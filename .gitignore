@@ -1,0 +1,40 @@
+# Environment
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.uv/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Obsidian workspace files (optional — commit if you want to share workspace state)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# Large raw inputs — keep PDFs out of git
+raw/pdfs/*.pdf
+raw/pdfs/*.PDF
+
+# DuckDB index (rebuild from wiki/)
+*.duckdb
+*.duckdb.wal
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Claude Code — local/generated, not committed
+.claude/settings.local.json
+.claude/sessions/
+.claude/memory/
+# Playground skills toolkit accidentally nested here — exclude until relocated
+.claude/skills/skills/

@@ -1,0 +1,58 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=10000"]
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-ast
+      - id: detect-private-key
+      # Disabled: solo project, committing directly to main is fine
+      # - id: no-commit-to-branch
+      #   args: ["--branch", "main"]
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.2
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+        exclude: ^notebooks/
+      - id: ruff-format
+        exclude: ^notebooks/
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.9.1
+    hooks:
+      - id: nbstripout
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.3
+    hooks:
+      - id: gitleaks
+        name: detect secrets (gitleaks)
+
+  - repo: local
+    hooks:
+      - id: no-hardcoded-paths
+        name: no hardcoded /Users/ paths in src/
+        language: pygrep
+        entry: "/Users/"
+        files: ^src/
+        types: [python]
+
+      - id: no-pkl-staged
+        name: no model .pkl files staged
+        language: fail
+        entry: ".pkl model files must not be committed — add to .gitignore"
+        files: \.pkl$
+
+      - id: no-dotenv-staged
+        name: .env not staged
+        language: fail
+        entry: ".env file must not be committed"
+        files: ^\.env$
