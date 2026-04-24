@@ -32,9 +32,8 @@ raw/pdfs/*.PDF
 # VS Code
 .vscode/
 
-# Claude Code — local/generated, not committed
+# Claude Code — machine-specific settings only
 .claude/settings.local.json
-.claude/sessions/
-.claude/memory/
-# Playground skills toolkit accidentally nested here — exclude until relocated
+# Playground skills toolkit copies accidentally nested here — exclude until relocated
 .claude/skills/skills/
+.claude/skills/old/

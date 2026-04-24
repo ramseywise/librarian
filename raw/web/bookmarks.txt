@@ -1,0 +1,22 @@
+# Web bookmarks for librarian KB
+# One URL per line. Blank lines and lines starting with # are ignored.
+# Run: uv run python scripts/scrape_bookmarks.py
+#
+# ── Google ADK ────────────────────────────────────────────────────────────────
+https://cloud.google.com/blog/topics/developers-practitioners/use-google-adk-and-mcp-with-an-external-server
+
+# ── LangGraph ─────────────────────────────────────────────────────────────────
+
+# ── MCP ───────────────────────────────────────────────────────────────────────
+https://modelcontextprotocol.io/introduction
+
+# ── RAG / embeddings ──────────────────────────────────────────────────────────
+
+# ── Voice agents ──────────────────────────────────────────────────────────────
+
+# ── Evals ─────────────────────────────────────────────────────────────────────
+
+# ── Claude / Anthropic ────────────────────────────────────────────────────────
+https://www.anthropic.com/engineering/building-effective-agents
+
+# ── General AI engineering ────────────────────────────────────────────────────
