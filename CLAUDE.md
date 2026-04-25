@@ -21,7 +21,7 @@ generic documentation.
 
 **Visualization:** Obsidian native graph view (wikilinks = edges). Install the Graph
 Analysis community plugin for cosine-similarity edges between pages. Do NOT use the
-Streamlit visualizer (`scripts/visualize.py`) — it is deprecated.
+Streamlit visualizer (`etl/visualize.py`) — it is deprecated.
 
 **Agent layer (in progress):** A LangGraph agent with `search_wiki`, `read_page`, and
 `write_wikilink` tools — answers questions from the KB and can commit new wikilinks back

@@ -33,5 +33,5 @@ When running a batch ingest (multiple raw sources at once):
 
 - Prefer reading `wiki/_index.md` before reading individual pages — it's faster.
 - When writing wiki pages, always write frontmatter first, then content.
-- Use Bash only for: running scripts in `scripts/`, file operations not covered by file tools.
+- Use Bash only for: running scripts in `etl/`, file operations not covered by file tools.
 - Do not make web requests during ingest unless the source is a URL (use WebFetch).
