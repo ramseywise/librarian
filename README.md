@@ -43,7 +43,7 @@ Web / bookmarks ────────────────────► 
 | `wiki/` | LLM-compiled knowledge. One `.md` file per concept, project, or decision. Structured frontmatter, wikilinks, cross-references. Claude writes; humans correct factual errors. |
 | `CLAUDE.md` | The compiler contract — schema rules, ingest checklist, conflict policy, domain taxonomy. Defines how Claude maintains the wiki. |
 | `scripts/` | Connectors for pulling from Notion and Linear, extracting PDF text, and pushing stable pages back to Notion or as Linear tickets. Pull on demand, not continuous sync. |
-| `app/backend/` | FastAPI server — wiki graph API, semantic edges (sentence-transformers), UMAP layout, and a streaming chat agent backed by a local Ollama model. |
+| `app/backend/` | FastAPI server — wiki graph API, semantic edges (sentence-transformers), UMAP layout, and a streaming chat agent backed by Gemini. |
 | `app/ui/` | React + Vite graph UI. Visualises the wiki as a force-directed graph; chat panel queries the agent. |
 | `mcp_server/` | FastMCP server exposing `search_wiki`, `read_page`, `list_pages` over the DuckDB FTS index. Read-only. Configured in `.claude/settings.json`. |
 | `.claude/skills/` | `/ingest`, `/query`, `/lint`, `/adk-context` — Claude Code slash commands for all wiki operations. |
@@ -79,21 +79,19 @@ Web / bookmarks ────────────────────► 
 ## Quick Start
 
 ```bash
-# 1. Install Ollama (system service — required for the graph UI chat agent)
-brew install ollama
-ollama serve   # or open Ollama.app; runs as a menu bar service
-
-# 2. Install dependencies
+# 1. Install dependencies
 uv sync                  # core deps
-make install-api         # api extras (FastAPI, sentence-transformers, ollama client)
+make install-api         # api extras (FastAPI, sentence-transformers, Gemini client)
 make install-ui          # npm install for the React UI
-make setup-ollama        # pull the model (default: llama3.2; set OLLAMA_MODEL to override)
 
-# 3. Configure
-cp .env.example .env     # fill in ANTHROPIC_API_KEY, NOTION_API_KEY, LINEAR_API_KEY
-                         # OLLAMA_MODEL and OLLAMA_HOST are optional (see .env.example)
+# 2. Configure
+cp .env.example .env
+# Fill in:
+#   GOOGLE_API_KEY   — free at aistudio.google.com (required for chat agent)
+#   ANTHROPIC_API_KEY — required for /ingest, /query, /lint slash commands
+#   NOTION_API_KEY / LINEAR_API_KEY — optional, only needed for those connectors
 
-# 4. Open in Claude Code
+# 3. Open in Claude Code
 code .                   # CLAUDE.md loads automatically
 ```
 
