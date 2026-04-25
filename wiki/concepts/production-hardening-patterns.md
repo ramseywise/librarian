@@ -18,7 +18,7 @@ Concrete fixes for common failure modes when moving from dev to production with 
 
 ### Embedder Warmup on Startup
 
-**Problem:** `SentenceTransformer` (multilingual-e5-large, 560MB) uses lazy loading. First request after a Fargate cold-start takes 30–60s while the model loads.
+See [[Embedder Warmup]] for full detail. **Problem:** `SentenceTransformer` (multilingual-e5-large, 560MB) uses lazy loading. First request after a Fargate cold-start takes 30–60s while the model loads.
 
 **Fix:** Call `embedder.embed_query("warmup")` in the FastAPI lifespan `init_graph()` function, immediately after `create_librarian()`. The graph holds a reference to the resolved embedder — warmup it there.
 

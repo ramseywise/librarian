@@ -16,6 +16,18 @@ material and patterns into agent context when invoked. Not slash commands — lo
 
 ---
 
+## Cross-Domain Skills
+
+| Skill | One-line summary | References |
+|-------|-----------------|------------|
+| `voice-agents` | Voice/BIDI streaming patterns — Gemini Live, session state, latency constraints, multimodal RAG. | `bidi-streaming.md`*, `gemini-live.md`* |
+| `observability` | Agent tracing and monitoring — LangFuse, LangSmith, Cloud Trace, BigQuery analytics. | `langfuse-setup.md`*, `langsmith-datasets.md`* |
+| `advanced-rag-patterns` | CRAG, Self-RAG, GraphRAG, Adaptive RAG, multi-query expansion, Plan-and-Execute. | `crag-implementation.md`*, `adaptive-routing.md`* |
+
+*References marked with `*` are stubs pending wiki ingest.
+
+---
+
 ## Google ADK Skills
 
 For building agents with the Google Agent Development Kit (Python).

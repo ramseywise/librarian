@@ -9,14 +9,23 @@
 
 A personal agent design reference following Karpathy's LLM Wiki pattern. Raw sources
 (Notion, Linear, meetings, PDFs, playground docs) go into `raw/` (append-only). Claude
-compiles them into `wiki/` (structured, interlinked markdown). Obsidian is the read UI.
-Claude Code is the write runtime. A local MCP server exposes the wiki to other agents.
+compiles them into `wiki/` (structured, interlinked markdown). Obsidian is the read and
+visualization UI. Claude Code is the write runtime. A local MCP server exposes the wiki
+to other agents.
 
 The core use case: before starting a new agent build, load the KB to get grounded
 recommendations from accumulated design experience — your own hard-won patterns, not
 generic documentation.
 
 **Mental model:** `raw/` = source code. Claude = compiler. `wiki/` = executable output.
+
+**Visualization:** Obsidian native graph view (wikilinks = edges). Install the Graph
+Analysis community plugin for cosine-similarity edges between pages. Do NOT use the
+Streamlit visualizer (`scripts/visualize.py`) — it is deprecated.
+
+**Agent layer (in progress):** A LangGraph agent with `search_wiki`, `read_page`, and
+`write_wikilink` tools — answers questions from the KB and can commit new wikilinks back
+to wiki files. Chainlit for the chat UI.
 
 ---
 
@@ -29,7 +38,7 @@ generic documentation.
   - `raw/notion/` — Notion page exports (use `YYYY-MM-DD-page-title.md`)
   - `raw/linear/` — Linear issue/project dumps
   - `raw/meetings/` — Meeting transcripts (use `YYYY-MM-DD-topic.md`)
-  - `raw/playground-docs/` — Research + plan docs from playground repo
+  - `raw/playground-docs/` — Research + plan docs from playground repo and `.claude/docs/archived/`
   - `raw/pdfs/` — Extracted text from research PDFs
   - `raw/web/` — Saved web research, bookmarks, article captures
   - `raw/repos/` — README / architecture snapshots from key repos
@@ -87,8 +96,10 @@ Content...
 | `mcp` | Model Context Protocol, MCP server design, tool schemas |
 | `voice` | Voice agent patterns, BIDI streaming, session management |
 | `eval` | Evaluation harnesses, LLM judges, golden sets, metrics |
-| `infra` | Deployment, CI/CD, observability, caching, monitoring |
+| `infra` | Deployment, CI/CD, observability (LangFuse/LangSmith/Cloud Trace), caching |
 | `llm` | LLM API patterns, prompt engineering, context management |
+| `deep-agents` | Deep Agents harness — middleware, StateBackend, StoreBackend, skill format |
+| `context-management` | Prefix caching, session compaction, history pruning, context windows |
 
 ### Type Tags (include exactly one)
 
@@ -110,17 +121,18 @@ Run this checklist for **every** new raw source, without exception.
 
 1. **Read the source fully** before writing anything to `wiki/`.
 2. **Identify** all entities, concepts, decisions, and open questions mentioned.
-3. **For each identified item:**
+3. **Extract atomic concepts** — this is the most important step for graph density. For every named technique, pattern, algorithm, or method mentioned in the source, ask: *does this deserve its own page?* Create a new page if yes. Examples of things that get their own page: `semantic caching`, `RRF fusion`, `inter-annotator agreement`, `prefix caching`, `CRAG retry loop`, `HistoryCondenser`. Do NOT bury these as bullets inside a coarser page — they become nodes in the graph only if they are pages. Rule of thumb: if it has a name and a non-obvious mechanism, it gets a page.
+4. **For each identified item (both coarse topics and atomic concepts):**
    - Find the existing wiki page, or create a new one if it doesn't exist.
    - Update the summary if the source adds new understanding.
    - Add new facts as additional sections or bullets.
    - Update the `sources:` frontmatter list.
    - Update `updated:` to today's date.
-4. **Scan for contradictions:** if the source disagrees with an existing wiki claim, do NOT silently overwrite. Go to step 5.
-5. **Handle contradictions:** add an entry to `wiki/_conflicts.md`, tag the affected page with `conflict`, and note both claims with source citations. Do not resolve — flag for human review.
-6. **Add cross-references:** after updating pages, scan for opportunities to add `[[wikilinks]]` to related pages.
-7. **Update `wiki/_index.md`:** add any new pages to the appropriate section.
-8. **Check for orphans:** any new page must have at least one backlink from another wiki page.
+5. **Scan for contradictions:** if the source disagrees with an existing wiki claim, do NOT silently overwrite. Go to step 6.
+6. **Handle contradictions:** add an entry to `wiki/_conflicts.md`, tag the affected page with `conflict`, and note both claims with source citations. Do not resolve — flag for human review.
+7. **Add cross-references:** after updating pages, scan for opportunities to add `[[wikilinks]]` to related pages. Prefer linking atomic concept pages from within broader topic pages — this is how graph edges form. Every atomic concept page should appear as an inline `[[wikilink]]` inside at least one coarser page.
+8. **Update `wiki/_index.md`:** add any new pages to the appropriate section.
+9. **Check for orphans:** any new page must have at least one backlink from another wiki page.
 
 ---
 

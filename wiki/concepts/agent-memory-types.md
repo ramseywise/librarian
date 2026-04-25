@@ -6,6 +6,7 @@ updated: 2026-04-24
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/librarian-components.md
+  - raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md
 ---
 
 # Agent Memory Types
@@ -27,6 +28,8 @@ sources:
 4. **Procedural** — store approved action sequences. Lowest priority — requires enough usage data to learn patterns.
 
 ## LangGraph `BaseStore` (0.4+)
+
+See [[LangGraph BaseStore]] for full detail.
 
 ```python
 from langgraph.store.memory import InMemoryStore
@@ -94,7 +97,7 @@ For MVP context management, the short-term memory schema:
 
 ### Summarization Node
 
-8-message trigger, 4-message overlap. Separate summarizer model call (Haiku) for cost. Preserves factual state across compaction.
+See [[Summarization Node]] for full detail. 8-message trigger, 4-message overlap. Separate summarizer model call (Haiku) for cost. Preserves factual state across compaction.
 
 ```
 trigger: len(messages) >= 8
@@ -113,7 +116,68 @@ model: Haiku (cost-efficient, targeted)
 
 **ADK multi-agent auth gotcha:** `asyncio.create_task()` copies a context snapshot — `ContextVar` mutations after creation are invisible to child tasks. Use `session.state` as the primary auth channel for multi-agent, not `ContextVar`.
 
+## Langmem — Practical Memory Tools
+
+`langmem` wraps the `BaseStore` patterns above into agent-ready tools:
+
+```python
+from langmem import create_manage_memory_tool, create_search_memory_tool
+
+namespace = ("enoa", "{langgraph_user_id}", "taste")
+manage_memory_tool = create_manage_memory_tool(namespace=namespace)
+search_memory_tool  = create_search_memory_tool(namespace=namespace)
+# Add to ALL_TOOLS — agent decides when to call them
+```
+
+**Episodic store** (past sessions as few-shots):
+
+```python
+# InMemoryStore with local sentence-transformers (no OpenAI dep)
+store = InMemoryStore(index={"embed": "sentence-transformers:all-MiniLM-L6-v2"})
+
+# In agent_node: retrieve 2 most similar past sessions, inject as examples
+memories = store.search(("enoa", user_id, "sessions"), query=user_request, limit=2)
+# After successful recommendation:
+store.put(("enoa", user_id, "sessions"), key=session_id, value={...})
+```
+
+**Procedural memory** (per-user system prompt evolution):
+
+```python
+# Namespace: ("enoa", user_id, "strategy")
+# get_procedural_prompt() → prepend to system prompt or fall back to default
+# update_procedural_prompt() → overwrite with new instructions
+```
+
+**Background optimizer** (Sonnet, not on hot path):
+
+```python
+from langmem import create_multi_prompt_optimizer
+
+optimizer = create_multi_prompt_optimizer(
+    model="anthropic:claude-sonnet-4-6", kind="metaprompt"
+)
+# Call async after session ends (asyncio.create_task) — don't block user response
+optimizer.invoke({"trajectories": [...], "prompts": [current_prompt]})
+```
+
+**Memory stats in prompt** — tells the agent what it knows before responding:
+```
+"You have 3 past sessions on record. 2 taste facts stored."
+```
+Mirrors MemGPT's memory statistics pattern. Inject as `<memory_stats>` block in system prompt.
+
+**Redis checkpointer gate:**
+```python
+if settings.redis_url:
+    checkpointer = AsyncRedisSaver(...)
+    await checkpointer.setup()
+else:
+    checkpointer = MemorySaver()  # dev: in-process only
+```
+
 ## See Also
 - [[LangGraph CRAG Pipeline]]
 - [[ADK Context Engineering]]
 - [[LangGraph Advanced Patterns]]
+- [[Listen-Wiseer Project]]

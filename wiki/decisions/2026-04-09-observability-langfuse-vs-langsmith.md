@@ -6,6 +6,7 @@ updated: 2026-04-24
 sources:
   - raw/playground-docs/rag-agent-template-research.md
   - raw/playground-docs/adk-orchestration-research.md
+  - raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
 ---
 
 # Observability — LangFuse vs LangSmith Decision
@@ -79,6 +80,13 @@ When annotation queues are needed:
 - Replace `langfuse.CallbackHandler` import with `langsmith.LangChainTracer`
 - Update `LANGCHAIN_TRACING_V2=true`, `LANGCHAIN_API_KEY`, `LANGCHAIN_PROJECT` env vars
 - Use `langsmith.evaluate()` for dataset-based evaluation runs
+
+## Implementation Notes (listen-wiseer Phase 5c)
+
+- LangFuse **cloud free tier: 50k observations/month** — sufficient for dev eval harness
+- Phoenix deps (`arize-phoenix-otel`, `openinference-*`) were added speculatively to listen-wiseer `pyproject.toml` but never actively wired. Confirmed no active Phoenix usage in `src/`. These are dead weight — remove in future cleanup.
+- RAGAS needs an LLM for grading — defaults to OpenAI. Configure with `langchain_anthropic.ChatAnthropic` (Haiku for cost) to stay within the Anthropic stack.
+- DeepEval similarly defaults to OpenAI — configure via `DeepEvalBaseLLM` subclass for Anthropic.
 
 ## See Also
 - [[RAG Evaluation]]

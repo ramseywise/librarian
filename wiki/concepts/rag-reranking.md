@@ -54,7 +54,7 @@ Only chunks marked `relevant=True` by the retrieval CRAG grader go to the rerank
 
 ## Confidence Score
 
-`confidence_score = max(relevance_score)` across reranked chunks. If no chunks survive → `0.0` (triggers CRAG retry). This flows to the `QualityGate` node.
+`confidence_score = max(relevance_score)` across reranked chunks. If no chunks survive → `0.0` (triggers [[CRAG Retry Logic]]). This flows to the `QualityGate` node.
 
 ## n-Candidates Rule of Thumb
 
@@ -78,3 +78,5 @@ Too many into reranker → latency spike. Too few → no gain over CRAG grading 
 - [[LangGraph CRAG Pipeline]]
 - [[RAG Retrieval Strategies]]
 - [[RAG Evaluation]]
+- [[CRAG Retry Logic]]
+- [[Reciprocal Rank Fusion]]

@@ -6,6 +6,8 @@ updated: 2026-04-24
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
+  - raw/web/2026-04-24-cloud-google-com-blog-topics-developers-practitioners-use-go-5e50e6e1.md
+  - raw/web/2026-04-24-modelcontextprotocol-io-introduction-dd33377c.md
 ---
 
 # MCP Protocol
@@ -88,7 +90,45 @@ Pratiyush/llm-wiki → 12 tools: query, search, lint, sync, export, ...
 
 Start read-only; add write tools behind confirmation. The wiki MCP server will be the runtime interface for other agents to load wiki pages as context.
 
+## Transport Protocols
+
+Two transport mechanisms for MCP servers:
+
+| Protocol | Description | Status |
+|---|---|---|
+| **SSE (Server-Sent Events)** | Two endpoints: HTTP POST for client→server requests, SSE GET for server→client streaming | Legacy; still widely used |
+| **Streamable HTTP** | Single HTTP endpoint for both directions; server can optionally use SSE for streaming | Successor (released March 2025) |
+
+ADK uses `MCPToolset.from_server` to connect to external MCP servers:
+
+```python
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, SseServerParams
+
+# SSE transport
+toolset = await MCPToolset.from_server(
+    SseServerParams(url="http://localhost:8001/sse")
+)
+tools = await toolset.get_tools_async()
+agent = LlmAgent(tools=tools)
+```
+
+For Streamable HTTP, use `StreamableHTTPServerParams` (same pattern, different params class).
+
+**FastMCP** is the recommended server implementation for Python:
+```python
+from mcp.server.fastmcp import FastMCP
+mcp = FastMCP("my-server")
+
+@mcp.tool
+def extract_wikipedia_article(query: str) -> str: ...
+```
+
+Debug MCP servers with `mcp dev server.py` (MCP Inspector UI).
+
+Production auth: under active development in the MCP spec — refer to the MCP auth specification.
+
 ## See Also
 - [[Karpathy LLM Wiki Pattern]]
 - [[ADK Context Engineering]]
 - [[Librarian RAG Architecture]]
+- [[Agentic Workflow Patterns]]

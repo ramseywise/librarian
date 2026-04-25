@@ -66,7 +66,7 @@ Nodes return partial dicts; LangGraph merges them. No node can modify state outs
 
 ## HistoryCondenser Node
 
-The condenser is the **first node** after START. It rewrites the user's latest message into a standalone query using prior conversation history.
+See [[HistoryCondenser]] for full detail. The condenser is the **first node** after START. It rewrites the user's latest message into a standalone query using prior conversation history.
 
 ```python
 class HistoryCondenser:
@@ -83,7 +83,7 @@ class HistoryCondenser:
 
 ## CRAG Retry Logic
 
-The CRAG gate compares `confidence_score` (from RerankerAgent) against `confidence_threshold` (default 0.3):
+See [[CRAG Retry Logic]] for full detail. The CRAG gate compares `confidence_score` (from RerankerAgent) against `confidence_threshold` (default 0.3):
 - `confidence_score >= threshold` → generate
 - `confidence_score < threshold` AND `retry_count <= max_crag_retries` → loop back to retrieve with incremented `retry_count`
 - `retry_count > max_crag_retries` → generate from whatever context is available

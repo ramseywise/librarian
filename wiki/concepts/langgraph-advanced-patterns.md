@@ -36,7 +36,7 @@ Each subgraph is independently testable. The copilot graph only knows about inte
 
 ## Send API — Fan-Out Parallelism
 
-Built-in for map-reduce patterns:
+See [[Send API Fan-out]] for full detail. Built-in for map-reduce patterns:
 
 ```python
 def fan_out_queries(state: AgentState) -> list[Send]:

@@ -6,6 +6,10 @@ updated: 2026-04-24
 sources:
   - raw/playground-docs/adk-samples-patterns-analysis.md
   - raw/playground-docs/rag-agent-template-research.md
+  - raw/claude-docs/playground/agents/analyzer.md
+  - raw/claude-docs/playground/agents/comparator.md
+  - raw/claude-docs/playground/agents/grader.md
+  - raw/claude-docs/playground/skills/a2ui-workspace/README.md
 ---
 
 # ADK Context Engineering
@@ -14,7 +18,7 @@ sources:
 
 **`static_instruction=`** is always a string literal or file read — no dynamic data allowed. Dynamic context goes into `instruction=callable` or is injected into conversation history as `function_response` events.
 
-**Why this matters:** static instructions are eligible for prefix caching — the model caches everything up to the first dynamic token. Mixing dynamic data into static instructions breaks caching and inflates costs.
+**Why this matters:** static instructions are eligible for [[Prefix Caching]] — the model caches everything up to the first dynamic token. Mixing dynamic data into static instructions breaks caching and inflates costs.
 
 ## File Organization
 
@@ -27,6 +31,8 @@ sources:
 | `SPEC.md` | Architecture specification per agent |
 
 ## SKILL.md Pattern
+
+See [[SKILL.md Pattern]] for full detail.
 
 ```yaml
 ---
@@ -135,8 +141,71 @@ async def list_bills(tool_context: ToolContext) -> list[dict]:
     ...
 ```
 
+---
+
+## SKILL.md Evaluation Framework
+
+Three agents (Grader → Comparator → Analyzer) form a pipeline for measuring whether a SKILL.md improves Claude's output.
+
+### How the pipeline works
+
+1. **Run** the same eval prompt twice: once with the skill loaded (`with_skill`), once without (`without_skill`). Save outputs and transcripts.
+2. **Grader** evaluates each run independently: PASS/FAIL per expectation, plus claims extracted from outputs, plus critique of the eval assertions themselves ("this assertion would also pass for a clearly wrong output").
+3. **Comparator** judges which output is better without knowing which skill produced it (blind). Scores on a content + structure rubric, determines winner.
+4. **Analyzer** unblins the result: reads both skills + transcripts, identifies what made the winner win, produces improvement suggestions ranked by impact.
+
+### Grader output structure
+
+```json
+{
+  "expectations": [{"text": "...", "passed": true, "evidence": "..."}],
+  "summary": {"passed": 2, "failed": 1, "total": 3, "pass_rate": 0.67},
+  "claims": [{"claim": "...", "type": "factual|process|quality", "verified": true}],
+  "eval_feedback": {
+    "suggestions": [{"assertion": "...", "reason": "would also pass for wrong output"}],
+    "overall": "Assertions check presence but not correctness."
+  }
+}
+```
+
+The `eval_feedback` field critiques the eval assertions themselves — a passing grade on a weak assertion creates false confidence. Surface suggestions when an assertion is trivially satisfied or a real outcome goes unchecked.
+
+### Comparator: blind judgment
+
+Comparator receives outputs labeled A and B without knowing which skill produced which. Evaluates on a rubric:
+- **Content:** correctness, completeness, accuracy (1–5 each)
+- **Structure:** organization, formatting, usability (1–5 each)
+- Winner declared by rubric score first, assertion pass rate second.
+
+### Analyzer improvement suggestions
+
+Four suggestion categories: `instructions`, `tools`, `examples`, `error_handling`. Priority levels: `high` (would change the outcome), `medium` (improves quality), `low` (nice to have). Focus on changes that would have changed the win/loss outcome, not cosmetic improvements.
+
+### A2UI benchmark results (3 iterations)
+
+| Iteration | Change | With Skill | Without | Delta |
+|---|---|---|---|---|
+| 1 | Initial draft, easy evals | 92% | 100% | −8pp |
+| 2 | Replaced easy eval with checkout form; fixed debug JSON example | 94% | 22% | +72pp |
+| 3 | Added `action` reminder to Button | **100%** | 22% | **+78pp** |
+
+**Key finding:** Without the a2ui skill, Claude hallucinates a fake schema — nested `children` trees, `"type": "card"` shorthand, `bind` fields — none of which exist in the A2UI protocol. The skill prevents this entirely. +78pp gain from a single well-crafted SKILL.md.
+
+**Lesson:** Eval design matters as much as skill design. Iteration 1 used easy evals that the baseline already passed (100%) — they couldn't detect skill value. Only when the eval targeted behavior that actually requires the skill (checkout form, debug blank screen) did the signal emerge.
+
+### Description optimization
+
+The skill `description` field is the only thing Claude reads when deciding whether to load the skill. A skill that under-triggers (user needs it, it doesn't load) or over-triggers (loads on unrelated prompts, wastes context) defeats its purpose. Description optimization runs an automated loop:
+1. Evaluate current description against 20 trigger/no-trigger queries (3 runs each)
+2. Propose improved description based on failures
+3. Re-evaluate on training + held-out test set
+4. Iterate up to 5 times
+
+---
+
 ## See Also
 - [[ADK vs LangGraph Comparison]]
 - [[Agent Memory Types]]
 - [[LangGraph Advanced Patterns]]
 - [[MCP Protocol]]
+- [[VA Agent Project]]

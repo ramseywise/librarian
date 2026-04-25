@@ -146,3 +146,4 @@ Three strategies for loading domain knowledge into agents — see [[ADK Context 
 - [[LangGraph CRAG Pipeline]]
 - [[ADK Context Engineering]]
 - [[Librarian RAG Architecture]]
+- [[VA Agent Project]]

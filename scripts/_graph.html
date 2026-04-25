@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #1a1a2e;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#795548", "font": {"color": "white"}, "id": "Librarian KB \u2014 Build Plan", "label": "Librarian KB \u2014 Build Plan", "shape": "star", "size": 33, "title": "\u003cb\u003eLibrarian KB \u2014 Build Plan\u003c/b\u003e\u003cbr\u003eRevised phased plan for the Librarian KB \u2014 manifest-first dedup, Streamlit viz, focused ingest, then Chainlit + LangGraph agent. Notion/Linear connectors deferred to Phase 5.\u003cbr\u003e\u003csmall\u003ellm, infra, mcp, langgraph, project\u003c/small\u003e"}, {"color": "#EA4335", "font": {"color": "white"}, "id": "Librarian Project", "label": "Librarian Project", "shape": "star", "size": 54, "title": "\u003cb\u003eLibrarian Project\u003c/b\u003e\u003cbr\u003eThe Librarian service \u2014 a LangGraph CRAG-based RAG pipeline for knowledge retrieval, deployed as a Python FastAPI service with evaluation harness.\u003cbr\u003e\u003csmall\u003erag, langgraph, project\u003c/small\u003e"}, {"color": "#4285F4", "font": {"color": "white"}, "id": "ADK vs LangGraph Comparison", "label": "ADK vs LangGraph Comparison", "shape": "triangle", "size": 48, "title": "\u003cb\u003eADK vs LangGraph Comparison\u003c/b\u003e\u003cbr\u003eSide-by-side mental model comparison of Google ADK and LangGraph \u2014 primitive mappings, when to use each, and the recommended vocabulary alignment approach.\u003cbr\u003e\u003csmall\u003eadk, langgraph, comparison\u003c/small\u003e"}, {"color": "#34A853", "font": {"color": "white"}, "id": "Plan and Execute Pattern", "label": "Plan and Execute Pattern", "shape": "diamond", "size": 30, "title": "\u003cb\u003ePlan and Execute Pattern\u003c/b\u003e\u003cbr\u003eSeparating planning from execution for multi-step agent tasks \u2014 Planner, Executor, Replanner, and Responder nodes with HITL confirmation gate.\u003cbr\u003e\u003csmall\u003elanggraph, pattern\u003c/small\u003e"}, {"color": "#4285F4", "font": {"color": "white"}, "id": "ADK Context Engineering", "label": "ADK Context Engineering", "shape": "diamond", "size": 42, "title": "\u003cb\u003eADK Context Engineering\u003c/b\u003e\u003cbr\u003eHow the ADK samples repo manages context \u2014 SKILL.md pattern, three skill-loading strategies, static vs dynamic instruction, and history compaction.\u003cbr\u003e\u003csmall\u003eadk, context-management, pattern\u003c/small\u003e"}, {"color": "#EA4335", "font": {"color": "white"}, "id": "Librarian RAG Architecture", "label": "Librarian RAG Architecture", "shape": "diamond", "size": 75, "title": "\u003cb\u003eLibrarian RAG Architecture\u003c/b\u003e\u003cbr\u003eThe five-agent Librarian pipeline \u2014 Plan, Retrieval, Reranker, Generation, and Eval agents wired by a LangGraph StateGraph with CRAG retry loop.\u003cbr\u003e\u003csmall\u003erag, langgraph, pattern\u003c/small\u003e"}, {"color": "#EA4335", "font": {"color": "white"}, "id": "Bedrock KB vs LangGraph Decision", "label": "Bedrock KB vs LangGraph Decision", "shape": "square", "size": 39, "title": "\u003cb\u003eBedrock KB vs LangGraph Decision\u003c/b\u003e\u003cbr\u003eDecision framework for Bedrock Knowledge Bases vs. LangGraph CRAG pipeline \u2014 quality, observability, cost, and migration path analysis.\u003cbr\u003e\u003csmall\u003erag, infra, decision\u003c/small\u003e"}, {"color": "#34A853", "font": {"color": "white"}, "id": "Orchestration Architecture Decision", "label": "Orchestration Architecture Decision", "shape": "square", "size": 39, "title": "\u003cb\u003eOrchestration Architecture Decision\u003c/b\u003e\u003cbr\u003eThree architecture options for the Librarian service deployment \u2014 full Bedrock, full LangGraph, or polyglot \u2014 with tradeoffs and the recommended migration path.\u003cbr\u003e\u003csmall\u003elanggraph, adk, infra, decision\u003c/small\u003e"}, {"color": "#607D8B", "font": {"color": "white"}, "id": "Observability \u2014 LangFuse vs LangSmith Decision", "label": "Observability \u2014 LangFuse vs LangSmith Decision", "shape": "square", "size": 30, "title": "\u003cb\u003eObservability \u2014 LangFuse vs LangSmith Decision\u003c/b\u003e\u003cbr\u003eDecision to use LangFuse first for RAG observability \u2014 native ragas/deepeval integrations, self-hostable, GDPR-friendly, swap later when annotation queues needed.\u003cbr\u003e\u003csmall\u003einfra, eval, decision\u003c/small\u003e"}, {"color": "#4285F4", "font": {"color": "white"}, "id": "ADK vs LangGraph Decision", "label": "ADK vs LangGraph Decision", "shape": "square", "size": 42, "title": "\u003cb\u003eADK vs LangGraph Decision\u003c/b\u003e\u003cbr\u003eDecision to keep Librarian on LangGraph \u2014 ADK\u0027s strengths don\u0027t address Librarian\u0027s core requirements; vocabulary alignment (Level 1) is the right refactor scope.\u003cbr\u003e\u003csmall\u003eadk, langgraph, decision\u003c/small\u003e"}, {"color": "#EA4335", "font": {"color": "white"}, "id": "RAG Retrieval Strategies", "label": "RAG Retrieval Strategies", "shape": "dot", "size": 51, "title": "\u003cb\u003eRAG Retrieval Strategies\u003c/b\u003e\u003cbr\u003eComprehensive reference for chunking, embedding, vector store, and hybrid search strategies \u2014 component choices, tradeoffs, and swap paths used in the Librarian pipeline.\u003cbr\u003e\u003csmall\u003erag, concept\u003c/small\u003e"}, {"color": "#EA4335", "font": {"color": "white"}, "id": "RAG Evaluation", "label": "RAG Evaluation", "shape": "dot", "size": 45, "title": "\u003cb\u003eRAG Evaluation\u003c/b\u003e\u003cbr\u003eThree-tier evaluation architecture for RAG pipelines \u2014 golden datasets, LLM-as-judge, failure clustering, ragas vs deepeval, and retrieval lift measurement.\u003cbr\u003e\u003csmall\u003erag, eval, concept\u003c/small\u003e"}, {"color": "#795548", "font": {"color": "white"}, "id": "Karpathy LLM Wiki Pattern", "label": "Karpathy LLM Wiki Pattern", "shape": "dot", "size": 33, "title": "\u003cb\u003eKarpathy LLM Wiki Pattern\u003c/b\u003e\u003cbr\u003eThe compiler analogy for personal knowledge bases \u2014 raw sources in, LLM compiles them into structured interlinked wiki pages, no vector infra needed.\u003cbr\u003e\u003csmall\u003ellm, concept\u003c/small\u003e"}, {"color": "#FF6D00", "font": {"color": "white"}, "id": "A2A Agent Protocol", "label": "A2A Agent Protocol", "shape": "dot", "size": 27, "title": "\u003cb\u003eA2A Agent Protocol\u003c/b\u003e\u003cbr\u003eGoogle\u0027s Agent-to-Agent open specification for inter-agent communication \u2014 task lifecycle, agent cards, and how it maps to LangGraph primitives.\u003cbr\u003e\u003csmall\u003emcp, infra, concept\u003c/small\u003e"}, {"color": "#FF6D00", "font": {"color": "white"}, "id": "MCP Protocol", "label": "MCP Protocol", "shape": "dot", "size": 36, "title": "\u003cb\u003eMCP Protocol\u003c/b\u003e\u003cbr\u003eModel Context Protocol \u2014 how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery via MCP servers.\u003cbr\u003e\u003csmall\u003emcp, concept\u003c/small\u003e"}, {"color": "#34A853", "font": {"color": "white"}, "id": "LangGraph Advanced Patterns", "label": "LangGraph Advanced Patterns", "shape": "diamond", "size": 45, "title": "\u003cb\u003eLangGraph Advanced Patterns\u003c/b\u003e\u003cbr\u003eAdvanced LangGraph patterns beyond the basics \u2014 subgraphs, Send API fan-out, streaming modes, time-travel, breakpoints/interrupts, and Plan-and-Execute.\u003cbr\u003e\u003csmall\u003elanggraph, pattern\u003c/small\u003e"}, {"color": "#607D8B", "font": {"color": "white"}, "id": "Production Hardening Patterns", "label": "Production Hardening Patterns", "shape": "diamond", "size": 42, "title": "\u003cb\u003eProduction Hardening Patterns\u003c/b\u003e\u003cbr\u003eChecklist of production hardening fixes for the Librarian service \u2014 P0/P1/P2 issues, async I/O safety, SQL injection prevention, CORS, and Docker packaging.\u003cbr\u003e\u003csmall\u003einfra, rag, langgraph, pattern\u003c/small\u003e"}, {"color": "#EA4335", "font": {"color": "white"}, "id": "RAG Reranking", "label": "RAG Reranking", "shape": "dot", "size": 36, "title": "\u003cb\u003eRAG Reranking\u003c/b\u003e\u003cbr\u003eReranking strategies for RAG pipelines \u2014 cross-encoder vs LLM listwise, confidence scoring, and when each is appropriate.\u003cbr\u003e\u003csmall\u003erag, concept\u003c/small\u003e"}, {"color": "#34A853", "font": {"color": "white"}, "id": "LangGraph CRAG Pipeline", "label": "LangGraph CRAG Pipeline", "shape": "diamond", "size": 66, "title": "\u003cb\u003eLangGraph CRAG Pipeline\u003c/b\u003e\u003cbr\u003eThe Corrective RAG pattern implemented as a LangGraph StateGraph \u2014 deterministic graph with conditional retry loop, confidence gating, and typed state schema.\u003cbr\u003e\u003csmall\u003elanggraph, rag, pattern\u003c/small\u003e"}, {"color": "#9C27B0", "font": {"color": "white"}, "id": "Agent Memory Types", "label": "Agent Memory Types", "shape": "dot", "size": 33, "title": "\u003cb\u003eAgent Memory Types\u003c/b\u003e\u003cbr\u003eFour memory types for agent systems \u2014 in-context, episodic, semantic, and procedural \u2014 and how to implement them with LangGraph BaseStore.\u003cbr\u003e\u003csmall\u003ememory, langgraph, concept\u003c/small\u003e"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Librarian KB \u2014 Build Plan", "to": "Karpathy LLM Wiki Pattern"}, {"arrows": "to", "from": "Librarian KB \u2014 Build Plan", "to": "MCP Protocol"}, {"arrows": "to", "from": "Librarian KB \u2014 Build Plan", "to": "Plan and Execute Pattern"}, {"arrows": "to", "from": "Librarian KB \u2014 Build Plan", "to": "Agent Memory Types"}, {"arrows": "to", "from": "Librarian KB \u2014 Build Plan", "to": "RAG Evaluation"}, {"arrows": "to", "from": "Librarian KB \u2014 Build Plan", "to": "Librarian Project"}, {"arrows": "to", "from": "Librarian Project", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "Librarian Project", "to": "ADK vs LangGraph Decision"}, {"arrows": "to", "from": "Librarian Project", "to": "Orchestration Architecture Decision"}, {"arrows": "to", "from": "Librarian Project", "to": "Bedrock KB vs LangGraph Decision"}, {"arrows": "to", "from": "Librarian Project", "to": "Observability \u2014 LangFuse vs LangSmith Decision"}, {"arrows": "to", "from": "Librarian Project", "to": "Karpathy LLM Wiki Pattern"}, {"arrows": "to", "from": "Librarian Project", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "Librarian Project", "to": "RAG Retrieval Strategies"}, {"arrows": "to", "from": "Librarian Project", "to": "Production Hardening Patterns"}, {"arrows": "to", "from": "ADK vs LangGraph Comparison", "to": "LangGraph Advanced Patterns"}, {"arrows": "to", "from": "ADK vs LangGraph Comparison", "to": "ADK Context Engineering"}, {"arrows": "to", "from": "ADK vs LangGraph Comparison", "to": "ADK vs LangGraph Decision"}, {"arrows": "to", "from": "ADK vs LangGraph Comparison", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "ADK vs LangGraph Comparison", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "Plan and Execute Pattern", "to": "LangGraph Advanced Patterns"}, {"arrows": "to", "from": "Plan and Execute Pattern", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "Plan and Execute Pattern", "to": "ADK vs LangGraph Comparison"}, {"arrows": "to", "from": "ADK Context Engineering", "to": "ADK vs LangGraph Comparison"}, {"arrows": "to", "from": "ADK Context Engineering", "to": "Agent Memory Types"}, {"arrows": "to", "from": "ADK Context Engineering", "to": "LangGraph Advanced Patterns"}, {"arrows": "to", "from": "ADK Context Engineering", "to": "MCP Protocol"}, {"arrows": "to", "from": "Librarian RAG Architecture", "to": "RAG Evaluation"}, {"arrows": "to", "from": "Librarian RAG Architecture", "to": "Orchestration Architecture Decision"}, {"arrows": "to", "from": "Librarian RAG Architecture", "to": "ADK vs LangGraph Comparison"}, {"arrows": "to", "from": "Librarian RAG Architecture", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "Librarian RAG Architecture", "to": "RAG Retrieval Strategies"}, {"arrows": "to", "from": "Librarian RAG Architecture", "to": "RAG Reranking"}, {"arrows": "to", "from": "Librarian RAG Architecture", "to": "Production Hardening Patterns"}, {"arrows": "to", "from": "Librarian RAG Architecture", "to": "Librarian Project"}, {"arrows": "to", "from": "Bedrock KB vs LangGraph Decision", "to": "ADK vs LangGraph Decision"}, {"arrows": "to", "from": "Bedrock KB vs LangGraph Decision", "to": "Orchestration Architecture Decision"}, {"arrows": "to", "from": "Bedrock KB vs LangGraph Decision", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "Bedrock KB vs LangGraph Decision", "to": "RAG Evaluation"}, {"arrows": "to", "from": "Orchestration Architecture Decision", "to": "ADK vs LangGraph Decision"}, {"arrows": "to", "from": "Orchestration Architecture Decision", "to": "Bedrock KB vs LangGraph Decision"}, {"arrows": "to", "from": "Orchestration Architecture Decision", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "Orchestration Architecture Decision", "to": "ADK vs LangGraph Comparison"}, {"arrows": "to", "from": "Observability \u2014 LangFuse vs LangSmith Decision", "to": "RAG Evaluation"}, {"arrows": "to", "from": "Observability \u2014 LangFuse vs LangSmith Decision", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "Observability \u2014 LangFuse vs LangSmith Decision", "to": "ADK Context Engineering"}, {"arrows": "to", "from": "ADK vs LangGraph Decision", "to": "ADK vs LangGraph Comparison"}, {"arrows": "to", "from": "ADK vs LangGraph Decision", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "ADK vs LangGraph Decision", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "ADK vs LangGraph Decision", "to": "Bedrock KB vs LangGraph Decision"}, {"arrows": "to", "from": "RAG Retrieval Strategies", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "RAG Retrieval Strategies", "to": "RAG Reranking"}, {"arrows": "to", "from": "RAG Retrieval Strategies", "to": "RAG Evaluation"}, {"arrows": "to", "from": "RAG Retrieval Strategies", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "RAG Retrieval Strategies", "to": "Production Hardening Patterns"}, {"arrows": "to", "from": "RAG Retrieval Strategies", "to": "Bedrock KB vs LangGraph Decision"}, {"arrows": "to", "from": "RAG Evaluation", "to": "RAG Retrieval Strategies"}, {"arrows": "to", "from": "RAG Evaluation", "to": "RAG Reranking"}, {"arrows": "to", "from": "RAG Evaluation", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "RAG Evaluation", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "Karpathy LLM Wiki Pattern", "to": "RAG Retrieval Strategies"}, {"arrows": "to", "from": "Karpathy LLM Wiki Pattern", "to": "Librarian Project"}, {"arrows": "to", "from": "Karpathy LLM Wiki Pattern", "to": "MCP Protocol"}, {"arrows": "to", "from": "A2A Agent Protocol", "to": "MCP Protocol"}, {"arrows": "to", "from": "A2A Agent Protocol", "to": "LangGraph Advanced Patterns"}, {"arrows": "to", "from": "A2A Agent Protocol", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "MCP Protocol", "to": "Karpathy LLM Wiki Pattern"}, {"arrows": "to", "from": "MCP Protocol", "to": "ADK Context Engineering"}, {"arrows": "to", "from": "MCP Protocol", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "LangGraph Advanced Patterns", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "LangGraph Advanced Patterns", "to": "Agent Memory Types"}, {"arrows": "to", "from": "LangGraph Advanced Patterns", "to": "Plan and Execute Pattern"}, {"arrows": "to", "from": "LangGraph Advanced Patterns", "to": "ADK Context Engineering"}, {"arrows": "to", "from": "LangGraph Advanced Patterns", "to": "A2A Agent Protocol"}, {"arrows": "to", "from": "Production Hardening Patterns", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "Production Hardening Patterns", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "Production Hardening Patterns", "to": "Librarian Project"}, {"arrows": "to", "from": "Production Hardening Patterns", "to": "Observability \u2014 LangFuse vs LangSmith Decision"}, {"arrows": "to", "from": "Production Hardening Patterns", "to": "Orchestration Architecture Decision"}, {"arrows": "to", "from": "RAG Reranking", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "RAG Reranking", "to": "RAG Retrieval Strategies"}, {"arrows": "to", "from": "RAG Reranking", "to": "RAG Evaluation"}, {"arrows": "to", "from": "LangGraph CRAG Pipeline", "to": "ADK vs LangGraph Comparison"}, {"arrows": "to", "from": "LangGraph CRAG Pipeline", "to": "Librarian RAG Architecture"}, {"arrows": "to", "from": "LangGraph CRAG Pipeline", "to": "RAG Retrieval Strategies"}, {"arrows": "to", "from": "LangGraph CRAG Pipeline", "to": "RAG Reranking"}, {"arrows": "to", "from": "LangGraph CRAG Pipeline", "to": "Production Hardening Patterns"}, {"arrows": "to", "from": "LangGraph CRAG Pipeline", "to": "ADK vs LangGraph Decision"}, {"arrows": "to", "from": "Agent Memory Types", "to": "LangGraph CRAG Pipeline"}, {"arrows": "to", "from": "Agent Memory Types", "to": "ADK Context Engineering"}, {"arrows": "to", "from": "Agent Memory Types", "to": "LangGraph Advanced Patterns"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"stabilization": {"iterations": 150}}, "edges": {"arrows": {"to": {"enabled": true, "scaleFactor": 0.5}}, "color": {"opacity": 0.4}}, "nodes": {"font": {"size": 13}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

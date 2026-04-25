@@ -1,6 +1,6 @@
 ---
 name: adk-context
-description: "Generate a curated briefing from the wiki before starting an ADK or LangGraph build session in playground. Reads agent, concept, and decision pages tagged adk/langgraph/mcp/memory and outputs a structured context injection."
+description: "Generate a curated briefing from the wiki before starting an agent build session. Reads decision, pattern, and concept pages tagged adk/langgraph/mcp/memory/voice/deep-agents/context-management and outputs a structured context injection."
 allowed-tools: Read Glob Grep
 ---
 
@@ -9,10 +9,12 @@ You are preparing a knowledge briefing for an AI engineering session. The user i
 ## Input
 
 `$ARGUMENTS` (optional): specific domain or topic to focus on.
-- Empty → full briefing (adk + langgraph + memory + mcp)
+- Empty → full briefing (adk + langgraph + memory + mcp + deep-agents)
 - `adk` → only ADK-tagged pages
 - `voice` → only voice-tagged pages
 - `rag` → only RAG-tagged pages
+- `deep-agents` → Deep Agents harness patterns
+- `context-management` → prefix caching, compaction, history pruning
 - Free text → search for relevant pages by topic
 
 ## Protocol

@@ -99,6 +99,7 @@ Priority 2 for copilot build (after breakpoints). Effort: ~3 days. Blocks multi-
 See [[LangGraph Advanced Patterns]] for the priority order of advanced patterns.
 
 ## See Also
+- [[Agentic Workflow Patterns]]
 - [[LangGraph Advanced Patterns]]
 - [[LangGraph CRAG Pipeline]]
 - [[ADK vs LangGraph Comparison]]

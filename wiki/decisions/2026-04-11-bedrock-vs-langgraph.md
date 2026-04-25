@@ -120,3 +120,4 @@ The eval gate: add `BedrockRetriever` adapter to the eval pipeline so Bedrock KB
 - [[Orchestration Architecture Decision]]
 - [[Librarian RAG Architecture]]
 - [[RAG Evaluation]]
+- [[Evaluation & Improvement Project (VIR)]] — concrete use case: Billy → Bedrock KB ingestion for HC Virtual Assistant MVP

@@ -89,7 +89,7 @@ Wrapped in `MultilingualEmbedder` with E5 prefix rule enforced at the Protocol l
 
 ### Active: RRF (Reciprocal Rank Fusion)
 
-**Production choice.** Rank-based fusion avoids sensitivity to score distribution differences between BM25 and vector search:
+**Production choice.** See [[Reciprocal Rank Fusion]] for full mechanism. Rank-based fusion avoids sensitivity to score distribution differences between BM25 and vector search:
 
 ```python
 def rrf_score(bm25_rank: int, vector_rank: int, k: int = 60) -> float:
@@ -241,6 +241,42 @@ Intent classification via `\b`-anchored keyword regex. Intent ordering: COMPARE 
 | COMPARE | `hybrid` |
 | EXPLORE | `dense` |
 
+## DuckDB vss — Zero-Dependency Vector Store
+
+For projects already using DuckDB, the `vss` extension provides vector search without adding a new service:
+
+```sql
+CREATE TABLE rag_chunks (
+    chunk_id  VARCHAR PRIMARY KEY,
+    subject   VARCHAR NOT NULL,   -- normalized: lower(strip(artist_name))
+    section   VARCHAR DEFAULT 'bio',
+    source_url VARCHAR DEFAULT '',
+    text      VARCHAR NOT NULL,
+    embedding FLOAT[384],         -- all-MiniLM-L6-v2
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+Search via `array_cosine_similarity()`:
+
+```python
+conn.execute("""
+    SELECT chunk_id, text, array_cosine_similarity(embedding, $1::FLOAT[384]) AS score
+    FROM rag_chunks WHERE subject = $2
+    ORDER BY score DESC LIMIT $3
+""", [query_embedding, subject, top_k])
+```
+
+**When to use:** `<10k chunks`, same database already in use, want zero extra infra. Add HNSW index when scale warrants it. For larger corpora or multi-tenant workloads, prefer dedicated vector stores.
+
+**Lazy ingestion pattern** (used in listen-wiseer for artist bios):
+1. Agent calls `get_artist_context(artist_name)`
+2. Check `rag_chunks` for cached passages for this artist
+3. On cache miss: fetch Wikipedia → chunk → embed → upsert → return top-k
+4. On cache hit: return top-k directly
+
+This avoids pre-ingesting all artists upfront and handles the corpus freshness gap naturally.
+
 ## See Also
 - [[LangGraph CRAG Pipeline]]
 - [[RAG Reranking]]
@@ -248,3 +284,4 @@ Intent classification via `\b`-anchored keyword regex. Intent ordering: COMPARE 
 - [[Librarian RAG Architecture]]
 - [[Production Hardening Patterns]]
 - [[Bedrock KB vs LangGraph Decision]]
+- [[Listen-Wiseer Project]]

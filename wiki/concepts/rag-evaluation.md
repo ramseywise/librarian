@@ -7,6 +7,8 @@ sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/playground-docs/rag-agent-template-research.md
   - raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md
+  - raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
+  - raw/linear/2026-04-24-evaluation-and-improvement.md
 ---
 
 # RAG Evaluation
@@ -174,8 +176,81 @@ For copilot/action agents, additional metrics:
 | CRAG retry | 1.5s | 4s |
 | Action (plan + execute) | 2s | 6s |
 
+## Agent Eval Taxonomy (Anthropic)
+
+For LangGraph agents specifically, Anthropic defines three eval tiers — distinct from the RAG quality tiers above:
+
+| Tier | What it tests | Cost | When to run |
+|---|---|---|---|
+| **Tier 1 — Unit** | Individual components: tool selection accuracy, intent classification, routing, parameter extraction | Free — deterministic, no LLM calls | Every CI run |
+| **Tier 2 — Trajectory** | Sequence of agent decisions — which nodes were visited, which tools called, in what order | Low (mock tools) or medium (LLM-graded) | Pre-merge gate |
+| **Tier 3 — End-to-end** | Final output quality from user's perspective — LLM-as-judge for faithfulness, relevance, completeness | Expensive — LLM calls per sample | Cost-gated, not CI |
+
+**Principle:** Tier 1 catches ~70% of regressions cheaply. Add Tier 2 for routing logic. Use Tier 3 sparingly for quality gates.
+
+**Golden dataset schema for agent evals:**
+
+```python
+class AgentGoldenSample(BaseModel):
+    sample_id: str
+    query: str
+    expected_intent: str
+    expected_confidence_min: float
+    expected_tools: list[str]       # tool names the query should trigger
+    expected_entities: dict[str, list[str]]
+    expected_route: str             # "rewrite_query" | "clarify_or_proceed"
+    difficulty: str                 # easy | medium | hard
+    eval_tier: int                  # 1=unit, 2=trajectory, 3=e2e
+```
+
+Coverage target: 8-10 samples per intent for Tier 1, 5-10 trajectory cases, 5-10 edge cases. 40-60 total.
+
+**RAGAS + DeepEval split:**
+- **RAGAS** — RAG-specific quality: faithfulness, answer_relevancy, context_precision, context_recall. Use for `get_artist_context` tool quality.
+- **DeepEval** — Agent-specific quality: `ToolCorrectnessMetric`, `GEval` (custom rubric), `AgentTaskCompletionMetric`. RAGAS doesn't have tool-use metrics.
+- Both log scores to LangFuse traces via their respective integrations.
+
+**DuckDB import chain gotcha (listen-wiseer):** Tier 1 evals must avoid importing `agent.tools` directly — it imports `RecommendationEngine` which imports DuckDB. Use the replication pattern (copy node logic inline) for Tier 1; use the mock pattern (patch `agent.tools._engine`) for Tier 2/3.
+
+**Make targets by tier:**
+```bash
+make eval-unit        # Tier 1 — deterministic, CI-safe
+make eval-trajectory  # Tier 2 — LangFuse-traced, cost-gated
+make eval-e2e         # Tier 3 — RAGAS + DeepEval, CONFIRM_EXPENSIVE_OPS required
+```
+
+## Real-Data Baseline Methodology
+
+Before launching a new system, establish a performance baseline using the **existing system's conversation data** — not synthetic golden sets. This gives a concrete "beat this" target.
+
+Pattern from [[Evaluation & Improvement Project (VIR)]]:
+- Export historical conversations from the prior system (BookKeeping Hero in this case)
+- Run EDA to understand conversation structure, quality distribution, and failure modes
+- Extract explicit feedback signals (thumbs up/down) as gold labels — these are real user judgements, not annotator opinions
+- Document baseline metrics before the new system launches
+- After launch, compare new system against this baseline on the same question types
+
+**Why this matters:** Synthetic eval sets measure what you chose to measure. Real-data baselines measure what the system actually gets asked in production.
+
+## LLM-as-Judge Calibration
+
+LLM judge scores should not be trusted at scale until calibrated against human labels. The calibration loop:
+
+1. Annotate a batch of conversations with human CS agents
+2. Run LLM judges on the same batch
+3. Compare — where does the judge agree/disagree with humans?
+4. Adjust judge prompts or scoring thresholds until agreement is sufficient
+5. Only then use LLM judges to scale quality assessment
+
+This is especially important for edge cases — judge prompts optimized on average-case behavior may not generalize to failure modes. See [[HITL Annotation Pipeline]] for the full annotation workflow.
+
+---
+
 ## See Also
 - [[RAG Retrieval Strategies]]
 - [[RAG Reranking]]
 - [[LangGraph CRAG Pipeline]]
 - [[Librarian RAG Architecture]]
+- [[Listen-Wiseer Project]]
+- [[HITL Annotation Pipeline]]
+- [[Evaluation & Improvement Project (VIR)]]
