@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "rubric_based_final_response_quality_v1": {
+      "threshold": 0.8,
+      "rubrics": [
+        {
+          "rubric_id": "asks_for_missing_info",
+          "rubric_content": {
+            "text_property": "If the user's request cannot be fulfilled because required information is missing (e.g. no customer name, no invoice ID), the agent must ask a specific clarifying question rather than guessing or refusing silently. If the required information was present, the property is not applicable."
+          }
+        },
+        {
+          "rubric_id": "confirmation_before_write",
+          "rubric_content": {
+            "text_property": "If the user requests a create or update operation, the agent must ask for explicit confirmation before applying the change. Applying a write without confirmation must fail this rubric. If no write was requested, the property is not applicable."
+          }
+        },
+        {
+          "rubric_id": "error_communicated_clearly",
+          "rubric_content": {
+            "text_property": "If the operation failed or was rejected (e.g. invalid data, missing required field), the response must clearly name the problem and tell the user what to do next. A vague or silent failure must fail this rubric. If the operation succeeded, the property is not applicable."
+          }
+        }
+      ]
+    }
+  }
+}

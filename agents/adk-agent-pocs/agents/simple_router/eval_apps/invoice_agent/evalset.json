@@ -1,0 +1,279 @@
+{
+  "eval_set_id": "invoice_agent_evalset",
+  "name": "Invoice Agent — Independent Eval",
+  "description": "Evaluates invoice_agent in isolation, without going through the router.\n\nTool assertions follow the same design as the parent routing_evalset:\n- Only tools with fully predictable args are asserted: get_invoice_details, validate_invoice,\n  note_invoice_id (all take invoice_id from the user message), and signal_follow_up (no args).\n- get_conversation_context is not asserted since the agent may or may not call it first.\n- update_invoice_field is not asserted because field_name and value come from the model.\n\nMatch type ANY_ORDER tolerates extra tool calls (e.g. get_conversation_context before the\ndomain tool) without failing the case.",
+  "eval_cases": [
+    {
+      "eval_id": "show_invoice",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "Show me invoice 10" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "get_invoice_details", "args": { "invoice_id": "10" } }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "validate_invoice",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "Validate invoice 10" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "get_invoice_details", "args": { "invoice_id": "10" } },
+              { "name": "validate_invoice", "args": { "invoice_id": "10" } }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "note_then_show_multi_turn",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "I'm looking at invoice number 10" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "note_invoice_id", "args": { "invoice_id": "10" } }
+            ],
+            "intermediate_responses": []
+          }
+        },
+        {
+          "invocation_id": "inv_2",
+          "user_content": { "parts": [{ "text": "Show me the details" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "get_invoice_details", "args": { "invoice_id": "10" } }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "mention_then_short_followup",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "I'm looking at invoice 10" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "note_invoice_id", "args": { "invoice_id": "10" } },
+              { "name": "signal_follow_up", "args": {} }
+            ],
+            "intermediate_responses": []
+          }
+        },
+        {
+          "invocation_id": "inv_2",
+          "user_content": { "parts": [{ "text": "show it" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "get_invoice_details", "args": { "invoice_id": "10" } }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "unresolved_generic_request",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "Show me invoice" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "signal_follow_up", "args": {} }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "nonsensitive_write_no_confirmation",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "Update the status of invoice 10 to approved" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "get_invoice_details", "args": { "invoice_id": "10" } },
+              { "name": "validate_invoice", "args": { "invoice_id": "10" } }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "show_invoice_with_prestated_id",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "Show it to me" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "get_invoice_details", "args": { "invoice_id": "42" } }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {
+          "public:session_facts": {
+            "invoice": {
+              "status": "persisted",
+              "description": "Invoice ID stated by user: 42",
+              "value": "{\"id\": \"42\"}",
+              "fact_id": "test-fact-id-prestated"
+            }
+          }
+        }
+      }
+    },
+    {
+      "eval_id": "show_invoice_cache_hit",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "Show me invoice 10" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {
+          "public:session_facts": {
+            "invoice": {
+              "status": "persisted",
+              "description": "Full invoice data for invoice #10",
+              "value": "{\"id\": \"10\", \"status\": \"draft\", \"vendor_name\": \"Acme\", \"amount\": \"1250.0\", \"due_date\": \"2026-04-01\", \"vat_rate\": null, \"missing_fields\": [\"vat_rate\"]}",
+              "fact_id": "test-fact-id-001"
+            }
+          }
+        }
+      }
+    },
+    {
+      "eval_id": "write_already_loaded",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "Set the VAT rate on invoice 10 to 0.25" }] },
+          "final_response": {
+            "role": "model",
+            "parts": [{ "text": "" }]
+          },
+          "intermediate_data": {
+            "tool_uses": [
+              { "name": "validate_invoice", "args": { "invoice_id": "10" } }
+            ],
+            "intermediate_responses": []
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "invoice_agent",
+        "user_id": "eval_user",
+        "state": {
+          "public:session_facts": {
+            "invoice": {
+              "status": "persisted",
+              "description": "Full invoice data for invoice #10",
+              "value": "{\"id\": \"10\", \"status\": \"draft\", \"vendor_name\": \"Acme\", \"amount\": \"1250.0\", \"due_date\": \"2026-04-01\", \"vat_rate\": null, \"missing_fields\": [\"vat_rate\"]}",
+              "fact_id": "test-fact-id-001"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

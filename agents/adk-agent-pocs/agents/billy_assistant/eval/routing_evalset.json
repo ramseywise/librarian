@@ -1,0 +1,294 @@
+{
+  "eval_set_id": "routing_evalset",
+  "name": "Billy Assistant — Routing Accuracy",
+  "description": "Covers single-domain routing to each subagent, support-vs-action disambiguation, and out-of-domain fallback.\n\nDesign note: tool_trajectory_avg_score compares on both name AND args (exact match per tool).\nTo keep assertions reliable across model runs, only assert on tools whose args are fully predictable.\nFor routing assertions (which agent handled the request), intermediate_responses is the source of truth.",
+  "eval_cases": [
+    {
+      "eval_id": "how_to_upload_invoice_routes_to_support",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": {
+            "parts": [
+              {
+                "text": "how to upload an invoice"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": ""
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": [
+              [
+                "support_agent",
+                [
+                  {
+                    "text": ""
+                  }
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "billy_assistant",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "create_invoice_routes_to_invoice_agent",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": {
+            "parts": [
+              {
+                "text": "Create an invoice for Nordisk Tech"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": ""
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": [
+              [
+                "invoice_agent",
+                [
+                  {
+                    "text": ""
+                  }
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "billy_assistant",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "list_customers_routes_to_customer_agent",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": {
+            "parts": [
+              {
+                "text": "Show me all my customers"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": ""
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": [
+              [
+                "customer_agent",
+                [
+                  {
+                    "text": ""
+                  }
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "billy_assistant",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "add_product_routes_to_product_agent",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": {
+            "parts": [
+              {
+                "text": "Add a new product to my product catalog"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": ""
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": [
+              [
+                "product_agent",
+                [
+                  {
+                    "text": ""
+                  }
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "billy_assistant",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "send_invoice_email_routes_to_email_agent",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": {
+            "parts": [
+              {
+                "text": "Send invoice 2024-002 to Nordisk Tech by email"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": ""
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": [
+              [
+                "email_agent",
+                [
+                  {
+                    "text": ""
+                  }
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "billy_assistant",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "invite_user_routes_to_invitation_agent",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": {
+            "parts": [
+              {
+                "text": "Invite peter@example.com to my Billy organization"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": ""
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": [
+              [
+                "invitation_agent",
+                [
+                  {
+                    "text": ""
+                  }
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "billy_assistant",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    },
+    {
+      "eval_id": "how_to_approve_invoice_routes_to_support",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": {
+            "parts": [
+              {
+                "text": "How do I approve an invoice in Billy?"
+              }
+            ]
+          },
+          "final_response": {
+            "role": "model",
+            "parts": [
+              {
+                "text": ""
+              }
+            ]
+          },
+          "intermediate_data": {
+            "tool_uses": [],
+            "intermediate_responses": [
+              [
+                "support_agent",
+                [
+                  {
+                    "text": ""
+                  }
+                ]
+              ]
+            ]
+          }
+        }
+      ],
+      "session_input": {
+        "app_name": "billy_assistant",
+        "user_id": "eval_user",
+        "state": {}
+      }
+    }
+  ]
+}

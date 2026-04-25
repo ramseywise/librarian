@@ -1,0 +1,43 @@
+{
+  "eval_set_id": "error_evalset",
+  "name": "Simple Router — Agent Robustness & Error Handling",
+  "description": "Rubric-based tests for agent robustness when requests are incomplete, fields are invalid, or tools surface problems.\nTests that agents ask for clarification, surface validation issues clearly, and gate writes behind confirmation.\n\nNote on mock tools: get_invoice_details returns identical hardcoded data for any invoice ID.\nTrue 'not found' errors require real backend integration and cannot be tested today.\nThese cases test robustness within the current mock.\n\nScorer: rubric_based_final_response_quality_v1, threshold 0.8.\n\nCases:\n  E1  error_validation_failure_communicated — Validation issues named clearly\n  E2  error_missing_invoice_id_asks         — Agent asks for missing ID rather than guessing\n  E3  error_update_requires_confirmation    — Write gated behind confirmation prompt",
+  "eval_cases": [
+    {
+      "eval_id": "error_validation_failure_communicated",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "validate invoice 10" }] },
+          "final_response": { "role": "model", "parts": [{ "text": "" }] },
+          "intermediate_data": { "tool_uses": [], "intermediate_responses": [] }
+        }
+      ],
+      "session_input": { "app_name": "simple_router", "user_id": "eval_user", "state": {} }
+    },
+    {
+      "eval_id": "error_missing_invoice_id_asks",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "validate the invoice" }] },
+          "final_response": { "role": "model", "parts": [{ "text": "" }] },
+          "intermediate_data": { "tool_uses": [], "intermediate_responses": [] }
+        }
+      ],
+      "session_input": { "app_name": "simple_router", "user_id": "eval_user", "state": {} }
+    },
+    {
+      "eval_id": "error_update_requires_confirmation",
+      "conversation": [
+        {
+          "invocation_id": "inv_1",
+          "user_content": { "parts": [{ "text": "set the VAT rate on invoice 10 to 25%" }] },
+          "final_response": { "role": "model", "parts": [{ "text": "" }] },
+          "intermediate_data": { "tool_uses": [], "intermediate_responses": [] }
+        }
+      ],
+      "session_input": { "app_name": "simple_router", "user_id": "eval_user", "state": {} }
+    }
+  ]
+}

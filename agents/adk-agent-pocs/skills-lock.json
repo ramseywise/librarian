@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "skills": {
+    "adk-cheatsheet": {
+      "source": "google/adk-docs",
+      "sourceType": "github",
+      "computedHash": "a38c60cac8bc202390bbf59e438a29ebd679ead13625f5d6526520a47d333057"
+    },
+    "adk-deploy-guide": {
+      "source": "google/adk-docs",
+      "sourceType": "github",
+      "computedHash": "f732bc0bc4ee7f6860f5dc0a4b746fec327c48dd2a94c56e2b6b3b2e6fa69b35"
+    },
+    "adk-dev-guide": {
+      "source": "google/adk-docs",
+      "sourceType": "github",
+      "computedHash": "e3ab9a05dd09d4cd9f0d9196d0cfc640f0e69a7f83d330572c62997776982892"
+    },
+    "adk-eval-guide": {
+      "source": "google/adk-docs",
+      "sourceType": "github",
+      "computedHash": "ceb7dbcee90b76e5a8ebd4392dbeea4abbfcf55a4aa4eb34a3aa380f94247ea1"
+    },
+    "adk-observability-guide": {
+      "source": "google/adk-docs",
+      "sourceType": "github",
+      "computedHash": "64e8b9c676d63af232304369d4e543761ffd62d35fed47d3adba67b916e811c2"
+    },
+    "adk-scaffold": {
+      "source": "google/adk-docs",
+      "sourceType": "github",
+      "computedHash": "04008a4236754bf23eb132422bf2c04a8c6dbedfeb78897e5b49237b698c701a"
+    },
+    "deep-agents-core": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "8cbf6f61f42b2482472f53a99e23607f16017e1e16ca037409c6c8fcfcbcc395"
+    },
+    "deep-agents-memory": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "b7b0facdff17b6f3ad77019e30a697175389e06ec7260780f49d5b3a1d28ad2a"
+    },
+    "deep-agents-orchestration": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "1570f8d88e1233edc3306d28224604172b016aedba0ced2efa2dd8e38e28ae62"
+    },
+    "framework-selection": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "4077205bed91c048ba47f0db1bd66930bdbdd04e5195dc3d5b265272c5059cd1"
+    },
+    "langchain-dependencies": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "bab5411cdfbdeaa42544c45791d9d3fc18d4cc193f4a3c5e2f6bd567422bffaf"
+    },
+    "langchain-fundamentals": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "ede1b3210a135e2c7eb5ddb51e0aaf3b78fde07cfd9fbe6efaeb4d6c5db60bd2"
+    },
+    "langchain-middleware": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "7d1931c4439cc4ba0c4cc92e824aa08067b76748911196319b595c91041cdd61"
+    },
+    "langchain-rag": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "545c661f6ed9b54cfe078a438052b2742d6122fc022f69db67d1a01aca4c726c"
+    },
+    "langgraph-fundamentals": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "d754005c69632037ca79c4daa8177b03e5a0f17f40cde3b0f532b33a8df88ded"
+    },
+    "langgraph-human-in-the-loop": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "0e81f1ef881b4c82bdcb5bece6309558f9e53681022f8347f869abc403b48637"
+    },
+    "langgraph-persistence": {
+      "source": "langchain-ai/langchain-skills",
+      "sourceType": "github",
+      "computedHash": "fc617bfab9d06826cba1097def5c7775f4522a1dabdd1a0111472f9929b1b914"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "rubric_based_final_response_quality_v1": {
+      "threshold": 0.8,
+      "rubrics": [
+        {
+          "rubric_id": "steps_present",
+          "rubric_content": {
+            "text_property": "The response must include concrete, numbered or bulleted step-by-step instructions that the user can follow to complete the task."
+          }
+        },
+        {
+          "rubric_id": "no_hallucination",
+          "rubric_content": {
+            "text_property": "The response must only describe actions available in the product UI. It must not invent features, buttons, or menu options that were not returned by the tools."
+          }
+        }
+      ]
+    }
+  }
+}

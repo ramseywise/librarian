@@ -1,0 +1,16 @@
+inv_002
+
+how to upload an invoice and show me invoice inv_002
+
+how to upload an invoice
+how to create an expense
+how do I credit an invoice
+show me invoice inv_001
+show me an expense
+how to upload an invoice and show me invoice 10
+what invoice number did i see before
+cool
+
+
+
+aws sso login --sso-session admin

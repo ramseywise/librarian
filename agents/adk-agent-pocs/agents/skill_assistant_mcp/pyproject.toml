@@ -1,0 +1,5 @@
+[project]
+name = "skill_assistant_mcp"
+version = "0.1.0"
+requires-python = "==3.12.*"
+dependencies = ["google-adk>=1.25.0", "google-genai>=1.47.0", "pyyaml>=6.0"]

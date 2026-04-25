@@ -1,0 +1,33 @@
+{
+  "criteria": {
+    "rubric_based_final_response_quality_v1": {
+      "threshold": 0.8,
+      "rubrics": [
+        {
+          "rubric_id": "support_over_action_for_how_to",
+          "rubric_content": {
+            "text_property": "If the user asks a how-to or explanatory question (e.g. 'how do I upload an invoice?', 'what is an approval flow?'), the response must come from the support agent and contain guidance — not an attempt to perform an action. A response that tries to create, edit, or list data instead of explaining is a failure. If the user requested an action rather than an explanation, the property is not applicable."
+          }
+        },
+        {
+          "rubric_id": "action_agent_for_operations",
+          "rubric_content": {
+            "text_property": "If the user requests a concrete action (create, list, edit, send, invite), the response must come from the relevant domain agent and perform or confirm that action — not redirect to support documentation. If the user asked a how-to question rather than requesting an action, the property is not applicable."
+          }
+        },
+        {
+          "rubric_id": "out_of_domain_handled_gracefully",
+          "rubric_content": {
+            "text_property": "If the user asks about a topic outside all known domains (invoices, customers, products, email, invitations, support), the response must politely decline and briefly explain what Billy Assistant can help with. It must not attempt to answer or fabricate a response in the requested domain. If the request was in-domain, the property is not applicable."
+          }
+        },
+        {
+          "rubric_id": "no_hallucination",
+          "rubric_content": {
+            "text_property": "Data presented in the response (amounts, dates, names, IDs, statuses) must be consistent with what the tools returned. The agent must not invent field values. If no data was fetched this turn, the property is not applicable."
+          }
+        }
+      ]
+    }
+  }
+}

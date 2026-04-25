@@ -1,0 +1,104 @@
+{
+  "type": "array",
+  "items": {
+    "title": "A2UI v0.9 Message",
+    "description": "A JSON message conforming to the A2UI v0.9 protocol. Each message MUST contain exactly ONE of: 'createSurface', 'updateComponents', 'updateDataModel', or 'deleteSurface'.",
+    "type": "object",
+    "properties": {
+      "version": {
+        "type": "string",
+        "description": "Protocol version identifier. Must be 'v0.9'.",
+        "const": "v0.9"
+      },
+      "createSurface": {
+        "type": "object",
+        "description": "Initializes a new UI surface and begins rendering.",
+        "properties": {
+          "surfaceId": {
+            "type": "string",
+            "description": "Unique identifier for the surface. Must be new and unused if adding a new surface."
+          },
+          "catalogId": {
+            "type": "string",
+            "description": "URI identifying the component catalog to use for this surface."
+          },
+          "theme": {
+            "type": "object",
+            "description": "Optional theme parameters as defined by the catalog's theme schema.",
+            "additionalProperties": true
+          },
+          "sendDataModel": {
+            "type": "boolean",
+            "description": "When true, the client includes the full data model in metadata with every server-bound message."
+          }
+        },
+        "required": ["surfaceId", "catalogId"],
+        "additionalProperties": false
+      },
+      "updateComponents": {
+        "type": "object",
+        "description": "Adds or updates UI components on a surface. Exactly one component must have id 'root'.",
+        "properties": {
+          "surfaceId": {
+            "type": "string",
+            "description": "The surface to update."
+          },
+          "components": {
+            "type": "array",
+            "description": "Flat list of components. Each entry has an 'id', a 'component' type string, and type-specific properties at the same level.",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique component identifier within the surface."
+                },
+                "component": {
+                  "type": "string",
+                  "description": "Component type name, e.g. 'Text', 'Button', 'Column', 'List'."
+                }
+              },
+              "required": ["id", "component"],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": ["surfaceId", "components"],
+        "additionalProperties": false
+      },
+      "updateDataModel": {
+        "type": "object",
+        "description": "Updates the data model for a surface at a given JSON Pointer path. Plain JSON values — no type wrappers.",
+        "properties": {
+          "surfaceId": {
+            "type": "string",
+            "description": "The surface whose data model is updated."
+          },
+          "path": {
+            "type": "string",
+            "description": "JSON Pointer (RFC 6901) specifying where to set the value. Defaults to '/' (root) if omitted."
+          },
+          "value": {
+            "description": "New value at the specified path. Any JSON value is accepted. Omitting removes the key."
+          }
+        },
+        "required": ["surfaceId"],
+        "additionalProperties": false
+      },
+      "deleteSurface": {
+        "type": "object",
+        "description": "Removes a surface and all associated components from the UI.",
+        "properties": {
+          "surfaceId": {
+            "type": "string",
+            "description": "The surface to delete."
+          }
+        },
+        "required": ["surfaceId"],
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }
+}

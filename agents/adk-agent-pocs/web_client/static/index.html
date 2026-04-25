@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADK Agent Chat</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js" onerror="window._markedFailed=true"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #252836;
+      --border: #2e3147;
+      --accent: #6c63ff;
+      --accent-hover: #7d75ff;
+      --live: #22c55e;
+      --danger: #ef4444;
+      --text: #e2e8f0;
+      --text-muted: #8892a4;
+      --user-bubble: #2d3748;
+      --agent-bubble: #1e2a3a;
+      --transcript-bg: #1a2233;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      flex: 1;
+    }
+    .agent-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .agent-select-wrap label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    select:focus { outline: 2px solid var(--accent); }
+
+    .live-badge {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: rgba(34,197,94,0.15);
+      color: var(--live);
+      border: 1px solid rgba(34,197,94,0.3);
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .live-badge.visible { display: flex; cursor: pointer; }
+    .live-badge.visible:hover { background: rgba(34,197,94,0.25); border-color: rgba(34,197,94,0.6); }
+    .live-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--live);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .btn-new, .btn-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .btn-new:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-toggle.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.12); }
+
+    /* Hide tool rows when toggled off */
+    #chat.hide-tools .tool-row { display: none; }
+
+    /* ── Status bar ── */
+    #status-bar {
+      height: 28px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      gap: 8px;
+    }
+    #status-bar .dot {
+      width: 6px; height: 6px;
+      background: var(--text-muted);
+      border-radius: 50%;
+    }
+    #status-bar.listening .dot { background: var(--live); animation: pulse 1s ease-in-out infinite; }
+    #status-bar.speaking .dot { background: var(--accent); animation: pulse 0.8s ease-in-out infinite; }
+    #status-bar.error {
+      background: rgba(239,68,68,0.15);
+      border-bottom-color: rgba(239,68,68,0.4);
+      color: #fca5a5;
+      font-weight: 600;
+      font-size: 0.8rem;
+      height: auto;
+      min-height: 36px;
+      padding: 8px 20px;
+    }
+    #status-bar.error .dot { background: var(--danger); }
+
+    /* ── Chat area ── */
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 78%;
+      gap: 2px;
+    }
+    .msg.user { align-self: flex-end; align-items: flex-end; }
+    .msg.agent { align-self: flex-start; align-items: flex-start; }
+
+    .msg-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .msg.user .bubble {
+      background: var(--user-bubble);
+      border-bottom-right-radius: 4px;
+    }
+    .msg.agent .bubble {
+      background: var(--agent-bubble);
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .msg.agent.live-msg .bubble {
+      border-left: 3px solid var(--live);
+    }
+
+    /* Inline citation links appended to live agent responses */
+    .inline-citations { margin-left: 2px; }
+    .bubble.partial { opacity: 0.75; }
+
+    /* Transcription bubbles */
+    .transcript {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 6px 10px;
+      background: var(--transcript-bg);
+      border-radius: var(--radius-sm);
+      border-left: 2px solid var(--accent);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+      max-width: 78%;
+    }
+    .transcript.user {
+      align-self: flex-end;
+      border-left: 3px solid var(--live);
+      background: var(--user-bubble);
+      color: var(--text);
+      font-style: normal;
+    }
+    .transcript.model { align-self: flex-start; border-left-color: var(--accent); }
+    .transcript-icon { flex-shrink: 0; }
+
+    /* ── Tool call rows ── */
+    .tool-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      align-self: flex-start;
+      max-width: 90%;
+      padding: 2px 0;
+    }
+    .step-num {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      min-width: 22px;
+      text-align: right;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+    .step-agent-icon {
+      width: 28px; height: 28px;
+      background: #22d3ee;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #0f172a;
+    }
+    .tool-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tool-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.78rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .tool-pill .pill-icon { opacity: 0.8; }
+    .tool-pill[data-tooltip] { cursor: pointer; }
+
+
+    /* Timing badge + inline trace panel */
+    .timing-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding: 3px 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: border-color 0.15s, color 0.15s;
+      user-select: none;
+    }
+    .timing-badge:hover { border-color: var(--accent); color: var(--text); }
+    .timing-badge.open { border-color: var(--accent); color: var(--text); }
+
+    .trace-panel {
+      display: none;
+      margin-top: 4px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.76rem;
+      color: #e6edf3;
+      width: 560px;
+      max-width: 90vw;
+    }
+    .trace-panel.open { display: block; }
+    .trace-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #8b949e;
+      border-bottom: 1px solid #21262d;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .trace-header .trace-total { color: #e6edf3; font-family: 'SF Mono', monospace; }
+    .trace-ttft {
+      font-family: 'SF Mono', monospace;
+      font-size: 0.68rem;
+      color: #58a6ff;
+      font-weight: 400;
+      margin-left: 8px;
+    }
+    .trace-span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 0;
+    }
+    .trace-span-icon { width: 14px; text-align: center; flex-shrink: 0; }
+    .trace-span-label {
+      flex: 0 0 140px;
+      width: 140px;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.7rem;
+      color: #8b949e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .trace-bar-wrap { flex: 1; height: 10px; background: #161b22; border-radius: 3px; overflow: hidden; position: relative; }
+    .trace-bar { height: 100%; border-radius: 3px; min-width: 2px; position: absolute; top: 0; }
+    .trace-bar.llm  { background: #1f6feb; }
+    .trace-bar.tool { background: #388bfd; opacity: 0.75; }
+    .trace-span-ms {
+      flex: 0 0 52px;
+      text-align: right;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.7rem;
+      color: #8b949e;
+    }
+
+    /* ── Tooltip ── */
+    #tool-tooltip {
+      position: fixed;
+      z-index: 9999;
+      max-width: 480px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: #e6edf3;
+      white-space: pre-wrap;
+      word-break: break-all;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: none;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    /* JSON syntax highlight classes */
+    #tool-tooltip .j-key   { color: #7ee787; }
+    #tool-tooltip .j-str   { color: #a5d6ff; }
+    #tool-tooltip .j-num   { color: #f47067; }
+    #tool-tooltip .j-bool  { color: #ff7b72; }
+    #tool-tooltip .j-null  { color: #ff7b72; }
+
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      gap: 8px;
+      pointer-events: none;
+    }
+    .empty-state svg { opacity: 0.3; }
+    .empty-state p { font-size: 0.85rem; }
+
+    /* ── Input bar ── */
+    #input-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    #msg-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      resize: none;
+      min-height: 42px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    #msg-input:focus { outline: 2px solid var(--accent); }
+    #msg-input::placeholder { color: var(--text-muted); }
+
+    .icon-btn {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .icon-btn:active { transform: scale(0.93); }
+
+    #mic-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      display: none;
+    }
+    #mic-btn.visible { display: flex; }
+    #mic-btn:hover { border-color: var(--live); color: var(--live); }
+    #mic-btn.recording {
+      background: rgba(239,68,68,0.15);
+      border-color: var(--danger);
+      color: var(--danger);
+      animation: pulse 0.8s ease-in-out infinite;
+    }
+
+    #send-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+    #send-btn:hover { background: var(--accent-hover); }
+    #send-btn:disabled { background: var(--surface2); color: var(--text-muted); cursor: not-allowed; }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* ── Markdown rendering ── */
+    .bubble.markdown { white-space: normal; }
+    .bubble.markdown p { margin: 0 0 0.6em; }
+    .bubble.markdown p:last-child { margin-bottom: 0; }
+    .bubble.markdown h1,.bubble.markdown h2,.bubble.markdown h3,
+    .bubble.markdown h4,.bubble.markdown h5,.bubble.markdown h6 {
+      margin: 0.8em 0 0.3em; font-weight: 600; line-height: 1.3;
+    }
+    .bubble.markdown h1 { font-size: 1.2em; }
+    .bubble.markdown h2 { font-size: 1.1em; }
+    .bubble.markdown h3 { font-size: 1em; }
+    .bubble.markdown ul, .bubble.markdown ol {
+      margin: 0.4em 0 0.4em 1.4em; padding: 0;
+    }
+    .bubble.markdown li { margin: 0.15em 0; }
+    .bubble.markdown code {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85em;
+    }
+    .bubble.markdown pre {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      overflow-x: auto;
+      margin: 0.5em 0;
+    }
+    .bubble.markdown pre code {
+      background: none; border: none; padding: 0; font-size: 0.82em;
+    }
+    .bubble.markdown blockquote {
+      border-left: 3px solid var(--accent);
+      margin: 0.5em 0;
+      padding: 0.2em 0.8em;
+      color: var(--text-muted);
+    }
+    .bubble.markdown table {
+      border-collapse: collapse; width: 100%; margin: 0.5em 0; font-size: 0.85em;
+    }
+    .bubble.markdown th, .bubble.markdown td {
+      border: 1px solid var(--border); padding: 5px 10px; text-align: left;
+    }
+    .bubble.markdown th { background: rgba(255,255,255,0.05); font-weight: 600; }
+    .bubble.markdown a { color: var(--accent); text-decoration: underline; }
+    .bubble.markdown .citation {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.78em;
+      vertical-align: super;
+      font-weight: 700;
+      margin-left: 1px;
+    }
+    .bubble.markdown .citation:hover { text-decoration: underline; }
+    .bubble.markdown hr { border: none; border-top: 1px solid var(--border); margin: 0.6em 0; }
+    .bubble.markdown strong { font-weight: 600; }
+    .bubble.markdown em { font-style: italic; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>ADK Agent Chat</h1>
+  <div class="agent-select-wrap">
+    <label for="agent-select">Agent:</label>
+    <select id="agent-select"><option value="">Loading…</option></select>
+  </div>
+  <span class="live-badge" id="live-badge">LIVE</span>
+  <button class="btn-toggle active" id="btn-tools" title="Show/hide tool calls">Tools</button>
+  <button class="btn-new" id="btn-new" title="New conversation">New</button>
+</header>
+
+<div id="status-bar">
+  <div class="dot"></div>
+  <span id="status-text">Select an agent to start</span>
+</div>
+
+<div id="chat">
+  <div class="empty-state" id="empty-state">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <p>Send a message to begin</p>
+  </div>
+</div>
+
+<div id="tool-tooltip"></div>
+
+<div id="input-bar">
+  <textarea id="msg-input" placeholder="Type a message…" rows="1"></textarea>
+  <button class="icon-btn" id="mic-btn" title="Hold to speak">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="23"/>
+      <line x1="8" y1="23" x2="16" y2="23"/>
+    </svg>
+  </button>
+  <button class="icon-btn" id="send-btn" title="Send">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="22" y1="2" x2="11" y2="13"/>
+      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+// Configure marked (guard against CDN load failure)
+if (typeof marked !== 'undefined') {
+  marked.use({ breaks: true, gfm: true });
+} else {
+  logToServer('marked.js failed to load from CDN', '', 'error');
+}
+
+function parseMarkdown(text) {
+  try {
+    if (typeof marked === 'undefined') return escapeHtml(text);
+    return marked.parse(text).replace(/<a href=/g, '<a target="_blank" rel="noopener noreferrer" href=');
+  } catch (e) {
+    logToServer('parseMarkdown error: ' + e.message, '', 'error');
+    return escapeHtml(text);
+  }
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ──────────────────────────────────────────────
+// Citation helpers  [1], [1, 2] → clickable links
+// ──────────────────────────────────────────────
+function extractPassages(obj) {
+  if (!obj) return [];
+  if (Array.isArray(obj)) {
+    if (obj.length && obj[0].passage !== undefined) return obj;
+    return [];
+  }
+  if (typeof obj === 'string') {
+    try { return extractPassages(JSON.parse(obj)); } catch { return []; }
+  }
+  if (typeof obj === 'object') {
+    for (const key of ['result', 'output', 'content', 'data']) {
+      if (obj[key] !== undefined) return extractPassages(obj[key]);
+    }
+  }
+  return [];
+}
+
+function buildCitationMap(responses) {
+  const map = {};
+  for (const r of responses) {
+    for (const p of extractPassages(r.response)) {
+      if (p.passage && p.url) map[p.passage] = { url: p.url, title: p.title || p.url };
+    }
+  }
+  return map;
+}
+
+function injectCitations(html, citationMap) {
+  if (!citationMap || !Object.keys(citationMap).length) return html;
+  return html.replace(/\[(\d+(?:,\s*\d+)*)\]/g, (match, inner) => {
+    const nums = inner.split(',').map(s => parseInt(s.trim()));
+    return nums.map(n => {
+      const c = citationMap[n];
+      if (!c) return `[${n}]`;
+      const title = (c.title || '').replace(/"/g, '&quot;');
+      return `<a href="${c.url}" target="_blank" rel="noopener noreferrer" class="citation" title="${title}">[${n}]</a>`;
+    }).join(', ');
+  });
+}
+
+// Show any uncaught JS error in the status bar so it's visible without DevTools
+window.onerror = function(msg, _src, line) {
+  const el = document.getElementById('status-text');
+  if (el) el.textContent = 'JS error (line ' + line + '): ' + msg;
+  logToServer(msg, 'line ' + line);
+  return false;
+};
+
+function logToServer(message, context = '', level = 'error') {
+  fetch('/log', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ level, message: String(message), context: String(context) }),
+  }).catch(() => {});
+}
+
+// ──────────────────────────────────────────────
+// Helpers
+// ──────────────────────────────────────────────
+function newUUID() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  // Fallback for non-secure contexts
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+// ──────────────────────────────────────────────
+// State
+// ──────────────────────────────────────────────
+let currentAgent = null;
+let isLive = false;
+let sessionId = newUUID();
+let userId = "web-user";
+let ws = null;
+let isRecording = false;
+let audioContext = null;
+let mediaStream = null;
+let scriptProcessor = null;
+let audioQueue = [];
+let isPlayingAudio = false;
+
+// Partial message tracking
+let partialBubble = null;
+// Step counter — increments for every chat row (user msg, tool row, agent response)
+let stepCounter = 0;
+
+// ──────────────────────────────────────────────
+// DOM refs
+// ──────────────────────────────────────────────
+const agentSelect = document.getElementById('agent-select');
+const liveBadge = document.getElementById('live-badge');
+const btnNew = document.getElementById('btn-new');
+const chatEl = document.getElementById('chat');
+const emptyState = document.getElementById('empty-state');
+const statusBar = document.getElementById('status-bar');
+const statusText = document.getElementById('status-text');
+const msgInput = document.getElementById('msg-input');
+const micBtn = document.getElementById('mic-btn');
+const sendBtn = document.getElementById('send-btn');
+
+// ──────────────────────────────────────────────
+// Status helpers
+// ──────────────────────────────────────────────
+function setStatus(text, mode = '') {
+  statusText.textContent = text;
+  statusBar.className = mode;
+}
+
+// ──────────────────────────────────────────────
+// Chat rendering
+// ──────────────────────────────────────────────
+function hideEmpty() {
+  emptyState.style.display = 'none';
+}
+
+function renderBubble(bubble, text, partial) {
+  if (bubble.dataset.role === 'agent') {
+    bubble.classList.add('markdown');
+    let html = parseMarkdown(text);
+    try {
+      const citMap = bubble.dataset.citationMap ? JSON.parse(bubble.dataset.citationMap) : {};
+      html = injectCitations(html, citMap);
+    } catch {}
+    bubble.innerHTML = html;
+  } else {
+    bubble.textContent = text;
+  }
+  bubble.classList.toggle('partial', partial);
+}
+
+function addMessage(role, text, partial = false, live = false) {
+  hideEmpty();
+  stepCounter++;
+  const wrap = document.createElement('div');
+  wrap.className = `msg ${role}${live ? ' live-msg' : ''}`;
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = role === 'user' ? 'You' : currentAgent || 'Agent';
+  wrap.appendChild(label);
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.dataset.role = role;
+  bubble.dataset.raw = text;
+  renderBubble(bubble, text, partial);
+  wrap.appendChild(bubble);
+
+  chatEl.appendChild(wrap);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return bubble;
+}
+
+function appendToBubble(bubble, chunk, partial) {
+  bubble.dataset.raw = (bubble.dataset.raw || '') + chunk;
+  renderBubble(bubble, bubble.dataset.raw, partial);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+// ──────────────────────────────────────────────
+// JSON syntax highlighting for tooltip
+// ──────────────────────────────────────────────
+function highlightJson(obj) {
+  const raw = JSON.stringify(obj, null, 2);
+  return raw.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    (match) => {
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) return `<span class="j-key">${match}</span>`;
+        return `<span class="j-str">${match}</span>`;
+      }
+      if (/true|false/.test(match)) return `<span class="j-bool">${match}</span>`;
+      if (/null/.test(match)) return `<span class="j-null">${match}</span>`;
+      return `<span class="j-num">${match}</span>`;
+    }
+  );
+}
+
+const tooltip = document.getElementById('tool-tooltip');
+let tooltipVisible = false;
+
+function showTooltip(el, data) {
+  tooltip.innerHTML = highlightJson(data);
+  tooltip.style.display = 'block';
+  tooltipVisible = true;
+  positionTooltip(el);
+}
+
+function positionTooltip(el) {
+  const rect = el.getBoundingClientRect();
+  const ttW = Math.min(480, window.innerWidth - 24);
+  tooltip.style.maxWidth = ttW + 'px';
+  let left = rect.left;
+  if (left + ttW > window.innerWidth - 12) left = window.innerWidth - ttW - 12;
+  tooltip.style.left = left + 'px';
+  // Prefer above; fall back to below
+  const above = rect.top - tooltip.offsetHeight - 8;
+  tooltip.style.top = (above > 8 ? above : rect.bottom + 8) + 'px';
+}
+
+function hideTooltip() {
+  tooltip.style.display = 'none';
+  tooltipVisible = false;
+}
+
+// ──────────────────────────────────────────────
+// Trace popover (hover on agent bubble)
+// ──────────────────────────────────────────────
+
+function fmtMs(ms) {
+  return ms >= 1000 ? (ms / 1000).toFixed(2) + 's' : ms + 'ms';
+}
+
+function renderTrace(traceData) {
+  const { total_ms, spans, first_text_ms, first_audio_ms } = traceData;
+  const preLastLlmMs = spans.slice(0, -1).reduce((s, sp) => s + sp.ms, 0);
+  const ttftHtml = first_audio_ms != null
+    ? `<span class="trace-ttft">First word: ${preLastLlmMs > 0 ? fmtMs(preLastLlmMs) + ' + ' : ''}${fmtMs(first_audio_ms)}</span>`
+    : first_text_ms != null
+      ? `<span class="trace-ttft">First token: ${fmtMs(first_text_ms)}</span>`
+      : '';
+  let html = `<div class="trace-header"><span>Response timing ${ttftHtml}</span><span class="trace-total">${fmtMs(total_ms)}</span></div>`;
+  let llmIdx = 0;
+  let elapsed = 0;
+  for (const span of spans) {
+    const leftPct = (elapsed / total_ms) * 100;
+    const widthPct = Math.max(0.5, (span.ms / total_ms) * 100);
+    elapsed += span.ms;
+    if (span.kind === 'llm') {
+      llmIdx++;
+      html += `<div class="trace-span">
+        <span class="trace-span-icon">→</span>
+        <span class="trace-span-label">LLM ${llmIdx > 1 ? llmIdx : ''}</span>
+        <div class="trace-bar-wrap"><div class="trace-bar llm" style="left:${leftPct.toFixed(1)}%;width:${widthPct.toFixed(1)}%"></div></div>
+        <span class="trace-span-ms">${fmtMs(span.ms)}</span>
+      </div>`;
+    } else {
+      const label = (span.names || []).join(', ');
+      html += `<div class="trace-span">
+        <span class="trace-span-icon">🔧</span>
+        <span class="trace-span-label" title="${label}">${label}</span>
+        <div class="trace-bar-wrap"><div class="trace-bar tool" style="left:${leftPct.toFixed(1)}%;width:${widthPct.toFixed(1)}%"></div></div>
+        <span class="trace-span-ms">${fmtMs(span.ms)}</span>
+      </div>`;
+    }
+  }
+  return html;
+}
+
+function attachTrace(bubble, traceData) {
+  const wrap = bubble.closest('.msg') || bubble.closest('.transcript') || bubble.parentElement;
+  if (!wrap) return;
+
+  // Badge toggles the inline panel
+  const badge = document.createElement('span');
+  badge.className = 'timing-badge';
+  badge.textContent = `⏱ ${fmtMs(traceData.total_ms)}`;
+
+  // Inline panel
+  const panel = document.createElement('div');
+  panel.className = 'trace-panel';
+  panel.innerHTML = renderTrace(traceData);
+
+  badge.addEventListener('click', () => {
+    const open = panel.classList.toggle('open');
+    badge.classList.toggle('open', open);
+  });
+
+  wrap.appendChild(badge);
+  wrap.appendChild(panel);
+}
+
+function attachTooltip(el, data) {
+  el.addEventListener('mouseenter', () => showTooltip(el, data));
+  el.addEventListener('mousemove', () => { if (tooltipVisible) positionTooltip(el); });
+  el.addEventListener('mouseleave', hideTooltip);
+}
+
+function addToolRow(items, done) {
+  hideEmpty();
+  stepCounter++;
+  const row = document.createElement('div');
+  row.className = 'tool-row';
+
+  const num = document.createElement('span');
+  num.className = 'step-num';
+  num.textContent = `#${stepCounter}`;
+  row.appendChild(num);
+
+  const pills = document.createElement('div');
+  pills.className = 'tool-pills';
+  // items is either [{name, args}] or [{name, response}]
+  for (const item of items) {
+    const name = typeof item === 'string' ? item : item.name;
+    const tooltipData = done ? (item.response ?? null) : (item.args ?? null);
+    const pill = document.createElement('span');
+    pill.className = 'tool-pill';
+    pill.innerHTML = done
+      ? `<span class="pill-icon">✓</span>${name}`
+      : `<span class="pill-icon">⚡</span>${name}`;
+    if (tooltipData !== null && tooltipData !== undefined) {
+      attachTooltip(pill, tooltipData);
+    }
+    pills.appendChild(pill);
+  }
+  row.appendChild(pills);
+
+  chatEl.appendChild(row);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return row;
+}
+
+function addTranscription(role, text) {
+  hideEmpty();
+  const el = document.createElement('div');
+  el.className = `transcript ${role}`;
+  const icon = document.createElement('span');
+  icon.className = 'transcript-icon';
+  icon.textContent = role === 'user' ? '🎙' : '🔊';
+  const txt = document.createElement('span');
+  txt.textContent = `"${text}"`;
+  el.appendChild(icon);
+  el.appendChild(txt);
+  chatEl.appendChild(el);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return el;
+}
+
+// ──────────────────────────────────────────────
+// Agent loading
+// ──────────────────────────────────────────────
+async function loadAgents() {
+  agentSelect.innerHTML = '<option value="">Loading…</option>';
+  try {
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 5000);
+    const res = await fetch('/agents', { signal: ctrl.signal });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const agents = data.agents ?? data;
+    const defaultAgent = data.default_agent ?? null;
+    agentSelect.innerHTML = '<option value="">Select agent…</option>';
+    for (const a of agents) {
+      const opt = document.createElement('option');
+      opt.value = a.name;
+      opt.textContent = a.name + (a.is_live ? ' 🎙' : '');
+      opt.dataset.live = a.is_live ? '1' : '0';
+      opt.dataset.supportsText = (a.supports_text !== false) ? '1' : '0';
+      if (defaultAgent && a.name === defaultAgent) opt.selected = true;
+      agentSelect.appendChild(opt);
+    }
+    if (defaultAgent && agentSelect.value === defaultAgent) onAgentChange();
+    else setStatus('Select an agent to start', '');
+  } catch (e) {
+    agentSelect.innerHTML = '<option value="">⚠ Failed — retry?</option>';
+    setStatus('Could not reach server — is it running?', '');
+    // Auto-retry every 3 s until agents load
+    setTimeout(loadAgents, 3000);
+  }
+}
+
+function onAgentChange() {
+  const opt = agentSelect.selectedOptions[0];
+  if (!opt || !opt.value) return;
+
+  closeWs();
+  currentAgent = opt.value;
+  isLive = opt.dataset.live === '1';
+  const supportsText = opt.dataset.supportsText !== '0';
+  newSession();
+
+  liveBadge.classList.toggle('visible', isLive);
+  micBtn.classList.toggle('visible', isLive);
+
+  msgInput.disabled = !supportsText;
+  sendBtn.disabled = !supportsText;
+  msgInput.placeholder = supportsText ? 'Type a message…' : 'Voice only — use the microphone';
+
+  if (isLive) {
+    connectWs();
+    setStatus(`Connected to ${currentAgent} (live)`, '');
+  } else {
+    setStatus(`Connected to ${currentAgent}`, '');
+  }
+}
+
+// ──────────────────────────────────────────────
+// Session
+// ──────────────────────────────────────────────
+function newSession() {
+  closeWs();
+  sessionId = newUUID();
+  chatEl.innerHTML = '';
+  chatEl.appendChild(emptyState);
+  emptyState.style.display = '';
+  partialBubble = null;
+  stepCounter = 0;
+
+  if (currentAgent && isLive) {
+    connectWs();
+  }
+  setStatus(currentAgent ? `Connected to ${currentAgent}` : 'Select an agent to start', '');
+}
+
+// ──────────────────────────────────────────────
+// WebSocket (live agents)
+// ──────────────────────────────────────────────
+function connectWs() {
+  if (ws) ws.close();
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  ws = new WebSocket(`${proto}://${location.host}/ws/${currentAgent}?session_id=${sessionId}&user_id=${userId}`);
+  ws.binaryType = 'arraybuffer';
+
+  ws.onopen = () => setStatus(`Live — ${currentAgent}`, '');
+  ws.onclose = () => setStatus('Disconnected', '');
+  ws.onerror = () => setStatus('Connection error', '');
+
+  // Pending transcription elements (updated incrementally)
+  let userTranscriptEl = null;
+  let modelTranscriptEl = null;
+  let agentBubble = null;
+  let agentBubbleFromTranscription = false; // true when bubble was created by output_transcription events
+  let lastCompletedBubble = null; // retro-inject citations when tool_responses arrive after turn_complete
+
+  // Live turn timing
+  let liveT0 = null;
+  let liveLastMilestone = null;
+  let liveSpans = [];
+  let liveFirstTextMs = null;
+  let liveFirstAudioMs = null;
+  let liveCitationMap = {};
+
+  function liveMarkStart() {
+    if (liveT0 === null) {
+      liveT0 = performance.now();
+      liveLastMilestone = liveT0;
+    }
+  }
+
+  function liveResetTurn() {
+    liveT0 = null;
+    liveLastMilestone = null;
+    liveSpans = [];
+    liveFirstTextMs = null;
+    liveFirstAudioMs = null;
+  }
+
+  ws.onmessage = (ev) => {
+    try {
+    liveMarkStart();
+
+    if (ev.data instanceof ArrayBuffer) {
+      if (liveFirstAudioMs === null && liveLastMilestone !== null) liveFirstAudioMs = Math.round(performance.now() - liveLastMilestone);
+      enqueueAudio(ev.data);
+      setStatus('Agent speaking…', 'speaking');
+      return;
+    }
+
+    const msg = JSON.parse(ev.data);
+
+    if (msg.type === 'transcription') {
+      if (msg.role === 'user') {
+        if (!userTranscriptEl || msg.finished === false) {
+          if (!userTranscriptEl) {
+            userTranscriptEl = addTranscription('user', msg.content);
+          } else {
+            userTranscriptEl.querySelector('span:last-child').textContent = `"${msg.content}"`;
+          }
+        }
+        if (msg.finished) userTranscriptEl = null;
+      } else {
+        // Render model transcription directly as a streaming markdown bubble.
+        // Intermediate events are deltas — append with a space separator.
+        // The final event (finished=true) is the complete authoritative transcript — replace.
+        if (!agentBubble) {
+          agentBubble = addMessage('agent', msg.content, true, true);
+          agentBubble.dataset.citationMap = JSON.stringify(liveCitationMap);
+          agentBubbleFromTranscription = true;
+        } else if (msg.finished) {
+          agentBubble.dataset.raw = msg.content;
+          renderBubble(agentBubble, msg.content, false);
+          chatEl.scrollTop = chatEl.scrollHeight;
+        } else {
+          const prev = agentBubble.dataset.raw || '';
+          const sep = (prev && !prev.endsWith(' ') && !msg.content.startsWith(' ')) ? ' ' : '';
+          agentBubble.dataset.raw = prev + sep + msg.content;
+          renderBubble(agentBubble, agentBubble.dataset.raw, true);
+          chatEl.scrollTop = chatEl.scrollHeight;
+        }
+      }
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    if (msg.type === 'tool_calls') {
+      liveSpans.push({ kind: 'llm', ms: Math.round(performance.now() - liveLastMilestone) });
+      liveLastMilestone = performance.now();
+      addToolRow(msg.calls, false);
+    }
+
+    if (msg.type === 'tool_responses') {
+      liveSpans.push({ kind: 'tool', names: msg.responses.map(r => r.name), ms: Math.round(performance.now() - liveLastMilestone) });
+      liveLastMilestone = performance.now();
+      Object.assign(liveCitationMap, buildCitationMap(msg.responses));
+      const targetBubble = agentBubble || lastCompletedBubble;
+      if (targetBubble) {
+        targetBubble.dataset.citationMap = JSON.stringify(liveCitationMap);
+        // Retro-inject: re-render with citations and append [N] links if not already done
+        if (!targetBubble.dataset.citationsAdded) {
+          const raw = targetBubble.dataset.raw || '';
+          if (raw) renderBubble(targetBubble, raw, false);
+          targetBubble.dataset.citationsAdded = '1';
+          const entries = Object.entries(liveCitationMap);
+          if (entries.length) {
+            const lastBlock = targetBubble.querySelector('p:last-of-type') ||
+                              targetBubble.querySelector('li:last-of-type') ||
+                              targetBubble;
+            entries.forEach(([n, c]) => {
+              const a = document.createElement('a');
+              a.href = c.url;
+              a.target = '_blank';
+              a.rel = 'noopener noreferrer';
+              a.className = 'citation';
+              a.textContent = `[${n}]`;
+              attachTooltip(a, c.title && c.title !== c.url ? c.title : c.url);
+              lastBlock.appendChild(a);
+            });
+          }
+        }
+      }
+      addToolRow(msg.responses, true);
+    }
+
+    if (msg.type === 'text') {
+      if (liveFirstTextMs === null) liveFirstTextMs = Math.round(performance.now() - liveT0);
+      // Skip text events when the bubble is owned by output_transcription — same content, avoids duplication
+      if (!agentBubbleFromTranscription) {
+        if (!agentBubble) {
+          agentBubble = addMessage('agent', msg.content, msg.partial, true);
+        } else if (msg.partial) {
+          appendToBubble(agentBubble, msg.content, true);
+        } else {
+          agentBubble.dataset.raw = msg.content;
+          renderBubble(agentBubble, msg.content, false);
+          chatEl.scrollTop = chatEl.scrollHeight;
+        }
+      }
+    }
+
+    if (msg.type === 'turn_complete') {
+      const now = performance.now();
+      if (liveT0 !== null) {
+        const totalMs = Math.round(now - liveT0);
+        liveSpans.push({ kind: 'llm', ms: Math.round(now - liveLastMilestone) });
+        const traceData = { total_ms: totalMs, spans: liveSpans, first_text_ms: liveFirstTextMs, first_audio_ms: liveFirstAudioMs };
+        // Attach to text bubble if present, otherwise to last transcription
+        const anchor = agentBubble || modelTranscriptEl;
+        if (anchor) attachTrace(anchor, traceData);
+      }
+      liveCitationMap = {};
+      liveResetTurn();
+      lastCompletedBubble = agentBubble; // keep reference for retro-injection
+      agentBubble = null;
+      agentBubbleFromTranscription = false;
+      modelTranscriptEl = null;
+      userTranscriptEl = null;
+      setStatus(`Live — ${currentAgent}`, '');
+    }
+
+    if (msg.type === 'error') {
+      addMessage('agent', `⚠ ${msg.content}`);
+      logToServer(msg.content, `agent=${currentAgent}`);
+    }
+    } catch (e) {
+      const errMsg = `WS message error: ${e.message}`;
+      setStatus(errMsg, 'error');
+      logToServer(errMsg, `agent=${currentAgent} data=${typeof ev.data === 'string' ? ev.data.slice(0, 200) : '[binary]'}`);
+    }
+  };
+}
+
+function closeWs() {
+  if (ws) {
+    ws.close();
+    ws = null;
+  }
+  stopRecording();
+}
+
+// ──────────────────────────────────────────────
+// Text chat (non-live)
+// ──────────────────────────────────────────────
+async function sendText(text) {
+  if (!currentAgent || !text.trim()) return;
+
+  addMessage('user', text);
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<div class="spinner"></div>';
+  setStatus('Thinking…', '');
+
+  let agentBubble = null;
+  let citationMap = {};
+  // Client-side timing
+  const t0 = performance.now();
+  let lastMilestone = t0;
+  const clientSpans = [];
+  let firstTextMs = null;
+
+  try {
+    const res = await fetch(`/chat/${currentAgent}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, session_id: sessionId, user_id: userId }),
+    });
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+
+      const lines = buf.split('\n');
+      buf = lines.pop(); // keep incomplete line
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = JSON.parse(line.slice(6));
+
+        if (data.type === 'tool_calls') {
+          clientSpans.push({ kind: 'llm', ms: Math.round(performance.now() - lastMilestone) });
+          lastMilestone = performance.now();
+          addToolRow(data.calls, false);
+        }
+        if (data.type === 'tool_responses') {
+          clientSpans.push({ kind: 'tool', names: data.responses.map(r => r.name), ms: Math.round(performance.now() - lastMilestone) });
+          lastMilestone = performance.now();
+          Object.assign(citationMap, buildCitationMap(data.responses));
+          addToolRow(data.responses, true);
+        }
+        if (data.type === 'text') {
+          if (firstTextMs === null) firstTextMs = Math.round(performance.now() - t0);
+          if (!agentBubble) {
+            agentBubble = addMessage('agent', data.content, data.partial);
+            agentBubble.dataset.citationMap = JSON.stringify(citationMap);
+          } else if (data.partial) {
+            appendToBubble(agentBubble, data.content, true);
+          } else {
+            // Final event contains the full authoritative text — replace, don't append
+            agentBubble.dataset.raw = data.content;
+            renderBubble(agentBubble, data.content, false);
+            chatEl.scrollTop = chatEl.scrollHeight;
+          }
+        }
+        if (data.type === 'done') {
+          if (agentBubble && !agentBubble.dataset.traced) {
+            agentBubble.dataset.traced = '1';
+            renderBubble(agentBubble, agentBubble.dataset.raw || '', false);
+            const totalMs = Math.round(performance.now() - t0);
+            clientSpans.push({ kind: 'llm', ms: Math.round(performance.now() - lastMilestone) });
+            attachTrace(agentBubble, { total_ms: totalMs, spans: clientSpans, first_text_ms: firstTextMs });
+          }
+        }
+        if (data.type === 'error') {
+          addMessage('agent', `⚠ ${data.content}`);
+        }
+      }
+    }
+  } catch (e) {
+    addMessage('agent', `⚠ Failed to reach agent: ${e.message}`);
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`;
+    setStatus(currentAgent ? `Connected to ${currentAgent}` : '', '');
+  }
+}
+
+// ──────────────────────────────────────────────
+// Audio recording (live agents)
+// ──────────────────────────────────────────────
+async function startRecording() {
+  if (isRecording) return;
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true }, video: false });
+    audioContext = new AudioContext({ sampleRate: 16000 }); // browser resamples from native rate
+
+    const source = audioContext.createMediaStreamSource(mediaStream);
+
+    // ScriptProcessorNode (widely supported) — 50ms @ 16kHz = 800 samples
+    scriptProcessor = audioContext.createScriptProcessor(1024, 1, 1); // 64ms @ 16kHz
+    source.connect(scriptProcessor);
+    scriptProcessor.connect(audioContext.destination);
+
+    scriptProcessor.onaudioprocess = (e) => {
+      if (!isRecording || !ws || ws.readyState !== WebSocket.OPEN) return;
+      const float32 = e.inputBuffer.getChannelData(0);
+      // Convert to 16-bit signed PCM
+      const int16 = new Int16Array(float32.length);
+      for (let i = 0; i < float32.length; i++) {
+        const s = Math.max(-1, Math.min(1, float32[i]));
+        int16[i] = s < 0 ? s * 32768 : s * 32767;
+      }
+      ws.send(int16.buffer);
+    };
+
+    isRecording = true;
+    micBtn.classList.add('recording');
+    setStatus('Listening…', 'listening');
+  } catch (e) {
+    const hint = e.name === 'NotAllowedError'
+      ? 'Permission denied — check System Settings → Privacy & Security → Microphone'
+      : e.name === 'OverconstrainedError'
+      ? 'Audio constraints not supported by your device'
+      : e.message || e.name;
+    setStatus('Mic error: ' + hint, 'error');
+    logToServer(e.message || e.name, e.name);
+  }
+}
+
+function stopRecording() {
+  if (!isRecording) return;
+  isRecording = false;
+  micBtn.classList.remove('recording');
+
+  if (scriptProcessor) { scriptProcessor.disconnect(); scriptProcessor = null; }
+  if (audioContext) { audioContext.close(); audioContext = null; }
+  if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+  setStatus(ws ? `Live — ${currentAgent}` : 'Disconnected', '');
+}
+
+// ──────────────────────────────────────────────
+// Audio playback queue (model → browser)
+// Model sends PCM at 24kHz, 16-bit, mono
+// ──────────────────────────────────────────────
+const PLAYBACK_SAMPLE_RATE = 24000;
+let playbackContext = null;
+let playbackScheduleTime = 0;
+
+function getPlaybackContext() {
+  if (!playbackContext || playbackContext.state === 'closed') {
+    playbackContext = new AudioContext({ sampleRate: PLAYBACK_SAMPLE_RATE });
+    playbackScheduleTime = playbackContext.currentTime;
+  }
+  return playbackContext;
+}
+
+function enqueueAudio(arrayBuffer) {
+  const ctx = getPlaybackContext();
+  const int16 = new Int16Array(arrayBuffer);
+  const float32 = new Float32Array(int16.length);
+  for (let i = 0; i < int16.length; i++) {
+    float32[i] = int16[i] / 32768.0;
+  }
+
+  const buf = ctx.createBuffer(1, float32.length, PLAYBACK_SAMPLE_RATE);
+  buf.copyToChannel(float32, 0);
+
+  const source = ctx.createBufferSource();
+  source.buffer = buf;
+  source.connect(ctx.destination);
+
+  const startAt = Math.max(ctx.currentTime, playbackScheduleTime);
+  source.start(startAt);
+  playbackScheduleTime = startAt + buf.duration;
+}
+
+// ──────────────────────────────────────────────
+// Input textarea auto-resize
+// ──────────────────────────────────────────────
+msgInput.addEventListener('input', () => {
+  msgInput.style.height = 'auto';
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+});
+
+msgInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+
+// ──────────────────────────────────────────────
+// Send (text)
+// ──────────────────────────────────────────────
+function handleSend() {
+  const text = msgInput.value.trim();
+  if (!text || !currentAgent) return;
+  msgInput.value = '';
+  msgInput.style.height = 'auto';
+
+  if (isLive && ws && ws.readyState === WebSocket.OPEN) {
+    // Send text over the live WS
+    addMessage('user', text);
+    ws.send(JSON.stringify({ type: 'text', content: text }));
+  } else {
+    sendText(text);
+  }
+}
+
+// ──────────────────────────────────────────────
+// Mic button (toggle)
+// ──────────────────────────────────────────────
+micBtn.addEventListener('click', () => {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+});
+
+// ──────────────────────────────────────────────
+// Event listeners
+// ──────────────────────────────────────────────
+sendBtn.addEventListener('click', handleSend);
+agentSelect.addEventListener('change', onAgentChange);
+btnNew.addEventListener('click', () => { if (currentAgent) newSession(); });
+
+liveBadge.addEventListener('click', () => {
+  if (currentAgent && isLive) {
+    closeWs();
+    connectWs();
+    setStatus(`Reconnecting to ${currentAgent}…`, '');
+  }
+});
+
+const btnTools = document.getElementById('btn-tools');
+btnTools.addEventListener('click', () => {
+  const hidden = chatEl.classList.toggle('hide-tools');
+  btnTools.classList.toggle('active', !hidden);
+});
+
+// ──────────────────────────────────────────────
+// Init
+// ──────────────────────────────────────────────
+loadAgents();
+</script>
+</body>
+</html>

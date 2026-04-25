@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "rubric_based_final_response_quality_v1": {
+      "threshold": 0.8,
+      "rubrics": [
+        {
+          "rubric_id": "error_communicated_clearly",
+          "rubric_content": {
+            "text_property": "If the agent explicitly rejected the request or returned a validation failure (e.g. flagged a missing or invalid field and told the user the request cannot be completed as-is), the response must clearly name the problem and tell the user what to do next. A vague or silent failure must fail this rubric. If the agent instead provided invoice details, asked for confirmation, or asked a clarifying question — without issuing an explicit rejection — the property is not applicable."
+          }
+        },
+        {
+          "rubric_id": "asks_for_missing_info",
+          "rubric_content": {
+            "text_property": "If the user's request cannot be fulfilled because required information (such as an invoice ID) is missing, the agent must ask a specific clarifying question rather than guessing or refusing. If the required information was present, the property is not applicable."
+          }
+        },
+        {
+          "rubric_id": "confirmation_before_write",
+          "rubric_content": {
+            "text_property": "If the user requested an update to a sensitive invoice field (VAT rate, due date, amount, vendor name), the agent must ask for explicit confirmation before applying the change. Applying a write without confirmation must fail this rubric. If no write was requested, the property is not applicable."
+          }
+        }
+      ]
+    }
+  }
+}

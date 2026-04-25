@@ -1,0 +1,20 @@
+{
+  "excluded_agents": [
+    "billy_assistant",
+    "billy_support",
+    "dynamic_skill_mcp",
+    "fast_multi_agent_system",
+    "hello_world",
+    "simple_hybride_router",
+    "simple_router",
+    "skill_assistant",
+    "skill_assistant_mcp",
+    "wine_expert",
+    "wine_expert_multi_agent"
+  ],
+  "default_agent": "native_skill_mcp",
+  "warmup": {
+    "agents": ["live_mcp", "native_skill_mcp"],
+    "cache_warmup_agents": []
+  }
+}

@@ -1,0 +1,53 @@
+architecture:
+  style: "clean isometric technical diagram, blueprint aesthetic, dark navy and cyan palette, minimalist line art, no text labels"
+  template: "isometric system architecture showing {components} connected by {relationships}, {infrastructure_type} infrastructure, {scale} scale, {detail_focus} as focal detail"
+  scene_hint: "Focus on spatial relationships between components. Use depth and layering to show hierarchy."
+  skip_image: false
+
+concept:
+  style: "abstract geometric illustration, modern flat design, bold accent colors on white, symbolic and metaphorical, no literal depictions"
+  template: "abstract visual metaphor for {concept_name}: {metaphor_description}, conveying {emotional_tone}, {color_mood} color palette, {composition_style} composition"
+  scene_hint: "Use symbolism over literalism. The viewer should feel the concept before reading the text."
+  skip_image: false
+
+narrative:
+  style: "cinematic wide-angle photograph or editorial illustration, atmospheric lighting, storytelling composition, emotionally resonant"
+  template: "editorial photograph depicting {scene_description}, {setting}, {mood} atmosphere, {subject} as focal point, {lighting_style} lighting, photorealistic"
+  scene_hint: "Tell a story in a single frame. The viewer should wonder what happened just before this moment."
+  skip_image: false
+
+timeline:
+  style: "elegant horizontal timeline infographic, gradient progression, milestone markers, modern sans-serif, no body text"
+  template: "timeline visualization showing {phases} progressing from {start_state} to {end_state}, {progression_metaphor}, {accent_color} highlights on key milestones"
+  scene_hint: "Emphasize progression and transformation over time. Use scale or color intensity to show growth."
+  skip_image: false
+
+comparison:
+  style: "clean split-screen or side-by-side layout, contrasting color zones, balanced composition, diagrammatic"
+  template: "visual comparison between {option_a} and {option_b}, {comparison_dimension} as organizing axis, {visual_metaphor} to highlight difference"
+  scene_hint: "Make the contrast immediately obvious through color, scale, or position."
+  skip_image: false
+
+process_flow:
+  style: "flowing process diagram, connected nodes with directional arrows, soft gradients, modern flat design"
+  template: "process flow visualization showing {steps} from {input} to {output}, {flow_style} layout, {emphasis_point} highlighted"
+  scene_hint: "Guide the eye along the flow direction. Use size to show importance."
+  skip_image: false
+
+data:
+  style: "n/a — use slide layout with large text and chart placeholder, no generated image"
+  template: ""
+  scene_hint: ""
+  skip_image: true
+
+code_demo:
+  style: "n/a — flag for screenshot or code diagram; no generated image"
+  template: ""
+  scene_hint: ""
+  skip_image: true
+
+team:
+  style: "n/a — use neutral geometric pattern or avatar placeholder from template"
+  template: ""
+  scene_hint: ""
+  skip_image: true
