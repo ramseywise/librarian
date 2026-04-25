@@ -277,7 +277,17 @@ Reads `LLM_PROVIDER` (gemini | anthropic | openai). LLM instances cached via `lr
 
 ---
 
+## Relationship to Shine Copilot
+
+The VA agent is the active implementation of the broader [[Shine Copilot Architecture]]. The ADK outer shell maps to the Copilot orchestration coordination layer (VA team responsibility); the LangGraph domain subgraphs map to the execution layer (domain team responsibility). The `support_graph` CRAG loop is the prototype for [[Shine Knowledge Agent]] — same retrieval pattern, smaller scope.
+
+AGT-09 (ADK vs LangGraph spike, ✅ Q2 2026) was the formal decision task that validated both frameworks — state management, MCP support, observability, prefix caching, and voice compatibility. See [[ADK vs LangGraph Decision]].
+
+---
+
 ## See Also
+- [[Shine Copilot Architecture]]
+- [[Shine Knowledge Agent]]
 - [[ADK vs LangGraph Comparison]]
 - [[ADK Context Engineering]]
 - [[MCP Protocol]]
@@ -285,3 +295,4 @@ Reads `LLM_PROVIDER` (gemini | anthropic | openai). LLM instances cached via `lr
 - [[Production Hardening Patterns]]
 - [[Agent Memory Types]]
 - [[Agentic Workflow Patterns]]
+- [[Multi-Modal Agent Response]]

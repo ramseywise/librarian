@@ -1,200 +1,163 @@
 ---
 title: Librarian KB — Build Plan
-tags: [llm, infra, mcp, langgraph, project]
-summary: Phased plan for the Librarian KB — through Phase 3 complete, next is Streamlit viz, then Chainlit + LangGraph agent and MCP connectors.
-updated: 2026-04-24
+tags: [llm, infra, mcp, langgraph, rag, project]
+summary: Phased build plan for the Librarian KB — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phases 9–15 future.
+updated: 2026-04-25
 sources:
-  - raw/playground-docs/obsidian-kb-plan.md
-  - raw/playground-docs/obsidian-kb-research.md
+  - raw/claude-docs/playground/docs/archived/obsidian-kb-plan.md
+  - raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
 ---
 
 # Librarian KB — Build Plan
 
-Current state: Phases 1–3 complete. 26 wiki pages, manifest at 167 entries, all core ingest done. Next: Streamlit viz (Phase 2b), then Phase 4 agent.
+A specialized agent-design KB following the [[Karpathy LLM Wiki Pattern]] — not a general second brain. Before starting any new agent build, load the KB to get grounded recommendations from accumulated design experience. Scope stays narrow: agent engineering, RAG, LangGraph, ADK, MCP, eval patterns.
 
-See [[Karpathy LLM Wiki Pattern]] for the foundational model this follows.
+**Mental model:** `raw/` = source code → Claude = compiler → `wiki/` = executable output → agent/viz = interface
 
 ---
 
-## Architecture Overview
+## Architecture (3 Layers)
 
 ```
-raw/          ← immutable inputs (append-only, selectively git-tracked)
-  ├── manifest.jsonl    ← ingest state: hash + date + wiki pages per file
-  claude-docs/          ← scraped from all workspace .claude/ dirs
-  playground-docs/      ← seeded playground research/plans
-  web/                  ← saved web research
-  sessions/             ← session transcripts (git-ignored)
-  pdfs/                 ← extracted text (git-ignored)
-
-wiki/         ← LLM-compiled knowledge (Claude writes here)
-
-scripts/
-  visualize.py          ← Streamlit wiki graph + coverage panel
-  seed_kb.py            ← scraper (already exists as /seed-kb skill)
-
-.claude/
-  skills/               ← /ingest /query /lint /adk-context /seed-kb
+Layer 3: React Flow UI      ←  graph explorer + agent chat; highlights subgraph on query; write-back to wiki
+              ↕ read/write
+Layer 2: Obsidian           ←  interim viz; Juggl + Graph Analysis plugins (semantic edges)
+              ↕ read
+Layer 1: Wiki KB            ←  deterministic compiler: raw/ → wiki/ (atomic concepts as pages)
 ```
 
 ---
 
-## Phase 1 — Core Structure ✅ Complete
+## Phase Status
 
-- Repo, CLAUDE.md schema, `raw/` + `wiki/` directory contract
-- `raw/` seeded from playground docs and `.claude/` scraper
-- 21 wiki pages compiled across concepts, agents, projects, decisions
-- Skills: `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb`
-- `.claude/` cleaned to: agents, commands, hooks, memory, skills, settings
+### ✅ Phase 1 — Core Structure
+- Repo initialized; `CLAUDE.md` schema written with ingest protocol, page format, domain/type tags
+- `raw/`, `wiki/` directory structure in place
+- Claude Code skills: `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb`
 
----
+### ✅ Phase 2 — Seed & First Ingest
+- `raw/playground-docs/` seeded from `playground/.claude/docs/archived/`
+- `raw/claude-docs/` seeded from all workspace `.claude/docs/`
+- First wiki pages compiled: 26 pages across concepts/agents/projects/decisions
+- `raw/manifest.jsonl` tracking ingested files with SHA256 hashes
 
-## Phase 2 — Manifest + Dedup + Streamlit
+### ✅ Phase 3 — Atomic Concept Extraction
+- Ingest protocol updated: atomic concepts as own pages (not buried bullets)
+- 10 new atomic pages: [[Reciprocal Rank Fusion]], [[HistoryCondenser]], [[LangGraph BaseStore]], [[Prefix Caching]], [[CRAG Retry Logic]], [[Send API Fan-out]], [[Summarization Node]], [[ACI (Agent-Computer Interface)]], [[Embedder Warmup]], [[SKILL.md Pattern]]
+- Wiki at 36 pages, 156+ wikilinks
 
-**Goal:** ingest is idempotent; coverage is visible.
+### ✅ Phase 4 — Obsidian Vault
+- Vault opened at `wiki/` (`.obsidian/` config committed)
+- `make viz` opens Obsidian at `wiki/`
+- Streamlit visualizer deprecated
 
-### 2a — Ingest Manifest ✅ Complete
+### ✅ Phase 5 — Obsidian Plugins
+- Juggl installed — custom node styling per tag, hierarchical/concentric layouts, live filtering
+- Graph Analysis installed — cosine-similarity semantic edges between pages
+- Evaluation complete: Juggl covers core viz needs; React Flow (Phase 8) deprioritized but built anyway for multi-edge + agent chat
 
-`raw/manifest.jsonl` — one line per ingested file:
-```jsonl
-{"path": "raw/web/2026-04-24-anthropic-agents.md", "hash": "sha256:...", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/agents/plan-and-execute-pattern.md"]}
-```
+### 🔄 Phase 6 — Input Connectors (active)
+Personal + work sources in scope. All claude.ai MCP integrations available without separate OAuth.
 
-- `/ingest` checks hash before processing — skip if unchanged, re-ingest if modified
-- On completion, appends/updates the manifest entry
-- Eliminates re-ingestion of `raw/playground-docs/` content already compiled
-- `raw/sessions/`, `raw/pdfs/` remain git-ignored; manifest tracks everything else
+**Done:**
+- Linear: MCP connector active (work)
+- Google Drive: 3 priority decks ingested (`langgraph_yan`, `adk-overview`, `poc-architecture`)
+- Work Notion: 4 priority pages ingested (RAG Pipeline, Support Knowledge Agent, Copilot, AGT-09)
+- Gmail: removed — Gemini meeting transcripts live in Google Drive (already covered)
 
-### 2b — Streamlit Wiki Graph ← next
+**Pending:**
+- Google Drive (ongoing): search for additional shared AI/agent decks → `raw/gdrive/`
+- Notion (personal): `ramsey.wise@gmail.com` account — researcher PDF notes, personal agent design notes
+- Guru (work KB): company knowledge base articles relevant to agent stack
+- PDFs: `scripts/ingest_pdf.py` reads from `DROPBOX_PDF_PATH`
 
-`scripts/visualize.py`:
+### ✅ Phase 7 — Plan Merge & Wiki Canonical Page
+- Source `raw/claude-docs/playground/docs/archived/obsidian-kb-plan.md` ingested (manifest confirmed)
+- `wiki/projects/librarian-kb-plan.md` rewritten as canonical single-source plan page
+- `.claude/docs/plans/master-plan.md` archived
 
-```
-Nodes    wiki pages (colored by domain tag)
-Edges    [[wikilinks]] between pages
-Panel    click node → summary + source files
-Filter   by tag (adk / rag / langgraph / mcp / memory...)
-Coverage manifest panel — which raw/ files have no wiki coverage yet
-```
+### 🔄 Phase 8 — React Flow UI (Phase 8C pending)
+**Code lives in `app/`. Run:** `make install-api && make install-ui`, then `make api` + `make ui`.
 
-Stack: `streamlit` + `networkx` + `pyvis` (interactive graph) + `python-frontmatter` for parsing.
+**✅ Phase 8A — Graph**
+- `app/ui/` — Vite + React + TypeScript + `@xyflow/react`
+- `app/backend/` — FastAPI + WebSocket hot-reload + `watchfiles`
+- Multi-edge types: wikilink / semantic (MiniLM cosine sim) / tag-shared (≥2 domain tags)
+- Edge toggle panel, layout switcher (dagre ↔ UMAP-semantic), tag filter panel
 
----
+**✅ Phase 8B — Agent Chat**
+- `app/backend/agent.py` — Anthropic tool-use loop: `search_wiki` + `read_page`, streams tokens
+- SSE endpoint: `{type: token}`, `{type: highlight}`, `{type: done}`
+- `ChatPanel` component with token streaming; `NodeDetailPanel` with highlight badge
 
-## Phase 3 — Focused Ingest ✅ Complete
+**⬜ Phase 8C — Write-back**
+- `POST /api/writeback` → insert wikilink in `## See Also` (endpoint exists, needs HITL UI)
+- HITL diff preview modal before write
+- `watchfiles` detects change → WebSocket refreshes graph
 
-| Source | Output |
-|---|---|
-| `raw/web/` | [[MCP Protocol]], [[Plan and Execute Pattern]], [[Agentic Workflow Patterns]], [[Production Hardening Patterns]] updated |
-| `raw/claude-docs/listen-wiseer/` | [[Listen-Wiseer Project]], [[RAG Evaluation]], [[Agent Memory Types]] updated |
-| `raw/claude-docs/playground/docs/plans/va-agent-*` | [[VA Agent Project]] created |
-| `raw/linear/` | [[PII Masking Approaches]], [[HITL Annotation Pipeline]], [[Evaluation & Improvement Project (VIR)]] created |
-| `raw/claude-docs/playground/agents/` + `skills/a2ui-workspace/` | [[ADK Context Engineering]] updated with SKILL.md eval framework |
+### ⬜ Phase 9 — MCP Server
+- `mcp_server/server.py` (FastMCP): `search_wiki`, `read_page`, `list_pages` tools
+- Add to Claude Code MCP config in `.claude/settings.json`
+- DuckDB FTS index over `wiki/` for `search_wiki`
+- Expose to playground agents — inject wiki context into ADK/LangGraph builds
 
-Skipped: `raw/sessions/` (54 transcripts, token stats only — no wiki value), `raw/claude-docs/playground/skills/` (operational stubs, low priority).
+### ⬜ Phase 10 — Output Connectors
+- `scripts/export_to_linear.py` — wiki action item → Linear ticket via MCP
+- `scripts/export_to_notion.py` — stable wiki page → Notion page via MCP
+- `/lint` findings → auto-create Linear tickets for orphan pages, dead links
 
----
-
-## Phase 4 — Conversational Agent (Chainlit + LangGraph)
-
-**Goal:** an agent that can explore the wiki, do deep research across clusters, and generate structured outputs.
-
-### Architecture
-
-```
-Chainlit UI
-  └── LangGraph StateGraph
-        ├── Planner node   — identifies relevant wiki pages from query
-        ├── Research node  — reads pages, builds context, flags gaps
-        ├── Generator node — produces output (brief / tickets / deck outline)
-        └── HITL gate      — confirm before any external write
-```
-
-**Why LangGraph:** Plan-and-Execute pattern is already in [[Plan and Execute Pattern]]. Already in the stack (librarian, listen-wiseer). Works natively with Chainlit streaming.
-
-**Why not ADK here:** ADK's strength is hierarchical multi-agent delegation with clearly bounded sub-agents. The KB agent is a single-domain reasoning loop — better fit for LangGraph. ADK could replace the Generator node later when output targets (Linear, Notion, decks) become distinct specialized agents.
-
-**Why not Cloudflare:** JS/TS only — breaks the Python stack. Revisit for hosting/edge deployment after the agent is working locally.
-
-### Use Cases
-
-| Query | Agent behaviour |
-|---|---|
-| "What do we know about voice agents?" | Research node reads `memory`, `mcp`, `adk` tagged pages; synthesises briefing |
-| "Create tickets for the next phase of listen-wiseer" | Research → Generator → Linear MCP (with HITL confirmation) |
-| "Prepare a deck on RAG architecture decisions" | Research → Generator → markdown outline → Notion export |
-
-### Free Tier Reality
-
-| Layer | Cost |
-|---|---|
-| LangGraph library | Free |
-| LangGraph Cloud (optional) | Free tier: 1 deployment, limited traces |
-| Chainlit | Free (open source) |
-| Claude API | ~$0.003/1k input tokens (Haiku) — negligible for personal use |
-| LangSmith (optional observability) | Free tier: 10k traces/month |
+### ⬜ Phase 11 — RAG Search Layer
+- Semantic search over wiki via MiniLM embeddings (already in `app/backend/embeddings.py`)
+- `/query` skill uses embeddings rather than filename matching
+- Evaluate: does wiki-grounded context improve agent builds?
 
 ---
 
-## Phase 5 — MCP Server + Input Connectors (deferred)
+## Agent Integration Phases
 
-Originally Phase 2–3. Deferred because the agent works fine reading `wiki/` directly over filesystem. MCP becomes valuable when:
-- Other agents (in playground, ADK builds) need to query the KB at runtime
-- You want Claude.ai (browser) to access the wiki without opening VS Code
+> **Prerequisite:** Phases 5 + 8 must complete before starting. The four agents live in `agents/`: `researcher`, `adk-agent-pocs`, `presenter`, `cartographer`.
 
-### MCP Server (`mcp_server/server.py` — FastMCP)
+### ⬜ Phase 12 — Researcher Integration
+Wire `agents/researcher/` (PDF → Obsidian notes) into the librarian ingest pipeline.
+- Researcher emits wiki-compatible frontmatter (title, tags, summary, updated, sources)
+- `uv run researcher <pdf>` → runs ingest protocol, creates/updates `wiki/` pages
+- `/ingest` skill detects PDFs and delegates to researcher
 
-Tools: `search_wiki`, `read_page`, `list_pages_by_tag`. Read-only initially.
+### ⬜ Phase 13 — ADK POC Knowledge Extraction
+`agents/adk-agent-pocs/` contains live reference implementations. Use to fill wiki gaps.
+- Audit sub-projects; create `wiki/skills/` for POC-derived patterns
+- Priority: `a2ui-mcp-pattern`, `skill-md-multi-agent`, `mcp-tool-schema-design`
 
-### Source Registry (portable MCP config)
+### ⬜ Phase 14 — Presenter Output Agent
+`agents/presenter/` deck-authoring agent. Expand output targets.
+- Verify PPT end-to-end against librarian wiki as source
+- Linear + Notion + Google Docs/Slides export
+- `/present` skill: Claude Code entry point to kick off a deck from a wiki query
 
-`.claude/settings.json` already configures API-key-based MCP servers — no OAuth, works on any machine:
-
-| Source | MCP server | Key in `.env` | Auth type |
-|---|---|---|---|
-| Personal Notion | `@notionhq/notion-mcp-server` | `NOTION_API_KEY` | API key — portable |
-| Work Notion | claude.ai MCP (OAuth) | — | Session OAuth — machine-specific |
-| Linear | `linear-mcp-server` | `LINEAR_API_KEY` | API key — portable |
-| Librarian KB | `mcp_server/server.py` | `ANTHROPIC_API_KEY` | Local — portable |
-
-**Pattern:** API-key servers activate automatically from `.env`; claude.ai OAuth overlay for work accounts when on the right machine. New machine = copy repo + add `.env` keys.
-
-**Future:** per-project ingest design doc in `wiki/projects/` capturing which sources exist, which are ingested, what wiki pages they produce, and what's pending. Enables automated ingest config generation from the registry.
-
-### Input Connectors (on-demand, not continuous sync)
-
-| Source | Tool | Script |
-|---|---|---|
-| Personal Notion | `@notionhq/notion-mcp-server` (env) or `scripts/ingest_notion.py` | `NOTION_API_KEY` |
-| Work Notion | claude.ai MCP OAuth | `/mcp` auth flow |
-| Linear | `linear-mcp-server` (env) or `scripts/ingest_linear.py` | `LINEAR_API_KEY` |
-| Gmail transcripts | Manual paste → `raw/meetings/` | — |
-| Dropbox PDFs | `scripts/ingest_pdf.py` reads `DROPBOX_PDF_PATH` | — |
-
----
-
-## Phase 6 — RAG Search + Fine-Tuning (future)
-
-- DuckDB FTS index over `wiki/` for the Streamlit app and MCP search tool
-- Lightweight embedding layer (MiniLM, already in librarian) for semantic search
-- Synthetic QA pairs from wiki pages → fine-tune Haiku on KB content
+### ⬜ Phase 15 — Cartographer Automation
+`agents/cartographer/` parses session JSONL → HTML friction reports.
+- Cron mode: daily friction analysis → `raw/sessions/` → auto-ingest
+- Gate: do not automate until Phase 12 ingest pipeline is stable
 
 ---
 
 ## Key Decisions
 
-| Decision | Choice | Rationale |
+| Decision | Choice | Date |
 |---|---|---|
-| Ingest state | `manifest.jsonl` (file-based) | Git-trackable, no infra, Claude-readable |
-| Visualization | Streamlit (Stage 1), Chainlit (Stage 2) | Different jobs: analytics vs. conversational |
-| Agent framework | LangGraph + Chainlit | Already in stack; Plan-and-Execute is the right pattern |
-| Output agents | ADK sub-agents (future) | Better fit when Linear/Notion/decks are distinct agents |
-| Hosting | Local dev first; Cloudflare Workers later | Cloudflare free tier is best; requires JS port |
-| Connectors | Deferred to Phase 5 | Not blocking; filesystem access is sufficient for Phases 2–4 |
-| raw/ git strategy | Selective: include claude-docs/, web/, playground-docs/; ignore sessions/, pdfs/ | Keeps repo lean; preserves source traceability |
+| Wiki pattern | Karpathy LLM Wiki (raw → compiled) | 2026-04-24 |
+| Orchestration | LangGraph (not ADK) for agent layer | 2026-04-12 |
+| Interim viz | Obsidian native + Juggl + Graph Analysis | 2026-04-24 |
+| Target viz | React Flow (not Cytoscape, not sigma.js) | 2026-04-24 |
+| Agent streaming | FastAPI + SSE (not WebSocket, not polling) | 2026-04-24 |
+| Scope | Agent engineering KB only (not general second brain) | 2026-04-24 |
+| Agent integration | Phases 12–15 deferred until Phases 5+8 complete | 2026-04-25 |
+| Input scope | Personal + work sources both in scope for Phase 6 | 2026-04-25 |
+| MCP auth | claude.ai MCPs (Notion, Drive, Guru) — no separate OAuth | 2026-04-25 |
 
 ## See Also
 - [[Karpathy LLM Wiki Pattern]]
-- [[Plan and Execute Pattern]]
 - [[Librarian Project]]
+- [[ADK vs LangGraph Comparison]]
 - [[MCP Protocol]]
+- [[Plan and Execute Pattern]]

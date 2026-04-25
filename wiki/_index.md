@@ -42,6 +42,9 @@ updated: 2026-04-25
 | [[SKILL.md Pattern]] | ADK skill declaration format — YAML frontmatter + instruction body, three loading strategies, evaluation framework |
 | [[LangGraph State Reducers]] | Functions that define how parallel node outputs merge into shared state — preventing collisions during super-steps |
 | [[Multi-Agent Orchestration Patterns]] | Four patterns evaluated for the Shine ADK POC — Agent with Skills & Compaction selected for minimal LLM calls and prefix cache efficiency |
+| [[RAG Knowledge Preparation]] | Transforming human-readable documentation into machine-retrievable knowledge units — chunking, metadata, market/language filtering |
+| [[Copilot Learning Loop]] | Operational process for improving agent systems over time — signal capture, knowledge refinement workflows, controlled autonomy expansion |
+| [[Multi-Modal Agent Response]] | Agent response pattern combining text, charts, interactive UI, and task surfaces — structured elicitation reduces ambiguity |
 
 ---
 
@@ -65,10 +68,12 @@ updated: 2026-04-25
 | Page | Summary |
 |---|---|
 | [[Librarian Project]] | The Librarian RAG service — stack, architecture decisions, production status |
-| [[Librarian KB — Build Plan]] | Revised phased plan — manifest dedup, Streamlit viz, focused ingest, then Chainlit + LangGraph agent |
+| [[Librarian KB — Build Plan]] | Phased build plan — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phases 9–15 future |
 | [[Listen-Wiseer Project]] | Spotify recommendation agent — ENOA taste map, LangGraph ReAct + Chainlit, LightGBM, DuckDB vss RAG, three-tier eval harness |
 | [[VA Agent Project]] | Billy accounting VA agent — dual ADK+LangGraph implementations, 57 tools, MCP stub layer, all 9 phases complete |
 | [[Evaluation & Improvement Project (VIR)]] | Shine Q2 2026 — Billy→Bedrock KB ingestion, CS annotation pipeline, ~50 conversation golden eval set targeting 2026-06-30 |
+| [[Shine Copilot Architecture]] | Shine's embedded guidance/orchestration/execution layer — VA team owns coordination, domain teams own execution agents |
+| [[Shine Knowledge Agent]] | Shine's Help Center RAG system — knowledge retrieval capability for Copilot, targeting ≥60% self-service resolution |
 
 ---
 

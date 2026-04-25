@@ -219,6 +219,18 @@ make eval-trajectory  # Tier 2 — LangFuse-traced, cost-gated
 make eval-e2e         # Tier 3 — RAGAS + DeepEval, CONFIRM_EXPENSIVE_OPS required
 ```
 
+## Business Metric Targets (Shine Knowledge Agent)
+
+For product-embedded RAG, the retrieval-level metrics (hit_rate, MRR) need to map up to business outcomes. From [[Shine Knowledge Agent]] requirements:
+
+- **≥60% self-service resolution rate** — share of queries resolved without escalation (top-line target)
+- **↓15% support contacts from Help Center** — demand reduction signal
+- **Near-zero wrong-market answers** — market/language filtering is a hard correctness gate, not a soft quality signal
+
+**Benchmarking baseline:** the Bookkeeping Hero chatbot (prior system) provides the real-data baseline — evaluate answer quality, identify where the prior system performs well, identify its failure modes. This prevents regressing from a known baseline.
+
+---
+
 ## Real-Data Baseline Methodology
 
 Before launching a new system, establish a performance baseline using the **existing system's conversation data** — not synthetic golden sets. This gives a concrete "beat this" target.
