@@ -188,8 +188,25 @@ else:
     checkpointer = MemorySaver()  # dev: in-process only
 ```
 
+## Store Operations Reference
+
+```python
+store.put(("user-123", "facts"), "location", {"city": "Copenhagen"})  # Put
+item = store.get(("user-123", "facts"), "location")                    # Get → item.value
+results = store.search(("user-123", "facts"), filter={"city": "Copenhagen"})  # Filter search
+store.delete(("user-123", "facts"), "location")                        # Delete
+```
+
+In nodes, access via `runtime.store` (Deep Agents) or `config["store"]` (plain LangGraph). Do NOT capture the store instance in a closure — always access via the runtime/config parameter.
+
+## Deep Agents Memory Backends
+
+For Deep Agents, memory is surfaced through pluggable backends rather than direct `BaseStore` access. See [[Deep Agents Memory Backends]] for the `StateBackend` / `StoreBackend` / `CompositeBackend` pattern.
+
 ## See Also
 - [[LangGraph CRAG Pipeline]]
 - [[ADK Context Engineering]]
 - [[LangGraph Advanced Patterns]]
 - [[Listen-Wiseer Project]]
+- [[Deep Agents Memory Backends]]
+- [[LangGraph BaseStore]]

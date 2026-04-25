@@ -5,6 +5,8 @@ summary: Functions that define how parallel node outputs merge into shared state
 updated: 2026-04-25
 sources:
   - raw/gdrive/2026-04-24-langgraph-yan.md
+  - raw/agent-skills/langgraph-fundamentals/SKILL.md
+  - raw/agent-skills/langgraph-persistence/SKILL.md
 ---
 
 # LangGraph State Reducers
@@ -59,6 +61,42 @@ Prefer `add_messages` for any field holding `BaseMessage` objects. It handles:
 - Updates — if a message with the same ID arrives, it replaces the old one
 
 `operator.add` is simpler and better for plain data (floats, dicts, raw strings).
+
+## Overwrite — Bypassing Reducers in update_state
+
+`update_state()` passes values through reducers. To **replace** a list field instead of appending, use `Overwrite`:
+
+```python
+from langgraph.types import Overwrite
+
+# State: items: Annotated[list, operator.add]
+# Current: {"items": ["A", "B"]}
+
+graph.update_state(config, {"items": ["C"]})          # Result: ["A", "B", "C"] — appended
+graph.update_state(config, {"items": Overwrite(["C"])})  # Result: ["C"] — replaced
+```
+
+## Five-Step Graph Design
+
+When building a new graph:
+
+1. **Map discrete steps** — sketch a flowchart; each step becomes a node
+2. **Categorize nodes** — LLM step, data step, action step, or user input step
+3. **Design state** — shared memory for all nodes; store raw data, format inside nodes
+4. **Build nodes** — each takes state, returns a partial dict of only the fields it updates
+5. **Wire it together** — connect with edges, add conditional routing, compile with checkpointer if needed
+
+## Subgraph Checkpointer Scoping
+
+When compiling a subgraph, `checkpointer` controls persistence behavior:
+
+| Mode | Interrupts | Multi-turn memory | Use when |
+|---|---|---|---|
+| `checkpointer=False` | No | No | Subgraph needs neither |
+| `None` (default) | Yes | No | Subgraph needs `interrupt()` but starts fresh each call |
+| `checkpointer=True` | Yes | Yes | Subgraph needs to remember across invocations |
+
+**Warning:** stateful subgraphs (`checkpointer=True`) cannot be called multiple times within a single node — they write to the same checkpoint namespace and conflict. Wrap each in its own `StateGraph` with a unique node name for isolation.
 
 ## See Also
 - [[LangGraph Advanced Patterns]]

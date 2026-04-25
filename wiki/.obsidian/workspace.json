@@ -245,6 +245,10 @@
   },
   "active": "fc1536855779324c",
   "lastOpenFiles": [
+    "concepts/voice-agent-patterns.md",
+    "concepts/deep-agents-memory-backends.md",
+    "concepts/deep-agents-framework.md",
+    "concepts/framework-selection.md",
     "concepts/multi-modal-agent-response.md",
     "concepts/copilot-learning-loop.md",
     "concepts/rag-knowledge-preparation.md",
@@ -266,10 +270,6 @@
     "concepts/langgraph-basestore.md",
     "concepts/hitl-annotation-pipeline.md",
     "concepts/history-condenser.md",
-    "concepts/embedder-warmup.md",
-    "concepts/crag-retry-logic.md",
-    "concepts/agentic-workflow-patterns.md",
-    "concepts/aci-agent-computer-interface.md",
-    "_conflicts.md"
+    "concepts/embedder-warmup.md"
   ]
 }

@@ -39,7 +39,8 @@ async def _watch_and_broadcast() -> None:
 
 @contextlib.asynccontextmanager
 async def lifespan(_: FastAPI):  # type: ignore[type-arg]
-    warmup()
+    # Warmup in background so server accepts connections immediately
+    asyncio.get_event_loop().run_in_executor(None, warmup)
     asyncio.create_task(_watch_and_broadcast())
     yield
 

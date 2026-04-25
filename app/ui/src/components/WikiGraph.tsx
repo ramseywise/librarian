@@ -52,8 +52,9 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
     semantic: false,
     "tag-shared": false,
   });
-  const [layout, setLayout] = useState<LayoutMode>("dagre");
+  const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
+  const [overviewMode, setOverviewMode] = useState(true);
   const [loadingUmap, setLoadingUmap] = useState(false);
   const [loadingSemantic, setLoadingSemantic] = useState(false);
   const [umapPositions, setUmapPositions] = useState<Record<string, { x: number; y: number }> | null>(null);
@@ -61,12 +62,15 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
   // Refs so layout effect can read current dimming state without being a dep
   const activeTagsRef = useRef(activeTags);
   const highlightedPagesRef = useRef(highlightedPages);
+  const overviewModeRef = useRef(overviewMode);
   activeTagsRef.current = activeTags;
   highlightedPagesRef.current = highlightedPages;
+  overviewModeRef.current = overviewMode;
 
   const applyDimming = useCallback((newNodes: WikiFlowNode[]): WikiFlowNode[] => {
     const hp = highlightedPagesRef.current;
     const at = activeTagsRef.current;
+    const ov = overviewModeRef.current;
     return newNodes.map((n) => ({
       ...n,
       data: {
@@ -74,6 +78,8 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
         dimmed:
           hp && hp.size > 0
             ? !hp.has(n.id)
+            : ov
+            ? n.data.typeTag !== "project"
             : at.size > 0 && !n.data.domain.some((t: string) => at.has(t)),
       },
     }));
@@ -120,10 +126,10 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
     setEdges(styled);
   }, [edgeVis, wikilinkEdges, semanticEdges, tagSharedEdges, setEdges]);
 
-  // Re-apply dimming when filter/highlight state changes
+  // Re-apply dimming when filter/highlight/overview state changes
   useEffect(() => {
     setNodes((prev) => (prev.length ? applyDimming(prev) : prev));
-  }, [activeTags, highlightedPages, applyDimming]);
+  }, [activeTags, highlightedPages, overviewMode, applyDimming]);
 
   const handleLoadSemantic = useCallback(async () => {
     setLoadingSemantic(true);
@@ -184,6 +190,22 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
 
       <LayoutSwitcher current={layout} onChange={handleLayoutChange} loadingUmap={loadingUmap} />
 
+      {/* Depth toggle — top-right */}
+      <div style={depthToggleStyle}>
+        <button
+          onClick={() => setOverviewMode(true)}
+          style={{ ...depthBtnStyle, ...(overviewMode ? depthBtnActiveStyle : {}) }}
+        >
+          Projects
+        </button>
+        <button
+          onClick={() => setOverviewMode(false)}
+          style={{ ...depthBtnStyle, ...(!overviewMode ? depthBtnActiveStyle : {}) }}
+        >
+          All
+        </button>
+      </div>
+
       <TagFilterPanel activeTags={activeTags} onChange={setActiveTags} />
 
       <ReactFlow
@@ -210,3 +232,29 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
     </div>
   );
 }
+
+const depthToggleStyle: React.CSSProperties = {
+  position: "absolute",
+  top: 12,
+  right: 12,
+  zIndex: 10,
+  display: "flex",
+  background: "#1c1c1c",
+  border: "1px solid #333",
+  borderRadius: 8,
+  overflow: "hidden",
+};
+
+const depthBtnStyle: React.CSSProperties = {
+  padding: "5px 14px",
+  fontSize: 11,
+  cursor: "pointer",
+  background: "transparent",
+  border: "none",
+  color: "#555",
+};
+
+const depthBtnActiveStyle: React.CSSProperties = {
+  background: "#2a2a2a",
+  color: "#e0e0e0",
+};

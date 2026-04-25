@@ -45,6 +45,10 @@ updated: 2026-04-25
 | [[RAG Knowledge Preparation]] | Transforming human-readable documentation into machine-retrievable knowledge units — chunking, metadata, market/language filtering |
 | [[Copilot Learning Loop]] | Operational process for improving agent systems over time — signal capture, knowledge refinement workflows, controlled autonomy expansion |
 | [[Multi-Modal Agent Response]] | Agent response pattern combining text, charts, interactive UI, and task surfaces — structured elicitation reduces ambiguity |
+| [[Framework Selection — LangChain vs LangGraph vs Deep Agents]] | Decision guide for choosing between LangChain, LangGraph, and Deep Agents — layered frameworks with a clear decision tree |
+| [[Deep Agents Framework]] | create_deep_agent() harness — planning, file management, subagent delegation, HITL, and on-demand skills via configurable middleware |
+| [[Deep Agents Memory Backends]] | Pluggable backends for Deep Agents — StateBackend (ephemeral), StoreBackend (cross-thread), FilesystemBackend (local), CompositeBackend (routing) |
+| [[Voice Agent Patterns]] | Real-time voice agent patterns — <400ms latency budget, ADK Strategy C preloading, mandatory history pruning, BIDI streaming constraints |
 
 ---
 

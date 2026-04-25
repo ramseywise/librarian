@@ -1,21 +1,24 @@
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 from typing import Any, AsyncGenerator
 
 import frontmatter
-from anthropic import AsyncAnthropic
+import ollama
 
 WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
+MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 
-_client: AsyncAnthropic | None = None
+_client: ollama.AsyncClient | None = None
 
 
-def _get_client() -> AsyncAnthropic:
+def _get_client() -> ollama.AsyncClient:
     global _client
     if _client is None:
-        _client = AsyncAnthropic()
+        host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        _client = ollama.AsyncClient(host=host)
     return _client
 
 
@@ -81,34 +84,40 @@ def _read_page(page_id: str) -> str:
 
 _TOOLS: list[dict[str, Any]] = [
     {
-        "name": "search_wiki",
-        "description": (
-            "Search wiki pages for content matching the query. "
-            "Returns page IDs, summaries, and excerpts for the top matches."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "Search query using key terms from the question",
-                }
+        "type": "function",
+        "function": {
+            "name": "search_wiki",
+            "description": (
+                "Search wiki pages for content matching the query. "
+                "Returns page IDs, summaries, and excerpts for the top matches."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query using key terms from the question",
+                    }
+                },
+                "required": ["query"],
             },
-            "required": ["query"],
         },
     },
     {
-        "name": "read_page",
-        "description": "Read the full content of a wiki page by its ID (kebab-case filename without .md).",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "page_id": {
-                    "type": "string",
-                    "description": "Page ID as shown in search results, e.g. 'langgraph-crag-pipeline'",
-                }
+        "type": "function",
+        "function": {
+            "name": "read_page",
+            "description": "Read the full content of a wiki page by its ID (kebab-case filename without .md).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "page_id": {
+                        "type": "string",
+                        "description": "Page ID as shown in search results, e.g. 'langgraph-crag-pipeline'",
+                    }
+                },
+                "required": ["page_id"],
             },
-            "required": ["page_id"],
         },
     },
 ]
@@ -126,59 +135,57 @@ Be direct. Stay grounded in the wiki — do not invent content."""
 
 async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
     client = _get_client()
-    messages: list[dict[str, Any]] = [{"role": "user", "content": query}]
+    messages: list[dict[str, Any]] = [
+        {"role": "system", "content": _SYSTEM},
+        {"role": "user", "content": query},
+    ]
     referenced_pages: set[str] = set()
 
     for _ in range(8):
-        async with client.messages.stream(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=2048,
-            system=_SYSTEM,
-            tools=_TOOLS,  # type: ignore[arg-type]
-            messages=messages,  # type: ignore[arg-type]
-        ) as stream:
-            async for event in stream:
-                if event.type == "content_block_delta":
-                    delta = event.delta
-                    if hasattr(delta, "type") and delta.type == "text_delta" and delta.text:
-                        yield {"type": "token", "content": delta.text}
+        full_content = ""
+        tool_calls: list[Any] | None = None
 
-            response = await stream.get_final_message()
+        async for chunk in await client.chat(
+            model=MODEL,
+            messages=messages,
+            tools=_TOOLS,
+            stream=True,
+        ):
+            if chunk.message.content:
+                full_content += chunk.message.content
+                yield {"type": "token", "content": chunk.message.content}
+            if chunk.message.tool_calls:
+                tool_calls = chunk.message.tool_calls
 
-        if response.stop_reason == "end_turn":
+        if not tool_calls:
             break
 
-        if response.stop_reason == "tool_use":
-            messages.append({
-                "role": "assistant",
-                "content": [b.model_dump() for b in response.content],
-            })
-            tool_results: list[dict[str, Any]] = []
+        messages.append({
+            "role": "assistant",
+            "content": full_content,
+            "tool_calls": [
+                {"function": {"name": tc.function.name, "arguments": tc.function.arguments}}
+                for tc in tool_calls
+            ],
+        })
 
-            for block in response.content:
-                if block.type != "tool_use":
-                    continue
-                if block.name == "search_wiki":
-                    result = _search_wiki(block.input["query"])  # type: ignore[index]
-                    for m in re.finditer(r"\(id: `([^`]+)`\)", result):
-                        referenced_pages.add(m.group(1))
-                elif block.name == "read_page":
-                    page_id = block.input["page_id"]  # type: ignore[index]
-                    result = _read_page(page_id)
-                    if not result.startswith("Page '"):
-                        referenced_pages.add(page_id)
-                else:
-                    result = "Unknown tool."
+        for tc in tool_calls:
+            name = tc.function.name
+            args: dict[str, Any] = tc.function.arguments
 
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": result,
-                })
+            if name == "search_wiki":
+                result = _search_wiki(args["query"])
+                for m in re.finditer(r"\(id: `([^`]+)`\)", result):
+                    referenced_pages.add(m.group(1))
+            elif name == "read_page":
+                page_id = args["page_id"]
+                result = _read_page(page_id)
+                if not result.startswith("Page '"):
+                    referenced_pages.add(page_id)
+            else:
+                result = "Unknown tool."
 
-            messages.append({"role": "user", "content": tool_results})
-        else:
-            break
+            messages.append({"role": "tool", "content": result})
 
     valid_pages = {p for p in referenced_pages if next(WIKI_DIR.rglob(f"{p}.md"), None)}
     if valid_pages:

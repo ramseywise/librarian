@@ -1,13 +1,15 @@
 ---
 title: LangGraph Advanced Patterns
 tags: [langgraph, pattern]
-summary: Advanced LangGraph patterns beyond the basics — subgraphs, Send API fan-out, streaming modes, time-travel, breakpoints/interrupts, and Plan-and-Execute.
+summary: Advanced LangGraph patterns beyond the basics — subgraphs, Send API fan-out, streaming modes, time-travel, breakpoints/interrupts, error handling, and Plan-and-Execute.
 updated: 2026-04-25
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
   - raw/playground-docs/rag-agent-template-research.md
   - raw/gdrive/2026-04-24-langgraph-yan.md
+  - raw/agent-skills/langgraph-fundamentals/SKILL.md
+  - raw/agent-skills/langgraph-human-in-the-loop/SKILL.md
 ---
 
 # LangGraph Advanced Patterns
@@ -227,6 +229,91 @@ Use static for predictable pause points (before/after known nodes). Use dynamic 
 
 See [[HITL Annotation Pipeline]] for the broader annotation workflow pattern.
 
+## HITL: Idempotency Before interrupt()
+
+When a graph resumes, the node restarts from the **beginning** — all code before `interrupt()` re-runs. In subgraphs, both parent and subgraph node re-execute.
+
+**Safe before interrupt():** upsert operations, check-before-create patterns.
+**Unsafe before interrupt():** inserts, list appends — these create duplicates on each resume.
+
+Always place non-idempotent side effects **after** `interrupt()`, or extract them to a separate node that runs before the interrupt node.
+
+## HITL: Validation Loop
+
+`interrupt()` can be used inside a loop to re-prompt until input is valid:
+
+```python
+def get_age_node(state):
+    prompt = "What is your age?"
+    while True:
+        answer = interrupt(prompt)
+        if isinstance(answer, int) and answer > 0:
+            break
+        prompt = f"'{answer}' is not valid. Please enter a positive number."
+    return {"age": answer}
+```
+
+## HITL: Multiple Parallel Interrupts
+
+When parallel branches each call `interrupt()`, resume all with a single `Command` mapping interrupt IDs to values:
+
+```python
+result = graph.invoke({"vals": []}, config)
+resume_map = {i.id: f"answer for {i.value}" for i in result["__interrupt__"]}
+result = graph.invoke(Command(resume=resume_map), config)
+```
+
+## HITL: Command(resume) Warning
+
+`Command(resume=...)` is the **only** Command pattern intended as `invoke()` input. Do NOT pass `Command(update=...)` as invoke input — the graph appears stuck (resumes from latest checkpoint but the update is not applied as expected).
+
+## Error Handling Strategy
+
+Match error type to the right handler:
+
+| Error Type | Who Fixes | Strategy |
+|---|---|---|
+| Transient (network, rate limits) | System | `RetryPolicy(max_attempts=3)` on `add_node` |
+| LLM-recoverable (tool failures) | LLM | `ToolNode(tools, handle_tool_errors=True)` |
+| User-fixable (missing info) | Human | `interrupt({"message": ...})` |
+| Unexpected | Developer | Let bubble up — `raise` |
+
+```python
+from langgraph.types import RetryPolicy
+from langgraph.prebuilt import ToolNode
+
+workflow.add_node(
+    "search",
+    search_node,
+    retry_policy=RetryPolicy(max_attempts=3, initial_interval=1.0)
+)
+
+tool_node = ToolNode(tools, handle_tool_errors=True)
+workflow.add_node("tools", tool_node)
+```
+
+## Custom Stream Writer
+
+Emit progress updates from inside a node:
+
+```python
+from langgraph.config import get_stream_writer
+
+def my_node(state):
+    writer = get_stream_writer()
+    writer("Processing step 1...")
+    # do work
+    writer("Complete!")
+    return {"result": "done"}
+
+for chunk in graph.stream({"data": "test"}, stream_mode="custom"):
+    print(chunk)
+```
+
+## Command + Static Edge Warning
+
+`Command(goto="node_c")` adds a **dynamic** edge only. If you also have `graph.add_edge("node_a", "node_b")`, **both** `node_b` and `node_c` will run. Only use `Command` routing when the node has no static outgoing edges.
+
 ## See Also
 - [[LangGraph CRAG Pipeline]]
 - [[LangGraph State Reducers]]
@@ -235,3 +322,6 @@ See [[HITL Annotation Pipeline]] for the broader annotation workflow pattern.
 - [[ADK Context Engineering]]
 - [[A2A Agent Protocol]]
 - [[HITL Annotation Pipeline]]
+- [[Framework Selection — LangChain vs LangGraph vs Deep Agents]]
+- [[Deep Agents Framework]]
+- [[Voice Agent Patterns]]

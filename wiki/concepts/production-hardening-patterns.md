@@ -252,9 +252,24 @@ Three common bugs in Streamlit frontends:
 
 ---
 
+## Subgraph Checkpointer Scoping (from langgraph-persistence)
+
+When compiling a subgraph, `checkpointer` controls how state is persisted:
+
+| Feature | `checkpointer=False` | `None` (default) | `True` |
+|---|---|---|---|
+| Interrupts (HITL) | No | Yes | Yes |
+| Multi-turn memory | No | No | Yes |
+| Multiple calls (same subgraph in parallel) | Yes | Yes | **No** (namespace conflict) |
+
+Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt support with fresh-per-call state; `True` for cross-invocation memory. See [[LangGraph State Reducers]] for the subgraph namespace isolation pattern.
+
+---
+
 ## See Also
 - [[Librarian RAG Architecture]]
 - [[LangGraph CRAG Pipeline]]
 - [[Librarian Project]]
 - [[Observability — LangFuse vs LangSmith Decision]]
+- [[LangGraph State Reducers]]
 - [[Orchestration Architecture Decision]]
