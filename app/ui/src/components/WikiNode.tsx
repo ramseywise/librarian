@@ -41,10 +41,18 @@ export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
         padding: "8px 12px",
         minWidth: 160,
         maxWidth: 200,
-        boxShadow: selected ? `0 0 14px ${color}88` : "none",
-        opacity: data.dimmed ? 0.15 : 1,
-        transition: "opacity 0.25s, box-shadow 0.2s",
+        boxShadow: data.highlighted
+          ? `0 0 0 2px ${color}, 0 0 24px ${color}cc`
+          : selected
+          ? `0 0 14px ${color}88`
+          : "none",
+        opacity: data.dimmed ? 0.12 : 1,
+        transform: data.highlighted ? "scale(1.5)" : "scale(1)",
+        transformOrigin: "center",
+        transition: "opacity 0.25s, box-shadow 0.2s, transform 0.2s",
         cursor: "pointer",
+        position: "relative",
+        zIndex: data.highlighted ? 10 : undefined,
       }}
       title={data.summary}
     >

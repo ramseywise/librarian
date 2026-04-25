@@ -44,6 +44,7 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
         const reader = resp.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
+        let receivedDone = false;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -68,6 +69,7 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
               } else if (event.type === "highlight") {
                 onHighlight(event.pages as string[]);
               } else if (event.type === "done") {
+                receivedDone = true;
                 setMessages((prev) =>
                   prev.map((m) =>
                     m.id === assistantId ? { ...m, streaming: false } : m
@@ -79,6 +81,13 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
               // ignore malformed SSE lines
             }
           }
+        }
+        // Only clean up if the backend closed the stream without sending a done event
+        if (!receivedDone) {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === assistantId ? { ...m, streaming: false } : m))
+          );
+          setStreaming(false);
         }
       } catch (err) {
         console.error("chat stream error:", err);

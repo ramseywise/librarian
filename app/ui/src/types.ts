@@ -10,6 +10,7 @@ export interface WikiNodeData extends Record<string, unknown> {
   updated: string;
   path: string;
   dimmed: boolean;
+  highlighted: boolean;
 }
 
 export interface WikiEdgeData extends Record<string, unknown> {

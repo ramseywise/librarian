@@ -6,6 +6,8 @@ import {
   MiniMap,
   useNodesState,
   useEdgesState,
+  useReactFlow,
+  ReactFlowProvider,
   BackgroundVariant,
   type Edge,
   type Node,
@@ -33,7 +35,15 @@ interface WikiGraphProps {
   onNodeSelect?: (node: SelectedNode | null) => void;
 }
 
-export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
+function AutoFit({ version }: { version: number }) {
+  const { fitView } = useReactFlow();
+  useEffect(() => {
+    if (version > 0) requestAnimationFrame(() => fitView({ padding: 0.15 }));
+  }, [version, fitView]);
+  return null;
+}
+
+function WikiGraphInner({ highlightedPages, onNodeSelect }: WikiGraphProps) {
   const {
     baseNodes,
     wikilinkEdges,
@@ -58,6 +68,7 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
   const [loadingUmap, setLoadingUmap] = useState(false);
   const [loadingSemantic, setLoadingSemantic] = useState(false);
   const [umapPositions, setUmapPositions] = useState<Record<string, { x: number; y: number }> | null>(null);
+  const [fitVersion, setFitVersion] = useState(0);
 
   // Refs so layout effect can read current dimming state without being a dep
   const activeTagsRef = useRef(activeTags);
@@ -75,6 +86,7 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
       ...n,
       data: {
         ...n.data,
+        highlighted: hp != null && hp.size > 0 && hp.has(n.id),
         dimmed:
           hp && hp.size > 0
             ? !hp.has(n.id)
@@ -90,20 +102,26 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
     if (!baseNodes.length) return;
 
     async function applyLayout() {
-      const visibleEdges = wikilinkEdges;
-      if (layout === "dagre") {
-        const laid = applyDagreLayout(baseNodes as Node[], visibleEdges as Edge[]);
-        setNodes(applyDimming(laid as WikiFlowNode[]));
-      } else if (layout === "umap-semantic") {
-        setLoadingUmap(true);
-        const positions = umapPositions ?? await (async () => {
-          const pos = await fetchUmapPositions();
-          setUmapPositions(pos);
-          return pos;
-        })();
+      try {
+        const visibleEdges = wikilinkEdges;
+        if (layout === "dagre") {
+          const laid = applyDagreLayout(baseNodes as Node[], visibleEdges as Edge[]);
+          setNodes(applyDimming(laid as WikiFlowNode[]));
+          setFitVersion((v) => v + 1);
+        } else if (layout === "umap-semantic") {
+          setLoadingUmap(true);
+          const positions = umapPositions ?? await (async () => {
+            const pos = await fetchUmapPositions();
+            setUmapPositions(pos);
+            return pos;
+          })();
+          setLoadingUmap(false);
+          const laid = applyUmapLayout(baseNodes as Node[], positions);
+          setNodes(applyDimming(laid as WikiFlowNode[]));
+          setFitVersion((v) => v + 1);
+        }
+      } catch {
         setLoadingUmap(false);
-        const laid = applyUmapLayout(baseNodes as Node[], positions);
-        setNodes(applyDimming(laid as WikiFlowNode[]));
       }
     }
 
@@ -111,8 +129,9 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baseNodes, layout]);
 
-  // Recompute visible edges whenever toggles or edge sets change
+  // Recompute visible edges whenever toggles, edge sets, or highlights change
   useEffect(() => {
+    const hp = highlightedPages;
     const active: Edge<WikiEdgeData>[] = [];
     if (edgeVis.wikilink) active.push(...wikilinkEdges);
     if (edgeVis.semantic) active.push(...semanticEdges);
@@ -122,9 +141,10 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
       ...e,
       style: EDGE_STYLES[e.data?.edgeType ?? "wikilink"],
       animated: e.data?.edgeType === "semantic",
+      hidden: hp && hp.size > 0 ? !hp.has(e.source) && !hp.has(e.target) : false,
     }));
     setEdges(styled);
-  }, [edgeVis, wikilinkEdges, semanticEdges, tagSharedEdges, setEdges]);
+  }, [edgeVis, wikilinkEdges, semanticEdges, tagSharedEdges, highlightedPages, setEdges]);
 
   // Re-apply dimming when filter/highlight/overview state changes
   useEffect(() => {
@@ -222,6 +242,7 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
         maxZoom={3}
         proOptions={{ hideAttribution: true }}
       >
+        <AutoFit version={fitVersion} />
         <Background variant={BackgroundVariant.Dots} color="#222" gap={20} />
         <Controls style={{ background: "#1c1c1c", border: "1px solid #333" }} />
         <MiniMap
@@ -233,9 +254,17 @@ export function WikiGraph({ highlightedPages, onNodeSelect }: WikiGraphProps) {
   );
 }
 
+export function WikiGraph(props: WikiGraphProps) {
+  return (
+    <ReactFlowProvider>
+      <WikiGraphInner {...props} />
+    </ReactFlowProvider>
+  );
+}
+
 const depthToggleStyle: React.CSSProperties = {
   position: "absolute",
-  top: 12,
+  top: 90,
   right: 12,
   zIndex: 10,
   display: "flex",
