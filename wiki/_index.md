@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [index]
 summary: Auto-generated table of contents for the obsidian-kb wiki. Updated after every ingest.
-updated: 2026-04-24
+updated: 2026-04-25
 ---
 
 # Wiki Index
@@ -40,6 +40,8 @@ updated: 2026-04-24
 | [[ACI (Agent-Computer Interface)]] | Tool design discipline for agents — description, parameter, and return-value conventions that prevent tool-use failures |
 | [[Embedder Warmup]] | Force-loads embedding model during app startup to prevent 3–8s cold-start spike on first production request |
 | [[SKILL.md Pattern]] | ADK skill declaration format — YAML frontmatter + instruction body, three loading strategies, evaluation framework |
+| [[LangGraph State Reducers]] | Functions that define how parallel node outputs merge into shared state — preventing collisions during super-steps |
+| [[Multi-Agent Orchestration Patterns]] | Four patterns evaluated for the Shine ADK POC — Agent with Skills & Compaction selected for minimal LLM calls and prefix cache efficiency |
 
 ---
 

@@ -34,6 +34,15 @@ raw/pdfs/*.PDF
 
 # Claude Code — machine-specific settings only
 .claude/settings.local.json
+# Ephemeral planning docs — canonical knowledge belongs in wiki/
+.claude/docs/
 # Playground skills toolkit copies accidentally nested here — exclude until relocated
 .claude/skills/skills/
 .claude/skills/old/
+
+# Node
+node_modules/
+**/node_modules/
+
+# Vite cache artifacts
+**/.vite/

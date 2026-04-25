@@ -2,11 +2,12 @@
 title: Agent Memory Types
 tags: [memory, langgraph, concept]
 summary: Four memory types for agent systems — in-context, episodic, semantic, and procedural — and how to implement them with LangGraph BaseStore.
-updated: 2026-04-24
+updated: 2026-04-25
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/librarian-components.md
   - raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md
+  - raw/gdrive/2026-04-24-langgraph-yan.md
 ---
 
 # Agent Memory Types
@@ -26,6 +27,17 @@ sources:
 2. **Episodic** — add `BaseStore` + write session summary to store at `END` node. Cost: 1 Haiku call per session (~$0.0001). High ROI — enables "last time you asked about X..."
 3. **Semantic** — extract entities from conversation, store in `BaseStore` vector namespace, retrieve relevant facts at `analyze` node.
 4. **Procedural** — store approved action sequences. Lowest priority — requires enough usage data to learn patterns.
+
+## Long-Term Memory Write Timing
+
+When writing to `BaseStore`, choose based on latency requirements:
+
+| Timing | When | Trade-off |
+|---|---|---|
+| **Hot path** | During the agent run, inside a node | Immediate — adds latency to the user-facing response |
+| **Background** | Async task spawned after the run completes | No latency impact, slight delay before memory is available |
+
+Prefer background writes for session summaries and episodic store updates. Use hot path only when the memory is needed within the same run (e.g. procedural memory update that affects the current response).
 
 ## LangGraph `BaseStore` (0.4+)
 

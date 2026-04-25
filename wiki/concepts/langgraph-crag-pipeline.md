@@ -2,13 +2,14 @@
 title: LangGraph CRAG Pipeline
 tags: [langgraph, rag, pattern]
 summary: The Corrective RAG pattern implemented as a LangGraph StateGraph — deterministic graph with conditional retry loop, confidence gating, and typed state schema.
-updated: 2026-04-24
+updated: 2026-04-25
 sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/playground-docs/rag-tradeoffs.md
   - raw/playground-docs/adk-orchestration-research.md
   - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
   - raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
+  - raw/meetings/2026-04-15-langgraph-huddle.md
 ---
 
 # LangGraph CRAG Pipeline
@@ -121,6 +122,16 @@ await graph.ainvoke(state, config=config)
 ```
 
 Key signals emitted per query: `confidence_score`, `retrieved_chunks`, `graded_chunks`, `reranked_chunks`, `failure_reason`, `retry_count`.
+
+## When Does Graph-RAG Quality Show?
+
+At small POC scale (synthetic data, simple queries, small corpus), graph-based RAG and vanilla RAG show **no measurable end-user UX difference** — the graph topology itself doesn't improve quality. The quality gain comes from the pipeline components enabled by the graph:
+- Proper chunking + embedding (vs single similarity_search call)
+- Hybrid BM25 + dense retrieval with RRF (vs dense-only)
+- Cross-encoder reranking with confidence scoring
+- CRAG retry loop for low-confidence results
+
+The Librarian benchmark confirms: hybrid + reranker = 68% hit rate vs dense-only = 45%. The graph is the enabler, not the source, of quality. See [[RAG Retrieval Strategies]].
 
 ## Vocabulary Alignment (ADK-style naming)
 

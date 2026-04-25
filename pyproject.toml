@@ -30,6 +30,17 @@ viz = [
     "networkx>=3.3",
     "python-frontmatter>=1.1.0",
 ]
+api = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.29.0",
+    "python-frontmatter>=1.1.0",
+    "sentence-transformers>=3.0.0",
+    "umap-learn>=0.5.6",
+    "watchfiles>=0.21.0",
+    "websockets>=12.0",
+    "numpy>=1.26.0",
+    "scikit-learn>=1.4.0",
+]
 
 [tool.uv]
 dev-dependencies = [

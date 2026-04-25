@@ -1,1 +1,6 @@
-{}
+{
+  "useMarkdownLinks": false,
+  "livePreview": true,
+  "strictLineBreaks": false,
+  "communityPluginsEnabled": true
+}

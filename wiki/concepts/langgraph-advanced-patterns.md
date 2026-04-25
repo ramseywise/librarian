@@ -2,11 +2,12 @@
 title: LangGraph Advanced Patterns
 tags: [langgraph, pattern]
 summary: Advanced LangGraph patterns beyond the basics — subgraphs, Send API fan-out, streaming modes, time-travel, breakpoints/interrupts, and Plan-and-Execute.
-updated: 2026-04-24
+updated: 2026-04-25
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
   - raw/playground-docs/rag-agent-template-research.md
+  - raw/gdrive/2026-04-24-langgraph-yan.md
 ---
 
 # LangGraph Advanced Patterns
@@ -148,7 +149,25 @@ def supervisor_route(state: SupervisorState) -> Command:
     return Command(goto="retrieval_subgraph")
 ```
 
-## MemorySaver → Redis Upgrade Path
+## Workflows vs Agents
+
+LangGraph supports two distinct execution models:
+
+- **Workflows** — predetermined code paths defined at compile time. Fast and predictable. Use when every possible execution path can be anticipated (e.g. CRAG retry loop, HITL confirm gate).
+- **Agents** — dynamic. The agent decides which tools to call and in what order at runtime. Use when the task space is open-ended.
+
+Both are implemented with the same `StateGraph` API. The distinction is whether conditional edges route to fixed destinations or the LLM picks the next step.
+
+## Checkpointer Backend Selection
+
+Choose based on environment and scale:
+
+| Backend | Environment | Characteristics |
+|---|---|---|
+| `MemorySaver` | Dev / unit tests | In-memory only. Lost on restart. Zero setup. |
+| `SqliteSaver` | Local / prototype | SQLite file. Survives restarts. Not scalable. |
+| `PostgresSaver` | Production | ACID, concurrent, horizontal scale. Used in LangSmith itself. |
+| `RedisSaver` | High-perf production | <1ms checkpoint reads. TTL support. Distributed. |
 
 ```python
 # Development
@@ -160,9 +179,59 @@ checkpointer = AsyncRedisSaver(ttl=86400)  # 24h TTL
 
 Template: `MemorySaver` default, `checkpointer` param for injection.
 
+## Time Travel — Replay vs Fork
+
+Two distinct time travel modes built on top of checkpoints:
+
+- **Replay** — re-execute from a prior checkpoint. Same inputs, same graph. Use for debugging or retrying after a failure.
+- **Fork** — branch from a prior checkpoint with *modified* state. Creates an alternative execution path without affecting the original thread. Use for "what if" exploration and test harnesses.
+
+```python
+# List all checkpoints for a thread
+checkpoints = list(graph.get_state_history(config))
+
+# Replay from checkpoint 2
+graph.invoke(None, checkpoints[2].config)
+
+# Fork with modified state
+graph.update_state(checkpoints[2].config, {"messages": [HumanMessage("Try differently")]})
+graph.invoke(None, checkpoints[2].config)
+```
+
+## HITL: Static Breakpoints vs Dynamic `interrupt()`
+
+Two mechanisms — choose based on where in execution you need to pause:
+
+**Static breakpoints** (compile-time, fires at node boundaries):
+```python
+graph.compile(
+    interrupt_before=["tool_executor"],  # pause before any tool execution
+    interrupt_after=["planner"],          # pause after plan is generated
+    checkpointer=checkpointer,
+)
+```
+
+**Dynamic `interrupt()`** (runtime, fires inside a node mid-execution):
+```python
+from langgraph.types import interrupt
+
+def review_node(state: AgentState) -> AgentState:
+    draft = generate_draft(state)
+    approved = interrupt({"draft": draft, "prompt": "Approve?"})  # suspends here
+    if not approved:
+        return {"messages": [HumanMessage("Revise: ...")]}
+    return {"output": draft}
+```
+
+Use static for predictable pause points (before/after known nodes). Use dynamic when the pause decision depends on runtime state computed inside the node.
+
+See [[HITL Annotation Pipeline]] for the broader annotation workflow pattern.
+
 ## See Also
 - [[LangGraph CRAG Pipeline]]
+- [[LangGraph State Reducers]]
 - [[Agent Memory Types]]
 - [[Plan and Execute Pattern]]
 - [[ADK Context Engineering]]
 - [[A2A Agent Protocol]]
+- [[HITL Annotation Pipeline]]

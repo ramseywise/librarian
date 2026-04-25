@@ -165,3 +165,6 @@
 {"path": "raw/claude-docs/playground/skills/scope-initiative/SKILL.md", "hash": "sha256:a1232612d1328002", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/skills/skill-creator/SKILL.md", "hash": "sha256:dcd4803e61e913e6", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/skills/write-tickets/SKILL.md", "hash": "sha256:f6cc4fc31a985511", "ingested_at": "2026-04-24", "wiki_pages": []}
+{"path": "raw/gdrive/2026-04-24-langgraph-yan.md", "hash": "sha256:1264d4cfcb69e19d", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/concepts/langgraph-state-reducers.md", "wiki/concepts/langgraph-advanced-patterns.md", "wiki/concepts/agent-memory-types.md"]}
+{"path": "raw/gdrive/2026-04-15-adk-overview-poc-architecture.md", "hash": "sha256:9579a9bbd110a43e", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/concepts/multi-agent-orchestration-patterns.md", "wiki/agents/adk-vs-langgraph-comparison.md", "wiki/concepts/prefix-caching.md"]}
+{"path": "raw/meetings/2026-04-15-langgraph-huddle.md", "hash": "sha256:b185ae6df1b8ed8d", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/agents/adk-vs-langgraph-comparison.md", "wiki/concepts/langgraph-crag-pipeline.md"]}

@@ -2,11 +2,13 @@
 title: ADK vs LangGraph Comparison
 tags: [adk, langgraph, comparison]
 summary: Side-by-side mental model comparison of Google ADK and LangGraph — primitive mappings, when to use each, and the recommended vocabulary alignment approach.
-updated: 2026-04-24
+updated: 2026-04-25
 sources:
   - raw/playground-docs/adk-orchestration-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
   - raw/playground-docs/orchestration-rollout-plan.md
+  - raw/gdrive/2026-04-15-adk-overview-poc-architecture.md
+  - raw/meetings/2026-04-15-langgraph-huddle.md
 ---
 
 # ADK vs LangGraph Comparison
@@ -106,6 +108,30 @@ For a RAG pipeline, Librarian's approach is correct: you don't want the LLM to d
 - Using Claude (Anthropic is not a first-class ADK provider)
 - Need the LangFuse / OTel observability stack
 
+## LangGraph vs Autogen
+
+Autogen and LangGraph take opposite stances on determinism:
+
+| Dimension | LangGraph | Autogen |
+|---|---|---|
+| Workflow enforcement | Developer defines every path; graph topology is fixed | Agents talk to each other; execution path is model-decided |
+| Determinism | High — same inputs reliably follow the same edges | Low — agent-to-agent negotiation produces unpredictable sequences |
+| Explicit missing-info handling | Required up front (HITL interrupt node, conditional edge) | Handled implicitly by agent negotiation (may or may not work) |
+| Speed on deterministic tasks | Fast — no extra LLM calls for routing | Slower — multi-turn negotiation even for simple workflows |
+
+**Empirical finding (Yan Zhang, Shine, April 2026):** Autogen did not reliably follow a deterministic workflow in practice — agents deviated from the intended path. LangGraph enforced the workflow precisely, at the cost of requiring every case (including missing-info clarification) to be explicitly designed.
+
+**Implication:** For well-scoped pipelines (RAG help assistant, payment execution workflow), LangGraph's explicitness is an asset. For truly open-ended agent tasks, the constraint becomes overhead.
+
+## Graph-Based RAG vs Vanilla RAG — Empirical Note
+
+At Shine's RAG POC scale, **no measurable end-user UX difference** was found between graph-based RAG (LangGraph CRAG pipeline) and vanilla RAG. However:
+- LangGraph was **easier to build** for the developer
+- The graph model made adding components (reranker node, HITL node) straightforward
+- The Librarian benchmark shows hybrid + reranker = 68% hit rate vs dense-only = 45% — the quality gap emerges with proper retrieval pipeline design, not from the graph framework itself
+
+The UX parity finding reflects the POC stage (small corpus, synthetic data, simple queries). At production scale with a proper retrieval stack, the quality gap is measurable. See [[RAG Retrieval Strategies]] for benchmark data.
+
 ## Three Levels of ADK Refactoring
 
 ### Level 1: Vocabulary Alignment (~2 days, recommended)
@@ -141,9 +167,16 @@ class LibrarianADKAgent(BaseAgent):
 
 Three strategies for loading domain knowledge into agents — see [[ADK Context Engineering]].
 
+## Multi-Agent Architecture Patterns (Shine POC)
+
+The Shine ADK POC (April 2026) evaluated four orchestration topologies. **Agent with Skills & Compaction** was selected — it minimizes LLM calls and is most compatible with prefix caching at scale.
+
+See [[Multi-Agent Orchestration Patterns]] for the full trade-off analysis and POC stack.
+
 ## See Also
 - [[ADK vs LangGraph Decision]]
 - [[LangGraph CRAG Pipeline]]
 - [[ADK Context Engineering]]
+- [[Multi-Agent Orchestration Patterns]]
 - [[Librarian RAG Architecture]]
 - [[VA Agent Project]]

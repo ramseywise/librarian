@@ -46,7 +46,12 @@ Prompt templates with a static system block at the top cache aggressively. Vary 
 
 Anthropic API responses include `cache_read_input_tokens` and `cache_creation_input_tokens` in usage stats. A healthy prefix-caching setup should show `cache_read_input_tokens > 0` on all calls after the first.
 
+## Design Goal: Minimize LLM Calls + Cache Aggressively
+
+The Shine ADK POC (April 2026) explicitly set "minimize LLM calls + optimize for prefix caching at scale" as top design goals. This directly influenced the choice of **Agent with Skills & Compaction** over multi-agent topologies — a single agent with a stable prefix caches better than N agents each with their own context. See [[Multi-Agent Orchestration Patterns]].
+
 ## See Also
 - [[ADK Context Engineering]]
+- [[Multi-Agent Orchestration Patterns]]
 - [[Production Hardening Patterns]]
 - [[LangGraph CRAG Pipeline]]
