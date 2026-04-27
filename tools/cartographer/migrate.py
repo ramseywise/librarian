@@ -17,6 +17,8 @@ from typing import Any
 
 import structlog
 
+from tools.cartographer.enrich import _compute_cost, _get_pricing
+
 log = structlog.get_logger(__name__)
 
 
@@ -64,12 +66,13 @@ def _top_tools(session: dict[str, Any], n: int = 5) -> str:
 def migrate_jsonl_to_notes(
     sessions: list[dict[str, Any]],
     sessions_dir: Path,
+    facets: dict[str, dict[str, Any]] | None = None,
 ) -> list[Path]:
     """Generate skeleton session notes from JSONL sessions.
 
     Skips dates already covered by an existing note.
-    Quantitative fields are filled from JSONL; qualitative fields left as
-    placeholders for manual completion.
+    Quantitative fields are filled from JSONL; when facets are provided the
+    session_id is used to enrich qualitative fields (goal, outcome, summary).
     """
     sessions_dir.mkdir(parents=True, exist_ok=True)
 
@@ -90,51 +93,83 @@ def migrate_jsonl_to_notes(
         except ValueError:
             stem = f"{date}T0000"
 
+        facet = (facets or {}).get(session.get("session_id", ""))
         note_path = sessions_dir / f"{stem}.md"
         note_path.write_text(
-            _render_skeleton(session, stem),
+            _render_skeleton(session, stem, facet=facet),
             encoding="utf-8",
         )
         existing_dates.add(date)
         created.append(note_path)
-        log.info("migrate.created", path=str(note_path))
+        log.info("migrate.created", path=str(note_path), facet_enriched=facet is not None)
 
     return created
 
 
-def _render_skeleton(session: dict[str, Any], stem: str) -> str:
+def _render_skeleton(
+    session: dict[str, Any], stem: str, facet: dict[str, Any] | None = None
+) -> str:
     first_prompt = session.get("first_prompt", "").strip()
-    work_field = (
-        first_prompt[:200] if first_prompt else "[migrated from JSONL — fill in]"
-    )
     langs = ", ".join(session.get("languages", {}).keys()) or "unknown"
     date = stem[:10]
     bash_ap = session.get("bash_antipatterns", 0)
     skills = session.get("skill_invocations", [])
 
+    # Prefer facet-derived qualitative fields when available
+    if facet:
+        work_field = facet.get("underlying_goal") or first_prompt[:200] or "[fill in]"
+        outcome = facet.get("outcome", "complete").replace("_", " ")
+        brief = facet.get("brief_summary", "")
+        gotchas = facet.get("friction_detail") or "[No friction recorded]"
+        goal_cats = ", ".join(facet.get("goal_categories", {}).keys())
+        insights = f"**Outcome**: {outcome} | **Goal**: {goal_cats}\n{brief}"
+        friction = _friction_signals(session)
+        source_note = "<!-- Enriched from facets + JSONL. -->"
+    else:
+        work_field = first_prompt[:200] if first_prompt else "[migrated from JSONL — fill in]"
+        outcome = "complete"
+        gotchas = "[No qualitative data available — migrated from JSONL]"
+        insights = f"[Auto-generated: {session.get('user_message_count')} msgs / {session.get('duration_minutes')}min / {session.get('files_modified')} files / interruptions={session.get('user_interruptions')} / bash_antipatterns={bash_ap} / read_edit_ratio={session.get('read_edit_ratio')}]"
+        friction = _friction_signals(session)
+        source_note = "<!-- Migrated from JSONL. Quantitative fields auto-filled; qualitative fields need manual completion. -->"
+
+    inp = session.get("input_tokens", 0)
+    out = session.get("output_tokens", 0)
+    cw = session.get("cache_write_tokens", 0)
+    cr = session.get("cache_read_tokens", 0)
+    model = session.get("primary_model", "claude-sonnet-4-6")
+    est_cost = round(_compute_cost(inp, out, cw, cr, model), 6)
+
     return f"""\
 ---
 date: {date}
 time: {stem[11:] if len(stem) > 10 else "0000"}
+session_id: {session.get("session_id", "~")}
 duration_min: {int(session.get("duration_minutes", 0))}
 project: ~
 branch: ~
-status: complete
+status: {outcome}
 tests_pass: ~
 files_touched: {session.get("files_modified", 0)}
 compacted: false
 skills_invoked: [{", ".join(skills)}]
 skill_candidates: 0
 friction_count: 0
+input_tokens: {inp}
+output_tokens: {out}
+cache_write_tokens: {cw}
+cache_read_tokens: {cr}
+primary_model: {model}
+est_cost_usd: {est_cost}
 ---
 
 # Session — {stem}
 
-<!-- Migrated from JSONL. Quantitative fields auto-filled; qualitative fields need manual completion. -->
+{source_note}
 
 ## Position
 - **Work**: {work_field}
-- **Status**: complete
+- **Status**: {outcome}
 - **Branch**: [unknown — migrated]
 - **Tests**: [unknown — migrated]
 
@@ -145,10 +180,10 @@ friction_count: 0
 - **Token hotspots**: input={session.get("input_tokens", 0):,} output={session.get("output_tokens", 0):,} bash_antipatterns={bash_ap}
 
 ## Gotchas
-[No qualitative data available — migrated from JSONL]
+{gotchas}
 
 ## Friction signals
-{_friction_signals(session)}
+{friction}
 
 ## Attribution notes
 - **Primary cause:** [unknown — migrated]
@@ -162,7 +197,7 @@ friction_count: 0
 ## Skill candidates
 
 ## Session insights
-[Auto-generated: {session.get("user_message_count")} msgs / {session.get("duration_minutes")}min / {session.get("files_modified")} files / interruptions={session.get("user_interruptions")} / bash_antipatterns={bash_ap} / read_edit_ratio={session.get("read_edit_ratio")}]
+{insights}
 
 ## Next session prompt
 [Fill in manually]

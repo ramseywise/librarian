@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from collections import defaultdict
@@ -148,13 +149,21 @@ def parse_session(path: Path) -> dict[str, Any] | None:  # noqa: C901
                     else:
                         tool_errors["other"] += 1
 
-    # Token usage
+    # Token usage + model tracking
     input_tokens = 0
     output_tokens = 0
+    cache_write_tokens = 0
+    model_counts: dict[str, int] = defaultdict(int)
     for record in asst_msgs:
-        usage = record.get("message", {}).get("usage", {})
+        msg = record.get("message", {})
+        usage = msg.get("usage", {})
         input_tokens += usage.get("input_tokens", 0)
         output_tokens += usage.get("output_tokens", 0)
+        cache_write_tokens += usage.get("cache_creation_input_tokens", 0)
+        model_id = msg.get("model", "")
+        if model_id:
+            model_counts[model_id] += 1
+    primary_model = max(model_counts, key=lambda k: model_counts[k]) if model_counts else "unknown"
 
     # Files modified via file-history-snapshots
     files_modified: set[str] = set()
@@ -222,7 +231,7 @@ def parse_session(path: Path) -> dict[str, Any] | None:  # noqa: C901
         round(output_tokens / len(asst_msgs), 1) if asst_msgs else 0.0
     )
 
-    # Cache tokens (prompt cache efficiency)
+    # Cache read tokens (prompt cache efficiency)
     cache_read_tokens = 0
     for record in asst_msgs:
         usage = record.get("message", {}).get("usage", {})
@@ -258,6 +267,9 @@ def parse_session(path: Path) -> dict[str, Any] | None:  # noqa: C901
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "cache_read_tokens": cache_read_tokens,
+        "cache_write_tokens": cache_write_tokens,
+        "models": dict(model_counts),
+        "primary_model": primary_model,
         "files_modified": len(files_modified),
         "first_prompt": first_prompt,
         "user_response_times": response_times,
@@ -302,7 +314,13 @@ def aggregate(sessions: list[dict[str, Any]]) -> dict[str, Any]:
     total_cache_read = 0
     long_sessions_no_todo = 0
 
+    all_models: dict[str, int] = defaultdict(int)
+    total_cache_write = 0
+
     for session in sessions:
+        for model_id, count in session.get("models", {}).items():
+            all_models[model_id] += count
+        total_cache_write += session.get("cache_write_tokens", 0)
         for key, val in session["tool_counts"].items():
             all_tools[key] += val
         for key, val in session["languages"].items():
@@ -433,6 +451,8 @@ def aggregate(sessions: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "hook_blocks_total": total_hook_blocks,
         "cache_read_tokens_total": total_cache_read,
+        "cache_write_tokens_total": total_cache_write,
+        "model_distribution": dict(sorted(all_models.items(), key=lambda x: -x[1])),
         "long_sessions_without_todo": long_sessions_no_todo,
         # --- Prompt engineering signals ---
         "output_tokens_per_msg": {
@@ -634,15 +654,17 @@ Make the analysis specific — use actual numbers, first prompts, and patterns. 
 
 
 def call_claude(api_key: str, prompt: str, model: str = "claude-sonnet-4-6") -> str:
-    """Call the Anthropic API to generate an HTML report via shared LLM client."""
-    from core.clients.llm import AnthropicLLM
+    """Call the Anthropic API to generate an HTML report."""
+    import anthropic
 
-    llm = AnthropicLLM(model=model, api_key=api_key)
-    return llm.generate_sync(
+    client = anthropic.Anthropic(api_key=api_key)
+    message = client.messages.create(
+        model=model,
+        max_tokens=8192,
         system="You are an expert data analyst generating HTML reports.",
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=8192,
     )
+    return message.content[0].text if message.content else ""
 
 
 def build_prompt(
@@ -757,7 +779,7 @@ def main() -> None:
     parser.add_argument("--projects-dir", default="~/.claude/projects")
     parser.add_argument(
         "--sessions-dir",
-        default=".claude/sessions",
+        default="~/.claude/sessions",
         help="Session notes dir (used on cord or to enrich JSONL report)",
     )
     parser.add_argument(
@@ -768,10 +790,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    from core.config.settings import BaseSettings
-
-    _cfg = BaseSettings()
-    api_key = args.key or _cfg.anthropic_api_key
+    api_key = args.key or os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key and not args.dry_run:
         log.error("parser.no_api_key", msg="Set ANTHROPIC_API_KEY or pass --key")
         sys.exit(1)
@@ -821,7 +840,7 @@ def main() -> None:
         sys.stdout.write("\n")
         return
 
-    model = args.model or _cfg.model_sonnet
+    model = args.model or "claude-sonnet-4-6"
     log.info("parser.calling_api", model=model)
     prompt = build_prompt(sessions, agg, session_notes=session_notes or None)
 
