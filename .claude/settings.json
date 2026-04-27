@@ -51,7 +51,8 @@
     },
     "librarian": {
       "command": "uv",
-      "args": ["run", "python", "mcp_server/server.py"],
+      "args": ["run", "python", "app/mcp_server/server.py"],
+      "cwd": "/Users/ramsey.wise/Workspace/librarian",
       "env": {
         "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
       }

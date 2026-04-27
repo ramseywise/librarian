@@ -1,10 +1,19 @@
-.PHONY: viz api ui install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest lint help
+.PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest lint help
 
-viz:
+app:
+	docker compose up
+
+app-build:
+	docker compose up --build
+
+obsidian:
 	open -a Obsidian $(PWD)/wiki
 
 api:
 	cd app && uv run --extra api uvicorn backend.main:app --reload --port 8000
+
+mcp:
+	uv run python app/mcp_server/server.py
 
 ui:
 	cd app/ui && npm run dev
@@ -37,9 +46,12 @@ lint:
 	@echo "Run /lint via Claude Code"
 
 help:
-	@echo "viz              — open wiki in Obsidian"
-	@echo "api              — start FastAPI backend (port 8000)"
-	@echo "ui               — start Vite dev server (port 5173)"
+	@echo "app              — start api + ui via Docker (one command)"
+	@echo "app-build        — rebuild Docker images and start"
+	@echo "obsidian         — open wiki in Obsidian"
+	@echo "mcp              — start MCP server (local, used by Claude Code)"
+	@echo "api              — start FastAPI backend directly (port 8000)"
+	@echo "ui               — start Vite dev server directly (port 5173)"
 	@echo "install-ui       — npm install for ui/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "setup-ollama     — pull the configured Ollama model"
