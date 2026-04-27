@@ -1,18 +1,66 @@
 ---
 title: Agent Memory Types
 tags: [memory, langgraph, concept]
-summary: Four memory types for agent systems — in-context, episodic, semantic, and procedural — and how to implement them with LangGraph BaseStore.
-updated: 2026-04-25
+summary: Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for VA agents — backed by LangGraph BaseStore.
+updated: 2026-04-26
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/librarian-components.md
   - raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md
   - raw/gdrive/2026-04-24-langgraph-yan.md
+  - raw/claude-docs/playground/docs/research/agentic-ai/memory-architecture.md
 ---
 
 # Agent Memory Types
 
-## The Four Types
+## Three-Tier Memory Taxonomy (Cognitive Science Model)
+
+Agents need three distinct memory types with different storage and retrieval patterns. Do not collapse these into a single "memory store."
+
+| Tier | What it stores | Storage shape | Retrieval pattern | Update pattern |
+|------|---------------|---------------|-------------------|----------------|
+| **Semantic** | Facts, knowledge, entities | Profile (single JSON doc) or Collection (vector index) | Key lookup or semantic search | Upsert on new fact |
+| **Episodic** | Past task records, conversation history, few-shot examples | Append-only log or vector index | Semantic search by similarity | Append only |
+| **Procedural** | Rules, system prompt, tone, persona | Updatable prompt template | Direct load at session start | Rewrite on feedback |
+
+### Semantic Memory — Two Sub-modes
+
+**Profile mode** (single evolving document):
+```python
+store.put(("users", user_id), "profile", {
+    "language": "da", "payment_method": "invoice",
+    "preferred_contact": "email", "last_updated": "2026-04-26"
+})
+profile = store.get(("users", user_id), "profile").value
+```
+
+**Collection mode** — use when facts are too numerous for a single JSON doc. Each fact is a separate document; retrieval is semantic search. LangGraph `Store` is key-value only — for vector search, use an external store (Chroma, pgvector) and reference IDs from `Store`.
+
+### Episodic Memory — Few-Shot Injection
+
+```python
+similar_episodes = vector_store.similarity_search(
+    query=current_task, k=3, filter={"user_id": user_id}
+)
+few_shot_context = format_as_examples(similar_episodes)
+# Prepend to system prompt or inject into context window
+```
+
+### Procedural Memory — Self-Updating System Prompts
+
+Agents can rewrite their own instructions based on feedback (reflection pattern — see below):
+```python
+store.put(("agents", agent_id), "system_prompt", {
+    "version": 7,
+    "content": "You are a billing assistant for...",
+    "updated_at": "2026-04-26",
+    "updated_reason": "User corrected VAT calculation tone"
+})
+```
+
+---
+
+## The Four Types (LangGraph Mechanism View)
 
 | Type | What it holds | Lifetime | LangGraph mechanism |
 |---|---|---|---|
@@ -98,6 +146,80 @@ For MVP context management, the short-term memory schema:
 - Compaction must write raw turns to cold storage (S3) before discarding — needed for GDPR audit trail
 - `trace_id` is non-negotiable on every turn — without it observability is blind
 - Sensitive data must never enter the LLM payload unredacted — redact at assembly time, not storage time
+
+## SQLite Preference + Session Store (Lightweight Implementation)
+
+For local dev and small deployments, a single SQLite table covers semantic (profile) and episodic (session summaries) memory:
+
+```python
+CREATE TABLE preference_store (
+    user_id TEXT NOT NULL,
+    key     TEXT NOT NULL,   -- "pref:language", "session:2026-04-26", "proc:system_prompt"
+    value   TEXT NOT NULL,   -- JSON
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, key)
+);
+```
+
+**Key namespacing:** `pref:*` = user preferences, `session:YYYY-MM-DD` = session summaries, `proc:system_prompt` = current instruction version.
+
+**Production upgrade path:** swap SQLite for Postgres without changing calling code — same async interface.
+
+---
+
+## Reflection Pattern (Self-Improving Agents)
+
+Agents can improve their own procedural memory based on user feedback signals.
+
+**Hot-path reflection** (immediate, adds ~1–2s latency):
+```
+User message → Agent response → Reflection node → Update system prompt → Next turn
+```
+
+**Background reflection** (async, no latency impact — preferred for production):
+```
+User message → Agent response → [background task: Reflection → Update system prompt]
+```
+
+**Reflection trigger signals:** user explicitly corrects the agent, user overrides an action, low confidence score, negative rating.
+
+```python
+async def reflection_node(state: AgentState) -> dict:
+    if not should_reflect(state):
+        return {}
+    current_prompt = await store.get(("agents", "billing"), "system_prompt")
+    updated = await llm.ainvoke(
+        f"Given this correction: {state['last_correction']}\n"
+        f"Update this system prompt:\n{current_prompt.value['content']}"
+    )
+    await store.put(("agents", "billing"), "system_prompt", {
+        "version": current_prompt.value["version"] + 1,
+        "content": updated.content,
+        "updated_at": date.today().isoformat(),
+    })
+    return {"reflection_applied": True}
+```
+
+---
+
+## Memory Loading Pattern at Turn Start
+
+Load all three tiers at the start of each turn before routing:
+
+```python
+async def load_memory_node(state: AgentState, store: BaseStore) -> dict:
+    user_id = state["user_id"]
+    prefs  = await store.aget(("users", user_id), "profile")
+    session = await store.aget(("users", user_id), f"session:{date.today().isoformat()}")
+    system  = await store.aget(("agents", "billing"), "system_prompt")
+    return {
+        "user_prefs": prefs.value if prefs else {},
+        "session_context": session.value if session else {},
+        "system_prompt": system.value["content"] if system else DEFAULT_PROMPT,
+    }
+```
+
+---
 
 ## Context Window Management
 
@@ -210,3 +332,5 @@ For Deep Agents, memory is surfaced through pluggable backends rather than direc
 - [[Listen-Wiseer Project]]
 - [[Deep Agents Memory Backends]]
 - [[LangGraph BaseStore]]
+- [[Self-Learning Agents]]
+- [[Chain of Thought]]

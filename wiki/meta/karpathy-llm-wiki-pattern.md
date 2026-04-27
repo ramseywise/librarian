@@ -25,7 +25,7 @@ Andrej Karpathy published the [llm-wiki gist](https://gist.github.com/karpathy/4
 
 **`raw/`** — Immutable input drop zone. PDFs, meeting transcripts, Notion exports, Linear dumps, repo snapshots. Never edit files here. Append-only source of truth.
 
-**`wiki/`** — LLM-generated, continuously updated. One `.md` file per entity, concept, or topic. Interlinked with `[[wikilinks]]`. Each page has frontmatter summary + tags. A single ingest may touch 10–15 wiki pages.
+**`wiki/`** — LLM-generated, continuously updated. One `.md` file per entity, concept, or topic. Interlinked with wikilinks. Each page has frontmatter summary + tags. A single ingest may touch 10–15 wiki pages.
 
 **`CLAUDE.md`** — The schema. Tells the LLM exactly how to behave as wiki maintainer: directory layout, naming conventions, frontmatter schema, when to create vs. update pages, what counts as a contradiction.
 
@@ -53,7 +53,7 @@ The "70x cheaper than RAG" claim compares embedding + vector retrieval costs vs.
 
 Obsidian is the recommended read UI — not because it's required (all `.md` files), but for:
 - **Graph view** — visual map of concept interconnections via backlinks
-- **`[[wikilinks]]`** — native syntax, auto-generates backlinks
+- **wikilinks** (`\[\[Page Title\]\]` syntax) — auto-generates backlinks
 - **Local-first** — vault is just a folder; Claude Code reads/writes it directly
 - **Dataview plugin** — SQL-like queries over frontmatter
 

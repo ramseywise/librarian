@@ -47,13 +47,23 @@ to wiki files. Chainlit for the chat UI.
 
 - Claude is the **only writer** here. Do not manually edit unless correcting a factual error.
 - One `.md` file per entity, concept, project, or decision.
+- **Directory = domain (primary retrieval axis). Type = tag (frontmatter only).**
 - Subdirectories:
-  - `wiki/concepts/` — Technology and architecture concepts (ADK, LangGraph, RAG, MCP, etc.)
-  - `wiki/agents/` — Agent patterns, framework comparisons, implementation decisions
-  - `wiki/projects/` — Per-project knowledge (playground, librarian, listen-wiseer, etc.)
-  - `wiki/decisions/` — Architecture decision records (ADRs), date-prefixed
+  - `wiki/rag/` — RAG, retrieval, chunking, embeddings, reranking, hybrid search
+  - `wiki/langgraph/` — LangGraph state machines, CRAG, checkpointers, reducers, streaming
+  - `wiki/adk/` — Google ADK, SKILL.md, VA patterns, voice, orchestration
+  - `wiki/infra/` — Deployment, observability, caching, security, production hardening
+  - `wiki/patterns/` — Framework-agnostic agentic patterns (ReAct, CoT, ACI, workflow)
+  - `wiki/eval/` — Evaluation harnesses, LLM judges, annotation pipelines, preference alignment
+  - `wiki/deep-agents/` — Deep Agents harness, middleware, state/store backends
+  - `wiki/memory/` — Agent memory patterns (in-context, episodic, semantic, procedural)
+  - `wiki/mcp/` — Model Context Protocol, tool schemas, A2A
+  - `wiki/meta/` — Wiki-about-wiki: Karpathy pattern, Claude workflow system, session knowledge
+  - `wiki/projects/` — Per-project knowledge (librarian, listen-wiseer, va-agent, shine)
   - `wiki/_index.md` — Auto-generated TOC, updated after every ingest
   - `wiki/_conflicts.md` — Flagged contradictions between sources
+- **ADRs live in their domain directory** — not a flat `decisions/` dir. Use `type: decision` tag.
+- **Projects stay flat** in `wiki/projects/` until a project exceeds ~5 pages.
 
 ---
 
@@ -213,9 +223,8 @@ Use `wiki/_index.md` to find pages by domain. The index is maintained automatica
 
 When searching for a page, check:
 1. `wiki/_index.md` for the canonical list
-2. `wiki/concepts/` for technology concepts
-3. `wiki/agents/` for agent patterns and decisions
-4. `wiki/decisions/` for ADRs
+2. The domain subdirectory directly: `wiki/rag/`, `wiki/langgraph/`, `wiki/adk/`, etc.
+3. `wiki/projects/` for project-level pages
 
 ---
 

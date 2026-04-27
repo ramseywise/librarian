@@ -89,7 +89,7 @@ Wrapped in `MultilingualEmbedder` with E5 prefix rule enforced at the Protocol l
 
 ### Active: RRF (Reciprocal Rank Fusion)
 
-**Production choice.** See [[Reciprocal Rank Fusion]] for full mechanism. Rank-based fusion avoids sensitivity to score distribution differences between BM25 and vector search:
+**Production choice.** See [[Reciprocal Rank Fusion (RRF)]] for full mechanism. Rank-based fusion avoids sensitivity to score distribution differences between BM25 and vector search:
 
 ```python
 def rrf_score(bm25_rank: int, vector_rank: int, k: int = 60) -> float:
@@ -284,4 +284,5 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[Librarian RAG Architecture]]
 - [[Production Hardening Patterns]]
 - [[Bedrock KB vs LangGraph Decision]]
+- [[RAG API Design Patterns]]
 - [[Listen-Wiseer Project]]

@@ -45,7 +45,7 @@ def summarization_node(state: AgentState) -> AgentState:
 
 ## Contrast with History Pruning
 
-[[History Pruning]] removes tool response messages from history before each LLM call (reducing noise). Summarization replaces *multiple turns* with a single compressed summary. They solve different problems:
+History pruning removes tool response messages from history before each LLM call (reducing noise). Summarization replaces *multiple turns* with a single compressed summary. They solve different problems:
 
 - Pruning: remove low-value messages (old tool outputs)
 - Summarization: compress high-value messages (decisions, context) that no longer fit
@@ -61,6 +61,6 @@ The summarized `SystemMessage` prepended to history is a candidate for [[Prefix 
 ## See Also
 - [[Agent Memory Types]]
 - [[ADK Context Engineering]]
-- [[History Condenser]]
+- [[HistoryCondenser]]
 - [[Prefix Caching]]
 - [[LangGraph Advanced Patterns]]

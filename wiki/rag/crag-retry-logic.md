@@ -57,4 +57,4 @@ Each retry adds: ~100ms Haiku reformulation + ~150ms retrieval + ~300ms rerankin
 - [[LangGraph CRAG Pipeline]]
 - [[RAG Reranking]]
 - [[RAG Evaluation]]
-- [[Reciprocal Rank Fusion]]
+- [[Reciprocal Rank Fusion (RRF)]]

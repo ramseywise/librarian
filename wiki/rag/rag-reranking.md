@@ -79,4 +79,4 @@ Too many into reranker → latency spike. Too few → no gain over CRAG grading 
 - [[RAG Retrieval Strategies]]
 - [[RAG Evaluation]]
 - [[CRAG Retry Logic]]
-- [[Reciprocal Rank Fusion]]
+- [[Reciprocal Rank Fusion (RRF)]]

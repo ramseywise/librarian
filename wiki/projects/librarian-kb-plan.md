@@ -43,7 +43,7 @@ Layer 1: Wiki KB            ←  deterministic compiler: raw/ → wiki/ (atomic 
 
 ### ✅ Phase 3 — Atomic Concept Extraction
 - Ingest protocol updated: atomic concepts as own pages (not buried bullets)
-- 10 new atomic pages: [[Reciprocal Rank Fusion]], [[HistoryCondenser]], [[LangGraph BaseStore]], [[Prefix Caching]], [[CRAG Retry Logic]], [[Send API Fan-out]], [[Summarization Node]], [[ACI (Agent-Computer Interface)]], [[Embedder Warmup]], [[SKILL.md Pattern]]
+- 10 new atomic pages: [[Reciprocal Rank Fusion (RRF)]], [[HistoryCondenser]], [[LangGraph BaseStore]], [[Prefix Caching]], [[CRAG Retry Logic]], [[Send API Fan-out]], [[Summarization Node]], [[ACI (Agent-Computer Interface)]], [[Embedder Warmup]], [[SKILL.md Pattern]]
 - Wiki at 36 pages, 156+ wikilinks
 
 ### ✅ Phase 4 — Obsidian Vault
