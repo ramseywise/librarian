@@ -1,11 +1,22 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-10
-session_id: 1900854e-f563-4b19-a1ad-89beb4c2a9d8
-prompts: 3
-total_tokens: 139036
 cache_read_tokens: 10348105
+date: 2026-04-10
+est_cost_usd: 5.188148
+input_tokens: 152
+key_output: librarian module folder restructuring with infra/, ingestion/, orchestration/
+  organization
+outcome: fully_achieved
+output_tokens: 138884
+output_type: code_change
+project: -Users-ramsey-wise-Workspace
+prompts: 3
+session_id: 1900854e-f563-4b19-a1ad-89beb4c2a9d8
+tool: claude-code
+total_tokens: 139036
+underlying_goal: Reorganize the librarian module's folder structure to be more logical,
+  moving files into appropriate packages like infra/, ingestion/, orchestration/,
+  etc.
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-10 (-Users-ramsey-wise-Workspace)

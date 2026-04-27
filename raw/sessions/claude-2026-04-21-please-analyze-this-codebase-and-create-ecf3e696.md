@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-21
-session_id: ecf3e696-1de5-46b4-a64c-7c0fa3701004
-prompts: 1
-total_tokens: 14825
 cache_read_tokens: 266420
+date: 2026-04-21
+est_cost_usd: 0.218613
+input_tokens: 6974
+key_output: CLAUDE.md
+outcome: fully_achieved
+output_tokens: 7851
+output_type: wiki_page
+project: -Users-ramsey-wise-Workspace
+prompts: 1
+session_id: ecf3e696-1de5-46b4-a64c-7c0fa3701004
+tool: claude-code
+total_tokens: 14825
+underlying_goal: Generate a CLAUDE.md file documenting the codebase for future Claude
+  Code instances
+work_type: planning
 ---
 
 # Claude Code Session — 2026-04-21 (-Users-ramsey-wise-Workspace)

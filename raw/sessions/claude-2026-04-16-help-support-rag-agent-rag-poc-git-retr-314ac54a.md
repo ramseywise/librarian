@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: poc
-date: 2026-04-16
-session_id: 314ac54a-84d9-4954-bcf2-8fcb88ea051f
-prompts: 12
-total_tokens: 168030
 cache_read_tokens: 22638808
+date: 2026-04-16
+est_cost_usd: 8.718692
+input_tokens: 2000
+key_output: multi-query feature flag and routing diagnostics
+outcome: mostly_achieved
+output_tokens: 128070
+output_type: code_change
+project: poc
+prompts: 12
+session_id: 314ac54a-84d9-4954-bcf2-8fcb88ea051f
+tool: claude-code
+total_tokens: 168030
+underlying_goal: Test the RAG pipeline end-to-end with a single document, validate
+  routing paths, and understand multi-query behavior with feature flag control
+work_type: debug
 ---
 
 # Claude Code Session — 2026-04-16 (poc)

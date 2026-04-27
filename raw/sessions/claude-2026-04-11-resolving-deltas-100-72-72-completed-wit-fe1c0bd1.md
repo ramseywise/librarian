@@ -1,11 +1,22 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-11
-session_id: fe1c0bd1-09e2-4ada-aa9e-0c2dee26f8c2
-prompts: 8
-total_tokens: 100365
 cache_read_tokens: 15883002
+date: 2026-04-11
+est_cost_usd: 6.26524
+input_tokens: 428
+key_output: 'src/ package restructure: core, librarian, storage, orchestration, interfaces,
+  eval modules'
+outcome: fully_achieved
+output_tokens: 99937
+output_type: code_change
+project: -Users-ramsey-wise-Workspace
+prompts: 8
+session_id: fe1c0bd1-09e2-4ada-aa9e-0c2dee26f8c2
+tool: claude-code
+total_tokens: 100365
+underlying_goal: Resolve a git pull conflict and then restructure the repository's
+  Python package layout to cleanly separate librarian/core/storage/orchestration/interfaces/eval
+  modules
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-11 (-Users-ramsey-wise-Workspace)

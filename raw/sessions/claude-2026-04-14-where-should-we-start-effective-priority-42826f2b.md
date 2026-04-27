@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-14
-session_id: 42826f2b-6665-4e3f-bbda-e3ec589cb187
-prompts: 1
-total_tokens: 64994
 cache_read_tokens: 5216759
+date: 2026-04-14
+est_cost_usd: 2.320686
+input_tokens: 18271
+key_output: infra-interfaces blocking findings resolved
+outcome: fully_achieved
+output_tokens: 46723
+output_type: code_change
+project: -Users-ramsey-wise-Workspace
+prompts: 1
+session_id: 42826f2b-6665-4e3f-bbda-e3ec589cb187
+tool: claude-code
+total_tokens: 64994
+underlying_goal: Prioritize and resolve blocking findings across infra-interfaces,
+  orchestration-rollout, terraform-restructure, and langgraph-adk-compat work streams
+work_type: debug
 ---
 
 # Claude Code Session — 2026-04-14 (-Users-ramsey-wise-Workspace)

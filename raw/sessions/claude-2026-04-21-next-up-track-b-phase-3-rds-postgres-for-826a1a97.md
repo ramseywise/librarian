@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: playground
-date: 2026-04-21
-session_id: 826a1a97-2587-4b78-aa9e-7064155c5edd
-prompts: 62
-total_tokens: 2631129
 cache_read_tokens: 199785003
+date: 2026-04-21
+est_cost_usd: 60.446218
+input_tokens: 54
+key_output: .claude/plan for VA agent extraction
+outcome: mostly_achieved
+output_tokens: 34037
+output_type: plan_doc
+project: playground
+prompts: 62
+session_id: 826a1a97-2587-4b78-aa9e-7064155c5edd
+tool: claude-code
+total_tokens: 2631129
+underlying_goal: Get a code review of recently committed VA agent changes and receive
+  guidance on extracting VA agents into a shareable standalone project
+work_type: review
 ---
 
 # Claude Code Session — 2026-04-21 (playground)

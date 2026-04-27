@@ -1,10 +1,13 @@
 ---
-tool: codex
-project: txmatch
-date: 2025-09-14
 branch: ramsey-feature-dev
-session_id: 8713027f-f8a5-40a5-b79c-c42827b04d90
+date: 2025-09-14
+key_output: none
+output_type: none
+project: txmatch
 prompts: 3
+session_id: 8713027f-f8a5-40a5-b79c-c42827b04d90
+tool: codex
+work_type: chat
 ---
 
 # Codex Session — 2025-09-14 (txmatch)

@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-11
-session_id: 356746ec-a014-4291-b7cf-8fdae4374fa8
-prompts: 11
-total_tokens: 104146
 cache_read_tokens: 11766807
+date: 2026-04-11
+est_cost_usd: 5.068319
+input_tokens: 244
+key_output: none
+outcome: not_achieved
+output_tokens: 102503
+output_type: none
+project: -Users-ramsey-wise-Workspace
+prompts: 11
+session_id: 356746ec-a014-4291-b7cf-8fdae4374fa8
+tool: claude-code
+total_tokens: 104146
+underlying_goal: Extend the end-session workflow to also trigger the quick-pr skill
+  (generate summary, create branch, commit, and push to GitHub)
+work_type: feature
 ---
 
 # Claude Code Session — 2026-04-11 (-Users-ramsey-wise-Workspace)

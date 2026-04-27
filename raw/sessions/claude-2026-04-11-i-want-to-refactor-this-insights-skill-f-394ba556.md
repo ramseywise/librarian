@@ -1,11 +1,21 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-11
-session_id: 394ba556-c64e-4f80-b60a-80878d32413e
-prompts: 24
-total_tokens: 310269
 cache_read_tokens: 33656975
+date: 2026-04-11
+est_cost_usd: 11.855491
+input_tokens: 278
+key_output: insights skill renamed to claude-insights with updated references
+outcome: fully_achieved
+output_tokens: 117171
+output_type: code_change
+project: -Users-ramsey-wise-Workspace
+prompts: 24
+session_id: 394ba556-c64e-4f80-b60a-80878d32413e
+tool: claude-code
+total_tokens: 310269
+underlying_goal: Refactor and rename the 'insights' skill for the cartographer agent
+  to better reflect its two distinct analysis modes (JSONL parsing and local artifact
+  processing) and multi-system workflow
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-11 (-Users-ramsey-wise-Workspace)

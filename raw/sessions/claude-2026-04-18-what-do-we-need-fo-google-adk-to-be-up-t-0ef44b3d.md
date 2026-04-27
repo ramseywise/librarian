@@ -1,11 +1,17 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-18
-session_id: 0ef44b3d-1439-4ce1-8cc2-9c93c1f1e4ea
-prompts: 5
-total_tokens: 89331
 cache_read_tokens: 16536565
+date: 2026-04-18
+est_cost_usd: 4.96097
+input_tokens: 0
+key_output: none
+output_tokens: 0
+output_type: none
+project: -Users-ramsey-wise-Workspace
+prompts: 5
+session_id: 0ef44b3d-1439-4ce1-8cc2-9c93c1f1e4ea
+tool: claude-code
+total_tokens: 89331
+work_type: planning
 ---
 
 # Claude Code Session — 2026-04-18 (-Users-ramsey-wise-Workspace)

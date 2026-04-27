@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: poc
-date: 2026-04-15
-session_id: 578a75d8-38a9-43b0-8fea-bcea6b2c437c
-prompts: 3
-total_tokens: 120088
 cache_read_tokens: 6886941
+date: 2026-04-15
+est_cost_usd: 3.865638
+input_tokens: 147
+key_output: .gitignore update and import fixes
+outcome: fully_achieved
+output_tokens: 119941
+output_type: config_change
+project: poc
+prompts: 3
+session_id: 578a75d8-38a9-43b0-8fea-bcea6b2c437c
+tool: claude-code
+total_tokens: 120088
+underlying_goal: Update .gitignore with standard patterns and fix Python import errors
+  after renaming the package from 'librarian' to 'app.rag'
+work_type: config
 ---
 
 # Claude Code Session — 2026-04-15 (poc)

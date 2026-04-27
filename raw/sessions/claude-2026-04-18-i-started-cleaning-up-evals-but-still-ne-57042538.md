@@ -1,11 +1,21 @@
 ---
-tool: claude-code
-project: poc
-date: 2026-04-18
-session_id: 57042538-4711-4a9e-808b-d35a6f57ba5c
-prompts: 4
-total_tokens: 89230
 cache_read_tokens: 6045797
+date: 2026-04-18
+est_cost_usd: 3.150557
+input_tokens: 136
+key_output: evals/ directory restructured with consolidated runner.py, graders/, harnesses/,
+  metrics/, and utils/
+outcome: fully_achieved
+output_tokens: 89094
+output_type: code_change
+project: poc
+prompts: 4
+session_id: 57042538-4711-4a9e-808b-d35a6f57ba5c
+tool: claude-code
+total_tokens: 89230
+underlying_goal: Clean up and simplify the evals/ directory structure by removing
+  clutter and clarifying the purpose of graders, metrics, experiments, and utils subdirectories
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-18 (poc)

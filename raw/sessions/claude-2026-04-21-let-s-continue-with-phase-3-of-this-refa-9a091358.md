@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: wiseer
-date: 2026-04-21
-session_id: 9a091358-862d-4696-a105-9b6917884a36
-prompts: 12
-total_tokens: 181931
 cache_read_tokens: 20526204
+date: 2026-04-21
+est_cost_usd: 7.379962
+input_tokens: 182
+key_output: async checkpointer bug fixes and .env configuration
+outcome: mostly_achieved
+output_tokens: 81437
+output_type: code_change
+project: wiseer
+prompts: 12
+session_id: 9a091358-862d-4696-a105-9b6917884a36
+tool: claude-code
+total_tokens: 181931
+underlying_goal: Get the Docker infrastructure running successfully so the app works
+  in the browser after previous cleanup work
+work_type: debug
 ---
 
 # Claude Code Session — 2026-04-21 (wiseer)

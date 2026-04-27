@@ -1,11 +1,21 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-18
-session_id: 29a60696-7ff8-4c3e-8b18-fb20b242ce58
-prompts: 5
-total_tokens: 28162
 cache_read_tokens: 1983749
+date: 2026-04-18
+est_cost_usd: 1.016499
+input_tokens: 88
+key_output: rag_poc/.env LLM provider configuration (Bedrock → Ollama)
+outcome: fully_achieved
+output_tokens: 28074
+output_type: config_change
+project: -Users-ramsey-wise-Workspace
+prompts: 5
+session_id: 29a60696-7ff8-4c3e-8b18-fb20b242ce58
+tool: claude-code
+total_tokens: 28162
+underlying_goal: Configure rag_poc to use an appropriate LLM provider (initially Bedrock
+  with work credentials, then switched to Ollama) with local vector storage to avoid
+  PII concerns
+work_type: config
 ---
 
 # Claude Code Session — 2026-04-18 (-Users-ramsey-wise-Workspace)

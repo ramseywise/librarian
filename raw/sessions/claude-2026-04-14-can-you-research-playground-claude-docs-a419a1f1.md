@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-14
-session_id: a419a1f1-d991-450d-94bf-82dee52cd1b8
-prompts: 3
-total_tokens: 58377
 cache_read_tokens: 4467584
+date: 2026-04-14
+est_cost_usd: 2.213278
+input_tokens: 221
+key_output: ts-copilot-upgrades.md updated with research findings
+outcome: mostly_achieved
+output_tokens: 58156
+output_type: plan_doc
+project: -Users-ramsey-wise-Workspace
+prompts: 3
+session_id: a419a1f1-d991-450d-94bf-82dee52cd1b8
+tool: claude-code
+total_tokens: 58377
+underlying_goal: Research and update a TypeScript copilot upgrades plan with tradeoffs
+  and considerations, ensure proper documentation in the research/plans directories
+work_type: research
 ---
 
 # Claude Code Session — 2026-04-14 (-Users-ramsey-wise-Workspace)

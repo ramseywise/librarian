@@ -1,11 +1,14 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-22
-session_id: 198e7d2c-075c-4808-9aab-4ef856041da5
-prompts: 3
-total_tokens: 9477
 cache_read_tokens: 757634
+date: 2026-04-22
+key_output: Linear ticket template skill for requirements
+output_type: plan_doc
+project: -Users-ramsey-wise-Workspace
+prompts: 3
+session_id: 198e7d2c-075c-4808-9aab-4ef856041da5
+tool: claude-code
+total_tokens: 9477
+work_type: planning
 ---
 
 # Claude Code Session — 2026-04-22 (-Users-ramsey-wise-Workspace)

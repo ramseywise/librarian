@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-21
-session_id: dd86ca38-03a7-4b2f-9dc7-2ef4b32bc455
-prompts: 5
-total_tokens: 148490
 cache_read_tokens: 9815066
+date: 2026-04-21
+est_cost_usd: 3.620618
+input_tokens: 386
+key_output: listen-wiseer agent tools package split
+outcome: mostly_achieved
+output_tokens: 44996
+output_type: code_change
+project: -Users-ramsey-wise-Workspace
+prompts: 5
+session_id: dd86ca38-03a7-4b2f-9dc7-2ef4b32bc455
+tool: claude-code
+total_tokens: 148490
+underlying_goal: Execute Phase 2 of a refactor plan for listen-wiseer, splitting the
+  agent tools into a package and wiring up new functionality like create_playlist
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-21 (-Users-ramsey-wise-Workspace)

@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-11
-session_id: f5cfe1b3-846c-4fd9-a0c6-d5113911b6c0
-prompts: 5
-total_tokens: 67461
 cache_read_tokens: 12751375
+date: 2026-04-11
+est_cost_usd: 4.833524
+input_tokens: 317
+key_output: librarian rag_core restructuring with infra improvements
+outcome: mostly_achieved
+output_tokens: 67144
+output_type: code_change
+project: -Users-ramsey-wise-Workspace
+prompts: 5
+session_id: f5cfe1b3-846c-4fd9-a0c6-d5113911b6c0
+tool: claude-code
+total_tokens: 67461
+underlying_goal: Restructure the librarian agent codebase and adopt infrastructure
+  improvements from a sibling project, then document and ship the work
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-11 (-Users-ramsey-wise-Workspace)

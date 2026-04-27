@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-11
-session_id: deb81c96-6438-4a70-a853-3ad7839b97fe
-prompts: 8
-total_tokens: 169923
 cache_read_tokens: 17987148
+date: 2026-04-11
+est_cost_usd: 7.580804
+input_tokens: 340
+key_output: core module extraction for shared types between storage and librarian
+outcome: fully_achieved
+output_tokens: 145576
+output_type: code_change
+project: -Users-ramsey-wise-Workspace
+prompts: 8
+session_id: deb81c96-6438-4a70-a853-3ad7839b97fe
+tool: claude-code
+total_tokens: 169923
+underlying_goal: Refactor librarian project to fix circular/inverted dependency between
+  storage and librarian modules by extracting shared types to a core module
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-11 (-Users-ramsey-wise-Workspace)

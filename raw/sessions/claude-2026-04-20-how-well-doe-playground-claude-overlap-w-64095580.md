@@ -1,11 +1,21 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-20
-session_id: 64095580-3c26-46e2-a37b-ac3acb421e99
-prompts: 17
-total_tokens: 301199
 cache_read_tokens: 22381206
+date: 2026-04-20
+est_cost_usd: 7.86401
+input_tokens: 1456
+key_output: workspace architecture and git organization guidance (incomplete)
+outcome: partially_achieved
+output_tokens: 76352
+output_type: analysis
+project: -Users-ramsey-wise-Workspace
+prompts: 17
+session_id: 64095580-3c26-46e2-a37b-ac3acb421e99
+tool: claude-code
+total_tokens: 301199
+underlying_goal: Understand structural organization of a multi-agent workspace (where
+  MCP belongs, frontend strategy) and figure out how to organize git commits for the
+  playground directory
+work_type: planning
 ---
 
 # Claude Code Session — 2026-04-20 (-Users-ramsey-wise-Workspace)

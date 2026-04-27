@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: poc
-date: 2026-04-20
-session_id: ba67f0c4-6b54-4134-b97b-b1949eda4bca
-prompts: 3
-total_tokens: 13396
 cache_read_tokens: 677491
+date: 2026-04-20
+est_cost_usd: 0.389019
+input_tokens: 1264
+key_output: none
+outcome: fully_achieved
+output_tokens: 12132
+output_type: none
+project: poc
+prompts: 3
+session_id: ba67f0c4-6b54-4134-b97b-b1949eda4bca
+tool: claude-code
+total_tokens: 13396
+underlying_goal: Verify no sensitive data was leaked to git, confirm what local changes
+  need pushing, and update an outdated PR description
+work_type: review
 ---
 
 # Claude Code Session — 2026-04-20 (poc)

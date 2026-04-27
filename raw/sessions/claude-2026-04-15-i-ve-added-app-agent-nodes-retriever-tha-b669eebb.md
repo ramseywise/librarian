@@ -1,11 +1,22 @@
 ---
-tool: claude-code
-project: poc
-date: 2026-04-15
-session_id: b669eebb-b154-4db6-a7ca-c9c4955ced02
-prompts: 6
-total_tokens: 230707
 cache_read_tokens: 9363849
+date: 2026-04-15
+est_cost_usd: 6.196974
+input_tokens: 5693
+key_output: rag_poc codebase restructuring with domain consolidation (core, clients,
+  rag, orchestration)
+outcome: partially_achieved
+output_tokens: 224716
+output_type: code_change
+project: poc
+prompts: 6
+session_id: b669eebb-b154-4db6-a7ca-c9c4955ced02
+tool: claude-code
+total_tokens: 230707
+underlying_goal: Reorganize and clean up the rag_poc codebase structure, consolidating
+  duplicate modules and establishing clear domain boundaries (core, clients, rag,
+  orchestration)
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-15 (poc)

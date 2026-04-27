@@ -1,11 +1,14 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-24
-session_id: 108c3f61-f121-455a-bf64-7df29e8cfeed
-prompts: 10
-total_tokens: 92289
 cache_read_tokens: 8757725
+date: 2026-04-24
+key_output: librarian knowledge base project setup and file organization plan
+output_type: plan_doc
+project: -Users-ramsey-wise-Workspace
+prompts: 10
+session_id: 108c3f61-f121-455a-bf64-7df29e8cfeed
+tool: claude-code
+total_tokens: 92289
+work_type: planning
 ---
 
 # Claude Code Session — 2026-04-24 (-Users-ramsey-wise-Workspace)

@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: poc
-date: 2026-04-16
-session_id: efd3b13a-0787-47bb-b3c8-b9a40941fff2
-prompts: 5
-total_tokens: 88903
 cache_read_tokens: 4373914
+date: 2026-04-16
+est_cost_usd: 2.643451
+input_tokens: 189
+key_output: LangGraph RAG module restructuring (partial)
+outcome: partially_achieved
+output_tokens: 88714
+output_type: code_change
+project: poc
+prompts: 5
+session_id: efd3b13a-0787-47bb-b3c8-b9a40941fff2
+tool: claude-code
+total_tokens: 88903
+underlying_goal: 'Reorganize and simplify the LangGraph RAG project structure: move
+  demo fixtures, rename graph nodes consistently, and consolidate scattered files'
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-16 (poc)

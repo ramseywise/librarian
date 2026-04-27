@@ -1,11 +1,21 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-14
-session_id: a6a9bcf4-08cc-4935-8933-212b5e82a328
-prompts: 8
-total_tokens: 125262
 cache_read_tokens: 11847845
+date: 2026-04-14
+est_cost_usd: 5.430703
+input_tokens: 215
+key_output: .claude/docs restructured with in-progress/backlog/archived/reference
+  lifecycle folders
+outcome: fully_achieved
+output_tokens: 125047
+output_type: config_change
+project: -Users-ramsey-wise-Workspace
+prompts: 8
+session_id: a6a9bcf4-08cc-4935-8933-212b5e82a328
+tool: claude-code
+total_tokens: 125262
+underlying_goal: Restructure .claude/docs to pair research/plan/review artifacts by
+  topic with clear lifecycle folders (in-progress/backlog/archived/reference)
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-14 (-Users-ramsey-wise-Workspace)

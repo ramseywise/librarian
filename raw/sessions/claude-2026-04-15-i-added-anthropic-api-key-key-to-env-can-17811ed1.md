@@ -1,11 +1,21 @@
 ---
-tool: claude-code
-project: poc
-date: 2026-04-15
-session_id: 17811ed1-1079-40d2-9a47-a6ef39d703c1
-prompts: 7
-total_tokens: 46732
 cache_read_tokens: 9962580
+date: 2026-04-15
+est_cost_usd: 3.65505
+input_tokens: 2892
+key_output: LLM provider migration to Anthropic with local embeddings and node-level
+  logging
+outcome: mostly_achieved
+output_tokens: 43840
+output_type: code_change
+project: poc
+prompts: 7
+session_id: 17811ed1-1079-40d2-9a47-a6ef39d703c1
+tool: claude-code
+total_tokens: 46732
+underlying_goal: Migrate the RAG application from OpenAI to Anthropic/local embeddings,
+  verify it runs, and improve per-node logging
+work_type: feature
 ---
 
 # Claude Code Session — 2026-04-15 (poc)

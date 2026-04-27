@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-14
-session_id: 48cd8a0e-b58f-4885-80ff-5ace7eb37fa0
-prompts: 4
-total_tokens: 41158
 cache_read_tokens: 1783473
+date: 2026-04-14
+est_cost_usd: 1.15168
+input_tokens: 61
+key_output: librarian production-readiness research and plan docs
+outcome: fully_achieved
+output_tokens: 41097
+output_type: analysis
+project: -Users-ramsey-wise-Workspace
+prompts: 4
+session_id: 48cd8a0e-b58f-4885-80ff-5ace7eb37fa0
+tool: claude-code
+total_tokens: 41158
+underlying_goal: Research how to bring librarian up to ts_google_adk production standards
+  and document findings in research/plans docs without duplicating existing content
+work_type: research
 ---
 
 # Claude Code Session — 2026-04-14 (-Users-ramsey-wise-Workspace)

@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: poc
-date: 2026-04-17
-session_id: 9fc31735-2ff2-4a6f-bbb9-4f848d712c71
-prompts: 2
-total_tokens: 13921
 cache_read_tokens: 1017001
+date: 2026-04-17
+est_cost_usd: 0.513051
+input_tokens: 72
+key_output: Fixed 3 mypy type errors in runtime.py and test files
+outcome: mostly_achieved
+output_tokens: 13849
+output_type: code_change
+project: poc
+prompts: 2
+session_id: 9fc31735-2ff2-4a6f-bbb9-4f848d712c71
+tool: claude-code
+total_tokens: 13921
+underlying_goal: Fix mypy type errors in the codebase and then discuss architectural
+  placement of QA policies/gates in the orchestrator
+work_type: debug
 ---
 
 # Claude Code Session — 2026-04-17 (poc)

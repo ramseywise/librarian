@@ -1,11 +1,21 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-14
-session_id: ec44fece-c35a-43cd-acb4-e691a39052a4
-prompts: 5
-total_tokens: 20970
 cache_read_tokens: 1021093
+date: 2026-04-14
+est_cost_usd: 0.616426
+input_tokens: 371
+key_output: ruff configuration for @v2/ts_google_adk folder
+outcome: mostly_achieved
+output_tokens: 20599
+output_type: config_change
+project: -Users-ramsey-wise-Workspace
+prompts: 5
+session_id: ec44fece-c35a-43cd-acb4-e691a39052a4
+tool: claude-code
+total_tokens: 20970
+underlying_goal: Configure linting in a polyglot monorepo so the Python ruff linter
+  stops flagging a TypeScript subfolder, ultimately just disabling linting/validation
+  for that folder
+work_type: config
 ---
 
 # Claude Code Session — 2026-04-14 (-Users-ramsey-wise-Workspace)

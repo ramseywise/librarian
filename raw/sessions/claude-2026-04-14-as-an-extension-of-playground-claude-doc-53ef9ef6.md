@@ -1,11 +1,21 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-14
-session_id: 53ef9ef6-5e04-4424-8577-3f4e3681a8b2
-prompts: 3
-total_tokens: 79560
 cache_read_tokens: 2811772
+date: 2026-04-14
+est_cost_usd: 2.027812
+input_tokens: 760
+key_output: 'three planning documents: TS copilot upgrades, Python/LangGraph copilot
+  port, librarian updates'
+outcome: fully_achieved
+output_tokens: 78800
+output_type: plan_doc
+project: -Users-ramsey-wise-Workspace
+prompts: 3
+session_id: 53ef9ef6-5e04-4424-8577-3f4e3681a8b2
+tool: claude-code
+total_tokens: 79560
+underlying_goal: Compare architectures of ts_google_adk and librarian, then plan building
+  a Python/LangGraph copilot equivalent along with related upgrade plans
+work_type: planning
 ---
 
 # Claude Code Session — 2026-04-14 (-Users-ramsey-wise-Workspace)

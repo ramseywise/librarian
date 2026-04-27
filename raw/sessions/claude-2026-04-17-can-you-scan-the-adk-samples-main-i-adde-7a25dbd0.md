@@ -1,11 +1,20 @@
 ---
-tool: claude-code
-project: -Users-ramsey-wise-Workspace
-date: 2026-04-17
-session_id: 7a25dbd0-ca78-41ff-b2fe-1e251774c7fb
-prompts: 11
-total_tokens: 134208
 cache_read_tokens: 12993661
+date: 2026-04-17
+est_cost_usd: 4.520862
+input_tokens: 83
+key_output: orchestrator package flattened, imports updated, graph_diagram.png regenerated
+outcome: fully_achieved
+output_tokens: 41501
+output_type: code_change
+project: -Users-ramsey-wise-Workspace
+prompts: 11
+session_id: 7a25dbd0-ca78-41ff-b2fe-1e251774c7fb
+tool: claude-code
+total_tokens: 134208
+underlying_goal: Refactor the orchestrator package to flatten the shared/ directory
+  and update documentation/diagrams to reflect the new structure
+work_type: refactor
 ---
 
 # Claude Code Session — 2026-04-17 (-Users-ramsey-wise-Workspace)
