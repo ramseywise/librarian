@@ -4,9 +4,11 @@ Exposes the compiled wiki to any MCP client — Claude Code, playground agents,
 or other tools. Read-only.
 
 Tools:
-  search_wiki   — full-text search over wiki/ pages
-  read_page     — read a specific wiki page by filename or title
-  list_pages    — list pages by tag, directory, or all
+  search_wiki          — full-text search over wiki/ pages, optionally scoped to a domain
+  read_page            — read a specific wiki page by filename or title
+  list_domain          — list all pages in a domain directory
+  list_pages           — list pages by domain tag, directory, or all
+  get_domain_briefing  — return all pages in a domain as a structured reference briefing
 
 Usage:
     uv run python mcp_server/server.py
@@ -27,6 +29,11 @@ log = structlog.get_logger()
 
 WIKI_DIR = Path("wiki")
 DB_PATH = Path(".wiki_index.duckdb")
+
+DOMAINS = [
+    "rag", "langgraph", "adk", "infra", "patterns",
+    "eval", "deep-agents", "memory", "mcp", "meta", "projects",
+]
 
 mcp = FastMCP("librarian")
 
@@ -50,7 +57,6 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
 
-    # Install and load FTS extension
     try:
         con.execute("INSTALL fts")
         con.execute("LOAD fts")
@@ -96,7 +102,6 @@ def _parse_frontmatter(text: str) -> dict:
         key = key.strip()
         val = val.strip()
         if key == "tags":
-            # Parse [tag1, tag2] or bare list
             meta["tags"] = re.findall(r"[\w-]+", val)
         else:
             meta[key] = val.strip("\"'")
@@ -109,26 +114,55 @@ def get_con() -> duckdb.DuckDBPyConnection:
     return con
 
 
+def _resolve_domain_dir(domain: str) -> Path | None:
+    """Return the wiki subdirectory for a domain name, or None if not found."""
+    candidate = WIKI_DIR / domain
+    if candidate.is_dir():
+        return candidate
+    # Fuzzy: allow 'deep_agents' → 'deep-agents'
+    slug = domain.replace("_", "-").lower()
+    candidate = WIKI_DIR / slug
+    if candidate.is_dir():
+        return candidate
+    return None
+
+
 # ---------------------------------------------------------------------------
 # MCP Tools
 # ---------------------------------------------------------------------------
 
 
 @mcp.tool()
-def search_wiki(query: str, tag: str = "", limit: int = 10) -> str:
-    """Search the wiki with full-text search.
+def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
+    """Search the wiki with full-text search, optionally scoped to a domain.
 
     Args:
-        query: Search terms
-        tag:   Optional domain tag to filter (e.g. 'adk', 'langgraph', 'rag')
-        limit: Max results (default 10)
+        query:  Search terms
+        domain: Optional domain directory to scope the search
+                (e.g. 'rag', 'langgraph', 'adk', 'infra', 'patterns',
+                 'eval', 'deep-agents', 'memory', 'mcp', 'meta', 'projects')
+        limit:  Max results (default 10)
 
     Returns:
         Matching pages with title, summary, path, and a snippet.
     """
     con = get_con()
 
-    sql = """
+    tag_filter = ""
+    params: list = [query, query, query]
+
+    if domain:
+        domain_dir = _resolve_domain_dir(domain)
+        if domain_dir:
+            # Scope by path prefix (exact directory match)
+            tag_filter = "AND path LIKE ?"
+            params.append(str(domain_dir) + "/%")
+        else:
+            # Fall back to tag match
+            tag_filter = "AND lower(tags) LIKE '%' || lower(?) || '%'"
+            params.append(domain)
+
+    sql = f"""
         SELECT path, title, tags, summary, content
         FROM pages
         WHERE (
@@ -141,24 +175,18 @@ def search_wiki(query: str, tag: str = "", limit: int = 10) -> str:
             CASE WHEN lower(title) LIKE '%' || lower(?) || '%' THEN 0 ELSE 1 END,
             updated DESC
         LIMIT ?
-    """.format(
-        tag_filter="AND lower(tags) LIKE '%' || lower(?) || '%'" if tag else ""
-    )
+    """
 
-    params: list = [query, query, query]
-    if tag:
-        params.append(tag)
     params += [query, limit]
-
     rows = con.execute(sql, params).fetchall()
     con.close()
 
     if not rows:
-        return f"No wiki pages found for: {query!r}" + (f" (tag: {tag})" if tag else "")
+        suffix = f" in domain '{domain}'" if domain else ""
+        return f"No wiki pages found for: {query!r}{suffix}"
 
     results = []
     for path, title, tags, summary, content in rows:
-        # Extract a snippet around the first match
         idx = content.lower().find(query.lower())
         snippet = ""
         if idx >= 0:
@@ -182,18 +210,16 @@ def read_page(path_or_title: str) -> str:
     """Read a specific wiki page by file path or title.
 
     Args:
-        path_or_title: Either a relative path like 'wiki/concepts/foo.md'
-                       or a page title like 'Google ADK Overview'
+        path_or_title: Either a relative path like 'wiki/rag/rag-retrieval-strategies.md'
+                       or a page title like 'RAG Retrieval Strategies'
 
     Returns:
         Full page content, or an error message if not found.
     """
-    # Try direct path first
     candidate = Path(path_or_title)
     if candidate.exists():
         return candidate.read_text(encoding="utf-8")
 
-    # Try under wiki/
     wiki_candidate = WIKI_DIR / path_or_title
     if wiki_candidate.exists():
         return wiki_candidate.read_text(encoding="utf-8")
@@ -202,7 +228,6 @@ def read_page(path_or_title: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", path_or_title.lower()).strip("-")
     matches = list(WIKI_DIR.rglob(f"*{slug}*.md"))
     if not matches:
-        # Try any word
         words = path_or_title.lower().split()
         for word in words:
             matches = list(WIKI_DIR.rglob(f"*{word}*.md"))
@@ -215,9 +240,46 @@ def read_page(path_or_title: str) -> str:
     if len(matches) == 1:
         return matches[0].read_text(encoding="utf-8")
 
-    # Multiple matches — return list
     paths = "\n".join(f"  - {m}" for m in matches[:10])
     return f"Multiple pages match {path_or_title!r}. Be more specific:\n{paths}"
+
+
+@mcp.tool()
+def list_domain(domain: str) -> str:
+    """List all pages in a domain directory.
+
+    This is an O(1) filesystem operation — no embedding or search needed.
+
+    Args:
+        domain: Domain directory name — one of:
+                rag, langgraph, adk, infra, patterns, eval,
+                deep-agents, memory, mcp, meta, projects
+
+    Returns:
+        All pages in the domain with title, tags, and summary.
+    """
+    domain_dir = _resolve_domain_dir(domain)
+    if domain_dir is None:
+        valid = ", ".join(DOMAINS)
+        return f"Unknown domain: {domain!r}. Valid domains: {valid}"
+
+    pages = sorted(p for p in domain_dir.glob("*.md") if not p.name.startswith("_"))
+    if not pages:
+        return f"No pages found in domain '{domain}'"
+
+    results = []
+    for page in pages:
+        text = page.read_text(encoding="utf-8", errors="ignore")
+        meta = _parse_frontmatter(text)
+        page_tags = meta.get("tags", [])
+        results.append(
+            f"- **{meta.get('title', page.stem)}** (`{page}`)\n"
+            f"  Tags: {', '.join(page_tags) or 'none'}\n"
+            f"  {meta.get('summary', '')}"
+        )
+
+    header = f"**{len(results)} page(s) in `wiki/{domain}/`**:\n\n"
+    return header + "\n".join(results)
 
 
 @mcp.tool()
@@ -225,8 +287,10 @@ def list_pages(tag: str = "", directory: str = "") -> str:
     """List wiki pages, optionally filtered by tag or directory.
 
     Args:
-        tag:       Domain tag to filter (e.g. 'adk', 'langgraph', 'rag', 'memory')
-        directory: Subdirectory to list (e.g. 'concepts', 'agents', 'decisions')
+        tag:       Domain tag to filter (e.g. 'adk', 'langgraph', 'rag')
+        directory: Subdirectory to list — use domain names:
+                   rag, langgraph, adk, infra, patterns, eval,
+                   deep-agents, memory, mcp, meta, projects
 
     Returns:
         List of pages with title, tags, and summary.
@@ -251,13 +315,62 @@ def list_pages(tag: str = "", directory: str = "") -> str:
 
     if not results:
         return (
-            f"No pages found"
+            "No pages found"
             + (f" with tag '{tag}'" if tag else "")
             + (f" in '{directory}'" if directory else "")
         )
 
     header = f"**{len(results)} page(s)**" + (f" tagged '{tag}'" if tag else "") + ":\n\n"
     return header + "\n".join(results)
+
+
+@mcp.tool()
+def get_domain_briefing(domain: str) -> str:
+    """Return a structured build briefing for a domain — all pages concatenated.
+
+    Use this before starting work in a domain to load all accumulated patterns,
+    decisions, and tradeoffs into context. Equivalent to the adk-context skill
+    but generalized to any domain.
+
+    Args:
+        domain: Domain directory name — one of:
+                rag, langgraph, adk, infra, patterns, eval,
+                deep-agents, memory, mcp, meta, projects
+
+    Returns:
+        Full content of all pages in the domain, separated by dividers,
+        ordered by type (decisions first, then patterns, then concepts).
+    """
+    domain_dir = _resolve_domain_dir(domain)
+    if domain_dir is None:
+        valid = ", ".join(DOMAINS)
+        return f"Unknown domain: {domain!r}. Valid domains: {valid}"
+
+    pages = sorted(p for p in domain_dir.glob("*.md") if not p.name.startswith("_"))
+    if not pages:
+        return f"No pages found in domain '{domain}'"
+
+    # Parse all pages and sort: decisions first, then by type tag order
+    type_order = {"decision": 0, "pattern": 1, "comparison": 2, "concept": 3, "reference": 4, "project": 5}
+    parsed = []
+    for page in pages:
+        text = page.read_text(encoding="utf-8", errors="ignore")
+        meta = _parse_frontmatter(text)
+        tags = meta.get("tags", [])
+        type_tag = next((t for t in tags if t in type_order), "concept")
+        parsed.append((type_order.get(type_tag, 3), meta.get("title", page.stem), text))
+
+    parsed.sort(key=lambda x: (x[0], x[1]))
+
+    sections = []
+    for _, title, content in parsed:
+        sections.append(f"{'=' * 60}\n# {title}\n{'=' * 60}\n\n{content}")
+
+    header = (
+        f"# Domain Briefing: {domain.upper()}\n"
+        f"{len(parsed)} pages · use read_page for any individual page\n\n"
+    )
+    return header + "\n\n".join(sections)
 
 
 if __name__ == "__main__":
