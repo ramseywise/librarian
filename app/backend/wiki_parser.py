@@ -8,11 +8,12 @@ import frontmatter
 WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
-DOMAIN_TAGS = {
-    "langgraph", "rag", "adk", "mcp", "memory", "voice",
-    "eval", "infra", "llm", "deep-agents", "context-management",
-}
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
+DOMAIN_TAG_SET = {
+    "langgraph", "rag", "adk", "mcp", "memory",
+    "eval", "infra", "deep-agents",
+    "patterns", "meta", "projects",
+}
 
 
 def _slug(title: str) -> str:
@@ -39,7 +40,7 @@ def parse_wiki() -> dict:
         # also register by title slug so wikilinks resolve
         page_slugs[_slug(title)] = title
 
-        domain = [t for t in tags if t in DOMAIN_TAGS]
+        domain = [md_file.parent.name]
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
 
         nodes.append({
@@ -83,17 +84,22 @@ def parse_wiki() -> dict:
                 "data": {"edgeType": "wikilink"},
             })
 
-    # Tag-shared edges: pages sharing ≥2 domain tags
+    # Tag-shared edges: cross-domain pages sharing ≥1 frontmatter domain tag.
+    # Skip same-directory pairs — intra-domain proximity is already captured by UMAP clustering.
     tag_map: dict[str, set[str]] = {}
+    dir_map: dict[str, str] = {}
     for n in nodes:
-        tag_map[n["id"]] = set(n["data"]["domain"])
+        tag_map[n["id"]] = {t for t in n["data"]["tags"] if t in DOMAIN_TAG_SET}
+        dir_map[n["id"]] = n["data"]["domain"][0]
 
     node_list = list(node_ids)
     for i in range(len(node_list)):
         for j in range(i + 1, len(node_list)):
             a, b = node_list[i], node_list[j]
+            if dir_map.get(a) == dir_map.get(b):
+                continue
             shared = tag_map.get(a, set()) & tag_map.get(b, set())
-            if len(shared) >= 2:
+            if len(shared) >= 1:
                 edges.append({
                     "id": f"ts:{a}->{b}",
                     "source": a,

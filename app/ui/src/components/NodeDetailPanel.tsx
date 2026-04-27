@@ -1,9 +1,14 @@
 import type { WikiNodeData } from "../types";
 
-const DOMAIN_COLORS: Record<string, string> = {
-  langgraph: "#4CAF50", rag: "#2196F3", adk: "#FF9800", mcp: "#9C27B0",
-  memory: "#00BCD4", voice: "#F44336", eval: "#FFEB3B", infra: "#607D8B",
-  llm: "#E91E63", "deep-agents": "#3F51B5", "context-management": "#009688",
+const TAG_COLORS: Record<string, string> = {
+  // Domain tags
+  rag: "#2196F3", langgraph: "#4CAF50", adk: "#FF9800", infra: "#607D8B",
+  patterns: "#E91E63", eval: "#FFEB3B", "deep-agents": "#3F51B5",
+  memory: "#00BCD4", mcp: "#9C27B0", meta: "#795548", projects: "#009688",
+  // Type tags
+  concept: "#9e9e9e", pattern: "#b39ddb", decision: "#ef9a9a",
+  project: "#80cbc4", comparison: "#ffe082", reference: "#a5d6a7",
+  conflict: "#ff7043",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -17,11 +22,13 @@ interface Props {
   highlighted: boolean;
   lastQuery: string;
   onClose: () => void;
+  onTagClick?: (tag: string) => void;
+  activeTags?: Set<string>;
 }
 
-export function NodeDetailPanel({ data, highlighted, lastQuery, onClose }: Props) {
+export function NodeDetailPanel({ data, highlighted, lastQuery, onClose, onTagClick, activeTags }: Props) {
   const primaryDomain = (data.domain as string[])[0] ?? "infra";
-  const color = DOMAIN_COLORS[primaryDomain] ?? "#607D8B";
+  const color = TAG_COLORS[primaryDomain] ?? "#607D8B";
   const fileName = data.path ? String(data.path).split("/").pop() : null;
 
   return (
@@ -61,21 +68,30 @@ export function NodeDetailPanel({ data, highlighted, lastQuery, onClose }: Props
         </div>
       )}
 
-      {/* Tags */}
+      {/* Tags — all clickable to filter graph */}
       <div style={{ padding: "0 20px 16px", display: "flex", flexWrap: "wrap", gap: 6 }}>
         {(data.tags as string[]).map((tag) => {
-          const tagColor = DOMAIN_COLORS[tag] ?? "#444";
+          const tagColor = TAG_COLORS[tag] ?? "#666";
+          const isActive = activeTags?.has(tag);
           return (
-            <span key={tag} style={{
-              background: tagColor + "22",
-              border: `1px solid ${tagColor}`,
-              color: tagColor,
-              borderRadius: 12,
-              padding: "3px 10px",
-              fontSize: 11,
-            }}>
+            <button
+              key={tag}
+              onClick={onTagClick ? () => onTagClick(tag) : undefined}
+              style={{
+                background: isActive ? tagColor + "33" : tagColor + "18",
+                border: `1px solid ${isActive ? tagColor : tagColor + "44"}`,
+                color: isActive ? tagColor : tagColor + "bb",
+                borderRadius: 12,
+                padding: "3px 10px",
+                fontSize: 11,
+                cursor: onTagClick ? "pointer" : "default",
+                fontFamily: "inherit",
+                boxShadow: isActive ? `0 0 6px ${tagColor}55` : "none",
+                transition: "all 0.15s",
+              }}
+            >
               {tag}
-            </span>
+            </button>
           );
         })}
       </div>

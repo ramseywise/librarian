@@ -1,20 +1,21 @@
 const DOMAIN_TAGS = [
-  "langgraph", "rag", "adk", "mcp", "memory", "voice",
-  "eval", "infra", "llm", "deep-agents", "context-management",
+  "rag", "langgraph", "adk", "infra", "patterns",
+  "eval", "deep-agents", "memory", "mcp", "meta", "projects",
 ];
 
 const TAG_COLORS: Record<string, string> = {
-  langgraph: "#4CAF50", rag: "#2196F3", adk: "#FF9800", mcp: "#9C27B0",
-  memory: "#00BCD4", voice: "#F44336", eval: "#FFEB3B", infra: "#607D8B",
-  llm: "#E91E63", "deep-agents": "#3F51B5", "context-management": "#009688",
+  rag: "#2196F3", langgraph: "#4CAF50", adk: "#FF9800", infra: "#607D8B",
+  patterns: "#E91E63", eval: "#FFEB3B", "deep-agents": "#3F51B5",
+  memory: "#00BCD4", mcp: "#9C27B0", meta: "#795548", projects: "#009688",
 };
 
 interface Props {
   activeTags: Set<string>;
   onChange: (tags: Set<string>) => void;
+  onBrief?: (domain: string) => void;
 }
 
-export function TagFilterPanel({ activeTags, onChange }: Props) {
+export function TagFilterPanel({ activeTags, onChange, onBrief }: Props) {
   function toggle(tag: string) {
     const next = new Set(activeTags);
     if (next.has(tag)) next.delete(tag);
@@ -45,9 +46,28 @@ export function TagFilterPanel({ activeTags, onChange }: Props) {
               background: active ? color + "22" : "transparent",
               border: `1px solid ${active ? color : "#333"}`,
               color: active ? color : "#555",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              padding: "3px 6px 3px 8px",
             }}
           >
             {tag}
+            {onBrief && (
+              <span
+                onClick={(e) => { e.stopPropagation(); onBrief(tag); }}
+                title={`Brief me on ${tag}`}
+                style={{
+                  fontSize: 9,
+                  opacity: 0.5,
+                  padding: "1px 3px",
+                  borderRadius: 3,
+                  background: color + "33",
+                }}
+              >
+                ↗
+              </span>
+            )}
           </button>
         );
       })}

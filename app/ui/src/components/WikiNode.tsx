@@ -3,17 +3,17 @@ import type { Node } from "@xyflow/react";
 import type { WikiNodeData } from "../types";
 
 const DOMAIN_COLORS: Record<string, string> = {
-  langgraph: "#4CAF50",
   rag: "#2196F3",
+  langgraph: "#4CAF50",
   adk: "#FF9800",
-  mcp: "#9C27B0",
-  memory: "#00BCD4",
-  voice: "#F44336",
-  eval: "#FFEB3B",
   infra: "#607D8B",
-  llm: "#E91E63",
+  patterns: "#E91E63",
+  eval: "#FFEB3B",
   "deep-agents": "#3F51B5",
-  "context-management": "#009688",
+  memory: "#00BCD4",
+  mcp: "#9C27B0",
+  meta: "#795548",
+  projects: "#009688",
 };
 
 const TYPE_BORDER: Record<string, string> = {
@@ -46,7 +46,7 @@ export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
           : selected
           ? `0 0 14px ${color}88`
           : "none",
-        opacity: data.dimmed ? 0.12 : 1,
+        opacity: data.dimmed && !selected ? 0.12 : 1,
         transform: data.highlighted ? "scale(1.5)" : "scale(1)",
         transformOrigin: "center",
         transition: "opacity 0.25s, box-shadow 0.2s, transform 0.2s",

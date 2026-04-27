@@ -10,7 +10,7 @@ interface Props {
 const EDGE_META: { key: keyof EdgeVisibility; label: string; color: string; description: string }[] = [
   { key: "wikilink", label: "Wikilinks", color: "#aaa", description: "Explicit [[...]] references" },
   { key: "semantic", label: "Semantic", color: "#4a90d9", description: "Cosine similarity ≥ 0.65 (MiniLM)" },
-  { key: "tag-shared", label: "Tag-shared", color: "#e8943a", description: "Pages sharing ≥2 domain tags" },
+  { key: "tag-shared", label: "Tag-shared", color: "#e8943a", description: "Pages sharing a domain tag (cross-domain structural links)" },
 ];
 
 export function EdgeTogglePanel({ visibility, onChange, onLoadSemantic, loadingSemanticEdges }: Props) {

@@ -8,8 +8,17 @@ import type { SelectedNode } from "./types";
 export default function App() {
   const [highlightedPages, setHighlightedPages] = useState<Set<string>>(new Set());
   const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
+  const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
   const [chatOpen, setChatOpen] = useState(true);
   const lastQueryRef = useRef("");
+
+  const handleTagClick = useCallback((tag: string) => {
+    setActiveTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(tag)) next.delete(tag); else next.add(tag);
+      return next;
+    });
+  }, []);
 
   const handleHighlight = useCallback((pages: string[]) => {
     setHighlightedPages(new Set(pages));
@@ -27,6 +36,14 @@ export default function App() {
       sendQuery(query);
     },
     [sendQuery]
+  );
+
+  const handleBrief = useCallback(
+    (domain: string) => {
+      setChatOpen(true);
+      handleSend(`get_domain_briefing("${domain}")`);
+    },
+    [handleSend]
   );
 
   return (
@@ -52,6 +69,9 @@ export default function App() {
           <WikiGraph
             highlightedPages={highlightedPages}
             onNodeSelect={setSelectedNode}
+            onBrief={handleBrief}
+            activeTags={activeTags}
+            onActiveTagsChange={setActiveTags}
           />
           {selectedNode && (
             <NodeDetailPanel
@@ -60,6 +80,8 @@ export default function App() {
               highlighted={highlightedPages.has(selectedNode.id)}
               lastQuery={lastQueryRef.current}
               onClose={() => setSelectedNode(null)}
+              onTagClick={handleTagClick}
+              activeTags={activeTags}
             />
           )}
         </div>
