@@ -11,7 +11,7 @@ from pathlib import Path
 import structlog
 from dotenv import load_dotenv
 
-from core.config.agent_settings import settings
+from etl.researcher._settings import settings
 
 load_dotenv()
 
@@ -47,7 +47,7 @@ def _pdf_hash(pdf_path: Path) -> str:
 def _relative_key(pdf_path: Path) -> str:
     """Manifest key: relative path from readings_dir, or absolute as fallback."""
     try:
-        return str(pdf_path.relative_to(settings.readings_dir))
+        return str(pdf_path.relative_to(settings.dropbox_pdf_path))
     except ValueError:
         return str(pdf_path.resolve())
 
@@ -57,11 +57,11 @@ def _find_unprocessed(
     force: bool = False,
 ) -> list[Path]:
     """Recursively find PDFs in readings_dir not yet in the manifest."""
-    if not settings.readings_dir.exists():
-        log.error("batch.readings_dir_missing", path=str(settings.readings_dir))
+    if not settings.dropbox_pdf_path.exists():
+        log.error("batch.readings_dir_missing", path=str(settings.dropbox_pdf_path))
         return []
 
-    pdfs: list[Path] = sorted(settings.readings_dir.rglob("*.pdf"))
+    pdfs: list[Path] = sorted(settings.dropbox_pdf_path.rglob("*.pdf"))
     if force:
         return pdfs
 

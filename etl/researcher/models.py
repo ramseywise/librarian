@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, field_validator
 
-from core.config.agent_settings import settings
+from etl.researcher._settings import settings
 
 SOURCE_TOPIC_MAP: dict[str, str] = {
     "0.rag": "rag",

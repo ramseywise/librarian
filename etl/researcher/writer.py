@@ -5,8 +5,8 @@ from pathlib import Path
 
 import structlog
 
+from etl.researcher._settings import settings
 from etl.researcher.models import Note
-from core.config.agent_settings import settings
 
 log = structlog.get_logger(__name__)
 

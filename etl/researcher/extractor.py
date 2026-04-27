@@ -3,13 +3,11 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from core.config.agent_settings import settings
-
 
 def get_page_count(pdf_path: Path) -> int:
     """Return total page count for a PDF using pdfinfo."""
     result = subprocess.run(
-        [str(settings.pdfinfo_bin), str(pdf_path)],
+        ["pdfinfo", str(pdf_path)],
         capture_output=True,
         text=True,
         check=True,
@@ -24,7 +22,7 @@ def extract_pages(pdf_path: Path, start: int, end: int) -> str:
     """Extract text from a page range (inclusive) using pdftotext."""
     result = subprocess.run(
         [
-            str(settings.pdftotext_bin),
+            "pdftotext",
             "-f",
             str(start),
             "-l",
