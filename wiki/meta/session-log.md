@@ -2,7 +2,7 @@
 title: Session Log
 tags: [context-management, llm, project]
 summary: Chronological index of all Claude Code and Codex sessions captured in raw/sessions/ — what was worked on, which project, and approximate token spend.
-updated: 2026-04-26
+updated: 2026-06-04
 sources:
   - raw/sessions/
 ---
@@ -144,6 +144,427 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 108c3f61 | 10 | 92k | Playground infra → GitHub; secrets audit; consolidate settings.json; name "librarian" chosen for wiki repo |
 
 ---
+
+### 2025-09-14 (txmatch)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 4998c107 | — | — |
+| 8713027f | — | — |
+| a2b0ddde | — | — |
+| ef78d2bb | — | — |
+
+### 2025-09-15 (txmatch)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 76cb019f | — | — |
+
+### 2025-09-16 (txmatch)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 58516737 | — | — |
+| dabddaa4 | — | — |
+
+### 2026-04-25 (null)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | — | — |
+
+### 2026-04-26 (null)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | — | — |
+| 2026-04- | 319k | — |
+| 2026-04- | 421k | — |
+| 2026-04- | 537k | — |
+| 2026-04- | 697k | ok then maybe we should just hae a command to do all of this in claude rather |
+
+### 2026-04-27 (librarian)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | 86k | let's do phase 1 |
+| 2026-04- | 155k | This session is being continued from a previous conversation that ran out of c |
+| 2026-04- | 220k | the uv sync is taking a while to buid - is it a lot from the toml that needs d |
+
+### 2026-04-29 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | 52k |  can you find SEVDESK_API_TOKEN |
+| 2026-04- | 139k | and what about these open issues? should we move the plans to research where u |
+| 2026-04- | 223k | /compact sounds good, lets proceed we want to finish all the plans and put the |
+| 2026-04- | 52k | yes please but leave the regex part 1 as the precursor to run gdor review |
+| 2026-04- | 269k | This session is being continued from a previous conversation that ran out of c |
+| 2026-04- | 125k |  and the global skills? any iteration needed? |
+| 2026-04- | 365k | what about langgraph-prompts? |
+| 2026-04- | 230k |  wait since we added pre-commit we seem to have a lot of issues for these but |
+| 2026-04- | 412k | ok all three sound good.. i'm wondering also about context chunks how long are |
+| 2026-04- | 275k |  i have 33 tickets that mention sevdesk - can we make these generic names plea |
+| 2026-04- | 307k | not just for this session but also uncommitted changes. and i already removed |
+| 2026-04- | 25k | yes that would be great thank you |
+| 2026-04- | 64k |  WARN[0112] Found orphan containers ([listen-wiseer-app listen-wiseer-db-init |
+
+### 2026-04-30 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | 63k |  i just realized we have been naming everything billy - but actually this is j |
+| 2026-04- | 169k |  i still see 70 files with billy mentioned that's insane and also did i remove |
+| 2026-04- | 204k |  idk i still see 60 files |
+
+### 2026-05-04 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 99k |  what scripts for eval of bedrockKB do we have available here? we dont need al |
+| 2026-05- | 121k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 173k | I guess one nbk is fine |
+| 2026-05- | 190k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 223k | Continue from where you left off. |
+| 2026-05- | 5k |  TypeError: dtype 'str' does not support operation 'mean' |
+| 2026-05- | 266k | that sounds great |
+| 2026-05- | 297k | why is topic distribution so long? perhaps do something to get top topic_descr |
+
+### 2026-05-05 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 50k |  eval notebook somehow lost the 1f. lexical and semantic similarity subplot bu |
+| 2026-05- | 73k |  ratings looks good but the user feedback and notes should be histogram like t |
+| 2026-05- | 132k |  no histogram and there are some rated like and dislike not a number but a str |
+| 2026-05- | 211k |  ok for lexical similarity can we just do the repeated question distrbution an |
+| 2026-05- | 295k |  df = pd.read_csv("evals/data/bookkeeperHero.csv") |
+| 2026-05- | 431k |  i see the 1g but no code |
+| 2026-05- | 441k |  i'm looking at it now and we're missing the code for source fidelity and lexi |
+| 2026-05- | 508k |  did you delete the code? |
+| 2026-05- | 52k |  What's working well |
+| 2026-05- | 14k |  i want to get the naming convention correct here bc we have turns = task_id.. |
+| 2026-05- | 40k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 63k | i've added them to a nbks/sevdesk folder here |
+| 2026-05- | 80k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 105k |  ok so the parkey is creating data path but actually we whave evalse/data wher |
+| 2026-05- | 114k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 135k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 17k |  fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 4)) |
+| 2026-05- | 115k |  ignore the comments i'm trying to fix this figure.. but we shoud also save th |
+| 2026-05- | 202k |  just please have a look at the nbk its not aligned with the 6 eda topics .. e |
+| 2026-05- | 231k |  it was overwritten again somehow please update the nb |
+| 2026-05- | 266k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 19k |  so i dont know if you are aware, but our analysis is basically per turn right |
+| 2026-05- | 44k |  ok but the question remains - does this eda nbk output @results/eda_output/ p |
+
+### 2026-05-06 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 9k |  how to export nbk as html in a cell |
+| 2026-05- | 114k |  i think we also use sentence transformers - but my point is that in playgroun |
+| 2026-05- | 212k |  is there also a flag for when the response language is not the same as the qu |
+| 2026-05- | 407k | ok so what have i commited so far bc i dont see it on github.. as anything pus |
+| 2026-05- | 473k |  any insights here === df (full) === |
+| 2026-05- | 817k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 110k |  a few thoughts about our eval set aggregation and metrics to track from regre |
+| 2026-05- | 210k |  exactly and we want to full base that contains all 5 separate datasets.. the |
+| 2026-05- | 210k |  are you use you updated te nbk loks the same to me |
+| 2026-05- | 319k | looks but i'm wondering if eval sets should be more like this breakdown 100 li |
+| 2026-05- | 429k |  ok let's look a bit more closely now that we have our eval data set.. does it |
+| 2026-05- | 515k |  ok the nbk ran through - but was anything recorded? or do i have to uncomment |
+| 2026-05- | 672k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 1172k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 96k |  can we double check the sentiment distr for each of our samples used for llm |
+
+### 2026-05-07 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 59k |  what do we think of just the base output and the 500 sample for the llm as gr |
+| 2026-05- | 153k | wait a minute - did you just run the quality test through base? it was only me |
+| 2026-05- | 120k |  we should have the --fix in the make lint command for ruff and also execute b |
+| 2026-05- | 268k | looks great, but we are missing the all_stats.html did i delete it or was it n |
+| 2026-05- | 397k | you ran it and think it lokos great? no this is what i'm seeing.. the fix need |
+| 2026-05- | 118k |  if or file, this would look like make eval-stats --file? or make eval-stats f |
+| 2026-05- | 249k | @evals/reports/bkh/all_stats.html , @evals/reports/bkh/base_stats.html , @eval |
+| 2026-05- | 74k | exactly thank you lets make those changes, update paths and validate tests |
+| 2026-05- | 176k | Let's think this through a little bit. Because we're in going in the right dir |
+| 2026-05- | 244k | layer 1. satisfaction rate, resolution rate, resolution with friction rate, an |
+| 2026-05- | 398k | you think so? i think resolution rate is north star with satisfaction, retriev |
+| 2026-05- | 98k |  i just noticed a mistak maybe where no source liked is FN but this is problab |
+| 2026-05- | 197k | are there any metrics from quality or intent graders we can add with instead o |
+| 2026-05- | 93k |  can you run this skill to get insights report from claude usage - i'm trying |
+| 2026-05- | 110k |  ok we have done a lot of good stuff here.. can we do a code review before we |
+| 2026-05- | 87k | [Request interrupted by user] |
+
+### 2026-05-08 (Workspace)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 98k |  right but @playground is wired to test clara tickets i guess only va-support- |
+| 2026-05- | 210k | quick question bc i just want to test the 3 va models against the sevdesk data |
+| 2026-05- | 110k |  something doesnt look right in the nbk for Calibration metrics (liked = posit |
+| 2026-05- | 260k |  can you give me how to store under@data/baseline/golden_traces for the 12 and |
+| 2026-05- | 429k |  NameError: name '_DEFAULT_MODEL' is not defined |
+| 2026-05- | 99k | ok while that is running we should add data/baseline to gitignore and change t |
+| 2026-05- | 367k | ok yeah cool it makes sense that routing fails here - leave it for now we will |
+| 2026-05- | 91k |  yes please update the nbk so that it will run now thanks |
+| 2026-05- | 428k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 614k | very nice.. should we make the old data set into regression/capability set for |
+| 2026-05- | 217k | yes please collapse into one, but i think in nb 04_quality grader we compared |
+| 2026-05- | 315k | sorry but we already ran eval_runner_quality what we're missing are the stats |
+
+### 2026-05-09 (Workspace)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 771k | Check if the calibration eval (background task b6fo15w0q) has completed by rea |
+| 2026-05- | 1079k | ok before we run the same 50 eval quality - can we instead include the single |
+| 2026-05- | 93k |  question - what is the best way to handle data/report issues - if we push the |
+| 2026-05- | 82k | ok lets move it to specs then and can we create specs/evals folder where all t |
+| 2026-05- | 220k |  Okay. Yeah. Great. Glad we're on the same page here. So what I've done is I'v |
+| 2026-05- | 305k | Oh, I think I know it got cut off. Um, Yeah. For the single agents, we don't n |
+| 2026-05- | 149k |  Yep. That pretty much touches on everything we discussed, but one thing that' |
+| 2026-05- | 322k | perfect lets write that plan and continue implementation thanks |
+| 2026-05- | 60k | yes lets do that and does this apply also to langgraph or is independent to ad |
+| 2026-05- | 200k |  ok i did a pretty heavy refactoring of @galactus/data which i think makes sen |
+| 2026-05- | 163k | also the adk/langgraph agents calling bedrock should be similar in coverage - |
+| 2026-05- | 348k | no lg is also broke |
+| 2026-05- | 414k | oh intersting that hc_rag mrr is better than va_staging.. actually it looks li |
+| 2026-05- | 581k | oh no something fucked up for hc_lg and hc_rag |
+| 2026-05- | 739k |  ok we want next to these experiments also the comparison for va-agents with s |
+
+### 2026-05-10 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 875k |  wait what? bkh should definitely not look higher.. why do we not have 44 task |
+| 2026-05- | 1029k | this is what i see bkh missing data  , deepeval data misssing - eval_suite mda |
+| 2026-05- | 633k |  ok heres the deal - i have renamed datasets to datasets_old.. what files need |
+| 2026-05- | 1072k | ok this looks better but should the pipeline folder reflect the breakdown you |
+| 2026-05- | 1603k | can we update readme please bc this is important step alos what are our repo r |
+
+### 2026-05-11 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 85k | btw are any of these other metrics useful for us that we might want to add lat |
+| 2026-05- | 97k |  also do we have the reranker in the ablation study? so is it just hyde is the |
+| 2026-05- | 240k |  ok but did we dod the deepeval on bkh? if so we could just run that in the nb |
+| 2026-05- | 397k | ok awesome.. i have also some metrics from @nbks/sevdesk - is there anhything |
+| 2026-05- | 536k |  making the call now and to be clear, make va-calibrate-full  will calibrate t |
+| 2026-05- | 124k |  what other topics would be interesting from our multiagent lg version - every |
+
+### 2026-05-12 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 324k |  great can we finish va-migration? |
+| 2026-05- | 129k |  is part of this plan or va-migration include adding safeguards, confidence ga |
+| 2026-05- | 133k |  for the recent addition of grounding to our support-agents.. we also have ver |
+| 2026-05- | 159k |  ok then lets do sprints 1-4 and we should touch kb urls - but we may have to |
+| 2026-05- | 294k | y ty - and yes i am particularly interested in business analyst regarding invo |
+| 2026-05- | 502k |  awesome before we move to sprint 2, can you please review these documents tha |
+
+### 2026-05-13 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 171k |  ok i am thinking - lets make a new nbk.. golden_traces.. lets load the data w |
+| 2026-05- | 116k |  # 17. Final Showdown — Custom v4 vs DeepEval vs RAGAS (second 50-query set) |
+| 2026-05- | 291k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 384k | i said to do batches just bc its sooooo slow |
+| 2026-05- | 99k |  edge_paths = { |
+| 2026-05- | 468k | ok so now i can call the next fifty va-call-golden INPUT=data/datasets/va_stag |
+| 2026-05- | 135k |  Grounding summary (192 graded items): |
+| 2026-05- | 522k | ok lets review this a bit.. is the golden running both bkh and va responses/so |
+| 2026-05- | 710k |  alright what do we think of the output for i think our golden traces nbk? its |
+| 2026-05- | 871k |  btw are we getting the call latency and error reported anywhere? |
+| 2026-05- | 969k |  ok i think there is a mistake eith eval-stats golden bc its taking. along tim |
+| 2026-05- | 81k |  ok looks good.. dont we want to also show the repo structure for core and eva |
+| 2026-05- | 166k | what happened to our eval metrics in file:///Users/ramsey.wise/Workspace/galac |
+| 2026-05- | 188k |  ok i reran the nbk but not sure if all paths were updated? some still say 192 |
+
+### 2026-05-14 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 113k |  so our golden traces have a problem with url match between old and new versio |
+| 2026-05- | 99k | Love that. Can you also add this information to a read me somewhere maybe arou |
+| 2026-05- | 261k |  ok looks like everything works but is it retrieving from 500? not the va-stag |
+| 2026-05- | 351k | wait but pycall is also bedrock which doesnt work now bc of aws creds.. so we |
+| 2026-05- | 440k | ok raw json givs 5 sources but only title url   "suggestions": [], |
+| 2026-05- | 561k |  but is the retrival 500 the same as our 600 count? we should have task id and |
+| 2026-05- | 128k |  {"status":"ok","backend":"langgraph"}%   but backend should be hc_rag |
+
+### 2026-05-15 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 194k | looks good but now we are missing the va-hit-count as well as the billy url if |
+| 2026-05- | 373k | ok but the ub_url_coverage has only 1395 rows.. are there some. missing maybe |
+| 2026-05- | 503k |  index error.. ok i like where we're going with this from bkh to liked we can |
+| 2026-05- | 137k |  I just added @worksapce/chat-agent that has a pretty sophisticated eval and o |
+| 2026-05- | 589k | look where we start eda (i added markdown separator) the first cell is bkh hit |
+| 2026-05- | 205k |  no lets add it to the plan and start implementing - although there might be s |
+| 2026-05- | 665k |  Golden responses: 597 rows |
+| 2026-05- | 298k | This session is being continued from a previous conversation that ran out of c |
+
+### 2026-05-16 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 823k |  ok but that's where we're wrong.. first of all expected_url is this mapped to |
+| 2026-05- | 989k |  did you add that at the end i just reran and dont see it |
+| 2026-05- | 1123k | ok very cool.. yes i agree with your insights will check it out, but this is s |
+
+### 2026-05-18 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 142k |  in this report.. we show top 10 disliked topics.. but lets also show top 10 l |
+| 2026-05- | 97k |  for the eval methods tab do we need to update any of the stats or quality gra |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+
+### 2026-05-19 (.claude)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+
+### 2026-05-20 (.claude)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+
+### 2026-05-21 (.claude)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 0k | — |
+
+### 2026-05-24 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 112k |  then why is there only 38 capability test in baseline/eval sets - are the lat |
+| 2026-05- | 261k | question is hc_adk and hc_lg currently wired to the hc_rag or to bedrock? has |
+| 2026-05- | 42k |  now that we have the golden 597 we can do the ablation study - what is left t |
+| 2026-05- | 400k | ok lets please fix all of these monitoring and metric issues and i will rerun |
+| 2026-05- | 124k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 618k | also it looks like adk is running but there are no logs so i have no idea wher |
+| 2026-05- | 253k |  help.shine.co should be the corpus_articles (formerly billy help).. we should |
+| 2026-05- | 700k |  interesting and how does this compare to va-agents? bc i think the adjusted m |
+| 2026-05- | 911k |  data/datasets/support-agents/eval_sets/proper_eval_51.jsonl --endpoint http:/ |
+| 2026-05- | 154k | make crawl-billypedia |
+| 2026-05- | 82k |  these reports enrichment folder is getting out of control can we refactor and |
+| 2026-05- | 1239k |  well actually can we create a nbk like the onese we did at sevdesk for findin |
+| 2026-05- | 212k |  how does this metadata compare to bedrock config for DATA_SOURCE_IDS = { |
+| 2026-05- | 1503k |  why is this last reranker taking so long? been almost 30 min |
+| 2026-05- | 70k |  ok and what about the mq? do we include that for the ablation as well? |
+| 2026-05- | 156k |  but i want to see this table by source |
+
+### 2026-05-25 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 298k | oh intersting ok so looks like we were escalating cases that we prob could hav |
+| 2026-05- | 648k | ok interesting our router to source typd didnt work.. but if we had thinking t |
+| 2026-05- | 792k | Okay. So I do make s a eighty k bedrock up and then run this. Is that right? |
+| 2026-05- | 893k | This session is being continued from a previous conversation that ran out of c |
+
+### 2026-05-26 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 176k |  if we were to vibe code this agentic framework with eval and data ingestion a |
+
+### 2026-05-28 (null)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| a0a707d3 | 77k | — |
+
+### 2026-05-29 (null)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 68493546 | 67k | — |
+
+### 2026-05-30 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 79k |  hmm so these are used by both ingestion and preprocessing? or more eval? like |
+| 2026-05- | 134k |  nice is there anything from plans we can archive or remove? also research - i |
+| 2026-05- | 204k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 122k |  now that we have refactored core - our data folder is a hot mess.. is there a |
+
+### 2026-06-01 (Workspace)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-06- | 177k |  can ytou give a summary of all the changes i just pulled particularly from he |
+| 2026-06- | 137k |  instead of matching our intercom conversations by our rated bkh n=597 qa samp |
+
+### 2026-06-02 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-06- | 369k |  did we update it? it looks the same gold df and for the sentence transformer |
+| 2026-06- | 362k | ok and is there anything here on latency and evaluation of this invocation flo |
+| 2026-06- | 749k |  ok so if i look at the gold_df by match_type=bkh_liked, there is no intercom |
+| 2026-06- | 722k |  in the doc can you explain this a bit better Tier 1 (hallucinated IDs), Tier |
+| 2026-06- | 1254k | ok thanks and to be clear and the qa pairs from gold overlapping with any of t |
+| 2026-06- | 1191k | what do you think about this bc in galactus we use ragas and thats as good or |
+| 2026-06- | 184k |  i think its even less after deduplication within queries, 195 but yes can you |
+| 2026-06- | 1296k | This session is being continued from a previous conversation that ran out of c |
+| 2026-06- | 242k |  I UNCOMMENT GENAI USE TO TRUE BUT IT SAYS GOOGLE API key not set |
+| 2026-06- | 83k |  is there also overlap with @tooling/evals - for example the multiagent vs sup |
+
+### 2026-06-03 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-06- | 97k |  if this eval calibration is done can you mark it as such, also the pii pipeli |
+| 2026-06- | 1465k | Base directory for this skill: /Users/ramsey.wise/.claude/skills/execute-tasks |
+| 2026-06- | 142k |  yo what's going on with this make file, please reduce it's crazy - all the ab |
+| 2026-06- | 158k | actually i delete evals graders shared and also data is root of galactus not i |
+| 2026-06- | 79k | oh thats not good.. we need to centralize our support agent schemas and config |
+| 2026-06- | 154k | oh ok bur actually.. the loop is research -> plan -> plan review (dor gate) -> |
+| 2026-06- | 223k | Start or continue a research phase. Delegates to the `research-review` protoco |
+| 2026-06- | 377k | well the agent creator folder is used for the claud agents to execute i guess? |
+| 2026-06- | 539k | can we also run a hook to do a lint after run-code-review? |
+
+### 2026-06-04 (galactus)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-06- | 107k |  make test 3 skipped, 22 deselected, 9 errors in 3.36s |
+| 2026-06- | 84k |  how would you compare @chat-agent/src/agentic_rag to @galactus/src/support_ag |
+| 2026-06- | 92k |  is this src folder linted already? |
+| 2026-06- | 83k | ok cool is that something we need to refactor, is it fine where it sits in the |
+| 2026-06- | 125k | sorry my skills strucutre looks different |
 
 ## Notes
 

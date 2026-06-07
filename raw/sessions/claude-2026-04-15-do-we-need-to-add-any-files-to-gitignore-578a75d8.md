@@ -1,4 +1,5 @@
 ---
+tags: [config, context-management]
 cache_read_tokens: 6886941
 date: 2026-04-15
 est_cost_usd: 3.865638

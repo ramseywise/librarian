@@ -1,4 +1,5 @@
 ---
+tags: [context-management, planning]
 cache_read_tokens: 757634
 date: 2026-04-22
 key_output: Linear ticket template skill for requirements

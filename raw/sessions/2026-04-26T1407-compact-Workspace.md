@@ -1,4 +1,5 @@
 ---
+tags: [compact, context-management]
 date: 2026-04-26
 time: 1407
 duration_min: ~

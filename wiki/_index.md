@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [index]
 summary: Auto-generated table of contents for the obsidian-kb wiki. Updated after every ingest.
-updated: 2026-04-27
+updated: 2026-06-05
 ---
 
 # Wiki Index
@@ -76,7 +76,8 @@ updated: 2026-04-27
 | [[PII Masking Approaches]] | Regex vs LLM-based vs hybrid masking — contextual PII is the hard problem |
 | [[Prefix Caching]] | Claude's KV cache for repeated prompt prefixes — 90% cost/latency reduction |
 | [[Input Guardrails Pipeline]] | 7-stage deterministic safety pipeline — LLM-free by design |
-| [[Observability — LangFuse vs LangSmith Decision]] | LangFuse first — native ragas/deepeval, self-hostable, GDPR-friendly |
+| [[Observability — LangFuse vs LangSmith Decision]] | LangFuse first — native ragas/deepeval, self-hostable, GDPR-friendly; Shine weighted score 8.58/10 |
+| [[Langfuse Platform]] | Open-source LLM observability — tracing, prompt management, eval; Shine adoption status (legal cleared, SSO pending) |
 
 ---
 
@@ -103,6 +104,7 @@ updated: 2026-04-27
 | [[HITL Annotation Pipeline]] | Two-queue annotation workflow, inter-annotator agreement gate, feedback routing |
 | [[Direct Preference Optimization]] | Training-time preference alignment using preference pairs — not applicable to API-only models |
 | [[VA Eval Harness]] | Four eval suites, tool_trajectory_avg_score, LLM judge, Makefile flow, CI regression gate |
+| [[Agentic KPI Trees]] | KPI tree pattern — goal completion rate, no-touch rate, auto-reconciliation accuracy for VA/accounting/matching agents |
 
 ---
 
@@ -162,10 +164,13 @@ updated: 2026-04-27
 | [[Librarian Project]] | The Librarian RAG service — stack, architecture decisions, production status |
 | [[Librarian KB — Build Plan]] | Phased build plan — Phases 1–5 complete, Phase 6 active, Phases 9–15 future |
 | [[Listen-Wiseer Project]] | Spotify recommendation agent — ENOA taste map, LangGraph ReAct + Chainlit, DuckDB vss RAG |
-| [[VA Agent Project]] | Billy accounting VA agent — dual ADK+LangGraph implementations, 57 tools, 9 phases complete |
+| [[VA Agent Project]] | Billy accounting VA agent — dual ADK+LangGraph implementations, 57 tools, 9 phases complete; production va-agents + va-hypernova MCP migration |
 | [[Evaluation & Improvement Project (VIR)]] | Shine Q2 2026 — Billy→Bedrock KB ingestion, CS annotation pipeline, golden eval set |
 | [[Shine Copilot Architecture]] | Shine's embedded guidance/orchestration/execution layer — VA team owns coordination |
 | [[Shine Knowledge Agent]] | Shine's Help Center RAG system — knowledge retrieval for Copilot, ≥60% self-service target |
+| [[AI Engineering Chapter @Shine]] | Cross-company AI chapter (Shine) — bi-weekly forum; Langfuse adoption, framework survey, KPI alignment across VA/Banking/Advisor/Matching |
+| [[Shine Chat Agent]] | Shine Banking customer support chatbot — Vertex AI Search RAG, 3-layer guardrails, Langfuse-first, EoQ2 2026 launch |
+| [[VA Hypernova MCP]] | VA team MCP server PoC — 18 Billy.dk tools extracted from va-agents to AWS Bedrock AgentCore Runtime |
 
 ---
 

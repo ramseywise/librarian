@@ -1,14 +1,16 @@
 ---
 title: ADK vs LangGraph Comparison
 tags: [adk, langgraph, comparison]
-summary: Side-by-side mental model comparison of Google ADK and LangGraph — primitive mappings, when to use each, and the recommended vocabulary alignment approach.
-updated: 2026-04-25
+summary: Side-by-side mental model comparison of Google ADK and LangGraph — primitive mappings, weighted scoring (LangGraph 716/845 for AWS/ADK-compatible context), VA team production findings, and the recommended vocabulary alignment approach.
+updated: 2026-06-05
 sources:
   - raw/playground-docs/adk-orchestration-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
   - raw/playground-docs/orchestration-rollout-plan.md
   - raw/gdrive/2026-04-15-adk-overview-poc-architecture.md
   - raw/meetings/2026-04-15-langgraph-huddle.md
+  - raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
+  - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
 ---
 
 # ADK vs LangGraph Comparison
@@ -173,6 +175,37 @@ The Shine ADK POC (April 2026) evaluated four orchestration topologies. **Agent 
 
 See [[Multi-Agent Orchestration Patterns]] for the full trade-off analysis and POC stack.
 
+## Shine VA Team Weighted Scoring (2026-05)
+
+The VA team conducted a formal weighted evaluation before committing to LangGraph for the next iteration of va-agents. The evaluation considered 11 criteria weighted by importance for their specific context (AWS-hosted, Google ADK-compatible, Python-native team, high-compliance accounting domain).
+
+| Framework | Weighted Score (out of 845) | Notes |
+|---|---|---|
+| **LangGraph** | **716** | AWS fit, deterministic control, typed state, strong eval tooling |
+| ADK 2.0 Beta | 693 | GCP-native, strong multi-modal, weaker on AWS |
+| ADK 1.x (stable) | 649 | Solid but lacks newer ADK 2.0 features |
+
+**LangGraph won on:** AWS infrastructure fit, deterministic workflow enforcement, typed state contracts, HITL patterns, observability stack (Langfuse integration), framework stability.
+
+**ADK 2.0 Beta won on:** multi-modal (audio/video), GCP-native integrations, Gemini tool use.
+
+**Key driver of the decision:** The VA team has ~7 Python-native developers and 1 TypeScript developer. LangGraph is Python-first. ADK's advantages are GCP-native, which doesn't match the team's AWS deployment.
+
+### Python vs TypeScript evaluation
+
+| Language | Score (out of 500) |
+|---|---|
+| **Python** | **377** |
+| TypeScript | 302 |
+
+Python wins primarily on: team expertise ratio (7:1 Python), ML library ecosystem, ADK + LangGraph native support.
+
+The "Brain and Limbs" hybrid option was also considered: Python for orchestration/RAG brain + TypeScript for tool execution via MCP. This is essentially the va-hypernova architecture — Python agent, TypeScript tools over MCP. See [[VA Hypernova MCP]].
+
+### VA team transition plan
+
+The VA team (Billy.dk virtual assistant) is transitioning to LangGraph for its next iteration. Current production is Google ADK + Next.js (va-agents on AWS ECS). The transition is enabled by extracting tools into the MCP layer (va-hypernova) — the agent framework can change without rewriting the tool layer.
+
 ## See Also
 - [[ADK vs LangGraph Decision]]
 - [[LangGraph CRAG Pipeline]]
@@ -180,3 +213,5 @@ See [[Multi-Agent Orchestration Patterns]] for the full trade-off analysis and P
 - [[Multi-Agent Orchestration Patterns]]
 - [[Librarian RAG Architecture]]
 - [[VA Agent Project]]
+- [[VA Hypernova MCP]]
+- [[AI Engineering Chapter @Shine]]

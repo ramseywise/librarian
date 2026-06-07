@@ -1,4 +1,5 @@
 ---
+tags: [context-management, infra, review]
 cache_read_tokens: 199785003
 date: 2026-04-21
 est_cost_usd: 60.446218

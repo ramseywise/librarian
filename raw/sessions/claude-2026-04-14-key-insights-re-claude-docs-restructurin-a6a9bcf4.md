@@ -1,4 +1,5 @@
 ---
+tags: [context-management, refactor]
 cache_read_tokens: 11847845
 date: 2026-04-14
 est_cost_usd: 5.430703

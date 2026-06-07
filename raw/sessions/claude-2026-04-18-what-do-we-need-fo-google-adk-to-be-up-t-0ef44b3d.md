@@ -1,4 +1,5 @@
 ---
+tags: [context-management, planning]
 cache_read_tokens: 16536565
 date: 2026-04-18
 est_cost_usd: 4.96097

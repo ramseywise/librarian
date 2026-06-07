@@ -1,4 +1,5 @@
 ---
+tags: [context-management, planning]
 cache_read_tokens: 8757725
 date: 2026-04-24
 key_output: librarian knowledge base project setup and file organization plan

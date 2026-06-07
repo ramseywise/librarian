@@ -1,4 +1,5 @@
 ---
+tags: [context-management, research]
 cache_read_tokens: 5947812
 date: 2026-04-12
 est_cost_usd: 2.940487

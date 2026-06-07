@@ -1,13 +1,15 @@
 ---
 title: VA Agent Project
 tags: [adk, langgraph, mcp, pattern, project]
-summary: Billy accounting VA agent — dual ADK+LangGraph implementations over a shared MCP tool layer, 57 tools across 11 domains, all 9 phases complete including long-term memory and artefact store.
-updated: 2026-04-24
+summary: Billy accounting VA agent — dual ADK+LangGraph implementations over a shared MCP tool layer (57 tools, 11 domains), all 9 phases complete; production context is va-agents on AWS ECS (Next.js + Google ADK + Gemini), with va-hypernova PoC migrating 18 tools to AWS Bedrock AgentCore MCP.
+updated: 2026-06-05
 sources:
   - raw/claude-docs/playground/docs/plans/va-agent-improvements.md
   - raw/claude-docs/playground/docs/plans/va-agent-systems.md
   - raw/claude-docs/playground/docs/plans/va-infra.md
   - raw/claude-docs/playground/docs/components.md
+  - raw/notion/2026-06-04-hypernova-mcp-server-poc.md
+  - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
 ---
 
 # VA Agent Project
@@ -282,6 +284,34 @@ Reads `LLM_PROVIDER` (gemini | anthropic | openai). LLM instances cached via `lr
 The VA agent is the active implementation of the broader [[Shine Copilot Architecture]]. The ADK outer shell maps to the Copilot orchestration coordination layer (VA team responsibility); the LangGraph domain subgraphs map to the execution layer (domain team responsibility). The `support_graph` CRAG loop is the prototype for [[Shine Knowledge Agent]] — same retrieval pattern, smaller scope.
 
 AGT-09 (ADK vs LangGraph spike, ✅ Q2 2026) was the formal decision task that validated both frameworks — state management, MCP support, observability, prefix caching, and voice compatibility. See [[ADK vs LangGraph Decision]].
+
+---
+
+## Production Context (va-agents @ Shine)
+
+The playground VA agent (above) is a proof-of-concept. The production VA is a separate repo at Ageras:
+
+- **Repo:** `ageras-com/va-agents` (private) — the actual Billy.dk virtual assistant
+- **Stack:** Next.js + Google ADK + Gemini, deployed on AWS ECS
+- **Users:** Billy.dk accountants (Danish SMB accounting software)
+- **Tool integrations:** 18 tools covering invoices, quotes, customers, products, emails, invitations, RAG knowledge lookup
+- **Session state:** PostgreSQL on RDS
+- **Per-organization auth:** Billy API token passed from the Billy iframe as request header — not shared credentials
+
+### Hypernova MCP Migration (PoC, 2026-06)
+
+The VA team is evaluating migrating the 18 tool integrations out of va-agents into a standalone MCP server. This is the [[VA Hypernova MCP]] project (adapted from a sevdesk production deployment).
+
+**Motivation:** Decoupling tools from agent logic makes it possible to:
+1. Replace the agent framework (ADK → LangGraph) without rewriting tools
+2. Independently deploy and version the tool layer
+3. Add CloudWatch + X-Ray observability without agent-level instrumentation
+
+**Architecture:** `billy-mcp-server` on AWS Bedrock AgentCore Runtime (stateless); Next.js app calls tools over HTTP via MCP protocol; Cognito JWT auth.
+
+### Framework transition
+
+Following the [[ADK vs LangGraph Comparison]] weighted scoring (LangGraph 716/845 vs ADK 2.0 Beta 693/845), the VA team is planning to transition to LangGraph for the next va-agents iteration. The MCP tool extraction (Hypernova) is an enabler: once tools are in the MCP layer, the agent framework can change independently.
 
 ---
 

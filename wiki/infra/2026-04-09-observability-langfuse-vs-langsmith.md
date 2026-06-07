@@ -1,12 +1,15 @@
 ---
 title: Observability — LangFuse vs LangSmith Decision
 tags: [infra, eval, decision]
-summary: Decision to use LangFuse first for RAG observability — native ragas/deepeval integrations, self-hostable, GDPR-friendly, swap later when annotation queues needed.
-updated: 2026-04-24
+summary: Decision to use LangFuse first for RAG observability — native ragas/deepeval integrations, self-hostable, GDPR-friendly, and highest weighted score (8.58/10) for Shine's AWS-hosted, high-compliance context.
+updated: 2026-06-05
 sources:
   - raw/playground-docs/rag-agent-template-research.md
   - raw/playground-docs/adk-orchestration-research.md
   - raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
+  - raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
+  - raw/gdrive/2026-05-15-ai-chapter-meeting-1.md
+  - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
 ---
 
 # Observability — LangFuse vs LangSmith Decision
@@ -88,7 +91,40 @@ When annotation queues are needed:
 - RAGAS needs an LLM for grading — defaults to OpenAI. Configure with `langchain_anthropic.ChatAnthropic` (Haiku for cost) to stay within the Anthropic stack.
 - DeepEval similarly defaults to OpenAI — configure via `DeepEvalBaseLLM` subclass for Anthropic.
 
+## Shine VA Team Weighted Evaluation (2026-05)
+
+A more comprehensive evaluation was conducted for Shine's VA team context: AWS-hosted system, Google ADK-compatible, high-compliance accounting domain. See [[Langfuse Platform]] for full Shine adoption details.
+
+| Platform | Weighted Score | Best when |
+|---|---|---|
+| **Langfuse** | **8.58 / 10** | AWS-hosted, ADK-compatible, Datadog-aligned, high-compliance |
+| LangSmith | 7.92 / 10 | LangGraph-first architecture with deep HITL debugging needs |
+
+**Langfuse wins on:** security/data sovereignty, AWS fit, Datadog integration, cost/scalability, framework agnosticism, prompt governance.  
+**LangSmith wins on:** LangGraph-native HITL trace quality, evaluation workflow maturity, annotation queues.
+
+### Pricing comparison
+
+| Tier | Langfuse | LangSmith |
+|---|---|---|
+| Free | 50k observations/month, unlimited users | 5k traces/month, 1 user |
+| Growth/Pro | Usage-based ($29–$199/mo, unlimited users) | $39/user/month + per-trace overages |
+| Scale consideration | ~6× cheaper at scale | Expensive for growing teams |
+
+### Patronus AI vs Langfuse (Shine context)
+
+Patronus AI was previously self-hosted on-premise by the Advisor Production team inside SHI. Decision (May 2026): **Patronus AI discontinued** in favor of Langfuse. The existing SHI on-premise setup no longer fits current requirements; Langfuse offers a better-fitting deployment model, broader framework support, and a more mature ecosystem.
+
+### Shine-specific compliance decisions
+
+- **PII reduction** required before sending traces to SaaS Langfuse (external infrastructure)
+- **SSO mandatory** before production use (security team requirement) — adds Teams plan
+- **Data deletion compliance**: use token-based IDs to reference customer documents in golden datasets — never copy raw document content into the observability platform
+- **Legal cleared** May 2026; contract finalization in progress; production use gates on contract + SSO
+
 ## See Also
 - [[RAG Evaluation]]
 - [[Librarian RAG Architecture]]
 - [[ADK Context Engineering]]
+- [[Langfuse Platform]]
+- [[AI Engineering Chapter @Shine]]

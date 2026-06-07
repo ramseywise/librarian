@@ -1,4 +1,5 @@
 ---
+tags: [chat, context-management]
 branch: ramsey-feature-dev
 date: 2025-09-15
 key_output: none

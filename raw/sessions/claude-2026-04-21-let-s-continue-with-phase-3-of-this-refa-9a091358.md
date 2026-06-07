@@ -1,4 +1,5 @@
 ---
+tags: [context-management, debug]
 cache_read_tokens: 20526204
 date: 2026-04-21
 est_cost_usd: 7.379962

@@ -139,6 +139,38 @@ Architecture/planning sessions generate more output tokens per prompt than execu
 
 ---
 
+---
+
+## Insights — 2026-06-04
+
+*Compiled from 24 sessions (2026-06-01 through 2026-06-04), all on galactus (support agent ablation + GT verification).*
+
+### Top Patterns
+
+**Compaction without context restoration**: All 24 sessions compacted with `[Fill in]` placeholders intact. Checkpoints are being generated but never completed — cold-resumption is unreliable every session.
+
+**Token bloat on eval/analysis work**: 3 sessions exceeded 1M tokens (GT dataset verification: 1.25M; Workspace-wide execute: 1.47M; chat-agent parity: 1.19M). Root cause: re-injecting full codebase context instead of delta updates. One prompt fix: prepend "Before exploring, check cached docs for answers. Only ask new questions on deltas."
+
+**Repeated agent cross-diffing**: "How does X compare to Y?" appeared across 10+ sessions with no cached answer. `docs/frameworks/agent-feature-parity.md` exists but is not being used as a first-stop reference.
+
+**Branch fragmentation**: `vir-179-*` (3 sessions, 301K tokens) and `vir-212-*` (2 sessions, 426K tokens) covering overlapping work → context thrashing, duplicated cache writes.
+
+### Skill candidates
+
+| Skill | Verdict | Rationale |
+|-------|---------|-----------|
+| `checkpoint-fill` | Generate | Automates completing unfilled template fields after compaction |
+| `consolidate <area>` | Generate | Structured cleanup for recurring architectural drift (6+ sessions flagging dead code, duplicate metrics) |
+| `compare-agents` | Generate | Cached agent feature matrix to eliminate repeated cross-diffing |
+
+### Cost signals
+
+- **Cache write anomaly**: short sessions showing 3–6× cache_write vs output size → context re-pinned unnecessarily on resume
+- **Consolidate branches**: same codebase loaded fresh in 5+ branches → lower prefix cache hit rate
+- **Batch eval queries**: pre-filter GT data to unique queries before grading (195 unique from 597)
+
+---
+
 ## See Also
 
 - [[Session Log]]

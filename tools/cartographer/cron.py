@@ -37,6 +37,7 @@ SESSION_META_DIR = CLAUDE_DIR / "usage-data" / "session-meta"
 
 # Librarian raw/sessions/ — for wiki ingest
 LIBRARIAN_RAW_SESSIONS = Path(__file__).resolve().parent.parent.parent / "raw" / "sessions"
+LIBRARIAN_WIKI_DIR = Path(__file__).resolve().parent.parent.parent / "wiki"
 
 # Pricing per million tokens: (input, output, cache_write, cache_read)
 _MODEL_PRICING: dict[str, tuple[float, float, float, float]] = {
@@ -235,6 +236,153 @@ def _compute_cost_summary(session_meta_dir: Path, days: int = 7) -> str:
     return "\n".join(lines)
 
 
+def _parse_session_frontmatter(text: str) -> dict[str, str]:
+    """Parse key-value frontmatter from a session markdown file."""
+    import re
+    fm: dict[str, str] = {}
+    m = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
+    if not m:
+        return fm
+    for line in m.group(1).splitlines():
+        if ":" in line:
+            k, _, v = line.partition(":")
+            fm[k.strip()] = v.strip()
+    return fm
+
+
+_PROJECT_DOMAIN_TAGS: dict[str, list[str]] = {
+    "galactus": ["adk", "langgraph", "eval"],
+    "librarian": ["rag", "mcp", "context-management"],
+    "va-agents": ["adk", "voice"],
+    "playground": ["infra"],
+    "listen-wiseer": ["langgraph"],
+    "Workspace": ["context-management"],
+}
+
+
+def _update_wiki_session_log(raw_sessions: Path, wiki_dir: Path) -> int:
+    """Append new session rows to wiki/meta/session-log.md (append-only).
+
+    Reads all session files in raw_sessions/, finds dates not yet covered in the
+    log, and appends grouped date sections before the Notes/See Also footer.
+    Returns the number of new date groups added.
+    """
+    import re
+
+    session_log = wiki_dir / "meta" / "session-log.md"
+    if not session_log.exists() or not raw_sessions.exists():
+        return 0
+
+    existing = session_log.read_text(encoding="utf-8")
+    covered_dates = set(re.findall(r"### (\d{4}-\d{2}-\d{2})", existing))
+
+    new_by_date: dict[str, list[dict]] = {}
+    for f in sorted(raw_sessions.glob("*.md")):
+        content = f.read_text(encoding="utf-8", errors="replace")
+        fm = _parse_session_frontmatter(content)
+        date = str(fm.get("date", "")).strip()
+        if not date or date in covered_dates or not re.match(r"\d{4}-\d{2}-\d{2}", date):
+            continue
+
+        # First meaningful bullet from Recent prompts section as topic
+        topic = "—"
+        in_prompts = False
+        for line in content.splitlines():
+            if line.strip().startswith("## Recent prompts"):
+                in_prompts = True
+                continue
+            if in_prompts and line.strip().startswith("##"):
+                break
+            if in_prompts and line.strip().startswith("- ") and len(line.strip()) > 12:
+                topic = line.strip()[2:80].rstrip()
+                break
+
+        project = (fm.get("project") or "unknown").strip()
+        raw_tokens = (fm.get("total_tokens") or fm.get("output_tokens") or "").strip()
+        tok_str = f"{int(raw_tokens)//1000}k" if raw_tokens and raw_tokens not in ("~", "") else "—"
+        session_id = ((fm.get("session_id") or f.stem).strip())[:8]
+
+        new_by_date.setdefault(date, []).append(
+            {"id": session_id, "tokens": tok_str, "project": project, "topic": topic}
+        )
+
+    if not new_by_date:
+        return 0
+
+    blocks: list[str] = []
+    for date_str in sorted(new_by_date.keys()):
+        sessions = new_by_date[date_str]
+        project = sessions[0]["project"]
+        blocks.append(f"\n### {date_str} ({project})\n")
+        blocks.append("| Session | ~Tokens | Topic |")
+        blocks.append("|---------|---------|-------|")
+        for s in sessions:
+            blocks.append(f"| {s['id']} | {s['tokens']} | {s['topic']} |")
+
+    new_block = "\n".join(blocks) + "\n"
+
+    today = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
+    updated = re.sub(r"(updated: )\d{4}-\d{2}-\d{2}", rf"\g<1>{today}", existing, count=1)
+
+    insert_match = re.search(r"\n## (Notes|See Also)\n", updated)
+    if insert_match:
+        pos = insert_match.start()
+        updated = updated[:pos] + new_block + updated[pos:]
+    else:
+        updated = updated.rstrip() + "\n" + new_block
+
+    session_log.write_text(updated, encoding="utf-8")
+    log.info("cron.wiki_session_log_updated", new_dates=len(new_by_date))
+    return len(new_by_date)
+
+
+def _tag_new_session_files(raw_sessions: Path) -> int:
+    """Add semantic tags frontmatter to session files that are missing them.
+
+    Infers tags from: project name (→ domain tags), skills_invoked, work_type.
+    Skips files that already have a tags: line in their frontmatter.
+    Returns count of files tagged.
+    """
+    import re
+
+    if not raw_sessions.exists():
+        return 0
+
+    tagged = 0
+    for f in sorted(raw_sessions.glob("*.md")):
+        content = f.read_text(encoding="utf-8", errors="replace")
+        # Skip if tags already present in frontmatter
+        fm_match = re.match(r"^---\n(.*?)\n---", content, re.DOTALL)
+        if fm_match and re.search(r"^tags:", fm_match.group(1), re.MULTILINE):
+            continue
+
+        fm = _parse_session_frontmatter(content)
+        tags: list[str] = ["context-management"]
+
+        project = (fm.get("project") or "").strip()
+        tags.extend(_PROJECT_DOMAIN_TAGS.get(project, []))
+
+        work_type = (fm.get("work_type") or "").strip()
+        if work_type and work_type not in ("~", ""):
+            tags.append(work_type.replace(" ", "-").lower())
+
+        skills_raw = (fm.get("skills_invoked") or "").strip("[]")
+        for skill in skills_raw.split(","):
+            s = skill.strip().strip("'\"")
+            if s and s not in ("none", "~", ""):
+                tags.append(s)
+
+        tags_str = ", ".join(sorted(set(tags)))
+        new_content = re.sub(r"^(---\n)", rf"\1tags: [{tags_str}]\n", content, count=1)
+        if new_content != content:
+            f.write_text(new_content, encoding="utf-8")
+            tagged += 1
+
+    if tagged:
+        log.info("cron.session_files_tagged", count=tagged)
+    return tagged
+
+
 def _sync_sessions_to_raw(sessions_dir: Path, raw_dir: Path) -> int:
     """Copy new PreCompact session notes to librarian/raw/sessions/ for wiki ingest.
 
@@ -430,6 +578,14 @@ def run_cron() -> None:
     synced = _sync_sessions_to_raw(SESSIONS_DIR, LIBRARIAN_RAW_SESSIONS)
     if synced:
         log.info("cron.sessions_synced", count=synced, dest=str(LIBRARIAN_RAW_SESSIONS))
+
+    # Tag any session files that are missing semantic frontmatter tags
+    _tag_new_session_files(LIBRARIAN_RAW_SESSIONS)
+
+    # Append new sessions to wiki/meta/session-log.md (append-only)
+    wiki_dates_added = _update_wiki_session_log(LIBRARIAN_RAW_SESSIONS, LIBRARIAN_WIKI_DIR)
+    if wiki_dates_added:
+        log.info("cron.wiki_updated", dates_added=wiki_dates_added)
 
     report = run_analysis()
     out_path = save_report(report)

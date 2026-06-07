@@ -1,13 +1,14 @@
 ---
 title: MCP Protocol
 tags: [mcp, concept]
-summary: Model Context Protocol — how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery via MCP servers.
-updated: 2026-04-24
+summary: Model Context Protocol — how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery; includes AWS Bedrock AgentCore deployment pattern from the Hypernova PoC.
+updated: 2026-06-05
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
   - raw/web/2026-04-24-cloud-google-com-blog-topics-developers-practitioners-use-go-5e50e6e1.md
   - raw/web/2026-04-24-modelcontextprotocol-io-introduction-dd33377c.md
+  - raw/notion/2026-06-04-hypernova-mcp-server-poc.md
 ---
 
 # MCP Protocol
@@ -127,8 +128,57 @@ Debug MCP servers with `mcp dev server.py` (MCP Inspector UI).
 
 Production auth: under active development in the MCP spec — refer to the MCP auth specification.
 
+## AWS Bedrock AgentCore Deployment Pattern
+
+AWS Bedrock AgentCore Runtime is a managed container runtime that simplifies deploying MCP servers to production. The VA team's Hypernova PoC uses this pattern.
+
+### How it works
+
+```
+bedrock-agentcore deploy
+  → build container image
+  → push to ECR
+  → provision AgentCore Runtime endpoint
+  → auto-configure CloudWatch + X-Ray observability
+```
+
+Single CLI command replaces manual ECS task definition, ECR push, CloudWatch log group setup, and X-Ray tracing instrumentation.
+
+### Configuration (`.bedrock_agentcore.yaml`)
+
+```yaml
+name: billy-mcp-server
+entry_point: python src/server.py
+observability: enabled       # auto-wires CloudWatch + X-Ray
+auth:
+  type: cognito              # JWT authorizer via Amazon Cognito
+  user_pool_id: us-east-1_xxx
+  client_id: xxx
+```
+
+### Authentication
+
+Amazon Cognito JWT authorizer is the default auth pattern for Bedrock AgentCore MCP servers. The Runtime validates the JWT before forwarding to the container — no auth code required in the MCP server itself.
+
+### Per-Organization Token Forwarding
+
+When the MCP client (e.g., va-agents Next.js app) needs to pass organization-scoped credentials to the MCP server, the pattern is: forward the credential as an HTTP request header. The MCP server reads it from the request context on each call — no hardcoded or stored credentials.
+
+Example (va-agents / Billy.dk): the Next.js app sends the Billy API token (from the iframe) as a header on each MCP request. The billy-mcp-server reads it and uses it for all Billy API calls in that request.
+
+### Observability (auto-configured)
+
+With `observability: enabled`:
+- **CloudWatch**: all stdout/stderr captured automatically as log streams
+- **X-Ray**: every MCP tool call is traced with a segment including input/output
+- No SDK instrumentation required in the MCP server code
+
+See [[VA Hypernova MCP]] for the full production deployment of this pattern.
+
 ## See Also
 - [[Karpathy LLM Wiki Pattern]]
 - [[ADK Context Engineering]]
 - [[Librarian RAG Architecture]]
 - [[Agentic Workflow Patterns]]
+- [[VA Hypernova MCP]]
+- [[AI Engineering Chapter @Shine]]
