@@ -1,6 +1,6 @@
 # RAG API Design Patterns
 
-**Source:** librarian-ts-parity-research  
+**Source:** librarian-ts-parity-research
 **Relevance:** How to expose a RAG service cleanly — multi-query surface, deduplication, typed response contract
 
 ---
@@ -78,17 +78,17 @@ class QueryResponse(BaseModel):
 @app.post("/query", response_model=QueryResponse)
 async def query(request: QueryRequest) -> QueryResponse:
     start = time.monotonic()
-    
+
     # Run all queries in parallel
     results = await asyncio.gather(*[
         retrieval_graph.ainvoke({"query": q, "metadata_filter": request.metadata_filter})
         for q in request.queries
     ])
-    
+
     # Merge + dedup + rerank
     all_passages = [p for r in results for p in r["reranked_chunks"]]
     unique = dedup_global(all_passages)[:request.top_k_per_query]
-    
+
     return QueryResponse(
         passages=[Passage.model_validate(p.model_dump()) for p in unique],
         retrieval_strategy=results[0].get("strategy", "crag"),

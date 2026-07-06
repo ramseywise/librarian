@@ -19,7 +19,7 @@
 | **GDPR** | Data sent to Langchain Inc (check DPA) | Self-host = no external data transfer |
 | **Best for** | Fast iteration, LangGraph-native teams | Production with data sovereignty requirements |
 
-**For Shine/Billy (EU, GDPR context): Langfuse self-hosted is the safer default.** LangSmith is fine for local dev and prototyping.
+**For EU, GDPR context: Langfuse self-hosted is the safer default.** LangSmith is fine for local dev and prototyping.
 
 **Swap pattern** — both can be activated via env var, no code changes:
 ```python
@@ -30,11 +30,11 @@ def setup_observability():
     if os.getenv("LANGSMITH_API_KEY"):
         os.environ["LANGCHAIN_TRACING_V2"] = "true"
         os.environ["LANGCHAIN_PROJECT"] = os.getenv("LANGCHAIN_PROJECT", "va-agent")
-    
+
     if os.getenv("LANGFUSE_PUBLIC_KEY"):
         from langfuse.callback import CallbackHandler
         return CallbackHandler()  # pass as callback to LangGraph invoke
-    
+
     return None
 ```
 
@@ -44,7 +44,7 @@ def setup_observability():
 
 Every turn should produce one trace with:
 - User ID
-- Session/thread ID  
+- Session/thread ID
 - Agent routing decision (which subagent handled it)
 - All tool calls + args + results
 - Token counts
@@ -128,7 +128,7 @@ VA agents can be triggered in four ways. Runtime topology must match the trigger
 | Trigger | Description | Latency expectation | Example |
 |---------|-------------|---------------------|---------|
 | **HTTP/API** | Direct REST call to agent endpoint | p50 < 2s | Chat UI, Intercom widget |
-| **Webhook/Event** | External service pushes an event | Near-real-time | New invoice created in Billy → agent notification |
+| **Webhook/Event** | External service pushes an event | Near-real-time | New invoice created → agent notification |
 | **Message Queue** | Kafka/SQS message triggers agent | Seconds to minutes | Batch processing, async task queue |
 | **Cron/Schedule** | Time-based trigger | Defined interval | Daily report generation, weekly summaries |
 

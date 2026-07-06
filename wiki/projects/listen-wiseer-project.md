@@ -2,7 +2,7 @@
 title: Listen-Wiseer Project
 tags: [langgraph, rag, memory, eval, project]
 summary: Spotify recommendation agent with ENOA taste-map personalisation — LangGraph ReAct + Chainlit UI, LightGBM classifiers, DuckDB vss RAG, and three-tier eval harness.
-updated: 2026-04-24
+updated: 2026-07-06
 sources:
   - raw/claude-docs/listen-wiseer/memory/project_listen_wiseer.md
   - raw/claude-docs/listen-wiseer/docs/plans/phase4a_agent_chainlit.md
@@ -11,6 +11,16 @@ sources:
   - raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
   - raw/claude-docs/listen-wiseer/docs/research/infra_support.md
   - raw/claude-docs/listen-wiseer/docs/research/peer-repos.md
+  - raw/claude-docs/listen-wiseer/docs/plans/phase6_refactor.md
+  - raw/claude-docs/listen-wiseer/docs/plans/phase7a-exploration-tools.md
+  - raw/claude-docs/listen-wiseer/docs/plans/phase7b-intent-refactor-ux.md
+  - raw/claude-docs/listen-wiseer/docs/plans/phase7c-memory-genre-polish.md
+  - raw/claude-docs/listen-wiseer/docs/research/music-agent/exploration-architecture.md
+  - raw/claude-docs/listen-wiseer/docs/research/music-agent/recommender-design.md
+  - raw/claude-docs/listen-wiseer/docs/research/music-agent/peer-repos.md
+  - raw/claude-docs/listen-wiseer/docs/research/music-agent/spotify-repos.md
+  - raw/claude-docs/listen-wiseer/docs/research/evaluation/eval-harness.md
+  - raw/claude-docs/listen-wiseer/docs/README.md
 ---
 
 # Listen-Wiseer Project
@@ -32,7 +42,7 @@ Personal Spotify recommendation agent personalised to the user's own ENOA taste 
 | Tools | MCP server (8 tools) + StructuredTool wrappers (10 tools) |
 | Observability | LangFuse (tracing + scoring) |
 
-## Phase Status (as of 2026-04-06)
+## Phase Status (as of 2026-07-05)
 
 | Phase | Status |
 |---|---|
@@ -43,9 +53,39 @@ Personal Spotify recommendation agent personalised to the user's own ENOA taste 
 | 4b — Episodic, semantic, procedural memory (MemorySaver) | ✓ Done |
 | 5a — RAG core: DuckDB vss, MiniLM, Wikipedia/Tavily, 93 tests | ✓ Done |
 | 5b — Intent routing: 6 nodes, 5 intents, clarification, 10 tools, 97 tests | ✓ Done |
-| **5c — Eval harness (LangFuse + golden dataset + intent/tool metrics)** | **UP NEXT** |
-| 6a — Playwright UI smoke tests | Planned |
-| 6b — Observability dashboard | Planned |
+| **6 — Stabilize + Postgres persistence + Tavily web search** | **✓ Done** |
+| 7a — Exploration tools (6 new Spotify endpoints + agent tools) | Planned |
+| 7b — Intent taxonomy refactor + Chainlit UX (quick-reply chips) | Planned |
+| 7c — Genre lineage, taste analysis, cross-session memory | Planned |
+
+## Phase 6 — What Changed
+
+Phase 6 stabilized the stack and replaced RAG with Tavily for artist context:
+
+- **Dead deps removed:** chromadb, arize-phoenix, openinference — also removed dead Compose services and dead config
+- **Persistence:** MemorySaver → Postgres (via `db-init` Compose service, `POSTGRES_URL` env var)
+- **Web search:** Tavily replaces Wikipedia RAG for artist context — `get_artist_context_tool` calls `TavilyClient`; RAG suspended but not deleted in `rag_core/`
+- **System prompt updates:** aligned with Tavily-first retrieval strategy
+
+## Phase 7 Roadmap
+
+### 7a — Exploration Tools
+Add 6 new Spotify fetch functions + corresponding agent tools:
+- `fetch_top_tracks`, `fetch_top_artists`, `fetch_artist_info`, `fetch_artist_top_tracks`, `fetch_artist_albums`, `fetch_spotify_recommendations`
+- 6 new StructuredTools wiring these into the agent
+- Intent taxonomy updated with `explore_my_taste` and `discover` intents
+
+### 7b — Intent Refactor + Chainlit UX
+- `INTENT_PATTERNS` extended for `explore_my_taste` and `discover`
+- Agent suggestions → Chainlit quick-reply chips (Actions + `cl.on_action`)
+- Track list rendering (stretch)
+- Golden dataset expanded with 5 new intent examples
+
+### 7c — Genre Lineage, Taste Analysis, Cross-Session Memory
+- `get_genre_context_tool` using structured Tavily genre queries
+- `get_taste_analysis_tool` comparing short-term vs long-term artists
+- Cross-session memory: `InMemoryStore` → env-switched Postgres/SQLite store via `get_store()`
+- Memory persistence test
 
 ## Graph Topology (post-5b)
 
@@ -96,17 +136,32 @@ START → trim_history → classify_intent → [route_after_classify]
 
 ## Gaps vs Peer Repos
 
-From research into three peer Spotify agent repos:
+From research into six Spotify peer repos (three MCP/AI agents + three utility apps):
 
-| Gap | Missing capability |
-|---|---|
-| No listening history persistence | Can't answer "what were my top artists this year?" — only live `recently_played` (50 tracks) |
-| No temporal analytics | No play counts, listening timeline, weekday/time-of-day patterns |
-| No album-level lookup | Can't answer "when was [album] released?" or "how many tracks?" |
-| No Spotify `/recommendations` tool | Agent can't compare "Spotify's recommendation vs mine" |
-| No direct artist profile query | Can't answer "how popular is X?" or "how many followers?" |
+| Gap | Spotify API | Effort | Impact |
+|---|---|---|---|
+| **No Spotify Affinity API** | `/me/top/tracks`, `/me/top/artists` (3 time ranges: 4w/6m/all-time, up to 100 results) | Small | **High** — "who are my top artists this month?" |
+| **No listening history persistence** | `/me/player/recently-played` (max 50; must poll hourly) + GDPR export for full history | Medium | High — enables temporal analytics |
+| **No temporal analytics** | Derived from persisted history | — | High — play counts, listening timeline, weekday patterns |
+| **No followed-artists + new-release tracking** | `/me/following`, `/artists/{id}/albums` | Medium | Medium — "what has [artist] released recently?" |
+| **No Spotify `/recommendations` with tuneable params** | `/v1/recommendations?target_energy=...` | Small | Medium — "find tracks like this playlist but more acoustic" |
+| **No album-level lookup** | `/v1/search?type=album` | Small | Medium — "when was [album] released?" |
+| **No direct artist profile query** | `/v1/search?type=artist` | Small | Medium — popularity, followers, Spotify-assigned genres |
+| **No currently-playing / playback control** | `/me/player/*` (needs extra OAuth scopes) | Small | Low — niche, async UI |
+| **No saved/liked tracks sync** | `/me/tracks` (library) | Medium | Low — we have `faves` table already |
 
-These are natural Phase 6+ additions.
+**Priority:** Spotify Affinity API (`/me/top/`) is the highest-ROI addition — available instantly (no export needed), three time windows, Spotify's own affinity calculation.
+
+**Key insight from peer repos:** Since Spotify only returns the last 50 recently-played tracks, you MUST poll frequently (hourly) to build a listening history. The GDPR privacy export is the only way to get historical data older than ~50 plays.
+
+**What we have that peers don't:**
+- GMM + LightGBM ML recommender (no peer uses trained models)
+- ENOA genre taxonomy (6k+ genre spatial map)
+- Persistent taste memory (langmem across sessions)
+- Full RAG pipeline (hybrid search, Wikipedia, reranking)
+- Multi-node agent graph (intent classification, query rewriting, validation)
+
+These are natural Phase 7+ additions.
 
 ## See Also
 - [[Agent Memory Types]]

@@ -1,6 +1,6 @@
 # Agentic RAG Patterns
 
-**Source:** agentic-rag-copilot-research, rag-agent-template-research  
+**Source:** agentic-rag-copilot-research, rag-agent-template-research
 **Relevance:** Advanced retrieval patterns for agents that need to decide whether, what, and how to retrieve
 
 ---
@@ -81,8 +81,8 @@ embedding = embedder.embed("query: " + hypothesis.content)
 results = retriever.retrieve(embedding, k=10)
 ```
 
-**When HyDE helps:** factual lookup where the user doesn't know the right vocabulary.  
-**When HyDE hurts:** ambiguous or conversational queries — a confidently wrong hypothesis retrieves irrelevant passages that reinforce the wrong answer.  
+**When HyDE helps:** factual lookup where the user doesn't know the right vocabulary.
+**When HyDE hurts:** ambiguous or conversational queries — a confidently wrong hypothesis retrieves irrelevant passages that reinforce the wrong answer.
 **Cost:** 1 Haiku call (~100ms) per query. Gate behind `planning_mode="full"` config flag.
 
 ---

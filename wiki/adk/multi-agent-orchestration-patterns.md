@@ -148,3 +148,4 @@ This prevents schema drift as agents evolve independently.
 - [[LangGraph Advanced Patterns]]
 - [[VA Product Design Patterns]]
 - [[Runtime Topology and Checkpointer Alignment]]
+- [[ADK Workflow Agents]]

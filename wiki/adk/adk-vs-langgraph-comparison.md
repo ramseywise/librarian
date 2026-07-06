@@ -2,7 +2,7 @@
 title: ADK vs LangGraph Comparison
 tags: [adk, langgraph, comparison]
 summary: Side-by-side mental model comparison of Google ADK and LangGraph — primitive mappings, weighted scoring (LangGraph 716/845 for AWS/ADK-compatible context), VA team production findings, and the recommended vocabulary alignment approach.
-updated: 2026-06-05
+updated: 2026-07-06
 sources:
   - raw/playground-docs/adk-orchestration-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
@@ -11,6 +11,8 @@ sources:
   - raw/meetings/2026-04-15-langgraph-huddle.md
   - raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
   - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
+  - raw/notion/2026-04-21-agt09-adk-vs-langgraph-spike.md
+  - raw/sessions/claude-2026-04-12-i-added-a-folder-google-adk-masterclass-406fcc7f.md
 ---
 
 # ADK vs LangGraph Comparison
@@ -207,6 +209,7 @@ The "Brain and Limbs" hybrid option was also considered: Python for orchestratio
 The VA team (Billy.dk virtual assistant) is transitioning to LangGraph for its next iteration. Current production is Google ADK + Next.js (va-agents on AWS ECS). The transition is enabled by extracting tools into the MCP layer (va-hypernova) — the agent framework can change without rewriting the tool layer.
 
 ## See Also
+- [[ADK JS TypeScript Patterns]]
 - [[ADK vs LangGraph Decision]]
 - [[LangGraph CRAG Pipeline]]
 - [[ADK Context Engineering]]

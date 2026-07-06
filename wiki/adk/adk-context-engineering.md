@@ -2,7 +2,7 @@
 title: ADK Context Engineering
 tags: [adk, context-management, pattern]
 summary: How the ADK samples repo manages context — SKILL.md pattern, three skill-loading strategies, static vs dynamic instruction, and history compaction.
-updated: 2026-04-24
+updated: 2026-07-06
 sources:
   - raw/playground-docs/adk-samples-patterns-analysis.md
   - raw/playground-docs/rag-agent-template-research.md
@@ -10,6 +10,7 @@ sources:
   - raw/claude-docs/playground/agents/comparator.md
   - raw/claude-docs/playground/agents/grader.md
   - raw/claude-docs/playground/skills/a2ui-workspace/README.md
+  - raw/sessions/claude-2026-04-17-can-you-scan-the-adk-samples-main-i-adde-7a25dbd0.md
 ---
 
 # ADK Context Engineering
@@ -77,6 +78,8 @@ The frontmatter declares which MCP tools to activate. The body is the instructio
 
 **Current state:** rag_poc uses an implicit Strategy C — one tool always bound, no lazy loading. Fine for single-domain RAG but doesn't scale to multi-domain.
 
+**Comparison finding (session `7a25dbd0`, 2026-04-17):** Scanning `adk-samples-main` against `rag_poc` confirmed this gap. The ADK samples repo uses Strategy B (native SkillToolset) for its main multi-domain agent. For a single-domain RAG agent (one tool, one corpus), Strategy C is acceptable. The upgrade to Strategy B is warranted when adding a second domain (e.g. FAQ + structured data lookup).
+
 ## LangGraph Translation of Strategy B
 
 | ADK Concept | LangGraph Implementation |
@@ -97,13 +100,51 @@ The frontmatter declares which MCP tools to activate. The body is the instructio
 - **Why:** preserves factual state across compaction; Sonnet is overkill for summarization
 
 ```python
-# Summarization node pattern
+# Summarization node pattern (LangGraph manual implementation)
 if len(state["messages"]) >= 8:
     summary = await haiku.ainvoke(
         [SystemMessage(SUMMARIZER_PROMPT)] + state["messages"][-8:]
     )
     state["messages"] = [summary] + state["messages"][-4:]
 ```
+
+### ADK Native Compaction API
+
+ADK provides built-in context compaction via `EventsCompactionConfig` on the `App` object — no custom node needed:
+
+```python
+from google.adk.apps.app import App, EventsCompactionConfig
+from google.adk.apps.llm_event_summarizer import LlmEventSummarizer
+from google.adk.models import Gemini
+
+app = App(
+    name="my_app",
+    root_agent=root_agent,
+    events_compaction_config=EventsCompactionConfig(
+        compaction_interval=20,   # summarize every N events (not messages)
+        overlap_size=3,           # include last 3 events in next window
+        summarizer=LlmEventSummarizer(llm=Gemini(model="gemini-3-flash-preview")),
+    ),
+)
+```
+
+ADK also supports context caching for large system prompts (prefix caching equivalent):
+
+```python
+from google.adk.agents.context_cache_config import ContextCacheConfig
+
+app = App(
+    name="my_app",
+    root_agent=root_agent,
+    context_cache_config=ContextCacheConfig(
+        min_tokens=2048,     # only cache if context exceeds this
+        ttl_seconds=1800,    # cache lifetime
+        cache_intervals=10,  # re-cache every N invocations
+    ),
+)
+```
+
+See [[ADK Python API Reference]] for full API signatures and parameter descriptions.
 
 ## Context Management for Voice/BIDI
 
@@ -204,6 +245,7 @@ The skill `description` field is the only thing Claude reads when deciding wheth
 ---
 
 ## See Also
+- [[ADK Python API Reference]]
 - [[ADK vs LangGraph Comparison]]
 - [[Agent Memory Types]]
 - [[LangGraph Advanced Patterns]]

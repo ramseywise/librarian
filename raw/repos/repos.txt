@@ -1,0 +1,12 @@
+# Repos to scrape → raw/repos/
+# One absolute path per line. Use # for comments.
+# Run: uv run python etl/scrape_repos.py
+#
+# What gets extracted per repo:
+#   CLAUDE.md, README.md, SANYI.md
+#   .claude/skills/**/*.md
+#   .claude/docs/**/*.md
+#   docs/**/*.md
+#   .agents/**/*.md
+#
+# Add your active repos below:

@@ -37,7 +37,7 @@ from langgraph.types import interrupt
 
 def confirm_plan_node(state: AgentState) -> AgentState:
     plan = state["plan"]
-    
+
     # Only interrupt if the plan touches financial data
     if any(step.tool in HIGH_RISK_TOOLS for step in plan.steps):
         user_response = interrupt({
@@ -47,7 +47,7 @@ def confirm_plan_node(state: AgentState) -> AgentState:
         })
         if user_response != "approved":
             raise ValueError("Plan rejected by user")
-    
+
     return state
 ```
 
@@ -88,18 +88,18 @@ def clarify_node(state: AgentState, llm) -> dict:
     if state["clarification_rounds"] >= MAX_CLARIFICATION_ROUNDS:
         # Budget exhausted — proceed with best-effort interpretation
         return {"clarification_complete": True}
-    
+
     missing = detect_missing_info(state["messages"])
     if not missing:
         return {"clarification_complete": True}
-    
+
     question = interrupt({
         "type": "clarification",
         "question": missing.question,
         "round": state["clarification_rounds"] + 1,
         "max_rounds": MAX_CLARIFICATION_ROUNDS,
     })
-    
+
     return {
         "messages": state["messages"] + [HumanMessage(content=question)],
         "clarification_rounds": state["clarification_rounds"] + 1,
@@ -118,14 +118,14 @@ After planning (but before execution), show the full plan for explicit approval:
 ```python
 def schedule_confirm_node(state: AgentState) -> dict:
     plan = state["task_plan"]
-    
+
     response = interrupt({
         "type": "confirm_execution",
         "steps": [{"tool": s.tool, "description": s.description} for s in plan.steps],
         "estimated_api_calls": len(plan.steps),
         "irreversible": any(s.irreversible for s in plan.steps),
     })
-    
+
     if response == "rejected":
         return {"task_cancelled": True}
     return {}  # proceed to executor
@@ -203,17 +203,17 @@ def should_require_approval(tool_name: str, args: dict) -> bool:
 
 async def tool_approval_node(state: AgentState) -> dict:
     pending = state["pending_tool_call"]
-    
+
     if not should_require_approval(pending["tool"], pending["args"]):
         return {"approved": True}
-    
+
     response = interrupt({
         "type": "tool_approval",
         "tool": pending["tool"],
         "args": pending["args"],
         "consequence": TOOL_CONSEQUENCES[pending["tool"]],
     })
-    
+
     return {"approved": response == "approved"}
 ```
 

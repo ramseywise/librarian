@@ -41,7 +41,46 @@ to wiki files. Chainlit for the chat UI.
   - `raw/playground-docs/` — Research + plan docs from playground repo and `.claude/docs/archived/`
   - `raw/pdfs/` — Extracted text from research PDFs
   - `raw/web/` — Saved web research, bookmarks, article captures
-  - `raw/repos/` — README / architecture snapshots from key repos
+  - `raw/repos/` — CLAUDE.md, README, skill files, and docs scraped from active repos via `etl/scrape_repos.py`; configure which repos to scrape in `raw/repos/repos.txt`
+  - `raw/books/` — Curated quotes and notes from books (format below)
+  - `raw/articles/` — Web article captures with highlighted quotes (format below)
+
+#### Book source format (`raw/books/<author-title.md>`)
+
+```markdown
+---
+source_type: book
+title: "Title of the Book"
+author: "Author Name"
+year: YYYY
+---
+
+## Chapter N — Chapter Title
+
+> "Exact quote that is relevant to agent design or engineering."
+
+**Note:** Why this quote matters for your work — connect it to a pattern, decision, or technique.
+
+> "Another relevant quote."
+
+**Note:** Application or implication.
+```
+
+#### Article source format (`raw/articles/<YYYY-MM-DD-slug.md>`)
+
+```markdown
+---
+source_type: article
+title: "Article Title"
+author: "Author Name"
+url: https://...
+published: YYYY-MM-DD
+---
+
+> "Key quote from the article."
+
+**Note:** Why this is relevant.
+```
 
 ### `wiki/` — LLM-Compiled Knowledge
 
@@ -59,8 +98,9 @@ to wiki files. Chainlit for the chat UI.
   - `wiki/memory/` — Agent memory patterns (in-context, episodic, semantic, procedural)
   - `wiki/mcp/` — Model Context Protocol, tool schemas, A2A
   - `wiki/meta/` — Wiki-about-wiki: Karpathy pattern, Claude workflow system, session knowledge
-  - `wiki/projects/` — Per-project knowledge (librarian, listen-wiseer, va-agent, shine)
-  - `wiki/_index.md` — Auto-generated TOC, updated after every ingest
+  - `wiki/projects/` — Per-project knowledge (generic, public — librarian, listen-wiseer, etc.)
+  - `wiki/private/` — Company/project-specific pages; **gitignored, never committed**. Move pages here when they contain proprietary context, client names, or internal project details. Use the same page format — they are still compiled and queryable locally.
+  - `wiki/_index.md` — Auto-generated TOC, updated after every ingest. Do not list `wiki/private/` entries here.
   - `wiki/_conflicts.md` — Flagged contradictions between sources
 - **ADRs live in their domain directory** — not a flat `decisions/` dir. Use `type: decision` tag.
 - **Projects stay flat** in `wiki/projects/` until a project exceeds ~5 pages.
@@ -185,6 +225,8 @@ Output a prioritised list: BLOCKER (conflicts, dead links) → WARN (orphans, st
 
 ## Conflict Handling
 
+### Flagging (during ingest)
+
 When a new source contradicts an existing wiki claim:
 
 1. **Do not silently overwrite** the existing claim.
@@ -205,6 +247,23 @@ When a new source contradicts an existing wiki claim:
 
 3. Tag the affected page with `conflict` in frontmatter.
 4. During lint, surface all unresolved conflicts.
+
+### Resolution (human review step)
+
+To resolve a conflict in `wiki/_conflicts.md`:
+
+1. Read both claims and their source files.
+2. Determine which is correct — or synthesise both if both are partially right.
+3. Update the affected wiki page with the correct/synthesised claim; cite both sources.
+4. Mark the conflict entry resolved:
+
+```markdown
+**Status:** Resolved — [YYYY-MM-DD]
+**Resolution:** Claim A was correct; Claim B referred to a different threshold (chunk-level vs. reranker-level). Updated [[Affected Page]] to distinguish both contexts.
+```
+
+5. Remove the `conflict` tag from the page frontmatter.
+6. Run `/lint` to confirm no remaining unresolved conflicts.
 
 ---
 

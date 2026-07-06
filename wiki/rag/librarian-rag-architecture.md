@@ -2,7 +2,7 @@
 title: Librarian RAG Architecture
 tags: [rag, langgraph, pattern]
 summary: The five-agent Librarian pipeline — Plan, Retrieval, Reranker, Generation, and Eval agents wired by a LangGraph StateGraph with CRAG retry loop.
-updated: 2026-04-24
+updated: 2026-07-06
 sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/playground-docs/librarian-architecture-decisions.md
@@ -10,6 +10,7 @@ sources:
   - raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md
   - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
   - raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
+  - raw/claude-docs/playground/docs/plans/rag-migration-plan.md
 ---
 
 # Librarian RAG Architecture
@@ -173,6 +174,36 @@ This makes it trivial to wrap retrieval for any new framework (LangGraph ToolNod
 1. **Multi-query API surface** — `/query` endpoint takes single `query: str`; the LLM caller can't drive multi-query. Should accept `queries: List[str]` (1-3).
 2. **Global dedup** — fingerprint dedup exists within `EnsembleRetriever`; no cross-query dedup across parallel API calls.
 3. **Pydantic response schema** — HTTP contract should be explicit `QueryResponse(passages, retrieval_strategy, query_count, latency_ms)`.
+
+## Three-Store Corpus Layout
+
+When migrating or building a multi-corpus RAG service, use a three-store layout per corpus:
+
+```
+data/
+  raw/
+    <corpus_name>/          ← scraped source files (JSONL from raptor_scraper etc.)
+  stores/
+    vectordb/
+      <corpus>.duckdb       ← dense embeddings (rag_chunks table, FLOAT[] embedding column)
+    metadb/
+      <corpus>_meta.db      ← document-level bookkeeping (SHA-256 checksum, chunk_count, ingested_at, source_file)
+    graphdb/
+      <corpus>/             ← entity/relation graph for multi-hop queries (future; Kuzu recommended over Neo4j for embedded use)
+```
+
+**Ingest pipeline** runs offline, one-time per corpus update:
+```
+<corpus_raw>/ → parse → chunk → embed → write → <corpus>.duckdb + <corpus>_meta.db
+```
+
+Both read and query paths are **read-only consumers** of the stores. No service writes to the index at runtime.
+
+**Critical gap to fix during migration:** Add an `ingest_runs` table to metadb capturing model name, chunking strategy class, chunking parameters, and run timestamp. Without this, the index is not reproducible when reindexing or switching embedding models.
+
+**Latency note:** Local DuckDB read (~30–80ms) is significantly faster than AWS Bedrock Knowledge Base network round-trip (~100–200ms), even before adding reranking.
+
+See [[Bedrock KB vs LangGraph Decision]] for the build vs buy trade-off analysis.
 
 ## See Also
 - [[LangGraph CRAG Pipeline]]

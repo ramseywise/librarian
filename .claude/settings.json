@@ -31,7 +31,12 @@
       "Bash(python3 *)",
       "Bash(git *)",
       "Bash(uv run *)",
-      "Bash(ls *)"
+      "Bash(ls *)",
+      "mcp__claude_ai_Google_Drive__list_recent_files",
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "mcp__claude_ai_Notion__notion-search",
+      "mcp__claude_ai_Notion__notion-fetch",
+      "mcp__claude_ai_Notion__notion-query-meeting-notes"
     ]
   },
   "mcpServers": {

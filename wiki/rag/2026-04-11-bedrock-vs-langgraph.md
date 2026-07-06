@@ -2,10 +2,11 @@
 title: Bedrock KB vs LangGraph Decision
 tags: [rag, infra, decision]
 summary: Decision framework for Bedrock Knowledge Bases vs. LangGraph CRAG pipeline — quality, observability, cost, and migration path analysis.
-updated: 2026-04-24
+updated: 2026-07-06
 sources:
   - raw/playground-docs/bedrock-kb-research.md
   - raw/playground-docs/librarian-architecture-decisions.md
+  - raw/sessions/claude-2026-04-12-ok-we-have-this-doc-that-is-a-comparison-8d1a71b0.md
 ---
 
 # Bedrock KB vs LangGraph Decision
@@ -108,6 +109,19 @@ Add `/query` endpoint to playground → change `fetch_support_knowledge` from Be
 | Infrastructure | Zero | One service | Two services |
 | Long-term scalability | Constrained by Bedrock | High | High |
 | Migration risk | Low | Medium | Low (A→C is 1 fn change) |
+
+## Engineering Risk Matrix (session 8d1a71b0)
+
+A four-axis risk assessment across the three options (from April 2026 tradeoff research):
+
+| Risk | Full Bedrock (A) | Full LangGraph (B) | Polyglot (C) |
+|---|---|---|---|
+| Integration | Low — AWS-native, TS SDK | Medium — Python service, HTTP boundary | Medium-High — two services, deploy complexity |
+| Cost | Low fixed; high at scale | Fixed Fargate; model tokens only | Same as B + TS infra |
+| Latency | ~1–2.5s blocking | ~800ms–1.5s TTFT (streaming) | ~200ms overhead for extra hop |
+| Hallucination | Highest — black box, no reranking | Lowest — CRAG gate, cross-encoder, LangFuse diagnostics | Same as B |
+
+The hallucination risk gap is the decisive factor for production use: when Bedrock KB fails, there is no signal to intercept or improve on. The LangGraph `confidence_score` gate prevents low-confidence responses from reaching the user.
 
 ## Recommendation
 

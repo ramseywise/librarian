@@ -259,6 +259,9 @@ This is especially important for edge cases — judge prompts optimized on avera
 ---
 
 ## See Also
+- [[RAG Eval Metrics Suite]]
+- [[Synthetic Dataset Generation for RAG Eval]]
+- [[Conversation Repository Pattern]]
 - [[RAG Retrieval Strategies]]
 - [[RAG Reranking]]
 - [[LangGraph CRAG Pipeline]]

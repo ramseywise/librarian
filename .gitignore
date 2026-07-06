@@ -24,7 +24,7 @@ wiki/.obsidian/workspace-mobile.json
 raw/pdfs/*.pdf
 raw/pdfs/*.PDF
 
-# DuckDB index (rebuild from wiki/)
+# DuckDB indexes (rebuild from wiki/)
 *.duckdb
 *.duckdb.wal
 
@@ -38,6 +38,9 @@ raw/pdfs/*.PDF
 .claude/settings.local.json
 # Ephemeral planning docs — canonical knowledge belongs in wiki/
 .claude/docs/
+
+# Private wiki pages — company/project-specific content not committed to the public repo
+wiki/private/
 # Playground skills toolkit copies accidentally nested here — exclude until relocated
 .claude/skills/skills/
 .claude/skills/old/

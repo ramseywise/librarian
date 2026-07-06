@@ -2,7 +2,7 @@
 title: RAG Knowledge Preparation
 tags: [rag, infra, concept]
 summary: The process of transforming human-readable documentation into machine-retrievable knowledge units — chunking, metadata tagging, rewriting for self-containment, and enforcing consistency.
-updated: 2026-04-25
+updated: 2026-07-06
 sources:
   - raw/notion/2026-04-07-support-knowledge-agent.md
   - raw/notion/2026-04-13-rag-pipeline-requirements.md

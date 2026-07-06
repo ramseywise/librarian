@@ -1,6 +1,6 @@
 # RAG Pipeline Component Tradeoffs
 
-**Source:** rag-tradeoffs.md, rag-agent-template-research.md  
+**Source:** rag-tradeoffs.md, rag-agent-template-research.md
 **Relevance:** Decision log per pipeline stage — what to pick and why at each layer
 
 ---

@@ -273,3 +273,7 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[Observability — LangFuse vs LangSmith Decision]]
 - [[LangGraph State Reducers]]
 - [[Orchestration Architecture Decision]]
+- [[ADK Deployment Patterns]]
+- [[ADK Scaffold Patterns]]
+- [[Cloud Run + Cloud SQL Pattern]]
+- [[PGVector Migration Pattern]]

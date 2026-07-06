@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [index]
 summary: Auto-generated table of contents for the obsidian-kb wiki. Updated after every ingest.
-updated: 2026-06-05
+updated: 2026-07-06
 ---
 
 # Wiki Index
@@ -22,11 +22,17 @@ updated: 2026-06-05
 | [[RAG Evaluation]] | Three-tier eval architecture — golden datasets, LLM-as-judge, failure clustering |
 | [[RAG Knowledge Preparation]] | Transforming human-readable documentation into machine-retrievable knowledge units |
 | [[RAG API Design Patterns]] | Multi-query surface, fingerprint-based global dedup, typed Pydantic response contract |
+| [[Agentic RAG — Advanced Patterns]] | Self-RAG vs CRAG, Adaptive RAG, GraphRAG, HyDE, Multi-Query RAG-Fusion, A2A protocol mapping, latency budgets |
 | [[Reciprocal Rank Fusion (RRF)]] | Score-free rank-position fusion algorithm for merging BM25 + dense vector results |
 | [[Embedder Warmup]] | Force-loads embedding model at startup to prevent 3–8s cold-start spike on first request |
 | [[CRAG Retry Logic]] | Confidence-gated conditional back-edge that re-enters retrieval below reranker threshold |
 | [[Librarian RAG Architecture]] | Five-agent Librarian pipeline — Plan, Retrieval, Reranker, Generation, Eval wired by LangGraph |
 | [[Bedrock KB vs LangGraph Decision]] | Decision framework for Bedrock KBs vs LangGraph CRAG pipeline — quality, cost, migration path |
+| [[VA vs HCA Retrieval Evaluation]] | Production benchmarking (MRR 0.286 vs 0.248, n=754), 47% corpus ceiling analysis, failure taxonomy, and two-lever improvement framework |
+| [[Conversation Repository Pattern]] | Two-table PostgreSQL schema for multi-turn conversation state — conversations + messages with JSONB trace and sources columns |
+| [[Semantic Cache Pipeline]] | 3-tier zero-retrieval-cost path for paraphrase queries — cache lookup → source router → CRAG fallback, with offline seed build and threshold sweep |
+| [[Vector Database Comparison]] | Side-by-side of DuckDB, ChromaDB, pgvector, OpenSearch, Pinecone, and GCP Discovery Engine across cost, scalability, search modes, and migration notes |
+| [[GCP Vertex AI Search vs Bedrock KB]] | Architecture and behavioral comparison of GCP Vertex AI Search vs AWS Bedrock KB — score semantics, language handling, session state, and when to switch |
 
 ---
 
@@ -54,6 +60,13 @@ updated: 2026-06-05
 
 | Page | Summary |
 |---|---|
+| [[ADK Python API Reference]] | Quick reference for the ADK Python SDK — agents, tools, state, callbacks, plugins, artifacts, memory, context caching, and compaction |
+| [[ADK Workflow Agents]] | Sequential, Parallel, and Loop agents — deterministic control flow without LLM orchestration |
+| [[ADK Deployment Patterns]] | Agent Engine vs Cloud Run vs GKE decision matrix, CI/CD with WIF, service account architecture, event-driven triggers, Terraform patterns |
+| [[ADK Eval Guide]] | Eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, user simulation |
+| [[ADK User Simulation Eval]] | Dynamic conversation testing using ConversationScenario and user simulator LLM |
+| [[ADK Observability]] | Four observability tiers — Cloud Trace, prompt-response logging, BigQuery Agent Analytics, third-party platforms |
+| [[ADK Scaffold Patterns]] | Agent Starter Pack CLI, templates, DESIGN_SPEC.md contract, prototype-first workflow |
 | [[ADK Context Engineering]] | SKILL.md pattern, three skill-loading strategies (A/B/C), history compaction |
 | [[ADK vs LangGraph Comparison]] | Side-by-side mental model, primitive mappings, and when to use each |
 | [[SKILL.md Pattern]] | ADK skill declaration format — YAML frontmatter + instruction body, three loading strategies |
@@ -63,6 +76,8 @@ updated: 2026-06-05
 | [[Multi-Modal Agent Response]] | Agent response combining text, charts, interactive UI, and task surfaces |
 | [[Plan and Execute Pattern]] | Separating planning from execution for multi-step tasks with HITL confirmation |
 | [[ADK vs LangGraph Decision]] | Decision to keep Librarian on LangGraph — vocabulary alignment is the right scope |
+| [[HITL and Interrupt Patterns]] | Six HITL patterns — static/dynamic breakpoints, clarification loop, scheduler gate, tool approval, time-travel/fork |
+| [[ADK JS TypeScript Patterns]] | Google ADK TypeScript SDK (@google/adk 0.5.0) — LlmAgent, FunctionTool, Zod structured output, NDJSON streaming, pitfalls |
 
 ---
 
@@ -78,6 +93,11 @@ updated: 2026-06-05
 | [[Input Guardrails Pipeline]] | 7-stage deterministic safety pipeline — LLM-free by design |
 | [[Observability — LangFuse vs LangSmith Decision]] | LangFuse first — native ragas/deepeval, self-hostable, GDPR-friendly; Shine weighted score 8.58/10 |
 | [[Langfuse Platform]] | Open-source LLM observability — tracing, prompt management, eval; Shine adoption status (legal cleared, SSO pending) |
+| [[Observability and Runtime Patterns]] | LangSmith vs Langfuse choice, tracing architecture, checkpointer alignment rules, trigger patterns, key monitoring signals |
+| [[Langfuse ADK Tracing Patterns]] | Two-layer ADK + Langfuse tracing — OTel auto-instrumentation + @observe decorators; session grouping, RAG path tagging, first-class Scores, error visibility |
+| [[Cloud Run + Cloud SQL Pattern]] | Single Cloud Run container + Cloud SQL Auth Proxy (unix socket) — sizing rationale, --workers 1, KB update workflow |
+| [[PGVector Migration Pattern]] | NumPy .npz → pgvector migration — schema, cosine distance operator, IVFFlat index, pg_dump/restore via Auth Proxy |
+| [[Presidio PII Redaction for Langfuse]] | Presidio + spaCy fr_core_news_lg + CamemBERT + custom regex for French financial PII — wired via Langfuse SDK mask hook |
 
 ---
 
@@ -91,6 +111,7 @@ updated: 2026-06-05
 | [[Chain of Thought]] | Inference-time technique to show reasoning before answering; improves multi-step logic |
 | [[ACI (Agent-Computer Interface)]] | Tool design discipline — description, parameter, and return-value conventions |
 | [[Agentic Workflow Patterns]] | Anthropic's five composable workflow patterns and ACI tool design |
+| [[Multi-Repo Claude Organization]] | Organizing .claude/, .agents/, and docs/ across related repos — avoiding skill sprawl |
 
 ---
 
@@ -101,10 +122,17 @@ updated: 2026-06-05
 | Page | Summary |
 |---|---|
 | [[Copilot Learning Loop]] | Operational process for improving agent systems — signal capture, knowledge refinement |
+| [[Anthropic Three-Tier Eval Taxonomy]] | Three-tier agent eval framework (unit/trajectory/e2e) — 70% regression coverage from deterministic unit evals, RAGAS+DeepEval for e2e |
 | [[HITL Annotation Pipeline]] | Two-queue annotation workflow, inter-annotator agreement gate, feedback routing |
 | [[Direct Preference Optimization]] | Training-time preference alignment using preference pairs — not applicable to API-only models |
 | [[VA Eval Harness]] | Four eval suites, tool_trajectory_avg_score, LLM judge, Makefile flow, CI regression gate |
+| [[Galactus Eval Architecture]] | Routing vs domain eval (Strand A/E/F), grader interface, three-tier coverage, ablation methodology, GT pipeline |
+| [[LLM Grader Calibration Insights]] | Custom v3 grader vs DeepEval defaults, domain-shift failure pattern, passage context requirement |
 | [[Agentic KPI Trees]] | KPI tree pattern — goal completion rate, no-touch rate, auto-reconciliation accuracy for VA/accounting/matching agents |
+| [[RAG Eval Metrics Suite]] | Eight-metric RAG eval framework — runtime (faithfulness, naturalness, relevance, contextual relevance) vs offline (completeness, recall, document precision, calibration) |
+| [[Synthetic Dataset Generation for RAG Eval]] | Four-mode pipeline (init/refresh/regenerate/export) with article fingerprinting, stable content-derived IDs, and four query categories |
+| [[Eval Gate Contract]] | 8-gate RAG eval pipeline (Corpus QA → Index Readiness → Retrieval Optimization → Model/Runtime → Agent Retrieval → Generation Quality → Grader Calibration → Report) with canonical row pools and failure taxonomy |
+| [[Grounding Claim Methodology]] | Yellow highlighter metaphor for citation verification — four-tier grounding, quote word-boundary check, Tier 1–3 hard fails, Tier 4 log-only diagnostics |
 
 ---
 
@@ -128,6 +156,7 @@ updated: 2026-06-05
 |---|---|
 | [[Agent Memory Types]] | Four memory types and LangGraph BaseStore — when to use each |
 | [[Self-Learning Agents]] | Four-level improvement stack — inference-time, session-time, operational, training-time |
+| [[Memory Architecture for VA Agents]] | Three-tier cognitive model (semantic/episodic/procedural), SQLite pattern, context window management, reflection pattern |
 
 ---
 
@@ -139,6 +168,7 @@ updated: 2026-06-05
 |---|---|
 | [[MCP Protocol]] | Tool definitions separated from agents — Resources, Tools, Prompts; runtime tool discovery |
 | [[A2A Agent Protocol]] | Google's agent-to-agent specification — task lifecycle, agent cards, LangGraph mapping |
+| [[MCP Server Security Patterns]] | Read-only invariant, sandbox isolation, secrets handling, and what not to expose over MCP |
 
 ---
 
@@ -150,6 +180,9 @@ updated: 2026-06-05
 |---|---|
 | [[Karpathy LLM Wiki Pattern]] | The compiler analogy for personal KBs — raw in, LLM compiles to wiki, no vector infra needed |
 | [[Claude Workflow System]] | Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints |
+| [[Claude Code Hook Architecture]] | Lifecycle hooks (PreToolUse/PostToolUse/Stop), exit-code protocol, current hook suite, pattern for adding new hooks |
+| [[SANYI Change-Contract System]] | Three-layer change contract (变易/简易/不易) for agent architectures — init/review/audit modes, violation codes |
+| [[Session Knowledge Capture Patterns]] | Output type taxonomy, pre-compact enrichment, and session-as-source-of-truth approach |
 | [[Session Log]] | Chronological index of all Claude Code and Codex sessions — what was worked on |
 | [[Session Insights]] | Friction patterns, recurring themes, skill candidates from 84 facet-analyzed sessions |
 
@@ -157,20 +190,16 @@ updated: 2026-06-05
 
 ## Projects
 
-*Per-project knowledge pages.*
+*Per-project knowledge pages — public, reusable.*
 
 | Page | Summary |
 |---|---|
 | [[Librarian Project]] | The Librarian RAG service — stack, architecture decisions, production status |
 | [[Librarian KB — Build Plan]] | Phased build plan — Phases 1–5 complete, Phase 6 active, Phases 9–15 future |
+| [[Librarian Graph Explorer]] | Local React Flow wiki graph explorer — multi-edge toggling (wikilink/semantic/tag-shared), UMAP semantic layout, agent chat + write-back |
 | [[Listen-Wiseer Project]] | Spotify recommendation agent — ENOA taste map, LangGraph ReAct + Chainlit, DuckDB vss RAG |
-| [[VA Agent Project]] | Billy accounting VA agent — dual ADK+LangGraph implementations, 57 tools, 9 phases complete; production va-agents + va-hypernova MCP migration |
-| [[Evaluation & Improvement Project (VIR)]] | Shine Q2 2026 — Billy→Bedrock KB ingestion, CS annotation pipeline, golden eval set |
-| [[Shine Copilot Architecture]] | Shine's embedded guidance/orchestration/execution layer — VA team owns coordination |
-| [[Shine Knowledge Agent]] | Shine's Help Center RAG system — knowledge retrieval for Copilot, ≥60% self-service target |
-| [[AI Engineering Chapter @Shine]] | Cross-company AI chapter (Shine) — bi-weekly forum; Langfuse adoption, framework survey, KPI alignment across VA/Banking/Advisor/Matching |
-| [[Shine Chat Agent]] | Shine Banking customer support chatbot — Vertex AI Search RAG, 3-layer guardrails, Langfuse-first, EoQ2 2026 launch |
-| [[VA Hypernova MCP]] | VA team MCP server PoC — 18 Billy.dk tools extracted from va-agents to AWS Bedrock AgentCore Runtime |
+
+> **Private project pages** (company-specific) live in `wiki/private/` — gitignored, available locally.
 
 ---
 

@@ -178,14 +178,14 @@ User message → Agent response → [background task: Reflection node → Update
 async def reflection_node(state: AgentState) -> dict:
     if not should_reflect(state):  # check correction signals
         return {}
-    
+
     current_prompt = await store.get(("agents", "billing"), "system_prompt")
-    
+
     updated = await llm.ainvoke(
         f"Given this correction from the user: {state['last_correction']}\n"
         f"Update this system prompt to prevent the same mistake:\n{current_prompt.value['content']}"
     )
-    
+
     await store.put(("agents", "billing"), "system_prompt", {
         "version": current_prompt.value["version"] + 1,
         "content": updated.content,
@@ -204,17 +204,17 @@ Load all three memory tiers at the start of each turn before routing:
 ```python
 async def load_memory_node(state: AgentState, store: BaseStore) -> dict:
     user_id = state["user_id"]
-    
+
     # Semantic — user preferences
     prefs = await store.aget(("users", user_id), "profile")
-    
+
     # Episodic — recent session summary
     today = date.today().isoformat()
     session = await store.aget(("users", user_id), f"session:{today}")
-    
+
     # Procedural — current system prompt version
     system = await store.aget(("agents", "billing"), "system_prompt")
-    
+
     return {
         "user_prefs": prefs.value if prefs else {},
         "session_context": session.value if session else {},

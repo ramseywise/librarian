@@ -1,6 +1,6 @@
 # Eval Harness for VA Agents
 
-**Sources:** adk-agent-samples-main/agents/billy_assistant/eval/, librarian wiki (rag-evaluation.md, copilot-learning-loop.md)
+**Sources:** adk-agent-samples-main/agents/eval/, librarian wiki (rag-evaluation.md, copilot-learning-loop.md)
 
 ---
 
@@ -89,7 +89,7 @@ def tool_trajectory_avg_score(
 ) -> float:
     if not expected:
         return 1.0
-    
+
     matches = 0
     for exp, act in zip(expected, actual):
         tool_match = exp["tool_name"] == act["tool_name"]
@@ -99,7 +99,7 @@ def tool_trajectory_avg_score(
         )
         if tool_match and args_match:
             matches += 1
-    
+
     return matches / len(expected)
 ```
 
@@ -208,10 +208,10 @@ async def test_routing_case(agent, case):
             for m in case["conversation"]
         ]
     })
-    
+
     actual_tools = extract_tool_calls(result)
     score = tool_trajectory_avg_score(case["expected_tool_use"], actual_tools)
-    
+
     assert score >= 0.8, (
         f"Case {case['id']}: tool trajectory score {score:.2f} < 0.8\n"
         f"Expected: {case['expected_tool_use']}\n"
@@ -262,7 +262,7 @@ Run eval on every PR. Fail CI if routing score drops below floor.
 # .github/workflows/eval.yml
 - name: Run eval suite
   run: make eval-routing eval-behavioral
-  
+
 - name: Check score floor
   run: |
     uv run python eval/check_floor.py \

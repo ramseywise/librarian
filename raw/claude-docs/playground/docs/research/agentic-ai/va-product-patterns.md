@@ -1,6 +1,5 @@
 # VA Product Patterns
 
-**Source:** ts_google_adk (Billy Shine Assistant) — production VA embedded in Billy.dk  
 **Relevance:** Product design patterns for VA agents: interaction model, structured output, escalation
 
 ---
@@ -64,7 +63,7 @@ Define escalation triggers in the agent instruction — don't rely on the LLM to
 Trigger `contactSupport: true` when:
 - User expresses frustration (explicit signal words)
 - Same question asked 3+ times in the session
-- Agent fails 2+ times on the same task  
+- Agent fails 2+ times on the same task
 - User explicitly asks for a human
 
 On escalation: generate an Intercom session summary and hand off. The summary should include: what the user was trying to do, what the agent tried, why it failed.

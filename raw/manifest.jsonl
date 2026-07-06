@@ -1,14 +1,101 @@
-{"path": "raw/web/2026-04-24-www-anthropic-com-engineering-building-effective-agents-7d24e5fa.md", "hash": "sha256:ffd0c6a5f3e63c16", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/patterns/agentic-workflow-patterns.md", "wiki/adk/plan-and-execute-pattern.md"]}
-{"path": "raw/web/2026-04-24-modelcontextprotocol-io-introduction-dd33377c.md", "hash": "sha256:950377138ee7bdb5", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/mcp/mcp-protocol.md"]}
-{"path": "raw/web/2026-04-24-cloud-google-com-blog-topics-developers-practitioners-use-go-5e50e6e1.md", "hash": "sha256:84d492e92866e1e6", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/mcp/mcp-protocol.md"]}
-{"path": "raw/claude-docs/listen-wiseer/memory/project_listen_wiseer.md", "hash": "sha256:0860df2fabb9238a", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md","wiki/memory/agent-memory-types.md","wiki/rag/rag-evaluation.md","wiki/rag/rag-retrieval-strategies.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
-{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase4a_agent_chainlit.md", "hash": "sha256:9f4ab6e0b8224965", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md","wiki/memory/agent-memory-types.md","wiki/rag/rag-evaluation.md","wiki/rag/rag-retrieval-strategies.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
-{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md", "hash": "sha256:c3e50415ce56e34c", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md","wiki/memory/agent-memory-types.md","wiki/rag/rag-evaluation.md","wiki/rag/rag-retrieval-strategies.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
-{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase5a_rag.md", "hash": "sha256:5e1c25ffefcc0ec3", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md","wiki/memory/agent-memory-types.md","wiki/rag/rag-evaluation.md","wiki/rag/rag-retrieval-strategies.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
-{"path": "raw/claude-docs/listen-wiseer/docs/research/eval-harness.md", "hash": "sha256:1634d7f8ce593237", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md","wiki/memory/agent-memory-types.md","wiki/rag/rag-evaluation.md","wiki/rag/rag-retrieval-strategies.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
-{"path": "raw/claude-docs/listen-wiseer/docs/research/infra_support.md", "hash": "sha256:fcccc8c26072590f", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md","wiki/memory/agent-memory-types.md","wiki/rag/rag-evaluation.md","wiki/rag/rag-retrieval-strategies.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
-{"path": "raw/claude-docs/listen-wiseer/docs/research/peer-repos.md", "hash": "sha256:373ca0f5c4253653", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md","wiki/memory/agent-memory-types.md","wiki/rag/rag-evaluation.md","wiki/rag/rag-retrieval-strategies.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
-{"path": "raw/claude-docs/listen-wiseer/docs/research/spotify-folder-repos.md", "hash": "sha256:d1c1b3ba9cb39203", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md","wiki/memory/agent-memory-types.md","wiki/rag/rag-evaluation.md","wiki/rag/rag-retrieval-strategies.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
+{"path": "raw/agent-skills/README.md", "hash": "sha256:69c04c0989f1ce67", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-cheatsheet/SKILL.md", "hash": "sha256:cf4e754b9217530f", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-cheatsheet/references/docs-index.md", "hash": "sha256:35c1e5ecc473ecce", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-cheatsheet/references/python.md", "hash": "sha256:07ec14b8dbbdbd01", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-deploy-guide/SKILL.md", "hash": "sha256:98fbad7e27160132", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-deploy-guide/references/agent-engine.md", "hash": "sha256:98aa7a151e8eed91", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-deploy-guide/references/cloud-run.md", "hash": "sha256:81192ff1c92fce2d", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-deploy-guide/references/event-driven.md", "hash": "sha256:25a3eeb25f379c49", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-deploy-guide/references/terraform-patterns.md", "hash": "sha256:f5319c88884352c4", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-dev-guide/SKILL.md", "hash": "sha256:eb9d8c05eadc9200", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-eval-guide/SKILL.md", "hash": "sha256:699aac85531704fe", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-eval-guide/references/builtin-tools-eval.md", "hash": "sha256:6dfb6eceeadaabf6", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-eval-guide/references/criteria-guide.md", "hash": "sha256:a6a2ae2171b988a9", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-eval-guide/references/multimodal-eval.md", "hash": "sha256:7b0326c480c014b6", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-eval-guide/references/user-simulation.md", "hash": "sha256:8ffb5e4b0d2403b3", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-observability-guide/SKILL.md", "hash": "sha256:8c101a7ef36e0d24", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-observability-guide/references/bigquery-agent-analytics.md", "hash": "sha256:b3700f58fe018864", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-observability-guide/references/cloud-trace-and-logging.md", "hash": "sha256:9a7f56e48c7ac78a", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/adk-scaffold/SKILL.md", "hash": "sha256:729233e4186d8128", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/advanced-rag-patterns/SKILL.md", "hash": "sha256:84078106294272a0", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/deep-agents-core/SKILL.md", "hash": "sha256:07b82a267485c995", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/deep-agents-core/references/middleware-patterns.md", "hash": "sha256:37b76c9ae3c2c4b3", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/deep-agents-memory/SKILL.md", "hash": "sha256:3dea5098da27a0ec", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/deep-agents-memory/references/backend-guide.md", "hash": "sha256:6c96c9820a7d3303", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/deep-agents-orchestration/SKILL.md", "hash": "sha256:8528f09d35ea1a82", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/deep-agents-orchestration/references/langgraph-compat.md", "hash": "sha256:edcb069904e10fe4", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/framework-selection/SKILL.md", "hash": "sha256:b6b28b4712078d3f", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langchain-dependencies/SKILL.md", "hash": "sha256:8bc5e8f3fcaec569", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langchain-fundamentals/SKILL.md", "hash": "sha256:b5bd17f0c1833789", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langchain-middleware/SKILL.md", "hash": "sha256:4685303d30225bd6", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langchain-rag/SKILL.md", "hash": "sha256:19b8914b14401771", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langchain-rag/references/advanced-patterns.md", "hash": "sha256:fa0ee82381e6621b", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langchain-rag/references/rag-strategies.md", "hash": "sha256:4b6c7a446c18045a", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langgraph-fundamentals/SKILL.md", "hash": "sha256:3c6eeb5facd72fc2", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langgraph-human-in-the-loop/SKILL.md", "hash": "sha256:3e43a99257a835d3", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/langgraph-persistence/SKILL.md", "hash": "sha256:a3c3fe4339f2822b", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/observability/SKILL.md", "hash": "sha256:760ee2e49b7e0c33", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/agent-skills/voice-agents/SKILL.md", "hash": "sha256:67543c04d1fdf766", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md", "wiki/deep-agents/deep-agents-framework.md", "wiki/deep-agents/deep-agents-memory-backends.md", "wiki/adk/voice-agent-patterns.md"]}
+{"path": "raw/claude-docs/_user/commands/clean_memory.md", "hash": "sha256:d2bc3b78cc12839c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/_user/commands/consolidate.md", "hash": "sha256:8d07db225e86596a", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/_user/commands/end_session.md", "hash": "sha256:9f0efcbe1d1fbb6d", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/_user/commands/insights.md", "hash": "sha256:435d1e5bc8ee51e8", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/_user/commands/logging.md", "hash": "sha256:d7f30c0e01f820cc", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/_user/commands/ml.md", "hash": "sha256:296dee4e132a0f13", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/_user/commands/start_session.md", "hash": "sha256:e5500f7247086f66", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/_user/commands/style.md", "hash": "sha256:0a4660cb48436bd8", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/docs/documents/VIR-257-hc-lg-refactor.md", "hash": "sha256:6660bc9b4078db3b", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md"]}
+{"path": "raw/claude-docs/galactus/docs/documents/VIR-259-extend-escalation-grader.md", "hash": "sha256:92f08abf46f196bf", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md"]}
+{"path": "raw/claude-docs/galactus/docs/plans/VIR-115-pii-pipeline.md", "hash": "sha256:d69914604b550aab", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md", "wiki/infra/pii-masking-approaches.md"]}
+{"path": "raw/claude-docs/galactus/docs/plans/VIR-179-ablation-analysis.md", "hash": "sha256:9abdc6af97d66d8b", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md", "wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/galactus/docs/plans/VIR-212-gt-pipeline.md", "hash": "sha256:237a0ac9c4291a9b", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md", "wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/galactus/docs/plans/VIR-212-gt-verification.md", "hash": "sha256:867079d060301a0f", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md", "wiki/eval/llm-calibration-insights.md"]}
+{"path": "raw/claude-docs/galactus/docs/research/VIR-115-pii-pipeline-design.md", "hash": "sha256:5c3b9b430df5a942", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md", "wiki/infra/pii-masking-approaches.md"]}
+{"path": "raw/claude-docs/galactus/docs/research/VIR-179-ablation.md", "hash": "sha256:03f6fc3b6d2f6c85", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md", "wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/galactus/skills/SANYI/README.md", "hash": "sha256:1d34616935d9e27c", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/meta/sanyi-change-contract.md"]}
+{"path": "raw/claude-docs/galactus/skills/SANYI/SKILL.md", "hash": "sha256:c424cfc03c232024", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/meta/sanyi-change-contract.md"]}
+{"path": "raw/claude-docs/galactus/skills/SANYI/references/contract-spec.md", "hash": "sha256:6176d047c60173de", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/SANYI/references/interview-guide.md", "hash": "sha256:6928ef8afafb628b", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/SANYI/references/violations.md", "hash": "sha256:23ea34d102f50536", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/agent-creation/add-eval/SKILL.md", "hash": "sha256:7be89e4753828df2", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/agent-creation/add-guardrails/SKILL.md", "hash": "sha256:6cdc3e696b5547cb", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/agent-creation/add-hitl/SKILL.md", "hash": "sha256:4e7a204d027ef498", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/agent-creation/add-rag/SKILL.md", "hash": "sha256:476073ed48718a7c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/agent-creation/new-agent/SKILL.md", "hash": "sha256:42899336fb18b8fa", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/agent-creation/new-support-agent/SKILL.md", "hash": "sha256:c4693d6952cbc92c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/eval-creation/eval-build/SKILL.md", "hash": "sha256:75bc4742d1a600e6", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/eval-creation/eval-report/SKILL.md", "hash": "sha256:cc4c4656dfb20931", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/eval-creation/eval-report/references/json_schemas.md", "hash": "sha256:a41fc461abd11b0c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/eval-creation/nbk-to-eval/SKILL.md", "hash": "sha256:62d2483d4173095a", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/eval-creation/va-eval/SKILL.md", "hash": "sha256:81175709471eb4f1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/knowledge-creation/claude-insights/SKILL.md", "hash": "sha256:3f41072da012d2a1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/knowledge-creation/knowledge-share/SKILL.md", "hash": "sha256:f4c4cd582c2b7e41", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/knowledge-creation/skill-creator/SKILL.md", "hash": "sha256:157a21b7f83c5097", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/knowledge-creation/sync-sessions/SKILL.md", "hash": "sha256:cb9b83d6463eb8fa", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/planning/define-milestones/SKILL.md", "hash": "sha256:fed053f1fa242941", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/planning/design-sprint/SKILL.md", "hash": "sha256:1e35032ecec6cf26", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/planning/doc-to-linear-tickets/SKILL.md", "hash": "sha256:7f03aee920a89049", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/planning/dod-check/SKILL.md", "hash": "sha256:b9df9a33bedf2a8b", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/planning/execute-tasks/SKILL.md", "hash": "sha256:e6a8b179588c5487", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/planning/github-projects/SKILL.md", "hash": "sha256:61d04226f14a7e86", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/planning/linear-spike/SKILL.md", "hash": "sha256:cfc5a449dce50c7e", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/planning/scope-initiative/SKILL.md", "hash": "sha256:ccc70708bfd23a35", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/skill-eval/analyzer/SKILL.md", "hash": "sha256:5f3e9bbae3d7a0bc", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/skill-eval/comparator/SKILL.md", "hash": "sha256:39ab37a02b755511", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/skill-eval/grader/SKILL.md", "hash": "sha256:c7c6886e892452f3", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/akira/SKILL.md", "hash": "sha256:58b38cedfe64048a", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/code-debug/SKILL.md", "hash": "sha256:920db5787302e4d1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/compact-session/SKILL.md", "hash": "sha256:3e39657e5a7c4a80", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/execute-plan/SKILL.md", "hash": "sha256:1a64b8bf3d3097e2", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/plan-review/SKILL.md", "hash": "sha256:9a16234524c8a247", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/prototype/SKILL.md", "hash": "sha256:04ae006a2fede410", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/quick-commit/SKILL.md", "hash": "sha256:908a7798c39682b1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/quick-pr/SKILL.md", "hash": "sha256:97789818c561ea04", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/research-review/SKILL.md", "hash": "sha256:e3b58e629fa266e6", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/review-pr/SKILL.md", "hash": "sha256:74fee168523c9472", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/run-code-review/SKILL.md", "hash": "sha256:b5c6256d652678cc", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/tdd/SKILL.md", "hash": "sha256:2970021709697227", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/galactus/skills/workflow/tooling-deck/SKILL.md", "hash": "sha256:a4a24a5371fa2c18", "ingested_at": "2026-07-05", "wiki_pages": []}
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/peer-repo-improvements.md", "hash": "sha256:0860df2fabb9238a", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/phase1_flask_origin.md", "hash": "sha256:273fd7808f7fb607", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/phase2a_infra_refactor.md", "hash": "sha256:267b2c680478e9f4", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
@@ -20,209 +107,236 @@
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/phase3b_train.md", "hash": "sha256:5b6a43a2a79a9179", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/phase3c_add_catboost.md", "hash": "sha256:e23ec193b6cd90be", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/phase3d_eda.md", "hash": "sha256:42bdfc8bbac978c6", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase4a_agent_chainlit.md", "hash": "sha256:9f4ab6e0b8224965", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md", "wiki/memory/agent-memory-types.md", "wiki/rag/rag-evaluation.md", "wiki/rag/rag-retrieval-strategies.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md", "hash": "sha256:c3e50415ce56e34c", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md", "wiki/memory/agent-memory-types.md", "wiki/rag/rag-evaluation.md", "wiki/rag/rag-retrieval-strategies.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase5a_rag.md", "hash": "sha256:5e1c25ffefcc0ec3", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md", "wiki/memory/agent-memory-types.md", "wiki/rag/rag-evaluation.md", "wiki/rag/rag-retrieval-strategies.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/phase5b_intent.md", "hash": "sha256:ef8c64e284067a93", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/phase5c_eval.md", "hash": "sha256:9706c4b39d884e6a", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
 {"path": "raw/claude-docs/listen-wiseer/docs/plans/phase6_dashboard.md", "hash": "sha256:73b67514a69be2b4", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase6_refactor.md", "hash": "sha256:487357e5e8f6a066", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase7a-exploration-tools.md", "hash": "sha256:224667f3effa35a7", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase7b-intent-refactor-ux.md", "hash": "sha256:340e70b4333461ab", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/plans/phase7c-memory-genre-polish.md", "hash": "sha256:fcbe9809b5abd083", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/eval-harness.md", "hash": "sha256:1634d7f8ce593237", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md", "wiki/memory/agent-memory-types.md", "wiki/rag/rag-evaluation.md", "wiki/rag/rag-retrieval-strategies.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/infra_support.md", "hash": "sha256:fcccc8c26072590f", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md", "wiki/memory/agent-memory-types.md", "wiki/rag/rag-evaluation.md", "wiki/rag/rag-retrieval-strategies.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/music-agent/exploration-architecture.md", "hash": "sha256:f651e4aa5ab5b3b8", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/music-agent/recommender-design-v1.md", "hash": "sha256:fcccc8c26072590f", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/music-agent/recommender-design.md", "hash": "sha256:fcccc8c26072590f", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/spotify-folder-repos.md", "hash": "sha256:d1c1b3ba9cb39203", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md", "wiki/memory/agent-memory-types.md", "wiki/rag/rag-evaluation.md", "wiki/rag/rag-retrieval-strategies.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
 {"path": "raw/claude-docs/listen-wiseer/memory/MEMORY.md", "hash": "sha256:aa744d1b5e3f1096", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/memory/project_listen_wiseer.md", "hash": "sha256:56b3e1c69a63e235", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
 {"path": "raw/claude-docs/listen-wiseer/memory/user_profile.md", "hash": "sha256:a92f4ae0f6d9f5b1", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
-{"path": "raw/claude-docs/listen-wiseer/skills/code_debug.md", "hash": "sha256:9c341ea81fe96b36", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/code_execute.md", "hash": "sha256:13a90aba3f68e980", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/code_pr.md", "hash": "sha256:506e25dcda4a23e8", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/code_refactor.md", "hash": "sha256:f3ea3f7b9b5f1525", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/code_review.md", "hash": "sha256:e0c462ac4836936f", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/code_test.md", "hash": "sha256:25cbc08c7683cca8", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/design_sprint.md", "hash": "sha256:30949bde3a0d0c70", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/document.md", "hash": "sha256:c19bcf313faddf9c", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/initiative_brief.md", "hash": "sha256:326f0a22ac7bebd2", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/initiative_scoping.md", "hash": "sha256:764b363da80f3829", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/insights_analysis.md", "hash": "sha256:e937dd9ead72c75d", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/memory_audit.md", "hash": "sha256:187630458fc1a20c", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/memory_write.md", "hash": "sha256:ec97e870823c25d1", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/plan_check.md", "hash": "sha256:69888e2f08091322", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/plan_from_scratch.md", "hash": "sha256:5b06996f054ce6d4", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/plan_iterate.md", "hash": "sha256:e08d890bd5b1ee71", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/plan_risk.md", "hash": "sha256:9b6142d5ecd34a44", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/plan_scope.md", "hash": "sha256:f8a8417bbcbd3420", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/rag_research.md", "hash": "sha256:567d414b42b70196", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/refactor_patterns.md", "hash": "sha256:4db7b1e4e693be42", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/refactor_propose.md", "hash": "sha256:d18ab1fbf14e9119", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/refactor_safety.md", "hash": "sha256:d18b22e463a4c25d", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/refactor_scope.md", "hash": "sha256:210e34ac85095497", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/research_assumptions.md", "hash": "sha256:5e62c0278e5af541", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/research_codebase.md", "hash": "sha256:2af4838bfa78651c", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/research_synthesis.md", "hash": "sha256:a16e727ab4901891", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/review_validate_plan.md", "hash": "sha256:cf046b2702107b0c", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/listen-wiseer/skills/session_update.md", "hash": "sha256:faefb012e20a9b73", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/docs/plans/va-agent-improvements.md", "hash": "sha256:a6c4296ea7239a1f", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
-{"path": "raw/claude-docs/playground/docs/plans/va-agent-systems.md", "hash": "sha256:0334d0196bfbfba7", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
-{"path": "raw/claude-docs/playground/docs/plans/va-infra.md", "hash": "sha256:aa6dbaf3c810409e", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
-{"path": "raw/claude-docs/playground/docs/components.md", "hash": "sha256:308f735ebf543b48", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/skills/code-refactor/SKILL.md", "hash": "sha256:f3ea3f7b9b5f1525", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/code-test/SKILL.md", "hash": "sha256:25cbc08c7683cca8", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/code_debug.md", "hash": "sha256:9c341ea81fe96b36", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/code_execute.md", "hash": "sha256:13a90aba3f68e980", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/code_pr.md", "hash": "sha256:506e25dcda4a23e8", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/code_refactor.md", "hash": "sha256:f3ea3f7b9b5f1525", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/code_review.md", "hash": "sha256:e0c462ac4836936f", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/code_test.md", "hash": "sha256:25cbc08c7683cca8", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/design_sprint.md", "hash": "sha256:30949bde3a0d0c70", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/document.md", "hash": "sha256:c19bcf313faddf9c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/initiative_brief.md", "hash": "sha256:326f0a22ac7bebd2", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/initiative_scoping.md", "hash": "sha256:764b363da80f3829", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/insights_analysis.md", "hash": "sha256:e937dd9ead72c75d", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/memory_audit.md", "hash": "sha256:187630458fc1a20c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/memory_write.md", "hash": "sha256:ec97e870823c25d1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/pipeline/SKILL.md", "hash": "sha256:cc5069fc35790913", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/plan_check.md", "hash": "sha256:69888e2f08091322", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/plan_from_scratch.md", "hash": "sha256:5b06996f054ce6d4", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/plan_iterate.md", "hash": "sha256:e08d890bd5b1ee71", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/plan_risk.md", "hash": "sha256:9b6142d5ecd34a44", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/plan_scope.md", "hash": "sha256:f8a8417bbcbd3420", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/rag-research/SKILL.md", "hash": "sha256:567d414b42b70196", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/rag_research.md", "hash": "sha256:567d414b42b70196", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/refactor_patterns.md", "hash": "sha256:4db7b1e4e693be42", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/refactor_propose.md", "hash": "sha256:d18ab1fbf14e9119", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/refactor_safety.md", "hash": "sha256:d18b22e463a4c25d", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/refactor_scope.md", "hash": "sha256:210e34ac85095497", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/research_assumptions.md", "hash": "sha256:5e62c0278e5af541", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/research_codebase.md", "hash": "sha256:2af4838bfa78651c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/research_synthesis.md", "hash": "sha256:a16e727ab4901891", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/review_validate_plan.md", "hash": "sha256:cf046b2702107b0c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/listen-wiseer/skills/session_update.md", "hash": "sha256:faefb012e20a9b73", "ingested_at": "2026-07-05", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/agents/analyzer.md", "hash": "sha256:bf68f4cac5a56c67", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
 {"path": "raw/claude-docs/playground/agents/comparator.md", "hash": "sha256:fe1fc9787c495d86", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
 {"path": "raw/claude-docs/playground/agents/grader.md", "hash": "sha256:57134da0c1a4eea3", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
-{"path": "raw/claude-docs/playground/memory/project_profile.md", "hash": "sha256:2aac1e3b4c076b10", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/memory/user_profile.md", "hash": "sha256:778be77ab3e1c007", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/memory/MEMORY.md", "hash": "sha256:b565932ce18c3fe5", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/README.md", "hash": "sha256:69f1a121018616f9", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md", "hash": "sha256:c4cc57fa8bef8087", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md","wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md", "hash": "sha256:d4f677b5fa32fb38", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md","wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md", "hash": "sha256:575eb9da4ea4a08a", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md","wiki/projects/librarian-project.md","wiki/rag/rag-retrieval-strategies.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/infra-security-triage/plan.md", "hash": "sha256:b0a70663eac9d5cd", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md", "hash": "sha256:38f52f8980ae7c17", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md","wiki/rag/rag-retrieval-strategies.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md", "hash": "sha256:3bab9eb4466e572d", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/rag-evaluation.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/research-agent-refactor/plan.md", "hash": "sha256:610ba63b6fa248b4", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/research-agent-refactor/research.md", "hash": "sha256:ee6c80720176fb11", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/rag-core-infra/review.md", "hash": "sha256:4c10bbdba53f6754", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md","wiki/infra/production-hardening-patterns.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/docs-restructure/research.md", "hash": "sha256:113775f0162821b6", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/docs/archived/visualizer-improvements/plan.md", "hash": "sha256:d524c383c9c0a358", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/docs/archived/visualizer-improvements/research.md", "hash": "sha256:bbb052e226640cea", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/docs/archived/librarian-restructure/plan.md", "hash": "sha256:527b4c9252b6ee8d", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/docs/archived/adk-orchestration-research.md", "hash": "sha256:30839a71d22860a1", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md","wiki/adk/adk-context-engineering.md","wiki/adk/2026-04-12-adk-vs-langgraph.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md", "hash": "sha256:06c5bbec7c3aab2b", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-context-engineering.md","wiki/adk/adk-vs-langgraph-comparison.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/adk-orchestration-research.md", "hash": "sha256:30839a71d22860a1", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md", "wiki/adk/adk-context-engineering.md", "wiki/adk/2026-04-12-adk-vs-langgraph.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md", "hash": "sha256:06c5bbec7c3aab2b", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-context-engineering.md", "wiki/adk/adk-vs-langgraph-comparison.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md", "hash": "sha256:ce0653deedf54b7c", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/docs/archived/bedrock-kb-research.md", "hash": "sha256:175a2f3ef0f93fb7", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/2026-04-11-bedrock-vs-langgraph.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/codebase-dedup-research.md", "hash": "sha256:93e361e47dadcb5b", "ingested_at": "2026-04-24", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/docs/archived/docs-restructure/research.md", "hash": "sha256:113775f0162821b6", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/docs/archived/github-cicd-pipeline-plan.md", "hash": "sha256:e85e6f2e723bdbc7", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/docs/archived/infra-interfaces-review.md", "hash": "sha256:72f847373893651e", "ingested_at": "2026-04-24", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/docs/archived/infra-security-triage/plan.md", "hash": "sha256:b0a70663eac9d5cd", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/langgraph-adk-compat.md", "hash": "sha256:6890e8ff8983418f", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/librarian-architecture-decisions.md", "hash": "sha256:30d03316e8e38c60", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md","wiki/rag/librarian-rag-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/librarian-architecture-decisions.md", "hash": "sha256:30d03316e8e38c60", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/rag/librarian-rag-architecture.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/librarian-components.md", "hash": "sha256:308f735ebf543b48", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/librarian-rag-architecture.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/librarian-stack-audit.md", "hash": "sha256:609e462463f20036", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md","wiki/rag/rag-retrieval-strategies.md","wiki/rag/rag-evaluation.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md", "hash": "sha256:575eb9da4ea4a08a", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md", "wiki/projects/librarian-project.md", "wiki/rag/rag-retrieval-strategies.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md", "hash": "sha256:c4cc57fa8bef8087", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md", "wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md", "hash": "sha256:38f52f8980ae7c17", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/rag/rag-retrieval-strategies.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/librarian-restructure/plan.md", "hash": "sha256:527b4c9252b6ee8d", "ingested_at": "2026-04-24", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/docs/archived/librarian-stack-audit.md", "hash": "sha256:609e462463f20036", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/rag/rag-retrieval-strategies.md", "wiki/rag/rag-evaluation.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/librarian-ts-parity-plan.md", "hash": "sha256:8a40831a936e9b04", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/librarian-ts-parity-research.md", "hash": "sha256:2852e6b52720c4f5", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md","wiki/rag/rag-retrieval-strategies.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/librarian-ts-parity-research.md", "hash": "sha256:2852e6b52720c4f5", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/rag/rag-retrieval-strategies.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md", "hash": "sha256:3bab9eb4466e572d", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/rag-evaluation.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/obsidian-kb-plan.md", "hash": "sha256:8e59a3761620bd97", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-kb-plan.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/obsidian-kb-research.md", "hash": "sha256:e68e0295755ca63b", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-kb-plan.md","wiki/meta/karpathy-llm-wiki-pattern.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/orchestration-rollout-plan.md", "hash": "sha256:1fd7036b29390b74", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md","wiki/langgraph/2026-04-12-orchestration-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/obsidian-kb-research.md", "hash": "sha256:e68e0295755ca63b", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-kb-plan.md", "wiki/meta/karpathy-llm-wiki-pattern.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/orchestration-rollout-plan.md", "hash": "sha256:1fd7036b29390b74", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md", "wiki/langgraph/2026-04-12-orchestration-architecture.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/orchestration-rollout-review.md", "hash": "sha256:502454442bada129", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/langgraph/2026-04-12-orchestration-architecture.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/playground-archived-plan.md", "hash": "sha256:ac297bc0ee53cb72", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/docs/archived/py-copilot-plan.md", "hash": "sha256:f500e71c22f7983d", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/py-copilot-research.md", "hash": "sha256:b2e2f1c8c5a8d958", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/rag-agent-template-research.md", "hash": "sha256:8840abc6189e1e72", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md","wiki/rag/rag-evaluation.md","wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/rag-architecture-execution-plan.md", "hash": "sha256:f6835199917fd319", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/librarian-rag-architecture.md","wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/rag-architecture-refactoring-plan.md", "hash": "sha256:a73e4120b80f61ca", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/librarian-rag-architecture.md","wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/rag-core-infra-review.md", "hash": "sha256:4c10bbdba53f6754", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md","wiki/infra/production-hardening-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/rag-agent-template-research.md", "hash": "sha256:8840abc6189e1e72", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md", "wiki/rag/rag-evaluation.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/rag-architecture-execution-plan.md", "hash": "sha256:f6835199917fd319", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/librarian-rag-architecture.md", "wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/rag-architecture-refactoring-plan.md", "hash": "sha256:a73e4120b80f61ca", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/librarian-rag-architecture.md", "wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/rag-core-infra-review.md", "hash": "sha256:4c10bbdba53f6754", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/infra/production-hardening-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/rag-core-infra/review.md", "hash": "sha256:4c10bbdba53f6754", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/infra/production-hardening-patterns.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/rag-poc-upgrade-plan.md", "hash": "sha256:80dab768e42261dc", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/rag-system-development-plan.md", "hash": "sha256:801f97067553ff37", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/rag-tradeoffs.md", "hash": "sha256:d6dd1f5cb4b34a52", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md","wiki/rag/librarian-rag-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/rag-tradeoffs.md", "hash": "sha256:d6dd1f5cb4b34a52", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md", "wiki/rag/librarian-rag-architecture.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/research-agent-refactor-research.md", "hash": "sha256:ee6c80720176fb11", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
-{"path": "raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod-plan.md", "hash": "sha256:d4f677b5fa32fb38", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md","wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/research-agent-refactor/plan.md", "hash": "sha256:610ba63b6fa248b4", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/research-agent-refactor/research.md", "hash": "sha256:ee6c80720176fb11", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod-plan.md", "hash": "sha256:d4f677b5fa32fb38", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md", "wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md", "hash": "sha256:d4f677b5fa32fb38", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/infra/production-hardening-patterns.md", "wiki/projects/librarian-project.md"]}
 {"path": "raw/claude-docs/playground/docs/archived/skills-audit-research.md", "hash": "sha256:8b4997fc235c9d5c", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/docs/archived/terraform-restructure-plan.md", "hash": "sha256:f53552c3e0e7bb07", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/docs/archived/terraform-restructure-research.md", "hash": "sha256:3a18849f443e3736", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/docs/archived/ts-copilot-plan.md", "hash": "sha256:8ea49728e4c6b4b4", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/docs/archived/ts-copilot-research.md", "hash": "sha256:d5c43d966ee2cbd6", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/linear/2026-04-24-evaluation-and-improvement.md", "hash": "sha256:71403b110d6c4209", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md", "wiki/infra/pii-masking-approaches.md", "wiki/eval/hitl-annotation-pipeline.md", "wiki/rag/rag-evaluation.md", "wiki/rag/2026-04-11-bedrock-vs-langgraph.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/visualizer-improvements/plan.md", "hash": "sha256:d524c383c9c0a358", "ingested_at": "2026-04-24", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/docs/archived/visualizer-improvements/research.md", "hash": "sha256:bbb052e226640cea", "ingested_at": "2026-04-24", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/docs/components.md", "hash": "sha256:308f735ebf543b48", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
+{"path": "raw/claude-docs/playground/docs/evals/eval-architecture.md", "hash": "sha256:d0b62c54a3b5b004", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/evals/grader_interface.md", "hash": "sha256:a51653dbeaa1c3b2", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/evals/grader_methodology.md", "hash": "sha256:a5ce7bc779f8319e", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/evals/llm-calibration-insights.md", "hash": "sha256:78b8aea2676db75d", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/eval/llm-calibration-insights.md"]}
+{"path": "raw/claude-docs/playground/docs/frameworks/google-adk.md", "hash": "sha256:08d021a3210bd2ef", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
+{"path": "raw/claude-docs/playground/docs/frameworks/langfuse.md", "hash": "sha256:814afac021301897", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/infra/langfuse-platform.md"]}
+{"path": "raw/claude-docs/playground/docs/frameworks/langgraph.md", "hash": "sha256:3c11ed0c6bffcd9e", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/langgraph/langgraph-crag-pipeline.md"]}
+{"path": "raw/claude-docs/playground/docs/plans/hardening.md", "hash": "sha256:c46c1489af8a0f4d", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/infra/production-hardening-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/plans/rag-latency-optimization.md", "hash": "sha256:6a8dce73d09115ef", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md"]}
+{"path": "raw/claude-docs/playground/docs/plans/support-rag-orchestration.md", "hash": "sha256:2c364d2a620eb826", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/agentic-rag-advanced.md"]}
+{"path": "raw/claude-docs/playground/docs/plans/va-agent-improvements.md", "hash": "sha256:a6c4296ea7239a1f", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
+{"path": "raw/claude-docs/playground/docs/plans/va-agent-systems.md", "hash": "sha256:0334d0196bfbfba7", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
+{"path": "raw/claude-docs/playground/docs/plans/va-infra.md", "hash": "sha256:aa6dbaf3c810409e", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
+{"path": "raw/claude-docs/playground/docs/plans/va-routing-eval.md", "hash": "sha256:a4619e7facd7add7", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/research/agentic-ai/adk-skill-loading-patterns.md", "hash": "sha256:3fe51da842dc55c5", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
+{"path": "raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md", "hash": "sha256:2e780a81d594587c", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/infra/input-guardrails-pipeline.md"]}
+{"path": "raw/claude-docs/playground/docs/research/agentic-ai/hitl-and-interrupts.md", "hash": "sha256:dd7bf66eb372c8d9", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-hitl-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/research/agentic-ai/memory-architecture.md", "hash": "sha256:3b8487dd8155c724", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/memory/memory-architecture-va.md"]}
+{"path": "raw/claude-docs/playground/docs/research/agentic-ai/orchestration-patterns.md", "hash": "sha256:ee8eae2bab211178", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/multi-agent-orchestration-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/research/agentic-ai/va-product-patterns.md", "hash": "sha256:0988cac0d8d1305b", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/va-product-design-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/research/architecture/architecture-decisions.md", "hash": "sha256:42736222ddb71738", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/va-agent-project.md", "wiki/rag/bedrock-kb-vs-langgraph.md"]}
+{"path": "raw/claude-docs/playground/docs/research/architecture/custom-rag-vs-managed-kb.md", "hash": "sha256:009d322a55a63839", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/bedrock-kb-vs-langgraph.md"]}
+{"path": "raw/claude-docs/playground/docs/research/architecture/langgraph-vs-adk.md", "hash": "sha256:f10ece8738b3e067", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md"]}
+{"path": "raw/claude-docs/playground/docs/research/architecture/rag-patterns.md", "hash": "sha256:5b6722d7710b8611", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md"]}
+{"path": "raw/claude-docs/playground/docs/research/architecture/va-adk-implementation.md", "hash": "sha256:21b726a52fe93fc2", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
+{"path": "raw/claude-docs/playground/docs/research/evaluation-and-learning/eval-harness.md", "hash": "sha256:004d3be5833af464", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/eval/va-eval-harness.md"]}
+{"path": "raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md", "hash": "sha256:70c6a31d32ad3ca6", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/infra/observability-runtime-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md", "hash": "sha256:e6264f2cd3595de6", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/memory/self-learning-agents.md", "wiki/patterns/react-pattern.md", "wiki/patterns/chain-of-thought.md", "wiki/eval/direct-preference-optimization.md"]}
+{"path": "raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md", "hash": "sha256:32b7c86fde715301", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/agentic-rag-advanced.md"]}
+{"path": "raw/claude-docs/playground/docs/research/rag/rag-api-design.md", "hash": "sha256:65d16e2bb3b11e2f", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/rag-api-design-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/research/rag/rag-component-tradeoffs.md", "hash": "sha256:c2867bc0032f8edb", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md"]}
+{"path": "raw/claude-docs/playground/docs/research/rag/rag-integration-strategy.md", "hash": "sha256:3e2a8a4fdda0e891", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/rag-integration-strategy.md"]}
+{"path": "raw/claude-docs/playground/docs/support-agents/grounding-methodology.md", "hash": "sha256:45730c309700f603", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/support-agents/safeguards-architecture.md", "hash": "sha256:46b629c1adaf475a", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/infra/input-guardrails-pipeline.md"]}
+{"path": "raw/claude-docs/playground/master-plan.md", "hash": "sha256:0f3f2b8ca443fca8", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/projects/va-agent-project.md"]}
+{"path": "raw/claude-docs/playground/memory/MEMORY.md", "hash": "sha256:b565932ce18c3fe5", "ingested_at": "2026-04-24", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/memory/project_profile.md", "hash": "sha256:2aac1e3b4c076b10", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/memory/user_profile.md", "hash": "sha256:778be77ab3e1c007", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/sessions/2026-04-10T0130.md", "hash": "sha256:ae0107c592a89e70", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/sessions/2026-04-11T1430.md", "hash": "sha256:40285fab085de7c3", "ingested_at": "2026-04-24", "wiki_pages": []}
 {"path": "raw/claude-docs/playground/sessions/2026-04-11T2026.md", "hash": "sha256:44bbda4966eaaf01", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/benchmark.md", "hash": "sha256:a3c08e76b023942e", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-debug-blank-screen/with_skill/outputs/response.md", "hash": "sha256:fec8d9641ad3aeee", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-debug-blank-screen/without_skill/outputs/response.md", "hash": "sha256:cbdbd7911ff4e47b", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-product-card/with_skill/outputs/response.md", "hash": "sha256:f5637e1c684053d8", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-version-comparison/with_skill/outputs/response.md", "hash": "sha256:b711ddebcdd94547", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-version-comparison/without_skill/outputs/response.md", "hash": "sha256:50ec7232c0824502", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/benchmark.md", "hash": "sha256:fe1d213076ee1eeb", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-checkout-form/with_skill/outputs/response.md", "hash": "sha256:9a8f2ce591adc571", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-checkout-form/without_skill/outputs/response.md", "hash": "sha256:6f4a114ce158c301", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-debug-blank-screen/with_skill/outputs/response.md", "hash": "sha256:de294aee1f882260", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-debug-blank-screen/without_skill/outputs/response.md", "hash": "sha256:838db36518311f39", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-product-card/with_skill/outputs/response.md", "hash": "sha256:1cc8fd7abc447a4d", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-product-card/without_skill/outputs/response.md", "hash": "sha256:3e62d0fe0bc49339", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/benchmark.md", "hash": "sha256:ad7d8c3927351593", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/eval-checkout-form/with_skill/outputs/response.md", "hash": "sha256:2e2e6615a67bdf5c", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/eval-debug-blank-screen/with_skill/outputs/response.md", "hash": "sha256:6e63db056d3b07f2", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/eval-product-card/with_skill/outputs/response.md", "hash": "sha256:e896ad66aa9a2b70", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui-workspace/README.md", "hash": "sha256:69f1a121018616f9", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/a2ui/SKILL.md", "hash": "sha256:4848995acd5e7b3b", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/adk-python/SKILL.md", "hash": "sha256:6ccc484009641e4e", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/backend/SKILL.md", "hash": "sha256:e58370769243f101", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/claude-insights/SKILL.md", "hash": "sha256:3f41072da012d2a1", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/code-debug/SKILL.md", "hash": "sha256:ba36e35e15e838d1", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/code-review/SKILL.md", "hash": "sha256:6c784d45b0e05027", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/compact-session/SKILL.md", "hash": "sha256:112b46b01e624bb2", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/define-epic/SKILL.md", "hash": "sha256:30c5f9078d9ec794", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/design-sprint/SKILL.md", "hash": "sha256:f875c6513dae8c72", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/doc-to-linear/SKILL.md", "hash": "sha256:dda0de13de269402", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/execute-plan/SKILL.md", "hash": "sha256:ffc22d6f7fc734c4", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/execute-tasks/SKILL.md", "hash": "sha256:e6a8b179588c5487", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/frontend/SKILL.md", "hash": "sha256:d58bce7d86bcc1d3", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/github-projects/SKILL.md", "hash": "sha256:61d04226f14a7e86", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/mcp-builder/reference/evaluation.md", "hash": "sha256:8c99479f8a2d22a6", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/mcp-builder/reference/mcp_best_practices.md", "hash": "sha256:80fb4369a349447c", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/mcp-builder/reference/node_mcp_server.md", "hash": "sha256:c3ba35a4f599dd53", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/mcp-builder/reference/python_mcp_server.md", "hash": "sha256:2da52f77e6751910", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/mcp-builder/SKILL.md", "hash": "sha256:0f4592dcb53cf2b5", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/milestone-balancing/SKILL.md", "hash": "sha256:394ff8ffb9e2a486", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/plan-epic/SKILL.md", "hash": "sha256:eef8a9c3da991b9d", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/plan-refactor/SKILL.md", "hash": "sha256:dcda71f3c7680aa9", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/plan-review/SKILL.md", "hash": "sha256:9aa0ac16e643e8a2", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/prototype/SKILL.md", "hash": "sha256:04ae006a2fede410", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/quick-commit/SKILL.md", "hash": "sha256:908a7798c39682b1", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/quick-pr/SKILL.md", "hash": "sha256:97789818c561ea04", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/README.md", "hash": "sha256:6a2ac43211be9210", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/research-review/SKILL.md", "hash": "sha256:803d691c1dfc8c44", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/review-pr/SKILL.md", "hash": "sha256:74fee168523c9472", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/scope-initiative/SKILL.md", "hash": "sha256:a1232612d1328002", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/skill-creator/SKILL.md", "hash": "sha256:dcd4803e61e913e6", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/claude-docs/playground/skills/write-tickets/SKILL.md", "hash": "sha256:f6cc4fc31a985511", "ingested_at": "2026-04-24", "wiki_pages": []}
-{"path": "raw/gdrive/2026-04-24-langgraph-yan.md", "hash": "sha256:1264d4cfcb69e19d", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/langgraph/langgraph-state-reducers.md", "wiki/langgraph/langgraph-advanced-patterns.md", "wiki/memory/agent-memory-types.md"]}
+{"path": "raw/claude-docs/playground/skills/README.md", "hash": "sha256:6a2ac43211be9210", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/README.md", "hash": "sha256:69f1a121018616f9", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/benchmark.md", "hash": "sha256:a3c08e76b023942e", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-debug-blank-screen/with_skill/outputs/response.md", "hash": "sha256:fec8d9641ad3aeee", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-debug-blank-screen/without_skill/outputs/response.md", "hash": "sha256:cbdbd7911ff4e47b", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-product-card/with_skill/outputs/response.md", "hash": "sha256:f5637e1c684053d8", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-version-comparison/with_skill/outputs/response.md", "hash": "sha256:b711ddebcdd94547", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/eval-version-comparison/without_skill/outputs/response.md", "hash": "sha256:50ec7232c0824502", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/benchmark.md", "hash": "sha256:fe1d213076ee1eeb", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-checkout-form/with_skill/outputs/response.md", "hash": "sha256:9a8f2ce591adc571", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-checkout-form/without_skill/outputs/response.md", "hash": "sha256:6f4a114ce158c301", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-debug-blank-screen/with_skill/outputs/response.md", "hash": "sha256:de294aee1f882260", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-debug-blank-screen/without_skill/outputs/response.md", "hash": "sha256:838db36518311f39", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-product-card/with_skill/outputs/response.md", "hash": "sha256:1cc8fd7abc447a4d", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-product-card/without_skill/outputs/response.md", "hash": "sha256:3e62d0fe0bc49339", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/benchmark.md", "hash": "sha256:ad7d8c3927351593", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/eval-checkout-form/with_skill/outputs/response.md", "hash": "sha256:2e2e6615a67bdf5c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/eval-debug-blank-screen/with_skill/outputs/response.md", "hash": "sha256:6e63db056d3b07f2", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/eval-product-card/with_skill/outputs/response.md", "hash": "sha256:e896ad66aa9a2b70", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/a2ui/SKILL.md", "hash": "sha256:4848995acd5e7b3b", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/adk-python/SKILL.md", "hash": "sha256:5aa584d895136e70", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-context-engineering.md"]}
+{"path": "raw/claude-docs/playground/skills/backend/SKILL.md", "hash": "sha256:e58370769243f101", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/claude-insights/SKILL.md", "hash": "sha256:3f41072da012d2a1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/code-debug/SKILL.md", "hash": "sha256:ba36e35e15e838d1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/code-review/SKILL.md", "hash": "sha256:6c784d45b0e05027", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/compact-session/SKILL.md", "hash": "sha256:112b46b01e624bb2", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/define-epic/SKILL.md", "hash": "sha256:30c5f9078d9ec794", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/design-sprint/SKILL.md", "hash": "sha256:f875c6513dae8c72", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/doc-to-linear/SKILL.md", "hash": "sha256:dda0de13de269402", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/execute-plan/SKILL.md", "hash": "sha256:ffc22d6f7fc734c4", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/execute-tasks/SKILL.md", "hash": "sha256:e6a8b179588c5487", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/frontend/SKILL.md", "hash": "sha256:d58bce7d86bcc1d3", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/gdpr-scrub/SKILL.md", "hash": "sha256:6078ae7b593fe833", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/github-projects/SKILL.md", "hash": "sha256:61d04226f14a7e86", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/claude-insights/SKILL.md", "hash": "sha256:3f41072da012d2a1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/code-debug/SKILL.md", "hash": "sha256:ba36e35e15e838d1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/code-review/SKILL.md", "hash": "sha256:9025c65dd26715e3", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/compact-session/SKILL.md", "hash": "sha256:3e39657e5a7c4a80", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/define-milestones/SKILL.md", "hash": "sha256:fed053f1fa242941", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/design-sprint/SKILL.md", "hash": "sha256:1e35032ecec6cf26", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/doc-to-linear-tickets/SKILL.md", "hash": "sha256:6dd6ed3a6ff2947f", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/execute-plan/SKILL.md", "hash": "sha256:e4db84673297b848", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/execute-tasks/SKILL.md", "hash": "sha256:e6a8b179588c5487", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/github-projects/SKILL.md", "hash": "sha256:61d04226f14a7e86", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/mcp-builder/SKILL.md", "hash": "sha256:0f4592dcb53cf2b5", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/mcp-builder/reference/evaluation.md", "hash": "sha256:6d0b58e7b086e426", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/mcp-builder/reference/mcp_best_practices.md", "hash": "sha256:80fb4369a349447c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/mcp-builder/reference/node_mcp_server.md", "hash": "sha256:b6521f4810d50944", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/mcp-builder/reference/python_mcp_server.md", "hash": "sha256:4fda54a3e825517f", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/plan-refactor/SKILL.md", "hash": "sha256:dcda71f3c7680aa9", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/plan-review/SKILL.md", "hash": "sha256:7221d75f315baee0", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/prototype/SKILL.md", "hash": "sha256:04ae006a2fede410", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/quick-commit/SKILL.md", "hash": "sha256:908a7798c39682b1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/quick-pr/SKILL.md", "hash": "sha256:97789818c561ea04", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/research-review/SKILL.md", "hash": "sha256:272db8d9c0175b9f", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/review-pr/SKILL.md", "hash": "sha256:74fee168523c9472", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/scope-initiative/SKILL.md", "hash": "sha256:ccc70708bfd23a35", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/global/skill-creator/SKILL.md", "hash": "sha256:157a21b7f83c5097", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/langgraph/SKILL.md", "hash": "sha256:50aeddbbc2fa6576", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/mcp-builder/SKILL.md", "hash": "sha256:0f4592dcb53cf2b5", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/mcp-builder/reference/evaluation.md", "hash": "sha256:8c99479f8a2d22a6", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/mcp-builder/reference/mcp_best_practices.md", "hash": "sha256:80fb4369a349447c", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/mcp-builder/reference/node_mcp_server.md", "hash": "sha256:c3ba35a4f599dd53", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/mcp-builder/reference/python_mcp_server.md", "hash": "sha256:2da52f77e6751910", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/milestone-balancing/SKILL.md", "hash": "sha256:394ff8ffb9e2a486", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/nextjs/SKILL.md", "hash": "sha256:faaedaad5b7307b6", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/plan-epic/SKILL.md", "hash": "sha256:eef8a9c3da991b9d", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/plan-refactor/SKILL.md", "hash": "sha256:dcda71f3c7680aa9", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/plan-review/SKILL.md", "hash": "sha256:9aa0ac16e643e8a2", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/prototype/SKILL.md", "hash": "sha256:04ae006a2fede410", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/quick-commit/SKILL.md", "hash": "sha256:908a7798c39682b1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/quick-pr/SKILL.md", "hash": "sha256:97789818c561ea04", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/research-review/SKILL.md", "hash": "sha256:803d691c1dfc8c44", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/review-pr/SKILL.md", "hash": "sha256:74fee168523c9472", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/scope-initiative/SKILL.md", "hash": "sha256:a1232612d1328002", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/skill-creator/SKILL.md", "hash": "sha256:dcd4803e61e913e6", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/playground/skills/write-tickets/SKILL.md", "hash": "sha256:f6cc4fc31a985511", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/claude-docs/va-agents/agents/clean-code.md", "hash": "sha256:b22fbba6d42ba884", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/meta/claude-workflow-system.md"]}
 {"path": "raw/gdrive/2026-04-15-adk-overview-poc-architecture.md", "hash": "sha256:9579a9bbd110a43e", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/adk/multi-agent-orchestration-patterns.md", "wiki/adk/adk-vs-langgraph-comparison.md", "wiki/infra/prefix-caching.md"]}
+{"path": "raw/gdrive/2026-04-24-langgraph-yan.md", "hash": "sha256:1264d4cfcb69e19d", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/langgraph/langgraph-state-reducers.md", "wiki/langgraph/langgraph-advanced-patterns.md", "wiki/memory/agent-memory-types.md"]}
+{"path": "raw/gdrive/2026-05-15-ai-chapter-meeting-1.md", "hash": "sha256:77b40509c0abdca4", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/projects/ai-engineering-chapter.md", "wiki/infra/langfuse-platform.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md", "wiki/eval/agentic-kpi-trees.md"]}
+{"path": "raw/gdrive/2026-05-28-ai-chapter-meeting-2.md", "hash": "sha256:142f5971ca8676fc", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/projects/ai-engineering-chapter.md", "wiki/adk/adk-vs-langgraph-comparison.md", "wiki/eval/agentic-kpi-trees.md", "wiki/projects/va-agent-project.md"]}
+{"path": "raw/linear/2026-04-24-evaluation-and-improvement.md", "hash": "sha256:71403b110d6c4209", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/projects/evaluation-and-improvement-project.md", "wiki/infra/pii-masking-approaches.md", "wiki/eval/hitl-annotation-pipeline.md", "wiki/rag/rag-evaluation.md", "wiki/rag/2026-04-11-bedrock-vs-langgraph.md"]}
 {"path": "raw/meetings/2026-04-15-langgraph-huddle.md", "hash": "sha256:b185ae6df1b8ed8d", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md", "wiki/langgraph/langgraph-crag-pipeline.md"]}
-{"path": "raw/notion/2026-04-13-rag-pipeline-requirements.md", "hash": "sha256:1030bf765abc785", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/projects/shine-knowledge-agent.md", "wiki/rag/rag-knowledge-preparation.md"]}
-{"path": "raw/notion/2026-04-07-support-knowledge-agent.md", "hash": "sha256:944f104fa1280f7", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/projects/shine-knowledge-agent.md", "wiki/rag/rag-knowledge-preparation.md", "wiki/eval/copilot-learning-loop.md"]}
-{"path": "raw/notion/2026-04-21-agt09-adk-vs-langgraph-spike.md", "hash": "sha256:bc02131d59cda08", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/projects/va-agent-project.md", "wiki/adk/adk-vs-langgraph-comparison.md"]}
-{"path": "raw/notion/2026-04-09-copilot-why-what-how.md", "hash": "sha256:f1632539f2ad023", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/projects/shine-copilot-architecture.md", "wiki/eval/copilot-learning-loop.md", "wiki/adk/multi-modal-agent-response.md"]}
-{"path": "raw/agent-skills/README.md", "hash": "sha256:69c04c0989f1ce67", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-cheatsheet/SKILL.md", "hash": "sha256:cf4e754b9217530f", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-cheatsheet/references/docs-index.md", "hash": "sha256:35c1e5ecc473ecce", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-cheatsheet/references/python.md", "hash": "sha256:07ec14b8dbbdbd01", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-deploy-guide/SKILL.md", "hash": "sha256:98fbad7e27160132", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-deploy-guide/references/agent-engine.md", "hash": "sha256:98aa7a151e8eed91", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-deploy-guide/references/cloud-run.md", "hash": "sha256:81192ff1c92fce2d", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-deploy-guide/references/event-driven.md", "hash": "sha256:25a3eeb25f379c49", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-deploy-guide/references/terraform-patterns.md", "hash": "sha256:f5319c88884352c4", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-dev-guide/SKILL.md", "hash": "sha256:eb9d8c05eadc9200", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-eval-guide/SKILL.md", "hash": "sha256:699aac85531704fe", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-eval-guide/references/builtin-tools-eval.md", "hash": "sha256:6dfb6eceeadaabf6", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-eval-guide/references/criteria-guide.md", "hash": "sha256:a6a2ae2171b988a9", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-eval-guide/references/multimodal-eval.md", "hash": "sha256:7b0326c480c014b6", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-eval-guide/references/user-simulation.md", "hash": "sha256:8ffb5e4b0d2403b3", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-observability-guide/SKILL.md", "hash": "sha256:8c101a7ef36e0d24", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-observability-guide/references/bigquery-agent-analytics.md", "hash": "sha256:b3700f58fe018864", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-observability-guide/references/cloud-trace-and-logging.md", "hash": "sha256:9a7f56e48c7ac78a", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/adk-scaffold/SKILL.md", "hash": "sha256:729233e4186d8128", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/advanced-rag-patterns/SKILL.md", "hash": "sha256:84078106294272a0", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/deep-agents-core/SKILL.md", "hash": "sha256:07b82a267485c995", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/deep-agents-core/references/middleware-patterns.md", "hash": "sha256:37b76c9ae3c2c4b3", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/deep-agents-memory/SKILL.md", "hash": "sha256:3dea5098da27a0ec", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/deep-agents-memory/references/backend-guide.md", "hash": "sha256:6c96c9820a7d3303", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/deep-agents-orchestration/SKILL.md", "hash": "sha256:8528f09d35ea1a82", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/deep-agents-orchestration/references/langgraph-compat.md", "hash": "sha256:edcb069904e10fe4", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/framework-selection/SKILL.md", "hash": "sha256:b6b28b4712078d3f", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langchain-dependencies/SKILL.md", "hash": "sha256:8bc5e8f3fcaec569", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langchain-fundamentals/SKILL.md", "hash": "sha256:b5bd17f0c1833789", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langchain-middleware/SKILL.md", "hash": "sha256:4685303d30225bd6", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langchain-rag/SKILL.md", "hash": "sha256:19b8914b14401771", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langchain-rag/references/advanced-patterns.md", "hash": "sha256:fa0ee82381e6621b", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langchain-rag/references/rag-strategies.md", "hash": "sha256:4b6c7a446c18045a", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langgraph-fundamentals/SKILL.md", "hash": "sha256:3c6eeb5facd72fc2", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langgraph-human-in-the-loop/SKILL.md", "hash": "sha256:3e43a99257a835d3", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/langgraph-persistence/SKILL.md", "hash": "sha256:a3c3fe4339f2822b", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/observability/SKILL.md", "hash": "sha256:760ee2e49b7e0c33", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/agent-skills/voice-agents/SKILL.md", "hash": "sha256:67543c04d1fdf766", "ingested_at": "2026-04-25", "wiki_pages": ["wiki/deep-agents/framework-selection.md","wiki/deep-agents/deep-agents-framework.md","wiki/deep-agents/deep-agents-memory-backends.md","wiki/adk/voice-agent-patterns.md"]}
-{"path": "raw/claude-docs/playground/docs/research/agentic-ai/orchestration-patterns.md", "hash": "sha256:7b8348a1c279c554", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/adk/multi-agent-orchestration-patterns.md"]}
-{"path": "raw/claude-docs/playground/docs/research/agentic-ai/memory-architecture.md", "hash": "sha256:c6685c702467754b", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/memory/agent-memory-types.md"]}
-{"path": "raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md", "hash": "sha256:934a972c99a92b2a", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/infra/input-guardrails-pipeline.md"]}
-{"path": "raw/claude-docs/playground/docs/research/agentic-ai/hitl-and-interrupts.md", "hash": "sha256:6a93502a99c8c721", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/langgraph/langgraph-advanced-patterns.md"]}
-{"path": "raw/claude-docs/playground/docs/research/agentic-ai/adk-skill-loading-patterns.md", "hash": "sha256:3be2486ad9a5a00d", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/adk/skill-md-pattern.md", "wiki/adk/adk-context-engineering.md"]}
-{"path": "raw/claude-docs/playground/docs/research/agentic-ai/va-product-patterns.md", "hash": "sha256:ea1bb629e37e5595", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/adk/va-product-design-patterns.md"]}
-{"path": "raw/claude-docs/playground/docs/research/rag/rag-integration-strategy.md", "hash": "sha256:df96cf21b31d10ee", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md"]}
-{"path": "raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md", "hash": "sha256:184497954a0752c5", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/langgraph/langgraph-crag-pipeline.md", "wiki/memory/self-learning-agents.md"]}
-{"path": "raw/claude-docs/playground/docs/research/rag/rag-component-tradeoffs.md", "hash": "sha256:b1296e2fa08d54cd", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md", "wiki/rag/rag-api-design-patterns.md"]}
-{"path": "raw/claude-docs/playground/docs/research/rag/rag-api-design.md", "hash": "sha256:a9f2f790d9a09921", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/rag/rag-api-design-patterns.md"]}
-{"path": "raw/claude-docs/playground/docs/research/evaluation-and-learning/eval-harness.md", "hash": "sha256:76b2a4604129f2a8", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/eval/va-eval-harness.md"]}
-{"path": "raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md", "hash": "sha256:e6264f2cd3595de6", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/memory/self-learning-agents.md", "wiki/patterns/react-pattern.md", "wiki/patterns/chain-of-thought.md", "wiki/eval/direct-preference-optimization.md"]}
-{"path": "raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md", "hash": "sha256:5668ab8f748622256", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/langgraph/runtime-topology.md"]}
+{"path": "raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md", "hash": "sha256:de74dc76d4bd4cf0", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md", "wiki/infra/langfuse-platform.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md", "wiki/projects/va-hypernova-mcp.md"]}
+{"path": "raw/notion/2026-06-01-chat-agent-rfc.md", "hash": "sha256:00991d7928dde6f7", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/projects/shine-chat-agent.md", "wiki/infra/langfuse-platform.md", "wiki/projects/ai-engineering-chapter.md"]}
+{"path": "raw/notion/2026-06-04-hypernova-mcp-server-poc.md", "hash": "sha256:9391638eb100731a", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/projects/va-hypernova-mcp.md", "wiki/mcp/mcp-protocol.md", "wiki/projects/va-agent-project.md"]}
 {"path": "raw/sessions/claude-2026-04-10-what-is-this-analyzer-folder-aren-t-thes-1900854e.md", "hash": "sha256:70b73e1244534dea", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/meta/session-log.md", "wiki/meta/claude-workflow-system.md"]}
 {"path": "raw/sessions/claude-2026-04-11-can-we-transfer-the-code-from-cs-agent-a-deb81c96.md", "hash": "sha256:52d591c1cedbecf6", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/meta/session-log.md", "wiki/meta/claude-workflow-system.md"]}
 {"path": "raw/sessions/claude-2026-04-11-i-want-to-refactor-this-insights-skill-f-394ba556.md", "hash": "sha256:5c47686f369fee7b", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/meta/session-log.md", "wiki/meta/claude-workflow-system.md"]}
@@ -277,8 +391,471 @@
 {"path": "raw/sessions/codex-2025-09-15-active-file-untitled-2-open-tabs-valida-76cb019f.md", "hash": "sha256:f3c3c97e81a964b2", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/meta/session-log.md", "wiki/meta/claude-workflow-system.md"]}
 {"path": "raw/sessions/codex-2025-09-16-active-file-notebooks-documentfortransa-58516737.md", "hash": "sha256:c11155e91b344fe4", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/meta/session-log.md", "wiki/meta/claude-workflow-system.md"]}
 {"path": "raw/sessions/codex-2025-09-16-open-tabs-validation-py-notebooks-docum-dabddaa4.md", "hash": "sha256:74d01a8d4856bd42", "ingested_at": "2026-04-26", "wiki_pages": ["wiki/meta/session-log.md", "wiki/meta/claude-workflow-system.md"]}
-{"path": "raw/gdrive/2026-05-15-ai-chapter-meeting-1.md", "hash": "sha256:77b40509c0abdca4", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/projects/ai-engineering-chapter.md", "wiki/infra/langfuse-platform.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md", "wiki/eval/agentic-kpi-trees.md"]}
-{"path": "raw/gdrive/2026-05-28-ai-chapter-meeting-2.md", "hash": "sha256:142f5971ca8676fc", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/projects/ai-engineering-chapter.md", "wiki/adk/adk-vs-langgraph-comparison.md", "wiki/eval/agentic-kpi-trees.md", "wiki/projects/va-agent-project.md"]}
-{"path": "raw/notion/2026-06-04-hypernova-mcp-server-poc.md", "hash": "sha256:9391638eb100731a", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/projects/va-hypernova-mcp.md", "wiki/mcp/mcp-protocol.md", "wiki/projects/va-agent-project.md"]}
-{"path": "raw/notion/2026-06-01-chat-agent-rfc.md", "hash": "sha256:00991d7928dde6f7", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/projects/shine-chat-agent.md", "wiki/infra/langfuse-platform.md", "wiki/projects/ai-engineering-chapter.md"]}
-{"path": "raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md", "hash": "sha256:de74dc76d4bd4cf0", "ingested_at": "2026-06-05", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md", "wiki/infra/langfuse-platform.md", "wiki/infra/2026-04-09-observability-langfuse-vs-langsmith.md", "wiki/projects/va-hypernova-mcp.md"]}
+{"path": "raw/web/2026-04-24-cloud-google-com-blog-topics-developers-practitioners-use-go-5e50e6e1.md", "hash": "sha256:84d492e92866e1e6", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/mcp/mcp-protocol.md"]}
+{"path": "raw/web/2026-04-24-modelcontextprotocol-io-introduction-dd33377c.md", "hash": "sha256:950377138ee7bdb5", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/mcp/mcp-protocol.md"]}
+{"path": "raw/web/2026-04-24-www-anthropic-com-engineering-building-effective-agents-7d24e5fa.md", "hash": "sha256:ffd0c6a5f3e63c16", "ingested_at": "2026-04-24", "wiki_pages": ["wiki/patterns/agentic-workflow-patterns.md", "wiki/adk/plan-and-execute-pattern.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/SKILL.md", "hash": "sha256:cf4e754b9217530f", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-python-api-reference.md", "wiki/adk/adk-workflow-agents.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/references/docs-index.md", "hash": "sha256:35c1e5ecc473ecce", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-python-api-reference.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/references/python.md", "hash": "sha256:07ec14b8dbbdbd01", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-python-api-reference.md", "wiki/adk/adk-workflow-agents.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/SKILL.md", "hash": "sha256:98fbad7e27160132", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-deployment-patterns.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/references/agent-engine.md", "hash": "sha256:98aa7a151e8eed91", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-deployment-patterns.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/references/cloud-run.md", "hash": "sha256:81192ff1c92fce2d", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-deployment-patterns.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/references/event-driven.md", "hash": "sha256:25a3eeb25f379c49", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-deployment-patterns.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/references/terraform-patterns.md", "hash": "sha256:f5319c88884352c4", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-deployment-patterns.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-dev-guide/SKILL.md", "hash": "sha256:eb9d8c05eadc9200", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-python-api-reference.md", "wiki/adk/adk-scaffold-patterns.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-eval-guide/SKILL.md", "hash": "sha256:699aac85531704fe", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-eval-guide.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/builtin-tools-eval.md", "hash": "sha256:6dfb6eceeadaabf6", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-eval-guide.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/criteria-guide.md", "hash": "sha256:a6a2ae2171b988a9", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-eval-guide.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/multimodal-eval.md", "hash": "sha256:7b0326c480c014b6", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-eval-guide.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/user-simulation.md", "hash": "sha256:8ffb5e4b0d2403b3", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-eval-guide.md", "wiki/adk/adk-user-simulation-eval.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-observability-guide/SKILL.md", "hash": "sha256:8c101a7ef36e0d24", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-observability.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-observability-guide/references/bigquery-agent-analytics.md", "hash": "sha256:b3700f58fe018864", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-observability.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-observability-guide/references/cloud-trace-and-logging.md", "hash": "sha256:9a7f56e48c7ac78a", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-observability.md"]}
+{"path": "raw/claude-docs/galactus/.agents/skills/adk-scaffold/SKILL.md", "hash": "sha256:729233e4186d8128", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/adk/adk-scaffold-patterns.md"]}
+{"path": "raw/notion/2026-06-29-va-langgraph-roadmap.md", "hash": "sha256:3bac292c26ed5cfd", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/private/va-langgraph-migration.md", "wiki/private/va-agent-project.md"]}
+{"path": "raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md", "hash": "sha256:fbea247301a59cd6", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/rag/va-hca-retrieval-evaluation.md", "wiki/eval/galactus-eval-architecture.md", "wiki/eval/llm-calibration-insights.md"]}
+{"path": "raw/notion/2026-07-03-golden-dataset-alignment-notes.md", "hash": "sha256:f32e5051aad1fffa", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/eval/va-eval-harness.md"]}
+{"path": "raw/notion/2026-06-02-va-poc-to-v1-technical-strategy.md", "hash": "sha256:579a6219eb0b90c5", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/private/va-langgraph-migration.md", "wiki/private/va-agent-project.md"]}
+{"path": "raw/notion/2026-06-17-rag-pipeline-requirements-and-scope.md", "hash": "sha256:84c987426b049e2e", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/private/shine-knowledge-agent.md"]}
+{"path": "raw/notion/2026-04-09-copilot-chat-hc-integration-prd.md", "hash": "sha256:f04ed25689d8b9ce", "ingested_at": "2026-07-05", "wiki_pages": ["wiki/private/shine-copilot-architecture.md"]}
+{"path": "raw/sessions/2026-04-10T2230.md", "hash": "sha256:4facdf73b2360cf9", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-11T1218.md", "hash": "sha256:0ee30e95bb6eea22", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-12T1024.md", "hash": "sha256:39883cca80c4491e", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-14T1627.md", "hash": "sha256:94c3f0fc1abf6e0e", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-15T1057.md", "hash": "sha256:35654ab576f83acd", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-16T0808.md", "hash": "sha256:00ad8e0b5217c79a", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-17T1557.md", "hash": "sha256:49b973750b812f30", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-18T1327.md", "hash": "sha256:da78ec9a068e9ff4", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-19T1117.md", "hash": "sha256:6347d86adb3561d6", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-20T1645.md", "hash": "sha256:ca58058cd30e48f9", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-21T0703.md", "hash": "sha256:138b4be754d7da9d", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-22T0647.md", "hash": "sha256:62476b36a3ceb457", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-24T1048.md", "hash": "sha256:61835e643129be60", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-25T1018.md", "hash": "sha256:d8cb74c1d162726d", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-26T0915.md", "hash": "sha256:f6370eb878c56f3a", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-26T1407-compact-Workspace.md", "hash": "sha256:661d1b9863ce5c20", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-26T1429-compact-Workspace.md", "hash": "sha256:9e18edcaeb8835a6", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-26T1502-compact-Workspace.md", "hash": "sha256:d6ba9a099e1082e1", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-26T1702-compact-Workspace.md", "hash": "sha256:633eca0ddde0cb39", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-27T1230-compact-librarian.md", "hash": "sha256:ab84a4cdda14bac2", "ingested_at": "2026-07-05", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-07-05-how-does-galactus-claude-skills-and-hook-4914f277.md", "hash": "sha256:9bb08d614707a22c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-27T1243-compact-librarian.md", "hash": "sha256:5a179573eafbb8c4", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-27T1321-compact-librarian.md", "hash": "sha256:5190d7091fa8b898", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T1946-compact-playground.md", "hash": "sha256:16900b41fefc23f7", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T1959-compact-playground.md", "hash": "sha256:581cc2799b663961", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2016-compact-playground.md", "hash": "sha256:31e9fecdaad0e63a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2020-compact-playground.md", "hash": "sha256:072d0082e6731cb7", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2049-compact-playground.md", "hash": "sha256:44498454b1956175", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2053-compact-playground.md", "hash": "sha256:98d795264257073a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2115-compact-playground.md", "hash": "sha256:393f0904677e0541", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2131-compact-playground.md", "hash": "sha256:155849f2cc08803e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2139-compact-playground.md", "hash": "sha256:ba2c228cbf9f62c7", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2149-compact-playground.md", "hash": "sha256:ea270ad1e5531dd8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2216-compact-playground.md", "hash": "sha256:0dfa9e574da3e7b9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2255-compact-playground.md", "hash": "sha256:ef7120bde8d1790d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-29T2311-compact-playground.md", "hash": "sha256:4626f9fe96eb63c5", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-30T2200-compact-playground.md", "hash": "sha256:6830bad790c580dc", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-30T2223-compact-playground.md", "hash": "sha256:402b089a5a89ecfa", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-04-30T2233-compact-playground.md", "hash": "sha256:b075e234f2de0d9a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-04T1519-compact-playground.md", "hash": "sha256:ca3369c0931d711a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-04T1523-compact-playground.md", "hash": "sha256:09601f800c7692c1", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-04T1634-compact-playground.md", "hash": "sha256:d0e8cd8458497af7", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-04T1652-compact-playground.md", "hash": "sha256:7238487fc322c537", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-04T1803-compact-playground.md", "hash": "sha256:b55257baf1d20a92", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-04T1815-compact-playground.md", "hash": "sha256:9fbbc4e5d6be6e47", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-04T1837-compact-playground.md", "hash": "sha256:15b36409f6161c17", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-04T1903-compact-playground.md", "hash": "sha256:382f7da8f46b2f3b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1201-compact-playground.md", "hash": "sha256:ebf9fe0df543134a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1217-compact-playground.md", "hash": "sha256:4f27ac83a6f45933", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1224-compact-playground.md", "hash": "sha256:30911657245ba5e9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1251-compact-playground.md", "hash": "sha256:1f2eda151ecbde13", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1256-compact-playground.md", "hash": "sha256:e4fbfebaae58ae61", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1313-compact-playground.md", "hash": "sha256:8d513bc5229eb011", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1337-compact-playground.md", "hash": "sha256:25f5cd4756c52e53", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1346-compact-playground.md", "hash": "sha256:6f4352cea51e9585", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1426-compact-playground.md", "hash": "sha256:4acac8230d94c8ea", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1710-compact-playground.md", "hash": "sha256:6749cd89b3dc7e45", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1724-compact-playground.md", "hash": "sha256:c9e6d2b4a093c9c6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1802-compact-playground.md", "hash": "sha256:fc81444a0be48851", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1817-compact-playground.md", "hash": "sha256:cfbf9b3f3bed392c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1821-compact-playground.md", "hash": "sha256:4643d0a2ed5e37cc", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1835-compact-playground.md", "hash": "sha256:01c4c4b5b59a24e6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1844-compact-playground.md", "hash": "sha256:2d8e3d9962308cb0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T1954-compact-playground.md", "hash": "sha256:65792a878ef4bd82", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T2011-compact-playground.md", "hash": "sha256:83324f538c06f3f5", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T2044-compact-playground.md", "hash": "sha256:20590a8527145288", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T2114-compact-playground.md", "hash": "sha256:d491335b410b01f9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T2122-compact-playground.md", "hash": "sha256:c9b1e7db5b11ad6d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T2155-compact-playground.md", "hash": "sha256:0a0bb966490b81c9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-05T2207-compact-playground.md", "hash": "sha256:d3fb5d0bdcecba6d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1026-compact-playground.md", "hash": "sha256:738e840581cbe58d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1057-compact-galactus.md", "hash": "sha256:b51a7af148a07081", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1139-compact-galactus.md", "hash": "sha256:e1d15e7ee70509ff", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1244-compact-galactus.md", "hash": "sha256:9b49170e1e068eee", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1404-compact-galactus.md", "hash": "sha256:453fc89c857c6da4", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1507-compact-galactus.md", "hash": "sha256:6031baf1c2110bdd", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1610-compact-galactus.md", "hash": "sha256:7f7086f81d6f9cea", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1704-compact-galactus.md", "hash": "sha256:943d0290cfd3d831", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1706-compact-galactus.md", "hash": "sha256:3a9bec3f331fde89", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1734-compact-galactus.md", "hash": "sha256:fcb60d9d3679589c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1802-compact-galactus.md", "hash": "sha256:3967b1368c02829c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1837-compact-galactus.md", "hash": "sha256:c7c415a527328783", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T1922-compact-galactus.md", "hash": "sha256:0aa65b66df7fa8a1", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T2013-compact-galactus.md", "hash": "sha256:b500ccbc1a355830", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-06T2031-compact-galactus.md", "hash": "sha256:f43989e1efb4eee8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1039-compact-galactus.md", "hash": "sha256:c3e8de9aa26c7e7e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1132-compact-galactus.md", "hash": "sha256:a0d9f5e5f8246eef", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1210-compact-galactus.md", "hash": "sha256:e729a3aebd54c090", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1314-compact-galactus.md", "hash": "sha256:ce1743c906838659", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1342-compact-galactus.md", "hash": "sha256:3f74f93815f9ee4e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1533-compact-galactus.md", "hash": "sha256:12f1596f5ef8d266", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1612-compact-galactus.md", "hash": "sha256:a8a88662437d4770", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1647-compact-galactus.md", "hash": "sha256:23aba64c7a526a67", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1814-compact-galactus.md", "hash": "sha256:eed722d44ba5b914", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1830-compact-galactus.md", "hash": "sha256:05de8cc5d4c81cce", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1931-compact-galactus.md", "hash": "sha256:36420630c8caa55d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T1959-compact-galactus.md", "hash": "sha256:49d983c2b9ed48bb", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T2014-compact-galactus.md", "hash": "sha256:65f8ce71dff87b6b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T2018-compact-Workspace.md", "hash": "sha256:811cd48c55ab8433", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T2102-compact-galactus.md", "hash": "sha256:30f79636a6299670", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-07T2111-compact-galactus.md", "hash": "sha256:39400f0628f535ad", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1100-compact-Workspace.md", "hash": "sha256:b6f5088bab6f7771", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1132-compact-Workspace.md", "hash": "sha256:8696fc9a18f81502", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1155-compact-galactus.md", "hash": "sha256:51f09cac9a01eecf", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1250-compact-galactus.md", "hash": "sha256:50c9308f64b543a8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1320-compact-galactus.md", "hash": "sha256:f1c6fbd2986e57fe", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1525-compact-galactus.md", "hash": "sha256:1d1f690d53297e42", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1534-compact-Workspace.md", "hash": "sha256:9779cf0ff55ccaf2", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1604-compact-galactus.md", "hash": "sha256:ad353ab6b51af0ae", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T1953-compact-Workspace.md", "hash": "sha256:f647d550c798eba5", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T2054-compact-Workspace.md", "hash": "sha256:11523ef0b829d260", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T2135-compact-galactus.md", "hash": "sha256:8fb7d0874715c610", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-08T2225-compact-galactus.md", "hash": "sha256:c756a5fc8d9a76e6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1155-compact-Workspace.md", "hash": "sha256:cf261d8491a6d82f", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1208-compact-Workspace.md", "hash": "sha256:c6319edf8722ab42", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1309-compact-Workspace.md", "hash": "sha256:467aaeeb2d5dd139", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1425-compact-Workspace.md", "hash": "sha256:7e90252ce78b1d9d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1456-compact-Workspace.md", "hash": "sha256:2d7a01dcbeb1ef95", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1512-compact-Workspace.md", "hash": "sha256:1c3e6a796704e23d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1614-compact-Workspace.md", "hash": "sha256:63d0a3bb5eda642a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1650-compact-Workspace.md", "hash": "sha256:52cf20abe2b395e9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1753-compact-Workspace.md", "hash": "sha256:17b95faa21b6280b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1754-compact-galactus.md", "hash": "sha256:6812b9f11b73f6bb", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T1940-compact-Workspace.md", "hash": "sha256:8f0036e180ea0ed4", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T2102-compact-Workspace.md", "hash": "sha256:d7e07b98160be3c9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T2126-compact-Workspace.md", "hash": "sha256:1369413c378230bb", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T2208-compact-galactus.md", "hash": "sha256:55448ab7de0bfc13", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-09T2351-compact-Workspace.md", "hash": "sha256:9cfa198e10ba99cb", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-10T0044-compact-galactus.md", "hash": "sha256:496273bed8c23815", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-10T1112-compact-Workspace.md", "hash": "sha256:81d011689e74a70e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-10T1249-compact-galactus.md", "hash": "sha256:a9505183928f9fd0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-10T1341-compact-galactus.md", "hash": "sha256:6d938cbf9ddb40e8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-10T1419-compact-galactus.md", "hash": "sha256:1b8f86e4d6f257d6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-11T1120-compact-galactus.md", "hash": "sha256:3e0758ddc8106d13", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-11T1603-compact-galactus.md", "hash": "sha256:9059783ea1c2fada", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-11T1814-compact-galactus.md", "hash": "sha256:8d9fa38ee4a13787", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-11T1949-compact-galactus.md", "hash": "sha256:c19d6f6d3e73dce9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-11T2132-compact-galactus.md", "hash": "sha256:307fd20de77ec0a5", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-11T2307-compact-galactus.md", "hash": "sha256:9d78910c0f5a7f78", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-12T0920-compact-galactus.md", "hash": "sha256:c0b5eb2e865dc412", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-12T2138-compact-Workspace.md", "hash": "sha256:97b1929513fc5363", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-12T2313-compact-galactus.md", "hash": "sha256:765c03080fcde058", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-12T2322-compact-galactus.md", "hash": "sha256:3979bf7c049271ce", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-12T2342-compact-galactus.md", "hash": "sha256:44a6d3615a35f953", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-12T2358-compact-galactus.md", "hash": "sha256:ae15a5e0041e9ec0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1313-compact-galactus.md", "hash": "sha256:4113db90ec8f9651", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1334-compact-galactus.md", "hash": "sha256:081cc5827a87a66a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1502-compact-galactus.md", "hash": "sha256:db381a63eb311f89", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1547-compact-galactus.md", "hash": "sha256:5be89040f61b4c07", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1642-compact-galactus.md", "hash": "sha256:eb82d8b6aafaccd9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1737-compact-galactus.md", "hash": "sha256:3beffbea070f7ee5", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1828-compact-galactus.md", "hash": "sha256:e85cc3c40087e6e0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1833-compact-galactus.md", "hash": "sha256:739bc0bf0a004b21", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T1905-compact-galactus.md", "hash": "sha256:cfa47ca075343dd1", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T2031-compact-galactus.md", "hash": "sha256:296def4cec2cc425", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T2120-compact-galactus.md", "hash": "sha256:632d1122d24adef0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T2128-compact-galactus.md", "hash": "sha256:d008938d3e9a2287", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T2204-compact-galactus.md", "hash": "sha256:f1d5e56e4cfc5297", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-13T2311-compact-galactus.md", "hash": "sha256:5bd7bb639be1c4b1", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-14T1245-compact-galactus.md", "hash": "sha256:c41eba49934a5c4b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-14T1334-compact-galactus.md", "hash": "sha256:db27f1270e7b2d3c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-14T1430-compact-galactus.md", "hash": "sha256:8293386a2aaaaf5f", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-14T1551-compact-galactus.md", "hash": "sha256:fba9ef5359ea4cb9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-14T1626-compact-galactus.md", "hash": "sha256:a229276534618a17", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-14T1844-compact-galactus.md", "hash": "sha256:2d896d2724bc681c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-14T2006-compact-galactus.md", "hash": "sha256:8356d6ef305da0e8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-15T1723-compact-galactus.md", "hash": "sha256:1310c3828db27a8b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-15T1903-compact-galactus.md", "hash": "sha256:d3b1937290e43d47", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-15T1931-compact-galactus.md", "hash": "sha256:e1c1e8e1c05c03ae", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-15T2025-compact-Workspace.md", "hash": "sha256:581254fbed875901", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-15T2028-compact-galactus.md", "hash": "sha256:da1c910ab9b397b4", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-15T2043-compact-Workspace.md", "hash": "sha256:c9df8b7592aea5d4", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-15T2048-compact-galactus.md", "hash": "sha256:ddcf61e5246b64ec", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-15T2057-compact-Workspace.md", "hash": "sha256:e71c5dce8173cb7e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-16T1950-compact-galactus.md", "hash": "sha256:0b23ae5d7493c228", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-16T2123-compact-galactus.md", "hash": "sha256:31d34a4b4821ef5f", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-16T2207-compact-galactus.md", "hash": "sha256:0068fee8f940dcdd", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-18T1255-compact-galactus.md", "hash": "sha256:786135e6b7656533", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-18T1355-compact-galactus.md", "hash": "sha256:61f9509d9c885a23", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-18T1701-compact-.claude.md", "hash": "sha256:67722cb0eead1f14", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-18T1800-compact-.claude.md", "hash": "sha256:91e88b9f4c35d3c3", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-18T1821-compact-.claude.md", "hash": "sha256:1b44bca05d801c76", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-18T1907-compact-.claude.md", "hash": "sha256:4ecc4b98e5b733a3", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-19T0954-compact-.claude.md", "hash": "sha256:cdb2a7305e2dfb85", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-19T1037-compact-.claude.md", "hash": "sha256:a15960b9863fff29", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-19T1203-compact-.claude.md", "hash": "sha256:63a5da100cd33639", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-19T1405-compact-.claude.md", "hash": "sha256:6064be4f58bdf743", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T1438-compact-.claude.md", "hash": "sha256:f51f197828c1c0d8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T1550-compact-.claude.md", "hash": "sha256:cdc83ceaae743742", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T1700-compact-.claude.md", "hash": "sha256:6422607cae22a61c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T1731-compact-.claude.md", "hash": "sha256:0cf940b627b96c17", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T1802-compact-.claude.md", "hash": "sha256:59264d90b06fedb0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T1829-compact-.claude.md", "hash": "sha256:6129d3774d83688f", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T1848-compact-.claude.md", "hash": "sha256:54f1fb91f26b0ca4", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T1912-compact-.claude.md", "hash": "sha256:e4e019b47a18ef40", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T2004-compact-.claude.md", "hash": "sha256:d2d63b2dc2ced431", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T2031-compact-.claude.md", "hash": "sha256:46c03594528f9a05", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T2052-compact-.claude.md", "hash": "sha256:427788997f6322c8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-20T2121-compact-.claude.md", "hash": "sha256:539b400c21ad47cf", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-21T1915-compact-.claude.md", "hash": "sha256:84dd1dad8c3e6bf6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1416-compact-galactus.md", "hash": "sha256:baf34493755829cc", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1516-compact-galactus.md", "hash": "sha256:5a7717fe9ad97172", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1547-compact-galactus.md", "hash": "sha256:063590536d3ea241", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1604-compact-galactus.md", "hash": "sha256:1f0732b764e6fe8c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1634-compact-galactus.md", "hash": "sha256:2c6e134bdc000c7e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1705-compact-galactus.md", "hash": "sha256:4d4365ee580c78bb", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1723-compact-articles.md", "hash": "sha256:b60506a244bb35ca", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1726-compact-galactus.md", "hash": "sha256:087c17507791f247", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1824-compact-galactus.md", "hash": "sha256:344855a2434edf28", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T1914-compact-galactus.md", "hash": "sha256:7ce02ffd6acb3600", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T2010-compact-galactus.md", "hash": "sha256:a64305816211809b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T2011-compact-galactus.md", "hash": "sha256:ed59657ff42fcaa4", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T2026-compact-galactus.md", "hash": "sha256:f25a4e1993018e72", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T2142-compact-galactus.md", "hash": "sha256:ad8778de802f7981", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T2247-compact-galactus.md", "hash": "sha256:68edb58cf519a495", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-24T2357-compact-galactus.md", "hash": "sha256:1cfcdde08b76a2de", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-25T0114-compact-galactus.md", "hash": "sha256:e7b91cf6aa7d004d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-25T1003-compact-galactus.md", "hash": "sha256:ab07fb15879ad38c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-25T1246-compact-galactus.md", "hash": "sha256:0e22374510d3e4b6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-25T1342-compact-galactus.md", "hash": "sha256:edc8359591379ba2", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-26T2057-compact-galactus.md", "hash": "sha256:20dacc3a9d7b93ef", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-28T0711.md", "hash": "sha256:4cdb3664ced43dcc", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-29T0728.md", "hash": "sha256:d271b0dcb6a7eb77", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-30T1020-compact-galactus.md", "hash": "sha256:e36e0392db50917d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-30T1035-compact-galactus.md", "hash": "sha256:bb01a8d97483eac2", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-30T1057-compact-galactus.md", "hash": "sha256:960d5e3b8ee2023c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-05-30T1210-compact-galactus.md", "hash": "sha256:77a6fdca0b2028f9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-01T1834-compact-Workspace.md", "hash": "sha256:4c3344fce49ed84c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-01T1843-compact-galactus.md", "hash": "sha256:2f0b38c984eb2bda", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T0831-compact-galactus.md", "hash": "sha256:e19fc56b46dc61ab", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T0918-compact-Workspace.md", "hash": "sha256:7e315c3f2cfca3bc", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T1145-compact-galactus.md", "hash": "sha256:2a70ebbdda01b244", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T1244-compact-Workspace.md", "hash": "sha256:63c5901e7619e3ac", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T1248-compact-galactus.md", "hash": "sha256:13bacf4d9f00eb0c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T1835-compact-Workspace.md", "hash": "sha256:b3e76a7ddea1241d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T1902-compact-galactus.md", "hash": "sha256:dcd5c71d04f564fe", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T1910-compact-Workspace.md", "hash": "sha256:f5ceadefbebac687", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T2211-compact-galactus.md", "hash": "sha256:e44c23575e4c4bed", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-02T2255-compact-galactus.md", "hash": "sha256:df16e41cc8222a2e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T1251-compact-galactus.md", "hash": "sha256:3356fd11a87d1dcb", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T1351-compact-Workspace.md", "hash": "sha256:653acb83d4ad69e2", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T1544-compact-galactus.md", "hash": "sha256:0742ada7e989b258", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T1746-compact-galactus.md", "hash": "sha256:2cdbbabd7de58a2f", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T2059-compact-galactus.md", "hash": "sha256:bc40e16cc6e91553", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T2136-compact-galactus.md", "hash": "sha256:88ad8ac657a460ba", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T2156-compact-galactus.md", "hash": "sha256:c02a9d33bb770ac0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T2158-compact-galactus.md", "hash": "sha256:7db4b8a733371207", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-03T2245-compact-galactus.md", "hash": "sha256:9ee1be238db2bdb9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-04T0024-compact-galactus.md", "hash": "sha256:a02ab657e2b7f575", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-04T1321-compact-Workspace.md", "hash": "sha256:189bff03c72f8106", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-04T1659-compact-galactus.md", "hash": "sha256:3be995753eb6245d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-04T1853-compact-galactus.md", "hash": "sha256:4422b4ffa936a703", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/2026-06-04T2046-compact-galactus.md", "hash": "sha256:6f4981310e9e2d65", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-04-can-we-do-a-scraping-of-google-drive-ing-57331686.md", "hash": "sha256:d40ed26df222d9dd", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-05-do-we-need-to-update-this-readme-e8f4eeed.md", "hash": "sha256:3fb7e8f974978f61", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-05-i-think-we-have-updated-everything-in-ev-824e04f8.md", "hash": "sha256:df2f4bbe4d617efd", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-05-people-always-talk-about-adding-a-ralph-54fbb1fb.md", "hash": "sha256:570dc1777a916301", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-05-why-is-ingestion-here-i-htought-we-moved-f38c3543.md", "hash": "sha256:fca73220f6281c01", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-07-do-we-need-this-or-can-we-now-delete-leg-eeeb2744.md", "hash": "sha256:244fbfe9a718c4b9", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-07-this-is-exactly-right-for-running-experi-3e89eb49.md", "hash": "sha256:d4cc804d60716c27", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-07-we-have-a-500-tests-isnt-there-a-better-a758a3bb.md", "hash": "sha256:ab9e499af565d4e0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-07-we-have-a-bunch-of-capabilities-for-the-83bb4b48.md", "hash": "sha256:ef1996ef59d1eeb7", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-07-why-does-this-say-80-files-would-be-refo-e9506f1e.md", "hash": "sha256:2cb408243c4eb45b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-08-calibrated-llm-as-judge-answer-relevanc-09914670.md", "hash": "sha256:f4a653eb78541081", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-08-can-you-right-2-linear-tix-for-me-to-cop-7aa3db68.md", "hash": "sha256:09206f5abddbda7e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-08-do-we-need-to-update-this-as-well-since-fe31aacc.md", "hash": "sha256:993f09e14e5f8220", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-08-doe-sthe-codqualityagent-in-akira-also-s-b52a3ff9.md", "hash": "sha256:856b2ff7752ea8ee", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-08-filenotfounderror-errno-2-no-such-file-o-4c189a8c.md", "hash": "sha256:f9814bcc85349ba3", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-08-is-this-an-error-do-we-have-clear-schema-52d344b8.md", "hash": "sha256:d52722b40139be63", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-08-this-nbk-is-using-my-old-csv-download-fo-fdc67863.md", "hash": "sha256:ced9b8a7f83f85e7", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-08-we-somehow-managed-to-run-through-400-eu-be975ee5.md", "hash": "sha256:b47a444a96a4788b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-09-indexerror-single-positional-indexer-is-0c6ec8a1.md", "hash": "sha256:f11d069eabba1ff3", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-09-modulenotfounderror-no-module-named-rag-660918fb.md", "hash": "sha256:bdc97e4e4dc2d466", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-09-which-of-these-metrics-or-exploration-in-bf836c46.md", "hash": "sha256:5f9730792a112e62", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-10-is-this-fable-model-working-here-can-you-9ddbb706.md", "hash": "sha256:a2a90a22e4f031e5", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-11-what-is-going-on-here-can-we-fix-eval-qu-8caa7044.md", "hash": "sha256:dd7a96266a3f79f6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-19-base-directory-for-this-skill-users-rams-8877c883.md", "hash": "sha256:f459f30eb1708b7f", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-19-based-on-these-findings-from-our-support-094b14b7.md", "hash": "sha256:c4a1247593dd95d1", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-19-can-we-sanyi-evals-particularly-the-pipe-11d354a7.md", "hash": "sha256:0099c341c9f6cd2f", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-19-have-these-tasks-been-imiplemented-if-so-6a1505ca.md", "hash": "sha256:61ce0d0412c5c88e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-19-is-this-nbk-updated-with-our-recent-runs-b4f26fe7.md", "hash": "sha256:27459d69ec06dd12", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-19-some-thoughts-on-sanyi-but-also-how-does-5bae9447.md", "hash": "sha256:9da791feb7999443", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-19-what-do-we-think-of-the-this-md-report-i-130222d2.md", "hash": "sha256:25f45670e927cd8c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-22-so-we-have-a-lot-of-data-in-corpus-and-e-93b4309e.md", "hash": "sha256:2759aaa211924551", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-22-what-s-the-thinking-budget-for-va-agent-84c3ba53.md", "hash": "sha256:413db62a6805ba47", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-22-why-is-there-this-cursor-bot-in-our-gith-f3d8c629.md", "hash": "sha256:735b77d885a5921c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-23-load-heuristic-json-files-heuristic-dir-2a6c99c4.md", "hash": "sha256:5ba10c5461c2ac1a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-23-shouldn-t-the-escalation-response-be-eng-bf544d36.md", "hash": "sha256:970d7a67dd5d6a99", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-can-we-remove-the-linting-issues-in-the-b0642ba1.md", "hash": "sha256:346c5f7cdf8ddd18", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-can-we-turn-the-lint-off-for-this-html-p-7e180bf0.md", "hash": "sha256:b5c39a08835784ad", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-comment-thread-core-preprocessing-articl-b9dc2827.md", "hash": "sha256:519a886a45707eac", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-core-preprocessing-conversations-groundi-4034555a.md", "hash": "sha256:e7be22757fb15f02", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-error-on-make-eval-all-file-users-ramsey-76bda47b.md", "hash": "sha256:afdfab79bc24da15", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-how-s-our-logs-why-does-it-looks-like-hc-6210d985.md", "hash": "sha256:142f1278f5c98012", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-how-well-does-our-va-evaluation-framewor-a7cab4b9.md", "hash": "sha256:fa89a9a62d70b3e8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-how-would-you-compare-our-playground-to-de544217.md", "hash": "sha256:84419dc5f6b299f2", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-i-just-gitpulled-va-agents-is-there-anyt-51b184ce.md", "hash": "sha256:2795cb58f355d370", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-i-just-onboarded-someone-to-this-repo-is-890685a5.md", "hash": "sha256:8386c397a1fe29e6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-in-this-doc-do-we-also-clearly-talk-abou-0c67abca.md", "hash": "sha256:c6a5ae826f00177c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-just-out-of-curiosity-how-many-of-those-b91ebc5f.md", "hash": "sha256:47127959be13907b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-ok-i-think-we-are-about-to-push-everythi-419dc79c.md", "hash": "sha256:693c0f35f0360b46", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-this-graph-here-i-want-to-make-it-clear-b92e12ec.md", "hash": "sha256:766c23beff956581", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-24-woah-am-i-seeing-some-calls-15sec-in-lat-c46b867f.md", "hash": "sha256:713b239d2a1c4531", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-btw-for-dataset-we-could-use-240-qa-i-th-4ad49b99.md", "hash": "sha256:4ab58d305bca67c0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-can-you-update-this-page-accordingly-to-b6ed6cf9.md", "hash": "sha256:e255a48b262a5474", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-have-we-updated-all-the-tabs-in-this-rep-6be85145.md", "hash": "sha256:1215dcdef73d90b0", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-how-well-does-this-document-reflect-our-8cc7f4f3.md", "hash": "sha256:7b6f1111b7a0ae93", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-i-just-deleted-old-datasets-do-we-need-t-0310489c.md", "hash": "sha256:b98e298edb005d64", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-i-m-on-an-old-branch-and-need-to-rebase-c28a2b11.md", "hash": "sha256:020a09815cd88a2e", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-i-think-this-dataset-doesnt-need-query-w-cb15d378.md", "hash": "sha256:2efd6eeda8ab18eb", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-i-think-we-can-remove-what-the-source-ba-a9522055.md", "hash": "sha256:789039e84ef4e070", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-25-why-doesnt-hca-plot-y-true-e6f88df0.md", "hash": "sha256:6c4be5075c87295c", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-06-26-please-remove-this-part-from-the-overvie-71d75bb4.md", "hash": "sha256:d7acdc89f045eb59", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-07-05-which-repos-is-librarian-scraping-c7597adf.md", "hash": "sha256:43fffaf29959e246", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-07-05-why-is-make-lint-failing-doew-sit-not-ha-0ee40dd4.md", "hash": "sha256:b0ba30095f5913d8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/claude-docs/chat-agent/docs/LANGFUSE.md", "hash": "sha256:cc888f8f01b82682", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/langfuse-adk-tracing-patterns.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/LANGFUSE_TRACING_REPORT.md", "hash": "sha256:8fdacc82ca3c9a00", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/shine-langfuse-tracing-gaps.md", "wiki/infra/langfuse-adk-tracing-patterns.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/TODO_production.md", "hash": "sha256:8ec2982d59f86e4f", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/cloud-run-cloud-sql-pattern.md", "wiki/infra/pgvector-migration-pattern.md", "wiki/private/shine-production-backlog.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/architecture/PGVector_migration.md", "hash": "sha256:2fd777885ce8d57b", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/pgvector-migration-pattern.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/architecture/VertexAI.md", "hash": "sha256:67b6d2be0d544271", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/pgvector-migration-pattern.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/architecture/cloud_deployment.md", "hash": "sha256:47066af5de37f5a4", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/cloud-run-cloud-sql-pattern.md", "wiki/private/shine-chat-agent.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/architecture/conversation_repository.md", "hash": "sha256:63f98363270da5e8", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/conversation-repository-pattern.md", "wiki/private/shine-chat-agent.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/architecture/queries.md", "hash": "sha256:2a82a8479d760fb8", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/pgvector-migration-pattern.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/backlog.md", "hash": "sha256:b82e5fdc85b6c627", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/shine-production-backlog.md", "wiki/private/shine-chat-agent.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/eval/eval_metrics.md", "hash": "sha256:12f06b3eff0b4d2a", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/rag-eval-metrics-suite.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/eval/pipeline.md", "hash": "sha256:81d8c76550a2287d", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/synthetic-dataset-generation.md", "wiki/private/shine-chat-agent.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/kb-analysis/answer_quality_criteria.md", "hash": "sha256:7f14375bbc6eb5ae", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/shine-answer-quality-criteria.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md", "hash": "sha256:c2ad590719d0c0f7", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/shine-answer-quality-criteria.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/plans/aif32_code_review_fixes.md", "hash": "sha256:3f54399bee915663", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/synthetic-dataset-generation.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/plans/synthetic_dataset_generation.md", "hash": "sha256:042801a9f748b255", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/synthetic-dataset-generation.md"]}
+{"path": "raw/claude-docs/chat-agent/docs/shine_pii_redaction_decision.md", "hash": "sha256:070fde708d1829c3", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/presidio-pii-redaction.md", "wiki/private/shine-chat-agent.md"]}
+{"path": "raw/notion/2026-04-07-support-knowledge-agent.md", "hash": "sha256:944f104fa1280f79", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/shine-knowledge-agent.md", "wiki/rag/rag-knowledge-preparation.md", "wiki/eval/copilot-learning-loop.md"]}
+{"path": "raw/notion/2026-04-09-copilot-why-what-how.md", "hash": "sha256:f1632539f2ad0236", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/shine-copilot-architecture.md", "wiki/eval/copilot-learning-loop.md"]}
+{"path": "raw/notion/2026-04-13-rag-pipeline-requirements.md", "hash": "sha256:1030bf765abc7850", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/shine-knowledge-agent.md", "wiki/rag/rag-knowledge-preparation.md"]}
+{"path": "raw/notion/2026-04-21-agt09-adk-vs-langgraph-spike.md", "hash": "sha256:bc02131d59cda086", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/va-agent-project.md", "wiki/adk/adk-vs-langgraph-comparison.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/peer-repos.md", "hash": "sha256:373ca0f5c42536f3", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/playground/docs/README.md", "hash": "sha256:8a7c3763888fddea", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/claude-workflow-system.md"]}
+{"path": "raw/claude-docs/playground/docs/archived/librarian-hardening/review.md", "hash": "sha256:67171273e0476b15", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/librarian-rag-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/plans/rag-migration-plan.md", "hash": "sha256:9402b857f412d861", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/librarian-rag-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/research/README.md", "hash": "sha256:735887946454debf", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/research/git-workflows.md", "hash": "sha256:52cdb6203d1634ea", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/claude-workflow-system.md"]}
+{"path": "raw/claude-docs/playground/docs/research/architecture/pre-merge-review.md", "hash": "sha256:b479a18e4d0488f6", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md"]}
+{"path": "raw/claude-docs/playground/docs/reviews/pre-commit-review.md", "hash": "sha256:1b57287f1a7df5cf", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/production-hardening-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/tooling/adk-js.md", "hash": "sha256:dd557b00e4a3d073", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/adk/adk-js-typescript-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/tooling/demo.md", "hash": "sha256:a4edf4ad786598c4", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/va-agent-project.md"]}
+{"path": "raw/claude-docs/playground/docs/tooling/docker-setup.md", "hash": "sha256:2da140a2fb3f2d06", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/production-hardening-patterns.md"]}
+{"path": "raw/claude-docs/playground/docs/tooling/eval-harness.md", "hash": "sha256:46b07e13e961187e", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/va-eval-harness.md"]}
+{"path": "raw/claude-docs/playground/docs/tooling/hooks-architecture.md", "hash": "sha256:680c6a428b28dc03", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/claude-code-hook-architecture.md"]}
+{"path": "raw/claude-docs/playground/docs/tooling/nextjs-16-app-router.md", "hash": "sha256:bc289a8f269e44d4", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/va-agent-project.md"]}
+{"path": "raw/claude-docs/playground/docs/tooling/observability-setup.md", "hash": "sha256:6f629a8d71edffcf", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/observability-runtime-patterns.md"]}
+{"path": "raw/claude-docs/playground/react-flow-ui.md", "hash": "sha256:770163206a552541", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-graph-explorer.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/README.md", "hash": "sha256:0b85a24c85b7f4aa", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/evaluation/eval-harness.md", "hash": "sha256:1634d7f8ce593237", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/anthropic-eval-taxonomy.md", "wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/music-agent/peer-repos.md", "hash": "sha256:373ca0f5c42536f3", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/listen-wiseer/docs/research/music-agent/spotify-repos.md", "hash": "sha256:d1c1b3ba9cb39203", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/listen-wiseer-project.md"]}
+{"path": "raw/claude-docs/_user/CLAUDE.md", "hash": "sha256:073fac9243087eb8", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/claude-workflow-system.md"]}
+{"path": "raw/claude-docs/galactus/docs/OVERVIEW.md", "hash": "sha256:54c192fc1a34190f", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-project.md"]}
+{"path": "raw/claude-docs/galactus/docs/SESSION.md", "hash": "sha256:caf7536858f74081", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-project.md"]}
+{"path": "raw/claude-docs/galactus/docs/dev/git.md", "hash": "sha256:5e04ab851d8e57e8", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-dev-hooks.md"]}
+{"path": "raw/claude-docs/galactus/docs/dev/hooks-architecture.md", "hash": "sha256:68b8e31e5462f45a", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-dev-hooks.md"]}
+{"path": "raw/claude-docs/galactus/docs/evals/eval-architecture.md", "hash": "sha256:174a17fbeddec4c3", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/galactus/docs/evals/eval-harness-patterns.md", "hash": "sha256:b38ac7acada596b3", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/galactus/docs/evals/gate-contract.md", "hash": "sha256:0430712a685e7376", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/eval-gate-contract.md"]}
+{"path": "raw/claude-docs/galactus/docs/evals/grader_interface.md", "hash": "sha256:a51653dbeaa1c3b2", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/galactus/docs/evals/grader_methodology.md", "hash": "sha256:a5ce7bc779f8319e", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md", "wiki/eval/llm-calibration-insights.md"]}
+{"path": "raw/claude-docs/galactus/docs/evals/llm-calibration-insights.md", "hash": "sha256:f1fe3a3eed0a71b7", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/llm-calibration-insights.md"]}
+{"path": "raw/claude-docs/galactus/docs/frameworks/agent-feature-parity.md", "hash": "sha256:bb55495f3a601412", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-agent-parity.md"]}
+{"path": "raw/claude-docs/galactus/docs/frameworks/google-adk.md", "hash": "sha256:36129f8801e4606e", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-project.md"]}
+{"path": "raw/claude-docs/galactus/docs/frameworks/langfuse.md", "hash": "sha256:814afac021301897", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/infra/langfuse-platform.md", "wiki/private/langfuse-galactus.md"]}
+{"path": "raw/claude-docs/galactus/docs/frameworks/langgraph.md", "hash": "sha256:3c11ed0c6bffcd9e", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/galactus/docs/frameworks/langsmith.md", "hash": "sha256:d6bc8ed84f91a277", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/langsmith-galactus.md"]}
+{"path": "raw/claude-docs/galactus/docs/frameworks/va-langgraph-production-parity.md", "hash": "sha256:9b8bb2b6c2be3714", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/va-langgraph-production-parity.md"]}
+{"path": "raw/claude-docs/galactus/docs/rag/bedrock-kb.md", "hash": "sha256:b6cfd4b2377edf16", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/va-bedrock-kb.md"]}
+{"path": "raw/claude-docs/galactus/docs/rag/gcp-vertex-vs-bedrock.md", "hash": "sha256:9b835d77a6ee3373", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/gcp-vertex-vs-bedrock.md"]}
+{"path": "raw/claude-docs/galactus/docs/rag/hc-rag-pipeline.md", "hash": "sha256:08c0017bd9c56781", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/hc-rag-pipeline.md"]}
+{"path": "raw/claude-docs/galactus/docs/rag/retrieval-improvements.md", "hash": "sha256:a309c261e8ae5fe8", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/galactus-eval-architecture.md"]}
+{"path": "raw/claude-docs/galactus/docs/rag/rrf.md", "hash": "sha256:68ff08492c9e41b7", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/reciprocal-rank-fusion.md"]}
+{"path": "raw/claude-docs/galactus/docs/rag/semantic-cache.md", "hash": "sha256:a95b2afa07b02fcd", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/semantic-cache.md"]}
+{"path": "raw/claude-docs/galactus/docs/rag/vector-databases.md", "hash": "sha256:b9d16bbc79db2adf", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/vector-databases.md"]}
+{"path": "raw/claude-docs/galactus/docs/stakeholders/agent-comparison-findings.md", "hash": "sha256:d9524fd6c677deee", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/agent-comparison-findings.md"]}
+{"path": "raw/claude-docs/galactus/docs/stakeholders/galactus-eval-framework.md", "hash": "sha256:89b7cdd551da14de", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-eval-framework.md"]}
+{"path": "raw/claude-docs/galactus/docs/stakeholders/va-demo-may-2026.md", "hash": "sha256:bd4c6918ea2bb208", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/va-demo-may-2026.md"]}
+{"path": "raw/claude-docs/galactus/docs/support-agents/accounting-knowledge.md", "hash": "sha256:341d22fc75a4760c", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/danish-accounting-domain.md"]}
+{"path": "raw/claude-docs/galactus/docs/support-agents/grounding-methodology.md", "hash": "sha256:45730c309700f603", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/grounding-claim-methodology.md"]}
+{"path": "raw/claude-docs/galactus/docs/support-agents/invocation-flow.md", "hash": "sha256:071a17304a03e809", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/va-invocation-flow.md"]}
+{"path": "raw/claude-docs/galactus/docs/support-agents/observability.md", "hash": "sha256:d7e26c14dd0afa4e", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-observability.md"]}
+{"path": "raw/claude-docs/galactus/docs/support-agents/safeguards-architecture.md", "hash": "sha256:46b629c1adaf475a", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/private/galactus-safeguards.md"]}
+{"path": "raw/sessions/claude-2026-04-10-what-is-this-analyzer-folder-aren-t-thes-1900854e.md", "hash": "sha256:67599bab631abce1", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-11-can-we-transfer-the-code-from-cs-agent-a-deb81c96.md", "hash": "sha256:d3648dc447740db7", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/meta/session-log.md", "wiki/meta/session-insights.md"]}
+{"path": "raw/sessions/claude-2026-04-11-i-want-to-refactor-this-insights-skill-f-394ba556.md", "hash": "sha256:a90341ec71518b35", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-11-librarian-chat-is-the-front-end-right-so-356746ec.md", "hash": "sha256:a86f2258404af34c", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-insights.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-11-resolving-deltas-100-72-72-completed-wit-fe1c0bd1.md", "hash": "sha256:b40d7c0df9dac2ed", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/meta/session-log.md", "wiki/meta/session-insights.md"]}
+{"path": "raw/sessions/claude-2026-04-11-shhould-src-agents-infra-live-under-src-f5cfe1b3.md", "hash": "sha256:7406ebecaa3e200e", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-12-i-added-a-folder-google-adk-masterclass-406fcc7f.md", "hash": "sha256:8401c86a5a223ef0", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/adk/adk-vs-langgraph-comparison.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-12-ok-we-have-this-doc-that-is-a-comparison-8d1a71b0.md", "hash": "sha256:8a7ccb2e5491e8e2", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/2026-04-11-bedrock-vs-langgraph.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-14-as-an-extension-of-playground-claude-doc-53ef9ef6.md", "hash": "sha256:30a01684a7dee9ba", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-14-can-you-research-playground-claude-docs-a419a1f1.md", "hash": "sha256:0f942230d0a5b450", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-14-execute-claude-terraform-restructure-unb-dd36bdeb.md", "hash": "sha256:944b41ae21c59b64", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-14-for-a-python-copilot-service-we-want-to-4a5c5ba3.md", "hash": "sha256:eebf0bc9e8c4ace3", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-14-i-want-librarian-to-remain-as-solely-a-h-48cd8a0e.md", "hash": "sha256:1b128a159ea09c53", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/meta/session-insights.md"]}
+{"path": "raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md", "hash": "sha256:d557794848d8ebc4", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/claude-workflow-system.md", "wiki/meta/session-insights.md"]}
+{"path": "raw/sessions/claude-2026-04-14-one-thing-that-i-m-realizing-is-that-my-ec44fece.md", "hash": "sha256:2c800a1c64f889b5", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-insights.md"]}
+{"path": "raw/sessions/claude-2026-04-14-what-is-the-difference-between-playgroun-3def7093.md", "hash": "sha256:88a6e5c1f81c6f24", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/meta/session-insights.md"]}
+{"path": "raw/sessions/claude-2026-04-14-where-should-we-start-effective-priority-42826f2b.md", "hash": "sha256:ffa5ccf570db2837", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-15-do-we-need-to-add-any-files-to-gitignore-578a75d8.md", "hash": "sha256:2494686b1625c9d5", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-15-how-does-rag-poc-master-compare-to-playg-b269ccf1.md", "hash": "sha256:c6492117e508edd9", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/projects/librarian-project.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-15-i-added-anthropic-api-key-key-to-env-can-17811ed1.md", "hash": "sha256:9d830d82c3e900fe", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-15-i-just-realized-we-dont-have-any-unit-te-eeebbd1e.md", "hash": "sha256:f3dc06454e6a1fae", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-15-i-ve-added-app-agent-nodes-retriever-tha-b669eebb.md", "hash": "sha256:eb94ed616e7fbac5", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-insights.md"]}
+{"path": "raw/sessions/claude-2026-04-15-is-there-anywehre-in-workspace-where-i-h-92643c18.md", "hash": "sha256:e90551a9e7d5ec97", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-15-mode-literal-q-a-task-execution-none-7c4e1442.md", "hash": "sha256:066dd1c3900ad2ba", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-15-what-do-we-need-to-fix-for-this-app-and-c2109cb9.md", "hash": "sha256:7f5ee7d15bc5c8f6", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-16-help-support-rag-agent-rag-poc-git-retr-314ac54a.md", "hash": "sha256:3235eb62bd0beb58", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-16-ok-time-to-do-an-intensive-code-review-o-06b9a503.md", "hash": "sha256:bbe800d67f794e7a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-16-should-this-demo-go-in-data-efd3b13a.md", "hash": "sha256:720a464b8a277f7d", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-16-what-is-going-on-with-eval-can-we-please-ca037b9e.md", "hash": "sha256:07e07bc045d4c5c1", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-17-cade-we-code-review-changes-to-graph-is-c44fa991.md", "hash": "sha256:2957853cc013e70a", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-insights.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-17-can-you-scan-the-adk-samples-main-i-adde-7a25dbd0.md", "hash": "sha256:5c9f3b731cc198be", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/adk/adk-context-engineering.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-17-found-3-errors-3-fixed-0-remaining-uv-ru-9fc31735.md", "hash": "sha256:f76b038d76022a72", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-18-can-you-add-to-rag-poc-env-what-is-neede-29a60696.md", "hash": "sha256:acdbb7571000c2b5", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-18-i-started-cleaning-up-evals-but-still-ne-57042538.md", "hash": "sha256:d470b91653379879", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/eval/va-eval-harness.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-18-what-do-we-need-fo-google-adk-to-be-up-t-0ef44b3d.md", "hash": "sha256:17d9a413bc00b8b8", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-19-4-other-linting-errors-6765bd2b.md", "hash": "sha256:420661ec4d83496a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-19-looks-like-linting-has-some-errors-still-1bafe007.md", "hash": "sha256:dd86c29d21182c31", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-insights.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-19-should-ingestion-or-embedding-be-part-of-9e66674c.md", "hash": "sha256:ac5b07381984caf7", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/rag/rag-retrieval-strategies.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-20-how-well-doe-playground-claude-overlap-w-64095580.md", "hash": "sha256:7e12e011c54b04a1", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/patterns/multi-repo-claude-organization.md", "wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-20-is-there-any-sensitive-data-we-pushed-or-ba67f0c4.md", "hash": "sha256:03c525f73b6f18bb", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/claude-2026-04-21-i-ve-been-working-on-playground-claude-p-dd86ca38.md", "hash": "sha256:d9c2227e9b538c03", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-21-is-there-any-sensitive-data-in-playgroun-46a3b186.md", "hash": "sha256:2aabd0d65a8a3300", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-21-let-s-continue-with-phase-3-of-this-refa-9a091358.md", "hash": "sha256:17172a8fdf4b31f1", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-21-next-up-track-b-phase-3-rds-postgres-for-826a1a97.md", "hash": "sha256:01dce0e065a964cb", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-log.md", "wiki/private/va-agent-project.md"]}
+{"path": "raw/sessions/claude-2026-04-21-please-analyze-this-codebase-and-create-ecf3e696.md", "hash": "sha256:e65f3e48a169666a", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-22-the-user-just-ran-insights-to-generate-a-198e7d2c.md", "hash": "sha256:45b75679adac0cfe", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-log.md"]}
+{"path": "raw/sessions/claude-2026-04-24-qq-do-i-need-to-push-playground-infrastr-108c3f61.md", "hash": "sha256:77d3ba1c006da618", "ingested_at": "2026-07-06", "wiki_pages": ["wiki/meta/session-log.md", "wiki/mcp/mcp-server-security-patterns.md", "wiki/projects/librarian-project.md"]}
+{"path": "raw/sessions/codex-2025-09-14-active-file-notebooks-documentfortransa-4998c107.md", "hash": "sha256:e24405a5bb1481ac", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/codex-2025-09-14-active-file-notebooks-documentfortransa-8713027f.md", "hash": "sha256:54a579121b75744a", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/codex-2025-09-14-active-file-notebooks-documentfortransa-a2b0ddde.md", "hash": "sha256:4f2316b69f764ac1", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/codex-2025-09-14-active-file-notebooks-documentfortransa-ef78d2bb.md", "hash": "sha256:4243ea73fa2ddc7b", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/codex-2025-09-15-active-file-untitled-2-open-tabs-valida-76cb019f.md", "hash": "sha256:bf6c3821a5f1b9a7", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/codex-2025-09-16-active-file-notebooks-documentfortransa-58516737.md", "hash": "sha256:027e9476e2616d6f", "ingested_at": "2026-07-06", "wiki_pages": []}
+{"path": "raw/sessions/codex-2025-09-16-open-tabs-validation-py-notebooks-docum-dabddaa4.md", "hash": "sha256:c0813da5fb7909f3", "ingested_at": "2026-07-06", "wiki_pages": []}

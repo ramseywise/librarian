@@ -1,6 +1,6 @@
 # ADK Skill Loading and Context Engineering Patterns
 
-**Source:** adk-agent-samples-main — 16 ADK agents + LangGraph port  
+**Source:** adk-agent-samples-main — 16 ADK agents + LangGraph port
 **Relevance:** Core patterns for building scalable VA agents on ADK or LangGraph
 
 ---

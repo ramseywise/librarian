@@ -2,9 +2,22 @@
 title: Session Insights
 tags: [context-management, llm, pattern, project]
 summary: Compiled insights from 42 facet-analyzed Claude Code sessions — friction patterns, recurring themes, skill candidates, and learning outcomes.
-updated: 2026-04-26
+updated: 2026-07-06
 sources:
   - raw/sessions/
+  - raw/sessions/claude-2026-04-10-what-is-this-analyzer-folder-aren-t-thes-1900854e.md
+  - raw/sessions/claude-2026-04-11-can-we-transfer-the-code-from-cs-agent-a-deb81c96.md
+  - raw/sessions/claude-2026-04-11-librarian-chat-is-the-front-end-right-so-356746ec.md
+  - raw/sessions/claude-2026-04-11-resolving-deltas-100-72-72-completed-wit-fe1c0bd1.md
+  - raw/sessions/claude-2026-04-11-shhould-src-agents-infra-live-under-src-f5cfe1b3.md
+  - raw/sessions/claude-2026-04-14-i-want-librarian-to-remain-as-solely-a-h-48cd8a0e.md
+  - raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md
+  - raw/sessions/claude-2026-04-14-one-thing-that-i-m-realizing-is-that-my-ec44fece.md
+  - raw/sessions/claude-2026-04-14-what-is-the-difference-between-playgroun-3def7093.md
+  - raw/sessions/claude-2026-04-15-i-ve-added-app-agent-nodes-retriever-tha-b669eebb.md
+  - raw/sessions/claude-2026-04-16-help-support-rag-agent-rag-poc-git-retr-314ac54a.md
+  - raw/sessions/claude-2026-04-17-cade-we-code-review-changes-to-graph-is-c44fa991.md
+  - raw/sessions/claude-2026-04-19-looks-like-linting-has-some-errors-still-1bafe007.md
 ---
 
 # Session Insights
@@ -170,6 +183,63 @@ Architecture/planning sessions generate more output tokens per prompt than execu
 - **Batch eval queries**: pre-filter GT data to unique queries before grading (195 unique from 597)
 
 ---
+
+---
+
+## Insights — 2026-04-10 to 2026-04-15 Batch (ingested 2026-07-06)
+
+*20 sessions across `playground` (Workspace project) and `poc` (Help Support RAG Agent). Heavy on refactoring and architecture research.*
+
+### Confirmed friction patterns
+
+**Polyglot linting (session `ec44fece`)**: Ruff flagged TypeScript files in a mixed TS/Python repo because the `src/` ruff config didn't exclude the TypeScript subfolder. Resolution: add `exclude = ["v2/ts_google_adk"]` to `[tool.ruff]` in `pyproject.toml`. This confirms the `polyglot-lint` skill candidate — the fix is a one-liner but requires knowing ruff's scope model.
+
+**Cascading structural errors from file moves (session `fe1c0bd1`)**: `mv` followed a symlink instead of the real path, breaking import resolution after the restructure. The mitigations are: (a) verify the target is a real path before moving, (b) run full import check after every structural change.
+
+**Reviews disconnected from plan iteration (session `a6a9bcf4`)**: 2 of 8 reviewed plans had unresolved "Needs changes" flags with no follow-up — `/code-review` had no iteration mode at that point. The research→plan→confirm→review→revise loop requires an explicit feedback cycle from review back to plan.
+
+### Architecture decisions confirmed
+
+- **Librarian scope**: RAG-only service, not multi-agent copilot — scope locked in session `48cd8a0e`. Prevents architectural drift.
+- **Core module pattern**: Shared types in `core/` breaks circular dependency between `storage` and `librarian` modules without requiring a monorepo restructure. Session `deb81c96`.
+- **Binary triage without LLM**: For 0/1 routing (is this query for the LLM or not?), a keyword/rule-based classifier in Next.js is preferable to an LLM call — eliminates latency and cost for a deterministic decision. Session `356746ec`.
+- **Fargate over Lambda for monolithic Python service**: Lambda cold-start plus 15-min timeout is incompatible with always-warm embedding model and stateful LangGraph checkpointer. Session `fe1c0bd1`.
+- **clients/ vs interfaces/ boundary**: `clients/` = stateful external API wrappers; `interfaces/` = stateless internal protocol contracts. Collapsing them creates hidden coupling between transport and domain logic. Session `3def7093`.
+
+---
+
+## Insights — 2026-04-15 to 2026-04-20 Batch (ingested 2026-07-06)
+
+*20 sessions on the `poc` project (Help Support RAG Agent) and Workspace. Primary themes: RAG PoC modularisation, eval harness design, ADK context engineering comparison, multi-repo organisation.*
+
+### Architecture decisions confirmed
+
+- **Domain boundary for data models (session `b669eebb`):** `data_models/models.py` belongs in `core/` alongside agent prompts and state — not in a separate `data_models/` package. Core is the zero-dependency base layer: shared types, state definitions, and static prompts. Everything else imports from it; core imports from nothing.
+
+- **src/ vs app/ naming (session `1bafe007`):** Rename `app/` → `src/` for the core Python package when a frontend exists at the repo root. Convention: `src/` = Python business logic + orchestrators; frontend dirs (Next.js, Streamlit) live at root. All orchestrators (LangGraph, ADK) go inside `src/` — they're implementation, not infrastructure.
+
+- **Ingestion/embedding in preprocessing, not retrieval (session `9e66674c`):** See [[RAG Retrieval Strategies]] — Ingestion Pipeline section. Retrieval's scope is query-time only. One indexer, owned by preprocessing.
+
+- **Runtime-agnostic orchestrator plan (session `c44fa991`):** When a RAG PoC grows to support multiple runtimes (LangGraph + ADK), write the refactor plan *before* touching files. The pattern: `orchestrator/{langgraph,adk}/` with shared `orchestrator/{memory,guardrails,prompts}/`. The factory selects the runtime via `ORCHESTRATION_STRATEGY` env var. This is the same pattern already implemented in the Librarian service — the PoC was converging on it independently.
+
+- **Graders vs metrics vs harnesses distinction (session `57042538`):** See [[VA Eval Harness]] — Eval Directory Structure section. The key conceptual point: graders produce metrics; harnesses run graders against evalsets; experiments test variants and push to LangSmith. These are four distinct concepts that should live in four distinct directories.
+
+### Friction patterns (new from this batch)
+
+**Context loss after usage limit (sessions `64095580`, `efd3b13a`):** Both sessions where analysis or refactoring work hit the context limit resulted in partial/diverged outcomes. The `64095580` workspace analysis left commit organisation incomplete; `efd3b13a` left the graph node refactor in a broken state. Mitigation: `/compact "step N"` checkpoints before crossing ~80% context.
+
+**Destructive file delete before intent confirmed (session `b669eebb`):** Deleted `app/rag/` thinking it was a duplicate of `app/agent_nodes/retriever`, but it was the primary domain module. The invariant: never delete a directory without first listing all its callers (`grep -r "from app.rag"`).
+
+**Multi-query smoke test against wrong language corpus (session `314ac54a`):** First smoke test sent an English query against a German corpus → zero results, looked like a bug. The pipeline was correct; the test data was wrong. When standing up a multilingual RAG pipeline, smoke tests must use a query in the corpus language.
+
+**ADK context engineering comparison insight (session `7a25dbd0`):** Scanning `adk-samples-main` confirmed rag_poc uses an implicit Strategy C (one tool always bound). Acceptable for single-domain RAG. Strategy B upgrade is warranted when a second domain is added.
+
+### Skill candidates (new from this batch)
+
+| Candidate | Trigger | Rationale |
+|---|---|---|
+| `pre-delete-check` | Before any `rm -rf` on a module dir | Sessions `b669eebb`, `06b9a503` — destructive deletes were the root cause of partial outcomes; a caller-grep check takes 5s |
+| `smoke-test-lang` | Before first RAG pipeline test | Session `314ac54a` — multilingual RAG needs smoke test in the corpus language, not the developer's default |
 
 ## See Also
 

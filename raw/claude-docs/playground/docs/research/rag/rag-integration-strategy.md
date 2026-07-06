@@ -22,12 +22,12 @@ The `mcp_servers/billy/app/tools/support_knowledge.py` implementation of `fetch_
 
 | Track | Goal | Timeline |
 |---|---|---|
-| **Track 1 — VA integration** | Replace Bedrock with thin custom RAG tool in va-langgraph/billy MCP. Simple Q&A, no fancy orchestration. | Near-term |
+| **Track 1 — VA integration** | Replace Bedrock with thin custom RAG tool in va-langgraph/MCP. Simple Q&A, no fancy orchestration. | Near-term |
 | **Track 2 — Standalone experiment** | Migrate `help-support-rag-agent` into playground as a peer service. Keep full 9-node graph, confidence gating, eval harness. Learn whether the complexity pays off. | Parallel / experimental |
 
 Both tracks share the same `src/rag/` library (embedding, retrieval, reranking). Track 2 informs what eventually lands in Track 1.
 
-**Key shared infrastructure question:** Both tracks need to point at the same knowledge base (Billy help/support docs). A shared DuckDB vector store or a shared Chroma instance would allow both tracks to use the same indexed corpus. The ingestion pipeline (`src/rag/preprocessing/` + `src/rag/ingestion/`) runs once offline; both services read from the same index.
+**Key shared infrastructure question:** Both tracks need to point at the same knowledge base (help/support docs). A shared DuckDB vector store or a shared Chroma instance would allow both tracks to use the same indexed corpus. The ingestion pipeline (`src/rag/preprocessing/` + `src/rag/ingestion/`) runs once offline; both services read from the same index.
 
 ---
 
@@ -480,7 +480,7 @@ The recommended approach is to run both tracks in parallel within playground:
 Replace `fetch_support_knowledge` in `app/tools/support_knowledge.py` with a thin wrapper around `src/rag/`:
 
 ```
-billy MCP: fetch_support_knowledge(query)
+MCP: fetch_support_knowledge(query)
   └─ rag_retrieve(query)
       ├─ embed(query)                   # sentence-transformers, in-process
       ├─ vector_search(embedding)       # DuckDB local index
@@ -499,10 +499,10 @@ The `support_subgraph` in va-langgraph sees no change — it still calls `fetch_
 
 ### Track 2 — `va-support-rag/` standalone agentic RAG (migrated into playground)
 
-Migrate `help-support-rag-agent` into `playground/va-support-rag/`. Wire it into `infrastructure/containers/docker-compose.va.yml` as a peer service alongside `va-langgraph` and `va-google-adk`.
+Migrate `help-support-rag-agent` into `playground/va-support-rag/`. Wire it into `infrastructure/containers/docker-compose.yml` as a peer service alongside `va-langgraph` and `va-google-adk`.
 
 Purpose: experimentation. Keep the full 9-node graph. Use it to:
-- Calibrate the confidence thresholds (`0.4` RRF, `0.25` sigmoid) against real Billy help doc queries
+- Calibrate the confidence thresholds (`0.4` RRF, `0.25` sigmoid) against real help doc queries
 - Validate whether cross-encoder reranking actually improves answer quality vs passthrough
 - Test the HITL gates (disable for autonomous mode; keep wired for supervised experiments)
 - Run the eval harness (Ragas, DeepEval) to establish a quality baseline
@@ -519,7 +519,7 @@ Cleanup needed to align with playground conventions:
 | Multi-provider LLM factory | `LLM_PROVIDER=gemini\|openai\|anthropic\|bedrock` | Adopt `resolve_chat_model(size)` from `va-langgraph/shared/model_factory.py`; default to Gemini Flash |
 | `app/` mirror | Duplicate of `src/main.py` | Delete `app/`, keep `src/` only |
 | Checkpointer | Configurable `sqlite\|postgres\|memory` | Default Postgres (shared RDS in prod, SQLite for local dev) |
-| Docker | Standalone `infra/docker/docker-compose.yml` | Add service to `infrastructure/containers/docker-compose.va.yml` |
+| Docker | Standalone `infra/docker/docker-compose.yml` | Add service to `infrastructure/containers/docker-compose.yml` |
 | Imports | `from src.rag...` absolute | Normalise to package-relative imports |
 | `.env` | Standalone | Merge keys into playground's `.env.example` |
 
@@ -530,8 +530,8 @@ Cleanup needed to align with playground conventions:
 
 Track 2 is immediately runnable. The corpus and eval set migrate with the codebase.
 
-**Track 1 — Billy corpus (does not exist yet)**
-`fetch_support_knowledge` calls a Bedrock KB that has never been loaded. No Billy help docs have been ingested. Track 1 is **blocked on corpus creation** — scraping or exporting Billy's help documentation is a prerequisite before the RAG tool can replace the Bedrock call meaningfully.
+**Track 1 — Raw corpus (does not exist yet)**
+`fetch_support_knowledge` calls a Bedrock KB that has never been loaded. No help docs have been ingested. Track 1 is **blocked on corpus creation** — scraping or exporting help documentation is a prerequisite before the RAG tool can replace the Bedrock call meaningfully.
 
 **Sequencing implication:**
 - **Now:** Migrate `help-support-rag-agent` → `playground/va-support-rag/` (Track 2). Runs immediately on sevdesk corpus. Use for experimentation, confidence calibration, eval baseline.

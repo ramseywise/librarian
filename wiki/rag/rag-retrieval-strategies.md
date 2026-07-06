@@ -2,7 +2,7 @@
 title: RAG Retrieval Strategies
 tags: [rag, concept]
 summary: Comprehensive reference for chunking, embedding, vector store, and hybrid search strategies — component choices, tradeoffs, and swap paths used in the Librarian pipeline.
-updated: 2026-04-24
+updated: 2026-07-06
 sources:
   - raw/playground-docs/rag-tradeoffs.md
   - raw/playground-docs/librarian-stack-audit.md
@@ -11,6 +11,7 @@ sources:
   - raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md
   - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
   - raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
+  - raw/sessions/claude-2026-04-19-should-ingestion-or-embedding-be-part-of-9e66674c.md
 ---
 
 # RAG Retrieval Strategies
@@ -219,6 +220,12 @@ cache_ttl_seconds: int = 300
 | Index | `Retriever.upsert()` | Batched (default 64) writes to vector store |
 | Snippet | Regex sentence splitting | Extracts sentences 30-400 chars, writes to DuckDB FTS |
 | Metadata | `MetadataDB.insert_document()` | DuckDB table: doc_id, title, word_count, chunk_count, checksum |
+
+**Preprocessing boundary decision (2026-04-19):** Ingestion, embedding, and indexing all belong in `preprocessing/` — not in `retrieval/`. Retrieval's responsibility is query-time only: search, score, and return chunks. The indexer (the component that writes chunks to the vector store) is part of the ingestion pipeline, not the retrieval pipeline. Mixing them creates an ownership ambiguity where retrieval modules must know about write operations.
+
+**Dead code signal:** If an `indexing.py` (or equivalent) in a retrieval module has no callers, it is dead code — the real indexer lives in preprocessing. Delete it rather than leaving it as an unused alternative path.
+
+**One-indexer rule:** maintain exactly one indexer per pipeline, owned by preprocessing/ingestion. Multiple indexer implementations (even experimental ones) should be strategy-swappable via config, not coexisting as separate modules.
 
 ---
 

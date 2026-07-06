@@ -199,21 +199,21 @@ from google.genai.types import Content
 
 def guardrails_callback(callback_context: CallbackContext) -> Content | None:
     last_message = callback_context.user_content.parts[-1].text
-    
+
     # Run pipeline
     text = normalise(last_message)
     ok, err = check_size(text)
     if not ok:
         return Content(parts=[Part(text=f"Your message is too long. {err}")])
-    
+
     if looks_like_injection(text):
         return Content(parts=[Part(text="I can only help with billing questions.")])
-    
+
     text, pii_found = detect_and_redact(text)
-    
+
     if not is_in_domain(text):
         return Content(parts=[Part(text="I'm a billing assistant. I can help with invoices, customers, and payments.")])
-    
+
     # Mutate the message in-place with redacted + enveloped version
     callback_context.user_content.parts[-1].text = wrap_in_envelope(text)
     return None  # None = continue to LLM
@@ -230,20 +230,20 @@ agent = LlmAgent(
 ```python
 def guardrails_node(state: AgentState) -> dict:
     text = state["messages"][-1].content
-    
+
     text = normalise(text)
     ok, err = check_size(text)
     if not ok:
         return {"blocked": True, "block_reason": "size", "messages": state["messages"] + [AIMessage(content=err)]}
-    
+
     if looks_like_injection(text):
         return {"blocked": True, "block_reason": "injection"}
-    
+
     text, pii_found = detect_and_redact(text)
-    
+
     in_domain = is_in_domain(text)
     advisory = build_advisory(not in_domain, pii_found)
-    
+
     return {
         "blocked": False,
         "messages": state["messages"][:-1] + [HumanMessage(content=wrap_in_envelope(text))],

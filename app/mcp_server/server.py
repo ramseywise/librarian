@@ -4,11 +4,15 @@ Exposes the compiled wiki to any MCP client — Claude Code, playground agents,
 or other tools. Read-only.
 
 Tools:
-  search_wiki          — full-text search over wiki/ pages, optionally scoped to a domain
+  search_wiki          — hybrid search (FTS + semantic) with backlink-weighted ranking
   read_page            — read a specific wiki page by filename or title
   list_domain          — list all pages in a domain directory
   list_pages           — list pages by domain tag, directory, or all
   get_domain_briefing  — return all pages in a domain as a structured reference briefing
+
+Hybrid search: blends DuckDB FTS with cosine similarity (sentence-transformers).
+Falls back to FTS-only if sentence-transformers is not installed.
+Backlink counts are indexed and used as a ranking signal alongside relevance.
 
 Usage:
     uv run python mcp_server/server.py
@@ -17,6 +21,7 @@ Usage:
 from __future__ import annotations
 
 import re
+import struct
 from pathlib import Path
 
 import duckdb
@@ -29,6 +34,8 @@ log = structlog.get_logger()
 
 WIKI_DIR = Path("wiki")
 DB_PATH = Path(".wiki_index.duckdb")
+SCHEMA_VERSION = "2"
+WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 DOMAINS = [
     "rag", "langgraph", "adk", "infra", "patterns",
@@ -37,22 +44,113 @@ DOMAINS = [
 
 mcp = FastMCP("librarian")
 
+# Optional semantic search — gracefully absent if sentence-transformers not installed
+try:
+    from sentence_transformers import SentenceTransformer
+    _emb_model: SentenceTransformer | None = None
+    HAS_EMBEDDINGS = True
+except ImportError:
+    HAS_EMBEDDINGS = False
+
+
+def _get_emb_model() -> "SentenceTransformer":
+    global _emb_model
+    if _emb_model is None:
+        _emb_model = SentenceTransformer("all-MiniLM-L6-v2")
+    return _emb_model
+
+
+def _vec_to_blob(vec: "list[float]") -> bytes:
+    return struct.pack(f"{len(vec)}f", *vec)
+
+
+def _blob_to_vec(blob: bytes) -> list[float]:
+    n = len(blob) // 4
+    return list(struct.unpack(f"{n}f", blob))
+
+
+def _cosine(a: list[float], b: list[float]) -> float:
+    dot = sum(x * y for x, y in zip(a, b))
+    na = sum(x * x for x in a) ** 0.5
+    nb = sum(x * x for x in b) ** 0.5
+    return dot / (na * nb + 1e-9)
+
 
 # ---------------------------------------------------------------------------
-# Index management
+# Index freshness check
 # ---------------------------------------------------------------------------
+
+
+def _index_needs_rebuild(con: duckdb.DuckDBPyConnection) -> bool:
+    """Return True if the index is absent, stale, or schema-mismatched."""
+    try:
+        version = con.execute(
+            "SELECT val FROM meta WHERE key = 'schema_version'"
+        ).fetchone()
+        if not version or version[0] != SCHEMA_VERSION:
+            return True
+        built_at = float(
+            con.execute("SELECT val FROM meta WHERE key = 'built_at'").fetchone()[0]
+        )
+        # Rebuild if any wiki page is newer than the index
+        for p in WIKI_DIR.rglob("*.md"):
+            if p.stat().st_mtime > built_at:
+                return True
+        return False
+    except Exception:
+        return True
+
+
+# ---------------------------------------------------------------------------
+# Index build
+# ---------------------------------------------------------------------------
+
+
+def _compute_backlinks(pages: list[tuple]) -> dict[str, int]:
+    """Count inbound wikilinks for each page slug."""
+    slug_to_path: dict[str, str] = {}
+    for path, title, *_ in pages:
+        slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+        slug_to_path[slug] = path
+        # also register by stem
+        stem = Path(path).stem
+        slug_to_path[stem] = path
+
+    counts: dict[str, int] = {p[0]: 0 for p in pages}
+    for path, *__, content in pages:
+        for match in WIKILINK_RE.finditer(content):
+            raw = match.group(1).strip()
+            slug = re.sub(r"[^a-z0-9]+", "-", raw.lower()).strip("-")
+            target = slug_to_path.get(slug) or slug_to_path.get(
+                raw.lower().replace(" ", "-")
+            )
+            if target and target != path and target in counts:
+                counts[target] += 1
+    return counts
 
 
 def build_index(con: duckdb.DuckDBPyConnection) -> None:
     """Build or rebuild the DuckDB FTS index over wiki/ pages."""
+    if not _index_needs_rebuild(con):
+        return
+
+    log.info("rebuilding_index")
+
+    con.execute("DROP TABLE IF EXISTS meta")
+    con.execute("DROP TABLE IF EXISTS pages")
+
+    con.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, val TEXT)")
+
     con.execute("""
-        CREATE TABLE IF NOT EXISTS pages (
+        CREATE TABLE pages (
             path      TEXT PRIMARY KEY,
             title     TEXT,
             tags      TEXT,
             summary   TEXT,
             updated   TEXT,
-            content   TEXT
+            content   TEXT,
+            backlinks INTEGER DEFAULT 0,
+            embedding BLOB
         )
     """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
@@ -61,16 +159,16 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
         con.execute("INSTALL fts")
         con.execute("LOAD fts")
     except Exception:
-        pass  # already installed
+        pass
 
-    pages = list(WIKI_DIR.rglob("*.md"))
-    rows = []
-    for page in pages:
+    # Collect all pages
+    raw_pages: list[tuple] = []
+    for page in sorted(WIKI_DIR.rglob("*.md")):
         if page.name.startswith("."):
             continue
         text = page.read_text(encoding="utf-8", errors="ignore")
         meta = _parse_frontmatter(text)
-        rows.append((
+        raw_pages.append((
             str(page),
             meta.get("title", page.stem),
             " ".join(meta.get("tags", [])),
@@ -79,11 +177,39 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
             text,
         ))
 
+    backlinks = _compute_backlinks(raw_pages)
+
+    # Compute embeddings if available
+    embeddings: dict[str, bytes] = {}
+    if HAS_EMBEDDINGS:
+        try:
+            model = _get_emb_model()
+            texts = [f"{r[1]}. {r[3]}\n\n{r[5][:600]}" for r in raw_pages]
+            vecs = model.encode(texts, normalize_embeddings=True)
+            for i, row in enumerate(raw_pages):
+                embeddings[row[0]] = _vec_to_blob(vecs[i].tolist())
+        except Exception as e:
+            log.warning("embedding_failed", error=str(e))
+
+    rows = [
+        (
+            path, title, tags, summary, updated, content,
+            backlinks.get(path, 0),
+            embeddings.get(path),
+        )
+        for path, title, tags, summary, updated, content in raw_pages
+    ]
+
     con.executemany(
-        "INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         rows,
     )
-    log.info("index_built", page_count=len(rows))
+
+    import time
+    con.execute("INSERT INTO meta VALUES ('schema_version', ?)", [SCHEMA_VERSION])
+    con.execute("INSERT INTO meta VALUES ('built_at', ?)", [str(time.time())])
+
+    log.info("index_built", page_count=len(rows), with_embeddings=bool(embeddings))
 
 
 def _parse_frontmatter(text: str) -> dict:
@@ -119,7 +245,6 @@ def _resolve_domain_dir(domain: str) -> Path | None:
     candidate = WIKI_DIR / domain
     if candidate.is_dir():
         return candidate
-    # Fuzzy: allow 'deep_agents' → 'deep-agents'
     slug = domain.replace("_", "-").lower()
     candidate = WIKI_DIR / slug
     if candidate.is_dir():
@@ -134,7 +259,10 @@ def _resolve_domain_dir(domain: str) -> Path | None:
 
 @mcp.tool()
 def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
-    """Search the wiki with full-text search, optionally scoped to a domain.
+    """Search the wiki using hybrid search (FTS + semantic similarity + backlink rank).
+
+    Results are ranked by a blend of: text match relevance, semantic closeness
+    (if sentence-transformers is installed), and inbound backlink count.
 
     Args:
         query:  Search terms
@@ -144,7 +272,7 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
         limit:  Max results (default 10)
 
     Returns:
-        Matching pages with title, summary, path, and a snippet.
+        Matching pages with title, summary, path, backlink count, and a snippet.
     """
     con = get_con()
 
@@ -154,16 +282,15 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
     if domain:
         domain_dir = _resolve_domain_dir(domain)
         if domain_dir:
-            # Scope by path prefix (exact directory match)
             tag_filter = "AND path LIKE ?"
             params.append(str(domain_dir) + "/%")
         else:
-            # Fall back to tag match
             tag_filter = "AND lower(tags) LIKE '%' || lower(?) || '%'"
             params.append(domain)
 
+    # Fetch candidates — title match first, then recency, then backlinks
     sql = f"""
-        SELECT path, title, tags, summary, content
+        SELECT path, title, tags, summary, content, backlinks, embedding
         FROM pages
         WHERE (
             lower(content) LIKE '%' || lower(?) || '%'
@@ -173,11 +300,11 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
         {tag_filter}
         ORDER BY
             CASE WHEN lower(title) LIKE '%' || lower(?) || '%' THEN 0 ELSE 1 END,
+            backlinks DESC,
             updated DESC
         LIMIT ?
     """
-
-    params += [query, limit]
+    params += [query, limit * 3]  # fetch 3× for re-ranking
     rows = con.execute(sql, params).fetchall()
     con.close()
 
@@ -185,8 +312,39 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
         suffix = f" in domain '{domain}'" if domain else ""
         return f"No wiki pages found for: {query!r}{suffix}"
 
+    # Hybrid re-ranking: blend FTS rank + cosine similarity + backlink boost
+    if HAS_EMBEDDINGS and len(rows) > 1:
+        try:
+            model = _get_emb_model()
+            q_vec = model.encode([query], normalize_embeddings=True)[0].tolist()
+            max_backlinks = max(r[5] for r in rows) or 1
+
+            scored: list[tuple[float, tuple]] = []
+            for i, row in enumerate(rows):
+                path, title, tags, summary, content, bl, emb_blob = row
+                # FTS rank: position in result set (0=best), normalised 0–1
+                fts_score = 1.0 - (i / len(rows))
+                # Backlink score: normalised 0–1
+                bl_score = bl / max_backlinks
+                # Semantic score
+                sem_score = 0.0
+                if emb_blob:
+                    page_vec = _blob_to_vec(emb_blob)
+                    sem_score = _cosine(q_vec, page_vec)
+                # Weighted blend
+                final = 0.5 * fts_score + 0.3 * sem_score + 0.2 * bl_score
+                scored.append((final, row))
+
+            scored.sort(key=lambda x: x[0], reverse=True)
+            rows = [r for _, r in scored[:limit]]
+        except Exception as e:
+            log.warning("hybrid_rerank_failed", error=str(e))
+            rows = rows[:limit]
+    else:
+        rows = rows[:limit]
+
     results = []
-    for path, title, tags, summary, content in rows:
+    for path, title, tags, summary, content, backlinks, _ in rows:
         idx = content.lower().find(query.lower())
         snippet = ""
         if idx >= 0:
@@ -197,7 +355,7 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
         results.append(
             f"**{title}**\n"
             f"Path: `{path}`\n"
-            f"Tags: {tags}\n"
+            f"Tags: {tags} · Backlinks: {backlinks}\n"
             f"Summary: {summary}\n"
             + (f"Snippet: ...{snippet}..." if snippet else "")
         )
@@ -224,7 +382,6 @@ def read_page(path_or_title: str) -> str:
     if wiki_candidate.exists():
         return wiki_candidate.read_text(encoding="utf-8")
 
-    # Fuzzy title match
     slug = re.sub(r"[^a-z0-9]+", "-", path_or_title.lower()).strip("-")
     matches = list(WIKI_DIR.rglob(f"*{slug}*.md"))
     if not matches:
@@ -246,7 +403,7 @@ def read_page(path_or_title: str) -> str:
 
 @mcp.tool()
 def list_domain(domain: str) -> str:
-    """List all pages in a domain directory.
+    """List all pages in a domain directory, ordered by backlink count.
 
     This is an O(1) filesystem operation — no embedding or search needed.
 
@@ -256,7 +413,7 @@ def list_domain(domain: str) -> str:
                 deep-agents, memory, mcp, meta, projects
 
     Returns:
-        All pages in the domain with title, tags, and summary.
+        All pages in the domain with title, tags, summary, and backlink count.
     """
     domain_dir = _resolve_domain_dir(domain)
     if domain_dir is None:
@@ -267,19 +424,31 @@ def list_domain(domain: str) -> str:
     if not pages:
         return f"No pages found in domain '{domain}'"
 
+    # Load backlink counts from index
+    con = get_con()
+    bl_map: dict[str, int] = {}
+    try:
+        for path, bl in con.execute("SELECT path, backlinks FROM pages").fetchall():
+            bl_map[path] = bl
+    except Exception:
+        pass
+    con.close()
+
     results = []
     for page in pages:
         text = page.read_text(encoding="utf-8", errors="ignore")
         meta = _parse_frontmatter(text)
         page_tags = meta.get("tags", [])
-        results.append(
-            f"- **{meta.get('title', page.stem)}** (`{page}`)\n"
+        bl = bl_map.get(str(page), 0)
+        results.append((bl, (
+            f"- **{meta.get('title', page.stem)}** (`{page}`) · ↑{bl} backlinks\n"
             f"  Tags: {', '.join(page_tags) or 'none'}\n"
             f"  {meta.get('summary', '')}"
-        )
+        )))
 
-    header = f"**{len(results)} page(s) in `wiki/{domain}/`**:\n\n"
-    return header + "\n".join(results)
+    results.sort(key=lambda x: x[0], reverse=True)
+    header = f"**{len(results)} page(s) in `wiki/{domain}/`** (sorted by backlinks):\n\n"
+    return header + "\n".join(r[1] for r in results)
 
 
 @mcp.tool()
@@ -293,10 +462,19 @@ def list_pages(tag: str = "", directory: str = "") -> str:
                    deep-agents, memory, mcp, meta, projects
 
     Returns:
-        List of pages with title, tags, and summary.
+        List of pages with title, tags, summary, and backlink count.
     """
     search_dir = WIKI_DIR / directory if directory else WIKI_DIR
     pages = [p for p in search_dir.rglob("*.md") if not p.name.startswith("_")]
+
+    con = get_con()
+    bl_map: dict[str, int] = {}
+    try:
+        for path, bl in con.execute("SELECT path, backlinks FROM pages").fetchall():
+            bl_map[path] = bl
+    except Exception:
+        pass
+    con.close()
 
     results = []
     for page in sorted(pages):
@@ -307,8 +485,9 @@ def list_pages(tag: str = "", directory: str = "") -> str:
         if tag and tag not in page_tags:
             continue
 
+        bl = bl_map.get(str(page), 0)
         results.append(
-            f"- **{meta.get('title', page.stem)}** (`{page}`)\n"
+            f"- **{meta.get('title', page.stem)}** (`{page}`) · ↑{bl}\n"
             f"  Tags: {', '.join(page_tags) or 'none'}\n"
             f"  {meta.get('summary', '')}"
         )
@@ -329,8 +508,7 @@ def get_domain_briefing(domain: str) -> str:
     """Return a structured build briefing for a domain — all pages concatenated.
 
     Use this before starting work in a domain to load all accumulated patterns,
-    decisions, and tradeoffs into context. Equivalent to the adk-context skill
-    but generalized to any domain.
+    decisions, and tradeoffs into context.
 
     Args:
         domain: Domain directory name — one of:
@@ -338,8 +516,7 @@ def get_domain_briefing(domain: str) -> str:
                 deep-agents, memory, mcp, meta, projects
 
     Returns:
-        Full content of all pages in the domain, separated by dividers,
-        ordered by type (decisions first, then patterns, then concepts).
+        Full content of all pages in the domain, ordered: decisions → patterns → concepts.
     """
     domain_dir = _resolve_domain_dir(domain)
     if domain_dir is None:
@@ -350,7 +527,6 @@ def get_domain_briefing(domain: str) -> str:
     if not pages:
         return f"No pages found in domain '{domain}'"
 
-    # Parse all pages and sort: decisions first, then by type tag order
     type_order = {"decision": 0, "pattern": 1, "comparison": 2, "concept": 3, "reference": 4, "project": 5}
     parsed = []
     for page in pages:
@@ -374,5 +550,5 @@ def get_domain_briefing(domain: str) -> str:
 
 
 if __name__ == "__main__":
-    log.info("starting_mcp_server", wiki_dir=str(WIKI_DIR))
+    log.info("starting_mcp_server", wiki_dir=str(WIKI_DIR), hybrid_search=HAS_EMBEDDINGS)
     mcp.run()

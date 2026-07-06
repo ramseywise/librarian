@@ -46,7 +46,12 @@ Get Legal/Ops sign-off only after validation results are reviewed.
 
 At high volume (>10K conversations/day), LLM-based masking becomes expensive. Revisit with a purpose-built NER model (spaCy, flair) — cheaper and faster than an LLM call per conversation at scale, with acceptable contextual PII coverage for most use cases.
 
+## Concrete Implementation
+
+For a production hybrid implementation targeting French-language financial support traces, see [[Presidio PII Redaction for Langfuse]] — Presidio orchestration layer with spaCy fr_core_news_lg + CamemBERT NER + custom regex recognizers for 20+ French PII entity types, wired into the Langfuse SDK `mask` hook.
+
 ## See Also
+- [[Presidio PII Redaction for Langfuse]]
 - [[Evaluation & Improvement Project (VIR)]]
 - [[HITL Annotation Pipeline]]
 - [[RAG Evaluation]]

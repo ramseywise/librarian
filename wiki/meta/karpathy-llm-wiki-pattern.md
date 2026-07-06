@@ -73,7 +73,24 @@ Obsidian is read-mostly. Claude Code is the primary writer.
 
 Use the wiki to generate synthetic training data → fine-tune a model so it "knows" the KB in its weights. Long arc: external wiki → RAG → fine-tuned weights.
 
+## Wiki Taxonomy Decisions
+
+### Decisions live in domain directories, not a flat `decisions/` dir
+
+**Decision:** architectural decision records (ADRs) live in the domain directory they belong to (`wiki/infra/`, `wiki/langgraph/`, etc.), tagged `type: decision`. A flat `wiki/decisions/` directory would break domain-scoped retrieval.
+
+*Rationale:* When loading a domain briefing (`get_domain_briefing("infra")`), you want the observability decision in the same retrieval as the observability concept pages. A flat decisions dir requires two queries.
+
+### Private content stays gitignored
+
+Company-specific, client-identifying, or proprietary content goes in `wiki/private/` (gitignored), never in committed `wiki/` subdirectories. Private pages use the same format and are locally queryable — they just don't appear in the public repo.
+
+### Raw sources documented as references
+
+Every wiki page should list the `sources:` frontmatter field pointing back to the `raw/` files it was compiled from. This makes it possible to re-derive a page if the wiki is corrupted and to trace provenance of claims.
+
 ## See Also
 - [[Librarian Project]]
 - [[MCP Protocol]]
 - [[RAG Retrieval Strategies]]
+- [[Session Knowledge Capture Patterns]]

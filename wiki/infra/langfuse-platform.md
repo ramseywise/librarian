@@ -1,13 +1,14 @@
 ---
 title: Langfuse Platform
 tags: [infra, eval, concept]
-summary: Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by Shine's AI teams as the observability standard, with SSO and governance pending before production rollout.
-updated: 2026-06-05
+summary: Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by Shine's AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
+updated: 2026-07-06
 sources:
   - raw/gdrive/2026-05-15-ai-chapter-meeting-1.md
   - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
   - raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
   - raw/notion/2026-06-01-chat-agent-rfc.md
+  - raw/claude-docs/galactus/docs/frameworks/langfuse.md
 ---
 
 # Langfuse Platform
@@ -124,9 +125,100 @@ Pricing: Langfuse = unlimited users + usage-based ($29–$199/mo). LangSmith = $
 
 ---
 
+## Instrumentation Patterns by Framework
+
+**Key principle:** Use native instrumentation per framework — no unified adapter layer. Native depth (ADK tool call sequences, LangGraph node transitions) is worth the cross-platform query cost.
+
+### ADK — `lf.trace()` + ContextVar
+ADK's runner loop is not a regular Python call stack — `ContextVar` propagation is more reliable than `@observe` decorators. Create the trace in `main.py`, set it on `_lf_trace_ctx`, read it inside tool functions to create child spans.
+
+```python
+# main.py — before runner.run_async()
+_lf_token = _lf_trace_ctx.set(_lf_trace)
+try:
+    async for event in _runner.run_async(...):
+        ...
+finally:
+    _lf_trace_ctx.reset(_lf_token)
+
+# agent.py — inside tool function
+lf_trace = _lf_trace_ctx.get()
+if lf_trace:
+    span = lf_trace.span(name="bedrock-kb-retrieve", input={"queries": queries})
+    ...
+    span.end(output={...}, metadata={...})
+```
+
+### LangGraph — `CallbackHandler`
+```python
+from langfuse.callback import CallbackHandler
+
+handler = CallbackHandler(public_key=..., secret_key=..., session_id=session_id)
+result = await graph.ainvoke(state, config={"callbacks": [handler]})
+```
+Every node, edge, and LLM call is captured automatically.
+
+### FastAPI/standard Python — `@observe` decorator
+```python
+from langfuse.decorators import observe, langfuse_context
+
+@observe(name="agent_turn")
+async def _run_turn(query: str, session_id: str = "") -> dict:
+    langfuse_context.update_current_observation(session_id=session_id)
+    ...
+    asyncio.create_task(push_online_scores(trace_id=langfuse_context.get_current_trace_id(), ...))
+```
+
+## Online Scoring — Attaching Grader Results Post-Hoc
+
+Run graders offline against completed traces and write scores back via the API:
+
+```python
+langfuse.score(trace_id=trace_id, name="grounding", value=result.score, comment=result.explanation)
+```
+
+**Standard score keys for RAG support agents:**
+- `citation_hallucination`, `missing_citation`, `citation_recall`, `language_consistency` (heuristic, free)
+- `grounding`, `answer_relevancy`, `completeness`, `escalation_correct` (LLM calibrated)
+
+## Remote Prompt Management
+
+```python
+instruction = get_langfuse_prompt(
+    prompt_name="agent_instruction",   # Langfuse prompt name
+    fallback=LOCAL_PROMPT,             # local fallback when Langfuse is off
+)
+```
+
+The fetch is called inside a lazy factory (cached for process lifetime — no per-request fetch). Langfuse must be initialised via `configure_runtime()` before the agent is constructed.
+
+## Annotation Queues (HITL Path)
+
+Route low-confidence grader outputs to Langfuse annotation instead of file-based queues:
+
+```python
+queue = langfuse.create_annotation_queue("uncertain-cases")
+for trace_id, score in grader_results.items():
+    if score < 0.6:
+        langfuse.add_trace_to_queue(queue_id=queue.id, trace_id=trace_id)
+```
+
+Reviewers label in the UI; export completed labels as JSONL for regression fixtures.
+
+## PII Redaction via Mask Hook
+
+The Langfuse SDK accepts a `mask` function at client initialization applied to all trace data before any network call. This is the single interception point for PII redaction in agentic pipelines. For a production French-language financial agent implementation, see [[Presidio PII Redaction for Langfuse]].
+
+## ADK Two-Layer Tracing
+
+When using Google ADK v1.x, two instrumentation layers combine into a single trace tree: ADK's OpenTelemetry auto-instrumentation (LLM calls, tool executions) + manual `@observe` decorators (retrieval steps, custom spans). Critical operational additions: session ID grouping, RAG path tagging, retrieval quality as a first-class Score. See [[Langfuse ADK Tracing Patterns]] for patterns and the gap checklist.
+
 ## See Also
+- [[Langfuse ADK Tracing Patterns]]
+- [[Presidio PII Redaction for Langfuse]]
 - [[Observability — LangFuse vs LangSmith Decision]]
 - [[AI Engineering Chapter @Shine]]
 - [[Shine Chat Agent]]
 - [[Input Guardrails Pipeline]]
 - [[RAG Evaluation]]
+- [[Observability and Runtime Patterns]]

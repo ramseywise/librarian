@@ -1,6 +1,6 @@
 # Orchestration Patterns for VA Agents
 
-**Sources:** langgraph_Yan.pptx, langgraph_extended.pptx, adk-agent-samples-main (wine_expert_multi_agent, billy_assistant), playground VA implementations, librarian wiki (adk-vs-langgraph-comparison.md, multi-agent-orchestration-patterns.md)
+**Sources:** langgraph_Yan.pptx, langgraph_extended.pptx, adk-agent-samples-main, playground VA implementations, librarian wiki (adk-vs-langgraph-comparison.md, multi-agent-orchestration-patterns.md)
 
 ---
 
@@ -20,8 +20,8 @@ User → Supervisor → [Invoice Agent | Customer Agent | Report Agent | ...]
                     Response back to user
 ```
 
-**Pros:** Full control over routing, easy to debug, single point of routing logic  
-**Cons:** Supervisor is a bottleneck, complex queries may need multiple hops  
+**Pros:** Full control over routing, easy to debug, single point of routing logic
+**Cons:** Supervisor is a bottleneck, complex queries may need multiple hops
 **Best for:** Well-defined domain boundaries, high-stakes actions (billing), when you need routing explainability
 
 ```python
@@ -38,9 +38,9 @@ root_agent = LlmAgent(
     instruction="""
     You are a billing assistant supervisor. Route requests to the right specialist:
     - Invoice questions → invoice_agent
-    - Customer management → customer_agent  
+    - Customer management → customer_agent
     - Reports and analytics → report_agent
-    
+
     Previously tried agents this turn: {tried_agents}
     User preferences: {user_prefs}
     """,
@@ -60,8 +60,8 @@ Each agent decides when to hand off to another agent. No central supervisor.
 User → Agent A → (decides to hand off) → Agent B → Response
 ```
 
-**Pros:** More flexible, agents can chain naturally, no routing bottleneck  
-**Cons:** Harder to debug (routing logic is distributed), risk of infinite handoff loops  
+**Pros:** More flexible, agents can chain naturally, no routing bottleneck
+**Cons:** Harder to debug (routing logic is distributed), risk of infinite handoff loops
 **Best for:** Open-ended workflows where routing is hard to predetermine
 
 ```python
@@ -88,8 +88,8 @@ User → [Invoice Agent]  ─┐
        [Report Agent]   ─┘
 ```
 
-**Pros:** Lowest latency for the winning path, no routing error possible  
-**Cons:** High token cost (all agents run regardless), complex result aggregation  
+**Pros:** Lowest latency for the winning path, no routing error possible
+**Cons:** High token cost (all agents run regardless), complex result aggregation
 **Best for:** When routing accuracy is very low and cost/latency is acceptable
 
 ```python
@@ -120,17 +120,17 @@ Prevents re-routing to a failed agent within the same conversation turn.
 async def supervisor_node(state: AgentState, llm) -> dict:
     tried = state.get("tried_agents", [])
     prefs = state.get("user_prefs", {})
-    
+
     routing_prompt = f"""
     Route to the best agent. Do NOT route to: {tried}
     User language preference: {prefs.get('language', 'en')}
-    
+
     Available agents: invoice_agent, customer_agent, report_agent, support_agent
     """
-    
+
     decision = await llm.ainvoke(routing_prompt + "\n" + state["messages"][-1].content)
     chosen = parse_agent_decision(decision)
-    
+
     return {
         "next_agent": chosen,
         "tried_agents": tried + [chosen],

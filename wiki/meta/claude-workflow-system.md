@@ -2,11 +2,12 @@
 title: Claude Workflow System
 tags: [context-management, llm, pattern]
 summary: Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints, and session notes — that automates context management across multi-phase engineering workflows.
-updated: 2026-04-26
+updated: 2026-07-06
 sources:
   - raw/sessions/claude-2026-04-11-i-want-to-refactor-this-insights-skill-f-394ba556.md
   - raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md
   - raw/sessions/claude-2026-04-22-the-user-just-ran-insights-to-generate-a-198e7d2c.md
+  - raw/claude-docs/_user/CLAUDE.md
 ---
 
 # Claude Workflow System
@@ -77,9 +78,67 @@ The system was iteratively developed April 2026:
 - **PreCompact not Stop hook**: compaction checkpoints fire on compact (context boundary), not on every response — avoids noise
 - **500k token gate**: stubbed in hook, not yet enforced — can be activated by uncommenting the threshold constant
 
+## Current Global Skills (as of 2026-07-06)
+
+Full skill inventory from `~/.claude/CLAUDE.md`:
+
+| Category | Skill | What it does |
+|---|---|---|
+| Session/git | `/compact-session` | Checkpoint: save artifacts, note, memory, commit + push + PR |
+| Session/git | `/quick-pr` | Stage → commit → push → draft PR |
+| Session/git | `/quick-commit` | Stage → commit (no push) |
+| Session/git | `/claude-insights` | HTML report from session notes + JSONL |
+| Discovery | `/research-review` | Research phase: write `.claude/docs/research/{name}.md` |
+| Discovery | `/plan-review` | Planning phase: write `.claude/docs/plans/{name}.md` |
+| Discovery | `/plan-refactor` | Plan a refactor before executing |
+| Dev execution | `/execute-plan` | Step through active plan, append to `CHANGELOG.md` |
+| Dev execution | `/code-review` | Write `.claude/docs/reviews/{name}.md` + PR |
+| Dev execution | `/review-pr` | Review an open PR |
+| Dev execution | `/code-debug` | Diagnose and fix a bug |
+| Product/Linear | `/define-milestones` | Define milestones: goal, success metrics, initiative list |
+| Product/Linear | `/design-sprint` | Ideate: HMW → workstreams → named initiatives |
+| Product/Linear | `/scope-initiative` | Initiative → backward mapping, task backlog, Linear hierarchy |
+| Product/Linear | `/doc-to-linear-tickets` | Push planning doc into Linear issues |
+| Product/Linear | `/execute-tasks` | Step through task list, mark done |
+| Product/Linear | `/github-projects` | Manage GitHub Projects V2 |
+| Tech domain | `/langgraph` | State design, node/edge patterns, HITL, checkpointing |
+| Tech domain | `/prototype` | Rapid prototype: skip tests, skip polish, just build |
+| Tech domain | `/mcp-builder` | Build MCP servers (Python FastMCP or Node SDK) |
+
+## Docs Lifecycle Pattern
+
+From `.claude/docs/` conventions:
+
+| Directory | Git-tracked | Purpose |
+|---|---|---|
+| `research/` | Yes | Permanent knowledge base — architecture decisions, evaluated patterns |
+| `tooling/` | Yes | Curated reference for dev tooling |
+| `plans/` | No (gitignored) | Local-only implementation specs — delete after execution |
+| `reviews/` | No (gitignored) | Local-only code review artifacts — ephemeral |
+
+**Promotion flow:** When a plan is executed, promote key decisions into a `research/` doc and delete the plan file.
+
+## Issue Tracking (Linear ↔ GitHub)
+
+Branch, commit, and PR naming must include `LIN-{id}` for auto-linking:
+- Branch: `feature/LIN-123-short-description`
+- Commit: `feat(LIN-123): short imperative title`
+- PR title: must contain `LIN-123`
+
+Stack: Code → GitHub | Tasks → Linear | Knowledge → Notion
+
+## Commit Style
+
+- Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `session:`, `checkpoint:`
+- Title under 60 chars, imperative mood
+- Body: why, not what
+
+See [[Claude Code Hook Architecture]] for how hooks enforce commit and code quality automatically.
+
 ## See Also
 
 - [[SKILL.md Pattern]]
 - [[Prefix Caching]]
 - [[Karpathy LLM Wiki Pattern]]
 - [[Session Log]]
+- [[Claude Code Hook Architecture]]

@@ -2,7 +2,7 @@
 title: Session Log
 tags: [context-management, llm, project]
 summary: Chronological index of all Claude Code and Codex sessions captured in raw/sessions/ — what was worked on, which project, and approximate token spend.
-updated: 2026-06-04
+updated: 2026-07-06
 sources:
   - raw/sessions/
 ---
@@ -41,18 +41,18 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
-| deb81c96 | — | — | Transfer code from CS agent; architecture refactors |
-| 394ba556 | — | — | Refactor insights skill |
-| 356746ec | — | — | Librarian chat front-end orientation |
-| fe1c0bd1 | — | — | Git delta resolution |
-| f5cfe1b3 | — | — | Source layout — `src/agents/infra/` placement question |
+| deb81c96 | 8 | 170k | Core module extraction — fix circular dep between `storage` and `librarian`; shared types in `core/` |
+| 394ba556 | 24 | 310k | Refactor + rename `insights` skill → `claude-insights`; two analysis modes (JSONL + local artifacts) |
+| 356746ec | 11 | 104k | Librarian chat as frontend; triage routing (Next.js vs LLM for binary 0/1 routing) |
+| fe1c0bd1 | 8 | 100k | src/ package restructure: core + librarian + storage + orchestration + interfaces + eval; Fargate over Lambda |
+| f5cfe1b3 | 5 | 67k | `infra/` under `src/` not `librarian/`; rag_core sub-organisation; listen-wiseer vs playground infra comparison |
 
 ### 2026-04-12 (Workspace)
 
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
-| 406fcc7f | — | — | Google ADK masterclass added to workspace; context engineering comparison |
-| 8d1a71b0 | — | — | ADK vs LangGraph comparison doc |
+| 406fcc7f | 3 | 77k | Google ADK vs LangGraph orchestration comparison; ADK + Python LangGraph hybrid; LangFuse compatibility confirmed |
+| 8d1a71b0 | 5 | 51k | RAG tradeoffs: BookKeeper Hero vs Bedrock KB vs Librarian; engineering risk matrix (integration/cost/latency/hallucination) |
 
 ### 2026-04-14 (Workspace — heavy day: 8 sessions)
 
@@ -85,51 +85,51 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
-| 314ac54a | — | — | `make lint` pass; mypy errors |
-| 06b9a503 | 3 | — | Intensive code review — simplify and condense |
-| efd3b13a | 5 | — | Demo data placement |
-| ca037b9e | 1 | — | Eval cleanup and simplification |
+| 314ac54a | 12 | 168k | Multi-query feature flag; LangSmith trace routing; English→German smoke test failure |
+| 06b9a503 | 3 | 92k | Intensive code review — simplify and condense 19 files |
+| efd3b13a | 5 | 89k | Demo data placement; LangGraph node simplification |
+| ca037b9e | 1 | 65k | Eval cleanup and simplification |
 
 ### 2026-04-17 (Workspace + poc)
 
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
-| 7a25dbd0 | 11 | — | ADK samples scan — context engineering (.agent/.claude/.agents), native_skill_mcp comparison |
-| 9fc31735 | — | — | mypy/ruff linting errors |
-| c44fa991 | 5 | — | Code review graph changes; simplify agentic system |
+| 7a25dbd0 | 11 | 134k | ADK samples scan — context engineering (.agent/.claude/.agents), native_skill_mcp vs rag_poc Strategy C |
+| 9fc31735 | 2 | 14k | mypy/ruff linting errors; QA policy/gate node placement question |
+| c44fa991 | 5 | 89k | Code review graph changes; runtime-agnostic orchestrator plan (LangGraph + ADK) |
 
 ### 2026-04-18 (Workspace + poc)
 
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
-| 29a60696 | 5 | — | `.env` for CS agent RAG pipeline notebooks |
-| 57042538 | 4 | — | Eval cleanup — graders vs metrics vs tasks; eval root simplification |
-| 0ef44b3d | 5 | — | Google ADK parity with adk-agent-samples; shared protocols vs skills |
+| 29a60696 | 5 | 28k | LLM provider config: Bedrock → Ollama (PII concern drove local switch) |
+| 57042538 | 4 | 89k | Eval cleanup — graders vs metrics vs harnesses vs experiments distinction |
+| 0ef44b3d | 5 | 89k | Google ADK parity with adk-agent-samples; shared protocols vs skills; Makefile targets for both runtimes |
 
 ### 2026-04-19 (poc project)
 
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
-| 6765bd2b | 12 | — | Linting errors |
-| 1bafe007 | — | — | mypy errors after ruff pass |
-| 9e66674c | 3 | — | `ingestion/` vs `embedding/` vs `preprocessing/` — single indexer decision |
+| 6765bd2b | 12 | 21k | Linting fixes; Makefile smoke test target added |
+| 1bafe007 | 26 | 239k | src/ vs app/ naming decision; circular import fix (datastore); test import reorganisation |
+| 9e66674c | 3 | 13k | Ingestion/embedding in preprocessing (not retrieval); single indexer decision; dead indexing.py deleted |
 
 ### 2026-04-20 (Workspace + poc)
 
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
-| 64095580 | 17 | — | playground/.claude vs adk-agent-pocs/.claude overlap; ADK research into docs |
-| ba67f0c4 | 3 | — | Sensitive data audit before merging open PR |
+| 64095580 | 17 | 301k | playground/.claude vs adk-agent-pocs/.claude overlap; .agents/ research docs lifecycle; ADK vs Claude skills |
+| ba67f0c4 | 3 | 13k | Sensitive data audit before merging open PR |
 
 ### 2026-04-21 (Workspace + playground + wiseer)
 
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
-| dd86ca38 | 5 | — | Compare playground VA agents vs listen-wiseer setup; listen-wiseer restart |
-| 46a3b186 | 25 | — | Playground sensitive data audit; infra folder consolidation |
-| 9a091358 | 12 | — | listen-wiseer phase 3 refactor continuation |
-| 826a1a97 | 62 | — | Track B Phase 3 — RDS Postgres for LangGraph checkpointer + EFS for Billy SQLite |
-| ecf3e696 | 1 | — | Auto-generate CLAUDE.md for codebase |
+| dd86ca38 | 5 | 148k | Compare playground VA agents vs listen-wiseer setup; listen-wiseer restart |
+| 46a3b186 | 25 | 423k | Playground sensitive data audit; infra folder consolidation |
+| 9a091358 | 12 | 182k | listen-wiseer phase 3 refactor continuation |
+| 826a1a97 | 62 | 2.6M | Track B Phase 3 — RDS Postgres for LangGraph checkpointer + EFS for Billy SQLite |
+| ecf3e696 | 1 | 15k | Auto-generate CLAUDE.md for codebase |
 
 ### 2026-04-22 (Workspace)
 
@@ -142,30 +142,6 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | Session | Prompts | ~Tokens | Topic |
 |---------|---------|---------|-------|
 | 108c3f61 | 10 | 92k | Playground infra → GitHub; secrets audit; consolidate settings.json; name "librarian" chosen for wiki repo |
-
----
-
-### 2025-09-14 (txmatch)
-
-| Session | ~Tokens | Topic |
-|---------|---------|-------|
-| 4998c107 | — | — |
-| 8713027f | — | — |
-| a2b0ddde | — | — |
-| ef78d2bb | — | — |
-
-### 2025-09-15 (txmatch)
-
-| Session | ~Tokens | Topic |
-|---------|---------|-------|
-| 76cb019f | — | — |
-
-### 2025-09-16 (txmatch)
-
-| Session | ~Tokens | Topic |
-|---------|---------|-------|
-| 58516737 | — | — |
-| dabddaa4 | — | — |
 
 ### 2026-04-25 (null)
 
@@ -574,11 +550,127 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 - `txmatch` = Shine transaction matching (Codex, 2025)
 - Token counts omitted where not available in frontmatter (many sessions lacked full stats in migrated skeleton notes)
 
+## 2026-04 Early Sessions (ingested 2026-07-05 / 2026-07-06)
+
+Sessions from 2026-04-10 to 2026-04-27. Key knowledge extracted:
+
+| Date | Session | Topic | Wiki page |
+|---|---|---|---|
+| 2026-04-10 | 1900854e | Module restructure: `infra/`/`ingestion/`/`orchestration/` layout | [[Librarian Project]] |
+| 2026-04-11 | deb81c96 | Core module extraction — break circular dep between `storage` + `librarian` | [[Librarian Project]] |
+| 2026-04-11 | fe1c0bd1 | src/ package layout finalized; Fargate over Lambda | [[Librarian Project]] |
+| 2026-04-11 | f5cfe1b3 | `infra/` under `src/`; `rag_core/` under `librarian/` | [[Librarian Project]] |
+| 2026-04-12 | 406fcc7f | ADK + Python LangGraph hybrid; LangFuse compatible with both | [[ADK vs LangGraph Comparison]] |
+| 2026-04-12 | 8d1a71b0 | Bedrock vs LangGraph engineering risk matrix (4 axes) | [[Bedrock KB vs LangGraph Decision]] |
+| 2026-04-14 | 48cd8a0e | Librarian scope locked: RAG-only, not copilot | [[Librarian Project]] |
+| 2026-04-14 | a6a9bcf4 | `.claude/docs` lifecycle: research→plan chains, archive model | [[Claude Workflow System]] |
+| 2026-04-14 | 3def7093 | `clients/` vs `interfaces/` boundary clarified | [[Librarian Project]] |
+| 2026-04-14 | ec44fece | Polyglot ruff config (TS folders need explicit exclude) | [[Session Insights]] |
+| 2026-04-15 | b269ccf1 | rag_poc vs librarian: evolution path to production copilot | [[Librarian Project]] |
+| 2026-04-17 | c44fa991 | Runtime-agnostic orchestrator plan (LangGraph + ADK factory pattern) | [[Session Insights]] |
+| 2026-04-17 | 7a25dbd0 | ADK samples context engineering scan vs rag_poc; Strategy C → B upgrade path | [[ADK Context Engineering]] |
+| 2026-04-18 | 57042538 | Graders vs metrics vs harnesses distinction; eval dir structure | [[VA Eval Harness]] |
+| 2026-04-19 | 9e66674c | Ingestion/embedding in preprocessing (not retrieval); one-indexer rule | [[RAG Retrieval Strategies]] |
+| 2026-04-19 | 1bafe007 | src/ vs app/ naming; circular import `datastore`↔`factory` fix | [[Session Insights]] |
+| 2026-04-20 | 64095580 | Multi-repo .claude/ organization; .agents/ research docs lifecycle | [[Multi-Repo Claude Organization]] |
+| 2026-04-24 | 108c3f61 | MCP server security — sandbox isolation, secrets, read-only invariant | [[MCP Server Security Patterns]] |
+| 2026-04-26 | — | Session enrichment, output type taxonomy, wiki taxonomy design | [[Session Knowledge Capture Patterns]] |
+| 2026-04-27 | — | Wiki decisions in domain dirs; raw sources as references | [[Karpathy LLM Wiki Pattern]] |
+
+Remaining sessions (linting ops, git ops, compact checkpoints): manifest-only, no wiki pages.
+
+## 2026-05–06 Batch (ingested 2026-07-06)
+
+Sessions from 2026-04-27 to 2026-06-04. Mostly compact stubs and migrated JSONL sessions with quantitative metadata only; no wiki pages generated.
+
+| Period | Project | Count | Theme |
+|---|---|---|---|
+| 2026-04-27 | librarian | 2 | Lint + UI graph view iterations |
+| 2026-04-29–30 | playground | 15 | RAG migration Track 2, sevdesk → generic renaming |
+| 2026-05-04–06 | playground | 14 | Eval EDA notebooks, eval set aggregation |
+| 2026-05-06–07 | galactus | 16 | Initial galactus setup: Makefile, pre-commit, project rename from intercom-data |
+| 2026-05-08–10 | galactus + Workspace | 20 | Calibration eval (VIR-138): LLM judge baselines, dataset splits |
+| 2026-05-11–12 | galactus | 10 | Ablation study (VIR-179): 14 configs, VA migration sprint |
+| 2026-05-13–16 | galactus | 22 | Golden dataset: 597 queries built from BKH liked + Intercom; grader calibration |
+| 2026-05-18 | galactus + .claude | 6 | Eval report (top liked/disliked topics); skill dev (auto-compacted empty sessions) |
+| 2026-05-19–21 | .claude | 21 | Skill iteration sessions (all auto-compact stubs, 0 tokens) |
+| 2026-05-24–26 | galactus | 17 | Corpus data types (help.shine.co, billypedia, pricing); ablation continuation |
+| 2026-05-28–29 | null | 2 | Galactus codebase refactor: ingestion/preprocessing separation (migrated JSONL) |
+| 2026-05-30 | galactus | 4 | Core refactor; data folder reorganization |
+| 2026-06-01–04 | galactus + Workspace | 12 | GT dataset verification (VIR-212); accounting_agent inception |
+
+## 2026-06–07 Individual Chat Sessions (ingested 2026-07-06)
+
+| Date | Session | Project | Topic |
+|---|---|---|---|
+| 2026-06-04 | 57331686 | librarian | Google Drive scraping for ingest pipeline |
+| 2026-06-05 | e8f4eeed | galactus | README update for ingestion path change |
+| 2026-06-05 | 824e04f8 | galactus | Eval data confirmation |
+| 2026-06-05 | 54fbb1fb | galactus | "Ralph" reference — escalation language considerations |
+| 2026-06-05 | f38c3543 | galactus | Ingestion path location debate |
+| 2026-06-07 | eeeb2744 | galactus | Legacy file cleanup |
+| 2026-06-07 | 3e89eb49 | galactus | Experiment runner design |
+| 2026-06-07 | a758a3bb | galactus | 500-test suite simplification |
+| 2026-06-07 | 83bb4b48 | galactus | Capability docs location → `src/` as specs |
+| 2026-06-07 | e9506f1e | galactus | Ruff formatter scope |
+| 2026-06-08 | 09914670 | galactus | Calibrated LLM-as-judge: answer_relevancy + completeness + grounding + RAGAS |
+| 2026-06-08 | 7aa3db68 | galactus | Linear tickets for copilot capabilities |
+| 2026-06-08 | fe31aacc | galactus | Eval schema update |
+| 2026-06-08 | b52a3ff9 | galactus | CodeQualityAgent (Akira) scope |
+| 2026-06-08 | 4c189a8c | galactus | FileNotFoundError debug |
+| 2026-06-08 | 52d344b8 | galactus | Schema clarity check |
+| 2026-06-08 | fdc67863 | galactus | Notebook CSV path fix |
+| 2026-06-08 | be975ee5 | galactus | EUR token budget tracking |
+| 2026-06-09 | 0c6ec8a1 | galactus | IndexError debug |
+| 2026-06-09 | 660918fb | galactus | ModuleNotFoundError (rag module) |
+| 2026-06-09 | bf836c46 | galactus | Metric/exploration selection for eval |
+| 2026-06-10 | 9ddbb706 | galactus | Fable model integration check |
+| 2026-06-11 | 8caa7044 | galactus | Eval quality bug fix |
+| 2026-06-19 | 8877c883 | galactus | execute-tasks skill invocation |
+| 2026-06-19 | 094b14b7 | galactus | accounting_agent inception; LangGraph parity with va-agents |
+| 2026-06-19 | 11d354a7 | galactus | SANYI applied to eval pipeline |
+| 2026-06-19 | 6a1505ca | galactus | Task completion check |
+| 2026-06-19 | b4f26fe7 | galactus | Notebook run verification |
+| 2026-06-19 | 5bae9447 | galactus | SANYI vs Akira code review system design |
+| 2026-06-19 | 130222d2 | galactus | MD report evaluation |
+| 2026-06-22 | 93b4309e | galactus | Corpus data push (700 files); accounting_agent smoke test |
+| 2026-06-22 | 84c3ba53 | va-agents | Thinking budget for VA/HCA agents |
+| 2026-06-22 | f3d8c629 | galactus | Cursor bot in GitHub repo |
+| 2026-06-23 | 2a6c99c4 | galactus | Heuristic JSON file loading |
+| 2026-06-23 | bf544d36 | galactus | Escalation response language (should be English) |
+| 2026-06-24 | b0642ba1 | galactus | HTML linting suppression |
+| 2026-06-24 | 7e180bf0 | galactus | Lint toggle for HTML pages |
+| 2026-06-24 | b9dc2827 | galactus | Core preprocessing grounding comment thread |
+| 2026-06-24 | 4034555a | galactus | Eligibility grounding preprocessing |
+| 2026-06-24 | 76bda47b | galactus | `make eval-all` error fix |
+| 2026-06-24 | 6210d985 | galactus | Log visibility issue |
+| 2026-06-24 | a7cab4b9 | galactus | VA eval framework assessment vs baseline docs |
+| 2026-06-24 | de544217 | galactus | Playground vs galactus comparison |
+| 2026-06-24 | 51b184ce | va-agents | Post-pull change review |
+| 2026-06-24 | 890685a5 | galactus | Onboarding doc gap analysis |
+| 2026-06-24 | 0c67abca | galactus | Escalation section documentation |
+| 2026-06-24 | b91ebc5f | galactus | Eval count check |
+| 2026-06-24 | 419dc79c | galactus | Pre-push review |
+| 2026-06-24 | b92e12ec | galactus | Graph clarity improvement |
+| 2026-06-24 | c46b867f | galactus | 15sec latency spike investigation |
+| 2026-06-25 | 4ad49b99 | galactus | Dataset size decision (240 QA) |
+| 2026-06-25 | b6ed6cf9 | galactus | Page update |
+| 2026-06-25 | 6be85145 | galactus | Tab update in report |
+| 2026-06-25 | 8cc7f4f3 | galactus | Document-to-eval-framework alignment check |
+| 2026-06-25 | 0310489c | galactus | Old dataset cleanup |
+| 2026-06-25 | c28a2b11 | galactus | Rebase from old branch |
+| 2026-06-25 | cb15d378 | galactus | Dataset query_word_count removal |
+| 2026-06-25 | a9522055 | galactus | Source baseline removal from overview |
+| 2026-06-25 | e6f88df0 | galactus | HCA y_true plot fix |
+| 2026-06-26 | 71d75bb4 | galactus | Overview section cleanup |
+| 2026-07-05 | 4914f277 | Workspace | galactus vs awesome-copilot vs sevdesk-platform-ai-catalog comparison |
+| 2026-07-05 | c7597adf | librarian | Librarian repo scraping question → this ingest session |
+| 2026-07-05 | 0ee40dd4 | librarian | `make lint` debugging |
+
 ## See Also
 
 - [[Librarian Project]]
 - [[Librarian KB — Build Plan]]
-- [[VA Agent Project]]
-- [[Listen-Wiseer Project]]
 - [[Claude Workflow System]]
 - [[Session Insights]]
+- [[Session Knowledge Capture Patterns]]

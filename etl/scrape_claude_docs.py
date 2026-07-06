@@ -1,8 +1,11 @@
-"""Scrape .claude/ folders from all workspace projects → raw/claude-docs/
+"""Scrape .claude/ folders and root docs/ from all workspace projects → raw/claude-docs/
 
-Collects markdown files from .claude/ subdirectories across:
+Collects markdown files from two locations per project:
+  - {project}/.claude/  (plans, skills, agents, sessions, memory, hooks)
+  - {project}/docs/     (committed reference docs at repo root — e.g. galactus/docs/)
+
+Also captures user-level:
   - ~/.claude/           (user-level CLAUDE.md, commands/, scripts/)
-  - ~/workspace/*/      (per-project docs/, skills/, agents/, sessions/, memory/)
 
 Writes to raw/claude-docs/{project-name}/{subdir}/{file}.md preserving structure.
 Idempotent: copies are overwritten on each run (source is always current).
@@ -31,6 +34,9 @@ USER_CLAUDE_DIR = Path.home() / ".claude"
 
 # Subdirs worth capturing from each project's .claude/
 PROJECT_SUBDIRS = {"docs", "skills", "agents", "sessions", "memory", "hooks"}
+
+# Root-level dirs to capture from each project (outside .claude/)
+PROJECT_ROOT_DIRS = {"docs", ".agents"}
 
 # From user-level ~/.claude/ — skip machine-specific dirs
 USER_SUBDIRS = {"commands", "scripts"}
@@ -83,7 +89,7 @@ def scrape_user_level(output_dir: Path, dry_run: bool) -> int:
 
 
 def scrape_projects(workspace: Path, output_dir: Path, dry_run: bool) -> int:
-    """Scrape .claude/ docs from each project in workspace."""
+    """Scrape .claude/ docs and root docs/ from each project in workspace."""
     if not workspace.exists():
         log.warning("workspace_missing", path=str(workspace))
         return 0
@@ -96,19 +102,29 @@ def scrape_projects(workspace: Path, output_dir: Path, dry_run: bool) -> int:
         if project in SKIP_PROJECTS:
             continue
 
-        claude_dir = project_dir / ".claude"
-        if not claude_dir.exists():
-            continue
-
         written = 0
         dest_root = output_dir / project
 
-        for subdir_name in PROJECT_SUBDIRS:
-            subdir = claude_dir / subdir_name
-            if not subdir.exists():
+        # .claude/ subdirectories (plans, skills, agents, memory, hooks, sessions)
+        claude_dir = project_dir / ".claude"
+        if claude_dir.exists():
+            for subdir_name in PROJECT_SUBDIRS:
+                subdir = claude_dir / subdir_name
+                if not subdir.exists():
+                    continue
+                for src in sorted(subdir.rglob("*.md")):
+                    rel = src.relative_to(claude_dir)
+                    dest = dest_root / rel
+                    _copy_file(src, dest, dry_run)
+                    written += 1
+
+        # Root-level docs/ (committed reference docs — e.g. galactus/docs/)
+        for root_dir_name in PROJECT_ROOT_DIRS:
+            root_docs = project_dir / root_dir_name
+            if not root_docs.exists():
                 continue
-            for src in sorted(subdir.rglob("*.md")):
-                rel = src.relative_to(claude_dir)
+            for src in sorted(root_docs.rglob("*.md")):
+                rel = src.relative_to(project_dir)
                 dest = dest_root / rel
                 _copy_file(src, dest, dry_run)
                 written += 1
