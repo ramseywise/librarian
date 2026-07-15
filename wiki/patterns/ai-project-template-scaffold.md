@@ -1,0 +1,43 @@
+---
+title: AI Project Template Scaffold
+tags: [infra, pattern]
+summary: A generic, framework-agnostic starter repo pattern for standing up new AI agent projects — modeled on a mature reference project's skills/docs/infra layout plus a conventional data-science project skeleton (`.github`, `project_init.sh`, `.vscode`, `data/`, `docs/`, `infrastructure/`), kept as its own repo rather than nested under the reference project.
+updated: 2026-07-14
+sources:
+  - raw/sessions/claude-2026-07-06-we-have-a-template-for-github-ai-project-268f0009.md
+  - raw/sessions/claude-2026-07-14-what-is-the-git-origin-for-ai-project-te-c90bb5d6.md
+  - raw/sessions/claude-2026-07-12-can-we-do-a-thorough-code-review-of-puff-a5c50915.md
+---
+
+# AI Project Template Scaffold
+
+A reusable starter-repo pattern for bootstrapping a new AI agent project, distilled from an existing mature reference project (docs, Claude commands/skills, data pipeline, evals, and infra) plus a conventional data-science project skeleton borrowed from a separate template repo.
+
+## What It Should Carry Over From a Mature Reference Project
+
+- `.claude/` — skills and commands, already refined through real use
+- `docs/` — the research→plan→archive lifecycle (see [[Claude Workflow System]])
+- Data pipeline and eval scaffolding (see [[Synthetic Dataset Generation for RAG Eval]], [[RAG Eval Metrics Suite]] for the shape of what belongs here)
+- Infra: AWS deployment config, LangFuse/LangSmith integration wiring, FastAPI service skeleton, CI/CD pipeline, Terraform
+
+## What It Should Carry Over From a Conventional DS Project Skeleton
+
+Comparing against a separate, more classically-structured data-science project template surfaced a gap list: `.github/` (CI workflows), `project_init.sh` (bootstrap script), `.vscode/` (editor config), and consistently-named top-level dirs — `configs/`, `data/`, `docs/`, `infrastructure/`.
+
+**Gap identified against "the image of an AI app":** the reference project template was missing explicit frontend scaffolding and some other app-shell pieces beyond the backend/eval/infra stack — worth auditing for any new template before treating it as complete.
+
+## Repo Placement Decision
+
+**Decision: the template lives in its own dedicated repo**, not nested inside the reference project (e.g. not `playground/ai-project-template/`). Rationale: a template needs an independent git origin so it can be instantiated cleanly for new projects (`git clone` + rename) without dragging along the reference project's own history or unrelated files. This is the same boundary logic as [[Multi-Repo Claude Organization]] — shared tooling that should be reusable across repos belongs in its own repo, not embedded in one consumer.
+
+**Local testability requirement:** before relying on the template, it should be possible to test it locally as a generator — i.e. actually instantiate a new project from it and confirm the result runs — not just review the file layout by eye.
+
+## Skill Porting
+
+Porting skills into the new template (`new-agent` skill work) raised the question of where supporting specs/docs should live — collected under a `root/docs`-style location rather than scattered — mirroring the docs lifecycle pattern in [[Claude Workflow System]].
+
+## See Also
+- [[Multi-Repo Claude Organization]]
+- [[Claude Workflow System]]
+- [[ADK Scaffold Patterns]]
+- [[Puffin Consciousness Development Skills]]

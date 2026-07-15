@@ -2,11 +2,12 @@
 title: RAG Reranking
 tags: [rag, concept]
 summary: Reranking strategies for RAG pipelines — cross-encoder vs LLM listwise, confidence scoring, and when each is appropriate.
-updated: 2026-04-24
+updated: 2026-07-14
 sources:
   - raw/playground-docs/rag-tradeoffs.md
   - raw/playground-docs/librarian-stack-audit.md
   - raw/playground-docs/rag-agent-template-research.md
+  - raw/agent-skills/langchain-rag/references/rag-strategies.md
 ---
 
 # RAG Reranking

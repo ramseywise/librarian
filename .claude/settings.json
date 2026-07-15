@@ -16,8 +16,6 @@
   },
   "permissions": {
     "allow": [
-      "Bash(find *)",
-      "Bash(grep *)",
       "Bash(sed *)",
       "Bash(xargs *)",
       "Bash(diff *)",
@@ -26,12 +24,9 @@
       "Bash(rm *)",
       "Bash(touch *)",
       "Bash(wc *)",
-      "Bash(cat *)",
       "Bash(echo *)",
       "Bash(python3 *)",
-      "Bash(git *)",
       "Bash(uv run *)",
-      "Bash(ls *)",
       "mcp__claude_ai_Google_Drive__list_recent_files",
       "mcp__claude_ai_Google_Drive__read_file_content",
       "mcp__claude_ai_Notion__notion-search",

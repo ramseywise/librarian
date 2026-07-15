@@ -2,7 +2,7 @@
 title: Session Log
 tags: [context-management, llm, project]
 summary: Chronological index of all Claude Code and Codex sessions captured in raw/sessions/ — what was worked on, which project, and approximate token spend.
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/sessions/
 ---
@@ -666,6 +666,24 @@ Sessions from 2026-04-27 to 2026-06-04. Mostly compact stubs and migrated JSONL 
 | 2026-07-05 | 4914f277 | Workspace | galactus vs awesome-copilot vs sevdesk-platform-ai-catalog comparison |
 | 2026-07-05 | c7597adf | librarian | Librarian repo scraping question → this ingest session |
 | 2026-07-05 | 0ee40dd4 | librarian | `make lint` debugging |
+
+## 2026-07-06 to 2026-07-14 Batch (ingested 2026-07-14)
+
+11 sessions — mostly thin prompt-only captures (no assistant transcript), but several reveal real decisions and concepts.
+
+| Date | Session | Project | Topic | Wiki page |
+|---|---|---|---|---|
+| 2026-07-06 | 268f0009 | INTENSO | ai-project-template scope: playground infra + sevdesk DS-template skeleton comparison | [[AI Project Template Scaffold]] |
+| 2026-07-06 | bec24482 | INTENSO | galactus/notebooks four-category tour; observability import diagnostic | [[Galactus Project]] |
+| 2026-07-06 | 012cfada | INTENSO | Settings.json reconciliation; galactus README gaps; templated playground READMEs | [[Claude Workflow System]] |
+| 2026-07-07 | 0cd5da0c | INTENSO | listen-wiseer review — refactor plan (RAG + FastAPI), agentic web search open question | [[Listen-Wiseer Project]] |
+| 2026-07-12 | a5c50915 | INTENSO | Puffin skills code review (genesis/dream/bgrow/reflect/research) vs playground; seed material concept | [[Puffin Consciousness Development Skills]] |
+| 2026-07-13 | dfcde495 | puffin | Puffin CLAUDE.md generation; Genesis 11-phase process; Akira/SANYI/Insights distinction ("ralph" origin) | [[Puffin Consciousness Development Skills]], [[Claude Workflow System]] |
+| 2026-07-13 | a3b6ecb6 | INTENSO | Claude settings inconsistency across repos; drive-root settings layering fix | [[Claude Workflow System]] |
+| 2026-07-14 | 877508dc | galactus | Value check on pulled galactus/va-agents/chat-agent changes | manifest-only |
+| 2026-07-14 | 63940e32 | INTENSO | How to run `/ingest`; README documentation gap for skill commands | [[Claude Workflow System]] |
+| 2026-07-14 | c90bb5d6 | INTENSO | ai-project-template git origin decision — separate repo, local template testing | [[AI Project Template Scaffold]] |
+| 2026-07-14 | 7f9c0f01 | INTENSO | Recovering wake/grow/reflect/synthesize/dream outputs from past sessions | [[Puffin Consciousness Development Skills]] |
 
 ## See Also
 

@@ -2,11 +2,13 @@
 title: Deep Agents Framework
 tags: [deep-agents, langgraph, pattern]
 summary: Opinionated agent harness built on LangChain/LangGraph — create_deep_agent() wraps planning, file management, subagent delegation, and HITL into configurable middleware with no boilerplate.
-updated: 2026-04-25
+updated: 2026-07-14
 sources:
   - raw/agent-skills/deep-agents-core/SKILL.md
   - raw/agent-skills/deep-agents-orchestration/SKILL.md
   - raw/agent-skills/framework-selection/SKILL.md
+  - raw/agent-skills/README.md
+  - raw/agent-skills/deep-agents-core/references/middleware-patterns.md
 ---
 
 # Deep Agents Framework
@@ -125,6 +127,20 @@ Interrupts happen between `invoke()` calls. Check `state.next` or `__interrupt__
 - `checkpointer` is required for any `interrupt_on` configuration
 - `store` is required when using `StoreBackend` or `MemoryMiddleware`
 - Skills need a backend to load from — `FilesystemBackend` for local, `StoreBackend` for cloud
+
+## Skill Directory Organization (`.agents/skills/`)
+
+The on-disk skill catalog loaded by the harness is organized into five groups, each loaded on demand (not slash commands — the agent reads them at runtime):
+
+| Group | Skills |
+|---|---|
+| Entry point | `framework-selection` — decides LangChain vs LangGraph vs Deep Agents for a given task; read first |
+| Cross-domain | `voice-agents`, `observability`, `advanced-rag-patterns` |
+| Google ADK | `adk-cheatsheet`, `adk-dev-guide`, `adk-scaffold`, `adk-deploy-guide`, `adk-eval-guide`, `adk-observability-guide` |
+| Deep Agents | `deep-agents-core`, `deep-agents-memory`, `deep-agents-orchestration` |
+| LangChain / LangGraph | `langchain-dependencies`, `langchain-fundamentals`, `langchain-middleware`, `langchain-rag`, `langgraph-fundamentals`, `langgraph-persistence`, `langgraph-human-in-the-loop` |
+
+Reference files marked with `*` in the catalog are stubs pending wiki ingest — the pattern is to promote a research doc into a `references/` file once the wiki page grounding it exists. These skill files are also read directly by Claude Code coding sessions (not just by agents at runtime) as framework reference before writing agent code.
 
 ## See Also
 

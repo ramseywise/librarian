@@ -2,10 +2,12 @@
 title: ADK Scaffold Patterns
 tags: [adk, infra, pattern]
 summary: Agent Starter Pack CLI patterns for scaffolding ADK agent projects — templates, deployment options, prototype-first workflow, DESIGN_SPEC.md contract, and development phase guidelines.
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/claude-docs/galactus/.agents/skills/adk-scaffold/SKILL.md
   - raw/claude-docs/galactus/.agents/skills/adk-dev-guide/SKILL.md
+  - raw/agent-skills/adk-scaffold/SKILL.md
+  - raw/agent-skills/adk-dev-guide/SKILL.md
 ---
 
 # ADK Scaffold Patterns
@@ -15,6 +17,14 @@ The `agent-starter-pack` CLI (`uvx`) scaffolds production-ready ADK agent projec
 For deployment details (CI/CD, service accounts, Terraform), see [[ADK Deployment Patterns]]. For evaluation patterns, see [[ADK Eval Guide]].
 
 ---
+
+## Requirements Gathering (Before the Spec)
+
+Before drafting `DESIGN_SPEC.md`, gather requirements with a fixed set of always-ask questions, plus conditional follow-ups:
+
+**Always ask:** (1) what problem the agent solves, (2) what external APIs/data sources and auth are needed, (3) safety constraints — what the agent must NOT do, (4) deployment preference (prototype-first recommended, or full deployment — and if so, Agent Engine or Cloud Run).
+
+**Ask based on context:** if retrieval/search is mentioned → datastore choice (`vertex_ai_search` vs `vertex_ai_vector_search`) via `--agent agentic_rag --datastore <choice>`; if the agent should be callable by other agents → `--agent adk_a2a`; if full deployment chosen → CI/CD runner (GitHub Actions vs Cloud Build); if Cloud Run chosen → session storage type; if CI/CD chosen → whether a git repo already exists or needs creating (and visibility).
 
 ## DESIGN_SPEC.md — The Primary Contract
 
@@ -108,6 +118,9 @@ uvx agent-starter-pack create <project-name> \
 | `--auto-approve` / `-y` | off | Skip confirmation prompts |
 | `--agent-directory` / `-dir` | `app` | Agent code directory name |
 | `--agent-guidance-filename` | `GEMINI.md` | Use `CLAUDE.md` or `AGENTS.md` for other IDEs |
+| `--skip-checks` / `-s` | off | Skip GCP/Vertex AI verification checks |
+| `--google-api-key` / `-k` | — | Use Google AI Studio instead of Vertex AI |
+| `--debug` | off | Enable debug logging for troubleshooting |
 
 **RAG/search:** if retrieval or data search is required, use `--agent agentic_rag --datastore <choice>`:
 - `vertex_ai_vector_search` — embeddings, similarity search
@@ -211,6 +224,16 @@ Inspect generated files, adapt what you need, copy into actual project. Delete t
 | `make deploy` | — | Deploy to dev (requires human approval) |
 
 ---
+
+## Operational Guidelines for Coding Agents
+
+**Session continuity:** on long sessions, re-read the relevant skill before each phase (cheatsheet before coding, eval guide before evals, deploy guide before deploying, this scaffold guide before scaffolding) — context compaction may have dropped earlier skill content.
+
+**Code preservation & isolation (Principle 1):** alter only the code segments directly targeted by the request; strictly preserve all surrounding and unrelated code (config values like `model`/`version`/`api_key`, comments, formatting). Before finalizing a code replacement, verify the exact target lines against the user's explicit instructions and confirm nothing outside that target changed.
+
+**Breaking infinite loops:** stop immediately after seeing the same error 3+ times in a row; don't retry failed operations blindly — fix the root cause. Red flags: incrementing lock IDs, names appending v5→v6→v7, repeating "I'll try one more time." For state conflicts (409 already-exists), use `terraform import` instead of retrying creation. For tool bugs, fix the source rather than working around it; when stuck, fall back to running underlying CLIs (e.g. `terraform`) directly instead of a wrapping tool.
+
+**Stale-skills check:** if repeated errors or unexplained gaps appear in skill instructions, run `npx skills check -g` (only when stale skills are suspected, not every session) and tell the user to `npx skills update -g` if it reports outdated skills.
 
 ## Critical Rules
 

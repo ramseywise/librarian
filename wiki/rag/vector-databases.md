@@ -58,7 +58,7 @@ Best for: AWS-native production, multilingual corpora, hybrid search without ext
 
 Two-level hierarchy: leaf chunk (`AMAZON_BEDROCK_TEXT_CHUNK`) for matching + parent context (`AMAZON_BEDROCK_TEXT`) for LLM. Raw `_score` is **not exposed** by the Bedrock KB API (always 0.0 via API).
 
-See [[Bedrock KB and GCP Vertex Comparison]] for full details.
+See [[GCP Vertex AI Search vs AWS Bedrock KB]] for full details.
 
 ### Pinecone
 Best for pure-play semantic similarity with zero ops. **No native BM25 hybrid** — poor fit for multilingual support KB where keyword precision matters.

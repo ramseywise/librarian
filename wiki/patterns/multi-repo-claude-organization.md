@@ -48,7 +48,7 @@ Research and plan docs should not accumulate forever. The correct lifecycle:
 When working with related repos (e.g. `playground` + `adk-agent-pocs` + `librarian`):
 - Check `~/.claude/skills/` before creating a new project skill — it may already exist
 - If a skill in repo A is more complete than in repo B, promote the better version globally and delete the copies
-- Use the [[Librarian]] `/seed-kb` + `etl/scrape_repos.py` to surface all `.claude/skills/` files across repos and identify duplicates
+- Use the [[Librarian Project]] `/seed-kb` + `etl/scrape_repos.py` to surface all `.claude/skills/` files across repos and identify duplicates
 
 ## .agents/ Pattern
 
@@ -83,3 +83,5 @@ When two repos serve the same domain (e.g. `playground/src/librarian` and a stan
 - [[ADK Context Engineering]]
 - [[Claude Workflow System]]
 - [[Karpathy LLM Wiki Pattern]]
+- [[AI Project Template Scaffold]] — the template-repo instance of the "shared tooling gets its own repo" rule
+- [[Puffin Consciousness Development Skills]] — a skill-scope question (global vs per-repo) from the same family of decisions

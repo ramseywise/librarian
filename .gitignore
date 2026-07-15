@@ -28,6 +28,9 @@ raw/pdfs/*.PDF
 *.duckdb
 *.duckdb.wal
 
+# Cron job logs
+logs/*.log
+
 # macOS
 .DS_Store
 

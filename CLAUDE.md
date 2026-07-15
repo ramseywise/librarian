@@ -23,9 +23,15 @@ generic documentation.
 Analysis community plugin for cosine-similarity edges between pages. Do NOT use the
 Streamlit visualizer (`etl/visualize.py`) — it is deprecated.
 
-**Agent layer (in progress):** A LangGraph agent with `search_wiki`, `read_page`, and
-`write_wikilink` tools — answers questions from the KB and can commit new wikilinks back
-to wiki files. Chainlit for the chat UI.
+**Agent layer:** `app/backend/agent.py` — a Gemini-based chat agent with its own wiki-search
+tool, streamed via SSE (`POST /api/chat/stream`) to the React graph UI's chat panel. No
+write-back tool exists yet (`/api/writeback` mutates a page's `## See Also` section directly
+from the UI, not via an agent tool call).
+
+**Code index (2026-07):** `tools/codemap/` — tree-sitter-based structural index (symbols,
+import edges) over source repos, separate from the wiki-compile pipeline. Exposed via MCP
+tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki tools. See
+`.claude/docs/plans/codemap-code-index.md`.
 
 ---
 

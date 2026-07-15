@@ -2,12 +2,16 @@
 title: ADK Python API Reference
 tags: [adk, reference]
 summary: Quick reference for the Google ADK Python SDK — agent types, tools, state, callbacks, plugins, artifacts, memory, context caching, and context compaction.
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/SKILL.md
   - raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/references/python.md
   - raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/references/docs-index.md
   - raw/claude-docs/galactus/.agents/skills/adk-dev-guide/SKILL.md
+  - raw/agent-skills/adk-cheatsheet/SKILL.md
+  - raw/agent-skills/adk-cheatsheet/references/docs-index.md
+  - raw/agent-skills/adk-cheatsheet/references/python.md
+  - raw/claude-skills/google-adk/adk-python.md
 ---
 
 # ADK Python API Reference
@@ -233,6 +237,28 @@ McpToolset(connection_params=SseConnectionParams(url="https://mcp.example.com/ss
 
 **Gotchas:** Paths must be absolute. Agent definition must be synchronous for deployment. Node.js required for npm-based servers — add to Dockerfile.
 
+### Tool Authentication
+
+| Auth Type | Pattern |
+|---|---|
+| API Key | `token_to_scheme_credential("apikey", "query", "apikey", "KEY")` → `auth_scheme, auth_credential` |
+| Service Account | `service_account_dict_to_scheme_credential(config, scopes=[...])` → `auth_scheme, auth_credential` |
+| OAuth2 / OIDC | `AuthCredential(auth_type=AuthCredentialTypes.OAUTH2, oauth2=OAuth2Auth(client_id=..., client_secret=...))` |
+| Custom `FunctionTool` | `tool_context.request_credential(AuthConfig(...))` to initiate, `tool_context.get_auth_response(AuthConfig(...))` to retrieve |
+
+Helpers live in `google.adk.tools.openapi_tool.auth.auth_helpers` (`token_to_scheme_credential`, `service_account_dict_to_scheme_credential`). Pass the resulting `auth_scheme` + `auth_credential` to `OpenAPIToolset(...)`.
+
+### OpenAPI Tools
+
+```python
+from google.adk.tools.openapi_tool.openapi_spec_parser.openapi_toolset import OpenAPIToolset
+
+toolset = OpenAPIToolset(spec_str=open("openapi.json").read(), spec_str_type="json")
+agent = Agent(name="api_agent", tools=[toolset], ...)
+```
+
+Pass `auth_scheme` + `auth_credential` (see Tool Authentication above) for authenticated APIs. Tool names derive from `operationId` (snake_case, max 60 chars).
+
 ---
 
 ## Factory Functions for Sub-agents
@@ -432,6 +458,10 @@ adk run /path/to/agent      # CLI chat
 adk api_server /path/to     # FastAPI server
 adk eval agent/ evalset.json  # Run evaluations
 ```
+
+## Repo Convention — Shared Guardrails & Tools
+
+A recurring multi-agent-repo layout: `agents/` holds individual agent projects (each with its own `tests/`), and a `shared/` directory holds reusable cross-agent code — `shared/guardrails/` for callbacks (PII redaction, prompt injection detection, domain validators) and `shared/tools/` for tool helpers (e.g. `chain_callbacks`, `compact_contract_from_pydantic`). Before writing new agent code: check whether a similar agent already exists under `agents/`, and whether a guardrail or tool helper already exists under `shared/` — reuse before creating. Treat local docs (`llms-full.txt` / `llms.txt`) as source of truth over upstream when they diverge, and call out the discrepancy explicitly rather than silently picking one.
 
 ## ADK Package Directory Map
 

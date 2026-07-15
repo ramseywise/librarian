@@ -2,11 +2,15 @@
 title: ADK Observability
 tags: [adk, infra, pattern]
 summary: Four-tier observability for ADK agents — Cloud Trace (always-on), prompt-response logging, BigQuery Agent Analytics plugin, and third-party platforms (AgentOps, Phoenix, MLflow, etc.).
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/claude-docs/galactus/.agents/skills/adk-observability-guide/SKILL.md
   - raw/claude-docs/galactus/.agents/skills/adk-observability-guide/references/bigquery-agent-analytics.md
   - raw/claude-docs/galactus/.agents/skills/adk-observability-guide/references/cloud-trace-and-logging.md
+  - raw/agent-skills/adk-observability-guide/SKILL.md
+  - raw/agent-skills/adk-observability-guide/references/bigquery-agent-analytics.md
+  - raw/agent-skills/adk-observability-guide/references/cloud-trace-and-logging.md
+  - raw/agent-skills/observability/SKILL.md
 ---
 
 # ADK Observability

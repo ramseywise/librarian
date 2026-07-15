@@ -2,9 +2,12 @@
 title: Claude Code Hook Architecture
 tags: [meta, infra, pattern]
 summary: Claude Code lifecycle hooks — PreToolUse/PostToolUse events, exit-code protocol (0=pass, 2=block), and the hook suite pattern used to enforce code quality automatically without mid-task reminders.
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/claude-docs/playground/docs/tooling/hooks-architecture.md
+  - raw/claude-docs/_user/commands/style.md
+  - raw/claude-docs/_user/commands/logging.md
+  - raw/claude-docs/_user/commands/ml.md
 ---
 
 # Claude Code Hook Architecture
@@ -100,6 +103,36 @@ exit 0
 ## Friction Log
 
 Failed Bash commands (non-zero exit) are logged to `.claude/friction-log.jsonl`. This is input signal for `/claude-insights` to identify patterns of repeated failures — surface systematic friction points across sessions.
+
+---
+
+## Style Standards Behind `code_quality.sh`
+
+`code_quality.sh`'s terse enforcement list (no `print()`, no bare `except`, no stdlib `logging`, no pandas, no mutable defaults) is the compiled-down version of three fuller personal convention references (`~/.claude/skills` style docs, invoked as `/style`, `/logging`, `/ml` in projects that opt in). The hook checks the letter of these; the docs below are the rationale.
+
+### `/style` — Python & Data Conventions
+
+- **Tooling:** `uv` only (`uv add`/`uv run`/`uv sync`) — never pip or poetry; ruff for lint/format; pyright for type checking; `from __future__ import annotations` everywhere; type annotations on all signatures; f-strings only
+- **Data:** Polars not pandas (lazy frames for large data, eager for small); DuckDB for local analytics/joins; Parquet for cached intermediates, never CSV; `snake_case` columns
+- **API/IO:** `httpx` not `requests`, async-first; always close connections; Pydantic models at API boundaries, not raw dicts
+- **Don'ts:** no hardcoded paths/secrets/hyperparameters (config/env vars only), no mutable default arguments, no bare `except`, no notebooks committed with output cells
+
+### `/logging` — structlog Standard
+
+- `utils.logging` (structlog) is the only logger — never stdlib `logging` or `print()` in `src/`
+- One logger per module: `log = get_logger(__name__)`
+- Startup: `configure_logging()` for colored console (dev) or `configure_logging(render_json=True)` for JSON lines (prod/CI)
+- Event names are dot-separated `module.action` (e.g. `sync.playlists`, `train.gmm.fit`) — never free-form strings; counts/IDs are bound as structured fields, not f-string-interpolated
+- `debug` for per-item loops, `info` for phase transitions, `error` for caught exceptions; `structlog.contextvars.bind_contextvars(run_id=...)` for request/session scope
+
+### `/ml` — ML/DS Best Practices
+
+- **Reproducibility:** seed everywhere (`np.random.seed(42)`, `random_state=42`, Polars `seed=`); hyperparameters in config, never inline; log params/metrics at train time; artifacts saved via joblib to `models/`, never committed
+- **Pipelines:** wrap preprocessing + model in sklearn `Pipeline` to prevent data leakage; fit scaler on train split only; `CalibratedClassifierCV` for calibrated probabilities
+- **Evaluation:** always report accuracy/precision/recall/f1/roc_auc/precision@K; silhouette score for clustering; compare against a naive baseline; log results as structured fields
+- **Data:** notebooks for exploration only, validated logic moves to `src/`; no pandas in ML code (Polars in, numpy arrays to sklearn); no training inside notebooks — notebooks call `python -m module.train`
+
+These three are personal cross-project engineering conventions (not agent-design patterns) — included here because they're the documented source of truth the `code_quality.sh`/`sdk_lint.sh` hooks mechanically enforce.
 
 ---
 

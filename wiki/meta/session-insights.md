@@ -2,7 +2,7 @@
 title: Session Insights
 tags: [context-management, llm, pattern, project]
 summary: Compiled insights from 42 facet-analyzed Claude Code sessions — friction patterns, recurring themes, skill candidates, and learning outcomes.
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/sessions/
   - raw/sessions/claude-2026-04-10-what-is-this-analyzer-folder-aren-t-thes-1900854e.md
@@ -240,6 +240,26 @@ Architecture/planning sessions generate more output tokens per prompt than execu
 |---|---|---|
 | `pre-delete-check` | Before any `rm -rf` on a module dir | Sessions `b669eebb`, `06b9a503` — destructive deletes were the root cause of partial outcomes; a caller-grep check takes 5s |
 | `smoke-test-lang` | Before first RAG pipeline test | Session `314ac54a` — multilingual RAG needs smoke test in the corpus language, not the developer's default |
+
+---
+
+## Insights — 2026-07-06 to 2026-07-14 Batch (ingested 2026-07-14)
+
+*11 sessions across INTENSO, galactus, and puffin. Mostly prompt-only captures (no recorded assistant transcript) — friction inferred from what was asked, not from resolution logs.*
+
+### New friction patterns
+
+**Operational commands living only in memory, not the README (session `63940e32`):** The user repeatedly has to re-ask how to run a known skill (`/ingest`) and what it actually does end-to-end. Root cause: the answer exists in the skill definition and in the user's head, but not in a discoverable `README.md`. Confirms the `env-audit`-adjacent idea from the April batch — but generalized: any skill whose usage gets re-explained in a session should get a README line as part of that session's wrap-up, not just an inline answer.
+
+**Settings/permissions fragmented across sibling repos (sessions `a3b6ecb6`, `012cfada`):** Working across many repos under one drive root (galactus, playground, INTENSO) produced inconsistent permission-prompt behavior because settings weren't layered consistently. Resolved by treating the drive root as an intermediate settings scope between global (`~/.claude/`) and per-repo (`.claude/`) — see [[Claude Workflow System]] for the resulting three-tier-plus-root model.
+
+### Skill candidate
+
+| Candidate | Trigger | Rationale |
+|---|---|---|
+| `readme-sync-check` | End of any session where a skill's usage was re-explained | Session `63940e32` — closes the loop the `/ingest` question exposed; a lightweight check for "was this just re-explained verbally and not written down" |
+
+---
 
 ## See Also
 

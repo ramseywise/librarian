@@ -2,9 +2,10 @@
 title: ADK User Simulation Eval
 tags: [adk, eval, pattern]
 summary: Dynamic conversation testing in ADK using ConversationScenario and a user simulator LLM — replaces static turn sequences when agent response order is unpredictable.
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/user-simulation.md
+  - raw/agent-skills/adk-eval-guide/references/user-simulation.md
 ---
 
 # ADK User Simulation Eval

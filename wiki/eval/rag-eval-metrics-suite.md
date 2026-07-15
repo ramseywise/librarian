@@ -196,3 +196,4 @@ Low Document Precision + high Contextual Relevance → source-targeting or ranki
 - [[Langfuse Platform]]
 - [[Langfuse ADK Tracing Patterns]]
 - [[CRAG Retry Logic]]
+- [[Observability & Evaluation Glossary]] — rank-based retrieval metrics (MRR, precision@k, recall@k, ndcg@k, hit@k) and heuristic-vs-judge metric typing

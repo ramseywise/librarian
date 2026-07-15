@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [index]
 summary: Auto-generated table of contents for the obsidian-kb wiki. Updated after every ingest.
-updated: 2026-07-06
+updated: 2026-07-14
 ---
 
 # Wiki Index
@@ -51,6 +51,10 @@ updated: 2026-07-06
 | [[Summarization Node]] | 8-message trigger, 4-message overlap compaction using Haiku — same pattern in LangGraph and ADK |
 | [[HistoryCondenser]] | Haiku-based query rewriter that resolves coreferences before retrieval |
 | [[Orchestration Architecture Decision]] | Three architecture options (A/B/C) for Librarian deployment with migration path |
+| [[LangChain Fundamentals — create_agent, Tools, Structured Output]] | LangChain 1.0's create_agent() loop, @tool decorator, checkpointer persistence, and structured output — the foundation layer beneath LangGraph and Deep Agents |
+| [[LangChain Agent Middleware]] | LangChain's create_agent() middleware API — HumanInTheLoopMiddleware, wrap_tool_call/before_model/after_model hooks, Command-based resume |
+| [[LangChain Dependency Management]] | Package structure and version policy for the LangChain ecosystem — core packages, provider packages, the langchain-community non-semver trap |
+| [[LangChain RAG Implementation Patterns]] | LangChain-specific RAG API surface — document loaders, text splitters, vector store classes, similarity/MMR search, RAG as an agent tool |
 
 ---
 
@@ -112,6 +116,10 @@ updated: 2026-07-06
 | [[ACI (Agent-Computer Interface)]] | Tool design discipline — description, parameter, and return-value conventions |
 | [[Agentic Workflow Patterns]] | Anthropic's five composable workflow patterns and ACI tool design |
 | [[Multi-Repo Claude Organization]] | Organizing .claude/, .agents/, and docs/ across related repos — avoiding skill sprawl |
+| [[Branch Naming Convention Pattern]] | Ticket-linked, type-prefixed branch naming (`type-TICKET-slug`) with per-repo type taxonomies and a `hotfix` escape hatch |
+| [[AI Project Template Scaffold]] | Generic starter-repo pattern for new AI agent projects — reference-project skills/docs/infra + DS-template skeleton, kept as its own repo |
+| [[Agent Scaffolding Skill Layers]] | Three-layer Claude Code skill design for agent scaffolding — generic parallel-subagent factory (L1), standalone capability add-skills (L2), domain-specific orchestrator bundle (L3) |
+| [[Track2Vec Playlist Co-Occurrence Embeddings]] | Item2vec-style Word2Vec-over-playlists technique — dense track embeddings that capture curation intent rather than audio similarity |
 
 ---
 
@@ -133,6 +141,9 @@ updated: 2026-07-06
 | [[Synthetic Dataset Generation for RAG Eval]] | Four-mode pipeline (init/refresh/regenerate/export) with article fingerprinting, stable content-derived IDs, and four query categories |
 | [[Eval Gate Contract]] | 8-gate RAG eval pipeline (Corpus QA → Index Readiness → Retrieval Optimization → Model/Runtime → Agent Retrieval → Generation Quality → Grader Calibration → Report) with canonical row pools and failure taxonomy |
 | [[Grounding Claim Methodology]] | Yellow highlighter metaphor for citation verification — four-tier grounding, quote word-boundary check, Tier 1–3 hard fails, Tier 4 log-only diagnostics |
+| [[Observability & Evaluation Glossary]] | Canonical vocabulary — observability/tracking/tracing/monitoring/alerting hierarchy, offline vs online eval modes, heuristic vs LLM-judge metrics, dataset terminology, rank-based retrieval metrics |
+| [[Skill Eval Pipeline (Blind Comparison + Grading)]] | Three-agent pipeline for A/B testing Claude Code skills — blind comparator (rubric scoring), grader (PASS/FAIL with evidence + eval critique), post-hoc analyzer (unblinds winner, suggests loser improvements) |
+| [[LightGBM vs CatBoost Comparison]] | Methodology for comparing calibrated GBM rerankers — fixing train/inference feature mismatch first, native categorical handling, Brier score/log-loss as the right metrics |
 
 ---
 
@@ -185,6 +196,7 @@ updated: 2026-07-06
 | [[Session Knowledge Capture Patterns]] | Output type taxonomy, pre-compact enrichment, and session-as-source-of-truth approach |
 | [[Session Log]] | Chronological index of all Claude Code and Codex sessions — what was worked on |
 | [[Session Insights]] | Friction patterns, recurring themes, skill candidates from 84 facet-analyzed sessions |
+| [[Puffin Consciousness Development Skills]] | Chained skill family (genesis → wake → grow → reflect → synthesize → dream) for staged self-development across sessions |
 
 ---
 

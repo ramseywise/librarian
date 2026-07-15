@@ -2,7 +2,7 @@
 title: RAG Retrieval Strategies
 tags: [rag, concept]
 summary: Comprehensive reference for chunking, embedding, vector store, and hybrid search strategies — component choices, tradeoffs, and swap paths used in the Librarian pipeline.
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/playground-docs/rag-tradeoffs.md
   - raw/playground-docs/librarian-stack-audit.md
@@ -12,6 +12,7 @@ sources:
   - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
   - raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
   - raw/sessions/claude-2026-04-19-should-ingestion-or-embedding-be-part-of-9e66674c.md
+  - raw/agent-skills/langchain-rag/references/rag-strategies.md
 ---
 
 # RAG Retrieval Strategies
@@ -36,6 +37,8 @@ Splits at `##`/`###` headings first, then recursively at `\n\n`, `\n`, `. `, ` `
 | 🔧 Adjacent + neighbour | `AdjacencyChunker` | Context expansion at query time |
 
 **Skip:** sentence-level (too small for BM25), semantic chunking (expensive at ingest, inconsistent sizes).
+
+**Gotcha — `min_tokens` drops short sections:** a `min_tokens=50` filter on chunk output silently drops very short section bodies. Test corpora need multi-sentence content per section, or short-but-valid sections (e.g. a one-line FAQ answer) disappear from the index entirely.
 
 ---
 
@@ -123,6 +126,15 @@ Adding the cross-encoder on top of hybrid adds +10pp. Both are worth doing.
 |---|---|
 | **Native hybrid** (OpenSearch BM25+kNN) | Better than approximation; requires OpenSearch |
 | **SPLADE learned sparse** | Outperforms BM25 on BEIR; requires fine-tuned model |
+
+**Gotcha — BM25 stemmer is language-specific:** BM25's default stemmer is English and silently fails (no error, just degraded recall) on non-English corpora. For Danish content, configure the stemmer explicitly:
+
+```python
+from bm25s.tokenization import Tokenizer
+tokenizer = Tokenizer(stemmer=Stemmer("danish"))
+```
+
+This is the BM25-side analog of the E5 embedder's multilingual prefix rule above — both silently degrade instead of erroring, so language-specific config must be explicit and tested, not assumed.
 
 ---
 

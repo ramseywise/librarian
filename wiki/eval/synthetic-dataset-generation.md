@@ -2,10 +2,11 @@
 title: Synthetic Dataset Generation for RAG Eval
 tags: [eval, rag, pattern]
 summary: Four-mode pipeline for generating and maintaining a versioned synthetic test dataset from a knowledge base — article fingerprinting drives incremental refresh, stable content-derived IDs make Langfuse upserts idempotent, and four query categories cover the full quality surface.
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/claude-docs/chat-agent/docs/eval/pipeline.md
   - raw/claude-docs/chat-agent/docs/plans/synthetic_dataset_generation.md
+  - raw/claude-docs/chat-agent/docs/plans/aif32_code_review_fixes.md
 ---
 
 # Synthetic Dataset Generation for RAG Eval
@@ -205,6 +206,20 @@ eval/
 
 The abstract `BaseGenerator` makes it straightforward to add a `ConversationHistoryGenerator` without schema changes — `metadata.source` already distinguishes `"intercom"` vs `"conversation_history"`.
 
+**Package layout note:** the package now lives at `src/eval/` (not `eval/` at repo root), following the `src`-layout convention used by `src/agentic_rag/` — see [[PGVector Migration Pattern]] for the sibling package. With hatch's `packages = ["src/eval"]` the installed name still resolves as `eval`, so `from eval.dataset.runner import RunConfig` etc. are unchanged.
+
+---
+
+## Code Review Fixes (AIF-32)
+
+A code review of the `eval/dataset/` pipeline surfaced one correctness bug and several consistency gaps, fixed in a single follow-up pass:
+
+- **Fingerprint bug:** `_run_refresh()` only wrote refreshed fingerprints into `article_manifest` for `diff.changed`, not `diff.new` — meaning newly added articles were re-treated as "new" on every subsequent refresh. Fix: include `diff.new` in the same fingerprint-write loop (confirms the "Bug to avoid" note above).
+- **Parser deduplication:** `src/agentic_rag/vector_store.py` (`_parse_intercom_chunks`) and `eval/dataset/article_parser.py` (`_parse_content`) had independently duplicated the same Intercom section-splitting/header-extraction logic. Extracted into a shared `src/agentic_rag/intercom_parser.py::parse_intercom_content()`, called by both — public interfaces of both callers unchanged.
+- **Pydantic validation with backward compat:** `evaluate.py::load_test_set()` now validates via `DatasetEnvelope.model_validate_json()` first, falling back to the legacy flat-list JSON parse on exception — lets the schema evolve without breaking older test-set files.
+- **Logging config placement:** `logging.basicConfig()` was called inside `runner.run()` — a library function reconfiguring the root logger as a side effect of being imported/called. Moved to the CLI entry point (`scripts/generate_dataset.py`), just before `runner.run(config)`.
+- **`DATASET_GENERATION_MODEL`/`DATASET_GENERATION_API_KEY`** (see above) were originally inline `_resolve_config()` lookups duplicated in `generators/intercom.py` and `generators/out_of_scope.py` — centralised as `config.py` constants that both generators now import.
+
 ---
 
 ## See Also
@@ -213,3 +228,4 @@ The abstract `BaseGenerator` makes it straightforward to add a `ConversationHist
 - [[Langfuse Platform]]
 - [[LLM Grader Calibration Insights]]
 - [[VA Eval Harness]]
+- [[PGVector Migration Pattern]]

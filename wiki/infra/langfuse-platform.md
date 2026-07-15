@@ -2,13 +2,14 @@
 title: Langfuse Platform
 tags: [infra, eval, concept]
 summary: Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by Shine's AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/gdrive/2026-05-15-ai-chapter-meeting-1.md
   - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
   - raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
   - raw/notion/2026-06-01-chat-agent-rfc.md
   - raw/claude-docs/galactus/docs/frameworks/langfuse.md
+  - raw/agent-skills/observability/SKILL.md
 ---
 
 # Langfuse Platform
@@ -222,3 +223,4 @@ When using Google ADK v1.x, two instrumentation layers combine into a single tra
 - [[Input Guardrails Pipeline]]
 - [[RAG Evaluation]]
 - [[Observability and Runtime Patterns]]
+- [[Observability & Evaluation Glossary]]

@@ -95,3 +95,4 @@ But claims make the system much easier to evaluate because they expose the evide
 - [[CRAG Retry Logic]]
 - [[RAG Reranking]]
 - [[Input Guardrails Pipeline]]
+- [[Observability & Evaluation Glossary]] — grounding vs citation_hallucination vs grounding.hallucination_rate distinction

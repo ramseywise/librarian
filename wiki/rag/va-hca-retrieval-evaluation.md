@@ -2,9 +2,10 @@
 title: VA vs HCA Retrieval Evaluation
 tags: [rag, eval, comparison]
 summary: Benchmarking results comparing VA, HCA (Bedrock), and local RAG baselines across 935 Danish support questions — VA outperforms HCA on all dimensions (MRR 0.286 vs 0.248), but 47% corpus ceiling means data-ops fixes dominate model-level improvements.
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
+  - raw/meetings/2026-06-23-onboarding-shyamali-session1.md
 ---
 
 # VA vs HCA Retrieval Evaluation
@@ -92,6 +93,10 @@ Agent-level improvements in priority order:
 3. Add fallback/safeguard when retrieval returns no URL (cuts HCA's 58% citationless rate)
 
 **Critical constraint:** High-impact model swaps (multilingual embedding, multilingual reranker) require confirming that Bedrock can run non-Bedrock models. This is an explicit feasibility gate — confirm before sequencing any model-swap work.
+
+### HCA Architecture Detail (from 2026-06-23 onboarding)
+
+HCA's additions on top of the base tool (per Dan): claims extraction (the [[Grounding Claim Methodology]] "yellow highlighter" pattern), [[Reciprocal Rank Fusion (RRF)]], language detection, and an iterative RAG retry loop (max 6 steps). Per the same source, HCA has **no re-ranker** and **discards earlier selections** on each retry iteration rather than accumulating them — described as "not well-thought-through." This lines up with the source-accumulation gap noted above (item 2) and the 58% citationless rate on hard questions: without reranking or accumulation across retries, each retry throws away prior candidate sources instead of building toward a fuller pool like VA's multi-query approach does.
 
 ---
 

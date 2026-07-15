@@ -2,13 +2,14 @@
 title: MCP Protocol
 tags: [mcp, concept]
 summary: Model Context Protocol — how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery; includes AWS Bedrock AgentCore deployment pattern from the Hypernova PoC.
-updated: 2026-06-05
+updated: 2026-07-14
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
   - raw/web/2026-04-24-cloud-google-com-blog-topics-developers-practitioners-use-go-5e50e6e1.md
   - raw/web/2026-04-24-modelcontextprotocol-io-introduction-dd33377c.md
   - raw/notion/2026-06-04-hypernova-mcp-server-poc.md
+  - raw/agent-skills/langchain-rag/references/advanced-patterns.md
 ---
 
 # MCP Protocol

@@ -2,9 +2,10 @@
 title: Observability and Runtime Patterns
 tags: [infra, concept, pattern]
 summary: Observability tool choice (LangSmith vs Langfuse), tracing architecture, runtime topology and checkpointer alignment rules, trigger patterns, and key signals to monitor for VA agents.
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
+  - raw/agent-skills/observability/SKILL.md
 ---
 
 # Observability and Runtime Patterns
@@ -25,6 +26,31 @@ sources:
 ```python
 OBSERVABILITY_BACKEND = os.getenv("OBSERVABILITY_BACKEND", "langfuse")
 # "langfuse" | "langsmith" | "none"
+```
+
+### LangSmith Setup
+
+When `OBSERVABILITY_BACKEND=langsmith`, enable tracing via environment variables — no client wiring required for LangChain/LangGraph runs in the process:
+
+```python
+import os
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = "..."
+os.environ["LANGCHAIN_PROJECT"] = "librarian-rag"
+```
+
+View traces at `smith.langchain.com`. LangSmith also hosts golden eval datasets directly:
+
+```python
+from langsmith import Client
+
+client = Client()
+dataset = client.create_dataset("librarian-golden-set")
+client.create_examples(
+    inputs=[{"question": q} for q in questions],
+    outputs=[{"answer": a} for a in answers],
+    dataset_id=dataset.id,
+)
 ```
 
 ## Tracing Architecture
@@ -125,3 +151,4 @@ LANGFUSE_HOST=https://your-langfuse.internal
 - [[Runtime Topology and Checkpointer Alignment]]
 - [[LangGraph Advanced Patterns]]
 - [[ADK Observability]]
+- [[Observability & Evaluation Glossary]]

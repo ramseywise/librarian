@@ -2,10 +2,11 @@
 title: CRAG Retry Logic
 tags: [rag, langgraph, concept]
 summary: The confidence-gated conditional back-edge in a CRAG pipeline that re-enters retrieval when the reranker's top score falls below threshold — preventing low-confidence answers from reaching the user.
-updated: 2026-04-24
+updated: 2026-07-14
 sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/playground-docs/rag-agent-template-research.md
+  - raw/agent-skills/langchain-rag/references/rag-strategies.md
 ---
 
 # CRAG Retry Logic
@@ -39,6 +40,8 @@ graph.add_conditional_edges("rerank", route_after_rerank)
 ```
 
 `retry_count` prevents infinite loops. `MAX_RETRIES=2` is a sensible default.
+
+**Off-by-one gotcha:** in one production implementation, `grade_docs` increments `retry_count` *before* returning (so the first pass already leaves `retry_count == 1`), and `check_sufficient` allows retry only while `retry_count < 2` — the net effect is exactly one real retry, not two. Document the increment-then-check ordering explicitly wherever this pattern is reused, since the off-by-one is easy to misread as "allows 2 retries."
 
 ## The Confidence Score
 

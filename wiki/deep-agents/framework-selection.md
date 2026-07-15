@@ -2,7 +2,7 @@
 title: Framework Selection — LangChain vs LangGraph vs Deep Agents
 tags: [langgraph, deep-agents, concept, comparison]
 summary: Decision guide for choosing between LangChain, LangGraph, and Deep Agents — layered frameworks where higher layers add planning, memory, and middleware on top of lower ones.
-updated: 2026-04-25
+updated: 2026-07-14
 sources:
   - raw/agent-skills/framework-selection/SKILL.md
   - raw/agent-skills/deep-agents-core/SKILL.md
@@ -44,6 +44,8 @@ Choosing a higher layer does not cut you off from lower layers — LangGraph gra
 
 Best for: single-purpose agents, RAG pipelines, document Q&A, quick prototypes.
 Not ideal when: state needs to persist, control flow is conditional or iterative.
+
+For LangChain's own mechanics — `create_agent()`, tools, structured output, middleware, dependency/package management, and RAG-specific implementation classes — see [[LangChain Fundamentals — create_agent, Tools, Structured Output]], [[LangChain Agent Middleware]], [[LangChain Dependency Management]], and [[LangChain RAG Implementation Patterns]].
 
 ### LangGraph — own the control flow
 
@@ -98,3 +100,7 @@ LangChain tools and retrievers work as building blocks inside both LangGraph nod
 - [[ADK vs LangGraph Comparison]]
 - [[Deep Agents Framework]]
 - [[SKILL.md Pattern]]
+- [[LangChain Fundamentals — create_agent, Tools, Structured Output]]
+- [[LangChain Agent Middleware]]
+- [[LangChain Dependency Management]]
+- [[LangChain RAG Implementation Patterns]]

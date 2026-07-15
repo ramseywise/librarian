@@ -70,7 +70,7 @@ The key feature beyond Obsidian:
 
 | Edge Type | Source | Color | Default |
 |---|---|---|---|
-| `wikilink` | Explicit `[[...]]` in markdown | White/light | On |
+| `wikilink` | Explicit double-bracket link syntax in markdown | White/light | On |
 | `semantic` | Cosine similarity > 0.65 (MiniLM) | Blue, opacity by score | Off |
 | `tag-shared` | Pages sharing ≥2 domain tags | Orange | Off |
 
@@ -106,7 +106,7 @@ Toggle panel: three checkboxes. Checking `semantic` adds soft blue edges between
 
 ## Write-Back Flow
 
-Agent proposes `[[NewLink]]` → React shows diff preview → user approves → `POST /api/writeback` → FastAPI writes to `.md` file → chokidar detects → re-parses → WebSocket pushes updated graph.
+Agent proposes a new wikilink (e.g. a page named `NewLink`) → React shows diff preview → user approves → `POST /api/writeback` → FastAPI writes to `.md` file → chokidar detects → re-parses → WebSocket pushes updated graph.
 
 HITL gate on write-back: user must approve every wikilink insertion before it lands in `wiki/*.md`.
 

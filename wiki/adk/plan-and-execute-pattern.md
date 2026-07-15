@@ -2,9 +2,10 @@
 title: Plan and Execute Pattern
 tags: [langgraph, pattern]
 summary: Separating planning from execution for multi-step agent tasks — Planner, Executor, Replanner, and Responder nodes with HITL confirmation gate.
-updated: 2026-04-24
+updated: 2026-07-14
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
+  - raw/agent-skills/langchain-rag/references/advanced-patterns.md
 ---
 
 # Plan and Execute Pattern

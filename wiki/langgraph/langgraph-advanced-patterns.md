@@ -2,7 +2,7 @@
 title: LangGraph Advanced Patterns
 tags: [langgraph, pattern]
 summary: Advanced LangGraph patterns beyond the basics — subgraphs, Send API fan-out, streaming modes, time-travel, breakpoints/interrupts, error handling, and Plan-and-Execute.
-updated: 2026-04-25
+updated: 2026-07-14
 sources:
   - raw/playground-docs/agentic-rag-copilot-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
@@ -10,6 +10,7 @@ sources:
   - raw/gdrive/2026-04-24-langgraph-yan.md
   - raw/agent-skills/langgraph-fundamentals/SKILL.md
   - raw/agent-skills/langgraph-human-in-the-loop/SKILL.md
+  - raw/claude-skills/langgraph/langgraph.md
 ---
 
 # LangGraph Advanced Patterns
@@ -325,3 +326,5 @@ for chunk in graph.stream({"data": "test"}, stream_mode="custom"):
 - [[Framework Selection — LangChain vs LangGraph vs Deep Agents]]
 - [[Deep Agents Framework]]
 - [[Voice Agent Patterns]]
+- [[LangChain Fundamentals — create_agent, Tools, Structured Output]]
+- [[LangChain Agent Middleware]]

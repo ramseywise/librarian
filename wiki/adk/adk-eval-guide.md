@@ -2,13 +2,18 @@
 title: ADK Eval Guide
 tags: [adk, eval, pattern]
 summary: ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, and user simulation for dynamic testing.
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/SKILL.md
   - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/builtin-tools-eval.md
   - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/criteria-guide.md
   - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/multimodal-eval.md
   - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/user-simulation.md
+  - raw/agent-skills/adk-eval-guide/SKILL.md
+  - raw/agent-skills/adk-eval-guide/references/builtin-tools-eval.md
+  - raw/agent-skills/adk-eval-guide/references/criteria-guide.md
+  - raw/agent-skills/adk-eval-guide/references/multimodal-eval.md
+  - raw/agent-skills/adk-eval-guide/references/user-simulation.md
 ---
 
 # ADK Eval Guide

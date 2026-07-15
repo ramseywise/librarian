@@ -1,0 +1,6 @@
+# Repos to index → .code_index.duckdb
+# One absolute path per line, optionally followed by a slug (else derived
+# from the directory name). Use # for comments.
+# Run: uv run codemap  (or: make codemap-reindex)
+
+/Users/wiseer/workspace/librarian librarian

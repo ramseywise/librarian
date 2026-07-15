@@ -2,9 +2,11 @@
 title: Agentic RAG — Advanced Patterns
 tags: [rag, pattern, concept]
 summary: Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, and A2A protocol mapping to LangGraph.
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
+  - raw/agent-skills/advanced-rag-patterns/SKILL.md
+  - raw/agent-skills/langchain-rag/references/advanced-patterns.md
 ---
 
 # Agentic RAG — Advanced Patterns
@@ -52,6 +54,8 @@ GraphRAG approach:
 
 **When to use:** relationship questions, entity comparison, "all X that share property Y" queries.  
 **When NOT to use:** simple factual lookups — overkill, adds significant pipeline complexity.
+
+**Lightweight alternative for personal KBs:** for a wiki-shaped corpus (like this Librarian wiki), `[[wikilinks]]` already provide a graph structure — prefer traversing those before reaching for a dedicated GraphRAG pipeline with LLM-extracted entities and community detection.
 
 ## HyDE (Hypothetical Document Embeddings)
 

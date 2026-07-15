@@ -2,11 +2,13 @@
 title: PGVector Migration Pattern
 tags: [infra, rag, pattern]
 summary: Migrating a vector store from in-memory NumPy arrays to PostgreSQL + pgvector — preserving the public API, using cosine distance operator, adding an IVFFlat index, and moving embeddings to Cloud SQL without re-embedding.
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/claude-docs/chat-agent/docs/architecture/PGVector_migration.md
   - raw/claude-docs/chat-agent/docs/TODO_production.md
   - raw/claude-docs/chat-agent/docs/architecture/queries.md
+  - raw/claude-docs/chat-agent/docs/architecture/VertexAI.md
+  - raw/claude-docs/chat-agent/docs/plans/aif32_code_review_fixes.md
 ---
 
 # PGVector Migration Pattern
@@ -126,6 +128,8 @@ Unchanged methods (no migration needed):
 - `_embed_query()` — Gemini query embedding
 - `_parse_*_chunks()` — markdown/Intercom parsers
 
+**Follow-up dedup (AIF-32 code review):** `_parse_intercom_chunks()` here and `eval/dataset/article_parser.py::_parse_content()` had independently duplicated the same Intercom section-splitting/header-extraction logic — any format change to the Intercom KB file had to be applied twice. Extracted into a shared `intercom_parser.py::parse_intercom_content()` used by both; public interfaces of both callers unchanged. See [[Synthetic Dataset Generation for RAG Eval]] for the eval-side caller.
+
 ---
 
 ## Useful pgAdmin Queries
@@ -169,3 +173,4 @@ Consider Vertex AI embeddings when: already on GCP with ADC auth, processing at 
 - [[Production Hardening Patterns]]
 - [[Embedder Warmup]]
 - [[Langfuse ADK Tracing Patterns]]
+- [[Synthetic Dataset Generation for RAG Eval]]

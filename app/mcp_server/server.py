@@ -549,6 +549,11 @@ def get_domain_briefing(domain: str) -> str:
     return header + "\n\n".join(sections)
 
 
+from app.mcp_server.codemap_tools import register_codemap_tools  # noqa: E402
+
+register_codemap_tools(mcp)
+
+
 if __name__ == "__main__":
     log.info("starting_mcp_server", wiki_dir=str(WIKI_DIR), hybrid_search=HAS_EMBEDDINGS)
     mcp.run()

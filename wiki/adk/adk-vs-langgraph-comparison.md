@@ -2,7 +2,7 @@
 title: ADK vs LangGraph Comparison
 tags: [adk, langgraph, comparison]
 summary: Side-by-side mental model comparison of Google ADK and LangGraph — primitive mappings, weighted scoring (LangGraph 716/845 for AWS/ADK-compatible context), VA team production findings, and the recommended vocabulary alignment approach.
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/playground-docs/adk-orchestration-research.md
   - raw/playground-docs/adk-samples-patterns-analysis.md
@@ -13,6 +13,7 @@ sources:
   - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
   - raw/notion/2026-04-21-agt09-adk-vs-langgraph-spike.md
   - raw/sessions/claude-2026-04-12-i-added-a-folder-google-adk-masterclass-406fcc7f.md
+  - raw/agent-skills/deep-agents-orchestration/references/langgraph-compat.md
 ---
 
 # ADK vs LangGraph Comparison
@@ -57,6 +58,23 @@ class RetrieverAgent:
         async def retrieve(state): return await self.run(state)
         return retrieve
 ```
+
+### SequentialAgent → linear edge chain
+
+```python
+# ADK
+pipeline = SequentialAgent(sub_agents=[condenser, analyzer, retriever, reranker, generator])
+
+# LangGraph
+graph.add_edge(START, "condense")
+graph.add_edge("condense", "analyze")
+graph.add_edge("analyze", "retrieve")
+graph.add_edge("retrieve", "rerank")
+graph.add_edge("rerank", "generate")
+graph.add_edge("generate", END)
+```
+
+ADK's advantage here: topology is self-documenting via the `sub_agents` list. LangGraph's advantage: conditional and back-edges are expressible directly in the same graph — `LoopAgent` can't model a mid-pipeline retry the way a CRAG back-edge can.
 
 ### LoopAgent → conditional back-edge (CRAG)
 
@@ -141,6 +159,17 @@ The UX parity finding reflects the POC stage (small corpus, synthetic data, simp
 ### Level 1: Vocabulary Alignment (~2 days, recommended)
 
 Rename classes to `*Agent` naming, add `name`/`description`/`instruction` properties, expose `as_node()`. No behavior change. Makes codebase readable to anyone who has seen ADK, CrewAI, or LangChain agent code. **Trivially reversible.**
+
+Concrete rename mapping used for the Librarian codebase:
+
+| Current | ADK-aligned |
+|---|---|
+| `RetrievalSubgraph` | `RetrieverAgent` |
+| `RerankerSubgraph` | `RerankerAgent` |
+| `GenerationSubgraph` | `GeneratorAgent` |
+| `HistoryCondenser` | `CondenserAgent` |
+| `LibrarianState` | `PipelineContext` |
+| `_make_retrieve_node()` | `retriever.as_node()` |
 
 ### Level 2: Callback Hooks (~3 days)
 

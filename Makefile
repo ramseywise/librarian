@@ -1,4 +1,4 @@
-.PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help
+.PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap
 
 app:
 	docker compose up
@@ -23,6 +23,15 @@ install-ui:
 
 install-api:
 	uv sync --extra api
+
+install-codemap:
+	uv sync --extra codemap
+
+codemap-reindex:
+	uv run codemap
+
+codemap-api:
+	uv run uvicorn tools.codemap.api:app --reload --host $${CODEMAP_API_HOST:-127.0.0.1} --port $${CODEMAP_API_PORT:-8100}
 
 setup-ollama:
 	ollama pull $${OLLAMA_MODEL:-llama3.2}
@@ -69,6 +78,9 @@ help:
 	@echo "ui               — start Vite dev server directly (port 5173)"
 	@echo "install-ui       — npm install for ui/"
 	@echo "install-api      — uv sync --extra api"
+	@echo "install-codemap  — uv sync --extra codemap"
+	@echo "codemap-reindex  — reindex repos in tools/codemap/repos.txt → .code_index.duckdb"
+	@echo "codemap-api      — start Codemap Query API (port 8100)"
 	@echo "setup-ollama     — pull the configured Ollama model"
 	@echo "test             — run unit tests (no servers needed)"
 	@echo "test-watch       — re-run unit tests on file change"

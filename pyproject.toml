@@ -21,6 +21,7 @@ dependencies = [
 
 [project.scripts]
 cartographer = "tools.cartographer.__main__:main"
+codemap = "tools.codemap.__main__:main"
 
 [project.optional-dependencies]
 dev = [
@@ -45,6 +46,12 @@ api = [
     "numpy>=1.26.0",
     "scikit-learn>=1.4.0",
     "ollama>=0.4.0",
+]
+codemap = [
+    "tree-sitter>=0.24.0",
+    "tree-sitter-python>=0.23.0",
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.29.0",
 ]
 
 [build-system]

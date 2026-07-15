@@ -2,7 +2,7 @@
 title: Galactus Eval Architecture
 tags: [eval, rag, concept]
 summary: Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the galactus HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
-updated: 2026-07-06
+updated: 2026-07-14
 sources:
   - raw/claude-docs/playground/docs/evals/eval-architecture.md
   - raw/claude-docs/playground/docs/evals/grader_interface.md
@@ -13,6 +13,9 @@ sources:
   - raw/claude-docs/galactus/docs/evals/grader_interface.md
   - raw/claude-docs/galactus/docs/evals/grader_methodology.md
   - raw/claude-docs/galactus/docs/evals/llm-calibration-insights.md
+  - raw/claude-docs/galactus/docs/frameworks/langgraph.md
+  - raw/claude-docs/galactus/docs/rag/retrieval-improvements.md
+  - raw/claude-docs/galactus/skills/eval-creation/eval-report/SKILL.md
 ---
 
 # Galactus Eval Architecture
@@ -109,6 +112,23 @@ Multi-agent ablation compares `hc_adk`, `hc_lg`, `hc_rag` across 14 configuratio
 | lg_multi_query | MULTI_QUERY=true | +recall at cost |
 
 **Decision gate:** promote config only if MRR improvement >5% or quality uplift >0.05 points at same latency.
+
+### Ablation Results (44-task run, completed)
+
+Top configs by MRR:
+
+| Config | MRR | Hit@1 | Hit@3 |
+|---|---|---|---|
+| `adk_flash_thinking1024` (gemini-3-flash-preview + thinking) | **0.656** | 0.52 | 0.73 |
+| `lg_multi_query` | 0.594 | — | — |
+| `adk_thinking1024` | 0.583 | — | — |
+| `adk_flash` | 0.563 | — | — |
+| `lg_crag` | 0.547 | — | — |
+| `adk_baseline` | 0.418 | — | — |
+
+Feature impact (ΔMRR vs baseline): thinking budget (hc_adk) **+0.165**, flash model swap **+0.145**, multi-query **+0.076**, CRAG alone **+0.005** (at +3.4s latency — marginal), LLM planner **−0.031** (regex router wins for this vocabulary), CRAG+thinking combined **−0.063** (interaction effect: thinking changes citation style, breaking CRAG's grading alignment).
+
+**Research path that produced this (from `retrieval-improvements.md`):** the ablation ran the priority list in order — (1) gemini-3-flash-preview model upgrade — biggest single lever, confirmed; (2) multi-query retrieval (RRF-merged 2–3 reformulated queries) — confirmed second-best lever; (3) HyDE — planned for `hc_rag` only (Bedrock HYBRID search dilutes the benefit since BM25 is keyword-based; see [[Agentic RAG — Advanced Patterns]] for the general HyDE mechanism); (4) routing all three agents' retrieval through `hc_rag`'s local DuckDB backend — TODO, would remove Bedrock cost and unlock HyDE; (5) DPO preference fine-tuning — BLOCKED on 200+ annotated preference pairs (32 annotated queries, 0 golden responses stored as of the last check).
 
 ## GT Pipeline (VIR-212)
 
@@ -214,3 +234,7 @@ These are **different concerns** — do not conflate:
 - [[RAG Eval Gate Contract]]
 - [[Grounding Claim Methodology]]
 - [[HITL and Interrupt Patterns]]
+- [[Agentic RAG — Advanced Patterns]]
+- [[Direct Preference Optimization]]
+- [[VA Bedrock KB Reference]]
+- [[Galactus Eval Framework]]

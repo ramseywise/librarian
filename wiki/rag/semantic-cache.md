@@ -124,3 +124,4 @@ The same `multilingual-e5-base` embedding model routes by intent type using pre-
 - [[CRAG Retry Logic]]
 - [[RAG Retrieval Strategies]]
 - [[Agentic RAG — Advanced Patterns]]
+- [[VA Bedrock KB Reference]]

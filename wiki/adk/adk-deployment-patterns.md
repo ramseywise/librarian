@@ -2,13 +2,18 @@
 title: ADK Deployment Patterns
 tags: [adk, infra, pattern]
 summary: ADK deployment targets (Agent Engine vs Cloud Run vs GKE), CI/CD with WIF, service account architecture, event-driven triggers, and Terraform patterns.
-updated: 2026-07-05
+updated: 2026-07-14
 sources:
   - raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/SKILL.md
   - raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/references/agent-engine.md
   - raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/references/cloud-run.md
   - raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/references/event-driven.md
   - raw/claude-docs/galactus/.agents/skills/adk-deploy-guide/references/terraform-patterns.md
+  - raw/agent-skills/adk-deploy-guide/SKILL.md
+  - raw/agent-skills/adk-deploy-guide/references/agent-engine.md
+  - raw/agent-skills/adk-deploy-guide/references/cloud-run.md
+  - raw/agent-skills/adk-deploy-guide/references/event-driven.md
+  - raw/agent-skills/adk-deploy-guide/references/terraform-patterns.md
 ---
 
 # ADK Deployment Patterns
@@ -88,6 +93,20 @@ If `make deploy` times out but the engine was created, manually populate this fi
 
 **Terraform resource:** `google_vertex_ai_reasoning_engine` in `deployment/terraform/service.tf`. Critical: `lifecycle.ignore_changes` on `source_code_spec` — source code is updated by CI/CD, not Terraform.
 
+**AdkApp key methods (full set):** `set_up()`, `register_operations()`, `register_feedback()` (collect and log user feedback), `async_stream_query()`.
+
+**Playground & remote testing:** `expose_app.py` bridges a local WebSocket frontend to a deployed Agent Engine instance for ADK Live/streaming projects — `make playground` runs against the local agent instance, `make playground-remote` reads `deployment_metadata.json` for the engine ID and connects via `client.aio.live.agent_engines.connect()` with bidirectional streaming.
+
+**CI/CD differences vs Cloud Run:**
+
+| Aspect | Agent Engine | Cloud Run |
+|---|---|---|
+| Build | `uv export` → requirements file | Docker build → container image |
+| Deploy command | `uv run -m app.app_utils.deploy` | `gcloud run deploy --image ...` |
+| Artifact | Base64 source tarball | Container image in Artifact Registry |
+| Python version | Fixed at 3.12 (Terraform) | Configurable in Dockerfile |
+| Load testing | Via `expose_app.py --mode remote` bridge | Direct HTTP to Cloud Run URL |
+
 ---
 
 ## Cloud Run
@@ -107,6 +126,8 @@ If `make deploy` times out but the engine was created, manually populate this fi
 **Ingress:** default is `INGRESS_TRAFFIC_ALL` (public). Restrict to `INGRESS_TRAFFIC_INTERNAL_ONLY` or `INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER` in `service.tf`.
 
 **IAP:** `make deploy IAP=true` adds Identity-Aware Proxy for Google identity authentication.
+
+**VPC connectors are not configured by default** — add them in custom Terraform if the agent needs private resource access.
 
 **Testing a deployed Cloud Run service:**
 ```bash
@@ -225,9 +246,11 @@ async def _run_agent(message_text: str, user_id: str = "trigger") -> list:
 
 **Eventarc:** binary mode uses `ce-*` headers + Pub/Sub body; structured mode has a `data` key.
 
-**BigQuery Remote Function:** BQ sends `{"calls": [["row1"], ...]}`, expects `{"replies": [...]}` in same order. Register at `POST /` (BQ cannot use URL paths).
+**BigQuery Remote Function:** BQ sends `{"calls": [["row1"], ...]}`, expects `{"replies": [...]}` in same order. Register at `POST /` (BQ cannot use URL paths). Terraform: `google_bigquery_routine` with `routine_type = "SCALAR_FUNCTION"`, `remote_function_options.endpoint` pointing at the Cloud Run service root URL and `connection` referencing a `google_bigquery_connection`.
 
 **Production hardening:** Add `asyncio.Semaphore` to cap concurrent invocations; retry with exponential backoff on 429/RESOURCE_EXHAUSTED.
+
+**Pub/Sub push subscription Terraform:** `google_pubsub_subscription` with `push_config.push_endpoint` set to the `/trigger/pubsub` route and `push_config.oidc_token` (service account + audience = the Cloud Run URL) for push auth. Requires a `google_service_account_iam_member` granting `roles/iam.serviceAccountTokenCreator` to the Pub/Sub service agent (`service-{PROJECT_NUMBER}@gcp-sa-pubsub.iam.gserviceaccount.com`) on `app_sa` so Pub/Sub can mint the OIDC tokens.
 
 ---
 
@@ -252,7 +275,14 @@ async def _run_agent(message_text: str, user_id: str = "trigger") -> list:
 ```bash
 terraform import google_cloud_run_v2_service.app \
   projects/PROJECT_ID/locations/REGION/services/SERVICE_NAME
+
+terraform import google_service_account.app_sa \
+  projects/PROJECT_ID/serviceAccounts/SA_EMAIL
+
+terraform import google_secret_manager_secret.my_secret \
+  projects/PROJECT_ID/secrets/SECRET_NAME
 ```
+After importing, run `terraform plan` to verify the imported state matches configuration before applying.
 
 ---
 

@@ -61,6 +61,25 @@ Meetings, PDFs, web, books, articles ──► raw/*/            ─┘
 
 ---
 
+## TL;DR — Run Ingestion
+
+```
+/ingest              # full pipeline: Notion + GDrive + sessions/docs scrape + repos → wiki
+/lint                # health check after ingesting
+```
+
+That's it — this is the command people forget. Full pipeline mode pulls Notion + GDrive via
+MCP, scrapes local sources (`make scrape` + `etl/scrape_repos.py`), and compiles every changed
+file into `wiki/` in one shot. Other variants:
+
+```
+/ingest raw/sessions/    # targeted compile of one raw/ dir
+/ingest resolve          # walk through flagged conflicts in wiki/_conflicts.md
+/seed-kb --ingest        # scrape this machine's sessions/docs/bookmarks, then ingest
+```
+
+---
+
 ## Quick Start
 
 ```bash
