@@ -7,6 +7,8 @@ import frontmatter
 
 WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
+TYPED_LINK_RE = re.compile(r"-\s*\[\[([^\]]+)\]\]\s*—\s*(extends|prerequisite-for|alternative-to|instance-of|contradicts|supersedes)")
+RELATIONSHIP_TYPES = {"extends", "prerequisite-for", "alternative-to", "instance-of", "contradicts", "supersedes"}
 
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
 DOMAIN_TAG_SET = {
@@ -71,13 +73,20 @@ def parse_wiki() -> dict:
 
     node_ids = {n["id"] for n in nodes}
 
-    # Second pass: extract wikilinks → edges
+    # Second pass: extract wikilinks → edges (with optional relationship types)
     seen_edges: set[tuple[str, str]] = set()
     for md_file in WIKI_DIR.rglob("*.md"):
         if md_file.name.startswith("_"):
             continue
         source_id = md_file.stem
         content = md_file.read_text()
+
+        # Extract typed relationships from See Also sections
+        typed_links: dict[str, str] = {}
+        for match in TYPED_LINK_RE.finditer(content):
+            link_target = _slug(match.group(1).strip())
+            typed_links[link_target] = match.group(2)
+
         for match in WIKILINK_RE.finditer(content):
             raw = match.group(1).strip()
             target_id = _slug(raw) if _slug(raw) in node_ids else raw.lower().replace(" ", "-")
@@ -87,12 +96,15 @@ def parse_wiki() -> dict:
             if key in seen_edges:
                 continue
             seen_edges.add(key)
+            edge_data: dict = {"edgeType": "wikilink"}
+            if target_id in typed_links:
+                edge_data["relationship"] = typed_links[target_id]
             edges.append(
                 {
                     "id": f"wl:{source_id}->{target_id}",
                     "source": source_id,
                     "target": target_id,
-                    "data": {"edgeType": "wikilink"},
+                    "data": edge_data,
                 }
             )
 

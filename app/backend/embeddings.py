@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import struct
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
 CACHE_DB = Path(__file__).parent.parent.parent / ".embeddings_cache.duckdb"
-MODEL_NAME = "all-MiniLM-L6-v2"
+MODEL_NAME = os.environ.get("LIBRARIAN_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 
 _model: SentenceTransformer | None = None
 
@@ -46,9 +47,20 @@ def _open_cache() -> duckdb.DuckDBPyConnection:
         CREATE TABLE IF NOT EXISTS embeddings (
             path         TEXT PRIMARY KEY,
             content_hash TEXT,
-            vector       BLOB
+            vector       BLOB,
+            model_name   TEXT DEFAULT ''
         )
     """)
+    # Add model_name column if missing (migration from old schema)
+    cols = {r[0] for r in con.execute("PRAGMA table_info('embeddings')").fetchall()}
+    if "model_name" not in cols:
+        con.execute("ALTER TABLE embeddings ADD COLUMN model_name TEXT DEFAULT ''")
+    # Invalidate cache if model changed
+    stale = con.execute(
+        "SELECT COUNT(*) FROM embeddings WHERE model_name != ?", [MODEL_NAME]
+    ).fetchone()[0]
+    if stale > 0:
+        con.execute("DELETE FROM embeddings WHERE model_name != ?", [MODEL_NAME])
     return con
 
 
@@ -103,8 +115,8 @@ def compute_embeddings() -> tuple[list[str], np.ndarray]:
             vec = new_vecs[i]
             page_ids.append(page_id)
             vecs.append(vec)
-            rows.append((path_str, chash, _vec_to_blob(vec)))
-        con.executemany("INSERT OR REPLACE INTO embeddings VALUES (?, ?, ?)", rows)
+            rows.append((path_str, chash, _vec_to_blob(vec), MODEL_NAME))
+        con.executemany("INSERT OR REPLACE INTO embeddings VALUES (?, ?, ?, ?)", rows)
 
     # Prune stale cache entries (deleted pages)
     current_paths = {str(f) for f in md_files}

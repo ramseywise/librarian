@@ -27,12 +27,15 @@ You are running a health check on the wiki. This is a **read-only** operation �
 - **Stale pages** — `updated` date older than 60 days
 - **Missing domain tag** — no domain tag from the canonical list in CLAUDE.md
 - **Uncovered raw files** — files in `raw/` that have no coverage in any wiki page `sources:` list
+- **Untyped links** — pages where >50% of `## See Also` entries lack a `— type` annotation
 
 ### NOTE — good to fix when time allows
 
 - **Missing See Also section** — pages with no cross-references at all
 - **Short summaries** — `summary:` field is fewer than 8 words
 - **Empty sections** — wiki sections with only a comment placeholder
+- **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain wikilinks (check `wiki/_bridge_suggestions.md` if it exists)
+- **Stale suggestions** — `wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 
 ## Output format
 

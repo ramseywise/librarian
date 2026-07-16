@@ -1,7 +1,7 @@
 ---
 title: VA Eval Harness
 tags: [eval, langgraph, adk, concept, pattern]
-summary: Agent evaluation harness for VA agents — four eval suites (routing, quality, behavioral, error handling), JSON evalset schema, tool_trajectory_avg_score metric, LLM-as-judge, Makefile flow, and CI regression gate. Production golden dataset: ~100 questions from 700-question Intercom set, Langfuse pipeline live, CS agent validated.
+summary: "Agent evaluation harness for VA agents — four eval suites (routing, quality, behavioral, error handling), JSON evalset schema, tool_trajectory_avg_score metric, LLM-as-judge, Makefile flow, and CI regression gate. Production golden dataset: ~100 questions from 700-question Intercom set, Langfuse pipeline live, CS agent validated."
 updated: 2026-07-06
 sources:
   - raw/claude-docs/playground/docs/research/evaluation-and-learning/eval-harness.md
