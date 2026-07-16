@@ -159,7 +159,7 @@ If all files in a directory are unchanged → report "Nothing to ingest — all 
 
 ---
 
-## Steps 1–8 — Ingest Protocol
+## Steps 1–10 — Ingest Protocol
 
 Follow `CLAUDE.md` exactly for each file that passed the manifest check.
 
@@ -171,10 +171,16 @@ Follow `CLAUDE.md` exactly for each file that passed the manifest check.
    - Create a new page in the right subdirectory if it doesn't exist.
    - Update the summary, add new facts, update `updated:` date and `sources:` list.
    - Tags: at least one domain tag + one type tag (see `CLAUDE.md`).
-5. **Contradiction check:** if source disagrees with existing wiki claim → add entry to `wiki/_conflicts.md`, tag page with `conflict`. Do NOT silently overwrite.
-6. **Cross-references:** add `[[wikilinks]]` to related pages in both directions.
+5. **Contradiction check:** if source disagrees with existing wiki claim → add entry to `wiki/_conflicts.md`, tag page with `conflict`. Do NOT silently overwrite. Consider source `confidence` level when evaluating contradictions (see CLAUDE.md § Source Confidence).
+6. **Cross-references (bidirectional):** add `[[wikilinks]]` to related pages in both directions. For each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships (`— extends`, `— prerequisite-for`, etc.) where the relationship type is clear.
 7. **Update `wiki/_index.md`:** add any new pages under the right section. Do NOT add `wiki/private/` pages to `_index.md`.
-8. **Orphan check:** every new page must have at least one backlink from another page.
+8. **Orphan check (blocking):** every new page MUST have at least one incoming backlink from another page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
+9. **Update manifest** (see Step 9 below).
+10. **Relink pass:** after all files in this cycle are ingested, run the relinker to discover additional semantic links:
+    ```bash
+    uv run --extra api python etl/relinker.py
+    ```
+    Review the output. If `wiki/_relink_suggestions.md` is generated, scan it for high-value links worth adding manually with typed relationships. Use `--dry-run` first if you want to preview changes without writing.
 
 ### Book and article source handling
 

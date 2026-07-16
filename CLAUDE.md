@@ -51,6 +51,18 @@ tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki to
   - `raw/books/` — Curated quotes and notes from books (format below)
   - `raw/articles/` — Web article captures with highlighted quotes (format below)
 
+#### Source Confidence
+
+All raw sources may include an optional `confidence` field in frontmatter:
+
+| Level | Sources | Treatment during ingest |
+|-------|---------|------------------------|
+| `high` | Own design docs, CLAUDE.md, verified decisions | Claims become wiki assertions |
+| `medium` | Documentation, articles, meeting notes | Claims added with attribution (default if omitted) |
+| `low` | Web scrapes, unverified transcripts | Claims marked provisional |
+
+When a `low` confidence source contradicts a `high` confidence wiki claim, flag the conflict but note the disparity. When a `high` confidence source contradicts `medium`, update the wiki and note both sources. Default to `medium` if the field is absent.
+
 #### Book source format (`raw/books/<author-title.md>`)
 
 ```markdown
@@ -186,9 +198,10 @@ Run this checklist for **every** new raw source, without exception.
    - Update `updated:` to today's date.
 5. **Scan for contradictions:** if the source disagrees with an existing wiki claim, do NOT silently overwrite. Go to step 6.
 6. **Handle contradictions:** add an entry to `wiki/_conflicts.md`, tag the affected page with `conflict`, and note both claims with source citations. Do not resolve — flag for human review.
-7. **Add cross-references:** after updating pages, scan for opportunities to add `[[wikilinks]]` to related pages. Prefer linking atomic concept pages from within broader topic pages — this is how graph edges form. Every atomic concept page should appear as an inline `[[wikilink]]` inside at least one coarser page.
+7. **Add cross-references (bidirectional):** after updating pages, scan for opportunities to add `[[wikilinks]]` to related pages. Prefer linking atomic concept pages from within broader topic pages — this is how graph edges form. Every atomic concept page should appear as an inline `[[wikilink]]` inside at least one coarser page. **Additionally:** for each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships where the type is clear.
 8. **Update `wiki/_index.md`:** add any new pages to the appropriate section.
-9. **Check for orphans:** any new page must have at least one backlink from another wiki page.
+9. **Check for orphans (blocking):** any new page MUST have at least one incoming backlink from another wiki page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
+10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run python etl/relinker.py` to discover additional semantic links. Review `wiki/_relink_suggestions.md` if generated.
 
 ---
 
@@ -215,8 +228,11 @@ Run lint to find health issues. Check each of the following:
 - **Dead wikilinks** — `[[Page]]` references that don't correspond to an existing file
 - **Missing summaries** — `summary:` field is empty or generic
 - **Orphan raw files** — files in `raw/` with no corresponding wiki coverage
+- **Untyped links** — `## See Also` entries without a `— type` annotation (>50% untyped = WARN)
+- **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain links (NOTE)
+- **Stale suggestions** — `wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 
-Output a prioritised list: BLOCKER (conflicts, dead links) → WARN (orphans, stale) → NOTE (missing coverage).
+Output a prioritised list: BLOCKER (conflicts, dead links) → WARN (orphans, stale, untyped) → NOTE (missing coverage, bridge gaps, stale suggestions).
 
 ---
 
@@ -226,6 +242,29 @@ Output a prioritised list: BLOCKER (conflicts, dead links) → WARN (orphans, st
 - Prefer linking to the concept page rather than the project page when both exist.
 - When creating a new page, immediately add a backlink from at least one existing page.
 - `[[See also: Page Title]]` in the See Also section is acceptable for non-inline references.
+
+### Typed Relationships
+
+In `## See Also` sections, annotate links with a relationship type using `— type` suffix:
+
+```markdown
+## See Also
+- [[CRAG Retry Logic]] — extends
+- [[RAG Evaluation]] — prerequisite-for
+- [[LangGraph vs ADK]] — alternative-to
+```
+
+| Type | Meaning |
+|------|---------|
+| `extends` | Builds on or refines the target |
+| `prerequisite-for` | Must understand this before the target |
+| `alternative-to` | Competing approach to the same problem |
+| `instance-of` | Concrete example of a general pattern |
+| `contradicts` | Disagrees with (links to conflict entry) |
+| `supersedes` | Replaces an older approach/decision |
+
+Untyped links (`- [[Page]]`) are still valid — type gradually during future ingests.
+The parser extracts relationship types into edge metadata for graph visualization.
 
 ---
 
