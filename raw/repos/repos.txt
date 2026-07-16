@@ -10,3 +10,7 @@
 #   .agents/**/*.md
 #
 # Add your active repos below:
+/Users/wiseer/workspace/playground
+/Users/wiseer/workspace/atlas
+/Users/wiseer/workspace/librarian
+/Users/wiseer/workspace/ai-project-template

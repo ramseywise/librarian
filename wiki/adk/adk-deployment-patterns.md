@@ -318,6 +318,7 @@ gcloud run services update-traffic SERVICE_NAME \
 
 ## See Also
 
+- [[System Design — Serverless Agent Backends]] — instance-of
 - [[ADK Scaffold Patterns]]
 - [[ADK Observability]]
 - [[ADK Python API Reference]]

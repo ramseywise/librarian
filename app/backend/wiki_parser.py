@@ -7,8 +7,17 @@ import frontmatter
 
 WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
-TYPED_LINK_RE = re.compile(r"-\s*\[\[([^\]]+)\]\]\s*—\s*(extends|prerequisite-for|alternative-to|instance-of|contradicts|supersedes)")
-RELATIONSHIP_TYPES = {"extends", "prerequisite-for", "alternative-to", "instance-of", "contradicts", "supersedes"}
+TYPED_LINK_RE = re.compile(
+    r"-\s*\[\[([^\]]+)\]\]\s*—\s*(extends|prerequisite-for|alternative-to|instance-of|contradicts|supersedes)"
+)
+RELATIONSHIP_TYPES = {
+    "extends",
+    "prerequisite-for",
+    "alternative-to",
+    "instance-of",
+    "contradicts",
+    "supersedes",
+}
 
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
 DOMAIN_TAG_SET = {

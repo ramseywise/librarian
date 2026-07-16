@@ -1,8 +1,8 @@
 ---
 title: SANYI Change-Contract System
-tags: [meta, pattern, concept, conflict]
-summary: Three-layer change-contract system (变易/简易/不易) for agent architectures — classifies every component into ever-changing, simple, or invariant, then enforces cross-layer discipline via init/review/audit modes. Violation-code table has an unresolved conflict — see [[Conflicts]].
-updated: 2026-07-14
+tags: [meta, pattern, concept]
+summary: Three-layer change-contract system (变易/简易/不易) for agent architectures — classifies every component into ever-changing, simple, or invariant, then enforces cross-layer discipline via init/review/audit modes.
+updated: 2026-07-17
 sources:
   - raw/claude-docs/project-g/skills/SANYI/SKILL.md
   - raw/claude-docs/project-g/skills/SANYI/README.md
@@ -30,36 +30,27 @@ sources:
 - Schemas that grow entropy (new optional fields added weekly) are Jianyi drifting toward Bianyi
 - **First Law:** LLM constraints in prompts are soft. Buyi invariants need deterministic code enforcement.
 
-## Violation Codes
+## Violation Codes (per `violations.md` — authoritative)
 
-> **⚠️ Unresolved conflict:** the table below is sourced from the original `SKILL.md`/`README.md` ingest (2026-07-05). A fuller reference doc (`references/violations.md`) ingested later declares itself authoritative and assigns **different meanings** to several of the same codes (e.g. its BY-1 is "direct modification of Buyi-guarded code," not "hardcoded tunable" — that concept is its BN-1 instead). See [[Conflicts]] for the full side-by-side and do not treat either table as settled until reviewed. The "Report Template and Severity Semantics" section below reflects `violations.md`'s version instead.
+> Resolved 2026-07-17: an earlier ingest (2026-07-05, from `SKILL.md`/`README.md`) carried a pre-reconciliation taxonomy that assigned different meanings to the same codes. `references/violations.md` declares itself authoritative and the live skill copies match it, so its table stands. See [[Conflicts]] for the resolution record.
 
-### Bianyi violations
-| Code | Description | Severity |
+Codes are keyed by the layer whose contract is violated — BY-\* are Buyi blockers, JY-\* are Jianyi entropy warnings, BN-1 is the Bianyi info-level finding.
+
+| Code | Meaning | Severity |
 |---|---|---|
-| BY-1 | Tunable hardcoded in source (threshold in `.py` not env/config) | Medium |
-| BY-2 | Prompt embedded in code (not in `prompts/` or Langfuse) | Medium |
-| BY-3 | Feature flag not exposed as env var | Low |
-| BY-4 | Dead config entry (declared but never read) | Low |
+| BY-1 | Direct modification of Buyi-guarded code (any edit inside a Buyi entry's `paths`, even "harmless" refactors) | blocker |
+| BY-2 | Semantic downgrade: Buyi invariant made bypassable via flag/config/env — every individual line looks innocent; only diffing against the contract reveals it | blocker |
+| BY-3 | Buyi evidence test deleted, skipped, or weakened | blocker |
+| BY-4 | Declared Buyi invariant has prompt-only implementation, no deterministic code path (the First Law violation) | blocker |
+| JY-1 | Jianyi budget exceeded (shape, escape hatches, or control flow) | warning |
+| JY-2 | Anomalous single-PR growth within budget (≥3 fields/params/edges in one PR) | warning |
+| JY-3 | Unbounded escape hatch: untyped catch-all (`dict`/`Any`/`**kwargs`) hides growth | warning |
+| BN-1 | Bianyi value (prompt string / tunable) hardcoded outside its declared layer — the only auto-fixable code | info |
+| MG-1 | Unrecorded layer migration (a remediated BY-4 is an MG-1 promotion, not a fresh violation) | notice |
+| UN-1 | Changed file matches no contract entry (layer decision never made) | notice |
+| UN-2 | Dangling contract: entry `paths` match no existing file | notice |
 
-### Jianyi violations
-| Code | Description | Severity |
-|---|---|---|
-| JY-1 | Schema entropy growth (more than 2 new optional fields without review) | Medium |
-| JY-2 | Graph topology change without contract update | High |
-| JY-3 | Tool signature drift (added/removed params without schema bump) | High |
-
-### Buyi violations
-| Code | Description | Severity |
-|---|---|---|
-| BN-1 | Invariant moved to prompt/config (hardcoded safety → env var or prompt) | Critical |
-
-### Migration/hygiene violations
-| Code | Description | Severity |
-|---|---|---|
-| MG-1 | Layer migration not recorded in SANYI.md | Medium |
-| UN-1 | Component not classified in contract | Low |
-| UN-2 | Dangling contract entry (component deleted, contract not updated) | Low |
+BY-1 is subsumed when BY-2/BY-3 fires on the same entry — report only the more specific code. The one migration direction that is never mere MG-1: silently making an invariant bypassable is always the BY-2 blocker.
 
 ## Modes
 
@@ -139,10 +130,12 @@ Buyi is the one layer machines can't infer (business/safety intent isn't in any 
 
 **Anti-staleness rules:** every review/audit run updates `current` stamps (audit also refreshes `last-audit`); a dangling `paths` match (UN-2) is always reported, never silently skipped; Pending defaults to strictest enforcement so parking is safe but not free; Debt excludes known violations from future reports so reviews stay quiet about history and loud about news; layer migrations must leave a `## Migrations` record — an unrecorded move is MG-1, except the one direction that's always the more specific BY-2 blocker: silently making an invariant bypassable.
 
-> **Note:** the original `SKILL.md`/`README.md` ingest described `SANYI.md`'s sections differently (`## Components`, `## Buyi Enforcement`, `## Migrations`, `## Pending Violations`, with no per-entry field spec). The "SANYI.md Format" section above reflects the fuller `contract-spec.md` reference doc instead. See [[Conflicts]] for both versions side by side — unresolved.
+> **Note:** the original `SKILL.md`/`README.md` ingest described `SANYI.md`'s sections differently (`## Components`, `## Buyi Enforcement`, `## Migrations`, `## Pending Violations`, with no per-entry field spec). Resolved 2026-07-17 in `contract-spec.md`'s favor — its six exact-match sections are what the live skill parses. The "SANYI.md Format" section above is authoritative; see [[Conflicts]] for the resolution record.
 
 ## See Also
 - [[ADK Context Engineering]]
 - [[Input Guardrails Pipeline]]
 - [[Production Hardening Patterns]]
 - [[Claude Workflow System]]
+- [[Change-Contracts Rollout]] — instance-of
+- [[Code Review Drill — SANYI]] — instance-of

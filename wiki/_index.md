@@ -82,6 +82,7 @@ updated: 2026-07-14
 | [[ADK vs LangGraph Decision]] | Decision to keep Librarian on LangGraph — vocabulary alignment is the right scope |
 | [[HITL and Interrupt Patterns]] | Six HITL patterns — static/dynamic breakpoints, clarification loop, scheduler gate, tool approval, time-travel/fork |
 | [[ADK JS TypeScript Patterns]] | Google ADK TypeScript SDK (@google/adk 0.5.0) — LlmAgent, FunctionTool, Zod structured output, NDJSON streaming, pitfalls |
+| [[System Design — Serverless Agent Backends]] | Interview-format writeup — stateless invocations, session state in Supabase, streaming inside timeout budgets, designed phase-2 handoff |
 
 ---
 
@@ -102,6 +103,7 @@ updated: 2026-07-14
 | [[Cloud Run + Cloud SQL Pattern]] | Single Cloud Run container + Cloud SQL Auth Proxy (unix socket) — sizing rationale, --workers 1, KB update workflow |
 | [[PGVector Migration Pattern]] | NumPy .npz → pgvector migration — schema, cosine distance operator, IVFFlat index, pg_dump/restore via Auth Proxy |
 | [[Presidio PII Redaction for Langfuse]] | Presidio + spaCy fr_core_news_lg + CamemBERT + custom regex for French financial PII — wired via Langfuse SDK mask hook |
+| [[System Design — Shared Code-Index Service]] | Interview-format writeup — centralized indexer + query API, MCP as thin read-only client, DuckDB single-writer risk, pgvector escape hatch |
 
 ---
 
@@ -144,6 +146,7 @@ updated: 2026-07-14
 | [[Observability & Evaluation Glossary]] | Canonical vocabulary — observability/tracking/tracing/monitoring/alerting hierarchy, offline vs online eval modes, heuristic vs LLM-judge metrics, dataset terminology, rank-based retrieval metrics |
 | [[Skill Eval Pipeline (Blind Comparison + Grading)]] | Three-agent pipeline for A/B testing Claude Code skills — blind comparator (rubric scoring), grader (PASS/FAIL with evidence + eval critique), post-hoc analyzer (unblinds winner, suggests loser improvements) |
 | [[LightGBM vs CatBoost Comparison]] | Methodology for comparing calibrated GBM rerankers — fixing train/inference feature mismatch first, native categorical handling, Brier score/log-loss as the right metrics |
+| [[System Design — Unified Eval Harness]] | Interview-format writeup of playground's harness — golden set, two-tier grading (heuristic → LLM judge), regression vs capability harnesses, threshold governance |
 
 ---
 
@@ -197,6 +200,7 @@ updated: 2026-07-14
 | [[Session Log]] | Chronological index of all Claude Code and Codex sessions — what was worked on |
 | [[Session Insights]] | Friction patterns, recurring themes, skill candidates from 84 facet-analyzed sessions |
 | [[Puffin Consciousness Development Skills]] | Chained skill family (genesis → wake → grow → reflect → synthesize → dream) for staged self-development across sessions |
+| [[Code Review Drill — SANYI]] | Code-review interview drill from a real contract-check run — the two-line diff that lints clean but violates the change contract |
 
 ---
 
@@ -210,6 +214,7 @@ updated: 2026-07-14
 | [[Librarian KB — Build Plan]] | Phased build plan — Phases 1–5 complete, Phase 6 active, Phases 9–15 future |
 | [[Librarian Graph Explorer]] | Local React Flow wiki graph explorer — multi-edge toggling (wikilink/semantic/tag-shared), UMAP semantic layout, agent chat + write-back |
 | [[Listen-Wiseer Project]] | Spotify recommendation agent — ENOA taste map, LangGraph ReAct + Chainlit, DuckDB vss RAG |
+| [[Change-Contracts Rollout]] | 2026-07-17 decision record — SANYI global promotion, per-repo contracts, review-skill enforcement, template seeding; akira blocked on hardcoded scan roots |
 
 > **Private project pages** (company-specific) live in `wiki/private/` — gitignored, available locally.
 

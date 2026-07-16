@@ -1138,6 +1138,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "python-frontmatter" },
     { name = "rich" },
+    { name = "scikit-learn" },
     { name = "structlog" },
 ]
 
@@ -1206,6 +1207,7 @@ requires-dist = [
     { name = "python-frontmatter", marker = "extra == 'viz'", specifier = ">=1.1.0" },
     { name = "rich", specifier = ">=13.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4.0" },
+    { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "scikit-learn", marker = "extra == 'api'", specifier = ">=1.4.0" },
     { name = "sentence-transformers", marker = "extra == 'api'", specifier = ">=3.0.0" },
     { name = "st-cytoscape", marker = "extra == 'viz'", specifier = ">=0.0.3" },

@@ -11,6 +11,7 @@ import json
 import os
 import re
 import sys
+from bisect import bisect_left, bisect_right
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -19,6 +20,37 @@ from typing import Any
 import structlog
 
 log = structlog.get_logger(__name__)
+
+# Relative cost weights: multiples of the input-token price (Anthropic cache pricing).
+# "cost units" throughout = token counts weighted by these, so percentages reflect
+# spend, not raw message counts. Output priced at ~5x input across Claude models.
+_COST_INPUT = 1.0
+_COST_CACHE_WRITE = 1.25
+_COST_CACHE_READ = 0.1
+_COST_OUTPUT = 5.0
+
+# Effective request context = input + cache_read + cache_creation tokens
+_CONTEXT_BUCKETS = ("<50k", "50-100k", "100-150k", ">150k")
+
+
+def _context_bucket(context_tokens: int) -> str:
+    if context_tokens < 50_000:
+        return "<50k"
+    if context_tokens < 100_000:
+        return "50-100k"
+    if context_tokens < 150_000:
+        return "100-150k"
+    return ">150k"
+
+
+def _usage_cost(usage: dict[str, Any]) -> float:
+    """Cost of one request in input-price-relative units."""
+    return (
+        usage.get("input_tokens", 0) * _COST_INPUT
+        + usage.get("cache_creation_input_tokens", 0) * _COST_CACHE_WRITE
+        + usage.get("cache_read_input_tokens", 0) * _COST_CACHE_READ
+        + usage.get("output_tokens", 0) * _COST_OUTPUT
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -36,6 +68,21 @@ def iter_sessions(projects_dir: Path) -> list[dict[str, Any]]:
         if session:
             sessions.append(session)
     return sessions
+
+
+def iter_subagent_sessions(projects_dir: Path) -> list[dict[str, Any]]:
+    """Parse subagent transcripts, each attributed to its parent session.
+
+    Layout: <projects>/<project>/<session-id>/subagents/agent-*.jsonl
+    """
+    subs: list[dict[str, Any]] = []
+    for jsonl in sorted(projects_dir.rglob("*/subagents/*.jsonl")):
+        session = parse_session(jsonl)
+        if session:
+            session["is_subagent"] = True
+            session["parent_session_id"] = jsonl.parent.parent.name
+            subs.append(session)
+    return subs
 
 
 def _text(content: object) -> str:
@@ -152,10 +199,15 @@ def parse_session(path: Path) -> dict[str, Any] | None:
                 else:
                     tool_errors["other"] += 1
 
-    # Token usage + model tracking
+    # Token usage + model tracking + per-request cost/context
     input_tokens = 0
     output_tokens = 0
     cache_write_tokens = 0
+    cache_read_tokens = 0
+    cost_units = 0.0
+    max_context = 0
+    context_bucket_cost: dict[str, float] = dict.fromkeys(_CONTEXT_BUCKETS, 0.0)
+    cost_events: list[tuple[str, float]] = []
     model_counts: dict[str, int] = defaultdict(int)
     for record in asst_msgs:
         msg = record.get("message", {})
@@ -163,10 +215,35 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         input_tokens += usage.get("input_tokens", 0)
         output_tokens += usage.get("output_tokens", 0)
         cache_write_tokens += usage.get("cache_creation_input_tokens", 0)
+        cache_read_tokens += usage.get("cache_read_input_tokens", 0)
+        cost = _usage_cost(usage)
+        cost_units += cost
+        context = (
+            usage.get("input_tokens", 0)
+            + usage.get("cache_creation_input_tokens", 0)
+            + usage.get("cache_read_input_tokens", 0)
+        )
+        if context:
+            max_context = max(max_context, context)
+            context_bucket_cost[_context_bucket(context)] += cost
+        event_ts = _parse_timestamp(record)
+        if event_ts is not None and cost:
+            cost_events.append((event_ts.isoformat(), cost))
         model_id = msg.get("model", "")
         if model_id:
             model_counts[model_id] += 1
     primary_model = max(model_counts, key=lambda k: model_counts[k]) if model_counts else "unknown"
+
+    # Compaction events (system compact_boundary records; older format flags the
+    # summary message instead — take the max to avoid double-counting pairs)
+    compact_count = max(
+        sum(
+            1
+            for r in records
+            if r.get("type") == "system" and r.get("subtype") == "compact_boundary"
+        ),
+        sum(1 for r in records if r.get("isCompactSummary")),
+    )
 
     # Files modified via file-history-snapshots
     files_modified: set[str] = set()
@@ -232,11 +309,34 @@ def parse_session(path: Path) -> dict[str, Any] | None:
     # Output tokens per assistant message (verbosity signal)
     output_tokens_per_msg = round(output_tokens / len(asst_msgs), 1) if asst_msgs else 0.0
 
-    # Cache read tokens (prompt cache efficiency)
-    cache_read_tokens = 0
-    for record in asst_msgs:
-        usage = record.get("message", {}).get("usage", {})
-        cache_read_tokens += usage.get("cache_read_input_tokens", 0)
+    # Skill/command cost attribution: assistant cost between a slash invocation
+    # and the next real user prompt is attributed to that skill. The invocation
+    # record is followed by a user message carrying the expanded skill prompt —
+    # consume it as part of the same turn rather than resetting.
+    skill_costs: dict[str, float] = defaultdict(float)
+    current_skill: str | None = None
+    expansion_pending = False
+    for record in records:
+        rtype = record.get("type")
+        if rtype == "user":
+            txt = _text(record.get("message", {}).get("content", ""))
+            if not txt.strip():
+                continue  # tool results — same turn continues
+            cmd = re.search(r"<command-name>/([\w-]+)</command-name>", txt)
+            if cmd:
+                current_skill = cmd.group(1)
+                expansion_pending = True
+                continue
+            stripped = re.sub(r"<[^>]+>.*?</[^>]+>", "", txt, flags=re.DOTALL).strip()
+            if not stripped:
+                continue
+            if expansion_pending:
+                expansion_pending = False
+                continue
+            slash = re.match(r"/([a-z][a-z0-9_-]+)", stripped)
+            current_skill = slash.group(1) if slash else None
+        elif rtype == "assistant" and current_skill:
+            skill_costs[current_skill] += _usage_cost(record.get("message", {}).get("usage", {}))
 
     # Read/Edit ratio: should be > 1 (understand before changing)
     edit_calls = (
@@ -265,6 +365,14 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         "output_tokens": output_tokens,
         "cache_read_tokens": cache_read_tokens,
         "cache_write_tokens": cache_write_tokens,
+        "cost_units": round(cost_units, 1),
+        "max_context": max_context,
+        "context_bucket_cost": {k: round(v, 1) for k, v in context_bucket_cost.items()},
+        "cost_events": cost_events,
+        "compact_count": compact_count,
+        "skill_costs": {k: round(v, 1) for k, v in skill_costs.items()},
+        "is_subagent": False,
+        "parent_session_id": None,
         "models": dict(model_counts),
         "primary_model": primary_model,
         "files_modified": len(files_modified),
@@ -288,10 +396,126 @@ def parse_session(path: Path) -> dict[str, Any] | None:
 # ---------------------------------------------------------------------------
 
 
-def aggregate(sessions: list[dict[str, Any]]) -> dict[str, Any]:
-    """Compute aggregate statistics across all sessions."""
+def _aggregate_economics(
+    sessions: list[dict[str, Any]],
+    subagent_sessions: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Cost-weighted usage signals: context buckets, cache economics, subagent
+    share, parallelism, and skill share — all as % of total cost units."""
+    everything = [*sessions, *subagent_sessions]
+    total_cost = sum(s.get("cost_units", 0.0) for s in everything)
+
+    # Context-size distribution, cost-weighted
+    bucket_cost: dict[str, float] = dict.fromkeys(_CONTEXT_BUCKETS, 0.0)
+    for s in everything:
+        for bucket, cost in s.get("context_bucket_cost", {}).items():
+            bucket_cost[bucket] = bucket_cost.get(bucket, 0.0) + cost
+    context_usage_pct = {
+        k: round(v / total_cost * 100) if total_cost else 0 for k, v in bucket_cost.items()
+    }
+
+    # Cache economics: hit rate + savings vs. running the same tokens uncached
+    total_input = sum(s.get("input_tokens", 0) for s in everything)
+    total_cache_read = sum(s.get("cache_read_tokens", 0) for s in everything)
+    total_cache_write = sum(s.get("cache_write_tokens", 0) for s in everything)
+    total_output = sum(s.get("output_tokens", 0) for s in everything)
+    all_input = total_input + total_cache_read + total_cache_write
+    cost_uncached = all_input * _COST_INPUT + total_output * _COST_OUTPUT
+    cache = {
+        "hit_rate_pct": round(total_cache_read / all_input * 100) if all_input else 0,
+        "savings_vs_uncached_pct": round((cost_uncached - total_cost) / cost_uncached * 100)
+        if cost_uncached
+        else 0,
+    }
+
+    # Subagent share + subagent-heavy sessions (>25% of session cost in subagents)
+    sub_cost_by_parent: dict[str, float] = defaultdict(float)
+    for sub in subagent_sessions:
+        sub_cost_by_parent[sub.get("parent_session_id") or ""] += sub.get("cost_units", 0.0)
+    subagent_cost = sum(sub_cost_by_parent.values())
+    heavy_sessions = 0
+    heavy_cost = 0.0
+    for s in sessions:
+        sub = sub_cost_by_parent.get(s["session_id"], 0.0)
+        whole = s.get("cost_units", 0.0) + sub
+        if whole and sub / whole > 0.25:
+            heavy_sessions += 1
+            heavy_cost += whole
+    subagents = {
+        "transcripts": len(subagent_sessions),
+        "share_of_usage_pct": round(subagent_cost / total_cost * 100) if total_cost else 0,
+        "heavy_sessions": heavy_sessions,
+        "pct_usage_in_heavy_sessions": round(heavy_cost / total_cost * 100) if total_cost else 0,
+    }
+
+    # Parallelism, cost-weighted: concurrency = main sessions active at each request.
+    # Intervals extend past end_time (last user msg) to the last billed request.
+    starts: list[datetime] = []
+    ends: list[datetime] = []
+    for s in sessions:
+        end = datetime.fromisoformat(s["end_time"])
+        event_times = [datetime.fromisoformat(ts) for ts, _ in s.get("cost_events", [])]
+        if event_times:
+            end = max(end, max(event_times))
+        starts.append(datetime.fromisoformat(s["start_time"]))
+        ends.append(end)
+    starts.sort()
+    ends.sort()
+    parallel_cost = {"1": 0.0, "2-3": 0.0, "4+": 0.0}
+    for s in everything:
+        for ts_iso, cost in s.get("cost_events", []):
+            ts = datetime.fromisoformat(ts_iso)
+            concurrent = max(bisect_right(starts, ts) - bisect_left(ends, ts), 1)
+            if concurrent == 1:
+                parallel_cost["1"] += cost
+            elif concurrent <= 3:
+                parallel_cost["2-3"] += cost
+            else:
+                parallel_cost["4+"] += cost
+    parallelism_usage_pct = {
+        k: round(v / total_cost * 100) if total_cost else 0 for k, v in parallel_cost.items()
+    }
+
+    # Skill/command share of usage (turn-attributed, main sessions carry these)
+    skill_cost_totals: dict[str, float] = defaultdict(float)
+    for s in everything:
+        for skill, cost in s.get("skill_costs", {}).items():
+            skill_cost_totals[skill] += cost
+    skill_usage_pct = {
+        k: round(v / total_cost * 100, 1) if total_cost else 0
+        for k, v in sorted(skill_cost_totals.items(), key=lambda x: -x[1])[:8]
+    }
+
+    compacts_total = sum(s.get("compact_count", 0) for s in sessions)
+    sessions_with_compacts = sum(1 for s in sessions if s.get("compact_count", 0) > 0)
+
+    return {
+        "usage_cost_units": round(total_cost),
+        "context_usage_pct": context_usage_pct,
+        "pct_usage_over_150k_context": context_usage_pct.get(">150k", 0),
+        "cache": cache,
+        "subagents": subagents,
+        "parallelism_usage_pct": parallelism_usage_pct,
+        "skill_usage_pct": skill_usage_pct,
+        "compacts": {
+            "total": compacts_total,
+            "sessions_with_compacts": sessions_with_compacts,
+        },
+    }
+
+
+def aggregate(
+    sessions: list[dict[str, Any]],
+    subagent_sessions: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Compute aggregate statistics across all sessions.
+
+    subagent_sessions (from iter_subagent_sessions) contribute to the
+    cost-weighted economics signals only, attributed to their parent sessions.
+    """
     if not sessions:
         return {}
+    subagent_sessions = subagent_sessions or []
 
     all_tools: dict[str, int] = defaultdict(int)
     all_langs: dict[str, int] = defaultdict(int)
@@ -400,7 +624,10 @@ def aggregate(sessions: list[dict[str, Any]]) -> dict[str, Any]:
     days_active = len(set(dates))
     msgs_per_day = round(total_user_msgs / days_active, 1) if days_active else 0
 
+    economics = _aggregate_economics(sessions, subagent_sessions)
+
     return {
+        **economics,
         "session_count": len(sessions),
         "total_user_messages": total_user_msgs,
         "days_active": days_active,
@@ -605,12 +832,24 @@ You are analyzing a developer's Claude Code usage data across two evaluation dim
   - user_interruptions: Frequent interruptions mean intent wasn't clear upfront
   - tool_errors (file_not_found, edit_failed): Prompts producing wrong file paths
 
+**Token Economics (TE)**: Where is spend actually going? (all % are cost-weighted:
+input=1x, cache write=1.25x, cache read=0.1x, output=5x the input price)
+  - context_usage_pct / pct_usage_over_150k_context: Share of spend at large request
+    context — high >150k share means sessions run too long before /compact or /clear
+  - cache.hit_rate_pct + cache.savings_vs_uncached_pct: Prompt-cache efficiency
+  - subagents.share_of_usage_pct + pct_usage_in_heavy_sessions: Subagent cost; each
+    subagent re-sends its own context — flag if heavy sessions dominate spend
+  - parallelism_usage_pct: Spend while 2-3 or 4+ sessions ran concurrently
+  - skill_usage_pct: Which /skills consume the most budget
+  - compacts: How often sessions compact (0 with high >150k share = compact too late)
+
 Generate a rich, insightful HTML report. Return ONLY valid HTML starting with <!DOCTYPE html>.
 
 The report must include these sections with these exact id attributes:
 - #section-work     : What You Work On (project areas with session counts)
 - #section-usage    : How You Use Claude Code (narrative + key CE/PE insight)
 - #section-wins     : Impressive Things You Did (3 big wins)
+- #section-economics: Token Economics (context-size spend distribution, cache savings, subagent share, parallelism)
 - #section-ce       : Context Engineering Health (bash antipatterns, skill usage, hook discipline, read/edit ratio)
 - #section-pe       : Prompt Engineering Health (verbosity, interruptions, path errors, cache efficiency)
 - #section-features : Existing CC Features to Try (3 features with copyable prompts)
@@ -691,6 +930,10 @@ def build_prompt(
                     # PE signals
                     "output_tokens_per_msg": session.get("output_tokens_per_msg", 0),
                     "cache_read_tokens": session.get("cache_read_tokens", 0),
+                    # TE signals
+                    "cost_units": session.get("cost_units", 0),
+                    "max_context": session.get("max_context", 0),
+                    "compact_count": session.get("compact_count", 0),
                 }
             )
         parts.append(
@@ -769,7 +1012,8 @@ def main() -> None:
     # --- JSONL source ---
     log.info("parser.scanning", path=str(projects_dir))
     sessions = iter_sessions(projects_dir)
-    log.info("parser.found_sessions", count=len(sessions))
+    subagent_sessions = iter_subagent_sessions(projects_dir)
+    log.info("parser.found_sessions", count=len(sessions), subagents=len(subagent_sessions))
 
     # --- Session notes source ---
     session_notes = parse_session_notes(sessions_dir)
@@ -781,7 +1025,7 @@ def main() -> None:
 
     agg: dict[str, Any] = {}
     if sessions:
-        agg = aggregate(sessions)
+        agg = aggregate(sessions, subagent_sessions)
         log.info(
             "parser.aggregated",
             date_range=agg.get("date_range", ""),

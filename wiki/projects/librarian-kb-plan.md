@@ -156,6 +156,7 @@ Wire `agents/researcher/` (PDF → Obsidian notes) into the librarian ingest pip
 | MCP auth | claude.ai MCPs (Notion, Drive, Guru) — no separate OAuth | 2026-04-25 |
 
 ## See Also
+- [[System Design — Shared Code-Index Service]] — extends
 - [[Karpathy LLM Wiki Pattern]]
 - [[Librarian Project]]
 - [[ADK vs LangGraph Comparison]]

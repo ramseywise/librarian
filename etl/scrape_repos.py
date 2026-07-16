@@ -37,6 +37,7 @@ EXTRACT_GLOBS = [
     ".claude/docs/**/*.md",
     "docs/**/*.md",
     ".agents/**/*.md",
+    "src/agents/akira/findings/*.md",
 ]
 
 # Never extract these (build artifacts, lock files, etc.)

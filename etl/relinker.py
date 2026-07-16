@@ -29,8 +29,17 @@ WIKI_DIR = REPO_ROOT / "wiki"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 DOMAIN_TAG_SET = {
-    "langgraph", "rag", "adk", "mcp", "memory",
-    "eval", "infra", "deep-agents", "patterns", "meta", "projects",
+    "langgraph",
+    "rag",
+    "adk",
+    "mcp",
+    "memory",
+    "eval",
+    "infra",
+    "deep-agents",
+    "patterns",
+    "meta",
+    "projects",
 }
 
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
@@ -101,9 +110,7 @@ def build_link_graph(pages: dict[str, PageInfo]) -> None:
                 pages[target_stem].incoming_links.add(stem)
 
 
-def compute_adjusted_score(
-    base_score: float, source: PageInfo, target: PageInfo
-) -> float:
+def compute_adjusted_score(base_score: float, source: PageInfo, target: PageInfo) -> float:
     score = base_score
     if source.domain == target.domain:
         score += 0.1
@@ -140,8 +147,9 @@ def relink(
     dry_run: bool = False,
 ) -> RelinkReport:
     sys.path.insert(0, str(REPO_ROOT))
-    from app.backend.embeddings import compute_embeddings
     from sklearn.metrics.pairwise import cosine_similarity
+
+    from app.backend.embeddings import compute_embeddings
 
     page_ids, vecs = compute_embeddings()
     if len(page_ids) < 2:
@@ -237,7 +245,7 @@ def detect_bridge_gaps(pages: dict[str, PageInfo]) -> list[tuple[str, str, int]]
         domain_pages[info.domain].append(stem)
 
     cross_links: dict[tuple[str, str], int] = defaultdict(int)
-    for stem, info in pages.items():
+    for info in pages.values():
         for target in info.outgoing_links:
             if target in pages:
                 src_domain = info.domain
@@ -249,7 +257,7 @@ def detect_bridge_gaps(pages: dict[str, PageInfo]) -> list[tuple[str, str, int]]
     gaps: list[tuple[str, str, int]] = []
     domains = [d for d, ps in domain_pages.items() if len(ps) >= 5]
     for i, d1 in enumerate(domains):
-        for d2 in domains[i + 1:]:
+        for d2 in domains[i + 1 :]:
             pair = tuple(sorted([d1, d2]))
             count = cross_links.get(pair, 0)
             if count < 3:
@@ -259,9 +267,7 @@ def detect_bridge_gaps(pages: dict[str, PageInfo]) -> list[tuple[str, str, int]]
     return gaps
 
 
-def write_suggestions(
-    suggested: list[tuple[str, str, float]], pages: dict[str, PageInfo]
-) -> None:
+def write_suggestions(suggested: list[tuple[str, str, float]], pages: dict[str, PageInfo]) -> None:
     lines = [
         "---",
         "title: Relink Suggestions",
@@ -283,9 +289,7 @@ def write_suggestions(
     (WIKI_DIR / "_relink_suggestions.md").write_text("\n".join(lines))
 
 
-def write_bridge_suggestions(
-    gaps: list[tuple[str, str, int]], pages: dict[str, PageInfo]
-) -> None:
+def write_bridge_suggestions(gaps: list[tuple[str, str, int]], pages: dict[str, PageInfo]) -> None:
     lines = [
         "---",
         "title: Bridge Suggestions",
@@ -315,7 +319,9 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Post-ingest relinking pass")
     parser.add_argument("--threshold", type=float, default=0.65, help="Auto-link threshold")
-    parser.add_argument("--suggest-threshold", type=float, default=0.55, help="Suggestion threshold")
+    parser.add_argument(
+        "--suggest-threshold", type=float, default=0.55, help="Suggestion threshold"
+    )
     parser.add_argument("--dry-run", action="store_true", help="Report only, don't modify files")
     parser.add_argument("--changed", nargs="*", help="Only relink these page stems (default: all)")
     args = parser.parse_args()
