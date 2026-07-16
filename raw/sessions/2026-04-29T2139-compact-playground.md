@@ -39,7 +39,7 @@ key_output: ~
 - ok all three sound good.. i'm wondering also about context chunks how long are our retrieved sources as well and yes the invoke astream for answer node sounds good.. as well as 2 and 3.
 -  lets go
 -  pre-commit is failing
-- no it was an issue with your changes to va-langgraph i dont know how two files renamed to clara were added and then removed did they get pushed?
+- no it was an issue with your changes to va-langgraph i dont know how two files renamed to corpus-a were added and then removed did they get pushed?
 - wait i thought we said struct log was better- do we need to update hooks?
 
 ## Gotchas

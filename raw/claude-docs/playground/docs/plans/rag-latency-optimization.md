@@ -8,7 +8,7 @@
 
 ## POC Baseline (April 29)
 
-Single German sevdesk query ("how do I create an invoice"):
+Single German vendor-a query ("how do I create an invoice"):
 
 | Stage | Time |
 |---|---|
@@ -93,7 +93,7 @@ Then make a query — the trace appears in LangSmith with node timings.
 
 ### Compare Flash 2.5 vs 2.0 for answer
 In `orchestrator/langgraph/chains.py` (or via env var if model is config-driven):
-- Set answer model to `gemini-2.0-flash` 
+- Set answer model to `gemini-2.0-flash`
 - Re-run eval: `uv run python evals/runner.py run --export results/flash20_20260429.json`
 - Compare hit_rate and avg_latency_ms
 

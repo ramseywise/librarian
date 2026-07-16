@@ -30,7 +30,7 @@ On the hardest questions HCA returns no citation 58% of the time vs VA's 39%.
 
 *Local RAG is a research baseline, not production. n=754.*
 
-**Ground truth:** ~24,000 real Danish Intercom conversations, <10% URL-cited. Billy/Shine alias map applied (billy.dk/support/ → help.shine.co/da/articles/).
+**Ground truth:** ~24,000 real Danish Intercom conversations, <10% URL-cited. product-a/client-a alias map applied (product-a.dk/support/ → help.client-a.co/da/articles/).
 
 **Limitation:** Ground truth is biased toward URL-cited conversations — these are more likely single-doc answerable than typical traffic. The ~59% ceiling is for this slice, not full support volume.
 
@@ -62,7 +62,7 @@ VA's grounding lead (+0.143) is the largest signal. When HCA's narrow retrieval 
 |---|---|---|
 | Glossary pages ranking above help articles | ~130 | Scope KB to help articles only |
 | Articles missing from index | ~93 | Re-ingest 202 sources |
-| URL mapping gap (Billy → Shine migration) | ~35–40 | Expand alias map |
+| URL mapping gap (product-a → client-a migration) | ~35–40 | Expand alias map |
 | Ranking failure (article indexed but buried) | ~175–185 | Requires embedding model upgrade |
 
 Fixing first two alone recovers ~220 questions, raising ceiling from ~40% to **~59% Hit@5**.

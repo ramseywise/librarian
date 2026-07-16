@@ -46,7 +46,7 @@ Masking applied at ingestion — raw PII never reaches downstream storage or LLM
 - 1 × TOKEN: session token — out of scope currently
 
 ### Over-masking (8%)
-- All [NAME] false positives: city names (Aarhus, Aalborg, København), domain names (billy.dk), company names, common Danish words (Jep, erhverskonto)
+- All [NAME] false positives: city names (Aarhus, Aalborg, København), domain names (product-a.dk), company names, common Danish words (Jep, erhverskonto)
 - Over-masking affects readability only, not privacy compliance
 
 ## Residual Risk

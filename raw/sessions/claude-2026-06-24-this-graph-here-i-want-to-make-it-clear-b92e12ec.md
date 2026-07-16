@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-24
 session_id: b92e12ec-708f-4115-98b8-78bc0ebf57ee
 prompts: 5
@@ -8,7 +8,7 @@ total_tokens: 80145
 cache_read_tokens: 3620082
 ---
 
-# Claude Code Session — 2026-06-24 (galactus)
+# Claude Code Session — 2026-06-24 (project-g)
 
 **First prompt:** this graph here - i want to make it clear here is what hca get.. here is what va gets.. but this is what hc_rag and _hc_lg get on mrr recall precisions and f1.. maybe add cell below this one before summary score card fig, axes = plt.subplots(1, 4, figsize=(16, 3.5))
 _ret_cands = df_ret.index.tolist(

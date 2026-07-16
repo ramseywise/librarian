@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-09
 session_id: 660918fb-1392-4aac-9de5-65515cc29ea4
 prompts: 16
@@ -8,7 +8,7 @@ total_tokens: 73260
 cache_read_tokens: 7405923
 ---
 
-# Claude Code Session — 2026-06-09 (galactus)
+# Claude Code Session — 2026-06-09 (project-g)
 
 **First prompt:** ModuleNotFoundError: No module named 'rag.preprocessing'
 

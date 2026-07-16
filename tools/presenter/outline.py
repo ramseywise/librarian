@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from core.client import create_client, parse_json_response
 from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
 
-from core.client import create_client, parse_json_response
 from tools.presenter.models import DeckIntake, DeckOutline
 
 console = Console()
@@ -30,10 +30,7 @@ def generate_outline(intake: DeckIntake, model: str) -> DeckOutline:
         context_block = f"\n\nCodebase context:\n{intake.codebase_summary}"
 
     user_msg = (
-        f"Goal: {intake.goal}\n"
-        f"Audience: {intake.audience}\n"
-        f"Tone: {intake.tone}"
-        f"{context_block}"
+        f"Goal: {intake.goal}\nAudience: {intake.audience}\nTone: {intake.tone}{context_block}"
     )
 
     response = client.messages.create(
@@ -49,9 +46,7 @@ def generate_outline(intake: DeckIntake, model: str) -> DeckOutline:
 
 def _print_outline(outline: DeckOutline) -> None:
     console.print(f"\n[bold cyan]{outline.title}[/bold cyan]\n")
-    table = Table(
-        show_header=True, header_style="bold magenta", box=None, pad_edge=False
-    )
+    table = Table(show_header=True, header_style="bold magenta", box=None, pad_edge=False)
     table.add_column("#", style="dim", width=3)
     table.add_column("Title", min_width=28)
     table.add_column("Type", style="cyan", width=12)
@@ -65,9 +60,7 @@ def _print_outline(outline: DeckOutline) -> None:
     console.print()
 
 
-def approval_checkpoint(
-    outline: DeckOutline, model: str, intake: DeckIntake
-) -> DeckOutline:
+def approval_checkpoint(outline: DeckOutline, model: str, intake: DeckIntake) -> DeckOutline:
     """Print outline and loop until user approves."""
     while True:
         _print_outline(outline)

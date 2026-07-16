@@ -39,7 +39,7 @@ key_output: ~
 -  and the global skills? any iteration needed?
 - 1. if global langgraph is a duplicate, delete (or update the main one). 2. within linear framework, scope-initiative is turning product requirements into the how do we -> backward mapping and dependency mapping to ticket grooming -> design-sprint is more like the ok what do we want to do this sprint
 -  i think plan-epic should be plan-initiative (not github issues remove that and roadmap) but. more the backward planning and dependency mapping.. yeah i gues define as well has is part of scoping and planning the initiative? or is this more like higher level definitions before we go to scoping and t
-- ok but why github milestone? this should be linear no? so define-epic is define-milestones for linear (we just used previous projects to do this but now we need to reverse it). and plan-epic is actually plan-initiatives. scope-initiative is right. can you adapt these skills to fit our project -> 1. 
+- ok but why github milestone? this should be linear no? so define-epic is define-milestones for linear (we just used previous projects to do this but now we need to reverse it). and plan-epic is actually plan-initiatives. scope-initiative is right. can you adapt these skills to fit our project -> 1.
 - sounds good
 
 ## Gotchas

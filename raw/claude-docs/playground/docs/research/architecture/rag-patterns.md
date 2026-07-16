@@ -391,11 +391,11 @@ changes). deepeval for CI regression (run in `tests/evals/` as part of `uv run p
 
 ---
 
-## 10. Production Benchmarks (RAPTOR v1 — sevdesk/German market)
+## 10. Production Benchmarks (rag-v1 v1 — vendor-a/German market)
 
 These are real numbers from a deployed prototype, not estimates.
 
-### RAPTOR v1 baseline (German market, all-MiniLM-L6-v2, dense-only)
+### rag-v1 v1 baseline (German market, all-MiniLM-L6-v2, dense-only)
 
 | Metric | v1 Baseline | Hybrid + reranker |
 |---|---|---|
@@ -424,7 +424,7 @@ committing.
 
 ### Response style finding
 
-RAPTOR suggestions were ignored by human agents despite correct technical content because:
+rag-v1 suggestions were ignored by human agents despite correct technical content because:
 - Suggestions were 3× the length of agent responses
 - Hedged language: *"könnte möglicherweise"*, *"Überprüfe bitte..."*
 

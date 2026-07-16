@@ -6,12 +6,12 @@
 
 ---
 
-## 1. Gap Analysis — `billy_assistant` vs `ts_google_adk`
+## 1. Gap Analysis — `product-a_assistant` vs `ts_google_adk`
 
-What exists in `adk-agent-pocs/agents/billy_assistant` that is reusable, and what
+What exists in `adk-agent-pocs/agents/product-a_assistant` that is reusable, and what
 `ts_google_adk` has that is not yet in Python.
 
-### Reusable from `billy_assistant`
+### Reusable from `product-a_assistant`
 
 | Component | What it is |
 |---|---|
@@ -39,7 +39,7 @@ What exists in `adk-agent-pocs/agents/billy_assistant` that is reusable, and wha
 | Source links | `sources: [{title, url}]` in schema | Missing |
 | Quote domain | list_quotes, create_quote, create_invoice_from_quote | Missing entirely |
 | Page context | URL prefix in user message → agent reads it | Missing |
-| Real API calls | Billy REST API client (not in-memory stubs) | All tools are mocks |
+| Real API calls | product-a REST API client (not in-memory stubs) | All tools are mocks |
 | Web client | React chat UI | `adk-agent-pocs/web_client` exists but tied to A2UI |
 | Observability | — | Neither system has tracing/LangFuse yet |
 
@@ -51,7 +51,7 @@ What exists in `adk-agent-pocs/agents/billy_assistant` that is reusable, and wha
 | `WineGuardrailsPlugin` patterns | Reusable safety pipeline — apply to VA |
 | Eval harness | 4 eval suites per agent — carry forward |
 | `agent_gateway` (FastAPI SSE) | Already done — reuse directly |
-| `mcp_servers/billy` | MCP tool server — usable by both ADK and LangGraph |
+| `mcp_servers/product-a` | MCP tool server — usable by both ADK and LangGraph |
 
 ---
 
@@ -88,7 +88,7 @@ class EmailFormConfig(BaseModel):
 class AssistantResponse(BaseModel):
     message: str                          # markdown — what the user sees
     suggestions: list[str] = []          # 2-4 follow-up chips
-    nav_buttons: list[NavButton] = []    # deep-links into Billy app
+    nav_buttons: list[NavButton] = []    # deep-links into product-a app
     sources: list[Source] = []           # support doc links
     table_type: str | None = None        # "invoices" | "customers" | "products" | "quotes"
     form: FormConfig | None = None       # inline creation form
@@ -100,7 +100,7 @@ class AssistantResponse(BaseModel):
 ### 2b. Tool Layer (`va-shared/tools/`)
 
 Plain Python functions — no ADK or LangGraph dependency. Identical between both systems.
-Initially call `mcp_servers/billy` over MCP; can swap to direct Billy REST API later.
+Initially call `mcp_servers/product-a` over MCP; can swap to direct product-a REST API later.
 
 | Module | Functions |
 |---|---|
@@ -192,19 +192,19 @@ Router system prompt updated to include `quote_agent` in domain map.
 `adk-agent-pocs/shared/guardrails/` — normalisation → size check → domain check
 → injection detection → PII redaction.
 
-**Context compaction:** Same `App` + `EventsCompactionConfig` as `billy_assistant`.
+**Context compaction:** Same `App` + `EventsCompactionConfig` as `product-a_assistant`.
 
 ### Phases
 
 **Phase 1 — Skeleton** (agent routes, no real API)
-- Port `billy_assistant` to `va-google-adk` with `AssistantResponse` output schema
+- Port `product-a_assistant` to `va-google-adk` with `AssistantResponse` output schema
 - Add `quote_agent`
 - Gateway: reuse `agent_gateway` adapted to the new schema
-- Tools: in-memory stubs from `billy_assistant`
+- Tools: in-memory stubs from `product-a_assistant`
 
 **Phase 2 — Real API**
-- Replace tool stubs with MCP calls to `mcp_servers/billy`
-- Or: direct Billy REST API client in `shared/tools/`
+- Replace tool stubs with MCP calls to `mcp_servers/product-a`
+- Or: direct product-a REST API client in `shared/tools/`
 
 **Phase 3 — UI features**
 - Suggestions, nav buttons, form triggers, email form, confirm/discard
@@ -213,7 +213,7 @@ Router system prompt updated to include `quote_agent` in domain map.
 
 **Phase 4 — Observability + Eval**
 - LangFuse tracing on gateway (optional, env-gated)
-- 4 eval suites carried forward from `billy_assistant`
+- 4 eval suites carried forward from `product-a_assistant`
 - Add quote routing evals
 
 ---
@@ -354,7 +354,7 @@ Adapt `ts_google_adk/src/app/` to:
 - Connect to `VA_BACKEND_URL` (either ADK or LangGraph gateway)
 - Render `AssistantResponse` fields (message, suggestions, nav_buttons, form, email_form, confirm, contact_support, sources)
 - SSE client that handles both `text` and `response` event types
-- Remove: TypeScript Billy API types (move to backend)
+- Remove: TypeScript product-a API types (move to backend)
 - Keep: chart-renderer, markdown-renderer, all chat UI components
 
 ---
@@ -363,12 +363,12 @@ Adapt `ts_google_adk/src/app/` to:
 
 ```
 Week 1: Shared foundation
-  □ va-shared/tools/ — port tool stubs from billy_assistant + add quotes.py
+  □ va-shared/tools/ — port tool stubs from product-a_assistant + add quotes.py
   □ schema.py — AssistantResponse Pydantic model
   □ gateway/main.py — FastAPI skeleton (same endpoints both systems will use)
 
 Week 2: va-google-adk Phase 1
-  □ Port billy_assistant → va-google-adk with AssistantResponse output schema
+  □ Port product-a_assistant → va-google-adk with AssistantResponse output schema
   □ Add quote_agent
   □ Gateway ADK runner + SSE
   □ Smoke test: routing evals pass
@@ -383,7 +383,7 @@ Week 3: va-langgraph Phase 1
 Week 4: UI + Real API
   □ Web client adapted from ts_google_adk
   □ Both gateways serving same frontend
-  □ Tool stubs → MCP calls to mcp_servers/billy
+  □ Tool stubs → MCP calls to mcp_servers/product-a
 
 Week 5+: HITL, CRAG, observability (per phase plans above)
 ```
@@ -396,7 +396,7 @@ Week 5+: HITL, CRAG, observability (per phase plans above)
 
 2. **Web client location** — Inside `va-google-adk/web_client/` with a symlink from `va-langgraph/`? Or a top-level `va-web-client/` package?
 
-3. **Real Billy API vs MCP server** — Use `mcp_servers/billy` (already exists) or call Billy REST directly with proper auth? MCP is simpler for now; direct is more prod-realistic.
+3. **Real product-a API vs MCP server** — Use `mcp_servers/product-a` (already exists) or call product-a REST directly with proper auth? MCP is simpler for now; direct is more prod-realistic.
 
 4. **LangGraph model for analyze node** — Haiku for classification (cheap, fast) or Sonnet for better entity extraction? Start with Haiku, gate Sonnet behind `planning_mode="full"`.
 

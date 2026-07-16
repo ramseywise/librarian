@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-10
 session_id: 9ddbb706-e275-471b-a35a-8f0810b654da
 prompts: 3
@@ -8,7 +8,7 @@ total_tokens: 1306
 cache_read_tokens: 79476
 ---
 
-# Claude Code Session — 2026-06-10 (galactus)
+# Claude Code Session — 2026-06-10 (project-g)
 
 **First prompt:** is this fable model working here? can you review my nbks/baseline/1234
 

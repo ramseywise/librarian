@@ -1,8 +1,8 @@
 # ADK Agent Samples — Pattern Analysis & Comparison
 
-**Date:** 2026-04-17  
-**Source:** `adk-agent-samples-main/` (added to workspace)  
-**Purpose:** Inform the rag_poc upgrade decision — LangGraph modernization vs. Google ADK migration  
+**Date:** 2026-04-17
+**Source:** `adk-agent-samples-main/` (added to workspace)
+**Purpose:** Inform the rag_poc upgrade decision — LangGraph modernization vs. Google ADK migration
 **Related plans:** [`rag-architecture-refactoring-plan.md`](../plans/rag-architecture-refactoring-plan.md), [`rag-system-development-plan.md`](../plans/rag-system-development-plan.md)
 
 ---
@@ -16,7 +16,7 @@ A production-grade reference implementation of the **Google Agent Development Ki
 - Multi-agent orchestration (router, parallel, supervisor/subagent)
 - Safety hardening (7-stage guardrail pipeline, multilingual routing)
 - Voice/BIDI streaming, A2UI declarative UI rendering
-- MCP integration via `billy` accounting server (13 tools)
+- MCP integration via `product-a` accounting server (13 tools)
 
 The LangGraph port lives at `langgraph_agents/native_skill_mcp/` — a direct translation of ADK patterns for teams staying on LangGraph.
 
@@ -168,9 +168,9 @@ agent_node → (tool_calls?) → tools_node → (summarize?) → agent_node
 
 ---
 
-## 7. MCP Architecture (Billy Server)
+## 7. MCP Architecture (product-a Server)
 
-`mcp_servers/billy/` is a clean reference for MCP server design:
+`mcp_servers/product-a/` is a clean reference for MCP server design:
 
 - **Dual entry points:** REST API (FastAPI, port 8766) + MCP server (stdio/SSE, port 8765)
 - **Shared database:** SQLite used by both

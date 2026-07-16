@@ -5,7 +5,7 @@ summary: Ticket-linked, type-prefixed branch naming (`type-TICKET-slug`) with pe
 updated: 2026-07-14
 sources:
   - raw/notion/2026-06-03-branch-naming-convention-va-team.md
-  - raw/claude-docs/galactus/skills/workflow/quick-commit/SKILL.md
+  - raw/claude-docs/project-g/skills/workflow/quick-commit/SKILL.md
 ---
 
 # Branch Naming Convention Pattern
@@ -55,4 +55,4 @@ Pair this convention with a pre-commit or pre-push hook that blocks commits on a
 
 ## See Also
 - [[Multi-Repo Claude Organization]]
-- [[Galactus Dev Hooks & Git Workflow]]
+- [[project-g Dev Hooks & Git Workflow]]

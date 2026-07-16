@@ -36,7 +36,7 @@ key_output: ~
 - **Session ID**: f5df804d-c997-4979-b7d2-593085ad920b
 
 ## Recent prompts
-- not just for this session but also uncommitted changes. and i already removed hc-rag-agent.. but something doesnt sound right.. they va-google-adk and va-langgraph should ahve call to bedrock option as fallback - but it should actually to the va-support-rag qa (not the orchestration) but i think it 
+- not just for this session but also uncommitted changes. and i already removed hc-rag-agent.. but something doesnt sound right.. they va-google-adk and va-langgraph should ahve call to bedrock option as fallback - but it should actually to the va-support-rag qa (not the orchestration) but i think it
 - ok i see we want to actually do a test for all 3 versions for comparison with the same dataset. are we ready to test that or do we need to make any further changes before running a make command?
 - K. Nice overview. But, actually, the VA support RAD, you are right. It has its own retrieval metrics. That are specific to RAG. But if we use also the generation from as, like, a stand alone, then, actually, the metrics might be comparable across, each of the three VA services. However, so that mean
 -  actually i need to sync my changes first i pushed but seems some divergent

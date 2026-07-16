@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-25
 session_id: 4ad49b99-7e4d-4801-a27e-925347aa380d
 prompts: 17
@@ -8,7 +8,7 @@ total_tokens: 245573
 cache_read_tokens: 26461086
 ---
 
-# Claude Code Session — 2026-06-25 (galactus)
+# Claude Code Session — 2026-06-25 (project-g)
 
 **First prompt:** btw for dataset we could use 240 qa i think in @data/datasets/bkh/bk_eval.json that are liked and can be use for grounding in the make eval-all-bkh command
 

@@ -1,5 +1,5 @@
-Plan: Migrate VectorStore from NumPy to pgvector (PostgreSQL)                                
-                                                                                              
+Plan: Migrate VectorStore from NumPy to pgvector (PostgreSQL)
+
  Context
 
  The current vector_store.py stores embeddings as a NumPy .npz file and metadata as

@@ -10,9 +10,7 @@ from etl.researcher.extractor import extract_toc
 MAX_CHUNK_PAGES = 20
 
 TOC_PATTERNS = [
-    re.compile(
-        r"^(Chapter\s+\d+[:.–-]?\s*.+?)\s+(\d+)\s*$", re.MULTILINE | re.IGNORECASE
-    ),
+    re.compile(r"^(Chapter\s+\d+[:.–-]?\s*.+?)\s+(\d+)\s*$", re.MULTILINE | re.IGNORECASE),
     re.compile(r"^(\d+\.\s+[A-Z].+?)\s+(\d+)\s*$", re.MULTILINE),
     re.compile(r"^(\d+\s+[A-Z][a-z].+?)\s+(\d+)\s*$", re.MULTILINE),
 ]
@@ -57,9 +55,7 @@ def _hard_split(page_count: int) -> list[Chunk]:
     return chunks
 
 
-def _sections_to_chunks(
-    sections: list[tuple[str, int]], page_count: int
-) -> list[Chunk]:
+def _sections_to_chunks(sections: list[tuple[str, int]], page_count: int) -> list[Chunk]:
     """Convert sorted (title, start_page) pairs into Chunk objects respecting MAX_CHUNK_PAGES.
 
     If a chapter spans more than MAX_CHUNK_PAGES, it is sub-split with title suffixes.

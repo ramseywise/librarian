@@ -83,7 +83,7 @@ All `genai.Client()` calls now use Application Default Credentials (ADC). No API
 - Readiness probe (`/api/ready`): checks PostgreSQL connection, vector store loaded, credentials configured. Returns `503` when not ready.
 - Configure Cloud Run probes in `cloudbuild.yaml`.
 
-**Tracked:** [AIF-49](https://linear.app/shine-co/issue/AIF-49/health-and-readiness-probes-for-cloud-run)
+**Tracked:** [AIF-49](https://linear.app/client-a-co/issue/AIF-49/health-and-readiness-probes-for-cloud-run)
 
 ---
 

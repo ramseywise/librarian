@@ -4,7 +4,7 @@ tags: [rag, infra, comparison]
 summary: Head-to-head comparison of GCP Discovery Engine and AWS Bedrock Knowledge Bases as managed RAG backends — covering search semantics, session state, answer ownership, and when to consider switching.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/galactus/docs/rag/gcp-vertex-vs-bedrock.md
+  - raw/claude-docs/project-g/docs/rag/gcp-vertex-vs-bedrock.md
 ---
 
 # GCP Vertex AI Search vs AWS Bedrock KB
@@ -60,7 +60,7 @@ Mode C — GCP Built-in Answer (:answer endpoint)
 
 ### Language Handling
 - **Bedrock KB:** language-agnostic — retrieval returns whatever language the docs are in. LLM generates in query language.
-- **GCP Discovery Engine:** defaults to corpus language (e.g. French for Shine) when user writes ASCII/English. Requires per-query preamble injection to override.
+- **GCP Discovery Engine:** defaults to corpus language (e.g. French for [client]) when user writes ASCII/English. Requires per-query preamble injection to override.
 
 ### Score Semantics
 

@@ -4,8 +4,8 @@ tags: [adk, infra, pattern]
 summary: Agent Starter Pack CLI patterns for scaffolding ADK agent projects — templates, deployment options, prototype-first workflow, DESIGN_SPEC.md contract, and development phase guidelines.
 updated: 2026-07-14
 sources:
-  - raw/claude-docs/galactus/.agents/skills/adk-scaffold/SKILL.md
-  - raw/claude-docs/galactus/.agents/skills/adk-dev-guide/SKILL.md
+  - raw/claude-docs/project-g/.agents/skills/adk-scaffold/SKILL.md
+  - raw/claude-docs/project-g/.agents/skills/adk-dev-guide/SKILL.md
   - raw/agent-skills/adk-scaffold/SKILL.md
   - raw/agent-skills/adk-dev-guide/SKILL.md
 ---

@@ -1,8 +1,8 @@
 # Plan: Librarian RAG Upgrade
 
-**Status:** Phase 1 complete  
-**Scope:** `src/librarian/`, `src/orchestration/` — RAG-only (no agent autonomy expansion)  
-**Depends on:** [langgraph-adk-compatibility.md](langgraph-adk-compatibility.md) (partially overlapping — this plan supersedes the ADK tools rewrite in that doc)  
+**Status:** Phase 1 complete
+**Scope:** `src/librarian/`, `src/orchestration/` — RAG-only (no agent autonomy expansion)
+**Depends on:** [langgraph-adk-compatibility.md](langgraph-adk-compatibility.md) (partially overlapping — this plan supersedes the ADK tools rewrite in that doc)
 **Consolidated from:** `librarian-rag-template.md` (merged 2026-04-14) — template architecture is now Phase 2 of this plan
 
 ---
@@ -34,7 +34,7 @@ The Librarian pipeline works but has gaps compared to production-grade RAG patte
 
 ### Step 1 — `EnsembleRetriever` with fingerprint dedup ✅
 
-**Files:** new `src/librarian/retrieval/ensemble.py`, edit `src/librarian/retrieval/__init__.py`  
+**Files:** new `src/librarian/retrieval/ensemble.py`, edit `src/librarian/retrieval/__init__.py`
 **Tests:** new `tests/librarian/unit/test_ensemble.py`
 
 Create a standalone `EnsembleRetriever` class that:
@@ -70,7 +70,7 @@ The existing `RetrieverAgent` will be updated to delegate to `EnsembleRetriever`
 
 ### Step 2 — `RAGResponse` Pydantic model + structured output ✅
 
-**Files:** new model in `src/librarian/schemas/response.py`, edit `src/librarian/generation/generator.py`  
+**Files:** new model in `src/librarian/schemas/response.py`, edit `src/librarian/generation/generator.py`
 **Tests:** edit `tests/librarian/unit/test_generator.py`
 
 Define a structured response model:
@@ -90,7 +90,7 @@ class RAGResponse(BaseModel):
 
 Update `call_llm()` → `call_llm_structured()` path:
 - When `RAGResponse` validation is desired (retrieval intents), the system prompt instructs Claude to respond in JSON matching the schema
-- Parse response with `RAGResponse.model_validate_json()` 
+- Parse response with `RAGResponse.model_validate_json()`
 - Fallback: if JSON parsing fails, wrap raw text in `RAGResponse(answer=raw_text, citations=..., confidence="low")`
 - `extract_citations()` is replaced by the model's `citations` field
 - The `GeneratorAgent.run()` return dict gains `"response_model": RAGResponse` alongside the existing `"response": str` for backward compat
@@ -99,7 +99,7 @@ Keep the unstructured path for `conversational` and `out_of_scope` intents — t
 
 ### Step 3 — Tool abstraction layer (`BaseTool` protocol) ✅
 
-**Files:** new `src/librarian/tools/base.py`, new `src/librarian/tools/retriever_tool.py`, new `src/librarian/tools/__init__.py`  
+**Files:** new `src/librarian/tools/base.py`, new `src/librarian/tools/retriever_tool.py`, new `src/librarian/tools/__init__.py`
 **Tests:** new `tests/librarian/unit/test_tools.py`
 
 Define a minimal tool protocol that both LangGraph and ADK can consume:
@@ -160,7 +160,7 @@ This makes it trivial to wrap any tool for a new framework (LangGraph ToolNode, 
 
 ### Step 4 — Config-driven constants ✅
 
-**Files:** edit `src/librarian/config.py`, edit files referencing hardcoded values  
+**Files:** edit `src/librarian/config.py`, edit files referencing hardcoded values
 **Tests:** edit existing config/factory tests
 
 Move remaining hardcoded values to `LibrarySettings`:
@@ -179,7 +179,7 @@ Wire `relevance_threshold` from config into `RetrieverAgent` constructor (curren
 
 ### Step 5 — CI parity (Makefile + shared conventions) ✅
 
-**Files:** edit `Makefile`, possibly new `pyproject.toml` test markers  
+**Files:** edit `Makefile`, possibly new `pyproject.toml` test markers
 **No new code in `src/`**
 
 Align test/lint targets with the ADK-style conventions:

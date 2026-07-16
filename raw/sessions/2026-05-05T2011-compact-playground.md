@@ -42,9 +42,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user wanted to fix a matplotlib figure showing turn count, duration, and turn pacing distributions i
-- 
-            
-            
+-
+
+
 -  i added some things but think we can make this cleaner. i see the fig saved like 1. turn and duration, 2. lang detection (but lets just do da, en, unknown with the print summary; we also need to see if this language switching is the customer and check whether the agent is responding like the custom
 - lets do that and move the logic to the third notebook if query clustering related thanks
 

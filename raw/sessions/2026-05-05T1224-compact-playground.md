@@ -43,10 +43,10 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user requested three interconnected updates to an evaluation notebook (`eval_notebook.ipynb`):
-   - 
-- 
-            
-            
+   -
+-
+
+
 -  df = pd.read_csv("evals/data/bookkeeperHero.csv")
 not recognizing the csv i added to evals/data
 

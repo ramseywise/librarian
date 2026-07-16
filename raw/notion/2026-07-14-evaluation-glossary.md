@@ -43,7 +43,7 @@ Examples in an agent system: user feedback labels (liked/disliked/resolved), ret
 - **Online evaluation / monitoring** — observing and scoring the agent against live production traffic, post-deployment.
 
 **Execution environments:**
-- **Local run** — running evaluation on your own machine, typically via Galactus. A way of doing offline evaluation, not a separate mode.
+- **Local run** — running evaluation on your own machine, typically via project-g. A way of doing offline evaluation, not a separate mode.
 - **Langfuse experiment** — running offline evaluation through the Langfuse UI/experiment runner in shared infra. Also a way of doing offline evaluation.
 
 **Dataset notes:**
@@ -114,6 +114,6 @@ In short: `citation_hallucination` is the cheap offline check, `grounding` is th
 ## Tooling split: Datadog vs. Langfuse
 
 - **Datadog** — infrastructure and system-level observability: logs, metrics (latency, error rates, system health), monitoring, alerting, APM tracing/log aggregation for the deployed `va-agents` service. Classical engineering stack: is the system up, healthy, performing?
-- **Langfuse** — AI/agent-specific observability and evaluation: traces (full chain of a user query through the agent — retrieval, LLM call, response), agent-level tracing/scoring for `galactus` and `va-agents`, monitoring of agent quality (not infra health), evaluation (experiments, prompt-version comparison, scoring against datasets). Dan's analogy: "Langfuse is MLflow for agents."
+- **Langfuse** — AI/agent-specific observability and evaluation: traces (full chain of a user query through the agent — retrieval, LLM call, response), agent-level tracing/scoring for `project-g` and `va-agents`, monitoring of agent quality (not infra health), evaluation (experiments, prompt-version comparison, scoring against datasets). Dan's analogy: "Langfuse is MLflow for agents."
 
 Complementary roles: Langfuse is the LLM-aware observability layer for agent-level tracing/scoring/evaluation; Datadog is the traditional application/infra observability layer for monitoring, APM, and log aggregation.

@@ -67,9 +67,7 @@ def write_note(note: Note, pdf_path: Path, topic_override: str | None = None) ->
 
     if note_path.exists():
         log.warning("writer.note_exists", path=str(note_path))
-        raise FileExistsError(
-            f"Note already exists: {note_path}. Delete it first or use --force."
-        )
+        raise FileExistsError(f"Note already exists: {note_path}. Delete it first or use --force.")
 
     content = render_note(note)
     note_path.write_text(content, encoding="utf-8")

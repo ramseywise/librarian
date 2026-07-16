@@ -1,6 +1,6 @@
 # Plan: LangGraph ↔ ADK Compatibility
 
-**Status:** Draft — awaiting review  
+**Status:** Draft — awaiting review
 **Scope:** `src/orchestration/` — no changes to `librarian/`, `interfaces/`, or storage layers
 
 ---

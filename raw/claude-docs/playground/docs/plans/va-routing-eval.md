@@ -1,8 +1,8 @@
 # VA Routing Eval Plan
 
-**Date:** 2026-05-07  
-**Status:** Ready to run  
-**Goal:** Establish a real routing baseline for va-langgraph against 278 Clara German tickets
+**Date:** 2026-05-07
+**Status:** Ready to run
+**Goal:** Establish a real routing baseline for va-langgraph against 278 corpus-a German tickets
 
 ---
 
@@ -79,7 +79,7 @@ The routing eval (`--baseline-only`) runs three graders:
 |---|---|---|
 | `schema` | Response has `message`, `suggestions`, `nav_buttons` | All fields present |
 | `message_quality` | Message non-empty, 10–5000 chars | Both criteria pass |
-| `routing` | `classified_intent` matches `expected_intent` in Clara fixture | Exact match |
+| `routing` | `classified_intent` matches `expected_intent` in corpus-a fixture | Exact match |
 
 **Key number to watch: `routing` pass rate for va-langgraph.**
 
@@ -118,7 +118,7 @@ Common patterns to look for:
 
 ## Next steps after baseline
 
-1. **If routing > 85%**: move to migrating va-langgraph into galactus for Danish eval
+1. **If routing > 85%**: move to migrating va-langgraph into project-g for Danish eval
 2. **If routing 70-85%**: update `prompts/router.txt` with correction examples for top
    failure intents, re-run `make va-eval-routing` to verify improvement
 3. **Support retrieval quality**: after routing baseline, run a retrieval spot-check —
@@ -135,6 +135,6 @@ Common patterns to look for:
 | `va-eval-base/graders.py` | `SchemaGrader`, `MessageQualityGrader`, `RoutingGrader` |
 | `va-eval-base/runner.py` | Orchestration, result aggregation |
 | `va-eval-base/cli.py` | Entry point (`--baseline-only`, `--output`, `--name`) |
-| `va-langgraph/tests/evalsuite/fixtures/clara_tickets.json` | 278 German tickets |
+| `va-langgraph/tests/evalsuite/fixtures/corpus-a_tickets.json` | 278 German tickets |
 | `results/routing-<ts>.json` | Output (gitignored) |
 | `Makefile` | `va-baseline`, `va-eval-routing`, `va-up-bg`, `va-wait` |

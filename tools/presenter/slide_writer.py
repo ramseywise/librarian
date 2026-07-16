@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from core.client import create_client, parse_json_response
+
 from tools.presenter.models import DeckIntake, DeckOutline, SlideContent, SlideOutline
 
 SLIDE_SYSTEM = """You are a slide content writer for technical presentations.
@@ -60,7 +61,9 @@ def _generate_one_slide(
         f"Intent: {slide.speaker_note}\n"
     )
     if slide.type in NO_IMAGE_TYPES:
-        user_msg += "\nNote: this slide type does not use a generated image — set image_brief to null."
+        user_msg += (
+            "\nNote: this slide type does not use a generated image — set image_brief to null."
+        )
 
     response = client.messages.create(
         model=model,

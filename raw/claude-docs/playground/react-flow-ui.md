@@ -1,8 +1,8 @@
 # React Flow Wiki Graph Explorer — Plan
 
-**Date:** 2026-04-24  
-**Updated:** 2026-04-25  
-**Status:** Ready to implement. Obsidian evaluation complete — gap is clear.  
+**Date:** 2026-04-24
+**Updated:** 2026-04-25
+**Status:** Ready to implement. Obsidian evaluation complete — gap is clear.
 **Effort:** ~3-4 days MVP (graph + multi-edge + UMAP), ~6-8 days full (agent chat + write-back)
 
 ---

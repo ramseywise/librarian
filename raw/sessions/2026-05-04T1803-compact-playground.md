@@ -36,9 +36,9 @@ key_output: ~
 - **Session ID**: 8dae261c-49ea-42af-8c3c-26d409b53659
 
 ## Recent prompts
-- 
-            
-            
+-
+
+
 - Continue from where you left off.
 -  @eval_notebook now has columns seelcted but needs to add subplots to show a dashboard for the bullets listed in 1. boookeeper hero eda. is this prepared enough to feed now into our graders? or do we need to do some alignment with col names? or do we need to do more parsing to get all data points pr
 - Okay. That is a really good question about the month, turn and single turn because sometimes well, ideally, this is a QA kinda single turn situation. The user wants to answer a question, and it turns the sources to answer it. However, I don't know Danish, so I don't actually know in these conversati

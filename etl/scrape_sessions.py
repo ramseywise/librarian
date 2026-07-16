@@ -20,7 +20,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 
 import structlog
@@ -40,6 +39,7 @@ CODEX_DIRS = [
 # ---------------------------------------------------------------------------
 # Claude Code JSONL
 # ---------------------------------------------------------------------------
+
 
 def _project_name_from_slug(slug: str) -> str:
     """Convert -Users-ramsey-wise-Workspace-playground → playground."""
@@ -137,7 +137,9 @@ def scrape_claude(output_dir: Path, dry_run: bool = False) -> int:
                 continue  # skip system-only sessions with no real user input
 
             # Build a slug from date + first prompt words
-            slug = re.sub(r"[^a-z0-9]+", "-", (prompts[0] if prompts else "session").lower())[:40].strip("-")
+            slug = re.sub(r"[^a-z0-9]+", "-", (prompts[0] if prompts else "session").lower())[
+                :40
+            ].strip("-")
             out_name = f"claude-{date}-{slug}-{session_id[:8]}.md"
             out_path = output_dir / out_name
 
@@ -155,12 +157,12 @@ date: {date}
 session_id: {session_id}
 prompts: {len(prompts)}
 total_tokens: {total_tokens}
-cache_read_tokens: {usage['cache_read_tokens']}
+cache_read_tokens: {usage["cache_read_tokens"]}
 ---
 
 # Claude Code Session — {date} ({project})
 
-**First prompt:** {prompts[0] if prompts else 'unknown'}
+**First prompt:** {prompts[0] if prompts else "unknown"}
 
 ## Prompts ({len(prompts)} total)
 
@@ -170,14 +172,16 @@ cache_read_tokens: {usage['cache_read_tokens']}
 
 | Metric | Value |
 |---|---|
-| Input tokens | {usage['input_tokens']:,} |
-| Output tokens | {usage['output_tokens']:,} |
-| Cache read | {usage['cache_read_tokens']:,} |
-| Cache write | {usage['cache_write_tokens']:,} |
+| Input tokens | {usage["input_tokens"]:,} |
+| Output tokens | {usage["output_tokens"]:,} |
+| Cache read | {usage["cache_read_tokens"]:,} |
+| Cache write | {usage["cache_write_tokens"]:,} |
 """
 
             if dry_run:
-                print(f"[claude] would write: {out_name} ({len(prompts)} prompts, {total_tokens:,} tokens)")
+                print(
+                    f"[claude] would write: {out_name} ({len(prompts)} prompts, {total_tokens:,} tokens)"
+                )
             else:
                 out_path.write_text(content, encoding="utf-8")
                 log.info("wrote_session", source="claude", file=out_name)
@@ -189,6 +193,7 @@ cache_read_tokens: {usage['cache_read_tokens']}
 # ---------------------------------------------------------------------------
 # Codex JSONL
 # ---------------------------------------------------------------------------
+
 
 def _codex_session_meta(lines: list[str]) -> dict:
     """Extract git/cwd metadata from the first few Codex JSONL lines."""
@@ -224,7 +229,9 @@ def _codex_prompts(lines: list[str]) -> list[str]:
                     # Skip environment context blocks
                     if text and not text.startswith("<environment_context") and len(text) > 20:
                         # Strip IDE context headers
-                        clean = re.sub(r"^#\s*Context from my IDE.*?\n.*?\n", "", text, flags=re.DOTALL).strip()
+                        clean = re.sub(
+                            r"^#\s*Context from my IDE.*?\n.*?\n", "", text, flags=re.DOTALL
+                        ).strip()
                         if clean and len(clean) > 20:
                             prompts.append(clean[:300])
                             break
@@ -249,7 +256,9 @@ def scrape_codex(output_dir: Path, dry_run: bool = False) -> int:
             session_id = meta.get("session_id") or jsonl_file.stem
             branch = meta.get("branch", "")
 
-            slug = re.sub(r"[^a-z0-9]+", "-", (prompts[0] if prompts else "session").lower())[:40].strip("-")
+            slug = re.sub(r"[^a-z0-9]+", "-", (prompts[0] if prompts else "session").lower())[
+                :40
+            ].strip("-")
             out_name = f"codex-{date}-{slug}-{session_id[:8]}.md"
             out_path = output_dir / out_name
 
@@ -270,7 +279,7 @@ prompts: {len(prompts)}
 # Codex Session — {date} ({project})
 
 **Branch:** {branch}
-**First prompt:** {prompts[0] if prompts else 'unknown'}
+**First prompt:** {prompts[0] if prompts else "unknown"}
 
 ## Prompts ({len(prompts)} total)
 
@@ -291,11 +300,14 @@ prompts: {len(prompts)}
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Scrape AI session history → raw/sessions/")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--source", choices=["claude", "codex", "all"], default="all")
-    parser.add_argument("--dry-run", action="store_true", help="Print what would be written, don't write")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print what would be written, don't write"
+    )
     args = parser.parse_args()
 
     if not args.dry_run:

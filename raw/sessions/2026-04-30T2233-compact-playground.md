@@ -41,10 +41,10 @@ key_output: ~
 
 Summary:
 1. Primary Request and Intent:
-   The user wants to remove all generic "billy" naming from the codebase, keeping only references that are 
-- 
-            
-            
+   The user wants to remove all generic "product-a" naming from the codebase, keeping only references that are
+-
+
+
 - i want the aggressive sweep even if it means renaming things where makes more sense.. woah what is this reset_db.py btw it mentions user names or is fake data?
 - yes exactly
 

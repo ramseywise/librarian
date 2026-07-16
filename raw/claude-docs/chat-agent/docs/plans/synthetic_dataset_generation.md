@@ -1,7 +1,7 @@
 # Plan: Synthetic Test Dataset Generation Script
 
-**Branch:** AIF-32-generate-test-dataset  
-**Date:** 2026-04-15  
+**Branch:** AIF-32-generate-test-dataset
+**Date:** 2026-04-15
 **Status:** Draft
 
 ---
@@ -199,12 +199,12 @@ At generation time the model is also configurable via `--generation-model` CLI f
 
 #### 5.1 Simple items
 
-**Input:** Single article body + instructions  
+**Input:** Single article body + instructions
 **Output:** JSON array of Q&A pairs
 
 ```
 System:
-You are generating evaluation test cases for a customer support chatbot. The chatbot answers questions about Shine's financial services product based on help center articles.
+You are generating evaluation test cases for a customer support chatbot. The chatbot answers questions about client-a's financial services product based on help center articles.
 
 User:
 Given the following article, generate [N] simple question-answer pairs. Each question must be answerable from this article alone.
@@ -233,7 +233,7 @@ Article (ID: [ARTICLE_ID]):
 
 #### 5.2 Complex items
 
-**Input:** Two article bodies + instructions  
+**Input:** Two article bodies + instructions
 
 ```
 Given the following two articles, generate [N] question-answer pairs where answering correctly requires information from BOTH articles.
@@ -260,7 +260,7 @@ Return a JSON array:
 
 #### 5.3 Ambiguous items
 
-**Input:** Single article body + instructions  
+**Input:** Single article body + instructions
 
 ```
 Generate [N] ambiguous questions based on the following article. Each question should be genuine but underspecified — missing context about the user's situation, company size, time frame, or applicable conditions. The question must NOT be clearly out of scope.

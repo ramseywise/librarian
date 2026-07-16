@@ -15,7 +15,7 @@ cache_read_tokens: 4548266
 ## Prompts (5 total)
 
 - why is make lint failing? doew sit not have unsafe fixes?
-- playground - it should be like galactus make commands no?
+- playground - it should be like project-g make commands no?
 - Found 4 errors (1 fixed, 3 remaining).
 - > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file -
 check for added large files..............................................Failed

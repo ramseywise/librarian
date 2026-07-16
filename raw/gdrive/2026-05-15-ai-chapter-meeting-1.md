@@ -3,7 +3,7 @@
 **Source:** Google Drive (Google Meet Notes by Gemini, shared by Sebastian Rose)
 **File ID:** 1QCT4pDCh4fR9W3nFRgelMqRuXm4V4_9BWKYD-jXMq1I
 **Date:** 2026-05-15
-**Attendees:** Manuel PEIXOTO, Nicklas Munksgaard Larsen, Dmytro Yarmak, Felix Schweickard, Ingo Schindler, Daniel Tadros, Sebastian Rose, Teresa Chambel, Hong-Thai Nguyen, Dan Steenbjerg Rasmussen, Marco Enrique Zimmermann, Ramsey Wise, Marcos OLIVEIRA, Silviu Lupu, Jonas Maia, Abhimanyu Aryan, Yan Zhang, Danni Gregersen, Anders Dehn, Cedric Deniau, Clara Quintans, Axel Simond, Raphael BACCONNIER, Jonathan Coneggo, Jakob Henning Jensen, Clément Gilardy, Jeremy Simon
+**Attendees:** Manuel PEIXOTO, Nicklas Munksgaard Larsen, Dmytro Yarmak, Felix Schweickard, Ingo Schindler, Daniel Tadros, Sebastian Rose, Teresa Chambel, Hong-Thai Nguyen, Dan Steenbjerg Rasmussen, Marco Enrique Zimmermann, Ramsey Wise, Marcos OLIVEIRA, Silviu Lupu, Jonas Maia, Abhimanyu Aryan, Yan Zhang, Danni Gregersen, Anders Dehn, Cedric Deniau, corpus-a Quintans, Axel Simond, Raphael BACCONNIER, Jonathan Coneggo, Jakob Henning Jensen, Clément Gilardy, Jeremy Simon
 
 ---
 

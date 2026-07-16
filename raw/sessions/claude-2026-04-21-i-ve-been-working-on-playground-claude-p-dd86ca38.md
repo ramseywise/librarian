@@ -32,7 +32,7 @@ work_type: refactor
 
 Summary:
 1. Primary Request and Intent:
-   The 
+   The
 
 ## Stats
 

@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-09
 session_id: 0c6ec8a1-1369-4a3c-8e7a-6640632fd9dc
 prompts: 5
@@ -8,7 +8,7 @@ total_tokens: 6222
 cache_read_tokens: 1019225
 ---
 
-# Claude Code Session — 2026-06-09 (galactus)
+# Claude Code Session — 2026-06-09 (project-g)
 
 **First prompt:** IndexError: single positional indexer is out-of-bounds
 

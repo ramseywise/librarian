@@ -182,7 +182,7 @@ When migrating or building a multi-corpus RAG service, use a three-store layout 
 ```
 data/
   raw/
-    <corpus_name>/          ← scraped source files (JSONL from raptor_scraper etc.)
+    <corpus_name>/          ← scraped source files (JSONL from [rag-v1]_scraper etc.)
   stores/
     vectordb/
       <corpus>.duckdb       ← dense embeddings (rag_chunks table, FLOAT[] embedding column)

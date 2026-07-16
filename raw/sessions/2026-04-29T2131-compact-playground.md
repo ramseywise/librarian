@@ -36,13 +36,13 @@ key_output: ~
 - **Session ID**: f5df804d-c997-4979-b7d2-593085ad920b
 
 ## Recent prompts
-- 
-            
-            
+-
+
+
 -  wait since we added pre-commit we seem to have a lot of issues for these but their just claude files do we have a make lint to fix or relax the rules a bit? idk seems like theres a lot of files that need fixing atm
 -  i want to commit changes to repo root and infrastructure - but it seems that hc-rag-agent has a lot of similar files to playground root - can we remove any of the duplicates or is there a reason to have another .env.example, make file or toml or can we delete the project level without breaking anyt
 -  ok and just to clarify nothing in the mcp_server is like access to information that's company specific?
--  i have 33 tickets that mention sevdesk - can we make these generic names please.. like i think some are require sevdesk_api and that's ok that's required for clara mcp server but anywhere esle we want to use conventional naming whether from billy or clara not sevdesk
+-  i have 33 tickets that mention vendor-a - can we make these generic names please.. like i think some are require vendor-a_api and that's ok that's required for corpus-a mcp server but anywhere esle we want to use conventional naming whether from product-a or corpus-a not vendor-a
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

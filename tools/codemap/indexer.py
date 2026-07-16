@@ -101,8 +101,13 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             [
-                file_id, repo.repo_id, rel_path, lang_name,
-                manifest.file_hash(path), loc, date.today().isoformat(),
+                file_id,
+                repo.repo_id,
+                rel_path,
+                lang_name,
+                manifest.file_hash(path),
+                loc,
+                date.today().isoformat(),
             ],
         )
 
@@ -116,9 +121,18 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
-                    symbol_id, file_id, repo.repo_id, sym.name, sym.kind,
-                    sym.signature, sym.docstring, sym.parent_scope,
-                    sym.start_line, sym.end_line, sym.start_byte, sym.end_byte,
+                    symbol_id,
+                    file_id,
+                    repo.repo_id,
+                    sym.name,
+                    sym.kind,
+                    sym.signature,
+                    sym.docstring,
+                    sym.parent_scope,
+                    sym.start_line,
+                    sym.end_line,
+                    sym.start_byte,
+                    sym.end_byte,
                 ],
             )
 
@@ -165,9 +179,7 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
 def _prune_removed_files(
     con: duckdb.DuckDBPyConnection, repo_id: str, seen_file_ids: set[str]
 ) -> None:
-    existing = con.execute(
-        "SELECT file_id FROM files WHERE repo_id = ?", [repo_id]
-    ).fetchall()
+    existing = con.execute("SELECT file_id FROM files WHERE repo_id = ?", [repo_id]).fetchall()
     for (file_id,) in existing:
         if file_id not in seen_file_ids:
             con.execute("DELETE FROM files WHERE file_id = ?", [file_id])
@@ -201,9 +213,7 @@ def _resolve_import_edges(con: duckdb.DuckDBPyConnection) -> None:
         repo_id = src_file_id.split(":", 1)[0]
         target_file_id = by_module.get((repo_id, dst_symbol))
         if target_file_id and target_file_id != src_file_id:
-            con.execute(
-                "UPDATE edges SET dst_file_id = ? WHERE rowid = ?", [target_file_id, rowid]
-            )
+            con.execute("UPDATE edges SET dst_file_id = ? WHERE rowid = ?", [target_file_id, rowid])
 
 
 def _resolve_call_edges(con: duckdb.DuckDBPyConnection) -> None:

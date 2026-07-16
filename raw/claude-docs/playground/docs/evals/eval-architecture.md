@@ -19,7 +19,7 @@ Two orthogonal eval dimensions exist for multi-agent VA:
 
 Strand A seeds from queries that exercise routing boundaries. Strand F seeds from representative domain tasks that assume routing is correct. The two datasets are complementary — neither replaces the other.
 
-**Why this is non-obvious:** galactus current evals only measure retrieval quality (MRR, P@k) and response quality (grounding, completeness). Neither catches "right answer, wrong tool path" or "routed to wrong sub-agent." These failures are invisible to all current graders.
+**Why this is non-obvious:** project-g current evals only measure retrieval quality (MRR, P@k) and response quality (grounding, completeness). Neither catches "right answer, wrong tool path" or "routed to wrong sub-agent." These failures are invisible to all current graders.
 
 ---
 
@@ -59,12 +59,12 @@ Use `coverage_decision` as the comparable breakdown axis for SA in the combined 
 
 ## Strand F — Domain agent eval
 
-Once routing is correct, domain correctness asks: did the sub-agent call the right Billy API tools, produce the expected structured output, and give a complete answer?
+Once routing is correct, domain correctness asks: did the sub-agent call the right product-a API tools, produce the expected structured output, and give a complete answer?
 
 ### Three eval dimensions
 
 **1. Tool trajectory** (reuse Strand A runner)
-Did the agent call the expected Billy API tools in the expected order?
+Did the agent call the expected product-a API tools in the expected order?
 
 **2. Output structure correctness** — `OutputStructureGrader`
 Did the response include the expected structured fields? `table_type` match, `chart_data` populated, `metric_cards` present, `contact_support` flag, `form` presence. Binary per-field: present/absent + type correct.
@@ -74,7 +74,7 @@ Input: actual `AssistantResponse` dict + expected output spec from task
 Output: `GraderOutput` with per-field pass/fail in `dimensions`
 
 **3. Response quality**
-Reuse existing `CompletenessGrader`, `GroundingGrader`. Context = the Billy API tool outputs.
+Reuse existing `CompletenessGrader`, `GroundingGrader`. Context = the product-a API tool outputs.
 
 ### Dataset format
 
@@ -107,14 +107,14 @@ Storage: `data/adk/eval_sets/domain_tasks/{domain}_tasks.jsonl`. Scope: 15 invoi
 
 ## ADK eval framework — native capabilities gap
 
-galactus currently has no `tool_trajectory_avg_score` equivalent. ADK provides this via `AgentEvaluator`. Other ADK-native metrics:
+project-g currently has no `tool_trajectory_avg_score` equivalent. ADK provides this via `AgentEvaluator`. Other ADK-native metrics:
 
-| Metric | Galactus equivalent |
+| Metric | project-g equivalent |
 |---|---|
 | `tool_trajectory_avg_score` | `adk_steps` diagnostic + experimental `ToolTrajectoryGrader` |
 | `final_response_match_v2` | Similar to GroundingGrader |
 | `hallucinations_v1` | Similar to GroundingGrader |
-| `safety_v1` | ❌ Not in galactus |
+| `safety_v1` | ❌ Not in project-g |
 | `rubric_based_final_response_quality_v1` | Similar to quality graders |
 
 ADK also exposes Vertex AI managed eval (pointwise, pairwise, AutoSxS) for systematic model comparison.

@@ -1,7 +1,7 @@
 # Phase 7b — Intent Taxonomy Refactor + Chainlit UX
 
-**Status:** PLANNED  
-**Depends on:** Phase 7a ✓  
+**Status:** PLANNED
+**Depends on:** Phase 7a ✓
 **Scope:** ~3 hours
 
 ---
@@ -121,7 +121,7 @@ File: `tests/eval/golden_dataset.json`
 
 ### Step 7 — Unit tests
 
-New test file: `tests/unit/test_query_understanding.py`  
+New test file: `tests/unit/test_query_understanding.py`
 Cover:
 - `classify_intent("what are my top artists?")` → `explore_my_taste`
 - `classify_intent("discover something new for me")` → `discover`

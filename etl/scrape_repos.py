@@ -17,7 +17,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import shutil
-from datetime import date
 from pathlib import Path
 
 import structlog
@@ -116,11 +115,15 @@ def load_repos(repos_file: Path) -> list[Path]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Scrape local repos → raw/repos/")
     parser.add_argument(
-        "--repos-file", type=Path, default=DEFAULT_REPOS_FILE,
+        "--repos-file",
+        type=Path,
+        default=DEFAULT_REPOS_FILE,
         help="Path to repos.txt (default: raw/repos/repos.txt)",
     )
     parser.add_argument(
-        "--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR,
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_OUTPUT_DIR,
         help="Output directory (default: raw/repos/)",
     )
     parser.add_argument("--dry-run", action="store_true")

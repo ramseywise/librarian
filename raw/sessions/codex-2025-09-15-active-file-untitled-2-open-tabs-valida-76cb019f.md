@@ -4,23 +4,23 @@ branch: ramsey-feature-dev
 date: 2025-09-15
 key_output: none
 output_type: none
-project: txmatch
+project: tx-project
 prompts: 4
 session_id: 76cb019f-34e0-44e5-a7a1-f5a493145b31
 tool: codex
 work_type: chat
 ---
 
-# Codex Session — 2025-09-15 (txmatch)
+# Codex Session — 2025-09-15 (tx-project)
 
 **Branch:** ramsey-feature-dev
 **First prompt:** ## Active file: Untitled-2
 
 ## Open tabs:
 - validation.py: notebooks/documentForTransaction/validation.py
-- transaction_match.py: src/txmatch/modules/transaction_match.py
-- scoring_system.py: src/txmatch/modules/utils/scoring_system.py
-- transaction_match_vectorized.py: src/txmatch/modules/transacti
+- transaction_match.py: src/tx-project/modules/transaction_match.py
+- scoring_system.py: src/tx-project/modules/utils/scoring_system.py
+- transaction_match_vectorized.py: src/tx-project/modules/transacti
 
 ## Prompts (4 total)
 
@@ -28,20 +28,20 @@ work_type: chat
 
 ## Open tabs:
 - validation.py: notebooks/documentForTransaction/validation.py
-- transaction_match.py: src/txmatch/modules/transaction_match.py
+- transaction_match.py: src/tx-project/modules/transaction_match.py
 - scoring_system.py: src/txma
 - ## Active file: notebooks/documentForTransaction/Autoassignment.ipynb
 
 ## Open tabs:
 - validation.py: notebooks/documentForTransaction/validation.py
-- transaction_match.py: src/txmatch/modules/transac
+- transaction_match.py: src/tx-project/modules/transac
 - ## Active file: notebooks/documentForTransaction/Autoassignment.ipynb
 
 ## Open tabs:
 - validation.py: notebooks/documentForTransaction/validation.py
-- transaction_match.py: src/txmatch/modules/transac
+- transaction_match.py: src/tx-project/modules/transac
 - ## Active file: notebooks/documentForTransaction/validation.py
 
 ## Open tabs:
 - validation.py: notebooks/documentForTransaction/validation.py
-- transaction_match.py: src/txmatch/modules/transaction_ma
+- transaction_match.py: src/tx-project/modules/transaction_ma

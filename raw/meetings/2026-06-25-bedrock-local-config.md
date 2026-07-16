@@ -38,7 +38,7 @@ Detailed walkthrough of AWS Vault access and Bedrock architecture for local dev 
 ### Bedrock App Architecture
 - Python app (`pyproject.toml` deps, env vars for KB ID and region `eu-north-1`)
 - `/chunks` endpoint: queries KB with score threshold 0.4 + deduplication
-- Identical setup to Galactus project — use Galactus `.env.example` as reference
+- Identical setup to project-g project — use project-g `.env.example` as reference
 
 ### Knowledge Base Setup
 - Create new service roles (let Amazon manage permissions)

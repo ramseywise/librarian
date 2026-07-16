@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-24
 session_id: b91ebc5f-ee59-4f18-94b1-9a7e2ae963ac
 prompts: 8
@@ -8,7 +8,7 @@ total_tokens: 150357
 cache_read_tokens: 19255846
 ---
 
-# Claude Code Session — 2026-06-24 (galactus)
+# Claude Code Session — 2026-06-24 (project-g)
 
 **First prompt:** just out of curiosity - how many of those 541 golden traces we're using from intercom data are actually bkh? i have a feel i just didn't do the conversation prepraocessing pipeine of the query and response with the url is why non of those turns are matches - do we neeed to review the conversations a
 

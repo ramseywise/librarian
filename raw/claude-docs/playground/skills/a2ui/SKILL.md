@@ -16,7 +16,7 @@ A2UI is a declarative protocol for AI agents to generate rich, interactive UIs. 
 messages describing components; native clients render them using their own widget libraries.
 This means **no code execution** — only data — which prevents UI injection attacks.
 
-Official site: https://a2ui.org  
+Official site: https://a2ui.org
 GitHub: https://github.com/google/A2UI
 
 ---

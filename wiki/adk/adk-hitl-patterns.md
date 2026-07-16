@@ -18,7 +18,7 @@ Six patterns for human-in-the-loop control in LangGraph agents. Choose based on 
 | **Static breakpoints** | Compile time (`interrupt_before`, `interrupt_after`) | Always at that node boundary | Easy — predictable |
 | **Dynamic `interrupt()`** | Inside a node at runtime | Only when condition is met | Harder — conditional |
 
-**Static breakpoints** are coarse but predictable. Use for mandatory review points.  
+**Static breakpoints** are coarse but predictable. Use for mandatory review points.
 **Dynamic `interrupt()`** is precise. Use when the condition matters (e.g., only high-value transactions).
 
 ```python

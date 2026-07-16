@@ -5,7 +5,7 @@ source_url: https://docs.google.com/document/d/10uXN-6JhFr8HC2vc8cP9ZQ-L9KTgDmB9
 type: meeting_notes
 date: 2026-06-23
 participants: [Ramsey Wise, Marco Zimmermann, Shyamali Pawar]
-tags: [bedrock, data-sources, knowledge-base, rag, evaluation, chunking, opensearch, galactus, langfuse]
+tags: [bedrock, data-sources, knowledge-base, rag, evaluation, chunking, opensearch, project-g, langfuse]
 ---
 
 # Onboarding — Bedrock & Data Sources — 2026-06-23
@@ -30,7 +30,7 @@ Marco walked through the current Bedrock staging KB architecture, data sources, 
 - [Marco + Yan] Review Ramsey's findings doc; collaborate on Thursday presentation
 - [Marco] Upload frequency questions to GitHub
 - [Marco] Create evaluation doc for HCA/VA (exclude VA-agent-specific data)
-- [Ramsey] Present Galactus repo + data/eval pipelines to Shyamali
+- [Ramsey] Present project-g repo + data/eval pipelines to Shyamali
 - [Ramsey] Sync with Yan on evaluation methodology
 - [Shyamali] Review all shared docs; prep question list for daily check-ins
 - [Shyamali] Create backlog tickets Friday afternoon post-consolidation
@@ -40,8 +40,8 @@ Marco walked through the current Bedrock staging KB architecture, data sources, 
 ### Current Data Sources (4 total, web-crawled)
 1. **Pricing page** (1 page, 59 chunks) — hierarchical chunking; table structure causes chunks too small → pricing info gets cut off. Needs fix.
 2. **Billipedia** — encyclopedic marketing articles; to be removed
-3. **Shine Intercom articles (Danish)** — target source; keep
-4. **Shine Intercom articles (English)** — duplicate/partial translations; to be removed
+3. **client-a Intercom articles (Danish)** — target source; keep
+4. **client-a Intercom articles (English)** — duplicate/partial translations; to be removed
 
 Production is a copy of staging for now.
 
@@ -57,14 +57,14 @@ Production is a copy of staging for now.
 - Source type always `web`; most other auto-fields are metadata noise
 - Additional metadata (slugs, etc.) to be added in future iterations
 
-### EDA Findings (Marco's notebooks in Galactus)
+### EDA Findings (Marco's notebooks in project-g)
 - Token count distribution, URL taxonomy, chunk size distribution
 - Duplication analysis: mostly image/copyright boilerplate — not a retrieval concern
 - Failure mode analysis: ~16 of 18 tested intents showed content gaps (possible methodology bug — Marco to investigate)
 
 ## Evaluation Architecture
 
-- **Offline**: Galactus repo → eval pipelines → HTML reports (Ramsey)
+- **Offline**: project-g repo → eval pipelines → HTML reports (Ramsey)
 - **Online**: Longfuse (Jeremy wiring datasets + metrics)
 - **Ground truth**: URL-level grounding set (human-verified) → passage-level next step
 - **Smoke tests**: Marco's validation matrix — basic scenarios, out-of-scope detection
@@ -72,7 +72,7 @@ Production is a copy of staging for now.
 
 ## Failure Taxonomy
 - No official taxonomy yet
-- Starting points: Ramsey's Galactus summary markdown, Yan's report
+- Starting points: Ramsey's project-g summary markdown, Yan's report
 - Marco investigating content gap analysis (coverage by intent)
 
 ## Team Contacts

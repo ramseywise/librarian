@@ -16,23 +16,23 @@ the backend that executes them does.
 Tool interface (function signatures + docstrings)
               ↓                             ↓
        Dev / CI / staging            Production
-   Billy MCP stub server         Real Billy REST API
+   product-a MCP stub server         Real product-a REST API
    (FastMCP → SQLite)            (httpx + OAuth + org_id)
    adk-agent-pocs/               va-google-adk / va-langgraph
-     mcp_servers/billy/            shared/tools/ backed by
+     mcp_servers/product-a/            shared/tools/ backed by
                                    direct httpx calls
 ```
 
-**Dev stub** (`mcp_servers/billy/`) — already exists, 110 tests passing:
+**Dev stub** (`mcp_servers/product-a/`) — already exists, 110 tests passing:
 - MCP server on `:8765` (`main_noauth.py` — stdio or SSE)
 - REST API on `:8766` (`main.py` — FastAPI, Swagger at `/docs`)
-- SQLite `billy.db` — persistent, seeded, shared across both servers
-- Controlled by `BILLY_DB` env var; `reset_db.py` reloads full fixture
+- SQLite `product-a.db` — persistent, seeded, shared across both servers
+- Controlled by `product-a_DB` env var; `reset_db.py` reloads full fixture
 
 **Production path** (future, not blocking dev) — same tool signatures, different
-implementation: thin httpx wrapper around the real Billy REST API, OAuth token
+implementation: thin httpx wrapper around the real product-a REST API, OAuth token
 from session state, `organisation_id` injected per-request. Controlled by
-`BILLY_BACKEND=api` env var when that layer is built.
+`product-a_BACKEND=api` env var when that layer is built.
 
 **Consequence for the build order**: Phase 7 from the previous plan ("replace stubs
 with real API") was wrong. The MCP stub is *permanent dev infrastructure*, not
@@ -540,7 +540,7 @@ Phase 9 — Artefact store  ✅ DONE
   - Artefact listing endpoint (GET /artefacts?session_id=...)
 
 Production path  (separate track, not gating dev phases)
-  ├── BILLY_BACKEND=api → direct httpx wrapper around real Billy REST API
+  ├── product-a_BACKEND=api → direct httpx wrapper around real product-a REST API
   ├── OAuth token injection from session state
   ├── Organisation ID per-request
   └── Same tool signatures — agent code unchanged
@@ -561,7 +561,7 @@ Production path  (separate track, not gating dev phases)
 | +Phase 6 (Insights) | Net margin, anomaly detection, customer concentration, break-even | Accounting/VAT |
 | +Phase 7 (Accounting) | Audit readiness, VAT periods, handoff doc | Long-term memory, Artefacts |
 | +Phase 8 (Long-term memory) | User preferences recalled cross-session; episodic session summaries | Artefacts |
-| +Phase 9 (Artefact store) ✅ | Generated docs / reports stored outside prompt; downloadable from UI | Real Billy data (Production path) |
+| +Phase 9 (Artefact store) ✅ | Generated docs / reports stored outside prompt; downloadable from UI | Real product-a data (Production path) |
 
 ---
 
@@ -573,7 +573,7 @@ Production path  (separate track, not gating dev phases)
 | Phase 1 | Does va-google-adk use one MCPToolset per sub-agent or shared at root? | Affects token count and session scope |
 | Phase 2 | Should `send_invoice_reminder` be a new MCP tool or reuse `send_invoice_by_email` with a reminder flag? | Affects DB schema (reminder log?) |
 | Phase 4 | How is `fixed_or_variable` classified for expenses? User-set flag vs LLM inference | Affects `get_expenses_by_category` and break-even calc |
-| Phase 5 | Is bank balance from Billy's own bank reconciliation view, or a separate open-banking connector? | Determines whether Banking is in the Billy MCP stub or a new server |
+| Phase 5 | Is bank balance from product-a's own bank reconciliation view, or a separate open-banking connector? | Determines whether Banking is in the product-a MCP stub or a new server |
 | Phase 6 | Data quality threshold before suppressing a metric? | Avoids misleading partial metrics (e.g. margin with 2 months of expenses) |
 | Prod path | Shared `tools/` package vs copy-per-project? | Currently the MCP approach makes this moot for dev; matters for prod httpx layer |
 
@@ -582,7 +582,7 @@ Production path  (separate track, not gating dev phases)
 ## 8. What this does NOT cover
 
 - **Snowflake feature store** — cross-org analytics; separate data pipeline
-- **Price recommender** — needs market benchmark data outside Billy
+- **Price recommender** — needs market benchmark data outside product-a
 - **Recurring invoice automation** — Act capability requiring event triggers
 - **Web client** — frontend; separate initiative
 - **Eval suites** — separate quality initiative
@@ -592,14 +592,14 @@ Production path  (separate track, not gating dev phases)
 - **Semantic / vector-based memory retrieval** — deferred past Phase 8 (simple
   recency + key-match is the Phase 8 baseline)
 - **Inferred user preferences** — confidence-threshold promotion deferred past Phase 8
-- **Open-banking connector** — Banking domain (Phase 5) assumes Billy's own bank
+- **Open-banking connector** — Banking domain (Phase 5) assumes product-a's own bank
   reconciliation view; real open-banking is a separate connector
 
 ---
 
 ## Appendix: full tool inventory after all phases
 
-### MCP server (`mcp_servers/billy/app/tools/`)
+### MCP server (`mcp_servers/product-a/app/tools/`)
 
 ```
 invoices.py     get_invoice, list_invoices, get_invoice_summary, create_invoice,

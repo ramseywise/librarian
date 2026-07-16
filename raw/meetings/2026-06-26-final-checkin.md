@@ -5,7 +5,7 @@ source_url: https://docs.google.com/document/d/1RIGOwe9r-EPL92oiKtPfLz7aJzDROsmP
 type: meeting_notes
 date: 2026-06-26
 participants: [Ramsey Wise, Shyamali Pawar, Yan Zhang]
-tags: [rag, ingestion, evaluation, ownership, bedrock, langfuse, galactus]
+tags: [rag, ingestion, evaluation, ownership, bedrock, langfuse, project-g]
 ---
 
 # Final Checkin — 2026-06-26
@@ -34,5 +34,5 @@ Clarified technical ownership boundaries and aligned on evaluation priorities am
 - **Jeremy note**: Jeremy sometimes acts without consulting the team (e.g., used wrong data source for Longfuse — old bookkeeping hero data instead of validated Intercom data).
 - **Bedrock ingestion frequency**: Unknown/undecided — needs to be determined once ingestion is cleaned up. Marco working on metadata enrichment.
 - **Trace collection**: Not yet operational. Plan is to push ingested articles to S3 and wire VA traces through Longfuse.
-- **Evaluation dashboards**: No standard dashboards available. Ramsey built a temporary HTML eval reports pipeline (in Galactus).
-- **Failure taxonomy**: No official taxonomy yet. Starting point in Yan's report and Galactus summary markdown.
+- **Evaluation dashboards**: No standard dashboards available. Ramsey built a temporary HTML eval reports pipeline (in project-g).
+- **Failure taxonomy**: No official taxonomy yet. Starting point in Yan's report and project-g summary markdown.

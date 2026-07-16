@@ -33,7 +33,7 @@ Always confirm which section or initiative to convert before creating tickets �
 Before creating any tickets, parse the document structure:
 
 1. Identify the **workstream** (top-level grouping, e.g. "HC Data Ingestion")
-2. Identify **initiatives** (mid-level groupings, e.g. "Ingest Billy Raw Articles")
+2. Identify **initiatives** (mid-level groupings, e.g. "Ingest product-a Raw Articles")
 3. Identify **issues** (individual tickets within each initiative)
 4. For each issue, extract:
    - Title
@@ -79,7 +79,7 @@ Current label taxonomy for the HC/VA Eval & Improvement workstream:
 
 | Label | Color | Use for |
 |-------|-------|---------|
-| HC Data Ingestion | #5e6ad2 | All Billy, Intercom, SKAT, GDPR masking, and data validation work |
+| HC Data Ingestion | #5e6ad2 | All product-a, Intercom, SKAT, GDPR masking, and data validation work |
 | HC Feedback Loop | #f2994a | CS onboarding, annotation guidelines, HITL sampling queues |
 | HC Evaluation | #4cb782 | Eval dataset curation, LLM-as-judge, benchmarking, clustering |
 
@@ -201,7 +201,7 @@ Before wrapping up, verify:
 
 ## Notes on this specific workstream
 
-This skill was built in the context of the HC/VA Eval & Improvement workstream at Shine. The document conventions used there are:
+This skill was built in the context of the HC/VA Eval & Improvement workstream at client-a. The document conventions used there are:
 
 - Issues listed as bullets under initiative headings
 - Size in square brackets: `[S · High]`, `[M · Blocker]`, `[XS · Secondary]`

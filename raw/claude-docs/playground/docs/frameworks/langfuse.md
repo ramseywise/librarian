@@ -1,6 +1,6 @@
 # LangFuse — Reference Spec
 
-Primary observability platform for galactus support agents. Handles tracing, online
+Primary observability platform for project-g support agents. Handles tracing, online
 scoring, datasets, and experiment comparison. LangSmith is used for VA agents
 (LangGraph auto-instrumentation) — see [langsmith.md](langsmith.md).
 
@@ -71,7 +71,7 @@ Each agent uses its framework's native instrumentation — `@observe` decorators
 
 **Why:** A unified tracing abstraction would add an adapter layer with no framework-neutral benefit. Native instrumentation gives framework-specific depth (ADK tool call sequences, LangGraph node transitions) that a generic wrapper would lose. The cost is that cross-framework query latency breakdowns require joining two platforms (LangFuse + LangSmith) — accepted as the right tradeoff given data ownership requirements.
 
-**Consequence:** Don't add a `galactus_trace()` wrapper that all agents call. Wire each agent to its platform directly.
+**Consequence:** Don't add a `project-g_trace()` wrapper that all agents call. Wire each agent to its platform directly.
 
 ---
 
@@ -193,7 +193,7 @@ for trace_id, result in grader_results.items():
     )
 ```
 
-### Standard score keys for galactus
+### Standard score keys for project-g
 
 **Heuristic grounding tiers (free, no LLM)**
 
@@ -326,7 +326,7 @@ for the process lifetime — no per-request fetch.
 
 ---
 
-## Files in galactus
+## Files in project-g
 
 | File | Purpose |
 |---|---|

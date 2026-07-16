@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-05
 session_id: 824e04f8-715b-4753-98f9-785aaf20bbfc
 prompts: 8
@@ -8,7 +8,7 @@ total_tokens: 345944
 cache_read_tokens: 35570847
 ---
 
-# Claude Code Session — 2026-06-05 (galactus)
+# Claude Code Session — 2026-06-05 (project-g)
 
 **First prompt:** I think we have updated everything in evals except reports which right now is kinda a mess.. i'm wondering would this be better in ts acting as like a front end for polyglot? or should we keep it python but how can we clean this up bc it's gotten insane but you see from our evals update what we will
 

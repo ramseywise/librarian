@@ -1,7 +1,7 @@
 # Support Knowledge Agent — Why, What, and How
 
-**Source:** Notion (work)  
-**Date:** 2026-04-07  
+**Source:** Notion (work)
+**Date:** 2026-04-07
 **URL:** https://www.notion.so/31ef148b3ab78088b1c8d80877b01784
 
 ---

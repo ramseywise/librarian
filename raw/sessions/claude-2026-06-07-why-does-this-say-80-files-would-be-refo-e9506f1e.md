@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-07
 session_id: e9506f1e-1e0d-4fea-ae56-79a1195fc34c
 prompts: 5
@@ -8,7 +8,7 @@ total_tokens: 6981
 cache_read_tokens: 1069777
 ---
 
-# Claude Code Session — 2026-06-07 (galactus)
+# Claude Code Session — 2026-06-07 (project-g)
 
 **First prompt:** why does this say 80 files would be reformatted, 262 files already formatted - why isnt it fixing everything?
 

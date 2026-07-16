@@ -1,14 +1,14 @@
 ---
 title: Langfuse Platform
 tags: [infra, eval, concept]
-summary: Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by Shine's AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
+summary: Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by [client]'s AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
 updated: 2026-07-14
 sources:
   - raw/gdrive/2026-05-15-ai-chapter-meeting-1.md
   - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
   - raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
   - raw/notion/2026-06-01-chat-agent-rfc.md
-  - raw/claude-docs/galactus/docs/frameworks/langfuse.md
+  - raw/claude-docs/project-g/docs/frameworks/langfuse.md
   - raw/agent-skills/observability/SKILL.md
 ---
 
@@ -16,7 +16,7 @@ sources:
 
 Langfuse is an open-source LLM engineering platform for observability, tracing, evaluation, prompt management, and analytics. It is purpose-built for LLMs and agentic workflows — unlike general APM tools like Datadog, which are not designed for the trace-level visibility needed when agents call other agents, manage sessions, and run multi-step evaluations.
 
-**Shine adoption status (as of 2026-06):** Legal review complete; contract being finalized. SSO is mandatory before production rollout. SaaS version adopted for testing; self-hosting preferred long-term for data sovereignty. Virtual Assistant and Advisor Production teams have both connected staging environments.
+**[client] adoption status (as of 2026-06):** Legal review complete; contract being finalized. SSO is mandatory before production rollout. SaaS version adopted for testing; self-hosting preferred long-term for data sovereignty. Virtual Assistant and Advisor Production teams have both connected staging environments.
 
 ---
 
@@ -57,7 +57,7 @@ The key architectural split: Datadog for ops, Langfuse for AI quality. Both are 
 
 ---
 
-## Shine-Specific Decisions
+## [client]-Specific Decisions
 
 ### SaaS vs Self-Hosting
 - **Current**: SaaS version chosen for the testing phase (avoids infrastructure management overhead)
@@ -76,12 +76,12 @@ The key architectural split: Datadog for ops, Langfuse for AI quality. Both are 
 
 ### Legal Status
 - Legal review complete as of May 2026
-- Contract finalization in progress (aligning with Shine's requirements)
+- Contract finalization in progress (aligning with [client]'s requirements)
 - Until contract signed, production data is not permitted
 
 ---
 
-## Langfuse vs Patronus AI (Shine context)
+## Langfuse vs Patronus AI ([client] context)
 
 | Dimension | Langfuse | Patronus AI |
 |---|---|---|
@@ -89,7 +89,7 @@ The key architectural split: Datadog for ops, Langfuse for AI quality. Both are 
 | LLM-as-judge | Available but not required | Pre-packaged LLM-as-judge evaluators |
 | Framework fit | Framework-neutral, OTel-native | Similar feature set |
 | Maturity | More mature, larger ecosystem | Startup (direct contact with team in San Francisco) |
-| Shine decision | Adopted (legal cleared) | Being discontinued — doesn't fit current SHI context |
+| [client] decision | Adopted (legal cleared) | Being discontinued — doesn't fit current SHI context |
 
 ---
 
@@ -97,14 +97,14 @@ The key architectural split: Datadog for ops, Langfuse for AI quality. Both are 
 
 See [[Observability — LangFuse vs LangSmith Decision]] for the original RAG-focused decision.
 
-The Shine VA team conducted a more comprehensive evaluation for an AWS-hosted, ADK-compatible, high-compliance accounting system:
+The [client] VA team conducted a more comprehensive evaluation for an AWS-hosted, ADK-compatible, high-compliance accounting system:
 
 | Platform | Weighted Score | Best when |
 |---|---|---|
 | **Langfuse** | **8.58 / 10** | AWS-hosted, ADK-compatible, Datadog-aligned, high-compliance |
 | LangSmith | 7.92 / 10 | LangGraph-first architecture with deep HITL debugging needs |
 
-Langfuse wins on: security/data sovereignty, AWS fit, Datadog integration, cost/scalability, framework agnosticism, prompt governance.  
+Langfuse wins on: security/data sovereignty, AWS fit, Datadog integration, cost/scalability, framework agnosticism, prompt governance.
 LangSmith wins on: LangGraph-native HITL trace quality, evaluation workflow maturity.
 
 Pricing: Langfuse = unlimited users + usage-based ($29–$199/mo). LangSmith = $39/user/month + per-trace overages (~6× more expensive at scale).
@@ -113,7 +113,7 @@ Pricing: Langfuse = unlimited users + usage-based ($29–$199/mo). LangSmith = $
 
 ## Integration Patterns
 
-### Chat Agent (Shine Banking)
+### Chat Agent ([client] Banking)
 - Traces sent to Langfuse after each turn
 - Prompts loaded from Langfuse versioned registry (Langfuse-first approach)
 - Banking Context Classifier prompt managed in Langfuse
@@ -218,8 +218,8 @@ When using Google ADK v1.x, two instrumentation layers combine into a single tra
 - [[Langfuse ADK Tracing Patterns]]
 - [[Presidio PII Redaction for Langfuse]]
 - [[Observability — LangFuse vs LangSmith Decision]]
-- [[AI Engineering Chapter @Shine]]
-- [[Shine Chat Agent]]
+- [[AI Engineering Chapter @[client]]]
+- [[[client] Chat Agent]]
 - [[Input Guardrails Pipeline]]
 - [[RAG Evaluation]]
 - [[Observability and Runtime Patterns]]

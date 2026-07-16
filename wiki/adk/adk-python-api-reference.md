@@ -4,10 +4,10 @@ tags: [adk, reference]
 summary: Quick reference for the Google ADK Python SDK — agent types, tools, state, callbacks, plugins, artifacts, memory, context caching, and context compaction.
 updated: 2026-07-14
 sources:
-  - raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/SKILL.md
-  - raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/references/python.md
-  - raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/references/docs-index.md
-  - raw/claude-docs/galactus/.agents/skills/adk-dev-guide/SKILL.md
+  - raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/SKILL.md
+  - raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/references/python.md
+  - raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/references/docs-index.md
+  - raw/claude-docs/project-g/.agents/skills/adk-dev-guide/SKILL.md
   - raw/agent-skills/adk-cheatsheet/SKILL.md
   - raw/agent-skills/adk-cheatsheet/references/docs-index.md
   - raw/agent-skills/adk-cheatsheet/references/python.md

@@ -44,10 +44,10 @@ Summary:
 1. Primary Request and Intent:
 
 **R1:** Fix linting errors visible in VSCode for `help-center-assistant.ts` — red indicator from ESLint `c
-- 
-            
-            
--  btw are there any chat-agent updates that we should also consider for our galactus support agents? looks like a lot of eval metrics were added and im currious about how we can improve our observability for evals in langfuse
+-
+
+
+-  btw are there any chat-agent updates that we should also consider for our project-g support agents? looks like a lot of eval metrics were added and im currious about how we can improve our observability for evals in langfuse
 -  ok cool i love what chat-agent added i want to make a plan for implementing these in our support agents first of all and second of all lets add langfuse but leave the langsmith there comment out for now i guess as secondary.. can we go ahead an implement or do we need a plan?
 - is there anything left undone?
 

@@ -20,7 +20,7 @@ work_type: refactor
 
 # Claude Code Session — 2026-04-11 (-Users-ramsey-wise-Workspace)
 
-**First prompt:** can we transfer the code from @cs_agent_assist_with_rag  to run against @librarian? like use this infra/eval set but i want to test the original parameters -> so maybe what would be easiest is to just store parameters and mock a model in the librarian as "raptor model" vs libarian vs a 3 test we wan
+**First prompt:** can we transfer the code from @cs_agent_assist_with_rag  to run against @librarian? like use this infra/eval set but i want to test the original parameters -> so maybe what would be easiest is to just store parameters and mock a model in the librarian as "rag-v1 model" vs libarian vs a 3 test we wan
 
 ## Prompts (8 total)
 

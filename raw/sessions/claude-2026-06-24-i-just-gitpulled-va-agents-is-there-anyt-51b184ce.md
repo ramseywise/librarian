@@ -16,7 +16,7 @@ cache_read_tokens: 20269515
 
 - i just gitpulled @va-agents.. is there anything here of importance? what is the parity of our galctus repo and this one?
 - ok would you suggest we update those? lets do that
-- ok how does galactus compare to @chat-agent? can we do a parity there as well if well for all 3 what works well and what we could improve in galactus
+- ok how does project-g compare to @chat-agent? can we do a parity there as well if well for all 3 what works well and what we could improve in project-g
 - ok can we adjust the accounting agent accordingly as well thanks thanks
 
 ## Stats

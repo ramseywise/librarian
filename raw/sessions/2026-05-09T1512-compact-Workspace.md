@@ -44,11 +44,11 @@ no-git
 Summary:
 1. Primary Request and Intent:
 
-The session picked up from a prior conversation where the user had reorganized galactus to `src/multi-agen
-- 
-            
-            
--  Did we accidentally, like, interrupt something? Because I thought we explicitly said for single agents that we want to, uh, pull out tools that can be called from either long graph or Google ADK, uh, like, one tool would be to call the bedrock knowledge base, we said. Right? But we would also have 
+The session picked up from a prior conversation where the user had reorganized project-g to `src/multi-agen
+-
+
+
+-  Did we accidentally, like, interrupt something? Because I thought we explicitly said for single agents that we want to, uh, pull out tools that can be called from either long graph or Google ADK, uh, like, one tool would be to call the bedrock knowledge base, we said. Right? But we would also have
 - yes to tools, yes to toml, do not delete rag because this is what we actually do want to test with the single agents. That's what VA rag should be. I don't know what it is now, but it looks like it's a copy of VA long graph. Okay. Can we please update VA Rag to be actually a customized rag, not a ca
 
 ## Gotchas

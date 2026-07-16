@@ -41,7 +41,7 @@ no-git
 -  ok we want next to these experiments also the comparison for va-agents with specs (see va-staging). it uses multi retrieval which we tried but took a long time right and wasnt as good .. ok and looks like the biggest gain is actually a better gemini model we want to document that.. hyde yes we were
 - [Request interrupted by user for tool use]
 - we should already have va-staging no?
-- file:///Users/ramsey.wise/Workspace/galactus/evals/reports/sa/comparison.html this looks amazing - but we need to get full eval set with task ids from va-staging and bkh to compare and i would also really like to see better incorpration also with our suite and stats file:///Users/ramsey.wise/Workspa
+- file:///Users/ramsey.wise/Workspace/project-g/evals/reports/sa/comparison.html this looks amazing - but we need to get full eval set with task ids from va-staging and bkh to compare and i would also really like to see better incorpration also with our suite and stats file:///Users/ramsey.wise/Workspa
 -  this is great but i want to see mrr or baseline bkh and benchmark for the va-agents curl we did - but its not in the report comparison only our local hcs but we want to see both and then local
 
 ## Gotchas

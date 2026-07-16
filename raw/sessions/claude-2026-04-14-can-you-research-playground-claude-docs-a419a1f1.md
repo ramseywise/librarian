@@ -20,7 +20,7 @@ work_type: research
 
 # Claude Code Session — 2026-04-14 (-Users-ramsey-wise-Workspace)
 
-**First prompt:** can you /research @playground/.claude/docs/plans/ts-copilot-upgrades.md tradeoffs, risks, considerations and then update this plan or write up new to-do list/ implementation plan based on the research and decisions taken logged. also consider any code-review hooks for ts that we haven't explored in 
+**First prompt:** can you /research @playground/.claude/docs/plans/ts-copilot-upgrades.md tradeoffs, risks, considerations and then update this plan or write up new to-do list/ implementation plan based on the research and decisions taken logged. also consider any code-review hooks for ts that we haven't explored in
 
 ## Prompts (3 total)
 

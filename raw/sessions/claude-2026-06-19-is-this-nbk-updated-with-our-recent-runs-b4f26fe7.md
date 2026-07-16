@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-19
 session_id: b4f26fe7-9807-4696-ae7e-2254728b79a9
 prompts: 5
@@ -8,7 +8,7 @@ total_tokens: 94389
 cache_read_tokens: 6833497
 ---
 
-# Claude Code Session — 2026-06-19 (galactus)
+# Claude Code Session — 2026-06-19 (project-g)
 
 **First prompt:** is this nbk updated with our recent runs actually? like i really love the delta in section 6 graph but i cant see which is the one high performing although im not sure if these are still acturate
 

@@ -1,24 +1,24 @@
 ---
-title: Galactus Eval Architecture
+title: project-g Eval Architecture
 tags: [eval, rag, concept]
-summary: Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the galactus HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
+summary: Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the project-g HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
 updated: 2026-07-14
 sources:
   - raw/claude-docs/playground/docs/evals/eval-architecture.md
   - raw/claude-docs/playground/docs/evals/grader_interface.md
   - raw/claude-docs/playground/docs/evals/grader_methodology.md
   - raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
-  - raw/claude-docs/galactus/docs/evals/eval-architecture.md
-  - raw/claude-docs/galactus/docs/evals/eval-harness-patterns.md
-  - raw/claude-docs/galactus/docs/evals/grader_interface.md
-  - raw/claude-docs/galactus/docs/evals/grader_methodology.md
-  - raw/claude-docs/galactus/docs/evals/llm-calibration-insights.md
-  - raw/claude-docs/galactus/docs/frameworks/langgraph.md
-  - raw/claude-docs/galactus/docs/rag/retrieval-improvements.md
-  - raw/claude-docs/galactus/skills/eval-creation/eval-report/SKILL.md
+  - raw/claude-docs/project-g/docs/evals/eval-architecture.md
+  - raw/claude-docs/project-g/docs/evals/eval-harness-patterns.md
+  - raw/claude-docs/project-g/docs/evals/grader_interface.md
+  - raw/claude-docs/project-g/docs/evals/grader_methodology.md
+  - raw/claude-docs/project-g/docs/evals/llm-calibration-insights.md
+  - raw/claude-docs/project-g/docs/frameworks/langgraph.md
+  - raw/claude-docs/project-g/docs/rag/retrieval-improvements.md
+  - raw/claude-docs/project-g/skills/eval-creation/eval-report/SKILL.md
 ---
 
-# Galactus Eval Architecture
+# project-g Eval Architecture
 
 ## Routing vs Domain Eval — The Key Distinction
 
@@ -184,7 +184,7 @@ Every agent eval harness should cover these four suites:
 | **Behavioral (rubric)** | Does the agent follow rules (no PII, stays in domain)? | Rubric criterion violated |
 | **Error handling** | Does the agent handle malformed input / API errors gracefully? | Crashes or produces unsafe output |
 
-Galactus currently implements: response quality (LLM graders), behavioral/rubric (heuristic metrics).
+project-g currently implements: response quality (LLM graders), behavioral/rubric (heuristic metrics).
 
 ## Two-Phase Run Pattern (run/assert)
 
@@ -208,7 +208,7 @@ The split keeps CI fast and LLM costs offline.
 
 **Implication for graders:** Avoid graders that assume a specific execution model (e.g. LangGraph node sequences, ADK tool call counts) until a winner is selected. Use framework-neutral metrics (MRR, grounding ratio, composite quality) for the primary comparison.
 
-**ADK native eval gap:** galactus has no `tool_trajectory_avg_score` equivalent. ADK's `AgentEvaluator` provides this for routing correctness (did the right sub-agent get called?). Not used in primary galactus evals because:
+**ADK native eval gap:** project-g has no `tool_trajectory_avg_score` equivalent. ADK's `AgentEvaluator` provides this for routing correctness (did the right sub-agent get called?). Not used in primary project-g evals because:
 1. Our eval set has expected URLs, not tool-level labels — annotating expected tool sequences is new work
 2. ROUGE-L (used by `final_response_match_v2`) is a poor fit for conversational helpdesk answers
 3. Framework neutrality: forcing ADK-specific eval before the hc_adk vs hc_lg winner is decided creates asymmetric grader coverage
@@ -237,4 +237,4 @@ These are **different concerns** — do not conflate:
 - [[Agentic RAG — Advanced Patterns]]
 - [[Direct Preference Optimization]]
 - [[VA Bedrock KB Reference]]
-- [[Galactus Eval Framework]]
+- [[project-g Eval Framework]]

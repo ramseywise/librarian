@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-24
 session_id: b0642ba1-81a0-4a25-bfaa-6781e6c66fad
 prompts: 1
@@ -8,7 +8,7 @@ total_tokens: 36591
 cache_read_tokens: 879027
 ---
 
-# Claude Code Session — 2026-06-24 (galactus)
+# Claude Code Session — 2026-06-24 (project-g)
 
 **First prompt:** can we remove the linting issues in the html doc?
 

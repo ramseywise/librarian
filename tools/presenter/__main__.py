@@ -5,10 +5,9 @@ import sys
 from pathlib import Path
 
 import structlog
+from core.config.agent_settings import settings
 from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
-
-from core.config.agent_settings import settings
 
 console = Console()
 log = structlog.get_logger(__name__)
@@ -57,9 +56,7 @@ def run_deck(dry_run: bool = False) -> None:
     slides = generate_slide_content(outline, intake, model)
 
     if dry_run:
-        console.print(
-            "\n[bold cyan]Dry run — skipping image fetch and render.[/bold cyan]"
-        )
+        console.print("\n[bold cyan]Dry run — skipping image fetch and render.[/bold cyan]")
         for slide in slides:
             console.print(
                 f"\n[bold]{slide.slide_number}. {slide.headline}[/bold] ({slide.slide_type})"
@@ -83,9 +80,7 @@ def run_deck(dry_run: bool = False) -> None:
 
     skipped = sum(1 for vp in viz_prompts if vp.skip_image)
     fetching = len(viz_prompts) - skipped
-    console.print(
-        f"  {fetching} images to fetch, {skipped} slides use text-only layout"
-    )
+    console.print(f"  {fetching} images to fetch, {skipped} slides use text-only layout")
 
     # 5. Image fetch
     console.print("\n[bold yellow]Fetching images…[/bold yellow]")
@@ -99,9 +94,7 @@ def run_deck(dry_run: bool = False) -> None:
     tpl = template_path if intake.use_template else None
     out_path = render_deck(outline, slides, image_map, tpl, slides_dir)
 
-    console.print(
-        f"\n[bold green]Done![/bold green] Deck saved to [cyan]{out_path}[/cyan]"
-    )
+    console.print(f"\n[bold green]Done![/bold green] Deck saved to [cyan]{out_path}[/cyan]")
 
 
 # ---------------------------------------------------------------------------
@@ -138,9 +131,7 @@ def run_image() -> None:
     # 3. Display concepts and let user pick
     console.print()
     for i, c in enumerate(concepts, 1):
-        console.print(
-            f"[bold cyan][{i}][/bold cyan] [bold]{c.label}[/bold] ({c.viz_type})"
-        )
+        console.print(f"[bold cyan][{i}][/bold cyan] [bold]{c.label}[/bold] ({c.viz_type})")
         console.print(f"    {c.description}")
         console.print(f"    [dim]Why: {c.rationale}[/dim]")
         console.print()
@@ -173,9 +164,7 @@ def run_image() -> None:
             )
             console.print()
             for i, c in enumerate(concepts, 1):
-                console.print(
-                    f"[bold cyan][{i}][/bold cyan] [bold]{c.label}[/bold] ({c.viz_type})"
-                )
+                console.print(f"[bold cyan][{i}][/bold cyan] [bold]{c.label}[/bold] ({c.viz_type})")
                 console.print(f"    {c.description}")
                 console.print(f"    [dim]Why: {c.rationale}[/dim]")
                 console.print()
@@ -198,15 +187,11 @@ def run_image() -> None:
     console.print("\n[bold yellow]Fetching image…[/bold yellow]")
     out_path = fetch_single_image(selected.filled_prompt, images_dir, filename)
 
-    console.print(
-        f"\n[bold green]Done![/bold green] Image saved to [cyan]{out_path}[/cyan]"
-    )
+    console.print(f"\n[bold green]Done![/bold green] Image saved to [cyan]{out_path}[/cyan]")
 
     # Revision loop — offer another round
     while True:
-        again = Prompt.ask(
-            "Generate another variation?", choices=["yes", "no"], default="no"
-        )
+        again = Prompt.ask("Generate another variation?", choices=["yes", "no"], default="no")
         if again == "no":
             break
 

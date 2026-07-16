@@ -64,7 +64,7 @@ Reference pipeline: `va-agents-service` (Node 22 + Pixi Python, awsonnet Jsonnet
 | **Package mgr** | `npm ci` + `pixi install` | `uv sync --frozen` | uv replaces both — single lockfile, faster installs, deterministic |
 | **Lint** | `npm run lint` (ESLint) | `ruff check` + `ruff format --check` | ruff is 10-100x faster than flake8/black; single tool for lint+format |
 | **Test** | `pixi run -e test pytest` | `uv run pytest` | pixi adds conda ecosystem; uv is lighter if PyPI-only deps suffice |
-| **Task def** | Jsonnet (awsonnet/shinesonnet) | Terraform modules | See IaC comparison below |
+| **Task def** | Jsonnet (awsonnet/client-asonnet) | Terraform modules | See IaC comparison below |
 | **Docker** | `ageras-com/github-actions` shared action | Standalone `docker build` + `aws ecr` | Can swap to shared action later — same inputs |
 | **Deploy** | `awsonnet-ecs-deploy.yml@v11` reusable workflow | Standalone `terraform apply -target=module.ecs` | See IaC comparison below |
 
@@ -76,7 +76,7 @@ Reference pipeline: `va-agents-service` (Node 22 + Pixi Python, awsonnet Jsonnet
 | **State** | Explicit state file (S3 + DynamoDB) — drift detection, plan/apply cycle | Stateless — generates JSON task def, ECS service handles the rest |
 | **Scope** | Provisions + deploys | Deploy only — assumes infra exists |
 | **Environment config** | `.tfvars` per environment | Jsonnet local variables per environment |
-| **Shared patterns** | Module registry (or stack-local modules) | `shinesonnet` library (company standard) |
+| **Shared patterns** | Module registry (or stack-local modules) | `client-asonnet` library (company standard) |
 | **Learning curve** | HCL, state management, import/moved blocks | Jsonnet, library conventions |
 | **Team compatibility** | Standard in industry; standalone | Requires `ageras-com/github-actions` shared workflows |
 
@@ -102,7 +102,7 @@ Matches the team's pattern: `lint → test → validate → build → deploy (au
 
 2. **Region difference**: Team uses `eu-north-1` (Stockholm), this project defaults to `eu-west-1` (Ireland). Align region before integrating with shared infra.
 
-3. **Cluster naming**: Team uses `billy-{environment}`, this project uses `librarian-{environment}`. Shared workflows need the `cluster-name` input — not hardcoded.
+3. **Cluster naming**: Team uses `product-a-{environment}`, this project uses `librarian-{environment}`. Shared workflows need the `cluster-name` input — not hardcoded.
 
 4. **Health check path**: Team uses `/va-agents/api/health`, this project uses `/health`. Task def health check and ALB target group must agree.
 

@@ -10,7 +10,7 @@ batch: gdrive-notion-2026-07-06
 |------|------|-------------|------|
 | meeting--final-checkin--2026-06-26.md | 2026-06-26 | Ramsey, Shyamali, Yan | rag, ownership, evaluation, bedrock, langfuse |
 | meeting--bedrock-local-config--2026-06-25.md | 2026-06-25 | Ramsey, Daniel, Shyamali, Marco | bedrock, aws, local-config, opensearch |
-| meeting--onboarding-shyamali-session1--2026-06-23.md | 2026-06-23 | Ramsey, Shyamali | onboarding, va-agents, hca, evaluation, galactus |
+| meeting--onboarding-shyamali-session1--2026-06-23.md | 2026-06-23 | Ramsey, Shyamali | onboarding, va-agents, hca, evaluation, project-g |
 | meeting--onboarding-bedrock-data-sources--2026-06-23.md | 2026-06-23 | Ramsey, Marco, Shyamali | bedrock, data-sources, rag, langfuse, chunking |
 
 ### Decision Docs
@@ -29,16 +29,16 @@ batch: gdrive-notion-2026-07-06
 - Bedrock Local Config Recording (Jun 25)
 - Onboarding Bedrock Recording (Jun 23)
 - Onboarding Shyamali Recording (Jun 23)
-- Onboarding Galactus Recording (Jun 24)
+- Onboarding project-g Recording (Jun 24)
 
 ## Not yet fetched (available for next ingest batch)
 - MVP Initiatives Notes (gdrive, large working doc, Jun 23)
-- billy-shine-url-map (gdrive spreadsheet, May–Jun)
+- product-a-client-a-url-map (gdrive spreadsheet, May–Jun)
 - VA/HCA Retrieval Executive Summary (notion)
 - Article generation from Intercom (notion)
 - Agents Overview (notion)
-- Onboarding Galactus notes (Jun 24)
+- Onboarding project-g notes (Jun 24)
 
 ## Sources
-- Google Drive: ramsey.wise@shine.co (recent files, last 30 days)
+- Google Drive: ramsey.wise@client-a.co (recent files, last 30 days)
 - Notion: AI & Automation workspace

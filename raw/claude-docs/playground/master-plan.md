@@ -2,7 +2,7 @@
 
 > **ARCHIVED 2026-04-25** — Canonical page is now `wiki/projects/librarian-kb-plan.md`. Do not update this file.
 
-**Updated:** 2026-04-25 (Phase 5 complete, Phase 6 active)  
+**Updated:** 2026-04-25 (Phase 5 complete, Phase 6 active)
 **Sources merged:** `raw/claude-docs/playground/docs/archived/obsidian-kb-plan.md`, memory/project_librarian.md, `.claude/docs/plans/react-flow-ui.md`
 
 ---
@@ -89,7 +89,7 @@ Scope expanded to cover **personal + work** sources. All claude.ai MCP integrati
 - [ ] Archive this master-plan.md once wiki page is live
 
 ### 🔄 Phase 8 — React Flow UI (in progress)
-**Plan doc:** `.claude/docs/plans/react-flow-ui.md`  
+**Plan doc:** `.claude/docs/plans/react-flow-ui.md`
 **Status:** Phase 8A + 8B complete (2026-04-25). 8C pending. Code lives in `app/`.
 
 #### ✅ Phase 8A — Graph

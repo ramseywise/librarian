@@ -25,8 +25,8 @@ work_type: refactor
 
 ## Prompts (4 total)
 
-- i started cleaning up @evals, but still need to reduce the clutter root fils into something more simple to understand.. so how is graders different than metrics?  and what are tasks right now? should 
-- trying to clean up @evals.. but i feel ike there's a lot of unnecessary files in metrics/utils.. why do we need these and runner/eperiment/tracing/variant setting files at root? we want to be able to 
+- i started cleaning up @evals, but still need to reduce the clutter root fils into something more simple to understand.. so how is graders different than metrics?  and what are tasks right now? should
+- trying to clean up @evals.. but i feel ike there's a lot of unnecessary files in metrics/utils.. why do we need these and runner/eperiment/tracing/variant setting files at root? we want to be able to
 - ok lets clean up but try to simplify as much as possible, deleting unnecessary scripts/functions.. os langsmith metrics becomes  part of loaders? and but instead add experiments folder that also pushe
 - are you sure there isn't overlap with experiements and utils?
 

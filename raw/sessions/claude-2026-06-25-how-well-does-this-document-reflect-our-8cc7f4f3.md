@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-25
 session_id: 8cc7f4f3-fb75-4ba5-b4a5-31bc9aef7b0d
 prompts: 2
@@ -8,7 +8,7 @@ total_tokens: 16456
 cache_read_tokens: 146787
 ---
 
-# Claude Code Session — 2026-06-25 (galactus)
+# Claude Code Session — 2026-06-25 (project-g)
 
 **First prompt:** how well does this document reflect our methodology but is still stakeholder related **Date:** June 2026
 **Full technical report:** va-hca-retrieval-report.md

@@ -42,7 +42,7 @@ key_output: ~
 0.105 Using CPython 3.12.13 interpreter at: /usr/local/bin/python3
 0.105 Creating virtual environment at: .venv
 0.135    Building va-langgraph @ file:///app
-1.300   × Failed 
+1.300   × Failed
 - va-gateway-lg-1   | ModuleNotFoundError: No module named 'structlog'
 - can we add some docker notation either in research or in the make file directly to help juniors who haven't worked with containers before
 

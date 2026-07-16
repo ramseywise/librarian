@@ -37,7 +37,7 @@ For each option, cover:
 - **When it degrades**: failure conditions (small corpus, non-English, high-latency budget)
 
 ### Known benchmarks to cite (when relevant)
-- RAPTOR v1 (German market, dense-only): 43% hit rate, 13% precision@5, 48% hallucination rate
+- rag-v1 v1 (German market, dense-only): 43% hit rate, 13% precision@5, 48% hallucination rate
 - Hybrid + cross-encoder reranker: 68% hit rate, 0.28 precision@5
 - Dense-only vs hybrid vs hybrid+reranker retrieval comparison (see research doc section 13)
 - Reranker degrades at <1K chunks (small corpus overfit)

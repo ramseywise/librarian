@@ -4,7 +4,7 @@ tags: [eval, rag, pattern]
 summary: Claims-based grounding — the "yellow highlighter" approach to RAG verification, where the agent extracts verbatim supporting quotes from retrieved documents before writing the final answer, creating a verifiable paper trail.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/galactus/docs/support-agents/grounding-methodology.md
+  - raw/claude-docs/project-g/docs/support-agents/grounding-methodology.md
 ---
 
 # Grounding Claim Methodology
@@ -91,7 +91,7 @@ But claims make the system much easier to evaluate because they expose the evide
 
 ## See Also
 - [[RAG Evaluation]]
-- [[Galactus Eval Architecture]]
+- [[project-g Eval Architecture]]
 - [[CRAG Retry Logic]]
 - [[RAG Reranking]]
 - [[Input Guardrails Pipeline]]

@@ -59,7 +59,7 @@ Compiled from `~/.claude/usage-data/facets/` (42 sessions with LLM-analyzed outc
 
 **Infrastructure** (3 sessions):
 - Terraform restructure (48 files, new infra layout)
-- VA agent: RDS Postgres for LangGraph checkpointer + EFS for Billy SQLite (62 prompts — longest session)
+- VA agent: RDS Postgres for LangGraph checkpointer + EFS for [product] SQLite (62 prompts — longest session)
 - Playground infra consolidation and secrets audit
 
 ---
@@ -156,7 +156,7 @@ Architecture/planning sessions generate more output tokens per prompt than execu
 
 ## Insights — 2026-06-04
 
-*Compiled from 24 sessions (2026-06-01 through 2026-06-04), all on galactus (support agent ablation + GT verification).*
+*Compiled from 24 sessions (2026-06-01 through 2026-06-04), all on project-g (support agent ablation + GT verification).*
 
 ### Top Patterns
 
@@ -245,13 +245,13 @@ Architecture/planning sessions generate more output tokens per prompt than execu
 
 ## Insights — 2026-07-06 to 2026-07-14 Batch (ingested 2026-07-14)
 
-*11 sessions across INTENSO, galactus, and puffin. Mostly prompt-only captures (no recorded assistant transcript) — friction inferred from what was asked, not from resolution logs.*
+*11 sessions across INTENSO, project-g, and puffin. Mostly prompt-only captures (no recorded assistant transcript) — friction inferred from what was asked, not from resolution logs.*
 
 ### New friction patterns
 
 **Operational commands living only in memory, not the README (session `63940e32`):** The user repeatedly has to re-ask how to run a known skill (`/ingest`) and what it actually does end-to-end. Root cause: the answer exists in the skill definition and in the user's head, but not in a discoverable `README.md`. Confirms the `env-audit`-adjacent idea from the April batch — but generalized: any skill whose usage gets re-explained in a session should get a README line as part of that session's wrap-up, not just an inline answer.
 
-**Settings/permissions fragmented across sibling repos (sessions `a3b6ecb6`, `012cfada`):** Working across many repos under one drive root (galactus, playground, INTENSO) produced inconsistent permission-prompt behavior because settings weren't layered consistently. Resolved by treating the drive root as an intermediate settings scope between global (`~/.claude/`) and per-repo (`.claude/`) — see [[Claude Workflow System]] for the resulting three-tier-plus-root model.
+**Settings/permissions fragmented across sibling repos (sessions `a3b6ecb6`, `012cfada`):** Working across many repos under one drive root (project-g, playground, INTENSO) produced inconsistent permission-prompt behavior because settings weren't layered consistently. Resolved by treating the drive root as an intermediate settings scope between global (`~/.claude/`) and per-repo (`.claude/`) — see [[Claude Workflow System]] for the resulting three-tier-plus-root model.
 
 ### Skill candidate
 

@@ -47,7 +47,7 @@ Structure the briefing as follows:
 ### Open Questions
 *Unresolved questions or spikes from the wiki.*
 
-- [Question] (from [[wiki/...]]) 
+- [Question] (from [[wiki/...]])
 
 ### Conflict Flags
 *Pages with unresolved contradictions — be careful here.*

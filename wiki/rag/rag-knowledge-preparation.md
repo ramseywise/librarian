@@ -98,6 +98,6 @@ Knowledge preparation is a prerequisite before loading content into a vector sto
 ## See Also
 - [[RAG Retrieval Strategies]]
 - [[RAG Evaluation]]
-- [[Shine Knowledge Agent]]
+- [[[client] Knowledge Agent]]
 - [[LangGraph CRAG Pipeline]]
 - [[PII Masking Approaches]]

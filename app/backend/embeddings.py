@@ -68,9 +68,7 @@ def compute_embeddings() -> tuple[list[str], np.ndarray]:
     Pages whose content hasn't changed since last run are served from DuckDB
     without calling the model — only new/changed pages are re-encoded.
     """
-    md_files = sorted(
-        f for f in WIKI_DIR.rglob("*.md") if not f.name.startswith("_")
-    )
+    md_files = sorted(f for f in WIKI_DIR.rglob("*.md") if not f.name.startswith("_"))
     if not md_files:
         return [], np.array([])
 
@@ -106,15 +104,11 @@ def compute_embeddings() -> tuple[list[str], np.ndarray]:
             page_ids.append(page_id)
             vecs.append(vec)
             rows.append((path_str, chash, _vec_to_blob(vec)))
-        con.executemany(
-            "INSERT OR REPLACE INTO embeddings VALUES (?, ?, ?)", rows
-        )
+        con.executemany("INSERT OR REPLACE INTO embeddings VALUES (?, ?, ?)", rows)
 
     # Prune stale cache entries (deleted pages)
     current_paths = {str(f) for f in md_files}
-    stale = [
-        (p,) for p in cached if p not in current_paths
-    ]
+    stale = [(p,) for p in cached if p not in current_paths]
     if stale:
         con.executemany("DELETE FROM embeddings WHERE path = ?", stale)
 
@@ -133,10 +127,12 @@ def semantic_edges(threshold: float = 0.65) -> list[dict]:
             score = float(sim[i, j])
             if score >= threshold:
                 a, b = page_ids[i], page_ids[j]
-                edges.append({
-                    "id": f"sem:{a}->{b}",
-                    "source": a,
-                    "target": b,
-                    "data": {"edgeType": "semantic", "score": round(score, 3)},
-                })
+                edges.append(
+                    {
+                        "id": f"sem:{a}->{b}",
+                        "source": a,
+                        "target": b,
+                        "data": {"edgeType": "semantic", "score": round(score, 3)},
+                    }
+                )
     return edges

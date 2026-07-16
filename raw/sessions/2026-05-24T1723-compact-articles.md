@@ -36,11 +36,11 @@ key_output: ~
 - **Session ID**: 16864786-cfb3-4f80-a1b8-2968613f3a3f
 
 ## Recent prompts
--  help.shine.co should be the corpus_articles (formerly billy help).. we should rename the json as their data source now there is a script for creating standardized json.. also fro billypedia .. plus pricing .. and potentially blog  oh ok i see we have no json for billypedia pricing, and raw which is
+-  help.client-a.co should be the corpus_articles (formerly product-a help).. we should rename the json as their data source now there is a script for creating standardized json.. also fro product-a-kb .. plus pricing .. and potentially blog  oh ok i see we have no json for product-a-kb pricing, and raw which is
 -  make ingest-all
-cd src/support_agents/hc_rag && VECTORDB_PATH=/Users/ramsey.wise/Workspace/galactus/data/datastores/knowledge.duckdb PYTHONPATH=.:/Users/ramsey.wise/Workspace/galactus/src uv run python -m rag.ingestion.corpus_v2 /Users/ramsey.wise/Workspace/galactus/data/articles/billy_raw --no-cle
+cd src/support_agents/hc_rag && VECTORDB_PATH=/Users/ramsey.wise/Workspace/project-g/data/datastores/knowledge.duckdb PYTHONPATH=.:/Users/ramsey.wise/Workspace/project-g/src uv run python -m rag.ingestion.corpus_v2 /Users/ramsey.wise/Workspace/project-g/data/articles/product-a_raw --no-cle
 - does it skip what was pre ingested or does each ingestion do a different versioning? then making lets create instead the output as ingestion verstion with json for each source?
-- ok and are all of our crawlers adjusted to have this metadata added to @core/ingestion/but we should prob org billy around our source type as well
+- ok and are all of our crawlers adjusted to have this metadata added to @core/ingestion/but we should prob org product-a around our source type as well
 - ok i reorganized core .. can we rearrange our data/articles to reflect this split
 
 ## Gotchas

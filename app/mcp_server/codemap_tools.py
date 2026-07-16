@@ -201,8 +201,8 @@ def register_codemap_tools(mcp: FastMCP) -> None:
             f"Signature: `{s['signature']}`"
             for s in results
         ]
-        return (
-            f"Found {len(results)} semantically similar symbol(s):\n\n" + "\n\n---\n\n".join(lines)
+        return f"Found {len(results)} semantically similar symbol(s):\n\n" + "\n\n---\n\n".join(
+            lines
         )
 
     @mcp.tool()
@@ -242,7 +242,4 @@ def _get(path: str, params: dict | None = None, not_found_ok: bool = False) -> l
 
 
 def _api_down_message() -> str:
-    return (
-        f"Codemap Query API unreachable at {CODEMAP_API_URL}. "
-        "Start it with: make codemap-api"
-    )
+    return f"Codemap Query API unreachable at {CODEMAP_API_URL}. Start it with: make codemap-api"

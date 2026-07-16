@@ -300,7 +300,7 @@ For multi-step tasks — evaluate the *sequence*, not just the final answer.
 class TrajectoryEval(BaseModel):
     expected_steps: list[str]  # ["planner", "confirm", "create_invoice", "send_email"]
     actual_steps: list[str]
-    
+
     def step_precision(self) -> float: ...
     def step_recall(self) -> float: ...
     def order_accuracy(self) -> float: ...  # LCS of step sequences

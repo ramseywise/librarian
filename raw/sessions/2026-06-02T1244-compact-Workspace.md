@@ -39,9 +39,9 @@ no-git
 
 ## Recent prompts
 -  in the doc can you explain this a bit better Tier 1 (hallucinated IDs), Tier 2 (claim-level cross-check), Tier 3 (verbatim quote), Tier 4 (relevance + language + source audit) - and what tiers we added? idk for me its still hard to read and understand exactly what was changed from main. should we a
-- can we fix areas where gaps between galactus and va-agents exists? also do we need to update tests given these changes? what is the added improvement of whats pending? should we just do it now? can we get an image of the old and new inocation flow patterns to compare as png as well? or svg whatever 
+- can we fix areas where gaps between project-g and va-agents exists? also do we need to update tests given these changes? what is the added improvement of whats pending? should we just do it now? can we get an image of the old and new inocation flow patterns to compare as png as well? or svg whatever
 - ok if we look at the invocation comparison it actually looks mostly the same what is changed here? quick bullet summary
--  ok so i have about 500 qa with sources that can be used for the url check but is this better for grounding or as semantic cache? and how can we incorporate our metrics from @galactus/evals/graders incorporated into their observability pipeline? can we stash changes pull and pop our changes or will 
+-  ok so i have about 500 qa with sources that can be used for the url check but is this better for grounding or as semantic cache? and how can we incorporate our metrics from @project-g/evals/graders incorporated into their observability pipeline? can we stash changes pull and pop our changes or will
 - 1. on the semantic cache, yes we could add an example of the top 10-25 qa samples but turn the feature off for now bc it needs to be tests. 2. yes exactly i want to make sure that their observability schema includes all we need to  be able to score and evaluate performance - but i think the new chan
 
 ## Gotchas

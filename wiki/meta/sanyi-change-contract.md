@@ -4,11 +4,11 @@ tags: [meta, pattern, concept, conflict]
 summary: Three-layer change-contract system (变易/简易/不易) for agent architectures — classifies every component into ever-changing, simple, or invariant, then enforces cross-layer discipline via init/review/audit modes. Violation-code table has an unresolved conflict — see [[Conflicts]].
 updated: 2026-07-14
 sources:
-  - raw/claude-docs/galactus/skills/SANYI/SKILL.md
-  - raw/claude-docs/galactus/skills/SANYI/README.md
-  - raw/claude-docs/galactus/skills/SANYI/references/contract-spec.md
-  - raw/claude-docs/galactus/skills/SANYI/references/interview-guide.md
-  - raw/claude-docs/galactus/skills/SANYI/references/violations.md
+  - raw/claude-docs/project-g/skills/SANYI/SKILL.md
+  - raw/claude-docs/project-g/skills/SANYI/README.md
+  - raw/claude-docs/project-g/skills/SANYI/references/contract-spec.md
+  - raw/claude-docs/project-g/skills/SANYI/references/interview-guide.md
+  - raw/claude-docs/project-g/skills/SANYI/references/violations.md
 ---
 
 # SANYI Change-Contract System

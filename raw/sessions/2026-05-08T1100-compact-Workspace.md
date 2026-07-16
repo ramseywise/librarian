@@ -38,15 +38,15 @@ no-git
 - **Session ID**: b0f440b5-068e-48ec-a966-d736b58b2fa8
 
 ## Recent prompts
--  right but @playground is wired to test clara tickets i guess only va-support-rag? or also langgraph i think calls support rag that we could add as subgraph.. so we want to test that here see if we need to make changes or copy files over to @galactus to test with new danish data.. doe sthat make sen
+-  right but @playground is wired to test corpus-a tickets i guess only va-support-rag? or also langgraph i think calls support rag that we could add as subgraph.. so we want to test that here see if we need to make changes or copy files over to @project-g to test with new danish data.. doe sthat make sen
 -  can you add to makefile command to test va performance baslie make va-up + run va-eval-base,  lets and the plan and test the routin ghere in playground thanks
 -  make va-baseline
 /Library/Developer/CommandLineTools/usr/bin/make va-up-bg
 docker compose -f infrastructure/containers/docker-compose.yml --env-file .env up --build -d
-[+] Building 0.1s (1/1) FINISHED                                                                                                   
--  > [mcp-backend stage-0 8/9] COPY infrastructure/containers/billy-mcp/entrypoint.sh ./entrypoint.sh:
+[+] Building 0.1s (1/1) FINISHED
+-  > [mcp-backend stage-0 8/9] COPY infrastructure/containers/product-a-mcp/entrypoint.sh ./entrypoint.sh:
 ------
-target mcp-backend: failed to solve: failed to compute cache key: failed to calculate checksum of ref xzvxed5vhkgr1rnej937a0i7n::wmz2exuj6flq5sehg73sp6545: "/infrastructure/containers/billy-mc
+target mcp-backend: failed to solve: failed to compute cache key: failed to calculate checksum of ref xzvxed5vhkgr1rnej937a0i7n::wmz2exuj6flq5sehg73sp6545: "/infrastructure/containers/product-a-mc
 - > [mcp-backend stage-0 5/9] RUN --mount=type=cache,target=/root/.cache/uv     UV_HTTP_TIMEOUT=180 uv sync --frozen --no-dev --no-install-project:
 0.550 Using CPython 3.12.13 interpreter at: /usr/local/bin/python3
 0.550 Creating virtual environment at: .venv

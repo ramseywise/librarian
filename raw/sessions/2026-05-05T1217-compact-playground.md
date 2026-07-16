@@ -42,9 +42,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    - Restore missing sections 1c (Ratings & Feedback) and 1f (Lexical & Semantic Similarity) in the evaluat
-- 
-            
-            
+-
+
+
 -  i want to walk through and update the md cells not just setup but also why do we care about turn and duration - what do we see from the figures and same for each of the eda bullets.. and i want the color code of response type to be green if has sources, red if escalation of pink of unknown which is
 -  ok for lexical similarity can we just do the repeated question distrbution and not in red - and i think before it was repeated question by similarity?
 

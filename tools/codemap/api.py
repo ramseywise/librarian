@@ -72,9 +72,15 @@ def find_symbol(name: str, repo: str = "", limit: int = 20) -> list[dict]:
         con.close()
     return [
         {
-            "symbol_id": r[0], "name": r[1], "kind": r[2], "signature": r[3],
-            "docstring": r[4], "file_id": r[5], "repo_id": r[6],
-            "start_line": r[7], "end_line": r[8],
+            "symbol_id": r[0],
+            "name": r[1],
+            "kind": r[2],
+            "signature": r[3],
+            "docstring": r[4],
+            "file_id": r[5],
+            "repo_id": r[6],
+            "start_line": r[7],
+            "end_line": r[8],
         }
         for r in rows
     ]
@@ -98,8 +104,13 @@ def get_file_symbols(repo: str, rel_path: str) -> list[dict]:
         raise HTTPException(status_code=404, detail=f"No symbols found for {file_id!r}")
     return [
         {
-            "name": r[0], "kind": r[1], "signature": r[2], "docstring": r[3],
-            "parent_scope": r[4], "start_line": r[5], "end_line": r[6],
+            "name": r[0],
+            "kind": r[1],
+            "signature": r[2],
+            "docstring": r[3],
+            "parent_scope": r[4],
+            "start_line": r[5],
+            "end_line": r[6],
         }
         for r in rows
     ]
@@ -143,9 +154,7 @@ def find_references(symbol_or_path: str, repo: str = "") -> list[dict]:
         ).fetchall()
     finally:
         con.close()
-    return [
-        {"src_file_id": r[0], "rel_path": r[1], "repo_id": r[2], "weight": r[3]} for r in rows
-    ]
+    return [{"src_file_id": r[0], "rel_path": r[1], "repo_id": r[2], "weight": r[3]} for r in rows]
 
 
 @app.get("/api/callers")
@@ -171,8 +180,11 @@ def find_callers(symbol_name: str, repo: str = "") -> list[dict]:
         con.close()
     return [
         {
-            "caller_name": r[0], "caller_kind": r[1], "rel_path": r[2],
-            "repo_id": r[3], "weight": r[4],
+            "caller_name": r[0],
+            "caller_kind": r[1],
+            "rel_path": r[2],
+            "repo_id": r[3],
+            "weight": r[4],
         }
         for r in rows
     ]

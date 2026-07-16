@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-24
 session_id: 6210d985-6ab6-452f-ab62-48436a76e549
 prompts: 6
@@ -8,7 +8,7 @@ total_tokens: 160468
 cache_read_tokens: 16007704
 ---
 
-# Claude Code Session — 2026-06-24 (galactus)
+# Claude Code Session — 2026-06-24 (project-g)
 
 **First prompt:** how's our logs why does it looks like hc_adk has 6 step callback?s also i think there is an error with rag retrieval 2026-06-24 19:24:11 | WARNING  | rag.retrieval.ensemble | ensemble.embed.failed query=opret faktura error=No module named 'sentence_transformers' is it bc we moved the vector db or to
 

@@ -94,9 +94,7 @@ def test_changing_one_file_reparses_only_that_file(temp_repo: Path) -> None:
 
     names = {
         row[0]
-        for row in con.execute(
-            "SELECT name FROM symbols WHERE repo_id = 'fixture'"
-        ).fetchall()
+        for row in con.execute("SELECT name FROM symbols WHERE repo_id = 'fixture'").fetchall()
     }
     assert "added" in names
     assert "other" in names

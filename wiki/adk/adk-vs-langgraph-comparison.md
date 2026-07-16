@@ -49,11 +49,11 @@ researcher = Agent(
 class RetrieverAgent:
     name = "retriever"
     description = "Multi-query embedding + hybrid search + grading"
-    
+
     async def run(self, state: LibrarianState) -> dict:
         # embed → search → grade
         ...
-    
+
     def as_node(self) -> Callable:
         async def retrieve(state): return await self.run(state)
         return retrieve
@@ -141,13 +141,13 @@ Autogen and LangGraph take opposite stances on determinism:
 | Explicit missing-info handling | Required up front (HITL interrupt node, conditional edge) | Handled implicitly by agent negotiation (may or may not work) |
 | Speed on deterministic tasks | Fast — no extra LLM calls for routing | Slower — multi-turn negotiation even for simple workflows |
 
-**Empirical finding (Yan Zhang, Shine, April 2026):** Autogen did not reliably follow a deterministic workflow in practice — agents deviated from the intended path. LangGraph enforced the workflow precisely, at the cost of requiring every case (including missing-info clarification) to be explicitly designed.
+**Empirical finding (Yan Zhang, [client], April 2026):** Autogen did not reliably follow a deterministic workflow in practice — agents deviated from the intended path. LangGraph enforced the workflow precisely, at the cost of requiring every case (including missing-info clarification) to be explicitly designed.
 
 **Implication:** For well-scoped pipelines (RAG help assistant, payment execution workflow), LangGraph's explicitness is an asset. For truly open-ended agent tasks, the constraint becomes overhead.
 
 ## Graph-Based RAG vs Vanilla RAG — Empirical Note
 
-At Shine's RAG POC scale, **no measurable end-user UX difference** was found between graph-based RAG (LangGraph CRAG pipeline) and vanilla RAG. However:
+At [client]'s RAG POC scale, **no measurable end-user UX difference** was found between graph-based RAG (LangGraph CRAG pipeline) and vanilla RAG. However:
 - LangGraph was **easier to build** for the developer
 - The graph model made adding components (reranker node, HITL node) straightforward
 - The Librarian benchmark shows hybrid + reranker = 68% hit rate vs dense-only = 45% — the quality gap emerges with proper retrieval pipeline design, not from the graph framework itself
@@ -187,7 +187,7 @@ Wrap the compiled LangGraph graph as a single ADK `BaseAgent`:
 class LibrarianADKAgent(BaseAgent):
     def __init__(self):
         self._graph = create_librarian()  # LangGraph compiled graph
-    
+
     async def _run_async_impl(self, ctx: InvocationContext) -> AsyncIterator[Event]:
         query = ctx.session.events[-1].content.parts[0].text
         result = await self._graph.ainvoke({"query": query, ...})
@@ -200,13 +200,13 @@ class LibrarianADKAgent(BaseAgent):
 
 Three strategies for loading domain knowledge into agents — see [[ADK Context Engineering]].
 
-## Multi-Agent Architecture Patterns (Shine POC)
+## Multi-Agent Architecture Patterns ([client] POC)
 
-The Shine ADK POC (April 2026) evaluated four orchestration topologies. **Agent with Skills & Compaction** was selected — it minimizes LLM calls and is most compatible with prefix caching at scale.
+The [client] ADK POC (April 2026) evaluated four orchestration topologies. **Agent with Skills & Compaction** was selected — it minimizes LLM calls and is most compatible with prefix caching at scale.
 
 See [[Multi-Agent Orchestration Patterns]] for the full trade-off analysis and POC stack.
 
-## Shine VA Team Weighted Scoring (2026-05)
+## [client] VA Team Weighted Scoring (2026-05)
 
 The VA team conducted a formal weighted evaluation before committing to LangGraph for the next iteration of va-agents. The evaluation considered 11 criteria weighted by importance for their specific context (AWS-hosted, Google ADK-compatible, Python-native team, high-compliance accounting domain).
 
@@ -235,7 +235,7 @@ The "Brain and Limbs" hybrid option was also considered: Python for orchestratio
 
 ### VA team transition plan
 
-The VA team (Billy.dk virtual assistant) is transitioning to LangGraph for its next iteration. Current production is Google ADK + Next.js (va-agents on AWS ECS). The transition is enabled by extracting tools into the MCP layer (va-hypernova) — the agent framework can change without rewriting the tool layer.
+The VA team ([product].dk virtual assistant) is transitioning to LangGraph for its next iteration. Current production is Google ADK + Next.js (va-agents on AWS ECS). The transition is enabled by extracting tools into the MCP layer (va-hypernova) — the agent framework can change without rewriting the tool layer.
 
 ## See Also
 - [[ADK JS TypeScript Patterns]]
@@ -246,4 +246,4 @@ The VA team (Billy.dk virtual assistant) is transitioning to LangGraph for its n
 - [[Librarian RAG Architecture]]
 - [[VA Agent Project]]
 - [[VA Hypernova MCP]]
-- [[AI Engineering Chapter @Shine]]
+- [[AI Engineering Chapter @[client]]]

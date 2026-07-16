@@ -44,9 +44,9 @@ Summary:
 1. Primary Request and Intent:
 
 **Request 1 (from continuation of prior session):** User confirmed proceeding with a proposed plan that in
-- 
-            
-            
+-
+
+
 -  let's go
 
 ## Gotchas

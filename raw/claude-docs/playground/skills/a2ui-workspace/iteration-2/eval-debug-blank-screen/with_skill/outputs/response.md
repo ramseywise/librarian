@@ -66,7 +66,7 @@ In v0.8, all `surfaceUpdate` messages must arrive before `beginRendering`. If `b
 
 `Text` components require `{ "literalString": "..." }` or `{ "path": "..." }` — not a bare string.
 
-**Wrong:** `"text": "Hello"`  
+**Wrong:** `"text": "Hello"`
 **Correct:** `"text": { "literalString": "Hello" }`
 
 ---

@@ -41,7 +41,7 @@ Tools registered in the graph come from MCP at runtime. Swapping the retrieval b
 
 ## ADK MCP Integration
 
-The ADK samples repo uses a `billy` MCP server (13 tools) with:
+The ADK samples repo uses a `[product]` MCP server (13 tools) with:
 - **Dual entry points:** REST API (FastAPI, port 8766) + MCP server (stdio/SSE, port 8765)
 - **Shared database:** SQLite used by both
 - Pure Python, no ADK dependency — completely decoupled from the agent
@@ -148,7 +148,7 @@ Single CLI command replaces manual ECS task definition, ECR push, CloudWatch log
 ### Configuration (`.bedrock_agentcore.yaml`)
 
 ```yaml
-name: billy-mcp-server
+name: [product]-mcp-server
 entry_point: python src/server.py
 observability: enabled       # auto-wires CloudWatch + X-Ray
 auth:
@@ -165,7 +165,7 @@ Amazon Cognito JWT authorizer is the default auth pattern for Bedrock AgentCore 
 
 When the MCP client (e.g., va-agents Next.js app) needs to pass organization-scoped credentials to the MCP server, the pattern is: forward the credential as an HTTP request header. The MCP server reads it from the request context on each call — no hardcoded or stored credentials.
 
-Example (va-agents / Billy.dk): the Next.js app sends the Billy API token (from the iframe) as a header on each MCP request. The billy-mcp-server reads it and uses it for all Billy API calls in that request.
+Example (va-agents / [product].dk): the Next.js app sends the [product] API token (from the iframe) as a header on each MCP request. The [product]-mcp-server reads it and uses it for all [product] API calls in that request.
 
 ### Observability (auto-configured)
 
@@ -182,4 +182,4 @@ See [[VA Hypernova MCP]] for the full production deployment of this pattern.
 - [[Librarian RAG Architecture]]
 - [[Agentic Workflow Patterns]]
 - [[VA Hypernova MCP]]
-- [[AI Engineering Chapter @Shine]]
+- [[AI Engineering Chapter @[client]]]

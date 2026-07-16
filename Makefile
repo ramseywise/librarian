@@ -93,3 +93,7 @@ help:
 	@echo "ingest           — /ingest (no args) = full pipeline in Claude Code; /ingest raw/path/ = targeted"
 	@echo "lint-raw         — validate raw/ filenames match YYYY-MM-DD-slug convention"
 	@echo "lint             — reminder: use /lint in Claude Code"
+
+.PHONY: precommit
+precommit:  ## run all pre-commit hooks (ruff, format, gitleaks, eslint where wired) on all files
+	pre-commit run --all-files

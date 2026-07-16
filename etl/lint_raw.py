@@ -15,7 +15,9 @@ ROOT = Path(__file__).parent.parent / "raw"
 EXEMPT_PREFIXES = {"claude-docs", "repos", "agent-skills", "claude-skills", "sessions"}
 
 # Standard user-drop convention: 2026-07-05-my-page.md
-DATE_SLUG_RE = re.compile(r"^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])-[a-z0-9][a-z0-9-]*\.md$")
+DATE_SLUG_RE = re.compile(
+    r"^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])-[a-z0-9][a-z0-9-]*\.md$"
+)
 
 ERRORS = []
 WARNINGS = []
@@ -49,13 +51,13 @@ def main() -> int:
         check_dir(subdir)
 
     if ERRORS:
-        print(f"\n{'─'*60}")
+        print(f"\n{'─' * 60}")
         print(f"ERRORS ({len(ERRORS)}) — files that will create malformed manifest entries:")
         for path, reason in ERRORS:
             print(f"  ✗ raw/{path}  [{reason}]")
 
     if WARNINGS:
-        print(f"\n{'─'*60}")
+        print(f"\n{'─' * 60}")
         print(f"WARNINGS ({len(WARNINGS)}) — fixable but won't block ingest:")
         for path, reason in WARNINGS:
             print(f"  ⚠ raw/{path}  [{reason}]")
@@ -65,8 +67,10 @@ def main() -> int:
         return 0
 
     if ERRORS:
-        print(f"\n{'─'*60}")
-        print("Rename these files before running /ingest, or they will be ingested with malformed manifest keys.")
+        print(f"\n{'─' * 60}")
+        print(
+            "Rename these files before running /ingest, or they will be ingested with malformed manifest keys."
+        )
         print("Convention: YYYY-MM-DD-lowercase-slug.md  (no uppercase, no spaces, no underscores)")
         return 1
 

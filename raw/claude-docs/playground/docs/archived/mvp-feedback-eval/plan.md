@@ -1,11 +1,11 @@
 # MVP Feedback Loop & Evaluation
 
 Date: 2026-04-14
-Based on: RAPTOR Evaluation Tech Doc (Three-Stage Approach: Detection, Attribution, Control)
+Based on: rag-v1 Evaluation Tech Doc (Three-Stage Approach: Detection, Attribution, Control)
 
 ## Overview
 
-Five tasks to establish the evaluation feedback loop for the RAPTOR CS agent. Tasks build on the existing grader infrastructure in `src/eval/graders/` and follow the three-stage RAPTOR framework: **Detect** problems (automated metrics + human review), **Attribute** causes (tracing + failure clustering), **Control** outcomes (guardrails + confidence gates).
+Five tasks to establish the evaluation feedback loop for the rag-v1 CS agent. Tasks build on the existing grader infrastructure in `src/eval/graders/` and follow the three-stage rag-v1 framework: **Detect** problems (automated metrics + human review), **Attribute** causes (tracing + failure clustering), **Control** outcomes (guardrails + confidence gates).
 
 **Reporting layer:** Langfuse is the current experiment tracking and scoring backend. DataDog is the target production dashboard — migration is a dependency for Tasks 3 and 5. Both are referenced below; Langfuse for what works today, DataDog for what the tasks must eventually deliver.
 
@@ -110,7 +110,7 @@ Targeted sampling of conversations that match known risk signals — low-confide
 
 ### [M] Task 3: LLM-as-Judge Integration (Offline Evaluation)
 
-Implement automated evaluation graders that score conversational outputs against the eval dataset using judge models. Scoring criteria from the RAPTOR tech doc:
+Implement automated evaluation graders that score conversational outputs against the eval dataset using judge models. Scoring criteria from the rag-v1 tech doc:
 
 | Criterion | Grader | Dimensions |
 |---|---|---|

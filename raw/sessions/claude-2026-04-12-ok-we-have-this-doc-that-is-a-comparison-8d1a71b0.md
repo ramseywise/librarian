@@ -26,7 +26,7 @@ work_type: research
 
 ## Prompts (5 total)
 
-- Ok we have this doc that is a comparison tradeoff for poc 1 (bedrockRAG) vs langgraph orchestrated RAG.. and also a @playground/.claude/docs/research/rag-tradeoffs.md that goes into more detail about 
+- Ok we have this doc that is a comparison tradeoff for poc 1 (bedrockRAG) vs langgraph orchestrated RAG.. and also a @playground/.claude/docs/research/rag-tradeoffs.md that goes into more detail about
 - [Image: original 2492x502, displayed at 2000x403. Multiply coordinates by 1.25 to map to original image.]
 - can you give me a table also of the 3 options against the risks for integration, cost, latency, hallucination (answer quality)
 - are there other engineering risks to be considered? any product/design ones either?

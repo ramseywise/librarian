@@ -21,9 +21,7 @@ settings = ResearcherSettings()
 
 def load_project_context() -> str:
     """Return project context markdown if .claude/docs/context.md exists."""
-    context_path = (
-        Path(__file__).resolve().parent.parent.parent / ".claude" / "docs" / "context.md"
-    )
+    context_path = Path(__file__).resolve().parent.parent.parent / ".claude" / "docs" / "context.md"
     if context_path.exists():
         return context_path.read_text(encoding="utf-8")
     return ""

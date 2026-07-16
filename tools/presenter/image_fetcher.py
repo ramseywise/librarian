@@ -6,8 +6,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import structlog
-
 from core.config.agent_settings import settings
+
 from tools.presenter.models import VizPrompt
 from tools.presenter.providers import get_provider
 
@@ -70,6 +70,4 @@ def fetch_single_image(prompt: str, output_dir: Path, filename: str) -> Path:
     """Fetch a single image using the configured provider."""
     provider = get_provider()
     dest = output_dir / filename
-    return provider.generate_image(
-        prompt, dest, settings.image_width, settings.image_height
-    )
+    return provider.generate_image(prompt, dest, settings.image_width, settings.image_height)

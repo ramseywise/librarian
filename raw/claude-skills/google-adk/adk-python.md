@@ -25,7 +25,7 @@ description:
 
 ## Repository layout
 
-- `agents/` — individual agent projects (billy_support, simple_router, wine_expert, etc.)
+- `agents/` — individual agent projects (product-a_support, simple_router, wine_expert, etc.)
 - `shared/guardrails/` — reusable guardrail callbacks (PII redaction, prompt injection, domain validators)
 - `shared/tools/` — reusable tool helpers (chain_callbacks, compact_contract_from_pydantic)
 - Tests live under each agent's `tests/` directory; follow the existing pytest patterns

@@ -39,10 +39,10 @@ no-git
 
 ## Recent prompts
 - Check if the calibration eval (background task b6fo15w0q) has completed by reading /private/tmp/claude-501/-Users-ramsey-wise-Workspace/b0f440b5-068e-48ec-a966-d736b58b2fa8/tasks/b6fo15w0q.output and show the user the results.
--  sorry we just moved to @galactus/data/va_staging.. please use this for data input and @galactus/evals/reports for html reports thanks
+-  sorry we just moved to @project-g/data/va_staging.. please use this for data input and @project-g/evals/reports for html reports thanks
 -  are you positive we aren't rerunning it bc i see prepared_eval report for all 3
 - did it finish?
-- 
+-
 
 
 

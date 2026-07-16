@@ -179,9 +179,7 @@ def _walk(
                 if dotted.type == "dotted_name":
                     result.imports.append(ImportRef(target=_node_text(dotted, source)))
                 elif dotted.type == "aliased_import":
-                    name_node = next(
-                        (c for c in dotted.children if c.type == "dotted_name"), None
-                    )
+                    name_node = next((c for c in dotted.children if c.type == "dotted_name"), None)
                     if name_node:
                         result.imports.append(ImportRef(target=_node_text(name_node, source)))
             _walk(child, source, result, scope_stack, lang)

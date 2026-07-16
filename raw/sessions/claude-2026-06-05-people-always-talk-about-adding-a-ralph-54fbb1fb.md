@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-05
 session_id: 54fbb1fb-bf53-4e08-8f60-ed9b0352d7df
 prompts: 66
@@ -8,7 +8,7 @@ total_tokens: 701362
 cache_read_tokens: 79308889
 ---
 
-# Claude Code Session — 2026-06-05 (galactus)
+# Claude Code Session — 2026-06-05 (project-g)
 
 **First prompt:** people always talk about adding a ralph when vibe coding bc it constantly asks why and how to make things better randomly throughout your repo.. how would you recommend that implement something like this, should it be a skill or a claude/agent or a src/ agent? like what wouldd need to go here the sk
 

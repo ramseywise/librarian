@@ -171,14 +171,14 @@ In ADK Python multi-agent, `asyncio.create_task()` copies a context snapshot —
 session = await session_service.create_session(
     app_name="copilot-py",
     state={
-        "billy_api_token": body.api_token,
-        "billy_org_id": body.org_id,
+        "[product]_api_token": body.api_token,
+        "[product]_org_id": body.org_id,
     },
 )
 
 # Tool functions — read via ToolContext (multi-agent safe)
 async def list_bills(tool_context: ToolContext) -> list[dict]:
-    token = tool_context.state["billy_api_token"]
+    token = tool_context.state["[product]_api_token"]
     ...
 ```
 

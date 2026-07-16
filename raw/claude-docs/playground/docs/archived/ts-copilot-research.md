@@ -1,17 +1,17 @@
 # Research: TypeScript Copilot Service
 
 **Date:** 2026-04-14
-**Scope:** `v2/ts_google_adk/` — the live, production TS copilot service embedded in Billy.dk
+**Scope:** `v2/ts_google_adk/` — the live, production TS copilot service embedded in product-a.dk
 
 ---
 
 ## What This Service Is
 
-An AI accounting assistant ("Shine Assistant") embedded as an iframe chatbot inside the Billy.dk web app. It wraps a Google ADK `LlmAgent` (Gemini Flash) with 18 tools covering the core Billy.dk accounting surface. The UI is Next.js 16 with React 19 and Recharts for visualizations.
+An AI accounting assistant ("client-a Assistant") embedded as an iframe chatbot inside the product-a.dk web app. It wraps a Google ADK `LlmAgent` (Gemini Flash) with 18 tools covering the core product-a.dk accounting surface. The UI is Next.js 16 with React 19 and Recharts for visualizations.
 
-The service is deployed on AWS ECS (`billy-staging` cluster) and accessed via Docker Compose locally.
+The service is deployed on AWS ECS (`product-a-staging` cluster) and accessed via Docker Compose locally.
 
-Entry point: `http://localhost:3000/va-agents/bot?BILLY_API_TOKEN=...&BILLY_ORGANIZATION_ID=...&theme=light`
+Entry point: `http://localhost:3000/va-agents/bot?product-a_API_TOKEN=...&product-a_ORGANIZATION_ID=...&theme=light`
 
 ---
 
@@ -35,7 +35,7 @@ The agent produces a JSON object (enforced via `outputSchema`) that drives all U
 |---|---|
 | `message` | Markdown content |
 | `suggestions` | Clickable green suggestion chips |
-| `navButtons` | Blue navigation buttons that drive the parent Billy app via `postMessage` |
+| `navButtons` | Blue navigation buttons that drive the parent product-a app via `postMessage` |
 | `tableType` | Enables click-to-select row behavior on markdown tables |
 | `form` | Inline creation form (customer, product, invoice, quote) |
 | `emailForm` | Editable email form for send-invoice/send-quote flows |
@@ -46,7 +46,7 @@ The agent produces a JSON object (enforced via `outputSchema`) that drives all U
 
 ### Page context awareness
 
-`parentUrl` from the Billy parent app is passed via `postMessage` and threaded through `useChat`. The agent instruction reads: each user message may be prefixed with `[User is currently on page: <url>]`. This enables context-aware responses without asking "which invoice?".
+`parentUrl` from the product-a parent app is passed via `postMessage` and threaded through `useChat`. The agent instruction reads: each user message may be prefixed with `[User is currently on page: <url>]`. This enables context-aware responses without asking "which invoice?".
 
 ### Escalation path
 
@@ -66,7 +66,7 @@ The agent sets `contactSupport: true` when:
 **Products:** list, create (with form), edit
 **Organization:** invite collaborator
 **Knowledge fallback:** Bedrock KB for anything outside tool scope
-**Navigation:** 30+ named routes in `navButtons`, covering all major Billy.dk pages
+**Navigation:** 30+ named routes in `navButtons`, covering all major product-a.dk pages
 **Charts:** pie (status breakdown), bar (monthly revenue), line (period comparison)
 
 ### E2E acceptance test matrix (8 cases — from `.claude/commands/test-chat.md`)
@@ -107,7 +107,7 @@ The agent sets `contactSupport: true` when:
 
 - **`FunctionTool` + Zod** is the right tool-definition pattern — explicit descriptions, type-safe execute, easy to test
 - **`outputSchema`** is doing real work: the frontend is driven entirely by the structured output, not by parsing message text
-- The `navButtons` + `suggestions` separation is clean — nav opens pages in Billy, suggestions send follow-up messages
+- The `navButtons` + `suggestions` separation is clean — nav opens pages in product-a, suggestions send follow-up messages
 - **`parentUrl` injection** is already partially wired; completing it is low-effort, high-value
 
 ### Known fragilities
@@ -134,4 +134,4 @@ The agent sets `contactSupport: true` when:
 1. **Is `gemini-3-flash-preview` a valid model string in this deployment?** Check the ECS task definition or the deployed config. If it's wrong, the service may be degraded in production today.
 2. **Does the Postgres session table need `app_name` namespacing?** Only matters if both TS and Python services are pointed at the same database during the comparison phase.
 3. **Is the LangGraph CRAG endpoint ready to replace Bedrock KB?** The Python plan calls for a `POST /query` endpoint on the playground FastAPI. When that lands, the TS service should be updated in parallel.
-4. **What is the Billy.dk rate limit for `GET /v2/reports/*`?** Financial reports can be expensive queries — the reports tools need a note on caching or debouncing if used frequently.
+4. **What is the product-a.dk rate limit for `GET /v2/reports/*`?** Financial reports can be expensive queries — the reports tools need a note on caching or debouncing if used frequently.

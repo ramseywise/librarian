@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-22
 session_id: 93b4309e-912a-46aa-b843-38b0a623699c
 prompts: 21
@@ -8,7 +8,7 @@ total_tokens: 209320
 cache_read_tokens: 15375222
 ---
 
-# Claude Code Session — 2026-06-22 (galactus)
+# Claude Code Session — 2026-06-22 (project-g)
 
 **First prompt:** so we have a lot of data in corpus and experiments - do we want to push this to the repo? it's 700 files but i think it will be good to store this. and the corpus also makes sense right? or is that run locally with make corpus-ingest with api in .env?
 
@@ -21,7 +21,7 @@ cache_read_tokens: 15375222
 - ess [41735]
 INFO:     Waiting for application startup.
 ERROR:    Traceback (most recent call last):
-  File "/Users/ramsey.wise/Workspace/galactus/.venv/lib/python3.12/site-packages/starlette/routing.p
+  File "/Users/ramsey.wise/Workspace/project-g/.venv/lib/python3.12/site-packages/starlette/routing.p
 
 ## Stats
 

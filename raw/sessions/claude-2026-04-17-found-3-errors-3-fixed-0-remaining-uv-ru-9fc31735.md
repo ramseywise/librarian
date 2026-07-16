@@ -33,7 +33,7 @@ tests/test_duckdb_document_store.py:15: error:
 uv run ruff format app/ tests/ evals/
 19 files reformatted, 141 files left unchanged
 uv run mypy app/ tests/
-app/orchestrator/adk/runtime.py:25: error: Function 
+app/orchestrator/adk/runtime.py:25: error: Function
 - i feel like qa policies and gates should necessarily be nodes.. does it fit better with policies or exist alongside nodes in sibling folder?
 
 ## Stats

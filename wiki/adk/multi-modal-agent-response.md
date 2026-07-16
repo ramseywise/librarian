@@ -42,7 +42,7 @@ Examples:
 
 ## Interaction Level Mapping
 
-Structured elicitation maps across the three-level interaction hierarchy (from [[Shine Copilot Architecture]]):
+Structured elicitation maps across the three-level interaction hierarchy (from [[[client] Copilot Architecture]]):
 
 | Level | Response Pattern |
 |---|---|
@@ -84,7 +84,7 @@ For action-oriented workflows (create invoice, correct categorization), lean tow
 ---
 
 ## See Also
-- [[Shine Copilot Architecture]]
+- [[[client] Copilot Architecture]]
 - [[VA Agent Project]]
 - [[ACI (Agent-Computer Interface)]]
 - [[Plan and Execute Pattern]]

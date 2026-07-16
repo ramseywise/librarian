@@ -44,9 +44,9 @@ no-git
 Summary:
 1. Primary Request and Intent:
    The session continued from a previous conversation where a migration plan was written. The user made two
-- 
-            
-            
+-
+
+
 - lets go
 - lets go
 

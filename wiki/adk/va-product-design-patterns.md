@@ -9,7 +9,7 @@ sources:
 
 # VA Product Design Patterns
 
-Patterns from the Billy Shine VA (production, embedded in Billy.dk). Applicable to any product-embedded VA agent.
+Patterns from the [product] [client] VA (production, embedded in [product].dk). Applicable to any product-embedded VA agent.
 
 ## Three Interaction Levels
 

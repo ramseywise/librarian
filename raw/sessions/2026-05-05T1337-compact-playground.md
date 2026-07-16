@@ -42,9 +42,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    User requested three sequential enhancements to the BookKeeper Hero evaluation notebook (bkh_data_prep.i
-- 
-            
-            
+-
+
+
 -  the first cell needs updating, but can you just give me it to copy paste an actual overview of the data and research qestions and/or methodology
 -  can we organize the avg & max turns by topic as desc avg? and it should be category not topic right?
 

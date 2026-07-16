@@ -103,9 +103,7 @@ def init_schema(con: duckdb.DuckDBPyConnection) -> None:
 
 
 def touch_built_at(con: duckdb.DuckDBPyConnection) -> None:
-    con.execute(
-        "INSERT OR REPLACE INTO meta VALUES ('built_at', ?)", [str(time.time())]
-    )
+    con.execute("INSERT OR REPLACE INTO meta VALUES ('built_at', ?)", [str(time.time())])
 
 
 def get_con(read_only: bool = False) -> duckdb.DuckDBPyConnection:

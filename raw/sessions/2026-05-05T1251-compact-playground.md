@@ -42,9 +42,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user reported that a CSV file (`bookkeeperHero.csv`) they added to `evals/data/` was not being recog
-- 
-            
-            
+-
+
+
 -  no that doesn't work bc the nbk things that is the root folder - it needs to be path to evals which is my local workspace not path to google
 - what was the change i willl copy it bc its not showing
 

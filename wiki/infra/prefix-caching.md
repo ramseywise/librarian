@@ -48,7 +48,7 @@ Anthropic API responses include `cache_read_input_tokens` and `cache_creation_in
 
 ## Design Goal: Minimize LLM Calls + Cache Aggressively
 
-The Shine ADK POC (April 2026) explicitly set "minimize LLM calls + optimize for prefix caching at scale" as top design goals. This directly influenced the choice of **Agent with Skills & Compaction** over multi-agent topologies — a single agent with a stable prefix caches better than N agents each with their own context. See [[Multi-Agent Orchestration Patterns]].
+The [client] ADK POC (April 2026) explicitly set "minimize LLM calls + optimize for prefix caching at scale" as top design goals. This directly influenced the choice of **Agent with Skills & Compaction** over multi-agent topologies — a single agent with a stable prefix caches better than N agents each with their own context. See [[Multi-Agent Orchestration Patterns]].
 
 ## See Also
 - [[ADK Context Engineering]]

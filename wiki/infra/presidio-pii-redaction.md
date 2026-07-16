@@ -4,7 +4,7 @@ tags: [infra, pattern]
 summary: Presidio orchestration layer with spaCy fr_core_news_lg + CamemBERT NER + custom regex recognizers for French financial PII — wired into Langfuse via the SDK mask hook as a single interception point before traces leave the process.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/chat-agent/docs/shine_pii_redaction_decision.md
+  - raw/claude-docs/chat-agent/docs/[client]_pii_redaction_decision.md
 ---
 
 # Presidio PII Redaction for Langfuse

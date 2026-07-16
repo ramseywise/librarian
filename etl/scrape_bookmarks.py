@@ -19,7 +19,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -34,9 +34,7 @@ log = structlog.get_logger()
 DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "raw" / "web"
 DEFAULT_BOOKMARKS_FILE = Path(__file__).parent.parent / "raw" / "web" / "bookmarks.txt"
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; librarian-kb/1.0)"
-}
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; librarian-kb/1.0)"}
 
 
 def _url_slug(url: str) -> str:
@@ -64,8 +62,21 @@ def _extract_content(html: str) -> tuple[str, str]:
     """Return (title, cleaned_body_markdown) from raw HTML."""
     soup = BeautifulSoup(html, "html.parser")
 
-    for tag in soup(["script", "style", "nav", "footer", "header", "aside",
-                     "form", "iframe", "noscript", "svg", "button"]):
+    for tag in soup(
+        [
+            "script",
+            "style",
+            "nav",
+            "footer",
+            "header",
+            "aside",
+            "form",
+            "iframe",
+            "noscript",
+            "svg",
+            "button",
+        ]
+    ):
         tag.decompose()
 
     title = ""
@@ -107,7 +118,7 @@ def scrape_url(url: str, output_dir: Path, dry_run: bool = False) -> bool:
         log.debug("already_captured", url=url)
         return False
 
-    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.now(UTC).strftime("%Y-%m-%d")
 
     try:
         with httpx.Client(headers=HEADERS, follow_redirects=True, timeout=20) as client:
@@ -175,10 +186,16 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--bookmarks-file", type=Path, default=DEFAULT_BOOKMARKS_FILE)
     parser.add_argument(
-        "--url", action="append", dest="urls", default=[],
-        metavar="URL", help="Single URL to capture (repeatable)"
+        "--url",
+        action="append",
+        dest="urls",
+        default=[],
+        metavar="URL",
+        help="Single URL to capture (repeatable)",
     )
-    parser.add_argument("--dry-run", action="store_true", help="Print what would be written, don't write")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print what would be written, don't write"
+    )
     args = parser.parse_args()
 
     if not args.dry_run:
@@ -191,7 +208,9 @@ def main() -> None:
         return
 
     written = sum(scrape_url(u, args.output_dir, dry_run=args.dry_run) for u in urls)
-    print(f"\n{'[dry-run] ' if args.dry_run else ''}Captured {written}/{len(urls)} URLs → {args.output_dir}")
+    print(
+        f"\n{'[dry-run] ' if args.dry_run else ''}Captured {written}/{len(urls)} URLs → {args.output_dir}"
+    )
 
 
 if __name__ == "__main__":

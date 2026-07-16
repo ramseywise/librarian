@@ -11,7 +11,7 @@ sources:
 
 A KPI tree for an agentic product measures the value the agent creates for the customer, not just its internal quality. The tree flows from a top-level customer value metric down through health metrics and leading indicators.
 
-This pattern emerged from the Shine AI Engineering Chapter's cross-team KPI alignment effort (May 2026). Each team is building toward a centralized KPI register.
+This pattern emerged from the [client] AI Engineering Chapter's cross-team KPI alignment effort (May 2026). Each team is building toward a centralized KPI register.
 
 ---
 
@@ -71,5 +71,5 @@ This pattern emerged from the Shine AI Engineering Chapter's cross-team KPI alig
 - [[RAG Evaluation]]
 - [[HITL Annotation Pipeline]]
 - [[VA Eval Harness]]
-- [[AI Engineering Chapter @Shine]]
+- [[AI Engineering Chapter @[client]]]
 - [[Copilot Learning Loop]]

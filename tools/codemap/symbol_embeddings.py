@@ -144,9 +144,16 @@ def semantic_search(
 
     return [
         {
-            "symbol_id": r[0], "name": r[1], "kind": r[2], "signature": r[3],
-            "docstring": r[4], "file_id": r[5], "repo_id": r[6],
-            "start_line": r[7], "end_line": r[8], "score": round(score, 4),
+            "symbol_id": r[0],
+            "name": r[1],
+            "kind": r[2],
+            "signature": r[3],
+            "docstring": r[4],
+            "file_id": r[5],
+            "repo_id": r[6],
+            "start_line": r[7],
+            "end_line": r[8],
+            "score": round(score, 4),
         }
         for score, r in scored[:limit]
     ]

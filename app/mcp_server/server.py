@@ -38,8 +38,17 @@ SCHEMA_VERSION = "2"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 DOMAINS = [
-    "rag", "langgraph", "adk", "infra", "patterns",
-    "eval", "deep-agents", "memory", "mcp", "meta", "projects",
+    "rag",
+    "langgraph",
+    "adk",
+    "infra",
+    "patterns",
+    "eval",
+    "deep-agents",
+    "memory",
+    "mcp",
+    "meta",
+    "projects",
 ]
 
 mcp = FastMCP("librarian")
@@ -47,20 +56,21 @@ mcp = FastMCP("librarian")
 # Optional semantic search — gracefully absent if sentence-transformers not installed
 try:
     from sentence_transformers import SentenceTransformer
+
     _emb_model: SentenceTransformer | None = None
     HAS_EMBEDDINGS = True
 except ImportError:
     HAS_EMBEDDINGS = False
 
 
-def _get_emb_model() -> "SentenceTransformer":
+def _get_emb_model() -> SentenceTransformer:
     global _emb_model
     if _emb_model is None:
         _emb_model = SentenceTransformer("all-MiniLM-L6-v2")
     return _emb_model
 
 
-def _vec_to_blob(vec: "list[float]") -> bytes:
+def _vec_to_blob(vec: list[float]) -> bytes:
     return struct.pack(f"{len(vec)}f", *vec)
 
 
@@ -70,7 +80,7 @@ def _blob_to_vec(blob: bytes) -> list[float]:
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=False))
     na = sum(x * x for x in a) ** 0.5
     nb = sum(x * x for x in b) ** 0.5
     return dot / (na * nb + 1e-9)
@@ -84,19 +94,12 @@ def _cosine(a: list[float], b: list[float]) -> float:
 def _index_needs_rebuild(con: duckdb.DuckDBPyConnection) -> bool:
     """Return True if the index is absent, stale, or schema-mismatched."""
     try:
-        version = con.execute(
-            "SELECT val FROM meta WHERE key = 'schema_version'"
-        ).fetchone()
+        version = con.execute("SELECT val FROM meta WHERE key = 'schema_version'").fetchone()
         if not version or version[0] != SCHEMA_VERSION:
             return True
-        built_at = float(
-            con.execute("SELECT val FROM meta WHERE key = 'built_at'").fetchone()[0]
-        )
+        built_at = float(con.execute("SELECT val FROM meta WHERE key = 'built_at'").fetchone()[0])
         # Rebuild if any wiki page is newer than the index
-        for p in WIKI_DIR.rglob("*.md"):
-            if p.stat().st_mtime > built_at:
-                return True
-        return False
+        return any(p.stat().st_mtime > built_at for p in WIKI_DIR.rglob("*.md"))
     except Exception:
         return True
 
@@ -121,9 +124,7 @@ def _compute_backlinks(pages: list[tuple]) -> dict[str, int]:
         for match in WIKILINK_RE.finditer(content):
             raw = match.group(1).strip()
             slug = re.sub(r"[^a-z0-9]+", "-", raw.lower()).strip("-")
-            target = slug_to_path.get(slug) or slug_to_path.get(
-                raw.lower().replace(" ", "-")
-            )
+            target = slug_to_path.get(slug) or slug_to_path.get(raw.lower().replace(" ", "-"))
             if target and target != path and target in counts:
                 counts[target] += 1
     return counts
@@ -168,14 +169,16 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
             continue
         text = page.read_text(encoding="utf-8", errors="ignore")
         meta = _parse_frontmatter(text)
-        raw_pages.append((
-            str(page),
-            meta.get("title", page.stem),
-            " ".join(meta.get("tags", [])),
-            meta.get("summary", ""),
-            meta.get("updated", ""),
-            text,
-        ))
+        raw_pages.append(
+            (
+                str(page),
+                meta.get("title", page.stem),
+                " ".join(meta.get("tags", [])),
+                meta.get("summary", ""),
+                meta.get("updated", ""),
+                text,
+            )
+        )
 
     backlinks = _compute_backlinks(raw_pages)
 
@@ -193,7 +196,12 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
 
     rows = [
         (
-            path, title, tags, summary, updated, content,
+            path,
+            title,
+            tags,
+            summary,
+            updated,
+            content,
             backlinks.get(path, 0),
             embeddings.get(path),
         )
@@ -206,6 +214,7 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     )
 
     import time
+
     con.execute("INSERT INTO meta VALUES ('schema_version', ?)", [SCHEMA_VERSION])
     con.execute("INSERT INTO meta VALUES ('built_at', ?)", [str(time.time())])
 
@@ -356,8 +365,7 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
             f"**{title}**\n"
             f"Path: `{path}`\n"
             f"Tags: {tags} · Backlinks: {backlinks}\n"
-            f"Summary: {summary}\n"
-            + (f"Snippet: ...{snippet}..." if snippet else "")
+            f"Summary: {summary}\n" + (f"Snippet: ...{snippet}..." if snippet else "")
         )
 
     return f"Found {len(rows)} result(s):\n\n" + "\n\n---\n\n".join(results)
@@ -440,11 +448,16 @@ def list_domain(domain: str) -> str:
         meta = _parse_frontmatter(text)
         page_tags = meta.get("tags", [])
         bl = bl_map.get(str(page), 0)
-        results.append((bl, (
-            f"- **{meta.get('title', page.stem)}** (`{page}`) · ↑{bl} backlinks\n"
-            f"  Tags: {', '.join(page_tags) or 'none'}\n"
-            f"  {meta.get('summary', '')}"
-        )))
+        results.append(
+            (
+                bl,
+                (
+                    f"- **{meta.get('title', page.stem)}** (`{page}`) · ↑{bl} backlinks\n"
+                    f"  Tags: {', '.join(page_tags) or 'none'}\n"
+                    f"  {meta.get('summary', '')}"
+                ),
+            )
+        )
 
     results.sort(key=lambda x: x[0], reverse=True)
     header = f"**{len(results)} page(s) in `wiki/{domain}/`** (sorted by backlinks):\n\n"
@@ -527,7 +540,14 @@ def get_domain_briefing(domain: str) -> str:
     if not pages:
         return f"No pages found in domain '{domain}'"
 
-    type_order = {"decision": 0, "pattern": 1, "comparison": 2, "concept": 3, "reference": 4, "project": 5}
+    type_order = {
+        "decision": 0,
+        "pattern": 1,
+        "comparison": 2,
+        "concept": 3,
+        "reference": 4,
+        "project": 5,
+    }
     parsed = []
     for page in pages:
         text = page.read_text(encoding="utf-8", errors="ignore")

@@ -41,9 +41,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user is working on the Librarian project — a personal agent design knowledge base at `/Users/ramsey.
-- 
-            
-            
+-
+
+
 -  lets go
 - Base directory for this skill: /Users/ramsey.wise/Workspace/librarian/.claude/skills/lint
 

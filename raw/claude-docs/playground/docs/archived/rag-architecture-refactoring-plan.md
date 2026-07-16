@@ -1,7 +1,7 @@
 # RAG agent architecture — refactoring plan (review follow-up)
 
-**Status:** Approved — **v2 + hardening** (see [§6 Decision log](#6-decision-log))  
-**Last updated:** April 16, 2026  
+**Status:** Approved — **v2 + hardening** (see [§6 Decision log](#6-decision-log))
+**Last updated:** April 16, 2026
 **Related:** [`rag-system-development-plan.md`](./rag-system-development-plan.md) (product phases, Bedrock, API); [`rag-architecture-execution-plan.md`](./rag-architecture-execution-plan.md) (ordered PRs: renames, facade, offline/online boundaries). This document focuses on **orchestration quality**, **policy robustness**, and **scope control** (v1 vs v2).
 
 **Audience:** Engineering for implementation order; v1 remains a **documented alternative**, not the current ship target.
@@ -42,21 +42,21 @@ Non-goals for this plan document: replacing LangGraph, choosing Bedrock vs local
 
 **Implemented in repo (April 2026):** `app/graph/context_builder.py`, extended `PlannerOutput` + state, structured policy logging in QA policy nodes, `docs/rag-score-policy.md`, tests in `tests/test_context_builder.py` / `test_hybrid_policy.py` / routing.
 
-1. **Context builder module**  
-   - Input: ranked chunks + config (`max_tokens` or char budget, dedup strategy, max chunks).  
-   - Output: string block + list of chunk ids used (for citations alignment).  
-   - Wire from `answer_node` (and keep `schemas` / formatting consistent).  
+1. **Context builder module**
+   - Input: ranked chunks + config (`max_tokens` or char budget, dedup strategy, max chunks).
+   - Output: string block + list of chunk ids used (for citations alignment).
+   - Wire from `answer_node` (and keep `schemas` / formatting consistent).
    - Tests: budget enforcement, dedup, empty input.
 
-2. **Planner output schema**  
-   - Extend structured fields (e.g. `intent`, optional `retrieval_hints` or `sub_intent`) without changing routing until validated.  
+2. **Planner output schema**
+   - Extend structured fields (e.g. `intent`, optional `retrieval_hints` or `sub_intent`) without changing routing until validated.
    - Golden tests + evals on planner outputs if LLM planner enabled.
 
-3. **Observability for policy decisions**  
+3. **Observability for policy decisions**
    - Log: raw scores, thresholds, route chosen, **reason codes** (already partly present—ensure stable enums for dashboards).
 
-4. **Eval / regression harness expansion**  
-   - Scripted scenarios: empty retrieval, adversarial query, low score, refine loop, escalation.  
+4. **Eval / regression harness expansion**
+   - Scripted scenarios: empty retrieval, adversarial query, low score, refine loop, escalation.
    - Tie to existing `evals/` where possible.
 
 **Exit criteria:** Context builder in use; planner schema versioned; baseline eval suite green on main.
@@ -65,25 +65,25 @@ Non-goals for this plan document: replacing LangGraph, choosing Bedrock vs local
 
 **Implemented in repo (April 2026):** `RAG_POLICY_MODE` / `RAG_POLICY_HYBRID_BORDER_LOW`, `app/graph/hybrid_policy.py` + probe chains in `app/rag/generator/llm.py`, `RAG_POST_ANSWER_EVALUATOR` + `post_answer_evaluator` graph node (`app/graph/nodes/post_answer_node.py`), env docs in `.env.example`.
 
-1. **Score policy documentation**  
+1. **Score policy documentation**
    - Document that thresholds are **empirical**; process to re-tune when embedder/reranker/corpus changes.
 
-2. **Hybrid policy spike (optional flag)**  
-   - e.g. `RAG_POLICY_MODE=scores_only|hybrid`  
+2. **Hybrid policy spike (optional flag)**
+   - e.g. `RAG_POLICY_MODE=scores_only|hybrid`
    - Hybrid: keep fast score gates; add **cheap** LLM check only on borderline band (define band by percentile or two-threshold “uncertainty zone”).
 
-3. **Post-answer evaluator (optional; default off)**  
-   - Add **wiring** (node or internal step after `answer_node`) + config, e.g. `RAG_POST_ANSWER_EVALUATOR=false` (exact name TBD in `app/core/config.py`).  
-   - When **false**: no extra LLM call; graph behaves as today.  
+3. **Post-answer evaluator (optional; default off)**
+   - Add **wiring** (node or internal step after `answer_node`) + config, e.g. `RAG_POST_ANSWER_EVALUATOR=false` (exact name TBD in `app/core/config.py`).
+   - When **false**: no extra LLM call; graph behaves as today.
    - When **true**: run evaluator (heuristic and/or LLM) and route to refine / escalate / END per product rules—document outcomes before enabling in prod.
 
 **Exit criteria:** Clear policy modes; optional hybrid behind flag; post-answer flag documented (implementation may land in same phase or follow Phase A).
 
 ### Phase C — Further v2 enhancements (optional)
 
-- Session memory / query-style hints (privacy-reviewed).  
-- Task graph: clarify ↔ scheduler loop edges.  
-- Deeper integration with LLM-as-judge / DataDog (aligns with development plan §5).  
+- Session memory / query-style hints (privacy-reviewed).
+- Task graph: clarify ↔ scheduler loop edges.
+- Deeper integration with LLM-as-judge / DataDog (aligns with development plan §5).
 - Batch-only judge flows if online post-answer stays off.
 
 ---
@@ -172,9 +172,9 @@ flowchart LR
 
 ### 4.3 How this maps to the codebase today
 
-- **Current repo** matches **approved v2** (retrieval policy + retrieval gate + rerank policy + rerank gate).  
-- **Hardening** does not remove gates; it adds **context builder**, **clearer policy semantics**, **evals**, and optional **hybrid** / **post-answer** flags.  
-- **v1** remains a **documented** shrink path (routing shortcuts / compact graph) if priorities change later.  
+- **Current repo** matches **approved v2** (retrieval policy + retrieval gate + rerank policy + rerank gate).
+- **Hardening** does not remove gates; it adds **context builder**, **clearer policy semantics**, **evals**, and optional **hybrid** / **post-answer** flags.
+- **v1** remains a **documented** shrink path (routing shortcuts / compact graph) if priorities change later.
 - **Phase A** (context builder, planner schema, evals) applies directly to the approved v2 path.
 
 **Layering glossary (logs and reviews):** use the same vocabulary as structured logs:
@@ -216,9 +216,9 @@ Canonical copy with PR sequencing: [`rag-architecture-execution-plan.md`](./rag-
 
 ## 7. Summary
 
-- **Approved path:** **v2** graph (dual policy + dual HITL gates) + **hardening** (context builder, planner schema, observability, score policy docs, optional hybrid).  
-- **Post-answer evaluator:** **on the roadmap** as an **optional** step, **default off** until config enables it.  
-- **v1** (thin path) stays **documented** in §4.1 for future use—not the active refactor target.  
+- **Approved path:** **v2** graph (dual policy + dual HITL gates) + **hardening** (context builder, planner schema, observability, score policy docs, optional hybrid).
+- **Post-answer evaluator:** **on the roadmap** as an **optional** step, **default off** until config enables it.
+- **v1** (thin path) stays **documented** in §4.1 for future use—not the active refactor target.
 - **Session learning / task loops** remain Phase C / product-gated.
 
 Engineering can turn §3 into tickets against the **v2 hardening** line; post-answer work is a **flagged** add-on when prioritized.

@@ -93,9 +93,7 @@ def _run_compare() -> None:
     p = argparse.ArgumentParser(description="Compare JSONL vs session notes")
     p.add_argument("--projects-dir", default="~/.claude/projects")
     p.add_argument("--sessions-dir", default=".claude/sessions")
-    p.add_argument(
-        "--output", default=None, help="Write report to file (default: stdout)"
-    )
+    p.add_argument("--output", default=None, help="Write report to file (default: stdout)")
     args = p.parse_args()
 
     projects_dir = Path(args.projects_dir).expanduser()

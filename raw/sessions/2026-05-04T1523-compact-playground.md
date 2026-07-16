@@ -41,9 +41,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    User initially asked about evaluation metrics for BedrockKB (hallucination, friction detection, retrieva
-- 
-            
-            
+-
+
+
 -  ok i dont think in the .env we need actually anything except gdrive file and google api key for gemini we need to use the grader - later when we do bedrock we have a token to run a curl command to test staging va-agent and from this result we should create a json/csv file to run eval like bookkeepe
 - let's add those two nbks
 - I guess one nbk is fine

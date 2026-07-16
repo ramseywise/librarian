@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-19
 session_id: 11d354a7-9680-4dc8-a331-e2595d7ede4b
 prompts: 3
@@ -8,14 +8,14 @@ total_tokens: 171269
 cache_read_tokens: 15340073
 ---
 
-# Claude Code Session — 2026-06-19 (galactus)
+# Claude Code Session — 2026-06-19 (project-g)
 
 **First prompt:** can we /sanyi @evals/ particularly the pipelines from the graders and metrics to the reports.. i feel like this could be greatly cleaned up
 
 ## Prompts (3 total)
 
 - can we /sanyi @evals/ particularly the pipelines from the graders and metrics to the reports.. i feel like this could be greatly cleaned up
-- Base directory for this skill: /Users/ramsey.wise/Workspace/galactus/.claude/skills/SANYI
+- Base directory for this skill: /Users/ramsey.wise/Workspace/project-g/.claude/skills/SANYI
 
 # SANYI (三易) — change contracts for agent architectures
 

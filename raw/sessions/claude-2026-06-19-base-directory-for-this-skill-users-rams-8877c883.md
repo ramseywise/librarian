@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-19
 session_id: 8877c883-b1d6-48e0-b721-3e98b94d0f11
 prompts: 2
@@ -8,9 +8,9 @@ total_tokens: 59359
 cache_read_tokens: 1988687
 ---
 
-# Claude Code Session — 2026-06-19 (galactus)
+# Claude Code Session — 2026-06-19 (project-g)
 
-**First prompt:** Base directory for this skill: /Users/ramsey.wise/Workspace/galactus/.claude/skills/SANYI
+**First prompt:** Base directory for this skill: /Users/ramsey.wise/Workspace/project-g/.claude/skills/SANYI
 
 # SANYI (三易) — change contracts for agent architectures
 
@@ -21,7 +21,7 @@ three change layers, records the assign
 
 ## Prompts (2 total)
 
-- Base directory for this skill: /Users/ramsey.wise/Workspace/galactus/.claude/skills/SANYI
+- Base directory for this skill: /Users/ramsey.wise/Workspace/project-g/.claude/skills/SANYI
 
 # SANYI (三易) — change contracts for agent architectures
 

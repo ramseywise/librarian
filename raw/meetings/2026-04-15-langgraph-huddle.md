@@ -31,7 +31,7 @@ Two teams formed to fork the repository:
 
 ### Framework Choice: LangGraph vs ADK
 
-There was an open question about whether to invest in LangGraph since Shine uses Google ADK for all their services — making LangGraph "potentially more effort to build." Decision deferred to higher pay grades; team continues learning/prototyping both.
+There was an open question about whether to invest in LangGraph since client-a uses Google ADK for all their services — making LangGraph "potentially more effort to build." Decision deferred to higher pay grades; team continues learning/prototyping both.
 
 ### Node Architecture
 
@@ -78,7 +78,7 @@ Yan to present initial POC at knowledge sharing session. Question raised about w
 - **[Yan Zhang]** Schedule follow-up discussion on new POC project structure
 - **[Axel + Yan]** Fork repo; build co-pilot agent POC with routing/action items
 - **[Ramsey + Marco]** Fork repo; add reranker, retriever, chunking, indexing, embedding, storage refactoring
-- **[Yan Zhang]** Obtain Shine data (articles, documentation) for preprocessing pipeline
+- **[Yan Zhang]** Obtain client-a data (articles, documentation) for preprocessing pipeline
 - **[Yan Zhang]** Set up data preprocessing — cleaning, chunking strategy, embedding index
 - **[Yan Zhang]** Select proper database for indexing/retrieval
 - **[Ramsey Wise]** Integrate LangSmith into POC for metrics
@@ -89,8 +89,8 @@ Yan to present initial POC at knowledge sharing session. Question raised about w
 
 ## Context Notes
 
-- POC used synthetic data (LLM-generated) — no real Shine data available at interview stage
+- POC used synthetic data (LLM-generated) — no real client-a data available at interview stage
 - LLM: OpenAI (all models in original POC)
 - Bedrock considered as a status quo model source
 - OpenSearch access lost; Chroma DB the local alternative
-- Raptor-style RAG pipeline was the inspiration for Ramsey's playground implementation
+- rag-v1-style RAG pipeline was the inspiration for Ramsey's playground implementation

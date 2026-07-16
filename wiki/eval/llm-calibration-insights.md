@@ -1,13 +1,13 @@
 ---
 title: LLM Grader Calibration Insights
 tags: [eval, concept]
-summary: Calibration evidence for LLM-as-judge graders in the galactus eval pipeline — custom v3 grader outperforms DeepEval defaults (+0.214 score delta vs +0.086), domain-shift is the main failure pattern, passage context is required for grounding accuracy. Grounding cross-check vs DeepEval shows near-zero agreement until article text is wired in.
+summary: Calibration evidence for LLM-as-judge graders in the project-g eval pipeline — custom v3 grader outperforms DeepEval defaults (+0.214 score delta vs +0.086), domain-shift is the main failure pattern, passage context is required for grounding accuracy. Grounding cross-check vs DeepEval shows near-zero agreement until article text is wired in.
 updated: 2026-07-06
 sources:
   - raw/claude-docs/playground/docs/evals/llm-calibration-insights.md
   - raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
-  - raw/claude-docs/galactus/docs/evals/llm-calibration-insights.md
-  - raw/claude-docs/galactus/docs/evals/grader_methodology.md
+  - raw/claude-docs/project-g/docs/evals/llm-calibration-insights.md
+  - raw/claude-docs/project-g/docs/evals/grader_methodology.md
 ---
 
 # LLM Grader Calibration Insights
@@ -40,7 +40,7 @@ Symptoms:
 
 ```python
 # WRONG — produces score=0.5 (no context to grade against)
-grader.grade(response=answer, context=["https://help.billy.dk/article/123"])
+grader.grade(response=answer, context=["https://help.[product].dk/article/123"])
 
 # CORRECT
 grader.grade(response=answer, context=[passage.text for passage in retrieved_passages])
@@ -132,7 +132,7 @@ When re-running calibration on GT dataset, isolate by query type — accounting-
 
 ## See Also
 - [[VA vs HCA Retrieval Evaluation]]
-- [[Galactus Eval Architecture]]
+- [[project-g Eval Architecture]]
 - [[VA Eval Harness]]
 - [[RAG Evaluation]]
 - [[HITL Annotation Pipeline]]

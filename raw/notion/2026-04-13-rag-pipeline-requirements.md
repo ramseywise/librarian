@@ -1,14 +1,14 @@
 # Initiative: RAG Pipeline — Requirements and Scope
 
-**Source:** Notion (work)  
-**Date:** 2026-04-13  
+**Source:** Notion (work)
+**Date:** 2026-04-13
 **URL:** https://www.notion.so/31ef148b3ab78016a69ffe7a2a2b01cd
 
 ---
 
 ## Purpose
 
-Collect requirements and separate into scopes to enable faster delivery of a first version of a knowledge retrieval system for Shine.
+Collect requirements and separate into scopes to enable faster delivery of a first version of a knowledge retrieval system for client-a.
 
 ---
 

@@ -1,4 +1,4 @@
-# Docker Setup Guide for Billy VA
+# Docker Setup Guide for product-a VA
 
 Quick reference for working with containers in this project. Not a Docker tutorial — assumes familiarity with `docker run` and basic container concepts.
 
@@ -133,7 +133,7 @@ environment:
 
 ## Volumes
 
-Persistent data (postgres, billy.db) lives in named volumes so it survives `docker compose down`:
+Persistent data (postgres, product-a.db) lives in named volumes so it survives `docker compose down`:
 ```bash
 docker volume ls                                    # see all volumes
 docker volume inspect playground_postgres_data     # inspect one

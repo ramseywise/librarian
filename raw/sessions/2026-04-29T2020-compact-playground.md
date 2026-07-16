@@ -49,7 +49,7 @@ specialized instructions for a domain or workflow.
 ## Core loop
 
 1. **Understand intent** — What should the skil
--  ok except its a note to VA context - billy is one mcp, but i also added clara.. but thats not lnaggraph specific its projects specific then we have the three before you build contexts but yes lets go
+-  ok except its a note to VA context - product-a is one mcp, but i also added corpus-a.. but thats not lnaggraph specific its projects specific then we have the three before you build contexts but yes lets go
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

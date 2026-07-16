@@ -41,9 +41,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user requested that EDA visualizations be corrected for using old column names instead of the export
-- 
-            
-            
+-
+
+
 -  TypeError: 'value' must be an instance of str or bytes, not a float
 for ratings and feedbback
 -  sorry where is the change can i just copy it

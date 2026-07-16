@@ -94,6 +94,8 @@ def summary() -> dict:
 
 if __name__ == "__main__":
     s = summary()
-    print(f"Ingested: {s['ingested']}  Pending: {s['pending']}  Wiki pages touched: {s['total_wiki_pages_touched']}")
+    print(
+        f"Ingested: {s['ingested']}  Pending: {s['pending']}  Wiki pages touched: {s['total_wiki_pages_touched']}"
+    )
     for gap in coverage_gaps()[:20]:
         print(f"  PENDING  {gap['path']}  ({gap['size_kb']} KB)")

@@ -57,7 +57,7 @@ Runtime topology must match the trigger. A cron trigger that assumes a long-live
 | **GDPR** | Data sent to Langchain Inc (check DPA) | Self-host = no external data transfer |
 | **Cost** | Usage-based | Self-host = infra cost only |
 
-**For EU/GDPR context (Shine/Billy): Langfuse self-hosted is the safer default.** See [[ADK vs LangGraph Comparison]] for the prior decision record.
+**For EU/GDPR context ([client]/[product]): Langfuse self-hosted is the safer default.** See [[ADK vs LangGraph Comparison]] for the prior decision record.
 
 ### Env-Var Swap Pattern (no code changes)
 

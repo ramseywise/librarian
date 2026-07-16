@@ -42,9 +42,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user needed to improve the EDA (Exploratory Data Analysis) dashboard in eval_notebook.ipynb to bette
-- 
-            
-            
+-
+
+
 -  ok bc the sources = 0 is so high i want to know what is the agent's response - are all of these escalation cases? coverage cases? or just greetings can we filter those out maybe? or like is some also clarification and a user picks a number? or is there spam here as well? and  did we remove the user
 - ok lets do the turn and duration dist together in one cell.. then we want turn count by topic normal 2x1 with our classification of no-source responses to explain the filtering.. then in a third cell lets look at source fidelity where we can stack turns that are filtered from the 0 sources just to m
 

@@ -75,7 +75,7 @@ If RAG scores aren't meaningfully higher than closed-book, retrieval isn't addin
 
 Groups by type, finds common query patterns (length, frequent terms), suggests fixes via `_suggest_fix()`.
 
-## RAPTOR Evaluation Framework
+## [rag-v1] Evaluation Framework
 
 Three-stage process for systematic evaluation:
 
@@ -219,9 +219,9 @@ make eval-trajectory  # Tier 2 — LangFuse-traced, cost-gated
 make eval-e2e         # Tier 3 — RAGAS + DeepEval, CONFIRM_EXPENSIVE_OPS required
 ```
 
-## Business Metric Targets (Shine Knowledge Agent)
+## Business Metric Targets ([client] Knowledge Agent)
 
-For product-embedded RAG, the retrieval-level metrics (hit_rate, MRR) need to map up to business outcomes. From [[Shine Knowledge Agent]] requirements:
+For product-embedded RAG, the retrieval-level metrics (hit_rate, MRR) need to map up to business outcomes. From [[[client] Knowledge Agent]] requirements:
 
 - **≥60% self-service resolution rate** — share of queries resolved without escalation (top-line target)
 - **↓15% support contacts from Help Center** — demand reduction signal

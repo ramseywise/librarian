@@ -31,7 +31,7 @@ work_type: debug
 
 Summary:
 1. Primary Request and Intent:
-   The 
+   The
 - ok now i am a little confused on the src structure with rag, agent, etl, mcp, rag, recommend, spotify auth, utils all mixed into one.. what should this look like as a monolith system? and should rag b
 
 ## Stats

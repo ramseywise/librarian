@@ -5,7 +5,7 @@
 
 ## Problem
 
-Billy users face fragmented support across multiple touchpoints: "Bookkeeping Hero" chatbot, Help Centre article database, and direct support channels. Fragmentation creates confusion, duplicates effort, and prevents proactive intelligent guidance.
+product-a users face fragmented support across multiple touchpoints: "Bookkeeping Hero" chatbot, Help Centre article database, and direct support channels. Fragmentation creates confusion, duplicates effort, and prevents proactive intelligent guidance.
 
 **Core problem:** Developing Copilot as a central assistant risks adding yet another fragmented touchpoint unless the experiences are deliberately unified.
 

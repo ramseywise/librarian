@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-23
 session_id: 2a6c99c4-f0e6-42ad-a937-73dc5897b5a2
 prompts: 14
@@ -8,7 +8,7 @@ total_tokens: 223143
 cache_read_tokens: 15998954
 ---
 
-# Claude Code Session — 2026-06-23 (galactus)
+# Claude Code Session — 2026-06-23 (project-g)
 
 **First prompt:** # ── Load heuristic JSON files ──────────────────────────────────────────────
 HEURISTIC_DIR = REPO / 'data/experiments/support_agents/llm500_recent'

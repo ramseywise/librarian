@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from playwright.sync_api import Page, sync_playwright
+from playwright.sync_api import sync_playwright
 
 SCREENSHOT_DIR = Path(__file__).parent.parent / "screenshots"
 UI_URL = "http://localhost:5173"

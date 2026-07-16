@@ -52,7 +52,7 @@ GraphRAG approach:
 3. Community detection + summarization for subgraph retrieval
 4. Use graph traversal (not vector search) to answer relationship queries
 
-**When to use:** relationship questions, entity comparison, "all X that share property Y" queries.  
+**When to use:** relationship questions, entity comparison, "all X that share property Y" queries.
 **When NOT to use:** simple factual lookups — overkill, adds significant pipeline complexity.
 
 **Lightweight alternative for personal KBs:** for a wiki-shaped corpus (like this Librarian wiki), `[[wikilinks]]` already provide a graph structure — prefer traversing those before reaching for a dedicated GraphRAG pipeline with LLM-extracted entities and community detection.
@@ -85,7 +85,7 @@ all_results = await asyncio.gather(*[retrieve(v) for v in variants])
 merged = global_dedup(flatten(all_results))
 ```
 
-**Sweet spot:** 3 variants. Beyond 3, diminishing returns + cost grows linearly.  
+**Sweet spot:** 3 variants. Beyond 3, diminishing returns + cost grows linearly.
 **Typical lift:** +10–15% recall over single query.
 
 **Global dedup after merge:** sort by score descending, dedup by `chunk_id` or content fingerprint, highest score wins.

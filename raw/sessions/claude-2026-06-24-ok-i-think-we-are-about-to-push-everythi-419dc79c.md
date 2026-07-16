@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-24
 session_id: 419dc79c-2c78-4480-b043-43a933f5f7e8
 prompts: 2
@@ -8,7 +8,7 @@ total_tokens: 54222
 cache_read_tokens: 3029615
 ---
 
-# Claude Code Session — 2026-06-24 (galactus)
+# Claude Code Session — 2026-06-24 (project-g)
 
 **First prompt:** ok i think we are about to push everything but i want to ask - how production ready is this repo anything you would tighten up from our core , eval or src pipelines?
 

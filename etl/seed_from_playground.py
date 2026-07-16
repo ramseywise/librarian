@@ -31,10 +31,7 @@ class Settings(BaseSettings):
 def main() -> None:
     settings = Settings()
 
-    if len(sys.argv) > 1:
-        source_root = Path(sys.argv[1])
-    else:
-        source_root = settings.playground_path
+    source_root = Path(sys.argv[1]) if len(sys.argv) > 1 else settings.playground_path
 
     docs_dir = source_root / ".claude" / "docs"
 
@@ -55,9 +52,7 @@ def main() -> None:
         log.info("copied", src=str(src), dest=str(dest))
 
     print(f"\nCopied {len(copied)} files to {RAW_PLAYGROUND}/")
-    print(
-        "\nNext: run /ingest raw/playground-docs/ in Claude Code to compile into wiki."
-    )
+    print("\nNext: run /ingest raw/playground-docs/ in Claude Code to compile into wiki.")
 
 
 if __name__ == "__main__":

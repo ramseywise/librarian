@@ -1,7 +1,7 @@
 # Copilot — Why, What, and How
 
-**Source:** Notion (work)  
-**Date:** 2026-04-09  
+**Source:** Notion (work)
+**Date:** 2026-04-09
 **URL:** https://www.notion.so/30df148b3ab780258383cb415b68b3ac
 
 ---

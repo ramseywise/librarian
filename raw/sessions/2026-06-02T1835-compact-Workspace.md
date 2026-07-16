@@ -38,7 +38,7 @@ no-git
 - **Session ID**: fe4042e5-92d7-4fea-a455-1c5139af7c56
 
 ## Recent prompts
-- what do you think about this bc in galactus we use ragas and thats as good or better? Good question — it's really a build-vs-reuse tradeoff. A few dimensions worth thinking through:
+- what do you think about this bc in project-g we use ragas and thats as good or better? Good question — it's really a build-vs-reuse tradeoff. A few dimensions worth thinking through:
 
 **What RAGAS gives you out of the box**
 The claim decomposition + NLI entailment pipeline is non-trivial to reimpleme
@@ -46,8 +46,8 @@ The claim decomposition + NLI entailment pipeline is non-trivial to reimpleme
 - yes and also i'd like to have this distinction (although if you say we can also get the ground truth for it) The idea you're describing is a two-tier eval setup:
 Production (real-time)          Offline (async/batch)
 ──────────────────────          ─────────────────────
-ADK hallucinations_v1    →    
-- ok so what va-agents/help assistant is trying to do is create an iterative rag invocation in google adk. we ahve tried to make our galactus/src/support agents to have a similar grounding and guardrails in place. but for the langgraph model.. how can we show him how this might look and perform better
+ADK hallucinations_v1    →
+- ok so what va-agents/help assistant is trying to do is create an iterative rag invocation in google adk. we ahve tried to make our project-g/src/support agents to have a similar grounding and guardrails in place. but for the langgraph model.. how can we show him how this might look and perform better
 - ok so lets make sure we update all src surpport agents to have the same features, but i think in our graph are we doing the same thing? or are we using crag and reranker and testing those as alternative approaches? like we should test everything to get best results, and yes we need kb error guard an
 
 ## Gotchas

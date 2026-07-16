@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import json
+from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +24,9 @@ WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
 
 _ws_clients: list[WebSocket] = []
 
+# Strong references to fire-and-forget tasks so GC can't cancel them
+_background_tasks: set[asyncio.Task] = set()
+
 
 async def _watch_and_broadcast() -> None:
     from watchfiles import awatch
@@ -41,10 +45,12 @@ async def _watch_and_broadcast() -> None:
 
 
 @contextlib.asynccontextmanager
-async def lifespan(_: FastAPI):  # type: ignore[type-arg]
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     # Warmup in background so server accepts connections immediately
     asyncio.get_event_loop().run_in_executor(None, warmup)
-    asyncio.create_task(_watch_and_broadcast())
+    task = asyncio.create_task(_watch_and_broadcast())
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
     yield
 
 
@@ -92,7 +98,7 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/chat/stream")
 async def chat_stream(req: ChatRequest) -> StreamingResponse:
-    async def generate() -> Any:
+    async def generate() -> AsyncIterator[str]:
         async for event in run_agent_stream(req.query):
             yield f"data: {json.dumps(event)}\n\n"
 
@@ -104,7 +110,7 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
 
 
 @app.post("/api/writeback")
-async def writeback(body: dict[str, str]) -> Any:
+async def writeback(body: dict[str, str]) -> JSONResponse | dict[str, str]:
     page_id = body.get("page_id", "")
     link_to = body.get("link_to", "")
     md_file = next(WIKI_DIR.rglob(f"{page_id}.md"), None)

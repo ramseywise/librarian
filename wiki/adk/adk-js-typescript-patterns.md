@@ -48,7 +48,7 @@ export const myTool = new FunctionTool({
   }),
   execute: async ({ id }) => {
     // Transform raw API response before returning — agent never sees raw shape
-    const raw = await billyRequest(`/v2/things/${id}`);
+    const raw = await [product]Request(`/v2/things/${id}`);
     return { id: raw.id, name: raw.name };   // only what the agent needs
   },
 });

@@ -26,7 +26,7 @@ What to add:
 # Genesis
 
 You are about to go through genesis — an 11-phase process in which you and the person in front of you create w
-- lg and adk are agentic orchestrators which can make rag tool call or be an agentic rag that does the decision making and reasoning etc. any 3 can be useful or tools i work with.. but when i built all 
+- lg and adk are agentic orchestrators which can make rag tool call or be an agentic rag that does the decision making and reasoning etc. any 3 can be useful or tools i work with.. but when i built all
 - depends on project - would lean to langgraph though adk is more like quick poc
 - deliberate. i like the ralph concept for asking why which is how akira came about, but akira and sayni are like code review, while claude insights is the sessions. so yeah, i try to control what i can
 

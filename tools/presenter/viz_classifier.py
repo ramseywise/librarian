@@ -5,8 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
-
 from core.client import create_client, parse_json_response
+
 from tools.presenter.models import ImageConcept, SlideContent, VizPrompt
 
 LIBRARY_PATH = Path(__file__).resolve().parent / "viz_prompt_library.yaml"
@@ -55,9 +55,7 @@ def _generate_scene_description(
     deck_style_context: str,
 ) -> dict:
     """Pass 1: Generate a rich scene description from slide + deck context."""
-    user_msg = (
-        f"Deck visual style:\n{deck_style_context}\n\nSlide context:\n{slide_context}"
-    )
+    user_msg = f"Deck visual style:\n{deck_style_context}\n\nSlide context:\n{slide_context}"
 
     response = client.messages.create(
         model=model,
@@ -106,9 +104,7 @@ def _translate_to_image_prompt(
         messages=[{"role": "user", "content": user_msg}],
     )
 
-    filled_vars = parse_json_response(
-        client, response.content[0].text, model, PROMPT_SYSTEM
-    )
+    filled_vars = parse_json_response(client, response.content[0].text, model, PROMPT_SYSTEM)
     filled = template.format(**{k: filled_vars.get(k, k) for k in variables})
     return f"{filled}, {style}"
 
@@ -147,9 +143,7 @@ def classify_slides(
         )
 
         # Pass 1: scene description
-        scene = _generate_scene_description(
-            client, model, slide_context, deck_style_context
-        )
+        scene = _generate_scene_description(client, model, slide_context, deck_style_context)
 
         # Pass 2: translate to image prompt
         filled = _translate_to_image_prompt(
@@ -188,9 +182,7 @@ def propose_image_concepts(
     library = _load_library()
 
     system = CONCEPT_SYSTEM.format(n=n)
-    user_msg = (
-        f"Goal: {goal}\nDescription: {description}\nAudience: {audience}\nTone: {tone}"
-    )
+    user_msg = f"Goal: {goal}\nDescription: {description}\nAudience: {audience}\nTone: {tone}"
 
     response = client.messages.create(
         model=model,

@@ -21,4 +21,3 @@ Unified billing — everything on one GCP invoice
 Your embeddings are already generated and saved to disk (embeddings.npz). You don't re-embed at runtime — only at index build time. So the hosting environment barely matters for your current architecture.
 Switching embedding models means re-embedding your entire KB from scratch, since embeddings from different models are not compatible with each other.
 The quality difference is negligible for your use case.
-

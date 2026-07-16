@@ -43,11 +43,11 @@ no-git
 
 Summary:
 1. Primary Request and Intent:
-   The user requested a full research comparison between `workspace/chat-agent` (a Google ADK Python agent 
-- 
-            
-            
-- yes lets update the plan and continue to phase 0 also it should be noted our @galactus/core is ingesting intercom articles -but we're missing some urls and could prob use some scripts for processing.. but the articles we are missing are mostly from billy and not in intercom
+   The user requested a full research comparison between `workspace/chat-agent` (a Google ADK Python agent
+-
+
+
+- yes lets update the plan and continue to phase 0 also it should be noted our @project-g/core is ingesting intercom articles -but we're missing some urls and could prob use some scripts for processing.. but the articles we are missing are mostly from product-a and not in intercom
 -  continue
 
 ## Gotchas

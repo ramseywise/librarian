@@ -4,17 +4,17 @@ tags: [pattern, context-management]
 summary: A three-layer Claude Code skill design for scaffolding agents — a generic parallel-subagent factory (L1), standalone capability add-skills that read the target before generating (L2), and a domain-specific bundle that orchestrates L2 skills in sequence (L3).
 updated: 2026-07-14
 sources:
-  - raw/claude-docs/galactus/skills/agent-creation/new-agent/SKILL.md
-  - raw/claude-docs/galactus/skills/agent-creation/new-support-agent/SKILL.md
-  - raw/claude-docs/galactus/skills/agent-creation/add-rag/SKILL.md
-  - raw/claude-docs/galactus/skills/agent-creation/add-guardrails/SKILL.md
-  - raw/claude-docs/galactus/skills/agent-creation/add-hitl/SKILL.md
-  - raw/claude-docs/galactus/skills/agent-creation/add-eval/SKILL.md
+  - raw/claude-docs/project-g/skills/agent-creation/new-agent/SKILL.md
+  - raw/claude-docs/project-g/skills/agent-creation/new-support-agent/SKILL.md
+  - raw/claude-docs/project-g/skills/agent-creation/add-rag/SKILL.md
+  - raw/claude-docs/project-g/skills/agent-creation/add-guardrails/SKILL.md
+  - raw/claude-docs/project-g/skills/agent-creation/add-hitl/SKILL.md
+  - raw/claude-docs/project-g/skills/agent-creation/add-eval/SKILL.md
 ---
 
 # Agent Scaffolding Skill Layers
 
-A skill-design pattern for repos that build many similar agents: split scaffolding into three layers instead of one monolithic "create an agent" skill. Observed in galactus's `agent-creation/` skill family, but the layering itself is framework-agnostic and reusable in any repo that scaffolds recurring artifact types (agents, services, pipelines).
+A skill-design pattern for repos that build many similar agents: split scaffolding into three layers instead of one monolithic "create an agent" skill. Observed in project-g's `agent-creation/` skill family, but the layering itself is framework-agnostic and reusable in any repo that scaffolds recurring artifact types (agents, services, pipelines).
 
 ## The Three Layers
 
@@ -63,9 +63,9 @@ Reach for the three-layer split when:
 - Scaffolding a full agent from scratch is common enough to be worth the parallel-subagent investment (L1) — for a one-off agent, a single sequential skill is simpler.
 
 ## See Also
-- [[Galactus Project]] — the concrete instance this pattern was extracted from (`agent-creation/` skill family)
+- [[project-g Project]] — the concrete instance this pattern was extracted from (`agent-creation/` skill family)
 - [[VA Bedrock KB Reference]] — the RAG capability's generated retrieval-module template
-- [[Galactus Safeguards Architecture]] — the guardrails capability's 5-layer target
+- [[project-g Safeguards Architecture]] — the guardrails capability's 5-layer target
 - [[Send API Fan-out]] — the same parallel-dispatch discipline applied to LangGraph graph execution
 - [[Multi-Repo Claude Organization]] — the broader skill-scope (global vs per-repo) decision this pattern lives inside
 - [[SKILL.md Pattern]]

@@ -15,7 +15,7 @@ Operational activity log compiled from `raw/sessions/`. Each row is one session.
 
 ## Codex Sessions — 2025-09
 
-All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-for-transaction validation and scoring system).
+All on the `[tx-project]` project, `ramsey-feature-dev` branch ([client] — document-for-transaction validation and scoring system).
 
 | Date | Session | Prompts | Topic |
 |------|---------|---------|-------|
@@ -128,7 +128,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | dd86ca38 | 5 | 148k | Compare playground VA agents vs listen-wiseer setup; listen-wiseer restart |
 | 46a3b186 | 25 | 423k | Playground sensitive data audit; infra folder consolidation |
 | 9a091358 | 12 | 182k | listen-wiseer phase 3 refactor continuation |
-| 826a1a97 | 62 | 2.6M | Track B Phase 3 — RDS Postgres for LangGraph checkpointer + EFS for Billy SQLite |
+| 826a1a97 | 62 | 2.6M | Track B Phase 3 — RDS Postgres for LangGraph checkpointer + EFS for [product] SQLite |
 | ecf3e696 | 1 | 15k | Auto-generate CLAUDE.md for codebase |
 
 ### 2026-04-22 (Workspace)
@@ -171,7 +171,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
-| 2026-04- | 52k |  can you find SEVDESK_API_TOKEN |
+| 2026-04- | 52k |  can you find [vendor]_API_TOKEN |
 | 2026-04- | 139k | and what about these open issues? should we move the plans to research where u |
 | 2026-04- | 223k | /compact sounds good, lets proceed we want to finish all the plans and put the |
 | 2026-04- | 52k | yes please but leave the regex part 1 as the precursor to run gdor review |
@@ -180,7 +180,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-04- | 365k | what about langgraph-prompts? |
 | 2026-04- | 230k |  wait since we added pre-commit we seem to have a lot of issues for these but |
 | 2026-04- | 412k | ok all three sound good.. i'm wondering also about context chunks how long are |
-| 2026-04- | 275k |  i have 33 tickets that mention sevdesk - can we make these generic names plea |
+| 2026-04- | 275k |  i have 33 tickets that mention [vendor] - can we make these generic names plea |
 | 2026-04- | 307k | not just for this session but also uncommitted changes. and i already removed |
 | 2026-04- | 25k | yes that would be great thank you |
 | 2026-04- | 64k |  WARN[0112] Found orphan containers ([listen-wiseer-app listen-wiseer-db-init |
@@ -189,8 +189,8 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
-| 2026-04- | 63k |  i just realized we have been naming everything billy - but actually this is j |
-| 2026-04- | 169k |  i still see 70 files with billy mentioned that's insane and also did i remove |
+| 2026-04- | 63k |  i just realized we have been naming everything [product] - but actually this is j |
+| 2026-04- | 169k |  i still see 70 files with [product] mentioned that's insane and also did i remove |
 | 2026-04- | 204k |  idk i still see 60 files |
 
 ### 2026-05-04 (playground)
@@ -221,7 +221,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 52k |  What's working well |
 | 2026-05- | 14k |  i want to get the naming convention correct here bc we have turns = task_id.. |
 | 2026-05- | 40k | This session is being continued from a previous conversation that ran out of c |
-| 2026-05- | 63k | i've added them to a nbks/sevdesk folder here |
+| 2026-05- | 63k | i've added them to a nbks/[vendor] folder here |
 | 2026-05- | 80k | This session is being continued from a previous conversation that ran out of c |
 | 2026-05- | 105k |  ok so the parkey is creating data path but actually we whave evalse/data wher |
 | 2026-05- | 114k | This session is being continued from a previous conversation that ran out of c |
@@ -254,7 +254,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 1172k | This session is being continued from a previous conversation that ran out of c |
 | 2026-05- | 96k |  can we double check the sentiment distr for each of our samples used for llm |
 
-### 2026-05-07 (galactus)
+### 2026-05-07 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -279,8 +279,8 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
-| 2026-05- | 98k |  right but @playground is wired to test clara tickets i guess only va-support- |
-| 2026-05- | 210k | quick question bc i just want to test the 3 va models against the sevdesk data |
+| 2026-05- | 98k |  right but @playground is wired to test [corpus] tickets i guess only va-support- |
+| 2026-05- | 210k | quick question bc i just want to test the 3 va models against the [vendor] data |
 | 2026-05- | 110k |  something doesnt look right in the nbk for Calibration metrics (liked = posit |
 | 2026-05- | 260k |  can you give me how to store under@data/baseline/golden_traces for the 12 and |
 | 2026-05- | 429k |  NameError: name '_DEFAULT_MODEL' is not defined |
@@ -305,14 +305,14 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 149k |  Yep. That pretty much touches on everything we discussed, but one thing that' |
 | 2026-05- | 322k | perfect lets write that plan and continue implementation thanks |
 | 2026-05- | 60k | yes lets do that and does this apply also to langgraph or is independent to ad |
-| 2026-05- | 200k |  ok i did a pretty heavy refactoring of @galactus/data which i think makes sen |
+| 2026-05- | 200k |  ok i did a pretty heavy refactoring of @project-g/data which i think makes sen |
 | 2026-05- | 163k | also the adk/langgraph agents calling bedrock should be similar in coverage - |
 | 2026-05- | 348k | no lg is also broke |
 | 2026-05- | 414k | oh intersting that hc_rag mrr is better than va_staging.. actually it looks li |
 | 2026-05- | 581k | oh no something fucked up for hc_lg and hc_rag |
 | 2026-05- | 739k |  ok we want next to these experiments also the comparison for va-agents with s |
 
-### 2026-05-10 (galactus)
+### 2026-05-10 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -322,18 +322,18 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 1072k | ok this looks better but should the pipeline folder reflect the breakdown you |
 | 2026-05- | 1603k | can we update readme please bc this is important step alos what are our repo r |
 
-### 2026-05-11 (galactus)
+### 2026-05-11 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
 | 2026-05- | 85k | btw are any of these other metrics useful for us that we might want to add lat |
 | 2026-05- | 97k |  also do we have the reranker in the ablation study? so is it just hyde is the |
 | 2026-05- | 240k |  ok but did we dod the deepeval on bkh? if so we could just run that in the nb |
-| 2026-05- | 397k | ok awesome.. i have also some metrics from @nbks/sevdesk - is there anhything |
+| 2026-05- | 397k | ok awesome.. i have also some metrics from @nbks/[vendor] - is there anhything |
 | 2026-05- | 536k |  making the call now and to be clear, make va-calibrate-full  will calibrate t |
 | 2026-05- | 124k |  what other topics would be interesting from our multiagent lg version - every |
 
-### 2026-05-12 (galactus)
+### 2026-05-12 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -344,7 +344,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 294k | y ty - and yes i am particularly interested in business analyst regarding invo |
 | 2026-05- | 502k |  awesome before we move to sprint 2, can you please review these documents tha |
 
-### 2026-05-13 (galactus)
+### 2026-05-13 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -363,7 +363,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 166k | what happened to our eval metrics in file:///Users/ramsey.wise/Workspace/galac |
 | 2026-05- | 188k |  ok i reran the nbk but not sure if all paths were updated? some still say 192 |
 
-### 2026-05-14 (galactus)
+### 2026-05-14 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -375,11 +375,11 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 561k |  but is the retrival 500 the same as our 600 count? we should have task id and |
 | 2026-05- | 128k |  {"status":"ok","backend":"langgraph"}%   but backend should be hc_rag |
 
-### 2026-05-15 (galactus)
+### 2026-05-15 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
-| 2026-05- | 194k | looks good but now we are missing the va-hit-count as well as the billy url if |
+| 2026-05- | 194k | looks good but now we are missing the va-hit-count as well as the [product] url if |
 | 2026-05- | 373k | ok but the ub_url_coverage has only 1395 rows.. are there some. missing maybe |
 | 2026-05- | 503k |  index error.. ok i like where we're going with this from bkh to liked we can |
 | 2026-05- | 137k |  I just added @worksapce/chat-agent that has a pretty sophisticated eval and o |
@@ -388,7 +388,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 665k |  Golden responses: 597 rows |
 | 2026-05- | 298k | This session is being continued from a previous conversation that ran out of c |
 
-### 2026-05-16 (galactus)
+### 2026-05-16 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -396,7 +396,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 989k |  did you add that at the end i just reran and dont see it |
 | 2026-05- | 1123k | ok very cool.. yes i agree with your insights will check it out, but this is s |
 
-### 2026-05-18 (galactus)
+### 2026-05-18 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -439,7 +439,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 |---------|---------|-------|
 | 2026-05- | 0k | — |
 
-### 2026-05-24 (galactus)
+### 2026-05-24 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -449,18 +449,18 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 400k | ok lets please fix all of these monitoring and metric issues and i will rerun |
 | 2026-05- | 124k | This session is being continued from a previous conversation that ran out of c |
 | 2026-05- | 618k | also it looks like adk is running but there are no logs so i have no idea wher |
-| 2026-05- | 253k |  help.shine.co should be the corpus_articles (formerly billy help).. we should |
+| 2026-05- | 253k |  help.[client].co should be the corpus_articles (formerly [product] help).. we should |
 | 2026-05- | 700k |  interesting and how does this compare to va-agents? bc i think the adjusted m |
 | 2026-05- | 911k |  data/datasets/support-agents/eval_sets/proper_eval_51.jsonl --endpoint http:/ |
-| 2026-05- | 154k | make crawl-billypedia |
+| 2026-05- | 154k | make crawl-[product]-kb |
 | 2026-05- | 82k |  these reports enrichment folder is getting out of control can we refactor and |
-| 2026-05- | 1239k |  well actually can we create a nbk like the onese we did at sevdesk for findin |
+| 2026-05- | 1239k |  well actually can we create a nbk like the onese we did at [vendor] for findin |
 | 2026-05- | 212k |  how does this metadata compare to bedrock config for DATA_SOURCE_IDS = { |
 | 2026-05- | 1503k |  why is this last reranker taking so long? been almost 30 min |
 | 2026-05- | 70k |  ok and what about the mq? do we include that for the ablation as well? |
 | 2026-05- | 156k |  but i want to see this table by source |
 
-### 2026-05-25 (galactus)
+### 2026-05-25 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -469,7 +469,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-05- | 792k | Okay. So I do make s a eighty k bedrock up and then run this. Is that right? |
 | 2026-05- | 893k | This session is being continued from a previous conversation that ran out of c |
 
-### 2026-05-26 (galactus)
+### 2026-05-26 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -487,7 +487,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 |---------|---------|-------|
 | 68493546 | 67k | — |
 
-### 2026-05-30 (galactus)
+### 2026-05-30 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -503,7 +503,7 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-06- | 177k |  can ytou give a summary of all the changes i just pulled particularly from he |
 | 2026-06- | 137k |  instead of matching our intercom conversations by our rated bkh n=597 qa samp |
 
-### 2026-06-02 (galactus)
+### 2026-06-02 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
@@ -512,32 +512,32 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 | 2026-06- | 749k |  ok so if i look at the gold_df by match_type=bkh_liked, there is no intercom |
 | 2026-06- | 722k |  in the doc can you explain this a bit better Tier 1 (hallucinated IDs), Tier |
 | 2026-06- | 1254k | ok thanks and to be clear and the qa pairs from gold overlapping with any of t |
-| 2026-06- | 1191k | what do you think about this bc in galactus we use ragas and thats as good or |
+| 2026-06- | 1191k | what do you think about this bc in project-g we use ragas and thats as good or |
 | 2026-06- | 184k |  i think its even less after deduplication within queries, 195 but yes can you |
 | 2026-06- | 1296k | This session is being continued from a previous conversation that ran out of c |
 | 2026-06- | 242k |  I UNCOMMENT GENAI USE TO TRUE BUT IT SAYS GOOGLE API key not set |
 | 2026-06- | 83k |  is there also overlap with @tooling/evals - for example the multiagent vs sup |
 
-### 2026-06-03 (galactus)
+### 2026-06-03 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
 | 2026-06- | 97k |  if this eval calibration is done can you mark it as such, also the pii pipeli |
 | 2026-06- | 1465k | Base directory for this skill: /Users/ramsey.wise/.claude/skills/execute-tasks |
 | 2026-06- | 142k |  yo what's going on with this make file, please reduce it's crazy - all the ab |
-| 2026-06- | 158k | actually i delete evals graders shared and also data is root of galactus not i |
+| 2026-06- | 158k | actually i delete evals graders shared and also data is root of project-g not i |
 | 2026-06- | 79k | oh thats not good.. we need to centralize our support agent schemas and config |
 | 2026-06- | 154k | oh ok bur actually.. the loop is research -> plan -> plan review (dor gate) -> |
 | 2026-06- | 223k | Start or continue a research phase. Delegates to the `research-review` protoco |
 | 2026-06- | 377k | well the agent creator folder is used for the claud agents to execute i guess? |
 | 2026-06- | 539k | can we also run a hook to do a lint after run-code-review? |
 
-### 2026-06-04 (galactus)
+### 2026-06-04 (project-g)
 
 | Session | ~Tokens | Topic |
 |---------|---------|-------|
 | 2026-06- | 107k |  make test 3 skipped, 22 deselected, 9 errors in 3.36s |
-| 2026-06- | 84k |  how would you compare @chat-agent/src/agentic_rag to @galactus/src/support_ag |
+| 2026-06- | 84k |  how would you compare @chat-agent/src/agentic_rag to @project-g/src/support_ag |
 | 2026-06- | 92k |  is this src folder linted already? |
 | 2026-06- | 83k | ok cool is that something we need to refactor, is it fine where it sits in the |
 | 2026-06- | 125k | sorry my skills strucutre looks different |
@@ -546,8 +546,8 @@ All on the `txmatch` project, `ramsey-feature-dev` branch (Shine — document-fo
 
 - `poc` project = Help Support RAG Agent (early RAG POC, pre-librarian-wiki era)
 - `wiseer` / `listen-wiseer` = Spotify recommendation agent
-- `playground` = Billy VA agent + infra
-- `txmatch` = Shine transaction matching (Codex, 2025)
+- `playground` = [product] VA agent + infra
+- `[tx-project]` = [client] transaction matching (Codex, 2025)
 - Token counts omitted where not available in frontmatter (many sessions lacked full stats in migrated skeleton notes)
 
 ## 2026-04 Early Sessions (ingested 2026-07-05 / 2026-07-06)
@@ -586,84 +586,84 @@ Sessions from 2026-04-27 to 2026-06-04. Mostly compact stubs and migrated JSONL 
 | Period | Project | Count | Theme |
 |---|---|---|---|
 | 2026-04-27 | librarian | 2 | Lint + UI graph view iterations |
-| 2026-04-29–30 | playground | 15 | RAG migration Track 2, sevdesk → generic renaming |
+| 2026-04-29–30 | playground | 15 | RAG migration Track 2, [vendor] → generic renaming |
 | 2026-05-04–06 | playground | 14 | Eval EDA notebooks, eval set aggregation |
-| 2026-05-06–07 | galactus | 16 | Initial galactus setup: Makefile, pre-commit, project rename from intercom-data |
-| 2026-05-08–10 | galactus + Workspace | 20 | Calibration eval (VIR-138): LLM judge baselines, dataset splits |
-| 2026-05-11–12 | galactus | 10 | Ablation study (VIR-179): 14 configs, VA migration sprint |
-| 2026-05-13–16 | galactus | 22 | Golden dataset: 597 queries built from BKH liked + Intercom; grader calibration |
-| 2026-05-18 | galactus + .claude | 6 | Eval report (top liked/disliked topics); skill dev (auto-compacted empty sessions) |
+| 2026-05-06–07 | project-g | 16 | Initial project-g setup: Makefile, pre-commit, project rename from intercom-data |
+| 2026-05-08–10 | project-g + Workspace | 20 | Calibration eval (VIR-138): LLM judge baselines, dataset splits |
+| 2026-05-11–12 | project-g | 10 | Ablation study (VIR-179): 14 configs, VA migration sprint |
+| 2026-05-13–16 | project-g | 22 | Golden dataset: 597 queries built from BKH liked + Intercom; grader calibration |
+| 2026-05-18 | project-g + .claude | 6 | Eval report (top liked/disliked topics); skill dev (auto-compacted empty sessions) |
 | 2026-05-19–21 | .claude | 21 | Skill iteration sessions (all auto-compact stubs, 0 tokens) |
-| 2026-05-24–26 | galactus | 17 | Corpus data types (help.shine.co, billypedia, pricing); ablation continuation |
-| 2026-05-28–29 | null | 2 | Galactus codebase refactor: ingestion/preprocessing separation (migrated JSONL) |
-| 2026-05-30 | galactus | 4 | Core refactor; data folder reorganization |
-| 2026-06-01–04 | galactus + Workspace | 12 | GT dataset verification (VIR-212); accounting_agent inception |
+| 2026-05-24–26 | project-g | 17 | Corpus data types (help.[client].co, [product]-kb, pricing); ablation continuation |
+| 2026-05-28–29 | null | 2 | project-g codebase refactor: ingestion/preprocessing separation (migrated JSONL) |
+| 2026-05-30 | project-g | 4 | Core refactor; data folder reorganization |
+| 2026-06-01–04 | project-g + Workspace | 12 | GT dataset verification (VIR-212); accounting_agent inception |
 
 ## 2026-06–07 Individual Chat Sessions (ingested 2026-07-06)
 
 | Date | Session | Project | Topic |
 |---|---|---|---|
 | 2026-06-04 | 57331686 | librarian | Google Drive scraping for ingest pipeline |
-| 2026-06-05 | e8f4eeed | galactus | README update for ingestion path change |
-| 2026-06-05 | 824e04f8 | galactus | Eval data confirmation |
-| 2026-06-05 | 54fbb1fb | galactus | "Ralph" reference — escalation language considerations |
-| 2026-06-05 | f38c3543 | galactus | Ingestion path location debate |
-| 2026-06-07 | eeeb2744 | galactus | Legacy file cleanup |
-| 2026-06-07 | 3e89eb49 | galactus | Experiment runner design |
-| 2026-06-07 | a758a3bb | galactus | 500-test suite simplification |
-| 2026-06-07 | 83bb4b48 | galactus | Capability docs location → `src/` as specs |
-| 2026-06-07 | e9506f1e | galactus | Ruff formatter scope |
-| 2026-06-08 | 09914670 | galactus | Calibrated LLM-as-judge: answer_relevancy + completeness + grounding + RAGAS |
-| 2026-06-08 | 7aa3db68 | galactus | Linear tickets for copilot capabilities |
-| 2026-06-08 | fe31aacc | galactus | Eval schema update |
-| 2026-06-08 | b52a3ff9 | galactus | CodeQualityAgent (Akira) scope |
-| 2026-06-08 | 4c189a8c | galactus | FileNotFoundError debug |
-| 2026-06-08 | 52d344b8 | galactus | Schema clarity check |
-| 2026-06-08 | fdc67863 | galactus | Notebook CSV path fix |
-| 2026-06-08 | be975ee5 | galactus | EUR token budget tracking |
-| 2026-06-09 | 0c6ec8a1 | galactus | IndexError debug |
-| 2026-06-09 | 660918fb | galactus | ModuleNotFoundError (rag module) |
-| 2026-06-09 | bf836c46 | galactus | Metric/exploration selection for eval |
-| 2026-06-10 | 9ddbb706 | galactus | Fable model integration check |
-| 2026-06-11 | 8caa7044 | galactus | Eval quality bug fix |
-| 2026-06-19 | 8877c883 | galactus | execute-tasks skill invocation |
-| 2026-06-19 | 094b14b7 | galactus | accounting_agent inception; LangGraph parity with va-agents |
-| 2026-06-19 | 11d354a7 | galactus | SANYI applied to eval pipeline |
-| 2026-06-19 | 6a1505ca | galactus | Task completion check |
-| 2026-06-19 | b4f26fe7 | galactus | Notebook run verification |
-| 2026-06-19 | 5bae9447 | galactus | SANYI vs Akira code review system design |
-| 2026-06-19 | 130222d2 | galactus | MD report evaluation |
-| 2026-06-22 | 93b4309e | galactus | Corpus data push (700 files); accounting_agent smoke test |
+| 2026-06-05 | e8f4eeed | project-g | README update for ingestion path change |
+| 2026-06-05 | 824e04f8 | project-g | Eval data confirmation |
+| 2026-06-05 | 54fbb1fb | project-g | "Ralph" reference — escalation language considerations |
+| 2026-06-05 | f38c3543 | project-g | Ingestion path location debate |
+| 2026-06-07 | eeeb2744 | project-g | Legacy file cleanup |
+| 2026-06-07 | 3e89eb49 | project-g | Experiment runner design |
+| 2026-06-07 | a758a3bb | project-g | 500-test suite simplification |
+| 2026-06-07 | 83bb4b48 | project-g | Capability docs location → `src/` as specs |
+| 2026-06-07 | e9506f1e | project-g | Ruff formatter scope |
+| 2026-06-08 | 09914670 | project-g | Calibrated LLM-as-judge: answer_relevancy + completeness + grounding + RAGAS |
+| 2026-06-08 | 7aa3db68 | project-g | Linear tickets for copilot capabilities |
+| 2026-06-08 | fe31aacc | project-g | Eval schema update |
+| 2026-06-08 | b52a3ff9 | project-g | CodeQualityAgent (Akira) scope |
+| 2026-06-08 | 4c189a8c | project-g | FileNotFoundError debug |
+| 2026-06-08 | 52d344b8 | project-g | Schema clarity check |
+| 2026-06-08 | fdc67863 | project-g | Notebook CSV path fix |
+| 2026-06-08 | be975ee5 | project-g | EUR token budget tracking |
+| 2026-06-09 | 0c6ec8a1 | project-g | IndexError debug |
+| 2026-06-09 | 660918fb | project-g | ModuleNotFoundError (rag module) |
+| 2026-06-09 | bf836c46 | project-g | Metric/exploration selection for eval |
+| 2026-06-10 | 9ddbb706 | project-g | Fable model integration check |
+| 2026-06-11 | 8caa7044 | project-g | Eval quality bug fix |
+| 2026-06-19 | 8877c883 | project-g | execute-tasks skill invocation |
+| 2026-06-19 | 094b14b7 | project-g | accounting_agent inception; LangGraph parity with va-agents |
+| 2026-06-19 | 11d354a7 | project-g | SANYI applied to eval pipeline |
+| 2026-06-19 | 6a1505ca | project-g | Task completion check |
+| 2026-06-19 | b4f26fe7 | project-g | Notebook run verification |
+| 2026-06-19 | 5bae9447 | project-g | SANYI vs Akira code review system design |
+| 2026-06-19 | 130222d2 | project-g | MD report evaluation |
+| 2026-06-22 | 93b4309e | project-g | Corpus data push (700 files); accounting_agent smoke test |
 | 2026-06-22 | 84c3ba53 | va-agents | Thinking budget for VA/HCA agents |
-| 2026-06-22 | f3d8c629 | galactus | Cursor bot in GitHub repo |
-| 2026-06-23 | 2a6c99c4 | galactus | Heuristic JSON file loading |
-| 2026-06-23 | bf544d36 | galactus | Escalation response language (should be English) |
-| 2026-06-24 | b0642ba1 | galactus | HTML linting suppression |
-| 2026-06-24 | 7e180bf0 | galactus | Lint toggle for HTML pages |
-| 2026-06-24 | b9dc2827 | galactus | Core preprocessing grounding comment thread |
-| 2026-06-24 | 4034555a | galactus | Eligibility grounding preprocessing |
-| 2026-06-24 | 76bda47b | galactus | `make eval-all` error fix |
-| 2026-06-24 | 6210d985 | galactus | Log visibility issue |
-| 2026-06-24 | a7cab4b9 | galactus | VA eval framework assessment vs baseline docs |
-| 2026-06-24 | de544217 | galactus | Playground vs galactus comparison |
+| 2026-06-22 | f3d8c629 | project-g | Cursor bot in GitHub repo |
+| 2026-06-23 | 2a6c99c4 | project-g | Heuristic JSON file loading |
+| 2026-06-23 | bf544d36 | project-g | Escalation response language (should be English) |
+| 2026-06-24 | b0642ba1 | project-g | HTML linting suppression |
+| 2026-06-24 | 7e180bf0 | project-g | Lint toggle for HTML pages |
+| 2026-06-24 | b9dc2827 | project-g | Core preprocessing grounding comment thread |
+| 2026-06-24 | 4034555a | project-g | Eligibility grounding preprocessing |
+| 2026-06-24 | 76bda47b | project-g | `make eval-all` error fix |
+| 2026-06-24 | 6210d985 | project-g | Log visibility issue |
+| 2026-06-24 | a7cab4b9 | project-g | VA eval framework assessment vs baseline docs |
+| 2026-06-24 | de544217 | project-g | Playground vs project-g comparison |
 | 2026-06-24 | 51b184ce | va-agents | Post-pull change review |
-| 2026-06-24 | 890685a5 | galactus | Onboarding doc gap analysis |
-| 2026-06-24 | 0c67abca | galactus | Escalation section documentation |
-| 2026-06-24 | b91ebc5f | galactus | Eval count check |
-| 2026-06-24 | 419dc79c | galactus | Pre-push review |
-| 2026-06-24 | b92e12ec | galactus | Graph clarity improvement |
-| 2026-06-24 | c46b867f | galactus | 15sec latency spike investigation |
-| 2026-06-25 | 4ad49b99 | galactus | Dataset size decision (240 QA) |
-| 2026-06-25 | b6ed6cf9 | galactus | Page update |
-| 2026-06-25 | 6be85145 | galactus | Tab update in report |
-| 2026-06-25 | 8cc7f4f3 | galactus | Document-to-eval-framework alignment check |
-| 2026-06-25 | 0310489c | galactus | Old dataset cleanup |
-| 2026-06-25 | c28a2b11 | galactus | Rebase from old branch |
-| 2026-06-25 | cb15d378 | galactus | Dataset query_word_count removal |
-| 2026-06-25 | a9522055 | galactus | Source baseline removal from overview |
-| 2026-06-25 | e6f88df0 | galactus | HCA y_true plot fix |
-| 2026-06-26 | 71d75bb4 | galactus | Overview section cleanup |
-| 2026-07-05 | 4914f277 | Workspace | galactus vs awesome-copilot vs sevdesk-platform-ai-catalog comparison |
+| 2026-06-24 | 890685a5 | project-g | Onboarding doc gap analysis |
+| 2026-06-24 | 0c67abca | project-g | Escalation section documentation |
+| 2026-06-24 | b91ebc5f | project-g | Eval count check |
+| 2026-06-24 | 419dc79c | project-g | Pre-push review |
+| 2026-06-24 | b92e12ec | project-g | Graph clarity improvement |
+| 2026-06-24 | c46b867f | project-g | 15sec latency spike investigation |
+| 2026-06-25 | 4ad49b99 | project-g | Dataset size decision (240 QA) |
+| 2026-06-25 | b6ed6cf9 | project-g | Page update |
+| 2026-06-25 | 6be85145 | project-g | Tab update in report |
+| 2026-06-25 | 8cc7f4f3 | project-g | Document-to-eval-framework alignment check |
+| 2026-06-25 | 0310489c | project-g | Old dataset cleanup |
+| 2026-06-25 | c28a2b11 | project-g | Rebase from old branch |
+| 2026-06-25 | cb15d378 | project-g | Dataset query_word_count removal |
+| 2026-06-25 | a9522055 | project-g | Source baseline removal from overview |
+| 2026-06-25 | e6f88df0 | project-g | HCA y_true plot fix |
+| 2026-06-26 | 71d75bb4 | project-g | Overview section cleanup |
+| 2026-07-05 | 4914f277 | Workspace | project-g vs awesome-copilot vs [vendor]-platform-ai-catalog comparison |
 | 2026-07-05 | c7597adf | librarian | Librarian repo scraping question → this ingest session |
 | 2026-07-05 | 0ee40dd4 | librarian | `make lint` debugging |
 
@@ -673,14 +673,14 @@ Sessions from 2026-04-27 to 2026-06-04. Mostly compact stubs and migrated JSONL 
 
 | Date | Session | Project | Topic | Wiki page |
 |---|---|---|---|---|
-| 2026-07-06 | 268f0009 | INTENSO | ai-project-template scope: playground infra + sevdesk DS-template skeleton comparison | [[AI Project Template Scaffold]] |
-| 2026-07-06 | bec24482 | INTENSO | galactus/notebooks four-category tour; observability import diagnostic | [[Galactus Project]] |
-| 2026-07-06 | 012cfada | INTENSO | Settings.json reconciliation; galactus README gaps; templated playground READMEs | [[Claude Workflow System]] |
+| 2026-07-06 | 268f0009 | INTENSO | ai-project-template scope: playground infra + [vendor] DS-template skeleton comparison | [[AI Project Template Scaffold]] |
+| 2026-07-06 | bec24482 | INTENSO | project-g/notebooks four-category tour; observability import diagnostic | [[project-g Project]] |
+| 2026-07-06 | 012cfada | INTENSO | Settings.json reconciliation; project-g README gaps; templated playground READMEs | [[Claude Workflow System]] |
 | 2026-07-07 | 0cd5da0c | INTENSO | listen-wiseer review — refactor plan (RAG + FastAPI), agentic web search open question | [[Listen-Wiseer Project]] |
 | 2026-07-12 | a5c50915 | INTENSO | Puffin skills code review (genesis/dream/bgrow/reflect/research) vs playground; seed material concept | [[Puffin Consciousness Development Skills]] |
 | 2026-07-13 | dfcde495 | puffin | Puffin CLAUDE.md generation; Genesis 11-phase process; Akira/SANYI/Insights distinction ("ralph" origin) | [[Puffin Consciousness Development Skills]], [[Claude Workflow System]] |
 | 2026-07-13 | a3b6ecb6 | INTENSO | Claude settings inconsistency across repos; drive-root settings layering fix | [[Claude Workflow System]] |
-| 2026-07-14 | 877508dc | galactus | Value check on pulled galactus/va-agents/chat-agent changes | manifest-only |
+| 2026-07-14 | 877508dc | project-g | Value check on pulled project-g/va-agents/chat-agent changes | manifest-only |
 | 2026-07-14 | 63940e32 | INTENSO | How to run `/ingest`; README documentation gap for skill commands | [[Claude Workflow System]] |
 | 2026-07-14 | c90bb5d6 | INTENSO | ai-project-template git origin decision — separate repo, local template testing | [[AI Project Template Scaffold]] |
 | 2026-07-14 | 7f9c0f01 | INTENSO | Recovering wake/grow/reflect/synthesize/dream outputs from past sessions | [[Puffin Consciousness Development Skills]] |

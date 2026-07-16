@@ -91,9 +91,7 @@ def _add_image_slide(
     notes_slide = slide.notes_slide
     notes_slide.notes_text_frame.text = content.speaker_note
 
-    log.info(
-        "renderer.slide.added", number=content.slide_number, type=content.slide_type
-    )
+    log.info("renderer.slide.added", number=content.slide_number, type=content.slide_type)
 
 
 def _add_text_slide(prs: Presentation, content: SlideContent) -> None:
@@ -111,9 +109,7 @@ def _add_text_slide(prs: Presentation, content: SlideContent) -> None:
     if 0 in placeholders:
         placeholders[0].text = content.headline
     else:
-        txBox = slide.shapes.add_textbox(
-            Inches(0.5), Inches(0.3), Inches(12.3), Inches(1.0)
-        )
+        txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.3), Inches(12.3), Inches(1.0))
         run = txBox.text_frame.paragraphs[0]
         run.text = content.headline
         run.runs[0].font.size = Pt(32)
@@ -127,9 +123,7 @@ def _add_text_slide(prs: Presentation, content: SlideContent) -> None:
             para.text = bullet
             para.runs[0].font.size = Pt(18)
     else:
-        txBox = slide.shapes.add_textbox(
-            Inches(0.5), Inches(1.5), Inches(12.3), Inches(5.0)
-        )
+        txBox = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(12.3), Inches(5.0))
         tf = txBox.text_frame
         tf.word_wrap = True
         for i, bullet in enumerate(content.body):
@@ -141,9 +135,7 @@ def _add_text_slide(prs: Presentation, content: SlideContent) -> None:
     notes_slide = slide.notes_slide
     notes_slide.notes_text_frame.text = content.speaker_note
 
-    log.info(
-        "renderer.slide.text", number=content.slide_number, type=content.slide_type
-    )
+    log.info("renderer.slide.text", number=content.slide_number, type=content.slide_type)
 
 
 def _add_title_slide(prs: Presentation, title: str) -> None:

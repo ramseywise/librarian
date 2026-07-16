@@ -15,8 +15,8 @@ cache_read_tokens: 380531
 ## Prompts (3 total)
 
 - which repos is librarian scraping?
-- what is the purpose of librarian? what do you think about the content organization and knowledge retrieval design and methodology? how can we improve this? what would be potential use cases - and for 
-- we also have a claude skill in galactus called sanyi - that creates contract relationships for ai products that i think might be also nice for this repo as well no?
+- what is the purpose of librarian? what do you think about the content organization and knowledge retrieval design and methodology? how can we improve this? what would be potential use cases - and for
+- we also have a claude skill in project-g called sanyi - that creates contract relationships for ai products that i think might be also nice for this repo as well no?
 
 ## Stats
 

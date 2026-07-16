@@ -4,7 +4,7 @@ tags: [rag, infra, comparison]
 summary: Side-by-side of vector stores used across RAG pipelines — DuckDB (embedded local), ChromaDB, pgvector, OpenSearch (Bedrock), Pinecone, GCP Discovery Engine — with when-to-use guidance and migration notes.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/galactus/docs/rag/vector-databases.md
+  - raw/claude-docs/project-g/docs/rag/vector-databases.md
 ---
 
 # Vector Database Comparison
@@ -64,7 +64,7 @@ See [[GCP Vertex AI Search vs AWS Bedrock KB]] for full details.
 Best for pure-play semantic similarity with zero ops. **No native BM25 hybrid** — poor fit for multilingual support KB where keyword precision matters.
 
 ### ChromaDB
-Optional backend — persistent HNSW. Prefer over DuckDB when you want ANN at larger corpus sizes (> 50k chunks). Not installed by default in the main galactus venv.
+Optional backend — persistent HNSW. Prefer over DuckDB when you want ANN at larger corpus sizes (> 50k chunks). Not installed by default in the main project-g venv.
 
 ### GCP Discovery Engine (Vertex AI Search)
 Best for: fully managed RAG on GCP. Two modes: Agentic RAG (Gemini ADK agentic loop) or Built-in Answer (`:answer` endpoint where GCP owns retrieval + generation). See [[GCP Vertex AI Search vs AWS Bedrock KB]].

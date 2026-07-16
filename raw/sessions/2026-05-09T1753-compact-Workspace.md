@@ -40,7 +40,7 @@ no-git
 ## Recent prompts
 - yes lets do that and does this apply also to langgraph or is independent to adk? and si it better with agent? or better as tests/eval_harness that we are creating?
 -  so these are not evals - they are gaurdrails? is that right?
--  if they are eval criteria - then they need to be a @galactus/evals/grader sorry i misunderstood.. then they dont belong with the agents but with evals to loop evals through can we update this as a grader and route it through our eval runner or _quality if llm call (and if we dont already do this, j
+-  if they are eval criteria - then they need to be a @project-g/evals/grader sorry i misunderstood.. then they dont belong with the agents but with evals to loop evals through can we update this as a grader and route it through our eval runner or _quality if llm call (and if we dont already do this, j
 -  do we also have paths updated from the eval runner to the data storage and report generation? it should all end up as part of the eval_suite that gets generated from metrics stored from these runners
 - can we delete idk now?
 

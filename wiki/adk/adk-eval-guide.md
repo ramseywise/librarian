@@ -4,11 +4,11 @@ tags: [adk, eval, pattern]
 summary: ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, and user simulation for dynamic testing.
 updated: 2026-07-14
 sources:
-  - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/SKILL.md
-  - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/builtin-tools-eval.md
-  - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/criteria-guide.md
-  - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/multimodal-eval.md
-  - raw/claude-docs/galactus/.agents/skills/adk-eval-guide/references/user-simulation.md
+  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/SKILL.md
+  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/builtin-tools-eval.md
+  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/criteria-guide.md
+  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/multimodal-eval.md
+  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/user-simulation.md
   - raw/agent-skills/adk-eval-guide/SKILL.md
   - raw/agent-skills/adk-eval-guide/references/builtin-tools-eval.md
   - raw/agent-skills/adk-eval-guide/references/criteria-guide.md
@@ -20,7 +20,7 @@ sources:
 
 ADK has a first-class evaluation framework via `adk eval`. This page covers the eval-fix loop, built-in criteria, evalset schema, critical gotchas, multimodal evaluation patterns, and user simulation for dynamic conversation testing.
 
-For the broader eval landscape, see [[VA Eval Harness]] and [[Galactus Eval Architecture]].
+For the broader eval landscape, see [[VA Eval Harness]] and [[project-g Eval Architecture]].
 
 ---
 
@@ -396,6 +396,6 @@ Use `conversation_scenario` instead of `conversation` for dynamic multi-turn tes
 
 - [[ADK User Simulation Eval]]
 - [[VA Eval Harness]]
-- [[Galactus Eval Architecture]]
+- [[project-g Eval Architecture]]
 - [[LLM Grader Calibration Insights]]
 - [[ADK Python API Reference]]

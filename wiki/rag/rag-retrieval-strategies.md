@@ -109,7 +109,7 @@ Config fallback: `HYBRID_SCORING=rrf|linear` if you need linear for A/B comparis
 - BM25-only: misses semantic paraphrases
 - Hybrid: catches both classes of match
 
-### Production benchmark (from RAPTOR v1 — Danish market)
+### Production benchmark (from [rag-v1] v1 — Danish market)
 
 | Strategy | Hit Rate |
 |---|---|

@@ -33,7 +33,7 @@ From github.com:ramseywise/playground
 - Resolving deltas: 100% (72/72), completed with 45 local objects.
 From github.com:ramseywise/playground
    a504b47..714eec7  main                                     -> origin/main
-   a504b47..a2da3f5 
+   a504b47..a2da3f5
 - ok i think we want two options.. like local setup should use cheap and easy dev to spin up vercel ui with langgraph be.. the second one is for a production pipeline that uses cloud services and api ca
 - i'm still not convinced should tools be in src or part of infra?
 - a yeah we want the lambda handler as an option but actually we will deploy with fargate i think for the monolithic setup? i dont know.. but ok then can we call it src/core + librarian (pipeline), stor

@@ -4,7 +4,7 @@ tags: [eval, rag, pattern]
 summary: Eight-gate ownership contract for RAG evaluation pipelines — each gate answers a distinct question about corpus quality, retrieval, generation, and grader calibration, with strict handoff contracts between gates.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/galactus/docs/evals/gate-contract.md
+  - raw/claude-docs/project-g/docs/evals/gate-contract.md
 ---
 
 # RAG Eval Gate Contract
@@ -60,7 +60,7 @@ Every gate must emit enough evidence for the next owner to proceed without rever
 |---|---|
 | `source_missing` | Expected source absent from corpus |
 | `url_unmapped` | Expected URL cannot be matched to canonical source |
-| `topic_proxy` | Source useful for coverage but not groundable as citation (e.g. Billypedia) |
+| `topic_proxy` | Source useful for coverage but not groundable as citation (e.g. [product]-kb) |
 | `index_lag` | Source exists in corpus but not in vector index |
 | `chunk_fragmented` | Evidence split too thin for ranking/generation |
 | `rank_miss` | Expected source indexed but not returned in top-k |
@@ -134,7 +134,7 @@ Track: liked vs disliked score separation, Cohen's d, precision/recall/F1 agains
 ---
 
 ## See Also
-- [[Galactus Eval Architecture]]
+- [[project-g Eval Architecture]]
 - [[RAG Evaluation]]
 - [[LLM Grader Calibration Insights]]
 - [[Reciprocal Rank Fusion (RRF)]]

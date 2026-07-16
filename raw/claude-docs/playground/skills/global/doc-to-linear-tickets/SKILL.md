@@ -79,7 +79,7 @@ Current label taxonomy for the HC/VA Eval & Improvement workstream:
 
 | Label | Color | Use for |
 |-------|-------|---------|
-| HC Data Ingestion | #5e6ad2 | All Billy, Intercom, SKAT, GDPR masking, and data validation work |
+| HC Data Ingestion | #5e6ad2 | All product-a, Intercom, SKAT, GDPR masking, and data validation work |
 | HC Feedback Loop | #f2994a | CS onboarding, annotation guidelines, HITL sampling queues |
 | HC Evaluation | #4cb782 | Eval dataset curation, LLM-as-judge, benchmarking, clustering |
 

@@ -138,6 +138,6 @@ CONFIRM_EXPENSIVE_OPS=1 make eval-trajectory  # unlock gated runs
 ## See Also
 - [[VA Eval Harness]]
 - [[RAG Evaluation]]
-- [[Galactus Eval Architecture]]
+- [[project-g Eval Architecture]]
 - [[HITL Annotation Pipeline]]
 - [[Observability — LangFuse vs LangSmith Decision]]

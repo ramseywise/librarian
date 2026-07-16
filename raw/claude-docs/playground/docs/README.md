@@ -16,7 +16,7 @@ new to the project.
 | [langgraph-vs-adk.md](architecture/langgraph-vs-adk.md) | Side-by-side mental model comparison: agent-centric/event-driven (ADK) vs. graph/state-machine (LangGraph). Covers primitives mapping, state management, observability, callback hooks, and when each framework is the right choice |
 | [custom-rag-vs-managed-kb.md](architecture/custom-rag-vs-managed-kb.md) | Build vs buy for RAG: custom LangGraph pipeline vs AWS Bedrock Knowledge Bases across 7 dimensions (retrieval quality, multi-turn accuracy, observability, latency, cost, corpus control, vendor lock-in) |
 | [architecture-decisions.md](architecture/architecture-decisions.md) | The three design options considered (full Bedrock / full LangGraph / polyglot), with tradeoffs, verdicts, and the recommended migration path |
-| [rag-patterns.md](architecture/rag-patterns.md) | Comprehensive RAG research reference: all chunking and retrieval strategies evaluated, CRAG implementation, reranker comparison, intent classification, multi-agent vs single-graph design, observability platform selection, production benchmarks from RAPTOR v1 |
+| [rag-patterns.md](architecture/rag-patterns.md) | Comprehensive RAG research reference: all chunking and retrieval strategies evaluated, CRAG implementation, reranker comparison, intent classification, multi-agent vs single-graph design, observability platform selection, production benchmarks from rag-v1 v1 |
 
 ---
 
@@ -27,7 +27,7 @@ How the project's dev tooling is configured.
 | Doc | What it covers |
 |---|---|
 | [hooks-architecture.md](tooling/hooks-architecture.md) | How the Claude Code hook suite works — lifecycle events, exit codes, per-hook responsibilities, how to add a new hook |
-| [eval-harness.md](tooling/eval-harness.md) | The `va-langgraph` eval framework — 278 real Clara fixtures, 4 graders (routing, safety, schema, message_quality), how to run and extend it |
+| [eval-harness.md](tooling/eval-harness.md) | The `va-langgraph` eval framework — 278 real corpus-a fixtures, 4 graders (routing, safety, schema, message_quality), how to run and extend it |
 | [observability-setup.md](tooling/observability-setup.md) | How tracing is wired for both VA implementations (LangSmith for both; Langfuse as the commented-out alternative). Also documents how to switch to Langfuse |
 | [adk-js.md](tooling/adk-js.md) | Google ADK JS patterns and conventions |
 | [demo.md](tooling/demo.md) | Demo setup and walkthrough |

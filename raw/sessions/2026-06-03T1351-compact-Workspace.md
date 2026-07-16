@@ -38,9 +38,9 @@ no-git
 - **Session ID**: fe4042e5-92d7-4fea-a455-1c5139af7c56
 
 ## Recent prompts
-- 
-            
-            
+-
+
+
 - Base directory for this skill: /Users/ramsey.wise/.claude/skills/execute-tasks
 
 Always follow the rules given by /.claude/skills/backend/SKILL.md and /.claude/skills/frontend/SKILL.md.
@@ -48,9 +48,9 @@ Always follow the rules given by /.claude/skills/backend/SKILL.md and /.claude/s
 Execute all planned (`[ ]`) tasks from the milestone's task file. Follow this process strictly.
 
 **GitHub Projects
--  are these tasks in @galactus/.claude/docs/plans? if not can we update them?
+-  are these tasks in @project-g/.claude/docs/plans? if not can we update them?
 - ok how might we add our gt dataset to grounding tests?
-- sorry i meant for the ts version in va-agents, not the python in galactus
+- sorry i meant for the ts version in va-agents, not the python in project-g
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

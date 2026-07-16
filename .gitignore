@@ -54,3 +54,6 @@ node_modules/
 
 # Vite cache artifacts
 **/.vite/
+
+# Raw ingest archive — personal/employer source material stays local-only
+raw/

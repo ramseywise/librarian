@@ -1,7 +1,7 @@
 # RAG system development plan
 
-**Last updated:** April 15, 2026  
-**Purpose:** Single place for implementation sequencing, team alignment, and traceability to product/engineering commitments.  
+**Last updated:** April 15, 2026
+**Purpose:** Single place for implementation sequencing, team alignment, and traceability to product/engineering commitments.
 **Audience:** Engineers implementing the stack; PM/design for scope checks.
 
 ---
@@ -12,7 +12,7 @@ This document **includes** all items from the team’s summarized plan. See [Tra
 
 | Theme | Items (from summary) | Covered here |
 |-------|----------------------|--------------|
-| **MVP** | Deploy Bedrock Knowledge Base with Billy Web content ingestion | [§3.1](#31-mvp--bedrock-knowledge-base--billy-web), [§4 Phase B](#phase-b--ingestion--index) |
+| **MVP** | Deploy Bedrock Knowledge Base with product-a Web content ingestion | [§3.1](#31-mvp--bedrock-knowledge-base--product-a-web), [§4 Phase B](#phase-b--ingestion--index) |
 | **MVP** | Out-of-the-box retrieval with re-ranking | [§3.2](#32-retrieval--re-ranking), [§4 Phase C](#phase-c--retrieval--quality--observability) |
 | **MVP** | Danish market support articles as primary source | [§3.3](#33-market--language-mvp), [§4 Phase B](#phase-b--ingestion--index) |
 | **QA** | Random sampling queue for human validation / annotation | [§5.1](#51-human-in-the-loop--sampling-queue) |
@@ -35,7 +35,7 @@ This section is a **pre-implementation** review: what is strong, what to lock, a
 
 ### Strengths of the current direction
 
-- **Bedrock KB + Billy Web** is a clear ingestion anchor: managed chunking/retrieval options, AWS-native path, and one primary crawl source reduce early integration surface area.
+- **Bedrock KB + product-a Web** is a clear ingestion anchor: managed chunking/retrieval options, AWS-native path, and one primary crawl source reduce early integration surface area.
 - **Re-ranking after retrieval** matches production RAG patterns; pairing it with **confidence thresholds** supports both quality and “edge case” routing.
 - **Human sampling + LLM-as-judge** is a sensible split: humans for trust and labels; automation for scale and regression detection.
 - **DataDog** for dashboards fits ops maturity if the org already standardizes on it; align **metric names and dimensions** early (see §6.3).
@@ -43,18 +43,18 @@ This section is a **pre-implementation** review: what is strong, what to lock, a
 ### Gaps to close in design (before large implementation spend)
 
 1. **API contract** — Request/response shapes for `market`, `locale`, `citations[]`, and outcomes (`answer` | `clarify` | `escalate`) should be fixed **before** the Help Center FE hard-codes assumptions.
-2. **“Billy Web” scope** — Define which properties (URLs, locales, article types) are in MVP and how **Danish-only** sources interact with **DK EN UI** users (filter vs. translate is a product decision).
+2. **“product-a Web” scope** — Define which properties (URLs, locales, article types) are in MVP and how **Danish-only** sources interact with **DK EN UI** users (filter vs. translate is a product decision).
 3. **Bedrock KB configuration** — Data source sync, embedding model, and **metadata filtering** (market/language) must be specified so retrieval matches regulatory expectations.
 4. **Evaluation ownership** — Who maintains the **benchmark set**, **sampling rate**, and **LLM-judge prompts** when models change?
 5. **PII / logging** — Even before a full masking layer, **default** log redaction policy avoids shipping sensitive payloads to DataDog or LangSmith.
 
 ### Sequencing recommendation
 
-1. **Contract + observability schema** (what you log and what the FE sends).  
-2. **Ingestion + KB** (Billy Web → Bedrock KB, Danish MVP).  
-3. **Retrieval + rerank + confidence** wired in app.  
-4. **API + streaming** for Help Center.  
-5. **QA loop** (sampling queue, judges, dashboards) in parallel once events exist.  
+1. **Contract + observability schema** (what you log and what the FE sends).
+2. **Ingestion + KB** (product-a Web → Bedrock KB, Danish MVP).
+3. **Retrieval + rerank + confidence** wired in app.
+4. **API + streaming** for Help Center.
+5. **QA loop** (sampling queue, judges, dashboards) in parallel once events exist.
 6. **Future** items explicitly **not** in MVP scope unless resourced.
 
 ---
@@ -68,7 +68,7 @@ The following is **in place in the POC codebase** as of the **retriever_agent** 
 | **Orchestration** | LangGraph under `app/graph/` (`graph.py`, `routing.py`, `policy.py`, `state.py`, `runner.py`; nodes in `app/graph/nodes/`) | HTTP API, streaming, Help Center contract (Phase D) |
 | **Retrieval** | `Embedder` / `Retriever` protocols; **ensemble** retriever (parallel queries, dedupe, **RRF**, score filtering); **snippet/keyword** path; **retrieval cache**; tool wrapper with Pydantic schemas | Bedrock Knowledge Base **Retrieve** as the managed baseline in prod (Phase B–C) |
 | **Reranking** | `Reranker` protocol; **cross-encoder**, **LLM listwise**, **passthrough** | Standardize one reranker + thresholds for production; vendor choice (Cohere, etc.) if required |
-| **Ingestion / index** | Preprocessing pipeline under `app/rag/preprocessing/` (chunking, parsing, indexing wiring; **Raptor-style** hierarchical / clustering pieces as implemented) | Billy Web → Bedrock KB sync, DK metadata filters (Phase B) |
+| **Ingestion / index** | Preprocessing pipeline under `app/rag/preprocessing/` (chunking, parsing, indexing wiring; **rag-v1-style** hierarchical / clustering pieces as implemented) | product-a Web → Bedrock KB sync, DK metadata filters (Phase B) |
 | **Observability** | Env + logger configuration before heavy imports; embedding client noise suppression (HF/tqdm) | Structured production metrics, DataDog dashboards (§6.3, Phase C exit) |
 | **Tooling** | `pyproject.toml` + `uv.lock`; **Makefile**; **pre-commit**; tests for retrieval/reranking paths | CI/CD and deployment (§6.1) |
 
@@ -84,9 +84,9 @@ For full product context (Help Center, Copilot compatibility, conversational beh
 
 ## Detailed scope
 
-### 3.1 MVP — Bedrock Knowledge Base + Billy Web
+### 3.1 MVP — Bedrock Knowledge Base + product-a Web
 
-- Provision **Amazon Bedrock Knowledge Base** with data source(s) fed by **Billy Web** crawl/export (exact mechanism: crawl pipeline vs. CMS export — confirm with whoever owns Billy Web).
+- Provision **Amazon Bedrock Knowledge Base** with data source(s) fed by **product-a Web** crawl/export (exact mechanism: crawl pipeline vs. CMS export — confirm with whoever owns product-a Web).
 - Automate **sync** on content changes where possible; document manual refresh if needed for MVP.
 - Track **document/version identifiers** in retrieval results for citations and gap analysis.
 
@@ -98,7 +98,7 @@ For full product context (Help Center, Copilot compatibility, conversational beh
 
 ### 3.3 Market + language (MVP)
 
-- **Primary data:** Danish market **support articles** (and agreed Billy Web surfaces).
+- **Primary data:** Danish market **support articles** (and agreed product-a Web surfaces).
 - **Runtime context:** `market` (e.g. `DK`) + **UI language** (`da` / `en`) on each request; retrieval filters must **not** return wrong-jurisdiction guidance.
 - **Future:** multi-market and broader language expansion is **out of MVP** unless explicitly pulled in (see §7.3).
 
@@ -108,7 +108,7 @@ For full product context (Help Center, Copilot compatibility, conversational beh
 
 | Step | Action |
 |------|--------|
-| B1 | Define Billy Web → staging format (HTML/markdown, URLs, locale tags). |
+| B1 | Define product-a Web → staging format (HTML/markdown, URLs, locale tags). |
 | B2 | Configure Bedrock KB data source + sync; validate chunk boundaries in spot checks. |
 | B3 | Attach or derive **metadata**: `market`, `language`, `source`, `url`, `title`, `updated_at`, optional `product_area`. |
 | B4 | Danish MVP: restrict or tag corpus so **filters** enforce DK + language rules at query time. |
@@ -206,7 +206,7 @@ For full product context (Help Center, Copilot compatibility, conversational beh
 
 | Summary bullet | Primary section |
 |----------------|-----------------|
-| Bedrock KB + Billy Web ingestion | [§3.1](#31-mvp--bedrock-knowledge-base--billy-web), [Phase B](#phase-b--ingestion--index) |
+| Bedrock KB + product-a Web ingestion | [§3.1](#31-mvp--bedrock-knowledge-base--product-a-web), [Phase B](#phase-b--ingestion--index) |
 | Retrieval + re-ranking | [§3.2](#32-retrieval--re-ranking), [Phase C](#phase-c--retrieval--quality--observability), [Implementation status](#implementation-status-this-repository) |
 | Danish market articles | [§3.3](#33-market--language-mvp), [Phase B](#phase-b--ingestion--index) |
 | Random sampling + human annotation | [§5.1](#51-human-in-the-loop--sampling-queue) |

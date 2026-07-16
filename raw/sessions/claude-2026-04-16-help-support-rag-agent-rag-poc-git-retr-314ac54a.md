@@ -20,7 +20,7 @@ work_type: debug
 
 # Claude Code Session — 2026-04-16 (poc)
 
-**First prompt:** (help-support-rag-agent) ➜  rag_poc git:(retriever_agent) ✗ make lint         
+**First prompt:** (help-support-rag-agent) ➜  rag_poc git:(retriever_agent) ✗ make lint
 uv run ruff check app/ tests/ evals/ --unsafe-fixes --fix
 Found 2 errors (2 fixed, 0 remaining).
 uv run ruff format app/ tests/ evals/
@@ -30,14 +30,14 @@ app/core/loggin
 
 ## Prompts (12 total)
 
-- (help-support-rag-agent) ➜  rag_poc git:(retriever_agent) ✗ make lint         
+- (help-support-rag-agent) ➜  rag_poc git:(retriever_agent) ✗ make lint
 uv run ruff check app/ tests/ evals/ --unsafe-fixes --fix
 Found 2 errors (2 fixed, 0 remaining).
-uv run ruff format app/ 
-- also so test errors 
-(help-support-rag-agent) ➜  rag_poc git:(retriever_agent) ✗ make test 
+uv run ruff format app/
+- also so test errors
+(help-support-rag-agent) ➜  rag_poc git:(retriever_agent) ✗ make test
 uv run pytest tests/ -v
-=============================================================== test session starts 
+=============================================================== test session starts
 - when we run make run-app, where are we saving traces? or is it going to langsmith? can we save locally just for testing?
 - where on langsmith do i see it? can we make a make command to view?
 - right now says  no projects found

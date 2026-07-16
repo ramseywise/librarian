@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-19
 session_id: 6a1505ca-189d-4f70-9f76-921749f9a18e
 prompts: 10
@@ -8,7 +8,7 @@ total_tokens: 96534
 cache_read_tokens: 12690104
 ---
 
-# Claude Code Session — 2026-06-19 (galactus)
+# Claude Code Session — 2026-06-19 (project-g)
 
 **First prompt:** have these tasks been imiplemented if so lets delete the plan if not please implement and then delete when done
 

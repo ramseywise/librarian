@@ -32,8 +32,7 @@ def resolve_topic(pdf_path: Path) -> str:
             topic_dir.mkdir(parents=True, exist_ok=True)
             return slug
     raise ValueError(
-        f"No known source folder found in path: {pdf_path}. "
-        f"Known folders: {list(SOURCE_TOPIC_MAP)}"
+        f"No known source folder found in path: {pdf_path}. Known folders: {list(SOURCE_TOPIC_MAP)}"
     )
 
 

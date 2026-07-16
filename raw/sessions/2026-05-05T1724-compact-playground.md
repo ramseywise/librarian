@@ -41,12 +41,12 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user was working on data preparation for a Jupyter notebook (01_data_prep.ipynb) and needed guidance
-- 
-            
-            
+-
+
+
 -  we use to have a parsing function to look at the response and parse also the title and url which we could make a cols source_1, source_2, source_3.. basically we are feature engineering any data points that could be valuable for analysis or metrics to track through our grader for aggregation to und
 - yes look through @killing-it please
-- i've added them to a nbks/sevdesk folder here
+- i've added them to a nbks/vendor-a folder here
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

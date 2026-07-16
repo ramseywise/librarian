@@ -75,7 +75,7 @@ updated: 2026-07-14
 | [[ADK vs LangGraph Comparison]] | Side-by-side mental model, primitive mappings, and when to use each |
 | [[SKILL.md Pattern]] | ADK skill declaration format — YAML frontmatter + instruction body, three loading strategies |
 | [[Voice Agent Patterns]] | Real-time voice agent patterns — <400ms latency budget, ADK Strategy C, BIDI streaming |
-| [[Multi-Agent Orchestration Patterns]] | Four patterns evaluated for Shine ADK POC — Agent with Skills & Compaction selected |
+| [[Multi-Agent Orchestration Patterns]] | Four patterns evaluated for [client] ADK POC — Agent with Skills & Compaction selected |
 | [[VA Product Design Patterns]] | Three interaction levels, structured output as UI contract, tool count budget |
 | [[Multi-Modal Agent Response]] | Agent response combining text, charts, interactive UI, and task surfaces |
 | [[Plan and Execute Pattern]] | Separating planning from execution for multi-step tasks with HITL confirmation |
@@ -95,8 +95,8 @@ updated: 2026-07-14
 | [[PII Masking Approaches]] | Regex vs LLM-based vs hybrid masking — contextual PII is the hard problem |
 | [[Prefix Caching]] | Claude's KV cache for repeated prompt prefixes — 90% cost/latency reduction |
 | [[Input Guardrails Pipeline]] | 7-stage deterministic safety pipeline — LLM-free by design |
-| [[Observability — LangFuse vs LangSmith Decision]] | LangFuse first — native ragas/deepeval, self-hostable, GDPR-friendly; Shine weighted score 8.58/10 |
-| [[Langfuse Platform]] | Open-source LLM observability — tracing, prompt management, eval; Shine adoption status (legal cleared, SSO pending) |
+| [[Observability — LangFuse vs LangSmith Decision]] | LangFuse first — native ragas/deepeval, self-hostable, GDPR-friendly; [client] weighted score 8.58/10 |
+| [[Langfuse Platform]] | Open-source LLM observability — tracing, prompt management, eval; [client] adoption status (legal cleared, SSO pending) |
 | [[Observability and Runtime Patterns]] | LangSmith vs Langfuse choice, tracing architecture, checkpointer alignment rules, trigger patterns, key monitoring signals |
 | [[Langfuse ADK Tracing Patterns]] | Two-layer ADK + Langfuse tracing — OTel auto-instrumentation + @observe decorators; session grouping, RAG path tagging, first-class Scores, error visibility |
 | [[Cloud Run + Cloud SQL Pattern]] | Single Cloud Run container + Cloud SQL Auth Proxy (unix socket) — sizing rationale, --workers 1, KB update workflow |
@@ -134,7 +134,7 @@ updated: 2026-07-14
 | [[HITL Annotation Pipeline]] | Two-queue annotation workflow, inter-annotator agreement gate, feedback routing |
 | [[Direct Preference Optimization]] | Training-time preference alignment using preference pairs — not applicable to API-only models |
 | [[VA Eval Harness]] | Four eval suites, tool_trajectory_avg_score, LLM judge, Makefile flow, CI regression gate |
-| [[Galactus Eval Architecture]] | Routing vs domain eval (Strand A/E/F), grader interface, three-tier coverage, ablation methodology, GT pipeline |
+| [[project-g Eval Architecture]] | Routing vs domain eval (Strand A/E/F), grader interface, three-tier coverage, ablation methodology, GT pipeline |
 | [[LLM Grader Calibration Insights]] | Custom v3 grader vs DeepEval defaults, domain-shift failure pattern, passage context requirement |
 | [[Agentic KPI Trees]] | KPI tree pattern — goal completion rate, no-touch rate, auto-reconciliation accuracy for VA/accounting/matching agents |
 | [[RAG Eval Metrics Suite]] | Eight-metric RAG eval framework — runtime (faithfulness, naturalness, relevance, contextual relevance) vs offline (completeness, recall, document precision, calibration) |

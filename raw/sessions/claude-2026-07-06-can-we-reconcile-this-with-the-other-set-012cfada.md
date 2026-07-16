@@ -17,7 +17,7 @@ cache_read_tokens: 10755717
 - can we reconcile this with the other settings
 - [Request interrupted by user for tool use]
 - sorry not .env but @settings 2.json with settings.json in playground/.claude
-- Are there any read me documents in Galactus that are within the core evals, uh, folders or SRC that are just general knowledge that's, like, good for explaining, like, the agent, um, or the metrics or
+- Are there any read me documents in project-g that are within the core evals, uh, folders or SRC that are just general knowledge that's, like, good for explaining, like, the agent, um, or the metrics or
 - lets ad readmes for playground that can be templated for any use case thanks
 
 ## Stats

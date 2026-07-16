@@ -16,7 +16,7 @@ import json
 import os
 import shutil
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import anthropic
@@ -64,7 +64,7 @@ def _read_recent_sessions(sessions_dir: Path, days: int = 7) -> str:
     """Read all session notes from the last N days."""
     if not sessions_dir.exists():
         return ""
-    cutoff = (datetime.now(tz=timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+    cutoff = (datetime.now(tz=UTC) - timedelta(days=days)).strftime("%Y-%m-%d")
     notes: list[str] = []
     for f in sorted(sessions_dir.glob("*.md"), reverse=True):
         if f.stem[:10] >= cutoff:
@@ -131,7 +131,7 @@ def _format_facets_summary(facets: dict[str, dict]) -> str:
     for sid, f in facets.items():
         outcome = f.get("outcome", "unknown")
         outcomes[outcome] = outcomes.get(outcome, 0) + 1
-        for cat in f.get("goal_categories", {}).keys():
+        for cat in f.get("goal_categories", {}):
             categories[cat] = categories.get(cat, 0) + 1
         if f.get("friction_detail"):
             brief = f.get("brief_summary", "")[:80]
@@ -163,7 +163,7 @@ def _compute_cost_summary(session_meta_dir: Path, days: int = 7) -> str:
     if not session_meta_dir.exists():
         return "No session-meta data available."
 
-    cutoff = datetime.now(tz=timezone.utc) - timedelta(days=days)
+    cutoff = datetime.now(tz=UTC) - timedelta(days=days)
     sessions: list[dict] = []
 
     for p in session_meta_dir.glob("*.json"):
@@ -184,24 +184,21 @@ def _compute_cost_summary(session_meta_dir: Path, days: int = 7) -> str:
             cw = data.get("cache_write_tokens", 0)
             cr = data.get("cache_read_tokens", 0)
 
-            cost = (
-                inp * inp_price
-                + out * out_price
-                + cw * cw_price
-                + cr * cr_price
-            ) / 1_000_000
+            cost = (inp * inp_price + out * out_price + cw * cw_price + cr * cr_price) / 1_000_000
 
-            sessions.append({
-                "date": start_str[:10],
-                "project": Path(data.get("project_path", "unknown")).name,
-                "model": model,
-                "input": inp,
-                "output": out,
-                "cache_write": cw,
-                "cache_read": cr,
-                "cost": cost,
-                "prompts": data.get("user_message_count", 0),
-            })
+            sessions.append(
+                {
+                    "date": start_str[:10],
+                    "project": Path(data.get("project_path", "unknown")).name,
+                    "model": model,
+                    "input": inp,
+                    "output": out,
+                    "cache_write": cw,
+                    "cache_read": cr,
+                    "cost": cost,
+                    "prompts": data.get("user_message_count", 0),
+                }
+            )
         except Exception:
             pass
 
@@ -239,6 +236,7 @@ def _compute_cost_summary(session_meta_dir: Path, days: int = 7) -> str:
 def _parse_session_frontmatter(text: str) -> dict[str, str]:
     """Parse key-value frontmatter from a session markdown file."""
     import re
+
     fm: dict[str, str] = {}
     m = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
     if not m:
@@ -251,7 +249,7 @@ def _parse_session_frontmatter(text: str) -> dict[str, str]:
 
 
 _PROJECT_DOMAIN_TAGS: dict[str, list[str]] = {
-    "galactus": ["adk", "langgraph", "eval"],
+    "project-g": ["adk", "langgraph", "eval"],
     "librarian": ["rag", "mcp", "context-management"],
     "va-agents": ["adk", "voice"],
     "playground": ["infra"],
@@ -299,7 +297,9 @@ def _update_wiki_session_log(raw_sessions: Path, wiki_dir: Path) -> int:
 
         project = (fm.get("project") or "unknown").strip()
         raw_tokens = (fm.get("total_tokens") or fm.get("output_tokens") or "").strip()
-        tok_str = f"{int(raw_tokens)//1000}k" if raw_tokens and raw_tokens not in ("~", "") else "—"
+        tok_str = (
+            f"{int(raw_tokens) // 1000}k" if raw_tokens and raw_tokens not in ("~", "") else "—"
+        )
         session_id = ((fm.get("session_id") or f.stem).strip())[:8]
 
         new_by_date.setdefault(date, []).append(
@@ -321,7 +321,7 @@ def _update_wiki_session_log(raw_sessions: Path, wiki_dir: Path) -> int:
 
     new_block = "\n".join(blocks) + "\n"
 
-    today = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
+    today = datetime.now(tz=UTC).strftime("%Y-%m-%d")
     updated = re.sub(r"(updated: )\d{4}-\d{2}-\d{2}", rf"\g<1>{today}", existing, count=1)
 
     insert_match = re.search(r"\n## (Notes|See Also)\n", updated)
@@ -523,12 +523,12 @@ def run_analysis() -> str:
 
 def save_report(report: str) -> Path:
     INSIGHTS_DIR.mkdir(parents=True, exist_ok=True)
-    date_str = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
+    date_str = datetime.now(tz=UTC).strftime("%Y-%m-%d")
     out_path = INSIGHTS_DIR / f"{date_str}.md"
 
     if out_path.exists():
         existing = out_path.read_text(encoding="utf-8")
-        run_time = datetime.now(tz=timezone.utc).strftime("%H:%M UTC")
+        run_time = datetime.now(tz=UTC).strftime("%H:%M UTC")
         report = f"{existing}\n\n---\n\n# Run {run_time}\n\n{report}"
 
     out_path.write_text(f"# Insights — {date_str}\n\n{report}\n", encoding="utf-8")
@@ -556,9 +556,7 @@ def extract_and_write_commands(report: str) -> list[str]:
                 if content.startswith("---") and "name:" in content:
                     for cl in content_lines:
                         if cl.strip().startswith("name:"):
-                            name = (
-                                cl.split(":", 1)[1].strip().strip('"').replace(" ", "_")
-                            )
+                            name = cl.split(":", 1)[1].strip().strip('"').replace(" ", "_")
                             filename = f"{name}.md"
                             cmd_path = COMMANDS_DIR / filename
                             cmd_path.write_text(content + "\n", encoding="utf-8")
@@ -595,7 +593,7 @@ def run_cron() -> None:
         "report": str(out_path),
         "commands_created": created_commands,
         "sessions_synced": synced,
-        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        "timestamp": datetime.now(tz=UTC).isoformat(),
     }
     summary_path = INSIGHTS_DIR / "latest.json"
     summary_path.parent.mkdir(parents=True, exist_ok=True)

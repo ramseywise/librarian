@@ -36,10 +36,10 @@ key_output: ~
 - **Session ID**: 86073127-b17c-440f-96da-d5d3b0cf5920
 
 ## Recent prompts
--  i still see 70 files with billy mentioned that's insane and also did i remove the billy for mcp-backend? let's really remove all places except under mcp server please
-- yes exactly hcange to view invoice and remove prompts mention of billy - theres tons of terraform files and everything that mention billy and it ONLY should if in relation to mcp server
+-  i still see 70 files with product-a mentioned that's insane and also did i remove the product-a for mcp-backend? let's really remove all places except under mcp server please
+- yes exactly hcange to view invoice and remove prompts mention of product-a - theres tons of terraform files and everything that mention product-a and it ONLY should if in relation to mcp server
 -  the remaining 35 ref in documentation needs to be removed unless related to mcp server
-- 
+-
 
 
 

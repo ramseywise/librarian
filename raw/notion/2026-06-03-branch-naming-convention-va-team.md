@@ -11,13 +11,13 @@ As the Virtual Assistant team grows across multiple repos, inconsistent branch n
 
 - **Traceability** — every branch is instantly linked to a Linear ticket
 - **Clarity** — the type prefix tells you the nature of the change before opening a PR (`feat` vs `fix` vs `infra` are very different scopes of review)
-- **Consistency** — onboarding is faster when rules are the same across `va-agents` and `galactus`
+- **Consistency** — onboarding is faster when rules are the same across `va-agents` and `project-g`
 
 ## Repositories
 
-- `billy-webapp` — Frontend
+- `product-a-webapp` — Frontend
 - `va-agents` — Backend / AI agents
-- `galactus` — Data science / Eval pipeline
+- `project-g` — Data science / Eval pipeline
 
 ## Format
 
@@ -57,9 +57,9 @@ hotfix-short-description
 
 Use when: the bug actively blocks users (payment failure, crash, data loss), no open feature branch can absorb it, and the fix must ship without waiting for the normal cycle. Must be merged back into `main` to avoid being overwritten by the next release.
 
-## `galactus` — Data science / Eval pipeline
+## `project-g` — Data science / Eval pipeline
 
-Evaluation, experimentation, and enablement repo for the VA team. Ingests data from Billy/Intercom, runs multi-layer LLM evaluations, hosts agent prototypes (LangGraph, Google ADK, RAG).
+Evaluation, experimentation, and enablement repo for the VA team. Ingests data from product-a/Intercom, runs multi-layer LLM evaluations, hosts agent prototypes (LangGraph, Google ADK, RAG).
 
 | Type | When to use | Example |
 |---|---|---|

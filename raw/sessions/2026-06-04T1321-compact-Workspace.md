@@ -38,9 +38,9 @@ no-git
 - **Session ID**: e7adef42-3989-4530-af7c-e23912753ce8
 
 ## Recent prompts
--  how would you compare @chat-agent/src/agentic_rag to @galactus/src/support_agents/hc_adk?
-- i see yes you are right.. but actual the hc_lg is the one with the corrective rag no? how does this compare to agent-rag of the va-agents/agents/hca? i want to have a clear picture of differences and where gaps with galactus/support_agents can be improved
-- lets execute these changes to galactus to bring it up to the quality of chat-agent production thanks
+-  how would you compare @chat-agent/src/agentic_rag to @project-g/src/support_agents/hc_adk?
+- i see yes you are right.. but actual the hc_lg is the one with the corrective rag no? how does this compare to agent-rag of the va-agents/agents/hca? i want to have a clear picture of differences and where gaps with project-g/support_agents can be improved
+- lets execute these changes to project-g to bring it up to the quality of chat-agent production thanks
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

@@ -15,7 +15,7 @@ uc_id: UC-03
 
 ## Problem
 
-Knowledge at Shine/sevdesk is fragmented across Confluence, Google Drive, internal back-office systems, market-specific wikis, and agent tribal knowledge. Agents handling second/third-level tickets must search across multiple sources. Problem gets worse during the product migration as agents must simultaneously handle legacy and new product knowledge.
+Knowledge at client-a/vendor-a is fragmented across Confluence, Google Drive, internal back-office systems, market-specific wikis, and agent tribal knowledge. Agents handling second/third-level tickets must search across multiple sources. Problem gets worse during the product migration as agents must simultaneously handle legacy and new product knowledge.
 
 ## Solution
 
@@ -24,7 +24,7 @@ Build a **Unified Knowledge Layer** — a single natural language interface agen
 ## Core Architecture
 
 1. **Ingestion**: Index content from Confluence, Google Drive, internal docs, and other sources
-2. **Vector search**: Chunked + embedded documents in vector DB (OpenSearch on AWS — already used in RAPTOR)
+2. **Vector search**: Chunked + embedded documents in vector DB (OpenSearch on AWS — already used in rag-v1)
 3. **Retrieval**: Hybrid search (keyword + semantic) + cross-encoder reranking
 4. **LLM response generation**: Claude Haiku (security-approved)
 5. **Interface**: Chat-style UI (Intercom app panel, internal tool, or Slack bot)
@@ -33,13 +33,13 @@ Build a **Unified Knowledge Layer** — a single natural language interface agen
 Same knowledge base, market-specific retrieval filters. German agents get DE-regulations context; French agents get FR-specific context.
 
 ## MVP Scope
-- Focus: 1–2 products (Shine Banking FR or sevdesk DE)
+- Focus: 1–2 products (client-a Banking FR or vendor-a DE)
 - Content: product knowledge + key process documentation
 - Success metric: reduction in time-to-answer for second-level tickets + agent satisfaction
 
 ## Technical Considerations
 
-From RAPTOR learnings:
+From rag-v1 learnings:
 - Best chunking: Recursive (score 0.88)
 - Best retrieval: Hybrid + Cross-encoder reranker (68% hit rate)
 - Vector DB: OpenSearch on AWS
@@ -56,5 +56,5 @@ Rouven's (Head of Global CS Ops) #1 priority. Migration-safe and cross-market by
 
 - Which knowledge sources for MVP? (Confluence, Google Drive, which back-office docs?)
 - Auth mechanisms / access rights per source — who approves?
-- Which market/product as MVP? (Shine Banking FR or sevdesk DE?)
+- Which market/product as MVP? (client-a Banking FR or vendor-a DE?)
 - Interface: Intercom App Panel, Slack Bot, or internal tool?

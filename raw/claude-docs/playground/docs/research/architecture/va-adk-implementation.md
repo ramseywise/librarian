@@ -85,7 +85,7 @@ Keep agents fully self-contained (no knowledge of gateway types). Gateway handle
 Each domain sub-agent is a pure ADK `Agent`:
 - `output_schema=AssistantResponse` — forces structured JSON output
 - `output_key="response"` — ADK stores the result in session state under this key
-- `MCPToolset(...)` — connects to the Billy/Clara MCP server over SSE, filtered to the domain's tools
+- `MCPToolset(...)` — connects to the product-a/corpus-a MCP server over SSE, filtered to the domain's tools
 - `THINKING_CONFIG` — enables Gemini extended thinking for tool-use reasoning
 - `report_out_of_domain()` — custom function that marks the agent as "tried" and returns control to the router
 

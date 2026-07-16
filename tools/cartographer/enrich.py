@@ -9,6 +9,7 @@ Usage:
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 from pathlib import Path
@@ -33,9 +34,20 @@ _MODEL_PRICING: dict[str, tuple[float, float, float, float]] = {
 _DEFAULT_PRICING = _MODEL_PRICING["claude-sonnet-4-6"]
 
 _WORK_TYPES = ["debug", "feature", "refactor", "review", "planning", "research", "config", "chat"]
-_OUTPUT_TYPES = ["pr", "plan_doc", "code_change", "decision", "wiki_page", "analysis", "config_change", "none"]
+_OUTPUT_TYPES = [
+    "pr",
+    "plan_doc",
+    "code_change",
+    "decision",
+    "wiki_page",
+    "analysis",
+    "config_change",
+    "none",
+]
 
-_CLASSIFY_SYSTEM = "You classify Claude Code sessions. Respond with valid JSON only, no explanation."
+_CLASSIFY_SYSTEM = (
+    "You classify Claude Code sessions. Respond with valid JSON only, no explanation."
+)
 _CLASSIFY_PROMPT = """\
 Classify this Claude Code session.
 
@@ -87,10 +99,8 @@ def _build_meta_index(meta_dir: Path) -> dict[str, dict]:
     if not meta_dir.exists():
         return index
     for p in meta_dir.glob("*.json"):
-        try:
+        with contextlib.suppress(Exception):
             index[p.stem] = json.loads(p.read_text(encoding="utf-8"))
-        except Exception:
-            pass
     return index
 
 
@@ -138,6 +148,7 @@ def _find_transcript(session_id: str) -> Path | None:
 
 def _extract_user_messages(transcript_path: Path, max_msgs: int = 8) -> list[str]:
     import re
+
     messages: list[str] = []
     for raw in transcript_path.read_text(errors="replace").splitlines():
         if not raw.strip():
@@ -150,7 +161,11 @@ def _extract_user_messages(transcript_path: Path, max_msgs: int = 8) -> list[str
             continue
         content = r.get("message", {}).get("content", "")
         text = (
-            " ".join(b.get("text", "") for b in content if isinstance(b, dict) and b.get("type") == "text")
+            " ".join(
+                b.get("text", "")
+                for b in content
+                if isinstance(b, dict) and b.get("type") == "text"
+            )
             if isinstance(content, list)
             else str(content)
         )
@@ -167,6 +182,7 @@ def _classify_session(
     api_key: str,
 ) -> dict[str, str] | None:
     import anthropic as _anthropic
+
     context = {
         "underlying_goal": (facet or {}).get("underlying_goal", "unknown"),
         "outcome": (facet or {}).get("outcome", "unknown"),

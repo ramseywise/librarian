@@ -19,7 +19,7 @@ structured JSON output and deterministic pass predicates.
 
 ```bash
 # Dataset pipeline — run once to build/refresh fixtures
-make va-eval-ingest       # ingest sevdesk CSV → sevdesk_tickets.json
+make va-eval-ingest       # ingest vendor-a CSV → vendor-a_tickets.json
 make va-eval-review       # LLM PII review → gdpr_findings.json
 make va-eval-pii-check    # verify PII coverage before committing fixtures
 
@@ -37,8 +37,8 @@ CONFIRM_EXPENSIVE_OPS=1 make eval-capability
 
 ## Dataset
 
-`tests/evalsuite/fixtures/sevdesk_tickets.json` — **278 fixtures**, German language,
-sourced from real sevdesk support tickets (CES-rated 1–7). Stratified sampling: ~40
+`tests/evalsuite/fixtures/vendor-a_tickets.json` — **278 fixtures**, German language,
+sourced from real vendor-a support tickets (CES-rated 1–7). Stratified sampling: ~40
 tickets per CES level.
 
 | CES | test_type | What it signals |
@@ -85,7 +85,7 @@ EvalTask(
     expected_answer="...",          # for message_quality grader
     ces_rating=3,                   # 1=easy, 7=frustrated
     test_type="capability",
-    source="sevdesk_raw",
+    source="vendor-a_raw",
     language="de",
 )
 

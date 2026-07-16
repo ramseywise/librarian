@@ -49,7 +49,7 @@ no-git
     ndcg@3: 0.2500
        p@5: 0.0500
        r@5: 0.2500
-    ndcg@5: 0.2500  
+    ndcg@5: 0.2500
 Aggregate scores (hc_lg, 8 annotated tasks):
        mrr: 0.500
 - ok lets turn feature crag flag off and fix adk gap then we can turn to coverage for rag

@@ -10,7 +10,7 @@ sources:
 
 # VA vs HCA Retrieval Evaluation
 
-Systematic comparison of production VA agent, production HCA (Bedrock-backed), and local RAG research baselines across 935 Danish Intercom support questions. Ground truth: ~24,000 real Danish Intercom conversations, URL-cited subset. Billy/Shine alias map applied (billy.dk/support/ → help.shine.co/da/articles/).
+Systematic comparison of production VA agent, production HCA (Bedrock-backed), and local RAG research baselines across 935 Danish Intercom support questions. Ground truth: ~24,000 real Danish Intercom conversations, URL-cited subset. [product]/[client] alias map applied ([product].dk/support/ → help.[client].co/da/articles/).
 
 **Evaluation date:** 2026-06-26. Dataset: n=754 (URL-cited subset of 935 questions).
 
@@ -60,7 +60,7 @@ VA scores higher on all five quality dimensions:
 |---|---|---|
 | Glossary pages ranking above help articles | ~130 | Scope KB to help articles only |
 | Articles missing from index | ~93 | Re-ingest 202 sources |
-| URL mapping gap (Billy → Shine migration) | ~35–40 | Expand alias map |
+| URL mapping gap ([product] → [client] migration) | ~35–40 | Expand alias map |
 | Ranking failure (article indexed but buried) | ~175–185 | Requires embedding model upgrade |
 
 **Fixing causes 1 + 2 recovers ~220 questions**, raising the achievable ceiling from ~40% to **~59% Hit@5 with zero model or agent change**.
@@ -141,9 +141,9 @@ This evaluation uses n=754 URL-cited questions as ground truth. A separate, cura
 - [[RAG Evaluation]]
 - [[RAG Retrieval Strategies]]
 - [[RAG Reranking]]
-- [[Galactus Eval Architecture]]
+- [[project-g Eval Architecture]]
 - [[LLM Grader Calibration Insights]]
 - [[VA Eval Harness]]
 - [[Agentic RAG — Advanced Patterns]]
-- [[Shine Knowledge Agent]]
+- [[[client] Knowledge Agent]]
 - [[CRAG Retry Logic]]

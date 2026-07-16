@@ -39,7 +39,7 @@ key_output: ~
 - what about langgraph-prompts?
 -  yes please
 -  idk what do you suggest? i think we did a smoke test no? how were the results?
--  oh ok wow so 335ms retrieval -> what took 6s? cold start? declarative pattern? and where do we see results of eval harness? oh i see we need to run it against the full data set and then where do we see the output/insights for tracking the experiment? ok what is structlog and how is it different to 
+-  oh ok wow so 335ms retrieval -> what took 6s? cold start? declarative pattern? and where do we see results of eval harness? oh i see we need to run it against the full data set and then where do we see the output/insights for tracking the experiment? ok what is structlog and how is it different to
 -  ok can you document as poc baseline somewhere i really want to explore why gemini flash takes so long and how to improve it should be made into a plan - is it bc of the 9 node graph? 2. ok so we have everything enabled is it langfuse or langsmith? and can we like store the results somewhere local t
 
 ## Gotchas

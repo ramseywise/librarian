@@ -5,7 +5,7 @@ source_url: https://docs.google.com/document/d/1PKJjT6-QB2Ij0IM2dTjaO40zLnxQ8s0L
 type: meeting_notes
 date: 2026-06-23
 participants: [Ramsey Wise, Shyamali Pawar]
-tags: [onboarding, va-agents, hca, typescript, python, evaluation, bedrock, langfuse, galactus]
+tags: [onboarding, va-agents, hca, typescript, python, evaluation, bedrock, langfuse, project-g]
 ---
 
 # Onboarding with Shyamali — 2026-06-23
@@ -18,7 +18,7 @@ Session 1 of Shyamali's onboarding. Covered VA and HCA repository structure, cur
 
 - Transition plan: Current VA is TypeScript/Google ADK (MVP). Future plan is Python agents as core logic, with TS repo as frontend/backend bridge.
 - Shyamali's focus: RAG evaluation and platform work (AWS/Go). Not responsible for VA agent code changes.
-- Communication: Use `#va-data-evaluation-galactus` Slack channel; postpone ticket creation until after onboarding week.
+- Communication: Use `#va-data-evaluation-project-g` Slack channel; postpone ticket creation until after onboarding week.
 
 ## Next Steps
 
@@ -26,7 +26,7 @@ Session 1 of Shyamali's onboarding. Covered VA and HCA repository structure, cur
 - [Shyamali] Request Langfuse access (contact Dan)
 - [Shyamali] Track all open questions daily; consolidate into running list
 - [Ramsey] Share guidance document with Shyamali
-- [Shyamali] Notify Dan via `#va-data-evaluation-galactus` that ticket creation is postponed until post-onboarding
+- [Shyamali] Notify Dan via `#va-data-evaluation-project-g` that ticket creation is postponed until post-onboarding
 - [Ramsey] Add Shyamali to the Slack channel
 
 ## Architecture Overview
@@ -47,17 +47,17 @@ Session 1 of Shyamali's onboarding. Covered VA and HCA repository structure, cur
 - Sebastian blocked HCA from prod until proper evaluation is done
 
 ## Performance Issues
-- VA hit rate has a ceiling due to Bedrock ingestion pipeline issues and bad parsing of Billy pages
+- VA hit rate has a ceiling due to Bedrock ingestion pipeline issues and bad parsing of product-a pages
 - False positives: VA retrieves Billipedia articles (non-support)
 - HCA has no re-ranker and is discarding retrieval results
-- Historical Intercom data uses Billy DK URLs, not the Shine Intercom URLs → evaluation mapping needed
+- Historical Intercom data uses product-a DK URLs, not the client-a Intercom URLs → evaluation mapping needed
 
 ## Evaluation Approach
 - Two data sets: Bookkeeping Hero (structured tabular) and Intercom data
-- Billy DK → Shine.co URL mapping being compiled by Ramsey (human-verified by Anders)
+- product-a DK → client-a.co URL mapping being compiled by Ramsey (human-verified by Anders)
 - Ground truth: URL-level grounding set; Ramsey building updated version with correct mappings
 - Longfuse: used for datasets + experiments; Jeremy wiring it for online evaluation
-- Galactus: offline evaluation pipeline → HTML eval reports (temporary dashboard substitute)
+- project-g: offline evaluation pipeline → HTML eval reports (temporary dashboard substitute)
 
 ## Team Contacts
 - **Daniel Tadros**: VA/HCA backend + staging access

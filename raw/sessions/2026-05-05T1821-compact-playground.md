@@ -43,9 +43,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    - User encountered an ImportError about missing pyarrow/fastparquet when trying to run 01_data_prep.ipyn
-- 
-            
-            
+-
+
+
 - it looks like the eda viz were made from old col names and not the exported ones - can ew correct this and check if any thing is missing from the analysis
 
 ## Gotchas

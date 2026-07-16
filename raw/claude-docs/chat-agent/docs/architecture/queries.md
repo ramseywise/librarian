@@ -1,14 +1,14 @@
-● Exactly. The embeddings live in PostgreSQL now — the vector_store_data_gemini/ folder (.npz 
+● Exactly. The embeddings live in PostgreSQL now — the vector_store_data_gemini/ folder (.npz
   and documents.json) is no longer used at all. You can delete it safely.
-                                                                                              
-> how to do a query for vector db in pg admin?                                                
-                                                                                              
-● In pgAdmin's Query Tool on the agentic_rag database, run:                                   
-                                         
-  SELECT id, metadata->>'category' AS category, metadata->>'title' AS title, score            
+
+> how to do a query for vector db in pg admin?
+
+● In pgAdmin's Query Tool on the agentic_rag database, run:
+
+  SELECT id, metadata->>'category' AS category, metadata->>'title' AS title, score
   FROM (
-      SELECT id, metadata, 1 - (embedding <=> (SELECT embedding FROM documents LIMIT 1)) AS   
-  score                                                     
+      SELECT id, metadata, 1 - (embedding <=> (SELECT embedding FROM documents LIMIT 1)) AS
+  score
       FROM documents
   ) sub
   ORDER BY score DESC

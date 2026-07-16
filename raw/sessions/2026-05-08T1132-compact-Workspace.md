@@ -38,11 +38,11 @@ no-git
 - **Session ID**: b0f440b5-068e-48ec-a966-d736b58b2fa8
 
 ## Recent prompts
-- 
-            
-            
-- quick question bc i just want to test the 3 va models against the sevdesk data we have - we dont actually need the mcp server - can we do that somehow in isolation
-- so i want to use the clara data and duckdb to test va-support-rag vs va-langgraph and va-google-adk
+-
+
+
+- quick question bc i just want to test the 3 va models against the vendor-a data we have - we dont actually need the mcp server - can we do that somehow in isolation
+- so i want to use the corpus-a data and duckdb to test va-support-rag vs va-langgraph and va-google-adk
 - Creating virtual environment at: .venv
   × Failed to build `va-eval-base @ file:///Users/ramsey.wise/Workspace/playground/va-eval-base`
   ├─▶ The build backend returned an error

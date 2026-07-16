@@ -10,9 +10,17 @@ WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
 DOMAIN_TAG_SET = {
-    "langgraph", "rag", "adk", "mcp", "memory",
-    "eval", "infra", "deep-agents",
-    "patterns", "meta", "projects",
+    "langgraph",
+    "rag",
+    "adk",
+    "mcp",
+    "memory",
+    "eval",
+    "infra",
+    "deep-agents",
+    "patterns",
+    "meta",
+    "projects",
 }
 
 
@@ -43,21 +51,23 @@ def parse_wiki() -> dict:
         domain = [md_file.parent.name]
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
 
-        nodes.append({
-            "id": page_id,
-            "type": "wikiNode",
-            "data": {
-                "title": title,
-                "tags": tags,
-                "domain": domain,
-                "typeTag": type_tag,
-                "summary": post.get("summary") or "",
-                "updated": str(post.get("updated") or ""),
-                "path": str(md_file.relative_to(WIKI_DIR)),
-                "dimmed": False,
-            },
-            "position": {"x": 0, "y": 0},
-        })
+        nodes.append(
+            {
+                "id": page_id,
+                "type": "wikiNode",
+                "data": {
+                    "title": title,
+                    "tags": tags,
+                    "domain": domain,
+                    "typeTag": type_tag,
+                    "summary": post.get("summary") or "",
+                    "updated": str(post.get("updated") or ""),
+                    "path": str(md_file.relative_to(WIKI_DIR)),
+                    "dimmed": False,
+                },
+                "position": {"x": 0, "y": 0},
+            }
+        )
 
     node_ids = {n["id"] for n in nodes}
 
@@ -77,12 +87,14 @@ def parse_wiki() -> dict:
             if key in seen_edges:
                 continue
             seen_edges.add(key)
-            edges.append({
-                "id": f"wl:{source_id}->{target_id}",
-                "source": source_id,
-                "target": target_id,
-                "data": {"edgeType": "wikilink"},
-            })
+            edges.append(
+                {
+                    "id": f"wl:{source_id}->{target_id}",
+                    "source": source_id,
+                    "target": target_id,
+                    "data": {"edgeType": "wikilink"},
+                }
+            )
 
     # Tag-shared edges: cross-domain pages sharing ≥1 frontmatter domain tag.
     # Skip same-directory pairs — intra-domain proximity is already captured by UMAP clustering.
@@ -100,11 +112,13 @@ def parse_wiki() -> dict:
                 continue
             shared = tag_map.get(a, set()) & tag_map.get(b, set())
             if len(shared) >= 1:
-                edges.append({
-                    "id": f"ts:{a}->{b}",
-                    "source": a,
-                    "target": b,
-                    "data": {"edgeType": "tag-shared", "sharedTags": list(shared)},
-                })
+                edges.append(
+                    {
+                        "id": f"ts:{a}->{b}",
+                        "source": a,
+                        "target": b,
+                        "data": {"edgeType": "tag-shared", "sharedTags": list(shared)},
+                    }
+                )
 
     return {"nodes": nodes, "edges": edges}

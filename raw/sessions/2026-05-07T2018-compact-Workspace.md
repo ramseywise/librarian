@@ -39,10 +39,10 @@ no-git
 
 ## Recent prompts
 -  can you run this skill to get insights report from claude usage - i'm trying to think about what skills and hooks we could add to the claude environment here
-- yes please add any .claude/skills and hooks at root of galactus where appropriate thanks
+- yes please add any .claude/skills and hooks at root of project-g where appropriate thanks
 - hmm idk about that does the hook for like linting make sense if i can just run a make command.. i mean more like what we created. commands for eval pipelines and report templates and metric calculations.. we did a lot of investigating in our last conversations that i would like to be able to creat t
--  are there any graders from @playground that are not currently included in @galactus that would be useful?
--  ok lets add the high value graders to @galactus/evals/graders.. what about the metrics? also next steps for us are the harnes for capability and regression tests - this basically configures our eval sets for testing and later get confged as pytest. what would you suggest is helpful to consider?
+-  are there any graders from @playground that are not currently included in @project-g that would be useful?
+-  ok lets add the high value graders to @project-g/evals/graders.. what about the metrics? also next steps for us are the harnes for capability and regression tests - this basically configures our eval sets for testing and later get confged as pytest. what would you suggest is helpful to consider?
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

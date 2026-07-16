@@ -110,9 +110,9 @@ Both are required. Neither alone is sufficient.
 
 ---
 
-## Connection to [[Shine Knowledge Agent]]
+## Connection to [[[client] Knowledge Agent]]
 
-The Shine knowledge agent's improvement over time depends entirely on a functioning learning loop. Without it:
+The [client] knowledge agent's improvement over time depends entirely on a functioning learning loop. Without it:
 - The system doesn't know which questions it's failing
 - Documentation gaps remain undetected until they become user complaints
 - The ≥60% self-service resolution target cannot be improved past its initial value
@@ -122,8 +122,8 @@ The learning loop is what makes the 60% target a floor, not a ceiling.
 ---
 
 ## See Also
-- [[Shine Copilot Architecture]]
-- [[Shine Knowledge Agent]]
+- [[[client] Copilot Architecture]]
+- [[[client] Knowledge Agent]]
 - [[RAG Evaluation]]
 - [[HITL Annotation Pipeline]]
 - [[Evaluation & Improvement Project (VIR)]]

@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-07
 session_id: 83bb4b48-4f65-425c-9119-1d0349acda37
 prompts: 3
@@ -8,7 +8,7 @@ total_tokens: 34217
 cache_read_tokens: 1981264
 ---
 
-# Claude Code Session — 2026-06-07 (galactus)
+# Claude Code Session — 2026-06-07 (project-g)
 
 **First prompt:** we have a bunch of capabilities for the agent creator i think buried in docs or skills.. should it go actually here?
 

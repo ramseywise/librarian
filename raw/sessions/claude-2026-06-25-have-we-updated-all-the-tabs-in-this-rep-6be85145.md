@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-25
 session_id: 6be85145-b6c3-4247-bbad-4ba6397f85f4
 prompts: 31
@@ -8,7 +8,7 @@ total_tokens: 612368
 cache_read_tokens: 85570202
 ---
 
-# Claude Code Session — 2026-06-25 (galactus)
+# Claude Code Session — 2026-06-25 (project-g)
 
 **First prompt:** have we updated all the tabs in this report with data from our last run that we provide results in the @data/datasets/va-hca-retrieval-findings.md  i think this is now updated.. but have we updated all the tabs in this report? and can we iterate on improving 1. clarity of communication for stakehold
 

@@ -27,7 +27,7 @@ work_type: config
 - is there any sensitive data in @playground?
 - it looks like we have two infra folders at root, can we consolidate and chuck waht we don't need or maybe make a readme for infra capabilities?
 - maybe a quick dff and then delete
-- does the current infrastructure support what we are doing in @va-google-adk and @va-langgraph? or what is still needed from ak-agent-pocs to put in infra/interfaces, eg mcp, a2ui, agent_gateway, billy
+- does the current infrastructure support what we are doing in @va-google-adk and @va-langgraph? or what is still needed from ak-agent-pocs to put in infra/interfaces, eg mcp, a2ui, agent_gateway, product-a
 - see also @.claude/docs/plans as references can we make a plan  for organizing infra containers and tf for va_agents as you've outlined here? we want to containerize adk/langgraph runners and then stre
 
 ## Stats

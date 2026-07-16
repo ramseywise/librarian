@@ -166,7 +166,7 @@ LangFuse must be optional — `LANGFUSE_ENABLED=true` activates it. structlog as
 
 ---
 
-## Production benchmarks (from RAPTOR v1 — Danish market)
+## Production benchmarks (from rag-v1 v1 — Danish market)
 
 | Strategy | Hit Rate | Precision@5 |
 |---|---|---|
@@ -177,7 +177,7 @@ LangFuse must be optional — `LANGFUSE_ENABLED=true` activates it. structlog as
 
 Baseline (v1) hallucination rate was 48% — root cause was corpus gaps, not the model.
 
-**Response style finding:** RAPTOR suggestions were ignored by human agents despite correct content
+**Response style finding:** rag-v1 suggestions were ignored by human agents despite correct content
 because they were 3× too long with hedging language. Generation prompts must enforce direct,
 actionable language with max length configured.
 

@@ -186,9 +186,7 @@ def build_merge_prompt(
             f"**Project context** (use for connecting findings to active work):\n{project_context}"
         )
 
-    parts.append(
-        "The following are draft notes from sequential chunks of the same document.\n"
-    )
+    parts.append("The following are draft notes from sequential chunks of the same document.\n")
     parts.append(joined)
     parts.append("\n---")
     parts.append(_MERGE_INSTRUCTIONS)

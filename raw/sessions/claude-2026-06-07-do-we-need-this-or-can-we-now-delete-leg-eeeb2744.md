@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-07
 session_id: eeeb2744-91ee-4103-9ad7-e765fdedeff3
 prompts: 4
@@ -8,7 +8,7 @@ total_tokens: 35552
 cache_read_tokens: 2704338
 ---
 
-# Claude Code Session — 2026-06-07 (galactus)
+# Claude Code Session — 2026-06-07 (project-g)
 
 **First prompt:** do we need this or can we now delete legacy folder?
 

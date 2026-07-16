@@ -18,7 +18,7 @@ cache_read_tokens: 366520923
 - is there anything from puffin that we should add to @ai-project-template for development before vibe coding? i really like this conciousness development from like genesis to dream it's so beautiful. c
 - awesome y lets prepare the plan to fix these things before we test it out
 - ok so are we ready to run /genesis on github repo from the puffin is this the starting point?or wait do run this over all repos or inside each one?
-- oh i see user seed material is like supposed to be created first.. so like we have a lot of this stuff in librarian sessions - i usually dont like memory but have a lot of configs and conversations.. 
+- oh i see user seed material is like supposed to be created first.. so like we have a lot of this stuff in librarian sessions - i usually dont like memory but have a lot of configs and conversations..
 
 ## Stats
 

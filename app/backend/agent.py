@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import os
 import re
+from collections.abc import AsyncGenerator
 from pathlib import Path
-from typing import Any, AsyncGenerator
+from typing import Any
 
 import frontmatter
 from google import genai
@@ -82,39 +83,41 @@ def _read_page(page_id: str) -> str:
     return f"# {title}\n\nSummary: {summary}\n\n{post.content}"
 
 
-_TOOLS = types.Tool(function_declarations=[
-    types.FunctionDeclaration(
-        name="search_wiki",
-        description=(
-            "Search wiki pages for content matching the query. "
-            "Returns page IDs, summaries, and excerpts for the top matches."
+_TOOLS = types.Tool(
+    function_declarations=[
+        types.FunctionDeclaration(
+            name="search_wiki",
+            description=(
+                "Search wiki pages for content matching the query. "
+                "Returns page IDs, summaries, and excerpts for the top matches."
+            ),
+            parameters=types.Schema(
+                type=types.Type.OBJECT,
+                properties={
+                    "query": types.Schema(
+                        type=types.Type.STRING,
+                        description="Search query using key terms from the question",
+                    )
+                },
+                required=["query"],
+            ),
         ),
-        parameters=types.Schema(
-            type=types.Type.OBJECT,
-            properties={
-                "query": types.Schema(
-                    type=types.Type.STRING,
-                    description="Search query using key terms from the question",
-                )
-            },
-            required=["query"],
+        types.FunctionDeclaration(
+            name="read_page",
+            description="Read the full content of a wiki page by its ID (kebab-case filename without .md).",
+            parameters=types.Schema(
+                type=types.Type.OBJECT,
+                properties={
+                    "page_id": types.Schema(
+                        type=types.Type.STRING,
+                        description="Page ID as shown in search results, e.g. 'langgraph-crag-pipeline'",
+                    )
+                },
+                required=["page_id"],
+            ),
         ),
-    ),
-    types.FunctionDeclaration(
-        name="read_page",
-        description="Read the full content of a wiki page by its ID (kebab-case filename without .md).",
-        parameters=types.Schema(
-            type=types.Type.OBJECT,
-            properties={
-                "page_id": types.Schema(
-                    type=types.Type.STRING,
-                    description="Page ID as shown in search results, e.g. 'langgraph-crag-pipeline'",
-                )
-            },
-            required=["page_id"],
-        ),
-    ),
-])
+    ]
+)
 
 _SYSTEM = """You are a discerning research analyst for a personal agent engineering knowledge base.
 Your job is not to recite documentation — it is to weigh evidence, surface trade-offs, flag gaps,
@@ -153,9 +156,7 @@ _CONFIG = types.GenerateContentConfig(
 
 async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
     client = _get_client()
-    contents: list[types.Content] = [
-        types.Content(role="user", parts=[types.Part(text=query)])
-    ]
+    contents: list[types.Content] = [types.Content(role="user", parts=[types.Part(text=query)])]
     referenced_pages: set[str] = set()
 
     try:
@@ -173,7 +174,9 @@ async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
                 if candidate and candidate.content and candidate.content.parts
                 else []
             )
-            function_calls = [p.function_call for p in parts if p.function_call and p.function_call.name]
+            function_calls = [
+                p.function_call for p in parts if p.function_call and p.function_call.name
+            ]
 
             if not function_calls:
                 # Final answer turn — stream it for real UX
@@ -205,12 +208,14 @@ async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
                 else:
                     result = "Unknown tool."
 
-                response_parts.append(types.Part(
-                    function_response=types.FunctionResponse(
-                        name=fc.name,
-                        response={"result": result},
+                response_parts.append(
+                    types.Part(
+                        function_response=types.FunctionResponse(
+                            name=fc.name,
+                            response={"result": result},
+                        )
                     )
-                ))
+                )
 
             contents.append(types.Content(role="user", parts=response_parts))
 

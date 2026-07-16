@@ -11,13 +11,13 @@ Usage:
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import structlog
 
-from tools.cartographer.enrich import _compute_cost, _get_pricing
+from tools.cartographer.enrich import _compute_cost
 
 log = structlog.get_logger(__name__)
 
@@ -28,9 +28,7 @@ log = structlog.get_logger(__name__)
 
 
 def _checkbox(items: list[str]) -> str:
-    return (
-        "\n".join(f"- [ ] {item}" for item in items) if items else "- [ ] None detected"
-    )
+    return "\n".join(f"- [ ] {item}" for item in items) if items else "- [ ] None detected"
 
 
 def _friction_signals(session: dict[str, Any]) -> str:
@@ -219,16 +217,14 @@ def compare_sources(
     so you can validate whether session notes cover the important signals.
     """
     # Index by date
-    jsonl_by_date: dict[str, dict[str, Any]] = {
-        s["start_time"][:10]: s for s in sessions
-    }
+    jsonl_by_date: dict[str, dict[str, Any]] = {s["start_time"][:10]: s for s in sessions}
     notes_by_date: dict[str, dict[str, Any]] = {n["session_id"][:10]: n for n in notes}
 
     all_dates = sorted(set(jsonl_by_date) | set(notes_by_date))
 
     lines: list[str] = [
         "# Source Comparison — JSONL vs Session Notes\n",
-        f"Generated: {datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}\n",
+        f"Generated: {datetime.now(tz=UTC).strftime('%Y-%m-%d %H:%M UTC')}\n",
         f"JSONL sessions: {len(sessions)} | Notes: {len(notes)} | Matched dates: {len(set(jsonl_by_date) & set(notes_by_date))}\n",
         "---\n",
     ]

@@ -1,6 +1,6 @@
 # ADK Overview & POC Architecture
 
-**Source:** Google Drive (shared by Dan, shine.co)
+**Source:** Google Drive (shared by Dan, client-a.co)
 **File ID:** 1iRq0dDS6ZuPbSa520PYkF0ss0giPCqanqz90t664Js0
 **Created:** 2026-04-15 | **Modified:** 2026-04-23
 **Type:** Google Slides presentation (13 slides)
@@ -107,7 +107,7 @@ Domain: [domain layer]
 Tools        Transport    Data     Client
 FastMCP  →   FastAPI   →  DB       TypeScript
              FastAPI      RAG      React/Vite
-             a2ui          
+             a2ui
 Agent: FastAPI
 Domain: [domain layer]
 ```

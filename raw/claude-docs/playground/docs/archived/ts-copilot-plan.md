@@ -149,9 +149,9 @@ These hooks should be added as new entries in the `PostToolUse` Write|Edit match
 
 ### Tranche A: Bills (Expenses) — Add First
 
-Billy.dk bills are the supplier-side mirror of invoices. These unlock the `expenseManagement` quick action.
+product-a.dk bills are the supplier-side mirror of invoices. These unlock the `expenseManagement` quick action.
 
-| Tool | Billy.dk API | Notes |
+| Tool | product-a.dk API | Notes |
 |---|---|---|
 | `list_bills` | `GET /v2/bills` | Filter by state, date, supplier |
 | `get_bill` | `GET /v2/bills/{id}` | Lines + supplier sideloaded |
@@ -174,7 +174,7 @@ Only proceed to Tranche B if response quality is acceptable.
 
 #### 1b. Transactions / Bank Reconciliation (Read-Only)
 
-| Tool | Billy.dk API | Notes |
+| Tool | product-a.dk API | Notes |
 |---|---|---|
 | `list_transactions` | `GET /v2/bankTransactions` | Filter by account, date, state |
 | `get_unmatched_transactions` | `GET /v2/bankTransactions?isMatched=false` | Primary reconciliation surface |
@@ -185,7 +185,7 @@ Agent guides to Transactions page (`navButtons: route: "transactions"`), does no
 
 #### 1c. VAT Declarations (Read-Only)
 
-| Tool | Billy.dk API | Notes |
+| Tool | product-a.dk API | Notes |
 |---|---|---|
 | `list_vat_declarations` | `GET /v2/vatDeclarations` | Period, state, amounts due |
 | `get_vat_declaration` | `GET /v2/vatDeclarations/{id}` | Full breakdown by VAT type |
@@ -194,7 +194,7 @@ Agent guides to Transactions page (`navButtons: route: "transactions"`), does no
 
 #### 1d. Financial Reports (Read-Only)
 
-| Tool | Billy.dk API | Notes |
+| Tool | product-a.dk API | Notes |
 |---|---|---|
 | `get_profit_and_loss` | `GET /v2/reports/profitAndLoss` | Period + currency params |
 | `get_balance` | `GET /v2/reports/balance` | Balance sheet as of date |

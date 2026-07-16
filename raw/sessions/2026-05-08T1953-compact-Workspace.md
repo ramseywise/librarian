@@ -44,8 +44,8 @@ Summary:
 1. Primary Request and Intent:
    The session continued from a previous conversation focused on running 3 VA services (va-langgraph :8001,
 -  ok cool so we have our baseline - looks like it only did the quality runner but what about the heuristic stats? like in @workspace/playground/evals/reports/bkh we did eval_stats from eval runner to get a report nd then again through metrics that give the pass fail - but it doesnt look like we get t
--  that's weird both should be connected to va-support rag so if it returns source then all 3 should right? bkh results are stored as json, see @galactus/data/bkh/stats.. i also dont get why va-langgraph is better than support rag bc they should be very similar now? whats making it low performant? is 
-- ok yes lets clear up any billy, sevdesk, shine or clara references thank you these repos should be more of templated style.. btw this is the @playground/ts_google_adk performance - outshines everything.. so we need our agents to be at least this performant
+-  that's weird both should be connected to va-support rag so if it returns source then all 3 should right? bkh results are stored as json, see @project-g/data/bkh/stats.. i also dont get why va-langgraph is better than support rag bc they should be very similar now? whats making it low performant? is
+- ok yes lets clear up any product-a, vendor-a, client-a or corpus-a references thank you these repos should be more of templated style.. btw this is the @playground/ts_google_adk performance - outshines everything.. so we need our agents to be at least this performant
 - [Image: original 2002x1630, displayed at 2000x1628. Multiply coordinates by 1.00 to map to original image.]
 
 ## Gotchas

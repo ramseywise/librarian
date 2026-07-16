@@ -22,7 +22,7 @@ or verified before updating the Python plan.
 
 | Tool group | Python friction | Notes |
 |---|---|---|
-| Bills (3 tools) | Low | `create_bill` needs `defaultExpenseAccount` lookup — same pattern as `get_default_sales_account()` already in `billy_client.py` |
+| Bills (3 tools) | Low | `create_bill` needs `defaultExpenseAccount` lookup — same pattern as `get_default_sales_account()` already in `product-a_client.py` |
 | Transactions read-only (2) | None | Straight GET wrappers, identical to invoice read tools |
 | VAT read-only (2) | None | Same |
 | Financial reports (3) | None | Same |
@@ -83,7 +83,7 @@ Each sub-agent has `output_schema=AccountingOutput`. Root agent has `output_sche
 
 ```python
 # FastAPI endpoint sets before runner.run_async()
-set_billy_config(body.api_token, body.org_id)
+set_product-a_config(body.api_token, body.org_id)
 ```
 
 This works for single-agent because ADK runs tool calls in the same asyncio task (verified against
@@ -91,7 +91,7 @@ This works for single-agent because ADK runs tool calls in the same asyncio task
 are invisible to the child task.
 
 **Multi-agent hand-off almost certainly crosses a task boundary.** If the root agent's dispatch to
-a sub-agent uses `create_task()` internally, `get_billy_config()` returns `None` in the sub-agent's
+a sub-agent uses `create_task()` internally, `get_product-a_config()` returns `None` in the sub-agent's
 tools — silent runtime failure.
 
 ### Recommended resolution: session.state as primary auth channel for multi-agent
@@ -106,16 +106,16 @@ session = await session_service.create_session(
     user_id=body.user_id,
     session_id=body.session_id,
     state={
-        "billy_api_token": body.api_token,
-        "billy_org_id": body.org_id,
+        "product-a_api_token": body.api_token,
+        "product-a_org_id": body.org_id,
     },
 )
 
 # Tool functions — read via ToolContext (multi-agent safe)
 async def list_bills(tool_context: ToolContext) -> list[dict]:
-    token = tool_context.state["billy_api_token"]
-    org_id = tool_context.state["billy_org_id"]
-    cfg = BillyConfig(api_token=token, organization_id=org_id)
+    token = tool_context.state["product-a_api_token"]
+    org_id = tool_context.state["product-a_org_id"]
+    cfg = product-aConfig(api_token=token, organization_id=org_id)
     async with get_client(cfg) as client:
         ...
 ```

@@ -10,11 +10,11 @@ cache_read_tokens: 5691406
 
 # Claude Code Session — 2026-07-13 (INTENSO)
 
-**First prompt:** btw i think we do not have claude settings the same for here as in galactus/playground.. seems like i have to approve a lot of read and bash commands.. can we fix our setup to open github folder and everything we need is there or should we do this at the user/global level?
+**First prompt:** btw i think we do not have claude settings the same for here as in project-g/playground.. seems like i have to approve a lot of read and bash commands.. can we fix our setup to open github folder and everything we need is there or should we do this at the user/global level?
 
 ## Prompts (2 total)
 
-- btw i think we do not have claude settings the same for here as in galactus/playground.. seems like i have to approve a lot of read and bash commands.. can we fix our setup to open github folder and e
+- btw i think we do not have claude settings the same for here as in project-g/playground.. seems like i have to approve a lot of read and bash commands.. can we fix our setup to open github folder and e
 - ok but can we make instead inteso/gihut the root as global setting with project level for each folder inside?
 
 ## Stats

@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-25
 session_id: a9522055-a4eb-42b7-9ee8-b19b3b6a40e2
 prompts: 92
@@ -8,11 +8,11 @@ total_tokens: 1633471
 cache_read_tokens: 199779369
 ---
 
-# Claude Code Session — 2026-06-25 (galactus)
+# Claude Code Session — 2026-06-25 (project-g)
 
 **First prompt:** i think we can remove What the source-backed GT asks retrieval to find
 and Full-GT ingestion coverage from notebook 02
-actually this entire tab looks outdated please see rag ingestion part of this documented if anything looks stale or needs to be created to demonstrate what in the exec summary here 
+actually this entire tab looks outdated please see rag ingestion part of this documented if anything looks stale or needs to be created to demonstrate what in the exec summary here
 
 ## Prompts (92 total)
 
@@ -26,7 +26,7 @@ actually this entire tab looks outdated please see rag ingestion part of this do
 
 Summary:
 1. Primary Request and Intent:
-   The 
+   The
 
 ## Stats
 

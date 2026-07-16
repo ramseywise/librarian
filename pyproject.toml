@@ -77,8 +77,14 @@ line-length = 100
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "UP", "ANN", "B", "SIM"]
-ignore = ["ANN101", "ANN102"]
+select = ["E", "W", "F", "I", "N", "UP", "ANN", "B", "C4", "SIM", "RUF"]
+# E501: ruff-format owns line length; RUF001-003: typographic unicode in prose;
+# N803/N806: ML naming conventions (X, y, X_train)
+ignore = ["E501", "RUF001", "RUF002", "RUF003", "N803", "N806"]
+
+[tool.ruff.lint.per-file-ignores]
+# load_dotenv() must run before app modules import (they read env at import time)
+"app/backend/main.py" = ["E402"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

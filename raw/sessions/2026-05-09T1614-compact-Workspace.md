@@ -42,7 +42,7 @@ no-git
 - Okay. That sounds awesome. I have one... just one last thing, and that is under workspace self learning folder. There is a Google ADJ master class main -- Of the trees. -- that are building agents, including a financial analyst. This could be cool to integrate into the multi agents if we don't alrea
 -  ok great so we have 2 research files and 4 plans already included in claude - do we need to update/consolidate and review before we begin implementation
 - so we migrated the files but i dont think we have executed any changes so proball 4 plans are legit - but do we need to add anything else to research, plan or specs? and how will we implement plans order?
-- to clarify we only have KB API for billy if its for clara then remove mark as done. and sounds good lets implement
+- to clarify we only have KB API for product-a if its for corpus-a then remove mark as done. and sounds good lets implement
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

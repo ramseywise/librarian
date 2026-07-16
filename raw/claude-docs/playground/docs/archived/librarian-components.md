@@ -57,7 +57,7 @@ Spikes (investigate)
 Evaluate summarisation prompts for compaction.
 Evaluate voice integration providers for quality and latency when using skills.
 LangGraph vs ADK (vs Semantic Kernel) for the orchestration loop — state management, MCP support, observability out of the box
-Prefix/context caching behaviour in practice across ADK, LangGraph (and Semantic Kernel) 
+Prefix/context caching behaviour in practice across ADK, LangGraph (and Semantic Kernel)
 Voice agent session compatibility — can the same session store handle text and voice turn structures?
 
 Decisions (align)
@@ -77,14 +77,14 @@ Core behavior
 Capture, store, and format user/assistant messages and tool outputs into a coherent context window for each LLM call
 
 Scope
-Session storage, 
-context assembly, 
-basic compaction strategies, 
+Session storage,
+context assembly,
+basic compaction strategies,
 
 Excludes
-Long-term memory persistence, 
-Complex compaction strategies, 
-Cross-session retrieval, 
+Long-term memory persistence,
+Complex compaction strategies,
+Cross-session retrieval,
 User preference storage
 artefact reference injection (non MVP)
 
@@ -94,7 +94,7 @@ Agent maintains operational coherence across 5+ turns
 Token overflows handled via defined compaction policy without crashing
 
 Tasks (owned work)
-Define the short-term memory schema: 
+Define the short-term memory schema:
 {session_id, conversation_history[], tool_results[], agent_state, artefact_refs[], turn_count}
 Build storage layer (in-memory / Redis / SQL)
 Build context formatter — converts stored turns into gateway-ready payload

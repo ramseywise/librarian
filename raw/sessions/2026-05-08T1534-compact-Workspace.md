@@ -38,9 +38,9 @@ no-git
 - **Session ID**: b0f440b5-068e-48ec-a966-d736b58b2fa8
 
 ## Recent prompts
-- ok yeah cool it makes sense that routing fails here - leave it for now we will need to update after m igration. so langgraph and support rag look good? or is it possible to only add va-langgraph to galactus with the custom rag as subgraph? or is it calling the support rag? and yes we need to wire go
-- va-eval base is probably setup for this projecgt - but we want to align it with gold standard galactus/evals/graders/.. lets fix google-adk to call rag, clean up evals and any duplicate files across the three va clients so that we can test and get ready to migrate to galactus
-- are we saving results? how to interpre performance here 
+- ok yeah cool it makes sense that routing fails here - leave it for now we will need to update after m igration. so langgraph and support rag look good? or is it possible to only add va-langgraph to project-g with the custom rag as subgraph? or is it calling the support rag? and yes we need to wire go
+- va-eval base is probably setup for this projecgt - but we want to align it with gold standard project-g/evals/graders/.. lets fix google-adk to call rag, clean up evals and any duplicate files across the three va clients so that we can test and get ready to migrate to project-g
+- are we saving results? how to interpre performance here
 ================================================================================
 Eval Report: routing-20260508-125418
 Timestamp: 2026-05-08T10:57:26.458953+00:00

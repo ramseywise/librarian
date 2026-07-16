@@ -1,6 +1,6 @@
 # Langgraph_Yan — A Visual Guide to Stateful AI Agents
 
-**Source:** Google Drive (shared by Yan Zhang, yan.zhang@shine.co)
+**Source:** Google Drive (shared by Yan Zhang, yan.zhang@client-a.co)
 **File ID:** 1LrhkKGe4nyrtt9bgQlHtMcTWG_u3AkPTD4v-nARD0wo
 **Created:** 2026-04-21 | **Modified:** 2026-04-24
 **Type:** Google Slides presentation
@@ -9,7 +9,7 @@
 
 ## Part 1: Why — From Chains to Graphs
 
-Traditional AI pipelines are linear and single-pass. LangGraph replaces them with cyclic, stateful graphs — enabling loops, branching, self-correction, and collaboration. This is the primary reason sevDesk switched from LangChain to LangGraph to support agentic RAG.
+Traditional AI pipelines are linear and single-pass. LangGraph replaces them with cyclic, stateful graphs — enabling loops, branching, self-correction, and collaboration. This is the primary reason vendor-a switched from LangChain to LangGraph to support agentic RAG.
 
 **Pipelines — Traditional AI**
 - Sequential, predictable, single-pass

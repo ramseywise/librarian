@@ -43,11 +43,11 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user asked to organize the average and maximum turns visualization in the notebook to:
-   - Sort by 
-- 
-            
-            
--  so i added also regression and capability test sets at the end - but before we do that - could we run a sample through our graders in theory? we wont have any info on retrieval score - its more like we have a few likes we can turn into qa sets for regression test - but we need also to somehow have 
+   - Sort by
+-
+
+
+-  so i added also regression and capability test sets at the end - but before we do that - could we run a sample through our graders in theory? we wont have any info on retrieval score - its more like we have a few likes we can turn into qa sets for regression test - but we need also to somehow have
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

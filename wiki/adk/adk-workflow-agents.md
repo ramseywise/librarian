@@ -4,7 +4,7 @@ tags: [adk, pattern]
 summary: ADK's three deterministic workflow agents — Sequential, Parallel, and Loop — which provide control flow without LLM orchestration.
 updated: 2026-07-05
 sources:
-  - raw/claude-docs/galactus/.agents/skills/adk-cheatsheet/references/python.md
+  - raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/references/python.md
 ---
 
 # ADK Workflow Agents

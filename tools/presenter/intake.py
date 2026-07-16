@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from core.config.agent_settings import settings
 from rich.console import Console
 from rich.prompt import Confirm, Prompt
 
-from core.config.agent_settings import settings
 from tools.presenter.models import DeckIntake, ImageIntake
 
 console = Console()

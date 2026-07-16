@@ -6,7 +6,7 @@ updated: 2026-07-06
 sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/playground-docs/rag-agent-template-research.md
-  - raw/claude-docs/galactus/docs/rag/rrf.md
+  - raw/claude-docs/project-g/docs/rag/rrf.md
 ---
 
 # Reciprocal Rank Fusion (RRF)

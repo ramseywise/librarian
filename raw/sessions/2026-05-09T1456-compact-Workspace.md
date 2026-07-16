@@ -38,9 +38,9 @@ no-git
 - **Session ID**: de07e1be-266e-4c37-8981-9781b95dcdc5
 
 ## Recent prompts
-- 
-            
-            
+-
+
+
 -  Okay. Yeah. Great. Glad we're on the same page here. So what I've done is I've added a s r c folder and changed our agents to multiagents and added a folder for single agents. We know that VA staging is testing VA agents, which is TypeScript, Google ADK, and bedrock. So what we want to test in sing
 -  Okay. Very cool. That looks super awesome. Okay. One thing I want to say, though, is that we have repeating files across agents, which is kind of to be expected. Uh, but, for example, like, the call to bedrock is a tool that would be used under the sea... single agents no matter what agent is calli
 - No. I think you pretty much got the gist. I don't wanna have, like, a shared, but what I think should be shared between the orchestration agents is the tooling. Right? So if there's any client scripts, like knowledge bedrock or other tools that we're gonna add to, like, the... yeah. Those other tool

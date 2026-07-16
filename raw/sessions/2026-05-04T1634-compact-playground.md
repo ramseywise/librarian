@@ -43,9 +43,9 @@ Summary:
 1. Primary Request and Intent:
    The user requested two complementary tasks:
    a) Simplify the .env configuration to only include ANTHRO
-- 
-            
-            
+-
+
+
 -  i think we also need to switch antrhopic for google api key to the graders; and why structlog and not just logging? lets remove.. also in the nbk you did a subprocesses call with pip but actually we are using uv with toml for packages we need so that the nbk is reproducible - lets add that to the e
 -  do not commit please
 

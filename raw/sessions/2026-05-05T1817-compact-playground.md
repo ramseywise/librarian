@@ -41,9 +41,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    - User asked to validate whether their cols_to_keep column selection list is properly aligned with downs
-- 
-            
-            
+-
+
+
 -  ImportError: Unable to find a usable engine; tried using: 'pyarrow', 'fastparquet'.
 A suitable version of pyarrow or fastparquet is required for parquet support.
 Trying to import the above resulted in these errors:

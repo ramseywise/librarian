@@ -10,7 +10,7 @@
 
 **What changed during research:**
 
-The `mcp_servers/billy/app/tools/support_knowledge.py` implementation of `fetch_support_knowledge` turned out to be **real production AWS Bedrock code** — not a stub. It calls `bedrock-agent-runtime.retrieve()` with hybrid search (semantic + keyword) and Amazon Rerank v1, filters by 0.4 relevance threshold, and returns up to 4 deduplicated passages. It has a hardcoded Knowledge Base ID (`C36YGJVEQP`, eu-central-1).
+The `mcp_servers/product-a/app/tools/support_knowledge.py` implementation of `fetch_support_knowledge` turned out to be **real production AWS Bedrock code** — not a stub. It calls `bedrock-agent-runtime.retrieve()` with hybrid search (semantic + keyword) and Amazon Rerank v1, filters by 0.4 relevance threshold, and returns up to 4 deduplicated passages. It has a hardcoded Knowledge Base ID (`C36YGJVEQP`, eu-central-1).
 
 **The user's position:**
 - Bedrock Knowledge Base has never been used — no corpus loaded, no KB set up
@@ -441,7 +441,7 @@ START → planner → retriever → qa_policy → reranker → answer → END
 
 4. **Does the va-langgraph `support_subgraph` CRAG loop actually help vs single-pass?** The current support subgraph does up to 3 LLM-call iterations. If grader often says "sufficient" on attempt 1, the CRAG loop is a good design. If it frequently retries, the latency is high and the benefit should be verified by eval.
 
-5. **What does `fetch_support_knowledge` actually do?** It is called via MCP (`billy_mcp_server`). Whether it performs dense retrieval, BM25, or a simple keyword search determines how much value the `help-support-rag-agent` pipeline adds on top of it.
+5. **What does `fetch_support_knowledge` actually do?** It is called via MCP (`product-a_mcp_server`). Whether it performs dense retrieval, BM25, or a simple keyword search determines how much value the `help-support-rag-agent` pipeline adds on top of it.
 
 6. **Is cross-encoder reranking justified by eval data?** The current default is `passthrough`. If there is no eval showing reranking improves answer quality, enabling cross-encoder adds 150–300ms for unclear gain.
 
@@ -475,7 +475,7 @@ Given that:
 
 The recommended approach is to run both tracks in parallel within playground:
 
-### Track 1 — `mcp_servers/billy/` RAG tool (replaces Bedrock)
+### Track 1 — `mcp_servers/product-a/` RAG tool (replaces Bedrock)
 
 Replace `fetch_support_knowledge` in `app/tools/support_knowledge.py` with a thin wrapper around `src/rag/`:
 
@@ -489,11 +489,11 @@ MCP: fetch_support_knowledge(query)
   └─ returns List[SupportPassage]       # same shape as current Bedrock response
 ```
 
-The `support_subgraph` in va-langgraph sees no change — it still calls `fetch_support_knowledge` via MCP. The change is entirely inside billy MCP. No HITL, no confidence gates, no multi-node graph. Just retrieval.
+The `support_subgraph` in va-langgraph sees no change — it still calls `fetch_support_knowledge` via MCP. The change is entirely inside product-a MCP. No HITL, no confidence gates, no multi-node graph. Just retrieval.
 
 **What to delete from current code:** Drop boto3 dependency, remove bedrock-agent-runtime client, remove AWS credential handling. Replace with local vector store read.
 
-**Data ingestion:** Run `src/rag/preprocessing/` + `src/rag/ingestion/` offline to build the DuckDB index from Billy help docs. Index lives in `mcp_servers/billy/data/vectorstore/` (volume-mounted in docker-compose).
+**Data ingestion:** Run `src/rag/preprocessing/` + `src/rag/ingestion/` offline to build the DuckDB index from product-a help docs. Index lives in `mcp_servers/product-a/data/vectorstore/` (volume-mounted in docker-compose).
 
 **Latency impact:** Current Bedrock call has network round-trip to AWS (~100–200ms EU). Local DuckDB retrieval is 20–50ms. Net improvement.
 
@@ -525,8 +525,8 @@ Cleanup needed to align with playground conventions:
 
 ### Corpus status per track
 
-**Track 2 — sevdesk corpus (already exists)**
-`help-support-rag-agent` was built and evaluated against **sevdesk** help/support sources. The DuckDB index, ingestion pipeline, and eval test set are all sevdesk-based. This is what powers the existing eval results and what the confidence threshold defaults were (loosely) tuned against.
+**Track 2 — vendor-a corpus (already exists)**
+`help-support-rag-agent` was built and evaluated against **vendor-a** help/support sources. The DuckDB index, ingestion pipeline, and eval test set are all vendor-a-based. This is what powers the existing eval results and what the confidence threshold defaults were (loosely) tuned against.
 
 Track 2 is immediately runnable. The corpus and eval set migrate with the codebase.
 
@@ -534,24 +534,24 @@ Track 2 is immediately runnable. The corpus and eval set migrate with the codeba
 `fetch_support_knowledge` calls a Bedrock KB that has never been loaded. No help docs have been ingested. Track 1 is **blocked on corpus creation** — scraping or exporting help documentation is a prerequisite before the RAG tool can replace the Bedrock call meaningfully.
 
 **Sequencing implication:**
-- **Now:** Migrate `help-support-rag-agent` → `playground/va-support-rag/` (Track 2). Runs immediately on sevdesk corpus. Use for experimentation, confidence calibration, eval baseline.
-- **Later (when Billy docs are available):** Run the ingestion pipeline against Billy help content. Wire Track 1 (thin RAG tool in `mcp_servers/billy/`) against the Billy index. At that point, Track 2 can also be re-pointed to Billy for a fair comparison.
+- **Now:** Migrate `help-support-rag-agent` → `playground/va-support-rag/` (Track 2). Runs immediately on vendor-a corpus. Use for experimentation, confidence calibration, eval baseline.
+- **Later (when product-a docs are available):** Run the ingestion pipeline against product-a help content. Wire Track 1 (thin RAG tool in `mcp_servers/product-a/`) against the product-a index. At that point, Track 2 can also be re-pointed to product-a for a fair comparison.
 
-The sevdesk corpus serves a different purpose in this context: it is the **eval and calibration vehicle** — it tells us whether the confidence gating, cross-encoder reranking, and hybrid policy are worth keeping before we commit to building a Billy corpus around them.
+The vendor-a corpus serves a different purpose in this context: it is the **eval and calibration vehicle** — it tells us whether the confidence gating, cross-encoder reranking, and hybrid policy are worth keeping before we commit to building a product-a corpus around them.
 
 ### What "compare and experiment" looks like
 
-Phase 1 (sevdesk corpus, both tracks use it):
-1. Run Track 2 eval harness against sevdesk golden dataset — measure hit rate, MRR, NDCG, escalation rate
+Phase 1 (vendor-a corpus, both tracks use it):
+1. Run Track 2 eval harness against vendor-a golden dataset — measure hit rate, MRR, NDCG, escalation rate
 2. Calibrate confidence thresholds (0.4 RRF, 0.25 sigmoid) against actual query distribution
 3. Determine: does cross-encoder reranking lift MRR by >5%? Does `post_answer_evaluator` catch real errors?
 4. Validate sub-2s latency under realistic query load
 
-Phase 2 (Billy corpus ready):
-1. Run ingestion pipeline on Billy help docs → build `billy_help.duckdb`
-2. Deploy Track 1 (thin RAG tool in billy MCP) with Billy index
-3. Point Track 2 at Billy index — run same eval suite
-4. A/B compare Track 1 (simple) vs Track 2 (agentic) on Billy queries
+Phase 2 (product-a corpus ready):
+1. Run ingestion pipeline on product-a help docs → build `product-a_help.duckdb`
+2. Deploy Track 1 (thin RAG tool in product-a MCP) with product-a index
+3. Point Track 2 at product-a index — run same eval suite
+4. A/B compare Track 1 (simple) vs Track 2 (agentic) on product-a queries
 5. Promote only what the eval data supports into Track 1
 
-This is a legitimate staged experiment: **validate the complexity on sevdesk first, then apply learnings to Billy.**
+This is a legitimate staged experiment: **validate the complexity on vendor-a first, then apply learnings to product-a.**

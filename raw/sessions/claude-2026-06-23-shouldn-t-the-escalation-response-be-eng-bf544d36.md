@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-23
 session_id: bf544d36-d82a-4278-9822-70c9a11b0851
 prompts: 116
@@ -8,7 +8,7 @@ total_tokens: 1704667
 cache_read_tokens: 141847767
 ---
 
-# Claude Code Session — 2026-06-23 (galactus)
+# Claude Code Session — 2026-06-23 (project-g)
 
 **First prompt:** shouldn't the escalation response be english or danish depending on the user's query and same for the other response types
 

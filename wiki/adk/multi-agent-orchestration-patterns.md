@@ -1,7 +1,7 @@
 ---
 title: Multi-Agent Orchestration Patterns
 tags: [adk, langgraph, deep-agents, concept]
-summary: Multi-agent architecture patterns — supervisor/handoff/parallel swarm trade-offs, try-agent history for fallback routing, tool count budget, and the Shine ADK POC selection rationale.
+summary: Multi-agent architecture patterns — supervisor/handoff/parallel swarm trade-offs, try-agent history for fallback routing, tool count budget, and the [client] ADK POC selection rationale.
 updated: 2026-04-26
 sources:
   - raw/gdrive/2026-04-15-adk-overview-poc-architecture.md
@@ -10,7 +10,7 @@ sources:
 
 # Multi-Agent Orchestration Patterns
 
-Four patterns were evaluated for the Shine ADK POC (April 2026). The design goals were **fast** (minimize LLM calls, prefix caching) and **scalable** (across domains and teams).
+Four patterns were evaluated for the [client] ADK POC (April 2026). The design goals were **fast** (minimize LLM calls, prefix caching) and **scalable** (across domains and teams).
 
 ## The Four Patterns
 
@@ -38,7 +38,7 @@ A dedicated router classifies intent and dispatches to specialist experts; an or
 
 **Best for:** High-volume systems with clearly separated domains and predictable routing patterns.
 
-### 4. Agent with Skills & Compaction ← Selected for Shine POC
+### 4. Agent with Skills & Compaction ← Selected for [client] POC
 A single agent with dynamically loaded skills; context compaction keeps the prompt lean.
 
 **Pros:** Domain separation, minimal coordination overhead, lean context via dynamic tools
@@ -48,12 +48,12 @@ A single agent with dynamically loaded skills; context compaction keeps the prom
 
 ## Why Pattern 4 Was Selected
 
-The Shine POC explicitly optimized for:
+The [client] POC explicitly optimized for:
 1. **Minimize LLM calls** — Patterns 1–3 all require additional routing/orchestration calls. Pattern 4 routes via skill selection without a separate LLM call.
 2. **Prefix caching at scale** — A single agent with a stable system prompt prefix is more cache-friendly than a multi-agent topology where each agent gets its own context.
 3. **Team scalability** — Skills are independently owned files (SKILL.md format), not separate agent deployments. Teams can add skills without coordinating on agent topology.
 
-## POC Stack (Shine, April 2026)
+## POC Stack ([client], April 2026)
 
 **v1 (static HTML client):**
 ```
@@ -79,7 +79,7 @@ v2 introduces an A2UI MCP pattern — a FastAPI layer that translates agent resp
 
 ## Supervisor vs Handoff vs Parallel Swarm
 
-Beyond the four Shine POC patterns, three general multi-agent topologies for VA agents:
+Beyond the four [client] POC patterns, three general multi-agent topologies for VA agents:
 
 | Topology | Mechanism | Best for | Watch out for |
 |----------|-----------|----------|---------------|

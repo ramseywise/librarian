@@ -5003,7 +5003,7 @@ function create_else_block$2(ctx) {
 	};
 }
 
-// (40:106) 
+// (40:106)
 function create_if_block_11(ctx) {
 	let fafilecode;
 	let current;
@@ -5032,7 +5032,7 @@ function create_if_block_11(ctx) {
 	};
 }
 
-// (38:62) 
+// (38:62)
 function create_if_block_10$1(ctx) {
 	let fafilepowerpoint;
 	let current;
@@ -5061,7 +5061,7 @@ function create_if_block_10$1(ctx) {
 	};
 }
 
-// (36:62) 
+// (36:62)
 function create_if_block_9$1(ctx) {
 	let fafileword;
 	let current;
@@ -5090,7 +5090,7 @@ function create_if_block_9$1(ctx) {
 	};
 }
 
-// (34:62) 
+// (34:62)
 function create_if_block_8$1(ctx) {
 	let fafilevideo;
 	let current;
@@ -5119,7 +5119,7 @@ function create_if_block_8$1(ctx) {
 	};
 }
 
-// (32:61) 
+// (32:61)
 function create_if_block_7$2(ctx) {
 	let fafileaudio;
 	let current;
@@ -5148,7 +5148,7 @@ function create_if_block_7$2(ctx) {
 	};
 }
 
-// (30:36) 
+// (30:36)
 function create_if_block_6$2(ctx) {
 	let fastickynote;
 	let current;
@@ -5177,7 +5177,7 @@ function create_if_block_6$2(ctx) {
 	};
 }
 
-// (28:36) 
+// (28:36)
 function create_if_block_5$2(ctx) {
 	let fafilepdf;
 	let current;
@@ -5206,7 +5206,7 @@ function create_if_block_5$2(ctx) {
 	};
 }
 
-// (26:36) 
+// (26:36)
 function create_if_block_4$3(ctx) {
 	let fafilecsv;
 	let current;
@@ -5235,7 +5235,7 @@ function create_if_block_4$3(ctx) {
 	};
 }
 
-// (24:62) 
+// (24:62)
 function create_if_block_3$6(ctx) {
 	let fafileexcel;
 	let current;
@@ -5264,7 +5264,7 @@ function create_if_block_3$6(ctx) {
 	};
 }
 
-// (22:37) 
+// (22:37)
 function create_if_block_2$8(ctx) {
 	let dihtml5;
 	let current;
@@ -6249,7 +6249,7 @@ function create_fragment$e(ctx) {
 }
 
 function instance$e($$self, $$props, $$invalidate) {
-	
+
 	let { currSubtypeInfo } = $$props;
 	const { anl, desc } = currSubtypeInfo;
 
@@ -7229,10 +7229,10 @@ function create_fragment$b(ctx) {
 }
 
 function instance$b($$self, $$props, $$invalidate) {
-	
-	
-	
-	
+
+
+
+
 	let { currSubtypeInfo } = $$props;
 	let { noZero = undefined } = $$props;
 	let { sortBy = undefined } = $$props;
@@ -8191,10 +8191,10 @@ function instance$a($$self, $$props, $$invalidate) {
 	let currSubtypeInfo;
 	let currNode;
 	let promiseSortedResults;
-	
-	
-	
-	
+
+
+
+
 	let { app } = $$props;
 	let { plugin } = $$props;
 	let { settings } = $$props;
@@ -9606,10 +9606,10 @@ let size$3 = 50;
 function instance$8($$self, $$props, $$invalidate) {
 	let currSubtypeInfo;
 	let promiseSortedResults;
-	
-	
-	
-	
+
+
+
+
 	let { app } = $$props;
 	let { plugin } = $$props;
 	let { settings } = $$props;
@@ -10755,10 +10755,10 @@ function instance$7($$self, $$props, $$invalidate) {
 	let currSubtypeInfo;
 	let currNode;
 	let promiseSortedResults;
-	
-	
-	
-	
+
+
+
+
 	let { app } = $$props;
 	let { plugin } = $$props;
 	let { settings } = $$props;
@@ -11590,8 +11590,8 @@ const mouseover_handler = function () {
 };
 
 function instance$4($$self, $$props, $$invalidate) {
-	
-	
+
+
 	let { currSubtype } = $$props;
 	let { view } = $$props;
 
@@ -12322,7 +12322,7 @@ function create_fragment$3(ctx) {
 			table = element("table");
 			thead = element("thead");
 
-			thead.innerHTML = `<tr class="svelte-1d9aab"><th scope="col">Note</th> 
+			thead.innerHTML = `<tr class="svelte-1d9aab"><th scope="col">Note</th>
       <th scope="col">Value</th></tr>`;
 
 			t4 = space();
@@ -12457,10 +12457,10 @@ function instance$3($$self, $$props, $$invalidate) {
 	let currSubtypeInfo;
 	let currNode;
 	let promiseSortedResults;
-	
-	
-	
-	
+
+
+
+
 	let { app } = $$props;
 	let { plugin } = $$props;
 	let { settings } = $$props;
@@ -13359,8 +13359,8 @@ function create_fragment$2(ctx) {
 			table = element("table");
 			thead = element("thead");
 
-			thead.innerHTML = `<tr class="svelte-6qr5sj"><th scope="col">Note</th> 
-      <th scope="col">Authority</th> 
+			thead.innerHTML = `<tr class="svelte-6qr5sj"><th scope="col">Note</th>
+      <th scope="col">Authority</th>
       <th scope="col">Hub</th></tr>`;
 
 			t6 = space();
@@ -13495,10 +13495,10 @@ function instance$2($$self, $$props, $$invalidate) {
 	let currSubtypeInfo;
 	let currNode;
 	let promiseSortedResults;
-	
-	
-	
-	
+
+
+
+
 	let { app } = $$props;
 	let { plugin } = $$props;
 	let { settings } = $$props;
@@ -13529,7 +13529,7 @@ function instance$2($$self, $$props, $$invalidate) {
 	});
 
 	onMount(() => {
-		
+
 	});
 
 	onMount(() => {
@@ -13778,7 +13778,7 @@ function create_if_block_10(ctx) {
 	};
 }
 
-// (49:36) 
+// (49:36)
 function create_if_block_9(ctx) {
 	let louvain;
 	let current;
@@ -13821,7 +13821,7 @@ function create_if_block_9(ctx) {
 	};
 }
 
-// (47:38) 
+// (47:38)
 function create_if_block_8(ctx) {
 	let tablecomponent;
 	let current;
@@ -13864,7 +13864,7 @@ function create_if_block_8(ctx) {
 	};
 }
 
-// (43:41) 
+// (43:41)
 function create_if_block_7(ctx) {
 	let tablecomponent;
 	let current;
@@ -13907,7 +13907,7 @@ function create_if_block_7(ctx) {
 	};
 }
 
-// (41:32) 
+// (41:32)
 function create_if_block_6(ctx) {
 	let tablecomponent;
 	let current;
@@ -13950,7 +13950,7 @@ function create_if_block_6(ctx) {
 	};
 }
 
-// (39:51) 
+// (39:51)
 function create_if_block_5(ctx) {
 	let tablecomponent;
 	let current;
@@ -13993,7 +13993,7 @@ function create_if_block_5(ctx) {
 	};
 }
 
-// (37:36) 
+// (37:36)
 function create_if_block_4(ctx) {
 	let tablecomponent;
 	let current;
@@ -14036,7 +14036,7 @@ function create_if_block_4(ctx) {
 	};
 }
 
-// (35:46) 
+// (35:46)
 function create_if_block_3(ctx) {
 	let labelpropagation;
 	let current;
@@ -14079,7 +14079,7 @@ function create_if_block_3(ctx) {
 	};
 }
 
-// (33:41) 
+// (33:41)
 function create_if_block_2(ctx) {
 	let cocitations;
 	let current;
@@ -14122,7 +14122,7 @@ function create_if_block_2(ctx) {
 	};
 }
 
-// (31:36) 
+// (31:36)
 function create_if_block_1(ctx) {
 	let tablecomponent;
 	let current;
@@ -14355,10 +14355,10 @@ function create_fragment$1(ctx) {
 
 function instance$1($$self, $$props, $$invalidate) {
 	let props;
-	
-	
-	
-	
+
+
+
+
 	let { app } = $$props;
 	let { plugin } = $$props;
 	let { settings } = $$props;
@@ -17483,7 +17483,7 @@ var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || fu
 
 var decode_json_1 = __importDefault$1(require$$0$5);
 // Adapted from https://github.com/mathiasbynens/he/blob/master/src/he.js#L94-L119
-var fromCodePoint = 
+var fromCodePoint =
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 String.fromCodePoint ||
     function (codePoint) {
@@ -24067,7 +24067,7 @@ function getInverseReplacer(inverse) {
 }
 // /[^\0-\x7F]/gu
 var reNonASCII = /(?:[\x80-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF])/g;
-var getCodePoint = 
+var getCodePoint =
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 String.prototype.codePointAt != null
     ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -30331,7 +30331,7 @@ IndexedSourceMapConsumer.prototype.sourceContentFor =
  * and an object is returned with the following properties:
  *
  *   - line: The line number in the generated source, or null.  The
- *     line number is 1-based. 
+ *     line number is 1-based.
  *   - column: The column number in the generated source, or null.
  *     The column number is 0-based.
  */
@@ -35839,7 +35839,7 @@ function create_fragment(ctx) {
 }
 
 function instance($$self, $$props, $$invalidate) {
-	
+
 	let { plugin } = $$props;
 	let { settingName } = $$props;
 	let { options } = $$props;

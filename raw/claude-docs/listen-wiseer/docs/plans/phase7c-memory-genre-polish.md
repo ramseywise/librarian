@@ -1,7 +1,7 @@
 # Phase 7c — Genre Lineage, Taste Analysis, Cross-session Memory
 
-**Status:** PLANNED  
-**Depends on:** Phase 7b ✓  
+**Status:** PLANNED
+**Depends on:** Phase 7b ✓
 **Scope:** ~5 hours
 
 ---
@@ -88,7 +88,7 @@ def get_store() -> BaseStore:
     return InMemoryStore()
 ```
 
-Add `MEMORY_STORE_URL` to `utils/config.py` settings (optional, defaults to `None` → in-memory).  
+Add `MEMORY_STORE_URL` to `utils/config.py` settings (optional, defaults to `None` → in-memory).
 Add `MEMORY_STORE_URL=` to `.env.example` with a comment.
 
 For dev, SQLite-backed store works via `sqlite+aiosqlite:///./data/memory.db`.

@@ -38,7 +38,7 @@ def iter_sessions(projects_dir: Path) -> list[dict[str, Any]]:
     return sessions
 
 
-def _text(content: Any) -> str:
+def _text(content: object) -> str:
     """Extract plain text from a message content field."""
     if isinstance(content, str):
         return content
@@ -83,7 +83,7 @@ _LANG_MAP: dict[str, str] = {
 }
 
 
-def parse_session(path: Path) -> dict[str, Any] | None:  # noqa: C901
+def parse_session(path: Path) -> dict[str, Any] | None:
     """Parse a single JSONL session file into a stats dict."""
     lines = path.read_text(errors="replace").splitlines()
     records: list[dict[str, Any]] = []
@@ -131,23 +131,26 @@ def parse_session(path: Path) -> dict[str, Any] | None:  # noqa: C901
     tool_errors: dict[str, int] = defaultdict(int)
     for record in user_msgs:
         for block in record.get("message", {}).get("content", []):
-            if isinstance(block, dict) and block.get("type") == "tool_result":
-                if block.get("is_error"):
-                    content_text = _text(block.get("content", "")).lower()
-                    if "no such file" in content_text or "not found" in content_text:
-                        tool_errors["file_not_found"] += 1
-                    elif "permission" in content_text:
-                        tool_errors["permission_denied"] += 1
-                    elif "rejected" in content_text:
-                        tool_errors["user_rejected"] += 1
-                    elif "failed" in content_text or "exit code" in content_text:
-                        tool_errors["command_failed"] += 1
-                    elif "too large" in content_text or "too long" in content_text:
-                        tool_errors["file_too_large"] += 1
-                    elif "edit" in content_text:
-                        tool_errors["edit_failed"] += 1
-                    else:
-                        tool_errors["other"] += 1
+            if (
+                isinstance(block, dict)
+                and block.get("type") == "tool_result"
+                and block.get("is_error")
+            ):
+                content_text = _text(block.get("content", "")).lower()
+                if "no such file" in content_text or "not found" in content_text:
+                    tool_errors["file_not_found"] += 1
+                elif "permission" in content_text:
+                    tool_errors["permission_denied"] += 1
+                elif "rejected" in content_text:
+                    tool_errors["user_rejected"] += 1
+                elif "failed" in content_text or "exit code" in content_text:
+                    tool_errors["command_failed"] += 1
+                elif "too large" in content_text or "too long" in content_text:
+                    tool_errors["file_too_large"] += 1
+                elif "edit" in content_text:
+                    tool_errors["edit_failed"] += 1
+                else:
+                    tool_errors["other"] += 1
 
     # Token usage + model tracking
     input_tokens = 0
@@ -227,9 +230,7 @@ def parse_session(path: Path) -> dict[str, Any] | None:  # noqa: C901
         skill_invocations.extend(re.findall(r"(?:^|\s)/([a-z][a-z0-9-]+)", txt))
 
     # Output tokens per assistant message (verbosity signal)
-    output_tokens_per_msg = (
-        round(output_tokens / len(asst_msgs), 1) if asst_msgs else 0.0
-    )
+    output_tokens_per_msg = round(output_tokens / len(asst_msgs), 1) if asst_msgs else 0.0
 
     # Cache read tokens (prompt cache efficiency)
     cache_read_tokens = 0
@@ -239,13 +240,9 @@ def parse_session(path: Path) -> dict[str, Any] | None:  # noqa: C901
 
     # Read/Edit ratio: should be > 1 (understand before changing)
     edit_calls = (
-        tool_counts.get("Edit", 0)
-        + tool_counts.get("Write", 0)
-        + tool_counts.get("MultiEdit", 0)
+        tool_counts.get("Edit", 0) + tool_counts.get("Write", 0) + tool_counts.get("MultiEdit", 0)
     )
-    read_edit_ratio = (
-        round(tool_counts.get("Read", 0) / edit_calls, 2) if edit_calls > 0 else None
-    )
+    read_edit_ratio = round(tool_counts.get("Read", 0) / edit_calls, 2) if edit_calls > 0 else None
 
     # Hook blocks: user_rejected errors on Bash (hook-triggered rejections)
     hook_blocks = tool_errors.get("user_rejected", 0)
@@ -360,13 +357,9 @@ def aggregate(sessions: list[dict[str, Any]]) -> dict[str, Any]:
             sessions_involved.add(sess_b["session_id"])
 
     overlap_messages = sum(
-        s["user_message_count"]
-        for s in sessions
-        if s["session_id"] in sessions_involved
+        s["user_message_count"] for s in sessions if s["session_id"] in sessions_involved
     )
-    overlap_pct = (
-        round(overlap_messages / total_user_msgs * 100) if total_user_msgs else 0
-    )
+    overlap_pct = round(overlap_messages / total_user_msgs * 100) if total_user_msgs else 0
 
     # Time-of-day buckets
     hour_counts: dict[int, int] = defaultdict(int)
@@ -374,13 +367,9 @@ def aggregate(sessions: list[dict[str, Any]]) -> dict[str, Any]:
         hour_counts[hour] += 1
 
     median_rt = (
-        sorted(all_response_times)[len(all_response_times) // 2]
-        if all_response_times
-        else 0
+        sorted(all_response_times)[len(all_response_times) // 2] if all_response_times else 0
     )
-    avg_rt = (
-        sum(all_response_times) / len(all_response_times) if all_response_times else 0
-    )
+    avg_rt = sum(all_response_times) / len(all_response_times) if all_response_times else 0
 
     # Response time distribution
     rt_buckets: dict[str, int] = {
@@ -434,17 +423,12 @@ def aggregate(sessions: list[dict[str, Any]]) -> dict[str, Any]:
         "uses_task_agent": sum(1 for s in sessions if s["uses_task_agent"]),
         # --- Context engineering signals ---
         "bash_antipatterns_total": total_bash_antipatterns,
-        "bash_antipatterns_per_session": round(
-            total_bash_antipatterns / len(sessions), 2
-        ),
+        "bash_antipatterns_per_session": round(total_bash_antipatterns / len(sessions), 2),
         "skill_invocations": dict(
             sorted(
                 defaultdict(
                     int,
-                    {
-                        s: all_skill_invocations.count(s)
-                        for s in set(all_skill_invocations)
-                    },
+                    {s: all_skill_invocations.count(s) for s in set(all_skill_invocations)},
                 ).items(),
                 key=lambda x: -x[1],
             )
@@ -529,9 +513,7 @@ def _parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
             # Parse simple lists: [a, b, c]
             if val.startswith("[") and val.endswith("]"):
                 inner = val[1:-1].strip()
-                fm[key] = (
-                    [v.strip().strip("'\"") for v in inner.split(",")] if inner else []
-                )
+                fm[key] = [v.strip().strip("'\"") for v in inner.split(",")] if inner else []
             elif val in ("true", "false"):
                 fm[key] = val == "true"
             elif val.lstrip("-").isdigit():
@@ -591,9 +573,7 @@ def _parse_one_session_note(path: Path) -> dict[str, Any] | None:
     }
 
 
-def parse_session_notes(
-    sessions_dir: Path, max_notes: int = 20
-) -> list[dict[str, Any]]:
+def parse_session_notes(sessions_dir: Path, max_notes: int = 20) -> list[dict[str, Any]]:
     """Parse up to max_notes recent session note files from sessions_dir."""
     if not sessions_dir.exists():
         return []
@@ -717,9 +697,7 @@ def build_prompt(
             f"## Session Summaries (JSONL — {len(session_summaries)} sessions)\n"
             f"{json.dumps(session_summaries, indent=2)}\n"
         )
-        parts.append(
-            f"## Sample First Prompts\n{json.dumps(sample_prompts, indent=2)}\n"
-        )
+        parts.append(f"## Sample First Prompts\n{json.dumps(sample_prompts, indent=2)}\n")
 
     if session_notes:
         note_summaries = [
@@ -733,18 +711,10 @@ def build_prompt(
                 "files_touched": n["files_touched"],
                 "token_hotspots": n["token_hotspots"],
                 "gotchas": n["gotchas"][:300] if n["gotchas"] else "",
-                "friction_signals": n["friction_signals"][:300]
-                if n["friction_signals"]
-                else "",
-                "attribution_notes": n["attribution_notes"][:400]
-                if n["attribution_notes"]
-                else "",
-                "skill_candidates": n["skill_candidates"][:300]
-                if n["skill_candidates"]
-                else "",
-                "session_insights": n["session_insights"][:300]
-                if n["session_insights"]
-                else "",
+                "friction_signals": n["friction_signals"][:300] if n["friction_signals"] else "",
+                "attribution_notes": n["attribution_notes"][:400] if n["attribution_notes"] else "",
+                "skill_candidates": n["skill_candidates"][:300] if n["skill_candidates"] else "",
+                "session_insights": n["session_insights"][:300] if n["session_insights"] else "",
             }
             for n in session_notes
         ]
@@ -782,12 +752,8 @@ def main() -> None:
         default="~/.claude/sessions",
         help="Session notes dir (used on cord or to enrich JSONL report)",
     )
-    parser.add_argument(
-        "--model", default=None, help="Model ID (default: from settings)"
-    )
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Extract stats only, skip API call"
-    )
+    parser.add_argument("--model", default=None, help="Model ID (default: from settings)")
+    parser.add_argument("--dry-run", action="store_true", help="Extract stats only, skip API call")
     args = parser.parse_args()
 
     api_key = args.key or os.environ.get("ANTHROPIC_API_KEY", "")
@@ -856,9 +822,7 @@ def main() -> None:
         if match:
             html = match.group(0)
         else:
-            log.warning(
-                "parser.html_not_detected", msg="Response doesn't look like HTML"
-            )
+            log.warning("parser.html_not_detected", msg="Response doesn't look like HTML")
 
     output_path.write_text(html)
     log.info("parser.report_written", path=str(output_path))

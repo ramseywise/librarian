@@ -11,7 +11,7 @@
 
 Establish the foundation to understand, measure, and continuously improve system performance and quality across HC and VA. Three areas:
 
-1. **HC Data Ingestion** (Billy → Intercom → BedrockKB) — blocks MVP
+1. **HC Data Ingestion** (product-a → Intercom → BedrockKB) — blocks MVP
 2. **HC Feedback Loop** (CS agent onboarding and validation of data samples)
 3. **HC Evaluation** (Intercom/BookKeeping Hero historical conversations for baseline eval) — does not block MVP
 
@@ -23,14 +23,14 @@ Establish the foundation to understand, measure, and continuously improve system
 
 ### M1: Access & Onboarding Complete (target: 2026-05-08)
 The team has confirmed access to all required systems, completed onboarding sessions with Dan and the CS team, and fully scoped RAG resources. Nothing else can start until this is done.
-- VIR-95: Onboard to Billy Ingestion and Storage to BedrockKB
+- VIR-95: Onboard to product-a Ingestion and Storage to BedrockKB
 - VIR-96: Onboarding with CS team + Intercom Workflow Exploration
 - VIR-99: Onboard to Intercom Historical Conversations Data
 - VIR-100: Onboarding to BookKeeping Hero Data
 - Stretch: VIR-98 (Article Content Audit), VIR-101 (EDA on BKH Data)
 
 ### M2: RAG Sources Ingested & Documented (target: 2026-05-22)
-Billy ingestion configured and running, Intercom extraction initiated, full RAG source picture documented. Annotation guidelines agreed.
+product-a ingestion configured and running, Intercom extraction initiated, full RAG source picture documented. Annotation guidelines agreed.
 - Track 1 (Raw Data): VIR-105, VIR-102, VIR-103, VIR-104, VIR-106, VIR-107
 - Track 2 (Human Validation): VIR-118, VIR-119, VIR-120, VIR-121
 
@@ -54,12 +54,12 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 
 ---
 
-### [VIR-95] Onboard to Billy Ingestion and Storage to BedrockKB
+### [VIR-95] Onboard to product-a Ingestion and Storage to BedrockKB
 **Status:** To Do | **Priority:** High | **Points:** 5
 **Assignee:** Yan Zhang | **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-95/onboard-to-billy-ingestion-and-storage-to-bedrockkb
+**URL:** https://linear.app/client-a-co/issue/VIR-95/onboard-to-product-a-ingestion-and-storage-to-bedrockkb
 
-**Goal:** Understand the scope of BedrockKB raw documents already ingested from Billy (help center urls, currently being migrated to Intercom) and determine what still needs to be done for MVP.
+**Goal:** Understand the scope of BedrockKB raw documents already ingested from product-a (help center urls, currently being migrated to Intercom) and determine what still needs to be done for MVP.
 
 **Context:** Some Help Center documents have already been ingested for BookKeeping Hero, but there is no clear picture of coverage scope. Before any new ingestion work begins, the team needs to understand what exists, what is missing, and whether a second ingestion pass is needed or if the existing setup can be extended.
 
@@ -68,7 +68,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-96] Onboarding with CS Team + Intercom Workflow Exploration
 **Status:** To Do | **Priority:** High | **Points:** 8
 **Assignee:** Marco Enrique Zimmermann | **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-96/onboarding-with-cs-team-intercom-workflow-exploration
+**URL:** https://linear.app/client-a-co/issue/VIR-96/onboarding-with-cs-team-intercom-workflow-exploration
 
 **Goal:** Get a knowledge share from the CS team on their ways of working and explore how Intercom is used in practice — specifically to understand how to solve HC requests, differentiate when escalation is needed and frictionless UI for how CS agents can view and annotate conversations within the existing workflow.
 
@@ -79,9 +79,9 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-98] Explore & Audit Article Content
 **Status:** To Do | **Priority:** High | **Points:** 5
 **Assignee:** Yan Zhang | **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-98/explore-and-audit-article-content
+**URL:** https://linear.app/client-a-co/issue/VIR-98/explore-and-audit-article-content
 
-**Goal:** Explore the Billy domains and any already-ingested sources to understand content structure, identify what should and shouldn't be ingested, and map how article metadata could support retrieval filtering.
+**Goal:** Explore the product-a domains and any already-ingested sources to understand content structure, identify what should and shouldn't be ingested, and map how article metadata could support retrieval filtering.
 
 **Context:** Before any ingestion pipeline is built, the team needs a clear picture of what content exists, how it is structured, and what quality bar it meets. Includes understanding URL patterns, article types, and available metadata.
 
@@ -90,7 +90,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-99] Onboard to Intercom Historical Conversations Data
 **Status:** To Do | **Priority:** High | **Points:** 5
 **Assignee:** Yan Zhang | **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-99/onboard-to-intercom-historical-conversations-data
+**URL:** https://linear.app/client-a-co/issue/VIR-99/onboard-to-intercom-historical-conversations-data
 
 **Goal:** Understand how to access Intercom historical conversation data so it can be used to build the eval dataset and seed the HITL queues.
 
@@ -101,7 +101,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-100] Onboarding to BookKeeping Hero Data
 **Status:** To Do | **Priority:** High | **Points:** 3
 **Assignee:** Marco Enrique Zimmermann | **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-100/onboarding-to-bookkeeping-hero-data
+**URL:** https://linear.app/client-a-co/issue/VIR-100/onboarding-to-bookkeeping-hero-data
 
 **Goal:** Get access to BookKeeping Hero conversation history and understand its structure so it can be used alongside Intercom data for cross-comparison and eval dataset curation.
 
@@ -112,7 +112,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-101] EDA on BookKeeping Hero Data
 **Status:** To Do | **Priority:** High | **Points:** 5
 **Assignee:** Marco Enrique Zimmermann | **Labels:** HC Evaluation
-**URL:** https://linear.app/shine-co/issue/VIR-101/eda-on-bookkeeping-hero-data
+**URL:** https://linear.app/client-a-co/issue/VIR-101/eda-on-bookkeeping-hero-data
 
 **Goal:** Explore BookKeeping Hero conversation data to understand its structure, quality, and signal availability — and use findings to establish a performance baseline that MVP can be evaluated against.
 
@@ -120,43 +120,43 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 
 ---
 
-### [VIR-102] Configure & Run Web Crawler on Billy Domains (AWS)
+### [VIR-102] Configure & Run Web Crawler on product-a Domains (AWS)
 **Status:** Backlog | **Priority:** High | **Points:** 5
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-102/configure-and-run-web-crawler-on-billy-domains-aws
+**URL:** https://linear.app/client-a-co/issue/VIR-102/configure-and-run-web-crawler-on-product-a-domains-aws
 
-**Goal:** Configure the AWS web crawler to crawl billy.dk/support, billy.dk/billypedia, and billy.dk/pris using the agreed filter rules, and produce clean structured output ready for Bedrock KB ingestion.
+**Goal:** Configure the AWS web crawler to crawl product-a.dk/support, product-a.dk/product-a-kb, and product-a.dk/pris using the agreed filter rules, and produce clean structured output ready for Bedrock KB ingestion.
 
 **Context:** Filter logic and content exclusion rules are defined in VIR-98. Blocked on that ticket completing.
 
 ---
 
-### [VIR-103] Explore Available Metadata Across Billy Domains and Define Initial Schema
+### [VIR-103] Explore Available Metadata Across product-a Domains and Define Initial Schema
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-103/explore-available-metadata-across-billy-domains-and-define-initial
+**URL:** https://linear.app/client-a-co/issue/VIR-103/explore-available-metadata-across-product-a-domains-and-define-initial
 
-**Goal:** Review what metadata is actually available from the crawler output across the three Billy domains, and define an initial schema grounded in what the data can realistically support.
+**Goal:** Review what metadata is actually available from the crawler output across the three product-a domains, and define an initial schema grounded in what the data can realistically support.
 
 **Context:** Schema needs to cover at minimum: market, language, source type, timestamp, and freshness — but fields and structure should be driven by what is available in the data, not assumed upfront.
 
 ---
 
-### [VIR-104] Ingest Billy Content into Bedrock KB and Validate
+### [VIR-104] Ingest product-a Content into Bedrock KB and Validate
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-104/ingest-billy-content-into-bedrock-kb-and-validate
+**URL:** https://linear.app/client-a-co/issue/VIR-104/ingest-product-a-content-into-bedrock-kb-and-validate
 
-**Goal:** Run ingestion of the crawled Billy content into Bedrock Knowledge Base and validate that content is retrievable, accurate, and clean.
+**Goal:** Run ingestion of the crawled product-a content into Bedrock Knowledge Base and validate that content is retrievable, accurate, and clean.
 
-**Context:** Final step of the Ingest Billy Raw Articles initiative. Support articles were recently updated so data quality may already be good, but retrieval quality needs to be spot-checked across all three domains.
+**Context:** Final step of the Ingest product-a Raw Articles initiative. Support articles were recently updated so data quality may already be good, but retrieval quality needs to be spot-checked across all three domains.
 
 ---
 
 ### [VIR-105] Agree Review Scope & Prioritisation
 **Status:** Backlog | **Priority:** High | **Points:** 1
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-105/agree-review-scope-and-prioritisation
+**URL:** https://linear.app/client-a-co/issue/VIR-105/agree-review-scope-and-prioritisation
 
 **Goal:** Define what gets validated, in what order, and who owns it — for both Help Center articles and conversation data — before any review work begins.
 
@@ -167,7 +167,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-106] Domain Expert Article Review
 **Status:** Backlog | **Priority:** High | **Points:** 5
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-106/domain-expert-article-review
+**URL:** https://linear.app/client-a-co/issue/VIR-106/domain-expert-article-review
 
 **Goal:** Accounting/tax and product domain experts work through the prioritised Help Center article list, marking each article as approved for ingestion, needs updating, or exclude.
 
@@ -178,7 +178,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-107] Remediate Flagged Articles
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-107/remediate-flagged-articles
+**URL:** https://linear.app/client-a-co/issue/VIR-107/remediate-flagged-articles
 
 **Goal:** Update or exclude articles flagged during domain expert review. Ensure all approved content is published before ingestion begins.
 
@@ -189,7 +189,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-108] Conversation Data Quality Review
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-108/conversation-data-quality-review
+**URL:** https://linear.app/client-a-co/issue/VIR-108/conversation-data-quality-review
 
 **Goal:** Assess the cleaned and masked Intercom conversation data for quality, completeness, and usefulness before it feeds downstream tasks such as clustering and benchmarking.
 
@@ -200,7 +200,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-109] Confirm Intercom API Access & Credentials
 **Status:** Backlog | **Priority:** High | **Points:** 1
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-109/confirm-intercom-api-access-and-credentials
+**URL:** https://linear.app/client-a-co/issue/VIR-109/confirm-intercom-api-access-and-credentials
 
 **Goal:** Verify that Intercom API access is available, credentials are in hand, and rate limits are understood before any engineering work begins.
 
@@ -211,7 +211,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-110] Confirm Storage Destination & GDPR Position
 **Status:** Backlog | **Priority:** High | **Points:** 1
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-110/confirm-storage-destination-and-gdpr-position
+**URL:** https://linear.app/client-a-co/issue/VIR-110/confirm-storage-destination-and-gdpr-position
 
 **Goal:** Ops confirms and provisions Snowflake or S3 as the storage destination. Legal/Ops confirms GDPR and data residency policy before any conversation data lands anywhere.
 
@@ -222,7 +222,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-111] Explore & Map Intercom Conversation Schema
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-111/explore-and-map-intercom-conversation-schema
+**URL:** https://linear.app/client-a-co/issue/VIR-111/explore-and-map-intercom-conversation-schema
 
 **Goal:** Pull sample conversation data from the Intercom API and document the data shape, available fields, and transformation logic needed to make it usable for downstream tasks.
 
@@ -233,7 +233,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-112] Build One-Time Extraction & Transform Job
 **Status:** Backlog | **Priority:** High | **Points:** 5
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-112/build-one-time-extraction-and-transform-job
+**URL:** https://linear.app/client-a-co/issue/VIR-112/build-one-time-extraction-and-transform-job
 
 **Goal:** Implement the one-time job that connects to the Intercom API, extracts historical conversations, transforms them to the agreed format, and lands them in the provisioned storage destination.
 
@@ -244,7 +244,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-113] Validate Extracted Intercom Data & Hand Off to EDA
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-113/validate-extracted-intercom-data-and-hand-off-to-eda
+**URL:** https://linear.app/client-a-co/issue/VIR-113/validate-extracted-intercom-data-and-hand-off-to-eda
 
 **Goal:** Spot-check the extracted and transformed conversation data for quality and completeness, and confirm it is ready to feed into the EDA and downstream eval work.
 
@@ -255,7 +255,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-114] Validate Masking Coverage & Sign Off
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-114/validate-masking-coverage-and-sign-off
+**URL:** https://linear.app/client-a-co/issue/VIR-114/validate-masking-coverage-and-sign-off
 
 **Goal:** Test the masking layer against real sample conversation data to confirm it catches both explicit and contextual PII, and get final sign-off from Legal/Ops before masked data flows downstream.
 
@@ -266,7 +266,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-115] Implement PII Masking Layer
 **Status:** Backlog | **Priority:** Medium | **Points:** 5
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-115/implement-pii-masking-layer
+**URL:** https://linear.app/client-a-co/issue/VIR-115/implement-pii-masking-layer
 
 **Goal:** Build the masking step based on the agreed approach and integrate it at the confirmed point in the pipeline.
 
@@ -277,7 +277,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-116] Evaluate & Select Masking Approach
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-116/evaluate-and-select-masking-approach
+**URL:** https://linear.app/client-a-co/issue/VIR-116/evaluate-and-select-masking-approach
 
 **Goal:** Run a technical spike to evaluate regex, LLM-based, and hybrid masking approaches against coverage, cost, and latency tradeoffs. Produce a recommendation for sign-off before build begins.
 
@@ -288,7 +288,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-117] Legal & Ops Sign-off on Masking Approach
 **Status:** Backlog | **Priority:** High | **Points:** 1
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-117/legal-and-ops-sign-off-on-masking-approach
+**URL:** https://linear.app/client-a-co/issue/VIR-117/legal-and-ops-sign-off-on-masking-approach
 
 **Goal:** Get written confirmation from Legal/Ops on the approved masking approach and the point in the pipeline where masking must be applied before any conversation data is processed.
 
@@ -299,7 +299,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-118] Validate CS Agents are Ready to Annotate
 **Status:** Backlog | **Priority:** Medium | **Points:** 1
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-118/validate-cs-agents-are-ready-to-annotate
+**URL:** https://linear.app/client-a-co/issue/VIR-118/validate-cs-agents-are-ready-to-annotate
 
 **Goal:** Validate that CS agents are ready to annotate before either HITL queue goes live. Hard dependency for the entire HITL workstream.
 
@@ -310,7 +310,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-119] Run Training Session with CS Team
 **Status:** Backlog | **Priority:** Medium | **Points:** 1
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-119/run-training-session-with-cs-team
+**URL:** https://linear.app/client-a-co/issue/VIR-119/run-training-session-with-cs-team
 
 **Goal:** Deliver a training session with the CS team to walk through annotation guidelines, tagging schema, and tooling before HITL queues go live.
 
@@ -321,7 +321,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-120] Prepare Training Material and Tooling
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-120/prepare-training-material-and-tooling
+**URL:** https://linear.app/client-a-co/issue/VIR-120/prepare-training-material-and-tooling
 
 **Goal:** Produce training materials CS agents can learn the annotation guidelines from, and ensure annotation tooling is set up and accessible before the training session goes live.
 
@@ -332,7 +332,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-121] Define Annotation Guidelines and Tagging Schema
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-121/define-annotation-guidelines-and-tagging-schema
+**URL:** https://linear.app/client-a-co/issue/VIR-121/define-annotation-guidelines-and-tagging-schema
 
 **Goal:** Define the annotation guidelines and tagging schema CS agents will use across both HITL queues, ensuring tags are specific enough that different agents label consistently.
 
@@ -343,7 +343,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-122] Summarise Annotations and Route to Feedback
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-122/summarise-annotations-and-route-to-feedback
+**URL:** https://linear.app/client-a-co/issue/VIR-122/summarise-annotations-and-route-to-feedback
 
 **Goal:** Synthesise the first batch of CS annotations into structured findings and route outputs to the appropriate downstream workstreams — eval dataset curation and failure-attribution analysis.
 
@@ -354,7 +354,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-123] Explore How Agents Annotate First Batch
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-123/explore-how-agents-annotate-first-batch
+**URL:** https://linear.app/client-a-co/issue/VIR-123/explore-how-agents-annotate-first-batch
 
 **Goal:** Run the first annotation round with CS agents on the prepared batch, observe the process, and surface any issues with the tagging schema, tooling, or workflow before scaling up.
 
@@ -365,7 +365,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-124] Prepare First Sampling Batch for CS Annotation
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-124/prepare-first-sampling-batch-for-cs-annotation
+**URL:** https://linear.app/client-a-co/issue/VIR-124/prepare-first-sampling-batch-for-cs-annotation
 
 **Goal:** Pull and prepare the first batch of sampled conversations from the historical Intercom dataset, ready for CS agents to annotate.
 
@@ -376,7 +376,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-125] Define Sampling Strategy for Historical Intercom Data
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-125/define-sampling-strategy-for-historical-intercom-data
+**URL:** https://linear.app/client-a-co/issue/VIR-125/define-sampling-strategy-for-historical-intercom-data
 
 **Goal:** Define the scope, selection logic, and volume for the first batch of historical Intercom conversations to be sampled for CS agent annotation.
 
@@ -387,7 +387,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-126] Summarise Edge Case Annotations for Feedback
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-126/summarise-edge-case-annotations-for-feedback
+**URL:** https://linear.app/client-a-co/issue/VIR-126/summarise-edge-case-annotations-for-feedback
 
 **Goal:** Synthesise CS agent annotations from the edge case batch into structured failure-attribution findings and route outputs to the eval dataset and downstream improvement work.
 
@@ -398,7 +398,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-127] Define Risk Signal Triggers and Thresholds
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-127/define-risk-signal-triggers-and-thresholds
+**URL:** https://linear.app/client-a-co/issue/VIR-127/define-risk-signal-triggers-and-thresholds
 
 **Goal:** Turn the EDA findings into a concrete written trigger spec — which signals fire, at what thresholds, and how they compose — so that a future engineering implementation has a clear, signed-off spec to build against.
 
@@ -409,7 +409,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-128] Define Edge Case Sampling Strategy
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-128/define-edge-case-sampling-strategy
+**URL:** https://linear.app/client-a-co/issue/VIR-128/define-edge-case-sampling-strategy
 
 **Goal:** Define which friction signals to use for manual edge case selection in the MVP, how many conversations to pull, and how to avoid overlap with the random sampling queue.
 
@@ -420,7 +420,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-129] EDA on Friction Signals
 **Status:** Backlog | **Priority:** High | **Points:** 5
 **Labels:** HC Feedback Loop
-**URL:** https://linear.app/shine-co/issue/VIR-129/eda-on-friction-signals
+**URL:** https://linear.app/client-a-co/issue/VIR-129/eda-on-friction-signals
 
 **Goal:** Run exploratory data analysis across available friction signals — escalations, thumbs down, Intercom conversation history patterns — to understand their distributions, overlaps, and predictive value for real HC failures.
 
@@ -431,7 +431,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-130] Curate Edge Case Dataset from Failure-Attribution Analysis
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Evaluation
-**URL:** https://linear.app/shine-co/issue/VIR-130/curate-edge-case-dataset-from-failure-attribution-analysis
+**URL:** https://linear.app/client-a-co/issue/VIR-130/curate-edge-case-dataset-from-failure-attribution-analysis
 
 **Goal:** Build a targeted edge case subset of the eval dataset drawn from failure-attribution findings, covering the most important failure modes identified through the edge case annotation queue.
 
@@ -442,7 +442,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-131] Curate Initial Eval Dataset (~50 Conversations)
 **Status:** Backlog | **Priority:** Medium | **Points:** 5
 **Labels:** HC Evaluation
-**URL:** https://linear.app/shine-co/issue/VIR-131/curate-initial-eval-dataset-50-conversations
+**URL:** https://linear.app/client-a-co/issue/VIR-131/curate-initial-eval-dataset-50-conversations
 
 **Goal:** Curate the initial versioned eval dataset of ~50 conversations covering key Danish market intent categories, stratified by high-impact intents and seeded from BookKeeping Hero explicit feedback and CS agent annotations.
 
@@ -453,7 +453,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-132] Eval Dataset Schema Definition
 **Status:** Backlog | **Priority:** Medium | **Points:** 3
 **Labels:** HC Evaluation
-**URL:** https://linear.app/shine-co/issue/VIR-132/eval-dataset-schema-definition
+**URL:** https://linear.app/client-a-co/issue/VIR-132/eval-dataset-schema-definition
 
 **Goal:** Define the schema for the versioned eval dataset, ensuring compatibility with the eval harness and downstream graders before any curation begins.
 
@@ -464,7 +464,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-133] EDA on Intercom Data
 **Status:** Backlog | **Priority:** High | **Points:** 3
 **Labels:** HC Evaluation
-**URL:** https://linear.app/shine-co/issue/VIR-133/eda-on-intercom-data
+**URL:** https://linear.app/client-a-co/issue/VIR-133/eda-on-intercom-data
 
 **Goal:** Conduct exploratory data analysis on Intercom conversation data to understand what we have before committing to a dataset schema or curation strategy.
 
@@ -475,7 +475,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-134] Automated Data Correctness Validation
 **Status:** Backlog | **Priority:** Low | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-134/automated-data-correctness-validation
+**URL:** https://linear.app/client-a-co/issue/VIR-134/automated-data-correctness-validation
 
 **Goal:** Implement ongoing health monitoring for the Bedrock KB — detecting broken links, empty content blocks, and outdated content across ingested sources.
 
@@ -486,7 +486,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-135] Coverage Benchmarking
 **Status:** Backlog | **Priority:** Low | **Points:** 3
 **Labels:** HC Data Ingestion
-**URL:** https://linear.app/shine-co/issue/VIR-135/coverage-benchmarking
+**URL:** https://linear.app/client-a-co/issue/VIR-135/coverage-benchmarking
 
 **Goal:** Use a representative set of real Intercom questions to query the RAG system pre-launch and validate that indexed content provides sufficient grounding to prevent hallucinations.
 
@@ -497,7 +497,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-136] Support Ticket Clustering
 **Status:** Backlog | **Priority:** Low | **Points:** 5
 **Labels:** HC Evaluation
-**URL:** https://linear.app/shine-co/issue/VIR-136/support-ticket-clustering
+**URL:** https://linear.app/client-a-co/issue/VIR-136/support-ticket-clustering
 
 **Goal:** Group historic Intercom tickets by topic similarity to understand knowledge base coverage gaps and inform ongoing content strategy.
 
@@ -508,7 +508,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-137] Failure-Attribution Taxonomy
 **Status:** Backlog | **Priority:** Low | **Points:** 3
 **Labels:** HC Evaluation
-**URL:** https://linear.app/shine-co/issue/VIR-137/failure-attribution-taxonomy
+**URL:** https://linear.app/client-a-co/issue/VIR-137/failure-attribution-taxonomy
 
 **Goal:** Cluster failure cases from the edge case annotation queue, define a formal failure-attribution taxonomy, and build a structured edge case dataset from it to guide ongoing annotation and eval harness expansion.
 
@@ -519,7 +519,7 @@ Initial ~50 conversation eval dataset curated, stratified by top Danish market i
 ### [VIR-138] LLM-as-Judge Grader
 **Status:** Backlog | **Priority:** Low | **Points:** 5
 **Labels:** HC Evaluation
-**URL:** https://linear.app/shine-co/issue/VIR-138/llm-as-judge-grader
+**URL:** https://linear.app/client-a-co/issue/VIR-138/llm-as-judge-grader
 
 **Goal:** Build an offline evaluation tool that scores conversational outputs against the eval dataset using a judge prompt, and calibrate it against human labels before scores are trusted.
 

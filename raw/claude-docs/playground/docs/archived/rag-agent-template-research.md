@@ -621,12 +621,12 @@ The API layer, CORS, SSE streaming, Redis checkpointer are the service layer, no
 
 ---
 
-## 13. Benchmarks from Production (RAPTOR v1 — sevdesk/German market)
+## 13. Benchmarks from Production (rag-v1 v1 — vendor-a/German market)
 
 > Source: help_center_agent_research.md + answer_quality_initiative.md
 > These are real numbers from a deployed prototype, not estimates.
 
-### RAPTOR v1 baseline (German market, all-MiniLM-L6-v2, dense-only)
+### rag-v1 v1 baseline (German market, all-MiniLM-L6-v2, dense-only)
 
 | Metric | v1 Baseline | After V2 enrichment | Hybrid + reranker |
 |---|---|---|---|
@@ -639,7 +639,7 @@ The API layer, CORS, SSE streaming, Redis checkpointer are the service layer, no
 
 **Root causes of 48% hallucination rate:** corpus coverage gaps + no fallback behavior. Not the model.
 
-### Retrieval strategy comparison (from RAPTOR experiments)
+### Retrieval strategy comparison (from rag-v1 experiments)
 
 | Strategy | Precision@5 | Recall@5 | Hit Rate |
 |---|---|---|---|
@@ -657,9 +657,9 @@ At small corpus sizes (<1K chunks), cross-encoder reranking can **degrade** qual
 overfitting to surface-level similarity. Test on actual corpus before committing to reranking.
 The 18–42% precision improvement comes from production systems with larger corpora.
 
-### Response style finding (RAPTOR agent-assist)
+### Response style finding (rag-v1 agent-assist)
 
-RAPTOR suggestions were ignored by human agents despite correct technical content because:
+rag-v1 suggestions were ignored by human agents despite correct technical content because:
 - Suggestions were 3× the length of agent responses
 - Hedged language: *"könnte möglicherweise"*, *"Überprüfe bitte..."*
 - Agents wrote direct responses and ignored suggestions entirely

@@ -9,7 +9,6 @@ from urllib.parse import quote
 
 import httpx
 import structlog
-
 from core.config.agent_settings import settings
 
 log = structlog.get_logger(__name__)
@@ -98,11 +97,11 @@ class ReplicateProvider:
     ) -> None:
         try:
             import replicate as _replicate
-        except ImportError:
+        except ImportError as err:
             raise RuntimeError(
                 "Replicate provider requires the replicate package. "
                 "Install it with: uv add replicate"
-            )
+            ) from err
         self._replicate = _replicate
         self._client = _replicate.Client(api_token=api_token)
         self.model = model

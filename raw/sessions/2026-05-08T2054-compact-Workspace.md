@@ -42,7 +42,7 @@ no-git
 - [Image: original 2018x1630, displayed at 2000x1615. Multiply coordinates by 1.01 to map to original image.]
 - ok so if we run another 50 tasks we can compare the improvement ? or will it be the same 50?
 -  Makefile:150: *** missing separator.  Stop.
-- ok before we run the same 50 eval quality - can we instead include the single llm call from @workspace/galactus/evals/graders that rates completness, relevancy and grounding. but can we also call for these deepeval using the their metrics to compare llm results (for callibration of our single one bu
+- ok before we run the same 50 eval quality - can we instead include the single llm call from @workspace/project-g/evals/graders that rates completness, relevancy and grounding. but can we also call for these deepeval using the their metrics to compare llm results (for callibration of our single one bu
 
 ## Gotchas
 [Fill in after resuming — non-obvious traps found before compaction]

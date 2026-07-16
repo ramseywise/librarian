@@ -2,7 +2,7 @@
 
 Collects markdown files from two locations per project:
   - {project}/.claude/  (plans, skills, agents, sessions, memory, hooks)
-  - {project}/docs/     (committed reference docs at repo root — e.g. galactus/docs/)
+  - {project}/docs/     (committed reference docs at repo root — e.g. playground/docs/)
 
 Also captures user-level:
   - ~/.claude/           (user-level CLAUDE.md, commands/, scripts/)
@@ -118,7 +118,7 @@ def scrape_projects(workspace: Path, output_dir: Path, dry_run: bool) -> int:
                     _copy_file(src, dest, dry_run)
                     written += 1
 
-        # Root-level docs/ (committed reference docs — e.g. galactus/docs/)
+        # Root-level docs/ (committed reference docs — e.g. playground/docs/)
         for root_dir_name in PROJECT_ROOT_DIRS:
             root_docs = project_dir / root_dir_name
             if not root_docs.exists():
@@ -140,7 +140,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Scrape .claude/ folders → raw/claude-docs/")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--workspace", type=Path, default=WORKSPACE_DIR)
-    parser.add_argument("--dry-run", action="store_true", help="Print what would be copied, don't write")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print what would be copied, don't write"
+    )
     args = parser.parse_args()
 
     if not args.dry_run:

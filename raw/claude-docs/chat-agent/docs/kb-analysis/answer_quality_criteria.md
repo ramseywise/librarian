@@ -11,20 +11,20 @@ For each topic: what a complete, correct answer looks like — and what a partia
 - States that a plain PDF sent by email is **not compliant** — formats must be Factur-X, UBL, or CII
 - States invoices must transit through a certified PA (Plateforme Agréée) or OD platform
 - Distinguishes B2B scope (full e-invoicing) from B2C/cross-border (e-reporting only)
-- Notes Shine offers free e-invoice reception; emission is still forthcoming; Shine is becoming a PA but was not yet on the official list at time of writing
+- Notes client-a offers free e-invoice reception; emission is still forthcoming; client-a is becoming a PA but was not yet on the official list at time of writing
 
 **Partial/wrong answer:**
 - Wrong year — e.g. "all companies must emit from 2026" (only ETI/grandes entreprises)
 - Saying plain PDFs are still compliant
 - Not mentioning the PA/OD requirement
-- Saying Shine is already a registered PA
+- Saying client-a is already a registered PA
 - Not distinguishing reception from emission, or B2B from B2C scope
 
 ---
 
 ## 2. Subscription plans and pricing
 
-### Shine Pro
+### client-a Pro
 
 **Complete/correct answer:**
 - Free: €0; Start: €11 HT/month (€108/year); Plus: €25 HT/month (€240/year); Business: €80 HT/month (€720/year)
@@ -33,7 +33,7 @@ For each topic: what a complete, correct answer looks like — and what a partia
 - Annual billing requires 12-month commitment; **not available at sign-up**; micro-enterprises are limited to 6-month commitment
 - Annual billing is **non-refundable** if cancelled early
 
-### Shine Facture
+### client-a Facture
 
 **Complete/correct answer:**
 - Free: €0, max 5 clients; Start: €11/month (€108/year); Plus: €25/month (€240/year)
@@ -75,7 +75,7 @@ For each topic: what a complete, correct answer looks like — and what a partia
 - Standard French rates: 20%, 10%, 5.5%, 2.1%; additional rates: 13%, 8.5% and 0.9% (purchase-only)
 - **Custom VAT rates cannot be created** — only pre-defined rates from the list
 - VAT must be changed manually to 0% for non-liable entities (default is 20%)
-- Shine's VAT auto-detection from receipts works only when a receipt is attached; untagged transactions are excluded from VAT auto-calculation even when the feature is enabled
+- client-a's VAT auto-detection from receipts works only when a receipt is attached; untagged transactions are excluded from VAT auto-calculation even when the feature is enabled
 - Late payment penalties are calculated on TTC amount and are **not subject to VAT**
 
 **Partial/wrong answer:**
@@ -93,19 +93,19 @@ For each topic: what a complete, correct answer looks like — and what a partia
 - Instant transfer limits without "téléphone principal": **€2,000/transfer, €4,000/day**; with primary phone: **€10,000/transfer, €20,000/day**
 - Instant not available for: future-dated transfers, recurring transfers, new beneficiary/device (temporary block), recipient bank doesn't support it, non-SEPA recipients
 - Beneficiary Verification (VoP) is automatic from 9 October 2025 — name on IBAN must match
-- SWIFT transfers go via Wise: sender needs **both** Shine BIC (`SNNNFR22XXX`) and Wise intermediary BIC (`TRWIBEB3`)
+- SWIFT transfers go via Wise: sender needs **both** client-a BIC (`SNNNFR22XXX`) and Wise intermediary BIC (`TRWIBEB3`)
 - SWIFT delay: 4–5 business days; rejected transfers returned to sender in up to 10 business days
 - SWIFT reception fees: Free = €6 HT/transfer; all paid plans = €5 HT/transfer
-- Shine accounts receive **euros only** — all FX conversion happens before crediting
+- client-a accounts receive **euros only** — all FX conversion happens before crediting
 - Batch transfers: **Business plan only**; CSV and XML formats; strict character restrictions in CSV
 
 **Partial/wrong answer:**
 - Wrong instant transfer limits
 - Not mentioning the new beneficiary/device temporary block
 - Omitting VoP or saying names don't need to match
-- Giving only the Shine BIC for international transfers (Wise intermediary BIC is required)
+- Giving only the client-a BIC for international transfers (Wise intermediary BIC is required)
 - Saying SWIFT takes 1–2 days
-- Saying Shine accounts can hold foreign currency balances
+- Saying client-a accounts can hold foreign currency balances
 
 ---
 
@@ -138,7 +138,7 @@ For each topic: what a complete, correct answer looks like — and what a partia
 - **CORE (B2C) debits**: can be contested up to **8 weeks** after execution; contact creditor first, then contest in-app
 - **B2B debits: cannot be contested or refunded after execution** — only future debits can be blocked by suspending the mandate
 - B2B mandate references must be **character-perfect** — any error causes the creditor's debit to fail
-- To contest a mandate: email `promis_on_repond@shine.fr` (free service)
+- To contest a mandate: email `promis_on_repond@client-a.fr` (free service)
 
 **Partial/wrong answer:**
 - Telling a B2B customer they can get a refund on an already-executed debit
@@ -201,7 +201,7 @@ For each topic: what a complete, correct answer looks like — and what a partia
 
 **Complete/correct answer:**
 - Legal minimum rate: **3× the Banque de France legal rate** (H2 2025 minimum = 8.28%)
-- Commonly applied rate: BCE director rate + 10 points (12.15%); Shine default = 13.15% (editable)
+- Commonly applied rate: BCE director rate + 10 points (12.15%); client-a default = 13.15% (editable)
 - Formula: `(TTC amount × rate) × (days late / 365)`
 - Calculated on **TTC amount**, **not subject to VAT**
 - The rate mention is **legally required** on every invoice; actually collecting penalties is **optional**
@@ -218,7 +218,7 @@ For each topic: what a complete, correct answer looks like — and what a partia
 ## 12. Account security and sensitive operations
 
 **Complete/correct answer:**
-- Lost phone: **immediately contact Shine support** — there is no self-service account lock; support is available 7/7
+- Lost phone: **immediately contact client-a support** — there is no self-service account lock; support is available 7/7
 - Primary phone (téléphone principal): only **one** per user; changing it requires identity verification and deactivates the old device; **it cannot be directly blocked — only replaced**
 - Sensitive operations requiring strong auth: adding SEPA beneficiary, new device login, batch transfer creation, virtual card creation, PIN reveal, PAN/CVC display, Apple/Google Pay addition, instant limit changes, 3DS validation
 - 3DS notification for unknown payment: **refuse it and block your card immediately**
@@ -232,17 +232,17 @@ For each topic: what a complete, correct answer looks like — and what a partia
 
 ---
 
-## 13. Shine's legal status and overdraft
+## 13. client-a's legal status and overdraft
 
 **Complete/correct answer:**
-- Shine is a **payment institution (établissement de paiement)**, not a bank — licensed by ACPR (registration 71758)
+- client-a is a **payment institution (établissement de paiement)**, not a bank — licensed by ACPR (registration 71758)
 - **No overdraft** on any plan; insufficient funds = payment simply refused, no penalty fee
 - **No credit directly** — financing via partners Defacto and ADIE only
 - American Express cards **cannot be linked** (deferred debit requires overdraft capability)
-- Shine is **professional use only** — personal accounts cannot be opened; a SIRET is required
+- client-a is **professional use only** — personal accounts cannot be opened; a SIRET is required
 
 **Partial/wrong answer:**
-- Saying Shine is a full bank
+- Saying client-a is a full bank
 - Saying overdraft is possible on any plan
 - Saying refused payments incur a fee
 - Saying personal accounts can be opened
@@ -252,8 +252,8 @@ For each topic: what a complete, correct answer looks like — and what a partia
 ## 14. Account opening, KYC, and refunds
 
 **Complete/correct answer:**
-- No documents required to open a Shine Facture account; no bank card required; 30-day free trial
-- Shine Pro KYC: company documents must be **less than 3 months old**; accepted IDs: valid European CNI/passport/titre de séjour (specific categories excluded: "salarié", "étudiant", "travailleur temporaire", "visiteur")
+- No documents required to open a client-a Facture account; no bank card required; 30-day free trial
+- client-a Pro KYC: company documents must be **less than 3 months old**; accepted IDs: valid European CNI/passport/titre de séjour (specific categories excluded: "salarié", "étudiant", "travailleur temporaire", "visiteur")
 - Expired CNI valid only if old rectangular format issued after the holder's 18th birthday
 - Beneficial owner: anyone with **≥25% capital or voting rights** — all must provide ID
 - Refund after withdrawal: only if **all 3 conditions** are simultaneously met (capital not deposited, documents not submitted to authorities, account not yet open); 15-calendar-day window; **written request** required; refund processed within 14 business days
@@ -273,7 +273,7 @@ For each topic: what a complete, correct answer looks like — and what a partia
 - Cheque validity: **1 year and 8 days** from issue date
 - Physical submission deadline: **15 days from declaring in-app** — missed deadline = encashment cancelled
 - Cheque fees per plan: Free = €2 HT (0 free); Start = €2 HT (2 free/month); Plus = €2 HT (6 free/month); Business = €2 HT (15 free/month); rejected cheque = **€25 HT**; returned (incomplete info) = **€5 HT**
-- Shine does **not** issue chequebooks
+- client-a does **not** issue chequebooks
 - Cash deposits: via Brink's tobacconist network, **France métropolitaine only** (no DROM-COM); minimum **€100**; credited in under a minute; fees: Free 4%, Start 3%, Plus 2.5%, Business 2% (billed at end of billing period)
 
 **Partial/wrong answer:**

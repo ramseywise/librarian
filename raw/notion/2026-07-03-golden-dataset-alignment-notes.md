@@ -13,7 +13,7 @@
 | URL labels (retrieval targets) | ✅ Human-generated and validated by CS agents |
 | Full conversation context | ✅ Captured in separate column |
 | Evaluation pipeline | ✅ Hooked up in Langfuse; runnable from terminal against staging, production, or development |
-| "Low hanging fruit" eval metrics | ✅ Connected to Langfuse eval pipeline (from VA agents and Galactus) |
+| "Low hanging fruit" eval metrics | ✅ Connected to Langfuse eval pipeline (from VA agents and project-g) |
 | Dataset representativeness | Frequency analysis was applied only across Ramsey's 700 questions |
 | Answer quality evaluation | 🔜 Next step after retrieval evaluation is stable |
 

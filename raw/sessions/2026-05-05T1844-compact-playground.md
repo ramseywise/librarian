@@ -41,9 +41,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user was debugging a TypeError in their Jupyter notebook (02_eda.ipynb) that appeared in the "Rating
-- 
-            
-            
+-
+
+
 -  the kernel crashed for the similarity matrix - but here i would rather use sentence transformers or fasttext.. but for now can we just do lexical similarity as a start and maybe comment out the ones that take longer to run
 -  great - i'm wondering if this is lengthy should we add it to the data prep before we output the parquet for eda?
 - yes please lets add the semantic similarity to data prep but i still want to run the lexical as baseline - we can save the embeddings as tf-idf, or if we run transformers or fast text it will save it as well

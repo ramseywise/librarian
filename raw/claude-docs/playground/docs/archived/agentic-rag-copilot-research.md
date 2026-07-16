@@ -570,15 +570,15 @@ For multi-step tasks, evaluate the *sequence* of tool calls, not just the final 
 class TrajectoryEval(BaseModel):
     expected_steps: list[str]   # ["planner", "confirm", "create_invoice", "send_email"]
     actual_steps: list[str]     # What the agent actually did
-    
+
     def step_precision(self) -> float:
         correct = set(self.expected_steps) & set(self.actual_steps)
         return len(correct) / len(self.actual_steps) if self.actual_steps else 0.0
-    
+
     def step_recall(self) -> float:
         correct = set(self.expected_steps) & set(self.actual_steps)
         return len(correct) / len(self.expected_steps)
-    
+
     def order_accuracy(self) -> float:
         # Longest common subsequence of step sequences
         ...

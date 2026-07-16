@@ -11,9 +11,9 @@
 
 ## Executive Summary
 
-**Problem:** 40% of customer inquiries can be answered via static content from Shine's knowledge base. Today every inquiry is handled by the customer support team, leading to slower response times and inefficiencies.
+**Problem:** 40% of customer inquiries can be answered via static content from client-a's knowledge base. Today every inquiry is handled by the customer support team, leading to slower response times and inefficiencies.
 
-In line with OKR Objective 2, the Virtual Assistant team is developing a customer support agent: **chat-agent**. It will use Shine's Intercom knowledge base to answer customer inquiries faster than the customer support team can today, while providing appropriate escalation paths, boundary adherence, and guardrails.
+In line with OKR Objective 2, the Virtual Assistant team is developing a customer support agent: **chat-agent**. It will use client-a's Intercom knowledge base to answer customer inquiries faster than the customer support team can today, while providing appropriate escalation paths, boundary adherence, and guardrails.
 
 Target: initial launch by EoQ2 2026.
 
@@ -21,15 +21,15 @@ Target: initial launch by EoQ2 2026.
 
 ## Background
 
-**Current situation:** Shine's customer support is fully human-driven. Customers reach out, customer support agents respond manually (assisted by macros/templates), referencing the Intercom knowledge base.
+**Current situation:** client-a's customer support is fully human-driven. Customers reach out, customer support agents respond manually (assisted by macros/templates), referencing the Intercom knowledge base.
 
-**Why now:** By shielding customer support agents from inquiries that can be handled automatically, we free them for complex cases and enable customer support to scale with Shine's growth.
+**Why now:** By shielding customer support agents from inquiries that can be handled automatically, we free them for complex cases and enable customer support to scale with client-a's growth.
 
 ---
 
 ## Proposal
 
-Develop a chat-agent that answers static user inquiries using the Intercom knowledge base, with proper escalation paths. Future evolution: personalization, autonomous agent actions, Shine Banking MCP Server.
+Develop a chat-agent that answers static user inquiries using the Intercom knowledge base, with proper escalation paths. Future evolution: personalization, autonomous agent actions, client-a Banking MCP Server.
 
 ### How It Works
 
@@ -41,7 +41,7 @@ Develop a chat-agent that answers static user inquiries using the Intercom knowl
 ### Technology
 
 - **Retrieval**: Google Cloud Discovery Engine (Vertex AI Search), specifically the `ConversationalSearchService:answer` endpoint
-- **Knowledge base indexing**: Vertex AI Search auto-indexes `help.shine.fr/*` — automatically updated as pages are added/changed
+- **Knowledge base indexing**: Vertex AI Search auto-indexes `help.client-a.fr/*` — automatically updated as pages are added/changed
 - **GCP handles**: retrieval, ranking, and answer generation (fully managed RAG service)
 
 ---
@@ -50,7 +50,7 @@ Develop a chat-agent that answers static user inquiries using the Intercom knowl
 
 ### Request Flow
 
-User → REST or SSE → Dedicated UI in Shine Help Center (web + mobile) → Agentic RAG Chatbot → Guardrails layer (input validation before any generation) → GCP Answer Engine
+User → REST or SSE → Dedicated UI in client-a Help Center (web + mobile) → Agentic RAG Chatbot → Guardrails layer (input validation before any generation) → GCP Answer Engine
 
 ### Answer Generation
 
@@ -102,7 +102,7 @@ Targeting phased rollout to start by EoQ2 2026.
 - Evaluation, performance metrics, and continuous improvement framework far along
 
 **Next steps (by EoQ):**
-- Backend deployment to shine-api-staging
+- Backend deployment to client-a-api-staging
 - Frontend implementation (web or mobile first TBD)
 - Start phased rollout to X% of users
 - Selection of chat-agent database for chat history and session management

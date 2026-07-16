@@ -41,10 +41,10 @@ key_output: ~
 
 Summary:
 1. Primary Request and Intent:
-   The user needed to update eval_notebook.ipynb to properly prepare BookKeeper Hero conversation data for 
-- 
-            
-            
+   The user needed to update eval_notebook.ipynb to properly prepare BookKeeper Hero conversation data for
+-
+
+
 -  ok so it looks like no rating and im not sure why its numeric bc its like or dislike (str) - whereas feedback is from user and note is from agent eg Adoption Agent did not complete response or was interrupted.. source fidelity looks good.. i wonder if there is a source count? it seems like one sour
 - why is topic distribution so long? perhaps do something to get top topic_descriptions in the subplot next to it .. i'm not sure what the ratings below are saying, maybe here we can also do the strings for these with feedback or agent notes? or should that just be cross tab below? yeah makes more sen
 

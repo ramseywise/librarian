@@ -4,9 +4,9 @@ tags: [eval, pattern]
 summary: Three-agent pipeline for A/B testing Claude Code skills — a blind comparator scores two outputs on a rubric without knowing which skill produced them, a grader checks explicit expectations pass/fail with cited evidence, and a post-hoc analyzer unblinds the result to explain why the winner won and suggest concrete improvements to the loser.
 updated: 2026-07-14
 sources:
-  - raw/claude-docs/galactus/skills/skill-eval/comparator/SKILL.md
-  - raw/claude-docs/galactus/skills/skill-eval/grader/SKILL.md
-  - raw/claude-docs/galactus/skills/skill-eval/analyzer/SKILL.md
+  - raw/claude-docs/project-g/skills/skill-eval/comparator/SKILL.md
+  - raw/claude-docs/project-g/skills/skill-eval/grader/SKILL.md
+  - raw/claude-docs/project-g/skills/skill-eval/analyzer/SKILL.md
 ---
 
 # Skill Eval Pipeline (Blind Comparison + Grading)

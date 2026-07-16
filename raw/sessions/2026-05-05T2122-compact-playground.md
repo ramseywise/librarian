@@ -41,9 +41,9 @@ key_output: ~
 Summary:
 1. Primary Request and Intent:
    The user identified that the EDA notebook's crosstab analysis of rating vs response_type was incomplete.
-- 
-            
-            
+-
+
+
 -  ok i see greeting for the source fidelity - but not in the response_type variable interruption.. also what do you think of @results/eda_output/ pngs ? also i dont think this is right bc it can be hey quetsion with answer - but there were before a category for greetings that all matched to no source
 - yes please bc my version seems old
 - [Request interrupted by user for tool use]

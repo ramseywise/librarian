@@ -20,24 +20,24 @@ sources:
   - raw/claude-docs/_user/commands/start_session.md
   - raw/claude-docs/_user/commands/insights.md
   - raw/claude-docs/_user/commands/consolidate.md
-  - raw/claude-docs/galactus/skills/knowledge-creation/claude-insights/SKILL.md
-  - raw/claude-docs/galactus/skills/knowledge-creation/knowledge-share/SKILL.md
-  - raw/claude-docs/galactus/skills/knowledge-creation/skill-creator/SKILL.md
-  - raw/claude-docs/galactus/skills/knowledge-creation/sync-sessions/SKILL.md
-  - raw/claude-docs/galactus/skills/planning/define-milestones/SKILL.md
-  - raw/claude-docs/galactus/skills/planning/design-sprint/SKILL.md
-  - raw/claude-docs/galactus/skills/planning/doc-to-linear-tickets/SKILL.md
-  - raw/claude-docs/galactus/skills/planning/linear-spike/SKILL.md
-  - raw/claude-docs/galactus/skills/planning/scope-initiative/SKILL.md
-  - raw/claude-docs/galactus/skills/planning/execute-tasks/SKILL.md
-  - raw/claude-docs/galactus/skills/planning/github-projects/SKILL.md
-  - raw/claude-docs/galactus/skills/workflow/akira/SKILL.md
-  - raw/claude-docs/galactus/skills/workflow/code-debug/SKILL.md
-  - raw/claude-docs/galactus/skills/workflow/compact-session/SKILL.md
-  - raw/claude-docs/galactus/skills/workflow/prototype/SKILL.md
-  - raw/claude-docs/galactus/skills/workflow/quick-commit/SKILL.md
-  - raw/claude-docs/galactus/skills/workflow/quick-pr/SKILL.md
-  - raw/claude-docs/galactus/skills/workflow/review-pr/SKILL.md
+  - raw/claude-docs/project-g/skills/knowledge-creation/claude-insights/SKILL.md
+  - raw/claude-docs/project-g/skills/knowledge-creation/knowledge-share/SKILL.md
+  - raw/claude-docs/project-g/skills/knowledge-creation/skill-creator/SKILL.md
+  - raw/claude-docs/project-g/skills/knowledge-creation/sync-sessions/SKILL.md
+  - raw/claude-docs/project-g/skills/planning/define-milestones/SKILL.md
+  - raw/claude-docs/project-g/skills/planning/design-sprint/SKILL.md
+  - raw/claude-docs/project-g/skills/planning/doc-to-linear-tickets/SKILL.md
+  - raw/claude-docs/project-g/skills/planning/linear-spike/SKILL.md
+  - raw/claude-docs/project-g/skills/planning/scope-initiative/SKILL.md
+  - raw/claude-docs/project-g/skills/planning/execute-tasks/SKILL.md
+  - raw/claude-docs/project-g/skills/planning/github-projects/SKILL.md
+  - raw/claude-docs/project-g/skills/workflow/akira/SKILL.md
+  - raw/claude-docs/project-g/skills/workflow/code-debug/SKILL.md
+  - raw/claude-docs/project-g/skills/workflow/compact-session/SKILL.md
+  - raw/claude-docs/project-g/skills/workflow/prototype/SKILL.md
+  - raw/claude-docs/project-g/skills/workflow/quick-commit/SKILL.md
+  - raw/claude-docs/project-g/skills/workflow/quick-pr/SKILL.md
+  - raw/claude-docs/project-g/skills/workflow/review-pr/SKILL.md
   - raw/claude-docs/listen-wiseer/skills/code-refactor/SKILL.md
   - raw/claude-docs/listen-wiseer/skills/code-test/SKILL.md
   - raw/claude-docs/listen-wiseer/skills/code_debug.md
@@ -147,7 +147,7 @@ Two `claude-skills/` entries are explicitly archived reference material for a di
 
 Both apply the same Boundary-Control-Entity (BCE) architectural pattern to their respective stack, mirroring each other across backend/frontend — the only cross-cutting fact worth noting since neither stack otherwise intersects with the LangGraph/ADK/RAG agent-design focus of this wiki.
 
-**The same BCE/Gradle reference stack has its own dev-workflow skill trio**, found (identical byte-for-byte) in the galactus, playground, and playground-global skill directories — confirming they are copied template files, not galactus-authored: `execute-tasks` (works a `docs/epics/{ID}-TASKS.md` file top to bottom, trunk-based direct-commit by default or one git worktree per independent task group for parallel execution, `./gradlew compileJava compileTestJava` as the verification gate, closes the GitHub milestone and flips `ROADMAP.md` "Scope" sections to "Delivered" when all tasks land), `github-projects` (GraphQL template library for GitHub Projects V2 — item-ID lookup, status/iteration field mutation, sub-issue linking — read from a `GitHub Project Integration` section in `CLAUDE.md`; every mutation is best-effort, appending `|| true` so a sync failure never blocks the actual work), and `review-pr` (PR review gated on the same BCE layering + task acceptance criteria + `./gradlew test`, capped at 3 review rounds before escalating to the user). Noted here for skill-inventory completeness alongside the microprofile-backend/frontend pair above — out of scope for this wiki's agent/RAG focus, and superseded within galactus itself by the Python/`uv`/Linear-VIR-ticket pipeline documented in [[Galactus Dev Hooks & Git Workflow]].
+**The same BCE/Gradle reference stack has its own dev-workflow skill trio**, found (identical byte-for-byte) in the project-g, playground, and playground-global skill directories — confirming they are copied template files, not project-g-authored: `execute-tasks` (works a `docs/epics/{ID}-TASKS.md` file top to bottom, trunk-based direct-commit by default or one git worktree per independent task group for parallel execution, `./gradlew compileJava compileTestJava` as the verification gate, closes the GitHub milestone and flips `ROADMAP.md` "Scope" sections to "Delivered" when all tasks land), `github-projects` (GraphQL template library for GitHub Projects V2 — item-ID lookup, status/iteration field mutation, sub-issue linking — read from a `GitHub Project Integration` section in `CLAUDE.md`; every mutation is best-effort, appending `|| true` so a sync failure never blocks the actual work), and `review-pr` (PR review gated on the same BCE layering + task acceptance criteria + `./gradlew test`, capped at 3 review rounds before escalating to the user). Noted here for skill-inventory completeness alongside the microprofile-backend/frontend pair above — out of scope for this wiki's agent/RAG focus, and superseded within project-g itself by the Python/`uv`/Linear-VIR-ticket pipeline documented in [[project-g Dev Hooks & Git Workflow]].
 
 ## Evolution
 
@@ -195,7 +195,7 @@ Full skill inventory from `~/.claude/CLAUDE.md`:
 
 **Session/git safety rails (`/quick-commit`, `/quick-pr`):** both skills share the same guardrails — never force-push or amend a published commit, never skip hooks (`--no-verify`), never commit `.env`, `*.pem`, `models/*.pkl`, or files over 10 MB, and always show the staged file list before committing. `/quick-commit` derives the branch name from the current branch's ticket ID if present (`feature/lin-{id}-<slug>`) or falls back to a bare `feature/<slug>` when no per-repo type taxonomy applies — the generic counterpart to the type-prefixed convention in [[Branch Naming Convention Pattern]]. `/quick-pr` extends this with push-with-rebase-retry on a rejected push, a PR body templated from `.github/pull_request_template.md` with fields auto-filled from the diff, and an optional immediate squash/merge.
 
-**Product/Linear pipeline detail:** `/design-sprint` runs an IDEO/Stanford d.school HMW sprint in six phases (deconstruct pain points → HMW reframes → named technical solutions per HMW → workstream clustering by role → 5–7 named initiatives with dependencies → an HTML dependency-map artifact) and hands off to `/scope-initiative` per initiative. `/define-milestones` sits one level up — one goal sentence, 2–3 *verifiable* (not activity-based) success metrics, and 2–5 candidate initiatives per milestone; if the candidate initiatives aren't clear yet, it defers to `/design-sprint` first. Both write to `.claude/docs/` and create the corresponding Linear milestone/initiative directly. `/knowledge-share` (galactus-specific instance, not yet in the global skill set) is the adjacent "turn repo state into a stakeholder artifact" skill — Notion page / Google Drive doc / Google Slides deck via MCP, always drafted and confirmed before creation.
+**Product/Linear pipeline detail:** `/design-sprint` runs an IDEO/Stanford d.school HMW sprint in six phases (deconstruct pain points → HMW reframes → named technical solutions per HMW → workstream clustering by role → 5–7 named initiatives with dependencies → an HTML dependency-map artifact) and hands off to `/scope-initiative` per initiative. `/define-milestones` sits one level up — one goal sentence, 2–3 *verifiable* (not activity-based) success metrics, and 2–5 candidate initiatives per milestone; if the candidate initiatives aren't clear yet, it defers to `/design-sprint` first. Both write to `.claude/docs/` and create the corresponding Linear milestone/initiative directly. `/knowledge-share` (project-g-specific instance, not yet in the global skill set) is the adjacent "turn repo state into a stakeholder artifact" skill — Notion page / Google Drive doc / Google Slides deck via MCP, always drafted and confirmed before creation.
 
 **`/scope-initiative` — six-section output:** takes a named, agreed initiative (from `/design-sprint`) and produces a Linear-ready backlog: (1) failure modes & HMWs table, every later task traces to at least one failure mode; (2) research — reusable assets, per-layer libraries, technical unknowns and what each blocks; (3) task backlog — goal, concrete deliverable (never "implement X"), risks, T-shirt size (S <1wk / M 1–2wk / L 2–4wk / XL >sprint); (4) summary table + critical path — week-1 decisions, highest-risk dependency; (5) numbered open questions, each with a named owner; (6) Linear hierarchy — Initiative → Projects → Issues with Given/When/Then acceptance criteria and blocking relationships. Hands off to `/doc-to-linear-tickets` once reviewed.
 
@@ -238,10 +238,10 @@ See [[Claude Code Hook Architecture]] for how hooks enforce commit and code qual
 When working across many repos under one root (e.g. an external drive with `github/<repo>` for each project), permission prompts multiply if every repo has its own disconnected settings. The fix pattern:
 
 - Set the **drive/org root** (e.g. `github/`) as a project-level settings scope with broad, low-risk read/bash permissions — so opening any repo underneath it inherits sane defaults.
-- Layer **per-repo `.claude/settings.json`** underneath for repo-specific permissions (build tools, test runners specific to that stack) — same layering as the three-tier settings model in [[Galactus Dev Hooks & Git Workflow]] (`~/.claude/settings.json` → `.claude/settings.json` → `.claude/settings.local.json`).
+- Layer **per-repo `.claude/settings.json`** underneath for repo-specific permissions (build tools, test runners specific to that stack) — same layering as the three-tier settings model in [[project-g Dev Hooks & Git Workflow]] (`~/.claude/settings.json` → `.claude/settings.json` → `.claude/settings.local.json`).
 - **Always open Claude Code sessions inside a repo directory** (`github/<repo>`), not at the drive root — permissions and project context are scoped per-directory, and opening at the root loses per-repo specificity.
 
-This generalizes the settings-layering rule already documented for `galactus`: instead of just global vs. one-repo, insert an intermediate "root of all my repos" layer when working across many sibling projects on the same machine/drive.
+This generalizes the settings-layering rule already documented for `project-g`: instead of just global vs. one-repo, insert an intermediate "root of all my repos" layer when working across many sibling projects on the same machine/drive.
 
 ## Documentation-Gap Friction: Commands Not in the README
 
@@ -281,7 +281,7 @@ A project-local instantiation of this skill (`code_debug` in [[Listen-Wiseer Pro
 - [[Karpathy LLM Wiki Pattern]]
 - [[Session Log]]
 - [[Claude Code Hook Architecture]]
-- [[Galactus Dev Hooks & Git Workflow]]
+- [[project-g Dev Hooks & Git Workflow]]
 - [[SANYI Change-Contract System]]
 - [[Puffin Consciousness Development Skills]]
 - [[Agent Scaffolding Skill Layers]]

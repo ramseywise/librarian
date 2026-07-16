@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-07
 session_id: a758a3bb-728e-4902-a8ef-d99c39d1b930
 prompts: 10
@@ -8,7 +8,7 @@ total_tokens: 238411
 cache_read_tokens: 11709371
 ---
 
-# Claude Code Session — 2026-06-07 (galactus)
+# Claude Code Session — 2026-06-07 (project-g)
 
 **First prompt:** we have a 500 tests.. isnt there a better way to show the overvew of tests like conftest or something when we run make test command
 

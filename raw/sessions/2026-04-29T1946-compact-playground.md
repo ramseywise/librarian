@@ -36,7 +36,7 @@ key_output: ~
 - **Session ID**: bbf2d9cf-cc6a-452c-9764-a756d1ec3e97
 
 ## Recent prompts
--  can you find SEVDESK_API_TOKEN
+-  can you find vendor-a_API_TOKEN
 -  are there any .claude/docs/plans that we haven't dont yet? or should this go to research no? can you give me a summary what we have already updated for me to handle the git commits once i review everything? did you also do a cr of all file changes to migrating hc-rag-agent?
 -  oh so we still have some pending steps not done.. let's then clean this up (without erasing any env files) then move to the cod review before I commit changes (not just hc-rag) but also for our va agents
 - do we actuallly have pre-commit for playground? i thought we did but maybe we moved it to @workspace/librarian?

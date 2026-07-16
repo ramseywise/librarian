@@ -123,9 +123,7 @@ def _run_batch(dry_run: bool, force: bool, max_pdfs: int = 5) -> None:
     total_found = len(unprocessed)
     if len(unprocessed) > max_pdfs:
         unprocessed = unprocessed[:max_pdfs]
-        print(
-            f"Found {total_found} PDF(s), processing first {max_pdfs} (--max-pdfs limit):"
-        )
+        print(f"Found {total_found} PDF(s), processing first {max_pdfs} (--max-pdfs limit):")
     else:
         print(f"Found {total_found} PDF(s) to process:")
 
@@ -186,18 +184,14 @@ def _run_batch(dry_run: bool, force: bool, max_pdfs: int = 5) -> None:
             failed += 1
             print(f"  FAIL: {key} — {exc}")
 
-    print(
-        f"\nBatch complete: {processed} processed, {skipped} skipped, {failed} failed"
-    )
+    print(f"\nBatch complete: {processed} processed, {skipped} skipped, {failed} failed")
     if total_found > max_pdfs:
         remaining = total_found - max_pdfs
         print(f"Remaining: {remaining} PDF(s) will be processed in the next run")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate Obsidian notes from PDFs using Claude."
-    )
+    parser = argparse.ArgumentParser(description="Generate Obsidian notes from PDFs using Claude.")
     parser.add_argument(
         "pdf_path",
         type=Path,
@@ -275,7 +269,7 @@ def main() -> None:
             print(f"Error: PDF not found: {pdf_path}", file=sys.stderr)
             sys.exit(1)
 
-        if not pdf_path.suffix.lower() == ".pdf":
+        if pdf_path.suffix.lower() != ".pdf":
             log.error("cli.not_a_pdf", path=str(pdf_path))
             print(f"Error: file is not a PDF: {pdf_path}", file=sys.stderr)
             sys.exit(1)

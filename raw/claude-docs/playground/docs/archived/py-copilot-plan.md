@@ -38,8 +38,8 @@ v2/py_copilot/
         invitations.py       # invite_user
         knowledge.py         # fetch_support_knowledge
     lib/
-      billy_client.py        # httpx async wrapper + helper API lookups
-      billy_context.py       # ContextVar for per-request (api_token, org_id)
+      product-a_client.py        # httpx async wrapper + helper API lookups
+      product-a_context.py       # ContextVar for per-request (api_token, org_id)
       session_service.py     # ADK session service factory
       feedback.py            # Feedback storage (mirrors TS message_feedback table)
     interfaces/
@@ -85,25 +85,25 @@ this is an internal implementation detail), the ContextVar would be stale in tho
 **Mitigation:**
 
 ```python
-# lib/billy_context.py
+# lib/product-a_context.py
 from contextvars import ContextVar, copy_context
 from dataclasses import dataclass
 
 @dataclass(frozen=True)
-class BillyConfig:
+class product-aConfig:
     api_token: str
     organization_id: str
 
-_config: ContextVar[BillyConfig | None] = ContextVar("billy_config", default=None)
+_config: ContextVar[product-aConfig | None] = ContextVar("product-a_config", default=None)
 
-def set_billy_config(token: str, org_id: str) -> None:
-    _config.set(BillyConfig(api_token=token, organization_id=org_id))
+def set_product-a_config(token: str, org_id: str) -> None:
+    _config.set(product-aConfig(api_token=token, organization_id=org_id))
 
-def get_billy_config() -> BillyConfig:
+def get_product-a_config() -> product-aConfig:
     cfg = _config.get()
     if cfg is None:
         raise RuntimeError(
-            "BillyConfig not set — did the FastAPI endpoint call set_billy_config() "
+            "product-aConfig not set — did the FastAPI endpoint call set_product-a_config() "
             "before invoking the runner?"
         )
     return cfg
@@ -114,7 +114,7 @@ happen within the same asyncio task (verified against `google-adk 0.5.x` source)
 is live throughout.
 
 **Validation test required:** `test_context.py` must verify that a tool function can read
-`get_billy_config()` from within a `runner.run_async()` call with a mocked agent. If the ADK
+`get_product-a_config()` from within a `runner.run_async()` call with a mocked agent. If the ADK
 internals ever change, this test catches it immediately.
 
 **Fallback:** If the ContextVar approach fails (e.g. ADK spawns tasks), inject config as a
@@ -235,26 +235,26 @@ reuse across requests with different auth tokens.
 request's token:
 
 ```python
-# lib/billy_client.py
+# lib/product-a_client.py
 from contextlib import asynccontextmanager
 import httpx
 
 @asynccontextmanager
-async def get_client(cfg: BillyConfig):
+async def get_client(cfg: product-aConfig):
     headers = {
         "Authorization": f"Bearer {cfg.api_token}",
         "x-access-token": cfg.api_token,
         "Content-Type": "application/json",
     }
     async with httpx.AsyncClient(
-        base_url=settings.billy_api_base_url,
+        base_url=settings.product-a_api_base_url,
         headers=headers,
         timeout=30.0,
     ) as client:
         yield client
 ```
 
-Each tool call does `async with get_client(get_billy_config()) as client:`.
+Each tool call does `async with get_client(get_product-a_config()) as client:`.
 Per-request client creation is acceptable given typical LLM latency (100ms+ per turn).
 If throughput becomes a bottleneck, move to a connection pool keyed by org_id.
 
@@ -323,9 +323,9 @@ dev = ["pytest", "pytest-asyncio", "respx", "ruff", "pyright"]
 
 ### Step 1 — Context + Client (`lib/`)
 
-Implement `billy_context.py` and `billy_client.py` per the friction mitigations above.
+Implement `product-a_context.py` and `product-a_client.py` per the friction mitigations above.
 Include `get_default_sales_account()`, `get_default_payment_method()`, `get_org_defaults()`
-as async helpers — each makes one Billy.dk API call and returns a typed dict.
+as async helpers — each makes one product-a.dk API call and returns a typed dict.
 
 ---
 
@@ -447,8 +447,8 @@ session_service = get_session_service()
 ```python
 @app.post("/chat", response_model=AccountingOutput)
 async def chat(body: ChatRequest, request: Request):
-    # 1. Inject per-request Billy context
-    set_billy_config(body.api_token, body.org_id)
+    # 1. Inject per-request product-a context
+    set_product-a_config(body.api_token, body.org_id)
 
     # 2. Get or create ADK session
     session = await session_service.get_or_create_session(

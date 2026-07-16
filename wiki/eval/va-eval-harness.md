@@ -145,7 +145,7 @@ Status as of 2026-07-03 team alignment meeting (Jeremy, Dan, Yan, Anders, Sebast
 | URL labels (retrieval targets) | Human-generated and validated by CS agents |
 | Full conversation context | Captured in separate column |
 | Evaluation pipeline | Live in Langfuse; runnable from terminal against staging, production, or dev |
-| Basic eval metrics | Connected to Langfuse eval pipeline (from VA agents and Galactus) |
+| Basic eval metrics | Connected to Langfuse eval pipeline (from VA agents and project-g) |
 | Dataset representativeness | Frequency analysis applied only across Ramsey's 700 questions — known limitation |
 | Answer quality evaluation | Next step after retrieval evaluation is stable |
 
@@ -161,16 +161,16 @@ Status as of 2026-07-03 team alignment meeting (Jeremy, Dan, Yan, Anders, Sebast
 
 **Ground truth bias note:** The URL-cited ground truth skews toward single-document-answerable questions — more likely to be resolved than typical support traffic. The retrieval ceiling metrics apply to this slice, not full support volume.
 
-### Relationship to Galactus Eval
+### Relationship to project-g Eval
 
-The Galactus Intercom URL-grounded dataset (754 rows) and the VA 100-question golden dataset are different cuts of the same source corpus. The 754-row set is the bulk benchmarking ground truth; the 100-question golden set is the curated, CS-validated operational baseline for ongoing Langfuse pipeline evaluation.
+The project-g Intercom URL-grounded dataset (754 rows) and the VA 100-question golden dataset are different cuts of the same source corpus. The 754-row set is the bulk benchmarking ground truth; the 100-question golden set is the curated, CS-validated operational baseline for ongoing Langfuse pipeline evaluation.
 
 ## Concrete Implementation: va-langgraph Eval Framework
 
 The playground `va-langgraph` eval framework provides a concrete implementation of the abstract four-suite pattern above.
 
 **Location:** `va-langgraph/eval/`
-**Dataset:** 278 fixtures, German language, real sevdesk support tickets (CES-rated 1–7). Stratified sampling: ~40 tickets per CES level.
+**Dataset:** 278 fixtures, German language, real [vendor] support tickets (CES-rated 1–7). Stratified sampling: ~40 tickets per CES level.
 
 | CES | test_type | Signal |
 |---|---|---|
@@ -229,7 +229,7 @@ From a cleanup session (2026-04-18) that consolidated a sprawling `evals/` root,
 
 ## See Also
 - [[VA vs HCA Retrieval Evaluation]]
-- [[Galactus Eval Architecture]]
+- [[project-g Eval Architecture]]
 - [[RAG Evaluation]]
 - [[Input Guardrails Pipeline]]
 - [[Self-Learning Agents]]

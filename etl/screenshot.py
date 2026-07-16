@@ -45,7 +45,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Screenshot a running Streamlit app")
     parser.add_argument("--url", default="http://localhost:8501", help="Streamlit URL")
     parser.add_argument("--out", default="scripts/screenshot.png", help="Output path")
-    parser.add_argument("--tab", choices=list(TAB_LABELS), default=None, help="Click a tab before capturing")
+    parser.add_argument(
+        "--tab", choices=list(TAB_LABELS), default=None, help="Click a tab before capturing"
+    )
     parser.add_argument("--wait", type=float, default=3.0, help="Seconds to wait after page load")
     args = parser.parse_args()
     asyncio.run(_capture(args.url, Path(args.out), args.tab, args.wait))

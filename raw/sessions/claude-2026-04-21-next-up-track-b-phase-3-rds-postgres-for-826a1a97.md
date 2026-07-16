@@ -20,11 +20,11 @@ work_type: review
 
 # Claude Code Session — 2026-04-21 (playground)
 
-**First prompt:** Next up: Track B Phase 3 (RDS Postgres for LG checkpointer + EFS for shared billy SQLite)
+**First prompt:** Next up: Track B Phase 3 (RDS Postgres for LG checkpointer + EFS for shared product-a SQLite)
 
 ## Prompts (62 total)
 
-- Next up: Track B Phase 3 (RDS Postgres for LG checkpointer + EFS for shared billy SQLite)
+- Next up: Track B Phase 3 (RDS Postgres for LG checkpointer + EFS for shared product-a SQLite)
 - is everything from @.claude/docs/plans now done? or is there any more va-agent improvements to make?
 - This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
 

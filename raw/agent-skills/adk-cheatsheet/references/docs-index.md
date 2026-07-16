@@ -169,4 +169,3 @@ An open-source, code-first toolkit for building, evaluating, and deploying sophi
 - [REST API](https://google.github.io/adk-docs/api-reference/rest/index.md)
 - [Community Resources](https://google.github.io/adk-docs/community/index.md)
 - [Contributing Guide](https://google.github.io/adk-docs/contributing-guide/index.md)
-

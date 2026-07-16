@@ -17,8 +17,17 @@ REPO_ROOT = Path(__file__).parent.parent
 WIKI_DIR = REPO_ROOT / "wiki"
 
 DOMAIN_TAGS = [
-    "adk", "langgraph", "rag", "memory", "mcp", "voice",
-    "eval", "infra", "llm", "deep-agents", "context-management",
+    "adk",
+    "langgraph",
+    "rag",
+    "memory",
+    "mcp",
+    "voice",
+    "eval",
+    "infra",
+    "llm",
+    "deep-agents",
+    "context-management",
 ]
 
 TAG_COLORS = {
@@ -111,18 +120,20 @@ def load_wiki_pages() -> list[dict]:
         domain = next((t for t in tags if t in DOMAIN_TAGS), "other")
         page_type = next((t for t in tags if t in CYTO_SHAPES), "concept")
         wikilinks = re.findall(r"\[\[([^\]]+)\]\]", post.content)
-        pages.append({
-            "file": f,
-            "rel": str(f.relative_to(WIKI_DIR)),
-            "title": post.get("title", f.stem),
-            "summary": post.get("summary", ""),
-            "tags": tags,
-            "domain": domain,
-            "type": page_type,
-            "updated": str(post.get("updated", "")),
-            "sources": post.get("sources", []),
-            "wikilinks": [w for w in wikilinks if not w.startswith("_")],
-        })
+        pages.append(
+            {
+                "file": f,
+                "rel": str(f.relative_to(WIKI_DIR)),
+                "title": post.get("title", f.stem),
+                "summary": post.get("summary", ""),
+                "tags": tags,
+                "domain": domain,
+                "type": page_type,
+                "updated": str(post.get("updated", "")),
+                "sources": post.get("sources", []),
+                "wikilinks": [w for w in wikilinks if not w.startswith("_")],
+            }
+        )
     return pages
 
 
@@ -145,7 +156,8 @@ def build_elements(
     selected_types: list[str],
 ) -> list[dict]:
     filtered = [
-        p for p in pages
+        p
+        for p in pages
         if (not selected_tags or any(t in selected_tags for t in p["tags"]))
         and (not selected_types or p["type"] in selected_types)
     ]
@@ -160,23 +172,25 @@ def build_elements(
     elements: list[dict] = []
 
     for p in filtered:
-        degree = in_degree[p["title"]] + len([l for l in p["wikilinks"] if l in filtered_titles])
+        degree = in_degree[p["title"]] + len([w for w in p["wikilinks"] if w in filtered_titles])
         size = max(25, min(75, 25 + degree * 5))
-        elements.append({
-            "data": {
-                "id": p["title"],
-                "label": p["title"],
-                "color": TAG_COLORS.get(p["domain"], "#9E9E9E"),
-                "shape": CYTO_SHAPES.get(p["type"], "ellipse"),
-                "size": size,
-                "summary": p["summary"],
-                "tags": ", ".join(p["tags"]),
-                "type": p["type"],
-                "domain": p["domain"],
-                "updated": p["updated"],
-                "title": p["summary"] or p["title"],
+        elements.append(
+            {
+                "data": {
+                    "id": p["title"],
+                    "label": p["title"],
+                    "color": TAG_COLORS.get(p["domain"], "#9E9E9E"),
+                    "shape": CYTO_SHAPES.get(p["type"], "ellipse"),
+                    "size": size,
+                    "summary": p["summary"],
+                    "tags": ", ".join(p["tags"]),
+                    "type": p["type"],
+                    "domain": p["domain"],
+                    "updated": p["updated"],
+                    "title": p["summary"] or p["title"],
+                }
             }
-        })
+        )
 
     seen: set[str] = set()
     for p in filtered:
@@ -222,15 +236,19 @@ def main() -> None:
         if node_count == 0:
             st.info("No pages match the selected filters.")
         else:
-            selected = cytoscape(elements, STYLESHEET, layout=LAYOUT, height="640px", key="wiki_graph")
+            selected = cytoscape(
+                elements, STYLESHEET, layout=LAYOUT, height="640px", key="wiki_graph"
+            )
 
             col_a, col_b = st.columns(2)
             with col_a:
                 st.markdown(
-                    "**Domains:** " + "  ".join(
+                    "**Domains:** "
+                    + "  ".join(
                         f'<span style="background:{TAG_COLORS[t]};padding:2px 6px;border-radius:3px;'
                         f'color:white;font-size:11px">{t}</span>'
-                        for t in all_domain_tags if t in TAG_COLORS
+                        for t in all_domain_tags
+                        if t in TAG_COLORS
                     ),
                     unsafe_allow_html=True,
                 )
@@ -257,7 +275,11 @@ def main() -> None:
                 continue
             if selected_types and p["type"] not in selected_types:
                 continue
-            if search and search.lower() not in p["title"].lower() and search.lower() not in " ".join(p["tags"]):
+            if (
+                search
+                and search.lower() not in p["title"].lower()
+                and search.lower() not in " ".join(p["tags"])
+            ):
                 continue
             with st.expander(f"**{p['title']}** — {p['domain']} · {p['type']}"):
                 st.write(p["summary"])
@@ -273,7 +295,8 @@ def main() -> None:
 
         raw_root = REPO_ROOT / "raw"
         pending_files = [
-            f for f in sorted(raw_root.rglob("*.md"))
+            f
+            for f in sorted(raw_root.rglob("*.md"))
             if str(f.relative_to(REPO_ROOT)) not in manifest
         ]
 
@@ -295,7 +318,9 @@ def main() -> None:
             st.subheader("Ingested sources")
             for path, entry in sorted(manifest.items()):
                 pages_touched = entry.get("wiki_pages", [])
-                st.text(f"✓  {path}  →  {len(pages_touched)} wiki page(s)  [{entry['ingested_at']}]")
+                st.text(
+                    f"✓  {path}  →  {len(pages_touched)} wiki page(s)  [{entry['ingested_at']}]"
+                )
 
 
 if __name__ == "__main__":

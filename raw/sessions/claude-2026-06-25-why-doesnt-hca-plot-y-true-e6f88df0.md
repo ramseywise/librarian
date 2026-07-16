@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-25
 session_id: e6f88df0-0640-4304-a164-afb8bd6da840
 prompts: 2
@@ -8,7 +8,7 @@ total_tokens: 60374
 cache_read_tokens: 8454597
 ---
 
-# Claude Code Session — 2026-06-25 (galactus)
+# Claude Code Session — 2026-06-25 (project-g)
 
 **First prompt:** why doesnt hca plot y_true?
 

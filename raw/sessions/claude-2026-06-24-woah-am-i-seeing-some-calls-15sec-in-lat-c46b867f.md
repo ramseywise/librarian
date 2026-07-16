@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-24
 session_id: c46b867f-8146-4678-ad8a-84cca9cb038b
 prompts: 25
@@ -8,7 +8,7 @@ total_tokens: 338922
 cache_read_tokens: 33152117
 ---
 
-# Claude Code Session — 2026-06-24 (galactus)
+# Claude Code Session — 2026-06-24 (project-g)
 
 **First prompt:** woah am i seeing some calls 15sec in latency? that's not good.. how bad is it for what we're running now - is that all our agents due to the guardrails ro waht?
 

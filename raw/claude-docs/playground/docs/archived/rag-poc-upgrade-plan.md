@@ -1,8 +1,8 @@
 # rag_poc Upgrade Plan — LangGraph Modernization or ADK Migration
 
-**Status:** Draft — pending framework decision (§2)  
-**Date:** 2026-04-17  
-**Research:** [`adk-samples-patterns-analysis.md`](../research/adk-samples-patterns-analysis.md)  
+**Status:** Draft — pending framework decision (§2)
+**Date:** 2026-04-17
+**Research:** [`adk-samples-patterns-analysis.md`](../research/adk-samples-patterns-analysis.md)
 **Prior plan:** [`rag-architecture-refactoring-plan.md`](./rag-architecture-refactoring-plan.md) (v2 hardening — Phase A/B already implemented)
 
 ---
@@ -64,7 +64,7 @@ Adopt ADK patterns **within** LangGraph by porting from `langgraph_agents/native
 - Anthropic as primary LLM provider
 - Existing LangChain tool wrappers
 
-**Effort:** Medium (3–4 weeks)  
+**Effort:** Medium (3–4 weeks)
 **Risk:** Low — additive changes, no graph topology changes
 
 ### Option B — Google ADK Migration
@@ -83,14 +83,14 @@ Rewrite orchestration layer using `google-adk>=1.28.0`, keeping the RAG pipeline
 - MCP server pattern
 - Guardrails (importable from `shared/`)
 
-**Effort:** High (6–8 weeks)  
+**Effort:** High (6–8 weeks)
 **Risk:** Medium-High — model provider swap, HITL pattern change, new framework primitives
 
 ### Option C — Hybrid: ADK for new agents, LangGraph for RAG core
 
-Keep existing LangGraph RAG graph. Add ADK agents as new entry points (e.g. a `BillyAssistant`-style agent that calls the RAG graph as a tool via MCP).
+Keep existing LangGraph RAG graph. Add ADK agents as new entry points (e.g. a `product-aAssistant`-style agent that calls the RAG graph as a tool via MCP).
 
-**Effort:** High but parallelizable  
+**Effort:** High but parallelizable
 **Risk:** Low per component, complexity in routing between systems
 
 ### Recommendation
@@ -225,7 +225,7 @@ The ADK samples LangGraph port proves all meaningful patterns are achievable wit
 If the decision shifts to ADK, the migration sequence is:
 
 1. **Keep RAG pipeline as pure Python** — retriever, reranker, context builder become ADK `FunctionTool`s
-2. **Wrap as MCP server** — expose `search_knowledge_base` via FastMCP (pattern: `mcp_servers/billy/`)
+2. **Wrap as MCP server** — expose `search_knowledge_base` via FastMCP (pattern: `mcp_servers/product-a/`)
 3. **Rewrite orchestration** — replace graph with `Agent(instruction=..., tools=[rag_mcp_toolset])`
 4. **Port HITL** — `before_tool_callback` for confirmation gates
 5. **Add SkillToolset** — if multi-domain skills needed

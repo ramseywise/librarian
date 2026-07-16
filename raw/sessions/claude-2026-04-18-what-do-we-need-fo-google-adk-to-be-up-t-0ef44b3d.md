@@ -21,7 +21,7 @@ work_type: planning
 
 ## Prompts (5 total)
 
-- what do we need fo google adk to be up to par with @adk-agent-samples-main? might be in @rag_poc/.claude/docs/plans/rag-poc-upgrade-plan.md - note shared protocols etc vs skills in particular - where 
+- what do we need fo google adk to be up to par with @adk-agent-samples-main? might be in @rag_poc/.claude/docs/plans/rag-poc-upgrade-plan.md - note shared protocols etc vs skills in particular - where
 - let's start parity so that we can test and evaluate both - with as much overlap in the skills logic as poassible for both orchestrators
 - Base directory for this skill: /Users/ramsey.wise/Workspace/adk-agent-samples-main/.claude/skills/adk-cheatsheet
 
@@ -34,7 +34,7 @@ Summary:
 1. Primary Request and Intent:
 
 **Mess
-- add teset to make file for both langgraph and adk.. also since we ahve adk/app should we rename our app to src? why is guardrails and prompts outside of orchestrator? should it go inside there or adk 
+- add teset to make file for both langgraph and adk.. also since we ahve adk/app should we rename our app to src? why is guardrails and prompts outside of orchestrator? should it go inside there or adk
 
 ## Stats
 

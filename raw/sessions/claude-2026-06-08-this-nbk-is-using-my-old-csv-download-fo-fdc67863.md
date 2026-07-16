@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-08
 session_id: fdc67863-68d6-4765-9d18-0c60edcd634a
 prompts: 47
@@ -8,7 +8,7 @@ total_tokens: 687023
 cache_read_tokens: 75691333
 ---
 
-# Claude Code Session — 2026-06-08 (galactus)
+# Claude Code Session — 2026-06-08 (project-g)
 
 **First prompt:** this nbk is using my old csv download for the last year matched with bkh - but actually now we have a pipeline that gets all the data in core.. should we try to match as many bkh queries as possible or just use the gt set we have in the following ingestion inspection and rag optimization? can we cla
 

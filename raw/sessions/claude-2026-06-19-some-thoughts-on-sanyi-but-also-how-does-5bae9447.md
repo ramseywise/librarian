@@ -1,6 +1,6 @@
 ---
 tool: claude-code
-project: galactus
+project: project-g
 date: 2026-06-19
 session_id: 5bae9447-1530-40ff-833c-b4786cb21051
 prompts: 6
@@ -8,12 +8,12 @@ total_tokens: 54876
 cache_read_tokens: 3765281
 ---
 
-# Claude Code Session — 2026-06-19 (galactus)
+# Claude Code Session — 2026-06-19 (project-g)
 
 **First prompt:** some thoughts on sanyi but also how does this compare with our @src/akira agent? what would be the best way of using this? Strong skill overall — the conceptual model is genuinely useful and the violation taxonomy is well-designed. A few honest observations:
 
 **What's working well**
-- The First Law 
+- The First Law
 
 ## Prompts (6 total)
 

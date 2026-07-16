@@ -4,7 +4,7 @@ tags: [rag, infra, pattern]
 summary: Zero-retrieval-cost path for RAG agents — embed the query, cosine-match against a grader-validated golden seed, and short-circuit the full CRAG pipeline on high-similarity hits.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/galactus/docs/rag/semantic-cache.md
+  - raw/claude-docs/project-g/docs/rag/semantic-cache.md
 ---
 
 # Semantic Cache for RAG Agents
@@ -24,7 +24,7 @@ planner ──▶ cache_lookup ──▶ hit (sim ≥ 0.85)? ──YES──▶ 
                                       ▼
                            source_router ──▶ route by intent_type
                                       │
-                          help_center / billypedia / escalation
+                          help_center / [product]-kb / escalation
                                       ▼
                              retrieve (CRAG) ──▶ answer ──▶ END
 ```
@@ -103,11 +103,11 @@ The same `multilingual-e5-base` embedding model routes by intent type using pre-
 |---|---|---|
 | `how_to` | help center | Standard CRAG retrieval |
 | `regulatory` | help center + pricing | Both, re-rank by domain |
-| `definition` | billypedia as context enrichment + help center for answer | Billypedia is **never** the primary target |
+| `definition` | [product]-kb as context enrichment + help center for answer | [product]-kb is **never** the primary target |
 | `escalation` | skip retrieval | Route directly to escalation |
 | `low_confidence` | all sources | Flat fallback search |
 
-**Key insight:** Billypedia (concept glossary) is context enrichment only. For `definition` queries, the actual answer still comes from help center articles.
+**Key insight:** [product]-kb (concept glossary) is context enrichment only. For `definition` queries, the actual answer still comes from help center articles.
 
 ---
 

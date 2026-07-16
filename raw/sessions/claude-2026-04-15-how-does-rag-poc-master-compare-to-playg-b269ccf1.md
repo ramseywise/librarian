@@ -25,7 +25,7 @@ work_type: research
 
 ## Prompts (4 total)
 
-- how does @rag_poc-master compare to @playground/src/librarian? what do we do that's better and if we were to clone and fork a repo how would we build it up into stack like librarian? lets first do an 
+- how does @rag_poc-master compare to @playground/src/librarian? what do we do that's better and if we were to clone and fork a repo how would we build it up into stack like librarian? lets first do an
 - write the plan. and the research on design choice differences
 - ok can you now compare it to @v2/ts_google_talk setup and requirements.. what would we need to do to turn this into a copilot with actionability?
 - what other things shoud be considered for the langgraph copilot in @playground or in general best practices, like a2a or agentic rag

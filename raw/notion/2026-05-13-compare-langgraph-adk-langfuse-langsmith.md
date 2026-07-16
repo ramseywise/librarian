@@ -143,10 +143,10 @@
 - Testing/eval automation
 
 **TypeScript wins for:**
-- Team familiarity (Shine core web devs)
+- Team familiarity (client-a core web devs)
 - I/O performance and concurrency (native non-blocking)
 - "Vibe coding" / AI-assisted DX (strong static types reduce generated-code errors)
-- Backend service integration (existing Shine backend services are TypeScript)
+- Backend service integration (existing client-a backend services are TypeScript)
 - Schema/contract safety (Zod-style validation)
 
 **Key architectural question:** Unified runtime vs "Brain and Limbs" hybrid (Python for orchestration/RAG + TypeScript for tool execution/API boundaries via MCP)?
