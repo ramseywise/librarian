@@ -38,7 +38,7 @@ viz = [
 ]
 api = [
     "fastapi>=0.139.2",
-    "uvicorn[standard]>=0.29.0",
+    "uvicorn[standard]>=0.51.0",
     "sentence-transformers>=5.6.0",
     "umap-learn>=0.5.6",
     "watchfiles>=1.2.0",
@@ -51,7 +51,7 @@ codemap = [
     "tree-sitter>=0.24.0",
     "tree-sitter-python>=0.23.0",
     "fastapi>=0.139.2",
-    "uvicorn[standard]>=0.29.0",
+    "uvicorn[standard]>=0.51.0",
 ]
 
 [build-system]
