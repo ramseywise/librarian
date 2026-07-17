@@ -8,6 +8,7 @@
 #   .claude/docs/**/*.md
 #   docs/**/*.md
 #   .agents/**/*.md
+#   interviewing/**/*.md   (learn-ai-engineering interview KB)
 #
 # Add your active repos below:
 /Users/wiseer/workspace/playground

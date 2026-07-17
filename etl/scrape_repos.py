@@ -2,7 +2,7 @@
 
 Reads raw/repos/repos.txt — one repo path per line (# for comments).
 For each repo, extracts: CLAUDE.md, README.md, .claude/skills/**/*.md,
-docs/**/*.md, .agents/**/*.md, SANYI.md.
+docs/**/*.md, .agents/**/*.md, SANYI.md, interviewing/**/*.md.
 
 Idempotent: skips files whose content hasn't changed since last scrape.
 
@@ -38,6 +38,7 @@ EXTRACT_GLOBS = [
     "docs/**/*.md",
     ".agents/**/*.md",
     "src/agents/akira/findings/*.md",
+    "interviewing/**/*.md",  # learn-ai-engineering interview KB
 ]
 
 # Never extract these (build artifacts, lock files, etc.)
