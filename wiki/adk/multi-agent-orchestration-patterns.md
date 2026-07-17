@@ -141,6 +141,11 @@ class InvoiceAgentOutput(TypedDict):
 This prevents schema drift as agents evolve independently.
 
 ## See Also
+- [[Agentic Workflow Patterns]] <!-- auto-linked -->
+- [[Voice Agent Patterns]] <!-- auto-linked -->
+- [[ADK Observability]] <!-- auto-linked -->
+- [[ADK Scaffold Patterns]] <!-- auto-linked -->
+- [[ADK Deployment Patterns]] <!-- auto-linked -->
 - [[ADK Context Engineering]]
 - [[SKILL.md Pattern]]
 - [[Prefix Caching]]

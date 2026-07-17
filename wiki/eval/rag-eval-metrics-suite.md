@@ -190,6 +190,10 @@ Low Document Precision + high Contextual Relevance → source-targeting or ranki
 ---
 
 ## See Also
+- [[RAG Eval Gate Contract]] <!-- auto-linked -->
+- [[project-g Eval Architecture]] <!-- auto-linked -->
+- [[HITL Annotation Pipeline]] <!-- auto-linked -->
+- [[VA Eval Harness]] <!-- auto-linked -->
 - [[Synthetic Dataset Generation for RAG Eval]]
 - [[RAG Evaluation]]
 - [[LLM Grader Calibration Insights]]

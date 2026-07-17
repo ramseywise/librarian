@@ -100,6 +100,7 @@ When compiling a subgraph, `checkpointer` controls persistence behavior:
 **Warning:** stateful subgraphs (`checkpointer=True`) cannot be called multiple times within a single node — they write to the same checkpoint namespace and conflict. Wrap each in its own `StateGraph` with a unique node name for isolation.
 
 ## See Also
+- [[LangGraph CRAG Pipeline]] <!-- auto-linked -->
 - [[LangGraph Advanced Patterns]]
 - [[Send API Fan-out]]
 - [[LangGraph BaseStore]]

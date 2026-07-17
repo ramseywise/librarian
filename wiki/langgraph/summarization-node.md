@@ -59,6 +59,7 @@ The same trigger/overlap pattern (8 messages, 4 overlap) appears in both LangGra
 The summarized `SystemMessage` prepended to history is a candidate for [[Prefix Caching]] if its content is stable across turns. However, since the summary evolves with each compression cycle, caching only helps within a single session.
 
 ## See Also
+- [[LangGraph BaseStore]] <!-- auto-linked -->
 - [[Agent Memory Types]]
 - [[ADK Context Engineering]]
 - [[HistoryCondenser]]

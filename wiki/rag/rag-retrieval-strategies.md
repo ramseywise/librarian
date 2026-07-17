@@ -297,6 +297,7 @@ conn.execute("""
 This avoids pre-ingesting all artists upfront and handles the corpus freshness gap naturally.
 
 ## See Also
+- [[RAG Knowledge Preparation]] <!-- backfill -->
 - [[LangGraph CRAG Pipeline]]
 - [[RAG Reranking]]
 - [[RAG Evaluation]]

@@ -206,6 +206,7 @@ Both read and query paths are **read-only consumers** of the stores. No service 
 See [[Bedrock KB vs LangGraph Decision]] for the build vs buy trade-off analysis.
 
 ## See Also
+- [[LangGraph BaseStore]] <!-- auto-linked -->
 - [[LangGraph CRAG Pipeline]]
 - [[RAG Retrieval Strategies]]
 - [[RAG Reranking]]

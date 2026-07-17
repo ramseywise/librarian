@@ -138,6 +138,8 @@ Test these explicitly — they don't appear in standard QA evals:
 | Scope violation | Retrieved context from wrong domain used to answer off-domain question |
 
 ## See Also
+- [[LangGraph BaseStore]] <!-- auto-linked -->
+- [[Librarian RAG Architecture]] <!-- auto-linked -->
 - [[CRAG Retry Logic]]
 - [[RAG Retrieval Strategies]]
 - [[RAG API Design Patterns]]

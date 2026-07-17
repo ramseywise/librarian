@@ -120,6 +120,7 @@ class EscalationChecker(BaseAgent):
 ---
 
 ## See Also
+- [[ADK vs LangGraph Comparison]] <!-- auto-linked -->
 
 - [[ADK Python API Reference]]
 - [[ADK Context Engineering]]

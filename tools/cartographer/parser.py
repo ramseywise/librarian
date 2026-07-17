@@ -872,6 +872,16 @@ Make the analysis specific — use actual numbers, first prompts, and patterns. 
 """
 
 
+def _key_from_env_file() -> str:
+    """Fallback key lookup for shells without ANTHROPIC_API_KEY exported."""
+    for env_path in (Path.home() / ".claude" / ".env", Path.cwd() / ".env"):
+        if env_path.exists():
+            for line in env_path.read_text().splitlines():
+                if line.startswith("ANTHROPIC_API_KEY="):
+                    return line.split("=", 1)[1].strip().strip("\"'")
+    return ""
+
+
 def call_claude(api_key: str, prompt: str, model: str = "claude-sonnet-4-6") -> str:
     """Call the Anthropic API to generate an HTML report."""
     import anthropic
@@ -999,9 +1009,13 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="Extract stats only, skip API call")
     args = parser.parse_args()
 
-    api_key = args.key or os.environ.get("ANTHROPIC_API_KEY", "")
+    api_key = args.key or os.environ.get("ANTHROPIC_API_KEY", "") or _key_from_env_file()
     if not api_key and not args.dry_run:
-        log.error("parser.no_api_key", msg="Set ANTHROPIC_API_KEY or pass --key")
+        log.error(
+            "parser.no_api_key",
+            msg="Set ANTHROPIC_API_KEY, pass --key, or put it in ~/.claude/.env; "
+            "use --dry-run for keyless mechanical stats",
+        )
         sys.exit(1)
 
     projects_dir = Path(args.projects_dir).expanduser()

@@ -120,6 +120,9 @@ The same `multilingual-e5-base` embedding model routes by intent type using pre-
 ---
 
 ## See Also
+- [[RAG Evaluation]] <!-- auto-linked -->
+- [[RAG Reranking]] <!-- auto-linked -->
+- [[RAG API Design Patterns]] <!-- auto-linked -->
 - [[Reciprocal Rank Fusion (RRF)]]
 - [[CRAG Retry Logic]]
 - [[RAG Retrieval Strategies]]

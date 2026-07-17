@@ -142,6 +142,9 @@ The Librarian uses ADK-idiomatic naming for agent classes:
 - Equivalent ADK structure: `SequentialAgent([condenser, planner, LoopAgent([retriever, reranker, gate]), generator])`
 
 ## See Also
+- [[Summarization Node]] <!-- auto-linked -->
+- [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
+- [[LangGraph BaseStore]] <!-- auto-linked -->
 - [[Librarian RAG Architecture]]
 - [[RAG Retrieval Strategies]]
 - [[RAG Reranking]]

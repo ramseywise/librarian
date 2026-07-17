@@ -127,12 +127,12 @@ def append_see_also(page_path: Path, link_title: str, comment: str = "auto-linke
 
     entry = f"- [[{link_title}]] <!-- {comment} -->"
 
-    if "## See Also" in content:
-        content = content.replace(
-            "## See Also",
-            f"## See Also\n{entry}",
-            1,
-        )
+    # Line-exact anchor: pages may QUOTE "## See Also" in prose or inline code
+    # (a substring replace once corrupted such a page) — only a real heading
+    # line counts as the section.
+    match = re.search(r"^## See Also[ \t]*$", content, flags=re.MULTILINE)
+    if match:
+        content = content[: match.end()] + f"\n{entry}" + content[match.end() :]
     else:
         content = content.rstrip() + f"\n\n## See Also\n{entry}\n"
 

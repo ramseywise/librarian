@@ -259,6 +259,7 @@ This is especially important for edge cases — judge prompts optimized on avera
 ---
 
 ## See Also
+- [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
 - [[RAG Eval Metrics Suite]]
 - [[Synthetic Dataset Generation for RAG Eval]]
 - [[Conversation Repository Pattern]]

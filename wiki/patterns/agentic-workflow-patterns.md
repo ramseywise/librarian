@@ -89,6 +89,7 @@ Frameworks (Claude Agent SDK, Strands, Rivet, Vellum) help get started but add a
 **Recommendation:** start with LLM APIs directly. Most patterns can be implemented in a few lines. Use frameworks if needed, but understand what's underneath — incorrect assumptions about framework internals are a common error source. Reduce abstraction layers as you move to production.
 
 ## See Also
+- [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Plan and Execute Pattern]]
 - [[LangGraph Advanced Patterns]]
 - [[MCP Protocol]]

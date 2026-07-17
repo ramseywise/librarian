@@ -483,6 +483,9 @@ google/adk/
 ---
 
 ## See Also
+- [[ADK JS TypeScript Patterns]] <!-- auto-linked -->
+- [[Multi-Agent Orchestration Patterns]] <!-- auto-linked -->
+- [[ADK vs LangGraph Comparison]] <!-- auto-linked -->
 
 - [[ADK Workflow Agents]]
 - [[ADK Context Engineering]]

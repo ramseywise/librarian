@@ -76,6 +76,7 @@ Too many into reranker → latency spike. Too few → no gain over CRAG grading 
 **Reranker caveat:** at small corpus sizes (<1K chunks), cross-encoder reranking can *degrade* quality by overfitting to surface-level similarity. Test on actual corpus before committing to reranking.
 
 ## See Also
+- [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
 - [[LangGraph CRAG Pipeline]]
 - [[RAG Retrieval Strategies]]
 - [[RAG Evaluation]]

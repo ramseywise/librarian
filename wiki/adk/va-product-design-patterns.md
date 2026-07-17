@@ -96,6 +96,10 @@ Minimum coverage before shipping level 3 (autonomous execution):
 8. Email pre-filling — to field is plain email only (no display names)
 
 ## See Also
+- [[Agentic KPI Trees]] <!-- backfill -->
+- [[Voice Agent Patterns]] <!-- auto-linked -->
+- [[ADK Scaffold Patterns]] <!-- auto-linked -->
+- [[Multi-Modal Agent Response]] <!-- auto-linked -->
 - [[Multi-Agent Orchestration Patterns]]
 - [[Input Guardrails Pipeline]]
 - [[SKILL.md Pattern]]

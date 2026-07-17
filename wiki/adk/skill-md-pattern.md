@@ -53,6 +53,7 @@ Three-agent pipeline for evaluating and improving skill descriptions:
 Automated description optimization loop: run Grader → Comparator → Analyzer → rewrite description → repeat until Grader passes consistently.
 
 ## See Also
+- [[ADK Scaffold Patterns]] <!-- auto-linked -->
 - [[ADK Context Engineering]]
 - [[ADK vs LangGraph Comparison]]
 - [[Prefix Caching]]

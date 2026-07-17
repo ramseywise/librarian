@@ -238,6 +238,8 @@ The "Brain and Limbs" hybrid option was also considered: Python for orchestratio
 The VA team ([product].dk virtual assistant) is transitioning to LangGraph for its next iteration. Current production is Google ADK + Next.js (va-agents on AWS ECS). The transition is enabled by extracting tools into the MCP layer (va-hypernova) — the agent framework can change without rewriting the tool layer.
 
 ## See Also
+- [[VA LangGraph Migration Roadmap]] <!-- backfill -->
+- [[project-g Agent Feature Parity]] <!-- backfill -->
 - [[ADK JS TypeScript Patterns]]
 - [[ADK vs LangGraph Decision]]
 - [[LangGraph CRAG Pipeline]]

@@ -37,6 +37,7 @@ Comparing against a separate, more classically-structured data-science project t
 Porting skills into the new template (`new-agent` skill work) raised the question of where supporting specs/docs should live — collected under a `root/docs`-style location rather than scattered — mirroring the docs lifecycle pattern in [[Claude Workflow System]].
 
 ## See Also
+- [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Multi-Repo Claude Organization]]
 - [[Claude Workflow System]]
 - [[ADK Scaffold Patterns]]

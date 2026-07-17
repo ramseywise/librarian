@@ -47,6 +47,7 @@ Static branches (added at graph compile time) run a fixed set of nodes in parall
 After all branches complete, state is merged at the join node. By default, fields are merged using their type annotations — lists are concatenated, values are last-write-wins. Use `Annotated[list, operator.add]` in the TypedDict to ensure list concatenation rather than replacement.
 
 ## See Also
+- [[LangGraph CRAG Pipeline]] <!-- auto-linked -->
 - [[LangGraph Advanced Patterns]]
 - [[Agentic Workflow Patterns]] — Parallelization / Sectioning pattern
 - [[Librarian RAG Architecture]]

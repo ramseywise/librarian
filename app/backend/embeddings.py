@@ -52,7 +52,7 @@ def _open_cache() -> duckdb.DuckDBPyConnection:
         )
     """)
     # Add model_name column if missing (migration from old schema)
-    cols = {r[0] for r in con.execute("PRAGMA table_info('embeddings')").fetchall()}
+    cols = {r[1] for r in con.execute("PRAGMA table_info('embeddings')").fetchall()}
     if "model_name" not in cols:
         con.execute("ALTER TABLE embeddings ADD COLUMN model_name TEXT DEFAULT ''")
     # Invalidate cache if model changed

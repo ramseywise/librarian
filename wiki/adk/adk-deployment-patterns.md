@@ -317,6 +317,7 @@ gcloud run services update-traffic SERVICE_NAME \
 ---
 
 ## See Also
+- [[VA Product Design Patterns]] <!-- auto-linked -->
 
 - [[System Design — Serverless Agent Backends]] — instance-of
 - [[ADK Scaffold Patterns]]

@@ -96,6 +96,8 @@ Knowledge preparation is a prerequisite before loading content into a vector sto
 ---
 
 ## See Also
+- [[Librarian RAG Architecture]] <!-- auto-linked -->
+- [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
 - [[RAG Retrieval Strategies]]
 - [[RAG Evaluation]]
 - [[[client] Knowledge Agent]]

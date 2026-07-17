@@ -112,6 +112,7 @@ print(result["structured_response"])  # ContactInfo(name='John', ...)
 - **Vague tool descriptions:** hurts tool-selection accuracy; always document `Args:` in the tool docstring.
 
 ## See Also
+- [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Framework Selection — LangChain vs LangGraph vs Deep Agents]]
 - [[LangChain Agent Middleware]]
 - [[LangChain Dependency Management]]

@@ -175,6 +175,8 @@ This adds an `embed_query` child span under `vector_search`, separating Gemini e
 ---
 
 ## See Also
+- [[LangSmith project-g]] <!-- auto-linked -->
+- [[Langfuse project-g]] <!-- auto-linked -->
 - [[Langfuse Platform]]
 - [[ADK Observability]]
 - [[CRAG Retry Logic]]

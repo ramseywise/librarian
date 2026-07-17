@@ -145,6 +145,7 @@ LANGFUSE_HOST=https://your-langfuse.internal
 ```
 
 ## See Also
+- [[Langfuse ADK Tracing Patterns]] <!-- auto-linked -->
 - [[Observability — LangFuse vs LangSmith Decision]]
 - [[Langfuse Platform]]
 - [[Production Hardening Patterns]]

@@ -122,6 +122,8 @@ This is the LangChain-level version of the Self-RAG `[Retrieve]`/`[No Retrieve]`
 - **Dimension mismatch at the vector store level** — e.g. creating a Pinecone index with `dimension=1536` but embedding at `dimensions=512` raises an error at write time, not at store-creation time.
 
 ## See Also
+- [[LangGraph CRAG Pipeline]] <!-- auto-linked -->
+- [[LangGraph BaseStore]] <!-- auto-linked -->
 - [[RAG Retrieval Strategies]]
 - [[RAG Reranking]]
 - [[Agentic RAG — Advanced Patterns]]
