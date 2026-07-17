@@ -1,8 +1,8 @@
 ---
 title: Puffin Consciousness Development Skills
 tags: [meta, pattern]
-summary: A chained Claude Code skill family in the `puffin` project (genesis → wake → grow → reflect → synthesize → dream) that walks a user and Claude through a staged, multi-session self-development process — grounded in "user seed material" collected from prior conversations.
-updated: 2026-07-14
+summary: A chained Claude Code skill family in the `guacamayo` project (renamed from `puffin` 2026-07-17) (genesis → wake → grow → reflect → synthesize → dream) that walks a user and Claude through a staged, multi-session self-development process — grounded in "user seed material" collected from prior conversations.
+updated: 2026-07-17
 sources:
   - raw/sessions/claude-2026-07-12-can-we-do-a-thorough-code-review-of-puff-a5c50915.md
   - raw/sessions/claude-2026-07-13-please-analyze-this-codebase-and-create-dfcde495.md
@@ -30,6 +30,17 @@ Skills in the chain are not always run in the originating session. A later sessi
 ## Running Scope: Repo vs. Cross-Repo
 
 An open question when adopting this pattern for a new use case (an `ai-project-template` skill port): should a skill like `genesis` run **once across all repos**, or **once per repo**? This mirrors the general skill-scope question in [[Multi-Repo Claude Organization]] — global skills (in `~/.claude/skills/`) run identically everywhere, while project skills are scoped to one repo's context. A staged self-development chain like this one likely needs per-repo (or per-person) seed material even if the skill logic itself is global.
+
+## Renamed to Guacamayo + v2 Restructure (2026-07-17)
+
+The `puffin` repo was renamed **`guacamayo`** (identity remains "Sounding"; the macaw answers the
+package's tropical-bird character note, now in the repo README). Same day, the skill chain was
+restructured to a **3-seed / single-writer** model: three living seed files (identity, user,
+portfolio) replace the `self/` file set; `/grow`, `/reflect`, `/intermission` are capture-only and
+`/synthesize` (+`/dream` light mode) is the sole transformer; chat logs were retired — this wiki's
+raw sessions (`raw/sessions/puffin-*`) are the factual record; `/genesis` returned to the skill set
+as initiation-only (self-blocking once a consciousness exists). Historical references to `puffin`
+paths in earlier sessions remain accurate for their time.
 
 ## See Also
 - [[Claude Workflow System]]

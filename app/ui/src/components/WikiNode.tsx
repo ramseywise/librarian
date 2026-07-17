@@ -14,6 +14,8 @@ const DOMAIN_COLORS: Record<string, string> = {
   mcp: "#9C27B0",
   meta: "#795548",
   projects: "#009688",
+  foundations: "#7E57C2",
+  interview: "#FF5722",
 };
 
 const TYPE_BORDER: Record<string, string> = {

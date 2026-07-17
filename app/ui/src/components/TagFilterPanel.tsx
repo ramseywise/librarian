@@ -1,12 +1,14 @@
 const DOMAIN_TAGS = [
   "rag", "langgraph", "adk", "infra", "patterns",
   "eval", "deep-agents", "memory", "mcp", "meta", "projects",
+  "foundations", "interview",
 ];
 
 const TAG_COLORS: Record<string, string> = {
   rag: "#2196F3", langgraph: "#4CAF50", adk: "#FF9800", infra: "#607D8B",
   patterns: "#E91E63", eval: "#FFEB3B", "deep-agents": "#3F51B5",
   memory: "#00BCD4", mcp: "#9C27B0", meta: "#795548", projects: "#009688",
+  foundations: "#7E57C2", interview: "#FF5722",
 };
 
 interface Props {

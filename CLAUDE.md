@@ -5,6 +5,10 @@
 
 ---
 
+## Refs (read before writing code here)
+
+- `~/.claude/refs/python.md`, `logging.md`
+
 ## What This Repo Is
 
 A personal agent design reference following Karpathy's LLM Wiki pattern. Raw sources
@@ -115,6 +119,8 @@ published: YYYY-MM-DD
   - `wiki/deep-agents/` — Deep Agents harness, middleware, state/store backends
   - `wiki/memory/` — Agent memory patterns (in-context, episodic, semantic, procedural)
   - `wiki/mcp/` — Model Context Protocol, tool schemas, A2A
+  - `wiki/foundations/` — ML/DS/data-engineering fundamentals: classical ML, deep learning, NLP, data systems, MLOps
+  - `wiki/interview/` — Coding-interview patterns (arrays/hashing, two pointers, sliding window, …), system design, prep references
   - `wiki/meta/` — Wiki-about-wiki: Karpathy pattern, Claude workflow system, session knowledge
   - `wiki/projects/` — Per-project knowledge (generic, public — librarian, listen-wiseer, etc.)
   - `wiki/private/` — Company/project-specific pages; **gitignored, never committed**. Move pages here when they contain proprietary context, client names, or internal project details. Use the same page format — they are still compiled and queryable locally.
@@ -168,6 +174,8 @@ Content...
 | `llm` | LLM API patterns, prompt engineering, context management |
 | `deep-agents` | Deep Agents harness — middleware, StateBackend, StoreBackend, skill format |
 | `context-management` | Prefix caching, session compaction, history pruning, context windows |
+| `foundations` | ML/DS/data-engineering fundamentals — classical ML, deep learning, NLP, data systems, MLOps |
+| `interview` | Coding-interview patterns, algorithms, system design, prep material |
 
 ### Type Tags (include exactly one)
 
@@ -182,6 +190,30 @@ Content...
 | `conflict` | Page has a flagged contradiction (see Conflicts section) |
 
 ---
+
+### Tombstone Pages (retired/merged pages)
+
+A page removed by compaction is never deleted — it becomes a **tombstone**: same
+filename (inbound wikilinks stay valid), `tombstone` added to tags, body reduced to one
+line pointing at its successor:
+
+```markdown
+---
+title: Old Page Title
+tags: [rag, tombstone]
+summary: Retired — superseded by Successor Page.
+updated: YYYY-MM-DD
+sources: [...unchanged...]
+---
+
+# Old Page Title
+
+Retired YYYY-MM-DD. See [[Successor Page]] — supersedes.
+```
+
+Tombstones are excluded from the search index (MCP server skips `tombstone`-tagged
+pages at build time) but remain readable via `read_page`. They are exempt from orphan
+rules. Only `/compact-wiki` creates tombstones.
 
 ## Ingest Protocol
 
@@ -202,6 +234,10 @@ Run this checklist for **every** new raw source, without exception.
 8. **Update `wiki/_index.md`:** add any new pages to the appropriate section.
 9. **Check for orphans (blocking):** any new page MUST have at least one incoming backlink from another wiki page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
 10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run python etl/relinker.py` to discover additional semantic links. Review `wiki/_relink_suggestions.md` if generated.
+11. **Accumulator ceiling:** pages that receive per-session appended rows (e.g.
+    `meta/session-log.md`) keep the last ~30 entries in full; when an append pushes
+    past that, roll older entries into month-range summary rows at ingest time —
+    same rule as index files. Compaction is the backstop, not the primary mechanism.
 
 ---
 
@@ -223,7 +259,7 @@ Run lint to find health issues. Check each of the following:
 
 - **Orphan pages** — pages with no backlinks from any other wiki page
 - **Missing frontmatter** — pages missing required frontmatter fields
-- **Stale pages** — `updated` date older than 60 days (flag for review, don't auto-update)
+- **Stale pages** — `updated` date older than 60 days (flag for review, don't auto-update; these flags feed `/compact-wiki` as retire/merge candidates)
 - **Unresolved conflicts** — pages tagged `conflict` that haven't been resolved
 - **Dead wikilinks** — `[[Page]]` references that don't correspond to an existing file
 - **Missing summaries** — `summary:` field is empty or generic
@@ -235,6 +271,17 @@ Run lint to find health issues. Check each of the following:
 Output a prioritised list: BLOCKER (conflicts, dead links) → WARN (orphans, stale, untyped) → NOTE (missing coverage, bridge gaps, stale suggestions).
 
 ---
+
+## Compaction Protocol
+
+The recompile stage: `/compact-wiki`, run manually by Ramsey ~monthly (or after ~5
+ingests). Evidence-driven — page age, size, relinker similarity, and retrieval
+telemetry (`logs/retrieval.jsonl`, written by the MCP server) — with three moves:
+**merge** (union sources, successor absorbs all true content, merged page becomes a
+tombstone), **retire** (tombstone + `[[Successor]] — supersedes`), **compress**
+(accumulator ceiling). Always a dry-run report first; only Ramsey-approved moves are
+applied; raw/ is never touched. See `.claude/skills/compact-wiki/SKILL.md` and
+`.claude/docs/plans/2026-07-17-knowledge-compaction.md`.
 
 ## Wikilinks
 

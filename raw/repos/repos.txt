@@ -14,3 +14,5 @@
 /Users/wiseer/workspace/atlas
 /Users/wiseer/workspace/librarian
 /Users/wiseer/workspace/ai-project-template
+/Users/wiseer/workspace/guacamayo
+/Users/wiseer/workspace/learn-ai-engineering

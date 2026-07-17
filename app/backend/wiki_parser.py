@@ -32,6 +32,8 @@ DOMAIN_TAG_SET = {
     "patterns",
     "meta",
     "projects",
+    "foundations",
+    "interview",
 }
 
 

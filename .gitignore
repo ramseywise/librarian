@@ -57,3 +57,4 @@ node_modules/
 
 # Raw ingest archive — personal/employer source material stays local-only
 raw/
+logs/*.jsonl

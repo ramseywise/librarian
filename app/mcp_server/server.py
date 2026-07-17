@@ -20,8 +20,10 @@ Usage:
 
 from __future__ import annotations
 
+import json
 import re
 import struct
+from datetime import UTC, datetime
 from pathlib import Path
 
 import duckdb
@@ -34,6 +36,8 @@ log = structlog.get_logger()
 
 WIKI_DIR = Path("wiki")
 DB_PATH = Path(".wiki_index.duckdb")
+LOGS_DIR = Path("logs")
+RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
 SCHEMA_VERSION = "2"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
@@ -84,6 +88,21 @@ def _cosine(a: list[float], b: list[float]) -> float:
     na = sum(x * x for x in a) ** 0.5
     nb = sum(x * x for x in b) ** 0.5
     return dot / (na * nb + 1e-9)
+
+
+def _log_retrieval(tool: str, **fields: object) -> None:
+    """Append one JSON line of retrieval telemetry to logs/retrieval.jsonl.
+
+    Never raises — telemetry must not break retrieval. Consumed by /compact-wiki
+    as merge/retire evidence (see .claude/docs/plans/2026-07-17-knowledge-compaction.md).
+    """
+    try:
+        LOGS_DIR.mkdir(exist_ok=True)
+        entry = {"ts": datetime.now(UTC).isoformat(), "tool": tool, **fields}
+        with RETRIEVAL_LOG.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
+    except Exception as e:
+        log.warning("telemetry_failed", error=str(e))
 
 
 # ---------------------------------------------------------------------------
@@ -169,6 +188,9 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
             continue
         text = page.read_text(encoding="utf-8", errors="ignore")
         meta = _parse_frontmatter(text)
+        # Tombstones stay followable via read_page but never rank in search
+        if "tombstone" in meta.get("tags", []):
+            continue
         raw_pages.append(
             (
                 str(page),
@@ -318,6 +340,7 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
     con.close()
 
     if not rows:
+        _log_retrieval("search_wiki", query=query, domain=domain, n_results=0, top_paths=[])
         suffix = f" in domain '{domain}'" if domain else ""
         return f"No wiki pages found for: {query!r}{suffix}"
 
@@ -368,6 +391,13 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
             f"Summary: {summary}\n" + (f"Snippet: ...{snippet}..." if snippet else "")
         )
 
+    _log_retrieval(
+        "search_wiki",
+        query=query,
+        domain=domain,
+        n_results=len(rows),
+        top_paths=[r[0] for r in rows[:5]],
+    )
     return f"Found {len(rows)} result(s):\n\n" + "\n\n---\n\n".join(results)
 
 
@@ -384,10 +414,12 @@ def read_page(path_or_title: str) -> str:
     """
     candidate = Path(path_or_title)
     if candidate.exists():
+        _log_retrieval("read_page", path=str(candidate), found=True)
         return candidate.read_text(encoding="utf-8")
 
     wiki_candidate = WIKI_DIR / path_or_title
     if wiki_candidate.exists():
+        _log_retrieval("read_page", path=str(wiki_candidate), found=True)
         return wiki_candidate.read_text(encoding="utf-8")
 
     slug = re.sub(r"[^a-z0-9]+", "-", path_or_title.lower()).strip("-")
@@ -400,11 +432,16 @@ def read_page(path_or_title: str) -> str:
                 break
 
     if not matches:
+        _log_retrieval("read_page", path=path_or_title, found=False)
         return f"Page not found: {path_or_title!r}. Run search_wiki to find the right path."
 
     if len(matches) == 1:
+        _log_retrieval("read_page", path=str(matches[0]), found=True)
         return matches[0].read_text(encoding="utf-8")
 
+    _log_retrieval(
+        "read_page", path=path_or_title, found=False, ambiguous=True, n_matches=len(matches)
+    )
     paths = "\n".join(f"  - {m}" for m in matches[:10])
     return f"Multiple pages match {path_or_title!r}. Be more specific:\n{paths}"
 
@@ -460,6 +497,7 @@ def list_domain(domain: str) -> str:
         )
 
     results.sort(key=lambda x: x[0], reverse=True)
+    _log_retrieval("list_domain", domain=domain, n_results=len(results))
     header = f"**{len(results)} page(s) in `wiki/{domain}/`** (sorted by backlinks):\n\n"
     return header + "\n".join(r[1] for r in results)
 
@@ -512,6 +550,7 @@ def list_pages(tag: str = "", directory: str = "") -> str:
             + (f" in '{directory}'" if directory else "")
         )
 
+    _log_retrieval("list_pages", tag=tag, directory=directory, n_results=len(results))
     header = f"**{len(results)} page(s)**" + (f" tagged '{tag}'" if tag else "") + ":\n\n"
     return header + "\n".join(results)
 
@@ -562,6 +601,7 @@ def get_domain_briefing(domain: str) -> str:
     for _, title, content in parsed:
         sections.append(f"{'=' * 60}\n# {title}\n{'=' * 60}\n\n{content}")
 
+    _log_retrieval("get_domain_briefing", domain=domain, n_pages=len(parsed))
     header = (
         f"# Domain Briefing: {domain.upper()}\n"
         f"{len(parsed)} pages · use read_page for any individual page\n\n"
