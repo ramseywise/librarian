@@ -91,8 +91,10 @@ def test_booleans_round_trip(tmp_path: Path) -> None:
 @pytest.mark.parametrize(
     ("date", "expected"),
     [
-        ("2026-04-10", "pre-hygiene"),
-        ("2026-06-04", "pre-hygiene"),
+        ("2026-04-10", "migrated-jsonl"),
+        ("2026-04-21", "migrated-jsonl"),
+        ("2026-04-26", "note-hook"),
+        ("2026-06-04", "note-hook"),
         ("2026-07-15", "telemetry-v1"),
         ("2026-07-17", "session-hygiene-v1"),
         ("2026-07-19", "session-hygiene-v1"),
@@ -100,6 +102,14 @@ def test_booleans_round_trip(tmp_path: Path) -> None:
 )
 def test_regime_lookup(date: str, expected: str) -> None:
     assert regime_for(date) == expected
+
+
+def test_april_logging_switch_is_its_own_regime() -> None:
+    """The 04-22 boundary is empirical: daily compaction is exactly 0% through
+    04-21 (migrated notes never recorded it) and exactly 100% from 04-26 (the hook
+    only fired on compaction). One regime spanning both would render that logger
+    swap as a 0->100% workflow trend."""
+    assert regime_for("2026-04-21") != regime_for("2026-04-26")
 
 
 def test_unmapped_date_is_unclassified_not_dropped() -> None:

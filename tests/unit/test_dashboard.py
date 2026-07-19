@@ -53,12 +53,12 @@ def _row(session_id: str, date: str, regime: str, **overrides: object) -> dict[s
 
 @pytest.fixture
 def two_regime_store(tmp_path: Path) -> Path:
-    """A store straddling the regime break: pre-hygiene notes + July JSONL."""
+    """A store straddling the regime break: note-hook notes + July JSONL."""
     store = tmp_path / "facts.db"
     rows = [
-        _row("n1", "2026-05-01", "pre-hygiene", compacted=True),
-        _row("n2", "2026-05-02", "pre-hygiene", compacted=True),
-        _row("n3", "2026-06-10", "pre-hygiene", compacted=False),
+        _row("n1", "2026-05-01", "note-hook", compacted=True),
+        _row("n2", "2026-05-02", "note-hook", compacted=True),
+        _row("n3", "2026-06-10", "note-hook", compacted=False),
         _row("j1", "2026-07-16", "telemetry-v1", compacted=False, max_context=150_000),
         _row("j2", "2026-07-18", "session-hygiene-v1", compacted=False, max_context=90_000),
         _row("j3", "2026-07-18", "session-hygiene-v1", compacted=True, max_context=180_000),
@@ -74,7 +74,7 @@ def two_regime_store(tmp_path: Path) -> Path:
 def test_rate_metrics_never_continuous(two_regime_store: Path, metric: str) -> None:
     """A population-rate metric must render as per-regime panels, never one line.
 
-    This is the survivorship guard: pre-hygiene notes exist only where a session
+    This is the survivorship guard: note-hook notes exist only where a session
     compacted, so a compaction-% line crossing 2026-07-15 would plot the
     note-writing hook's behaviour as if it were Ramsey's.
     """
@@ -186,13 +186,25 @@ def test_sparse_panel_renders_values_not_a_sliver() -> None:
 
 
 def test_saturated_rate_panel_is_flagged() -> None:
-    """pre-hygiene compaction is 186/186 then 26/26 — exactly 100%. That is the
+    """note-hook compaction is 186/186 then 26/26 — exactly 100%. That is the
     note-writing hook's trigger, and unflagged it reads as an upward trend."""
     points = [
-        Point(date=f"2026-05-{day:02d}", value=100.0, regime="pre-hygiene") for day in range(1, 6)
+        Point(date=f"2026-05-{day:02d}", value=100.0, regime="note-hook") for day in range(1, 6)
     ]
-    panel = Panel(regime="pre-hygiene", sampling_frame="frame", points=points)
+    panel = Panel(regime="note-hook", sampling_frame="frame", points=points)
     assert "100%" in _saturation_warning(panel)
+    assert "logging trigger" in _saturation_warning(panel)
+
+
+def test_zero_rail_panel_is_flagged() -> None:
+    """0% is as much a logging artifact as 100%: migrated-jsonl notes never
+    recorded compaction, so the whole regime sits on the floor."""
+    points = [
+        Point(date=f"2026-04-{day:02d}", value=0.0, regime="migrated-jsonl")
+        for day in range(10, 16)
+    ]
+    panel = Panel(regime="migrated-jsonl", sampling_frame="frame", points=points)
+    assert "0%" in _saturation_warning(panel)
     assert "logging trigger" in _saturation_warning(panel)
 
 

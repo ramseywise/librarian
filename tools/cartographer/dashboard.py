@@ -45,7 +45,8 @@ JULY_ONLY_METRICS = {"max_context_p50", "max_context_p90", "pct_over_150k"}
 # What each regime's corpus actually sampled. Rendered on every rate panel so a
 # reader cannot mistake a logging artifact for a workflow change.
 SAMPLING_FRAME = {
-    "pre-hygiene": "notes written only when a session compacted - rate is not a workflow property",
+    "migrated-jsonl": "notes migrated from JSONL - compaction was never recorded, so 0% is structural",
+    "note-hook": "notes written only when a session compacted - rate is not a workflow property",
     "telemetry-v1": "all sessions logged (JSONL)",
     "session-hygiene-v1": "all sessions logged (JSONL)",
     "unclassified": "sampling frame unknown - dates outside the regime table",
@@ -400,20 +401,23 @@ _MIN_LINE_POINTS = 3
 
 
 def _saturation_warning(panel: Panel) -> str:
-    """Flag a rate panel that is pinned at 100% — that is the logger, not the workflow.
+    """Flag a rate panel pinned at either rail — that is the logger, not the workflow.
 
-    Verified 2026-07-19: pre-hygiene compaction is 34% in April, then exactly
-    186/186 and 26/26 in May and June. A metric that reaches precisely 100% for
-    two consecutive months is reporting the note-writing hook's trigger condition,
-    and without this marker the panel reads as a genuine upward trend.
+    Both rails are artifacts here, and both are structural (verified 2026-07-19):
+    every `note-hook` day is exactly 100% because the hook only fired on
+    compaction, and every `migrated-jsonl` day is exactly 0% because migrated
+    notes never recorded compaction at all. Unflagged, the pair reads as a 0->100%
+    improvement across the boundary when nothing about the work changed.
     """
-    saturated = [p for p in panel.points if p.value >= 100]
-    if len(saturated) < _MIN_LINE_POINTS or len(saturated) < len(panel.points) / 2:
-        return ""
-    return (
-        f'<p class="saturated">⚠ {len(saturated)} of {len(panel.points)} points sit at '
-        f"100% — at saturation this measures the logging trigger, not behaviour.</p>"
-    )
+    for rail, label in ((100.0, "100%"), (0.0, "0%")):
+        pinned = [p for p in panel.points if p.value == rail]
+        if len(pinned) >= _MIN_LINE_POINTS and len(pinned) >= len(panel.points) / 2:
+            return (
+                f'<p class="saturated">⚠ {len(pinned)} of {len(panel.points)} points sit at '
+                f"{label} — at this rail the metric measures the logging trigger, "
+                f"not behaviour.</p>"
+            )
+    return ""
 
 
 def _panel_body(panel: Panel, color: str, span: int, widest: int) -> str:

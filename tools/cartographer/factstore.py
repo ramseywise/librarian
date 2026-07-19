@@ -68,8 +68,20 @@ ERA_JSONL = "jsonl"
 # Instrumentation regimes (Q0): the setup in force is the independent variable,
 # not noise to normalise away. Hand-authored — Ramsey owns this table, code only
 # joins on it. Dates are inclusive start, exclusive end; None = open-ended.
+#
+# The 2026-04-22 boundary is empirical, not a guess (verified 2026-07-19): daily
+# compaction is exactly 0% every day through 04-21 and exactly 100% every day
+# from 04-26, with a gap between. That is two logging mechanisms, not a change in
+# how Ramsey worked —
+#   migrated-jsonl: 45 of 56 rows are `claude-*` notes migrated from JSONL, which
+#                   never recorded compaction at all -> structural 0%.
+#   note-hook:      all 238 rows are hook-written notes, and the hook only fired
+#                   ON compaction -> structural 100%.
+# Merging them under one regime would have produced a 0->100% "trend" that is
+# purely an artifact of the logger changing.
 REGIMES: list[tuple[str, str | None, str]] = [
-    ("2026-04-10", "2026-07-15", "pre-hygiene"),
+    ("2026-04-10", "2026-04-22", "migrated-jsonl"),
+    ("2026-04-22", "2026-07-15", "note-hook"),
     ("2026-07-15", "2026-07-17", "telemetry-v1"),
     ("2026-07-17", None, "session-hygiene-v1"),
 ]
