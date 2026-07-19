@@ -40,7 +40,7 @@ Phase 6 left the system stable but the architecture is still a monolith: Spotify
 ### Why extract it
 
 Currently `src/spotify/` is an httpx client called directly by the agent. Extracting it as a FastMCP server:
-- Makes Spotify tools callable from Claude Code and other agents (same pattern as playground's product-a MCP)
+- Makes Spotify tools callable from Claude Code and other agents (same pattern as playground's knowledge-base MCP)
 - Decouples the agent from the Spotify client — agent becomes tool-agnostic
 - Lets us version and test Spotify tools independently
 - Follows the established pattern: one FastMCP server per domain
@@ -130,7 +130,7 @@ src/agent/tools/
   memory.py          — manage_taste_memory, search_taste_memory
 ```
 
-`spotify_read.py` and `spotify_write.py` call the FastMCP server via `langchain-mcp-adapters` or direct MCP client — same as playground's product-a adapter pattern. The agent doesn't import `src/spotify/` directly anymore.
+`spotify_read.py` and `spotify_write.py` call the FastMCP server via `langchain-mcp-adapters` or direct MCP client — same as playground's knowledge-base MCP adapter pattern. The agent doesn't import `src/spotify/` directly anymore.
 
 ### AgentResponse schema
 
@@ -203,7 +203,7 @@ Genre lineage queries working via Tavily. Taste analysis with time range selecto
 | Decision | Choice | Rationale |
 |---|---|---|
 | ADK vs LangGraph | LangGraph | State management needed for ML pipeline; familiar; LangSmith observability already wired |
-| MCP client in agent | `langchain-mcp-adapters` | Same pattern as playground product-a; avoids direct process management |
+| MCP client in agent | `langchain-mcp-adapters` | Same pattern as playground knowledge-base MCP; avoids direct process management |
 | Subagents vs single graph | Single graph | Prototype — one graph with sharp nodes is simpler to debug than subagent orchestration |
 | Music knowledge wiki | Defer | Tavily covers exploration for Phase 7; librarian integration is a separate project |
 | Cross-session memory store | Redis (Phase 7c) | InMemoryStore is dev-only; Postgres checkpointer already running in compose |

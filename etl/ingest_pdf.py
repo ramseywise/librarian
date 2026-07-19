@@ -15,6 +15,8 @@ import structlog
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
+from app.log_config import configure_logging
+
 load_dotenv()
 log = structlog.get_logger()
 
@@ -46,6 +48,7 @@ def extract_pdf(pdf_path: Path, out_dir: Path) -> Path:
 
 
 def main() -> None:
+    configure_logging()
     settings = Settings()
 
     if len(sys.argv) > 1:

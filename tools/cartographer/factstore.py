@@ -28,6 +28,7 @@ from tools.cartographer.parser import (
     _parse_frontmatter,
     _split_sections,
     iter_sessions,
+    iter_subagent_sessions,
 )
 
 log = structlog.get_logger(__name__)
@@ -58,7 +59,29 @@ NULLABLE_COLUMNS: dict[str, type] = {
     "skill_costs": str,  # JSON object
     "models": str,  # JSON object
     "tool_counts": str,  # JSON object
+    # Friction (2026-07-20). Parsed since the JSONL era but never stored, so a
+    # re-parse backfills these to 2026-07-15 -- no new regime, the measurement
+    # apparatus is unchanged and only the stored projection widened.
+    "tool_errors": str,  # JSON object: error-kind -> count
+    "tool_error_count": int,  # total is_error tool results
+    "user_interruptions": int,
+    "hook_blocks": int,
+    # Subagent attribution (2026-07-20). Subagent transcripts were always parsed
+    # (parser.iter_subagent_sessions) but never stored, so a re-parse backfills
+    # this -- no new regime, same apparatus, only the stored projection widened.
+    # JSON object: {"by_agent": {name -> {cost, output_tokens, n}},
+    #               "by_model": {model -> {cost, output_tokens, n}}}.
+    # `by_agent` keys are subagent-type names, plus UNATTRIBUTED_AGENT for
+    # transcripts predating SUBAGENT_ATTRIBUTION_CLI. NULL on parent rows.
+    "subagent_costs": str,
 }
+
+# `attributionAgent` (the subagent-type name) is emitted only by CLI 2.1.201+.
+# Transcripts from older builds carry no name, so their spend is real but
+# unattributable -- bucketed under UNATTRIBUTED_AGENT rather than dropped, so the
+# panel's per-agent shares never silently understate total subagent cost.
+SUBAGENT_ATTRIBUTION_CLI = "2.1.201"
+UNATTRIBUTED_AGENT = "unattributed"
 
 ALL_COLUMNS = {**FACT_COLUMNS, **NULLABLE_COLUMNS}
 
@@ -182,7 +205,23 @@ def _connect(store: Path) -> sqlite3.Connection:
     conn = sqlite3.connect(store)
     cols = ", ".join(f"{name} {_SQL_TYPES[typ]}" for name, typ in ALL_COLUMNS.items())
     conn.execute(f"CREATE TABLE IF NOT EXISTS sessions ({cols}, PRIMARY KEY (session_id))")
+    _add_missing_columns(conn)
     return conn
+
+
+def _add_missing_columns(conn: sqlite3.Connection) -> None:
+    """Widen an existing table when ALL_COLUMNS grows.
+
+    CREATE TABLE IF NOT EXISTS is a no-op on an existing store, so a new column
+    would silently never appear. Added columns are NULL for every prior row --
+    re-running the adapter over retained JSONL is what fills them.
+    """
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(sessions)")}
+    for name, typ in ALL_COLUMNS.items():
+        if name not in existing:
+            conn.execute(f"ALTER TABLE sessions ADD COLUMN {name} {_SQL_TYPES[typ]}")
+            log.info("factstore.column_added", column=name)
+    conn.commit()
 
 
 def upsert(rows: list[dict[str, Any]], store: Path) -> int:
@@ -246,6 +285,7 @@ def _edit_counts(session: dict[str, Any]) -> int:
 
 def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, Any]:
     date = str(session.get("start_time", ""))[:10]
+    errors: dict[str, int] = session.get("tool_errors", {}) or {}
     row: dict[str, Any] = {
         "session_id": session["session_id"],
         "date": date,
@@ -266,6 +306,10 @@ def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, 
         "skill_costs": json.dumps(session.get("skill_costs", {})),
         "models": json.dumps(session.get("models", {})),
         "tool_counts": json.dumps(session.get("tool_counts", {})),
+        "tool_errors": json.dumps(errors),
+        "tool_error_count": sum(errors.values()),
+        "user_interruptions": session.get("user_interruptions"),
+        "hook_blocks": errors.get("user_rejected", 0),
     }
     row["is_meta"] = _classify_meta({**row, "edited_paths": session.get("edited_paths", [])})
     return row
@@ -313,17 +357,62 @@ def _scan_session_files(projects_dir: Path) -> dict[str, dict[str, Any]]:
     return found
 
 
+def _subagent_costs_by_parent(projects_dir: Path) -> dict[str, dict[str, Any]]:
+    """Roll subagent transcripts up onto the parent session that spawned them.
+
+    Subagent spend belongs to the parent's session row: a subagent has no user
+    turns of its own, so storing it as a standalone session would inflate session
+    counts and halve per-session medians. Each parent gets one nested breakdown,
+    by subagent-type name and by model.
+    """
+    by_parent: dict[str, dict[str, dict[str, Any]]] = {}
+    for sub in iter_subagent_sessions(projects_dir):
+        parent = sub.get("parent_session_id")
+        if not parent:
+            continue
+        buckets = by_parent.setdefault(parent, {"by_agent": {}, "by_model": {}})
+
+        agent = sub.get("attribution_agent") or UNATTRIBUTED_AGENT
+        entry = buckets["by_agent"].setdefault(agent, {"cost": 0.0, "output_tokens": 0, "n": 0})
+        entry["cost"] += sub.get("cost_units", 0.0)
+        entry["output_tokens"] += sub.get("output_tokens", 0)
+        entry["n"] += 1
+
+        # Per-model split is available for every transcript, including the
+        # pre-2.1.201 ones that have no agent name.
+        for model, cost in (sub.get("model_costs") or {}).items():
+            slot = buckets["by_model"].setdefault(model, {"cost": 0.0, "output_tokens": 0, "n": 0})
+            slot["cost"] += cost
+            slot["output_tokens"] += (sub.get("model_output_tokens") or {}).get(model, 0)
+            slot["n"] += 1
+
+    for buckets in by_parent.values():
+        for group in buckets.values():
+            for slot in group.values():
+                slot["cost"] = round(slot["cost"], 1)
+    return by_parent
+
+
 def from_jsonl(projects_dir: Path) -> list[dict[str, Any]]:
     """Map parsed JSONL sessions onto fact rows (era="jsonl")."""
     scanned = _scan_session_files(projects_dir)
+    sub_costs = _subagent_costs_by_parent(projects_dir)
     rows: list[dict[str, Any]] = []
     for session in iter_sessions(projects_dir):
         extra = scanned.get(session["session_id"], {})
         if not session.get("project_path"):
             session["project_path"] = extra.get("cwd", "")
         session["edited_paths"] = extra.get("edited_paths", [])
-        rows.append(_to_fact_from_jsonl(session, str(projects_dir)))
-    log.info("factstore.from_jsonl", rows=len(rows), projects_dir=str(projects_dir))
+        row = _to_fact_from_jsonl(session, str(projects_dir))
+        costs = sub_costs.get(session["session_id"])
+        row["subagent_costs"] = json.dumps(costs) if costs else None
+        rows.append(row)
+    log.info(
+        "factstore.from_jsonl",
+        rows=len(rows),
+        with_subagents=sum(1 for r in rows if r["subagent_costs"]),
+        projects_dir=str(projects_dir),
+    )
     return rows
 
 

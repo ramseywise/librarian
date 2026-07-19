@@ -2,7 +2,7 @@
 
 **Last updated:** May 2026
 
-Every agent in project-g passes through up to five protection layers before a response reaches the user. This doc describes how those layers work, where each one lives in the codebase, and what gaps remain compared to the TS production system.
+Every agent in galactus passes through up to five protection layers before a response reaches the user. This doc describes how those layers work, where each one lives in the codebase, and what gaps remain compared to the TS production system.
 
 > **Scope:** High-level architecture overview and layer definitions. For Layer 4 implementation detail (grounding tier pipeline, hard/soft fail table, `enforce_grounding()` internals), see [invocation-flow.md](invocation-flow.md).
 
@@ -25,7 +25,7 @@ The check runs in < 1ms (no LLM calls), rewrites the response in-flight to `{con
 
 ---
 
-## Current state of project-g safeguards
+## Current state of galactus safeguards
 
 ### What exists
 
@@ -45,14 +45,14 @@ Layer 4 post-generation structural citation check is now implemented in all Pyth
 
 ```
 TS va-agents:      [input guardrail] → [retrieval] → [generate] → [grounding check] → user
-project-g hc_lg:    [input guardrail] → [CRAG gate] → [generate] → [grounding check] → user
-project-g hc_adk:                      [retrieval]  → [generate] → [grounding check] → user
-project-g va_lg:    [input guardrail] → [analyze]   → [domain]   → [grounding check] → user
+galactus hc_lg:    [input guardrail] → [CRAG gate] → [generate] → [grounding check] → user
+galactus hc_adk:                      [retrieval]  → [generate] → [grounding check] → user
+galactus va_lg:    [input guardrail] → [analyze]   → [domain]   → [grounding check] → user
 ```
 
 ### Schema difference: IDs vs URLs
 
-The TS system uses `citations: string[]` (passage IDs) to cross-reference against the retrieved set. project-g uses `AssistantResponse.sources: list[Source]` where each Source has `{title, url}`. This means:
+The TS system uses `citations: string[]` (passage IDs) to cross-reference against the retrieved set. galactus uses `AssistantResponse.sources: list[Source]` where each Source has `{title, url}`. This means:
 
 - TS: `cited_id ∈ retrieved_ids` (exact set membership)
 - Python: `cited_url ∈ retrieved_urls` (URL string matching)
@@ -153,7 +153,7 @@ Routing these signals to the artefact store at runtime means friction analysis c
 
 ## Confirm gate: HITL design for write operations (ADK)
 
-**Status:** Blocked on write tools (test product-a account not provisioned). Design is complete.
+**Status:** Blocked on write tools (test Billy account not provisioned). Design is complete.
 
 `confirm: bool` exists in `AssistantResponse` schema but nothing gates write operations behind it. In TS va-agents, edit operations return `confirm: true` on the first call, the frontend shows an approval prompt, then the user re-sends to actually execute.
 
@@ -208,7 +208,7 @@ help-center-assistant/
 
 ## TS/Python Parity
 
-| Feature | project-g (Python) | va-agents (TypeScript) |
+| Feature | galactus (Python) | va-agents (TypeScript) |
 |---|---|---|
 | Sanitize step (HTML, control chars) | ✅ `sanitize.py` | ✅ `guardrails/sanitize.ts` |
 | PII redaction | ✅ `pii_redaction.py` | ✅ `guardrails/pii.ts` |

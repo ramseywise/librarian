@@ -54,3 +54,4 @@ feature-engineering pass, feeding the per-playlist LightGBM/CatBoost reranker (s
 - [[Listen-Wiseer Project]]
 - [[LightGBM vs CatBoost Comparison]]
 - [[Agentic Workflow Patterns]]
+- [[Neural Probabilistic Language Model]] — prerequisite-for

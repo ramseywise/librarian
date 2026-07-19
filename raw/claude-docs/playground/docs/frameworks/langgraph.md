@@ -1,6 +1,6 @@
 # LangGraph — Reference Spec
 
-Patterns and checklist for building LangGraph agents/pipelines. Not currently used in project-g eval pipeline, but relevant if we add an agent layer on top of the graders. Also useful context when comparing LangGraph vs Google ADK.
+Patterns and checklist for building LangGraph agents/pipelines. Not currently used in galactus eval pipeline, but relevant if we add an agent layer on top of the graders. Also useful context when comparing LangGraph vs Google ADK.
 
 See also: [google-adk.md](google-adk.md), [langsmith.md](langsmith.md), playground `langgraph-vs-adk.md`.
 

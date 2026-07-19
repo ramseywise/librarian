@@ -20,6 +20,8 @@ import structlog
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
+from app.log_config import configure_logging
+
 load_dotenv()
 log = structlog.get_logger()
 
@@ -107,6 +109,7 @@ def fetch_page(page_id: str, api_key: str) -> tuple[str, str]:
 
 
 def main() -> None:
+    configure_logging()
     if len(sys.argv) < 2:
         print("Usage: uv run python scripts/ingest_notion.py <page-id-or-url>")
         sys.exit(1)

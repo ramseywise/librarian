@@ -1,0 +1,10 @@
+[
+  {"input": "ask the wiki: what's the recommended chunking strategy for long documents?", "expected": true},
+  {"input": "query the wiki about context window management patterns across the ADK projects", "expected": true},
+  {"input": "what does the wiki know about memory architectures for voice agents?", "expected": true},
+  {"input": "look up the wiki and give me a grounded answer on our MCP server conventions", "expected": true},
+  {"input": "search the wiki for reranking — file the answer as a new page", "expected": true},
+  {"input": "run a lint pass and find orphan pages", "expected": false},
+  {"input": "ingest this new notion doc into the wiki", "expected": false},
+  {"input": "compact the wiki — it's getting large", "expected": false}
+]

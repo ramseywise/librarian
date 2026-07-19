@@ -11,10 +11,12 @@ from __future__ import annotations
 import argparse
 import sys
 
+from app.log_config import configure_logging
 from tools.codemap.indexer import run
 
 
 def main() -> None:
+    configure_logging()
     p = argparse.ArgumentParser(description="Reindex configured repos into .code_index.duckdb")
     p.add_argument("--repo", default=None, help="Only reindex this repo_id")
     p.add_argument("--dry-run", action="store_true", help="Report changes without writing")

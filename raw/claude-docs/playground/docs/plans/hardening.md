@@ -44,7 +44,7 @@
 
 When the router sends a query to one of these domains, the domain subgraph invokes a tool call against an empty set, which produces a silent failure or cryptic LLM error rather than a clear "not available yet" response.
 
-The same issue exists in `va-google-adk` for the email/invitation sub-agents once product-a test account is ready — but the immediate fix is the LangGraph domain.
+The same issue exists in `va-google-adk` for the email/invitation sub-agents once a backend test account is ready — but the immediate fix is the LangGraph domain.
 
 **Fix:** Guard at the top of each domain subgraph node — before any tool call, check whether the domain's tool set is populated; if not, return a structured "not available" response and skip the LLM call.
 
@@ -65,7 +65,7 @@ The same issue exists in `va-google-adk` for the email/invitation sub-agents onc
 3. Apply the same guard to `_INVITATION_TOOLS`.
 4. The guard is a no-op for domains with populated tool sets — no behaviour change for invoice, quote, customer, product, support.
 
-**va-google-adk (future — apply when product-a test account is ready)**
+**va-google-adk (future — apply when a backend test account is ready)**
 
 - The `email_agent` and `invitation_agent` stubs in `sub_agents/` should return `AssistantResponse(message="...", intent="email", ...")` with a not-available message, rather than attempting tool calls.
 - Document the `TODO(2)` comment in each stub as the trigger point.

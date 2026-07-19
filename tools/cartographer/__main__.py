@@ -13,8 +13,11 @@ from __future__ import annotations
 
 import sys
 
+from app.log_config import configure_logging
+
 
 def main() -> None:
+    configure_logging()
     """Route to the appropriate cartographer subcommand."""
     if "--cron" in sys.argv:
         sys.argv.remove("--cron")

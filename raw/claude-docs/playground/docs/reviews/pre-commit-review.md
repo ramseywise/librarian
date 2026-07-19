@@ -10,7 +10,7 @@ The changeset is in good shape overall. The cleanup fixes (model factory, dateti
 ordering) are correct; the hc-rag-agent is a well-structured LangGraph service with proper
 pyproject.toml, a working Dockerfile, and solid guardrails code. There are **no
 showstopper bugs** that would break production, but there are three issues that should be
-fixed before the commit: a missing blank line that will trip ruff in vendor-a_ingest.py, a
+fixed before the commit: a missing blank line that will trip ruff in ticket_ingest.py, a
 typing import out of PEP-8 order in support_agent.py, and pervasive stdlib `logging`
 usage throughout hc-rag-agent's runtime/orchestration layer (the project convention is
 `structlog`). The eval pipeline changes (models.py, friction_grader.py, regression.py) are
@@ -20,9 +20,9 @@ correct and safe.
 
 ## Critical Issues (must fix before commit)
 
-### 1. `vendor-a_ingest.py` — missing blank line between `_sub_doc_ref` and `_BIZ_ID_RE`
+### 1. `ticket_ingest.py` — missing blank line between `_sub_doc_ref` and `_BIZ_ID_RE`
 
-**File:** `va-langgraph/eval/ingest/vendor-a_ingest.py`, lines 164–166
+**File:** `va-langgraph/eval/ingest/ticket_ingest.py`, lines 164–166
 
 ```python
     return "([REF])"
@@ -96,7 +96,7 @@ This is a mechanical change across ~15 files.
 
 ## Should Fix (recommended, not blocking)
 
-### 4. `vendor-a_ingest.py` — `_sub_doc_ref` missing blank line at end of function
+### 4. `ticket_ingest.py` — `_sub_doc_ref` missing blank line at end of function
 
 Related to issue #1 above. While ruff will catch the E302 at the top, there is also no
 blank line between the function close and the comment on line 165. A single blank line
@@ -165,7 +165,7 @@ or switching everything to structlog.
 ### 9. `docker-compose.va.yml` — `va-gateway-adk` missing `postgres` dependency
 
 `va-gateway-lg` correctly depends on `postgres`, but `va-gateway-adk` only depends on
-`product-a-mcp` and `hc-rag-agent`. If the ADK gateway ever needs postgres (e.g. if it gains
+`mcp-backend` and `hc-rag-agent`. If the ADK gateway ever needs postgres (e.g. if it gains
 its own checkpointer), this will silently race. Not a current bug but worth noting.
 
 ---
@@ -191,11 +191,11 @@ its own checkpointer), this will silently race. Not a current bug but worth noti
   intentional — tool_context is an ADK internal; any AttributeError or missing key
   should silently fall back to the default thread_id.
 
-- **`vendor-a_ingest.py` regex ordering** — moving `_ANGLE_URL_RE` and its application
+- **`ticket_ingest.py` regex ordering** — moving `_ANGLE_URL_RE` and its application
   to the top of `_scrub()` is correct; stripping angle-bracket URLs before email/phone
   patterns prevents false matches on URLs containing email-like substrings.
 
-- **`vendor-a_ingest.py` `_CHAIN_RE` broadening** — removing the `Original` suffix from
+- **`ticket_ingest.py` `_CHAIN_RE` broadening** — removing the `Original` suffix from
   `-----+` is a reasonable improvement for non-English CRM exports. Low risk.
 
 - **`pii_check.py`** — the URL/UUID strip before digit check prevents false positives on
@@ -214,7 +214,7 @@ its own checkpointer), this will silently race. Not a current bug but worth noti
 - `pii_redaction.py` patterns are thorough. One known over-redaction: the 16-digit card
   pattern will fire on invoice numbers of that length. Acceptable for a guardrail.
 - `prompt_injection.py` pattern #6 (`api_key`, `secret`, `password` in any key=value)
-  is aggressive — a user asking "how do I set my API key in vendor-a?" will trigger it.
+  is aggressive — a user asking "how do I set my API key in the app?" will trigger it.
   This is intentionally conservative, but worth monitoring false-positive rate.
 
 ### hc-rag-agent — general assessment

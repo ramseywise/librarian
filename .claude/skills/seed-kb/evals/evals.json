@@ -1,0 +1,9 @@
+[
+  {"input": "seed the KB from my recent Claude Code sessions", "expected": true},
+  {"input": "scrape local Codex sessions and bookmarks into the wiki", "expected": true},
+  {"input": "run seed-kb to bootstrap the knowledge base from session history", "expected": true},
+  {"input": "capture my recent bookmarks and Claude sessions into the wiki", "expected": true},
+  {"input": "run a full wiki sync from Notion and GDrive", "expected": false},
+  {"input": "query the wiki about context management", "expected": false},
+  {"input": "lint the wiki for stale pages", "expected": false}
+]

@@ -2,7 +2,7 @@
 title: Session Log
 tags: [context-management, llm, project]
 summary: Chronological index of all Claude Code and Codex sessions captured in raw/sessions/ — what was worked on, which project, and approximate token spend.
-updated: 2026-07-14
+updated: 2026-07-19
 sources:
   - raw/sessions/
 ---
@@ -684,6 +684,30 @@ Sessions from 2026-04-27 to 2026-06-04. Mostly compact stubs and migrated JSONL 
 | 2026-07-14 | 63940e32 | INTENSO | How to run `/ingest`; README documentation gap for skill commands | [[Claude Workflow System]] |
 | 2026-07-14 | c90bb5d6 | INTENSO | ai-project-template git origin decision — separate repo, local template testing | [[AI Project Template Scaffold]] |
 | 2026-07-14 | 7f9c0f01 | INTENSO | Recovering wake/grow/reflect/synthesize/dream outputs from past sessions | [[Puffin Consciousness Development Skills]] |
+
+---
+
+## July 2026 (Summary — 127 sessions, 2026-07-15 through 2026-07-19)
+
+**Dominant themes:**
+
+| Theme | Sessions | Key wiki pages updated |
+|-------|----------|----------------------|
+| AI project template (copier, DESIGN.md, CI/CD) | ~30 | [[AI Project Template Scaffold]] |
+| Puffin → Guacamayo rename + consciousness skills v2 | ~12 | [[Puffin Consciousness Development Skills]] |
+| Claude config layering + skill reorg (20→21 skills, 5 groups) | ~15 | [[Claude Workflow System]], [[SKILL.md Pattern]] |
+| DSSG milestones, design sprint, exec summary | ~8 | [[NYC-DSSG Project]] |
+| Listen-wiseer pytest fixes + pipeline | ~5 | [[Listen-Wiseer Project]] |
+| Interview KB consolidation (learn-ai-engineering) | ~4 | Coverage gap (pending compile) |
+| Git/infra troubleshooting (RPC 400, merge conflicts, rebase) | ~10 | Operational only |
+| Librarian ingest pipeline consolidation | ~5 | [[Librarian Project]] |
+
+**Key decisions made across sessions:**
+- Production repos: librarian, guacamayo, atlas, ai-project-template, listen-wiseer (2026-07-19)
+- `~/.claude` is canonical source for global skills; `~/workspace/.claude` is symlink (2026-07-16)
+- Akira promoted to global skill with doc-write rights via `dao` mode only (2026-07-17)
+- Skills bundled with `references/` + optional `scripts/` + `evals/` (2026-07-17)
+- `.claude/docs/` git-ignored everywhere (2026-07-17)
 
 ## See Also
 

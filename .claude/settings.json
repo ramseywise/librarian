@@ -1,5 +1,18 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/raw-immutable.sh",
+            "timeout": 10,
+            "statusMessage": "Checking raw/ immutability..."
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
@@ -52,7 +65,7 @@
     "librarian": {
       "command": "uv",
       "args": ["run", "python", "app/mcp_server/server.py"],
-      "cwd": "/Users/ramsey.wise/Workspace/librarian",
+      "cwd": "/Users/wiseer/workspace/librarian",
       "env": {
         "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
       }

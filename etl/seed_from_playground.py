@@ -18,6 +18,8 @@ import structlog
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
+from app.log_config import configure_logging
+
 load_dotenv()
 log = structlog.get_logger()
 
@@ -29,6 +31,7 @@ class Settings(BaseSettings):
 
 
 def main() -> None:
+    configure_logging()
     settings = Settings()
 
     source_root = Path(sys.argv[1]) if len(sys.argv) > 1 else settings.playground_path

@@ -8,7 +8,7 @@
 
 ## POC Baseline (April 29)
 
-Single German vendor-a query ("how do I create an invoice"):
+Single German-language support query ("how do I create an invoice"):
 
 | Stage | Time |
 |---|---|

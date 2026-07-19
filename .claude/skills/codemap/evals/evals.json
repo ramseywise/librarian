@@ -1,0 +1,10 @@
+[
+  {"input": "reindex the code-structure index for all configured repos", "expected": true},
+  {"input": "codemap — refresh symbol counts", "expected": true},
+  {"input": "query the codemap for the AgentState symbol", "expected": true},
+  {"input": "map the atlas repo before I start working in it", "expected": true},
+  {"input": "I need a repo_map overview of playground before diving in", "expected": true},
+  {"input": "compile the raw session exports into wiki pages", "expected": false},
+  {"input": "find orphan wiki pages with no backlinks", "expected": false},
+  {"input": "ask the wiki: what's the MCP tool call pattern?", "expected": false}
+]

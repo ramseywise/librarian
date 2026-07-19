@@ -2,9 +2,11 @@
 title: SKILL.md Pattern
 tags: [adk, context-management, concept]
 summary: ADK skill declaration format — YAML frontmatter listing tools + natural language instruction body, enabling dynamic skill loading without hardcoding capabilities into the system prompt.
-updated: 2026-04-24
+updated: 2026-07-19
 sources:
   - raw/playground-docs/librarian-stack-audit.md
+  - raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
+  - raw/sessions/claude-2026-07-19-what-is-this-mcp-buider-we-added-to-clau-6b9614e3.md
 ---
 
 # SKILL.md Pattern
@@ -52,10 +54,34 @@ Three-agent pipeline for evaluating and improving skill descriptions:
 
 Automated description optimization loop: run Grader → Comparator → Analyzer → rewrite description → repeat until Grader passes consistently.
 
+## Claude Code Skill Resource Layout (2026-07-17)
+
+An emerging norm for Claude Code skills — each skill is a directory with a canonical structure:
+
+```
+skill-name/
+├── SKILL.md          # Instructions (≤300 lines)
+├── references/       # On-demand docs (loaded only when skill reads them)
+│   ├── topic-a.md
+│   └── topic-b.md
+├── scripts/          # Executable helpers (deterministic, not regenerated)
+│   └── evaluation.py
+└── assets/           # Templates, examples
+```
+
+**Key decisions:**
+- `references/` content is NOT auto-loaded — Claude searches it on demand (keeps base context lean).
+- `scripts/` prevents repeated regeneration of the same helper logic across sessions.
+- Skills should include optional evals to document they performed well — tracked via `/skill-creator`'s blind comparison pipeline.
+- Frontmatter `description` should be "slightly pushy" — Claude under-triggers skills, so prefer explicit trigger phrases.
+
+**Example:** `/mcp-builder` (vendored from Anthropic SDK) uses this layout: `SKILL.md` + `references/` (server patterns, tool schemas) + `scripts/evaluation.py` (MCP server eval harness).
+
 ## See Also
 - [[ADK Scaffold Patterns]] <!-- auto-linked -->
 - [[ADK Context Engineering]]
 - [[ADK vs LangGraph Comparison]]
 - [[Prefix Caching]]
 - [[MCP Protocol]]
+- [[Claude Workflow System]] — extends (skill architecture section)
 - [[Claude Workflow System]]

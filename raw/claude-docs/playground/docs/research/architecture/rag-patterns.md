@@ -391,11 +391,11 @@ changes). deepeval for CI regression (run in `tests/evals/` as part of `uv run p
 
 ---
 
-## 10. Production Benchmarks (rag-v1 v1 — vendor-a/German market)
+## 10. Production Benchmarks (v1 German-market SaaS deployment)
 
 These are real numbers from a deployed prototype, not estimates.
 
-### rag-v1 v1 baseline (German market, all-MiniLM-L6-v2, dense-only)
+### v1 baseline (German market, all-MiniLM-L6-v2, dense-only)
 
 | Metric | v1 Baseline | Hybrid + reranker |
 |---|---|---|
@@ -424,7 +424,7 @@ committing.
 
 ### Response style finding
 
-rag-v1 suggestions were ignored by human agents despite correct technical content because:
+v1 suggestions were ignored by human agents despite correct technical content because:
 - Suggestions were 3× the length of agent responses
 - Hedged language: *"könnte möglicherweise"*, *"Überprüfe bitte..."*
 

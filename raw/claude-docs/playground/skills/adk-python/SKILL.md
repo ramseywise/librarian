@@ -31,7 +31,7 @@ Answer these before writing agent or tool code.
 **Tools**
 - What tools does this agent need? Check `shared/tools/` before creating new ones.
 - Each tool needs a Pydantic-typed signature and a docstring the LLM reads as documentation — what does the LLM need to understand about when to call it?
-- Does the tool call product-a MCP, corpus-a MCP, or an HTTP service directly?
+- Does the tool call the knowledge-base MCP server or an HTTP service directly?
 - Max ~10 tools per agent. If this pushes past that, consider a sub-agent split instead.
 
 **State & session**
@@ -92,7 +92,7 @@ async def get_invoice(invoice_id: str, tool_context: Any = None) -> dict:
     """Fetch an invoice by ID. Returns invoice details including line items and contact."""
     session_id = tool_context.state.get("session_id", "default") if tool_context else "default"
     async with httpx.AsyncClient(timeout=15.0) as client:
-        r = await client.get(f"{product-a_URL}/invoices/{invoice_id}")
+        r = await client.get(f"{BACKEND_URL}/invoices/{invoice_id}")
         r.raise_for_status()
     return r.json()   # transform before returning — agent never sees raw API shape
 
@@ -162,7 +162,7 @@ cd va-google-adk && uv run pytest tests/ -v
 ```
 
 - Tests live under `tests/` in the agent directory — follow existing pytest patterns.
-- Mock tool HTTP calls with `respx` or `unittest.mock.AsyncMock` — don't hit real product-a/corpus-a in unit tests.
+- Mock tool HTTP calls with `respx` or `unittest.mock.AsyncMock` — don't hit real backends in unit tests.
 - Test the `output_schema` contract: assert the agent's `response` key conforms to `AssistantResponse`.
 - Add a test for each new tool: happy path + error return (`{"error": "..."}` dict).
 

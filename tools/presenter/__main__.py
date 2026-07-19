@@ -9,21 +9,12 @@ from core.config.agent_settings import settings
 from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
 
+from app.log_config import configure_logging
+
 console = Console()
 log = structlog.get_logger(__name__)
 
 AGENT_DIR = Path(__file__).resolve().parent
-
-
-def _configure_logging() -> None:
-    structlog.configure(
-        processors=[
-            structlog.dev.ConsoleRenderer(),
-        ],
-        wrapper_class=structlog.BoundLogger,
-        context_class=dict,
-        logger_factory=structlog.PrintLoggerFactory(),
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -221,7 +212,7 @@ def run_image() -> None:
 
 
 def main() -> None:
-    _configure_logging()
+    configure_logging()
 
     parser = argparse.ArgumentParser(description="Presentation authoring agent")
     parser.add_argument(

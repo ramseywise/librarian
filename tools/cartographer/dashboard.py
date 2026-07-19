@@ -19,6 +19,7 @@ Two metric classes render differently, and the distinction is load-bearing (Q0):
 from __future__ import annotations
 
 import html
+import json
 import re
 from dataclasses import dataclass, field
 from datetime import date as _date
@@ -27,7 +28,11 @@ from typing import Any
 
 import structlog
 
-from tools.cartographer.factstore import read_all
+from tools.cartographer.factstore import (
+    SUBAGENT_ATTRIBUTION_CLI,
+    UNATTRIBUTED_AGENT,
+    read_all,
+)
 
 log = structlog.get_logger(__name__)
 
@@ -35,12 +40,23 @@ log = structlog.get_logger(__name__)
 # derived from it must not render a single point before this date.
 JULY_BOUNDARY = "2026-07-15"
 
+# Date the friction columns entered the factstore. Data before this is backfilled
+# from retained transcripts, not collected prospectively -- stated on the panel so
+# the distinction stays visible.
+FRICTION_STORED = "2026-07-20"
+
 # Population-rate metrics: the sampling frame differs per regime, so these are
 # faceted and never drawn as a continuous series.
 RATE_METRICS = {"compaction_pct", "sessions_per_week"}
 
 # July-forward only: the underlying columns are null in the note era.
-JULY_ONLY_METRICS = {"max_context_p50", "max_context_p90", "pct_over_150k"}
+JULY_ONLY_METRICS = {
+    "max_context_p50",
+    "max_context_p90",
+    "pct_over_150k",
+    "tool_error_rate",
+    "interruptions_p50",
+}
 
 # What each regime's corpus actually sampled. Rendered on every rate panel so a
 # reader cannot mistake a logging artifact for a workflow change.
@@ -155,7 +171,36 @@ def _metric_value(metric: str, bucket: list[dict[str, Any]]) -> float | None:
         if not values:
             return None
         return round(100 * sum(1 for v in values if v >= _CONTEXT_LIMIT) / len(values), 2)
+    if metric == "tool_error_rate":
+        # Errors per 100 tool calls -- normalised, so a long session is not
+        # counted as more friction than a short one doing the same work.
+        scored = [r for r in bucket if r.get("tool_error_count") is not None]
+        if not scored:
+            return None
+        calls = sum(_tool_call_total(r) for r in scored)
+        if not calls:
+            return None
+        errors = sum(int(r.get("tool_error_count") or 0) for r in scored)
+        return round(100 * errors / calls, 2)
+    if metric == "interruptions_p50":
+        values = [
+            float(r["user_interruptions"])
+            for r in bucket
+            if r.get("user_interruptions") is not None
+        ]
+        if not values:
+            return None
+        return _percentile(values, 50)
     raise ValueError(f"unknown metric: {metric}")
+
+
+def _tool_call_total(row: dict[str, Any]) -> int:
+    """Total tool invocations in a session, from the stored tool_counts JSON."""
+    try:
+        counts = json.loads(row.get("tool_counts") or "{}")
+    except (TypeError, ValueError):
+        return 0
+    return sum(int(v) for v in counts.values()) if isinstance(counts, dict) else 0
 
 
 def _regime_bands(points: list[Point]) -> list[tuple[str, str, str]]:
@@ -333,6 +378,22 @@ _TIER2 = [
     ("pct_over_150k", "% sessions over 150k context", "the 66% baseline"),
 ]
 
+# Friction: parsed since the JSONL era, stored from 2026-07-20. Backfilled to the
+# July boundary by re-parsing retained transcripts -- same apparatus, wider
+# projection, so these are NOT a new regime.
+_TIER3 = [
+    (
+        "tool_error_rate",
+        "Tool error rate",
+        "errors per 100 tool calls - normalised so long sessions are not penalised",
+    ),
+    (
+        "interruptions_p50",
+        "User interruptions per session (p50)",
+        "human turns arriving <5s apart - tool results excluded (see parser note)",
+    ),
+]
+
 # Population rates: within-regime diagnostics only. Rendered faceted, never as a
 # cross-regime trend - the Apr-Jun corpus samples only compacted sessions.
 _RATES = [
@@ -481,6 +542,80 @@ def _render_series(series: Series, color: str, title: str, note: str) -> str:
     )
 
 
+def _subagent_totals(
+    store: Path,
+) -> tuple[dict[str, dict[str, float]], dict[str, dict[str, float]]]:
+    """Sum the stored per-parent subagent breakdowns into (by_agent, by_model).
+
+    Work sessions only, matching every other panel. Rows with a NULL column are
+    parents that spawned no subagent — skipped, not counted as zero.
+    """
+    by_agent: dict[str, dict[str, float]] = {}
+    by_model: dict[str, dict[str, float]] = {}
+    for row in _work_sessions(read_all(store)):
+        raw = row.get("subagent_costs")
+        if not raw:
+            continue
+        try:
+            payload = json.loads(raw)
+        except (TypeError, json.JSONDecodeError):
+            continue
+        for group, target in (("by_agent", by_agent), ("by_model", by_model)):
+            for name, stats in (payload.get(group) or {}).items():
+                slot = target.setdefault(name, {"cost": 0.0, "output_tokens": 0.0, "n": 0.0})
+                slot["cost"] += stats.get("cost", 0.0)
+                slot["output_tokens"] += stats.get("output_tokens", 0)
+                slot["n"] += stats.get("n", 0)
+    return by_agent, by_model
+
+
+def _share_rows(totals: dict[str, dict[str, float]], label: str) -> str:
+    """A cost-ranked breakdown table. Share is of subagent spend, not session spend."""
+    if not totals:
+        return '<p class="empty">no data</p>'
+    grand = sum(s["cost"] for s in totals.values()) or 1.0
+    rows = "".join(
+        f"<tr><td>{html.escape(name)}</td><td>{stats['cost']:,.0f}</td>"
+        f"<td>{stats['cost'] / grand * 100:.0f}%</td>"
+        f"<td>{stats['output_tokens']:,.0f}</td><td>{stats['n']:.0f}</td></tr>"
+        for name, stats in sorted(totals.items(), key=lambda kv: -kv[1]["cost"])
+    )
+    return (
+        f"<table><thead><tr><th>{html.escape(label)}</th><th>cost units</th>"
+        f"<th>share</th><th>output tokens</th><th>transcripts</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table>"
+    )
+
+
+def _render_subagents(store: Path) -> str:
+    """Subagent spend split by agent type and by model.
+
+    Rendered as tables rather than a trend line: this is a categorical breakdown
+    of a single window, and only 2.1.201+ transcripts carry an agent name, so a
+    time series would show attribution coverage arriving rather than any change
+    in how subagents are used.
+    """
+    by_agent, by_model = _subagent_totals(store)
+    unattributed = by_agent.get(UNATTRIBUTED_AGENT, {}).get("cost", 0.0)
+    grand = sum(s["cost"] for s in by_agent.values())
+    caveat = ""
+    if unattributed and grand:
+        caveat = (
+            f'<p class="saturated">⚠ {unattributed / grand * 100:.0f}% of subagent cost '
+            f"predates CLI {SUBAGENT_ATTRIBUTION_CLI} and carries no agent name. "
+            f"Per-agent shares below are shares of all subagent spend, so the named "
+            f"rows understate each agent's true share of attributable work.</p>"
+        )
+    return (
+        f'<section class="chart"><h3>Subagent attribution</h3>'
+        f'<p class="note">Cost and tokens of subagent transcripts, charged to the '
+        f"parent session that spawned them. Work sessions only.</p>"
+        f"{caveat}"
+        f'<div class="table-view">{_share_rows(by_agent, "agent")}</div>'
+        f'<div class="table-view">{_share_rows(by_model, "model")}</div></section>'
+    )
+
+
 def _render_funnel(funnel: Funnel | None) -> str:
     if funnel is None or funnel.entries_in is None:
         return (
@@ -555,6 +690,52 @@ border-bottom:1px solid var(--border);}
 """
 
 
+# Provenance ledger: signal -> (source, earliest honest date, status). Rendered so
+# a reader can tell "flat line" from "never recorded", and so the next person to
+# add a metric knows what is already collected before instrumenting again.
+_COVERAGE = [
+    ("Cost, tokens, cache", "JSONL usage + migrated notes", "2026-04-10", "complete"),
+    ("Compaction flag", "note hook, then JSONL", "2026-04-10", "regime-bound - see rates"),
+    ("Max context", "JSONL per-request", JULY_BOUNDARY, "no pre-July data, not imputed"),
+    ("Skill + model attribution", "JSONL tool_use blocks", JULY_BOUNDARY, "no pre-July data"),
+    ("Tool errors, interruptions", "JSONL tool_result is_error", JULY_BOUNDARY, "backfilled"),
+    ("Plan-doc outcome", "not collected", "-", "unrecoverable - .claude/docs is git-ignored"),
+    (
+        "Subagent attribution",
+        "JSONL subagent transcripts",
+        JULY_BOUNDARY,
+        f"per-model complete; agent names only from CLI {SUBAGENT_ATTRIBUTION_CLI}",
+    ),
+]
+
+# Signals deliberately not collected, with the reason. Kept visible so the same
+# proposal is not re-litigated from scratch each time.
+_NOT_COLLECTED = (
+    "Plan-doc Status transitions (EXECUTED vs ABANDONED) would be the natural "
+    "outcome metric, but .claude/docs/ is git-ignored by policy - a doc's history "
+    "does not exist, only its current state. Making it a time series requires "
+    "snapshotting forward from a decision date; nothing recovers the past."
+)
+
+
+def _render_coverage() -> str:
+    """The provenance ledger -- what is measured, since when, and what never was."""
+    rows = "".join(
+        f"<tr><td>{html.escape(signal)}</td><td>{html.escape(source)}</td>"
+        f"<td>{html.escape(since)}</td><td>{html.escape(status)}</td></tr>"
+        for signal, source, since, status in _COVERAGE
+    )
+    return (
+        f'<div class="boundary"><h2>Signal coverage</h2>'
+        f'<p class="sub">Where each number comes from and the earliest date it is '
+        f"honest. A metric absent here is not being measured.</p></div>"
+        f'<div class="chart"><div class="table-view"><table>'
+        f"<tr><th>Signal</th><th>Source</th><th>Since</th><th>Status</th></tr>"
+        f"{rows}</table></div>"
+        f'<p class="frame">{html.escape(_NOT_COLLECTED)}</p></div>'
+    )
+
+
 def render_dashboard(store: Path, funnel: Funnel | None = None) -> str:
     """Render the full dashboard to a self-contained HTML string."""
     tier1 = "".join(
@@ -564,6 +745,10 @@ def render_dashboard(store: Path, funnel: Funnel | None = None) -> str:
     tier2 = "".join(
         _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
         for i, (metric, title, note) in enumerate(_TIER2)
+    )
+    tier3 = "".join(
+        _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
+        for i, (metric, title, note) in enumerate(_TIER3)
     )
     rates = "".join(
         _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
@@ -584,7 +769,15 @@ def render_dashboard(store: Path, funnel: Funnel | None = None) -> str:
         f"pre-hygiene regime a note existed only when a session compacted. Faceted "
         f"per regime, never joined into one line.</p></div>"
         f"{rates}"
+        f'<div class="boundary"><h2>Friction</h2>'
+        f'<p class="sub">Stored from {FRICTION_STORED} and backfilled to '
+        f"{JULY_BOUNDARY} by re-parsing retained transcripts. The parser extracted "
+        f"these all along; only the stored projection changed, so this is a schema "
+        f"change and not a new instrumentation regime.</p></div>"
+        f"{tier3}"
+        f"{_render_subagents(store)}"
         f"{_render_funnel(funnel)}"
+        f"{_render_coverage()}"
         f"</div>"
     )
 

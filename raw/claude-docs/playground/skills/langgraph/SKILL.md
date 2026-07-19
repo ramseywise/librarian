@@ -24,8 +24,7 @@ updated: 2026-04-29
 **Stack:** `va-langgraph/` — LangGraph StateGraph, Gemini 2.5 Flash, Postgres checkpointing, FastAPI gateway.
 
 **MCP backends:**
-- `mcp_servers/product-a/` — product-a billing API (invoices, quotes, customers, products, banking, expenses)
-- `mcp_servers/corpus-a/` — vendor-a CRM backend (contacts, accounting, email, invitations)
+- `mcp_servers/knowledge_base/` — music KB tools (`search_articles`, `get_article`)
 
 **Graph topology:**
 ```
@@ -79,7 +78,7 @@ Answer these before touching the graph. Write answers as a short design note —
 - Where does it join/leave the main flow? Update `_DOMAIN_NODES` and `_route_intent` accordingly.
 
 **Testing**
-- New domain → new fixtures in `tests/evalsuite/fixtures/corpus-a_tickets.json`?
+- New domain → new fixtures in `tests/evalsuite/fixtures/support_tickets.json`?
 - Can the subgraph be unit-tested with a mock `AgentState` dict before wiring into the graph?
 
 ---

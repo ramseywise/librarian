@@ -104,6 +104,7 @@ updated: 2026-07-19
 | [[PGVector Migration Pattern]] | NumPy .npz → pgvector migration — schema, cosine distance operator, IVFFlat index, pg_dump/restore via Auth Proxy |
 | [[Presidio PII Redaction for Langfuse]] | Presidio + spaCy fr_core_news_lg + CamemBERT + custom regex for French financial PII — wired via Langfuse SDK mask hook |
 | [[System Design — Shared Code-Index Service]] | Interview-format writeup — centralized indexer + query API, MCP as thin read-only client, DuckDB single-writer risk, pgvector escape hatch |
+| [[Safeguards Architecture — Five Protection Layers]] | Five-layer runtime safety pipeline — input guardrails, routing confidence, CRAG retrieval gate, post-generation grounding, escalation routing |
 
 ---
 
@@ -201,6 +202,7 @@ updated: 2026-07-19
 | [[Session Insights]] | Friction patterns, recurring themes, skill candidates from 84 facet-analyzed sessions |
 | [[Puffin Consciousness Development Skills]] | Chained skill family (genesis → wake → grow → reflect → synthesize → dream) for staged self-development across sessions |
 | [[Code Review Drill — SANYI]] | Code-review interview drill from a real contract-check run — the two-line diff that lints clean but violates the change contract |
+| [[Skill-Knowledge Information Flow]] | How knowledge flows between global skills, ai-project-template, learn-ai-engineering, and the librarian wiki — sync contracts and current drift |
 
 ---
 
@@ -215,6 +217,7 @@ updated: 2026-07-19
 | [[Librarian Graph Explorer]] | Local React Flow wiki graph explorer — multi-edge toggling (wikilink/semantic/tag-shared), UMAP semantic layout, agent chat + write-back |
 | [[Listen-Wiseer Project]] | Spotify recommendation agent — ENOA taste map, LangGraph ReAct + Chainlit, DuckDB vss RAG |
 | [[Change-Contracts Rollout]] | 2026-07-17 decision record — SANYI global promotion, per-repo contracts, review-skill enforcement, template seeding; akira blocked on hardcoded scan roots |
+| [[NYC-DSSG Project]] | NYC Data Science for Social Good — platform engineering for 600+ nonprofits via 300 volunteers; KB, templates, PM agent |
 
 > **Private project pages** (company-specific) live in `wiki/private/` — gitignored, available locally.
 
@@ -238,7 +241,18 @@ updated: 2026-07-19
 
 *ML/DS/data-engineering fundamentals — classical ML, deep learning, NLP, data systems, MLOps.*
 
-*(Empty — pending M2 distillation of data-science/ and data-engineering/ material from learn-ai-engineering.)*
+| Page | Summary |
+|---|---|
+| [[Transformer Architecture]] | The Transformer model (Vaswani et al., 2017) — encoder-decoder stacks of self-attention and feed-forward layers that replaced RNNs/CNNs for sequence transduction |
+| [[Self-Attention Mechanism]] | Self-attention relates different positions of a single sequence — the core primitive enabling Transformers to model long-range dependencies in O(1) path length |
+| [[Positional Encoding]] | Sinusoidal or learned position signals injected into Transformer input embeddings — required because self-attention is permutation-invariant |
+| [[Batch Normalization]] | Normalizes layer inputs using mini-batch statistics to reduce internal covariate shift — enables higher learning rates, acts as regularizer; pitfalls with EMA and domain shift |
+| [[Neural Probabilistic Language Model]] | Bengio et al. (2003) — learning distributed word representations (embeddings) jointly with a neural language model, fighting the curse of dimensionality |
+| [[WaveNet — Autoregressive Audio Generation]] | Deep autoregressive model for raw audio using dilated causal convolutions — SOTA TTS naturalness, multi-speaker conditioning, music generation |
+| [[Dilated Causal Convolutions]] | Convolutions with exponentially increasing dilation factors — grows receptive field exponentially with depth while preserving temporal causality |
+| [[Open-Domain Dialogue Systems]] | Three frameworks (retrieval/generation/hybrid) with two goals (informative via knowledge grounding, controllable via persona/strategy/safety) |
+| [[DIET Architecture]] | Dual Intent and Entity Transformer (Rasa, 2020) — multi-task NLU for joint intent classification and entity recognition, outperforms fine-tuned BERT 6x faster |
+| [[Dialogue Transformers — TED Policy]] | TED policy applies self-attention at the discourse level — over dialogue turns — outperforming LSTM-based policies on sub-dialogue handling |
 
 ---
 

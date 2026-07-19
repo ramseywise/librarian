@@ -28,6 +28,8 @@ import structlog
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
+from app.log_config import configure_logging
+
 load_dotenv()
 log = structlog.get_logger()
 
@@ -182,6 +184,7 @@ def load_bookmarks(bookmarks_file: Path) -> list[str]:
 
 
 def main() -> None:
+    configure_logging()
     parser = argparse.ArgumentParser(description="Scrape web bookmarks → raw/web/")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--bookmarks-file", type=Path, default=DEFAULT_BOOKMARKS_FILE)

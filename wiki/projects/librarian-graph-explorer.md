@@ -123,6 +123,7 @@ HITL gate on write-back: user must approve every wikilink insertion before it la
 ---
 
 ## See Also
+- [[Librarian KB — Build Plan]] <!-- auto-linked -->
 - [[Librarian Project]]
 - [[Librarian RAG Architecture]]
 - [[LangGraph CRAG Pipeline]]

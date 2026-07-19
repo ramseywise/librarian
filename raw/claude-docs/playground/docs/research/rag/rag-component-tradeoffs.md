@@ -59,7 +59,7 @@
 | RRF (Reciprocal Rank Fusion) | More principled fusion; no weight tuning; needs ranked lists. |
 | SPLADE learned sparse | Outperforms BM25 on BEIR; requires fine-tuned model. |
 
-**Production benchmarks (rag-v1 v1, Danish market):**
+**Production benchmarks (v1 production deployment):**
 
 | Strategy | Precision@5 | Recall@5 | Hit Rate |
 |----------|------------|---------|---------|

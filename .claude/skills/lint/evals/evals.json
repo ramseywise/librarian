@@ -1,0 +1,10 @@
+[
+  {"input": "health check the wiki — find orphan pages and dead links", "expected": true},
+  {"input": "lint the wiki, I want to see stale pages and missing frontmatter", "expected": true},
+  {"input": "are there any unresolved conflicts or uncovered raw sources?", "expected": true},
+  {"input": "check for dead wikilinks across the whole wiki", "expected": true},
+  {"input": "wiki health check before the monthly compaction", "expected": true},
+  {"input": "compact and merge the stale pages", "expected": false},
+  {"input": "run a full ingest from Notion", "expected": false},
+  {"input": "what does the wiki say about MCP server patterns?", "expected": false}
+]

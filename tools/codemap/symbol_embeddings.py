@@ -55,6 +55,14 @@ def _blob_to_vec(blob: bytes) -> np.ndarray:
     return np.array(struct.unpack(f"{n}f", blob), dtype=np.float32)
 
 
+def _table_exists(con: duckdb.DuckDBPyConnection) -> bool:
+    """True if symbol_embeddings exists — safe on a read-only connection."""
+    row = con.execute(
+        "SELECT count(*) FROM information_schema.tables WHERE table_name = 'symbol_embeddings'"
+    ).fetchone()
+    return bool(row and row[0])
+
+
 def ensure_table(con: duckdb.DuckDBPyConnection) -> None:
     con.execute(
         """
@@ -117,7 +125,11 @@ def semantic_search(
     sentence-transformers is absent or nothing is cached yet."""
     if not HAS_EMBEDDINGS:
         return []
-    ensure_table(con)
+    # No ensure_table here: this is the read path, and the API serves it over a
+    # read-only connection where CREATE raises. An absent table means nothing has
+    # been embedded yet — the documented empty-list case, not an error.
+    if not _table_exists(con):
+        return []
 
     sql = (
         "SELECT s.symbol_id, s.name, s.kind, s.signature, s.docstring, s.file_id, "

@@ -57,3 +57,4 @@ Haiku call: ~$0.001 per rewrite, ~100–200ms added latency on multi-turn only. 
 - [[RAG Retrieval Strategies]]
 - [[Summarization Node]]
 - [[Bedrock KB vs LangGraph Decision]] — Bedrock KB silently degrades here; HistoryCondenser prevents it
+- [[Dialogue Transformers — TED Policy]] — alternative-to (attention-based vs compaction-based history selection)

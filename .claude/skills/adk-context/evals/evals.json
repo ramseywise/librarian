@@ -1,0 +1,10 @@
+[
+  {"input": "pull an ADK context briefing before I start this agent build session", "expected": true},
+  {"input": "generate a wiki briefing tagged with adk and mcp patterns", "expected": true},
+  {"input": "I'm about to work on the voice agent — load relevant decision and pattern pages first", "expected": true},
+  {"input": "give me a curated context injection from the wiki for a deep-agents session", "expected": true},
+  {"input": "what's the wiki say about langgraph context management patterns?", "expected": true},
+  {"input": "compile the raw notion export into the wiki", "expected": false},
+  {"input": "find orphan pages and dead wikilinks", "expected": false},
+  {"input": "run a wiki compaction, there are too many stale pages", "expected": false}
+]

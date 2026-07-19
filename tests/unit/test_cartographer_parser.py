@@ -222,3 +222,95 @@ def test_aggregate_cache_savings(tmp_path: Path) -> None:
     assert agg["cache"]["hit_rate_pct"] == 90
     # actual: 90k*0.1 + 10k*1.25 = 21.5k vs uncached 100k → 78.5% ≈ 78%
     assert agg["cache"]["savings_vs_uncached_pct"] == 78
+
+
+@pytest.mark.unit
+def test_parse_session_extracts_attribution_agent(tmp_path: Path) -> None:
+    """CLI 2.1.201+ tags subagent records with the agent type name."""
+    path = tmp_path / "proj" / "sess-1" / "subagents" / "agent-a.jsonl"
+    _write_jsonl(
+        path,
+        [
+            {**_user("2026-07-18T10:00:00Z"), "attributionAgent": "Explore"},
+            _assistant("2026-07-18T10:00:05Z"),
+        ],
+    )
+    session = parse_session(path)
+    assert session is not None
+    assert session["attribution_agent"] == "Explore"
+
+
+@pytest.mark.unit
+def test_parse_session_attribution_absent_pre_2_1_201(tmp_path: Path) -> None:
+    """Older transcripts carry no name; the field stays None rather than guessing."""
+    path = tmp_path / "proj" / "sess-1" / "subagents" / "agent-a.jsonl"
+    _write_jsonl(path, [_user("2026-07-10T10:00:00Z"), _assistant("2026-07-10T10:00:05Z")])
+    session = parse_session(path)
+    assert session is not None
+    assert session["attribution_agent"] is None
+
+
+@pytest.mark.unit
+def test_parse_session_splits_cost_by_model(tmp_path: Path) -> None:
+    path = tmp_path / "proj" / "sess-1.jsonl"
+    _write_jsonl(
+        path,
+        [
+            _user("2026-07-18T10:00:00Z"),
+            _assistant("2026-07-18T10:00:05Z", output_tokens=50, model="claude-opus-4-8"),
+            _assistant("2026-07-18T10:00:09Z", output_tokens=30, model="claude-haiku-4-5"),
+        ],
+    )
+    session = parse_session(path)
+    assert session is not None
+    assert set(session["model_costs"]) == {"claude-opus-4-8", "claude-haiku-4-5"}
+    assert session["model_output_tokens"]["claude-opus-4-8"] == 50
+    assert session["model_output_tokens"]["claude-haiku-4-5"] == 30
+    # Per-model costs partition the session total, never duplicate it.
+    assert sum(session["model_costs"].values()) == pytest.approx(session["cost_units"], rel=0.02)
+
+
+@pytest.mark.unit
+def test_subagent_costs_roll_up_to_parent(tmp_path: Path) -> None:
+    """Subagent spend is charged to the parent, split by agent name and model."""
+    from tools.cartographer.factstore import UNATTRIBUTED_AGENT, _subagent_costs_by_parent
+
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1" / "subagents" / "agent-a.jsonl",
+        [
+            {**_user("2026-07-18T10:00:00Z"), "attributionAgent": "Explore"},
+            _assistant("2026-07-18T10:00:05Z", model="claude-haiku-4-5"),
+        ],
+    )
+    # Same parent, no attribution -> lands in the unattributed bucket, not dropped.
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1" / "subagents" / "agent-b.jsonl",
+        [
+            _user("2026-07-18T10:01:00Z"),
+            _assistant("2026-07-18T10:01:05Z", model="claude-sonnet-5"),
+        ],
+    )
+    rolled = _subagent_costs_by_parent(tmp_path)
+
+    assert set(rolled) == {"sess-1"}
+    by_agent = rolled["sess-1"]["by_agent"]
+    assert set(by_agent) == {"Explore", UNATTRIBUTED_AGENT}
+    assert by_agent["Explore"]["n"] == 1
+    assert by_agent[UNATTRIBUTED_AGENT]["n"] == 1
+    # Per-model coverage is complete even where the agent name is missing.
+    assert set(rolled["sess-1"]["by_model"]) == {"claude-haiku-4-5", "claude-sonnet-5"}
+
+
+@pytest.mark.unit
+def test_from_jsonl_leaves_subagent_costs_null_without_subagents(tmp_path: Path) -> None:
+    """A parent that spawned nothing stores NULL, not an empty object -- absence of
+    subagent use must stay distinguishable from a zero-cost subagent."""
+    from tools.cartographer.factstore import from_jsonl
+
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-18T10:00:00Z"), _assistant("2026-07-18T10:00:05Z")],
+    )
+    rows = from_jsonl(tmp_path)
+    assert len(rows) == 1
+    assert rows[0]["subagent_costs"] is None

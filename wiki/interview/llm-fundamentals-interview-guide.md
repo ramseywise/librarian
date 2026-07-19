@@ -57,3 +57,7 @@ Decision axes: knowledge freshness (RAG), behavior/format/style (fine-tune), dat
 - [[Prefix Caching]] — instance-of
 - [[RAG Interview Study Guide]] — extends
 - [[Direct Preference Optimization]] — instance-of
+- [[Transformer Architecture]] — prerequisite-for
+- [[Self-Attention Mechanism]] — prerequisite-for
+- [[Neural Probabilistic Language Model]] — prerequisite-for
+- [[Batch Normalization]] — prerequisite-for

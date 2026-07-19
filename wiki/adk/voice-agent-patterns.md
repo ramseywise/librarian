@@ -69,3 +69,4 @@ Voice sessions accumulate state faster than text. Key patterns:
 - [[Prefix Caching]]
 - [[Embedder Warmup]]
 - [[LangGraph Advanced Patterns]]
+- [[WaveNet — Autoregressive Audio Generation]] — prerequisite-for

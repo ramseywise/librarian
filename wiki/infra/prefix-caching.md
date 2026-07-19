@@ -56,3 +56,4 @@ The [client] ADK POC (April 2026) explicitly set "minimize LLM calls + optimize 
 - [[Production Hardening Patterns]]
 - [[LangGraph CRAG Pipeline]]
 - [[LLM Fundamentals Interview Study Guide]] — prerequisite-for
+- [[Self-Attention Mechanism]] — prerequisite-for

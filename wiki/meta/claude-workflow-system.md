@@ -2,7 +2,7 @@
 title: Claude Workflow System
 tags: [context-management, llm, pattern]
 summary: Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints, and session notes — that automates context management across multi-phase engineering workflows.
-updated: 2026-07-14
+updated: 2026-07-19
 sources:
   - raw/sessions/claude-2026-04-11-i-want-to-refactor-this-insights-skill-f-394ba556.md
   - raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md
@@ -45,6 +45,11 @@ sources:
   - raw/claude-docs/listen-wiseer/skills/code_pr.md
   - raw/claude-docs/listen-wiseer/skills/code_refactor.md
   - raw/claude-docs/listen-wiseer/skills/code_review.md
+  - raw/sessions/puffin-chat-2026-07-16-22-00.md
+  - raw/sessions/claude-2026-07-17-so-we-ve-been-using-puffin-for-a-couple-0bbb795a.md
+  - raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
+  - raw/sessions/claude-2026-07-17-should-this-akira-agent-be-part-of-claud-999c0dee.md
+  - raw/sessions/claude-2026-07-19-should-we-simlink-our-global-skills-to-g-a103916b.md
 ---
 
 # Claude Workflow System
@@ -163,33 +168,66 @@ The system was iteratively developed April 2026:
 - **PreCompact not Stop hook**: compaction checkpoints fire on compact (context boundary), not on every response — avoids noise
 - **500k token gate**: stubbed in hook, not yet enforced — can be activated by uncommenting the threshold constant
 
-## Current Global Skills (as of 2026-07-06)
+## Current Global Skills (as of 2026-07-19)
 
-Full skill inventory from `~/.claude/CLAUDE.md`:
+Reorganized 2026-07-17 into **5 named groups** (21 skills in `~/.claude/skills/`):
 
-| Category | Skill | What it does |
-|---|---|---|
-| Session/git | `/compact-session` | Checkpoint: save artifacts, note, memory, commit + push + PR |
-| Session/git | `/quick-pr` | Stage → commit → push → draft PR |
-| Session/git | `/quick-commit` | Stage → commit (no push) |
-| Session/git | `/claude-insights` | HTML report from session notes + JSONL |
-| Discovery | `/research-review` | Research phase: write `.claude/docs/research/{name}.md` |
-| Discovery | `/plan-review` | Planning phase: write `.claude/docs/plans/{name}.md` |
-| Discovery | `/plan-refactor` | Plan a refactor before executing |
-| Dev execution | `/execute-plan` | Step through active plan, append to `CHANGELOG.md` |
-| Dev execution | `/code-review` | Write `.claude/docs/reviews/{name}.md` + PR |
-| Dev execution | `/review-pr` | Review an open PR |
-| Dev execution | `/code-debug` | Diagnose and fix a bug |
-| Product/Linear | `/define-milestones` | Define milestones: goal, success metrics, initiative list |
-| Product/Linear | `/design-sprint` | Ideate: HMW → workstreams → named initiatives |
-| Product/Linear | `/scope-initiative` | Initiative → backward mapping, task backlog, Linear hierarchy |
-| Product/Linear | `/doc-to-linear-tickets` | Push planning doc into Linear issues |
-| Product/Linear | `/linear-spike` | Create a time-boxed spike/investigation ticket |
-| Product/Linear | `/execute-tasks` | Step through task list, mark done |
-| Product/Linear | `/github-projects` | Manage GitHub Projects V2 |
-| Tech domain | `/langgraph` | State design, node/edge patterns, HITL, checkpointing |
-| Tech domain | `/prototype` | Rapid prototype: skip tests, skip polish, just build |
-| Tech domain | `/mcp-builder` | Build MCP servers (Python FastMCP or Node SDK) |
+### `code-` — Implementation (4 skills)
+
+| Skill | What it does |
+|---|---|
+| `/code-debug` | Quick fix from error (six-step scientific loop) |
+| `/code-refactor` | Quality-driven, invokes native `/simplify` as finishing pass |
+| `/code-review` | Standing quality review on diff — leveled: 1=lint, 2=+tests+akira, 3=+sanyi |
+| `/code-pr` | Review an open PR |
+
+### `design-` — Architecture & Planning (4 skills)
+
+| Skill | What it does |
+|---|---|
+| `/design-sprint` | Full HMW design sprint from scratch |
+| `/design-initiative` | Initiative → backlog (replaced `/scope-initiative`) |
+| `/design-milestones` | Initiative → phase checkpoints |
+| `/design-prototype` | Spike/explore (replaces `/prototype`) |
+
+### `workflow-` — Process Pipeline (6 skills)
+
+| Skill | What it does |
+|---|---|
+| `/workflow-research` | Phase 1 — structured research artifact; `fan-out` mode for parallel haiku |
+| `/workflow-plan` | Phase 2 — implementation plan (opus) |
+| `/workflow-execute` | Phase 3 — step through plan |
+| `/workflow-review` | Phase 4 — plan fidelity check |
+| `/workflow-insights` | Usage analytics (feeds retro) |
+| `/workflow-retro` | Tooling retrospective + config audit — closes feedback loop |
+
+### `git-` — Git Operations (2 skills)
+
+| Skill | What it does |
+|---|---|
+| `/git-commit` | Stage + commit (replaces `/quick-commit`) |
+| `/git-pr` | Stage + commit + PR (replaces `/quick-pr`) |
+
+### Cross-Cutting (7 skills)
+
+| Skill | What it does |
+|---|---|
+| `/akira` | Interactive quality scanner — 4 modes: scan, wander, dao, all |
+| `/sanyi` | Change contracts (init/review/audit) |
+| `/skill-creator` | Skill CRUD + eval (blind comparison pipeline) |
+| `/mcp-builder` | Build MCP servers (vendored from Anthropic SDK; Python FastMCP or Node) |
+| `/github-projects` | Projects V2 GraphQL templates (consumed by other skills) |
+| `/new-agent` | Scaffold ADK or LangGraph agent |
+| `/docs-check` | Structural drift detection: README/DESIGN.md vs codebase; rides `/code-review level:2+` |
+
+### Key Reorganization Decisions (2026-07-17)
+
+- **Skills bundled with references and evals:** canonical resource layout is `SKILL.md` / `references/` (on-demand docs) / `scripts/` (executable helpers) / `assets/` (templates). See [[SKILL.md Pattern]].
+- **Model pairing:** Haiku for fan-out/extraction, Sonnet for bounded execution, Opus for `/workflow-plan`, `/workflow-retro`, `/sanyi audit`, and verdict-shaped work.
+- **Session hygiene:** one work item per session; the plan doc is continuity. Phase gates = session boundaries. `/workflow-plan` in opus → `/workflow-execute` in FRESH sonnet pointed at the plan doc.
+- **Review ladder:** `make precommit`/`make test` (zero tokens) → `/code-review level:1` → `level:2` (+tests+akira) → `level:3` (+full sanyi). `/akira` is `/code-review`'s interactive sibling.
+- **Config layering canonical (2026-07-16):** `~/.claude` is single source of truth for generic skills/hooks. `~/workspace/.claude` is a symlink. Repo `.claude/` holds repo-specific items only — never duplicate global skills (copies go stale, hooks fire twice). Exception: `ai-project-template/template/.claude/` is rendered output synced one-way via `scripts/sync-global-skills.sh`.
+- **Settings schema drift fix (2026-07-16):** 16 Bash allow patterns corrected from `Bash(x *)` to `Bash(x:*)`, added `WebFetch`/`Skill`/`Agent` tool names (legacy names `Task`/`TodoWrite`/`SlashCommand` retired).
 
 **`/prototype` — scope and exit.** Relaxes TDD and layering rules deliberately (tests optional, hardcoded values and skipped validation allowed) so the sole goal is answering one stated question ("does this work?", "how does this API behave?") as fast as possible — no refactoring of existing production code as a side effect, and prototype code stays clearly separated (its own directory or explicit "experimental" marking). Exits into one of three outcomes decided with the user: **adopt** (rewrite properly under the full backend/frontend skill rules), **adapt** (refactor the prototype into production), or **discard** — prototype code is never merged directly into a production path.
 
@@ -287,3 +325,4 @@ A project-local instantiation of this skill (`code_debug` in [[Listen-Wiseer Pro
 - [[Agent Scaffolding Skill Layers]]
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]]
 - [[Branch Naming Convention Pattern]]
+- [[Skill-Knowledge Information Flow]] — extends (four-system parity model)

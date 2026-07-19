@@ -22,6 +22,8 @@ from pathlib import Path
 import structlog
 from dotenv import load_dotenv
 
+from app.log_config import configure_logging
+
 load_dotenv()
 log = structlog.get_logger()
 
@@ -115,6 +117,7 @@ def load_repos(repos_file: Path) -> list[Path]:
 
 
 def main() -> None:
+    configure_logging()
     parser = argparse.ArgumentParser(description="Scrape local repos → raw/repos/")
     parser.add_argument(
         "--repos-file",

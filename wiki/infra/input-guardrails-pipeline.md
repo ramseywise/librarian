@@ -188,3 +188,5 @@ def guardrails_node(state: AgentState) -> dict:
 - [[LangGraph Advanced Patterns]]
 - [[ADK Context Engineering]]
 - [[Self-Learning Agents]]
+- [[Safeguards Architecture — Five Protection Layers]] — extends (full pipeline including post-generation)
+- [[Open-Domain Dialogue Systems]] — prerequisite-for

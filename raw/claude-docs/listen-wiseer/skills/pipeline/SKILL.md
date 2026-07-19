@@ -8,18 +8,18 @@ description: "Map the full phased workflow; start from a chosen phase with human
 
 | Phase | Command | Artifact | Gate |
 |-------|---------|----------|------|
-| 1. Research | `/research <name>` | `.claude/docs/research/<name>.md` | Human reviews before continuing |
-| 2. Plan | `/plan <name>` | `.claude/docs/plans/<name>.md` | Human reviews before continuing |
-| 2.5. Plan Review | `/plan-review` | plan file (iterated) | Blockers resolved, questions answered |
+| 1. Research | `/research <slug>` | `## Research` in `.claude/docs/plans/YYYY-MM-DD-<slug>.md` | Human reviews before continuing |
+| 2. Plan | `/plan <slug>` | `## Plan` in the same doc | Human reviews before continuing |
+| 2.5. Plan Review | `/plan review` | plan section (iterated) | Blockers resolved, questions answered |
 | — | `/compact` | — | **Run before execute** |
 | 3. Execute | `/execute` | `CHANGELOG.md` | Human confirms each step |
-| 4. Review | `/review <name>` | `.claude/docs/reviews/<name>.md` | Verdict: go / no-go |
+| 4. Review | `/code-review <slug>` | `## Review` in the same doc | Verdict: go / no-go |
 
-All phase artifacts live in `.claude/docs/` subdirectories. `SESSION.md` tracks the active plan and research files under `## Active docs`.
+One doc per work item: `.claude/docs/plans/YYYY-MM-DD-<slug>.md` with a `Status:` line (PLANNED / IN PROGRESS / EXECUTED). No SESSION.md — `grep -l 'Status: IN PROGRESS' .claude/docs/plans/*.md` finds the active doc.
 
-**Plan updates anytime:** `/plan-review` re-runs the review and patches the active plan.
+**Plan updates anytime:** `/plan review` re-runs the review and patches the active plan.
 
-Ad-hoc (skip pipeline): `/debug`, `/code_review`, `/refactor`.
+Ad-hoc (skip pipeline): `/code-debug`, `/code-review`, `/plan-refactor`.
 
 ## On invoke
 

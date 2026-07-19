@@ -2,7 +2,7 @@
 title: Listen-Wiseer Project
 tags: [langgraph, rag, memory, eval, project]
 summary: Spotify recommendation agent with ENOA taste-map personalisation — LangGraph ReAct + Chainlit UI, LightGBM classifiers, DuckDB vss RAG, and three-tier eval harness.
-updated: 2026-07-14
+updated: 2026-07-19
 sources:
   - raw/claude-docs/listen-wiseer/memory/project_listen_wiseer.md
   - raw/claude-docs/listen-wiseer/docs/plans/phase4a_agent_chainlit.md
@@ -58,7 +58,7 @@ Personal Spotify recommendation agent personalised to the user's own ENOA taste 
 | Memory | LangGraph `InMemoryStore` + langmem (episodic/semantic/procedural) |
 | Checkpointer | MemorySaver (dev) / AsyncRedisSaver (prod) |
 | Data | 595k-row corpus, 2182 tracks, 291 genre mappings |
-| Tools | MCP server (8 tools) + StructuredTool wrappers (10 tools) |
+| Tools | MCP server (8 tools) + StructuredTool wrappers (20 tools) |
 | Observability | LangFuse (tracing + scoring) |
 
 ## Phase Status (as of 2026-07-05)
@@ -73,9 +73,9 @@ Personal Spotify recommendation agent personalised to the user's own ENOA taste 
 | 5a — RAG core: DuckDB vss, MiniLM, Wikipedia/Tavily, 93 tests | ✓ Done |
 | 5b — Intent routing: 6 nodes, 5 intents, clarification, 10 tools, 97 tests | ✓ Done |
 | **6 — Stabilize + Postgres persistence + Tavily web search** | **✓ Done** |
-| 7a — Exploration tools (6 new Spotify endpoints + agent tools) | Planned |
-| 7b — Intent taxonomy refactor + Chainlit UX (quick-reply chips) | Planned |
-| 7c — Genre lineage, taste analysis, cross-session memory | Planned |
+| **7a — Exploration tools (6 new Spotify endpoints + agent tools)** | **✓ Done** |
+| **7b — Intent taxonomy refactor + Chainlit UX (quick-reply chips)** | **✓ Done** |
+| **7c — Genre lineage, taste analysis, cross-session memory** | **✓ Done** |
 
 ## Build Phase History (Pre-4a)
 
@@ -137,7 +137,7 @@ START → trim_history → classify_intent → [route_after_classify]
 
 **AgentState:** `messages`, `intent`, `intent_confidence`, `entities`, `query_variants`, `tool_validation_retries`
 
-**5 intents:** `artist_info`, `genre_info`, `recommendation`, `history`, `chit_chat`
+**7 intents (post-7b):** `artist_info`, `genre_info`, `recommendation`, `history`, `chit_chat`, `explore_my_taste`, `discover`
 
 **Intent classification:** pure keyword matching; confidence = `min(1.0, matched_keywords / 3)`; default fallback `artist_info` at 0.3.
 
@@ -151,8 +151,8 @@ START → trim_history → classify_intent → [route_after_classify]
 | Vector store (RAG) | DuckDB vss | Zero extra deps; same DB file; `array_cosine_similarity()` fast enough at <10k chunks |
 | RAG ingestion | Lazy Wikipedia/Tavily on first query | Avoid pre-ingesting all artists; cached in `rag_chunks` |
 | Artist info collection | Single `artist_info` ChromaDB collection + metadata filter | Simpler than per-artist collections |
-| Memory store | `InMemoryStore` + sentence-transformers (local) | No OpenAI dependency; reuses same model as Track2Vec |
-| Checkpointer | MemorySaver (dev) / AsyncRedisSaver (prod, gated on `REDIS_URL`) | No Redis overhead in dev |
+| Memory store | `AsyncPostgresStore` (prod) / `InMemoryStore` (dev, via `MEMORY_STORE_URL`) | Cross-session taste/episodic memory persistence |
+| Checkpointer | AsyncPostgresSaver (prod) / MemorySaver (dev) | Postgres via Docker Compose |
 | LLM client | `langchain-anthropic` `ChatAnthropic` over raw SDK | LangFuse span visibility |
 | Eval framework | LangFuse + RAGAS + DeepEval | LangFuse: free tier + RAGAS native integration; DeepEval: `ToolCorrectnessMetric` fills agent eval gap |
 

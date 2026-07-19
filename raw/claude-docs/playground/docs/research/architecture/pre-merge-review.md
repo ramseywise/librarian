@@ -9,9 +9,9 @@ Source: Code review of all playground/ changes before first merge to main.
 ## Criticals — all done
 
 ### 1. Live credentials in `.env`
-- Zeroed out GOOGLE_API_KEY, vendor-a_API_TOKEN, LANGSMITH_API_KEY in `.env`
+- Zeroed out GOOGLE_API_KEY, BACKEND_API_TOKEN, LANGSMITH_API_KEY in `.env`
 - Added LangSmith entries to `.env.example`
-- Keys must be re-entered from dashboards (Google Cloud Console, vendor-a Settings, LangSmith Settings)
+- Keys must be re-entered from dashboards (Google Cloud Console, LangSmith Settings)
 
 ### 2. Broken `hc-rag-agent` Dockerfile
 - Fixed: `infrastructure/containers/hc-rag-agent/Dockerfile` now copies all actual source dirs (`orchestrator/`, `rag/`, `core/`, `clients/`, `guardrails/`, `evals/`, `ingest/`)
@@ -44,7 +44,7 @@ Source: Code review of all playground/ changes before first merge to main.
 | 8 | Session memory leak in runner.py | → moved to `hardening.md` |
 | 9 | Empty tool sets graceful failure | → moved to `hardening.md` |
 | 10 | `datetime.utcnow()` deprecated | Fixed in `va-langgraph/eval/models.py` |
-| 11 | `_ANGLE_URL_RE` defined after use | Fixed in `eval/ingest/vendor-a_ingest.py` |
+| 11 | `_ANGLE_URL_RE` defined after use | Fixed in `eval/ingest/ticket_ingest.py` |
 | 12 | Missing unit tests | → moved to `hardening.md` |
 | 13 | Anthropic model ID format | Closed — IDs match what the API expects |
 

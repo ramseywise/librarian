@@ -8,17 +8,22 @@ from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
+from app.log_config import configure_logging
+
 from .agent import run_agent_stream
 from .embeddings import semantic_edges, warmup
-from .umap_layout import compute_umap_positions
 from .wiki_parser import parse_wiki
+
+# At import, not in a main(): uvicorn imports this module as an ASGI app and never
+# calls an entry point of ours. Must precede the first log call from any route.
+configure_logging()
 
 WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
 
@@ -89,6 +94,16 @@ async def get_semantic_edges(threshold: float = 0.65) -> list[dict]:
 
 @app.post("/api/layout/umap")
 async def umap_layout() -> dict[str, dict]:
+    # Imported lazily: umap-learn pulls in numba, which requires numpy<2.5 while
+    # pyproject.toml pins numpy>=2.5.1. A module-level import took the entire API
+    # down (including /api/graph) over one optional layout endpoint.
+    try:
+        from .umap_layout import compute_umap_positions
+    except ImportError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"UMAP layout unavailable — umap-learn/numba vs numpy conflict: {e}",
+        ) from e
     return compute_umap_positions()
 
 
@@ -109,7 +124,9 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
     )
 
 
-@app.post("/api/writeback")
+# response_model=None: the return union (JSONResponse | dict) is not a valid
+# Pydantic field type, and FastAPI rejects the route at import time without this.
+@app.post("/api/writeback", response_model=None)
 async def writeback(body: dict[str, str]) -> JSONResponse | dict[str, str]:
     page_id = body.get("page_id", "")
     link_to = body.get("link_to", "")

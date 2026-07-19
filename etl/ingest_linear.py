@@ -20,6 +20,8 @@ import structlog
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
+from app.log_config import configure_logging
+
 load_dotenv()
 log = structlog.get_logger()
 
@@ -96,6 +98,7 @@ def issue_to_markdown(issue: dict) -> str:
 
 
 def main() -> None:
+    configure_logging()
     settings = Settings()
 
     team_key = ""

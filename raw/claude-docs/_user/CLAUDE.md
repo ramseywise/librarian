@@ -1,105 +1,145 @@
-# Global Claude Code Settings
+# Global Claude Code Instructions
 
-Personal conventions and cross-project skills. Project-specific rules live in each repo's `CLAUDE.md`.
+## Developer Identity
 
-> Full reference: `~/.claude/README.md` (not auto-loaded — read on demand).
+Founding staff AI engineer fluent in Python and TypeScript agent systems. Frameworks in active use:
+Vercel AI SDK, Google ADK, Anthropic Claude API, LangGraph, LangChain. Primary focus: platform engineering
+for NYC-DSSG (a nonprofit) — building operational and technical support tools for volunteer cohorts and
+nonprofit client engagement. Skip basics unless asked.
 
-## Skills
+## Communication
 
-Global skills live in `~/.claude/skills/` — auto-discovered in every project. Project-specific skills live in each repo's `.claude/skills/` (e.g. librarian has `ingest`, `lint`, `query`, `adk-context`).
+- Brief and direct. Lead with the action.
+- No filler, no trailing summaries of what you just did — EXCEPT the completion format below.
+- File:line references over prose descriptions.
+- Don't add unsolicited comments, docstrings, or refactors to code I didn't ask to change.
+- When I correct a mistake, update the appropriate CLAUDE.md level — ask if unclear.
 
-### Skill pipeline
+### Completion format (non-trivial / multi-step tasks only)
 
-New tech-domain skills are workshopped in `librarian/raw/claude-skills/<tool>/` before being promoted to `~/.claude/skills/`. The raw version is the source of truth for iteration — it's grounded in wiki pages and updated as the wiki grows.
+When a task involved editing/creating multiple files, executing a plan phase, or
+anything I'd hand to a fresh session, close with three sections (skip for one-liners,
+questions, and read-only answers — those stay conversational):
 
-```
-librarian/raw/claude-skills/<tool>/<tool>.md   ← workshop: draft, iterate, ground in wiki
-~/.claude/skills/<name>/SKILL.md               ← promoted: active, available everywhere
-```
+1. **Summary** — 2–3 lines, what changed and the verification result.
+2. **Files created/edited** — bulleted `path:line` list (markdown links).
+3. **Open issues** — each with a one-line fix recommendation. For anything that
+   warrants its own session, include a fenced **spawn prompt** (repo + plan-doc path +
+   phase command, per Session hygiene) I can paste into a new VS Code Claude session.
+   Write "None" if there are none — don't invent issues to fill the section.
 
-To promote a skill: copy the raw file to `~/.claude/skills/<name>/SKILL.md`. When the wiki grows and the skill needs updating, edit the raw source first, then re-promote.
+## Tooling — skills, refs, and rules
 
-### Session & Git workflow
+### Skill groups (20 global skills in `~/.claude/skills/`)
 
-| Skill | What it does |
-|-------|-------------|
-| `/compact-session` | Session checkpoint: save artifacts, session note, memory, commit + push + PR. Mid-session: compact and continue. End of session: stop. |
-| `/quick-pr` | Stage → commit → push → draft PR end to end |
-| `/quick-commit` | Stage → commit (no push/PR) |
-| `/claude-insights` | Cartographer HTML report from session notes + JSONL (CE/PE eval) |
+**`code-`** — implementation (4 skills):
+`/code-debug` (quick fix from error), `/code-refactor` (quality-driven, invokes native
+`/simplify` as finishing pass), `/code-review` (standing quality review on diff — leveled:
+1=lint, 2=+tests+akira, 3=+sanyi), `/code-pr` (review an open PR).
 
-### Discovery & planning
+**`design-`** — architecture & planning artifacts (4 skills):
+`/design-sprint` (full design sprint from scratch), `/design-initiative` (initiative →
+backlog), `/design-milestones` (initiative → phase checkpoints), `/design-prototype`
+(spike/explore).
 
-| Skill | What it does |
-|-------|-------------|
-| `/research-review` | Research phase: read sources, write `.claude/docs/research/{name}.md` |
-| `/plan-review` | Planning phase: write `.claude/docs/plans/{name}.md` |
-| `/plan-refactor` | Plan a refactor before executing |
+**`workflow-`** — process pipeline (5 skills):
+`/workflow-research` (phase 1 — structured research artifact; `fan-out` mode for parallel
+haiku investigation) → `/workflow-plan` (phase 2) → `/workflow-execute` (phase 3) →
+`/workflow-review` (phase 4 — plan fidelity). `/workflow-insights` (usage analytics, feeds
+retro). `/workflow-retro` (tooling retrospective + config audit — closes the feedback loop).
 
-### Dev execution
+**`git-`** — git operations (2 skills):
+`/git-commit` (stage + commit), `/git-pr` (stage + commit + PR).
 
-| Skill | What it does |
-|-------|-------------|
-| `/execute-plan` | Execute phase: step through active plan, append to `CHANGELOG.md` |
-| `/code-review` | Review phase: write `.claude/docs/reviews/{name}.md` + PR |
-| `/review-pr` | Review an open PR: read diff, write review doc |
-| `/code-debug` | Diagnose and fix a bug |
+**Cross-cutting** (6 skills):
+`/akira` (interactive quality scanner — 4 modes: scan, wander, dao, all),
+`/sanyi` (change contracts), `/skill-creator` (skill CRUD + eval),
+`/mcp-builder` (build MCP servers — Python FastMCP or Node SDK; vendored from
+Anthropic, includes `scripts/evaluation.py`), `/github-projects` (Projects V2
+GraphQL templates — consumed by other skills, not usually invoked directly).
 
-### Product / initiative workflow (Linear)
+Native Claude skills (always available, no local copy): `/simplify`, `/claude-api`,
+`/claude-in-chrome`, `/keybindings-help`, `/loop`.
 
-The pipeline from "what do we build" to Linear tickets:
+### Refs (read on demand, not always-on)
 
-```
-/define-milestones  →  goal posts (what by when, which initiatives)
-/design-sprint      →  (optional) ideate initiatives when starting from scratch
-/scope-initiative   →  initiative → failure modes → task backlog → Linear hierarchy
-/doc-to-linear-tickets  →  push the scoped backlog into Linear issues
-```
+Stack/tool conventions live in `~/.claude/refs/` (python, typescript, sql, logging, ml,
+langgraph, google-adk, adk-vercel, insights-analysis).
+They are NOT auto-loaded. Each repo's `CLAUDE.md` carries a `Refs:` line naming which
+apply — **read those refs before writing code in that repo**. If a repo has no `Refs:`
+line, infer from the stack and propose adding the line.
 
-| Skill | What it does |
-|-------|-------------|
-| `/define-milestones` | Define Linear milestones: goal, success metrics, initiative list |
-| `/design-sprint` | Ideate from scratch: HMW → workstreams → named initiatives |
-| `/scope-initiative` | Initiative → backward mapping, task backlog, dependency map, Linear hierarchy |
-| `/doc-to-linear-tickets` | Push a planning doc into structured Linear issues |
-| `/execute-tasks` | Step through task list, mark done |
-| `/github-projects` | Manage GitHub Projects V2 (librarian project only) |
+Runbooks: `repo-security-setup.md` (Dependabot, branch protection).
 
-### Tech-domain skills
+### Rules (always-on)
 
-Skills are grounded in wiki pages — they distill accumulated patterns into actionable rules. When the wiki grows, update the skill. New skills start in `raw/claude-skills/<tool>/` and get promoted to `~/.claude/skills/` when ready.
+`~/.claude/rules/`: `docs.md` (doc-writer boundary), `shell.md` (zsh gotchas),
+`context-health.md` (compact proactively). On-demand: `naming.md` (role-based
+directory/layer convention); enforced by akira-scan, rides `/code-review` and `/akira`.
 
-| Skill | What it does | Wiki source |
-|-------|-------------|-------------|
-| `/langgraph` | State design, node/edge patterns, HITL, checkpointing, streaming, production checklist | [[LangGraph CRAG Pipeline]], [[LangGraph Advanced Patterns]], [[Production Hardening Patterns]] |
-| `/prototype` | Rapid prototype: skip tests, skip polish, just build | — |
-| `/mcp-builder` | Build MCP servers (Python FastMCP or Node SDK) | [[MCP Protocol]] |
+### Review ladder
 
-**In workshop** (`librarian/raw/claude-skills/`):
-- `google-adk/` — ADK Python patterns (promote when building ADK agents)
-- `fastapi/` — FastAPI service conventions (to build)
-- `java/`, `web-components/` — archived reference (different stack)
+`make precommit`/`make test` (zero tokens) → `/code-review level:1` (diff+lint) →
+`level:2` (+tests+akira) → `level:3` (+full sanyi). Sweep BEFORE commit;
+`/workflow-review` for plan-fidelity; `/code-pr` after a PR opens. `/akira` is
+`/code-review`'s interactive sibling (same scan + wander questions + test-gated dao
+fixes). `make review*`/`make akira` targets print the slash command — never auto-run.
 
-### Integrations
+### Model pairing
 
-| Skill | What it does |
-|-------|-------------|
-| `/doc-to-linear-tickets` | Parse a planning doc (pasted, Google Doc, or drafted) → create structured Linear issues with priorities, sizes, and dependencies |
+Haiku for fan-out/extraction, sonnet for bounded execution, opus for `/workflow-plan`,
+`/workflow-retro`, `/sanyi audit`, `/synthesize`, and anything verdict-shaped. Full
+table: `~/.claude/refs/models.md`.
 
-### Meta skills
+### Session hygiene
 
-| Skill | What it does |
-|-------|-------------|
-| `/skill-creator` | Create, edit, eval, and benchmark skills |
+One work item per session; the plan doc is continuity. Phase gates = session boundaries:
+`/workflow-plan` in opus → `/workflow-execute` in FRESH sonnet pointed at the plan doc.
+`/clear` when switching repos. Meta sessions dispatch via 3-line spawn prompts.
 
-## Issue Tracking
+## Config Layering — global is canonical
 
-Linear ↔ GitHub integration. Branch, commit, and PR naming must include `LIN-{id}` for auto-linking.
+`~/.claude` is the single source of truth for generic workflow assets (19 skills + guard
+hooks). The phase pipeline: `/workflow-research` → `/workflow-plan` → `/workflow-execute`
+→ `/workflow-review` → `/workflow-retro`.
 
-Stack: Code → GitHub | Tasks → Linear | Knowledge → Notion
+- **Never copy global skills/hooks/commands into a repo's `.claude/`** — global loads in every session.
+  Copies go stale and hooks fire twice.
+- **Exception — template payload, not config**: `ai-project-template/template/.claude/`
+  is *rendered output*, not a config dir that loads in my sessions. Scaffolded projects
+  have no access to `~/.claude`, so the template must vendor skills. That copy is
+  one-way reservoir→template via `scripts/sync-global-skills.sh` (canon is still
+  `~/.claude/skills/`; never edit the vendored copy). Renaming a global skill means
+  updating that script's `SKILLS[]` — it hard-fails on unknown names since 2026-07-19.
+- Repo `.claude/` holds **repo-specific things only**: project hooks (lint/test/coverage), project skills,
+  and settings that don't duplicate a global hook. Repos keep their own `hooks/lib.sh` (project hooks source it).
+- To improve a generic skill/hook, edit it in `~/.claude` — not a repo copy.
+- `~/workspace/.claude` is a symlink to `~/.claude`, not a separate config.
+- Doc-writer boundary (who writes machine- vs human-consumed docs, plan `Status:` lines,
+  skill placement rule): `~/.claude/rules/docs.md`. Tooling changes get a row in
+  `~/workspace/guacamayo/.claude/docs/tooling-ledger.md` (verified by `/retro`; drift caught by
+  `/config-audit`). Cross-repo project state lives in `guacamayo/.claude/docs/state/` — global
+  `~/.claude/docs/` is deliberately deleted; do not recreate it.
 
-## Commit style
+## Issue Tracking — Linear ↔ GitHub closed loop
 
-- Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `session:`, `checkpoint:`
-- Title under 60 chars, imperative mood
-- Body: why, not what
+MCPs: `github` + `linear` (configured in `~/.claude/.mcp.json` — add tokens before use).
+
+**My role as operator**: create Linear issues from plans, generate branch names, open PRs, keep IDs in sync.
+
+### Conventions (required for auto-linking)
+
+| Artifact | Format | Example |
+|----------|--------|---------|
+| Branch | `feature/lin-{id}-{slug}` | `feature/lin-12-add-auth` |
+| Commit | `{type}: {desc} (LIN-{id})` | `feat: add auth (LIN-12)` |
+| PR title | `LIN-{id} {description}` | `LIN-12 Add auth` |
+
+### Workflow
+
+1. `/plan` → I create a Linear issue, output issue ID
+2. `git checkout -b feature/lin-{id}-{slug}`
+3. Commits always include `(LIN-{id})` — **user commits, not Claude**
+4. `/review` → I open PR titled `LIN-{id} ...` → Linear auto-closes on merge
+
+**Claude never commits or pushes.** Stage changes and commit yourself. Linear tracking is optional — use it for repos that have Linear set up; skip for DSSG and other projects that don't.

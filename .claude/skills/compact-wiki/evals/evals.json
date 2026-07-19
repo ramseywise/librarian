@@ -1,0 +1,10 @@
+[
+  {"input": "/compact-wiki", "expected": true},
+  {"input": "compact the wiki — it's been a month", "expected": true},
+  {"input": "wiki maintenance time, let's consolidate stale pages", "expected": true},
+  {"input": "run the wiki compaction ritual, there are a lot of old pages", "expected": true},
+  {"input": "run a lint pass on the wiki and report issues", "expected": false},
+  {"input": "ingest the latest notion export", "expected": false},
+  {"input": "query the wiki about context management patterns", "expected": false},
+  {"input": "sync the wiki frontend taxonomy", "expected": false}
+]

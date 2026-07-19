@@ -1,0 +1,10 @@
+[
+  {"input": "audit wiki taxonomy drift and generate a sync report", "expected": true},
+  {"input": "check if the wiki directory structure matches the frontend domain lists", "expected": true},
+  {"input": "run wiki-sync --fix to apply the mechanical taxonomy changes", "expected": true},
+  {"input": "the FE domain list changed — sync the wiki structure to match", "expected": true},
+  {"input": "run the full ingest pipeline from Notion", "expected": false},
+  {"input": "compact the wiki, merge stale pages", "expected": false},
+  {"input": "find orphan pages and dead wikilinks in the wiki", "expected": false},
+  {"input": "query the wiki about voice agent memory patterns", "expected": false}
+]

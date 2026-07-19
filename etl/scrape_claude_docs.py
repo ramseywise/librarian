@@ -25,6 +25,8 @@ from pathlib import Path
 import structlog
 from dotenv import load_dotenv
 
+from app.log_config import configure_logging
+
 load_dotenv()
 log = structlog.get_logger()
 
@@ -137,6 +139,7 @@ def scrape_projects(workspace: Path, output_dir: Path, dry_run: bool) -> int:
 
 
 def main() -> None:
+    configure_logging()
     parser = argparse.ArgumentParser(description="Scrape .claude/ folders → raw/claude-docs/")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--workspace", type=Path, default=WORKSPACE_DIR)

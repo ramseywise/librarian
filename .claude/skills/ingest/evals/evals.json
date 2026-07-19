@@ -1,0 +1,10 @@
+[
+  {"input": "run the full wiki sync — pull Notion, GDrive, compile everything", "expected": true},
+  {"input": "ingest this URL into the wiki: https://docs.anthropic.com/en/api/getting-started", "expected": true},
+  {"input": "compile the raw/ dir for the adk domain", "expected": true},
+  {"input": "new Figma file to add: figma:https://www.figma.com/file/abc123", "expected": true},
+  {"input": "run a full sync on the wiki", "expected": true},
+  {"input": "compact the wiki, too many stale pages", "expected": false},
+  {"input": "find dead wikilinks and orphan pages", "expected": false},
+  {"input": "query the wiki: what's the current RAG design pattern?", "expected": false}
+]

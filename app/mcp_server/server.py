@@ -31,10 +31,14 @@ import structlog
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 
+from app.log_config import configure_logging
+
 load_dotenv()
+configure_logging()  # installs the secret-redaction processor
 log = structlog.get_logger()
 
 WIKI_DIR = Path("wiki")
+PRIVATE_DIR = WIKI_DIR / "private"
 DB_PATH = Path(".wiki_index.duckdb")
 LOGS_DIR = Path("logs")
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
@@ -90,6 +94,31 @@ def _cosine(a: list[float], b: list[float]) -> float:
     return dot / (na * nb + 1e-9)
 
 
+def is_under_private(path: Path | str, private_dir: Path) -> bool:
+    """True if path lies under private_dir — never indexed, never served.
+
+    Buyi invariant "wiki/private/ never leaves the machine", clause (b). Resolved
+    before comparison so ../ traversal and absolute paths cannot slip past.
+
+    private_dir is a parameter, not this module's PRIVATE_DIR, because callers
+    anchor their wiki root differently: the server uses a relative Path("wiki")
+    while app/backend/agent.py derives an absolute path from __file__. Sharing the
+    resolution logic while each caller supplies its own root keeps a second copy
+    from drifting, without making one caller's cwd decide the other's filter.
+    """
+    try:
+        resolved = Path(path).resolve()
+    except (OSError, RuntimeError):
+        return True  # unresolvable path — refuse rather than risk serving it
+    root = private_dir.resolve()
+    return resolved == root or root in resolved.parents
+
+
+def _is_private(path: Path | str) -> bool:
+    """is_under_private bound to this module's PRIVATE_DIR (read at call time)."""
+    return is_under_private(path, PRIVATE_DIR)
+
+
 def _log_retrieval(tool: str, **fields: object) -> None:
     """Append one JSON line of retrieval telemetry to logs/retrieval.jsonl.
 
@@ -118,7 +147,9 @@ def _index_needs_rebuild(con: duckdb.DuckDBPyConnection) -> bool:
             return True
         built_at = float(con.execute("SELECT val FROM meta WHERE key = 'built_at'").fetchone()[0])
         # Rebuild if any wiki page is newer than the index
-        return any(p.stat().st_mtime > built_at for p in WIKI_DIR.rglob("*.md"))
+        return any(
+            p.stat().st_mtime > built_at for p in WIKI_DIR.rglob("*.md") if not _is_private(p)
+        )
     except Exception:
         return True
 
@@ -185,6 +216,9 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     raw_pages: list[tuple] = []
     for page in sorted(WIKI_DIR.rglob("*.md")):
         if page.name.startswith("."):
+            continue
+        # wiki/private/ is never indexed — Buyi confidentiality invariant
+        if _is_private(page):
             continue
         text = page.read_text(encoding="utf-8", errors="ignore")
         meta = _parse_frontmatter(text)
@@ -272,13 +306,17 @@ def get_con() -> duckdb.DuckDBPyConnection:
 
 
 def _resolve_domain_dir(domain: str) -> Path | None:
-    """Return the wiki subdirectory for a domain name, or None if not found."""
+    """Return the wiki subdirectory for a domain name, or None if not found.
+
+    Resolves to None for wiki/private/ so list_domain and get_domain_briefing
+    cannot address it as a domain.
+    """
     candidate = WIKI_DIR / domain
-    if candidate.is_dir():
+    if candidate.is_dir() and not _is_private(candidate):
         return candidate
     slug = domain.replace("_", "-").lower()
     candidate = WIKI_DIR / slug
-    if candidate.is_dir():
+    if candidate.is_dir() and not _is_private(candidate):
         return candidate
     return None
 
@@ -412,28 +450,38 @@ def read_page(path_or_title: str) -> str:
     Returns:
         Full page content, or an error message if not found.
     """
+    # Private pages are indistinguishable from missing ones — a distinct "denied"
+    # message would itself confirm the page exists.
+    not_found = f"Page not found: {path_or_title!r}. Run search_wiki to find the right path."
+
     candidate = Path(path_or_title)
     if candidate.exists():
+        if _is_private(candidate):
+            _log_retrieval("read_page", path=str(candidate), found=False, private=True)
+            return not_found
         _log_retrieval("read_page", path=str(candidate), found=True)
         return candidate.read_text(encoding="utf-8")
 
     wiki_candidate = WIKI_DIR / path_or_title
     if wiki_candidate.exists():
+        if _is_private(wiki_candidate):
+            _log_retrieval("read_page", path=str(wiki_candidate), found=False, private=True)
+            return not_found
         _log_retrieval("read_page", path=str(wiki_candidate), found=True)
         return wiki_candidate.read_text(encoding="utf-8")
 
     slug = re.sub(r"[^a-z0-9]+", "-", path_or_title.lower()).strip("-")
-    matches = list(WIKI_DIR.rglob(f"*{slug}*.md"))
+    matches = [p for p in WIKI_DIR.rglob(f"*{slug}*.md") if not _is_private(p)]
     if not matches:
         words = path_or_title.lower().split()
         for word in words:
-            matches = list(WIKI_DIR.rglob(f"*{word}*.md"))
+            matches = [p for p in WIKI_DIR.rglob(f"*{word}*.md") if not _is_private(p)]
             if matches:
                 break
 
     if not matches:
         _log_retrieval("read_page", path=path_or_title, found=False)
-        return f"Page not found: {path_or_title!r}. Run search_wiki to find the right path."
+        return not_found
 
     if len(matches) == 1:
         _log_retrieval("read_page", path=str(matches[0]), found=True)
@@ -516,7 +564,9 @@ def list_pages(tag: str = "", directory: str = "") -> str:
         List of pages with title, tags, summary, and backlink count.
     """
     search_dir = WIKI_DIR / directory if directory else WIKI_DIR
-    pages = [p for p in search_dir.rglob("*.md") if not p.name.startswith("_")]
+    pages = [
+        p for p in search_dir.rglob("*.md") if not p.name.startswith("_") and not _is_private(p)
+    ]
 
     con = get_con()
     bl_map: dict[str, int] = {}

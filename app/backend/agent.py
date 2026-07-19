@@ -10,7 +10,24 @@ import frontmatter
 from google import genai
 from google.genai import types
 
+from app.mcp_server.server import is_under_private
+
 WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
+PRIVATE_DIR = WIKI_DIR / "private"
+
+
+def _is_private(path: Path | str) -> bool:
+    """True if path lies under this module's wiki/private/ — never served to the agent.
+
+    Shares the server's resolution logic (../ traversal, absolute and unresolvable
+    paths) but anchors on PRIVATE_DIR above. The server anchors on a relative
+    Path("wiki"), so under `make api` (cwd=app/) its own PRIVATE_DIR resolves to a
+    nonexistent app/wiki/private — binding to that would produce a filter that reads
+    as correct and excludes nothing. Read at call time so tests can repoint it.
+    """
+    return is_under_private(path, PRIVATE_DIR)
+
+
 MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 _client: genai.Client | None = None
@@ -28,7 +45,10 @@ def _search_wiki(query: str) -> str:
     query_lower = query.lower()
 
     for md_file in sorted(WIKI_DIR.rglob("*.md")):
-        if md_file.name.startswith("_"):
+        # wiki/private/ is never searched — Buyi confidentiality invariant, clause (b).
+        # The agent reaches the same pages the MCP server does, so it enforces the
+        # same exclusion, via the same predicate.
+        if md_file.name.startswith("_") or _is_private(md_file):
             continue
         post = frontmatter.load(md_file)
         title = str(post.get("title") or md_file.stem)
@@ -62,11 +82,16 @@ def _search_wiki(query: str) -> str:
 
 
 def _read_page(page_id: str) -> str:
-    md_file = next(WIKI_DIR.rglob(f"{page_id}.md"), None)
+    # Both lookup paths are filtered: a private page must be unreachable by ID and
+    # by title alike, or the title fallback becomes the way around the ID check.
+    md_file = next(
+        (p for p in WIKI_DIR.rglob(f"{page_id}.md") if not _is_private(p)),
+        None,
+    )
     if not md_file:
         target = page_id.lower().replace("-", " ")
         for f in WIKI_DIR.rglob("*.md"):
-            if f.name.startswith("_"):
+            if f.name.startswith("_") or _is_private(f):
                 continue
             post = frontmatter.load(f)
             title = str(post.get("title") or f.stem)

@@ -25,6 +25,8 @@ from pathlib import Path
 import structlog
 from dotenv import load_dotenv
 
+from app.log_config import configure_logging
+
 load_dotenv()
 log = structlog.get_logger()
 
@@ -302,6 +304,7 @@ prompts: {len(prompts)}
 
 
 def main() -> None:
+    configure_logging()
     parser = argparse.ArgumentParser(description="Scrape AI session history → raw/sessions/")
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--source", choices=["claude", "codex", "all"], default="all")
