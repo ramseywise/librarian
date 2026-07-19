@@ -146,3 +146,4 @@ Test these explicitly — they don't appear in standard QA evals:
 - [[Multi-Agent Orchestration Patterns]]
 - [[A2A Agent Protocol]]
 - [[VA vs HCA Retrieval Evaluation]]
+- [[RAG Interview Study Guide]] — prerequisite-for

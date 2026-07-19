@@ -49,3 +49,5 @@ Interview-format writeup of a system actually built (playground's `evals/`, shar
 - [[RAG Eval Gate Contract]] — instance-of
 - [[RAG Eval Metrics Suite]]
 - [[Change-Contracts Rollout]] — extends
+- [[Evals and Observability Interview Study Guide]] — prerequisite-for
+- [[System Design Interview Study Guide]] — prerequisite-for

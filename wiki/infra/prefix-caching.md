@@ -55,3 +55,4 @@ The [client] ADK POC (April 2026) explicitly set "minimize LLM calls + optimize 
 - [[Multi-Agent Orchestration Patterns]]
 - [[Production Hardening Patterns]]
 - [[LangGraph CRAG Pipeline]]
+- [[LLM Fundamentals Interview Study Guide]] — prerequisite-for

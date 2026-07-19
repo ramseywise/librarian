@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [index]
 summary: Auto-generated table of contents for the obsidian-kb wiki. Updated after every ingest.
-updated: 2026-07-14
+updated: 2026-07-19
 ---
 
 # Wiki Index
@@ -220,6 +220,28 @@ updated: 2026-07-14
 
 ---
 
+## Interview
+
+*Coding-interview patterns, algorithms, system design, prep references for ML/AI-engineering/DS/FDE roles.*
+
+| Page | Summary |
+|---|---|
+| [[RAG Interview Study Guide]] | Exam-prep reference for RAG architecture questions — component choices, architecture variants, production judgment, measured benchmarks, and terminology traps |
+| [[Agents Interview Study Guide]] | Exam-prep reference for agent architecture questions — workflow vs agent distinction, composable patterns, ACI tool design, harness engineering, long-horizon reliability, and memory taxonomy |
+| [[System Design Interview Study Guide]] | Method guide for the ML/LLM/agent system design round — 5-step process, trade-off narration formula, LLM reference architecture, bottleneck table, and failure mode reflexes |
+| [[Evals and Observability Interview Study Guide]] | Exam-prep reference for eval and observability questions — vocabulary, grader types, three-tier taxonomy, pass@k vs pass^k, and the tracing-first discipline |
+| [[LLM Fundamentals Interview Study Guide]] | Exam-prep reference for LLM theory questions — transformer architecture, training pipeline, adaptation menu, inference economics, and failure modes |
+
+---
+
+## Foundations
+
+*ML/DS/data-engineering fundamentals — classical ML, deep learning, NLP, data systems, MLOps.*
+
+*(Empty — pending M2 distillation of data-science/ and data-engineering/ material from learn-ai-engineering.)*
+
+---
+
 ## Conflicts
 
 Pages with unresolved conflicts between sources: see [[Conflicts]].
@@ -230,8 +252,13 @@ Pages with unresolved conflicts between sources: see [[Conflicts]].
 
 *Sources in `raw/` not yet fully compiled into wiki pages.*
 
+- `raw/articles/2026-07-19-*.md` — 13 coursera-reference articles written 2026-07-19; awaiting full wiki compile (M4)
+- `raw/repos/learn-ai-engineering/interviewing--rounds--*.md` — 9 round-type files (behavioral, case-study, coding-challenge, etc.); awaiting compile into interview/ wiki pages
+- `raw/repos/learn-ai-engineering/interviewing--guides--*.md` — remaining guides (foundations, context-cost, security-safety, data-eng-mlops, product-delivery); awaiting compile
+- `raw/repos/learn-ai-engineering/interviewing--notes--*.md` — 16 cleaned Notion notes; awaiting compile (high value: deep-agents, context-engineering, loop-engineering, reliable-agents)
 - `raw/claude-docs/playground/docs/archived/visualizer-improvements/` — Slide deck agent (low wiki priority)
 - `raw/claude-docs/playground/docs/archived/docs-restructure/research.md` — Scope/Build/Archive docs lifecycle model
 - `raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md` — Agentic RAG copilot topology (low priority)
 - `raw/claude-docs/playground/docs/archived/skills-audit-research.md` — Skill quality patterns (partial via ADK Context Engineering)
 - `raw/claude-docs/playground/skills/` — 26 skill SKILL.md files (operational definitions; no new wiki knowledge)
+- `learn-ai-engineering/data-science/`, `data-analytics/`, `data-engineering/` — books/courses for foundations/ domain; pending curated distillation into raw/books/
