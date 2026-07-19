@@ -13,10 +13,11 @@ jobs:
       # paths. These are the four real top-level Python dirs; raw/ wiki/ logs/
       # are artifacts (naming.md data-layer rule) and stay unlinted.
       lint-paths: "app etl tools tests"
-      # Non-blocking for the 2 unused-variable errors — trivial, but paid down
+      # Non-blocking for 1 unused-variable error — trivial, but paid down
       # separately rather than mixed into the CI rollout.
       lint-blocking: false
       # The plan expected 14 failures here; tests/unit/ is in fact green
-      # (84 passed, 2 skipped, verified 2026-07-19). The known-failing e2e and
-      # wiki-YAML tests live outside tests/unit/, so tests stay blocking.
+      # (92 passed, 2 skipped, verified 2026-07-19). The 9 known-failing e2e
+      # tests need a live server on :5173 and live outside tests/unit/, so
+      # tests stay blocking.
       test-command: "uv run pytest tests/unit/ -q"
