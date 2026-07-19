@@ -47,7 +47,7 @@ api = [
     "uvicorn[standard]>=0.51.0",
     "sentence-transformers>=5.6.0",
     "watchfiles>=1.2.0",
-    "websockets>=16.1",
+    "websockets>=16.1.1",
     # Ceiling, not a preference: umap-learn -> numba caps at numpy<2.5 (numba 0.66.0,
     # the latest, still does). Nothing here needs 2.5 — scikit-learn asks >=1.24.1 and
     # sentence-transformers >=1.20 — so the >=2.5.1 that arrived via a Dependabot group
