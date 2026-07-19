@@ -74,7 +74,7 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
         lang_name = parser.LANGUAGES[path.suffix].name
         first_language = first_language or lang_name
 
-        needs_parse, reason = manifest.check(file_id, path)
+        needs_parse, _reason = manifest.check(file_id, path)
         if not needs_parse:
             counts["skipped"] += 1
             continue
