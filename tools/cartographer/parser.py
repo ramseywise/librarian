@@ -306,6 +306,19 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         txt = re.sub(r"<[^>]+>.*?</[^>]+>", "", txt, flags=re.DOTALL)
         skill_invocations.extend(re.findall(r"(?:^|\s)/([a-z][a-z0-9-]+)", txt))
 
+    # Skill tool calls: the regex above only sees typed /slash text, so skills
+    # invoked through the Skill tool (including auto-triggered ones) are missed.
+    for record in asst_msgs:
+        for block in record.get("message", {}).get("content", []):
+            if (
+                isinstance(block, dict)
+                and block.get("type") == "tool_use"
+                and block.get("name") == "Skill"
+            ):
+                name = block.get("input", {}).get("skill")
+                if name:
+                    skill_invocations.append(name)
+
     # Output tokens per assistant message (verbosity signal)
     output_tokens_per_msg = round(output_tokens / len(asst_msgs), 1) if asst_msgs else 0.0
 

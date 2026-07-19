@@ -34,6 +34,10 @@ def main() -> None:
         sys.argv.remove("--enrich")
         _run_enrich()
 
+    elif "--facts" in sys.argv:
+        sys.argv.remove("--facts")
+        _run_facts()
+
     else:
         from tools.cartographer.parser import main as parser_main
 
@@ -135,6 +139,68 @@ def _run_enrich() -> None:
 
     scan_dirs = [Path(d).expanduser() for d in args.dirs] if args.dirs else None
     run_enrich(scan_dirs)
+
+
+def _run_facts() -> None:
+    """Refresh the session fact table and re-render the dashboard.
+
+    Capture is cheap and needs no API key, so this is the piece that runs daily —
+    local JSONL rotates out in roughly five days, and anything not captured before
+    then is gone for good.
+    """
+    import argparse
+    from datetime import UTC, datetime
+    from pathlib import Path
+
+    from tools.cartographer.dashboard import write_dashboard
+    from tools.cartographer.factstore import from_jsonl, from_notes, read_all, upsert
+
+    repo_root = Path(__file__).resolve().parents[2]
+    p = argparse.ArgumentParser(description="Refresh the session fact table + dashboard")
+    p.add_argument("--store", default=str(repo_root / "data" / "sessions.db"))
+    p.add_argument("--projects-dir", default="~/.claude/projects")
+    p.add_argument("--notes-dir", default=str(repo_root / "raw" / "sessions"))
+    p.add_argument(
+        "--dashboard",
+        default=str(Path("~/workspace/guacamayo/.sounding/dashboard.html").expanduser()),
+        help="Rendered dashboard path (guacamayo consolidates; librarian aggregates)",
+    )
+    p.add_argument(
+        "--growth-md",
+        default=str(Path("~/workspace/guacamayo/.sounding/growth.md").expanduser()),
+    )
+    p.add_argument("--stale-days", type=int, default=3)
+    p.add_argument("--no-dashboard", action="store_true", help="Refresh facts only")
+    args = p.parse_args()
+
+    store = Path(args.store).expanduser()
+    rows = from_notes(Path(args.notes_dir).expanduser())
+    rows += from_jsonl(Path(args.projects_dir).expanduser())
+    written = upsert(rows, store)
+    print(f"Fact table: {written} rows upserted -> {store}")
+
+    if not args.no_dashboard:
+        growth_md = Path(args.growth_md).expanduser()
+        out = write_dashboard(
+            store,
+            Path(args.dashboard).expanduser(),
+            growth_md=growth_md if growth_md.exists() else None,
+        )
+        print(f"Dashboard: {out}")
+
+    # Staleness guard: the newest row aging past --stale-days means capture is not
+    # keeping up with the ~5-day JSONL retention window, i.e. history is being lost.
+    stored = read_all(store)
+    newest = max((r["date"] for r in stored), default="")
+    if newest:
+        age = (datetime.now(UTC).date() - datetime.fromisoformat(newest).date()).days
+        if age > args.stale_days:
+            print(
+                f"WARNING: newest fact row is {age} days old ({newest}). "
+                f"Local JSONL rotates in ~5 days — sessions may already be lost. "
+                f"Check the scheduled --facts run.",
+                file=sys.stderr,
+            )
 
 
 if __name__ == "__main__":

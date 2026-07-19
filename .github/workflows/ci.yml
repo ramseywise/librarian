@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@main
+    with:
+      # Makefile's `lint:` is a stub that defers to Claude, so it defines no
+      # paths. These are the four real top-level Python dirs; raw/ wiki/ logs/
+      # are artifacts (naming.md data-layer rule) and stay unlinted.
+      lint-paths: "app etl tools tests"
+      # Lint gates from day one — the single RUF059 error was fixed 2026-07-19
+      # (tools/codemap/indexer.py), so `ruff check app etl tools tests` is clean.
+      # The plan expected 14 failures here; tests/unit/ is in fact green
+      # (92 passed, 2 skipped, verified 2026-07-19). The 9 known-failing e2e
+      # tests need a live server on :5173 and live outside tests/unit/, so
+      # tests stay blocking.
+      test-command: "uv run pytest tests/unit/ -q"

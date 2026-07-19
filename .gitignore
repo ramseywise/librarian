@@ -58,3 +58,7 @@ node_modules/
 # Raw ingest archive — personal/employer source material stays local-only
 raw/
 logs/*.jsonl
+
+# Cartographer fact table — rebuildable from raw/sessions + ~/.claude/projects
+data/sessions.db
+logs/*.err
