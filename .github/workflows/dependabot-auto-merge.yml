@@ -6,7 +6,19 @@ permissions:
   pull-requests: write
 
 jobs:
+  # CI must pass before auto-merge is allowed. Branch protection is not yet
+  # configured (verified 2026-07-19); this needs: is the practical gate until
+  # a branch protection rule requiring the `ci / lint` and `ci / test` checks
+  # is added. At that point this job becomes redundant but harmless.
+  wait-for-ci:
+    if: github.actor == 'dependabot[bot]'
+    uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@main
+    with:
+      lint-paths: "app etl tools tests"
+      test-command: "uv run pytest tests/unit/ -q"
+
   auto-merge:
+    needs: [wait-for-ci]
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
