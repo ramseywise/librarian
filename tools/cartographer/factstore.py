@@ -74,6 +74,10 @@ NULLABLE_COLUMNS: dict[str, type] = {
     # `by_agent` keys are subagent-type names, plus UNATTRIBUTED_AGENT for
     # transcripts predating SUBAGENT_ATTRIBUTION_CLI. NULL on parent rows.
     "subagent_costs": str,
+    # Session shape (2026-07-20). Human turns per session -- the denominator for
+    # "am I running one long session or ten cold starts". Backfills to the July
+    # boundary from retained transcripts; same apparatus, no new regime.
+    "human_turns": int,
 }
 
 # `attributionAgent` (the subagent-type name) is emitted only by CLI 2.1.201+.
@@ -309,6 +313,7 @@ def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, 
         "tool_errors": json.dumps(errors),
         "tool_error_count": sum(errors.values()),
         "user_interruptions": session.get("user_interruptions"),
+        "human_turns": session.get("user_message_count"),
         "hook_blocks": errors.get("user_rejected", 0),
     }
     row["is_meta"] = _classify_meta({**row, "edited_paths": session.get("edited_paths", [])})

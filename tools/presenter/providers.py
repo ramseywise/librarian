@@ -9,7 +9,8 @@ from urllib.parse import quote
 
 import httpx
 import structlog
-from core.config.agent_settings import settings
+
+from tools.presenter._settings import settings
 
 log = structlog.get_logger(__name__)
 

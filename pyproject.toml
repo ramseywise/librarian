@@ -22,6 +22,7 @@ dependencies = [
 [project.scripts]
 cartographer = "tools.cartographer.__main__:main"
 codemap = "tools.codemap.__main__:main"
+presenter = "tools.presenter.__main__:main"
 
 [project.optional-dependencies]
 dev = [
@@ -62,6 +63,17 @@ codemap = [
     "fastapi>=0.139.2",
     "uvicorn[standard]>=0.51.0",
 ]
+presenter = [
+    # renderer.py imports both directly; lxml is python-pptx's own dependency but
+    # is named here because the import is first-party, not incidental.
+    "python-pptx>=1.0.2",
+    "lxml>=5.3.0",
+    # providers.py, only on the image_provider="replicate" path.
+    "replicate>=1.0.0",
+    # viz_classifier.py reads viz_prompt_library.yaml. Was importable only by
+    # accident, via a transitive PyYAML — nothing here had declared it.
+    "pyyaml>=6.0.2",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -72,7 +84,12 @@ packages = ["tools"]
 
 [tool.uv]
 package = true
-dev-dependencies = [
+
+# Was [tool.uv] dev-dependencies, deprecated by uv and warned on every invocation.
+# Installed by default by bare `uv run`, same as before — no Makefile or CI command
+# passes --group, so the move is behaviour-preserving.
+[dependency-groups]
+dev = [
     "ruff>=0.15.22",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",

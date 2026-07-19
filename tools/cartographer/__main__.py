@@ -174,6 +174,8 @@ def _run_facts() -> None:
     )
     p.add_argument("--stale-days", type=int, default=3)
     p.add_argument("--no-dashboard", action="store_true", help="Refresh facts only")
+    p.add_argument("--workspace", default="~/workspace", help="Root scanned for git repos")
+    p.add_argument("--no-git", action="store_true", help="Skip repo-activity collection")
     args = p.parse_args()
 
     store = Path(args.store).expanduser()
@@ -181,6 +183,12 @@ def _run_facts() -> None:
     rows += from_jsonl(Path(args.projects_dir).expanduser())
     written = upsert(rows, store)
     print(f"Fact table: {written} rows upserted -> {store}")
+
+    if not args.no_git:
+        from tools.cartographer.gitstore import refresh as refresh_git
+
+        commits, prs = refresh_git(Path(args.workspace).expanduser(), store)
+        print(f"Repo activity: {commits} commit-days, {prs} PRs")
 
     if not args.no_dashboard:
         growth_md = Path(args.growth_md).expanduser()

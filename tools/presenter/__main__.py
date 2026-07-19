@@ -5,11 +5,11 @@ import sys
 from pathlib import Path
 
 import structlog
-from core.config.agent_settings import settings
 from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
 
 from app.log_config import configure_logging
+from tools.presenter._settings import settings
 
 console = Console()
 log = structlog.get_logger(__name__)
@@ -211,7 +211,7 @@ def run_image() -> None:
 # ---------------------------------------------------------------------------
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     configure_logging()
 
     parser = argparse.ArgumentParser(description="Presentation authoring agent")
@@ -230,7 +230,7 @@ def main() -> None:
         choices=["pollinations", "replicate"],
         help="Override the image provider from settings",
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.provider:
         settings.image_provider = args.provider

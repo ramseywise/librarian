@@ -5,8 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
-from core.client import create_client, parse_json_response
 
+from tools.presenter._client import create_client, parse_json_response
 from tools.presenter.models import ImageConcept, SlideContent, VizPrompt
 
 LIBRARY_PATH = Path(__file__).resolve().parent / "viz_prompt_library.yaml"

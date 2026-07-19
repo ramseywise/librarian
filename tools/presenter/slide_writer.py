@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from core.client import create_client, parse_json_response
-
+from tools.presenter._client import create_client, parse_json_response
 from tools.presenter.models import DeckIntake, DeckOutline, SlideContent, SlideOutline
 
 SLIDE_SYSTEM = """You are a slide content writer for technical presentations.

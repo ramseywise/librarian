@@ -109,6 +109,27 @@ def _parse_timestamp(record: dict[str, Any]) -> datetime | None:
     return None
 
 
+def _is_human_turn(record: dict[str, Any]) -> bool:
+    """True when a user-role record is a real human turn, not a tool result.
+
+    Tool results are delivered as user-role messages, so any timing or counting
+    over raw type=="user" records is dominated by machine traffic.
+    """
+    content = record.get("message", {}).get("content", [])
+    if isinstance(content, str):
+        return bool(content.strip())
+    if not isinstance(content, list):
+        return False
+    return not any(
+        isinstance(block, dict) and block.get("type") == "tool_result" for block in content
+    )
+
+
+def _human_turn_times(user_msgs: list[dict[str, Any]]) -> list[datetime]:
+    """Timestamps of genuine human turns, in record order."""
+    return [t for r in user_msgs if _is_human_turn(r) and (t := _parse_timestamp(r)) is not None]
+
+
 # Language map for file extension detection
 _LANG_MAP: dict[str, str] = {
     "py": "Python",
@@ -148,6 +169,14 @@ def parse_session(path: Path) -> dict[str, Any] | None:
 
     if not user_msgs:
         return None
+
+    # Subagent type name, e.g. "Explore" / "akira-scan". Emitted per-record by CLI
+    # 2.1.201+; transcripts written by older builds carry no attribution at all and
+    # leave this None (see SUBAGENT_ATTRIBUTION_CLI in factstore).
+    attribution_agent = next(
+        (str(a) for r in records if (a := r.get("attributionAgent"))),
+        None,
+    )
 
     # Timestamps
     user_times = [t for r in user_msgs if (t := _parse_timestamp(r)) is not None]
@@ -209,6 +238,8 @@ def parse_session(path: Path) -> dict[str, Any] | None:
     context_bucket_cost: dict[str, float] = dict.fromkeys(_CONTEXT_BUCKETS, 0.0)
     cost_events: list[tuple[str, float]] = []
     model_counts: dict[str, int] = defaultdict(int)
+    model_costs: dict[str, float] = defaultdict(float)
+    model_tokens: dict[str, int] = defaultdict(int)
     for record in asst_msgs:
         msg = record.get("message", {})
         usage = msg.get("usage", {})
@@ -232,6 +263,8 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         model_id = msg.get("model", "")
         if model_id:
             model_counts[model_id] += 1
+            model_costs[model_id] += cost
+            model_tokens[model_id] += usage.get("output_tokens", 0)
     primary_model = max(model_counts, key=lambda k: model_counts[k]) if model_counts else "unknown"
 
     # Compaction events (system compact_boundary records; older format flags the
@@ -266,9 +299,14 @@ def parse_session(path: Path) -> dict[str, Any] | None:
                     if lang:
                         langs[lang] += 1
 
-    # User response times (gap between consecutive user messages)
+    # User response times (gap between consecutive *human* turns).
+    #
+    # `user_msgs` is every type=="user" record, but ~90% of those are synthetic:
+    # a tool_result is delivered as a user-role message. Timing those measured
+    # tool latency, not the human, and inflated the interruption count roughly
+    # 10x (verified 2026-07-20 over 6 transcripts). Human turns only.
     response_times: list[float] = []
-    sorted_user_times = sorted(user_times)
+    sorted_user_times = sorted(_human_turn_times(user_msgs))
     for i in range(1, len(sorted_user_times)):
         delta = (sorted_user_times[i] - sorted_user_times[i - 1]).total_seconds()
         if 1 < delta < 7200:  # ignore tiny/huge gaps
@@ -277,7 +315,11 @@ def parse_session(path: Path) -> dict[str, Any] | None:
     # Message hours (UTC)
     message_hours = [t.hour for t in user_times]
 
-    # User interruptions (user message mid-tool-use — heuristic: short gap < 5s)
+    # User interruptions: a human turn arriving <5s after the previous one, i.e.
+    # too fast to be a considered reply. Still a heuristic, but calibrated --
+    # over human-only turns the gap median is ~226s and only 3.8% fall under 5s
+    # (measured 2026-07-20, n=157), so the threshold isolates a real tail rather
+    # than splitting the bulk of the distribution.
     interruptions = sum(1 for t in response_times if t < 5)
 
     # --- Context engineering signals ---
@@ -369,7 +411,10 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         "start_time": start.isoformat(),
         "end_time": end.isoformat(),
         "duration_minutes": round(duration_minutes, 1),
-        "user_message_count": len(user_msgs),
+        # Human turns only. `user_msgs` is ~92% tool_result records (measured
+        # 2026-07-20, n=3869 over 60 transcripts), so len(user_msgs) reported
+        # roughly 12x the real prompt count and made msgs_per_day meaningless.
+        "user_message_count": sum(1 for r in user_msgs if _is_human_turn(r)),
         "assistant_message_count": len(asst_msgs),
         "tool_counts": dict(tool_counts),
         "tool_errors": dict(tool_errors),
@@ -386,7 +431,10 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         "skill_costs": {k: round(v, 1) for k, v in skill_costs.items()},
         "is_subagent": False,
         "parent_session_id": None,
+        "attribution_agent": attribution_agent,
         "models": dict(model_counts),
+        "model_costs": {k: round(v, 1) for k, v in model_costs.items()},
+        "model_output_tokens": dict(model_tokens),
         "primary_model": primary_model,
         "files_modified": len(files_modified),
         "first_prompt": first_prompt,
@@ -635,6 +683,10 @@ def aggregate(
             rt_buckets[">15m"] += 1
 
     days_active = len(set(dates))
+    # Human prompts per active day. Counts genuine human turns only (see
+    # `user_message_count`) -- before 2026-07-20 this counted tool_result records
+    # too and ran ~12x higher, so figures quoted from older reports are not
+    # comparable to these.
     msgs_per_day = round(total_user_msgs / days_active, 1) if days_active else 0
 
     economics = _aggregate_economics(sessions, subagent_sessions)

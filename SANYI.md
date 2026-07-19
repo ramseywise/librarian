@@ -40,10 +40,11 @@ last-audit: 2026-07-20
 <!-- Two clauses, both now enforced and evidenced. Clause (b) was TARGET-only
      until 2026-07-20; app/ now filters private at every read path. -->
 
-- paths: wiki/private/, app/mcp_server/server.py
+- paths: wiki/private/, app/mcp_server/server.py, app/backend/agent.py
 - contract: Pages under wiki/private/ (proprietary context, client names,
   internal project detail) are (a) never committed to git, and (b) never
-  returned by any MCP tool. Confidentiality failure if violated.
+  returned by any read path that can reach a user — MCP tool or chat agent
+  tool call. Confidentiality failure if violated.
 - evidence: clause (a) — .gitignore#L46 (verified 2026-07-20: git ls-files
   wiki/private returns 0). Clause (b) — server.py#_is_private gates
   build_index, _index_needs_rebuild, read_page, list_pages, and
@@ -51,8 +52,19 @@ last-audit: 2026-07-20
   addressing private as a domain); read_page returns the not-found message so a
   denial cannot confirm the page exists. tests/unit/test_private_exclusion.py
   covers all six paths incl. ../ traversal; verified against the live wiki
-  2026-07-20 — 130 pages indexed, 0 private, 5 private pages on disk
-  (cured 2026-07-20).
+  2026-07-20 — 130 pages indexed, 0 private, 5 private pages on disk.
+  Chat agent — app/backend/agent.py#_is_private gates both wiki tools the Gemini
+  agent can call: _search_wiki's walk and _read_page's ID lookup *and* its
+  title-scan fallback (unfiltered, the fallback is a way around the ID check).
+  The agent reached wiki/ by its own rglob, so the server's gating did not cover
+  it; before the cure both tools served private pages into the SSE chat panel.
+  Both callers share server.py#is_under_private for path resolution but pass
+  their own private root: the server anchors on a relative Path("wiki"), which
+  under `make api` (cwd=app/) resolves to a nonexistent app/wiki/private, so
+  binding the agent to the server's own PRIVATE_DIR would read as correct and
+  exclude nothing. tests/unit/test_agent_private_exclusion.py covers both tools,
+  the title fallback, and that cwd-independence as a regression test; its four
+  leak cases fail against the pre-cure agent (cured 2026-07-20).
 
 ### Secrets never committed, never logged
 
@@ -66,7 +78,18 @@ last-audit: 2026-07-20
   drops values for key/token/secret-named fields (walking nested dicts and
   sequences) and masks recognisable Anthropic/Notion/Linear/Google/GitHub key
   formats even under an innocuous field name; installed ahead of the renderer by
-  configure_logging(), called at app/mcp_server/server.py:37.
+  configure_logging(). Called at every process entry point that logs, so the
+  processor is installed before the first log call rather than only where the
+  MCP server happens to run: app/mcp_server/server.py:37; app/backend/main.py at
+  import (uvicorn imports the ASGI app and calls no main() of ours); the eight
+  structlog-using etl/ scripts (ingest_linear, ingest_notion, ingest_pdf,
+  scrape_bookmarks, scrape_claude_docs, scrape_repos, scrape_sessions,
+  seed_from_playground), first statement of each main(); and the tools/ CLIs
+  (cartographer, codemap, presenter). tools/presenter/__main__.py previously
+  configured structlog itself with no redact_secrets processor — a same-clause
+  gap that reads as configured — and now calls the shared configure_logging().
+  Entry points that only print() (etl/relinker.py, etl/lint_raw.py,
+  etl/manifest.py, etl/screenshot.py) bind no logger and are out of scope.
   tests/unit/test_log_redaction.py asserts field-name, nested, value-shape, and
   end-to-end rendered-output cases (cured 2026-07-20).
 

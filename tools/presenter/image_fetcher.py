@@ -6,8 +6,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import structlog
-from core.config.agent_settings import settings
 
+from tools.presenter._settings import settings
 from tools.presenter.models import VizPrompt
 from tools.presenter.providers import get_provider
 

@@ -8,6 +8,13 @@ updates:
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # umap-learn -> numba caps at numpy<2.5 (numba 0.66.0, the latest, still
+      # does). A minor-group bump to 2.5.1 broke /api/layout/umap once already
+      # (383a364); the pin in pyproject.toml only holds if Dependabot stops
+      # reopening it. Drop this once numba supports numpy 2.5.
+      - dependency-name: "numpy"
+        versions: [">=2.5"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

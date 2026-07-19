@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from core.client import create_client, parse_json_response
 from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
 
+from tools.presenter._client import create_client, parse_json_response
 from tools.presenter.models import DeckIntake, DeckOutline
 
 console = Console()

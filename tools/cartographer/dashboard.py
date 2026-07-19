@@ -33,6 +33,7 @@ from tools.cartographer.factstore import (
     UNATTRIBUTED_AGENT,
     read_all,
 )
+from tools.cartographer.gitstore import read_git_activity, read_prs
 
 log = structlog.get_logger(__name__)
 
@@ -56,6 +57,8 @@ JULY_ONLY_METRICS = {
     "pct_over_150k",
     "tool_error_rate",
     "interruptions_p50",
+    "turns_per_session_p50",
+    "single_turn_pct",
 }
 
 # What each regime's corpus actually sampled. Rendered on every rate panel so a
@@ -182,6 +185,16 @@ def _metric_value(metric: str, bucket: list[dict[str, Any]]) -> float | None:
             return None
         errors = sum(int(r.get("tool_error_count") or 0) for r in scored)
         return round(100 * errors / calls, 2)
+    if metric == "turns_per_session_p50":
+        values = [float(r["human_turns"]) for r in bucket if r.get("human_turns") is not None]
+        if not values:
+            return None
+        return _percentile(values, 50)
+    if metric == "single_turn_pct":
+        values = [r["human_turns"] for r in bucket if r.get("human_turns") is not None]
+        if not values:
+            return None
+        return round(100 * sum(1 for v in values if v <= 1) / len(values), 2)
     if metric == "interruptions_p50":
         values = [
             float(r["user_interruptions"])
@@ -376,6 +389,23 @@ _TIER2 = [
     ("max_context_p50", "Max context (p50)", "peak context per session"),
     ("max_context_p90", "Max context (p90)", "tail context pressure"),
     ("pct_over_150k", "% sessions over 150k context", "the 66% baseline"),
+]
+
+# Session shape: how work is divided into sessions. Read alongside "Sessions per
+# week" -- volume alone cannot distinguish more work from the same work split
+# across more cold starts, and those have opposite cost implications (each new
+# session re-derives context that a continued one already holds).
+_TIER_SHAPE = [
+    (
+        "turns_per_session_p50",
+        "Human turns per session (p50)",
+        "how far a session gets before it ends",
+    ),
+    (
+        "single_turn_pct",
+        "% single-turn sessions",
+        "sessions ending after one prompt - each pays full context startup",
+    ),
 ]
 
 # Friction: parsed since the JSONL era, stored from 2026-07-20. Backfilled to the
@@ -699,7 +729,21 @@ _COVERAGE = [
     ("Max context", "JSONL per-request", JULY_BOUNDARY, "no pre-July data, not imputed"),
     ("Skill + model attribution", "JSONL tool_use blocks", JULY_BOUNDARY, "no pre-July data"),
     ("Tool errors, interruptions", "JSONL tool_result is_error", JULY_BOUNDARY, "backfilled"),
-    ("Plan-doc outcome", "not collected", "-", "unrecoverable - .claude/docs is git-ignored"),
+    (
+        "Human turns per session",
+        "JSONL user records, tool_results excluded",
+        JULY_BOUNDARY,
+        "backfilled",
+    ),
+    ("Plan-doc outcome", "not collected", "-", "blocked - no ABANDONED label exists; see note"),
+    (
+        "Commits + churn",
+        "git log across ~/workspace",
+        "2026-04-03",
+        "repo activity, not per-session",
+    ),
+    ("PRs opened/merged", "gh pr list", "2026-04-03", "repo activity; 94% dependabot"),
+    ("Issues resolved", "not collected", "-", "no data - 0 GitHub issues, 0 LIN- refs in commits"),
     (
         "Subagent attribution",
         "JSONL subagent transcripts",
@@ -712,10 +756,69 @@ _COVERAGE = [
 # proposal is not re-litigated from scratch each time.
 _NOT_COLLECTED = (
     "Plan-doc Status transitions (EXECUTED vs ABANDONED) would be the natural "
-    "outcome metric, but .claude/docs/ is git-ignored by policy - a doc's history "
-    "does not exist, only its current state. Making it a time series requires "
-    "snapshotting forward from a decision date; nothing recovers the past."
+    "outcome metric, and it is not built for two reasons measured 2026-07-20. "
+    "First, .claude/docs/ is git-ignored by policy, so a doc has current state but "
+    "no history - nothing recovers the past, only forward snapshots would work. "
+    "Second, and decisive: across 61 plan docs, 37 carry a Status line and ZERO "
+    "say ABANDONED (EXECUTED 26, COMPLETE 5, SUPERSEDED 2, IN PROGRESS 1). An "
+    "abandoned plan is silently dropped, never marked - so the ratio would read "
+    "~100% success by construction and measure labelling discipline, not outcomes. "
+    "The vocabulary is also unnormalised (EXECUTED vs COMPLETE vs RESEARCH "
+    "COMPLETE) and only 29 of 61 filenames are date-prefixed, so a time series "
+    "would cover under half the corpus. Fixing the metric means fixing the "
+    "convention first, not adding a panel."
 )
+
+
+def _render_repo_activity(store: Path) -> str:
+    """Repo-activity tiles: commits, churn, PR flow.
+
+    Deliberately tiles and not a trend line. These are NOT per-session metrics and
+    do not join to a session, so plotting them beside cost/context would invite the
+    inference the caveat exists to block (see gitstore.ATTRIBUTION).
+    """
+    activity = read_git_activity(store)
+    prs = read_prs(store)
+    if not activity and not prs:
+        return ""
+
+    commits = sum(r["commits"] for r in activity)
+    bot = sum(r["commits_bot"] for r in activity)
+    trailer = sum(r["commits_claude_trailer"] for r in activity)
+    human = commits - bot
+    insertions = sum(r["insertions"] for r in activity)
+    deletions = sum(r["deletions"] for r in activity)
+    repos = len({r["repo"] for r in activity})
+    human_prs = [p for p in prs if not p["is_bot"]]
+    merged = sum(p["merged"] for p in human_prs)
+
+    tiles = [
+        (f"{human:,}", "human commits"),
+        (f"{bot:,}", "bot commits"),
+        (f"+{insertions:,}", "lines added (source only)"),
+        (f"-{deletions:,}", "lines removed"),
+        (f"{len(human_prs)}", "human PRs"),
+        (f"{merged}", "PRs merged"),
+        (f"{repos}", "active repos"),
+    ]
+    tile_html = "".join(
+        f'<div class="tile"><span class="value">{html.escape(v)}</span>'
+        f'<span class="label">{html.escape(label)}</span></div>'
+        for v, label in tiles
+    )
+    return (
+        f'<div class="boundary"><h2>Repo activity</h2>'
+        f'<p class="sub">What landed in the repos. NOT a Claude-productivity metric '
+        f"and not joinable to a session - Ramsey commits, always, so only "
+        f"{trailer} of {commits:,} commits carry a Co-Authored-By trailer and its "
+        f"absence means nothing. Read these as workspace throughput.</p></div>"
+        f'<div class="chart"><h3>Totals since 2026-04-01</h3>'
+        f'<div class="tiles">{tile_html}</div>'
+        f'<p class="frame">Churn counts source files only - PDFs, notebooks, '
+        f"lockfiles, vendored course material and bundled plugin JS are excluded. "
+        f"Unfiltered, those were 50% of all insertions and one 70k-line PDF was the "
+        f"single largest contributor.</p></div>"
+    )
 
 
 def _render_coverage() -> str:
@@ -746,6 +849,10 @@ def render_dashboard(store: Path, funnel: Funnel | None = None) -> str:
         _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
         for i, (metric, title, note) in enumerate(_TIER2)
     )
+    shape = "".join(
+        _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
+        for i, (metric, title, note) in enumerate(_TIER_SHAPE)
+    )
     tier3 = "".join(
         _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
         for i, (metric, title, note) in enumerate(_TIER3)
@@ -769,6 +876,11 @@ def render_dashboard(store: Path, funnel: Funnel | None = None) -> str:
         f"pre-hygiene regime a note existed only when a session compacted. Faceted "
         f"per regime, never joined into one line.</p></div>"
         f"{rates}"
+        f'<div class="boundary"><h2>Session shape</h2>'
+        f'<p class="sub">Sessions per week counts volume; these say whether that '
+        f"volume is more work or the same work restarted. A session that ends after "
+        f"one prompt paid full context startup for one answer.</p></div>"
+        f"{shape}"
         f'<div class="boundary"><h2>Friction</h2>'
         f'<p class="sub">Stored from {FRICTION_STORED} and backfilled to '
         f"{JULY_BOUNDARY} by re-parsing retained transcripts. The parser extracted "
@@ -777,6 +889,7 @@ def render_dashboard(store: Path, funnel: Funnel | None = None) -> str:
         f"{tier3}"
         f"{_render_subagents(store)}"
         f"{_render_funnel(funnel)}"
+        f"{_render_repo_activity(store)}"
         f"{_render_coverage()}"
         f"</div>"
     )

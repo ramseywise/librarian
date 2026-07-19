@@ -1,4 +1,4 @@
-.PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap
+.PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter
 
 app:
 	docker compose up
@@ -26,6 +26,9 @@ install-api:
 
 install-codemap:
 	uv sync --extra codemap
+
+install-presenter:
+	uv sync --extra presenter
 
 codemap-reindex:
 	uv run codemap
@@ -79,6 +82,7 @@ help:
 	@echo "install-ui       — npm install for ui/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"
+	@echo "install-presenter — uv sync --extra presenter"
 	@echo "codemap-reindex  — reindex repos in tools/codemap/repos.txt → .code_index.duckdb"
 	@echo "codemap-api      — start Codemap Query API (port 8100)"
 	@echo "setup-ollama     — pull the configured Ollama model"
