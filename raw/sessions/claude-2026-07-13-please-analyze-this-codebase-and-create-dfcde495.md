@@ -1,4 +1,5 @@
 ---
+tags: [context-management]
 tool: claude-code
 project: puffin
 date: 2026-07-13

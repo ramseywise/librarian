@@ -1,4 +1,5 @@
 ---
+tags: [context-management]
 tool: claude-code
 project: -Users-ramsey-wise-Workspace
 date: 2026-07-05

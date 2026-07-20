@@ -1,4 +1,5 @@
 ---
+tags: [adk, context-management, eval, langgraph]
 tool: claude-code
 project: project-g
 date: 2026-06-05
