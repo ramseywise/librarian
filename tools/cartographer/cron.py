@@ -569,6 +569,21 @@ def extract_and_write_commands(report: str) -> list[str]:
     return created
 
 
+def _rotate_hook_log() -> None:
+    """Rotate ~/.claude/.hook-log.jsonl when it exceeds 10,000 lines.
+
+    Keeps at most 2 files: current + .hook-log.jsonl.1 (overwrites previous archive).
+    """
+    hook_log = Path.home() / ".claude" / ".hook-log.jsonl"
+    if not hook_log.exists():
+        return
+    lines = hook_log.read_text(encoding="utf-8").count("\n")
+    if lines > 10_000:
+        archive = hook_log.with_suffix(".jsonl.1")
+        hook_log.rename(archive)
+        log.info("cron.hook_log_rotated", archive=str(archive), lines=lines)
+
+
 def run_cron() -> None:
     log.info("cron.start")
 
@@ -598,5 +613,8 @@ def run_cron() -> None:
     summary_path = INSIGHTS_DIR / "latest.json"
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+
+    # Rotate hook log if needed
+    _rotate_hook_log()
 
     log.info("cron.complete", **summary)

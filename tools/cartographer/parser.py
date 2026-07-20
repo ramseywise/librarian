@@ -1082,6 +1082,54 @@ def build_prompt(
 
 
 # ---------------------------------------------------------------------------
+# Hook telemetry
+# ---------------------------------------------------------------------------
+
+
+def parse_hook_log(
+    log_path: Path,
+    start: datetime | None = None,
+    end: datetime | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Parse ~/.claude/.hook-log.jsonl and aggregate per-hook stats.
+
+    Returns {hook_name: {blocks: int, advisories: int, repos: list[str]}}.
+    Filters by date range when start/end are provided.
+    """
+    stats: dict[str, dict[str, Any]] = defaultdict(
+        lambda: {"blocks": 0, "advisories": 0, "repos": set()}
+    )
+    if not log_path.exists():
+        return {}
+    for line in log_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        ts_raw = event.get("ts", "")
+        if ts_raw:
+            try:
+                ts = datetime.fromisoformat(ts_raw.replace("Z", "+00:00"))
+                if start and ts < start:
+                    continue
+                if end and ts > end:
+                    continue
+            except ValueError:
+                pass
+        hook = event.get("hook", "unknown")
+        if event.get("exit_code") == 2:
+            stats[hook]["blocks"] += 1
+        else:
+            stats[hook]["advisories"] += 1
+        stats[hook]["repos"].add(event.get("repo", "unknown"))
+    # Convert sets to sorted lists for JSON serialisation
+    return {k: {**v, "repos": sorted(v["repos"])} for k, v in stats.items()}
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -1151,6 +1199,12 @@ def main() -> None:
             msg="No JSONL found — using session notes as primary source",
         )
 
+    # --- Hook telemetry ---
+    hook_log_path = Path.home() / ".claude" / ".hook-log.jsonl"
+    hook_telemetry = parse_hook_log(hook_log_path)
+    if hook_telemetry:
+        log.info("parser.hook_telemetry_loaded", hooks=len(hook_telemetry))
+
     if args.dry_run:
         out: dict[str, Any] = {}
         if agg:
@@ -1158,6 +1212,7 @@ def main() -> None:
         if session_notes:
             out["session_notes_count"] = len(session_notes)
             out["session_note_ids"] = [n["session_id"] for n in session_notes]
+        out["hook_telemetry"] = hook_telemetry
         sys.stdout.write(json.dumps(out, indent=2))
         sys.stdout.write("\n")
         return
