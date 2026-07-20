@@ -24,6 +24,7 @@ from tools.cartographer.parser import (
     _COST_CACHE_WRITE,
     _COST_INPUT,
     _COST_OUTPUT,
+    WORKSPACE_ROOT,
     _extract_field,
     _parse_frontmatter,
     _split_sections,
@@ -78,6 +79,13 @@ NULLABLE_COLUMNS: dict[str, type] = {
     # "am I running one long session or ten cold starts". Backfills to the July
     # boundary from retained transcripts; same apparatus, no new regime.
     "human_turns": int,
+    # Repo attribution (2026-07-20). JSON {repo: record_count} from every `cwd` in
+    # the transcript, not just the launch dir -- see parser._session_repos. The
+    # `project` column holds the launch dir, which is the bare workspace root for
+    # 86% of July sessions and names no repo; this column resolves a repo for 87%
+    # of transcripts. Backfills from retained JSONL, same apparatus, no new regime.
+    # {} means the session never left the root (genuinely repo-less, not missing).
+    "session_repos": str,
 }
 
 # `attributionAgent` (the subagent-type name) is emitted only by CLI 2.1.201+.
@@ -315,6 +323,7 @@ def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, 
         "user_interruptions": session.get("user_interruptions"),
         "human_turns": session.get("user_message_count"),
         "hook_blocks": errors.get("user_rejected", 0),
+        "session_repos": json.dumps(session.get("session_repos", {})),
     }
     row["is_meta"] = _classify_meta({**row, "edited_paths": session.get("edited_paths", [])})
     return row
@@ -339,6 +348,7 @@ def _scan_session_files(projects_dir: Path) -> dict[str, dict[str, Any]]:
         if "/subagents/" in str(jsonl):
             continue
         cwd = ""
+        repos: dict[str, int] = {}
         edited: list[str] = []
         for line in jsonl.read_text(errors="replace").splitlines():
             if '"cwd"' not in line and '"tool_use"' not in line:
@@ -347,8 +357,15 @@ def _scan_session_files(projects_dir: Path) -> dict[str, dict[str, Any]]:
                 record = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            if not cwd and record.get("cwd"):
-                cwd = str(record["cwd"])
+            if record.get("cwd"):
+                if not cwd:
+                    cwd = str(record["cwd"])
+                repo_prefix = WORKSPACE_ROOT + "/"
+                value = str(record["cwd"])
+                if value.startswith(repo_prefix):
+                    name = value[len(repo_prefix) :].split("/", 1)[0]
+                    if name:
+                        repos[name] = repos.get(name, 0) + 1
             for block in record.get("message", {}).get("content", []) or []:
                 if (
                     isinstance(block, dict)
@@ -358,7 +375,7 @@ def _scan_session_files(projects_dir: Path) -> dict[str, dict[str, Any]]:
                     path = block.get("input", {}).get("file_path", "")
                     if path:
                         edited.append(str(path))
-        found[jsonl.stem] = {"cwd": cwd, "edited_paths": edited}
+        found[jsonl.stem] = {"cwd": cwd, "repos": repos, "edited_paths": edited}
     return found
 
 
@@ -407,6 +424,8 @@ def from_jsonl(projects_dir: Path) -> list[dict[str, Any]]:
         extra = scanned.get(session["session_id"], {})
         if not session.get("project_path"):
             session["project_path"] = extra.get("cwd", "")
+        if not session.get("session_repos"):
+            session["session_repos"] = extra.get("repos", {})
         session["edited_paths"] = extra.get("edited_paths", [])
         row = _to_fact_from_jsonl(session, str(projects_dir))
         costs = sub_costs.get(session["session_id"])

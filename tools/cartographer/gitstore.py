@@ -6,7 +6,7 @@ worked*; these describe *what landed in the repos*. They are joinable on
 
 ATTRIBUTION (measured 2026-07-20, the constraint that shapes this module):
 Ramsey commits, always -- Claude never runs `git commit` (global CLAUDE.md). The
-`Co-Authored-By: Claude` trailer therefore appears on only 8 of 92 commits, and
+`Co-Authored-By: Claude` trailer therefore appears on only 6 of 406 commits, and
 its absence says nothing about whether a session was involved. There is no
 commit -> session join, and none can be manufactured. So these are **repo
 activity** metrics, not Claude-productivity metrics, and the dashboard labels

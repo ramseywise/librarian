@@ -125,6 +125,35 @@ def _is_human_turn(record: dict[str, Any]) -> bool:
     )
 
 
+WORKSPACE_ROOT = "/Users/wiseer/workspace"
+
+
+def _session_repos(records: list[dict[str, Any]]) -> dict[str, int]:
+    """Repos this session actually worked in, by record count under each.
+
+    `records[0]["cwd"]` is the *launch* directory, which is the workspace root for
+    86% of July sessions (measured 2026-07-20) -- Ramsey drives many repos from
+    the root, so the launch dir names no repo at all. But `cwd` is emitted on
+    every record and follows the session into subdirectories, so scanning all of
+    them resolves a repo for 87% of transcripts instead of 14%.
+
+    Returns {repo_name: record_count}, empty when a session never left the root.
+    Callers decide how to attribute a multi-repo session -- this deliberately
+    returns the whole distribution rather than picking a winner, because 22% of
+    sessions touch more than one repo and the median dominant share is only 57%.
+    """
+    counts: dict[str, int] = {}
+    prefix = WORKSPACE_ROOT + "/"
+    for record in records:
+        cwd = record.get("cwd")
+        if not isinstance(cwd, str) or not cwd.startswith(prefix):
+            continue
+        repo = cwd[len(prefix) :].split("/", 1)[0]
+        if repo:
+            counts[repo] = counts.get(repo, 0) + 1
+    return counts
+
+
 def _human_turn_times(user_msgs: list[dict[str, Any]]) -> list[datetime]:
     """Timestamps of genuine human turns, in record order."""
     return [t for r in user_msgs if _is_human_turn(r) and (t := _parse_timestamp(r)) is not None]
@@ -408,6 +437,10 @@ def parse_session(path: Path) -> dict[str, Any] | None:
     return {
         "session_id": path.stem,
         "project_path": str(records[0].get("cwd", "")) if records else "",
+        # Repo attribution from every cwd, not just the launch dir -- see
+        # _session_repos. JSON {repo: record_count}; {} when the session never
+        # left the workspace root.
+        "session_repos": _session_repos(records),
         "start_time": start.isoformat(),
         "end_time": end.isoformat(),
         "duration_minutes": round(duration_minutes, 1),

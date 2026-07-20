@@ -770,6 +770,118 @@ _NOT_COLLECTED = (
 )
 
 
+def weekly_cost_by_repo(store: Path) -> tuple[dict[str, dict[str, float]], float, float]:
+    """Weekly cost_units per repo, July-forward only.
+
+    Cost is split across the repos a session actually worked in, weighted by how
+    many records ran under each `cwd` (`session_repos`). A session that spent 90%
+    of its records in one repo contributes 90% of its cost there -- 22% of
+    sessions touch more than one repo, so assigning the whole session to a single
+    winner would misattribute real spend.
+
+    July-forward only (JULY_ONLY_METRICS): `session_repos` is derived from JSONL
+    `cwd` records, which the note era never captured. A pre-July point would plot
+    the absence of transcripts, not a quiet week.
+
+    Returns (weekly, attributed_cost, total_cost). The two totals are what the
+    panel needs to state its own coverage rather than implying it is complete.
+    """
+    weekly: dict[str, dict[str, float]] = {}
+    attributed = 0.0
+    total = 0.0
+    for row in _work_sessions(read_all(store)):
+        day = str(row.get("date") or "")
+        if day < JULY_BOUNDARY:
+            continue
+        cost = float(row.get("cost_units") or 0.0)
+        total += cost
+        try:
+            repos: dict[str, int] = json.loads(row.get("session_repos") or "{}")
+        except (json.JSONDecodeError, TypeError):
+            repos = {}
+        if not repos:
+            continue
+        attributed += cost
+        records = sum(repos.values())
+        week = _iso_week(day)
+        for repo, count in repos.items():
+            bucket = weekly.setdefault(repo, {})
+            bucket[week] = bucket.get(week, 0.0) + cost * count / records
+    return weekly, attributed, total
+
+
+def weekly_commits_by_repo(store: Path) -> dict[str, dict[str, float]]:
+    """Weekly human (non-bot) commits per repo, July-forward only.
+
+    Same window as `weekly_cost_by_repo` so the two panels sit on one x-axis.
+    Bot commits are excluded, not pooled -- see gitstore.ATTRIBUTION.
+    """
+    weekly: dict[str, dict[str, float]] = {}
+    for row in read_git_activity(store):
+        day = str(row.get("date") or "")
+        if day < JULY_BOUNDARY:
+            continue
+        human = int(row.get("commits") or 0) - int(row.get("commits_bot") or 0)
+        if human <= 0:
+            continue
+        bucket = weekly.setdefault(str(row["repo"]), {})
+        week = _iso_week(day)
+        bucket[week] = bucket.get(week, 0.0) + human
+    return weekly
+
+
+def _render_repo_economics(store: Path) -> str:
+    """Cost and commits per repo, side by side -- deliberately NOT divided.
+
+    The ratio these two panels invite is exactly the number this dashboard must
+    not print. Ramsey commits, always (gitstore.ATTRIBUTION): there is no
+    commit -> session join, so cost-per-commit would read as "Claude cost X per
+    commit" when the commits are Ramsey's and the trailer is absent from 400 of
+    406 of them. Rendering both series unjoined lets a reader see effort next to
+    outcome without the panel asserting a causal link the data cannot support.
+    """
+    cost_weekly, attributed, total = weekly_cost_by_repo(store)
+    commit_weekly = weekly_commits_by_repo(store)
+    if not cost_weekly and not commit_weekly:
+        return ""
+
+    repos = sorted(
+        set(cost_weekly) | set(commit_weekly),
+        key=lambda r: -sum(cost_weekly.get(r, {}).values()),
+    )
+    unattributed = total - attributed
+    share = (unattributed / total * 100) if total else 0.0
+
+    rows = []
+    for repo in repos:
+        cost = sum(cost_weekly.get(repo, {}).values())
+        commits = int(sum(commit_weekly.get(repo, {}).values()))
+        rows.append(
+            f"<tr><td>{html.escape(repo)}</td>"
+            f"<td>{cost / 1_000_000:,.1f}M</td><td>{commits}</td></tr>"
+        )
+    table = (
+        f'<div class="table-view"><table>'
+        f"<tr><th>Repo</th><th>Session cost (July+)</th><th>Human commits</th></tr>"
+        f"{''.join(rows)}</table></div>"
+    )
+    return (
+        f'<div class="boundary"><h2>Repo effort and outcome</h2>'
+        f'<p class="sub">Session cost and landed commits per repo, side by side and '
+        f"<strong>deliberately not divided</strong>. There is no commit -&gt; session "
+        f"join: Ramsey commits, always, so a cost-per-commit ratio would read as "
+        f"Claude-authored output when the commits are his. Read these as two "
+        f"independent series over the same weeks.</p></div>"
+        f'<div class="chart"><h3>Since {html.escape(JULY_BOUNDARY)}</h3>{table}'
+        f'<p class="frame">Cost is split across the repos a session worked in, '
+        f"weighted by records under each cwd; 22% of sessions touch more than one. "
+        f"{unattributed / 1_000_000:,.1f}M cost units ({share:.0f}%) ran entirely at "
+        f"the workspace root and name no repo - excluded here rather than assigned to "
+        f"one. A repo with cost and zero commits means spend without landed work, not "
+        f"a missing join.</p></div>"
+    )
+
+
 def _render_repo_activity(store: Path) -> str:
     """Repo-activity tiles: commits, churn, PR flow.
 
@@ -890,6 +1002,7 @@ def render_dashboard(store: Path, funnel: Funnel | None = None) -> str:
         f"{_render_subagents(store)}"
         f"{_render_funnel(funnel)}"
         f"{_render_repo_activity(store)}"
+        f"{_render_repo_economics(store)}"
         f"{_render_coverage()}"
         f"</div>"
     )
