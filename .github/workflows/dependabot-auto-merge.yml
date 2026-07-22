@@ -6,10 +6,6 @@ permissions:
   pull-requests: write
 
 jobs:
-  # CI must pass before auto-merge is allowed. Branch protection is not yet
-  # configured (verified 2026-07-19); this needs: is the practical gate until
-  # a branch protection rule requiring the `ci / lint` and `ci / test` checks
-  # is added. At that point this job becomes redundant but harmless.
   wait-for-ci:
     if: github.actor == 'dependabot[bot]'
     uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@main
@@ -24,8 +20,7 @@ jobs:
     steps:
       - uses: dependabot/fetch-metadata@v3
         id: metadata
-      - if: steps.metadata.outputs.update-type != 'version-update:semver-major'
-        run: gh pr merge --squash --delete-branch "$PR_URL"
+      - run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
