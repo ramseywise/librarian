@@ -203,6 +203,8 @@ updated: 2026-07-19
 | [[Puffin Consciousness Development Skills]] | Chained skill family (genesis → wake → grow → reflect → synthesize → dream) for staged self-development across sessions |
 | [[Code Review Drill — SANYI]] | Code-review interview drill from a real contract-check run — the two-line diff that lints clean but violates the change contract |
 | [[Skill-Knowledge Information Flow]] | How knowledge flows between global skills, ai-project-template, learn-ai-engineering, and the librarian wiki — sync contracts and current drift |
+| [[Agile Workflow Definitions]] | Definition of Ready, Definition of Done, WIP limits, weekly cadence, and ceremony-to-skill mapping |
+| [[Documentation Boundary — Machine vs Human Docs]] | Who writes what — machine-consumed docs vs human-consumed docs, with the akira dao exception |
 
 ---
 

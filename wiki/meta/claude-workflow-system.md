@@ -326,3 +326,5 @@ A project-local instantiation of this skill (`code_debug` in [[Listen-Wiseer Pro
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]]
 - [[Branch Naming Convention Pattern]]
 - [[Skill-Knowledge Information Flow]] — extends (four-system parity model)
+- [[Agile Workflow Definitions]] — extends (DoR, DoD, cadence, ceremony mapping)
+- [[Documentation Boundary — Machine vs Human Docs]] — extends (who writes what)
