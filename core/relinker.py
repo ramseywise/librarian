@@ -146,7 +146,9 @@ def relink(
     changed_pages: list[str] | None = None,
     dry_run: bool = False,
 ) -> RelinkReport:
-    sys.path.insert(0, str(REPO_ROOT))
+    _repo_root_str = str(REPO_ROOT)
+    if _repo_root_str not in sys.path:
+        sys.path.insert(0, _repo_root_str)
     from sklearn.metrics.pairwise import cosine_similarity
 
     from app.backend.embeddings import compute_embeddings

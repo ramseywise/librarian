@@ -19,11 +19,8 @@ DATE_SLUG_RE = re.compile(
     r"^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])-[a-z0-9][a-z0-9-]*\.md$"
 )
 
-ERRORS = []
-WARNINGS = []
 
-
-def check_dir(subdir: Path) -> None:
+def check_dir(subdir: Path, errors: list, warnings: list) -> None:
     for f in sorted(subdir.rglob("*.md")):
         rel = f.relative_to(ROOT)
         name = f.name
@@ -33,9 +30,9 @@ def check_dir(subdir: Path) -> None:
         # Distinguish clearly wrong vs close-but-not-quite
         has_date = re.match(r"^\d{4}-\d{2}-\d{2}", name)
         if has_date:
-            WARNINGS.append((rel, "has date prefix but slug contains uppercase or spaces"))
+            warnings.append((rel, "has date prefix but slug contains uppercase or spaces"))
         else:
-            ERRORS.append((rel, "missing YYYY-MM-DD- date prefix"))
+            errors.append((rel, "missing YYYY-MM-DD- date prefix"))
 
 
 def main() -> int:
@@ -43,30 +40,33 @@ def main() -> int:
         print(f"ERROR: raw/ not found at {ROOT}", file=sys.stderr)
         return 1
 
+    errors: list = []
+    warnings: list = []
+
     for subdir in sorted(ROOT.iterdir()):
         if not subdir.is_dir():
             continue
         if subdir.name in EXEMPT_PREFIXES:
             continue
-        check_dir(subdir)
+        check_dir(subdir, errors, warnings)
 
-    if ERRORS:
+    if errors:
         print(f"\n{'─' * 60}")
-        print(f"ERRORS ({len(ERRORS)}) — files that will create malformed manifest entries:")
-        for path, reason in ERRORS:
+        print(f"ERRORS ({len(errors)}) — files that will create malformed manifest entries:")
+        for path, reason in errors:
             print(f"  ✗ raw/{path}  [{reason}]")
 
-    if WARNINGS:
+    if warnings:
         print(f"\n{'─' * 60}")
-        print(f"WARNINGS ({len(WARNINGS)}) — fixable but won't block ingest:")
-        for path, reason in WARNINGS:
+        print(f"WARNINGS ({len(warnings)}) — fixable but won't block ingest:")
+        for path, reason in warnings:
             print(f"  ⚠ raw/{path}  [{reason}]")
 
-    if not ERRORS and not WARNINGS:
+    if not errors and not warnings:
         print("✓ All raw/ filenames conform to YYYY-MM-DD-slug convention.")
         return 0
 
-    if ERRORS:
+    if errors:
         print(f"\n{'─' * 60}")
         print(
             "Rename these files before running /ingest, or they will be ingested with malformed manifest keys."

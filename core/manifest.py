@@ -5,6 +5,14 @@ Each line in raw/manifest.jsonl is one ingested file:
 
 Use check() before ingesting to skip unchanged files.
 Use mark() after ingesting to record the result.
+
+For batch operations, use ManifestSession to avoid O(N²) _load() calls:
+
+    with ManifestSession() as ms:
+        for path in paths:
+            needs, reason = ms.check(path)
+            if needs:
+                ms.mark(path, wiki_pages)
 """
 
 from __future__ import annotations
@@ -42,7 +50,10 @@ def file_hash(path: Path) -> str:
 
 
 def check(path: str | Path) -> tuple[bool, str]:
-    """Return (needs_ingest, reason). False means skip — already ingested unchanged."""
+    """Return (needs_ingest, reason). False means skip — already ingested unchanged.
+
+    Note: calls _load() on each invocation. For batch operations prefer ManifestSession.
+    """
     p = Path(path)
     rel = str(p.relative_to(REPO_ROOT)) if p.is_absolute() else str(p)
     if not p.exists():
@@ -57,7 +68,10 @@ def check(path: str | Path) -> tuple[bool, str]:
 
 
 def mark(path: str | Path, wiki_pages: list[str]) -> None:
-    """Record a completed ingest for path."""
+    """Record a completed ingest for path.
+
+    Note: calls _load() on each invocation. For batch operations prefer ManifestSession.
+    """
     p = Path(path)
     rel = str(p.relative_to(REPO_ROOT)) if p.is_absolute() else str(p)
     entries = _load()
@@ -68,6 +82,57 @@ def mark(path: str | Path, wiki_pages: list[str]) -> None:
         "wiki_pages": wiki_pages,
     }
     _save(entries)
+
+
+class ManifestSession:
+    """Context manager for batch ingest — loads manifest once, saves on exit.
+
+    Fixes the O(N²) _load() pattern (#36): each check()/mark() call inside the
+    session operates on the in-memory dict rather than re-reading the file.
+
+        with ManifestSession() as ms:
+            for path in paths:
+                needs, reason = ms.check(path)
+                if needs:
+                    ms.mark(path, wiki_pages)
+    """
+
+    def __init__(self) -> None:
+        self._entries: dict[str, dict] = {}
+        self._dirty = False
+
+    def __enter__(self) -> ManifestSession:
+        self._entries = _load()
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        if self._dirty:
+            _save(self._entries)
+
+    def check(self, path: str | Path) -> tuple[bool, str]:
+        """Return (needs_ingest, reason). False means skip — already ingested unchanged."""
+        p = Path(path)
+        rel = str(p.relative_to(REPO_ROOT)) if p.is_absolute() else str(p)
+        if not p.exists():
+            return False, f"file not found: {rel}"
+        current_hash = file_hash(p)
+        if rel not in self._entries:
+            return True, "not yet ingested"
+        if self._entries[rel]["hash"] != current_hash:
+            return True, f"changed since {self._entries[rel]['ingested_at']}"
+        return False, f"already ingested on {self._entries[rel]['ingested_at']} (unchanged)"
+
+    def mark(self, path: str | Path, wiki_pages: list[str]) -> None:
+        """Record a completed ingest for path."""
+        p = Path(path)
+        rel = str(p.relative_to(REPO_ROOT)) if p.is_absolute() else str(p)
+        self._entries[rel] = {
+            "path": rel,
+            "hash": file_hash(p),
+            "ingested_at": date.today().isoformat(),
+            "wiki_pages": wiki_pages,
+        }
+        self._dirty = True
 
 
 def coverage_gaps(raw_dir: str | Path = "raw") -> list[dict]:
