@@ -1,2 +1,0 @@
-- [User profile](user_profile.md) — stack, preferences, communication style
-- [Project profile](project_profile.md) — architecture decisions, repo constraints
