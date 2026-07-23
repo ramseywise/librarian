@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2]))
 
-from etl.relinker import append_see_also
+from core.relinker import append_see_also
 
 
 def test_appends_under_real_heading(tmp_path: Path) -> None:

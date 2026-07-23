@@ -1,0 +1,90 @@
+2026-07-19 16:08:09 --- run started (mode=facts, repo=/Users/wiseer/workspace/librarian)
+2026-07-19 16:08:10 running: uv run cartographer --facts
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+2026-07-19 16:08:12 [info     ] factstore.from_notes           notes_dir=/Users/wiseer/workspace/librarian/raw/sessions rows=297 skipped=90
+2026-07-19 16:08:16 [info     ] factstore.from_jsonl           projects_dir=/Users/wiseer/.claude/projects rows=93
+2026-07-19 16:08:16 [info     ] factstore.upsert               rows=390 store=/Users/wiseer/workspace/librarian/data/sessions.db
+Fact table: 390 rows upserted -> /Users/wiseer/workspace/librarian/data/sessions.db
+2026-07-19 16:08:16 [info     ] dashboard.written              out=/Users/wiseer/workspace/guacamayo/.sounding/dashboard.html store=/Users/wiseer/workspace/librarian/data/sessions.db
+Dashboard: /Users/wiseer/workspace/guacamayo/.sounding/dashboard.html
+2026-07-19 16:08:16 facts: ok
+2026-07-19 16:08:16 --- run finished (exit 0)
+2026-07-19 16:09:02 --- run started (mode=facts, repo=/Users/wiseer/workspace/librarian)
+2026-07-19 16:09:02 running: uv run cartographer --facts
+warning: The `tool.uv.dev-dependencies` field (used in `pyproject.toml`) is deprecated and will be removed in a future release; use `dependency-groups.dev` instead
+Uninstalled 1 package in 3.35s
+Installed 1 package in 48ms
+2026-07-19 16:09:10 [info     ] factstore.from_notes           notes_dir=/Users/wiseer/workspace/librarian/raw/sessions rows=297 skipped=90
+2026-07-19 16:09:13 [info     ] factstore.from_jsonl           projects_dir=/Users/wiseer/.claude/projects rows=93
+2026-07-19 16:09:13 [info     ] factstore.upsert               rows=390 store=/Users/wiseer/workspace/librarian/data/sessions.db
+Fact table: 390 rows upserted -> /Users/wiseer/workspace/librarian/data/sessions.db
+2026-07-19 16:09:13 [info     ] dashboard.written              out=/Users/wiseer/workspace/guacamayo/.sounding/dashboard.html store=/Users/wiseer/workspace/librarian/data/sessions.db
+Dashboard: /Users/wiseer/workspace/guacamayo/.sounding/dashboard.html
+2026-07-19 16:09:13 facts: ok
+2026-07-19 16:09:13 --- run finished (exit 0)
+2026-07-20 09:00:05 --- run started (mode=facts, repo=/Users/wiseer/workspace/librarian)
+2026-07-20 09:00:05 running: uv run cartographer --facts
+[2m2026-07-20T07:00:06.355946Z[0m [[32m[1minfo     [0m] [1mfactstore.from_notes          [0m [36mnotes_dir[0m=[35m/Users/wiseer/workspace/librarian/raw/sessions[0m [36mrows[0m=[35m297[0m [36mskipped[0m=[35m210[0m
+[2m2026-07-20T07:00:09.015655Z[0m [[32m[1minfo     [0m] [1mfactstore.from_jsonl          [0m [36mprojects_dir[0m=[35m/Users/wiseer/.claude/projects[0m [36mrows[0m=[35m145[0m [36mwith_subagents[0m=[35m19[0m
+[2m2026-07-20T07:00:09.030387Z[0m [[32m[1minfo     [0m] [1mfactstore.upsert              [0m [36mrows[0m=[35m442[0m [36mstore[0m=[35m/Users/wiseer/workspace/librarian/data/sessions.db[0m
+Fact table: 442 rows upserted -> /Users/wiseer/workspace/librarian/data/sessions.db
+[2m2026-07-20T07:00:40.320708Z[0m [[32m[1minfo     [0m] [1mgitstore.upsert               [0m [36mrows[0m=[35m77[0m [36mtable[0m=[35mgit_activity[0m
+[2m2026-07-20T07:00:40.327709Z[0m [[32m[1minfo     [0m] [1mgitstore.upsert               [0m [36mrows[0m=[35m197[0m [36mtable[0m=[35mpull_requests[0m
+Repo activity: 77 commit-days, 197 PRs
+[2m2026-07-20T07:00:40.418126Z[0m [[32m[1minfo     [0m] [1mdashboard.written             [0m [36mout[0m=[35m/Users/wiseer/workspace/guacamayo/.sounding/dashboard.html[0m [36mstore[0m=[35m/Users/wiseer/workspace/librarian/data/sessions.db[0m
+Dashboard: /Users/wiseer/workspace/guacamayo/.sounding/dashboard.html
+2026-07-20 09:00:40 facts: ok
+2026-07-20 09:00:40 --- run finished (exit 0)
+2026-07-20 09:30:04 --- run started (mode=cron, repo=/Users/wiseer/workspace/librarian)
+2026-07-20 09:30:04 running: uv run cartographer --cron
+[2m2026-07-20T07:30:06.309685Z[0m [[32m[1minfo     [0m] [1mcron.start                    [0m
+[2m2026-07-20T07:30:06.463361Z[0m [[32m[1minfo     [0m] [1mcron.session_files_tagged     [0m [36mcount[0m=[35m194[0m
+[2m2026-07-20T07:30:06.488076Z[0m [[32m[1minfo     [0m] [1mcron.wiki_session_log_updated [0m [36mnew_dates[0m=[35m26[0m
+[2m2026-07-20T07:30:06.488147Z[0m [[32m[1minfo     [0m] [1mcron.wiki_updated             [0m [36mdates_added[0m=[35m26[0m
+[2m2026-07-20T07:30:06.543385Z[0m [[32m[1minfo     [0m] [1mcron.no_data                  [0m [36mmsg[0m=[35m'No session or friction data to analyze'[0m
+[2m2026-07-20T07:30:06.544822Z[0m [[32m[1minfo     [0m] [1mcron.saved                    [0m [36mpath[0m=[35m/Users/wiseer/.claude/docs/insights/2026-07-20.md[0m
+[2m2026-07-20T07:30:06.545005Z[0m [[32m[1minfo     [0m] [1mcron.complete                 [0m [36mcommands_created[0m=[35m[][0m [36mreport[0m=[35m/Users/wiseer/.claude/docs/insights/2026-07-20.md[0m [36msessions_synced[0m=[35m0[0m
+2026-07-20 09:30:06 cron: ok
+2026-07-20 09:30:06 --- run finished (exit 0)
+2026-07-21 10:53:48 --- run started (mode=facts, repo=/Users/wiseer/workspace/librarian)
+2026-07-21 10:53:49 running: uv run cartographer --facts
+[2m2026-07-21T08:54:25.174896Z[0m [[32m[1minfo     [0m] [1mfactstore.from_notes          [0m [36mnotes_dir[0m=[35m/Users/wiseer/workspace/librarian/raw/sessions[0m [36mrows[0m=[35m297[0m [36mskipped[0m=[35m210[0m
+[2m2026-07-21T08:56:00.339988Z[0m [[32m[1minfo     [0m] [1mfactstore.from_jsonl          [0m [36mprojects_dir[0m=[35m/Users/wiseer/.claude/projects[0m [36mrows[0m=[35m152[0m [36mwith_subagents[0m=[35m21[0m
+[2m2026-07-21T08:56:00.407252Z[0m [[32m[1minfo     [0m] [1mfactstore.upsert              [0m [36mrows[0m=[35m449[0m [36mstore[0m=[35m/Users/wiseer/workspace/librarian/data/sessions.db[0m
+Fact table: 449 rows upserted -> /Users/wiseer/workspace/librarian/data/sessions.db
+[2m2026-07-21T09:00:12.548350Z[0m [[33m[1mwarning  [0m] [1mgitstore.command_failed       [0m [36mcwd[0m=[35m/Users/wiseer/workspace/learn-ai-engineering[0m [36merror[0m=[35m"Command '['git', 'log', '--since=2026-04-01', '--no-merges', '--format=%x00%H%x1f%ad%x1f%an%x1f%s%x1f%b', '--date=short', '--numstat']' timed out after 60 seconds"[0m
+[2m2026-07-21T09:03:35.933433Z[0m [[32m[1minfo     [0m] [1mgitstore.upsert               [0m [36mrows[0m=[35m72[0m [36mtable[0m=[35mgit_activity[0m
+[2m2026-07-21T09:03:36.143220Z[0m [[32m[1minfo     [0m] [1mgitstore.upsert               [0m [36mrows[0m=[35m203[0m [36mtable[0m=[35mpull_requests[0m
+Repo activity: 72 commit-days, 203 PRs
+[2m2026-07-21T09:03:36.770496Z[0m [[32m[1minfo     [0m] [1mdashboard.written             [0m [36mout[0m=[35m/Users/wiseer/workspace/guacamayo/.sounding/dashboard.html[0m [36mstore[0m=[35m/Users/wiseer/workspace/librarian/data/sessions.db[0m
+Dashboard: /Users/wiseer/workspace/guacamayo/.sounding/dashboard.html
+2026-07-21 11:03:40 facts: ok
+2026-07-21 11:03:40 --- run finished (exit 0)
+2026-07-22 09:06:42 --- run started (mode=facts, repo=/Users/wiseer/workspace/librarian)
+2026-07-22 09:06:42 running: uv run cartographer --facts
+[2m2026-07-22T07:06:44.515403Z[0m [[32m[1minfo     [0m] [1mfactstore.from_notes          [0m [36mnotes_dir[0m=[35m/Users/wiseer/workspace/librarian/raw/sessions[0m [36mrows[0m=[35m297[0m [36mskipped[0m=[35m210[0m
+[2m2026-07-22T07:06:47.661155Z[0m [[32m[1minfo     [0m] [1mfactstore.from_jsonl          [0m [36mprojects_dir[0m=[35m/Users/wiseer/.claude/projects[0m [36mrows[0m=[35m159[0m [36mwith_subagents[0m=[35m23[0m
+[2m2026-07-22T07:06:47.675688Z[0m [[32m[1minfo     [0m] [1mfactstore.upsert              [0m [36mrows[0m=[35m456[0m [36mstore[0m=[35m/Users/wiseer/workspace/librarian/data/sessions.db[0m
+Fact table: 456 rows upserted -> /Users/wiseer/workspace/librarian/data/sessions.db
+[2m2026-07-22T07:23:13.267362Z[0m [[32m[1minfo     [0m] [1mgitstore.upsert               [0m [36mrows[0m=[35m87[0m [36mtable[0m=[35mgit_activity[0m
+[2m2026-07-22T07:23:13.272890Z[0m [[32m[1minfo     [0m] [1mgitstore.upsert               [0m [36mrows[0m=[35m212[0m [36mtable[0m=[35mpull_requests[0m
+Repo activity: 87 commit-days, 212 PRs
+[2m2026-07-22T07:23:13.370999Z[0m [[32m[1minfo     [0m] [1mdashboard.written             [0m [36mout[0m=[35m/Users/wiseer/workspace/guacamayo/.sounding/dashboard.html[0m [36mstore[0m=[35m/Users/wiseer/workspace/librarian/data/sessions.db[0m
+Dashboard: /Users/wiseer/workspace/guacamayo/.sounding/dashboard.html
+2026-07-22 09:23:13 facts: ok
+2026-07-22 09:23:13 --- run finished (exit 0)
+2026-07-23 09:08:23 --- run started (mode=facts, repo=/Users/wiseer/workspace/librarian)
+2026-07-23 09:08:23 running: uv run cartographer --facts
+Uninstalled 1 package in 17ms
+Installed 1 package in 10ms
+[2m2026-07-23T07:08:27.562147Z[0m [[32m[1minfo     [0m] [1mfactstore.from_notes          [0m [36mnotes_dir[0m=[35m/Users/wiseer/workspace/librarian/raw/sessions[0m [36mrows[0m=[35m297[0m [36mskipped[0m=[35m210[0m
+[2m2026-07-23T07:24:45.996162Z[0m [[32m[1minfo     [0m] [1mfactstore.from_jsonl          [0m [36mprojects_dir[0m=[35m/Users/wiseer/.claude/projects[0m [36mrows[0m=[35m173[0m [36mwith_subagents[0m=[35m26[0m
+[2m2026-07-23T07:24:46.015044Z[0m [[32m[1minfo     [0m] [1mfactstore.upsert              [0m [36mrows[0m=[35m470[0m [36mstore[0m=[35m/Users/wiseer/workspace/librarian/data/sessions.db[0m
+Fact table: 470 rows upserted -> /Users/wiseer/workspace/librarian/data/sessions.db
+[2m2026-07-23T08:06:19.076434Z[0m [[32m[1minfo     [0m] [1mgitstore.upsert               [0m [36mrows[0m=[35m95[0m [36mtable[0m=[35mgit_activity[0m
+[2m2026-07-23T08:06:19.088681Z[0m [[32m[1minfo     [0m] [1mgitstore.upsert               [0m [36mrows[0m=[35m259[0m [36mtable[0m=[35mpull_requests[0m
+Repo activity: 95 commit-days, 259 PRs
+[2m2026-07-23T08:06:19.238090Z[0m [[32m[1minfo     [0m] [1mdashboard.written             [0m [36mout[0m=[35m/Users/wiseer/workspace/guacamayo/.sounding/dashboard.html[0m [36mstore[0m=[35m/Users/wiseer/workspace/librarian/data/sessions.db[0m
+Dashboard: /Users/wiseer/workspace/guacamayo/.sounding/dashboard.html
+2026-07-23 10:06:19 facts: ok
+2026-07-23 10:06:19 --- run finished (exit 0)
