@@ -22,10 +22,10 @@ else
   ABS="${REPO_ROOT}/${FILE_PATH}"
 fi
 
-# Resolve .. segments without requiring the file to exist (realpath -m is GNU-only).
-ABS_DIR="$(cd "$(dirname "$ABS")" 2>/dev/null && pwd -P || true)"
-[[ -z "$ABS_DIR" ]] && exit 0  # parent doesn't exist yet => creating => allow
-ABS="${ABS_DIR}/$(basename "$ABS")"
+# Resolve .. segments without requiring intermediate dirs to exist.
+# Can't use realpath -m (GNU-only) or cd (fails when dirs are missing).
+# Collapse path textually: split on /, drop . and empty, fold X/.. pairs.
+ABS="$(python3 -c "import os.path,sys; print(os.path.normpath(sys.argv[1]))" "$ABS")"
 
 case "$ABS" in
   "${REPO_ROOT}/raw/"*) ;;
