@@ -25,7 +25,7 @@ from pathlib import Path
 import frontmatter
 
 REPO_ROOT = Path(__file__).parent.parent
-WIKI_DIR = REPO_ROOT / "wiki"
+WIKI_DIR = REPO_ROOT / "data" / "wiki"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 DOMAIN_TAG_SET = {

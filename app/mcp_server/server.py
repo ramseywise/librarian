@@ -37,7 +37,7 @@ load_dotenv()
 configure_logging()  # installs the secret-redaction processor
 log = structlog.get_logger()
 
-WIKI_DIR = Path("wiki")
+WIKI_DIR = Path("data/wiki")
 PRIVATE_DIR = WIKI_DIR / "private"
 DB_PATH = Path(".wiki_index.duckdb")
 LOGS_DIR = Path("logs")
@@ -101,7 +101,7 @@ def is_under_private(path: Path | str, private_dir: Path) -> bool:
     before comparison so ../ traversal and absolute paths cannot slip past.
 
     private_dir is a parameter, not this module's PRIVATE_DIR, because callers
-    anchor their wiki root differently: the server uses a relative Path("wiki")
+    anchor their wiki root differently: the server uses a relative Path("data/wiki")
     while app/backend/agent.py derives an absolute path from __file__. Sharing the
     resolution logic while each caller supplies its own root keeps a second copy
     from drifting, without making one caller's cwd decide the other's filter.

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import frontmatter
 
-WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
+WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 TYPED_LINK_RE = re.compile(
     r"-\s*\[\[([^\]]+)\]\]\s*—\s*(extends|prerequisite-for|alternative-to|instance-of|contradicts|supersedes)"

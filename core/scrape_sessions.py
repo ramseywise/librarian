@@ -30,7 +30,7 @@ from app.log_config import configure_logging
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "raw" / "sessions"
+DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "data" / "raw" / "sessions"
 CLAUDE_PROJECTS_DIR = Path.home() / ".claude" / "projects"
 CODEX_DIRS = [
     Path.home() / ".codex" / "sessions",

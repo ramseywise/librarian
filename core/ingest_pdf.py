@@ -20,7 +20,7 @@ from app.log_config import configure_logging
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_PDFS = Path("raw/pdfs")
+RAW_PDFS = Path("data/raw/pdfs")
 
 
 class Settings(BaseSettings):

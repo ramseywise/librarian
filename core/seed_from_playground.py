@@ -23,7 +23,7 @@ from app.log_config import configure_logging
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_PLAYGROUND = Path("raw/playground-docs")
+RAW_PLAYGROUND = Path("data/raw/playground-docs")
 
 
 class Settings(BaseSettings):

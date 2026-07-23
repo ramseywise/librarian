@@ -1,7 +1,7 @@
 """Ingest manifest — tracks what's been compiled into the wiki.
 
-Each line in raw/manifest.jsonl is one ingested file:
-  {"path": "raw/web/foo.md", "hash": "sha256:...", "ingested_at": "2026-04-24", "wiki_pages": [...]}
+Each line in data/raw/manifest.jsonl is one ingested file:
+  {"path": "data/raw/web/foo.md", "hash": "sha256:...", "ingested_at": "2026-04-24", "wiki_pages": [...]}
 
 Use check() before ingesting to skip unchanged files.
 Use mark() after ingesting to record the result.
@@ -15,7 +15,7 @@ from datetime import date
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
-MANIFEST_PATH = REPO_ROOT / "raw" / "manifest.jsonl"
+MANIFEST_PATH = REPO_ROOT / "data" / "raw" / "manifest.jsonl"
 
 
 def _load() -> dict[str, dict]:
@@ -70,7 +70,7 @@ def mark(path: str | Path, wiki_pages: list[str]) -> None:
     _save(entries)
 
 
-def coverage_gaps(raw_dir: str | Path = "raw") -> list[dict]:
+def coverage_gaps(raw_dir: str | Path = "data/raw") -> list[dict]:
     """Return raw .md files with no manifest entry, grouped by directory."""
     root = REPO_ROOT / raw_dir
     entries = _load()

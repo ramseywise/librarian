@@ -30,7 +30,7 @@ from app.log_config import configure_logging
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "raw" / "claude-docs"
+DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "data" / "raw" / "claude-docs"
 WORKSPACE_DIR = Path.home() / "workspace"
 USER_CLAUDE_DIR = Path.home() / ".claude"
 

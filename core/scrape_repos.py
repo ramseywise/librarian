@@ -27,8 +27,8 @@ from app.log_config import configure_logging
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_REPOS_FILE = Path(__file__).parent.parent / "raw" / "repos" / "repos.txt"
-DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "raw" / "repos"
+DEFAULT_REPOS_FILE = Path(__file__).parent.parent / "data" / "raw" / "repos" / "repos.txt"
+DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "data" / "raw" / "repos"
 
 # Files and glob patterns to extract from each repo
 EXTRACT_GLOBS = [
