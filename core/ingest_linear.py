@@ -25,7 +25,7 @@ from app.log_config import configure_logging
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_LINEAR = Path("raw/linear")
+RAW_LINEAR = Path("data/raw/linear")
 
 LINEAR_API = "https://api.linear.app/graphql"
 

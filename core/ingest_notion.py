@@ -25,7 +25,7 @@ from app.log_config import configure_logging
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_NOTION = Path("raw/notion")
+RAW_NOTION = Path("data/raw/notion")
 
 
 class Settings(BaseSettings):

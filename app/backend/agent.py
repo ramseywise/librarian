@@ -12,7 +12,7 @@ from google.genai import types
 
 from app.mcp_server.server import is_under_private
 
-WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
+WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
 PRIVATE_DIR = WIKI_DIR / "private"
 
 

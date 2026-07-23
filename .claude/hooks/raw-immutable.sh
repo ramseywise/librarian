@@ -28,8 +28,8 @@ ABS_DIR="$(cd "$(dirname "$ABS")" 2>/dev/null && pwd -P || true)"
 ABS="${ABS_DIR}/$(basename "$ABS")"
 
 case "$ABS" in
-  "${REPO_ROOT}/raw/"*) ;;
-  *) exit 0 ;;  # outside raw/ — not our concern
+  "${REPO_ROOT}/raw/"*|"${REPO_ROOT}/data/raw/"*) ;;
+  *) exit 0 ;;  # outside raw/ and data/raw/ — not our concern
 esac
 
 # The invariant is no-mutate, not no-write: only an EXISTING file is protected.

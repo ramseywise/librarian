@@ -63,14 +63,14 @@ Run both scrapers from the librarian directory:
 cd /path/to/librarian && make scrape
 
 # Scrape CLAUDE.md, README, skill files, and docs from configured repos
-uv run python etl/scrape_repos.py
+uv run python core/scrape_repos.py
 ```
 
 `make scrape` pulls:
 - Claude Code docs from all workspace projects (`.claude/docs/`, `.claude/skills/`, `docs/`, `.agents/`)
 - Claude Code + Codex session notes → `raw/sessions/`
 
-`etl/scrape_repos.py` pulls:
+`core/scrape_repos.py` pulls:
 - CLAUDE.md, README.md, SANYI.md, `.claude/skills/**/*.md`, `docs/**/*.md` from repos listed in `raw/repos/repos.txt`
 - Saves to `raw/repos/<repo-name>/`
 
@@ -138,7 +138,7 @@ When invoked as `/ingest resolve`:
 Before touching the manifest, run:
 
 ```bash
-cd /Users/ramsey.wise/Workspace/librarian && uv run python etl/lint_raw.py
+cd /Users/ramsey.wise/Workspace/librarian && uv run python core/lint_raw.py
 ```
 
 If any **ERRORS** are reported → stop and tell the user which files need renaming before ingesting. WARNINGs are advisory only; do not block on them.
@@ -178,7 +178,7 @@ Follow `CLAUDE.md` exactly for each file that passed the manifest check.
 9. **Update manifest** (see Step 9 below).
 10. **Relink pass:** after all files in this cycle are ingested, run the relinker to discover additional semantic links:
     ```bash
-    uv run --extra api python etl/relinker.py
+    uv run --extra api python core/relinker.py
     ```
     Review the output. If `wiki/_relink_suggestions.md` is generated, scan it for high-value links worth adding manually with typed relationships. Use `--dry-run` first if you want to preview changes without writing.
 

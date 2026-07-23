@@ -25,7 +25,7 @@ from .wiki_parser import parse_wiki
 # calls an entry point of ours. Must precede the first log call from any route.
 configure_logging()
 
-WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
+WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
 
 _ws_clients: list[WebSocket] = []
 

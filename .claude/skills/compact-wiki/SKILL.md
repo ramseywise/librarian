@@ -28,7 +28,7 @@ Rationale and evidence base: `.claude/docs/plans/2026-07-17-knowledge-compaction
 2. **Size**: `find wiki -name "*.md" -not -name "_*" -exec wc -l {} +` → pages over
    ~300 lines (reference dumps, accumulators).
 3. **Similarity**: read `wiki/_relink_suggestions.md` if present; optionally run
-   `uv run python etl/relinker.py` first. High-similarity pairs = merge candidates.
+   `uv run python core/relinker.py` first. High-similarity pairs = merge candidates.
 4. **Retrieval** (if `logs/retrieval.jsonl` has data): per-page retrieval counts over
    the window; co-retrieval pairs = paths appearing together in one `search_wiki`
    result set ≥3 times. Aggregate with a short python snippet, don't read the file raw.
@@ -67,7 +67,7 @@ Ramsey approves per move (approve all / subset / none). No approval, no writes.
 - **Retire**: replace body with tombstone format, add `tombstone` to tags, add
   `[[Successor]] — supersedes` line.
 - **Compress**: apply the accumulator ceiling (last ~30 entries + month rollups).
-- Then: update `wiki/_index.md`, run `uv run python etl/relinker.py`, rotate telemetry
+- Then: update `wiki/_index.md`, run `uv run python core/relinker.py`, rotate telemetry
   (summarize the window's aggregate into the report; truncate `logs/retrieval.jsonl`),
   append a one-line run record to the plan doc's `## Review` section, and add a
   `guacamayo/.claude/docs/tooling-ledger.md` row (status `hypothesis`, verification: "next

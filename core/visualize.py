@@ -14,7 +14,7 @@ import streamlit as st
 from st_cytoscape import cytoscape
 
 REPO_ROOT = Path(__file__).parent.parent
-WIKI_DIR = REPO_ROOT / "wiki"
+WIKI_DIR = REPO_ROOT / "data" / "wiki"
 
 DOMAIN_TAGS = [
     "adk",
@@ -138,7 +138,7 @@ def load_wiki_pages() -> list[dict]:
 
 
 def load_manifest() -> dict[str, dict]:
-    manifest_path = REPO_ROOT / "raw" / "manifest.jsonl"
+    manifest_path = REPO_ROOT / "data" / "raw" / "manifest.jsonl"
     if not manifest_path.exists():
         return {}
     entries = {}
@@ -220,7 +220,7 @@ def main() -> None:
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Wiki pages", len(pages))
     col2.metric("Ingested sources", len(manifest))
-    raw_files = list((REPO_ROOT / "raw").rglob("*.md"))
+    raw_files = list((REPO_ROOT / "data" / "raw").rglob("*.md"))
     pending = len([f for f in raw_files if str(f.relative_to(REPO_ROOT)) not in manifest])
     col3.metric("Pending ingest", pending)
     col4.metric("Wikilinks", sum(len(p["wikilinks"]) for p in pages))
@@ -291,9 +291,9 @@ def main() -> None:
 
     with tab_coverage:
         st.subheader("Raw files pending ingest")
-        st.caption("Files in raw/ with no manifest entry. Grouped by directory.")
+        st.caption("Files in data/raw/ with no manifest entry. Grouped by directory.")
 
-        raw_root = REPO_ROOT / "raw"
+        raw_root = REPO_ROOT / "data" / "raw"
         pending_files = [
             f
             for f in sorted(raw_root.rglob("*.md"))

@@ -33,8 +33,8 @@ from app.log_config import configure_logging
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "raw" / "web"
-DEFAULT_BOOKMARKS_FILE = Path(__file__).parent.parent / "raw" / "web" / "bookmarks.txt"
+DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "data" / "raw" / "web"
+DEFAULT_BOOKMARKS_FILE = Path(__file__).parent.parent / "data" / "raw" / "web" / "bookmarks.txt"
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; librarian-kb/1.0)"}
 
