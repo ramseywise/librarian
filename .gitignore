@@ -17,12 +17,8 @@ dist/
 # Obsidian workspace files — local UI state, not shared
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
-wiki/.obsidian/workspace.json
-wiki/.obsidian/workspace-mobile.json
-
-# Large raw inputs — keep PDFs out of git
-raw/pdfs/*.pdf
-raw/pdfs/*.PDF
+data/wiki/.obsidian/workspace.json
+data/wiki/.obsidian/workspace-mobile.json
 
 # DuckDB indexes (rebuild from wiki/)
 *.duckdb
@@ -43,7 +39,7 @@ logs/*.log
 .claude/docs/
 
 # Private wiki pages — company/project-specific content not committed to the public repo
-wiki/private/
+data/wiki/private/
 # Playground skills toolkit copies accidentally nested here — exclude until relocated
 .claude/skills/skills/
 .claude/skills/old/
@@ -57,8 +53,17 @@ node_modules/
 
 # Raw ingest archive — personal/employer source material stays local-only
 raw/
+data/raw/
+# Wiki output — compiled from raw/, large and rebuildable
+data/wiki/
+# Legacy paths (safety net)
+wiki/
 logs/*.jsonl
 
 # Cartographer fact table — rebuildable from raw/sessions + ~/.claude/projects
 data/sessions.db
 logs/*.err
+
+# Cartographer runtime logs (only .gitkeep is tracked)
+tools/cartographer/logs/*
+!tools/cartographer/logs/.gitkeep

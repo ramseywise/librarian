@@ -26,14 +26,14 @@ last-audit: 2026-07-20
   overwrite, or delete an existing raw file. The wiki's provenance chain (every
   page's sources: list) resolves to raw files; mutating one silently invalidates
   every page citing it — a trust failure of the entire KB.
-  Creation is explicitly permitted: etl/ingest_notion.py, etl/ingest_linear.py,
-  etl/ingest_pdf.py, etl/seed_from_playground.py, and the four etl/scrape_*.py
+  Creation is explicitly permitted: core/ingest_notion.py, core/ingest_linear.py,
+  core/ingest_pdf.py, core/seed_from_playground.py, and the four core/scrape_*.py
   scripts all write into raw/ as intended behaviour.
 - evidence: .claude/hooks/raw-immutable.sh (PreToolUse, Write|Edit) blocks
   Edit/Write on an EXISTING raw/ path and permits creation; absolute and ../
   paths are normalised before the check. tests/unit/test_raw_immutable_hook.py
   asserts both halves — mutation blocked, and creation permitted for all nine
-  etl/ ingest target dirs (cured 2026-07-20).
+  core/ ingest target dirs (cured 2026-07-20).
 
 ### wiki/private/ never leaves the machine
 
@@ -68,7 +68,7 @@ last-audit: 2026-07-20
 
 ### Secrets never committed, never logged
 
-- paths: .env, .env.example, etl/, app/, tools/
+- paths: .env, .env.example, core/, app/, tools/
 - contract: API keys (Anthropic, Google, Notion, Linear) live only in .env
   (gitignored); .env.example carries names, never values; and no key value is
   ever passed to a log call, written to a wiki page, or embedded in raw/.
@@ -82,14 +82,14 @@ last-audit: 2026-07-20
   processor is installed before the first log call rather than only where the
   MCP server happens to run: app/mcp_server/server.py:37; app/backend/main.py at
   import (uvicorn imports the ASGI app and calls no main() of ours); the eight
-  structlog-using etl/ scripts (ingest_linear, ingest_notion, ingest_pdf,
+  structlog-using core/ scripts (ingest_linear, ingest_notion, ingest_pdf,
   scrape_bookmarks, scrape_claude_docs, scrape_repos, scrape_sessions,
   seed_from_playground), first statement of each main(); and the tools/ CLIs
   (cartographer, codemap, presenter). tools/presenter/__main__.py previously
   configured structlog itself with no redact_secrets processor — a same-clause
   gap that reads as configured — and now calls the shared configure_logging().
-  Entry points that only print() (etl/relinker.py, etl/lint_raw.py,
-  etl/manifest.py, etl/screenshot.py) bind no logger and are out of scope.
+  Entry points that only print() (core/relinker.py, core/lint_raw.py,
+  core/manifest.py, core/screenshot.py) bind no logger and are out of scope.
   tests/unit/test_log_redaction.py asserts field-name, nested, value-shape, and
   end-to-end rendered-output cases (cured 2026-07-20).
 
@@ -152,8 +152,8 @@ last-audit: 2026-07-20
 
 - paths: raw/repos/repos.txt
 - contract: Which repos get scraped is config, editable without touching
-  etl/scrape_repos.py.
-- evidence: etl/scrape_repos.py#load_repos + --repos-file CLI override
+  core/scrape_repos.py.
+- evidence: core/scrape_repos.py#load_repos + --repos-file CLI override
   (verified 2026-07-20)
 
 ### Model selection and thresholds
@@ -189,7 +189,7 @@ last-audit: 2026-07-20
 - [BN-1] app/backend/main.py:86 — threshold: float = 0.65 is a literal in a
   handler signature; the Bianyi entry requires env/config sourcing (recorded
   2026-07-20)
-- [UN-1] tools/ (presenter, codemap, cartographer) and etl/researcher/ have no
+- [UN-1] tools/ (presenter, codemap, cartographer) and core/researcher/ have no
   contract entries — ~30 modules unassigned. Deliberate for v2: this interview
   scoped to the wiki/KB core. Revisit if tools/ grows a safety surface
   (recorded 2026-07-20)

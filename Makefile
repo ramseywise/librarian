@@ -7,7 +7,7 @@ app-build:
 	docker compose up --build
 
 obsidian:
-	open -a Obsidian $(PWD)/wiki
+	open -a Obsidian $(PWD)/data/wiki
 
 api:
 	cd app && uv run --extra api uvicorn backend.main:app --reload --port 8000

@@ -165,7 +165,7 @@ def _parse_ledger(path: Path) -> list:
         status_cell = m.group(4).strip()
         if date_cell in ("Date", "---") or status_cell in ("Status", "---"):
             continue
-        if "rollup" in status_cell or "batch" in status_cell:
+        if not status_cell or "rollup" in status_cell or "batch" in status_cell:
             continue
         experiments.append(
             Experiment(
