@@ -19,10 +19,12 @@ from tools.cartographer.dashboard import (
     JULY_BOUNDARY,
     RATE_METRICS,
     SAMPLING_FRAME,
+    Experiment,
     Panel,
     Point,
     _panel_body,
     _saturation_warning,
+    _svg_line,
     build_series,
     funnel_counts,
     render_dashboard,
@@ -257,3 +259,87 @@ def test_funnel_counts_absent_header_is_none_not_zero(tmp_path: Path) -> None:
 
     assert funnel.entries_in is None
     assert funnel.entries_since == 0
+
+
+# --- Step 1: dark-mode SVG contrast via CSS variables -------------------------
+
+
+def test_dark_mode_uses_css_variables(two_regime_store: Path) -> None:
+    """SVG strokes must use var(--chart-N), not hardcoded hex colours.
+    The CSS must define --chart-N in both light and dark blocks."""
+    html = render_dashboard(two_regime_store, funnel=None)
+    assert "var(--chart-" in html, "SVG should use CSS variable references"
+    for light_hex in ("#2a78d6", "#e87ba4", "#eda100"):
+        assert f'stroke="{light_hex}"' not in html, (
+            f"hardcoded light palette colour {light_hex} found in SVG stroke"
+        )
+    assert "--chart-1:#3987e5" in html, "dark-mode CSS must define --chart-1"
+    assert "--chart-1:#2a78d6" in html, "light-mode CSS must define --chart-1"
+
+
+# --- Step 3: topic sections with sticky nav -----------------------------------
+
+
+def test_dashboard_has_four_sections(two_regime_store: Path) -> None:
+    html = render_dashboard(two_regime_store, funnel=None)
+    for section_id in ("cost", "context", "friction", "progress"):
+        assert f'id="{section_id}"' in html, f"missing section #{section_id}"
+
+
+def test_dashboard_has_nav(two_regime_store: Path) -> None:
+    html = render_dashboard(two_regime_store, funnel=None)
+    assert "<nav" in html, "sticky nav element missing"
+    for href in ("#cost", "#context", "#friction", "#progress"):
+        assert f'href="{href}"' in html, f"nav link to {href} missing"
+
+
+# --- Step 4: axis labels -----------------------------------------------------
+
+
+def test_svg_has_axis_labels() -> None:
+    """SVG charts should render y-axis min/max and x-axis date labels."""
+    points = [
+        Point(date=f"2026-07-{d:02d}", value=float(v), regime="session-hygiene-v1")
+        for d, v in [(15, 10000), (16, 20000), (17, 15000), (18, 30000)]
+    ]
+    svg = _svg_line(points, "var(--chart-1)", unit="tokens")
+    assert "<text" in svg, "axis labels should render as <text> elements"
+    assert "30k" in svg, "y-axis max should show formatted value"
+    assert "10k" in svg, "y-axis min should show formatted value"
+
+
+# --- Step 5: experiment verdicts panel ----------------------------------------
+
+
+def test_experiment_panel_renders(two_regime_store: Path) -> None:
+    experiments = [
+        Experiment(name="compact-wiki", metric="ratio:foo", status="confirmed", date="2026-07"),
+        Experiment(name="bash-block", metric="count-drop:bar", status="failed", date="2026-07"),
+        Experiment(name="wake-nudge", metric="presence:baz", status="hypothesis", date="2026-07"),
+    ]
+    html = render_dashboard(two_regime_store, funnel=None, experiments=experiments)
+    assert "compact-wiki" in html
+    assert "bash-block" in html
+    assert "exp-confirmed" in html
+    assert "exp-failed" in html
+
+
+def test_experiment_grouping() -> None:
+    """Confirmed sorts before failed before inconclusive."""
+    from tools.cartographer.dashboard import _render_experiments
+
+    experiments = [
+        Experiment(name="z-last", metric="m", status="hypothesis", date="d"),
+        Experiment(name="a-first", metric="m", status="confirmed", date="d"),
+        Experiment(name="m-mid", metric="m", status="failed", date="d"),
+    ]
+    html = _render_experiments(experiments)
+    pos_confirmed = html.index("a-first")
+    pos_failed = html.index("m-mid")
+    pos_hyp = html.index("z-last")
+    assert pos_confirmed < pos_failed < pos_hyp
+
+
+def test_experiment_empty_state(two_regime_store: Path) -> None:
+    html = render_dashboard(two_regime_store, funnel=None, experiments=None)
+    assert "No experiments tracked" in html

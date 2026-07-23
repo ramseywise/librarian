@@ -317,6 +317,16 @@ class Funnel:
     entries_since: int = 0
 
 
+@dataclass(frozen=True)
+class Experiment:
+    """One tooling-ledger experiment row."""
+
+    name: str
+    metric: str
+    status: str
+    date: str
+
+
 _SYNTHESIS = re.compile(r"\*\*Last Synthesis\*\*:\s*(\d{4}-\d{2}-\d{2})(.*)", re.IGNORECASE)
 _SINCE = re.compile(r"\*\*Entries Since\*\*:\s*(\d+)", re.IGNORECASE)
 _ENTRIES_IN = re.compile(r"(\d+)\s+entries", re.IGNORECASE)
@@ -379,16 +389,58 @@ _PALETTE = {
 }
 
 _TIER1 = [
-    ("cost_units_p50", "Cost per session (p50)", "headline - cost units, work sessions only"),
-    ("cost_units_p90", "Cost per session (p90)", "tail sessions"),
-    ("cache_hit_rate", "Cache hit rate", "% of input tokens served from cache"),
-    ("output_tokens_p50", "Output tokens per session (p50)", "volume produced"),
+    (
+        "cost_units_p50",
+        "Cost per session (p50)",
+        "Lower is better. Each unit ≈ the cost of reading 1M input tokens.",
+        "Work sessions only; meta-sessions excluded",
+        "cost",
+    ),
+    (
+        "cost_units_p90",
+        "Cost per session (p90)",
+        "Tail cost — the expensive sessions. Spikes = runaway context or long opus runs.",
+        "",
+        "cost",
+    ),
+    (
+        "cache_hit_rate",
+        "Cache hit rate",
+        "Higher is better. Below 90% means context churn is breaking prompt cache.",
+        "",
+        "pct",
+    ),
+    (
+        "output_tokens_p50",
+        "Output tokens per session (p50)",
+        "Output volume per session. Output is 5× the cost of input.",
+        "",
+        "tokens",
+    ),
 ]
 
 _TIER2 = [
-    ("max_context_p50", "Max context (p50)", "peak context per session"),
-    ("max_context_p90", "Max context (p90)", "tail context pressure"),
-    ("pct_over_150k", "% sessions over 150k context", "the 66% baseline"),
+    (
+        "max_context_p50",
+        "Max context (p50)",
+        "Median peak context. Staying below 150k avoids the 5× cost cliff.",
+        "",
+        "tokens",
+    ),
+    (
+        "max_context_p90",
+        "Max context (p90)",
+        "The worst 10% of sessions. Shows how bad the outliers get.",
+        "",
+        "tokens",
+    ),
+    (
+        "pct_over_150k",
+        "% sessions over 150k context",
+        "Share of sessions hitting the cost cliff. Was 66% in early July, target <30%.",
+        "",
+        "pct",
+    ),
 ]
 
 # Session shape: how work is divided into sessions. Read alongside "Sessions per
@@ -399,12 +451,16 @@ _TIER_SHAPE = [
     (
         "turns_per_session_p50",
         "Human turns per session (p50)",
-        "how far a session gets before it ends",
+        "Turns before a session ends. Low = many cold starts paying context startup.",
+        "",
+        "count",
     ),
     (
         "single_turn_pct",
         "% single-turn sessions",
-        "sessions ending after one prompt - each pays full context startup",
+        "One-and-done sessions. Each pays full context load for one answer.",
+        "",
+        "pct",
     ),
 ]
 
@@ -415,12 +471,16 @@ _TIER3 = [
     (
         "tool_error_rate",
         "Tool error rate",
-        "errors per 100 tool calls - normalised so long sessions are not penalised",
+        "Errors per 100 tool calls. Higher = more friction; check failure attribution.",
+        "Normalised so long sessions are not penalised",
+        "count",
     ),
     (
         "interruptions_p50",
         "User interruptions per session (p50)",
-        "human turns arriving <5s apart - tool results excluded (see parser note)",
+        "Fast follow-up turns — the agent went off-track and was corrected.",
+        "Tool results excluded",
+        "count",
     ),
 ]
 
@@ -430,34 +490,112 @@ _RATES = [
     (
         "compaction_pct",
         "Compaction rate",
-        "diagnostic only - NOT a cross-regime trend (survivorship: see panel frames)",
+        "How often sessions compact. Per-regime only — the pre-July logger makes these incomparable across regimes.",
+        "Survivorship: see panel frames",
+        "pct",
     ),
-    ("sessions_per_week", "Sessions per week", "volume by regime; sampling frame differs"),
+    (
+        "sessions_per_week",
+        "Sessions per week",
+        "Session volume. More sessions could mean more work or the same work restarted.",
+        "Sampling frame differs per regime",
+        "count",
+    ),
 ]
 
 
-def _svg_line(points: list[Point], color: str, width: int = 640, height: int = 160) -> str:
-    """A minimal 2px trend line. Recessive baseline, no gridline clutter."""
+def _fmt_value(value: float, unit: str) -> str:
+    if unit == "pct":
+        return f"{value:.0f}%"
+    if unit == "tokens" and abs(value) >= 1000:
+        return f"{value / 1000:.0f}k"
+    if unit == "cost" and abs(value) >= 1_000_000:
+        return f"{value / 1_000_000:.1f}M"
+    if unit == "cost" and abs(value) >= 1000:
+        return f"{value / 1000:.0f}k"
+    return f"{value:g}"
+
+
+_MONTH_ABBR = [
+    "",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+]
+
+
+def _svg_line(
+    points: list[Point],
+    color: str,
+    width: int = 640,
+    height: int = 160,
+    unit: str = "count",
+) -> str:
+    """A minimal 2px trend line with y-axis labels and x-axis month ticks."""
     if not points:
         return '<p class="empty">no data</p>'
+    pad_left = 48
+    pad_bottom = 18
+    plot_w = width - pad_left
+    plot_h = height - pad_bottom
     values = [p.value for p in points]
     lo, hi = min(values), max(values)
     span = (hi - lo) or 1.0
-    step = width / max(len(points) - 1, 1)
-    coords = " ".join(
-        f"{i * step:.1f},{height - ((p.value - lo) / span) * (height - 20) - 10:.1f}"
-        for i, p in enumerate(points)
-    )
+    step = plot_w / max(len(points) - 1, 1)
+
+    def _x(i: int) -> float:
+        return pad_left + i * step
+
+    def _y(v: float) -> float:
+        return plot_h - ((v - lo) / span) * (plot_h - 20) - 10
+
+    coords = " ".join(f"{_x(i):.1f},{_y(p.value):.1f}" for i, p in enumerate(points))
     dots = "".join(
-        f'<circle cx="{i * step:.1f}" '
-        f'cy="{height - ((p.value - lo) / span) * (height - 20) - 10:.1f}" r="4" '
+        f'<circle cx="{_x(i):.1f}" cy="{_y(p.value):.1f}" r="4" '
         f'fill="{color}"><title>{html.escape(p.date)}: {p.value:g} (n={p.n})</title></circle>'
         for i, p in enumerate(points)
     )
+
+    y_labels = (
+        f'<text x="{pad_left - 4}" y="{_y(hi):.1f}" text-anchor="end" '
+        f'dominant-baseline="middle" class="axis-label">{html.escape(_fmt_value(hi, unit))}</text>'
+        f'<text x="{pad_left - 4}" y="{_y(lo):.1f}" text-anchor="end" '
+        f'dominant-baseline="middle" class="axis-label">{html.escape(_fmt_value(lo, unit))}</text>'
+    )
+
+    x_labels = ""
+    if len(points) > 14:
+        seen_months: set[str] = set()
+        for i, p in enumerate(points):
+            month_str = p.date[:7]
+            if month_str not in seen_months:
+                seen_months.add(month_str)
+                month_num = int(p.date[5:7])
+                x_labels += (
+                    f'<text x="{_x(i):.1f}" y="{height - 2}" text-anchor="middle" '
+                    f'class="axis-label">{_MONTH_ABBR[month_num]}</text>'
+                )
+    else:
+        x_labels = (
+            f'<text x="{_x(0):.1f}" y="{height - 2}" text-anchor="start" '
+            f'class="axis-label">{html.escape(points[0].date[5:])}</text>'
+            f'<text x="{_x(len(points) - 1):.1f}" y="{height - 2}" text-anchor="end" '
+            f'class="axis-label">{html.escape(points[-1].date[5:])}</text>'
+        )
+
     return (
         f'<svg viewBox="0 0 {width} {height}" role="img" preserveAspectRatio="none">'
         f'<polyline points="{coords}" fill="none" stroke="{color}" stroke-width="2" '
-        f'stroke-linejoin="round" stroke-linecap="round"/>{dots}</svg>'
+        f'stroke-linejoin="round" stroke-linecap="round"/>{dots}{y_labels}{x_labels}</svg>'
     )
 
 
@@ -511,7 +649,7 @@ def _saturation_warning(panel: Panel) -> str:
     return ""
 
 
-def _panel_body(panel: Panel, color: str, span: int, widest: int) -> str:
+def _panel_body(panel: Panel, color: str, span: int, widest: int, unit: str = "count") -> str:
     """A line when there is enough to plot, otherwise the values as text."""
     if len(panel.points) < _MIN_LINE_POINTS:
         values = ", ".join(f"{p.value:.0f}" for p in panel.points)
@@ -522,18 +660,28 @@ def _panel_body(panel: Panel, color: str, span: int, widest: int) -> str:
             f"too few points to plot)</span></p>"
         )
     width = max(140, round(300 * span / widest))
-    return _svg_line(panel.points, color, width=width)
+    return _svg_line(panel.points, color, width=width, unit=unit)
 
 
-def _render_series(series: Series, color: str, title: str, note: str) -> str:
+def _render_series(
+    series: Series,
+    color: str,
+    title: str,
+    note: str,
+    provenance: str = "",
+    unit: str = "count",
+) -> str:
     """Faceted panels for rate metrics; one banded line for properties."""
-    header = f"<h3>{html.escape(title)}</h3><p class='note'>{html.escape(note)}</p>"
+    prov = ""
+    if provenance:
+        prov = (
+            f'<details class="provenance"><summary>Technical note</summary>'
+            f"<p>{html.escape(provenance)}</p></details>"
+        )
+    header = f"<h3>{html.escape(title)}</h3><p class='note'>{html.escape(note)}</p>{prov}"
 
     if series.faceted:
         drawn = [p for p in series.panels if p.points]
-        # Width tracks each regime's span in days, so a 3-day regime does not get
-        # the same axis width as an 8-week one — equal-width panels made the July
-        # regimes look comparable in duration to pre-hygiene, which they are not.
         spans = {p.regime: max(_span_days(p.points), 1) for p in drawn}
         widest = max(spans.values(), default=1)
         panels = "".join(
@@ -541,7 +689,7 @@ def _render_series(series: Series, color: str, title: str, note: str) -> str:
             f"<h4>{html.escape(panel.regime)}</h4>"
             f'<p class="frame">{html.escape(panel.sampling_frame)}</p>'
             f"{_saturation_warning(panel)}"
-            f"{_panel_body(panel, color, spans[panel.regime], widest)}"
+            f"{_panel_body(panel, color, spans[panel.regime], widest, unit)}"
             f'<p class="range">{html.escape(panel.points[0].date)} - '
             f"{html.escape(panel.points[-1].date)}</p></div>"
             for panel in drawn
@@ -564,7 +712,7 @@ def _render_series(series: Series, color: str, title: str, note: str) -> str:
     )
     return (
         f'<section class="chart">{header}'
-        f"{_svg_line(series.points, color)}"
+        f"{_svg_line(series.points, color, unit=unit)}"
         f'<p class="range">{html.escape(series.points[0].date)} - '
         f"{html.escape(series.points[-1].date)}</p>"
         f'<ul class="bands">{bands}</ul>'
@@ -674,19 +822,68 @@ def _render_funnel(funnel: Funnel | None) -> str:
     )
 
 
+_STATUS_ORDER = {
+    "confirmed": 0,
+    "verified": 0,
+    "failed": 1,
+    "trending": 2,
+    "hypothesis": 3,
+    "inconclusive": 4,
+}
+_STATUS_CLASS = {"confirmed": "exp-confirmed", "verified": "exp-confirmed", "failed": "exp-failed"}
+
+
+def _render_experiments(experiments: list[Experiment] | None) -> str:
+    if not experiments:
+        return (
+            '<section class="chart"><h3>Experiments</h3>'
+            '<p class="note">No experiments tracked. Add hypothesis rows to the '
+            "tooling ledger.</p></section>"
+        )
+    grouped = sorted(experiments, key=lambda e: (_STATUS_ORDER.get(e.status.split()[0], 9), e.name))
+    rows = "".join(
+        f"<tr><td>{html.escape(e.name)}</td><td>{html.escape(e.metric)}</td>"
+        f'<td><span class="exp-badge {_STATUS_CLASS.get(e.status.split()[0], "exp-other")}">'
+        f"{html.escape(e.status)}</span></td>"
+        f"<td>{html.escape(e.date)}</td></tr>"
+        for e in grouped
+    )
+    confirmed = sum(1 for e in experiments if e.status.split()[0] in ("confirmed", "verified"))
+    failed = sum(1 for e in experiments if e.status.split()[0] == "failed")
+    pending = len(experiments) - confirmed - failed
+    return (
+        f'<section class="chart"><h3>Experiments</h3>'
+        f'<p class="note">{confirmed} confirmed, {failed} failed, {pending} pending.</p>'
+        f'<div class="table-view"><table>'
+        f"<thead><tr><th>Change</th><th>Metric</th><th>Status</th><th>Date</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table></div></section>"
+    )
+
+
 _CSS = """
 .viz-root{color-scheme:light;--surface-1:#fcfcfb;--page:#f9f9f7;--text-primary:#0b0b0b;
 --text-secondary:#52514e;--muted:#898781;--baseline:#c3c2b7;--border:rgba(11,11,11,.10);
 --warn:#9a5b00;
+--chart-1:#2a78d6;--chart-2:#008300;--chart-3:#e87ba4;--chart-4:#eda100;
 font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--page);
 color:var(--text-primary);padding:24px;}
 @media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .viz-root{
 color-scheme:dark;--surface-1:#1a1a19;--page:#0d0d0d;--text-primary:#fff;
 --text-secondary:#c3c2b7;--muted:#898781;--baseline:#383835;--border:rgba(255,255,255,.10);
---warn:#f0a94c;}}
+--warn:#f0a94c;
+--chart-1:#3987e5;--chart-2:#008300;--chart-3:#d55181;--chart-4:#c98500;}}
 :root[data-theme="dark"] .viz-root{color-scheme:dark;--surface-1:#1a1a19;--page:#0d0d0d;
 --text-primary:#fff;--text-secondary:#c3c2b7;--baseline:#383835;--border:rgba(255,255,255,.10);
---warn:#f0a94c;}
+--warn:#f0a94c;
+--chart-1:#3987e5;--chart-2:#008300;--chart-3:#d55181;--chart-4:#c98500;}
+.dash-nav{position:sticky;top:0;z-index:10;background:var(--page);display:flex;gap:8px;
+padding:8px 0 12px;border-bottom:1px solid var(--border);margin-bottom:16px;flex-wrap:wrap;}
+.dash-nav a{font-size:13px;padding:4px 12px;border-radius:16px;text-decoration:none;
+color:var(--text-secondary);background:var(--surface-1);border:1px solid var(--border);
+transition:background .15s,color .15s;}
+.dash-nav a:hover{color:var(--text-primary);background:var(--baseline);}
+.viz-root section{scroll-margin-top:48px;}
+.viz-root section>h2{font-size:17px;margin:24px 0 4px;border-left:3px solid var(--baseline);padding-left:12px;}
 .viz-root h1{font-size:20px;margin:0 0 4px;}
 .viz-root .sub{color:var(--text-secondary);margin:0 0 24px;font-size:13px;}
 .chart{background:var(--surface-1);border:1px solid var(--border);border-radius:8px;
@@ -704,6 +901,7 @@ padding:16px;margin-bottom:16px;overflow-x:auto;}
 .sparse{margin:12px 0;font-size:20px;}
 .sparse-label{font-size:12px;color:var(--text-secondary);font-weight:400;}
 svg{width:100%;height:160px;display:block;}
+.axis-label{font-size:10px;fill:var(--text-secondary);font-family:system-ui,sans-serif;}
 .bands{list-style:none;padding:0;margin:8px 0 0;font-size:12px;color:var(--text-secondary);
 display:flex;gap:16px;flex-wrap:wrap;}
 .tiles{display:flex;gap:24px;flex-wrap:wrap;}
@@ -712,6 +910,13 @@ display:flex;gap:16px;flex-wrap:wrap;}
 .tile .label{font-size:12px;color:var(--text-secondary);}
 .boundary{border-left:3px solid var(--baseline);padding-left:12px;margin:24px 0 12px;}
 .empty{color:var(--muted);font-size:12px;}
+.exp-badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.exp-confirmed{background:rgba(0,131,0,.15);color:#008300;}
+.exp-failed{background:rgba(220,50,50,.12);color:#c03030;}
+.exp-other{background:var(--border);color:var(--text-secondary);}
+.provenance{font-size:11px;color:var(--muted);margin:0 0 6px;}
+.provenance summary{cursor:pointer;}
+.provenance p{margin:4px 0 0;}
 .table-view{margin-top:12px;font-size:12px;color:var(--text-secondary);}
 .table-view summary{cursor:pointer;color:var(--text-secondary);}
 .table-view table{border-collapse:collapse;margin-top:8px;font-variant-numeric:tabular-nums;}
@@ -951,67 +1156,94 @@ def _render_coverage() -> str:
     )
 
 
-def render_dashboard(store: Path, funnel: Funnel | None = None) -> str:
+def render_dashboard(
+    store: Path,
+    funnel: Funnel | None = None,
+    experiments: list[Experiment] | None = None,
+) -> str:
     """Render the full dashboard to a self-contained HTML string."""
+
+    def _chart_var(i: int) -> str:
+        return f"var(--chart-{(i % 4) + 1})"
+
     tier1 = "".join(
-        _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
-        for i, (metric, title, note) in enumerate(_TIER1)
+        _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
+        for i, (metric, title, note, prov, unit) in enumerate(_TIER1)
     )
     tier2 = "".join(
-        _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
-        for i, (metric, title, note) in enumerate(_TIER2)
+        _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
+        for i, (metric, title, note, prov, unit) in enumerate(_TIER2)
     )
     shape = "".join(
-        _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
-        for i, (metric, title, note) in enumerate(_TIER_SHAPE)
+        _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
+        for i, (metric, title, note, prov, unit) in enumerate(_TIER_SHAPE)
     )
     tier3 = "".join(
-        _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
-        for i, (metric, title, note) in enumerate(_TIER3)
+        _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
+        for i, (metric, title, note, prov, unit) in enumerate(_TIER3)
     )
     rates = "".join(
-        _render_series(build_series(metric, store), _PALETTE["light"][i % 4], title, note)
-        for i, (metric, title, note) in enumerate(_RATES)
+        _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
+        for i, (metric, title, note, prov, unit) in enumerate(_RATES)
     )
+    nav = (
+        '<nav class="dash-nav">'
+        '<a href="#cost">Cost &amp; Efficiency</a>'
+        '<a href="#context">Context Health</a>'
+        '<a href="#friction">Friction &amp; Quality</a>'
+        '<a href="#progress">Experiments &amp; Progress</a>'
+        "</nav>"
+    )
+
+    sec_cost = (
+        f'<section id="cost"><h2>Cost &amp; Efficiency</h2>'
+        f'<p class="sub">Am I spending well?</p>'
+        f"{tier1}</section>"
+    )
+
+    sec_context = (
+        f'<section id="context"><h2>Context Health</h2>'
+        f'<p class="sub">Is context under control? Telemetry begins {JULY_BOUNDARY} '
+        f"— these metrics have no pre-boundary data.</p>"
+        f"{tier2}{rates}{shape}</section>"
+    )
+
+    sec_friction = (
+        f'<section id="friction"><h2>Friction &amp; Quality</h2>'
+        f'<p class="sub">Where does work break? Stored from {FRICTION_STORED}, '
+        f"backfilled to {JULY_BOUNDARY}.</p>"
+        f"{tier3}{_render_subagents(store)}</section>"
+    )
+
+    sec_progress = (
+        f'<section id="progress"><h2>Experiments &amp; Progress</h2>'
+        f'<p class="sub">Are my changes working?</p>'
+        f"{_render_experiments(experiments)}"
+        f"{_render_funnel(funnel)}"
+        f"{_render_repo_activity(store)}"
+        f"{_render_repo_economics(store)}"
+        f"{_render_coverage()}</section>"
+    )
+
     return (
         f"<style>{_CSS}</style>"
         f'<div class="viz-root"><h1>Context engineering dashboard</h1>'
         f'<p class="sub">Work sessions only, faceted by instrumentation regime. '
         f"Rates are never pooled across regimes.</p>"
-        f"{tier1}"
-        f'<div class="boundary"><h2>July-forward telemetry</h2>'
-        f'<p class="sub">telemetry begins {JULY_BOUNDARY} - these metrics have no '
-        f"pre-boundary data and are not imputed backwards.</p></div>"
-        f"{tier2}"
-        f'<div class="boundary"><h2>Population rates - per-regime only</h2>'
-        f'<p class="sub">These measure the logger as much as the workflow: in the '
-        f"pre-hygiene regime a note existed only when a session compacted. Faceted "
-        f"per regime, never joined into one line.</p></div>"
-        f"{rates}"
-        f'<div class="boundary"><h2>Session shape</h2>'
-        f'<p class="sub">Sessions per week counts volume; these say whether that '
-        f"volume is more work or the same work restarted. A session that ends after "
-        f"one prompt paid full context startup for one answer.</p></div>"
-        f"{shape}"
-        f'<div class="boundary"><h2>Friction</h2>'
-        f'<p class="sub">Stored from {FRICTION_STORED} and backfilled to '
-        f"{JULY_BOUNDARY} by re-parsing retained transcripts. The parser extracted "
-        f"these all along; only the stored projection changed, so this is a schema "
-        f"change and not a new instrumentation regime.</p></div>"
-        f"{tier3}"
-        f"{_render_subagents(store)}"
-        f"{_render_funnel(funnel)}"
-        f"{_render_repo_activity(store)}"
-        f"{_render_repo_economics(store)}"
-        f"{_render_coverage()}"
+        f"{nav}{sec_cost}{sec_context}{sec_friction}{sec_progress}"
         f"</div>"
     )
 
 
-def write_dashboard(store: Path, out: Path, growth_md: Path | None = None) -> Path:
+def write_dashboard(
+    store: Path,
+    out: Path,
+    growth_md: Path | None = None,
+    experiments: list[Experiment] | None = None,
+) -> Path:
     """Render and write the dashboard, returning the output path."""
     funnel = funnel_counts(growth_md) if growth_md else None
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render_dashboard(store, funnel), encoding="utf-8")
+    out.write_text(render_dashboard(store, funnel, experiments), encoding="utf-8")
     log.info("dashboard.written", out=str(out), store=str(store))
     return out

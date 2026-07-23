@@ -12,6 +12,7 @@ Usage:
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 from app.log_config import configure_logging
 
@@ -144,6 +145,39 @@ def _run_enrich() -> None:
     run_enrich(scan_dirs)
 
 
+def _parse_ledger(path: Path) -> list:
+    """Parse tooling-ledger.md into Experiment objects."""
+    import re
+
+    from tools.cartographer.dashboard import Experiment
+
+    if not path.exists():
+        return []
+    experiments = []
+    row_re = re.compile(r"^\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]*)\s*\|\s*([^|]+)\s*\|")
+    for line in path.read_text(encoding="utf-8").splitlines():
+        m = row_re.match(line)
+        if not m:
+            continue
+        date_cell = m.group(1).strip()
+        change_cell = m.group(2).strip()
+        metric_cell = m.group(3).strip()
+        status_cell = m.group(4).strip()
+        if date_cell in ("Date", "---") or status_cell in ("Status", "---"):
+            continue
+        if "rollup" in status_cell or "batch" in status_cell:
+            continue
+        experiments.append(
+            Experiment(
+                name=change_cell,
+                metric=metric_cell or "—",
+                status=status_cell,
+                date=date_cell,
+            )
+        )
+    return experiments
+
+
 def _run_facts() -> None:
     """Refresh the session fact table and re-render the dashboard.
 
@@ -176,6 +210,11 @@ def _run_facts() -> None:
     p.add_argument("--no-dashboard", action="store_true", help="Refresh facts only")
     p.add_argument("--workspace", default="~/workspace", help="Root scanned for git repos")
     p.add_argument("--no-git", action="store_true", help="Skip repo-activity collection")
+    p.add_argument(
+        "--ledger",
+        default=str(Path("~/workspace/guacamayo/.claude/docs/tooling-ledger.md").expanduser()),
+        help="Tooling ledger for experiment tracking",
+    )
     args = p.parse_args()
 
     store = Path(args.store).expanduser()
@@ -192,10 +231,13 @@ def _run_facts() -> None:
 
     if not args.no_dashboard:
         growth_md = Path(args.growth_md).expanduser()
+        ledger_path = Path(args.ledger).expanduser()
+        experiments = _parse_ledger(ledger_path) if ledger_path.exists() else None
         out = write_dashboard(
             store,
             Path(args.dashboard).expanduser(),
             growth_md=growth_md if growth_md.exists() else None,
+            experiments=experiments or None,
         )
         print(f"Dashboard: {out}")
 
