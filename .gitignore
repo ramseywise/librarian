@@ -63,3 +63,7 @@ logs/*.jsonl
 # Cartographer fact table — rebuildable from raw/sessions + ~/.claude/projects
 data/sessions.db
 logs/*.err
+
+# Cartographer runtime logs (only .gitkeep is tracked)
+tools/cartographer/logs/*
+!tools/cartographer/logs/.gitkeep

@@ -381,13 +381,6 @@ def funnel_counts(growth_md: Path) -> Funnel:
 # Rendering
 # ---------------------------------------------------------------------------
 
-# Categorical slots 1-4 from the dataviz reference palette. Only the first four
-# are used: they are the set that validates on the all-pairs list in both modes.
-_PALETTE = {
-    "light": ["#2a78d6", "#008300", "#e87ba4", "#eda100"],
-    "dark": ["#3987e5", "#008300", "#d55181", "#c98500"],
-}
-
 _TIER1 = [
     (
         "cost_units_p50",
@@ -833,6 +826,11 @@ _STATUS_ORDER = {
 _STATUS_CLASS = {"confirmed": "exp-confirmed", "verified": "exp-confirmed", "failed": "exp-failed"}
 
 
+def _status_key(status: str) -> str:
+    parts = status.split()
+    return parts[0] if parts else ""
+
+
 def _render_experiments(experiments: list[Experiment] | None) -> str:
     if not experiments:
         return (
@@ -840,16 +838,18 @@ def _render_experiments(experiments: list[Experiment] | None) -> str:
             '<p class="note">No experiments tracked. Add hypothesis rows to the '
             "tooling ledger.</p></section>"
         )
-    grouped = sorted(experiments, key=lambda e: (_STATUS_ORDER.get(e.status.split()[0], 9), e.name))
+    grouped = sorted(
+        experiments, key=lambda e: (_STATUS_ORDER.get(_status_key(e.status), 9), e.name)
+    )
     rows = "".join(
         f"<tr><td>{html.escape(e.name)}</td><td>{html.escape(e.metric)}</td>"
-        f'<td><span class="exp-badge {_STATUS_CLASS.get(e.status.split()[0], "exp-other")}">'
+        f'<td><span class="exp-badge {_STATUS_CLASS.get(_status_key(e.status), "exp-other")}">'
         f"{html.escape(e.status)}</span></td>"
         f"<td>{html.escape(e.date)}</td></tr>"
         for e in grouped
     )
-    confirmed = sum(1 for e in experiments if e.status.split()[0] in ("confirmed", "verified"))
-    failed = sum(1 for e in experiments if e.status.split()[0] == "failed")
+    confirmed = sum(1 for e in experiments if _status_key(e.status) in ("confirmed", "verified"))
+    failed = sum(1 for e in experiments if _status_key(e.status) == "failed")
     pending = len(experiments) - confirmed - failed
     return (
         f'<section class="chart"><h3>Experiments</h3>'
