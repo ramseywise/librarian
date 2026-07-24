@@ -1,3 +1,5 @@
+include ~/.claude/Makefile.common
+
 .PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter
 
 app:
@@ -97,7 +99,3 @@ help:
 	@echo "ingest           — /ingest (no args) = full pipeline in Claude Code; /ingest raw/path/ = targeted"
 	@echo "lint-raw         — validate raw/ filenames match YYYY-MM-DD-slug convention"
 	@echo "lint             — reminder: use /lint in Claude Code"
-
-.PHONY: precommit
-precommit:  ## run all pre-commit hooks (ruff, format, gitleaks, eslint where wired) on all files
-	pre-commit run --all-files
