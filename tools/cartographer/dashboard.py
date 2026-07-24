@@ -59,6 +59,8 @@ JULY_ONLY_METRICS = {
     "interruptions_p50",
     "turns_per_session_p50",
     "single_turn_pct",
+    "execution_skill_compliance_pct",
+    "friction_labels_total",
 }
 
 # What each regime's corpus actually sampled. Rendered on every rate panel so a
@@ -204,6 +206,14 @@ def _metric_value(metric: str, bucket: list[dict[str, Any]]) -> float | None:
         if not values:
             return None
         return _percentile(values, 50)
+    if metric == "execution_skill_compliance_pct":
+        exec_rows = [r for r in bucket if r.get("session_intent") == "execution"]
+        if not exec_rows:
+            return None
+        with_skills = sum(1 for r in exec_rows if len(json.loads(r.get("skill_costs") or "{}")) > 0)
+        return round(100 * with_skills / len(exec_rows), 2)
+    if metric == "friction_labels_total":
+        return sum(int(r.get("friction_label_count") or 0) for r in bucket)
     raise ValueError(f"unknown metric: {metric}")
 
 
@@ -475,6 +485,21 @@ _TIER3 = [
         "Tool results excluded",
         "count",
     ),
+    (
+        "execution_skill_compliance_pct",
+        "Execution sessions with skills (%)",
+        "Sessions classified as execution-intent that invoke ≥1 skill. "
+        "Low = sessions doing work without skill guardrails.",
+        "Heuristic: intent classifier is v1",
+        "pct",
+    ),
+    (
+        "friction_labels_total",
+        "Explicit friction labels",
+        "Count of FRICTION: labels in user messages. Direct user-reported friction.",
+        "User-authored signal",
+        "count",
+    ),
 ]
 
 # Population rates: within-regime diagnostics only. Rendered faceted, never as a
@@ -715,29 +740,39 @@ def _render_series(
 
 def _subagent_totals(
     store: Path,
-) -> tuple[dict[str, dict[str, float]], dict[str, dict[str, float]]]:
-    """Sum the stored per-parent subagent breakdowns into (by_agent, by_model).
+) -> tuple[dict[str, dict[str, float]], dict[str, dict[str, float]], dict[str, int]]:
+    """Sum the stored per-parent subagent breakdowns into (by_agent, by_model, spawn_counts).
 
     Work sessions only, matching every other panel. Rows with a NULL column are
     parents that spawned no subagent — skipped, not counted as zero.
+    spawn_counts aggregates agent type counts from parent Agent tool calls.
     """
     by_agent: dict[str, dict[str, float]] = {}
     by_model: dict[str, dict[str, float]] = {}
+    spawn_counts: dict[str, int] = {}
     for row in _work_sessions(read_all(store)):
         raw = row.get("subagent_costs")
-        if not raw:
-            continue
-        try:
-            payload = json.loads(raw)
-        except (TypeError, json.JSONDecodeError):
-            continue
-        for group, target in (("by_agent", by_agent), ("by_model", by_model)):
-            for name, stats in (payload.get(group) or {}).items():
-                slot = target.setdefault(name, {"cost": 0.0, "output_tokens": 0.0, "n": 0.0})
-                slot["cost"] += stats.get("cost", 0.0)
-                slot["output_tokens"] += stats.get("output_tokens", 0)
-                slot["n"] += stats.get("n", 0)
-    return by_agent, by_model
+        if raw:
+            try:
+                payload = json.loads(raw)
+            except (TypeError, json.JSONDecodeError):
+                payload = {}
+            for group, target in (("by_agent", by_agent), ("by_model", by_model)):
+                for name, stats in (payload.get(group) or {}).items():
+                    slot = target.setdefault(name, {"cost": 0.0, "output_tokens": 0.0, "n": 0.0})
+                    slot["cost"] += stats.get("cost", 0.0)
+                    slot["output_tokens"] += stats.get("output_tokens", 0)
+                    slot["n"] += stats.get("n", 0)
+        raw_spawns = row.get("agent_spawns")
+        if raw_spawns:
+            try:
+                spawns = json.loads(raw_spawns)
+            except (TypeError, json.JSONDecodeError):
+                spawns = []
+            for spawn in spawns:
+                agent_type = spawn.get("type", "general-purpose")
+                spawn_counts[agent_type] = spawn_counts.get(agent_type, 0) + 1
+    return by_agent, by_model, spawn_counts
 
 
 def _share_rows(totals: dict[str, dict[str, float]], label: str) -> str:
@@ -758,6 +793,23 @@ def _share_rows(totals: dict[str, dict[str, float]], label: str) -> str:
     )
 
 
+def _spawn_table(spawn_counts: dict[str, int]) -> str:
+    """Spawned agents by type — from parent Agent tool calls."""
+    if not spawn_counts:
+        return ""
+    total = sum(spawn_counts.values()) or 1
+    rows = "".join(
+        f"<tr><td>{html.escape(name)}</td><td>{count}</td><td>{count / total * 100:.0f}%</td></tr>"
+        for name, count in sorted(spawn_counts.items(), key=lambda kv: -kv[1])
+    )
+    return (
+        f"<h4>Spawned agents by type</h4>"
+        f'<p class="note">From parent sessions\' Agent tool calls.</p>'
+        f"<table><thead><tr><th>agent type</th><th>spawns</th>"
+        f"<th>share</th></tr></thead><tbody>{rows}</tbody></table>"
+    )
+
+
 def _render_subagents(store: Path) -> str:
     """Subagent spend split by agent type and by model.
 
@@ -766,7 +818,7 @@ def _render_subagents(store: Path) -> str:
     time series would show attribution coverage arriving rather than any change
     in how subagents are used.
     """
-    by_agent, by_model = _subagent_totals(store)
+    by_agent, by_model, spawn_counts = _subagent_totals(store)
     unattributed = by_agent.get(UNATTRIBUTED_AGENT, {}).get("cost", 0.0)
     grand = sum(s["cost"] for s in by_agent.values())
     caveat = ""
@@ -777,11 +829,20 @@ def _render_subagents(store: Path) -> str:
             f"Per-agent shares below are shares of all subagent spend, so the named "
             f"rows understate each agent's true share of attributable work.</p>"
         )
+    total_spawns = sum(spawn_counts.values())
+    attributed_n = sum(s["n"] for s in by_agent.values())
+    coverage_caveat = ""
+    if total_spawns and attributed_n and total_spawns > attributed_n * 1.5:
+        coverage_caveat = (
+            f'<p class="saturated">⚠ {total_spawns} agents spawned but only '
+            f"{attributed_n:.0f} cost-attributed — coverage gap.</p>"
+        )
     return (
         f'<section class="chart"><h3>Subagent attribution</h3>'
         f'<p class="note">Cost and tokens of subagent transcripts, charged to the '
         f"parent session that spawned them. Work sessions only.</p>"
-        f"{caveat}"
+        f"{caveat}{coverage_caveat}"
+        f'<div class="table-view">{_spawn_table(spawn_counts)}</div>'
         f'<div class="table-view">{_share_rows(by_agent, "agent")}</div>'
         f'<div class="table-view">{_share_rows(by_model, "model")}</div></section>'
     )
