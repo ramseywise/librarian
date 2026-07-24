@@ -30,6 +30,7 @@ from tools.cartographer.parser import (
     _split_sections,
     iter_sessions,
     iter_subagent_sessions,
+    parse_session,
 )
 
 log = structlog.get_logger(__name__)
@@ -86,6 +87,12 @@ NULLABLE_COLUMNS: dict[str, type] = {
     # of transcripts. Backfills from retained JSONL, same apparatus, no new regime.
     # {} means the session never left the root (genuinely repo-less, not missing).
     "session_repos": str,
+    # Usage observability (2026-07-24). Three new signals extracted from parent
+    # sessions: friction labels (user-reported), session intent (heuristic),
+    # and agent spawns (from Agent tool_use blocks). Backfills to July boundary.
+    "friction_label_count": int,
+    "session_intent": str,  # "scoping" | "execution" | "meta" | "unknown"
+    "agent_spawns": str,  # JSON list of {type, description, model}
 }
 
 # `attributionAgent` (the subagent-type name) is emitted only by CLI 2.1.201+.
@@ -141,6 +148,31 @@ def regime_for(date: str) -> str:
 
 # Config/tooling targets: a file under one of these is meta-work, not product work.
 _META_FILE_PATTERN = re.compile(r"(/\.claude/|/\.vscode/|/dotfiles/|/\.github/)", re.IGNORECASE)
+
+
+def _classify_intent(session: dict[str, Any]) -> str:
+    """Heuristic session intent: what the session was *doing*.
+
+    Returns "execution", "scoping", or "unknown". "meta" is handled by
+    _classify_meta and takes precedence in from_jsonl.
+    """
+    skills = session.get("skill_invocations") or []
+    files_modified = session.get("files_modified", 0) or 0
+    human_turns = session.get("user_message_count", 0) or 0
+    read_edit_ratio = session.get("read_edit_ratio")
+
+    if skills or (files_modified >= 1 and human_turns >= 3):
+        return "execution"
+
+    if (
+        human_turns >= 2
+        and not skills
+        and files_modified <= 1
+        and (read_edit_ratio is None or read_edit_ratio > 3)
+    ):
+        return "scoping"
+
+    return "unknown"
 
 
 def _classify_meta(row: dict[str, Any]) -> bool:
@@ -386,27 +418,58 @@ def _subagent_costs_by_parent(projects_dir: Path) -> dict[str, dict[str, Any]]:
     turns of its own, so storing it as a standalone session would inflate session
     counts and halve per-session medians. Each parent gets one nested breakdown,
     by subagent-type name and by model.
+
+    For pre-2.1.201 transcripts lacking ``attribution_agent``, a best-effort
+    enrichment matches unattributed children to the parent's ``agent_spawns``
+    by spawn order when the counts match exactly.
     """
-    by_parent: dict[str, dict[str, dict[str, Any]]] = {}
+    children_by_parent: dict[str, list[dict[str, Any]]] = {}
     for sub in iter_subagent_sessions(projects_dir):
         parent = sub.get("parent_session_id")
         if not parent:
             continue
-        buckets = by_parent.setdefault(parent, {"by_agent": {}, "by_model": {}})
+        children_by_parent.setdefault(parent, []).append(sub)
 
-        agent = sub.get("attribution_agent") or UNATTRIBUTED_AGENT
-        entry = buckets["by_agent"].setdefault(agent, {"cost": 0.0, "output_tokens": 0, "n": 0})
-        entry["cost"] += sub.get("cost_units", 0.0)
-        entry["output_tokens"] += sub.get("output_tokens", 0)
-        entry["n"] += 1
+    parent_spawns: dict[str, list[dict[str, str | None]]] = {}
+    for parent_id, children in children_by_parent.items():
+        has_unattributed = any(not c.get("attribution_agent") for c in children)
+        if not has_unattributed:
+            continue
+        for project_dir in projects_dir.iterdir():
+            if not project_dir.is_dir():
+                continue
+            parent_jsonl = project_dir / f"{parent_id}.jsonl"
+            if parent_jsonl.exists():
+                parent_session = parse_session(parent_jsonl)
+                if parent_session:
+                    parent_spawns[parent_id] = parent_session.get("agent_spawns", [])
+                break
 
-        # Per-model split is available for every transcript, including the
-        # pre-2.1.201 ones that have no agent name.
-        for model, cost in (sub.get("model_costs") or {}).items():
-            slot = buckets["by_model"].setdefault(model, {"cost": 0.0, "output_tokens": 0, "n": 0})
-            slot["cost"] += cost
-            slot["output_tokens"] += (sub.get("model_output_tokens") or {}).get(model, 0)
-            slot["n"] += 1
+    for parent_id, children in children_by_parent.items():
+        spawns = parent_spawns.get(parent_id, [])
+        unattributed = [c for c in children if not c.get("attribution_agent")]
+        if spawns and len(unattributed) == len(spawns):
+            unattributed.sort(key=lambda c: c.get("start_time", ""))
+            for child, spawn in zip(unattributed, spawns, strict=False):
+                child["attribution_agent"] = spawn.get("type") or "general-purpose"
+
+    by_parent: dict[str, dict[str, dict[str, Any]]] = {}
+    for parent_id, children in children_by_parent.items():
+        buckets = by_parent.setdefault(parent_id, {"by_agent": {}, "by_model": {}})
+        for sub in children:
+            agent = sub.get("attribution_agent") or UNATTRIBUTED_AGENT
+            entry = buckets["by_agent"].setdefault(agent, {"cost": 0.0, "output_tokens": 0, "n": 0})
+            entry["cost"] += sub.get("cost_units", 0.0)
+            entry["output_tokens"] += sub.get("output_tokens", 0)
+            entry["n"] += 1
+
+            for model, cost in (sub.get("model_costs") or {}).items():
+                slot = buckets["by_model"].setdefault(
+                    model, {"cost": 0.0, "output_tokens": 0, "n": 0}
+                )
+                slot["cost"] += cost
+                slot["output_tokens"] += (sub.get("model_output_tokens") or {}).get(model, 0)
+                slot["n"] += 1
 
     for buckets in by_parent.values():
         for group in buckets.values():
@@ -430,6 +493,12 @@ def from_jsonl(projects_dir: Path) -> list[dict[str, Any]]:
         row = _to_fact_from_jsonl(session, str(projects_dir))
         costs = sub_costs.get(session["session_id"])
         row["subagent_costs"] = json.dumps(costs) if costs else None
+        flc = session.get("friction_label_count", 0)
+        row["friction_label_count"] = flc if flc else None
+        intent = _classify_intent(session)
+        row["session_intent"] = "meta" if row["is_meta"] else intent
+        spawns = session.get("agent_spawns")
+        row["agent_spawns"] = json.dumps(spawns) if spawns else None
         rows.append(row)
     log.info(
         "factstore.from_jsonl",

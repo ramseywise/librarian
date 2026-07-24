@@ -232,6 +232,24 @@ def parse_session(path: Path) -> dict[str, Any] | None:
             if isinstance(block, dict) and block.get("type") == "tool_use":
                 tool_counts[block.get("name", "unknown")] += 1
 
+    # Agent spawn metadata from parent sessions
+    agent_spawns: list[dict[str, str | None]] = []
+    for record in asst_msgs:
+        for block in record.get("message", {}).get("content", []):
+            if (
+                isinstance(block, dict)
+                and block.get("type") == "tool_use"
+                and block.get("name") == "Agent"
+            ):
+                inp = block.get("input", {})
+                agent_spawns.append(
+                    {
+                        "type": inp.get("subagent_type", "general-purpose"),
+                        "description": inp.get("description"),
+                        "model": inp.get("model"),
+                    }
+                )
+
     # Tool result errors from user messages
     tool_errors: dict[str, int] = defaultdict(int)
     for record in user_msgs:
@@ -390,6 +408,13 @@ def parse_session(path: Path) -> dict[str, Any] | None:
                 if name:
                     skill_invocations.append(name)
 
+    # Friction labels from user messages
+    friction_labels: list[str] = []
+    for record in user_msgs:
+        txt = _text(record.get("message", {}).get("content", ""))
+        for match in re.findall(r"FRICTION:\s*(.+?)(?:\n|$)", txt):
+            friction_labels.append(match.strip()[:200])
+
     # Output tokens per assistant message (verbosity signal)
     output_tokens_per_msg = round(output_tokens / len(asst_msgs), 1) if asst_msgs else 0.0
 
@@ -482,6 +507,9 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         "read_edit_ratio": read_edit_ratio,
         "hook_blocks": hook_blocks,
         "has_todo_write": has_todo_write,
+        "agent_spawns": agent_spawns,
+        "friction_labels": friction_labels,
+        "friction_label_count": len(friction_labels),
     }
 
 

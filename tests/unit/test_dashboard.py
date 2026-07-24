@@ -22,6 +22,7 @@ from tools.cartographer.dashboard import (
     Experiment,
     Panel,
     Point,
+    _metric_value,
     _panel_body,
     _saturation_warning,
     _svg_line,
@@ -343,3 +344,94 @@ def test_experiment_grouping() -> None:
 def test_experiment_empty_state(two_regime_store: Path) -> None:
     html = render_dashboard(two_regime_store, funnel=None, experiments=None)
     assert "No experiments tracked" in html
+
+
+# --- Phase 4: execution skill compliance ------------------------------------
+
+
+def test_execution_skill_compliance_renders(tmp_path: Path) -> None:
+    store = tmp_path / "facts.db"
+    upsert(
+        [
+            _row(
+                "e1",
+                "2026-07-18",
+                "session-hygiene-v1",
+                session_intent="execution",
+                skill_costs='{"execute": 100}',
+            ),
+            _row(
+                "e2",
+                "2026-07-18",
+                "session-hygiene-v1",
+                session_intent="execution",
+                skill_costs="{}",
+            ),
+            _row("s1", "2026-07-18", "session-hygiene-v1", session_intent="scoping"),
+        ],
+        store,
+    )
+    html = render_dashboard(store, funnel=None)
+    assert "Execution sessions with skills" in html
+
+
+def test_execution_skill_compliance_no_execution_sessions() -> None:
+    bucket = [{"session_intent": "scoping", "skill_costs": "{}"}]
+    assert _metric_value("execution_skill_compliance_pct", bucket) is None
+
+
+def test_execution_skill_compliance_correct_pct() -> None:
+    bucket = [
+        {"session_intent": "execution", "skill_costs": '{"execute": 100}'},
+        {"session_intent": "execution", "skill_costs": "{}"},
+    ]
+    assert _metric_value("execution_skill_compliance_pct", bucket) == 50.0
+
+
+# --- Phase 5: friction labels total ------------------------------------------
+
+
+def test_friction_labels_total_renders(tmp_path: Path) -> None:
+    store = tmp_path / "facts.db"
+    upsert(
+        [
+            _row("f1", "2026-07-18", "session-hygiene-v1", friction_label_count=2),
+            _row("f2", "2026-07-18", "session-hygiene-v1", friction_label_count=1),
+        ],
+        store,
+    )
+    html = render_dashboard(store, funnel=None)
+    assert "Explicit friction labels" in html
+
+
+def test_friction_labels_total_zero() -> None:
+    bucket = [{"friction_label_count": 0}, {"friction_label_count": None}]
+    assert _metric_value("friction_labels_total", bucket) == 0
+
+
+# --- Phase 6: subagent spawns table ------------------------------------------
+
+
+def test_subagent_spawns_table_renders(tmp_path: Path) -> None:
+    import json
+
+    store = tmp_path / "facts.db"
+    spawns = json.dumps(
+        [
+            {"type": "Explore", "description": "Find files", "model": None},
+            {"type": "Explore", "description": "Search code", "model": None},
+            {"type": "code-reviewer", "description": "Review", "model": "sonnet"},
+        ]
+    )
+    upsert([_row("a1", "2026-07-18", "session-hygiene-v1", agent_spawns=spawns)], store)
+    html = render_dashboard(store, funnel=None)
+    assert "Spawned agents by type" in html
+    assert "Explore" in html
+    assert "code-reviewer" in html
+
+
+def test_subagent_spawns_empty(tmp_path: Path) -> None:
+    store = tmp_path / "facts.db"
+    upsert([_row("a1", "2026-07-18", "session-hygiene-v1")], store)
+    html = render_dashboard(store, funnel=None)
+    assert "Spawned agents by type" not in html

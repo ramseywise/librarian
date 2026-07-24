@@ -11,6 +11,7 @@ from tools.cartographer.factstore import (
     ERA_NOTE,
     REGIME_UNCLASSIFIED,
     SchemaError,
+    _classify_intent,
     _classify_meta,
     from_jsonl,
     from_notes,
@@ -413,3 +414,92 @@ def test_zero_edits_classifies_as_meta() -> None:
     """A session that changed nothing did no product work."""
     row = {"project": "/Users/wiseer/workspace/librarian", "files_modified": 0, "edited_paths": []}
     assert _classify_meta(row) is True
+
+
+# --- Session intent classification -------------------------------------------
+
+
+def test_classify_intent_execution() -> None:
+    session = {
+        "skill_invocations": ["workflow-execute"],
+        "files_modified": 5,
+        "user_message_count": 10,
+    }
+    assert _classify_intent(session) == "execution"
+
+
+def test_classify_intent_execution_by_edits() -> None:
+    session = {"skill_invocations": [], "files_modified": 3, "user_message_count": 5}
+    assert _classify_intent(session) == "execution"
+
+
+def test_classify_intent_scoping() -> None:
+    session = {
+        "skill_invocations": [],
+        "files_modified": 0,
+        "user_message_count": 4,
+        "read_edit_ratio": 10.0,
+    }
+    assert _classify_intent(session) == "scoping"
+
+
+def test_classify_intent_scoping_no_ratio() -> None:
+    """read_edit_ratio=None (all reads) is scoping."""
+    session = {
+        "skill_invocations": [],
+        "files_modified": 0,
+        "user_message_count": 3,
+        "read_edit_ratio": None,
+    }
+    assert _classify_intent(session) == "scoping"
+
+
+def test_classify_intent_unknown() -> None:
+    session = {"skill_invocations": [], "files_modified": 0, "user_message_count": 1}
+    assert _classify_intent(session) == "unknown"
+
+
+# --- New column storage -------------------------------------------------------
+
+
+def test_friction_label_count_stored(tmp_path: Path) -> None:
+    from tests.unit.test_cartographer_parser import _assistant, _user, _write_jsonl
+
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [
+            _user("2026-07-20T10:00:00Z", text="FRICTION: hook blocked edit"),
+            _assistant("2026-07-20T10:00:05Z"),
+        ],
+    )
+    rows = from_jsonl(tmp_path)
+    assert len(rows) == 1
+    assert rows[0]["friction_label_count"] == 1
+
+
+def test_agent_spawns_stored_as_json(tmp_path: Path) -> None:
+    from tests.unit.test_cartographer_parser import (
+        _assistant_with_tools,
+        _user,
+        _write_jsonl,
+    )
+
+    tools = [
+        {
+            "type": "tool_use",
+            "name": "Agent",
+            "input": {
+                "subagent_type": "Explore",
+                "description": "Find files",
+            },
+        }
+    ]
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-20T10:00:00Z"), _assistant_with_tools("2026-07-20T10:00:05Z", tools)],
+    )
+    rows = from_jsonl(tmp_path)
+    assert len(rows) == 1
+    spawns = json.loads(rows[0]["agent_spawns"])
+    assert len(spawns) == 1
+    assert spawns[0]["type"] == "Explore"

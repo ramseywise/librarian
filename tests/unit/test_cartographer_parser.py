@@ -314,3 +314,123 @@ def test_from_jsonl_leaves_subagent_costs_null_without_subagents(tmp_path: Path)
     rows = from_jsonl(tmp_path)
     assert len(rows) == 1
     assert rows[0]["subagent_costs"] is None
+
+
+def _assistant_with_tools(ts: str, tool_blocks: list[dict[str, Any]]) -> dict[str, Any]:
+    """Assistant message with tool_use blocks in content."""
+    base = _assistant(ts)
+    base["message"]["content"] = [
+        {"type": "text", "text": "ok"},
+        *tool_blocks,
+    ]
+    return base
+
+
+@pytest.mark.unit
+def test_agent_spawns_extraction(tmp_path: Path) -> None:
+    tools = [
+        {
+            "type": "tool_use",
+            "name": "Agent",
+            "input": {
+                "subagent_type": "Explore",
+                "description": "Find config files",
+                "model": "haiku",
+            },
+        },
+        {
+            "type": "tool_use",
+            "name": "Agent",
+            "input": {
+                "description": "Review changes",
+            },
+        },
+        {
+            "type": "tool_use",
+            "name": "Agent",
+            "input": {
+                "subagent_type": "code-reviewer",
+                "description": "Check quality",
+                "model": "sonnet",
+            },
+        },
+    ]
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-20T10:00:00Z"), _assistant_with_tools("2026-07-20T10:00:05Z", tools)],
+    )
+    session = parse_session(tmp_path / "proj" / "sess-1.jsonl")
+    assert session is not None
+    spawns = session["agent_spawns"]
+    assert len(spawns) == 3
+    assert spawns[0] == {"type": "Explore", "description": "Find config files", "model": "haiku"}
+    assert spawns[1] == {"type": "general-purpose", "description": "Review changes", "model": None}
+    assert spawns[2] == {"type": "code-reviewer", "description": "Check quality", "model": "sonnet"}
+
+
+@pytest.mark.unit
+def test_agent_spawns_empty_when_no_agent_calls(tmp_path: Path) -> None:
+    tools = [{"type": "tool_use", "name": "Read", "input": {"file_path": "/tmp/x"}}]
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-20T10:00:00Z"), _assistant_with_tools("2026-07-20T10:00:05Z", tools)],
+    )
+    session = parse_session(tmp_path / "proj" / "sess-1.jsonl")
+    assert session is not None
+    assert session["agent_spawns"] == []
+
+
+@pytest.mark.unit
+def test_subagent_type_defaults_to_general_purpose(tmp_path: Path) -> None:
+    tools = [{"type": "tool_use", "name": "Agent", "input": {"description": "Do something"}}]
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-20T10:00:00Z"), _assistant_with_tools("2026-07-20T10:00:05Z", tools)],
+    )
+    session = parse_session(tmp_path / "proj" / "sess-1.jsonl")
+    assert session is not None
+    assert session["agent_spawns"][0]["type"] == "general-purpose"
+
+
+@pytest.mark.unit
+def test_friction_label_extraction(tmp_path: Path) -> None:
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [
+            _user("2026-07-20T10:00:00Z", text="FRICTION: skill X never triggered\nother text"),
+            _assistant("2026-07-20T10:00:05Z"),
+            _user("2026-07-20T10:01:00Z", text="FRICTION: hook blocked my edit"),
+            _assistant("2026-07-20T10:01:05Z"),
+        ],
+    )
+    session = parse_session(tmp_path / "proj" / "sess-1.jsonl")
+    assert session is not None
+    assert session["friction_labels"] == ["skill X never triggered", "hook blocked my edit"]
+    assert session["friction_label_count"] == 2
+
+
+@pytest.mark.unit
+def test_friction_label_absent(tmp_path: Path) -> None:
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-20T10:00:00Z", text="normal message"), _assistant("2026-07-20T10:00:05Z")],
+    )
+    session = parse_session(tmp_path / "proj" / "sess-1.jsonl")
+    assert session is not None
+    assert session["friction_labels"] == []
+    assert session["friction_label_count"] == 0
+
+
+@pytest.mark.unit
+def test_friction_label_truncated(tmp_path: Path) -> None:
+    long_label = "x" * 300
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [
+            _user("2026-07-20T10:00:00Z", text=f"FRICTION: {long_label}"),
+            _assistant("2026-07-20T10:00:05Z"),
+        ],
+    )
+    session = parse_session(tmp_path / "proj" / "sess-1.jsonl")
+    assert session is not None
+    assert len(session["friction_labels"][0]) == 200
