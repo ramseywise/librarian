@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 import re
 from collections.abc import AsyncGenerator
@@ -186,67 +187,68 @@ async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
 
     try:
         # Tool-call turns: use non-streaming so chunk.text ambiguity with function_call
-        # parts doesn't swallow the response text. Stream only the final text turn.
-        for _ in range(8):
-            response = await client.aio.models.generate_content(
-                model=MODEL,
-                contents=contents,
-                config=_CONFIG,
-            )
-            candidate = response.candidates[0] if response.candidates else None
-            parts: list[types.Part] = (
-                candidate.content.parts
-                if candidate and candidate.content and candidate.content.parts
-                else []
-            )
-            function_calls = [
-                p.function_call for p in parts if p.function_call and p.function_call.name
-            ]
-
-            if not function_calls:
-                # Final answer turn — stream it for real UX
-                async for chunk in await client.aio.models.generate_content_stream(
+        # parts doesn't swallow the response text. On the final text turn, yield the
+        # already-fetched response directly — no second LLM call needed.
+        async with asyncio.timeout(300):  # 5-minute wall-clock bound (#33)
+            for _ in range(8):
+                response = await client.aio.models.generate_content(
                     model=MODEL,
                     contents=contents,
                     config=_CONFIG,
-                ):
-                    if chunk.text:
-                        yield {"type": "token", "content": chunk.text}
-                break
+                )
+                candidate = response.candidates[0] if response.candidates else None
+                parts: list[types.Part] = (
+                    candidate.content.parts
+                    if candidate and candidate.content and candidate.content.parts
+                    else []
+                )
+                function_calls = [
+                    p.function_call for p in parts if p.function_call and p.function_call.name
+                ]
 
-            # Execute tool calls and append to history
-            model_parts: list[types.Part] = [types.Part(function_call=fc) for fc in function_calls]
-            contents.append(types.Content(role="model", parts=model_parts))
+                if not function_calls:
+                    # Final answer turn — yield from the already-fetched response (#27)
+                    if candidate and candidate.content:
+                        for part in candidate.content.parts or []:
+                            if part.text:
+                                yield {"type": "token", "content": part.text}
+                    break
 
-            response_parts: list[types.Part] = []
-            for fc in function_calls:
-                args: dict[str, Any] = dict(fc.args or {})
-                if fc.name == "search_wiki":
-                    result = _search_wiki(args.get("query", ""))
-                    for m in re.finditer(r"\(id: `([^`]+)`\)", result):
-                        referenced_pages.add(m.group(1))
-                elif fc.name == "read_page":
-                    page_id = args.get("page_id", "")
-                    result = _read_page(page_id)
-                    if not result.startswith("Page '"):
-                        referenced_pages.add(page_id)
-                else:
-                    result = "Unknown tool."
+                # Execute tool calls and append to history
+                model_parts: list[types.Part] = [
+                    types.Part(function_call=fc) for fc in function_calls
+                ]
+                contents.append(types.Content(role="model", parts=model_parts))
 
-                response_parts.append(
-                    types.Part(
-                        function_response=types.FunctionResponse(
-                            name=fc.name,
-                            response={"result": result},
+                response_parts: list[types.Part] = []
+                for fc in function_calls:
+                    args: dict[str, Any] = dict(fc.args or {})
+                    if fc.name == "search_wiki":
+                        result = _search_wiki(args.get("query", ""))
+                        for m in re.finditer(r"\(id: `([^`]+)`\)", result):
+                            referenced_pages.add(m.group(1))
+                    elif fc.name == "read_page":
+                        page_id = args.get("page_id", "")
+                        result = _read_page(page_id)
+                        if not result.startswith("Page '"):
+                            referenced_pages.add(page_id)
+                    else:
+                        result = "Unknown tool."
+
+                    response_parts.append(
+                        types.Part(
+                            function_response=types.FunctionResponse(
+                                name=fc.name,
+                                response={"result": result},
+                            )
                         )
                     )
-                )
 
-            contents.append(types.Content(role="user", parts=response_parts))
+                contents.append(types.Content(role="user", parts=response_parts))
 
-        valid_pages = {p for p in referenced_pages if next(WIKI_DIR.rglob(f"{p}.md"), None)}
-        if valid_pages:
-            yield {"type": "highlight", "pages": list(valid_pages)}
+            valid_pages = {p for p in referenced_pages if next(WIKI_DIR.rglob(f"{p}.md"), None)}
+            if valid_pages:
+                yield {"type": "highlight", "pages": list(valid_pages)}
     except Exception as exc:
         yield {"type": "token", "content": f"\n\n[Error: {exc}]"}
 
