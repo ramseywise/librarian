@@ -70,6 +70,9 @@ try:
 except ImportError:
     HAS_EMBEDDINGS = False
 
+# Optional FTS — installed at index-build time; absence is non-fatal but logged
+HAS_FTS = False
+
 
 def _get_emb_model() -> SentenceTransformer:
     global _emb_model
@@ -206,11 +209,13 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
 
+    global HAS_FTS
     try:
         con.execute("INSTALL fts")
         con.execute("LOAD fts")
-    except Exception:
-        pass
+        HAS_FTS = True
+    except Exception as exc:
+        log.warning("fts_install_failed", error=str(exc))
 
     # Collect all pages
     raw_pages: list[tuple] = []
@@ -374,8 +379,10 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
         LIMIT ?
     """
     params += [query, limit * 3]  # fetch 3× for re-ranking
-    rows = con.execute(sql, params).fetchall()
-    con.close()
+    try:
+        rows = con.execute(sql, params).fetchall()
+    finally:
+        con.close()
 
     if not rows:
         _log_retrieval("search_wiki", query=query, domain=domain, n_results=0, top_paths=[])
@@ -525,7 +532,8 @@ def list_domain(domain: str) -> str:
             bl_map[path] = bl
     except Exception:
         pass
-    con.close()
+    finally:
+        con.close()
 
     results = []
     for page in pages:
@@ -575,7 +583,8 @@ def list_pages(tag: str = "", directory: str = "") -> str:
             bl_map[path] = bl
     except Exception:
         pass
-    con.close()
+    finally:
+        con.close()
 
     results = []
     for page in sorted(pages):
