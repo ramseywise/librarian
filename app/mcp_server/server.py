@@ -88,7 +88,7 @@ def _blob_to_vec(blob: bytes) -> list[float]:
 
 
 def _cosine(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b, strict=False))
+    dot = sum(x * y for x, y in zip(a, b, strict=True))
     na = sum(x * x for x in a) ** 0.5
     nb = sum(x * x for x in b) ** 0.5
     return dot / (na * nb + 1e-9)
@@ -563,7 +563,14 @@ def list_pages(tag: str = "", directory: str = "") -> str:
     Returns:
         List of pages with title, tags, summary, and backlink count.
     """
-    search_dir = WIKI_DIR / directory if directory else WIKI_DIR
+    if directory:
+        if ".." in directory or directory.startswith("/"):
+            raise ValueError(f"Invalid directory: {directory!r}")
+        search_dir = WIKI_DIR / directory
+        if not search_dir.resolve().is_relative_to(WIKI_DIR.resolve()):
+            raise ValueError(f"Directory escapes wiki root: {directory!r}")
+    else:
+        search_dir = WIKI_DIR
     pages = [
         p for p in search_dir.rglob("*.md") if not p.name.startswith("_") and not _is_private(p)
     ]

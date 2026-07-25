@@ -248,6 +248,9 @@ async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
         if valid_pages:
             yield {"type": "highlight", "pages": list(valid_pages)}
     except Exception as exc:
-        yield {"type": "token", "content": f"\n\n[Error: {exc}]"}
+        import logging
+
+        logging.getLogger(__name__).exception("Agent stream error: %s", exc)
+        yield {"type": "token", "content": "\n\n[An error occurred. Please try again.]"}
 
     yield {"type": "done"}
