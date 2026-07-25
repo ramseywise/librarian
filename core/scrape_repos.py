@@ -7,9 +7,9 @@ docs/**/*.md, .agents/**/*.md, SANYI.md, interviewing/**/*.md.
 Idempotent: skips files whose content hasn't changed since last scrape.
 
 Usage:
-    uv run python etl/scrape_repos.py
-    uv run python etl/scrape_repos.py --dry-run
-    uv run python etl/scrape_repos.py --repos-file path/to/repos.txt
+    uv run python core/scrape_repos.py
+    uv run python core/scrape_repos.py --dry-run
+    uv run python core/scrape_repos.py --repos-file path/to/repos.txt
 """
 
 from __future__ import annotations
@@ -22,13 +22,13 @@ from pathlib import Path
 import structlog
 from dotenv import load_dotenv
 
-from app.log_config import configure_logging
+from core.base import REPO_ROOT, ScraperBase
 
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_REPOS_FILE = Path(__file__).parent.parent / "raw" / "repos" / "repos.txt"
-DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "raw" / "repos"
+DEFAULT_REPOS_FILE = REPO_ROOT / "raw" / "repos" / "repos.txt"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "raw" / "repos"
 
 # Files and glob patterns to extract from each repo
 EXTRACT_GLOBS = [
@@ -116,39 +116,57 @@ def load_repos(repos_file: Path) -> list[Path]:
     return paths
 
 
-def main() -> None:
-    configure_logging()
-    parser = argparse.ArgumentParser(description="Scrape local repos → raw/repos/")
-    parser.add_argument(
-        "--repos-file",
-        type=Path,
-        default=DEFAULT_REPOS_FILE,
-        help="Path to repos.txt (default: raw/repos/repos.txt)",
-    )
-    parser.add_argument(
-        "--output-dir",
-        type=Path,
-        default=DEFAULT_OUTPUT_DIR,
-        help="Output directory (default: raw/repos/)",
-    )
-    parser.add_argument("--dry-run", action="store_true")
-    args = parser.parse_args()
+class RepoScraper(ScraperBase):
+    source_name = "scrape-repos"
+    output_dir = DEFAULT_OUTPUT_DIR
 
-    repos = load_repos(args.repos_file)
-    if not repos:
-        print("No repos configured. Add paths to raw/repos/repos.txt.")
-        return
+    def __init__(
+        self,
+        repos_file: Path = DEFAULT_REPOS_FILE,
+        output_dir: Path = DEFAULT_OUTPUT_DIR,
+    ) -> None:
+        self._repos_file = repos_file
+        self.output_dir = output_dir
 
-    total_written = total_skipped = 0
-    for repo_path in repos:
-        w, s = scrape_repo(repo_path, args.output_dir, dry_run=args.dry_run)
-        print(f"  {repo_path.name}: {w} written, {s} skipped")
-        total_written += w
-        total_skipped += s
+    def run(self, dry_run: bool = False) -> list[Path]:
+        repos = load_repos(self._repos_file)
+        if not repos:
+            print("No repos configured. Add paths to raw/repos/repos.txt.")
+            return []
 
-    prefix = "[dry-run] " if args.dry_run else ""
-    print(f"\n{prefix}Total: {total_written} written, {total_skipped} skipped → {args.output_dir}")
+        total_written = total_skipped = 0
+        for repo_path in repos:
+            w, s = scrape_repo(repo_path, self.output_dir, dry_run=dry_run)
+            print(f"  {repo_path.name}: {w} written, {s} skipped")
+            total_written += w
+            total_skipped += s
+
+        prefix = "[dry-run] " if dry_run else ""
+        print(
+            f"\n{prefix}Total: {total_written} written, {total_skipped} skipped → {self.output_dir}"
+        )
+        # Return a sentinel list (paths not tracked per-file in this scraper)
+        return [self.output_dir] if total_written > 0 else []
+
+    @classmethod
+    def _add_args(cls, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "--repos-file",
+            type=Path,
+            default=DEFAULT_REPOS_FILE,
+            help="Path to repos.txt (default: raw/repos/repos.txt)",
+        )
+        parser.add_argument(
+            "--output-dir",
+            type=Path,
+            default=DEFAULT_OUTPUT_DIR,
+            help="Output directory (default: raw/repos/)",
+        )
+
+    @classmethod
+    def _from_args(cls, args: argparse.Namespace) -> RepoScraper:
+        return cls(repos_file=args.repos_file, output_dir=args.output_dir)
 
 
 if __name__ == "__main__":
-    main()
+    RepoScraper.cli(description="Scrape local repos → raw/repos/")
