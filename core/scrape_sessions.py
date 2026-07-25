@@ -8,11 +8,11 @@ Writes one markdown file per session to raw/sessions/ (or --output-dir).
 Idempotent: skips sessions already present.
 
 Usage:
-    uv run python scripts/scrape_sessions.py
-    uv run python scripts/scrape_sessions.py --output-dir /path/to/raw/sessions
-    uv run python scripts/scrape_sessions.py --dry-run   # print what would be written
-    uv run python scripts/scrape_sessions.py --source claude
-    uv run python scripts/scrape_sessions.py --source codex
+    uv run python core/scrape_sessions.py
+    uv run python core/scrape_sessions.py --output-dir /path/to/raw/sessions
+    uv run python core/scrape_sessions.py --dry-run   # print what would be written
+    uv run python core/scrape_sessions.py --source claude
+    uv run python core/scrape_sessions.py --source codex
 """
 
 from __future__ import annotations
@@ -25,12 +25,12 @@ from pathlib import Path
 import structlog
 from dotenv import load_dotenv
 
-from app.log_config import configure_logging
+from core.base import REPO_ROOT, ScraperBase
 
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "raw" / "sessions"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "raw" / "sessions"
 CLAUDE_PROJECTS_DIR = Path.home() / ".claude" / "projects"
 CODEX_DIRS = [
     Path.home() / ".codex" / "sessions",
@@ -299,36 +299,59 @@ prompts: {len(prompts)}
 
 
 # ---------------------------------------------------------------------------
-# Main
+# ScraperBase subclass
 # ---------------------------------------------------------------------------
 
 
-def main() -> None:
-    configure_logging()
-    parser = argparse.ArgumentParser(description="Scrape AI session history → raw/sessions/")
-    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
-    parser.add_argument("--source", choices=["claude", "codex", "all"], default="all")
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Print what would be written, don't write"
-    )
-    args = parser.parse_args()
+class SessionScraper(ScraperBase):
+    source_name = "scrape-sessions"
+    output_dir = DEFAULT_OUTPUT_DIR
 
-    if not args.dry_run:
-        args.output_dir.mkdir(parents=True, exist_ok=True)
+    def __init__(
+        self,
+        source: str = "all",
+        output_dir: Path = DEFAULT_OUTPUT_DIR,
+    ) -> None:
+        self._source = source
+        self.output_dir = output_dir
 
-    total = 0
-    if args.source in ("claude", "all"):
-        n = scrape_claude(args.output_dir, dry_run=args.dry_run)
-        log.info("claude_sessions_scraped", count=n)
-        total += n
+    def run(self, dry_run: bool = False) -> list[Path]:
+        if not dry_run:
+            self.output_dir.mkdir(parents=True, exist_ok=True)
 
-    if args.source in ("codex", "all"):
-        n = scrape_codex(args.output_dir, dry_run=args.dry_run)
-        log.info("codex_sessions_scraped", count=n)
-        total += n
+        total = 0
+        if self._source in ("claude", "all"):
+            n = scrape_claude(self.output_dir, dry_run=dry_run)
+            log.info("claude_sessions_scraped", count=n)
+            total += n
 
-    print(f"\n{'[dry-run] ' if args.dry_run else ''}Total sessions: {total} → {args.output_dir}")
+        if self._source in ("codex", "all"):
+            n = scrape_codex(self.output_dir, dry_run=dry_run)
+            log.info("codex_sessions_scraped", count=n)
+            total += n
+
+        print(f"\n{'[dry-run] ' if dry_run else ''}Total sessions: {total} → {self.output_dir}")
+        return [self.output_dir] if total > 0 else []
+
+    @classmethod
+    def _add_args(cls, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "--output-dir",
+            type=Path,
+            default=DEFAULT_OUTPUT_DIR,
+            help="Output directory (default: raw/sessions/)",
+        )
+        parser.add_argument(
+            "--source",
+            choices=["claude", "codex", "all"],
+            default="all",
+            help="Which session source to scrape (default: all)",
+        )
+
+    @classmethod
+    def _from_args(cls, args: argparse.Namespace) -> SessionScraper:
+        return cls(source=args.source, output_dir=args.output_dir)
 
 
 if __name__ == "__main__":
-    main()
+    SessionScraper.cli(description="Scrape AI session history → raw/sessions/")

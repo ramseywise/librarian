@@ -4,14 +4,15 @@ Fetches issues for a project or team from Linear and saves as structured
 markdown to raw/linear/YYYY-MM-DD-<project>.md.
 
 Usage:
-    uv run python scripts/ingest_linear.py                       # uses LINEAR_PROJECT_ID from .env
-    uv run python scripts/ingest_linear.py --team <team-key>     # all issues for a team
-    uv run python scripts/ingest_linear.py --project <project-id>
+    uv run python core/ingest_linear.py                       # uses LINEAR_PROJECT_ID from .env
+    uv run python core/ingest_linear.py --team <team-key>     # all issues for a team
+    uv run python core/ingest_linear.py --project <project-id>
+    uv run python core/ingest_linear.py --dry-run
 """
 
 from __future__ import annotations
 
-import sys
+import argparse
 from datetime import date
 from pathlib import Path
 
@@ -20,12 +21,12 @@ import structlog
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
-from app.log_config import configure_logging
+from core.base import REPO_ROOT, ScraperBase
 
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_LINEAR = Path("raw/linear")
+RAW_LINEAR = REPO_ROOT / "raw" / "linear"
 
 LINEAR_API = "https://api.linear.app/graphql"
 
@@ -97,38 +98,67 @@ def issue_to_markdown(issue: dict) -> str:
     return "\n".join(lines)
 
 
-def main() -> None:
-    configure_logging()
-    settings = Settings()
+class LinearScraper(ScraperBase):
+    source_name = "ingest-linear"
+    output_dir = RAW_LINEAR
 
-    team_key = ""
-    project_id = settings.linear_project_id
+    def __init__(self, project_id: str = "", team_key: str = "") -> None:
+        self._project_id = project_id
+        self._team_key = team_key
 
-    args = sys.argv[1:]
-    for i, arg in enumerate(args):
-        if arg == "--team" and i + 1 < len(args):
-            team_key = args[i + 1]
-        if arg == "--project" and i + 1 < len(args):
-            project_id = args[i + 1]
+    def run(self, dry_run: bool = False) -> list[Path]:
+        settings = Settings()
+        project_id = self._project_id or settings.linear_project_id
+        team_key = self._team_key
 
-    log.info("fetching_linear_issues", project_id=project_id, team_key=team_key)
-    issues = fetch_issues(settings.linear_api_key, project_id, team_key)
-    log.info("fetched_issues", count=len(issues))
+        slug = team_key or project_id or "all"
+        today = date.today().isoformat()
+        out_path = self.output_dir / f"{today}-linear-{slug}.md"
 
-    today = date.today().isoformat()
-    slug = team_key or project_id or "all"
-    out_path = RAW_LINEAR / f"{today}-linear-{slug}.md"
-    RAW_LINEAR.mkdir(parents=True, exist_ok=True)
+        if dry_run:
+            print(
+                f"[would fetch] Linear issues (project={project_id or 'all'}, team={team_key or 'all'}) → {out_path}"
+            )
+            return [out_path]
 
-    sections = [f"# Linear Issues — {slug}\n\n**Fetched:** {today}  \n**Count:** {len(issues)}\n"]
-    for issue in issues:
-        sections.append(issue_to_markdown(issue))
+        log.info("fetching_linear_issues", project_id=project_id, team_key=team_key)
+        issues = fetch_issues(settings.linear_api_key, project_id, team_key)
+        log.info("fetched_issues", count=len(issues))
 
-    out_path.write_text("\n\n---\n\n".join(sections), encoding="utf-8")
-    log.info("saved_linear_dump", dest=str(out_path))
-    print(f"Saved: {out_path}")
-    print(f"Run /ingest {out_path} in Claude Code to compile into wiki.")
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        sections = [
+            f"# Linear Issues — {slug}\n\n**Fetched:** {today}  \n**Count:** {len(issues)}\n"
+        ]
+        for issue in issues:
+            sections.append(issue_to_markdown(issue))
+
+        out_path.write_text("\n\n---\n\n".join(sections), encoding="utf-8")
+        log.info("saved_linear_dump", dest=str(out_path))
+        print(f"Saved: {out_path}")
+        print(f"Run /ingest {out_path} in Claude Code to compile into wiki.")
+
+        return [out_path]
+
+    @classmethod
+    def _add_args(cls, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "--team",
+            default="",
+            metavar="TEAM_KEY",
+            help="Linear team key (e.g. ENG)",
+        )
+        parser.add_argument(
+            "--project",
+            default="",
+            metavar="PROJECT_ID",
+            help="Linear project ID (overrides LINEAR_PROJECT_ID env var)",
+        )
+
+    @classmethod
+    def _from_args(cls, args: argparse.Namespace) -> LinearScraper:
+        return cls(project_id=args.project, team_key=args.team)
 
 
 if __name__ == "__main__":
-    main()
+    LinearScraper.cli(description="Dump Linear issues → raw/linear/")

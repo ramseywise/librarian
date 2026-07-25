@@ -4,12 +4,14 @@ Fetches a Notion page (and optionally its children) via the Notion API
 and saves as markdown to raw/notion/YYYY-MM-DD-<title>.md.
 
 Usage:
-    uv run python scripts/ingest_notion.py <page-id-or-url>
-    uv run python scripts/ingest_notion.py <page-id> --children   # include sub-pages
+    uv run python core/ingest_notion.py <page-id-or-url>
+    uv run python core/ingest_notion.py <page-id> --children   # include sub-pages
+    uv run python core/ingest_notion.py <page-id> --dry-run
 """
 
 from __future__ import annotations
 
+import argparse
 import re
 import sys
 from datetime import date
@@ -20,12 +22,12 @@ import structlog
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
-from app.log_config import configure_logging
+from core.base import REPO_ROOT, ScraperBase
 
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_NOTION = Path("raw/notion")
+RAW_NOTION = REPO_ROOT / "raw" / "notion"
 
 
 class Settings(BaseSettings):
@@ -108,32 +110,64 @@ def fetch_page(page_id: str, api_key: str) -> tuple[str, str]:
     return title, blocks_to_markdown(blocks)
 
 
-def main() -> None:
-    configure_logging()
-    if len(sys.argv) < 2:
-        print("Usage: uv run python scripts/ingest_notion.py <page-id-or-url>")
-        sys.exit(1)
+class NotionScraper(ScraperBase):
+    source_name = "ingest-notion"
+    output_dir = RAW_NOTION
 
-    settings = Settings()
-    page_id = page_id_from_arg(sys.argv[1])
+    def __init__(self, page_id: str = "") -> None:
+        self._page_id = page_id
 
-    log.info("fetching_notion_page", page_id=page_id)
-    title, markdown = fetch_page(page_id, settings.notion_api_key)
+    def run(self, dry_run: bool = False) -> list[Path]:
+        if not self._page_id:
+            print("Usage: uv run python core/ingest_notion.py <page-id-or-url>")
+            sys.exit(1)
 
-    slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
-    today = date.today().isoformat()
-    out_path = RAW_NOTION / f"{today}-{slug}.md"
-    RAW_NOTION.mkdir(parents=True, exist_ok=True)
+        settings = Settings()
+        page_id = page_id_from_arg(self._page_id)
 
-    out_path.write_text(
-        f"# {title}\n\n**Source:** Notion page `{page_id}`\n**Fetched:** {today}\n\n---\n\n{markdown}",
-        encoding="utf-8",
-    )
+        log.info("fetching_notion_page", page_id=page_id)
 
-    log.info("saved_notion_page", title=title, dest=str(out_path))
-    print(f"Saved: {out_path}")
-    print(f"Run /ingest {out_path} in Claude Code to compile into wiki.")
+        if dry_run:
+            print(f"[would fetch] Notion page {page_id} → {self.output_dir}/")
+            return [self.output_dir / "<date>-<title>.md"]
+
+        title, markdown = fetch_page(page_id, settings.notion_api_key)
+
+        slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+        today = date.today().isoformat()
+        out_path = self.output_dir / f"{today}-{slug}.md"
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        out_path.write_text(
+            f"# {title}\n\n**Source:** Notion page `{page_id}`\n**Fetched:** {today}\n\n---\n\n{markdown}",
+            encoding="utf-8",
+        )
+
+        log.info("saved_notion_page", title=title, dest=str(out_path))
+        print(f"Saved: {out_path}")
+        print(f"Run /ingest {out_path} in Claude Code to compile into wiki.")
+
+        return [out_path]
+
+    @classmethod
+    def _add_args(cls, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "page_id",
+            nargs="?",
+            default="",
+            metavar="PAGE_ID_OR_URL",
+            help="Notion page ID or URL",
+        )
+        parser.add_argument(
+            "--children",
+            action="store_true",
+            help="Include sub-pages (not yet implemented)",
+        )
+
+    @classmethod
+    def _from_args(cls, args: argparse.Namespace) -> NotionScraper:
+        return cls(page_id=args.page_id)
 
 
 if __name__ == "__main__":
-    main()
+    NotionScraper.cli(description="Pull Notion pages → raw/notion/")

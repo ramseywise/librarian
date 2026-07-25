@@ -54,22 +54,22 @@ install-browsers:
 	uv run playwright install chromium
 
 scrape-sessions:
-	uv run python etl/scrape_sessions.py
+	uv run python core/scrape_sessions.py
 
 scrape-docs:
-	uv run python etl/scrape_claude_docs.py
+	uv run python core/scrape_claude_docs.py
 
 scrape-repos:
-	uv run python etl/scrape_repos.py
+	uv run python core/scrape_repos.py
 
 lint-raw:
-	uv run python etl/lint_raw.py
+	uv run python core/lint_raw.py
 
 scrape: scrape-docs scrape-sessions scrape-repos
 	@echo "Done — run /ingest in Claude Code to compile all changed sources into wiki"
 
-ingest:
-	@echo "Run /ingest <path> via Claude Code"
+ingest: scrape-docs scrape-sessions scrape-repos
+	@echo "Done — run /ingest in Claude Code to compile all changed sources into wiki"
 
 lint:
 	@echo "Run /lint via Claude Code"
@@ -96,6 +96,6 @@ help:
 	@echo "scrape-sessions  — scrape Claude Code + Codex sessions → raw/sessions/"
 	@echo "scrape-docs      — scrape .claude/ docs, docs/, .agents/ from all projects → raw/claude-docs/"
 	@echo "scrape-repos     — scrape CLAUDE.md + skills + docs from repos in raw/repos/repos.txt"
-	@echo "ingest           — /ingest (no args) = full pipeline in Claude Code; /ingest raw/path/ = targeted"
+	@echo "ingest           — run all scrapers → raw/, then run /ingest in Claude Code to compile into wiki"
 	@echo "lint-raw         — validate raw/ filenames match YYYY-MM-DD-slug convention"
 	@echo "lint             — reminder: use /lint in Claude Code"

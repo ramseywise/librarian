@@ -8,10 +8,10 @@ Writes one markdown file per URL to raw/web/ (or --output-dir).
 Idempotent: skips URLs already captured (matched by url_hash in existing frontmatter).
 
 Usage:
-    uv run python scripts/scrape_bookmarks.py
-    uv run python scripts/scrape_bookmarks.py --url https://example.com/article
-    uv run python scripts/scrape_bookmarks.py --bookmarks-file raw/web/bookmarks.txt
-    uv run python scripts/scrape_bookmarks.py --dry-run
+    uv run python core/scrape_bookmarks.py
+    uv run python core/scrape_bookmarks.py --url https://example.com/article
+    uv run python core/scrape_bookmarks.py --bookmarks-file raw/web/bookmarks.txt
+    uv run python core/scrape_bookmarks.py --dry-run
 """
 
 from __future__ import annotations
@@ -28,13 +28,13 @@ import structlog
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-from app.log_config import configure_logging
+from core.base import REPO_ROOT, ScraperBase
 
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent / "raw" / "web"
-DEFAULT_BOOKMARKS_FILE = Path(__file__).parent.parent / "raw" / "web" / "bookmarks.txt"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "raw" / "web"
+DEFAULT_BOOKMARKS_FILE = REPO_ROOT / "raw" / "web" / "bookmarks.txt"
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; librarian-kb/1.0)"}
 
@@ -183,38 +183,67 @@ def load_bookmarks(bookmarks_file: Path) -> list[str]:
     ]
 
 
-def main() -> None:
-    configure_logging()
-    parser = argparse.ArgumentParser(description="Scrape web bookmarks → raw/web/")
-    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
-    parser.add_argument("--bookmarks-file", type=Path, default=DEFAULT_BOOKMARKS_FILE)
-    parser.add_argument(
-        "--url",
-        action="append",
-        dest="urls",
-        default=[],
-        metavar="URL",
-        help="Single URL to capture (repeatable)",
-    )
-    parser.add_argument(
-        "--dry-run", action="store_true", help="Print what would be written, don't write"
-    )
-    args = parser.parse_args()
+class BookmarkScraper(ScraperBase):
+    source_name = "scrape-bookmarks"
+    output_dir = DEFAULT_OUTPUT_DIR
 
-    if not args.dry_run:
-        args.output_dir.mkdir(parents=True, exist_ok=True)
+    def __init__(
+        self,
+        urls: list[str] | None = None,
+        bookmarks_file: Path = DEFAULT_BOOKMARKS_FILE,
+        output_dir: Path = DEFAULT_OUTPUT_DIR,
+    ) -> None:
+        self._urls = urls or []
+        self._bookmarks_file = bookmarks_file
+        self.output_dir = output_dir
 
-    urls = args.urls or load_bookmarks(args.bookmarks_file)
+    def run(self, dry_run: bool = False) -> list[Path]:
+        if not dry_run:
+            self.output_dir.mkdir(parents=True, exist_ok=True)
 
-    if not urls:
-        print(f"No URLs to scrape. Add URLs to {args.bookmarks_file} or pass --url <url>.")
-        return
+        urls = self._urls or load_bookmarks(self._bookmarks_file)
 
-    written = sum(scrape_url(u, args.output_dir, dry_run=args.dry_run) for u in urls)
-    print(
-        f"\n{'[dry-run] ' if args.dry_run else ''}Captured {written}/{len(urls)} URLs → {args.output_dir}"
-    )
+        if not urls:
+            print(f"No URLs to scrape. Add URLs to {self._bookmarks_file} or pass --url <url>.")
+            return []
+
+        written = sum(scrape_url(u, self.output_dir, dry_run=dry_run) for u in urls)
+        print(
+            f"\n{'[dry-run] ' if dry_run else ''}Captured {written}/{len(urls)} URLs → {self.output_dir}"
+        )
+        return [self.output_dir] if written > 0 else []
+
+    @classmethod
+    def _add_args(cls, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "--output-dir",
+            type=Path,
+            default=DEFAULT_OUTPUT_DIR,
+            help="Output directory (default: raw/web/)",
+        )
+        parser.add_argument(
+            "--bookmarks-file",
+            type=Path,
+            default=DEFAULT_BOOKMARKS_FILE,
+            help="Bookmarks file (default: raw/web/bookmarks.txt)",
+        )
+        parser.add_argument(
+            "--url",
+            action="append",
+            dest="urls",
+            default=[],
+            metavar="URL",
+            help="Single URL to capture (repeatable)",
+        )
+
+    @classmethod
+    def _from_args(cls, args: argparse.Namespace) -> BookmarkScraper:
+        return cls(
+            urls=args.urls,
+            bookmarks_file=args.bookmarks_file,
+            output_dir=args.output_dir,
+        )
 
 
 if __name__ == "__main__":
-    main()
+    BookmarkScraper.cli(description="Scrape web bookmarks → raw/web/")
