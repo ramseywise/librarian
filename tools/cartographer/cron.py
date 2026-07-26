@@ -603,7 +603,7 @@ def fetch_arxiv_papers() -> int:
         log.info("cron.arxiv_fetched", papers_fetched=count)
         return count
     except Exception as exc:
-        log.warning("cron.arxiv_error", error=str(exc))
+        log.warning("cron.arxiv_error", error=str(exc), exc_info=True)
         return 0
 
 
