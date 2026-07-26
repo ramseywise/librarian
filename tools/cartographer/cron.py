@@ -584,6 +584,29 @@ def _rotate_hook_log() -> None:
         log.info("cron.hook_log_rotated", archive=str(archive), lines=lines)
 
 
+def fetch_arxiv_papers() -> int:
+    """Fetch recent arXiv papers into raw/web/ when ARXIV_FETCH_ENABLED=true.
+
+    Returns the number of papers written (0 if disabled or on error).
+    Controlled by env var: ARXIV_FETCH_ENABLED=true (off by default).
+    """
+    if os.environ.get("ARXIV_FETCH_ENABLED", "").lower() != "true":
+        log.debug("cron.arxiv_disabled", msg="Set ARXIV_FETCH_ENABLED=true to enable")
+        return 0
+
+    try:
+        from core.scrape_arxiv import ArxivScraper
+
+        scraper = ArxivScraper()
+        written = scraper.run(dry_run=False)
+        count = len(written)
+        log.info("cron.arxiv_fetched", papers_fetched=count)
+        return count
+    except Exception as exc:
+        log.warning("cron.arxiv_error", error=str(exc))
+        return 0
+
+
 def run_cron() -> None:
     log.info("cron.start")
 
@@ -600,6 +623,9 @@ def run_cron() -> None:
     if wiki_dates_added:
         log.info("cron.wiki_updated", dates_added=wiki_dates_added)
 
+    # Fetch recent arXiv papers (opt-in via ARXIV_FETCH_ENABLED=true)
+    arxiv_papers_fetched = fetch_arxiv_papers()
+
     report = run_analysis()
     out_path = save_report(report)
     created_commands = extract_and_write_commands(report)
@@ -608,6 +634,7 @@ def run_cron() -> None:
         "report": str(out_path),
         "commands_created": created_commands,
         "sessions_synced": synced,
+        "arxiv_papers_fetched": arxiv_papers_fetched,
         "timestamp": datetime.now(tz=UTC).isoformat(),
     }
     summary_path = INSIGHTS_DIR / "latest.json"
