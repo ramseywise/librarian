@@ -116,11 +116,7 @@ def _load_arxiv_ids_from_manifest() -> set[str]:
             # Pattern: YYYY-MM-DD-arxiv-<id>-<slug>.md
             m = re.search(r"-arxiv-([0-9]{4}\.[0-9]+(?:v\d+)?)-", f.name)
             if m:
-                seen.add(
-                    m.group(1).rstrip("v0123456789").rstrip(".")
-                    if "v" in m.group(1)
-                    else m.group(1)
-                )
+                seen.add(re.sub(r"v\d+$", "", m.group(1)))
 
     return seen
 
@@ -398,6 +394,13 @@ class ArxivScraper(ScraperBase):
             help=f"Fetch papers from last N days (default: {DEFAULT_SINCE_DAYS})",
         )
         parser.add_argument(
+            "--keywords",
+            nargs="+",
+            default=DEFAULT_KEYWORDS,
+            metavar="KW",
+            help="Keywords to filter papers (default: built-in list)",
+        )
+        parser.add_argument(
             "--output-dir",
             type=Path,
             default=DEFAULT_OUTPUT_DIR,
@@ -409,6 +412,7 @@ class ArxivScraper(ScraperBase):
         return cls(
             categories=args.categories,
             since_days=args.since_days,
+            keywords=args.keywords,
             output_dir=args.output_dir,
         )
 
