@@ -283,14 +283,14 @@ def test_dark_mode_uses_css_variables(two_regime_store: Path) -> None:
 
 def test_dashboard_has_four_sections(two_regime_store: Path) -> None:
     html = render_dashboard(two_regime_store, funnel=None)
-    for section_id in ("cost", "context", "friction", "progress"):
+    for section_id in ("cost", "context", "friction", "review", "progress"):
         assert f'id="{section_id}"' in html, f"missing section #{section_id}"
 
 
 def test_dashboard_has_nav(two_regime_store: Path) -> None:
     html = render_dashboard(two_regime_store, funnel=None)
     assert "<nav" in html, "sticky nav element missing"
-    for href in ("#cost", "#context", "#friction", "#progress"):
+    for href in ("#cost", "#context", "#friction", "#review", "#progress"):
         assert f'href="{href}"' in html, f"nav link to {href} missing"
 
 

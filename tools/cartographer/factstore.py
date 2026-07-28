@@ -91,7 +91,7 @@ NULLABLE_COLUMNS: dict[str, type] = {
     # sessions: friction labels (user-reported), session intent (heuristic),
     # and agent spawns (from Agent tool_use blocks). Backfills to July boundary.
     "friction_label_count": int,
-    "session_intent": str,  # "scoping" | "execution" | "meta" | "unknown"
+    "session_intent": str,  # "scoping" | "execution" | "brief-execution" | "meta" | "unknown"
     "agent_spawns": str,  # JSON list of {type, description, model}
 }
 
@@ -150,24 +150,46 @@ def regime_for(date: str) -> str:
 _META_FILE_PATTERN = re.compile(r"(/\.claude/|/\.vscode/|/dotfiles/|/\.github/)", re.IGNORECASE)
 
 
+_EDIT_TOOL_NAMES = ("Edit", "Write", "MultiEdit", "NotebookEdit")
+
+
 def _classify_intent(session: dict[str, Any]) -> str:
     """Heuristic session intent: what the session was *doing*.
 
-    Returns "execution", "scoping", or "unknown". "meta" is handled by
-    _classify_meta and takes precedence in from_jsonl.
+    Returns "execution", "brief-execution", "scoping", or "unknown". "meta"
+    is handled by _classify_meta and takes precedence in from_jsonl.
+
+    NOTE: session["files_modified"] is always 0 due to a known parser gap
+    (parse_session reads record["fileId"] from file-history-snapshot records
+    but current transcripts nest paths under snapshot.trackedFileBackups).
+    We derive the edit count directly from tool_counts instead, matching what
+    _edit_counts() does for the factstore row.
     """
     skills = session.get("skill_invocations") or []
-    files_modified = session.get("files_modified", 0) or 0
     human_turns = session.get("user_message_count", 0) or 0
     read_edit_ratio = session.get("read_edit_ratio")
 
-    if skills or (files_modified >= 1 and human_turns >= 3):
+    # Derive actual edit count from tool_counts — session["files_modified"] is
+    # always 0 for JSONL-era sessions (parser reads a stale field).
+    tool_counts: dict[str, int] = session.get("tool_counts") or {}
+    edit_count = sum(tool_counts.get(name, 0) for name in _EDIT_TOOL_NAMES)
+
+    # Execution: any skill invoked, or substantive edits with enough turns for
+    # back-and-forth direction.
+    if skills or (edit_count >= 1 and human_turns >= 3):
         return "execution"
 
+    # Brief-execution: low turn count but real file work happened. These are
+    # focused delegate sessions (e.g. "fix this one thing") — execution-shaped
+    # output, not a conversation.
+    if edit_count >= 2 and human_turns < 3:
+        return "brief-execution"
+
+    # Scoping: reading/discussing with minimal writes — planning or review.
     if (
         human_turns >= 2
         and not skills
-        and files_modified <= 1
+        and edit_count <= 1
         and (read_edit_ratio is None or read_edit_ratio > 3)
     ):
         return "scoping"

@@ -419,24 +419,40 @@ def test_zero_edits_classifies_as_meta() -> None:
 # --- Session intent classification -------------------------------------------
 
 
-def test_classify_intent_execution() -> None:
+def test_classify_intent_execution_by_skill() -> None:
+    """Skill invocation alone → execution, regardless of edit count."""
     session = {
         "skill_invocations": ["workflow-execute"],
-        "files_modified": 5,
+        "tool_counts": {"Edit": 0},
         "user_message_count": 10,
     }
     assert _classify_intent(session) == "execution"
 
 
 def test_classify_intent_execution_by_edits() -> None:
-    session = {"skill_invocations": [], "files_modified": 3, "user_message_count": 5}
+    """Edits from tool_counts (not files_modified) + turns>=3 → execution."""
+    session = {
+        "skill_invocations": [],
+        "tool_counts": {"Edit": 3, "Bash": 5},
+        "user_message_count": 5,
+    }
     assert _classify_intent(session) == "execution"
+
+
+def test_classify_intent_brief_execution() -> None:
+    """Real file work in 1-2 turns → brief-execution (focused delegate session)."""
+    session = {
+        "skill_invocations": [],
+        "tool_counts": {"Edit": 5, "Write": 1},
+        "user_message_count": 1,
+    }
+    assert _classify_intent(session) == "brief-execution"
 
 
 def test_classify_intent_scoping() -> None:
     session = {
         "skill_invocations": [],
-        "files_modified": 0,
+        "tool_counts": {},
         "user_message_count": 4,
         "read_edit_ratio": 10.0,
     }
@@ -447,7 +463,7 @@ def test_classify_intent_scoping_no_ratio() -> None:
     """read_edit_ratio=None (all reads) is scoping."""
     session = {
         "skill_invocations": [],
-        "files_modified": 0,
+        "tool_counts": {},
         "user_message_count": 3,
         "read_edit_ratio": None,
     }
@@ -455,7 +471,8 @@ def test_classify_intent_scoping_no_ratio() -> None:
 
 
 def test_classify_intent_unknown() -> None:
-    session = {"skill_invocations": [], "files_modified": 0, "user_message_count": 1}
+    """1 turn, 1 edit — too ambiguous for any named category."""
+    session = {"skill_invocations": [], "tool_counts": {"Edit": 1}, "user_message_count": 1}
     assert _classify_intent(session) == "unknown"
 
 

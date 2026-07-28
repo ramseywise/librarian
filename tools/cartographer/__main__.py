@@ -215,6 +215,11 @@ def _run_facts() -> None:
         default=str(Path("~/workspace/guacamayo/.claude/docs/tooling-ledger.md").expanduser()),
         help="Tooling ledger for experiment tracking",
     )
+    p.add_argument(
+        "--findings",
+        default=str(Path("~/workspace/guacamayo/.claude/docs/review-findings.jsonl").expanduser()),
+        help="Review findings JSONL for the code review subtab",
+    )
     args = p.parse_args()
 
     store = Path(args.store).expanduser()
@@ -230,14 +235,19 @@ def _run_facts() -> None:
         print(f"Repo activity: {commits} commit-days, {prs} PRs")
 
     if not args.no_dashboard:
+        from tools.cartographer.dashboard import parse_findings
+
         growth_md = Path(args.growth_md).expanduser()
         ledger_path = Path(args.ledger).expanduser()
         experiments = _parse_ledger(ledger_path) if ledger_path.exists() else None
+        findings_path = Path(args.findings).expanduser()
+        review_findings = parse_findings(findings_path) if findings_path.exists() else None
         out = write_dashboard(
             store,
             Path(args.dashboard).expanduser(),
             growth_md=growth_md if growth_md.exists() else None,
             experiments=experiments or None,
+            review_findings=review_findings or None,
         )
         print(f"Dashboard: {out}")
 
