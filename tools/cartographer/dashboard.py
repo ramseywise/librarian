@@ -892,6 +892,125 @@ def _status_key(status: str) -> str:
     return parts[0] if parts else ""
 
 
+def parse_findings(path: Path) -> list[dict]:
+    """Read review-findings JSONL, parse each line, return list of finding dicts.
+
+    Malformed lines are skipped with a warning so a single bad write never
+    breaks the dashboard render.
+    """
+    findings: list[dict] = []
+    if not path.exists():
+        return findings
+    for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            findings.append(json.loads(line))
+        except json.JSONDecodeError:
+            log.warning("dashboard.findings_parse_error", line=i, path=str(path))
+    return findings
+
+
+def _render_review_findings(findings: list[dict] | None) -> str:
+    """Render the Code Review Findings subtab section.
+
+    Four panels: severity distribution over time, findings by source, top
+    recurring categories, and per-repo finding density. Renders an empty-state
+    placeholder when no findings exist yet.
+    """
+    if not findings:
+        return (
+            '<section class="chart"><h3>Code Review Findings</h3>'
+            '<p class="note">No review findings yet. Run <code>/code-review</code> '
+            "or <code>/workflow-review</code> to populate.</p>"
+            "<p>Each run appends structured findings (akira-scan + SANYI) to "
+            "<code>guacamayo/.claude/docs/review-findings.jsonl</code>. "
+            "Cartographer reads this file on every <code>--facts</code> run.</p>"
+            "</section>"
+        )
+
+    # Severity distribution table
+    impact_order = {"blocker": 0, "important": 1, "question": 2, "suggestion": 3, "nit": 4}
+    impact_counts: dict[str, int] = {}
+    for f in findings:
+        impact = f.get("merge_impact", "unknown")
+        impact_counts[impact] = impact_counts.get(impact, 0) + 1
+    impact_rows = "".join(
+        f"<tr><td>{html.escape(impact)}</td><td>{count}</td></tr>"
+        for impact, count in sorted(
+            impact_counts.items(), key=lambda kv: impact_order.get(kv[0], 9)
+        )
+    )
+    severity_table = (
+        "<h4>By severity</h4>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Severity</th><th>Count</th></tr></thead>"
+        f"<tbody>{impact_rows}</tbody></table></div>"
+    )
+
+    # Source breakdown (akira-scan vs SANYI vs other)
+    source_counts: dict[str, int] = {}
+    for f in findings:
+        src = f.get("source", "unknown")
+        source_counts[src] = source_counts.get(src, 0) + 1
+    source_rows = "".join(
+        f"<tr><td>{html.escape(src)}</td><td>{count}</td></tr>"
+        for src, count in sorted(source_counts.items(), key=lambda kv: -kv[1])
+    )
+    source_table = (
+        "<h4>By source</h4>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Source</th><th>Count</th></tr></thead>"
+        f"<tbody>{source_rows}</tbody></table></div>"
+    )
+
+    # Top recurring categories
+    category_counts: dict[str, int] = {}
+    for f in findings:
+        cat = f.get("category")
+        if cat:
+            category_counts[cat] = category_counts.get(cat, 0) + 1
+    category_html = ""
+    if category_counts:
+        cat_rows = "".join(
+            f"<tr><td>{html.escape(cat)}</td><td>{count}</td></tr>"
+            for cat, count in sorted(category_counts.items(), key=lambda kv: -kv[1])[:10]
+        )
+        category_html = (
+            "<h4>Top categories</h4>"
+            '<div class="table-view"><table>'
+            "<thead><tr><th>Category</th><th>Count</th></tr></thead>"
+            f"<tbody>{cat_rows}</tbody></table></div>"
+        )
+
+    # Per-repo finding density
+    repo_counts: dict[str, int] = {}
+    for f in findings:
+        repo = f.get("repo", "unknown")
+        repo_counts[repo] = repo_counts.get(repo, 0) + 1
+    repo_rows = "".join(
+        f"<tr><td>{html.escape(repo)}</td><td>{count}</td></tr>"
+        for repo, count in sorted(repo_counts.items(), key=lambda kv: -kv[1])
+    )
+    repo_table = (
+        "<h4>By repo</h4>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Repo</th><th>Findings</th></tr></thead>"
+        f"<tbody>{repo_rows}</tbody></table></div>"
+    )
+
+    total = len(findings)
+    blockers = sum(1 for f in findings if f.get("merge_impact") == "blocker")
+    return (
+        f'<section class="chart"><h3>Code Review Findings</h3>'
+        f'<p class="note">{total} findings total, {blockers} blockers. '
+        f"Source: akira-scan + SANYI, persisted per review run.</p>"
+        f"{severity_table}{source_table}{category_html}{repo_table}"
+        f"</section>"
+    )
+
+
 def _render_experiments(experiments: list[Experiment] | None) -> str:
     if not experiments:
         return (
@@ -1221,6 +1340,7 @@ def render_dashboard(
     store: Path,
     funnel: Funnel | None = None,
     experiments: list[Experiment] | None = None,
+    review_findings: list[dict] | None = None,
 ) -> str:
     """Render the full dashboard to a self-contained HTML string."""
 
@@ -1252,6 +1372,7 @@ def render_dashboard(
         '<a href="#cost">Cost &amp; Efficiency</a>'
         '<a href="#context">Context Health</a>'
         '<a href="#friction">Friction &amp; Quality</a>'
+        '<a href="#review">Code Review</a>'
         '<a href="#progress">Experiments &amp; Progress</a>'
         "</nav>"
     )
@@ -1276,6 +1397,13 @@ def render_dashboard(
         f"{tier3}{_render_subagents(store)}</section>"
     )
 
+    sec_review = (
+        f'<section id="review"><h2>Code Review Findings</h2>'
+        f'<p class="sub">Structured findings from akira-scan and SANYI, '
+        f"persisted per review run.</p>"
+        f"{_render_review_findings(review_findings)}</section>"
+    )
+
     sec_progress = (
         f'<section id="progress"><h2>Experiments &amp; Progress</h2>'
         f'<p class="sub">Are my changes working?</p>'
@@ -1291,7 +1419,7 @@ def render_dashboard(
         f'<div class="viz-root"><h1>Context engineering dashboard</h1>'
         f'<p class="sub">Work sessions only, faceted by instrumentation regime. '
         f"Rates are never pooled across regimes.</p>"
-        f"{nav}{sec_cost}{sec_context}{sec_friction}{sec_progress}"
+        f"{nav}{sec_cost}{sec_context}{sec_friction}{sec_review}{sec_progress}"
         f"</div>"
     )
 
@@ -1301,10 +1429,11 @@ def write_dashboard(
     out: Path,
     growth_md: Path | None = None,
     experiments: list[Experiment] | None = None,
+    review_findings: list[dict] | None = None,
 ) -> Path:
     """Render and write the dashboard, returning the output path."""
     funnel = funnel_counts(growth_md) if growth_md else None
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render_dashboard(store, funnel, experiments), encoding="utf-8")
+    out.write_text(render_dashboard(store, funnel, experiments, review_findings), encoding="utf-8")
     log.info("dashboard.written", out=str(out), store=str(store))
     return out
