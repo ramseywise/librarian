@@ -10,7 +10,7 @@ sources:
 
 # Observability — LangFuse vs LangSmith Decision
 
-**Date:** 2026-04-09  
+**Date:** 2026-04-09
 **Status:** Decided — LangFuse first, revisit LangSmith when annotation queues are needed
 
 ## The Decision

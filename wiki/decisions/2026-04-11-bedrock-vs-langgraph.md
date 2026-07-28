@@ -10,7 +10,7 @@ sources:
 
 # Bedrock KB vs LangGraph Decision
 
-**Date:** 2026-04-11  
+**Date:** 2026-04-11
 **Status:** Decision framework established — start with Bedrock for TS prototype, migrate to Polyglot (Option C) once eval validates LangGraph CRAG quality
 
 ## Head-to-Head

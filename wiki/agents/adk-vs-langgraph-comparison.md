@@ -42,11 +42,11 @@ researcher = Agent(
 class RetrieverAgent:
     name = "retriever"
     description = "Multi-query embedding + hybrid search + grading"
-    
+
     async def run(self, state: LibrarianState) -> dict:
         # embed → search → grade
         ...
-    
+
     def as_node(self) -> Callable:
         async def retrieve(state): return await self.run(state)
         return retrieve
@@ -128,7 +128,7 @@ Wrap the compiled LangGraph graph as a single ADK `BaseAgent`:
 class LibrarianADKAgent(BaseAgent):
     def __init__(self):
         self._graph = create_librarian()  # LangGraph compiled graph
-    
+
     async def _run_async_impl(self, ctx: InvocationContext) -> AsyncIterator[Event]:
         query = ctx.session.events[-1].content.parts[0].text
         result = await self._graph.ainvoke({"query": query, ...})

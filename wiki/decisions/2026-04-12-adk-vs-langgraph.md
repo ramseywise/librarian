@@ -11,7 +11,7 @@ sources:
 
 # ADK vs LangGraph Decision
 
-**Date:** 2026-04-12  
+**Date:** 2026-04-12
 **Status:** Decided — keep LangGraph, apply Level 1 vocabulary alignment
 
 ## Decision

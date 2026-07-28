@@ -10,7 +10,7 @@ sources:
 
 # Orchestration Architecture Decision
 
-**Date:** 2026-04-12  
+**Date:** 2026-04-12
 **Status:** Decided — start A (Bedrock), migrate to C (Polyglot) once eval validates quality
 
 ## Option A — Full Bedrock (TS-Native Stack)
@@ -98,7 +98,7 @@ These should happen regardless of which direction is selected:
 ```python
 async def run_query(query: str, *, session_id: str | None = None) -> list[Passage]:
     """Run a query through the configured orchestration strategy.
-    
+
     Strategy selected by `settings.orchestration_strategy`:
     - "langgraph": LangGraph CRAG graph
     - "adk": ADK CustomRAGAgent
