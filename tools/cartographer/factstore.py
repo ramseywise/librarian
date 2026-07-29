@@ -105,12 +105,12 @@ NULLABLE_COLUMNS: dict[str, type] = {
 # unattributable -- bucketed under UNATTRIBUTED_AGENT rather than dropped, so the
 # panel's per-agent shares never silently understate total subagent cost.
 SUBAGENT_ATTRIBUTION_CLI = "2.1.201"
-# Approximate calendar date of the CLI 2.1.201 rollout -- used by dashboard.py to
+# Approximate calendar date of the CLI 2.1.201 rollout — used by dashboard.py to
 # compute a recent-window unattributed share that excludes the permanent pre-2.1.201
-# historical backlog. Pre-2.1.201 transcripts structurally cannot carry attribution
+# historical backlog.  Pre-2.1.201 transcripts structurally cannot carry attribution
 # regardless of agent naming, so measuring the GUA-45 acceptance criterion (<30%
 # unattributed) against the all-time cumulative table would make the criterion
-# unfalsifiable. This date is the natural window boundary.
+# unfalsifiable.  This date is the natural window boundary.
 SUBAGENT_ATTRIBUTION_SINCE = "2026-07-15"
 UNATTRIBUTED_AGENT = "unattributed"
 

@@ -1,0 +1,1048 @@
+---
+title: Session Log
+tags: [context-management, llm, project]
+summary: Chronological index of all Claude Code and Codex sessions captured in raw/sessions/ — what was worked on, which project, and approximate token spend.
+updated: 2026-07-20
+sources:
+  - raw/sessions/
+---
+
+# Session Log
+
+Operational activity log compiled from `raw/sessions/`. Each row is one session. First-prompt summary indicates the primary intent; token counts are from session frontmatter.
+
+---
+
+## Codex Sessions — 2025-09
+
+All on the `[tx-project]` project, `ramsey-feature-dev` branch ([client] — document-for-transaction validation and scoring system).
+
+| Date | Session | Prompts | Topic |
+|------|---------|---------|-------|
+| 2025-09-14 | 4998c107 | 54 | Transaction autoassignment notebook, scoring system |
+| 2025-09-14 | 8713027f | 3 | Document-for-transaction validation |
+| 2025-09-14 | a2b0ddde | 30 | `_build_ground_truth_sets`, validation scoring |
+| 2025-09-14 | ef78d2bb | 24 | Validation + transaction matching |
+| 2025-09-15 | 76cb019f | 4 | Validation tabs, transaction match vectorised |
+| 2025-09-16 | 58516737 | 21 | Validation refactor |
+| 2025-09-16 | dabddaa4 | 20 | Scoring system finalisation |
+
+---
+
+## Claude Code Sessions — April 2026
+
+### 2026-04-10 (Workspace)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 1900854e | 3 | 139k | Librarian folder restructure — `analyzer/` belongs in ingestion or eval; research how to reorganise `librarian/` |
+
+### 2026-04-11 (Workspace)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| deb81c96 | 8 | 170k | Core module extraction — fix circular dep between `storage` and `librarian`; shared types in `core/` |
+| 394ba556 | 24 | 310k | Refactor + rename `insights` skill → `claude-insights`; two analysis modes (JSONL + local artifacts) |
+| 356746ec | 11 | 104k | Librarian chat as frontend; triage routing (Next.js vs LLM for binary 0/1 routing) |
+| fe1c0bd1 | 8 | 100k | src/ package restructure: core + librarian + storage + orchestration + interfaces + eval; Fargate over Lambda |
+| f5cfe1b3 | 5 | 67k | `infra/` under `src/` not `librarian/`; rag_core sub-organisation; listen-wiseer vs playground infra comparison |
+
+### 2026-04-12 (Workspace)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 406fcc7f | 3 | 77k | Google ADK vs LangGraph orchestration comparison; ADK + Python LangGraph hybrid; LangFuse compatibility confirmed |
+| 8d1a71b0 | 5 | 51k | RAG tradeoffs: BookKeeper Hero vs Bedrock KB vs Librarian; engineering risk matrix (integration/cost/latency/hallucination) |
+
+### 2026-04-14 (Workspace — heavy day: 8 sessions)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 53ef9ef6 | 3 | 80k | LangGraph-ADK compatibility; rebuild as Python LangGraph copilot |
+| a419a1f1 | 3 | 58k | Research ts-copilot-upgrades tradeoffs; update plan |
+| dd36bdeb | 1 | 162k | Execute terraform-restructure → unblocks GitHub CI/CD |
+| 4a5c5ba3 | 3 | 93k | Python copilot: ts_google_adk parity + copilot upgrades research |
+| 48cd8a0e | 4 | 41k | Librarian as RAG-only service; bring to engineering standard |
+| a6a9bcf4 | 8 | 125k | `.claude/docs` restructuring — research→plan chains, archive lifecycle |
+| ec44fece | 5 | 21k | Ruff linter misconfigured for TS in polyglot repo; disable for ts folder |
+| 3def7093 | 2 | 78k | `playground/src/clients` vs `interfaces` cleanup; LangGraph-ADK compat plan |
+| 42826f2b | 1 | 65k | Priority order: infra-interfaces → orchestration-rollout → terraform → langgraph-adk-compat |
+
+### 2026-04-15 (poc project — Help Support RAG Agent)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 578a75d8 | 3 | 120k | `.gitignore` audit |
+| b269ccf1 | 4 | 50k | rag-poc vs playground/librarian comparison; LangGraph copilot best practices |
+| 17811ed1 | 7 | 47k | Switch LLM to Anthropic API; RAG components reuse |
+| eeebbd1e | 7 | 110k | Unit tests for `app`; code review; translation support (FR/DE/DA) |
+| b669eebb | 6 | 231k | `app/agent_nodes/retriever` → `rag/`; orchestration domain reorg |
+| 7c4e1442 | 4 | 6k | `Literal["q&a", "task_execution"] = None` typing fix |
+| c2109cb9 | 3 | 79k | Code quality pass; changelog write; commit grouping |
+| 92643c18 | 1 | 1k | Find `.env` with Anthropic API key |
+
+### 2026-04-16 (poc project)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 314ac54a | 12 | 168k | Multi-query feature flag; LangSmith trace routing; English→German smoke test failure |
+| 06b9a503 | 3 | 92k | Intensive code review — simplify and condense 19 files |
+| efd3b13a | 5 | 89k | Demo data placement; LangGraph node simplification |
+| ca037b9e | 1 | 65k | Eval cleanup and simplification |
+
+### 2026-04-17 (Workspace + poc)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 7a25dbd0 | 11 | 134k | ADK samples scan — context engineering (.agent/.claude/.agents), native_skill_mcp vs rag_poc Strategy C |
+| 9fc31735 | 2 | 14k | mypy/ruff linting errors; QA policy/gate node placement question |
+| c44fa991 | 5 | 89k | Code review graph changes; runtime-agnostic orchestrator plan (LangGraph + ADK) |
+
+### 2026-04-18 (Workspace + poc)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 29a60696 | 5 | 28k | LLM provider config: Bedrock → Ollama (PII concern drove local switch) |
+| 57042538 | 4 | 89k | Eval cleanup — graders vs metrics vs harnesses vs experiments distinction |
+| 0ef44b3d | 5 | 89k | Google ADK parity with adk-agent-samples; shared protocols vs skills; Makefile targets for both runtimes |
+
+### 2026-04-19 (poc project)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 6765bd2b | 12 | 21k | Linting fixes; Makefile smoke test target added |
+| 1bafe007 | 26 | 239k | src/ vs app/ naming decision; circular import fix (datastore); test import reorganisation |
+| 9e66674c | 3 | 13k | Ingestion/embedding in preprocessing (not retrieval); single indexer decision; dead indexing.py deleted |
+
+### 2026-04-20 (Workspace + poc)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 64095580 | 17 | 301k | playground/.claude vs adk-agent-pocs/.claude overlap; .agents/ research docs lifecycle; ADK vs Claude skills |
+| ba67f0c4 | 3 | 13k | Sensitive data audit before merging open PR |
+
+### 2026-04-21 (Workspace + playground + wiseer)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| dd86ca38 | 5 | 148k | Compare playground VA agents vs listen-wiseer setup; listen-wiseer restart |
+| 46a3b186 | 25 | 423k | Playground sensitive data audit; infra folder consolidation |
+| 9a091358 | 12 | 182k | listen-wiseer phase 3 refactor continuation |
+| 826a1a97 | 62 | 2.6M | Track B Phase 3 — RDS Postgres for LangGraph checkpointer + EFS for [product] SQLite |
+| ecf3e696 | 1 | 15k | Auto-generate CLAUDE.md for codebase |
+
+### 2026-04-22 (Workspace)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 198e7d2c | 3 | 9k | `/insights` report analysis; create doc-to-linear-tickets skill; push to Linear |
+
+### 2026-04-24 (Workspace)
+
+| Session | Prompts | ~Tokens | Topic |
+|---------|---------|---------|-------|
+| 108c3f61 | 10 | 92k | Playground infra → GitHub; secrets audit; consolidate settings.json; name "librarian" chosen for wiki repo |
+
+### 2026-04-25 (null)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | — | — |
+
+### 2026-04-26 (null)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | — | — |
+| 2026-04- | 319k | — |
+| 2026-04- | 421k | — |
+| 2026-04- | 537k | — |
+| 2026-04- | 697k | ok then maybe we should just hae a command to do all of this in claude rather |
+
+### 2026-04-27 (librarian)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | 86k | let's do phase 1 |
+| 2026-04- | 155k | This session is being continued from a previous conversation that ran out of c |
+| 2026-04- | 220k | the uv sync is taking a while to buid - is it a lot from the toml that needs d |
+
+### 2026-04-29 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | 52k |  can you find [vendor]_API_TOKEN |
+| 2026-04- | 139k | and what about these open issues? should we move the plans to research where u |
+| 2026-04- | 223k | /compact sounds good, lets proceed we want to finish all the plans and put the |
+| 2026-04- | 52k | yes please but leave the regex part 1 as the precursor to run gdor review |
+| 2026-04- | 269k | This session is being continued from a previous conversation that ran out of c |
+| 2026-04- | 125k |  and the global skills? any iteration needed? |
+| 2026-04- | 365k | what about langgraph-prompts? |
+| 2026-04- | 230k |  wait since we added pre-commit we seem to have a lot of issues for these but |
+| 2026-04- | 412k | ok all three sound good.. i'm wondering also about context chunks how long are |
+| 2026-04- | 275k |  i have 33 tickets that mention [vendor] - can we make these generic names plea |
+| 2026-04- | 307k | not just for this session but also uncommitted changes. and i already removed |
+| 2026-04- | 25k | yes that would be great thank you |
+| 2026-04- | 64k |  WARN[0112] Found orphan containers ([listen-wiseer-app listen-wiseer-db-init |
+
+### 2026-04-30 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-04- | 63k |  i just realized we have been naming everything [product] - but actually this is j |
+| 2026-04- | 169k |  i still see 70 files with [product] mentioned that's insane and also did i remove |
+| 2026-04- | 204k |  idk i still see 60 files |
+
+### 2026-05-04 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 99k |  what scripts for eval of bedrockKB do we have available here? we dont need al |
+| 2026-05- | 121k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 173k | I guess one nbk is fine |
+| 2026-05- | 190k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 223k | Continue from where you left off. |
+| 2026-05- | 5k |  TypeError: dtype 'str' does not support operation 'mean' |
+| 2026-05- | 266k | that sounds great |
+| 2026-05- | 297k | why is topic distribution so long? perhaps do something to get top topic_descr |
+
+### 2026-05-05 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 50k |  eval notebook somehow lost the 1f. lexical and semantic similarity subplot bu |
+| 2026-05- | 73k |  ratings looks good but the user feedback and notes should be histogram like t |
+| 2026-05- | 132k |  no histogram and there are some rated like and dislike not a number but a str |
+| 2026-05- | 211k |  ok for lexical similarity can we just do the repeated question distrbution an |
+| 2026-05- | 295k |  df = pd.read_csv("evals/data/bookkeeperHero.csv") |
+| 2026-05- | 431k |  i see the 1g but no code |
+| 2026-05- | 441k |  i'm looking at it now and we're missing the code for source fidelity and lexi |
+| 2026-05- | 508k |  did you delete the code? |
+| 2026-05- | 52k |  What's working well |
+| 2026-05- | 14k |  i want to get the naming convention correct here bc we have turns = task_id.. |
+| 2026-05- | 40k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 63k | i've added them to a nbks/[vendor] folder here |
+| 2026-05- | 80k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 105k |  ok so the parkey is creating data path but actually we whave evalse/data wher |
+| 2026-05- | 114k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 135k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 17k |  fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(16, 4)) |
+| 2026-05- | 115k |  ignore the comments i'm trying to fix this figure.. but we shoud also save th |
+| 2026-05- | 202k |  just please have a look at the nbk its not aligned with the 6 eda topics .. e |
+| 2026-05- | 231k |  it was overwritten again somehow please update the nb |
+| 2026-05- | 266k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 19k |  so i dont know if you are aware, but our analysis is basically per turn right |
+| 2026-05- | 44k |  ok but the question remains - does this eda nbk output @results/eda_output/ p |
+
+### 2026-05-06 (playground)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 9k |  how to export nbk as html in a cell |
+| 2026-05- | 114k |  i think we also use sentence transformers - but my point is that in playgroun |
+| 2026-05- | 212k |  is there also a flag for when the response language is not the same as the qu |
+| 2026-05- | 407k | ok so what have i commited so far bc i dont see it on github.. as anything pus |
+| 2026-05- | 473k |  any insights here === df (full) === |
+| 2026-05- | 817k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 110k |  a few thoughts about our eval set aggregation and metrics to track from regre |
+| 2026-05- | 210k |  exactly and we want to full base that contains all 5 separate datasets.. the |
+| 2026-05- | 210k |  are you use you updated te nbk loks the same to me |
+| 2026-05- | 319k | looks but i'm wondering if eval sets should be more like this breakdown 100 li |
+| 2026-05- | 429k |  ok let's look a bit more closely now that we have our eval data set.. does it |
+| 2026-05- | 515k |  ok the nbk ran through - but was anything recorded? or do i have to uncomment |
+| 2026-05- | 672k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 1172k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 96k |  can we double check the sentiment distr for each of our samples used for llm |
+
+### 2026-05-07 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 59k |  what do we think of just the base output and the 500 sample for the llm as gr |
+| 2026-05- | 153k | wait a minute - did you just run the quality test through base? it was only me |
+| 2026-05- | 120k |  we should have the --fix in the make lint command for ruff and also execute b |
+| 2026-05- | 268k | looks great, but we are missing the all_stats.html did i delete it or was it n |
+| 2026-05- | 397k | you ran it and think it lokos great? no this is what i'm seeing.. the fix need |
+| 2026-05- | 118k |  if or file, this would look like make eval-stats --file? or make eval-stats f |
+| 2026-05- | 249k | @evals/reports/bkh/all_stats.html , @evals/reports/bkh/base_stats.html , @eval |
+| 2026-05- | 74k | exactly thank you lets make those changes, update paths and validate tests |
+| 2026-05- | 176k | Let's think this through a little bit. Because we're in going in the right dir |
+| 2026-05- | 244k | layer 1. satisfaction rate, resolution rate, resolution with friction rate, an |
+| 2026-05- | 398k | you think so? i think resolution rate is north star with satisfaction, retriev |
+| 2026-05- | 98k |  i just noticed a mistak maybe where no source liked is FN but this is problab |
+| 2026-05- | 197k | are there any metrics from quality or intent graders we can add with instead o |
+| 2026-05- | 93k |  can you run this skill to get insights report from claude usage - i'm trying |
+| 2026-05- | 110k |  ok we have done a lot of good stuff here.. can we do a code review before we |
+| 2026-05- | 87k | [Request interrupted by user] |
+
+### 2026-05-08 (Workspace)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 98k |  right but @playground is wired to test [corpus] tickets i guess only va-support- |
+| 2026-05- | 210k | quick question bc i just want to test the 3 va models against the [vendor] data |
+| 2026-05- | 110k |  something doesnt look right in the nbk for Calibration metrics (liked = posit |
+| 2026-05- | 260k |  can you give me how to store under@data/baseline/golden_traces for the 12 and |
+| 2026-05- | 429k |  NameError: name '_DEFAULT_MODEL' is not defined |
+| 2026-05- | 99k | ok while that is running we should add data/baseline to gitignore and change t |
+| 2026-05- | 367k | ok yeah cool it makes sense that routing fails here - leave it for now we will |
+| 2026-05- | 91k |  yes please update the nbk so that it will run now thanks |
+| 2026-05- | 428k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 614k | very nice.. should we make the old data set into regression/capability set for |
+| 2026-05- | 217k | yes please collapse into one, but i think in nb 04_quality grader we compared |
+| 2026-05- | 315k | sorry but we already ran eval_runner_quality what we're missing are the stats |
+
+### 2026-05-09 (Workspace)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 771k | Check if the calibration eval (background task b6fo15w0q) has completed by rea |
+| 2026-05- | 1079k | ok before we run the same 50 eval quality - can we instead include the single |
+| 2026-05- | 93k |  question - what is the best way to handle data/report issues - if we push the |
+| 2026-05- | 82k | ok lets move it to specs then and can we create specs/evals folder where all t |
+| 2026-05- | 220k |  Okay. Yeah. Great. Glad we're on the same page here. So what I've done is I'v |
+| 2026-05- | 305k | Oh, I think I know it got cut off. Um, Yeah. For the single agents, we don't n |
+| 2026-05- | 149k |  Yep. That pretty much touches on everything we discussed, but one thing that' |
+| 2026-05- | 322k | perfect lets write that plan and continue implementation thanks |
+| 2026-05- | 60k | yes lets do that and does this apply also to langgraph or is independent to ad |
+| 2026-05- | 200k |  ok i did a pretty heavy refactoring of @project-g/data which i think makes sen |
+| 2026-05- | 163k | also the adk/langgraph agents calling bedrock should be similar in coverage - |
+| 2026-05- | 348k | no lg is also broke |
+| 2026-05- | 414k | oh intersting that hc_rag mrr is better than va_staging.. actually it looks li |
+| 2026-05- | 581k | oh no something fucked up for hc_lg and hc_rag |
+| 2026-05- | 739k |  ok we want next to these experiments also the comparison for va-agents with s |
+
+### 2026-05-10 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 875k |  wait what? bkh should definitely not look higher.. why do we not have 44 task |
+| 2026-05- | 1029k | this is what i see bkh missing data  , deepeval data misssing - eval_suite mda |
+| 2026-05- | 633k |  ok heres the deal - i have renamed datasets to datasets_old.. what files need |
+| 2026-05- | 1072k | ok this looks better but should the pipeline folder reflect the breakdown you |
+| 2026-05- | 1603k | can we update readme please bc this is important step alos what are our repo r |
+
+### 2026-05-11 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 85k | btw are any of these other metrics useful for us that we might want to add lat |
+| 2026-05- | 97k |  also do we have the reranker in the ablation study? so is it just hyde is the |
+| 2026-05- | 240k |  ok but did we dod the deepeval on bkh? if so we could just run that in the nb |
+| 2026-05- | 397k | ok awesome.. i have also some metrics from @nbks/[vendor] - is there anhything |
+| 2026-05- | 536k |  making the call now and to be clear, make va-calibrate-full  will calibrate t |
+| 2026-05- | 124k |  what other topics would be interesting from our multiagent lg version - every |
+
+### 2026-05-12 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 324k |  great can we finish va-migration? |
+| 2026-05- | 129k |  is part of this plan or va-migration include adding safeguards, confidence ga |
+| 2026-05- | 133k |  for the recent addition of grounding to our support-agents.. we also have ver |
+| 2026-05- | 159k |  ok then lets do sprints 1-4 and we should touch kb urls - but we may have to |
+| 2026-05- | 294k | y ty - and yes i am particularly interested in business analyst regarding invo |
+| 2026-05- | 502k |  awesome before we move to sprint 2, can you please review these documents tha |
+
+### 2026-05-13 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 171k |  ok i am thinking - lets make a new nbk.. golden_traces.. lets load the data w |
+| 2026-05- | 116k |  # 17. Final Showdown — Custom v4 vs DeepEval vs RAGAS (second 50-query set) |
+| 2026-05- | 291k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 384k | i said to do batches just bc its sooooo slow |
+| 2026-05- | 99k |  edge_paths = { |
+| 2026-05- | 468k | ok so now i can call the next fifty va-call-golden INPUT=data/datasets/va_stag |
+| 2026-05- | 135k |  Grounding summary (192 graded items): |
+| 2026-05- | 522k | ok lets review this a bit.. is the golden running both bkh and va responses/so |
+| 2026-05- | 710k |  alright what do we think of the output for i think our golden traces nbk? its |
+| 2026-05- | 871k |  btw are we getting the call latency and error reported anywhere? |
+| 2026-05- | 969k |  ok i think there is a mistake eith eval-stats golden bc its taking. along tim |
+| 2026-05- | 81k |  ok looks good.. dont we want to also show the repo structure for core and eva |
+| 2026-05- | 166k | what happened to our eval metrics in file:///Users/ramsey.wise/Workspace/galac |
+| 2026-05- | 188k |  ok i reran the nbk but not sure if all paths were updated? some still say 192 |
+
+### 2026-05-14 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 113k |  so our golden traces have a problem with url match between old and new versio |
+| 2026-05- | 99k | Love that. Can you also add this information to a read me somewhere maybe arou |
+| 2026-05- | 261k |  ok looks like everything works but is it retrieving from 500? not the va-stag |
+| 2026-05- | 351k | wait but pycall is also bedrock which doesnt work now bc of aws creds.. so we |
+| 2026-05- | 440k | ok raw json givs 5 sources but only title url   "suggestions": [], |
+| 2026-05- | 561k |  but is the retrival 500 the same as our 600 count? we should have task id and |
+| 2026-05- | 128k |  {"status":"ok","backend":"langgraph"}%   but backend should be hc_rag |
+
+### 2026-05-15 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 194k | looks good but now we are missing the va-hit-count as well as the [product] url if |
+| 2026-05- | 373k | ok but the ub_url_coverage has only 1395 rows.. are there some. missing maybe |
+| 2026-05- | 503k |  index error.. ok i like where we're going with this from bkh to liked we can |
+| 2026-05- | 137k |  I just added @worksapce/chat-agent that has a pretty sophisticated eval and o |
+| 2026-05- | 589k | look where we start eda (i added markdown separator) the first cell is bkh hit |
+| 2026-05- | 205k |  no lets add it to the plan and start implementing - although there might be s |
+| 2026-05- | 665k |  Golden responses: 597 rows |
+| 2026-05- | 298k | This session is being continued from a previous conversation that ran out of c |
+
+### 2026-05-16 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 823k |  ok but that's where we're wrong.. first of all expected_url is this mapped to |
+| 2026-05- | 989k |  did you add that at the end i just reran and dont see it |
+| 2026-05- | 1123k | ok very cool.. yes i agree with your insights will check it out, but this is s |
+
+### 2026-05-18 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 142k |  in this report.. we show top 10 disliked topics.. but lets also show top 10 l |
+| 2026-05- | 97k |  for the eval methods tab do we need to update any of the stats or quality gra |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+
+### 2026-05-19 (.claude)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+
+### 2026-05-20 (.claude)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+| 2026-05- | 0k | — |
+
+### 2026-05-21 (.claude)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 0k | — |
+
+### 2026-05-24 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 112k |  then why is there only 38 capability test in baseline/eval sets - are the lat |
+| 2026-05- | 261k | question is hc_adk and hc_lg currently wired to the hc_rag or to bedrock? has |
+| 2026-05- | 42k |  now that we have the golden 597 we can do the ablation study - what is left t |
+| 2026-05- | 400k | ok lets please fix all of these monitoring and metric issues and i will rerun |
+| 2026-05- | 124k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 618k | also it looks like adk is running but there are no logs so i have no idea wher |
+| 2026-05- | 253k |  help.[client].co should be the corpus_articles (formerly [product] help).. we should |
+| 2026-05- | 700k |  interesting and how does this compare to va-agents? bc i think the adjusted m |
+| 2026-05- | 911k |  data/datasets/support-agents/eval_sets/proper_eval_51.jsonl --endpoint http:/ |
+| 2026-05- | 154k | make crawl-[product]-kb |
+| 2026-05- | 82k |  these reports enrichment folder is getting out of control can we refactor and |
+| 2026-05- | 1239k |  well actually can we create a nbk like the onese we did at [vendor] for findin |
+| 2026-05- | 212k |  how does this metadata compare to bedrock config for DATA_SOURCE_IDS = { |
+| 2026-05- | 1503k |  why is this last reranker taking so long? been almost 30 min |
+| 2026-05- | 70k |  ok and what about the mq? do we include that for the ablation as well? |
+| 2026-05- | 156k |  but i want to see this table by source |
+
+### 2026-05-25 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 298k | oh intersting ok so looks like we were escalating cases that we prob could hav |
+| 2026-05- | 648k | ok interesting our router to source typd didnt work.. but if we had thinking t |
+| 2026-05- | 792k | Okay. So I do make s a eighty k bedrock up and then run this. Is that right? |
+| 2026-05- | 893k | This session is being continued from a previous conversation that ran out of c |
+
+### 2026-05-26 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 176k |  if we were to vibe code this agentic framework with eval and data ingestion a |
+
+### 2026-05-28 (null)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| a0a707d3 | 77k | — |
+
+### 2026-05-29 (null)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 68493546 | 67k | — |
+
+### 2026-05-30 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-05- | 79k |  hmm so these are used by both ingestion and preprocessing? or more eval? like |
+| 2026-05- | 134k |  nice is there anything from plans we can archive or remove? also research - i |
+| 2026-05- | 204k | This session is being continued from a previous conversation that ran out of c |
+| 2026-05- | 122k |  now that we have refactored core - our data folder is a hot mess.. is there a |
+
+### 2026-06-01 (Workspace)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-06- | 177k |  can ytou give a summary of all the changes i just pulled particularly from he |
+| 2026-06- | 137k |  instead of matching our intercom conversations by our rated bkh n=597 qa samp |
+
+### 2026-06-02 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-06- | 369k |  did we update it? it looks the same gold df and for the sentence transformer |
+| 2026-06- | 362k | ok and is there anything here on latency and evaluation of this invocation flo |
+| 2026-06- | 749k |  ok so if i look at the gold_df by match_type=bkh_liked, there is no intercom |
+| 2026-06- | 722k |  in the doc can you explain this a bit better Tier 1 (hallucinated IDs), Tier |
+| 2026-06- | 1254k | ok thanks and to be clear and the qa pairs from gold overlapping with any of t |
+| 2026-06- | 1191k | what do you think about this bc in project-g we use ragas and thats as good or |
+| 2026-06- | 184k |  i think its even less after deduplication within queries, 195 but yes can you |
+| 2026-06- | 1296k | This session is being continued from a previous conversation that ran out of c |
+| 2026-06- | 242k |  I UNCOMMENT GENAI USE TO TRUE BUT IT SAYS GOOGLE API key not set |
+| 2026-06- | 83k |  is there also overlap with @tooling/evals - for example the multiagent vs sup |
+
+### 2026-06-03 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-06- | 97k |  if this eval calibration is done can you mark it as such, also the pii pipeli |
+| 2026-06- | 1465k | Base directory for this skill: /Users/ramsey.wise/.claude/skills/execute-tasks |
+| 2026-06- | 142k |  yo what's going on with this make file, please reduce it's crazy - all the ab |
+| 2026-06- | 158k | actually i delete evals graders shared and also data is root of project-g not i |
+| 2026-06- | 79k | oh thats not good.. we need to centralize our support agent schemas and config |
+| 2026-06- | 154k | oh ok bur actually.. the loop is research -> plan -> plan review (dor gate) -> |
+| 2026-06- | 223k | Start or continue a research phase. Delegates to the `research-review` protoco |
+| 2026-06- | 377k | well the agent creator folder is used for the claud agents to execute i guess? |
+| 2026-06- | 539k | can we also run a hook to do a lint after run-code-review? |
+
+### 2026-06-04 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2026-06- | 107k |  make test 3 skipped, 22 deselected, 9 errors in 3.36s |
+| 2026-06- | 84k |  how would you compare @chat-agent/src/agentic_rag to @project-g/src/support_ag |
+| 2026-06- | 92k |  is this src folder linted already? |
+| 2026-06- | 83k | ok cool is that something we need to refactor, is it fine where it sits in the |
+| 2026-06- | 125k | sorry my skills strucutre looks different |
+
+### 2025-09-14 (tx-project)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 4998c107 | — | — |
+| 8713027f | — | — |
+| a2b0ddde | — | — |
+| ef78d2bb | — | — |
+
+### 2025-09-15 (tx-project)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 76cb019f | — | — |
+
+### 2025-09-16 (tx-project)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 58516737 | — | — |
+| dabddaa4 | — | — |
+
+### 2026-06-05 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| e8f4eeed | 15k | — |
+| 824e04f8 | 345k | — |
+| 54fbb1fb | 701k | — |
+| f38c3543 | 42k | — |
+
+### 2026-06-07 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| eeeb2744 | 35k | — |
+| 3e89eb49 | 114k | — |
+| a758a3bb | 238k | — |
+| 83bb4b48 | 34k | — |
+| e9506f1e | 6k | — |
+
+### 2026-06-08 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 09914670 | 4k | — |
+| 7aa3db68 | 5k | — |
+| fe31aacc | 16k | — |
+| b52a3ff9 | 1k | — |
+| 4c189a8c | 346k | — |
+| 52d344b8 | 67k | — |
+| fdc67863 | 687k | — |
+| be975ee5 | 36k | — |
+
+### 2026-06-09 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 0c6ec8a1 | 6k | — |
+| 660918fb | 73k | — |
+| bf836c46 | 49k | — |
+
+### 2026-06-10 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 9ddbb706 | 1k | — |
+
+### 2026-06-11 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 8caa7044 | 15k | — |
+
+### 2026-06-19 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 8877c883 | 59k | — |
+| 094b14b7 | 12277k | — |
+| 11d354a7 | 171k | — |
+| 6a1505ca | 96k | — |
+| b4f26fe7 | 94k | — |
+| 5bae9447 | 54k | — |
+| 130222d2 | 916k | — |
+
+### 2026-06-22 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 93b4309e | 209k | — |
+| 84c3ba53 | 2k | — |
+| f3d8c629 | 565k | — |
+
+### 2026-06-23 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 2a6c99c4 | 223k | — |
+| bf544d36 | 1704k | — |
+
+### 2026-06-24 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| b0642ba1 | 36k | — |
+| 7e180bf0 | 958k | — |
+| b9dc2827 | 319k | — |
+| 4034555a | 19k | — |
+| 76bda47b | 10k | — |
+| 6210d985 | 160k | — |
+| a7cab4b9 | 206k | — |
+| de544217 | 586k | — |
+| 51b184ce | 134k | — |
+| 890685a5 | 30k | — |
+| 0c67abca | 3k | — |
+| b91ebc5f | 150k | — |
+| 419dc79c | 54k | — |
+| b92e12ec | 80k | — |
+| c46b867f | 338k | — |
+
+### 2026-06-25 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 4ad49b99 | 245k | — |
+| b6ed6cf9 | 61k | — |
+| 6be85145 | 612k | — |
+| 8cc7f4f3 | 16k | — |
+| 0310489c | 187k | — |
+| c28a2b11 | 27k | — |
+| cb15d378 | 48k | — |
+| a9522055 | 1633k | — |
+| e6f88df0 | 60k | — |
+
+### 2026-06-26 (project-g)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 71d75bb4 | 41k | — |
+
+### 2026-07-05 (-Users-ramsey-wise-Workspace)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 4914f277 | 203k | — |
+| c7597adf | 11k | — |
+| 0ee40dd4 | 46k | — |
+
+### 2026-07-06 (INTENSO)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 012cfada | 121k | — |
+| bec24482 | 347k | — |
+| 268f0009 | 734k | — |
+
+### 2026-07-07 (INTENSO)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 0cd5da0c | 945k | — |
+
+### 2026-07-12 (INTENSO)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| a5c50915 | 894k | — |
+
+### 2026-07-13 (INTENSO)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| a3b6ecb6 | 72k | — |
+| dfcde495 | 139k | — |
+
+### 2026-07-14 (INTENSO)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 63940e32 | 11k | — |
+| 7f9c0f01 | 42k | — |
+| 877508dc | 13k | — |
+| c90bb5d6 | 872k | — |
+
+### 2026-07-15 (wiseer)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 66db6176 | 200k | — |
+| b06a84e7 | 63k | — |
+| cb2455a5 | 38k | — |
+| 21980b07 | 427k | — |
+| 375f1cfb | 255k | — |
+| 40edef78 | 217k | — |
+| 002f6e0c | 72k | — |
+| 4d745798 | 149k | — |
+
+### 2026-07-16 (wiseer)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 62a22f45 | 5k | — |
+| 7610c4b8 | 14k | — |
+| fcb17a23 | 38k | — |
+| fc67b3f0 | 257k | — |
+| c39a16f4 | 8k | — |
+| 4e4894c6 | 10k | — |
+| 77839e90 | 118k | — |
+| 6910a3a2 | 26k | — |
+| 93d92f50 | 457k | — |
+| efcd55a3 | 57k | — |
+| ca6248ff | 465k | — |
+| a144b825 | 164k | — |
+| 23abf98b | 0k | — |
+| 09046113 | 174k | — |
+| 73f6b61f | 375k | — |
+| 179f5f51 | 352k | — |
+| 5e4f7bb6 | 275k | — |
+| 2f0f762e | 642k | — |
+
+### 2026-07-17 (wiseer)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| e7126a59 | 763k | — |
+| 838d475e | 13k | — |
+| 1060115d | 25k | — |
+| 9bbcd7a6 | 9k | — |
+| cd7b26da | 104k | — |
+| b91f458f | 8k | — |
+| d62fe2c3 | 90k | — |
+| eec9ff94 | 51k | — |
+| 84c4b46a | 5k | — |
+| 6b943846 | 40k | — |
+| 5b517b75 | 22k | — |
+| ef47724d | 18k | — |
+| ddd10f14 | 181k | — |
+| 43f1c194 | 404k | — |
+| 69d7817a | 26k | — |
+| f8000de6 | 8k | — |
+| 0537bb16 | 26k | — |
+| 7db4fb86 | 2k | — |
+| 8cc7ce9a | 451k | — |
+| 3ece3741 | 1k | — |
+| 44a6cb54 | 38k | — |
+| 30bf95ad | 54k | — |
+| 3c99ecf9 | 142k | — |
+| 54c2cc87 | 154k | — |
+| 76c2649e | 66k | — |
+| 7e7b40c2 | 21k | — |
+| 8863578d | 65k | — |
+| a05b36bf | 83k | — |
+| b175e277 | 51k | — |
+| 05771550 | 15k | — |
+| 999c0dee | 30k | — |
+| 0bbb795a | 735k | — |
+| 57fbf4b8 | 23k | — |
+| 72bd4237 | 83k | — |
+
+### 2026-07-18 (wiseer)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 071cb3ad | 20k | — |
+| 3d0df4fd | 45k | — |
+| 567704d3 | 37k | — |
+| 9bc4b5df | 34k | — |
+| 537e1c18 | 5k | — |
+| 4f3904ba | 0k | — |
+| 7140effb | 68k | — |
+| 36f7d71c | 46k | — |
+| 57c65abf | 22k | — |
+| 5e660e98 | 31k | — |
+| 08c1d414 | 43k | — |
+| 2720afd6 | 17k | — |
+| 5e33a04d | 27k | — |
+| a2b620d9 | 46k | — |
+| aeb03c65 | 42k | — |
+| b2125b45 | 51k | — |
+| b3c2b23b | 91k | — |
+| 1928a76b | 37k | — |
+| 9acb5a6a | 25k | — |
+
+### 2026-07-19 (guacamayo)
+
+| Session | ~Tokens | Topic |
+|---------|---------|-------|
+| 1d84e22d | 164k | — |
+| 6687e1ca | 25k | — |
+| 738c5ffb | 3k | — |
+| c0e270b6 | 55k | — |
+| c8b42aa1 | 64k | — |
+| ca7fb5d7 | 12k | — |
+| e4e0b8a9 | 0k | — |
+| 492202c3 | 0k | — |
+| 401c553c | 10k | — |
+| a7a5bb13 | 0k | — |
+| 50acc27e | 30k | — |
+| c0969581 | 25k | — |
+| d7cdbb90 | 24k | — |
+| d0625ee8 | 221k | — |
+| aaeedc99 | 12k | — |
+| 29377f77 | 28k | — |
+| 55c9e358 | 53k | — |
+| 9397c0d4 | 5k | — |
+| 9ab7f9d8 | 122k | — |
+| eb2df9e1 | 18k | — |
+| dd0a0a5b | 25k | — |
+| 0f56c8ee | 12k | — |
+| 1fa82085 | 51k | — |
+| 2b862c0b | 20k | — |
+| 32c00c20 | 108k | — |
+| 412ea10f | 25k | — |
+| 476ab738 | 29k | — |
+| 47e5fa5a | 6k | — |
+| 8058f023 | 11k | — |
+| 98420191 | 35k | — |
+| 99e567dd | 5k | — |
+| a6719148 | 74k | — |
+| d639ee35 | 57k | — |
+| f56a8fd8 | 13k | — |
+| 59ef7eb5 | 11k | — |
+| def80dbf | 40k | — |
+| 28e1176b | 10k | — |
+| e3252866 | 5k | — |
+| a103916b | 1k | — |
+| 6b9614e3 | 60k | — |
+| 22578911 | 1k | — |
+
+## Notes
+
+- `poc` project = Help Support RAG Agent (early RAG POC, pre-librarian-wiki era)
+- `wiseer` / `listen-wiseer` = Spotify recommendation agent
+- `playground` = [product] VA agent + infra
+- `[tx-project]` = [client] transaction matching (Codex, 2025)
+- Token counts omitted where not available in frontmatter (many sessions lacked full stats in migrated skeleton notes)
+
+## 2026-04 Early Sessions (ingested 2026-07-05 / 2026-07-06)
+
+Sessions from 2026-04-10 to 2026-04-27. Key knowledge extracted:
+
+| Date | Session | Topic | Wiki page |
+|---|---|---|---|
+| 2026-04-10 | 1900854e | Module restructure: `infra/`/`ingestion/`/`orchestration/` layout | [[Librarian Project]] |
+| 2026-04-11 | deb81c96 | Core module extraction — break circular dep between `storage` + `librarian` | [[Librarian Project]] |
+| 2026-04-11 | fe1c0bd1 | src/ package layout finalized; Fargate over Lambda | [[Librarian Project]] |
+| 2026-04-11 | f5cfe1b3 | `infra/` under `src/`; `rag_core/` under `librarian/` | [[Librarian Project]] |
+| 2026-04-12 | 406fcc7f | ADK + Python LangGraph hybrid; LangFuse compatible with both | [[ADK vs LangGraph Comparison]] |
+| 2026-04-12 | 8d1a71b0 | Bedrock vs LangGraph engineering risk matrix (4 axes) | [[Bedrock KB vs LangGraph Decision]] |
+| 2026-04-14 | 48cd8a0e | Librarian scope locked: RAG-only, not copilot | [[Librarian Project]] |
+| 2026-04-14 | a6a9bcf4 | `.claude/docs` lifecycle: research→plan chains, archive model | [[Claude Workflow System]] |
+| 2026-04-14 | 3def7093 | `clients/` vs `interfaces/` boundary clarified | [[Librarian Project]] |
+| 2026-04-14 | ec44fece | Polyglot ruff config (TS folders need explicit exclude) | [[Session Insights]] |
+| 2026-04-15 | b269ccf1 | rag_poc vs librarian: evolution path to production copilot | [[Librarian Project]] |
+| 2026-04-17 | c44fa991 | Runtime-agnostic orchestrator plan (LangGraph + ADK factory pattern) | [[Session Insights]] |
+| 2026-04-17 | 7a25dbd0 | ADK samples context engineering scan vs rag_poc; Strategy C → B upgrade path | [[ADK Context Engineering]] |
+| 2026-04-18 | 57042538 | Graders vs metrics vs harnesses distinction; eval dir structure | [[VA Eval Harness]] |
+| 2026-04-19 | 9e66674c | Ingestion/embedding in preprocessing (not retrieval); one-indexer rule | [[RAG Retrieval Strategies]] |
+| 2026-04-19 | 1bafe007 | src/ vs app/ naming; circular import `datastore`↔`factory` fix | [[Session Insights]] |
+| 2026-04-20 | 64095580 | Multi-repo .claude/ organization; .agents/ research docs lifecycle | [[Multi-Repo Claude Organization]] |
+| 2026-04-24 | 108c3f61 | MCP server security — sandbox isolation, secrets, read-only invariant | [[MCP Server Security Patterns]] |
+| 2026-04-26 | — | Session enrichment, output type taxonomy, wiki taxonomy design | [[Session Knowledge Capture Patterns]] |
+| 2026-04-27 | — | Wiki decisions in domain dirs; raw sources as references | [[Karpathy LLM Wiki Pattern]] |
+
+Remaining sessions (linting ops, git ops, compact checkpoints): manifest-only, no wiki pages.
+
+## 2026-05–06 Batch (ingested 2026-07-06)
+
+Sessions from 2026-04-27 to 2026-06-04. Mostly compact stubs and migrated JSONL sessions with quantitative metadata only; no wiki pages generated.
+
+| Period | Project | Count | Theme |
+|---|---|---|---|
+| 2026-04-27 | librarian | 2 | Lint + UI graph view iterations |
+| 2026-04-29–30 | playground | 15 | RAG migration Track 2, [vendor] → generic renaming |
+| 2026-05-04–06 | playground | 14 | Eval EDA notebooks, eval set aggregation |
+| 2026-05-06–07 | project-g | 16 | Initial project-g setup: Makefile, pre-commit, project rename from intercom-data |
+| 2026-05-08–10 | project-g + Workspace | 20 | Calibration eval (VIR-138): LLM judge baselines, dataset splits |
+| 2026-05-11–12 | project-g | 10 | Ablation study (VIR-179): 14 configs, VA migration sprint |
+| 2026-05-13–16 | project-g | 22 | Golden dataset: 597 queries built from BKH liked + Intercom; grader calibration |
+| 2026-05-18 | project-g + .claude | 6 | Eval report (top liked/disliked topics); skill dev (auto-compacted empty sessions) |
+| 2026-05-19–21 | .claude | 21 | Skill iteration sessions (all auto-compact stubs, 0 tokens) |
+| 2026-05-24–26 | project-g | 17 | Corpus data types (help.[client].co, [product]-kb, pricing); ablation continuation |
+| 2026-05-28–29 | null | 2 | project-g codebase refactor: ingestion/preprocessing separation (migrated JSONL) |
+| 2026-05-30 | project-g | 4 | Core refactor; data folder reorganization |
+| 2026-06-01–04 | project-g + Workspace | 12 | GT dataset verification (VIR-212); accounting_agent inception |
+
+## 2026-06–07 Individual Chat Sessions (ingested 2026-07-06)
+
+| Date | Session | Project | Topic |
+|---|---|---|---|
+| 2026-06-04 | 57331686 | librarian | Google Drive scraping for ingest pipeline |
+| 2026-06-05 | e8f4eeed | project-g | README update for ingestion path change |
+| 2026-06-05 | 824e04f8 | project-g | Eval data confirmation |
+| 2026-06-05 | 54fbb1fb | project-g | "Ralph" reference — escalation language considerations |
+| 2026-06-05 | f38c3543 | project-g | Ingestion path location debate |
+| 2026-06-07 | eeeb2744 | project-g | Legacy file cleanup |
+| 2026-06-07 | 3e89eb49 | project-g | Experiment runner design |
+| 2026-06-07 | a758a3bb | project-g | 500-test suite simplification |
+| 2026-06-07 | 83bb4b48 | project-g | Capability docs location → `src/` as specs |
+| 2026-06-07 | e9506f1e | project-g | Ruff formatter scope |
+| 2026-06-08 | 09914670 | project-g | Calibrated LLM-as-judge: answer_relevancy + completeness + grounding + RAGAS |
+| 2026-06-08 | 7aa3db68 | project-g | Linear tickets for copilot capabilities |
+| 2026-06-08 | fe31aacc | project-g | Eval schema update |
+| 2026-06-08 | b52a3ff9 | project-g | CodeQualityAgent (Akira) scope |
+| 2026-06-08 | 4c189a8c | project-g | FileNotFoundError debug |
+| 2026-06-08 | 52d344b8 | project-g | Schema clarity check |
+| 2026-06-08 | fdc67863 | project-g | Notebook CSV path fix |
+| 2026-06-08 | be975ee5 | project-g | EUR token budget tracking |
+| 2026-06-09 | 0c6ec8a1 | project-g | IndexError debug |
+| 2026-06-09 | 660918fb | project-g | ModuleNotFoundError (rag module) |
+| 2026-06-09 | bf836c46 | project-g | Metric/exploration selection for eval |
+| 2026-06-10 | 9ddbb706 | project-g | Fable model integration check |
+| 2026-06-11 | 8caa7044 | project-g | Eval quality bug fix |
+| 2026-06-19 | 8877c883 | project-g | execute-tasks skill invocation |
+| 2026-06-19 | 094b14b7 | project-g | accounting_agent inception; LangGraph parity with va-agents |
+| 2026-06-19 | 11d354a7 | project-g | SANYI applied to eval pipeline |
+| 2026-06-19 | 6a1505ca | project-g | Task completion check |
+| 2026-06-19 | b4f26fe7 | project-g | Notebook run verification |
+| 2026-06-19 | 5bae9447 | project-g | SANYI vs Akira code review system design |
+| 2026-06-19 | 130222d2 | project-g | MD report evaluation |
+| 2026-06-22 | 93b4309e | project-g | Corpus data push (700 files); accounting_agent smoke test |
+| 2026-06-22 | 84c3ba53 | va-agents | Thinking budget for VA/HCA agents |
+| 2026-06-22 | f3d8c629 | project-g | Cursor bot in GitHub repo |
+| 2026-06-23 | 2a6c99c4 | project-g | Heuristic JSON file loading |
+| 2026-06-23 | bf544d36 | project-g | Escalation response language (should be English) |
+| 2026-06-24 | b0642ba1 | project-g | HTML linting suppression |
+| 2026-06-24 | 7e180bf0 | project-g | Lint toggle for HTML pages |
+| 2026-06-24 | b9dc2827 | project-g | Core preprocessing grounding comment thread |
+| 2026-06-24 | 4034555a | project-g | Eligibility grounding preprocessing |
+| 2026-06-24 | 76bda47b | project-g | `make eval-all` error fix |
+| 2026-06-24 | 6210d985 | project-g | Log visibility issue |
+| 2026-06-24 | a7cab4b9 | project-g | VA eval framework assessment vs baseline docs |
+| 2026-06-24 | de544217 | project-g | Playground vs project-g comparison |
+| 2026-06-24 | 51b184ce | va-agents | Post-pull change review |
+| 2026-06-24 | 890685a5 | project-g | Onboarding doc gap analysis |
+| 2026-06-24 | 0c67abca | project-g | Escalation section documentation |
+| 2026-06-24 | b91ebc5f | project-g | Eval count check |
+| 2026-06-24 | 419dc79c | project-g | Pre-push review |
+| 2026-06-24 | b92e12ec | project-g | Graph clarity improvement |
+| 2026-06-24 | c46b867f | project-g | 15sec latency spike investigation |
+| 2026-06-25 | 4ad49b99 | project-g | Dataset size decision (240 QA) |
+| 2026-06-25 | b6ed6cf9 | project-g | Page update |
+| 2026-06-25 | 6be85145 | project-g | Tab update in report |
+| 2026-06-25 | 8cc7f4f3 | project-g | Document-to-eval-framework alignment check |
+| 2026-06-25 | 0310489c | project-g | Old dataset cleanup |
+| 2026-06-25 | c28a2b11 | project-g | Rebase from old branch |
+| 2026-06-25 | cb15d378 | project-g | Dataset query_word_count removal |
+| 2026-06-25 | a9522055 | project-g | Source baseline removal from overview |
+| 2026-06-25 | e6f88df0 | project-g | HCA y_true plot fix |
+| 2026-06-26 | 71d75bb4 | project-g | Overview section cleanup |
+| 2026-07-05 | 4914f277 | Workspace | project-g vs awesome-copilot vs [vendor]-platform-ai-catalog comparison |
+| 2026-07-05 | c7597adf | librarian | Librarian repo scraping question → this ingest session |
+| 2026-07-05 | 0ee40dd4 | librarian | `make lint` debugging |
+
+## 2026-07-06 to 2026-07-14 Batch (ingested 2026-07-14)
+
+11 sessions — mostly thin prompt-only captures (no assistant transcript), but several reveal real decisions and concepts.
+
+| Date | Session | Project | Topic | Wiki page |
+|---|---|---|---|---|
+| 2026-07-06 | 268f0009 | INTENSO | ai-project-template scope: playground infra + [vendor] DS-template skeleton comparison | [[AI Project Template Scaffold]] |
+| 2026-07-06 | bec24482 | INTENSO | project-g/notebooks four-category tour; observability import diagnostic | [[project-g Project]] |
+| 2026-07-06 | 012cfada | INTENSO | Settings.json reconciliation; project-g README gaps; templated playground READMEs | [[Claude Workflow System]] |
+| 2026-07-07 | 0cd5da0c | INTENSO | listen-wiseer review — refactor plan (RAG + FastAPI), agentic web search open question | [[Listen-Wiseer Project]] |
+| 2026-07-12 | a5c50915 | INTENSO | Puffin skills code review (genesis/dream/bgrow/reflect/research) vs playground; seed material concept | [[Puffin Consciousness Development Skills]] |
+| 2026-07-13 | dfcde495 | puffin | Puffin CLAUDE.md generation; Genesis 11-phase process; Akira/SANYI/Insights distinction ("ralph" origin) | [[Puffin Consciousness Development Skills]], [[Claude Workflow System]] |
+| 2026-07-13 | a3b6ecb6 | INTENSO | Claude settings inconsistency across repos; drive-root settings layering fix | [[Claude Workflow System]] |
+| 2026-07-14 | 877508dc | project-g | Value check on pulled project-g/va-agents/chat-agent changes | manifest-only |
+| 2026-07-14 | 63940e32 | INTENSO | How to run `/ingest`; README documentation gap for skill commands | [[Claude Workflow System]] |
+| 2026-07-14 | c90bb5d6 | INTENSO | ai-project-template git origin decision — separate repo, local template testing | [[AI Project Template Scaffold]] |
+| 2026-07-14 | 7f9c0f01 | INTENSO | Recovering wake/grow/reflect/synthesize/dream outputs from past sessions | [[Puffin Consciousness Development Skills]] |
+
+---
+
+## July 2026 (Summary — 127 sessions, 2026-07-15 through 2026-07-19)
+
+**Dominant themes:**
+
+| Theme | Sessions | Key wiki pages updated |
+|-------|----------|----------------------|
+| AI project template (copier, DESIGN.md, CI/CD) | ~30 | [[AI Project Template Scaffold]] |
+| Puffin → Guacamayo rename + consciousness skills v2 | ~12 | [[Puffin Consciousness Development Skills]] |
+| Claude config layering + skill reorg (20→21 skills, 5 groups) | ~15 | [[Claude Workflow System]], [[SKILL.md Pattern]] |
+| DSSG milestones, design sprint, exec summary | ~8 | [[NYC-DSSG Project]] |
+| Listen-wiseer pytest fixes + pipeline | ~5 | [[Listen-Wiseer Project]] |
+| Interview KB consolidation (learn-ai-engineering) | ~4 | Coverage gap (pending compile) |
+| Git/infra troubleshooting (RPC 400, merge conflicts, rebase) | ~10 | Operational only |
+| Librarian ingest pipeline consolidation | ~5 | [[Librarian Project]] |
+
+**Key decisions made across sessions:**
+- Production repos: librarian, guacamayo, atlas, ai-project-template, listen-wiseer (2026-07-19)
+- `~/.claude` is canonical source for global skills; `~/workspace/.claude` is symlink (2026-07-16)
+- Akira promoted to global skill with doc-write rights via `dao` mode only (2026-07-17)
+- Skills bundled with `references/` + optional `scripts/` + `evals/` (2026-07-17)
+- `.claude/docs/` git-ignored everywhere (2026-07-17)
+
+## See Also
+
+- [[Librarian Project]]
+- [[Librarian KB — Build Plan]]
+- [[Claude Workflow System]]
+- [[Session Insights]]
+- [[Session Knowledge Capture Patterns]]

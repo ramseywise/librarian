@@ -208,7 +208,7 @@ def parse_session(path: Path) -> dict[str, Any] | None:
     )
 
     # Surface the session ran on (e.g. "claude-vscode"). Constant per session/CLI
-    # launch. None on transcripts predating this field -- see factstore.NULLABLE_COLUMNS.
+    # launch. None on transcripts predating this field — see factstore.NULLABLE_COLUMNS.
     entrypoint = next(
         (str(e) for r in records if (e := r.get("entrypoint"))),
         None,
@@ -1202,8 +1202,14 @@ def main() -> None:
 
     projects_dir = Path(args.projects_dir).expanduser()
     sessions_dir = Path(args.sessions_dir).expanduser()
-    output_path = Path(args.output).expanduser()
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    original_output = Path(args.output).expanduser()
+    original_output.parent.mkdir(parents=True, exist_ok=True)
+
+    # Date-stamped copy + symlink: report-2026-07-29.html, report.html → report-2026-07-29.html
+    from datetime import date as _date
+
+    dated_name = f"{original_output.stem}-{_date.today().isoformat()}{original_output.suffix}"
+    output_path = original_output.parent / dated_name
 
     # --- JSONL source ---
     log.info("parser.scanning", path=str(projects_dir))
@@ -1272,7 +1278,11 @@ def main() -> None:
             log.warning("parser.html_not_detected", msg="Response doesn't look like HTML")
 
     output_path.write_text(html)
-    log.info("parser.report_written", path=str(output_path))
+    # Symlink the original name → dated file so bookmarks/dashboard still work
+    if original_output != output_path:
+        original_output.unlink(missing_ok=True)
+        original_output.symlink_to(output_path.name)
+    log.info("parser.report_written", path=str(output_path), symlink=str(original_output))
 
 
 if __name__ == "__main__":
