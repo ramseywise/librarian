@@ -434,3 +434,32 @@ def test_friction_label_truncated(tmp_path: Path) -> None:
     session = parse_session(tmp_path / "proj" / "sess-1.jsonl")
     assert session is not None
     assert len(session["friction_labels"][0]) == 200
+
+
+# --- GUA-43: entrypoint / surface extraction ---------------------------------
+
+
+@pytest.mark.unit
+def test_parse_session_extracts_entrypoint(tmp_path: Path) -> None:
+    """entrypoint field is extracted from JSONL records and surfaced as 'entrypoint'."""
+    path = tmp_path / "proj" / "sess-1.jsonl"
+    _write_jsonl(
+        path,
+        [
+            {**_user("2026-07-18T10:00:00Z"), "entrypoint": "claude-vscode"},
+            _assistant("2026-07-18T10:00:05Z"),
+        ],
+    )
+    session = parse_session(path)
+    assert session is not None
+    assert session["entrypoint"] == "claude-vscode"
+
+
+@pytest.mark.unit
+def test_parse_session_entrypoint_none_when_absent(tmp_path: Path) -> None:
+    """Sessions without an entrypoint field return None -- pre-entrypoint transcripts."""
+    path = tmp_path / "proj" / "sess-1.jsonl"
+    _write_jsonl(path, [_user("2026-07-18T10:00:00Z"), _assistant("2026-07-18T10:00:05Z")])
+    session = parse_session(path)
+    assert session is not None
+    assert session["entrypoint"] is None
