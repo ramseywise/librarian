@@ -435,3 +435,70 @@ def test_subagent_spawns_empty(tmp_path: Path) -> None:
     upsert([_row("a1", "2026-07-18", "session-hygiene-v1")], store)
     html = render_dashboard(store, funnel=None)
     assert "Spawned agents by type" not in html
+
+
+# --- GUA-43: surface filter --------------------------------------------------
+
+
+def _two_surface_store(tmp_path: Path) -> Path:
+    """Store with two distinct surfaces for testing the JS toggle."""
+    store = tmp_path / "facts.db"
+    rows = [
+        _row("j1", "2026-07-16", "telemetry-v1", surface="claude-vscode"),
+        _row("j2", "2026-07-17", "telemetry-v1", surface="claude-vscode"),
+        _row("j3", "2026-07-18", "session-hygiene-v1", surface="claude-cli"),
+        _row("j4", "2026-07-18", "session-hygiene-v1"),  # surface=None -> "unknown"
+    ]
+    upsert(rows, store)
+    return store
+
+
+def test_build_series_surface_points_populated(tmp_path: Path) -> None:
+    """build_series returns per-surface point breakdowns for continuous metrics."""
+    store = _two_surface_store(tmp_path)
+    series = build_series("cost_units_p50", store)
+    assert not series.faceted
+    assert "claude-vscode" in series.surface_points
+
+
+def test_build_series_all_surfaces_in_all_points(tmp_path: Path) -> None:
+    """The all-surfaces series is not limited to a single surface."""
+    store = _two_surface_store(tmp_path)
+    series = build_series("cost_units_p50", store)
+    # Points should span all rows, not just one surface
+    assert len(series.points) >= 2
+
+
+def test_render_dashboard_has_surface_selector(tmp_path: Path) -> None:
+    """render_dashboard includes a surface selector element in the nav."""
+    store = _two_surface_store(tmp_path)
+    page = render_dashboard(store, funnel=None)
+    assert 'id="surf-sel"' in page
+    assert "surf-filter" in page
+
+
+def test_render_dashboard_has_js_toggle(tmp_path: Path) -> None:
+    """render_dashboard includes the vanilla JS surface toggle script."""
+    store = _two_surface_store(tmp_path)
+    page = render_dashboard(store, funnel=None)
+    assert "surf-view" in page
+    assert "surf-sel" in page
+
+
+def test_render_dashboard_surf_view_divs_present(tmp_path: Path) -> None:
+    """Continuous chart sections embed per-surface .surf-view divs."""
+    store = _two_surface_store(tmp_path)
+    page = render_dashboard(store, funnel=None)
+    # At least the "all" surf-view must be present
+    assert 'data-surface="all"' in page
+
+
+def test_distinct_surfaces_returns_observed_values(tmp_path: Path) -> None:
+    """_distinct_surfaces returns the surfaces actually present in the store."""
+    from tools.cartographer.dashboard import _distinct_surfaces
+
+    store = _two_surface_store(tmp_path)
+    surfaces = _distinct_surfaces(store)
+    assert "claude-vscode" in surfaces
+    assert isinstance(surfaces, list)
+    assert surfaces == sorted(surfaces)

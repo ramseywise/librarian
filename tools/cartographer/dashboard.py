@@ -30,6 +30,7 @@ import structlog
 
 from tools.cartographer.factstore import (
     SUBAGENT_ATTRIBUTION_CLI,
+    SUBAGENT_ATTRIBUTION_SINCE,
     UNATTRIBUTED_AGENT,
     read_all,
 )
@@ -97,7 +98,12 @@ class Panel:
 
 @dataclass(frozen=True)
 class Series:
-    """Either a continuous trend (`points`) or faceted panels (`panels`)."""
+    """Either a continuous trend (`points`) or faceted panels (`panels`).
+
+    `surface_points` carries per-surface breakdowns for continuous metrics,
+    enabling the JS surface toggle. Keys are surface names (e.g. "claude-vscode")
+    plus "unknown" for None-surface rows. Empty dict for rate/faceted metrics.
+    """
 
     metric: str
     faceted: bool
@@ -105,6 +111,7 @@ class Series:
     panels: list[Panel] = field(default_factory=list)
     regime_bands: list[tuple[str, str, str]] = field(default_factory=list)
     july_only: bool = False
+    surface_points: dict[str, list[Point]] = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -294,17 +301,48 @@ def build_series(metric: str, store: Path) -> Series:
             july_only=july_only,
         )
 
+    # Per-surface breakdown for the JS toggle. "unknown" buckets None-surface rows
+    # (pre-July / pre-entrypoint transcripts). Only computed for continuous metrics.
+    distinct_surfaces = sorted(
+        {str(r.get("surface") or "unknown") for r in rows},
+    )
+    surface_points: dict[str, list[Point]] = {}
+    for surf in distinct_surfaces:
+        surf_rows = [r for r in rows if (r.get("surface") or "unknown") == surf]
+        s_pts: list[Point] = []
+        for day, bucket in sorted(_group(surf_rows).items()):
+            regime = str(bucket[0]["regime"])
+            value = _metric_value(metric, bucket)
+            if value is None:
+                continue
+            s_pts.append(Point(date=day, value=value, regime=regime, n=len(bucket)))
+        if s_pts:
+            surface_points[surf] = s_pts
+
     return Series(
         metric=metric,
         faceted=False,
         points=points,
         regime_bands=_regime_bands(points),
         july_only=july_only,
+        surface_points=surface_points,
     )
 
 
 def _frame(regime: str) -> str:
     return SAMPLING_FRAME.get(regime, SAMPLING_FRAME["unclassified"])
+
+
+def _distinct_surfaces(store: Path) -> list[str]:
+    """Sorted list of distinct surface values in the fact table (work sessions only).
+
+    "unknown" is included only if any row has a null/missing surface -- it is never
+    fabricated when all rows carry a real surface value.
+    """
+    surfaces: set[str] = set()
+    for row in _work_sessions(read_all(store)):
+        surfaces.add(str(row.get("surface") or "unknown"))
+    return sorted(surfaces)
 
 
 # ---------------------------------------------------------------------------
@@ -728,9 +766,23 @@ def _render_series(
         f"{html.escape(start)} - {html.escape(end)}</li>"
         for regime, start, end in series.regime_bands
     )
+
+    # Pre-render one SVG per surface (including "all") as hidden divs.
+    # The JS surface selector simply shows/hides these divs -- no SVG re-draw
+    # in the browser, no framework, no build step. The "all" div is visible by
+    # default; selecting a specific surface shows only its div.
+    svg_all = _svg_line(series.points, color, unit=unit)
+    surface_svgs = f'<div class="surf-view" data-surface="all">{svg_all}</div>'
+    for surf, pts in series.surface_points.items():
+        surf_svg = _svg_line(pts, color, unit=unit)
+        surface_svgs += (
+            f'<div class="surf-view" data-surface="{html.escape(surf)}" '
+            f'style="display:none">{surf_svg}</div>'
+        )
+
     return (
-        f'<section class="chart">{header}'
-        f"{_svg_line(series.points, color, unit=unit)}"
+        f'<section class="chart" data-metric="{html.escape(series.metric)}">{header}'
+        f"{surface_svgs}"
         f'<p class="range">{html.escape(series.points[0].date)} - '
         f"{html.escape(series.points[-1].date)}</p>"
         f'<ul class="bands">{bands}</ul>'
@@ -740,17 +792,24 @@ def _render_series(
 
 def _subagent_totals(
     store: Path,
+    since: str | None = None,
 ) -> tuple[dict[str, dict[str, float]], dict[str, dict[str, float]], dict[str, int]]:
     """Sum the stored per-parent subagent breakdowns into (by_agent, by_model, spawn_counts).
 
     Work sessions only, matching every other panel. Rows with a NULL column are
-    parents that spawned no subagent — skipped, not counted as zero.
+    parents that spawned no subagent -- skipped, not counted as zero.
     spawn_counts aggregates agent type counts from parent Agent tool calls.
+    Pass `since` (YYYY-MM-DD) to restrict to sessions on/after that date -- used to
+    measure unattributed share on a recent window, since pre-CLI-2.1.201 transcripts
+    permanently lack attribution and would otherwise dominate an all-time cumulative
+    view regardless of how many new named agents ship.
     """
     by_agent: dict[str, dict[str, float]] = {}
     by_model: dict[str, dict[str, float]] = {}
     spawn_counts: dict[str, int] = {}
     for row in _work_sessions(read_all(store)):
+        if since and row.get("date", "") < since:
+            continue
         raw = row.get("subagent_costs")
         if raw:
             try:
@@ -821,14 +880,25 @@ def _render_subagents(store: Path) -> str:
     by_agent, by_model, spawn_counts = _subagent_totals(store)
     unattributed = by_agent.get(UNATTRIBUTED_AGENT, {}).get("cost", 0.0)
     grand = sum(s["cost"] for s in by_agent.values())
+    # Recent-window figure: CLI 2.1.201 rollout date is the natural cut -- anything
+    # before it structurally cannot carry attribution.
+    recent_by_agent, _, _ = _subagent_totals(store, since=SUBAGENT_ATTRIBUTION_SINCE)
+    recent_unattributed = recent_by_agent.get(UNATTRIBUTED_AGENT, {}).get("cost", 0.0)
+    recent_grand = sum(s["cost"] for s in recent_by_agent.values())
     caveat = ""
     if unattributed and grand:
         caveat = (
-            f'<p class="saturated">⚠ {unattributed / grand * 100:.0f}% of subagent cost '
+            f'<p class="saturated">&#9888; {unattributed / grand * 100:.0f}% of subagent cost '
             f"predates CLI {SUBAGENT_ATTRIBUTION_CLI} and carries no agent name. "
             f"Per-agent shares below are shares of all subagent spend, so the named "
             f"rows understate each agent's true share of attributable work.</p>"
         )
+        if recent_grand:
+            caveat += (
+                f'<p class="note">Since {SUBAGENT_ATTRIBUTION_SINCE}: '
+                f"{recent_unattributed / recent_grand * 100:.0f}% unattributed "
+                f"(recent-window figure -- the acceptance metric for GUA-45).</p>"
+            )
     total_spawns = sum(spawn_counts.values())
     attributed_n = sum(s["n"] for s in by_agent.values())
     coverage_caveat = ""
@@ -1102,6 +1172,11 @@ display:flex;gap:16px;flex-wrap:wrap;}
 .table-view table{border-collapse:collapse;margin-top:8px;font-variant-numeric:tabular-nums;}
 .table-view th,.table-view td{text-align:left;padding:2px 12px 2px 0;
 border-bottom:1px solid var(--border);}
+.surf-filter{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.surf-filter label{font-size:12px;color:var(--text-secondary);}
+.surf-filter select{font-size:12px;padding:3px 8px;border-radius:12px;
+border:1px solid var(--border);background:var(--surface-1);color:var(--text-primary);
+cursor:pointer;}
 """
 
 
@@ -1134,6 +1209,12 @@ _COVERAGE = [
         "JSONL subagent transcripts",
         JULY_BOUNDARY,
         f"per-model complete; agent names only from CLI {SUBAGENT_ATTRIBUTION_CLI}",
+    ),
+    (
+        "Context fixed overhead",
+        "manual JSONL sample, first-turn cache write",
+        "2026-07-28",
+        "one-time - GUA-44, see research doc; ~15-23k tokens/session, not tracked live",
     ),
 ]
 
@@ -1367,6 +1448,18 @@ def render_dashboard(
         _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
         for i, (metric, title, note, prov, unit) in enumerate(_RATES)
     )
+    # Build surface selector: "All" + one option per distinct observed surface.
+    surfaces = _distinct_surfaces(store)
+    surf_options = '<option value="all">All surfaces</option>' + "".join(
+        f'<option value="{html.escape(s)}">{html.escape(s)}</option>' for s in surfaces
+    )
+    surf_selector = (
+        f'<div class="surf-filter">'
+        f'<label for="surf-sel">Surface:</label>'
+        f'<select id="surf-sel">{surf_options}</select>'
+        f"</div>"
+    )
+
     nav = (
         '<nav class="dash-nav">'
         '<a href="#cost">Cost &amp; Efficiency</a>'
@@ -1374,7 +1467,30 @@ def render_dashboard(
         '<a href="#friction">Friction &amp; Quality</a>'
         '<a href="#review">Code Review</a>'
         '<a href="#progress">Experiments &amp; Progress</a>'
+        f"{surf_selector}"
         "</nav>"
+    )
+
+    surf_js = (
+        "<script>(function(){"
+        'var sel=document.getElementById("surf-sel");'
+        "if(!sel)return;"
+        "function apply(v){"
+        'document.querySelectorAll(".chart[data-metric]").forEach(function(chart){'
+        'var views=chart.querySelectorAll(".surf-view");'
+        "var found=false;"
+        "views.forEach(function(d){"
+        'var match=(d.dataset.surface===v)||(v==="all"&&d.dataset.surface==="all");'
+        'd.style.display=match?"":"none";'
+        "if(match)found=true;"
+        "});"
+        "if(!found){var a=chart.querySelector('.surf-view[data-surface=\"all\"]');"
+        'if(a)a.style.display="";}'
+        "});"
+        "}"
+        'sel.addEventListener("change",function(){apply(sel.value);});'
+        'apply("all");'
+        "})();</script>"
     )
 
     sec_cost = (
@@ -1420,7 +1536,7 @@ def render_dashboard(
         f'<p class="sub">Work sessions only, faceted by instrumentation regime. '
         f"Rates are never pooled across regimes.</p>"
         f"{nav}{sec_cost}{sec_context}{sec_friction}{sec_review}{sec_progress}"
-        f"</div>"
+        f"{surf_js}</div>"
     )
 
 
