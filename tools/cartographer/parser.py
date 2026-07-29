@@ -207,6 +207,13 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         None,
     )
 
+    # Surface the session ran on (e.g. "claude-vscode"). Constant per session/CLI
+    # launch. None on transcripts predating this field — see factstore.NULLABLE_COLUMNS.
+    entrypoint = next(
+        (str(e) for r in records if (e := r.get("entrypoint"))),
+        None,
+    )
+
     # Timestamps
     user_times = [t for r in user_msgs if (t := _parse_timestamp(r)) is not None]
     if not user_times:
@@ -510,6 +517,7 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         "agent_spawns": agent_spawns,
         "friction_labels": friction_labels,
         "friction_label_count": len(friction_labels),
+        "entrypoint": entrypoint,
     }
 
 

@@ -93,6 +93,11 @@ NULLABLE_COLUMNS: dict[str, type] = {
     "friction_label_count": int,
     "session_intent": str,  # "scoping" | "execution" | "brief-execution" | "meta" | "unknown"
     "agent_spawns": str,  # JSON list of {type, description, model}
+    # Surface/client segmentation (2026-07-28). Which Claude surface produced the
+    # session (e.g. "claude-vscode"). None pre-July (no telemetry) and on any
+    # transcript predating the entrypoint field. Open string, not a closed enum --
+    # local data has only ever observed one value; see GUA-43 plan Open Question 1.
+    "surface": str,
 }
 
 # `attributionAgent` (the subagent-type name) is emitted only by CLI 2.1.201+.
@@ -100,6 +105,13 @@ NULLABLE_COLUMNS: dict[str, type] = {
 # unattributable -- bucketed under UNATTRIBUTED_AGENT rather than dropped, so the
 # panel's per-agent shares never silently understate total subagent cost.
 SUBAGENT_ATTRIBUTION_CLI = "2.1.201"
+# Approximate calendar date of the CLI 2.1.201 rollout — used by dashboard.py to
+# compute a recent-window unattributed share that excludes the permanent pre-2.1.201
+# historical backlog.  Pre-2.1.201 transcripts structurally cannot carry attribution
+# regardless of agent naming, so measuring the GUA-45 acceptance criterion (<30%
+# unattributed) against the all-time cumulative table would make the criterion
+# unfalsifiable.  This date is the natural window boundary.
+SUBAGENT_ATTRIBUTION_SINCE = "2026-07-15"
 UNATTRIBUTED_AGENT = "unattributed"
 
 ALL_COLUMNS = {**FACT_COLUMNS, **NULLABLE_COLUMNS}
@@ -378,6 +390,7 @@ def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, 
         "human_turns": session.get("user_message_count"),
         "hook_blocks": errors.get("user_rejected", 0),
         "session_repos": json.dumps(session.get("session_repos", {})),
+        "surface": session.get("entrypoint"),
     }
     row["is_meta"] = _classify_meta({**row, "edited_paths": session.get("edited_paths", [])})
     return row

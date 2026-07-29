@@ -97,7 +97,12 @@ class Panel:
 
 @dataclass(frozen=True)
 class Series:
-    """Either a continuous trend (`points`) or faceted panels (`panels`)."""
+    """Either a continuous trend (`points`) or faceted panels (`panels`).
+
+    `surface_points` carries per-surface breakdowns for continuous metrics,
+    enabling the JS surface toggle. Keys are surface names (e.g. "claude-vscode")
+    plus "unknown" for None-surface rows. Empty dict for rate/faceted metrics.
+    """
 
     metric: str
     faceted: bool
@@ -105,6 +110,7 @@ class Series:
     panels: list[Panel] = field(default_factory=list)
     regime_bands: list[tuple[str, str, str]] = field(default_factory=list)
     july_only: bool = False
+    surface_points: dict[str, list[Point]] = field(default_factory=dict)
 
 
 # ---------------------------------------------------------------------------
@@ -294,12 +300,31 @@ def build_series(metric: str, store: Path) -> Series:
             july_only=july_only,
         )
 
+    # Per-surface breakdown for the JS toggle. "unknown" buckets None-surface rows
+    # (pre-July / pre-entrypoint transcripts). Only computed for continuous metrics.
+    distinct_surfaces = sorted(
+        {str(r.get("surface") or "unknown") for r in rows},
+    )
+    surface_points: dict[str, list[Point]] = {}
+    for surf in distinct_surfaces:
+        surf_rows = [r for r in rows if (r.get("surface") or "unknown") == surf]
+        s_pts: list[Point] = []
+        for day, bucket in sorted(_group(surf_rows).items()):
+            regime = str(bucket[0]["regime"])
+            value = _metric_value(metric, bucket)
+            if value is None:
+                continue
+            s_pts.append(Point(date=day, value=value, regime=regime, n=len(bucket)))
+        if s_pts:
+            surface_points[surf] = s_pts
+
     return Series(
         metric=metric,
         faceted=False,
         points=points,
         regime_bands=_regime_bands(points),
         july_only=july_only,
+        surface_points=surface_points,
     )
 
 
@@ -1134,6 +1159,12 @@ _COVERAGE = [
         "JSONL subagent transcripts",
         JULY_BOUNDARY,
         f"per-model complete; agent names only from CLI {SUBAGENT_ATTRIBUTION_CLI}",
+    ),
+    (
+        "Context fixed overhead",
+        "manual JSONL sample, first-turn cache write",
+        "2026-07-28",
+        "one-time - GUA-44, see research doc; ~15-23k tokens/session, not tracked live",
     ),
 ]
 
