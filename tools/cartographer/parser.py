@@ -332,6 +332,46 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         sum(1 for r in records if r.get("isCompactSummary")),
     )
 
+    # Compaction signals: turns-since-last-compact and trigger taxonomy.
+    # Walk records in order: track the index of the last compact boundary, then
+    # count human turns after it. compact_trigger reads compactMetadata.trigger
+    # from the compact_boundary record ("auto" | "manual").
+    #
+    # Format pairing: modern transcripts emit compact_boundary (with trigger)
+    # immediately followed by an isCompactSummary user record. The
+    # isCompactSummary record is how the parser detects compaction when
+    # compact_boundary is absent (older transcript format). When both are
+    # present, compact_boundary is authoritative; isCompactSummary is skipped
+    # so it cannot overwrite a good trigger value.
+    turns_since_last_compact: int | None = None
+    compact_trigger: str | None = None
+    _last_compact_idx: int | None = None
+    _prev_was_boundary = False
+    for _idx, _rec in enumerate(records):
+        if _rec.get("type") == "system" and _rec.get("subtype") == "compact_boundary":
+            _last_compact_idx = _idx
+            _meta = _rec.get("compactMetadata") or {}
+            compact_trigger = str(_meta["trigger"]) if "trigger" in _meta else None
+            _prev_was_boundary = True
+        elif _rec.get("isCompactSummary"):
+            if not _prev_was_boundary:
+                # Older format: no preceding compact_boundary — use this as the
+                # boundary marker. No trigger available in this format.
+                _last_compact_idx = _idx
+                compact_trigger = None
+            # If _prev_was_boundary is True, the compact_boundary already set
+            # everything correctly; skip this record entirely.
+            _prev_was_boundary = False
+        else:
+            _prev_was_boundary = False
+    if _last_compact_idx is not None:
+        # Count human turns strictly after the last compact boundary record.
+        turns_since_last_compact = sum(
+            1
+            for _rec in records[_last_compact_idx + 1 :]
+            if _rec.get("type") == "user" and _is_human_turn(_rec)
+        )
+
     # Files modified via file-history-snapshots
     files_modified: set[str] = set()
     for record in records:
@@ -518,6 +558,8 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         "friction_labels": friction_labels,
         "friction_label_count": len(friction_labels),
         "entrypoint": entrypoint,
+        "turns_since_last_compact": turns_since_last_compact,
+        "compact_trigger": compact_trigger,
     }
 
 

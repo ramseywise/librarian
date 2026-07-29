@@ -581,3 +581,68 @@ def test_surface_column_none_for_notes_era(tmp_path: Path) -> None:
     stored = read_all(store)
     assert len(stored) == 1
     assert stored[0].get("surface") is None
+
+
+# --- Step 1: turns_since_last_compact + compact_trigger columns --------------
+
+
+def _jsonl_session_with_compact(trigger: str = "manual") -> list[dict[str, Any]]:
+    """Session JSONL with a compact_boundary carrying the given trigger."""
+    return [
+        {
+            "type": "user",
+            "timestamp": "2026-07-16T10:00:00Z",
+            "cwd": "/Users/x/repo",
+            "message": {"content": "hello"},
+        },
+        {
+            "type": "assistant",
+            "timestamp": "2026-07-16T10:01:00Z",
+            "message": {
+                "model": "claude-opus-4-8",
+                "content": [{"type": "text", "text": "ok"}],
+                "usage": {
+                    "input_tokens": 100,
+                    "output_tokens": 50,
+                    "cache_read_input_tokens": 0,
+                    "cache_creation_input_tokens": 0,
+                },
+            },
+        },
+        {
+            "type": "system",
+            "subtype": "compact_boundary",
+            "timestamp": "2026-07-16T10:02:00Z",
+            "compactMetadata": {"trigger": trigger, "preTokens": 90000, "postTokens": 5000},
+        },
+        {
+            "type": "user",
+            "timestamp": "2026-07-16T10:03:00Z",
+            "message": {"content": "post-compact turn"},
+        },
+    ]
+
+
+def test_compact_trigger_column_round_trips_jsonl_era(tmp_path: Path) -> None:
+    """compact_trigger from compactMetadata.trigger is stored and read back."""
+    projects = tmp_path / "projects"
+    projects.mkdir()
+    _write_jsonl(projects / "cs.jsonl", _jsonl_session_with_compact(trigger="manual"))
+    store = tmp_path / "facts.db"
+    rows = from_jsonl(projects)
+    upsert(rows, store)
+    stored = read_all(store)
+    assert len(stored) == 1
+    assert stored[0]["compact_trigger"] == "manual"
+    assert stored[0]["turns_since_last_compact"] == 1
+
+
+def test_compact_columns_none_when_no_compact(tmp_path: Path) -> None:
+    """Sessions without a compact_boundary return None for both new columns."""
+    store = tmp_path / "facts.db"
+    row = _row("nc1")
+    upsert([row], store)
+    stored = read_all(store)
+    assert len(stored) == 1
+    assert stored[0].get("compact_trigger") is None
+    assert stored[0].get("turns_since_last_compact") is None

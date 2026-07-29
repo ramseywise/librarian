@@ -98,6 +98,15 @@ NULLABLE_COLUMNS: dict[str, type] = {
     # transcript predating the entrypoint field. Open string, not a closed enum --
     # local data has only ever observed one value; see GUA-43 plan Open Question 1.
     "surface": str,
+    # Compaction signals (2026-07-29). Deadline-bound: session JSONL rotates in
+    # ~5 days so these must be extracted before rotation or history is lost.
+    # turns_since_last_compact: human turns from the last compact_boundary to
+    #   session end; None when the session never compacted.
+    # compact_trigger: "auto" | "manual" from compactMetadata.trigger on the
+    #   compact_boundary record; None when no compact or trigger field absent.
+    # Backfills to July boundary on re-parse -- no new regime, same apparatus.
+    "turns_since_last_compact": int,
+    "compact_trigger": str,
 }
 
 # `attributionAgent` (the subagent-type name) is emitted only by CLI 2.1.201+.
@@ -391,6 +400,8 @@ def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, 
         "hook_blocks": errors.get("user_rejected", 0),
         "session_repos": json.dumps(session.get("session_repos", {})),
         "surface": session.get("entrypoint"),
+        "turns_since_last_compact": session.get("turns_since_last_compact"),
+        "compact_trigger": session.get("compact_trigger"),
     }
     row["is_meta"] = _classify_meta({**row, "edited_paths": session.get("edited_paths", [])})
     return row
