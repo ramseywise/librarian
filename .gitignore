@@ -56,8 +56,9 @@ raw/
 data/raw/
 # Wiki output — compiled from raw/, large and rebuildable
 data/wiki/
-# Legacy paths (safety net)
-wiki/
+# wiki/ is tracked — it is the repo's product, not rebuildable output.
+# Only private pages stay local.
+wiki/private/
 logs/*.jsonl
 
 # Cartographer fact table — rebuildable from raw/sessions + ~/.claude/projects
