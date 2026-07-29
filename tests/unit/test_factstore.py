@@ -520,3 +520,64 @@ def test_agent_spawns_stored_as_json(tmp_path: Path) -> None:
     spawns = json.loads(rows[0]["agent_spawns"])
     assert len(spawns) == 1
     assert spawns[0]["type"] == "Explore"
+
+
+# --- GUA-43: surface column --------------------------------------------------
+
+
+def _jsonl_session_with_entrypoint(
+    cwd: str = "/Users/x/repo", entrypoint: str = "claude-vscode"
+) -> list[dict]:
+    """Minimal JSONL records with an entrypoint field."""
+    return [
+        {
+            "type": "user",
+            "timestamp": "2026-07-16T10:00:00Z",
+            "cwd": cwd,
+            "entrypoint": entrypoint,
+            "message": {"content": "hello"},
+        },
+        {
+            "type": "assistant",
+            "timestamp": "2026-07-16T10:01:00Z",
+            "message": {
+                "model": "claude-opus-4-8",
+                "content": [{"type": "text", "text": "ok"}],
+                "usage": {
+                    "input_tokens": 100,
+                    "output_tokens": 50,
+                    "cache_read_input_tokens": 0,
+                    "cache_creation_input_tokens": 0,
+                },
+            },
+        },
+    ]
+
+
+def test_surface_column_round_trips_jsonl_era(tmp_path: Path) -> None:
+    """JSONL-era rows carry the surface value extracted from entrypoint."""
+    projects = tmp_path / "projects"
+    projects.mkdir()
+    _write_jsonl(projects / "abc.jsonl", _jsonl_session_with_entrypoint(entrypoint="claude-vscode"))
+    store = tmp_path / "facts.db"
+    rows = from_jsonl(projects)
+    upsert(rows, store)
+    stored = read_all(store)
+    assert len(stored) == 1
+    assert stored[0]["surface"] == "claude-vscode"
+
+
+def test_surface_column_none_for_notes_era(tmp_path: Path) -> None:
+    """Notes-era rows carry surface=None (no entrypoint telemetry pre-July).
+
+    validate_row() defaults absent nullable columns to None, so a row upserted
+    without a surface key must read back as None -- same apparatus that backfills
+    every prior NULLABLE_COLUMNS addition.
+    """
+    store = tmp_path / "facts.db"
+    # A minimal notes-era row: no surface key at all
+    row = _row("n1", date="2026-06-01", regime="note-hook", era=ERA_NOTE)
+    upsert([row], store)
+    stored = read_all(store)
+    assert len(stored) == 1
+    assert stored[0].get("surface") is None
