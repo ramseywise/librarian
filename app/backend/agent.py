@@ -37,7 +37,13 @@ _client: genai.Client | None = None
 def _get_client() -> genai.Client:
     global _client
     if _client is None:
-        _client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "GOOGLE_API_KEY is not set. "
+                "Add it to your .env file or export it before starting the server."
+            )
+        _client = genai.Client(api_key=api_key)
     return _client
 
 

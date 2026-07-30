@@ -130,9 +130,24 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
 async def writeback(body: dict[str, str]) -> JSONResponse | dict[str, str]:
     page_id = body.get("page_id", "")
     link_to = body.get("link_to", "")
+
+    # Reject `..` segments and absolute paths before touching the filesystem.
+    # rglob alone does not constrain results to WIKI_DIR — an injected page_id
+    # like "../../etc/passwd" or an absolute path would let a caller read or
+    # overwrite arbitrary files. The resolve()/is_relative_to() check below is
+    # the same guard applied in server.py (list_pages) and agent.py (_read_page).
+    if not page_id or ".." in page_id or page_id.startswith("/"):
+        return JSONResponse(status_code=400, content={"error": "invalid page_id"})
+
     md_file = next(WIKI_DIR.rglob(f"{page_id}.md"), None)
     if not md_file:
         return JSONResponse(status_code=404, content={"error": "page not found"})
+
+    # Second check: resolve symlinks / relative components and confirm the
+    # matched file actually lives inside the wiki root.
+    if not md_file.resolve().is_relative_to(WIKI_DIR.resolve()):
+        return JSONResponse(status_code=400, content={"error": "invalid page_id"})
+
     content = md_file.read_text()
     if "## See Also" not in content:
         content += "\n\n## See Also\n"
