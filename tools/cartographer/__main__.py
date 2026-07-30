@@ -199,8 +199,12 @@ def _run_facts() -> None:
     p.add_argument("--notes-dir", default=str(repo_root / "raw" / "sessions"))
     p.add_argument(
         "--dashboard",
-        default=str(Path("~/workspace/guacamayo/.sounding/dashboard.html").expanduser()),
-        help="Rendered dashboard path (guacamayo consolidates; librarian aggregates)",
+        default=str(repo_root / "data" / "dashboard.html"),
+        help=(
+            "Rendered dashboard path (engine artifact, librarian-local). "
+            "Never guacamayo/.sounding/dashboard.html — deprecated; the shared artifact "
+            "is context-dashboard.html, region-injected, not full-page rendered (LIB #68)"
+        ),
     )
     p.add_argument(
         "--growth-md",
@@ -212,7 +216,7 @@ def _run_facts() -> None:
     p.add_argument("--no-git", action="store_true", help="Skip repo-activity collection")
     p.add_argument(
         "--ledger",
-        default=str(Path("~/workspace/guacamayo/.claude/docs/tooling-ledger.md").expanduser()),
+        default=str(Path("~/workspace/guacamayo/.sounding/tooling-ledger.md").expanduser()),
         help="Tooling ledger for experiment tracking",
     )
     p.add_argument(
