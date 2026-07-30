@@ -1,0 +1,410 @@
+[
+  {
+    "id": "rag-001",
+    "category": "retrieval",
+    "query": "What chunking strategy does the Librarian pipeline use by default?",
+    "expected_answer": "The Librarian pipeline uses HtmlAwareChunker, a heading-boundary recursive chunker. It splits first at ## and ### headings, then recursively at paragraph and sentence boundaries until chunks fit max_tokens=512, with overlap_tokens=64 across boundaries.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "rag-002",
+    "category": "retrieval",
+    "query": "Why must multilingual-e5-large embeddings use a query prefix at search time?",
+    "expected_answer": "The E5 prefix rule requires 'query: ' prefix at search time and 'passage: ' prefix at index time. Violating this rule silently degrades recall by approximately 15-20% — there is no error, just degraded performance.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "rag-003",
+    "category": "retrieval",
+    "query": "What is Reciprocal Rank Fusion and why is it preferred over linear score combination?",
+    "expected_answer": "RRF combines ranked lists using position rather than raw scores: RRF(d) = sum of 1/(k + rank_i(d)) with k=60. It is preferred over linear combination because BM25 and vector scores live on incompatible scales, making linear weights fragile. RRF is parameter-free and typically bumps hit_rate by 3-8%.",
+    "source_pages": ["wiki/rag/reciprocal-rank-fusion.md", "wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "rag-004",
+    "category": "retrieval",
+    "query": "What is the CRAG confidence threshold and what happens when the score falls below it?",
+    "expected_answer": "The CRAG confidence threshold is 0.4 by default. When the best-scored chunk after reranking falls below this threshold, the pipeline loops back to a reformulation step that rewrites the query (typically via Haiku) and re-enters retrieval rather than generating a low-confidence answer. MAX_RETRIES is 2.",
+    "source_pages": ["wiki/rag/crag-retry-logic.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "rag-005",
+    "category": "retrieval",
+    "query": "What are the production benchmark hit rates for different retrieval strategies in the Librarian pipeline?",
+    "expected_answer": "From the rag-v1 Danish market benchmark: dense-only 45%, sparse BM25 50%, hybrid RRF 58%, hybrid plus cross-encoder reranker 68%. Adding the cross-encoder on top of hybrid adds 10 percentage points.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "rag-006",
+    "category": "retrieval",
+    "query": "What is the default reranker in the Librarian pipeline and how does it score chunks?",
+    "expected_answer": "The default reranker is CrossEncoderReranker using ms-marco-MiniLM-L-6-v2. It scores each (query, chunk.text) pair through a cross-attention model. Raw logits are normalized through sigmoid to produce scores in [0, 1]. It runs locally on CPU with approximately 50ms latency for 10 pairs.",
+    "source_pages": ["wiki/rag/rag-reranking.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "rag-007",
+    "category": "retrieval",
+    "query": "How does RRF promote cross-query agreement in multi-query retrieval?",
+    "expected_answer": "RRF promotes documents that appear in multiple query result lists. A document ranked 2nd by both query A and query B gets a higher RRF score than one ranked 2nd by only query B with a higher raw score. Cross-query consensus is the signal; raw score is the noise. RRF correctly surfaces the document that two queries agreed on over one that only one query found.",
+    "source_pages": ["wiki/rag/reciprocal-rank-fusion.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "rag-008",
+    "category": "retrieval",
+    "query": "What is the n-candidates rule of thumb for retrieval and reranking?",
+    "expected_answer": "The rule of thumb is: retrieve k=10, pass through CRAG grading leaving 3-6 relevant chunks, rerank those, then take the top 3 for generation. Too many into the reranker causes a latency spike; too few provides no gain over CRAG grading alone.",
+    "source_pages": ["wiki/rag/rag-reranking.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "rag-009",
+    "category": "retrieval",
+    "query": "What hybrid scoring formula does ChromaDB use in the Librarian pipeline?",
+    "expected_answer": "ChromaDB uses a hybrid score of 0.3 times term_overlap plus 0.7 times cosine_similarity. It runs as a PersistentClient on disk in the .chroma/ directory using cosine space with HNSW indexing.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "rag-010",
+    "category": "retrieval",
+    "query": "When should DuckDB vss be used instead of ChromaDB for vector search?",
+    "expected_answer": "DuckDB vss should be used when the project already uses DuckDB, has fewer than 50K chunks (O(n) scan is acceptable at that scale), and wants zero extra infrastructure. For larger corpora or multi-tenant workloads, switch to Chroma or OpenSearch.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "rag-011",
+    "category": "retrieval",
+    "query": "What does the EnsembleRetriever do and what key behaviors does it provide?",
+    "expected_answer": "EnsembleRetriever encapsulates multi-query retrieval by running all queries across all retrievers in parallel using asyncio.gather, applying fingerprint deduplication via sha256 of (url, first 200 chars of text), filtering chunks below a score threshold, and fusing all result lists with RRF. It returns list[GradedChunk] — the same interface the reranker expects.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "rag-012",
+    "category": "retrieval",
+    "query": "What is the BM25 stemmer gotcha for non-English corpora?",
+    "expected_answer": "BM25's default stemmer is English and silently fails on non-English corpora — there is no error, just degraded recall. For Danish content, the stemmer must be configured explicitly using Tokenizer(stemmer=Stemmer('danish')). This is the BM25-side analog of the E5 embedder's multilingual prefix rule.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mem-001",
+    "category": "memory",
+    "query": "What are the three tiers of agent memory and how do their storage and retrieval patterns differ?",
+    "expected_answer": "The three tiers are: Semantic (facts, knowledge, entities — stored as profile JSON or vector collection, retrieved by key lookup or semantic search, updated by upsert); Episodic (past task records and conversation history — stored as append-only log or vector index, retrieved by semantic similarity, append-only updates); Procedural (rules, system prompt, persona — stored as updatable prompt template, loaded directly at session start, rewritten on feedback).",
+    "source_pages": ["wiki/memory/agent-memory-types.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mem-002",
+    "category": "memory",
+    "query": "What is the implementation priority order for agent memory types in a copilot agent?",
+    "expected_answer": "Priority order is: 1) In-context memory (already handled by LangGraph checkpointer), 2) Episodic memory (add BaseStore and write session summary at END node — costs approximately $0.0001 per session with Haiku, high ROI), 3) Semantic memory (extract entities, store in BaseStore vector namespace), 4) Procedural memory (lowest priority, requires enough usage data to learn patterns).",
+    "source_pages": ["wiki/memory/agent-memory-types.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mem-003",
+    "category": "memory",
+    "query": "What is the history compaction trigger and overlap in the ADK context engineering pattern?",
+    "expected_answer": "The history compaction triggers when there are 8 or more messages. After compaction, the last 4 messages are kept as overlap. The summarizer uses Haiku (not Sonnet) for cost efficiency. This preserves factual state across compaction without overpaying for model quality.",
+    "source_pages": ["wiki/adk/adk-context-engineering.md", "wiki/memory/agent-memory-types.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "mem-004",
+    "category": "memory",
+    "query": "Why should long-term memory writes prefer background timing over hot-path timing?",
+    "expected_answer": "Background writes have no latency impact on the user-facing response, while hot-path writes add latency. Session summaries and episodic store updates should use background writes (async task spawned after the run completes). Only use hot path when the memory is needed within the same run, for example when a procedural memory update affects the current response.",
+    "source_pages": ["wiki/memory/agent-memory-types.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "mem-005",
+    "category": "memory",
+    "query": "What is the ContextVar vs session.state gotcha in ADK Python multi-agent systems?",
+    "expected_answer": "In ADK Python multi-agent, asyncio.create_task() copies a context snapshot — ContextVar mutations after task creation are invisible to child tasks. The correct approach is to use session.state as the primary auth channel for multi-agent, not ContextVar. Auth tokens should be written into session before the runner call and read via ToolContext in tool functions.",
+    "source_pages": ["wiki/adk/adk-context-engineering.md", "wiki/memory/agent-memory-types.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mcp-001",
+    "category": "architecture",
+    "query": "What are the three MCP primitives and what is each used for?",
+    "expected_answer": "The three MCP primitives are: Resources (read-only data the LLM can browse, such as documents, schemas, or session history), Tools (actions with side effects, such as retrieve, create, send, or search), and Prompts (reusable prompt templates, such as system prompt variants or formatting templates).",
+    "source_pages": ["wiki/mcp/mcp-protocol.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "mcp-002",
+    "category": "architecture",
+    "query": "What are the two MCP transport protocols and which is the current standard?",
+    "expected_answer": "The two protocols are SSE (Server-Sent Events), which uses two endpoints — an HTTP POST for client-to-server and an SSE GET for server-to-client — and Streamable HTTP, which uses a single endpoint for both directions and can optionally use SSE for streaming. Streamable HTTP is the successor, released March 2025. SSE is legacy but still widely used.",
+    "source_pages": ["wiki/mcp/mcp-protocol.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "mcp-003",
+    "category": "architecture",
+    "query": "How does the SKILL.md pattern in ADK control which MCP tools activate?",
+    "expected_answer": "SKILL.md uses YAML frontmatter with an adk_additional_tools list to declare which MCP tools activate when the skill loads. The frontmatter controls tool loading; the body provides the instruction text injected when the skill loads. This separates domain logic from agent orchestration code entirely.",
+    "source_pages": ["wiki/mcp/mcp-protocol.md", "wiki/adk/adk-context-engineering.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mcp-004",
+    "category": "architecture",
+    "query": "How does the AWS Bedrock AgentCore deployment pattern simplify MCP server deployment?",
+    "expected_answer": "The bedrock-agentcore deploy command builds a container image, pushes to ECR, provisions an AgentCore Runtime endpoint, and auto-configures CloudWatch and X-Ray observability — replacing manual ECS task definition, ECR push, CloudWatch log group setup, and X-Ray instrumentation. Auth uses Amazon Cognito JWT authorizer by default, requiring no auth code in the MCP server itself.",
+    "source_pages": ["wiki/mcp/mcp-protocol.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "pat-001",
+    "category": "patterns",
+    "query": "What is the ReAct pattern and when does it break down?",
+    "expected_answer": "ReAct (Reasoning + Acting) is the foundational single-agent inference loop where the agent alternates between reasoning (Thought) and acting (tool calls) until it has enough information to answer. It breaks down with 5 or more sequential tool calls where ordering matters, partial failure mid-sequence causing inconsistent state, or when the LLM needs to make a plan and verify each step before executing. For these cases, use Plan and Execute pattern.",
+    "source_pages": ["wiki/patterns/react-pattern.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "pat-002",
+    "category": "patterns",
+    "query": "What is the self-improvement maturity stack for ReAct agents?",
+    "expected_answer": "The maturity stack is: MVP — ReAct loop plus chain-of-thought in system prompt; Beta — self-critique on high-stakes outputs; Production — reflection plus procedural memory. Only graduate beyond ReAct when you have evidence it is breaking down.",
+    "source_pages": ["wiki/patterns/react-pattern.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "pat-003",
+    "category": "patterns",
+    "query": "What are the three LangGraph streaming modes and when is each appropriate?",
+    "expected_answer": "The three streaming modes are: values (full state snapshot after each node — for debugging or final state only), updates (state delta after each node — for progress indicators or partial results), and events (fine-grained: token, tool start/end, node start/end — for copilot UI to stream tokens and tool activity).",
+    "source_pages": ["wiki/langgraph/langgraph-advanced-patterns.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "pat-004",
+    "category": "patterns",
+    "query": "How does the LangGraph Send API enable fan-out parallelism?",
+    "expected_answer": "The Send API lets a node return a list of Send objects, each targeting a node with its own input state. LangGraph waits for all fan-out nodes to complete before proceeding. An Annotated[list, add_messages] reducer auto-merges results. This enables parallel retrieval across multiple query variants or knowledge bases simultaneously.",
+    "source_pages": ["wiki/langgraph/langgraph-advanced-patterns.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval-001",
+    "category": "eval",
+    "query": "What are the three test tiers in the RAG evaluation framework and what does each test?",
+    "expected_answer": "The three tiers are: Unit tests (free, mocks, each component in isolation — chunker, retriever, reranker, generator, graph wiring); Regression tests (free with InMemory and MockEmbedder, hit_rate@5 >= 0.6 and MRR >= 0.4 against golden dataset with ratchet floors); Capability tests (cheap to expensive, end-to-end routing correctness, CRAG termination, AnswerJudge grading that is cost-gated).",
+    "source_pages": ["wiki/rag/rag-evaluation.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval-002",
+    "category": "eval",
+    "query": "What are the four query categories in the synthetic dataset generation pattern and their target shares?",
+    "expected_answer": "The four categories are: simple (single-fact from one article, 40% target), complex (synthesis from 2+ articles, 25% target), ambiguous (underspecified queries needing clarification or scoped answers, 15% target), and out_of_scope (action requests or queries beyond a static KB, 20% target). Out-of-scope items are generated from a fixed prohibited-action taxonomy for stability across KB changes.",
+    "source_pages": ["wiki/eval/synthetic-dataset-generation.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval-003",
+    "category": "eval",
+    "query": "What are the three Anthropic agent eval tiers and when should each run?",
+    "expected_answer": "Tier 1 (Unit) tests individual components like tool selection and routing — deterministic, free, runs every CI run. Tier 2 (Trajectory) tests the sequence of agent decisions and tool calls — low to medium cost, runs as a pre-merge gate. Tier 3 (End-to-end) tests final output quality with LLM-as-judge for faithfulness, relevance, and completeness — expensive, cost-gated and not run in CI. Tier 1 catches approximately 70% of regressions cheaply.",
+    "source_pages": ["wiki/rag/rag-evaluation.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval-004",
+    "category": "eval",
+    "query": "What is the LLM-as-judge cost-gating pattern for the AnswerJudge?",
+    "expected_answer": "The AnswerJudge is cost-gated by a CONFIRM_EXPENSIVE_OPS flag that must be explicitly set to True. The default is False and it is enforced never to be committed as True. Estimated cost is approximately $0.01 to $0.03 per sample with Haiku. The judge scores (question, context, answer) on faithfulness, relevance, and completeness dimensions.",
+    "source_pages": ["wiki/rag/rag-evaluation.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval-005",
+    "category": "eval",
+    "query": "What are the eight RAG eval metrics and which require ground truth labels?",
+    "expected_answer": "The eight metrics are: Faithfulness, Response Naturalness, Answer Relevance, and Contextual Relevance (all runtime — no ground truth needed); and Answer Completeness, Contextual Recall, Document Precision, and Confidence Calibration (all offline — require labelled test set with ground truth answers and source URLs).",
+    "source_pages": ["wiki/eval/rag-eval-metrics-suite.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "eval-006",
+    "category": "eval",
+    "query": "What does Document Precision measure and why is it different from Contextual Relevance?",
+    "expected_answer": "Document Precision measures the fraction of retrieved chunks that originate from the expected source documents using exact URL matching — it is fully deterministic. Contextual Relevance evaluates whether chunk content is semantically useful for the query using an LLM judge. A pipeline can produce topically relevant chunks from the wrong document (outdated version or duplicate), which Document Precision catches but Contextual Relevance does not.",
+    "source_pages": ["wiki/eval/rag-eval-metrics-suite.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "eval-007",
+    "category": "eval",
+    "query": "What are the ragas and deepeval tools used for respectively?",
+    "expected_answer": "ragas is used for corpus-level quality benchmarks run manually after corpus changes, with native LangFuse integration. deepeval is used for CI regression testing running in pytest with DeepEvalCallbackHandler for LangFuse. The decision is to use both: ragas for experiments comparing retrieval strategies, deepeval for CI regression gates.",
+    "source_pages": ["wiki/rag/rag-evaluation.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "eval-008",
+    "category": "eval",
+    "query": "What are the regression metric floors for the Librarian golden dataset?",
+    "expected_answer": "The regression floors are hit_rate@5 >= 0.6 and MRR >= 0.4. These floors only go up, never down — they are ratchet floors updated (never lowered) when quality improves. They are run against a golden dataset using InMemory retriever and MockEmbedder so no live servers are needed.",
+    "source_pages": ["wiki/rag/rag-evaluation.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "infra-001",
+    "category": "infra",
+    "query": "What is prefix caching and what does it save?",
+    "expected_answer": "Prefix caching is Claude's automatic KV cache reuse for repeated prompt prefixes. When a new request shares a long prefix with a recent request, only the novel suffix is processed. It reduces prefix token cost to approximately 10% of uncached cost and reduces TTFT proportionally to prefix length. Cache TTL is 5 minutes and the prefix must be byte-identical to hit. High-value targets are system prompts, tool schemas, and long document contexts.",
+    "source_pages": ["wiki/infra/prefix-caching.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "infra-002",
+    "category": "infra",
+    "query": "Why does the ADK static_instruction field get prefix caching benefits but instruction=callable does not?",
+    "expected_answer": "static_instruction is a string literal or file read, so the content is identical across calls — it is eligible for prefix caching. instruction=callable is a function called per turn that injects dynamic content, breaking the byte-identical requirement for cache hits. This is why live_mcp strategy (all schemas in system prompt from turn 1) is cache-eligible but dynamic_skill_mcp (injecting via function_response) is not.",
+    "source_pages": ["wiki/infra/prefix-caching.md", "wiki/adk/adk-context-engineering.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "infra-003",
+    "category": "infra",
+    "query": "What memory and health check configuration does multilingual-e5-large require on Fargate?",
+    "expected_answer": "multilingual-e5-large (560MB model) needs approximately 1.5GB when loaded. The Fargate task memory should be set to 4096 MiB and the health check startPeriod should be 60 seconds because the model takes approximately 45 seconds to load. Without embedder warmup on startup, the first request after a cold start takes 30-60 seconds.",
+    "source_pages": ["wiki/infra/production-hardening-patterns.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "infra-004",
+    "category": "infra",
+    "query": "What checkpointer backends does the Librarian pipeline support and when should each be used?",
+    "expected_answer": "Three backends are supported: memory (MemorySaver, in-process only — for development), sqlite (AsyncSqliteSaver — for local persistence without a separate server), and postgres (AsyncPostgresSaver — for production Fargate deployments where multi-turn state must survive restarts and scale events). Selected via checkpoint_backend config setting.",
+    "source_pages": ["wiki/infra/production-hardening-patterns.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "adk-001",
+    "category": "architecture",
+    "query": "What is the fundamental difference between ADK and LangGraph state models?",
+    "expected_answer": "ADK uses a mutable dict (session.state) accessed via ToolContext — state is shared across all agents in a session and mutations are visible immediately. LangGraph uses an immutable TypedDict passed through nodes — nodes return diffs that LangGraph merges, providing full type safety. ADK state scope is session-wide; LangGraph state is per-node with checkpointer handling cross-turn persistence.",
+    "source_pages": ["wiki/adk/adk-vs-langgraph-comparison.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "adk-002",
+    "category": "architecture",
+    "query": "What are the three ADK skill-loading strategies and what are their trade-offs?",
+    "expected_answer": "Strategy A (dynamic_skill_mcp): tools list is static with load_skill tool, skill instructions injected via function_response — prefix cache eligible but incompatible with voice/BIDI agents. Strategy B (native_skill_mcp): load_skill returns prose only with schemas in tools API field, tool registry expands dynamically — voice compatible, cleanest separation, most relevant for multi-domain. Strategy C (live_mcp): all schemas and instructions in system prompt from turn 1 — required for voice agents, large initial context with no lazy loading.",
+    "source_pages": ["wiki/adk/adk-context-engineering.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "adk-003",
+    "category": "architecture",
+    "query": "Why does output_schema belong on leaf agents only in ADK multi-agent systems?",
+    "expected_answer": "ADK enforces that the routing-decision text from the root router conforms to the output_schema. A router's routing text will never conform to a domain output schema, causing the call to fail with a validation error that looks like a model output problem. output_schema should only be set on leaf agents that produce structured domain outputs.",
+    "source_pages": ["wiki/adk/adk-context-engineering.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "meta-001",
+    "category": "meta",
+    "query": "What is the Karpathy LLM Wiki Pattern and how does it differ from traditional RAG?",
+    "expected_answer": "The Karpathy pattern treats personal knowledge like a build system: raw sources (immutable inputs) are compiled by an LLM into structured interlinked wiki pages. Unlike RAG, it requires no vector DB or embedding pipeline — answers are grounded in synthesised structured markdown, not raw chunk similarity. Knowledge is synthesised once at ingest time rather than re-derived per query. It compounds — every ingest makes the entire wiki richer. Works well at thousands of pages; RAG wins at millions.",
+    "source_pages": ["wiki/meta/karpathy-llm-wiki-pattern.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "meta-002",
+    "category": "meta",
+    "query": "Where do architectural decision records (ADRs) live in the wiki and why?",
+    "expected_answer": "ADRs live in their domain directory (wiki/infra/, wiki/langgraph/, etc.) tagged with type: decision — not in a flat wiki/decisions/ directory. The reason is that when loading a domain briefing via get_domain_briefing(), you want the observability decision in the same retrieval as the observability concept pages. A flat decisions directory would require two queries.",
+    "source_pages": ["wiki/meta/karpathy-llm-wiki-pattern.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "meta-003",
+    "category": "meta",
+    "query": "What are the three core operations in the Karpathy LLM Wiki Pattern?",
+    "expected_answer": "The three operations are: ingest (drop a source in raw/, Claude reads it and writes/updates wiki pages, flags contradictions — knowledge synthesised once at ingest time), query (ask questions against the compiled wiki with answers grounded in accumulated structured understanding), and lint (health checks finding orphan pages, stale claims, internal contradictions, and missing cross-references).",
+    "source_pages": ["wiki/meta/karpathy-llm-wiki-pattern.md"],
+    "difficulty": "easy"
+  },
+  {
+    "id": "complex-001",
+    "category": "retrieval",
+    "query": "How do CRAG retry logic and reranking work together to prevent low-confidence answers?",
+    "expected_answer": "The reranker (CrossEncoderReranker) scores each (query, chunk) pair through a cross-encoder and applies sigmoid normalization to produce [0,1] scores. The confidence_score is the max relevance score across reranked chunks. The CRAG gate checks this score against a 0.4 threshold — if below threshold and retry_count < MAX_RETRIES (2), it routes to query reformulation (via Haiku) and re-enters retrieval. This prevents low-confidence answers from reaching the user at a cost of approximately 550ms additional latency per retry.",
+    "source_pages": ["wiki/rag/rag-reranking.md", "wiki/rag/crag-retry-logic.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "complex-002",
+    "category": "retrieval",
+    "query": "What is the ingestion pipeline ownership principle and what is the dead code signal?",
+    "expected_answer": "The preprocessing boundary decision (2026-04-19) establishes that ingestion, embedding, and indexing all belong in preprocessing/ — not in retrieval/. Retrieval's responsibility is query-time only: search, score, and return chunks. The dead code signal is: if an indexing.py in a retrieval module has no callers, it is dead code — the real indexer lives in preprocessing. Multiple indexer implementations should be strategy-swappable via config, not coexisting as separate modules.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "complex-003",
+    "category": "eval",
+    "query": "How does the SKILL.md evaluation pipeline measure whether a skill improves Claude's output?",
+    "expected_answer": "The pipeline has three agents: Grader evaluates each run (with skill vs without skill) independently, producing PASS/FAIL per expectation, extracted claims, and critique of eval assertions themselves. Comparator judges which output is better blind (without knowing which skill produced it) using a content and structure rubric. Analyzer unblinds the result, reads both skills and transcripts, and produces improvement suggestions ranked by impact in four categories: instructions, tools, examples, error_handling.",
+    "source_pages": ["wiki/adk/adk-context-engineering.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "complex-004",
+    "category": "memory",
+    "query": "What is the LangGraph BaseStore production deployment pattern and what infrastructure does it share?",
+    "expected_answer": "In production, LangGraph BaseStore uses AsyncPostgresStore.from_conn_string(settings.database_url). The graph is compiled with both checkpointer and store attached: graph.compile(checkpointer=checkpointer, store=store). AsyncPostgresStore uses the same Postgres instance as the checkpointer — no new infrastructure is required if Postgres is already in the stack. Development uses InMemoryStore.",
+    "source_pages": ["wiki/memory/agent-memory-types.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "complex-005",
+    "category": "retrieval",
+    "query": "What is the lazy ingestion pattern and when is it used?",
+    "expected_answer": "Lazy ingestion defers corpus loading until query time. The pattern is: agent calls get_artist_context(artist_name), checks rag_chunks for cached passages for that entity, on cache miss fetches source data (e.g., Wikipedia), chunks, embeds, upserts, then returns top-k; on cache hit returns top-k directly. This avoids pre-ingesting all entities upfront and handles corpus freshness naturally. Used in listen-wiseer for artist bios with DuckDB vss.",
+    "source_pages": ["wiki/rag/rag-retrieval-strategies.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "complex-006",
+    "category": "eval",
+    "query": "What is the Completeness times Relevance diagnostic matrix and what does each quadrant mean?",
+    "expected_answer": "The matrix combines Answer Completeness (covers GT claims) and Answer Relevance (addresses what was asked). High Completeness + High Relevance is ideal. High Completeness + Low Relevance means the response covers ground truth claims but doesn't engage with what was actually asked. Low Completeness + High Relevance means the response is on-topic but misses details. Low Completeness + Low Relevance means neither on-topic nor complete.",
+    "source_pages": ["wiki/eval/rag-eval-metrics-suite.md"],
+    "difficulty": "hard"
+  },
+  {
+    "id": "complex-007",
+    "category": "infra",
+    "query": "How does Anthropic API prefix caching report cache hits and what should a healthy setup show?",
+    "expected_answer": "Anthropic API responses include cache_read_input_tokens and cache_creation_input_tokens in usage stats. A healthy prefix-caching setup should show cache_read_input_tokens greater than 0 on all calls after the first. The [client] ADK POC explicitly set minimizing LLM calls and optimizing for prefix caching as top design goals, which influenced choosing Agent with Skills and Compaction over multi-agent topologies because a single agent with a stable prefix caches better than N agents each with their own context.",
+    "source_pages": ["wiki/infra/prefix-caching.md"],
+    "difficulty": "medium"
+  },
+  {
+    "id": "complex-008",
+    "category": "eval",
+    "query": "What is the Confidence Calibration metric and what does a negative Spearman correlation indicate?",
+    "expected_answer": "Confidence Calibration measures Spearman's rank correlation (rho) between the agent's ordinal confidence label (LOW=1, MEDIUM=2, HIGH=3) and Answer Completeness scores. A rho of -0.5 to -1.0 indicates the system is systematically inverted — HIGH confidence answers are actually less complete than LOW confidence answers. The metric requires all three tiers to be represented with at least 5 items each and needs approximately 300+ items for reliable measurement.",
+    "source_pages": ["wiki/eval/rag-eval-metrics-suite.md"],
+    "difficulty": "hard"
+  }
+]
