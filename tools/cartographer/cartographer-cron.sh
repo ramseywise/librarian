@@ -55,10 +55,13 @@ run_step() {
 EXIT_CODE=0
 
 case "${MODE}" in
-    facts) run_step facts uv run cartographer --facts || EXIT_CODE=$? ;;
+    # --no-dashboard: the full-page render wrote the deprecated guacamayo
+    # .sounding/dashboard.html; the shared context-dashboard.html is skill-maintained
+    # until cartographer learns region injection (LIB #68).
+    facts) run_step facts uv run cartographer --facts --no-dashboard || EXIT_CODE=$? ;;
     cron)  run_step cron  uv run cartographer --cron  || EXIT_CODE=$? ;;
     both)
-        run_step facts uv run cartographer --facts || EXIT_CODE=$?
+        run_step facts uv run cartographer --facts --no-dashboard || EXIT_CODE=$?
         run_step cron  uv run cartographer --cron  || EXIT_CODE=$?
         ;;
     *)
