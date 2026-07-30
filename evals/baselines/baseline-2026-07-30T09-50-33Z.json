@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-07-30T09-50-33Z",
+  "n_entries": 50,
+  "hit_rate": 1.0,
+  "mean_reciprocal_rank": 1.0,
+  "mean_token_overlap": 1.0,
+  "mean_semantic_similarity": 1.0,
+  "floors": {
+    "hit_rate": 0.6,
+    "mrr": 0.4
+  }
+}
