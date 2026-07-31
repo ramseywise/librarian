@@ -607,6 +607,29 @@ def fetch_arxiv_papers() -> int:
         return 0
 
 
+def fetch_feed_posts() -> int:
+    """Fetch recent RSS/blog posts into raw/web/ when FEED_FETCH_ENABLED=true.
+
+    Returns the number of posts written (0 if disabled or on error).
+    Controlled by env var: FEED_FETCH_ENABLED=true (off by default).
+    """
+    if os.environ.get("FEED_FETCH_ENABLED", "").lower() != "true":
+        log.debug("cron.feeds_disabled", msg="Set FEED_FETCH_ENABLED=true to enable")
+        return 0
+
+    try:
+        from core.scrape_feeds import FeedScraper
+
+        scraper = FeedScraper()
+        written = scraper.run(dry_run=False)
+        count = len(written)
+        log.info("cron.feeds_fetched", posts_fetched=count)
+        return count
+    except Exception as exc:
+        log.warning("cron.feeds_error", error=str(exc), exc_info=True)
+        return 0
+
+
 def run_cron() -> None:
     log.info("cron.start")
 
@@ -626,6 +649,9 @@ def run_cron() -> None:
     # Fetch recent arXiv papers (opt-in via ARXIV_FETCH_ENABLED=true)
     arxiv_papers_fetched = fetch_arxiv_papers()
 
+    # Fetch recent RSS/blog posts (opt-in via FEED_FETCH_ENABLED=true)
+    feed_posts_fetched = fetch_feed_posts()
+
     report = run_analysis()
     out_path = save_report(report)
     created_commands = extract_and_write_commands(report)
@@ -635,6 +661,7 @@ def run_cron() -> None:
         "commands_created": created_commands,
         "sessions_synced": synced,
         "arxiv_papers_fetched": arxiv_papers_fetched,
+        "feed_posts_fetched": feed_posts_fetched,
         "timestamp": datetime.now(tz=UTC).isoformat(),
     }
     summary_path = INSIGHTS_DIR / "latest.json"
