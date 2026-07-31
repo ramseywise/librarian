@@ -58,7 +58,7 @@ wheels = [
 
 [[package]]
 name = "anthropic"
-version = "0.120.0"
+version = "0.120.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -70,9 +70,9 @@ dependencies = [
     { name = "sniffio" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/92/5c/3331da4fc009d448008a50c78d86cc929e8c937cd1442245ce3f80561c4e/anthropic-0.120.0.tar.gz", hash = "sha256:6ba6007dc9b00365b20f6101a6618f5196ac1ceef81512e4b5cc0e7436d4975d", size = 1008042, upload-time = "2026-07-24T16:32:52.384Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/10/4ca013cb166f226bd89e0aeb0fcaff94f45ddf716d4925ce89475d3c587b/anthropic-0.120.2.tar.gz", hash = "sha256:9722efc10c27a30a69f5338ddacdb35bc6a64297a4e4ba729bf83af873d5fb3a", size = 1008421, upload-time = "2026-07-28T17:38:26.986Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/8a/8522bdf809e1f95f0d9c936540987a3f6afba01d2921a2bf488dedf836a8/anthropic-0.120.0-py3-none-any.whl", hash = "sha256:591bd531563ec7b63a1e138f5c11f14cb94edda99623b349c2ce2ece8e08b8a5", size = 1022602, upload-time = "2026-07-24T16:32:50.506Z" },
+    { url = "https://files.pythonhosted.org/packages/63/af/0f5db57b9397a0f3b7fc204cbef143401a7cadaf982330f97f1ce3d39f34/anthropic-0.120.2-py3-none-any.whl", hash = "sha256:0f0bc2b381dc0eb41c8d886b815d79c2041cd2374f83aed36f574b6dc9c579c1", size = 1022851, upload-time = "2026-07-28T17:38:25.466Z" },
 ]
 
 [[package]]
@@ -572,7 +572,7 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.139.2"
+version = "0.140.13"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-doc" },
@@ -581,26 +581,26 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cd/95/d3f0ae10836324a2eab98a52b61210ac609f08200bf4bb0dc8132d32f78a/fastapi-0.139.2.tar.gz", hash = "sha256:333145a6891e9b5b3cfceb69baf817e8240cde4d4588ae5a10bf56ffacb6255e", size = 423428, upload-time = "2026-07-16T15:06:17.912Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2f/cb/7a4d2c2eb5a5d8a91763c05b7383d72917862e32f780daa0e27ffbb34cc6/fastapi-0.140.13.tar.gz", hash = "sha256:500172a08cf1459901f90b05c37d93060dada3b573fec8f0862445db52ba6b4b", size = 424843, upload-time = "2026-07-28T15:37:00.805Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/c7/cb03251d9dfb177246a9809a76f189d21df32dbd4a845951881d11323b7f/fastapi-0.139.2-py3-none-any.whl", hash = "sha256:b9ad015a835173d59865e2f5d8296fbc2b317bf56a2ba1a5bfbdd03de2fd4b1c", size = 130234, upload-time = "2026-07-16T15:06:19.557Z" },
+    { url = "https://files.pythonhosted.org/packages/84/4e/f9e8c762ef5e05c40482131e3d5e8b36bca13fa127578261f1d6b35a25d4/fastapi-0.140.13-py3-none-any.whl", hash = "sha256:8b017110e1e9f30a95e8bdb8f71fbe2f0fe3af5717109e5b14f9e069df54f6d4", size = 131222, upload-time = "2026-07-28T15:37:02.124Z" },
 ]
 
 [[package]]
 name = "fastmcp"
-version = "3.4.4"
+version = "3.4.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastmcp-slim", extra = ["client", "server"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/9c/f7/5188565d1b93ad611cbd80bf473e7ad669d1f3b689c4bedcd304e1ec3472/fastmcp-3.4.4.tar.gz", hash = "sha256:378202e26ec15b23819d9a1c0d1b0ebda096bc712720532010a0b82a45c2b1df", size = 28796458, upload-time = "2026-07-09T00:32:41.352Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/23/14/c1ffb91b7d1fece86c81e1f9df5474f30fd97e4cdaa398814bbbeee88568/fastmcp-3.4.5.tar.gz", hash = "sha256:a95f2bc876bef42e8b50f7872f24f3f2fe3b1d37408c734e8b9d9e03014b72d3", size = 28800521, upload-time = "2026-07-27T19:20:01.231Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/67/3cef84ba38a23dca1e1e776bfda8a35ab3c7a6c94a8ca81d0715de6dd3c5/fastmcp-3.4.4-py3-none-any.whl", hash = "sha256:f86f208713212260068cf55c32936839eee856fefc7808e18a032f31eb0f718e", size = 8019, upload-time = "2026-07-09T00:32:39.411Z" },
+    { url = "https://files.pythonhosted.org/packages/c6/4f/73450a436c963c0382d15a882fc5d08f15aadc329194df1b54495a7c8383/fastmcp-3.4.5-py3-none-any.whl", hash = "sha256:5d3d438eb2917e63e6faf53e8cb8fe26d887ec3232f848093a4eecad7fa34861", size = 8017, upload-time = "2026-07-27T19:19:57.942Z" },
 ]
 
 [[package]]
 name = "fastmcp-slim"
-version = "3.4.4"
+version = "3.4.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "platformdirs" },
@@ -610,9 +610,9 @@ dependencies = [
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/45/79/f35661c6a1d76dfbe17a079f912d96fffcfdd40fad5a9144bb9e7dfb1fdf/fastmcp_slim-3.4.4.tar.gz", hash = "sha256:dcaa3e0be2127d7eacdce592c2ef0039204923dc0ec396454615cb4a3275b078", size = 590203, upload-time = "2026-07-09T00:32:20.531Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/81/1d/f3e271fbcd01ce01a4cf623b336d8e1305c192aa5d5e8e0223b7167462e9/fastmcp_slim-3.4.5.tar.gz", hash = "sha256:5badc3bceee61f61297eeb9494f499325f3ce1cafabf4611b31f6c3e9d7dff59", size = 591622, upload-time = "2026-07-27T19:15:19.455Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/16/91/321e0b2e9ed70d0628b17ddaec76fc7b09f3e1d5d290f70bf101a2890142/fastmcp_slim-3.4.4-py3-none-any.whl", hash = "sha256:9d3a6327b9ee835188eb7323fc3b5d4cd061631b48da8ece56794bb538972505", size = 765158, upload-time = "2026-07-09T00:32:19.11Z" },
+    { url = "https://files.pythonhosted.org/packages/43/3b/16d8aa8224094519f30b078138e725b8a731bf0a13f1f850e58b5f9b3cc4/fastmcp_slim-3.4.5-py3-none-any.whl", hash = "sha256:bc31217827c4999812543c83ee95ed9a47f3ed1e3fd0bd4f64371e375b748eca", size = 766478, upload-time = "2026-07-27T19:15:18.015Z" },
 ]
 
 [package.optional-dependencies]
@@ -1241,12 +1241,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", specifier = ">=0.120.0" },
+    { name = "anthropic", specifier = ">=0.120.2" },
     { name = "beautifulsoup4", specifier = ">=4.15.0" },
     { name = "duckdb", specifier = ">=1.5.5" },
-    { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.139.2" },
-    { name = "fastapi", marker = "extra == 'codemap'", specifier = ">=0.139.2" },
-    { name = "fastmcp", specifier = ">=3.4.4" },
+    { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.140.13" },
+    { name = "fastapi", marker = "extra == 'codemap'", specifier = ">=0.140.13" },
+    { name = "fastmcp", specifier = ">=3.4.5" },
     { name = "google-genai", specifier = ">=2.14.0" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "llvmlite", marker = "extra == 'viz'", specifier = ">=0.45" },
@@ -1282,7 +1282,7 @@ provides-extras = ["viz", "api", "codemap", "presenter"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "fastapi", specifier = ">=0.139.2" },
+    { name = "fastapi", specifier = ">=0.140.13" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "playwright", specifier = ">=1.61.0" },
     { name = "pytest", specifier = ">=9.1.1" },
