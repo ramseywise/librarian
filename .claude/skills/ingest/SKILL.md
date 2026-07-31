@@ -12,7 +12,7 @@ Parse `$ARGUMENTS`:
 - `raw/path/` or single file → **Targeted compile mode** (Phase 3 only, scoped to that path)
 - `https://...` → **URL mode**: WebFetch → save to `raw/web/YYYY-MM-DD-<slug>.md` → compile that file
 - `figma:<figma-url>` → **Figma mode**: pull that specific Figma/FigJam file → save to `raw/figma/` → compile
-- `resolve` → **Conflict resolution mode**: guide through unresolved entries in `wiki/_conflicts.md`
+- `resolve` → **Conflict resolution mode**: guide through unresolved entries in `data/wiki/_conflicts.md`
 
 ---
 
@@ -118,7 +118,7 @@ Save extracted content to `raw/figma/YYYY-MM-DD-<file-slug>.md`, then compile th
 
 When invoked as `/ingest resolve`:
 
-1. Read `wiki/_conflicts.md` in full.
+1. Read `data/wiki/_conflicts.md` in full.
 2. List all **Unresolved** conflicts (Status: Unresolved).
 3. For each conflict in turn:
    a. Display both claims with their source citations.
@@ -163,24 +163,24 @@ If all files in a directory are unchanged → report "Nothing to ingest — all 
 
 Follow `CLAUDE.md` exactly for each file that passed the manifest check.
 
-1. **Read the source fully** before writing anything to `wiki/`.
+1. **Read the source fully** before writing anything to `data/wiki/`.
 2. **Identify** all entities, concepts, decisions, and open questions.
-3. **Check `wiki/_index.md`** to see which pages already exist.
+3. **Check `data/wiki/_index.md`** to see which pages already exist.
 4. **For each identified item:**
    - Read the existing wiki page if it exists.
    - Create a new page in the right subdirectory if it doesn't exist.
    - Update the summary, add new facts, update `updated:` date and `sources:` list.
    - Tags: at least one domain tag + one type tag (see `CLAUDE.md`).
-5. **Contradiction check:** if source disagrees with existing wiki claim → add entry to `wiki/_conflicts.md`, tag page with `conflict`. Do NOT silently overwrite. Consider source `confidence` level when evaluating contradictions (see CLAUDE.md § Source Confidence).
+5. **Contradiction check:** if source disagrees with existing wiki claim → add entry to `data/wiki/_conflicts.md`, tag page with `conflict`. Do NOT silently overwrite. Consider source `confidence` level when evaluating contradictions (see CLAUDE.md § Source Confidence).
 6. **Cross-references (bidirectional):** add `[[wikilinks]]` to related pages in both directions. For each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships (`— extends`, `— prerequisite-for`, etc.) where the relationship type is clear.
-7. **Update `wiki/_index.md`:** add any new pages under the right section. Do NOT add `wiki/private/` pages to `_index.md`.
+7. **Update `data/wiki/_index.md`:** add any new pages under the right section. Do NOT add `data/wiki/private/` pages to `_index.md`.
 8. **Orphan check (blocking):** every new page MUST have at least one incoming backlink from another page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
 9. **Update manifest** (see Step 9 below).
 10. **Relink pass:** after all files in this cycle are ingested, run the relinker to discover additional semantic links:
     ```bash
     uv run --extra api python etl/relinker.py
     ```
-    Review the output. If `wiki/_relink_suggestions.md` is generated, scan it for high-value links worth adding manually with typed relationships. Use `--dry-run` first if you want to preview changes without writing.
+    Review the output. If `data/wiki/_relink_suggestions.md` is generated, scan it for high-value links worth adding manually with typed relationships. Use `--dry-run` first if you want to preview changes without writing.
 
 ### Book and article source handling
 
@@ -197,7 +197,7 @@ After ingesting each file:
 
 ```bash
 sha256sum raw/path/to/file.md
-echo '{"path": "raw/path/to/file.md", "hash": "sha256:<first16chars>", "ingested_at": "YYYY-MM-DD", "wiki_pages": ["wiki/...", "wiki/..."]}' >> raw/manifest.jsonl
+echo '{"path": "raw/path/to/file.md", "hash": "sha256:<first16chars>", "ingested_at": "YYYY-MM-DD", "wiki_pages": ["data/wiki/...", "data/wiki/..."]}' >> raw/manifest.jsonl
 ```
 
 If updating an existing entry, replace the line (sed or temp file pattern).

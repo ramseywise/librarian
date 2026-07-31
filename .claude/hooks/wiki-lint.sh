@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Post-write hook: quick lint after any write to wiki/
+# Post-write hook: quick lint after any write to data/wiki/
 # Checks only dead wikilinks and missing frontmatter fields — fast checks only.
 # Full lint is run manually via /lint.
 
@@ -7,13 +7,15 @@ set -euo pipefail
 
 FILE_PATH="${CLAUDE_TOOL_INPUT_FILE_PATH:-}"
 
-# Only run on wiki/ writes
-if [[ "$FILE_PATH" != wiki/* ]] || [[ "$FILE_PATH" == *.gitkeep ]]; then
+# Only run on data/wiki/ writes. Absolute paths are normalised to the repo-relative
+# form first, so a write addressed as /…/librarian/data/wiki/x.md is still checked.
+FILE_PATH="${FILE_PATH#*/librarian/}"
+if [[ "$FILE_PATH" != data/wiki/* ]] || [[ "$FILE_PATH" == *.gitkeep ]]; then
   exit 0
 fi
 
 # Skip index and conflicts files
-if [[ "$FILE_PATH" == wiki/_index.md ]] || [[ "$FILE_PATH" == wiki/_conflicts.md ]]; then
+if [[ "$FILE_PATH" == data/wiki/_index.md ]] || [[ "$FILE_PATH" == data/wiki/_conflicts.md ]]; then
   exit 0
 fi
 
@@ -57,11 +59,11 @@ if grep -q "^sources:" "$FILE_PATH" 2>/dev/null && [[ $SOURCE_COUNT -eq 0 ]]; th
   fi
 fi
 
-# Check for dead wikilinks (basic — checks if referenced file exists in wiki/)
+# Check for dead wikilinks (basic — checks if referenced file exists in data/wiki/)
 while IFS= read -r link; do
   # Convert [[Page Name]] to kebab-case filename
   slug=$(echo "$link" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -d '[]')
-  if ! find wiki/ -name "${slug}.md" -o -name "*${slug}*.md" 2>/dev/null | grep -q .; then
+  if ! find data/wiki/ -name "${slug}.md" -o -name "*${slug}*.md" 2>/dev/null | grep -q .; then
     echo "⚠ wiki-lint: possible dead wikilink [[${link}]] in ${FILE_PATH}" >&2
   fi
 done < <(sed -n 's/.*\[\[\([^]|#]*\)[^]]*\]\].*/\1/p' "$FILE_PATH" 2>/dev/null \
@@ -78,13 +80,13 @@ if [[ "$PAGE_SLUG" != _* ]]; then
   HAS_BACKLINK=0
 
   # Check by slug match
-  if grep -rl "\[\[.*${PAGE_SLUG}.*\]\]" wiki/ 2>/dev/null | grep -v "$FILE_PATH" | grep -q .; then
+  if grep -rl "\[\[.*${PAGE_SLUG}.*\]\]" data/wiki/ 2>/dev/null | grep -v "$FILE_PATH" | grep -q .; then
     HAS_BACKLINK=1
   fi
 
   # Check by title match (if different from slug)
   if [[ $HAS_BACKLINK -eq 0 ]] && [[ -n "$TITLE" ]]; then
-    if grep -rl "\[\[${TITLE}\]\]" wiki/ 2>/dev/null | grep -v "$FILE_PATH" | grep -q .; then
+    if grep -rl "\[\[${TITLE}\]\]" data/wiki/ 2>/dev/null | grep -v "$FILE_PATH" | grep -q .; then
       HAS_BACKLINK=1
     fi
   fi

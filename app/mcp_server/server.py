@@ -37,7 +37,7 @@ load_dotenv()
 configure_logging()  # installs the secret-redaction processor
 log = structlog.get_logger()
 
-WIKI_DIR = Path("wiki")
+WIKI_DIR = Path("data/wiki")
 PRIVATE_DIR = WIKI_DIR / "private"
 DB_PATH = Path(".wiki_index.duckdb")
 LOGS_DIR = Path("logs")
@@ -100,11 +100,11 @@ def _cosine(a: list[float], b: list[float]) -> float:
 def is_under_private(path: Path | str, private_dir: Path) -> bool:
     """True if path lies under private_dir — never indexed, never served.
 
-    Buyi invariant "wiki/private/ never leaves the machine", clause (b). Resolved
+    Buyi invariant "data/wiki/private/ never leaves the machine", clause (b). Resolved
     before comparison so ../ traversal and absolute paths cannot slip past.
 
     private_dir is a parameter, not this module's PRIVATE_DIR, because callers
-    anchor their wiki root differently: the server uses a relative Path("wiki")
+    anchor their wiki root differently: the server uses a relative Path("data/wiki")
     while app/backend/agent.py derives an absolute path from __file__. Sharing the
     resolution logic while each caller supplies its own root keeps a second copy
     from drifting, without making one caller's cwd decide the other's filter.
@@ -184,7 +184,7 @@ def _compute_backlinks(pages: list[tuple]) -> dict[str, int]:
 
 
 def build_index(con: duckdb.DuckDBPyConnection) -> None:
-    """Build or rebuild the DuckDB FTS index over wiki/ pages."""
+    """Build or rebuild the DuckDB FTS index over data/wiki/ pages."""
     if not _index_needs_rebuild(con):
         return
 
@@ -222,7 +222,7 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     for page in sorted(WIKI_DIR.rglob("*.md")):
         if page.name.startswith("."):
             continue
-        # wiki/private/ is never indexed — Buyi confidentiality invariant
+        # data/wiki/private/ is never indexed — Buyi confidentiality invariant
         if _is_private(page):
             continue
         text = page.read_text(encoding="utf-8", errors="ignore")
@@ -313,7 +313,7 @@ def get_con() -> duckdb.DuckDBPyConnection:
 def _resolve_domain_dir(domain: str) -> Path | None:
     """Return the wiki subdirectory for a domain name, or None if not found.
 
-    Resolves to None for wiki/private/ so list_domain and get_domain_briefing
+    Resolves to None for data/wiki/private/ so list_domain and get_domain_briefing
     cannot address it as a domain.
     """
     candidate = WIKI_DIR / domain
@@ -451,7 +451,7 @@ def read_page(path_or_title: str) -> str:
     """Read a specific wiki page by file path or title.
 
     Args:
-        path_or_title: Either a relative path like 'wiki/rag/rag-retrieval-strategies.md'
+        path_or_title: Either a relative path like 'data/wiki/rag/rag-retrieval-strategies.md'
                        or a page title like 'RAG Retrieval Strategies'
 
     Returns:
@@ -554,7 +554,7 @@ def list_domain(domain: str) -> str:
 
     results.sort(key=lambda x: x[0], reverse=True)
     _log_retrieval("list_domain", domain=domain, n_results=len(results))
-    header = f"**{len(results)} page(s) in `wiki/{domain}/`** (sorted by backlinks):\n\n"
+    header = f"**{len(results)} page(s) in `data/wiki/{domain}/`** (sorted by backlinks):\n\n"
     return header + "\n".join(r[1] for r in results)
 
 

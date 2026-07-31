@@ -153,13 +153,13 @@ class TestMark:
         rel = str(raw_file.relative_to(tmp_path))
 
         with _patch_manifest(tmp_path):
-            mark(raw_file, wiki_pages=["wiki/rag/page.md"])
+            mark(raw_file, wiki_pages=["data/wiki/rag/page.md"])
 
         mf = tmp_path / "manifest.jsonl"
         assert mf.exists()
         entry = json.loads(mf.read_text().strip())
         assert entry["path"] == rel
-        assert entry["wiki_pages"] == ["wiki/rag/page.md"]
+        assert entry["wiki_pages"] == ["data/wiki/rag/page.md"]
         assert entry["hash"].startswith("sha256:")
 
     def test_overwrites_existing_entry(self, tmp_path: Path) -> None:
@@ -169,17 +169,17 @@ class TestMark:
             "path": rel,
             "hash": "sha256:aaaaaaaaaaaaaaaa",
             "ingested_at": "2025-01-01",
-            "wiki_pages": ["wiki/old.md"],
+            "wiki_pages": ["data/wiki/old.md"],
         }
         _make_manifest(tmp_path, [old_entry])
 
         with _patch_manifest(tmp_path):
-            mark(raw_file, wiki_pages=["wiki/new.md"])
+            mark(raw_file, wiki_pages=["data/wiki/new.md"])
 
         lines = (tmp_path / "manifest.jsonl").read_text().strip().splitlines()
         entries = [json.loads(line) for line in lines]
         assert len(entries) == 1
-        assert entries[0]["wiki_pages"] == ["wiki/new.md"]
+        assert entries[0]["wiki_pages"] == ["data/wiki/new.md"]
 
 
 # ---------------------------------------------------------------------------
@@ -202,7 +202,7 @@ class TestManifestSession:
         with _patch_manifest(tmp_path), ManifestSession() as ms:
             needs, _ = ms.check(raw_file)
             assert needs is True
-            ms.mark(raw_file, wiki_pages=["wiki/page.md"])
+            ms.mark(raw_file, wiki_pages=["data/wiki/page.md"])
             needs2, _ = ms.check(raw_file)
             assert needs2 is False
 
@@ -210,12 +210,12 @@ class TestManifestSession:
         raw_file = _make_raw_file(tmp_path)
 
         with _patch_manifest(tmp_path), ManifestSession() as ms:
-            ms.mark(raw_file, wiki_pages=["wiki/page.md"])
+            ms.mark(raw_file, wiki_pages=["data/wiki/page.md"])
 
         mf = tmp_path / "manifest.jsonl"
         assert mf.exists()
         data = json.loads(mf.read_text().strip())
-        assert data["wiki_pages"] == ["wiki/page.md"]
+        assert data["wiki_pages"] == ["data/wiki/page.md"]
 
     def test_no_save_when_not_dirty(self, tmp_path: Path) -> None:
         mf = tmp_path / "manifest.jsonl"

@@ -13,7 +13,7 @@
 
 A personal agent design reference following Karpathy's LLM Wiki pattern. Raw sources
 (Notion, Linear, meetings, PDFs, playground docs) go into `raw/` (append-only). Claude
-compiles them into `wiki/` (structured, interlinked markdown). Obsidian is the read and
+compiles them into `data/wiki/` (structured, interlinked markdown). Obsidian is the read and
 visualization UI. Claude Code is the write runtime. A local MCP server exposes the wiki
 to other agents.
 
@@ -21,7 +21,7 @@ The core use case: before starting a new agent build, load the KB to get grounde
 recommendations from accumulated design experience — your own hard-won patterns, not
 generic documentation.
 
-**Mental model:** `raw/` = source code. Claude = compiler. `wiki/` = executable output.
+**Mental model:** `raw/` = source code. Claude = compiler. `data/wiki/` = executable output.
 
 **Visualization:** Obsidian native graph view (wikilinks = edges). Install the Graph
 Analysis community plugin for cosine-similarity edges between pages. Do NOT use the
@@ -104,30 +104,30 @@ published: YYYY-MM-DD
 **Note:** Why this is relevant.
 ```
 
-### `wiki/` — LLM-Compiled Knowledge
+### `data/wiki/` — LLM-Compiled Knowledge
 
 - Claude is the **only writer** here. Do not manually edit unless correcting a factual error.
 - One `.md` file per entity, concept, project, or decision.
 - **Directory = domain (primary retrieval axis). Type = tag (frontmatter only).**
 - Subdirectories:
-  - `wiki/rag/` — RAG, retrieval, chunking, embeddings, reranking, hybrid search
-  - `wiki/langgraph/` — LangGraph state machines, CRAG, checkpointers, reducers, streaming
-  - `wiki/adk/` — Google ADK, SKILL.md, VA patterns, voice, orchestration
-  - `wiki/infra/` — Deployment, observability, caching, security, production hardening
-  - `wiki/patterns/` — Framework-agnostic agentic patterns (ReAct, CoT, ACI, workflow)
-  - `wiki/eval/` — Evaluation harnesses, LLM judges, annotation pipelines, preference alignment
-  - `wiki/deep-agents/` — Deep Agents harness, middleware, state/store backends
-  - `wiki/memory/` — Agent memory patterns (in-context, episodic, semantic, procedural)
-  - `wiki/mcp/` — Model Context Protocol, tool schemas, A2A
-  - `wiki/foundations/` — ML/DS/data-engineering fundamentals: classical ML, deep learning, NLP, data systems, MLOps
-  - `wiki/interview/` — Coding-interview patterns (arrays/hashing, two pointers, sliding window, …), system design, prep references
-  - `wiki/meta/` — Wiki-about-wiki: Karpathy pattern, Claude workflow system, session knowledge
-  - `wiki/projects/` — Per-project knowledge (generic, public — librarian, listen-wiseer, etc.)
-  - `wiki/private/` — Company/project-specific pages; **gitignored, never committed**. Move pages here when they contain proprietary context, client names, or internal project details. Use the same page format — they are still compiled and queryable locally.
-  - `wiki/_index.md` — Auto-generated TOC, updated after every ingest. Do not list `wiki/private/` entries here.
-  - `wiki/_conflicts.md` — Flagged contradictions between sources
+  - `data/wiki/rag/` — RAG, retrieval, chunking, embeddings, reranking, hybrid search
+  - `data/wiki/langgraph/` — LangGraph state machines, CRAG, checkpointers, reducers, streaming
+  - `data/wiki/adk/` — Google ADK, SKILL.md, VA patterns, voice, orchestration
+  - `data/wiki/infra/` — Deployment, observability, caching, security, production hardening
+  - `data/wiki/patterns/` — Framework-agnostic agentic patterns (ReAct, CoT, ACI, workflow)
+  - `data/wiki/eval/` — Evaluation harnesses, LLM judges, annotation pipelines, preference alignment
+  - `data/wiki/deep-agents/` — Deep Agents harness, middleware, state/store backends
+  - `data/wiki/memory/` — Agent memory patterns (in-context, episodic, semantic, procedural)
+  - `data/wiki/mcp/` — Model Context Protocol, tool schemas, A2A
+  - `data/wiki/foundations/` — ML/DS/data-engineering fundamentals: classical ML, deep learning, NLP, data systems, MLOps
+  - `data/wiki/interview/` — Coding-interview patterns (arrays/hashing, two pointers, sliding window, …), system design, prep references
+  - `data/wiki/meta/` — Wiki-about-wiki: Karpathy pattern, Claude workflow system, session knowledge
+  - `data/wiki/projects/` — Per-project knowledge (generic, public — librarian, listen-wiseer, etc.)
+  - `data/wiki/private/` — Company/project-specific pages; **gitignored, never committed**. Move pages here when they contain proprietary context, client names, or internal project details. Use the same page format — they are still compiled and queryable locally.
+  - `data/wiki/_index.md` — Auto-generated TOC, updated after every ingest. Do not list `data/wiki/private/` entries here.
+  - `data/wiki/_conflicts.md` — Flagged contradictions between sources
 - **ADRs live in their domain directory** — not a flat `decisions/` dir. Use `type: decision` tag.
-- **Projects stay flat** in `wiki/projects/` until a project exceeds ~5 pages.
+- **Projects stay flat** in `data/wiki/projects/` until a project exceeds ~5 pages.
 
 ---
 
@@ -219,7 +219,7 @@ rules. Only `/compact-wiki` creates tombstones.
 
 Run this checklist for **every** new raw source, without exception.
 
-1. **Read the source fully** before writing anything to `wiki/`.
+1. **Read the source fully** before writing anything to `data/wiki/`.
 2. **Identify** all entities, concepts, decisions, and open questions mentioned.
 3. **Extract atomic concepts** — this is the most important step for graph density. For every named technique, pattern, algorithm, or method mentioned in the source, ask: *does this deserve its own page?* Create a new page if yes. Examples of things that get their own page: `semantic caching`, `RRF fusion`, `inter-annotator agreement`, `prefix caching`, `CRAG retry loop`, `HistoryCondenser`. Do NOT bury these as bullets inside a coarser page — they become nodes in the graph only if they are pages. Rule of thumb: if it has a name and a non-obvious mechanism, it gets a page.
 4. **For each identified item (both coarse topics and atomic concepts):**
@@ -229,11 +229,11 @@ Run this checklist for **every** new raw source, without exception.
    - Update the `sources:` frontmatter list.
    - Update `updated:` to today's date.
 5. **Scan for contradictions:** if the source disagrees with an existing wiki claim, do NOT silently overwrite. Go to step 6.
-6. **Handle contradictions:** add an entry to `wiki/_conflicts.md`, tag the affected page with `conflict`, and note both claims with source citations. Do not resolve — flag for human review.
+6. **Handle contradictions:** add an entry to `data/wiki/_conflicts.md`, tag the affected page with `conflict`, and note both claims with source citations. Do not resolve — flag for human review.
 7. **Add cross-references (bidirectional):** after updating pages, scan for opportunities to add `[[wikilinks]]` to related pages. Prefer linking atomic concept pages from within broader topic pages — this is how graph edges form. Every atomic concept page should appear as an inline `[[wikilink]]` inside at least one coarser page. **Additionally:** for each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships where the type is clear.
-8. **Update `wiki/_index.md`:** add any new pages to the appropriate section.
+8. **Update `data/wiki/_index.md`:** add any new pages to the appropriate section.
 9. **Check for orphans (blocking):** any new page MUST have at least one incoming backlink from another wiki page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
-10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run python etl/relinker.py` to discover additional semantic links. Review `wiki/_relink_suggestions.md` if generated.
+10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run python etl/relinker.py` to discover additional semantic links. Review `data/wiki/_relink_suggestions.md` if generated.
 11. **Accumulator ceiling:** pages that receive per-session appended rows (e.g.
     `meta/session-log.md`) keep the last ~30 entries in full; when an append pushes
     past that, roll older entries into month-range summary rows at ingest time —
@@ -245,7 +245,7 @@ Run this checklist for **every** new raw source, without exception.
 
 When answering a query against the wiki:
 
-1. Check `wiki/_index.md` to identify relevant pages.
+1. Check `data/wiki/_index.md` to identify relevant pages.
 2. Read the relevant pages in full — do not skim.
 3. Synthesise a grounded answer citing specific pages.
 4. If the answer reveals new insight worth preserving, offer to file it as a new wiki page.
@@ -266,7 +266,7 @@ Run lint to find health issues. Check each of the following:
 - **Orphan raw files** — files in `raw/` with no corresponding wiki coverage
 - **Untyped links** — `## See Also` entries without a `— type` annotation (>50% untyped = WARN)
 - **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain links (NOTE)
-- **Stale suggestions** — `wiki/_relink_suggestions.md` entries older than 14 days unreviewed
+- **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 
 Output a prioritised list: BLOCKER (conflicts, dead links) → WARN (orphans, stale, untyped) → NOTE (missing coverage, bridge gaps, stale suggestions).
 
@@ -322,7 +322,7 @@ The parser extracts relationship types into edge metadata for graph visualizatio
 When a new source contradicts an existing wiki claim:
 
 1. **Do not silently overwrite** the existing claim.
-2. Add an entry to `wiki/_conflicts.md`:
+2. Add an entry to `data/wiki/_conflicts.md`:
 
 ```markdown
 ## Conflict: [Topic] — [YYYY-MM-DD]
@@ -342,7 +342,7 @@ When a new source contradicts an existing wiki claim:
 
 ### Resolution (human review step)
 
-To resolve a conflict in `wiki/_conflicts.md`:
+To resolve a conflict in `data/wiki/_conflicts.md`:
 
 1. Read both claims and their source files.
 2. Determine which is correct — or synthesise both if both are partially right.
@@ -370,19 +370,19 @@ To resolve a conflict in `wiki/_conflicts.md`:
 
 ## Domains Index
 
-Use `wiki/_index.md` to find pages by domain. The index is maintained automatically during ingest.
+Use `data/wiki/_index.md` to find pages by domain. The index is maintained automatically during ingest.
 
 When searching for a page, check:
-1. `wiki/_index.md` for the canonical list
-2. The domain subdirectory directly: `wiki/rag/`, `wiki/langgraph/`, `wiki/adk/`, etc.
-3. `wiki/projects/` for project-level pages
+1. `data/wiki/_index.md` for the canonical list
+2. The domain subdirectory directly: `data/wiki/rag/`, `data/wiki/langgraph/`, `data/wiki/adk/`, etc.
+3. `data/wiki/projects/` for project-level pages
 
 ---
 
 ## What NOT to Do
 
 - **Do not** edit files in `raw/` — they are immutable inputs
-- **Do not** create summary files outside the `wiki/` structure — all knowledge belongs in wiki pages
+- **Do not** create summary files outside the `data/wiki/` structure — all knowledge belongs in wiki pages
 - **Do not** silently resolve conflicts — always flag them in `_conflicts.md`
 - **Do not** leave new pages without at least one backlink
 - **Do not** skip the ingest checklist for "small" sources — every source matters

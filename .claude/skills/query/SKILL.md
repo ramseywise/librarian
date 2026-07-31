@@ -12,7 +12,7 @@ You are querying a compiled personal knowledge base. Answer only from what is in
 
 ## Protocol
 
-1. Read `wiki/_index.md` to identify relevant pages by title and tags.
+1. Read `data/wiki/_index.md` to identify relevant pages by title and tags.
 
 2. Read the relevant pages in full using the Read tool.
 

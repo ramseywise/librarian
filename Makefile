@@ -18,10 +18,10 @@ mcp:
 	uv run python app/mcp_server/server.py
 
 ui:
-	cd app/ui && npm run dev
+	cd app/frontend && npm run dev
 
 install-ui:
-	cd app/ui && npm install
+	cd app/frontend && npm install
 
 install-api:
 	uv sync --extra api
@@ -84,7 +84,7 @@ help:
 	@echo "mcp              — start MCP server (local, used by Claude Code)"
 	@echo "api              — start FastAPI backend directly (port 8000)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
-	@echo "install-ui       — npm install for ui/"
+	@echo "install-ui       — npm install for app/frontend/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"
 	@echo "install-presenter — uv sync --extra presenter"

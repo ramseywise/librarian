@@ -19,7 +19,7 @@ You are preparing a knowledge briefing for an AI engineering session. The user i
 
 ## Protocol
 
-1. Read `wiki/_index.md`.
+1. Read `data/wiki/_index.md`.
 2. Read all pages tagged with the relevant domains (or the specified focus).
 3. Prioritise: `decision` and `comparison` pages first, then `pattern`, then `concept`.
 4. Ignore pages tagged `conflict` — flag them separately.
@@ -35,19 +35,19 @@ Structure the briefing as follows:
 ### Current Decisions
 *Architecture decisions already made — do not re-litigate without reason.*
 
-- **[Decision]:** [one-line summary] → [[wiki/decisions/...]]
+- **[Decision]:** [one-line summary] → [[data/wiki/decisions/...]]
 - ...
 
 ### Key Patterns
 *Reusable implementation patterns relevant to this session.*
 
-- **[Pattern name]:** [one-line description] → [[wiki/agents/...]]
+- **[Pattern name]:** [one-line description] → [[Page Title]]
 - ...
 
 ### Open Questions
 *Unresolved questions or spikes from the wiki.*
 
-- [Question] (from [[wiki/...]])
+- [Question] (from [[data/wiki/...]])
 
 ### Conflict Flags
 *Pages with unresolved contradictions — be careful here.*

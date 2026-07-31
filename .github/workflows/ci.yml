@@ -10,7 +10,7 @@ jobs:
     uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@main
     with:
       # Makefile's `lint:` is a stub that defers to Claude, so it defines no
-      # paths. These are the four real top-level Python dirs; raw/ wiki/ logs/
+      # paths. These are the four real top-level Python dirs; raw/ data/wiki/ logs/
       # are artifacts (naming.md data-layer rule) and stay unlinted.
       lint-paths: "app core tools tests"
       # Lint gates from day one — the single RUF059 error was fixed 2026-07-19

@@ -1,6 +1,6 @@
-"""Evidence for Buyi "wiki/private/ never leaves the machine", clause (b).
+"""Evidence for Buyi "data/wiki/private/ never leaves the machine", clause (b).
 
-Cures the BY-4 debt record: build_index indexed wiki/private/ and every read
+Cures the BY-4 debt record: build_index indexed data/wiki/private/ and every read
 tool served it. These tests fail against the pre-cure server.
 """
 

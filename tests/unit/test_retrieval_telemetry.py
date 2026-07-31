@@ -39,7 +39,7 @@ class _ExplodingPath:
 def test_log_retrieval_never_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(server, "LOGS_DIR", _ExplodingPath())
     # Must not propagate — telemetry can never break retrieval
-    server._log_retrieval("read_page", path="wiki/x.md", found=True)
+    server._log_retrieval("read_page", path="data/wiki/x.md", found=True)
 
 
 @pytest.fixture()

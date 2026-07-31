@@ -34,7 +34,7 @@ class GoldenEntry:
 class RetrievalResult:
     """A single page returned by the retrieval pipeline."""
 
-    page_path: str  # e.g. "wiki/rag/rag-retrieval-strategies.md"
+    page_path: str  # e.g. "data/wiki/rag/rag-retrieval-strategies.md"
     score: float = 0.0
 
 
@@ -93,7 +93,7 @@ class RetrievalGrader:
 
     The retrieval pipeline returns a ranked list of RetrievalResult objects.
     The grader normalises paths for comparison so partial path matches work:
-    "wiki/rag/rag-retrieval-strategies.md" matches if any retrieved path
+    "data/wiki/rag/rag-retrieval-strategies.md" matches if any retrieved path
     ends with that suffix.
     """
 

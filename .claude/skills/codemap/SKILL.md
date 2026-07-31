@@ -6,7 +6,7 @@ allowed-tools: Read Bash
 
 You are maintaining the live structural code index — distinct from the wiki compiler,
 this tracks symbols (functions/classes/methods) and file import edges parsed directly
-from source with tree-sitter, not LLM-synthesized prose. Never write to `wiki/` from
+from source with tree-sitter, not LLM-synthesized prose. Never write to `data/wiki/` from
 this skill.
 
 ## Input

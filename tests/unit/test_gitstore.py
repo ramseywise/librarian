@@ -54,7 +54,7 @@ def test_commit_counted_even_when_churn_filtered(repo: Path) -> None:
         "notebooks/explore.ipynb",
         "uv.lock",
         "app/package-lock.json",
-        "wiki/.obsidian/plugins/x/main.js",
+        "data/wiki/.obsidian/plugins/x/main.js",
         "generative-ai/coursera-references/Course/file.py",
         "frontend/node_modules/lib/index.js",
     ],

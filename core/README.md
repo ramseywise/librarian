@@ -1,7 +1,7 @@
 # core/ — ETL pipeline
 
 Standalone scripts that populate `raw/` from external sources, plus the `researcher/`
-sub-package that processes PDFs into Obsidian notes. Wiki compilation (raw/ → wiki/)
+sub-package that processes PDFs into Obsidian notes. Wiki compilation (raw/ → data/wiki/)
 happens via Claude Code skills, not here.
 
 ## Pipeline overview
@@ -11,7 +11,7 @@ source (Notion / Linear / web / PDFs / repos / sessions / ...)
     └── core/<scraper>.py
             └── raw/<subdir>/YYYY-MM-DD-<slug>.md   (immutable once written)
                     └── [wiki compilation via Claude skills]
-                                └── wiki/<domain>/<page>.md
+                                └── data/wiki/<domain>/<page>.md
 ```
 
 `core/manifest.py` tracks what has been ingested (SHA-256 hash dedup). Run

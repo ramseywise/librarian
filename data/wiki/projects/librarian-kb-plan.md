@@ -80,7 +80,7 @@ Personal + work sources in scope. All claude.ai MCP integrations available witho
 **Code lives in `app/`. Run:** `make install-api && make install-ui`, then `make api` + `make ui`.
 
 **✅ Phase 8A — Graph**
-- `app/ui/` — Vite + React + TypeScript + `@xyflow/react`
+- `app/frontend/` — Vite + React + TypeScript + `@xyflow/react`
 - `app/backend/` — FastAPI + WebSocket hot-reload + `watchfiles`
 - Multi-edge types: wikilink / semantic (MiniLM cosine sim) / tag-shared (≥2 domain tags)
 - Edge toggle panel, layout switcher (dagre ↔ UMAP-semantic), tag filter panel

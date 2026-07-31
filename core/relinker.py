@@ -9,8 +9,8 @@ Requires the `api` optional dependency group (numpy, sentence-transformers, scik
 
 Produces:
 - Auto-added links (appended to See Also with <!-- auto-linked --> comment)
-- wiki/_relink_suggestions.md (candidates between suggest and auto thresholds)
-- wiki/_bridge_suggestions.md (cross-domain gaps)
+- data/wiki/_relink_suggestions.md (candidates between suggest and auto thresholds)
+- data/wiki/_bridge_suggestions.md (cross-domain gaps)
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from pathlib import Path
 import frontmatter
 
 REPO_ROOT = Path(__file__).parent.parent
-WIKI_DIR = REPO_ROOT / "wiki"
+WIKI_DIR = REPO_ROOT / "data" / "wiki"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 DOMAIN_TAG_SET = {
