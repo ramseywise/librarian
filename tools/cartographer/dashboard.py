@@ -2652,3 +2652,83 @@ def write_dashboard(
     )
     log.info("dashboard.written", out=str(out), store=str(store))
     return out
+
+
+# ---------------------------------------------------------------------------
+# Region injection — context-dashboard.html marker pairs
+# ---------------------------------------------------------------------------
+
+# Marker pattern: <!-- NAME:START ... --> ... <!-- NAME:END -->
+_MARKER_END_TMPL = "<!-- {name}:END -->"
+
+
+def inject_regions(html_path: Path, regions: dict[str, str]) -> Path:
+    """Replace content between START/END marker pairs in *html_path*.
+
+    Only the bytes between each matched pair are replaced; everything else —
+    including the marker comments themselves — is left untouched.  The result
+    is built entirely in memory and written once, so a mid-run failure leaves
+    the original file intact.
+
+    Args:
+        html_path: Target HTML file (read + written in place).
+        regions: Mapping of region-name → replacement HTML.  Names not present
+            in the file are skipped with a warning; names present in the file
+            but absent from *regions* are left untouched.
+
+    Returns:
+        The path that was written.
+
+    Raises:
+        FileNotFoundError: If *html_path* does not exist.
+    """
+    # Guard: never write to the deprecated path. Checked before any read so the
+    # refusal is unconditional rather than dependent on the file being readable.
+    if html_path.name == "dashboard.html" and ".sounding" in str(html_path):
+        raise ValueError(
+            f"Refusing to write to deprecated path {html_path}. "
+            "The shared artifact is context-dashboard.html."
+        )
+
+    if not html_path.exists():
+        raise FileNotFoundError(f"context-dashboard not found: {html_path}")
+
+    result = html_path.read_text(encoding="utf-8")
+    for name, replacement in regions.items():
+        start_tag = f"<!-- {name}:START"
+        end_tag = _MARKER_END_TMPL.format(name=name)
+
+        start_idx = result.find(start_tag)
+        if start_idx == -1:
+            log.warning("inject_regions.missing_start", region=name, path=str(html_path))
+            continue
+
+        # Find the end of the START comment (the closing ">")
+        start_comment_end = result.index("-->", start_idx) + len("-->")
+
+        end_idx = result.find(end_tag, start_comment_end)
+        if end_idx == -1:
+            # Fail soft: a half-marked region is skipped, not fatal. Raising here
+            # would let one malformed pair block every other region's refresh.
+            log.warning("inject_regions.missing_end", region=name, path=str(html_path))
+            continue
+
+        # Replace only the content BETWEEN the two markers.
+        # Preserve a single newline on each side so markers stay on their own lines.
+        before = result[:start_comment_end]
+        after = result[end_idx:]
+        result = before + "\n" + replacement + "\n" + after
+
+    html_path.write_text(result, encoding="utf-8")
+    log.info("inject_regions.written", path=str(html_path), regions=list(regions))
+    return html_path
+
+
+def render_review_findings_region(findings: list[dict] | None) -> str:
+    """Return the injectable HTML for the REVIEW-FINDINGS marker region."""
+    return _render_review_findings(findings)
+
+
+def render_experiments_region(experiments: list[Experiment] | None) -> str:
+    """Return the injectable HTML for the EXPERIMENTS-LIFECYCLE marker region."""
+    return _render_experiments(experiments)

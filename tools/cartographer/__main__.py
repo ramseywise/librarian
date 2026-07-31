@@ -172,11 +172,28 @@ def _run_facts() -> None:
         ),
     )
     p.add_argument(
+        "--context-dashboard",
+        default=str(Path("~/workspace/guacamayo/.sounding/context-dashboard.html").expanduser()),
+        help=(
+            "Path to the shared context-dashboard.html for region injection. "
+            "Cartographer injects only the regions it owns (REVIEW-FINDINGS, "
+            "EXPERIMENTS-LIFECYCLE); all other regions and hand-written content "
+            "are left untouched."
+        ),
+    )
+    p.add_argument(
         "--growth-md",
         default=str(Path("~/workspace/guacamayo/.sounding/growth.md").expanduser()),
     )
     p.add_argument("--stale-days", type=int, default=3)
-    p.add_argument("--no-dashboard", action="store_true", help="Refresh facts only")
+    p.add_argument(
+        "--no-dashboard",
+        action="store_true",
+        help="Skip the full-page dashboard render (does not affect region injection)",
+    )
+    p.add_argument(
+        "--no-inject", action="store_true", help="Skip region injection into context-dashboard.html"
+    )
     p.add_argument("--workspace", default="~/workspace", help="Root scanned for git repos")
     p.add_argument("--no-git", action="store_true", help="Skip repo-activity collection")
     p.add_argument(
@@ -274,6 +291,38 @@ def _run_facts() -> None:
             print("Dashboard: hook-activity card refreshed")
         else:
             print("Dashboard: hook-activity card skipped (missing markers)")
+
+    # Deliberately NOT gated on --no-dashboard. The daily cron passes that flag to
+    # suppress the deprecated full-page render (cartographer-cron.sh:61), and region
+    # injection is the behaviour meant to replace it — coupling them would mean the
+    # daily job never refreshes a region. --no-inject is the only opt-out.
+    if not args.no_inject:
+        from tools.cartographer.dashboard import (
+            inject_regions,
+            parse_findings,
+            parse_ledger,
+            render_experiments_region,
+            render_review_findings_region,
+        )
+
+        ctx_path = Path(args.context_dashboard).expanduser()
+        if ctx_path.exists():
+            ledger_path = Path(args.ledger).expanduser()
+            ledger_log_path = Path(args.ledger_log).expanduser() if args.ledger_log else None
+            experiments = (
+                parse_ledger(ledger_path, ledger_log_path) if ledger_path.exists() else None
+            )
+            findings_path = Path(args.findings).expanduser()
+            review_findings = parse_findings(findings_path) if findings_path.exists() else None
+
+            regions: dict[str, str] = {
+                "REVIEW-FINDINGS": render_review_findings_region(review_findings),
+                "EXPERIMENTS-LIFECYCLE": render_experiments_region(experiments or None),
+            }
+            injected = inject_regions(ctx_path, regions)
+            print(f"Region injection: {injected}")
+        else:
+            print(f"context-dashboard not found, skipping injection: {ctx_path}", flush=True)
 
     # Staleness guard: the newest row aging past --stale-days means capture is not
     # keeping up with the ~5-day JSONL retention window, i.e. history is being lost.
