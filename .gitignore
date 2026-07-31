@@ -17,15 +17,10 @@ dist/
 # Obsidian workspace files — local UI state, not shared
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
-data/wiki/.obsidian/workspace.json
-data/wiki/.obsidian/workspace-mobile.json
 
 # DuckDB indexes (rebuild from wiki/)
 *.duckdb
 *.duckdb.wal
-
-# Cron job logs
-logs/*.log
 
 # macOS
 .DS_Store
@@ -38,12 +33,6 @@ logs/*.log
 # Ephemeral planning docs — canonical knowledge belongs in wiki/
 .claude/docs/
 
-# Private wiki pages — company/project-specific content not committed to the public repo
-data/wiki/private/
-# Playground skills toolkit copies accidentally nested here — exclude until relocated
-.claude/skills/skills/
-.claude/skills/old/
-
 # Node
 node_modules/
 **/node_modules/
@@ -52,19 +41,20 @@ node_modules/
 **/.vite/
 
 # Raw ingest archive — personal/employer source material stays local-only
-raw/
 data/raw/
-# Wiki output — compiled from raw/, large and rebuildable
-data/wiki/
-# wiki/ is tracked — it is the repo's product, not rebuildable output.
-# Only private pages stay local.
-wiki/private/
-logs/*.jsonl
+data/db
 
 # Cartographer fact table — rebuildable from raw/sessions + ~/.claude/projects
 data/sessions.db
-logs/*.err
+data/sessions.db.bak-*
 
-# Cartographer runtime logs (only .gitkeep is tracked)
-tools/cartographer/logs/*
-!tools/cartographer/logs/.gitkeep
+# data/wiki/ is tracked — it is the repo's product, not rebuildable output.
+# Only private pages stay local.
+data/wiki/private/
+
+# Runtime logs — cron output (cartographer, codemap) and MCP retrieval telemetry.
+# logs/ at the repo root is the only log location; the cron scripts, both launchd
+# plists, and app/mcp_server/server.py all write here.
+logs/*.log
+logs/*.jsonl
+logs/*.err
