@@ -12,7 +12,6 @@ Usage:
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 
 from app.log_config import configure_logging
 
@@ -145,39 +144,6 @@ def _run_enrich() -> None:
     run_enrich(scan_dirs)
 
 
-def _parse_ledger(path: Path) -> list:
-    """Parse tooling-ledger.md into Experiment objects."""
-    import re
-
-    from tools.cartographer.dashboard import Experiment
-
-    if not path.exists():
-        return []
-    experiments = []
-    row_re = re.compile(r"^\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]*)\s*\|\s*([^|]+)\s*\|")
-    for line in path.read_text(encoding="utf-8").splitlines():
-        m = row_re.match(line)
-        if not m:
-            continue
-        date_cell = m.group(1).strip()
-        change_cell = m.group(2).strip()
-        metric_cell = m.group(3).strip()
-        status_cell = m.group(4).strip()
-        if date_cell in ("Date", "---") or status_cell in ("Status", "---"):
-            continue
-        if not status_cell or "rollup" in status_cell or "batch" in status_cell:
-            continue
-        experiments.append(
-            Experiment(
-                name=change_cell,
-                metric=metric_cell or "—",
-                status=status_cell,
-                date=date_cell,
-            )
-        )
-    return experiments
-
-
 def _run_facts() -> None:
     """Refresh the session fact table and re-render the dashboard.
 
@@ -189,7 +155,6 @@ def _run_facts() -> None:
     from datetime import UTC, datetime
     from pathlib import Path
 
-    from tools.cartographer.dashboard import write_dashboard
     from tools.cartographer.factstore import from_jsonl, from_notes, read_all, upsert
 
     repo_root = Path(__file__).resolve().parents[2]
@@ -215,14 +180,29 @@ def _run_facts() -> None:
     p.add_argument("--workspace", default="~/workspace", help="Root scanned for git repos")
     p.add_argument("--no-git", action="store_true", help="Skip repo-activity collection")
     p.add_argument(
-        "--ledger",
-        default=str(Path("~/workspace/guacamayo/.sounding/tooling-ledger.md").expanduser()),
-        help="Tooling ledger for experiment tracking",
-    )
-    p.add_argument(
         "--findings",
         default=str(Path("~/workspace/guacamayo/.claude/docs/review-findings.jsonl").expanduser()),
-        help="Review findings JSONL for the code review subtab",
+        help="Review findings JSONL for the review card",
+    )
+    p.add_argument(
+        "--ledger",
+        default=str(Path("~/workspace/guacamayo/.sounding/tooling-ledger.md").expanduser()),
+        help="Tooling ledger path for the experiments card",
+    )
+    p.add_argument(
+        "--ledger-log",
+        default=None,
+        help="Tooling ledger log path (optional, for archived experiments)",
+    )
+    p.add_argument(
+        "--hook-log",
+        default=str(Path("~/.claude/.hook-log.jsonl").expanduser()),
+        help="Guard-hook event log (blocks/warns) for the hook-activity card",
+    )
+    p.add_argument(
+        "--hook-pass-log",
+        default=str(Path("~/.claude/.hook-pass-log.jsonl").expanduser()),
+        help="Guard-hook pass log (silent OKs) for the hook-activity card",
     )
     args = p.parse_args()
 
@@ -239,21 +219,61 @@ def _run_facts() -> None:
         print(f"Repo activity: {commits} commit-days, {prs} PRs")
 
     if not args.no_dashboard:
-        from tools.cartographer.dashboard import parse_findings
-
-        growth_md = Path(args.growth_md).expanduser()
-        ledger_path = Path(args.ledger).expanduser()
-        experiments = _parse_ledger(ledger_path) if ledger_path.exists() else None
-        findings_path = Path(args.findings).expanduser()
-        review_findings = parse_findings(findings_path) if findings_path.exists() else None
-        out = write_dashboard(
-            store,
-            Path(args.dashboard).expanduser(),
-            growth_md=growth_md if growth_md.exists() else None,
-            experiments=experiments or None,
-            review_findings=review_findings or None,
+        from tools.cartographer.dashboard import (
+            parse_findings,
+            patch_experiments_card,
+            patch_friction_regroup_card,
+            patch_hook_activity_card,
+            patch_input_tokens_card,
+            patch_review_findings,
+            patch_skill_economics_card,
+            patch_tool_trends_card,
         )
-        print(f"Dashboard: {out}")
+
+        dashboard = Path(args.dashboard).expanduser()
+        findings_path = Path(args.findings).expanduser()
+        ledger_path = Path(args.ledger).expanduser()
+        ledger_log_path = Path(args.ledger_log).expanduser() if args.ledger_log else None
+
+        findings = parse_findings(findings_path) if findings_path.exists() else []
+        if patch_review_findings(dashboard, findings):
+            print(f"Dashboard: review card refreshed ({len(findings)} findings) -> {dashboard}")
+        else:
+            print(f"Dashboard: skipped — {dashboard} missing or has no REVIEW-FINDINGS markers")
+
+        if patch_input_tokens_card(dashboard, store):
+            print("Dashboard: input-tokens card refreshed")
+        else:
+            print("Dashboard: input-tokens card skipped (missing markers)")
+
+        if patch_skill_economics_card(dashboard, store):
+            print("Dashboard: skill-economics card refreshed")
+        else:
+            print("Dashboard: skill-economics card skipped (missing markers)")
+
+        if patch_tool_trends_card(dashboard, store):
+            print("Dashboard: tool-trends card refreshed")
+        else:
+            print("Dashboard: tool-trends card skipped (missing markers)")
+
+        if patch_friction_regroup_card(dashboard, store):
+            print("Dashboard: friction-regroup card refreshed")
+        else:
+            print("Dashboard: friction-regroup card skipped (missing markers)")
+
+        if patch_experiments_card(
+            dashboard, ledger_path=ledger_path, ledger_log_path=ledger_log_path
+        ):
+            print("Dashboard: experiments card refreshed")
+        else:
+            print("Dashboard: experiments card skipped (missing markers)")
+
+        hook_log = Path(args.hook_log).expanduser()
+        hook_pass_log = Path(args.hook_pass_log).expanduser()
+        if patch_hook_activity_card(dashboard, hook_log, hook_pass_log):
+            print("Dashboard: hook-activity card refreshed")
+        else:
+            print("Dashboard: hook-activity card skipped (missing markers)")
 
     # Staleness guard: the newest row aging past --stale-days means capture is not
     # keeping up with the ~5-day JSONL retention window, i.e. history is being lost.

@@ -463,3 +463,55 @@ def test_parse_session_entrypoint_none_when_absent(tmp_path: Path) -> None:
     session = parse_session(path)
     assert session is not None
     assert session["entrypoint"] is None
+
+
+# --- Step 1: turns_since_last_compact + compact_trigger ----------------------
+
+
+@pytest.mark.unit
+def test_parse_session_compact_trigger_and_turns_since(tmp_path: Path) -> None:
+    """compact_boundary with compactMetadata.trigger populates both new fields."""
+    compact_boundary = {
+        "type": "system",
+        "subtype": "compact_boundary",
+        "timestamp": "2026-07-18T10:05:00Z",
+        "compactMetadata": {"trigger": "manual", "preTokens": 90000, "postTokens": 5000},
+    }
+    path = tmp_path / "proj" / "sess-1.jsonl"
+    _write_jsonl(
+        path,
+        [
+            _user("2026-07-18T10:00:00Z"),
+            _assistant("2026-07-18T10:00:05Z"),
+            compact_boundary,
+            # tool result (not a human turn) — should NOT count
+            {
+                "type": "user",
+                "timestamp": "2026-07-18T10:05:05Z",
+                "message": {
+                    "content": [{"type": "tool_result", "tool_use_id": "x", "content": "ok"}]
+                },
+            },
+            _user("2026-07-18T10:06:00Z", text="first post-compact"),
+            _assistant("2026-07-18T10:06:05Z"),
+            _user("2026-07-18T10:07:00Z", text="second post-compact"),
+        ],
+    )
+    session = parse_session(path)
+    assert session is not None
+    assert session["compact_trigger"] == "manual"
+    assert session["turns_since_last_compact"] == 2
+
+
+@pytest.mark.unit
+def test_parse_session_no_compact_gives_none(tmp_path: Path) -> None:
+    """Sessions that never compacted return None for both fields."""
+    path = tmp_path / "proj" / "sess-2.jsonl"
+    _write_jsonl(
+        path,
+        [_user("2026-07-18T10:00:00Z"), _assistant("2026-07-18T10:00:05Z")],
+    )
+    session = parse_session(path)
+    assert session is not None
+    assert session["compact_trigger"] is None
+    assert session["turns_since_last_compact"] is None

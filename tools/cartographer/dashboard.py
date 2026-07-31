@@ -62,7 +62,16 @@ JULY_ONLY_METRICS = {
     "single_turn_pct",
     "execution_skill_compliance_pct",
     "friction_labels_total",
+    # Step 4: input tokens — telemetry era only (no pre-July per-request data)
+    "input_tokens_p50",
+    "input_tokens_sum",
+    # Step 6: cost-by-context-bucket — needs max_context per session (July+)
+    "cost_bucket_pct_over150k",
 }
+
+# Top N tools to trend individually; everything else is aggregated as "other".
+# Determined empirically from the tool_counts column; extend as usage evolves.
+_TOP_TOOLS_N = 5
 
 # What each regime's corpus actually sampled. Rendered on every rate panel so a
 # reader cannot mistake a logging artifact for a workflow change.
@@ -221,6 +230,28 @@ def _metric_value(metric: str, bucket: list[dict[str, Any]]) -> float | None:
         return round(100 * with_skills / len(exec_rows), 2)
     if metric == "friction_labels_total":
         return sum(int(r.get("friction_label_count") or 0) for r in bucket)
+    # Step 4: input-token series
+    if metric == "input_tokens_p50":
+        values = [float(r.get("input_tokens") or 0) for r in bucket]
+        if not values:
+            return None
+        return _percentile(values, 50)
+    if metric == "input_tokens_sum":
+        return float(sum(r.get("input_tokens") or 0 for r in bucket))
+    # Step 6: cost share in >150k context bucket
+    if metric == "cost_bucket_pct_over150k":
+        scored = [r for r in bucket if r.get("max_context") is not None]
+        if not scored:
+            return None
+        total_cost = sum(float(r.get("cost_units") or 0) for r in scored)
+        if not total_cost:
+            return None
+        over_cost = sum(
+            float(r.get("cost_units") or 0)
+            for r in scored
+            if (r.get("max_context") or 0) >= _CONTEXT_LIMIT
+        )
+        return round(100 * over_cost / total_cost, 2)
     raise ValueError(f"unknown metric: {metric}")
 
 
@@ -345,6 +376,92 @@ def _distinct_surfaces(store: Path) -> list[str]:
     return sorted(surfaces)
 
 
+def build_tool_trends(store: Path) -> tuple[list[str], dict[str, list[Point]]]:
+    """Daily call-count trend for the top N tools plus an 'other' bucket.
+
+    Returns (ordered_tool_names, {tool_name: [Point]}). July-forward only —
+    tool_counts is null in the note era. The top-N selection is by total calls
+    across the whole window, so the legend is stable over time.
+    """
+    rows = [r for r in _work_sessions(read_all(store)) if str(r.get("date") or "") >= JULY_BOUNDARY]
+    # First pass: total calls per tool across the full window.
+    total_by_tool: dict[str, int] = {}
+    for row in rows:
+        try:
+            counts: dict[str, int] = json.loads(row.get("tool_counts") or "{}")
+        except (TypeError, json.JSONDecodeError):
+            continue
+        for tool, n in counts.items():
+            total_by_tool[tool] = total_by_tool.get(tool, 0) + int(n)
+    top_tools = [t for t, _ in sorted(total_by_tool.items(), key=lambda kv: -kv[1])[:_TOP_TOOLS_N]]
+
+    # Second pass: daily buckets per top tool + 'other'.
+    daily: dict[str, dict[str, int]] = {}
+    for row in rows:
+        day = str(row.get("date") or "")
+        try:
+            counts = json.loads(row.get("tool_counts") or "{}")
+        except (TypeError, json.JSONDecodeError):
+            counts = {}
+        bucket = daily.setdefault(day, dict.fromkeys(top_tools, 0))
+        bucket.setdefault("other", 0)
+        for tool, n in counts.items():
+            if tool in top_tools:
+                bucket[tool] += int(n)
+            else:
+                bucket["other"] += int(n)
+
+    ordered = top_tools + (["other"] if any(d.get("other", 0) for d in daily.values()) else [])
+    regime_rows = {str(r["date"]): str(r["regime"]) for r in rows}
+    series: dict[str, list[Point]] = {}
+    for tool in ordered:
+        pts: list[Point] = []
+        for day in sorted(daily):
+            v = daily[day].get(tool, 0)
+            pts.append(Point(date=day, value=float(v), regime=regime_rows.get(day, ""), n=1))
+        if pts:
+            series[tool] = pts
+    return ordered, series
+
+
+def _render_tool_trends(store: Path) -> str:
+    """Daily tool-call trends for the top N tools plus 'other'.
+
+    Step 6(b): shows which tools dominate invocation volume, how that shifts over
+    time, and whether the Bash-over-dedicated-tool antipattern is structural.
+    """
+    ordered, series = build_tool_trends(store)
+    if not series:
+        return (
+            '<section class="chart"><h3>Tool call trends (daily)</h3>'
+            '<p class="note">No tool-count data yet. July-forward only.</p></section>'
+        )
+    colors = [
+        "var(--chart-1)",
+        "var(--chart-2)",
+        "var(--chart-3)",
+        "var(--chart-4)",
+        "var(--muted)",
+    ]
+    charts = "".join(
+        (
+            f'<div style="margin-bottom:8px"><strong style="font-size:12px">'
+            f"{html.escape(tool)}</strong>"
+            f"{_svg_line(series[tool], colors[min(i, len(colors) - 1)], unit='count')}</div>"
+        )
+        for i, tool in enumerate(ordered)
+        if tool in series
+    )
+    return (
+        '<section class="chart"><h3>Tool call trends (daily)</h3>'
+        '<p class="note">Daily call count for the top 5 tools by volume, '
+        "plus an 'other' bucket. July-forward only. Bash volume is structural "
+        "(28.7/session median from insights-log) — track for antipattern changes, "
+        "not for absolute reduction.</p>"
+        f"{charts}</section>"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Guacamayo promotion funnel (research F5)
 # ---------------------------------------------------------------------------
@@ -444,6 +561,22 @@ _TIER1 = [
         "",
         "cost",
     ),
+    # Step 4: input-token series. Validates the 'context health is about input' intuition —
+    # cache hit rate is a reuse proxy, not direct input-volume visibility.
+    (
+        "input_tokens_p50",
+        "Input tokens per session (p50)",
+        "Median input-token volume. High = large context carried in; rising = context growth.",
+        "July-forward only; no pre-telemetry data",
+        "tokens",
+    ),
+    (
+        "input_tokens_sum",
+        "Input tokens total (daily)",
+        "Total input-token volume per day. Use alongside cache hit rate to read context cost.",
+        "July-forward only",
+        "tokens",
+    ),
     (
         "cache_hit_rate",
         "Cache hit rate",
@@ -482,6 +615,15 @@ _TIER2 = [
         "",
         "pct",
     ),
+    # Step 6: cost-concentration in the >150k bucket — validates the '52% of spend' claim.
+    (
+        "cost_bucket_pct_over150k",
+        "Cost share in >150k context sessions (%)",
+        "Share of daily session cost in sessions that hit the 150k cliff. "
+        "Validates or falsifies the '52% of spend' claim from insights-log.",
+        "July-forward only; sessions without max_context excluded",
+        "pct",
+    ),
 ]
 
 # Session shape: how work is divided into sessions. Read alongside "Sessions per
@@ -505,40 +647,65 @@ _TIER_SHAPE = [
     ),
 ]
 
-# Friction: parsed since the JSONL era, stored from 2026-07-20. Backfilled to the
-# July boundary by re-parsing retained transcripts -- same apparatus, wider
-# projection, so these are NOT a new regime.
-_TIER3 = [
-    (
-        "tool_error_rate",
-        "Tool error rate",
-        "Errors per 100 tool calls. Higher = more friction; check failure attribution.",
-        "Normalised so long sessions are not penalised",
-        "count",
-    ),
-    (
-        "interruptions_p50",
-        "User interruptions per session (p50)",
-        "Fast follow-up turns — the agent went off-track and was corrected.",
-        "Tool results excluded",
-        "count",
-    ),
+# ---------------------------------------------------------------------------
+# Friction tab — Step 9: prompt-eng / loop-eng / harness-eng regroup (F7)
+#
+# Research finding F4 confirmed: 3 of 5 original metrics measured productivity
+# not friction. The regroup separates true friction (loop-eng) from capability
+# signals (prompt-eng) and infrastructure health (harness-eng).
+# ---------------------------------------------------------------------------
+
+# Prompt-eng: does reasoning work? Skill compliance renamed from "friction" framing.
+_FRICTION_PROMPT_ENG = [
     (
         "execution_skill_compliance_pct",
-        "Execution sessions with skills (%)",
-        "Sessions classified as execution-intent that invoke ≥1 skill. "
-        "Low = sessions doing work without skill guardrails.",
+        "Skill compliance — execution sessions (%)",
+        "Execution sessions invoking ≥1 skill. Low = unscaffolded work. "
+        "Higher is better (productivity signal, not friction).",
         "Heuristic: intent classifier is v1",
         "pct",
     ),
+]
+
+# Loop-eng: does workflow repeat? The true-friction group.
+_FRICTION_LOOP_ENG = [
+    (
+        "interruptions_p50",
+        "User interruptions per session (p50)",
+        "Fast follow-up turns (<5s) — agent went off-track and was corrected. "
+        "Direct friction signal.",
+        "Tool results excluded from turn count",
+        "count",
+    ),
     (
         "friction_labels_total",
-        "Explicit friction labels",
-        "Count of FRICTION: labels in user messages. Direct user-reported friction.",
+        "Explicit friction labels (FRICTION:)",
+        "Count of FRICTION: labels in user messages. User-reported friction only.",
         "User-authored signal",
         "count",
     ),
 ]
+
+# Harness-eng: does infrastructure hold? Context + error signals.
+_FRICTION_HARNESS_ENG = [
+    (
+        "tool_error_rate",
+        "Tool error rate (per 100 calls)",
+        "Errors per 100 tool calls. Structural noise level is ~28.7 Bash antipatterns/session "
+        "(flat across interventions — endemic, not recoverable by config). "
+        "Taxonomy split (code/env/tool/unknown) tracked in tool_errors column.",
+        "Normalised so long sessions are not penalised",
+        "count",
+    ),
+]
+
+# Rework-cycle placeholder — loop-eng signal not yet captured (F5, Tier 3 deferred)
+_REWORK_PLACEHOLDER = (
+    '<section class="chart"><h3>Rework cycles</h3>'
+    '<p class="note">Not yet captured. Detecting rework requires message-pair '
+    "similarity analysis on session JSONL — deferred to Tier 3 (F5, LIB #65). "
+    "Current proxy: user interruptions (see above).</p></section>"
+)
 
 # Population rates: within-regime diagnostics only. Rendered faceted, never as a
 # cross-regime trend - the Apr-Jun corpus samples only compacted sessions.
@@ -918,6 +1085,62 @@ def _render_subagents(store: Path) -> str:
     )
 
 
+def build_skill_economics(store: Path) -> dict[str, dict[str, float]]:
+    """Aggregate per-skill invocation count and cost from stored skill_costs JSON.
+
+    Returns {skill_name: {"cost": float, "n": int}} sorted by cost descending.
+    Work sessions only (meta-sessions excluded). July-forward only — skill_costs
+    is null in the note era.
+    """
+    totals: dict[str, dict[str, float]] = {}
+    for row in _work_sessions(read_all(store)):
+        raw = row.get("skill_costs")
+        if not raw:
+            continue
+        try:
+            costs: dict[str, float] = json.loads(raw)
+        except (TypeError, json.JSONDecodeError):
+            continue
+        for skill, cost in costs.items():
+            entry = totals.setdefault(skill, {"cost": 0.0, "n": 0})
+            entry["cost"] += float(cost)
+            entry["n"] += 1
+    return dict(sorted(totals.items(), key=lambda kv: -kv[1]["cost"]))
+
+
+def _render_skill_economics(store: Path) -> str:
+    """Per-skill invocation count and cost table.
+
+    Parallel to the existing model/agent-type breakdown tables. Marker-owned
+    region in the aggregate dashboard; not patched into context-dashboard.html
+    (that is the review-card pattern, not needed here).
+    """
+    totals = build_skill_economics(store)
+    if not totals:
+        return (
+            '<section class="chart"><h3>Skill economics</h3>'
+            '<p class="note">No skill cost data yet. Skill invocations are attributed '
+            "from JSONL era sessions (July+).</p></section>"
+        )
+    grand = sum(e["cost"] for e in totals.values()) or 1.0
+    rows = "".join(
+        f"<tr><td>{html.escape(skill)}</td>"
+        f"<td>{stats['cost']:,.0f}</td>"
+        f"<td>{stats['cost'] / grand * 100:.0f}%</td>"
+        f"<td>{int(stats['n'])}</td></tr>"
+        for skill, stats in totals.items()
+    )
+    return (
+        '<section class="chart"><h3>Skill economics</h3>'
+        '<p class="note">Per-skill cost and session count. Cost attributed from JSONL '
+        "assistant output between a slash invocation and the next human turn. "
+        "Work sessions only; July-forward.</p>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Skill</th><th>cost units</th><th>share</th><th>sessions</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table></div></section>"
+    )
+
+
 def _render_funnel(funnel: Funnel | None) -> str:
     if funnel is None or funnel.entries_in is None:
         return (
@@ -955,6 +1178,96 @@ _STATUS_ORDER = {
     "inconclusive": 4,
 }
 _STATUS_CLASS = {"confirmed": "exp-confirmed", "verified": "exp-confirmed", "failed": "exp-failed"}
+
+# ---------------------------------------------------------------------------
+# Ledger parsing (Step 7)
+# ---------------------------------------------------------------------------
+
+_LEDGER_ROW = re.compile(
+    r"^\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|"
+)
+_LEDGER_LOG_ROW = re.compile(
+    r"^\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|"
+)
+_HEADER_CELL = re.compile(r"^-+$")
+
+
+def parse_ledger(ledger_path: Path, log_path: Path | None = None) -> list[Experiment]:
+    """Parse tooling-ledger.md (and optionally tooling-ledger-log.md) into Experiment rows.
+
+    Active ledger schema: | Date | Change | Area | Metric | Status |
+    Log ledger schema:    | Date | Change | Area | Verdict | Evidence |
+    Both are 5-column tables. Rows with rollup/batch markers in the date cell are
+    skipped (not parseable as individual experiments). Malformed rows degrade to
+    'skipped N rows' logged at WARNING — never crash the dashboard build.
+
+    Returns the list deduplicated by (date, name) — the log may contain superseded
+    entries that are re-archived from the active ledger.
+    """
+    experiments: list[Experiment] = []
+    skipped = 0
+
+    def _parse_5col_table(text: str, is_log: bool) -> None:
+        nonlocal skipped
+        for line in text.splitlines():
+            m = _LEDGER_ROW.match(line)
+            if not m:
+                continue
+            cells = [m.group(i).strip() for i in range(1, 6)]
+            date_cell, change_cell, _area_cell, metric_cell, status_cell = cells
+            # Skip header and separator rows
+            if _HEADER_CELL.match(date_cell) or date_cell.lower() in ("date", "---"):
+                continue
+            if _HEADER_CELL.match(status_cell) or status_cell.lower() in (
+                "status",
+                "verdict",
+                "---",
+            ):
+                continue
+            # Skip rollup/batch rows (not individual experiments)
+            if any(kw in date_cell.lower() for kw in ("rollup", "batch", "2026-07 (rollup)")):
+                skipped += 1
+                continue
+            if not change_cell or not status_cell:
+                skipped += 1
+                continue
+            # For the log: same positional layout (date|change|area|verdict|evidence)
+            # — verdict is in status_cell position, so no conditional needed.
+            effective_status = status_cell
+            # Strip backticks from metric
+            effective_metric = metric_cell.strip("`") or "—"
+            experiments.append(
+                Experiment(
+                    name=change_cell,
+                    metric=effective_metric,
+                    status=effective_status,
+                    date=date_cell,
+                )
+            )
+
+    if not ledger_path.exists():
+        log.warning("dashboard.ledger_missing", path=str(ledger_path))
+        return []
+
+    try:
+        _parse_5col_table(ledger_path.read_text(encoding="utf-8", errors="replace"), is_log=False)
+    except Exception as exc:
+        log.warning("dashboard.ledger_parse_error", path=str(ledger_path), error=str(exc))
+
+    if log_path and log_path.exists():
+        try:
+            _parse_5col_table(log_path.read_text(encoding="utf-8", errors="replace"), is_log=True)
+        except Exception as exc:
+            log.warning("dashboard.ledger_log_parse_error", path=str(log_path), error=str(exc))
+
+    if skipped:
+        log.warning("dashboard.ledger_rows_skipped", skipped=skipped)
+
+    # Dedup by (date, name) keeping last occurrence (log entries supersede earlier active rows).
+    seen: dict[tuple[str, str], int] = {}
+    for i, exp in enumerate(experiments):
+        seen[(exp.date, exp.name)] = i
+    return [experiments[i] for i in sorted(seen.values())]
 
 
 def _status_key(status: str) -> str:
@@ -1078,6 +1391,755 @@ def _render_review_findings(findings: list[dict] | None) -> str:
         f"Source: akira-scan + SANYI, persisted per review run.</p>"
         f"{severity_table}{source_table}{category_html}{repo_table}"
         f"</section>"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Marker-owned region helpers (canonical guacamayo dashboard patching)
+#
+# Every auto-refreshed card in context-dashboard.html is bounded by a pair of
+# HTML comments:
+#   <!-- REGION-NAME:START (regenerated by cartographer --facts; do not hand-edit) -->
+#   ... rendered content ...
+#   <!-- REGION-NAME:END -->
+#
+# _patch_marker_region is the shared swap logic.  Each card has its own pair of
+# marker constants and a thin patch_* wrapper so callers stay readable.
+# ---------------------------------------------------------------------------
+
+
+def _patch_marker_region(dashboard: Path, start_marker: str, end_marker: str, content: str) -> bool:
+    """Replace the content between start/end markers with `content`, in place.
+
+    Returns False (without writing) when the file or either marker is absent.
+    The start comment itself is preserved verbatim; only the region body changes.
+    """
+    if not dashboard.exists():
+        log.warning("dashboard.patch_missing_file", path=str(dashboard), marker=start_marker)
+        return False
+    text = dashboard.read_text(encoding="utf-8")
+    start = text.find(start_marker)
+    open_end = text.find("-->", start) if start != -1 else -1
+    end = text.find(end_marker, open_end + 3) if open_end != -1 else -1
+    if end == -1:
+        log.warning(
+            "dashboard.patch_missing_markers",
+            path=str(dashboard),
+            start=start_marker,
+            end=end_marker,
+        )
+        return False
+    patched = text[: open_end + 3] + "\n    " + content + "\n    " + text[end:]
+    dashboard.write_text(patched, encoding="utf-8")
+    return True
+
+
+REVIEW_CARD_START = "<!-- REVIEW-FINDINGS:START"
+REVIEW_CARD_END = "<!-- REVIEW-FINDINGS:END -->"
+
+# ---------------------------------------------------------------------------
+# Additional marker-owned regions (Step 4-9 cards)
+# ---------------------------------------------------------------------------
+
+INPUT_TOKENS_CARD_START = "<!-- INPUT-TOKENS:START"
+INPUT_TOKENS_CARD_END = "<!-- INPUT-TOKENS:END -->"
+
+SKILL_ECONOMICS_CARD_START = "<!-- SKILL-ECONOMICS:START"
+SKILL_ECONOMICS_CARD_END = "<!-- SKILL-ECONOMICS:END -->"
+
+TOOL_TRENDS_CARD_START = "<!-- TOOL-TRENDS:START"
+TOOL_TRENDS_CARD_END = "<!-- TOOL-TRENDS:END -->"
+
+FRICTION_REGROUP_CARD_START = "<!-- FRICTION-REGROUP:START"
+FRICTION_REGROUP_CARD_END = "<!-- FRICTION-REGROUP:END -->"
+
+EXPERIMENTS_CARD_START = "<!-- EXPERIMENTS-LIFECYCLE:START"
+EXPERIMENTS_CARD_END = "<!-- EXPERIMENTS-LIFECYCLE:END -->"
+
+HOOK_ACTIVITY_CARD_START = "<!-- HOOK-ACTIVITY:START"
+HOOK_ACTIVITY_CARD_END = "<!-- HOOK-ACTIVITY:END -->"
+
+_SEVERITY_ORDER = {"blocker": 0, "important": 1, "question": 2, "suggestion": 3, "nit": 4}
+_SEVERITY_COLOR = {"blocker": "var(--bad)", "important": "var(--warn)", "nit": "var(--text-3)"}
+_REVIEW_ROW_CAP = 20
+
+
+def _sev_style(sev: str) -> str:
+    color = _SEVERITY_COLOR.get(sev)
+    return f' style="color:{color}"' if color else ""
+
+
+def _review_row(f: dict) -> str:
+    where = f"{f.get('repo', '?')} {f.get('issue', '')}".strip()
+    title = html.escape(f.get("title", "?"))
+    file, line = f.get("file", ""), f.get("line", 0)
+    if file and file != "n/a":
+        loc = html.escape(file.rsplit("/", 1)[-1] + (f":{line}" if line else ""))
+        title += f' <span style="color:var(--text-3)">({loc})</span>'
+    sev = f.get("severity", "unknown")
+    return (
+        f"<tr><td>{html.escape(where)}</td><td>{title}</td>"
+        f"<td>{html.escape(f.get('category', ''))}</td>"
+        f"<td{_sev_style(sev)}>{html.escape(sev)}</td></tr>"
+    )
+
+
+def render_review_card(findings: list[dict]) -> str:
+    """Render the review-findings card for the canonical guacamayo dashboard.
+
+    Targets context-dashboard.html's hand-maintained idiom (card / card-note /
+    stat-row / repo-table), unlike ``_render_review_findings`` which renders this
+    repo's aggregate-dashboard chart idiom. Keyed to the review-findings.jsonl
+    schema: date, repo, issue, file, line, category, severity, title.
+
+    Step 8: findings are grouped by repo, time-descending within each repo.
+    Severity is a sort key within each repo group (not the primary grouping).
+    The `source` field is consumed when present (F8 full-schema rows) and
+    degraded gracefully for older rows without it.
+    """
+    if not findings:
+        return (
+            '<div class="card">\n'
+            '      <div class="card-title">Review findings</div>\n'
+            '      <p class="card-note">No review findings yet. Run <code>/code-review</code> '
+            "or <code>/workflow-review</code> to populate.</p>\n"
+            "    </div>"
+        )
+
+    sev_counts: dict[str, int] = {}
+    for f in findings:
+        sev = f.get("severity", "unknown")
+        sev_counts[sev] = sev_counts.get(sev, 0) + 1
+    stats = "".join(
+        f'<div class="stat"><span class="value"{_sev_style(sev)}>{count}</span>'
+        f'<span class="label">{html.escape(sev)}</span></div>'
+        for sev, count in sorted(sev_counts.items(), key=lambda kv: _SEVERITY_ORDER.get(kv[0], 9))
+    )
+
+    # Step 8: group by repo, sort repos by most-recent finding date descending,
+    # then within each repo sort by (severity, date descending).
+    by_repo: dict[str, list[dict]] = {}
+    for f in findings:
+        by_repo.setdefault(f.get("repo", "unknown"), []).append(f)
+    repo_order = sorted(
+        by_repo,
+        key=lambda r: max((f.get("date", "") for f in by_repo[r]), default=""),
+        reverse=True,
+    )
+
+    rows_rendered = 0
+    repo_sections = []
+    for repo in repo_order:
+        repo_findings = sorted(
+            by_repo[repo],
+            key=lambda f: (
+                _SEVERITY_ORDER.get(f.get("severity", ""), 9),
+                -(f.get("date") or "").__len__(),
+            ),
+        )
+        # Sort time-descending within same severity
+        repo_findings = sorted(
+            by_repo[repo],
+            key=lambda f: (_SEVERITY_ORDER.get(f.get("severity", ""), 9), f.get("date", "")),
+        )
+        repo_rows = ""
+        for f in repo_findings:
+            if rows_rendered >= _REVIEW_ROW_CAP:
+                break
+            repo_rows += _review_row(f)
+            rows_rendered += 1
+        if repo_rows:
+            source_tag = ""
+            # Consume `source` field (F8) when present on any finding in this repo
+            sources = {f.get("source") for f in repo_findings if f.get("source")}
+            if sources:
+                source_tag = (
+                    f' <span style="font-size:10px;color:var(--text-3)">'
+                    f"[{html.escape(', '.join(sorted(sources)))}]</span>"
+                )
+            repo_sections.append(
+                f'<tr><td colspan="4" style="padding-top:10px;font-weight:600;'
+                f'font-size:12px;color:var(--text-secondary)">'
+                f"{html.escape(repo)}{source_tag}</td></tr>"
+                f"{repo_rows}"
+            )
+
+    dates = sorted(f.get("date", "") for f in findings if f.get("date"))
+    latest = dates[-1] if dates else "?"
+    targets = {(f.get("repo", "?"), f.get("issue", "?")) for f in findings}
+    note = (
+        f"{len(findings)} findings across {len(targets)} review targets, "
+        f"{len(by_repo)} repos. Latest run: {html.escape(latest)}."
+    )
+
+    cap_note = ""
+    if len(findings) > _REVIEW_ROW_CAP:
+        cap_note = (
+            '\n      <p style="font-size:11px;color:var(--text-3);margin-top:8px;font-style:italic">'
+            f"Showing {_REVIEW_ROW_CAP} of {len(findings)} by severity; "
+            "full list in review-findings.jsonl.</p>"
+        )
+
+    return (
+        '<div class="card">\n'
+        '      <div class="card-title">Review findings</div>\n'
+        f'      <p class="card-note">{note}</p>\n'
+        f'      <div class="stat-row" style="margin-bottom:16px">{stats}</div>\n'
+        '      <div class="overflow-x">\n'
+        '      <table class="repo-table">\n'
+        "        <thead><tr><th>Repo / issue</th><th>Finding</th><th>Category</th><th>Severity</th></tr></thead>\n"
+        f"        <tbody>{''.join(repo_sections)}</tbody>\n"
+        "      </table>\n"
+        f"      </div>{cap_note}\n"
+        "    </div>"
+    )
+
+
+def patch_review_findings(dashboard: Path, findings: list[dict]) -> bool:
+    """Regenerate the review card between REVIEW-FINDINGS markers, in place.
+
+    The canonical dashboard is hand-maintained; only the marked region is
+    cartographer-owned. Returns False without writing when the file or either
+    marker is missing, so a moved marker never silently truncates the page.
+    """
+    if not dashboard.exists():
+        log.warning("dashboard.review_patch_missing_file", path=str(dashboard))
+        return False
+    text = dashboard.read_text(encoding="utf-8")
+    start = text.find(REVIEW_CARD_START)
+    open_end = text.find("-->", start) if start != -1 else -1
+    end = text.find(REVIEW_CARD_END, open_end + 3) if open_end != -1 else -1
+    if end == -1:
+        log.warning("dashboard.review_patch_missing_markers", path=str(dashboard))
+        return False
+    patched = text[: open_end + 3] + "\n    " + render_review_card(findings) + "\n    " + text[end:]
+    dashboard.write_text(patched, encoding="utf-8")
+    return True
+
+
+def render_input_tokens_card(store: Path) -> str:
+    """Render the input-tokens card for the canonical guacamayo dashboard.
+
+    Two metrics: p50 per-session and daily total. Shows how much context is
+    being carried in and how that tracks with cost. July-forward only.
+    """
+    series_p50 = build_series("input_tokens_p50", store)
+    series_sum = build_series("input_tokens_sum", store)
+    if not series_p50.points and not series_sum.points:
+        return (
+            '<div class="card">\n'
+            '      <div class="card-title">Input tokens</div>\n'
+            '      <p class="card-note">No data yet. July-forward only.</p>\n'
+            "    </div>"
+        )
+    latest_p50 = series_p50.points[-1].value if series_p50.points else 0
+    latest_sum = series_sum.points[-1].value if series_sum.points else 0
+    svg_p50 = _svg_line(series_p50.points, "var(--s1)", unit="tokens") if series_p50.points else ""
+    svg_sum = _svg_line(series_sum.points, "var(--s2)", unit="tokens") if series_sum.points else ""
+    return (
+        '<div class="card">\n'
+        '      <div class="card-title">Input tokens</div>\n'
+        '      <p class="card-note">How much context is carried into each session. '
+        "p50 = median per session; daily total tracks with daily cost. "
+        '<span class="direction good">&darr; Lower input volume = cheaper sessions.</span></p>\n'
+        '      <div class="card-row">\n'
+        '        <div class="card">\n'
+        '          <div class="card-title">Input tokens per session (p50)</div>\n'
+        '          <div class="stat-row">'
+        f'<div class="stat"><span class="value">{_fmt_value(latest_p50, "tokens")}</span>'
+        '<span class="label">p50 today</span></div></div>\n'
+        f"          {svg_p50}\n"
+        "        </div>\n"
+        '        <div class="card">\n'
+        '          <div class="card-title">Input tokens total (daily)</div>\n'
+        '          <div class="stat-row">'
+        f'<div class="stat"><span class="value">{_fmt_value(latest_sum, "tokens")}</span>'
+        '<span class="label">today</span></div></div>\n'
+        f"          {svg_sum}\n"
+        "        </div>\n"
+        "      </div>\n"
+        "    </div>"
+    )
+
+
+def patch_input_tokens_card(dashboard: Path, store: Path) -> bool:
+    """Regenerate the input-tokens card between INPUT-TOKENS markers, in place."""
+    return _patch_marker_region(
+        dashboard, INPUT_TOKENS_CARD_START, INPUT_TOKENS_CARD_END, render_input_tokens_card(store)
+    )
+
+
+def render_skill_economics_card(store: Path) -> str:
+    """Render the skill economics card for the canonical guacamayo dashboard."""
+    totals = build_skill_economics(store)
+    if not totals:
+        return (
+            '<div class="card">\n'
+            '      <div class="card-title">Skill economics</div>\n'
+            '      <p class="card-note">No skill cost data yet. Skill invocations are '
+            "attributed from JSONL era sessions (July+).</p>\n"
+            "    </div>"
+        )
+    grand = sum(e["cost"] for e in totals.values()) or 1.0
+    rows = "".join(
+        f"<tr><td>{html.escape(skill)}</td>"
+        f"<td>{stats['cost'] / 1_000_000:,.1f}M</td>"
+        f"<td>{stats['cost'] / grand * 100:.0f}%</td>"
+        f"<td>{int(stats['n'])}</td></tr>"
+        for skill, stats in totals.items()
+    )
+    return (
+        '<div class="card">\n'
+        '      <div class="card-title">Skill economics</div>\n'
+        '      <p class="card-note">Cost and session count per skill. Cost attributed from '
+        "JSONL output between a slash invocation and the next human turn. "
+        "Work sessions only; July-forward.</p>\n"
+        '      <div class="overflow-x">\n'
+        '      <table class="repo-table">\n'
+        "        <thead><tr><th>Skill</th><th>Cost</th><th>Share</th><th>Sessions</th></tr></thead>\n"
+        f"        <tbody>{rows}</tbody>\n"
+        "      </table>\n"
+        "      </div>\n"
+        "    </div>"
+    )
+
+
+def patch_skill_economics_card(dashboard: Path, store: Path) -> bool:
+    """Regenerate the skill economics card between SKILL-ECONOMICS markers, in place."""
+    return _patch_marker_region(
+        dashboard,
+        SKILL_ECONOMICS_CARD_START,
+        SKILL_ECONOMICS_CARD_END,
+        render_skill_economics_card(store),
+    )
+
+
+def render_tool_trends_card(store: Path) -> str:
+    """Render the tool-trends card for the canonical guacamayo dashboard."""
+    ordered, series = build_tool_trends(store)
+    if not series:
+        return (
+            '<div class="card">\n'
+            '      <div class="card-title">Tool call trends</div>\n'
+            '      <p class="card-note">No tool-count data yet. July-forward only.</p>\n'
+            "    </div>"
+        )
+    colors = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)", "var(--text-3)"]
+    charts = "".join(
+        f'<div style="margin-bottom:8px">'
+        f'<div style="font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:4px">'
+        f"{html.escape(tool)}</div>"
+        f"{_svg_line(series[tool], colors[min(i, len(colors) - 1)], unit='count', height=80)}</div>"
+        for i, tool in enumerate(ordered)
+        if tool in series
+    )
+    return (
+        '<div class="card">\n'
+        '      <div class="card-title">Tool call trends (daily)</div>\n'
+        '      <p class="card-note">Daily call count for the top 5 tools by volume, '
+        "plus an 'other' bucket. July-forward only. Bash volume is structural "
+        "(28.7/session median) &mdash; track for antipattern changes, not absolute reduction.</p>\n"
+        f"      {charts}\n"
+        "    </div>"
+    )
+
+
+def patch_tool_trends_card(dashboard: Path, store: Path) -> bool:
+    """Regenerate the tool-trends card between TOOL-TRENDS markers, in place."""
+    return _patch_marker_region(
+        dashboard, TOOL_TRENDS_CARD_START, TOOL_TRENDS_CARD_END, render_tool_trends_card(store)
+    )
+
+
+def render_friction_regroup_card(store: Path) -> str:
+    """Render the friction three-group regroup card for the canonical guacamayo dashboard.
+
+    Step 9: prompt-eng / loop-eng / harness-eng grouping. Each metric becomes a
+    compact inline stat with sparkline, so all three groups fit without scrolling.
+    """
+
+    def _inline_metric(metric: str, title: str, unit: str, label_hint: str) -> str:
+        series = build_series(metric, store)
+        if not series.points:
+            return (
+                f'<div style="margin-bottom:8px">'
+                f'<span style="font-size:12px;font-weight:600">{html.escape(title)}</span> '
+                f'<span style="color:var(--text-3);font-size:11px">no data</span></div>'
+            )
+        latest = series.points[-1]
+        svg = _svg_line(series.points, "var(--s1)", height=60, unit=unit)
+        return (
+            f'<div style="margin-bottom:12px">'
+            f'<div style="font-size:12px;font-weight:600;margin-bottom:2px">{html.escape(title)}</div>'
+            f'<span style="font-size:18px;font-weight:600">{html.escape(_fmt_value(latest.value, unit))}</span>'
+            f'<span style="color:var(--text-3);font-size:11px;margin-left:6px">{html.escape(label_hint)}</span>'
+            f"{svg}</div>"
+        )
+
+    def _hint(note: str, limit: int = 40) -> str:
+        if len(note) <= limit:
+            return note
+        cut = note[:limit].rsplit(" ", 1)[0].rstrip()
+        return f"{cut}…" if cut else f"{note[:limit]}…"
+
+    prompt_eng = "".join(
+        _inline_metric(metric, title, unit, _hint(note))
+        for metric, title, note, _prov, unit in _FRICTION_PROMPT_ENG
+    )
+    loop_eng = "".join(
+        _inline_metric(metric, title, unit, _hint(note))
+        for metric, title, note, _prov, unit in _FRICTION_LOOP_ENG
+    )
+    harness_eng = "".join(
+        _inline_metric(metric, title, unit, _hint(note))
+        for metric, title, note, _prov, unit in _FRICTION_HARNESS_ENG
+    )
+    return (
+        '<div class="card">\n'
+        '      <div class="card-title">Friction &amp; Quality (regrouped)</div>\n'
+        '      <p class="card-note">Metrics regrouped by engineering layer: '
+        "<strong>Prompt-eng</strong> (capability signals, higher = better), "
+        "<strong>Loop-eng</strong> (true friction, lower = better), "
+        "<strong>Harness-eng</strong> (infrastructure health).</p>\n"
+        '      <div class="card-row">\n'
+        '        <div class="card" style="flex:1">\n'
+        '          <div class="card-title">Prompt-eng</div>\n'
+        '          <p class="card-note" style="color:var(--good)">Does reasoning work? '
+        "Higher is better.</p>\n"
+        f"          {prompt_eng}\n"
+        "        </div>\n"
+        '        <div class="card" style="flex:1">\n'
+        '          <div class="card-title">Loop-eng</div>\n'
+        '          <p class="card-note" style="color:var(--bad)">Does workflow repeat? '
+        "Lower is better.</p>\n"
+        f"          {loop_eng}\n"
+        f'          <p style="font-size:11px;color:var(--text-3)">Rework cycles: '
+        f"Not yet captured (message-pair analysis, Tier 3).</p>\n"
+        "        </div>\n"
+        '        <div class="card" style="flex:1">\n'
+        '          <div class="card-title">Harness-eng</div>\n'
+        '          <p class="card-note">Does infrastructure hold?</p>\n'
+        f"          {harness_eng}\n"
+        "        </div>\n"
+        "      </div>\n"
+        "    </div>"
+    )
+
+
+def patch_friction_regroup_card(dashboard: Path, store: Path) -> bool:
+    """Regenerate the friction regroup card between FRICTION-REGROUP markers, in place."""
+    return _patch_marker_region(
+        dashboard,
+        FRICTION_REGROUP_CARD_START,
+        FRICTION_REGROUP_CARD_END,
+        render_friction_regroup_card(store),
+    )
+
+
+def render_experiments_card(
+    experiments: list[Experiment] | None,
+    ledger_path: Path | None = None,
+    ledger_log_path: Path | None = None,
+) -> str:
+    """Render the experiments lifecycle card for the canonical guacamayo dashboard.
+
+    Reads from ledger when provided (Step 7). Falls back to the passed experiments
+    list for backward compatibility. Renders verdict counts + top-10 table matching
+    the hand-maintained card idiom.
+    """
+    if ledger_path is not None and experiments is None:
+        experiments = parse_ledger(ledger_path, ledger_log_path)
+    if not experiments:
+        return (
+            '<div class="card">\n'
+            '      <div class="card-title">Experiment verdicts</div>\n'
+            '      <p class="card-note">No experiments tracked. Add hypothesis rows to the '
+            "tooling ledger.</p>\n"
+            "    </div>"
+        )
+    confirmed = sum(1 for e in experiments if _status_key(e.status) in ("confirmed", "verified"))
+    failed = sum(1 for e in experiments if _status_key(e.status) == "failed")
+    pending = len(experiments) - confirmed - failed
+
+    _BADGE = {
+        "confirmed": ("confirmed", "var(--good)"),
+        "verified": ("confirmed", "var(--good)"),
+        "failed": ("failed", "var(--bad)"),
+    }
+
+    def _badge(status: str) -> str:
+        key = _status_key(status)
+        label, color = _BADGE.get(key, (status[:10], "var(--text-3)"))
+        return f'<span class="badge" style="color:{color}">{html.escape(label)}</span>'
+
+    top = sorted(
+        experiments,
+        key=lambda e: (_STATUS_ORDER.get(_status_key(e.status), 9), e.date),
+    )[:10]
+    rows = "".join(
+        f"<tr>"
+        f'<td title="{html.escape(e.name)}">{html.escape(e.name[:50])}</td>'
+        f'<td style="font-family:\'DM Mono\',monospace;font-size:11px" title="{html.escape(e.metric)}">{html.escape(e.metric[:30])}</td>'
+        f"<td>{_badge(e.status)}</td>"
+        f"<td>{html.escape(e.date)}</td>"
+        f"</tr>"
+        for e in top
+    )
+    cap = ""
+    if len(experiments) > 10:
+        cap = (
+            f'\n      <p style="font-size:11px;color:var(--text-3);margin-top:8px;font-style:italic">'
+            f"Showing top 10 of {len(experiments)}. Full list in tooling-ledger.md.</p>"
+        )
+    return (
+        '<div class="card">\n'
+        '      <div class="card-title">Experiment verdicts</div>\n'
+        f'      <p class="card-note">{confirmed} confirmed, {failed} failed, {pending} pending. '
+        f"Most experiments are &lt;5 days old &mdash; too early to call.</p>\n"
+        '      <div class="stat-row" style="margin-bottom:16px">\n'
+        f'        <div class="stat"><span class="value" style="color:var(--good)">{confirmed}</span>'
+        '<span class="label">confirmed</span></div>\n'
+        f'        <div class="stat"><span class="value" style="color:var(--bad)">{failed}</span>'
+        '<span class="label">failed</span></div>\n'
+        f'        <div class="stat"><span class="value" style="color:var(--text-3)">{pending}</span>'
+        '<span class="label">pending</span></div>\n'
+        "      </div>\n"
+        '      <div class="overflow-x">\n'
+        '      <table class="exp-table">\n'
+        "        <thead><tr><th>Change</th><th>Metric</th><th>Status</th><th>Date</th></tr></thead>\n"
+        f"        <tbody>{rows}</tbody>\n"
+        f"      </table>\n"
+        f"      </div>{cap}\n"
+        "    </div>"
+    )
+
+
+def patch_experiments_card(
+    dashboard: Path,
+    experiments: list[Experiment] | None = None,
+    ledger_path: Path | None = None,
+    ledger_log_path: Path | None = None,
+) -> bool:
+    """Regenerate the experiments card between EXPERIMENTS-LIFECYCLE markers, in place."""
+    content = render_experiments_card(experiments, ledger_path, ledger_log_path)
+    return _patch_marker_region(dashboard, EXPERIMENTS_CARD_START, EXPERIMENTS_CARD_END, content)
+
+
+# ---------------------------------------------------------------------------
+# Hook activity (guard-hook fires from ~/.claude/hooks/lib.sh logging)
+# ---------------------------------------------------------------------------
+#
+# Two logs, written by two different lib.sh helpers:
+#   .hook-log.jsonl      -- log_event, carries exit_code (2 = block, 0 = warn)
+#   .hook-pass-log.jsonl -- log_pass, no exit_code, silent OKs, capped by tail
+#
+# Both are written by shell `printf` with only `tr '"\\' '..'` sanitising the
+# context field, so a logged multi-line command embeds real newlines and splits
+# one record across several physical lines.  `strict=False` does NOT rescue those
+# (it relaxes control chars *within* a string, not a string cut in half by
+# splitlines), so the reader below also stitches continuation fragments back
+# together before parsing.  strict=False is still passed for the raw-control-char
+# case the sanitiser likewise misses (e.g. a literal tab in a command).
+
+# Every hook that sources lib.sh -- used to report which guards have never fired.
+KNOWN_HOOKS = (
+    "branch_guard",
+    "ci_drift_warn",
+    "destructive_cmd_guard",
+    "docs_drift_warn",
+    "docs_hygiene",
+    "function_complexity_warning",
+    "issue_label_sync",
+    "memory_duplication_guard",
+    "memory_route_guard",
+    "pip_guard",
+    "review-verdict-gate",
+    "risky_git_guard",
+    "secrets_scan",
+    "task_complete_check",
+)
+
+# Hooks wired to call log_pass; pass counts for anything else are absent, not zero.
+PASS_LOGGING_HOOKS = ("risky_git_guard", "branch_guard")
+
+
+def parse_hook_log(path: Path) -> list[dict]:
+    """Read a hook JSONL log, tolerating records broken across physical lines.
+
+    Records are emitted by shell printf, so an unescaped newline inside the
+    `context` field splits one JSON object over several lines. Lines are
+    re-joined until they parse (or the record is abandoned), and parsing uses
+    strict=False so raw control characters inside strings are accepted.
+
+    Malformed records are skipped with a warning -- one bad write never breaks
+    the dashboard render. Returns [] when the file is absent.
+    """
+    events: list[dict] = []
+    if not path.exists():
+        return events
+    buf = ""
+    buf_start = 0
+    for i, raw in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        if not buf:
+            if not raw.strip():
+                continue
+            buf, buf_start = raw, i
+        else:
+            # Continuation of a record whose context field contained a newline.
+            buf += "\n" + raw
+        try:
+            obj = json.loads(buf, strict=False)
+        except json.JSONDecodeError:
+            # A truncating `tail` can orphan a fragment with no opening brace;
+            # give up on it rather than swallowing every following line.
+            if not buf.lstrip().startswith("{"):
+                log.warning("dashboard.hook_log_parse_error", line=buf_start, path=str(path))
+                buf = ""
+            continue
+        if isinstance(obj, dict):
+            events.append(obj)
+        buf = ""
+    if buf:
+        log.warning("dashboard.hook_log_truncated_record", line=buf_start, path=str(path))
+    return events
+
+
+@dataclass
+class HookActivity:
+    """Per-hook block/warn/pass counts plus the roll-ups the card header needs."""
+
+    rows: list[dict] = field(default_factory=list)
+    blocks: int = 0
+    warns: int = 0
+    passes: int = 0
+    seen: int = 0
+    known: int = len(KNOWN_HOOKS)
+    silent: list[str] = field(default_factory=list)
+    since: str = ""
+
+
+def build_hook_activity(event_log: Path, pass_log: Path) -> HookActivity:
+    """Aggregate block/warn/pass counts per hook from the two lib.sh logs.
+
+    Blocks are exit_code 2, warns are exit 0 with a message. Passes come from the
+    separate pass log, which only a couple of hooks write and which lib.sh caps --
+    so pass counts are floor values, and hooks that never call log_pass get None
+    (rendered as an em dash) rather than a misleading 0.
+    """
+    stats: dict[str, dict[str, int]] = {}
+    timestamps: list[str] = []
+
+    for ev in parse_hook_log(event_log):
+        hook = ev.get("hook")
+        if not hook:
+            continue
+        entry = stats.setdefault(hook, {"blocks": 0, "warns": 0, "passes": 0})
+        if ev.get("exit_code") == 2:
+            entry["blocks"] += 1
+        else:
+            entry["warns"] += 1
+        if ts := ev.get("ts"):
+            timestamps.append(ts)
+
+    for ev in parse_hook_log(pass_log):
+        hook = ev.get("hook")
+        if not hook:
+            continue
+        stats.setdefault(hook, {"blocks": 0, "warns": 0, "passes": 0})["passes"] += 1
+        if ts := ev.get("ts"):
+            timestamps.append(ts)
+
+    rows = [
+        {
+            "hook": hook,
+            "blocks": s["blocks"],
+            "warns": s["warns"],
+            # None (not 0) for hooks that never call log_pass -- absence of data.
+            "passes": s["passes"] if hook in PASS_LOGGING_HOOKS else None,
+        }
+        for hook, s in stats.items()
+    ]
+    rows.sort(key=lambda r: (-r["blocks"], -r["warns"], r["hook"]))
+
+    return HookActivity(
+        rows=rows,
+        blocks=sum(r["blocks"] for r in rows),
+        warns=sum(r["warns"] for r in rows),
+        passes=sum(s["passes"] for s in stats.values()),
+        seen=len(rows),
+        silent=sorted(h for h in KNOWN_HOOKS if h not in stats),
+        since=min(timestamps, default="")[:10],
+    )
+
+
+def render_hook_activity_card(event_log: Path, pass_log: Path) -> str:
+    """Render the hook-activity card for the canonical guacamayo dashboard."""
+    act = build_hook_activity(event_log, pass_log)
+    if not act.rows:
+        return (
+            '<div class="card">\n'
+            '      <div class="card-title">Hook activity</div>\n'
+            '      <p class="card-note">No hook fires logged yet. Guard hooks log to '
+            "<code>~/.claude/.hook-log.jsonl</code> via <code>lib.sh</code>.</p>\n"
+            "    </div>"
+        )
+
+    def _cell(value: int | None, color: str) -> str:
+        if value is None:
+            return "<td>&mdash;</td>"
+        style = f' style="color:{color}"' if value else ""
+        return f"<td{style}>{value}</td>"
+
+    rows = "".join(
+        f"<tr><td>{html.escape(r['hook'])}</td>"
+        f"{_cell(r['blocks'], 'var(--bad)')}"
+        f"{_cell(r['warns'], 'var(--warn)')}"
+        f"{_cell(r['passes'], 'var(--good)')}</tr>"
+        for r in act.rows
+    )
+    since = f" (since {act.since})" if act.since else ""
+    silent = ""
+    if act.silent:
+        silent = (
+            '\n      <p style="font-size:11px;color:var(--text-3);margin-top:8px;'
+            'font-style:italic">Silent since logging began: '
+            f"{html.escape(', '.join(act.silent))}. Pass-logging (log_pass) is only wired into "
+            f"{html.escape(' + '.join(PASS_LOGGING_HOOKS))}, and the pass log is capped &mdash; "
+            "pass counts are floor values, not totals.</p>"
+        )
+    return (
+        '<div class="card">\n'
+        f'      <div class="card-title">Hook activity{html.escape(since)}</div>\n'
+        '      <p class="card-note">Guard-hook fires from <code>lib.sh</code> logging. '
+        "<strong>Blocks</strong> = exit 2 (action denied), <strong>warns</strong> = exit 0 "
+        "with a message, <strong>passes</strong> = silent OK (logged by opted-in hooks only).</p>\n"
+        '      <div class="stat-row">\n'
+        f'        <div class="stat"><span class="value" style="color:var(--bad)">{act.blocks}</span>'
+        '<span class="label">blocks</span></div>\n'
+        f'        <div class="stat"><span class="value" style="color:var(--warn)">{act.warns}</span>'
+        '<span class="label">warns</span></div>\n'
+        f'        <div class="stat"><span class="value" style="color:var(--good)">{act.passes}</span>'
+        '<span class="label">passes logged</span></div>\n'
+        f'        <div class="stat"><span class="value">{act.seen} / {act.known}</span>'
+        '<span class="label">hooks seen firing</span></div>\n'
+        "      </div>\n"
+        '      <div class="overflow-x">\n'
+        '      <table class="repo-table">\n'
+        "        <thead><tr><th>Hook</th><th>Blocks</th><th>Warns</th><th>Passes</th></tr></thead>\n"
+        f"        <tbody>{rows}</tbody>\n"
+        "      </table>\n"
+        f"      </div>{silent}\n"
+        "    </div>"
+    )
+
+
+def patch_hook_activity_card(dashboard: Path, event_log: Path, pass_log: Path) -> bool:
+    """Regenerate the hook-activity card between HOOK-ACTIVITY markers, in place."""
+    return _patch_marker_region(
+        dashboard,
+        HOOK_ACTIVITY_CARD_START,
+        HOOK_ACTIVITY_CARD_END,
+        render_hook_activity_card(event_log, pass_log),
     )
 
 
@@ -1422,8 +2484,17 @@ def render_dashboard(
     funnel: Funnel | None = None,
     experiments: list[Experiment] | None = None,
     review_findings: list[dict] | None = None,
+    ledger_path: Path | None = None,
+    ledger_log_path: Path | None = None,
 ) -> str:
-    """Render the full dashboard to a self-contained HTML string."""
+    """Render the full dashboard to a self-contained HTML string.
+
+    `ledger_path` and `ledger_log_path` are optional; when provided, the
+    experiments section reads live from the tooling ledger (Step 7). When not
+    provided, `experiments` is used directly (backward-compatible).
+    """
+    if ledger_path is not None and experiments is None:
+        experiments = parse_ledger(ledger_path, ledger_log_path)
 
     def _chart_var(i: int) -> str:
         return f"var(--chart-{(i % 4) + 1})"
@@ -1440,9 +2511,32 @@ def render_dashboard(
         _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
         for i, (metric, title, note, prov, unit) in enumerate(_TIER_SHAPE)
     )
-    tier3 = "".join(
+    # Step 9: friction tab regroup — three groups instead of flat _TIER3 list.
+    friction_prompt = "".join(
         _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
-        for i, (metric, title, note, prov, unit) in enumerate(_TIER3)
+        for i, (metric, title, note, prov, unit) in enumerate(_FRICTION_PROMPT_ENG)
+    )
+    friction_loop = "".join(
+        _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
+        for i, (metric, title, note, prov, unit) in enumerate(_FRICTION_LOOP_ENG)
+    )
+    friction_harness = "".join(
+        _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
+        for i, (metric, title, note, prov, unit) in enumerate(_FRICTION_HARNESS_ENG)
+    )
+    tier3 = (
+        f'<div class="boundary"><h2 style="font-size:14px;margin:0 0 4px">Prompt-eng</h2>'
+        f'<p class="sub" style="margin:0 0 12px">Does reasoning work? '
+        f"Capability signals — higher is better.</p></div>"
+        f"{friction_prompt}"
+        f'<div class="boundary"><h2 style="font-size:14px;margin:0 0 4px">Loop-eng</h2>'
+        f'<p class="sub" style="margin:0 0 12px">Does workflow repeat? '
+        f"True friction signals — lower is better.</p></div>"
+        f"{friction_loop}{_REWORK_PLACEHOLDER}"
+        f'<div class="boundary"><h2 style="font-size:14px;margin:0 0 4px">Harness-eng</h2>'
+        f'<p class="sub" style="margin:0 0 12px">Does infrastructure hold? '
+        f"Error and context signals.</p></div>"
+        f"{friction_harness}"
     )
     rates = "".join(
         _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
@@ -1496,7 +2590,7 @@ def render_dashboard(
     sec_cost = (
         f'<section id="cost"><h2>Cost &amp; Efficiency</h2>'
         f'<p class="sub">Am I spending well?</p>'
-        f"{tier1}</section>"
+        f"{tier1}{_render_tool_trends(store)}</section>"
     )
 
     sec_context = (
@@ -1510,7 +2604,7 @@ def render_dashboard(
         f'<section id="friction"><h2>Friction &amp; Quality</h2>'
         f'<p class="sub">Where does work break? Stored from {FRICTION_STORED}, '
         f"backfilled to {JULY_BOUNDARY}.</p>"
-        f"{tier3}{_render_subagents(store)}</section>"
+        f"{tier3}{_render_subagents(store)}{_render_skill_economics(store)}</section>"
     )
 
     sec_review = (
@@ -1546,10 +2640,15 @@ def write_dashboard(
     growth_md: Path | None = None,
     experiments: list[Experiment] | None = None,
     review_findings: list[dict] | None = None,
+    ledger_path: Path | None = None,
+    ledger_log_path: Path | None = None,
 ) -> Path:
     """Render and write the dashboard, returning the output path."""
     funnel = funnel_counts(growth_md) if growth_md else None
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render_dashboard(store, funnel, experiments, review_findings), encoding="utf-8")
+    out.write_text(
+        render_dashboard(store, funnel, experiments, review_findings, ledger_path, ledger_log_path),
+        encoding="utf-8",
+    )
     log.info("dashboard.written", out=str(out), store=str(store))
     return out
