@@ -25,12 +25,6 @@ codemap = "tools.codemap.__main__:main"
 presenter = "tools.presenter.__main__:main"
 
 [project.optional-dependencies]
-dev = [
-    "ruff>=0.16.0",
-    "pytest>=9.1.1",
-    "pytest-asyncio>=1.4.0",
-    "playwright>=1.61.0",
-]
 viz = [
     "streamlit>=1.60.0",
     "st-cytoscape>=0.0.3",
@@ -86,8 +80,11 @@ packages = ["tools"]
 package = true
 
 # Was [tool.uv] dev-dependencies, deprecated by uv and warned on every invocation.
-# Installed by default by bare `uv run`, same as before — no Makefile or CI command
-# passes --group, so the move is behaviour-preserving.
+# Installed by default by bare `uv run`. This is the ONLY dev definition — the old
+# [project.optional-dependencies] dev extra was removed 2026-07-31; nothing referenced it.
+# CI does pass --group: the shared workflow (ai-project-template's python-ci.yml) runs
+# `uv sync --group dev`, which installs this group and NO extras. Anything tests/ imports
+# must therefore be listed here, not only under [project.optional-dependencies].
 [dependency-groups]
 dev = [
     "ruff>=0.16.0",
@@ -98,6 +95,9 @@ dev = [
     "playwright>=1.61.0",
     "tree-sitter-python>=0.25.0",
     "tree-sitter>=0.26.0",
+    # tests/unit/test_writeback_security.py imports fastapi.testclient. Also in the
+    # `api` extra, but extras are not installed by `uv sync --group dev`.
+    "fastapi>=0.139.2",
 ]
 
 [tool.ruff]
