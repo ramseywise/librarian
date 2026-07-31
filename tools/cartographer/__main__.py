@@ -300,6 +300,7 @@ def _run_facts() -> None:
         from tools.cartographer.dashboard import (
             inject_regions,
             parse_findings,
+            parse_ledger,
             render_experiments_region,
             render_review_findings_region,
         )
@@ -307,7 +308,10 @@ def _run_facts() -> None:
         ctx_path = Path(args.context_dashboard).expanduser()
         if ctx_path.exists():
             ledger_path = Path(args.ledger).expanduser()
-            experiments = _parse_ledger(ledger_path) if ledger_path.exists() else None
+            ledger_log_path = Path(args.ledger_log).expanduser() if args.ledger_log else None
+            experiments = (
+                parse_ledger(ledger_path, ledger_log_path) if ledger_path.exists() else None
+            )
             findings_path = Path(args.findings).expanduser()
             review_findings = parse_findings(findings_path) if findings_path.exists() else None
 
