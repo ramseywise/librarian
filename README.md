@@ -181,7 +181,7 @@ get_domain_briefing("langgraph")  # via MCP in the agent itself
 | `etl/` | Scrapers: `scrape_sessions.py` (Claude/Codex), `scrape_claude_docs.py` (workspace docs), `scrape_repos.py` (repos) |
 | `app/mcp_server/` | FastMCP server: `search_wiki` (hybrid FTS + semantic + backlink rank), `read_page`, `list_domain`, `get_domain_briefing` |
 | `app/backend/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Gemini chat agent |
-| `app/ui/` | React + Vite graph UI — Cytoscape.js force-directed graph, chat panel, live wiki watch |
+| `app/frontend/` | React + Vite graph UI — Cytoscape.js force-directed graph, chat panel, live wiki watch |
 | `.claude/skills/` | `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb`, `/sanyi` — Claude Code slash commands |
 
 ---

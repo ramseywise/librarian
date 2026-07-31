@@ -39,10 +39,10 @@ repos:
   - repo: local
     hooks:
       - id: eslint-ui
-        name: eslint (app/ui)
+        name: eslint (app/frontend)
         language: system
-        entry: bash -c 'cd app/ui && npm run lint'
-        files: ^app/ui/.*\.(ts|tsx|js|jsx)$
+        entry: bash -c 'cd app/frontend && npm run lint'
+        files: ^app/frontend/.*\.(ts|tsx|js|jsx)$
         pass_filenames: false
 
       - id: no-hardcoded-paths

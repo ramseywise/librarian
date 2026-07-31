@@ -30,16 +30,16 @@ Note any domain with **< 3 pages** (thin — merge candidate) or **> 20 pages** 
 
 Read each file and extract its domain/color list:
 
-### `app/ui/src/components/TagFilterPanel.tsx`
+### `app/frontend/src/components/TagFilterPanel.tsx`
 Find `const DOMAIN_TAGS = [...]`. Extract the array values.
 
-### `app/ui/src/components/WikiNode.tsx`
+### `app/frontend/src/components/WikiNode.tsx`
 Find `const DOMAIN_COLORS: Record<string, string> = {...}`. Extract keys.
 
-### `app/ui/src/components/NodeDetailPanel.tsx`
+### `app/frontend/src/components/NodeDetailPanel.tsx`
 Find `const TAG_COLORS: Record<string, string> = {...}`. Extract domain-tag keys (skip type tags: concept, pattern, decision, project, comparison, reference, conflict).
 
-### `app/ui/src/components/WikiGraph.tsx`
+### `app/frontend/src/components/WikiGraph.tsx`
 Find the `miniMapColor` callback's inline `colors` record. Extract keys.
 
 ### `app/backend/wiki_parser.py`
