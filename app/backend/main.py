@@ -25,7 +25,7 @@ from .wiki_parser import parse_wiki
 configure_logging()
 log = get_logger(__name__)
 
-WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
+WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
 
 _ws_clients: list[WebSocket] = []
 

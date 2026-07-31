@@ -41,7 +41,7 @@ def _make_entry(
         category=category,
         query=query,
         expected_answer=expected_answer,
-        source_pages=source_pages or ["wiki/rag/reciprocal-rank-fusion.md"],
+        source_pages=source_pages or ["data/wiki/rag/reciprocal-rank-fusion.md"],
         difficulty=difficulty,
     )
 
@@ -83,8 +83,8 @@ def test_golden_dataset_source_pages_reference_wiki() -> None:
     entries = load_golden_dataset(str(GOLDEN_PATH))
     for e in entries:
         for page in e.source_pages:
-            assert page.startswith("wiki/"), (
-                f"source_page '{page}' in entry {e.id} must start with 'wiki/'"
+            assert page.startswith("data/wiki/"), (
+                f"source_page '{page}' in entry {e.id} must start with 'data/wiki/'"
             )
 
 
@@ -115,7 +115,7 @@ def test_golden_dataset_difficulty_distribution() -> None:
 
 @pytest.mark.unit
 def test_golden_dataset_source_pages_exist_in_wiki() -> None:
-    """Each source_page path must exist under wiki/ in the repo.
+    """Each source_page path must exist under data/wiki/ in the repo.
 
     This is the domain-truth gate: Q&A pairs must be grounded in real pages.
     """
@@ -141,8 +141,8 @@ def test_golden_dataset_source_pages_exist_in_wiki() -> None:
 @pytest.mark.unit
 def test_retrieval_grader_hit_exact_match() -> None:
     grader = RetrievalGrader()
-    entry = _make_entry(source_pages=["wiki/rag/reciprocal-rank-fusion.md"])
-    retrieved = [RetrievalResult("wiki/rag/reciprocal-rank-fusion.md", score=0.9)]
+    entry = _make_entry(source_pages=["data/wiki/rag/reciprocal-rank-fusion.md"])
+    retrieved = [RetrievalResult("data/wiki/rag/reciprocal-rank-fusion.md", score=0.9)]
     result = grader.grade_entry(entry, retrieved)
     assert result.hit is True
     assert result.reciprocal_rank == pytest.approx(1.0)
@@ -151,9 +151,9 @@ def test_retrieval_grader_hit_exact_match() -> None:
 @pytest.mark.unit
 def test_retrieval_grader_hit_suffix_match() -> None:
     grader = RetrievalGrader()
-    entry = _make_entry(source_pages=["wiki/rag/reciprocal-rank-fusion.md"])
+    entry = _make_entry(source_pages=["data/wiki/rag/reciprocal-rank-fusion.md"])
     # Retrieved path has a leading slash — should still match
-    retrieved = [RetrievalResult("/wiki/rag/reciprocal-rank-fusion.md", score=0.9)]
+    retrieved = [RetrievalResult("/data/wiki/rag/reciprocal-rank-fusion.md", score=0.9)]
     result = grader.grade_entry(entry, retrieved)
     assert result.hit is True
 
@@ -161,8 +161,8 @@ def test_retrieval_grader_hit_suffix_match() -> None:
 @pytest.mark.unit
 def test_retrieval_grader_miss() -> None:
     grader = RetrievalGrader()
-    entry = _make_entry(source_pages=["wiki/rag/reciprocal-rank-fusion.md"])
-    retrieved = [RetrievalResult("wiki/rag/rag-reranking.md", score=0.8)]
+    entry = _make_entry(source_pages=["data/wiki/rag/reciprocal-rank-fusion.md"])
+    retrieved = [RetrievalResult("data/wiki/rag/rag-reranking.md", score=0.8)]
     result = grader.grade_entry(entry, retrieved)
     assert result.hit is False
     assert result.reciprocal_rank == pytest.approx(0.0)
@@ -171,11 +171,11 @@ def test_retrieval_grader_miss() -> None:
 @pytest.mark.unit
 def test_retrieval_grader_mrr_rank_2() -> None:
     grader = RetrievalGrader()
-    entry = _make_entry(source_pages=["wiki/rag/reciprocal-rank-fusion.md"])
+    entry = _make_entry(source_pages=["data/wiki/rag/reciprocal-rank-fusion.md"])
     retrieved = [
-        RetrievalResult("wiki/rag/rag-reranking.md", score=0.9),
-        RetrievalResult("wiki/rag/reciprocal-rank-fusion.md", score=0.8),
-        RetrievalResult("wiki/rag/crag-retry-logic.md", score=0.7),
+        RetrievalResult("data/wiki/rag/rag-reranking.md", score=0.9),
+        RetrievalResult("data/wiki/rag/reciprocal-rank-fusion.md", score=0.8),
+        RetrievalResult("data/wiki/rag/crag-retry-logic.md", score=0.7),
     ]
     result = grader.grade_entry(entry, retrieved)
     assert result.hit is True
@@ -187,15 +187,15 @@ def test_retrieval_grader_multi_expected_pages() -> None:
     grader = RetrievalGrader()
     entry = _make_entry(
         source_pages=[
-            "wiki/rag/reciprocal-rank-fusion.md",
-            "wiki/rag/rag-retrieval-strategies.md",
+            "data/wiki/rag/reciprocal-rank-fusion.md",
+            "data/wiki/rag/rag-retrieval-strategies.md",
         ]
     )
     # Only the second expected page appears, at rank 3
     retrieved = [
-        RetrievalResult("wiki/rag/rag-reranking.md", score=0.9),
-        RetrievalResult("wiki/rag/crag-retry-logic.md", score=0.8),
-        RetrievalResult("wiki/rag/rag-retrieval-strategies.md", score=0.7),
+        RetrievalResult("data/wiki/rag/rag-reranking.md", score=0.9),
+        RetrievalResult("data/wiki/rag/crag-retry-logic.md", score=0.8),
+        RetrievalResult("data/wiki/rag/rag-retrieval-strategies.md", score=0.7),
     ]
     result = grader.grade_entry(entry, retrieved)
     assert result.hit is True
@@ -215,14 +215,14 @@ def test_retrieval_grader_empty_retrieved() -> None:
 def test_retrieval_grader_batch_hit_rate_and_mrr() -> None:
     grader = RetrievalGrader()
     entries = [
-        _make_entry(id="e1", source_pages=["wiki/rag/a.md"]),
-        _make_entry(id="e2", source_pages=["wiki/rag/b.md"]),
-        _make_entry(id="e3", source_pages=["wiki/rag/c.md"]),
+        _make_entry(id="e1", source_pages=["data/wiki/rag/a.md"]),
+        _make_entry(id="e2", source_pages=["data/wiki/rag/b.md"]),
+        _make_entry(id="e3", source_pages=["data/wiki/rag/c.md"]),
     ]
     retrieved = [
-        [RetrievalResult("wiki/rag/a.md")],  # rank-1 hit
-        [RetrievalResult("wiki/rag/x.md"), RetrievalResult("wiki/rag/b.md")],  # rank-2
-        [RetrievalResult("wiki/rag/x.md")],  # miss
+        [RetrievalResult("data/wiki/rag/a.md")],  # rank-1 hit
+        [RetrievalResult("data/wiki/rag/x.md"), RetrievalResult("data/wiki/rag/b.md")],  # rank-2
+        [RetrievalResult("data/wiki/rag/x.md")],  # miss
     ]
     hit_rate, mrr, results = grader.grade_batch(entries, retrieved)
     assert hit_rate == pytest.approx(2 / 3)

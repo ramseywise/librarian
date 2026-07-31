@@ -18,7 +18,7 @@ dist/
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
 
-# DuckDB indexes (rebuild from wiki/)
+# DuckDB indexes (rebuild from data/wiki/)
 *.duckdb
 *.duckdb.wal
 
@@ -30,7 +30,7 @@ dist/
 
 # Claude Code — machine-specific settings only
 .claude/settings.local.json
-# Ephemeral planning docs — canonical knowledge belongs in wiki/
+# Ephemeral planning docs — canonical knowledge belongs in data/wiki/
 .claude/docs/
 
 # Node

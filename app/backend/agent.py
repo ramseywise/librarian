@@ -13,17 +13,17 @@ from google.genai import types
 
 from app.mcp_server.server import is_under_private
 
-WIKI_DIR = Path(__file__).parent.parent.parent / "wiki"
+WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
 PRIVATE_DIR = WIKI_DIR / "private"
 
 
 def _is_private(path: Path | str) -> bool:
-    """True if path lies under this module's wiki/private/ — never served to the agent.
+    """True if path lies under this module's data/wiki/private/ — never served to the agent.
 
     Shares the server's resolution logic (../ traversal, absolute and unresolvable
     paths) but anchors on PRIVATE_DIR above. The server anchors on a relative
-    Path("wiki"), so under `make api` (cwd=app/) its own PRIVATE_DIR resolves to a
-    nonexistent app/wiki/private — binding to that would produce a filter that reads
+    Path("data/wiki"), so under `make api` (cwd=app/) its own PRIVATE_DIR resolves to a
+    nonexistent app/data/wiki/private — binding to that would produce a filter that reads
     as correct and excludes nothing. Read at call time so tests can repoint it.
     """
     return is_under_private(path, PRIVATE_DIR)
@@ -52,7 +52,7 @@ def _search_wiki(query: str) -> str:
     query_lower = query.lower()
 
     for md_file in sorted(WIKI_DIR.rglob("*.md")):
-        # wiki/private/ is never searched — Buyi confidentiality invariant, clause (b).
+        # data/wiki/private/ is never searched — Buyi confidentiality invariant, clause (b).
         # The agent reaches the same pages the MCP server does, so it enforces the
         # same exclusion, via the same predicate.
         if md_file.name.startswith("_") or _is_private(md_file):

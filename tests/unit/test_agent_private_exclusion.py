@@ -1,9 +1,9 @@
-"""Evidence for Buyi "wiki/private/ never leaves the machine", clause (b) — agent side.
+"""Evidence for Buyi "data/wiki/private/ never leaves the machine", clause (b) — agent side.
 
 tests/unit/test_private_exclusion.py covers the MCP server. The chat agent in
 app/backend/agent.py reaches the same pages through its own rglob walk, so it needs
 its own evidence: before the cure, _search_wiki and _read_page walked WIKI_DIR with
-no private filter at all and served wiki/private/ content into the SSE chat panel.
+no private filter at all and served data/wiki/private/ content into the SSE chat panel.
 """
 
 from __future__ import annotations

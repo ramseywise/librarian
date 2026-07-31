@@ -12,7 +12,7 @@ Rationale and evidence base: `.claude/docs/plans/2026-07-17-knowledge-compaction
 
 ## Invariants (from CLAUDE.md contract — never violate)
 
-- `raw/` is immutable. Compaction touches `wiki/` only.
+- `raw/` is immutable. Compaction touches `data/wiki/` only.
 - Every removed page leaves a **tombstone** (same filename, `tombstone` tag, one-line
   body pointing to its successor: `[[Successor]] — supersedes`). Inbound wikilinks stay
   valid; tombstones are excluded from search ranking automatically.
@@ -27,7 +27,7 @@ Rationale and evidence base: `.claude/docs/plans/2026-07-17-knowledge-compaction
 1. **Age**: `grep -rh "^updated:" wiki --include="*.md"` → pages >60 days stale.
 2. **Size**: `find wiki -name "*.md" -not -name "_*" -exec wc -l {} +` → pages over
    ~300 lines (reference dumps, accumulators).
-3. **Similarity**: read `wiki/_relink_suggestions.md` if present; optionally run
+3. **Similarity**: read `data/wiki/_relink_suggestions.md` if present; optionally run
    `uv run python etl/relinker.py` first. High-similarity pairs = merge candidates.
 4. **Retrieval** (if `logs/retrieval.jsonl` has data): per-page retrieval counts over
    the window; co-retrieval pairs = paths appearing together in one `search_wiki`
@@ -67,7 +67,7 @@ Ramsey approves per move (approve all / subset / none). No approval, no writes.
 - **Retire**: replace body with tombstone format, add `tombstone` to tags, add
   `[[Successor]] — supersedes` line.
 - **Compress**: apply the accumulator ceiling (last ~30 entries + month rollups).
-- Then: update `wiki/_index.md`, run `uv run python etl/relinker.py`, rotate telemetry
+- Then: update `data/wiki/_index.md`, run `uv run python etl/relinker.py`, rotate telemetry
   (summarize the window's aggregate into the report; truncate `logs/retrieval.jsonl`),
   append a one-line run record to the plan doc's `## Review` section, and add a
   `guacamayo/.claude/docs/tooling-ledger.md` row (status `hypothesis`, verification: "next

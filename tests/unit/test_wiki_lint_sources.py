@@ -43,8 +43,8 @@ def run_hook(page: Path) -> tuple[int, str]:
 
 @pytest.fixture()
 def page(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """A scratch page under the real wiki/ — the hook only lints wiki/* paths."""
-    scratch = REPO / "wiki" / "_lint_test_scratch"
+    """A scratch page under the real data/wiki/ — the hook only lints data/wiki/* paths."""
+    scratch = REPO / "data" / "wiki" / "_lint_test_scratch"
     scratch.mkdir(parents=True, exist_ok=True)
     target = scratch / "provenance-fixture.md"
     yield target

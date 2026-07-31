@@ -43,7 +43,7 @@ from evals.graders import (
 )
 
 # ---------------------------------------------------------------------------
-# Regression floors (from wiki/rag/rag-evaluation.md — never lower these)
+# Regression floors (from data/wiki/rag/rag-evaluation.md — never lower these)
 # ---------------------------------------------------------------------------
 
 HIT_RATE_FLOOR = 0.60

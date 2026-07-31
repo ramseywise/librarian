@@ -35,18 +35,24 @@ last-audit: 2026-07-20
   asserts both halves — mutation blocked, and creation permitted for all nine
   core/ ingest target dirs (cured 2026-07-20).
 
-### wiki/private/ never leaves the machine
+### data/wiki/private/ never leaves the machine
 
 <!-- Two clauses, both now enforced and evidenced. Clause (b) was TARGET-only
-     until 2026-07-20; app/ now filters private at every read path. -->
+     until 2026-07-20; app/ now filters private at every read path.
 
-- paths: wiki/private/, app/mcp_server/server.py, app/backend/agent.py
-- contract: Pages under wiki/private/ (proprietary context, client names,
+     2026-07-31: wiki/ moved to data/wiki/; the paths above and every consumer
+     (6 absolute-path modules, the MCP server's relative root, wiki-lint.sh, the
+     golden dataset) were repointed together. Invariant unchanged — only its
+     location. Verified: 15 private-exclusion tests pass, git ls-files
+     data/wiki/private returns 0. -->
+
+- paths: data/wiki/private/, app/mcp_server/server.py, app/backend/agent.py
+- contract: Pages under data/wiki/private/ (proprietary context, client names,
   internal project detail) are (a) never committed to git, and (b) never
   returned by any read path that can reach a user — MCP tool or chat agent
   tool call. Confidentiality failure if violated.
-- evidence: clause (a) — .gitignore#L46 (verified 2026-07-20: git ls-files
-  wiki/private returns 0). Clause (b) — server.py#_is_private gates
+- evidence: clause (a) — .gitignore#L53 (verified 2026-07-31: git ls-files
+  data/wiki/private returns 0). Clause (b) — server.py#_is_private gates
   build_index, _index_needs_rebuild, read_page, list_pages, and
   _resolve_domain_dir (which blocks list_domain + get_domain_briefing from
   addressing private as a domain); read_page returns the not-found message so a
@@ -56,11 +62,11 @@ last-audit: 2026-07-20
   Chat agent — app/backend/agent.py#_is_private gates both wiki tools the Gemini
   agent can call: _search_wiki's walk and _read_page's ID lookup *and* its
   title-scan fallback (unfiltered, the fallback is a way around the ID check).
-  The agent reached wiki/ by its own rglob, so the server's gating did not cover
+  The agent reached data/wiki/ by its own rglob, so the server's gating did not cover
   it; before the cure both tools served private pages into the SSE chat panel.
   Both callers share server.py#is_under_private for path resolution but pass
-  their own private root: the server anchors on a relative Path("wiki"), which
-  under `make api` (cwd=app/) resolves to a nonexistent app/wiki/private, so
+  their own private root: the server anchors on a relative Path("data/wiki"),
+  which under `make api` (cwd=app/) resolves to a nonexistent app/data/wiki/private, so
   binding the agent to the server's own PRIVATE_DIR would read as correct and
   exclude nothing. tests/unit/test_agent_private_exclusion.py covers both tools,
   the title fallback, and that cwd-independence as a regression test; its four
@@ -98,7 +104,7 @@ last-audit: 2026-07-20
 <!-- Ratified 2026-07-20. This is the invariant raw/-immutability exists to
      protect, and it is the one frontmatter field nothing currently checks. -->
 
-- paths: wiki/, .claude/hooks/wiki-lint.sh
+- paths: data/wiki/, .claude/hooks/wiki-lint.sh
 - contract: Every wiki page carries a non-empty sources: list, and every entry
   in it resolves to a real raw/ file or an external URL. A page asserting
   invented or unresolvable provenance is a trust failure of the KB.
@@ -114,7 +120,7 @@ last-audit: 2026-07-20
 
 ### Wiki page schema
 
-- paths: wiki/, .claude/hooks/wiki-lint.sh, CLAUDE.md
+- paths: data/wiki/, .claude/hooks/wiki-lint.sh, CLAUDE.md
 - contract: Every page carries the required frontmatter (title, tags, summary,
   updated, sources) with at least one domain tag and exactly one type tag. The
   frontmatter shape is an interface consumed by the parser, MCP server, and
@@ -173,7 +179,7 @@ last-audit: 2026-07-20
   (author: ramsey)
 - 2026-07-20: all four BY-4 debt records cured — each Buyi entry moved from
   TARGET to an evidence line backed by a test: raw/ immutability
-  (PreToolUse hook), wiki/private/ MCP exclusion (_is_private gate),
+  (PreToolUse hook), data/wiki/private/ MCP exclusion (_is_private gate),
   wiki provenance (wiki-lint sources: check), and log redaction
   (structlog processor). Two latent bugs surfaced in the process: the
   MCP server was serving 5 real private pages, and wiki-lint's orphan

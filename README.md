@@ -2,9 +2,9 @@
 
 A compiled knowledge base for AI engineering — following the [Karpathy LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 
-Raw sources (docs, sessions, meetings, papers, books) go into `raw/` (append-only). Claude compiles them into `wiki/` — structured, interlinked, contradiction-flagged. A local MCP server exposes the wiki to any agent at runtime.
+Raw sources (docs, sessions, meetings, papers, books) go into `raw/` (append-only). Claude compiles them into `data/wiki/` — structured, interlinked, contradiction-flagged. A local MCP server exposes the wiki to any agent at runtime.
 
-**Mental model:** `raw/` = source code. Claude = compiler. `wiki/` = executable output.
+**Mental model:** `raw/` = source code. Claude = compiler. `data/wiki/` = executable output.
 
 ---
 
@@ -22,11 +22,11 @@ Librarian captures that knowledge once, structures it for retrieval, and surface
 Sessions ──────────────────────────────► raw/sessions/    ─┐
 Docs (.claude/skills/, CLAUDE.md) ─────► raw/claude-docs/  │
 Repo scraper (etl/scrape_repos.py) ─────► raw/repos/        │
-Google Drive ──MCP──────────────────────► raw/gdrive/        ├──► /ingest ──► wiki/
+Google Drive ──MCP──────────────────────► raw/gdrive/        ├──► /ingest ──► data/wiki/
 Notion ────────MCP──────────────────────► raw/notion/        │
 Meetings, PDFs, web, books, articles ──► raw/*/            ─┘
 
-                                            wiki/
+                                            data/wiki/
                                               │
                           ┌───────────────────┼──────────────────┐
                           ▼                   ▼                  ▼
@@ -41,9 +41,9 @@ Meetings, PDFs, web, books, articles ──► raw/*/            ─┘
 
 **Key invariants:**
 - `raw/` is append-only — never edit after drop
-- `wiki/` is Claude-maintained — humans correct factual errors only
+- `data/wiki/` is Claude-maintained — humans correct factual errors only
 - Conflicts are flagged, never silently overwritten
-- `wiki/private/` is gitignored — company-specific pages live here locally
+- `data/wiki/private/` is gitignored — company-specific pages live here locally
 
 ---
 
@@ -70,11 +70,11 @@ Meetings, PDFs, web, books, articles ──► raw/*/            ─┘
 
 That's it — this is the command people forget. Full pipeline mode pulls Notion + GDrive via
 MCP, scrapes local sources (`make scrape` + `etl/scrape_repos.py`), and compiles every changed
-file into `wiki/` in one shot. Other variants:
+file into `data/wiki/` in one shot. Other variants:
 
 ```
 /ingest raw/sessions/    # targeted compile of one raw/ dir
-/ingest resolve          # walk through flagged conflicts in wiki/_conflicts.md
+/ingest resolve          # walk through flagged conflicts in data/wiki/_conflicts.md
 /seed-kb --ingest        # scrape this machine's sessions/docs/bookmarks, then ingest
 ```
 
@@ -175,8 +175,8 @@ get_domain_briefing("langgraph")  # via MCP in the agent itself
 | Component | What it does |
 |---|---|
 | `raw/` | Append-only input drop zone — sessions, docs, meetings, PDFs, books, articles, repo scrapes |
-| `wiki/` | LLM-compiled knowledge — one `.md` per concept, pattern, or decision; structured frontmatter, wikilinks |
-| `wiki/private/` | Company-specific pages, gitignored — same format, local only |
+| `data/wiki/` | LLM-compiled knowledge — one `.md` per concept, pattern, or decision; structured frontmatter, wikilinks |
+| `data/wiki/private/` | Company-specific pages, gitignored — same format, local only |
 | `CLAUDE.md` | Compiler contract — schema rules, ingest checklist, conflict policy, domain taxonomy |
 | `etl/` | Scrapers: `scrape_sessions.py` (Claude/Codex), `scrape_claude_docs.py` (workspace docs), `scrape_repos.py` (repos) |
 | `app/mcp_server/` | FastMCP server: `search_wiki` (hybrid FTS + semantic + backlink rank), `read_page`, `list_domain`, `get_domain_briefing` |
@@ -222,11 +222,11 @@ The backend caches embeddings and UMAP layout in DuckDB — only recomputed when
 ## Wiki Invariants
 
 1. **One page per concept** — find the existing page or create one; never scatter knowledge
-2. **Conflicts are flagged, not overwritten** — contradictions go to `wiki/_conflicts.md` for human review
+2. **Conflicts are flagged, not overwritten** — contradictions go to `data/wiki/_conflicts.md` for human review
 3. **Every page has at least one backlink** — orphan pages are a lint error
 4. **`updated:` is set on every write** — stale pages (>60 days) are surfaced by `/lint`
 5. **Sources are cited** — every wiki page lists the `raw/` files it was compiled from
-6. **Private stays private** — company-specific pages go to `wiki/private/` (gitignored), not `wiki/projects/`
+6. **Private stays private** — company-specific pages go to `data/wiki/private/` (gitignored), not `data/wiki/projects/`
 
 ---
 
@@ -281,7 +281,7 @@ The backend caches embeddings and UMAP layout in DuckDB — only recomputed when
 
 ## Architecture Governance (SANYI)
 
-The repo includes the [SANYI change-contract system](wiki/meta/sanyi-change-contract-system.md) for detecting architectural decay across PRs.
+The repo includes the [SANYI change-contract system](data/wiki/meta/sanyi-change-contract-system.md) for detecting architectural decay across PRs.
 
 Layers for this repo:
 - **Bianyi** (ever-changing): wiki page content, ingest prompts, domain taxonomy config

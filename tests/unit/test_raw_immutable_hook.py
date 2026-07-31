@@ -55,7 +55,7 @@ def test_blocks_via_absolute_path(existing_raw_file: Path) -> None:
 
 def test_blocks_via_traversal_path(existing_raw_file: Path) -> None:
     """A ../ path landing back inside raw/ is still a raw/ mutation."""
-    code, _ = run_hook(f"wiki/../raw/web/{existing_raw_file.name}")
+    code, _ = run_hook(f"data/wiki/../../raw/web/{existing_raw_file.name}")
     assert code == BLOCK
 
 
@@ -72,7 +72,7 @@ def test_permits_creating_raw_file_in_new_subdir() -> None:
 
 
 def test_ignores_paths_outside_raw() -> None:
-    for path in ("wiki/rag/chunking.md", "app/mcp_server/server.py", "CLAUDE.md"):
+    for path in ("data/wiki/rag/chunking.md", "app/mcp_server/server.py", "CLAUDE.md"):
         code, err = run_hook(path)
         assert code == ALLOW, f"{path} must not be blocked: {err}"
 

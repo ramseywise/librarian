@@ -1,6 +1,6 @@
 ---
 name: wiki-sync
-description: "Audit wiki taxonomy drift and generate an FE sync report. Compares actual wiki/ directory structure against hardcoded domain lists in the frontend and backend. Read-only by default; --fix applies mechanical changes."
+description: "Audit wiki taxonomy drift and generate an FE sync report. Compares actual data/wiki/ directory structure against hardcoded domain lists in the frontend and backend. Read-only by default; --fix applies mechanical changes."
 allowed-tools: Read Bash Glob Grep Edit Write
 ---
 
@@ -16,12 +16,12 @@ You are auditing the Librarian wiki for structural drift between the wiki conten
 
 Run:
 ```bash
-ls wiki/
+ls data/wiki/
 ```
 
 Collect all subdirectory names that do NOT start with `_`. These are the **canonical domain list**. Also count pages per domain:
 ```bash
-for d in wiki/*/; do echo "$(ls "$d"*.md 2>/dev/null | wc -l | tr -d ' ') $(basename $d)"; done | sort -rn
+for d in data/wiki/*/; do echo "$(ls "$d"*.md 2>/dev/null | wc -l | tr -d ' ') $(basename $d)"; done | sort -rn
 ```
 
 Note any domain with **< 3 pages** (thin — merge candidate) or **> 20 pages** (thick — split candidate).
@@ -55,9 +55,9 @@ For each actual wiki domain:
 - **Missing from WikiGraph miniMapColor** — domain not in inline colors record
 - **Missing from wiki_parser.py** — domain not in DOMAIN_TAG_SET
 
-For each hardcoded domain NOT found in `wiki/`:
+For each hardcoded domain NOT found in `data/wiki/`:
 
-- **Ghost entry** — domain in code but no corresponding `wiki/<domain>/` directory (may be stale)
+- **Ghost entry** — domain in code but no corresponding `data/wiki/<domain>/` directory (may be stale)
 
 Structural concerns:
 - **Thin domain** — < 3 pages: flag as merge candidate, suggest which domain to fold into
@@ -82,7 +82,7 @@ WIKI-SYNC REPORT — YYYY-MM-DD
 ==============================
 
 DOMAIN INVENTORY
-  actual wiki/ dirs : [list]
+  actual data/wiki/ dirs : [list]
   total pages       : N
 
 PAGE COUNT HEALTH
@@ -92,7 +92,7 @@ PAGE COUNT HEALTH
 FE DRIFT
   [MISSING] patterns — not in TagFilterPanel DOMAIN_TAGS
   [MISSING] patterns — not in WikiNode DOMAIN_COLORS
-  [GHOST]   llm      — in wiki_parser.py DOMAIN_TAG_SET but no wiki/llm/ directory
+  [GHOST]   llm      — in wiki_parser.py DOMAIN_TAG_SET but no data/wiki/llm/ directory
 
 EXACT CHANGES NEEDED
   TagFilterPanel.tsx line ~2: add "patterns" to DOMAIN_TAGS array

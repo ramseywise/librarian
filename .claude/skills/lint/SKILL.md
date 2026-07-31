@@ -17,8 +17,8 @@ You are running a health check on the wiki. This is a **read-only** operation �
 
 ### BLOCKER — must fix before trusting the wiki
 
-- **Unresolved conflicts** — pages tagged `conflict` in frontmatter; also check `wiki/_conflicts.md` for open entries
-- **Dead wikilinks** — `[[Page Name]]` references that don't match any file in `wiki/`
+- **Unresolved conflicts** — pages tagged `conflict` in frontmatter; also check `data/wiki/_conflicts.md` for open entries
+- **Dead wikilinks** — `[[Page Name]]` references that don't match any file in `data/wiki/`
 - **Missing frontmatter fields** — any page missing `title`, `tags`, `summary`, or `updated`
 
 ### WARN — degrades wiki quality
@@ -34,16 +34,16 @@ You are running a health check on the wiki. This is a **read-only** operation �
 - **Missing See Also section** — pages with no cross-references at all
 - **Short summaries** — `summary:` field is fewer than 8 words
 - **Empty sections** — wiki sections with only a comment placeholder
-- **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain wikilinks (check `wiki/_bridge_suggestions.md` if it exists)
-- **Stale suggestions** — `wiki/_relink_suggestions.md` entries older than 14 days unreviewed
+- **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain wikilinks (check `data/wiki/_bridge_suggestions.md` if it exists)
+- **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 
 ## Output format
 
 Group by severity. For each issue:
 ```
-[BLOCKER] wiki/concepts/foo.md — dead wikilink: [[Bar Baz]] (no matching file)
-[WARN]    wiki/agents/my-page.md — orphan (no incoming backlinks)
-[NOTE]    wiki/concepts/bar.md — summary too short (4 words)
+[BLOCKER] data/wiki/concepts/foo.md — dead wikilink: [[Bar Baz]] (no matching file)
+[WARN]    data/wiki/agents/my-page.md — orphan (no incoming backlinks)
+[NOTE]    data/wiki/concepts/bar.md — summary too short (4 words)
 ```
 
 End with a summary count: `N blockers, N warnings, N notes`.

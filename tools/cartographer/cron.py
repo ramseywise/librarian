@@ -37,7 +37,7 @@ SESSION_META_DIR = CLAUDE_DIR / "usage-data" / "session-meta"
 
 # Librarian raw/sessions/ — for wiki ingest
 LIBRARIAN_RAW_SESSIONS = Path(__file__).resolve().parent.parent.parent / "raw" / "sessions"
-LIBRARIAN_WIKI_DIR = Path(__file__).resolve().parent.parent.parent / "wiki"
+LIBRARIAN_WIKI_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "wiki"
 
 # Pricing per million tokens: (input, output, cache_write, cache_read)
 _MODEL_PRICING: dict[str, tuple[float, float, float, float]] = {
@@ -259,7 +259,7 @@ _PROJECT_DOMAIN_TAGS: dict[str, list[str]] = {
 
 
 def _update_wiki_session_log(raw_sessions: Path, wiki_dir: Path) -> int:
-    """Append new session rows to wiki/meta/session-log.md (append-only).
+    """Append new session rows to data/wiki/meta/session-log.md (append-only).
 
     Reads all session files in raw_sessions/, finds dates not yet covered in the
     log, and appends grouped date sections before the Notes/See Also footer.
@@ -641,7 +641,7 @@ def run_cron() -> None:
     # Tag any session files that are missing semantic frontmatter tags
     _tag_new_session_files(LIBRARIAN_RAW_SESSIONS)
 
-    # Append new sessions to wiki/meta/session-log.md (append-only)
+    # Append new sessions to data/wiki/meta/session-log.md (append-only)
     wiki_dates_added = _update_wiki_session_log(LIBRARIAN_RAW_SESSIONS, LIBRARIAN_WIKI_DIR)
     if wiki_dates_added:
         log.info("cron.wiki_updated", dates_added=wiki_dates_added)
