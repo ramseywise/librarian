@@ -349,6 +349,79 @@ def test_experiment_empty_state(two_regime_store: Path) -> None:
     assert "No experiments tracked" in html
 
 
+# --- LIB-58: verdict trajectories --------------------------------------------
+
+
+def test_verdict_trajectories_empty_state_when_no_verdict_store(two_regime_store: Path) -> None:
+    """Omitting verdict_store entirely (the default) renders the empty state,
+    so callers that never scored verdicts see no broken/missing section."""
+    html = render_dashboard(two_regime_store, funnel=None)
+    assert "No scored verdicts yet" in html
+
+
+def test_verdict_trajectories_render_ordered_sequence(two_regime_store: Path) -> None:
+    from tools.cartographer.factstore import append_verdicts
+
+    append_verdicts(
+        [
+            {
+                "experiment": "bash-antipattern-nudge",
+                "date": "2026-07-18",
+                "metric": "absence:bash-antipatterns",
+                "verdict": "trending",
+                "evidence": "bash-antipatterns=1 (expected 0)",
+            }
+        ],
+        two_regime_store,
+        run_at="2026-07-19T00:00:00Z",
+    )
+    append_verdicts(
+        [
+            {
+                "experiment": "bash-antipattern-nudge",
+                "date": "2026-07-18",
+                "metric": "absence:bash-antipatterns",
+                "verdict": "confirmed",
+                "evidence": "bash-antipatterns=0 across scored sessions",
+            }
+        ],
+        two_regime_store,
+        run_at="2026-07-20T00:00:00Z",
+    )
+
+    html = render_dashboard(two_regime_store, funnel=None, verdict_store=two_regime_store)
+
+    assert "Verdict trajectories" in html
+    assert "bash-antipattern-nudge" in html
+    pos_trending = html.index("trending")
+    pos_confirmed = html.index("confirmed", pos_trending)
+    assert pos_trending < pos_confirmed, "sequence should render oldest run first"
+
+
+def test_render_verdict_trajectories_region_matches_dashboard_section() -> None:
+    from tools.cartographer.dashboard import render_verdict_trajectories_region
+
+    rows = [
+        {
+            "experiment": "exp-a",
+            "date": "2026-07-18",
+            "metric": "presence:foo",
+            "verdict": "confirmed",
+            "evidence": "foo observed",
+            "run_at": "2026-07-20T00:00:00Z",
+        }
+    ]
+    region_html = render_verdict_trajectories_region(rows)
+    assert "exp-a" in region_html
+    assert "Verdict trajectories" in region_html
+
+
+def test_render_verdict_trajectories_region_empty_state() -> None:
+    from tools.cartographer.dashboard import render_verdict_trajectories_region
+
+    assert "No scored verdicts yet" in render_verdict_trajectories_region(None)
+
+
 # --- Phase 4: execution skill compliance ------------------------------------
 
 

@@ -33,6 +33,7 @@ from tools.cartographer.factstore import (
     SUBAGENT_ATTRIBUTION_SINCE,
     UNATTRIBUTED_AGENT,
     read_all,
+    read_verdicts,
 )
 from tools.cartographer.gitstore import read_git_activity, read_prs
 
@@ -2237,6 +2238,67 @@ def _render_experiments(experiments: list[Experiment] | None) -> str:
     )
 
 
+# ---------------------------------------------------------------------------
+# Verdict trajectories (LIB-58) — deterministic verdict history per experiment
+# ---------------------------------------------------------------------------
+#
+# `experiment_verdicts` is append-only: every insights run that scores an
+# experiment's metric adds a row, so the same experiment accumulates one
+# verdict per run over time. That history is the trajectory this section
+# renders — hypothesis date, then the ordered sequence of (run_at, verdict)
+# observations — so a reader can see an experiment move from `inconclusive`
+# to `trending` to `confirmed` across runs, rather than only its latest call.
+
+_TRAJECTORY_BADGE_CLASS = {
+    "confirmed": "exp-confirmed",
+    "trending": "exp-trending",
+    "inconclusive": "exp-pending",
+    "failed": "exp-failed",
+}
+
+
+def _render_verdict_trajectories(verdict_rows: list[dict[str, Any]] | None) -> str:
+    """Render one trajectory (date -> ordered verdict sequence) per experiment.
+
+    `verdict_rows` is the shape returned by `factstore.read_verdicts()`: dicts
+    with `experiment`, `date`, `metric`, `verdict`, `evidence`, `run_at`. Rows
+    are grouped by experiment name and sorted by `run_at` within each group,
+    oldest first, so the sequence reads left-to-right as it happened.
+    """
+    if not verdict_rows:
+        return (
+            '<section class="chart"><h3>Verdict trajectories</h3>'
+            '<p class="note">No scored verdicts yet. Verdicts accumulate one row '
+            "per insights run against the tooling ledger.</p></section>"
+        )
+
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for row in verdict_rows:
+        grouped.setdefault(row["experiment"], []).append(row)
+
+    rows_html = "".join(
+        f"<tr><td>{html.escape(name)}</td>"
+        f"<td>{html.escape(runs[0].get('date', ''))}</td>"
+        f'<td class="verdict-trajectory">'
+        + '<span class="verdict-arrow">&rarr;</span>'.join(
+            f'<span class="verdict-step {_TRAJECTORY_BADGE_CLASS.get(r["verdict"], "exp-other")}" '
+            f'title="{html.escape(r.get("run_at", ""))}: {html.escape(r.get("evidence", ""))}">'
+            f"{html.escape(r['verdict'])}</span>"
+            for r in sorted(runs, key=lambda r: r.get("run_at") or "")
+        )
+        + "</td></tr>"
+        for name, runs in sorted(grouped.items(), key=lambda kv: kv[1][0].get("date", ""))
+    )
+    return (
+        '<section class="chart"><h3>Verdict trajectories</h3>'
+        f'<p class="note">{len(grouped)} experiment(s) with scored history — '
+        "each step is one insights run, oldest to newest.</p>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Experiment</th><th>Hypothesis date</th><th>Verdict sequence</th></tr></thead>"
+        f"<tbody>{rows_html}</tbody></table></div></section>"
+    )
+
+
 _CSS = """
 .viz-root{color-scheme:light;--surface-1:#fcfcfb;--page:#f9f9f7;--text-primary:#0b0b0b;
 --text-secondary:#52514e;--muted:#898781;--baseline:#c3c2b7;--border:rgba(11,11,11,.10);
@@ -2290,7 +2352,12 @@ display:flex;gap:16px;flex-wrap:wrap;}
 .exp-badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;}
 .exp-confirmed{background:rgba(0,131,0,.15);color:#008300;}
 .exp-failed{background:rgba(220,50,50,.12);color:#c03030;}
+.exp-trending{background:rgba(237,161,0,.15);color:#9a6a00;}
+.exp-pending{background:var(--border);color:var(--text-secondary);}
 .exp-other{background:var(--border);color:var(--text-secondary);}
+.verdict-trajectory{white-space:nowrap;}
+.verdict-step{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.verdict-arrow{color:var(--muted);margin:0 4px;}
 .provenance{font-size:11px;color:var(--muted);margin:0 0 6px;}
 .provenance summary{cursor:pointer;}
 .provenance p{margin:4px 0 0;}
@@ -2563,15 +2630,22 @@ def render_dashboard(
     review_findings: list[dict] | None = None,
     ledger_path: Path | None = None,
     ledger_log_path: Path | None = None,
+    verdict_store: Path | None = None,
 ) -> str:
     """Render the full dashboard to a self-contained HTML string.
 
     `ledger_path` and `ledger_log_path` are optional; when provided, the
     experiments section reads live from the tooling ledger (Step 7). When not
     provided, `experiments` is used directly (backward-compatible).
+
+    `verdict_store` is optional (LIB-58); when provided, the progress section
+    also renders per-experiment verdict trajectories read from the
+    `experiment_verdicts` table. Omitted entirely when not given, so callers
+    that never scored verdicts see no change to the rendered page.
     """
     if ledger_path is not None and experiments is None:
         experiments = parse_ledger(ledger_path, ledger_log_path)
+    verdict_rows = read_verdicts(verdict_store) if verdict_store is not None else None
 
     def _chart_var(i: int) -> str:
         return f"var(--chart-{(i % 4) + 1})"
@@ -2695,6 +2769,7 @@ def render_dashboard(
         f'<section id="progress"><h2>Experiments &amp; Progress</h2>'
         f'<p class="sub">Are my changes working?</p>'
         f"{_render_experiments(experiments)}"
+        f"{_render_verdict_trajectories(verdict_rows)}"
         f"{_render_funnel(funnel)}"
         f"{_render_repo_activity(store)}"
         f"{_render_repo_economics(store)}"
@@ -2719,12 +2794,21 @@ def write_dashboard(
     review_findings: list[dict] | None = None,
     ledger_path: Path | None = None,
     ledger_log_path: Path | None = None,
+    verdict_store: Path | None = None,
 ) -> Path:
     """Render and write the dashboard, returning the output path."""
     funnel = funnel_counts(growth_md) if growth_md else None
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(
-        render_dashboard(store, funnel, experiments, review_findings, ledger_path, ledger_log_path),
+        render_dashboard(
+            store,
+            funnel,
+            experiments,
+            review_findings,
+            ledger_path,
+            ledger_log_path,
+            verdict_store,
+        ),
         encoding="utf-8",
     )
     log.info("dashboard.written", out=str(out), store=str(store))
@@ -2809,3 +2893,14 @@ def render_review_findings_region(findings: list[dict] | None) -> str:
 def render_experiments_region(experiments: list[Experiment] | None) -> str:
     """Return the injectable HTML for the EXPERIMENTS-LIFECYCLE marker region."""
     return _render_experiments(experiments)
+
+
+def render_verdict_trajectories_region(verdict_rows: list[dict[str, Any]] | None) -> str:
+    """Return the injectable HTML for a VERDICT-TRAJECTORIES marker region.
+
+    Not wired into any marker set yet — no VERDICT-TRAJECTORIES comment pair
+    exists in context-dashboard.html today. Exposed so a future region-
+    injection wire-up (in __main__.py, alongside EXPERIMENTS-LIFECYCLE) can
+    reuse this rather than re-deriving the render.
+    """
+    return _render_verdict_trajectories(verdict_rows)
