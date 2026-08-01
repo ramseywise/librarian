@@ -335,7 +335,11 @@ def _run_facts() -> None:
             parse_findings,
             parse_ledger,
             render_experiments_region,
+            render_friction_regroup_card,
+            render_input_tokens_card,
             render_review_findings_region,
+            render_skill_economics_card,
+            render_tool_trends_card,
         )
 
         ctx_path = Path(args.context_dashboard).expanduser()
@@ -351,6 +355,10 @@ def _run_facts() -> None:
             regions: dict[str, str] = {
                 "REVIEW-FINDINGS": render_review_findings_region(review_findings),
                 "EXPERIMENTS-LIFECYCLE": render_experiments_region(experiments or None),
+                "INPUT-TOKENS": render_input_tokens_card(store),
+                "SKILL-ECONOMICS": render_skill_economics_card(store),
+                "TOOL-TRENDS": render_tool_trends_card(store),
+                "FRICTION-REGROUP": render_friction_regroup_card(store),
             }
             injected = inject_regions(ctx_path, regions)
             print(f"Region injection: {injected}")
