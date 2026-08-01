@@ -67,6 +67,13 @@ JULY_ONLY_METRICS = {
     "input_tokens_sum",
     # Step 6: cost-by-context-bucket — needs max_context per session (July+)
     "cost_bucket_pct_over150k",
+    # LIB-57: failure attribution + bash antipatterns — parsed since the JSONL
+    # era only, same as tool_error_rate.
+    "errors_code_total",
+    "errors_env_total",
+    "errors_tool_total",
+    "errors_unknown_total",
+    "bash_antipatterns_p50",
 }
 
 # Top N tools to trend individually; everything else is aggregated as "other".
@@ -230,6 +237,25 @@ def _metric_value(metric: str, bucket: list[dict[str, Any]]) -> float | None:
         return round(100 * with_skills / len(exec_rows), 2)
     if metric == "friction_labels_total":
         return sum(int(r.get("friction_label_count") or 0) for r in bucket)
+    # LIB-57: failure attribution + bash antipatterns, computed at parse time in
+    # factstore._to_fact_from_jsonl (ported from the workflow-insights step-9
+    # lookup table) since the parser discards raw error text after reducing it
+    # to an error_kind count dict.
+    if metric in {
+        "errors_code_total",
+        "errors_env_total",
+        "errors_tool_total",
+        "errors_unknown_total",
+    }:
+        column = metric.removesuffix("_total")
+        return float(sum(int(r.get(column) or 0) for r in bucket))
+    if metric == "bash_antipatterns_p50":
+        values = [
+            float(r["bash_antipatterns"]) for r in bucket if r.get("bash_antipatterns") is not None
+        ]
+        if not values:
+            return None
+        return _percentile(values, 50)
     # Step 4: input-token series
     if metric == "input_tokens_p50":
         values = [float(r.get("input_tokens") or 0) for r in bucket]
@@ -695,6 +721,45 @@ _FRICTION_HARNESS_ENG = [
         "(flat across interventions — endemic, not recoverable by config). "
         "Taxonomy split (code/env/tool/unknown) tracked in tool_errors column.",
         "Normalised so long sessions are not penalised",
+        "count",
+    ),
+    # LIB-57: failure attribution, computed at parse time (errors_code/env/tool/
+    # unknown columns) from the workflow-insights step-9 lookup table.
+    (
+        "errors_code_total",
+        "Errors — code",
+        "file_not_found, edit_failed, command_failed (retry unknown — parser "
+        "carries no retry sequence, so transient/code fold together).",
+        "Attribution applied at parse time; backfill requires re-parse",
+        "count",
+    ),
+    (
+        "errors_env_total",
+        "Errors — env",
+        "permission_denied, file_too_large, quota/rate-limit signals.",
+        "Attribution applied at parse time; backfill requires re-parse",
+        "count",
+    ),
+    (
+        "errors_tool_total",
+        "Errors — tool",
+        "user_rejected (hook blocks) on any tool.",
+        "Attribution applied at parse time; backfill requires re-parse",
+        "count",
+    ),
+    (
+        "errors_unknown_total",
+        "Errors — unknown",
+        "Unclassified error_kind values. A high rate flags a taxonomy gap, not noise to ignore.",
+        "Attribution applied at parse time; backfill requires re-parse",
+        "count",
+    ),
+    (
+        "bash_antipatterns_p50",
+        "Bash antipatterns per session (p50)",
+        "Shell used where a dedicated tool (Read/Grep/Glob) exists — wastes "
+        "context, slower than the native tool.",
+        "",
         "count",
     ),
 ]
@@ -2277,6 +2342,18 @@ _COVERAGE = [
         "manual JSONL sample, first-turn cache write",
         "2026-07-28",
         "one-time - GUA-44, see research doc; ~15-23k tokens/session, not tracked live",
+    ),
+    (
+        "Failure attribution (code/env/tool/unknown)",
+        "JSONL tool_errors, classified at parse time (LIB-57)",
+        JULY_BOUNDARY,
+        "backfill requires re-parse - raw error text discarded after error_kind reduction",
+    ),
+    (
+        "Bash antipatterns",
+        "JSONL Bash tool_use commands",
+        JULY_BOUNDARY,
+        "backfilled",
     ),
 ]
 

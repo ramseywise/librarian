@@ -9,10 +9,15 @@ import pytest
 from tools.cartographer.factstore import (
     ERA_JSONL,
     ERA_NOTE,
+    ERROR_CATEGORY_CODE,
+    ERROR_CATEGORY_ENV,
+    ERROR_CATEGORY_TOOL,
+    ERROR_CATEGORY_UNKNOWN,
     REGIME_UNCLASSIFIED,
     SchemaError,
     _classify_intent,
     _classify_meta,
+    classify_error_kind,
     from_jsonl,
     from_notes,
     read_all,
@@ -646,3 +651,117 @@ def test_compact_columns_none_when_no_compact(tmp_path: Path) -> None:
     assert len(stored) == 1
     assert stored[0].get("compact_trigger") is None
     assert stored[0].get("turns_since_last_compact") is None
+
+
+# --- LIB-57: failure attribution + bash antipatterns -------------------------
+
+
+@pytest.mark.parametrize(
+    ("error_kind", "expected"),
+    [
+        ("user_rejected", ERROR_CATEGORY_TOOL),
+        ("permission_denied", ERROR_CATEGORY_ENV),
+        ("command_failed", ERROR_CATEGORY_CODE),
+        ("file_not_found", ERROR_CATEGORY_CODE),
+        ("file_too_large", ERROR_CATEGORY_ENV),
+        ("edit_failed", ERROR_CATEGORY_CODE),
+        ("other", ERROR_CATEGORY_UNKNOWN),
+    ],
+)
+def test_classify_error_kind_matches_skill_lookup_table(error_kind: str, expected: str) -> None:
+    """Ported 1:1 from the step-9 lookup table in workflow-insights/SKILL.md."""
+    assert classify_error_kind(error_kind) == expected
+
+
+def test_classify_error_kind_unknown_kind_falls_to_unknown() -> None:
+    """A kind absent from the lookup table must never be force-fit into
+    code/env/tool -- a high unknown rate is the signal the table needs expansion."""
+    assert classify_error_kind("some_new_kind_the_parser_never_emitted") == ERROR_CATEGORY_UNKNOWN
+
+
+def test_jsonl_adapter_attributes_errors_by_category(tmp_path: Path) -> None:
+    """Classification happens at parse time in _to_fact_from_jsonl: the parser
+    discards raw error text after reducing it to the error_kind count dict, so
+    this is the only point attribution can be applied."""
+    from tests.unit.test_cartographer_parser import _assistant, _user, _write_jsonl
+
+    records = [
+        _user("2026-07-20T10:00:00Z"),
+        _assistant("2026-07-20T10:00:05Z"),
+        _user(
+            "2026-07-20T10:01:00Z",
+            text=[
+                {
+                    "type": "tool_result",
+                    "tool_use_id": "1",
+                    "is_error": True,
+                    "content": "no such file or directory",
+                },
+                {
+                    "type": "tool_result",
+                    "tool_use_id": "2",
+                    "is_error": True,
+                    "content": "permission denied",
+                },
+                {
+                    "type": "tool_result",
+                    "tool_use_id": "3",
+                    "is_error": True,
+                    "content": "rejected by hook",
+                },
+                {
+                    "type": "tool_result",
+                    "tool_use_id": "4",
+                    "is_error": True,
+                    "content": "something unrecognisable happened",
+                },
+            ],
+        ),
+    ]
+    _write_jsonl(tmp_path / "proj" / "sess-1.jsonl", records)
+
+    rows = from_jsonl(tmp_path)
+
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["errors_code"] == 1  # file_not_found
+    assert row["errors_env"] == 1  # permission_denied
+    assert row["errors_tool"] == 1  # user_rejected
+    assert row["errors_unknown"] == 1  # other
+    validate_row(row)
+
+
+def test_jsonl_adapter_stores_bash_antipatterns_from_parser(tmp_path: Path) -> None:
+    """bash_antipatterns is written from the value the parser already computes --
+    no re-derivation in factstore."""
+    from tests.unit.test_cartographer_parser import _assistant_with_tools, _user, _write_jsonl
+
+    tools = [
+        {"type": "tool_use", "name": "Bash", "input": {"command": "cat foo.txt"}},
+        {"type": "tool_use", "name": "Bash", "input": {"command": "grep bar foo.txt"}},
+        {"type": "tool_use", "name": "Bash", "input": {"command": "python script.py"}},
+    ]
+    _write_jsonl(
+        tmp_path / "proj" / "sess-1.jsonl",
+        [_user("2026-07-20T10:00:00Z"), _assistant_with_tools("2026-07-20T10:00:05Z", tools)],
+    )
+
+    rows = from_jsonl(tmp_path)
+
+    assert len(rows) == 1
+    assert rows[0]["bash_antipatterns"] == 2  # cat + grep; python script.py is not flagged
+
+
+def test_error_attribution_columns_none_for_notes_era(tmp_path: Path) -> None:
+    """Notes-era rows carry no tool_errors data, so the new columns default to
+    None via the same NULLABLE_COLUMNS mechanism as every other backfilled column."""
+    store = tmp_path / "facts.db"
+    row = _row("n1", date="2026-06-01", regime="note-hook", era=ERA_NOTE)
+    upsert([row], store)
+    stored = read_all(store)
+    assert len(stored) == 1
+    assert stored[0].get("errors_code") is None
+    assert stored[0].get("errors_env") is None
+    assert stored[0].get("errors_tool") is None
+    assert stored[0].get("errors_unknown") is None
+    assert stored[0].get("bash_antipatterns") is None
