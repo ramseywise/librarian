@@ -3,13 +3,18 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 
 from tools.cartographer.parser import (
+    _REQUIRED_SECTION_IDS,
+    SectionContractError,
     _context_bucket,
+    _missing_section_ids,
     _usage_cost,
     aggregate,
+    generate_report_html,
     iter_sessions,
     iter_subagent_sessions,
     parse_session,
@@ -515,3 +520,69 @@ def test_parse_session_no_compact_gives_none(tmp_path: Path) -> None:
     assert session is not None
     assert session["compact_trigger"] is None
     assert session["turns_since_last_compact"] is None
+
+
+# --- Section contract validation (LIB-61) -----------------------------------
+
+
+def _html_with_ids(*section_ids: str) -> str:
+    body = "".join(f'<div id="{sid}"></div>' for sid in section_ids)
+    return f"<!DOCTYPE html><html><body>{body}</body></html>"
+
+
+@pytest.mark.unit
+def test_missing_section_ids_all_present() -> None:
+    html = _html_with_ids(*_REQUIRED_SECTION_IDS)
+    assert _missing_section_ids(html) == []
+
+
+@pytest.mark.unit
+def test_missing_section_ids_reports_absent_ones() -> None:
+    present = _REQUIRED_SECTION_IDS[:-2]
+    html = _html_with_ids(*present)
+    missing = _missing_section_ids(html)
+    assert missing == list(_REQUIRED_SECTION_IDS[-2:])
+
+
+@pytest.mark.unit
+def test_generate_report_html_all_nine_present_no_retry() -> None:
+    """When the first response has all nine ids, call_claude is invoked exactly once."""
+    full_html = _html_with_ids(*_REQUIRED_SECTION_IDS)
+    with patch("tools.cartographer.parser.call_claude", return_value=full_html) as mock_call:
+        result = generate_report_html("fake-key", "prompt", "fake-model")
+    assert result == full_html
+    mock_call.assert_called_once()
+
+
+@pytest.mark.unit
+def test_generate_report_html_missing_id_triggers_one_retry() -> None:
+    """A response missing one id triggers exactly one retry with a corrective prompt."""
+    incomplete_html = _html_with_ids(*_REQUIRED_SECTION_IDS[:-1])
+    full_html = _html_with_ids(*_REQUIRED_SECTION_IDS)
+    with patch(
+        "tools.cartographer.parser.call_claude",
+        side_effect=[incomplete_html, full_html],
+    ) as mock_call:
+        result = generate_report_html("fake-key", "prompt", "fake-model")
+    assert result == full_html
+    assert mock_call.call_count == 2
+    # The retry prompt must name the specific missing id.
+    retry_prompt = mock_call.call_args_list[1].args[1]
+    assert _REQUIRED_SECTION_IDS[-1] in retry_prompt
+
+
+@pytest.mark.unit
+def test_generate_report_html_still_missing_after_retry_raises() -> None:
+    """If the retry also comes back incomplete, raise naming the missing ids -- never save silently."""
+    incomplete_html = _html_with_ids(*_REQUIRED_SECTION_IDS[:-2])
+    still_incomplete_html = _html_with_ids(*_REQUIRED_SECTION_IDS[:-1])
+    with (
+        patch(
+            "tools.cartographer.parser.call_claude",
+            side_effect=[incomplete_html, still_incomplete_html],
+        ) as mock_call,
+        pytest.raises(SectionContractError) as exc_info,
+    ):
+        generate_report_html("fake-key", "prompt", "fake-model")
+    assert mock_call.call_count == 2
+    assert _REQUIRED_SECTION_IDS[-1] in str(exc_info.value)
