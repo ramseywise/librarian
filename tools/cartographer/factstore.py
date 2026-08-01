@@ -107,6 +107,19 @@ NULLABLE_COLUMNS: dict[str, type] = {
     # Backfills to July boundary on re-parse -- no new regime, same apparatus.
     "turns_since_last_compact": int,
     "compact_trigger": str,
+    # Failure attribution + bash antipatterns (LIB-57, 2026-08-01). Classification
+    # must happen at parse time inside _to_fact_from_jsonl(): the parser reduces
+    # raw tool_result error text to an error_kind count dict and discards the raw
+    # text, so attribution cannot be recovered post-hoc from an existing row.
+    # Backfill therefore requires re-parsing retained JSONL, not an in-place
+    # UPDATE -- same ~15-day retention ceiling as every other backfilled column.
+    # errors_code/env/tool/unknown are per-session counts (sum to tool_error_count);
+    # bash_antipatterns mirrors the parser's own count (session["bash_antipatterns"]).
+    "errors_code": int,
+    "errors_env": int,
+    "errors_tool": int,
+    "errors_unknown": int,
+    "bash_antipatterns": int,
 }
 
 # `attributionAgent` (the subagent-type name) is emitted only by CLI 2.1.201+.
@@ -161,6 +174,55 @@ def regime_for(date: str) -> str:
         if date >= start and (end is None or date < end):
             return name
     return REGIME_UNCLASSIFIED
+
+
+# ---------------------------------------------------------------------------
+# Failure attribution (LIB-57)
+# ---------------------------------------------------------------------------
+
+# Ported from the step-9 lookup table in
+# ~/.claude/skills/workflow-insights/SKILL.md (deterministic over error_kind,
+# the count-dict key the parser already emits in tool_errors). `transient` vs
+# `code` cannot be distinguished at the signal level -- the parser carries no
+# retry-sequence data -- so both fold into `code` per the v1 note there.
+# `user_rejected` is a hook block (tool-side rejection), not a code/env failure.
+ERROR_CATEGORY_CODE = "code"
+ERROR_CATEGORY_ENV = "env"
+ERROR_CATEGORY_TOOL = "tool"
+ERROR_CATEGORY_UNKNOWN = "unknown"
+
+_ERROR_KIND_CATEGORY: dict[str, str] = {
+    "user_rejected": ERROR_CATEGORY_TOOL,
+    "permission_denied": ERROR_CATEGORY_ENV,
+    "command_failed": ERROR_CATEGORY_CODE,
+    "file_not_found": ERROR_CATEGORY_CODE,
+    "file_too_large": ERROR_CATEGORY_ENV,
+    "edit_failed": ERROR_CATEGORY_CODE,
+    "other": ERROR_CATEGORY_UNKNOWN,
+}
+
+
+def classify_error_kind(error_kind: str) -> str:
+    """Map a parser `error_kind` name to its failure-attribution category.
+
+    Unknown/unrecognised kinds fall to `errors_unknown` -- never force-fit into
+    code/env/tool. A high unknown rate is a signal the lookup table needs
+    expansion, not a bug to silently paper over.
+    """
+    return _ERROR_KIND_CATEGORY.get(error_kind, ERROR_CATEGORY_UNKNOWN)
+
+
+def _attribute_errors(tool_errors: dict[str, int]) -> dict[str, int]:
+    """Roll a session's `tool_errors` count dict up into the four categories."""
+    totals = {
+        ERROR_CATEGORY_CODE: 0,
+        ERROR_CATEGORY_ENV: 0,
+        ERROR_CATEGORY_TOOL: 0,
+        ERROR_CATEGORY_UNKNOWN: 0,
+    }
+    for error_kind, count in tool_errors.items():
+        totals[classify_error_kind(error_kind)] += count
+    return totals
 
 
 # ---------------------------------------------------------------------------
@@ -373,6 +435,10 @@ def _edit_counts(session: dict[str, Any]) -> int:
 def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, Any]:
     date = str(session.get("start_time", ""))[:10]
     errors: dict[str, int] = session.get("tool_errors", {}) or {}
+    # Failure attribution must happen here, at parse time: the parser reduces
+    # raw tool_result error text to this error_kind count dict and discards the
+    # raw text, so the mapping cannot be recovered post-hoc from a stored row.
+    attributed = _attribute_errors(errors)
     row: dict[str, Any] = {
         "session_id": session["session_id"],
         "date": date,
@@ -402,6 +468,11 @@ def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, 
         "surface": session.get("entrypoint"),
         "turns_since_last_compact": session.get("turns_since_last_compact"),
         "compact_trigger": session.get("compact_trigger"),
+        "errors_code": attributed[ERROR_CATEGORY_CODE],
+        "errors_env": attributed[ERROR_CATEGORY_ENV],
+        "errors_tool": attributed[ERROR_CATEGORY_TOOL],
+        "errors_unknown": attributed[ERROR_CATEGORY_UNKNOWN],
+        "bash_antipatterns": session.get("bash_antipatterns", 0),
     }
     row["is_meta"] = _classify_meta({**row, "edited_paths": session.get("edited_paths", [])})
     return row
