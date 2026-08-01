@@ -415,6 +415,110 @@ def read_all(store: Path) -> list[dict[str, Any]]:
 
 
 # ---------------------------------------------------------------------------
+# Experiment verdicts (LIB-58)
+# ---------------------------------------------------------------------------
+#
+# Append-only, unlike `sessions` (which is keyed and replaced on re-upsert):
+# every insights run that scores an experiment appends a new row, so verdict
+# *history* is queryable (LIB-58 acceptance criterion "verdict history queryable
+# and rendered as a per-experiment trajectory"). There is no natural single-row
+# identity to upsert against -- (experiment, date) is the ledger row's identity,
+# but the verdict for that same row can legitimately change across runs as more
+# session data accumulates, and overwriting would destroy the trajectory this
+# table exists to capture.
+
+EXPERIMENT_VERDICT_COLUMNS: dict[str, type] = {
+    "experiment": str,  # ledger "Change" cell -- the experiment name
+    "date": str,  # ledger hypothesis date (YYYY-MM-DD), NOT the run date
+    "metric": str,  # raw typed-metric string, e.g. "ratio:foo above 80%"
+    "verdict": str,  # confirmed | trending | inconclusive | failed
+    "evidence": str,  # one-line human-readable justification
+}
+
+_VERDICT_SQL_TYPES = {str: "TEXT"}
+
+
+def _connect_verdicts(store: Path) -> sqlite3.Connection:
+    store.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(store)
+    cols = ", ".join(
+        f"{name} {_VERDICT_SQL_TYPES[typ]}" for name, typ in EXPERIMENT_VERDICT_COLUMNS.items()
+    )
+    conn.execute(
+        f"CREATE TABLE IF NOT EXISTS experiment_verdicts "
+        f"({cols}, run_at TEXT NOT NULL, "
+        f"PRIMARY KEY (experiment, date, run_at))"
+    )
+    _add_missing_verdict_columns(conn)
+    return conn
+
+
+def _add_missing_verdict_columns(conn: sqlite3.Connection) -> None:
+    """Widen an existing experiment_verdicts table when its columns grow.
+
+    Same rationale as `_add_missing_columns` for `sessions`: CREATE TABLE IF NOT
+    EXISTS is a no-op on an existing store, so a new column would silently never
+    appear otherwise.
+    """
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(experiment_verdicts)")}
+    for name, typ in EXPERIMENT_VERDICT_COLUMNS.items():
+        if name not in existing:
+            conn.execute(
+                f"ALTER TABLE experiment_verdicts ADD COLUMN {name} {_VERDICT_SQL_TYPES[typ]}"
+            )
+            log.info("factstore.verdict_column_added", column=name)
+    conn.commit()
+
+
+def append_verdicts(rows: list[dict[str, Any]], store: Path, run_at: str) -> int:
+    """Append one verdict row per experiment for this insights run.
+
+    Unlike `upsert`, this never replaces prior rows -- `run_at` (an ISO timestamp
+    supplied by the caller, not read from the clock here, so tests are
+    deterministic) plus (experiment, date) forms the primary key, so re-running
+    insights on the same day at a different time still records a distinct
+    observation rather than clobbering the last one.
+    """
+    if not rows:
+        return 0
+    names = list(EXPERIMENT_VERDICT_COLUMNS)
+    values = []
+    for row in rows:
+        missing = [n for n in names if not row.get(n)]
+        if missing:
+            raise SchemaError(f"experiment verdict row missing: {', '.join(missing)}")
+        values.append((*(str(row[n]) for n in names), run_at))
+    placeholders = ", ".join("?" for _ in names) + ", ?"
+    sql = (
+        f"INSERT OR REPLACE INTO experiment_verdicts ({', '.join(names)}, run_at) "
+        f"VALUES ({placeholders})"
+    )
+    conn = _connect_verdicts(store)
+    try:
+        conn.executemany(sql, values)
+        conn.commit()
+    finally:
+        conn.close()
+    log.info("factstore.append_verdicts", rows=len(values), store=str(store))
+    return len(values)
+
+
+def read_verdicts(store: Path) -> list[dict[str, Any]]:
+    """Read every verdict row back, oldest first -- the trajectory order."""
+    if not store.exists():
+        return []
+    conn = _connect_verdicts(store)
+    try:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            "SELECT * FROM experiment_verdicts ORDER BY experiment, date, run_at"
+        ).fetchall()
+    finally:
+        conn.close()
+    return [dict(row) for row in rows]
+
+
+# ---------------------------------------------------------------------------
 # Adapter: JSONL (July-forward)
 # ---------------------------------------------------------------------------
 
