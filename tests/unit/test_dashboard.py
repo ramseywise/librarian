@@ -17,13 +17,16 @@ import pytest
 
 from tools.cartographer.dashboard import (
     JULY_BOUNDARY,
+    LEDGER_METRIC_MAPPING,
     RATE_METRICS,
     SAMPLING_FRAME,
     Experiment,
     Panel,
     Point,
+    _annotations_for_metric,
     _metric_value,
     _panel_body,
+    _render_annotations,
     _saturation_warning,
     _svg_line,
     build_hook_activity,
@@ -32,6 +35,7 @@ from tools.cartographer.dashboard import (
     parse_hook_log,
     render_dashboard,
     render_hook_activity_card,
+    warn_unmapped_experiments,
 )
 from tools.cartographer.factstore import ERA_JSONL, ERA_NOTE, upsert
 
@@ -1015,3 +1019,166 @@ def test_hook_activity_empty_logs_render_placeholder(tmp_path: Path) -> None:
     card = render_hook_activity_card(tmp_path / "absent.jsonl", tmp_path / "absent2.jsonl")
 
     assert "No hook fires logged yet" in card
+
+
+# ---------------------------------------------------------------------------
+# LIB-59: regime-band annotations — bind ledger experiments to friction charts
+# ---------------------------------------------------------------------------
+
+
+def test_ledger_metric_mapping_resolves_the_one_experiment() -> None:
+    """The single verified MVP mapping: execution-sessions-with-skills -> the
+    execution_skill_compliance_pct chart. No other signal is mapped."""
+    assert LEDGER_METRIC_MAPPING == {
+        "execution-sessions-with-skills": "execution_skill_compliance_pct"
+    }
+
+    exp = Experiment(
+        name="Session intent classifier + compliance metric",
+        metric="ratio:execution-sessions-with-skills above 80%",
+        status="hypothesis — inconclusive (no compliance signals, 227 sessions) — due 08-10",
+        date="2026-07-24",
+    )
+    mapped = _annotations_for_metric("execution_skill_compliance_pct", [exp])
+    assert mapped == [exp]
+    assert _annotations_for_metric("output_tokens_p50", [exp]) == []
+
+
+def test_unmapped_ledger_rows_skip_silently() -> None:
+    """Experiments with no LEDGER_METRIC_MAPPING entry never appear as an
+    annotation for any metric -- they are dropped, not raised as an error."""
+    absence_exp = Experiment(
+        name="autocompact defect sweep",
+        metric="absence:autocompact-defect-reports",
+        status="hypothesis",
+        date="2026-07-20",
+    )
+    presence_exp = Experiment(
+        name="bash taxonomy rollout",
+        metric="presence:bash-stratified-taxonomy",
+        status="hypothesis",
+        date="2026-07-21",
+    )
+    for metric in ("execution_skill_compliance_pct", "output_tokens_p50", "cost_units_p50"):
+        assert _annotations_for_metric(metric, [absence_exp, presence_exp]) == []
+
+
+def test_warn_unmapped_experiments_fires_for_new_signal() -> None:
+    """A parsed experiment with no mapping entry surfaces as a WARNING, not a
+    silent drop -- so a newly added ledger experiment is noticed, not lost."""
+    import structlog
+
+    mapped_exp = Experiment(
+        name="mapped",
+        metric="ratio:execution-sessions-with-skills above 80%",
+        status="hypothesis",
+        date="2026-07-24",
+    )
+    unmapped_exp = Experiment(
+        name="new-experiment",
+        metric="count-drop:some-brand-new-signal above 5",
+        status="hypothesis",
+        date="2026-07-30",
+    )
+
+    with structlog.testing.capture_logs() as cap:
+        unmapped = warn_unmapped_experiments([mapped_exp, unmapped_exp])
+
+    assert unmapped == ["some-brand-new-signal"]
+    assert any(
+        entry.get("event") == "dashboard.ledger_signal_unmapped"
+        and entry.get("signal") == "some-brand-new-signal"
+        for entry in cap
+    )
+
+
+def test_annotation_renders_on_execution_skill_compliance_series() -> None:
+    """A mapped experiment inside a series' date range draws a vertical
+    annotation line, with a hover title carrying name + metric + status."""
+    points = [
+        Point(date="2026-07-20", value=40.0, regime="session-hygiene-v1"),
+        Point(date="2026-07-24", value=55.0, regime="session-hygiene-v1"),
+        Point(date="2026-07-28", value=60.0, regime="session-hygiene-v1"),
+    ]
+    exp = Experiment(
+        name="Session intent classifier + compliance metric",
+        metric="ratio:execution-sessions-with-skills above 80%",
+        status="hypothesis — inconclusive (no compliance signals, 227 sessions) — due 08-10",
+        date="2026-07-24",
+    )
+    svg = _svg_line(points, "var(--chart-1)", experiments=[exp])
+
+    assert "<line" in svg
+    assert 'class="annotation-line"' in svg
+    assert "Session intent classifier + compliance metric" in svg
+    assert "ratio:execution-sessions-with-skills above 80%" in svg
+    assert "inconclusive" in svg
+
+
+def test_annotation_outside_series_date_range_does_not_render() -> None:
+    """An experiment dated before/after the plotted series draws nothing --
+    there is no x-coordinate on this chart for a date it never covers."""
+    points = [
+        Point(date="2026-07-20", value=40.0, regime="session-hygiene-v1"),
+        Point(date="2026-07-28", value=60.0, regime="session-hygiene-v1"),
+    ]
+    too_early = Experiment(
+        name="too-early",
+        metric="ratio:execution-sessions-with-skills above 80%",
+        status="hypothesis",
+        date="2026-06-01",
+    )
+    too_late = Experiment(
+        name="too-late",
+        metric="ratio:execution-sessions-with-skills above 80%",
+        status="hypothesis",
+        date="2026-08-15",
+    )
+    svg = _render_annotations(points, [too_early, too_late], lambda i: float(i), plot_h=142.0)
+
+    assert svg == ""
+
+
+def test_render_dashboard_annotation_at_2026_07_24(tmp_path: Path) -> None:
+    """End-to-end: the mapped ledger experiment shows up as an annotation on
+    the execution_skill_compliance_pct chart in the full rendered page."""
+    store = tmp_path / "facts.db"
+    upsert(
+        [
+            _row(
+                "e1",
+                "2026-07-20",
+                "session-hygiene-v1",
+                session_intent="execution",
+                skill_costs="{}",
+            ),
+            _row(
+                "e2",
+                "2026-07-24",
+                "session-hygiene-v1",
+                session_intent="execution",
+                skill_costs='{"execute": 100}',
+            ),
+            _row(
+                "e3",
+                "2026-07-28",
+                "session-hygiene-v1",
+                session_intent="execution",
+                skill_costs='{"execute": 100}',
+            ),
+        ],
+        store,
+    )
+    experiments = [
+        Experiment(
+            name="Session intent classifier + compliance metric",
+            metric="ratio:execution-sessions-with-skills above 80%",
+            status="hypothesis — inconclusive (no compliance signals, 227 sessions) — due 08-10",
+            date="2026-07-24",
+        )
+    ]
+    html = render_dashboard(store, funnel=None, experiments=experiments)
+
+    assert 'data-metric="execution_skill_compliance_pct"' in html
+    assert 'class="annotation-line"' in html
+    assert "Session intent classifier + compliance metric" in html
