@@ -992,7 +992,33 @@ def parse_session_notes(sessions_dir: Path, max_notes: int = 20) -> list[dict[st
 # API call
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPT = """\
+# Single source of truth for the nine pinned report sections. The system prompt
+# text below is generated from this dict so the prompt and the post-call
+# validator (see _missing_section_ids) can never drift apart.
+_REQUIRED_SECTIONS: dict[str, str] = {
+    "section-work": "What You Work On (project areas with session counts)",
+    "section-usage": "How You Use Claude Code (narrative + key CE/PE insight)",
+    "section-wins": "Impressive Things You Did (3 big wins)",
+    "section-economics": (
+        "Token Economics (context-size spend distribution, cache savings, "
+        "subagent share, parallelism)"
+    ),
+    "section-ce": (
+        "Context Engineering Health (bash antipatterns, skill usage, hook "
+        "discipline, read/edit ratio)"
+    ),
+    "section-pe": "Prompt Engineering Health (verbosity, interruptions, path errors, cache efficiency)",
+    "section-features": "Existing CC Features to Try (3 features with copyable prompts)",
+    "section-patterns": "New Ways to Use Claude Code (3 usage patterns)",
+    "section-horizon": "On the Horizon (2-3 ambitious future workflows)",
+}
+_REQUIRED_SECTION_IDS: tuple[str, ...] = tuple(_REQUIRED_SECTIONS)
+
+_SECTION_ID_LIST = "\n".join(
+    f"- #{section_id:<15}: {desc}" for section_id, desc in _REQUIRED_SECTIONS.items()
+)
+
+_SYSTEM_PROMPT = f"""\
 You are analyzing a developer's Claude Code usage data across two evaluation dimensions:
 
 **Context Engineering (CE)**: Are the right augmentation tools being used efficiently?
@@ -1022,15 +1048,7 @@ input=1x, cache write=1.25x, cache read=0.1x, output=5x the input price)
 Generate a rich, insightful HTML report. Return ONLY valid HTML starting with <!DOCTYPE html>.
 
 The report must include these sections with these exact id attributes:
-- #section-work     : What You Work On (project areas with session counts)
-- #section-usage    : How You Use Claude Code (narrative + key CE/PE insight)
-- #section-wins     : Impressive Things You Did (3 big wins)
-- #section-economics: Token Economics (context-size spend distribution, cache savings, subagent share, parallelism)
-- #section-ce       : Context Engineering Health (bash antipatterns, skill usage, hook discipline, read/edit ratio)
-- #section-pe       : Prompt Engineering Health (verbosity, interruptions, path errors, cache efficiency)
-- #section-features : Existing CC Features to Try (3 features with copyable prompts)
-- #section-patterns : New Ways to Use Claude Code (3 usage patterns)
-- #section-horizon  : On the Horizon (2-3 ambitious future workflows)
+{_SECTION_ID_LIST}
 
 Style requirements (inline CSS, no external deps except Google Fonts):
 - Clean, modern design using Inter font
@@ -1070,6 +1088,46 @@ def call_claude(api_key: str, prompt: str, model: str = "claude-sonnet-4-6") -> 
         messages=[{"role": "user", "content": prompt}],
     )
     return message.content[0].text if message.content else ""
+
+
+class SectionContractError(RuntimeError):
+    """Raised when the generated report is still missing pinned section IDs after retry."""
+
+
+def _missing_section_ids(html: str) -> list[str]:
+    """Return the subset of _REQUIRED_SECTION_IDS not present as an id="..." attribute."""
+    found = set(re.findall(r'id="([a-z0-9-]+)"', html))
+    return [section_id for section_id in _REQUIRED_SECTION_IDS if section_id not in found]
+
+
+def generate_report_html(api_key: str, prompt: str, model: str) -> str:
+    """Call the API and enforce the nine-section contract, retrying once on miss.
+
+    Raises SectionContractError if sections are still missing after the retry —
+    callers must never silently save a report that fails the contract.
+    """
+    html = call_claude(api_key, prompt, model=model)
+    missing = _missing_section_ids(html)
+    if not missing:
+        return html
+
+    log.warning("parser.sections_missing", missing=missing, attempt=1)
+    retry_prompt = (
+        f"{prompt}\n\n"
+        "Your previous response was missing the following required section id "
+        f"attributes: {', '.join(f'#{m}' for m in missing)}. "
+        "Regenerate the COMPLETE HTML report, including every one of these missing "
+        f"sections with their exact id attributes: {', '.join(missing)}. "
+        "All nine pinned section ids from the system prompt must be present."
+    )
+    html = call_claude(api_key, retry_prompt, model=model)
+    missing = _missing_section_ids(html)
+    if missing:
+        raise SectionContractError(
+            "Insights report still missing required section ids after retry: "
+            f"{', '.join(f'#{m}' for m in missing)}"
+        )
+    return html
 
 
 def build_prompt(
@@ -1306,7 +1364,10 @@ def main() -> None:
     prompt = build_prompt(sessions, agg, session_notes=session_notes or None)
 
     try:
-        html = call_claude(api_key, prompt, model=model)
+        html = generate_report_html(api_key, prompt, model=model)
+    except SectionContractError as exc:
+        log.error("parser.section_contract_failed", error=str(exc))
+        sys.exit(1)
     except Exception as exc:
         log.error("parser.api_error", error=str(exc))
         sys.exit(1)
