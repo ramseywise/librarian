@@ -212,6 +212,11 @@ def _run_facts() -> None:
         help="Tooling ledger log path (optional, for archived experiments)",
     )
     p.add_argument(
+        "--no-verdicts",
+        action="store_true",
+        help="Skip deterministic verdict scoring against the tooling ledger",
+    )
+    p.add_argument(
         "--hook-log",
         default=str(Path("~/.claude/.hook-log.jsonl").expanduser()),
         help="Guard-hook event log (blocks/warns) for the hook-activity card",
@@ -234,6 +239,34 @@ def _run_facts() -> None:
 
         commits, prs = refresh_git(Path(args.workspace).expanduser(), store)
         print(f"Repo activity: {commits} commit-days, {prs} PRs")
+
+    if not args.no_verdicts:
+        from tools.cartographer.dashboard import parse_ledger
+        from tools.cartographer.factstore import append_verdicts, read_all
+        from tools.cartographer.verdicts import score_metric
+
+        ledger_path = Path(args.ledger).expanduser()
+        ledger_log_path = Path(args.ledger_log).expanduser() if args.ledger_log else None
+        if ledger_path.exists():
+            experiments = parse_ledger(ledger_path, ledger_log_path)
+            scored_rows = read_all(store)
+            run_at = datetime.now(UTC).isoformat()
+            verdict_rows = []
+            for exp in experiments:
+                verdict = score_metric(exp.metric, scored_rows)
+                verdict_rows.append(
+                    {
+                        "experiment": exp.name,
+                        "date": exp.date,
+                        "metric": exp.metric,
+                        "verdict": verdict.verdict,
+                        "evidence": verdict.evidence,
+                    }
+                )
+            appended = append_verdicts(verdict_rows, store, run_at)
+            print(f"Verdicts: {appended} scored -> {store}")
+        else:
+            print(f"Verdicts: skipped — ledger not found at {ledger_path}")
 
     if not args.no_dashboard:
         from tools.cartographer.dashboard import (

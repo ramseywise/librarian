@@ -21,6 +21,7 @@ from __future__ import annotations
 import html
 import json
 import re
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date as _date
 from pathlib import Path
@@ -33,8 +34,10 @@ from tools.cartographer.factstore import (
     SUBAGENT_ATTRIBUTION_SINCE,
     UNATTRIBUTED_AGENT,
     read_all,
+    read_verdicts,
 )
 from tools.cartographer.gitstore import read_git_activity, read_prs
+from tools.cartographer.verdicts import parse_metric
 
 log = structlog.get_logger(__name__)
 
@@ -827,8 +830,15 @@ def _svg_line(
     width: int = 640,
     height: int = 160,
     unit: str = "count",
+    experiments: list[Experiment] | None = None,
 ) -> str:
-    """A minimal 2px trend line with y-axis labels and x-axis month ticks."""
+    """A minimal 2px trend line with y-axis labels and x-axis month ticks.
+
+    `experiments` (LIB-59) draws one dated vertical annotation line per mapped
+    ledger experiment that falls within the plotted date range -- see
+    `_render_annotations`. Omitted by every caller that has no experiments to
+    bind, so charts with no mapping render exactly as before.
+    """
     if not points:
         return '<p class="empty">no data</p>'
     pad_left = 48
@@ -880,11 +890,74 @@ def _svg_line(
             f'class="axis-label">{html.escape(points[-1].date[5:])}</text>'
         )
 
+    annotations = _render_annotations(points, experiments, _x, plot_h) if experiments else ""
+
     return (
         f'<svg viewBox="0 0 {width} {height}" role="img" preserveAspectRatio="none">'
         f'<polyline points="{coords}" fill="none" stroke="{color}" stroke-width="2" '
-        f'stroke-linejoin="round" stroke-linecap="round"/>{dots}{y_labels}{x_labels}</svg>'
+        f'stroke-linejoin="round" stroke-linecap="round"/>{dots}{annotations}{y_labels}{x_labels}'
+        f"</svg>"
     )
+
+
+# Neutral annotation colour, distinct from every _CSS --chart-N line colour in
+# both themes -- see LIB-59 issue comment (2026-08-01): the ledger's Status
+# column no longer leads with a stable `hypothesis`/`FRICTION` vocabulary (all
+# 32 rows now lead with `hypothesis`), so colour-by-status would render every
+# annotation identically and carry zero information. One neutral colour for
+# all annotations; the hover tooltip carries the full status text instead.
+_ANNOTATION_COLOR = "#8a8a86"
+
+
+def _render_annotations(
+    points: list[Point],
+    experiments: list[Experiment],
+    x_of: Callable[[int], float],
+    plot_h: float,
+) -> str:
+    """One dated vertical line per experiment that falls inside `points`' date range.
+
+    `x_of` is `_svg_line`'s own index->x closure; the date is located by linear
+    interpolation between the two bracketing points (or snapped to an exact
+    match) so an annotation lines up with the same x-scale as the trend line
+    it sits behind. Experiments outside the series' first/last date render
+    nothing -- there is no x-coordinate for them on this chart.
+    """
+    if not points:
+        return ""
+    first, last = points[0].date, points[-1].date
+    marks = ""
+    for exp in experiments:
+        if not (first <= exp.date <= last):
+            continue
+        x = _annotation_x(points, exp.date, x_of)
+        if x is None:
+            continue
+        title = html.escape(f"{exp.name} — {exp.metric} — {exp.status}")
+        marks += (
+            f'<line x1="{x:.1f}" y1="0" x2="{x:.1f}" y2="{plot_h:.1f}" '
+            f'stroke="{_ANNOTATION_COLOR}" stroke-width="1.5" stroke-dasharray="3,2" '
+            f'class="annotation-line"><title>{title}</title></line>'
+        )
+    return marks
+
+
+def _annotation_x(
+    points: list[Point], target_date: str, x_of: Callable[[int], float]
+) -> float | None:
+    """x-coordinate for `target_date` on `points`' scale, or None if unplaceable."""
+    for i, p in enumerate(points):
+        if p.date == target_date:
+            return x_of(i)
+    # Interpolate between the bracketing points sharing the same index scale
+    # `_svg_line` uses (index-based, not calendar-day-based) -- points are not
+    # evenly spaced in time, so an annotation between two plotted dates lands
+    # at the midpoint of their index positions, which is close enough for a
+    # marker whose job is "roughly here", not exact date arithmetic.
+    for i in range(len(points) - 1):
+        if points[i].date < target_date < points[i + 1].date:
+            return (x_of(i) + x_of(i + 1)) / 2
+    return None
 
 
 def _table_view(points: list[Point]) -> str:
@@ -958,8 +1031,15 @@ def _render_series(
     note: str,
     provenance: str = "",
     unit: str = "count",
+    experiments: list[Experiment] | None = None,
 ) -> str:
-    """Faceted panels for rate metrics; one banded line for properties."""
+    """Faceted panels for rate metrics; one banded line for properties.
+
+    `experiments` (LIB-59) is the full parsed ledger list; only rows whose
+    ledger signal maps to `series.metric` (see `LEDGER_METRIC_MAPPING`) draw an
+    annotation, and only on the continuous-line branch -- faceted rate metrics
+    have no single x-scale to annotate against.
+    """
     prov = ""
     if provenance:
         prov = (
@@ -999,11 +1079,13 @@ def _render_series(
         for regime, start, end in series.regime_bands
     )
 
+    mapped_experiments = _annotations_for_metric(series.metric, experiments or [])
+
     # Pre-render one SVG per surface (including "all") as hidden divs.
     # The JS surface selector simply shows/hides these divs -- no SVG re-draw
     # in the browser, no framework, no build step. The "all" div is visible by
     # default; selecting a specific surface shows only its div.
-    svg_all = _svg_line(series.points, color, unit=unit)
+    svg_all = _svg_line(series.points, color, unit=unit, experiments=mapped_experiments)
     surface_svgs = f'<div class="surf-view" data-surface="all">{svg_all}</div>'
     for surf, pts in series.surface_points.items():
         surf_svg = _svg_line(pts, color, unit=unit)
@@ -1338,6 +1420,57 @@ def parse_ledger(ledger_path: Path, log_path: Path | None = None) -> list[Experi
 def _status_key(status: str) -> str:
     parts = status.split()
     return parts[0] if parts else ""
+
+
+# ---------------------------------------------------------------------------
+# Regime-band annotations (LIB-59) — bind ledger experiments to friction charts
+# ---------------------------------------------------------------------------
+#
+# MVP scope: exactly one verified mapping. The ledger's ~32 experiments span
+# four metric types (absence/presence/ratio/count-drop); most name process or
+# git/GitHub events the factstore cannot observe as a chart timeseries at all
+# (see verdicts.py module docstring). Building a general mapping engine for
+# rows that have nothing to point at is out of scope — this is a closed
+# registry, extended only when a new ledger signal has a real chart to land
+# on. Keyed by the ledger signal slug (the text after `<type>:`, e.g.
+# "execution-sessions-with-skills"), not the raw metric cell, so ledger
+# comparator/threshold prose can vary without breaking the mapping.
+LEDGER_METRIC_MAPPING: dict[str, str] = {
+    "execution-sessions-with-skills": "execution_skill_compliance_pct",
+}
+
+
+def _experiment_signals(experiment: Experiment) -> list[str]:
+    """Signal slugs named by an experiment's ledger metric cell (0, 1, or many)."""
+    return [clause.signal.strip().lower() for clause in parse_metric(experiment.metric)]
+
+
+def warn_unmapped_experiments(experiments: list[Experiment]) -> list[str]:
+    """Build-time check: which parsed experiments have no annotation mapping.
+
+    Returns the list of unmapped signal slugs (deduplicated, order preserved)
+    and logs one WARNING per slug so a newly added ledger experiment surfaces
+    instead of silently never appearing as an annotation. This is a warning,
+    not a failure — most ledger rows (absence/presence meta-signals) are
+    legitimately unchartable, so an unmapped signal is expected, not broken.
+    """
+    seen: dict[str, None] = {}
+    for exp in experiments:
+        for signal in _experiment_signals(exp):
+            if signal and signal not in LEDGER_METRIC_MAPPING:
+                seen.setdefault(signal, None)
+    for signal in seen:
+        log.warning("dashboard.ledger_signal_unmapped", signal=signal)
+    return list(seen)
+
+
+def _annotations_for_metric(metric: str, experiments: list[Experiment]) -> list[Experiment]:
+    """Experiments whose ledger signal maps to `metric`, for annotation rendering."""
+    return [
+        exp
+        for exp in experiments
+        if any(LEDGER_METRIC_MAPPING.get(signal) == metric for signal in _experiment_signals(exp))
+    ]
 
 
 def parse_findings(path: Path) -> list[dict]:
@@ -2237,6 +2370,67 @@ def _render_experiments(experiments: list[Experiment] | None) -> str:
     )
 
 
+# ---------------------------------------------------------------------------
+# Verdict trajectories (LIB-58) — deterministic verdict history per experiment
+# ---------------------------------------------------------------------------
+#
+# `experiment_verdicts` is append-only: every insights run that scores an
+# experiment's metric adds a row, so the same experiment accumulates one
+# verdict per run over time. That history is the trajectory this section
+# renders — hypothesis date, then the ordered sequence of (run_at, verdict)
+# observations — so a reader can see an experiment move from `inconclusive`
+# to `trending` to `confirmed` across runs, rather than only its latest call.
+
+_TRAJECTORY_BADGE_CLASS = {
+    "confirmed": "exp-confirmed",
+    "trending": "exp-trending",
+    "inconclusive": "exp-pending",
+    "failed": "exp-failed",
+}
+
+
+def _render_verdict_trajectories(verdict_rows: list[dict[str, Any]] | None) -> str:
+    """Render one trajectory (date -> ordered verdict sequence) per experiment.
+
+    `verdict_rows` is the shape returned by `factstore.read_verdicts()`: dicts
+    with `experiment`, `date`, `metric`, `verdict`, `evidence`, `run_at`. Rows
+    are grouped by experiment name and sorted by `run_at` within each group,
+    oldest first, so the sequence reads left-to-right as it happened.
+    """
+    if not verdict_rows:
+        return (
+            '<section class="chart"><h3>Verdict trajectories</h3>'
+            '<p class="note">No scored verdicts yet. Verdicts accumulate one row '
+            "per insights run against the tooling ledger.</p></section>"
+        )
+
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for row in verdict_rows:
+        grouped.setdefault(row["experiment"], []).append(row)
+
+    rows_html = "".join(
+        f"<tr><td>{html.escape(name)}</td>"
+        f"<td>{html.escape(runs[0].get('date', ''))}</td>"
+        f'<td class="verdict-trajectory">'
+        + '<span class="verdict-arrow">&rarr;</span>'.join(
+            f'<span class="verdict-step {_TRAJECTORY_BADGE_CLASS.get(r["verdict"], "exp-other")}" '
+            f'title="{html.escape(r.get("run_at", ""))}: {html.escape(r.get("evidence", ""))}">'
+            f"{html.escape(r['verdict'])}</span>"
+            for r in sorted(runs, key=lambda r: r.get("run_at") or "")
+        )
+        + "</td></tr>"
+        for name, runs in sorted(grouped.items(), key=lambda kv: kv[1][0].get("date", ""))
+    )
+    return (
+        '<section class="chart"><h3>Verdict trajectories</h3>'
+        f'<p class="note">{len(grouped)} experiment(s) with scored history — '
+        "each step is one insights run, oldest to newest.</p>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Experiment</th><th>Hypothesis date</th><th>Verdict sequence</th></tr></thead>"
+        f"<tbody>{rows_html}</tbody></table></div></section>"
+    )
+
+
 _CSS = """
 .viz-root{color-scheme:light;--surface-1:#fcfcfb;--page:#f9f9f7;--text-primary:#0b0b0b;
 --text-secondary:#52514e;--muted:#898781;--baseline:#c3c2b7;--border:rgba(11,11,11,.10);
@@ -2290,7 +2484,12 @@ display:flex;gap:16px;flex-wrap:wrap;}
 .exp-badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;}
 .exp-confirmed{background:rgba(0,131,0,.15);color:#008300;}
 .exp-failed{background:rgba(220,50,50,.12);color:#c03030;}
+.exp-trending{background:rgba(237,161,0,.15);color:#9a6a00;}
+.exp-pending{background:var(--border);color:var(--text-secondary);}
 .exp-other{background:var(--border);color:var(--text-secondary);}
+.verdict-trajectory{white-space:nowrap;}
+.verdict-step{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.verdict-arrow{color:var(--muted);margin:0 4px;}
 .provenance{font-size:11px;color:var(--muted);margin:0 0 6px;}
 .provenance summary{cursor:pointer;}
 .provenance p{margin:4px 0 0;}
@@ -2563,15 +2762,24 @@ def render_dashboard(
     review_findings: list[dict] | None = None,
     ledger_path: Path | None = None,
     ledger_log_path: Path | None = None,
+    verdict_store: Path | None = None,
 ) -> str:
     """Render the full dashboard to a self-contained HTML string.
 
     `ledger_path` and `ledger_log_path` are optional; when provided, the
     experiments section reads live from the tooling ledger (Step 7). When not
     provided, `experiments` is used directly (backward-compatible).
+
+    `verdict_store` is optional (LIB-58); when provided, the progress section
+    also renders per-experiment verdict trajectories read from the
+    `experiment_verdicts` table. Omitted entirely when not given, so callers
+    that never scored verdicts see no change to the rendered page.
     """
     if ledger_path is not None and experiments is None:
         experiments = parse_ledger(ledger_path, ledger_log_path)
+    if experiments:
+        warn_unmapped_experiments(experiments)
+    verdict_rows = read_verdicts(verdict_store) if verdict_store is not None else None
 
     def _chart_var(i: int) -> str:
         return f"var(--chart-{(i % 4) + 1})"
@@ -2589,8 +2797,13 @@ def render_dashboard(
         for i, (metric, title, note, prov, unit) in enumerate(_TIER_SHAPE)
     )
     # Step 9: friction tab regroup — three groups instead of flat _TIER3 list.
+    # LIB-59: this is the one tier with a mapped ledger experiment
+    # (execution_skill_compliance_pct), so it is the only call site that passes
+    # `experiments` through for annotation rendering.
     friction_prompt = "".join(
-        _render_series(build_series(metric, store), _chart_var(i), title, note, prov, unit)
+        _render_series(
+            build_series(metric, store), _chart_var(i), title, note, prov, unit, experiments
+        )
         for i, (metric, title, note, prov, unit) in enumerate(_FRICTION_PROMPT_ENG)
     )
     friction_loop = "".join(
@@ -2695,6 +2908,7 @@ def render_dashboard(
         f'<section id="progress"><h2>Experiments &amp; Progress</h2>'
         f'<p class="sub">Are my changes working?</p>'
         f"{_render_experiments(experiments)}"
+        f"{_render_verdict_trajectories(verdict_rows)}"
         f"{_render_funnel(funnel)}"
         f"{_render_repo_activity(store)}"
         f"{_render_repo_economics(store)}"
@@ -2706,6 +2920,10 @@ def render_dashboard(
         f'<div class="viz-root"><h1>Context engineering dashboard</h1>'
         f'<p class="sub">Work sessions only, faceted by instrumentation regime. '
         f"Rates are never pooled across regimes.</p>"
+        f'<p class="sub">Vertical markers on a chart pin a dated tooling-ledger '
+        f"experiment to that metric (hover for name, metric, and status); "
+        f"<code>absence:</code>-type experiments are meta-signals with no "
+        f"timeseries to land on and are deliberately not rendered.</p>"
         f"{nav}{sec_cost}{sec_context}{sec_friction}{sec_review}{sec_progress}"
         f"{surf_js}</div>"
     )
@@ -2719,12 +2937,21 @@ def write_dashboard(
     review_findings: list[dict] | None = None,
     ledger_path: Path | None = None,
     ledger_log_path: Path | None = None,
+    verdict_store: Path | None = None,
 ) -> Path:
     """Render and write the dashboard, returning the output path."""
     funnel = funnel_counts(growth_md) if growth_md else None
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(
-        render_dashboard(store, funnel, experiments, review_findings, ledger_path, ledger_log_path),
+        render_dashboard(
+            store,
+            funnel,
+            experiments,
+            review_findings,
+            ledger_path,
+            ledger_log_path,
+            verdict_store,
+        ),
         encoding="utf-8",
     )
     log.info("dashboard.written", out=str(out), store=str(store))
@@ -2809,3 +3036,14 @@ def render_review_findings_region(findings: list[dict] | None) -> str:
 def render_experiments_region(experiments: list[Experiment] | None) -> str:
     """Return the injectable HTML for the EXPERIMENTS-LIFECYCLE marker region."""
     return _render_experiments(experiments)
+
+
+def render_verdict_trajectories_region(verdict_rows: list[dict[str, Any]] | None) -> str:
+    """Return the injectable HTML for a VERDICT-TRAJECTORIES marker region.
+
+    Not wired into any marker set yet — no VERDICT-TRAJECTORIES comment pair
+    exists in context-dashboard.html today. Exposed so a future region-
+    injection wire-up (in __main__.py, alongside EXPERIMENTS-LIFECYCLE) can
+    reuse this rather than re-deriving the render.
+    """
+    return _render_verdict_trajectories(verdict_rows)

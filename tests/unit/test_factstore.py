@@ -17,10 +17,12 @@ from tools.cartographer.factstore import (
     SchemaError,
     _classify_intent,
     _classify_meta,
+    append_verdicts,
     classify_error_kind,
     from_jsonl,
     from_notes,
     read_all,
+    read_verdicts,
     regime_for,
     upsert,
     validate_row,
@@ -765,3 +767,90 @@ def test_error_attribution_columns_none_for_notes_era(tmp_path: Path) -> None:
     assert stored[0].get("errors_tool") is None
     assert stored[0].get("errors_unknown") is None
     assert stored[0].get("bash_antipatterns") is None
+
+
+# --- experiment_verdicts (LIB-58) -------------------------------------------
+
+
+def _verdict_row(**overrides: str) -> dict[str, str]:
+    row = {
+        "experiment": "bash-antipattern-nudge",
+        "date": "2026-07-20",
+        "metric": "absence:bash-antipatterns",
+        "verdict": "confirmed",
+        "evidence": "bash-antipatterns=0 across scored sessions",
+    }
+    row.update(overrides)
+    return row
+
+
+def test_append_verdicts_round_trips_through_read_verdicts(tmp_path: Path) -> None:
+    store = tmp_path / "facts.db"
+    written = append_verdicts([_verdict_row()], store, run_at="2026-07-20T00:00:00Z")
+
+    assert written == 1
+    rows = read_verdicts(store)
+    assert len(rows) == 1
+    assert rows[0]["experiment"] == "bash-antipattern-nudge"
+    assert rows[0]["verdict"] == "confirmed"
+    assert rows[0]["run_at"] == "2026-07-20T00:00:00Z"
+
+
+def test_append_verdicts_accumulates_across_runs_same_experiment(tmp_path: Path) -> None:
+    """The table is append-only: two runs for the same experiment/date produce
+    two rows (a trajectory), not an overwrite -- unlike `upsert` on `sessions`."""
+    store = tmp_path / "facts.db"
+    append_verdicts([_verdict_row(verdict="inconclusive")], store, run_at="2026-07-18T00:00:00Z")
+    append_verdicts([_verdict_row(verdict="trending")], store, run_at="2026-07-19T00:00:00Z")
+    append_verdicts([_verdict_row(verdict="confirmed")], store, run_at="2026-07-20T00:00:00Z")
+
+    rows = read_verdicts(store)
+    assert len(rows) == 3
+    verdict_sequence = [r["verdict"] for r in rows]
+    assert verdict_sequence == ["inconclusive", "trending", "confirmed"]
+
+
+def test_append_verdicts_same_run_at_replaces_not_duplicates(tmp_path: Path) -> None:
+    """Re-running the same insights run (identical run_at) is idempotent, since
+    (experiment, date, run_at) is the primary key -- guards against double-invocation
+    within a single --facts run rather than accumulating duplicate trajectory steps."""
+    store = tmp_path / "facts.db"
+    append_verdicts([_verdict_row(verdict="trending")], store, run_at="2026-07-20T00:00:00Z")
+    append_verdicts([_verdict_row(verdict="confirmed")], store, run_at="2026-07-20T00:00:00Z")
+
+    rows = read_verdicts(store)
+    assert len(rows) == 1
+    assert rows[0]["verdict"] == "confirmed"
+
+
+def test_append_verdicts_empty_rows_is_noop(tmp_path: Path) -> None:
+    store = tmp_path / "facts.db"
+    written = append_verdicts([], store, run_at="2026-07-20T00:00:00Z")
+    assert written == 0
+    assert not store.exists()
+
+
+def test_append_verdicts_missing_field_raises_schema_error(tmp_path: Path) -> None:
+    store = tmp_path / "facts.db"
+    bad_row = _verdict_row()
+    del bad_row["evidence"]
+    with pytest.raises(SchemaError):
+        append_verdicts([bad_row], store, run_at="2026-07-20T00:00:00Z")
+
+
+def test_read_verdicts_missing_store_returns_empty_list(tmp_path: Path) -> None:
+    assert read_verdicts(tmp_path / "does-not-exist.db") == []
+
+
+def test_append_verdicts_multiple_experiments_distinct_rows(tmp_path: Path) -> None:
+    store = tmp_path / "facts.db"
+    rows = [
+        _verdict_row(experiment="exp-a", date="2026-07-18"),
+        _verdict_row(experiment="exp-b", date="2026-07-19", verdict="failed"),
+    ]
+    written = append_verdicts(rows, store, run_at="2026-07-20T00:00:00Z")
+
+    assert written == 2
+    stored = read_verdicts(store)
+    experiments = {r["experiment"] for r in stored}
+    assert experiments == {"exp-a", "exp-b"}
