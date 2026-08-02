@@ -2,10 +2,12 @@
 # Cartographer scheduled run.
 #
 # Two cadences, because the two halves have very different costs:
-#   --facts  daily   — capture into the fact table. No API key, cheap. This is the
-#                      one that matters: local JSONL rotates out in ~5 days, so a
-#                      missed window is history lost for good.
-#   --cron   weekly  — LLM friction analysis. Needs ANTHROPIC_API_KEY, costs money.
+#   --facts  daily   — derive session notes from JSONL, then capture into the fact
+#                      table. No API key, cheap. This is the one that matters: local
+#                      JSONL rotates out in ~5 days, so a missed window is history
+#                      lost for good.
+#   --cron   weekly  — corpus sweep: sync, tag, wiki session log, arXiv/RSS fetch.
+#                      Deterministic since #60 retired the LLM analysis stage.
 #
 # Scheduling is launchd, not crontab — cron does not fire while the Mac is asleep
 # and silently skips the window; launchd re-fires on wake. See
@@ -20,7 +22,15 @@ MODE="${1:-facts}"
 # Repo root is two levels up from tools/cartographer/ — this was ../../.. back when
 # the script lived at src/agents/cartographer/, which resolved above the repo.
 REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-LOG_FILE="${REPO_DIR}/logs/cartographer-cron.log"
+
+# One log per mode. Both plists wrote to a single file, so a daily --facts failure was
+# buried under weekly --cron output and the two cadences could not be read apart (#60).
+case "${MODE}" in
+    facts) LOG_NAME="cartographer-facts.log" ;;
+    cron)  LOG_NAME="cartographer-cron.log" ;;
+    *)     LOG_NAME="cartographer-both.log" ;;
+esac
+LOG_FILE="${REPO_DIR}/logs/${LOG_NAME}"
 
 mkdir -p "$(dirname "${LOG_FILE}")"
 cd "${REPO_DIR}"
