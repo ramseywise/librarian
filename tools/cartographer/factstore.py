@@ -415,6 +415,190 @@ def read_all(store: Path) -> list[dict[str, Any]]:
 
 
 # ---------------------------------------------------------------------------
+# Review findings (LIB-50)
+# ---------------------------------------------------------------------------
+#
+# An additive projection of guacamayo/.claude/docs/review-findings.jsonl onto a
+# queryable SQLite table. The JSONL write path is CANONICAL and is owned by the
+# review orchestrators (/code-review, /workflow-review); the dashboard's
+# parse_findings() reads it directly. This table is a read-side projection for
+# structured queries (count by repo, category, severity) — it does NOT replace
+# either path.
+#
+# Schema design decision (LIB-50): the table is a METRICS PROJECTION, not the
+# full canonical finding. The nested fields defined in finding-schema.md
+# (claim.observation, claim.failure_scenario, claim.impact,
+# recommendation.action, recommendation.description, recommendation.tradeoffs)
+# are the narrative substance of a finding and are NOT stored here. Reasons:
+#
+#   1. The 7 existing JSONL rows predate any convention to emit those fields;
+#      they would all land as NULL — a wide table of nulls with no backfill path.
+#   2. Populating them requires orchestrator changes outside this issue's scope.
+#   3. The JSONL already carries the full narrative; storing it here would be a
+#      second copy with no query benefit (free-text fields are not filterable).
+#
+# The flat JSONL fields map to the nested finding-schema.md structure as follows:
+#
+#   JSONL flat key       <- finding-schema.md nested path
+#   ─────────────────────────────────────────────────────
+#   id                   <- id
+#   source               <- source
+#   date                 <- date (emission date, not location date)
+#   session_id           <- (flat, optional FK to sessions.session_id)
+#   repo                 <- (flat, not in schema; added by orchestrator)
+#   issue                <- (flat, e.g. "GUA-45"; not in schema; orchestrator)
+#   file                 <- location.file
+#   lines                <- location.lines
+#   symbols              <- location.symbols  (JSON array → TEXT)
+#   title                <- claim.title
+#   category             <- (flat; reporter-native taxonomy tag)
+#   merge_impact         <- severity.merge_impact
+#   evidence_state       <- evidence.state
+#   review_type          <- (flat; "workflow-review" | "code-review" etc.)
+#
+# Omitted nested fields (not in JSONL, not in this table):
+#   claim.observation, claim.failure_scenario, claim.impact
+#   recommendation.action, recommendation.description, recommendation.tradeoffs
+#   severity.source_native, evidence.basis, communication.comment_type
+#
+# These live in the JSONL. Query this table for metrics; read the JSONL for narrative.
+
+FINDING_COLUMNS: dict[str, type] = {
+    "id": str,  # e.g. "AK-001"
+    "source": str,  # "akira-scan" | "sanyi" | "workflow-review" | ...
+    "date": str,  # YYYY-MM-DD emission date
+    "session_id": str,  # nullable FK → sessions.session_id (NULL for pre-GUA-63 rows)
+    "repo": str,  # target repo name, e.g. "librarian"
+    "issue": str,  # associated issue, e.g. "GUA-45" (empty string when absent)
+    "file": str,  # location.file — path relative to repo root
+    "lines": str,  # location.lines — "42" or "42-48" (text, not parsed)
+    "symbols": str,  # location.symbols — JSON array, e.g. '["fn_name"]'
+    "title": str,  # claim.title — one-line summary
+    "category": str,  # reporter-native category tag, e.g. "resource-leak"
+    "merge_impact": str,  # "blocker" | "important" | "question" | "suggestion" | "nit"
+    "evidence_state": str,  # "verified" | "supported" | "hypothesis" | "question"
+    "review_type": str,  # "workflow-review" | "code-review" | ...
+}
+
+_FINDING_SQL_TYPES = {str: "TEXT"}
+
+
+def _connect_findings(store: Path) -> sqlite3.Connection:
+    """Open (or create) the store and ensure the findings table exists."""
+    store.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(store)
+    cols = ", ".join(f"{name} {_FINDING_SQL_TYPES[typ]}" for name, typ in FINDING_COLUMNS.items())
+    conn.execute(f"CREATE TABLE IF NOT EXISTS findings ({cols}, PRIMARY KEY (id))")
+    _add_missing_finding_columns(conn)
+    return conn
+
+
+def _add_missing_finding_columns(conn: sqlite3.Connection) -> None:
+    """Widen an existing findings table when FINDING_COLUMNS grows."""
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(findings)")}
+    for name, typ in FINDING_COLUMNS.items():
+        if name not in existing:
+            conn.execute(f"ALTER TABLE findings ADD COLUMN {name} {_FINDING_SQL_TYPES[typ]}")
+            log.info("factstore.finding_column_added", column=name)
+    conn.commit()
+
+
+def upsert_findings(rows: list[dict[str, Any]], store: Path) -> int:
+    """Idempotent on finding id. Returns rows written.
+
+    Re-running over the same JSONL replaces rows in place rather than
+    appending duplicates, so this is safe to schedule alongside --facts.
+    """
+    if not rows:
+        return 0
+    names = list(FINDING_COLUMNS)
+    placeholders = ", ".join("?" for _ in names)
+    sql = f"INSERT OR REPLACE INTO findings ({', '.join(names)}) VALUES ({placeholders})"
+    values = []
+    for row in rows:
+        values.append(tuple(row.get(n) for n in names))
+    conn = _connect_findings(store)
+    try:
+        conn.executemany(sql, values)
+        conn.commit()
+    finally:
+        conn.close()
+    log.info("factstore.upsert_findings", rows=len(values), store=str(store))
+    return len(values)
+
+
+def read_findings(store: Path) -> list[dict[str, Any]]:
+    """Read every findings row back as a list of dicts, ordered by date and id."""
+    if not store.exists():
+        return []
+    conn = _connect_findings(store)
+    try:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT * FROM findings ORDER BY date, id").fetchall()
+    finally:
+        conn.close()
+    return [dict(row) for row in rows]
+
+
+def from_findings_jsonl(path: Path) -> list[dict[str, Any]]:
+    """Read review-findings JSONL and return a list of finding dicts for upsert.
+
+    Maps the flat JSONL fields to FINDING_COLUMNS. Fields absent from a row
+    default to None (session_id, lines, symbols) or empty string (issue).
+
+    Nested-to-flat mapping — JSONL is already flat; this adapter documents the
+    correspondence to finding-schema.md's nested structure:
+      JSONL key       <- schema path
+      file            <- location.file
+      lines           <- location.lines
+      symbols         <- location.symbols (JSON array serialised as text)
+      title           <- claim.title
+      merge_impact    <- severity.merge_impact
+      evidence_state  <- evidence.state
+
+    Narrative fields (claim.observation, claim.failure_scenario, claim.impact,
+    recommendation.*) are absent from the JSONL and therefore absent from this
+    table. This table is a metrics projection; the JSONL is the source of truth
+    for finding content.
+
+    Malformed lines are skipped with a warning, matching parse_findings() in
+    dashboard.py (which owns the dashboard read path and is not touched here).
+    """
+    rows: list[dict[str, Any]] = []
+    if not path.exists():
+        return rows
+    for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            raw = json.loads(line)
+        except json.JSONDecodeError:
+            log.warning("factstore.findings_parse_error", line=i, path=str(path))
+            continue
+        symbols = raw.get("symbols")
+        row: dict[str, Any] = {
+            "id": raw.get("id", ""),
+            "source": raw.get("source", ""),
+            "date": raw.get("date", ""),
+            "session_id": raw.get("session_id"),  # nullable — pre-GUA-63 rows have none
+            "repo": raw.get("repo", ""),
+            "issue": raw.get("issue") or "",
+            "file": raw.get("file", ""),
+            "lines": raw.get("lines") or "",
+            "symbols": json.dumps(symbols) if isinstance(symbols, list) else (symbols or "[]"),
+            "title": raw.get("title", ""),
+            "category": raw.get("category", ""),
+            "merge_impact": raw.get("merge_impact", ""),
+            "evidence_state": raw.get("evidence_state", ""),
+            "review_type": raw.get("review_type", ""),
+        }
+        rows.append(row)
+    log.info("factstore.from_findings_jsonl", rows=len(rows), path=str(path))
+    return rows
+
+
+# ---------------------------------------------------------------------------
 # Experiment verdicts (LIB-58)
 # ---------------------------------------------------------------------------
 #
