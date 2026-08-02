@@ -9,11 +9,15 @@ import pytest
 
 from tools.cartographer.parser import (
     _REQUIRED_SECTION_IDS,
+    _SECTION_ID_LIST,
+    _SYSTEM_PROMPT,
+    ReportTruncatedError,
     SectionContractError,
     _context_bucket,
     _missing_section_ids,
     _usage_cost,
     aggregate,
+    call_claude,
     generate_report_html,
     iter_sessions,
     iter_subagent_sessions,
@@ -586,3 +590,96 @@ def test_generate_report_html_still_missing_after_retry_raises() -> None:
         generate_report_html("fake-key", "prompt", "fake-model")
     assert mock_call.call_count == 2
     assert _REQUIRED_SECTION_IDS[-1] in str(exc_info.value)
+
+
+# --- Section contract reaches the API payload (LIB-86) ----------------------
+#
+# The tests above patch call_claude, so they exercise the validator and the retry
+# counter but never the prompt the model actually receives. That gap let the
+# contract be enforced while _SYSTEM_PROMPT went unreferenced: every run failed
+# validation because the model was never told which ids to emit. These tests patch
+# the anthropic client instead, which is the only level at which that is visible.
+
+
+def _fake_anthropic(
+    *responses: str, stop_reason: str = "end_turn"
+) -> tuple[Any, list[dict[str, Any]]]:
+    """Return (Anthropic-class stub, list that records each outgoing create() kwargs)."""
+    calls: list[dict[str, Any]] = []
+    replies = list(responses)
+
+    class _Message:
+        def __init__(self, text: str) -> None:
+            self.content = [type("Block", (), {"text": text})()]
+            self.stop_reason = stop_reason
+
+    class _Stream:
+        def __init__(self, text: str) -> None:
+            self._message = _Message(text)
+
+        def __enter__(self) -> _Stream:
+            return self
+
+        def __exit__(self, *_: object) -> None:
+            return None
+
+        def get_final_message(self) -> _Message:
+            return self._message
+
+    class _Messages:
+        def stream(self, **kwargs: object) -> _Stream:
+            calls.append(kwargs)
+            return _Stream(replies.pop(0))
+
+    class _Anthropic:
+        def __init__(self, **_: object) -> None:
+            self.messages = _Messages()
+
+    return _Anthropic, calls
+
+
+@pytest.mark.unit
+def test_call_claude_sends_every_required_section_id_to_the_api() -> None:
+    """The outgoing system prompt must name all nine ids -- the bug LIB-86 fixed."""
+    fake_cls, calls = _fake_anthropic(_html_with_ids(*_REQUIRED_SECTION_IDS))
+    with patch("anthropic.Anthropic", fake_cls):
+        call_claude("fake-key", "prompt", model="fake-model")
+
+    assert len(calls) == 1
+    system = calls[0]["system"]
+    missing = [sid for sid in _REQUIRED_SECTION_IDS if sid not in system]
+    assert missing == [], f"section ids never sent to the model: {missing}"
+
+
+@pytest.mark.unit
+def test_retry_also_sends_the_section_contract() -> None:
+    """The retry must carry the system prompt too, not just the corrective user text."""
+    fake_cls, calls = _fake_anthropic(
+        _html_with_ids(*_REQUIRED_SECTION_IDS[:-1]),
+        _html_with_ids(*_REQUIRED_SECTION_IDS),
+    )
+    with patch("anthropic.Anthropic", fake_cls):
+        generate_report_html("fake-key", "prompt", "fake-model")
+
+    assert len(calls) == 2
+    for call in calls:
+        assert all(sid in call["system"] for sid in _REQUIRED_SECTION_IDS)
+
+
+@pytest.mark.unit
+def test_truncated_response_raises_distinctly_from_contract_failure() -> None:
+    """stop_reason=max_tokens must not be reported as the model ignoring the contract."""
+    fake_cls, _ = _fake_anthropic(
+        _html_with_ids(*_REQUIRED_SECTION_IDS[:2]), stop_reason="max_tokens"
+    )
+    with patch("anthropic.Anthropic", fake_cls), pytest.raises(ReportTruncatedError) as exc_info:
+        call_claude("fake-key", "prompt", model="fake-model")
+    assert "max_tokens" in str(exc_info.value)
+
+
+@pytest.mark.unit
+def test_system_prompt_is_generated_from_the_required_sections_dict() -> None:
+    """_SECTION_ID_LIST must have a live consumer, or the contract can silently drift."""
+    assert _SECTION_ID_LIST in _SYSTEM_PROMPT
+    for section_id in _REQUIRED_SECTION_IDS:
+        assert section_id in _SECTION_ID_LIST
