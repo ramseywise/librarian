@@ -152,9 +152,10 @@ def _run_facts() -> None:
     then is gone for good.
     """
     import argparse
-    from datetime import UTC, datetime
+    from datetime import UTC, datetime, timedelta
     from pathlib import Path
 
+    from tools.cartographer.cron import EmptyInputError
     from tools.cartographer.factstore import (
         from_findings_jsonl,
         from_jsonl,
@@ -169,6 +170,20 @@ def _run_facts() -> None:
     p.add_argument("--store", default=str(repo_root / "data" / "sessions.db"))
     p.add_argument("--projects-dir", default="~/.claude/projects")
     p.add_argument("--notes-dir", default=str(repo_root / "raw" / "sessions"))
+    p.add_argument(
+        "--no-derive",
+        action="store_true",
+        help="Skip deriving session notes from JSONL; only re-read what is already in --notes-dir",
+    )
+    p.add_argument(
+        "--since",
+        default=(datetime.now(UTC) - timedelta(days=30)).date().isoformat(),
+        help=(
+            "Only derive notes for sessions starting on or after this YYYY-MM-DD. "
+            "Defaults to a 30-day window so a first run does not backfill the "
+            "whole JSONL archive; pass an older date to widen it"
+        ),
+    )
     p.add_argument(
         "--dashboard",
         default=str(repo_root / "data" / "dashboard.html"),
@@ -251,7 +266,29 @@ def _run_facts() -> None:
     args = p.parse_args()
 
     store = Path(args.store).expanduser()
-    rows = from_notes(Path(args.notes_dir).expanduser())
+
+    # Derive notes BEFORE from_notes reads them. Nothing else writes to notes_dir on a
+    # schedule, so without this the directory stays empty and from_notes contributes
+    # zero rows — which is how it sat for weeks (#60).
+    notes_dir = Path(args.notes_dir).expanduser()
+    if not args.no_derive:
+        from tools.cartographer.migrate import derive_notes
+        from tools.cartographer.parser import iter_sessions
+
+        projects_dir = Path(args.projects_dir).expanduser()
+        sessions = iter_sessions(projects_dir)
+        if not sessions:
+            # Fail loud. Continuing here would upsert an empty fact table and exit 0,
+            # which is byte-for-byte how a healthy run looks from the outside (#60).
+            exc = EmptyInputError(
+                f"no JSONL sessions found in {projects_dir} — refusing to run on empty input"
+            )
+            print(f"FATAL: {exc}", file=sys.stderr)
+            raise SystemExit(1) from exc
+        derived = derive_notes(sessions, notes_dir, since=args.since)
+        print(f"Derived {len(derived)} new session note(s) -> {notes_dir}")
+
+    rows = from_notes(notes_dir)
     rows += from_jsonl(Path(args.projects_dir).expanduser())
     written = upsert(rows, store)
     print(f"Fact table: {written} rows upserted -> {store}")

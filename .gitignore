@@ -40,7 +40,10 @@ node_modules/
 # Vite cache artifacts
 **/.vite/
 
-# Raw ingest archive — personal/employer source material stays local-only
+# Raw ingest archive — personal/employer source material stays local-only.
+# raw/ at the repo root is where `cartographer --facts` derives session notes: verbatim
+# prompts and project paths, regenerable from ~/.claude/projects. Never committed (#60).
+raw/
 data/raw/
 data/db
 
@@ -51,6 +54,12 @@ data/sessions.db.bak-*
 # data/wiki/ is tracked — it is the repo's product, not rebuildable output.
 # Only private pages stay local.
 data/wiki/private/
+
+# ...except the session log, which is both. `--cron` regenerates it from raw/sessions/,
+# and since #60 gave it real topics its rows carry verbatim first prompts — the same
+# content raw/ is ignored for, reaching a public repo through a tracked door. Untracked
+# 2026-08-02; earlier revisions in history hold curated summaries only.
+data/wiki/meta/session-log.md
 
 # Runtime logs — cron output (cartographer, codemap) and MCP retrieval telemetry.
 # logs/ at the repo root is the only log location; the cron scripts, both launchd

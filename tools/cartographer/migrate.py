@@ -104,8 +104,81 @@ def migrate_jsonl_to_notes(
     return created
 
 
+def _derive_project(session: dict[str, Any]) -> str:
+    """Resolve a real project name for the note's `project:` field.
+
+    `_render_skeleton` used to hardcode `~`, which degrades two consumers:
+    `cron.py:299` heads every wiki session-log group with it, and `cron.py:363` maps it
+    to domain tags. Prefer the repo the session touched most; fall back to the cwd's
+    basename; only then give up.
+    """
+    repos = session.get("session_repos") or {}
+    if repos:
+        return max(repos.items(), key=lambda kv: kv[1])[0]
+    project_path = (session.get("project_path") or "").rstrip("/")
+    if project_path:
+        return Path(project_path).name or "unknown"
+    return "unknown"
+
+
+def _note_stem(session: dict[str, Any]) -> str:
+    """Timestamp plus a session-id suffix, so two sessions on one date cannot collide."""
+    start = session.get("start_time", "")
+    try:
+        ts = datetime.fromisoformat(start).strftime("%Y-%m-%dT%H%M")
+    except ValueError:
+        ts = f"{start[:10] or '0000-00-00'}T0000"
+    return f"{ts}-{str(session.get('session_id', 'unknown'))[:8]}"
+
+
+def derive_notes(
+    sessions: list[dict[str, Any]],
+    notes_dir: Path,
+    facets: dict[str, dict[str, Any]] | None = None,
+    since: str | None = None,
+) -> list[Path]:
+    """Derive parser-compliant session notes from JSONL sessions into `notes_dir`.
+
+    Differs from `migrate_jsonl_to_notes` in the three ways that made that function
+    unusable as a `--facts` producer (#60): dedupe is per session rather than per date,
+    `project` is resolved instead of `~`, and a `## Recent prompts` section is emitted.
+
+    `since` is an inclusive `YYYY-MM-DD` lower bound on the session date. It exists
+    because the JSONL corpus is ~1000 sessions; without a window the first run backfills
+    all of them at once.
+
+    Idempotent: a note whose path already exists is left alone, so the daily cadence
+    only ever adds.
+    """
+    notes_dir.mkdir(parents=True, exist_ok=True)
+
+    written: list[Path] = []
+    for session in sorted(sessions, key=lambda s: s.get("start_time", "")):
+        date = str(session.get("start_time", ""))[:10]
+        if since and date < since:
+            continue
+
+        stem = _note_stem(session)
+        path = notes_dir / f"{stem}.md"
+        if path.exists():
+            continue
+
+        facet = (facets or {}).get(session.get("session_id", ""))
+        path.write_text(
+            _render_skeleton(session, stem, facet=facet, project=_derive_project(session)),
+            encoding="utf-8",
+        )
+        written.append(path)
+        log.info("derive.created", path=str(path), facet_enriched=facet is not None)
+
+    return written
+
+
 def _render_skeleton(
-    session: dict[str, Any], stem: str, facet: dict[str, Any] | None = None
+    session: dict[str, Any],
+    stem: str,
+    facet: dict[str, Any] | None = None,
+    project: str | None = None,
 ) -> str:
     first_prompt = session.get("first_prompt", "").strip()
     langs = ", ".join(session.get("languages", {}).keys()) or "unknown"
@@ -141,10 +214,10 @@ def _render_skeleton(
     return f"""\
 ---
 date: {date}
-time: {stem[11:] if len(stem) > 10 else "0000"}
+time: {stem[11:15] if len(stem) > 10 else "0000"}
 session_id: {session.get("session_id", "~")}
 duration_min: {int(session.get("duration_minutes", 0))}
-project: ~
+project: {project or _derive_project(session)}
 branch: ~
 status: {outcome}
 tests_pass: ~
@@ -164,6 +237,9 @@ est_cost_usd: {est_cost}
 # Session — {stem}
 
 {source_note}
+
+## Recent prompts
+- {first_prompt or "[no prompt captured]"}
 
 ## Position
 - **Work**: {work_field}
