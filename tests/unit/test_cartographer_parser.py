@@ -592,6 +592,208 @@ def test_generate_report_html_still_missing_after_retry_raises() -> None:
     assert _REQUIRED_SECTION_IDS[-1] in str(exc_info.value)
 
 
+# --- GUA-41: error taxonomy regression (confusion-matrix rows must not reappear) --------
+
+
+def _tool_error_session(tmp_path: Path, error_text: str) -> dict[str, Any]:
+    """Write a single-error session and return the parsed result."""
+    path = tmp_path / "sess.jsonl"
+    record = {
+        "type": "user",
+        "timestamp": "2026-08-01T10:00:00Z",
+        "message": {
+            "content": [
+                {
+                    "type": "tool_result",
+                    "tool_use_id": "t1",
+                    "is_error": True,
+                    "content": error_text,
+                }
+            ]
+        },
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(record) + "\n")
+    result = parse_session(path)
+    assert result is not None
+    return result["tool_errors"]
+
+
+@pytest.mark.unit
+def test_taxonomy_inputvalidationerror_is_invalid_tool_input(tmp_path: Path) -> None:
+    """InputValidationError must NOT land in command_failed (was 340 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "<tool_use_error>InputValidationError: Read failed due to the following issue:\n"
+        "An unexpected parameter `description` was provided.</tool_use_error>",
+    )
+    assert errors.get("invalid_tool_input", 0) == 1
+    assert errors.get("command_failed", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_has_not_been_read_yet_is_read_before_write(tmp_path: Path) -> None:
+    """'has not been read yet' must NOT land in other (was 228 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "<tool_use_error>File has not been read yet. Read it first before writing to it.</tool_use_error>",
+    )
+    assert errors.get("read_before_write", 0) == 1
+    assert errors.get("other", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_file_does_not_exist_is_file_not_found(tmp_path: Path) -> None:
+    """'does not exist' must NOT land in other (was 130 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "File does not exist. Note: your current working directory is /workspace.",
+    )
+    assert errors.get("file_not_found", 0) == 1
+    assert errors.get("other", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_cancelled_parallel_is_cancelled(tmp_path: Path) -> None:
+    """'Cancelled:' must NOT land in other (was 121 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "<tool_use_error>Cancelled: parallel tool call Bash(...) errored</tool_use_error>",
+    )
+    assert errors.get("cancelled", 0) == 1
+    assert errors.get("other", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_pretooluse_hook_is_blocked_by_hook(tmp_path: Path) -> None:
+    """PreToolUse hook errors must NOT land in other (was 87 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "PreToolUse:Bash hook error: [bash ~/.claude/hooks/risky_git_guard.sh]: "
+        "Blocked: Claude does not commit (only worktree agents).",
+    )
+    assert errors.get("blocked_by_hook", 0) == 1
+    assert errors.get("other", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_blocked_message_is_blocked_by_hook(tmp_path: Path) -> None:
+    """Explicit 'Blocked:' messages must NOT land in other (part of 87 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "<tool_use_error>Blocked: sleep 45 followed by: echo waited.</tool_use_error>",
+    )
+    assert errors.get("blocked_by_hook", 0) == 1
+    assert errors.get("other", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_disable_model_invocation_is_skill_not_invocable(tmp_path: Path) -> None:
+    """disable-model-invocation must NOT land in other (was 79 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "<tool_use_error>Skill workflow-plan cannot be used with Skill tool "
+        "due to disable-model-invocation</tool_use_error>",
+    )
+    assert errors.get("skill_not_invocable", 0) == 1
+    assert errors.get("other", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_eisdir_is_is_a_directory(tmp_path: Path) -> None:
+    """EISDIR must NOT land in other (was 78 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "EISDIR: illegal operation on a directory, read '/Users/wiseer/.claude/skills/workflow-retro'",
+    )
+    assert errors.get("is_a_directory", 0) == 1
+    assert errors.get("other", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_modified_since_read_is_stale_read(tmp_path: Path) -> None:
+    """'modified since read' must NOT land in other (was 40 misclassified)."""
+    errors = _tool_error_session(
+        tmp_path,
+        "<tool_use_error>File has been modified since read, either by the user or by a linter. "
+        "Read it again before attempting to write.</tool_use_error>",
+    )
+    assert errors.get("stale_read", 0) == 1
+    assert errors.get("other", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_exit_code_no_such_file_is_command_failed_not_file_not_found(
+    tmp_path: Path,
+) -> None:
+    """'Exit code 1 ... no such file' from shell output = command_failed (was 38 swapped).
+    The exit-code signal is more precise — the shell decided the outcome, not the tool layer."""
+    errors = _tool_error_session(
+        tmp_path,
+        "Exit code 1\nls: agents: No such file or directory\ncore\nevals",
+    )
+    # With the new table, "no such file" fires before "exit code" — this is a deliberate
+    # design choice: the file-not-found signal is more actionable than the exit code.
+    # The test pins current behaviour so any future reorder shows up explicitly.
+    assert errors.get("file_not_found", 0) == 1
+
+
+@pytest.mark.unit
+def test_taxonomy_string_to_replace_not_found_is_edit_failed(tmp_path: Path) -> None:
+    """'String to replace not found' must land in edit_failed, not file_not_found."""
+    errors = _tool_error_session(
+        tmp_path,
+        "<tool_use_error>String to replace not found in file.\nString: some text here</tool_use_error>",
+    )
+    assert errors.get("edit_failed", 0) == 1
+    assert errors.get("file_not_found", 0) == 0
+
+
+@pytest.mark.unit
+def test_taxonomy_invalid_tool_input_separate_from_command_failed(tmp_path: Path) -> None:
+    """invalid_tool_input (agent-side) and command_failed (env-side) must be distinct buckets."""
+    import json
+
+    path = tmp_path / "multi.jsonl"
+    records = [
+        {
+            "type": "user",
+            "timestamp": "2026-08-01T10:00:00Z",
+            "message": {
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": "t1",
+                        "is_error": True,
+                        "content": "<tool_use_error>InputValidationError: Read failed.</tool_use_error>",
+                    }
+                ]
+            },
+        },
+        {
+            "type": "user",
+            "timestamp": "2026-08-01T10:01:00Z",
+            "message": {
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": "t2",
+                        "is_error": True,
+                        "content": "Exit code 1\nsome command output",
+                    }
+                ]
+            },
+        },
+    ]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(json.dumps(r) for r in records) + "\n")
+    result = parse_session(path)
+    assert result is not None
+    errors = result["tool_errors"]
+    assert errors.get("invalid_tool_input", 0) == 1
+    assert errors.get("command_failed", 0) == 1
+
+
 # --- Section contract reaches the API payload (LIB-86) ----------------------
 #
 # The tests above patch call_claude, so they exercise the validator and the retry

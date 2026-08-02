@@ -257,7 +257,48 @@ def parse_session(path: Path) -> dict[str, Any] | None:
                     }
                 )
 
-    # Tool result errors from user messages
+    # Tool result errors from user messages.
+    # Ordered most-specific-first so narrow patterns are not swallowed by broad ones.
+    # Each entry is (substring_to_match, category).  First match wins.
+    _ERROR_PATTERNS: list[tuple[str, str]] = [
+        # --- agent-side malformed calls (before any "failed" broad match) ---
+        ("inputvalidationerror", "invalid_tool_input"),
+        # --- edit-tool failures (before generic "not found") ---
+        ("string to replace not found", "edit_failed"),
+        # --- write-before-read / stale-read (before generic "file" patterns) ---
+        ("has not been read yet", "read_before_write"),
+        ("modified since read", "stale_read"),
+        # --- filesystem shape errors ---
+        ("eisdir", "is_a_directory"),
+        ("is a directory", "is_a_directory"),
+        # --- skill invocation blocked by settings ---
+        ("disable-model-invocation", "skill_not_invocable"),
+        # --- parallel tool cancellation ---
+        ("cancelled", "cancelled"),
+        ("canceled", "cancelled"),
+        # --- hook-level blocks (PreToolUse errors and explicit "Blocked:" messages) ---
+        ("pretooluse", "blocked_by_hook"),
+        ("blocked:", "blocked_by_hook"),
+        # --- file-not-found (broad; must come after edit/hook patterns) ---
+        ("no such file", "file_not_found"),
+        ("not found", "file_not_found"),
+        ("does not exist", "file_not_found"),
+        ("path does not exist", "file_not_found"),
+        # --- ACL / user action ---
+        ("permission", "permission_denied"),
+        ("rejected", "user_rejected"),
+        # --- oversized content ---
+        ("too large", "file_too_large"),
+        ("too long", "file_too_large"),
+        ("exceeds maximum", "file_too_large"),
+        # --- real shell command failures: exit code present = environment-side ---
+        ("exit code", "command_failed"),
+        # --- remaining edit failures ---
+        ("edit", "edit_failed"),
+        # --- any other 'failed' substring (HTTP errors, misc) ---
+        ("failed", "command_failed"),
+    ]
+
     tool_errors: dict[str, int] = defaultdict(int)
     for record in user_msgs:
         for block in record.get("message", {}).get("content", []):
@@ -267,20 +308,12 @@ def parse_session(path: Path) -> dict[str, Any] | None:
                 and block.get("is_error")
             ):
                 content_text = _text(block.get("content", "")).lower()
-                if "no such file" in content_text or "not found" in content_text:
-                    tool_errors["file_not_found"] += 1
-                elif "permission" in content_text:
-                    tool_errors["permission_denied"] += 1
-                elif "rejected" in content_text:
-                    tool_errors["user_rejected"] += 1
-                elif "failed" in content_text or "exit code" in content_text:
-                    tool_errors["command_failed"] += 1
-                elif "too large" in content_text or "too long" in content_text:
-                    tool_errors["file_too_large"] += 1
-                elif "edit" in content_text:
-                    tool_errors["edit_failed"] += 1
-                else:
-                    tool_errors["other"] += 1
+                category = "other"
+                for pattern, cat in _ERROR_PATTERNS:
+                    if pattern in content_text:
+                        category = cat
+                        break
+                tool_errors[category] += 1
 
     # Token usage + model tracking + per-request cost/context
     input_tokens = 0
