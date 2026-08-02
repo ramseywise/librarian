@@ -19,12 +19,15 @@ from tools.cartographer.factstore import (
     _classify_meta,
     append_verdicts,
     classify_error_kind,
+    from_findings_jsonl,
     from_jsonl,
     from_notes,
     read_all,
+    read_findings,
     read_verdicts,
     regime_for,
     upsert,
+    upsert_findings,
     validate_row,
 )
 
@@ -854,3 +857,156 @@ def test_append_verdicts_multiple_experiments_distinct_rows(tmp_path: Path) -> N
     stored = read_verdicts(store)
     experiments = {r["experiment"] for r in stored}
     assert experiments == {"exp-a", "exp-b"}
+
+
+# ---------------------------------------------------------------------------
+# LIB-50: findings table
+# ---------------------------------------------------------------------------
+
+# The 7 production rows from guacamayo/.claude/docs/review-findings.jsonl,
+# verbatim. AK-006 and WH-001/WH-002 have no `symbols` key in production.
+_FINDINGS_JSONL = """\
+{"id": "SY-001", "source": "sanyi", "date": "2026-07-29", "repo": "librarian", "issue": "GUA-45", "file": "tools/cartographer/factstore.py", "lines": "114", "symbols": ["SUBAGENT_ATTRIBUTION_SINCE"], "category": "config", "merge_impact": "important", "evidence_state": "supported", "title": "SUBAGENT_ATTRIBUTION_SINCE hardcoded date not externalized", "review_type": "workflow-review"}
+{"id": "AK-001", "source": "akira-scan", "date": "2026-07-29", "repo": "atlas", "issue": "ATL-37", "file": "src/graph.py", "lines": "155", "symbols": ["knowledge_tool_node"], "category": "resource-leak", "merge_impact": "important", "evidence_state": "verified", "title": "knowledge_tool_node leaks AtlasGraph on exception path", "review_type": "workflow-review"}
+{"id": "AK-003", "source": "akira-scan", "date": "2026-07-29", "repo": "atlas", "issue": "ATL-37", "file": "core/preprocessing/crypto/indicators.py", "lines": "92", "symbols": ["compute_volume_sma"], "category": "api-contract", "merge_impact": "important", "evidence_state": "verified", "title": "volume_ratio now nullable \\u2014 contract change undocumented", "review_type": "workflow-review"}
+{"id": "AK-006", "source": "akira-scan", "date": "2026-07-29", "repo": "atlas", "issue": "ATL-37", "file": "tests/api/test_main.py", "lines": "22-24", "category": "test-quality", "merge_impact": "suggestion", "evidence_state": "verified", "title": "exception-path test asserts close() only, not HTTP 500 surfaced", "review_type": "workflow-review"}
+{"id": "AK-007", "source": "sanyi", "date": "2026-07-29", "repo": "atlas", "issue": "ATL-37", "file": "src/config.py", "lines": "7", "symbols": ["ATLAS_LLM_MODEL"], "category": "sanyi", "merge_impact": "nit", "evidence_state": "verified", "title": "hardcoded model fallback string remains (SANYI BN-1)", "review_type": "workflow-review"}
+{"id": "WH-001", "source": "workflow-review", "date": "2026-07-29", "repo": "guacamayo", "issue": "fleet", "file": "n/a", "category": "workspace-hygiene", "merge_impact": "nit", "evidence_state": "verified", "title": "9 empty worktree-agent-* branches in guacamayo", "review_type": "workflow-review"}
+{"id": "WH-002", "source": "workflow-review", "date": "2026-07-29", "repo": "librarian", "issue": "GUA-43", "file": "n/a", "category": "workspace-hygiene", "merge_impact": "important", "evidence_state": "verified", "title": "GUA-43 commit 39bca10 + /tmp/librarian-gua43 worktree redundant with staged state", "review_type": "workflow-review"}
+"""
+
+
+def test_findings_round_trip_all_seven_rows(tmp_path: Path) -> None:
+    """Gate 1: upsert all 7 production findings, read back, assert field-level equality."""
+    jsonl_path = tmp_path / "review-findings.jsonl"
+    jsonl_path.write_text(_FINDINGS_JSONL, encoding="utf-8")
+    store = tmp_path / "facts.db"
+
+    rows = from_findings_jsonl(jsonl_path)
+    assert len(rows) == 7
+
+    written = upsert_findings(rows, store)
+    assert written == 7
+
+    stored = read_findings(store)
+    assert len(stored) == 7
+
+    # Index by id for field-level comparison
+    by_id = {r["id"]: r for r in stored}
+
+    # SY-001 — has symbols, has session_id=None (pre-GUA-63)
+    sy001 = by_id["SY-001"]
+    assert sy001["source"] == "sanyi"
+    assert sy001["date"] == "2026-07-29"
+    assert sy001["session_id"] is None  # Gate 3: nullable confirmed
+    assert sy001["repo"] == "librarian"
+    assert sy001["issue"] == "GUA-45"
+    assert sy001["file"] == "tools/cartographer/factstore.py"
+    assert sy001["lines"] == "114"
+    assert json.loads(sy001["symbols"]) == ["SUBAGENT_ATTRIBUTION_SINCE"]
+    assert sy001["title"] == "SUBAGENT_ATTRIBUTION_SINCE hardcoded date not externalized"
+    assert sy001["category"] == "config"
+    assert sy001["merge_impact"] == "important"
+    assert sy001["evidence_state"] == "supported"
+    assert sy001["review_type"] == "workflow-review"
+
+    # AK-006 — no `symbols` key in JSONL → stored as "[]"
+    ak006 = by_id["AK-006"]
+    assert ak006["lines"] == "22-24"
+    assert json.loads(ak006["symbols"]) == []
+
+    # WH-001 — no `symbols`, no `session_id`
+    wh001 = by_id["WH-001"]
+    assert wh001["session_id"] is None
+    assert wh001["repo"] == "guacamayo"
+    assert wh001["issue"] == "fleet"
+
+    # WH-002
+    wh002 = by_id["WH-002"]
+    assert wh002["merge_impact"] == "important"
+    assert wh002["file"] == "n/a"
+
+
+def test_findings_upsert_is_idempotent_on_id(tmp_path: Path) -> None:
+    """Re-running over same JSONL replaces rows, not appends."""
+    jsonl_path = tmp_path / "review-findings.jsonl"
+    jsonl_path.write_text(_FINDINGS_JSONL, encoding="utf-8")
+    store = tmp_path / "facts.db"
+
+    rows = from_findings_jsonl(jsonl_path)
+    upsert_findings(rows, store)
+    upsert_findings(rows, store)
+
+    assert len(read_findings(store)) == 7
+
+
+def test_findings_session_id_nullable(tmp_path: Path) -> None:
+    """Gate 3: all 7 pre-GUA-63 rows load with session_id=None."""
+    jsonl_path = tmp_path / "review-findings.jsonl"
+    jsonl_path.write_text(_FINDINGS_JSONL, encoding="utf-8")
+    store = tmp_path / "facts.db"
+
+    upsert_findings(from_findings_jsonl(jsonl_path), store)
+    stored = read_findings(store)
+
+    assert all(r["session_id"] is None for r in stored)
+
+
+def test_findings_session_id_stored_when_present(tmp_path: Path) -> None:
+    """A finding with a session_id round-trips correctly."""
+    line = json.dumps(
+        {
+            "id": "AK-999",
+            "source": "akira-scan",
+            "date": "2026-08-01",
+            "session_id": "abc123",
+            "repo": "librarian",
+            "issue": "LIB-50",
+            "file": "tools/x.py",
+            "lines": "1",
+            "symbols": [],
+            "title": "test finding",
+            "category": "test",
+            "merge_impact": "nit",
+            "evidence_state": "verified",
+            "review_type": "workflow-review",
+        }
+    )
+    jsonl_path = tmp_path / "review-findings.jsonl"
+    jsonl_path.write_text(line + "\n", encoding="utf-8")
+    store = tmp_path / "facts.db"
+
+    upsert_findings(from_findings_jsonl(jsonl_path), store)
+    stored = read_findings(store)
+
+    assert len(stored) == 1
+    assert stored[0]["session_id"] == "abc123"
+
+
+def test_findings_malformed_line_skipped(tmp_path: Path) -> None:
+    """A malformed JSON line is skipped; surrounding rows are still loaded."""
+    content = (
+        '{"id": "AK-001", "source": "akira-scan", "date": "2026-07-29", "repo": "atlas", '
+        '"issue": "ATL-37", "file": "f.py", "lines": "1", "title": "t", "category": "c", '
+        '"merge_impact": "nit", "evidence_state": "verified", "review_type": "workflow-review"}\n'
+        "not valid json\n"
+        '{"id": "AK-002", "source": "akira-scan", "date": "2026-07-29", "repo": "atlas", '
+        '"issue": "ATL-37", "file": "g.py", "lines": "2", "title": "t2", "category": "c", '
+        '"merge_impact": "nit", "evidence_state": "verified", "review_type": "workflow-review"}\n'
+    )
+    jsonl_path = tmp_path / "review-findings.jsonl"
+    jsonl_path.write_text(content, encoding="utf-8")
+
+    rows = from_findings_jsonl(jsonl_path)
+    assert len(rows) == 2
+    assert rows[0]["id"] == "AK-001"
+    assert rows[1]["id"] == "AK-002"
+
+
+def test_findings_missing_jsonl_returns_empty(tmp_path: Path) -> None:
+    rows = from_findings_jsonl(tmp_path / "does-not-exist.jsonl")
+    assert rows == []
+
+
+def test_read_findings_missing_store_returns_empty(tmp_path: Path) -> None:
+    assert read_findings(tmp_path / "does-not-exist.db") == []
