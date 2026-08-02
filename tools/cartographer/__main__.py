@@ -155,7 +155,14 @@ def _run_facts() -> None:
     from datetime import UTC, datetime
     from pathlib import Path
 
-    from tools.cartographer.factstore import from_jsonl, from_notes, read_all, upsert
+    from tools.cartographer.factstore import (
+        from_findings_jsonl,
+        from_jsonl,
+        from_notes,
+        read_all,
+        upsert,
+        upsert_findings,
+    )
 
     repo_root = Path(__file__).resolve().parents[2]
     p = argparse.ArgumentParser(description="Refresh the session fact table + dashboard")
@@ -238,6 +245,11 @@ def _run_facts() -> None:
     rows += from_jsonl(Path(args.projects_dir).expanduser())
     written = upsert(rows, store)
     print(f"Fact table: {written} rows upserted -> {store}")
+
+    findings_path = Path(args.findings).expanduser()
+    finding_rows = from_findings_jsonl(findings_path)
+    findings_written = upsert_findings(finding_rows, store)
+    print(f"Findings table: {findings_written} rows upserted -> {store}")
 
     if not args.no_git:
         from tools.cartographer.gitstore import refresh as refresh_git
