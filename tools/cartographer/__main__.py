@@ -184,8 +184,9 @@ def _run_facts() -> None:
         help=(
             "Path to the shared context-dashboard.html for region injection. "
             "Cartographer injects only the regions it owns (REVIEW-FINDINGS, "
-            "EXPERIMENTS-LIFECYCLE); all other regions and hand-written content "
-            "are left untouched."
+            "EXPERIMENTS-LIFECYCLE, INPUT-TOKENS, SKILL-ECONOMICS, TOOL-TRENDS, "
+            "FRICTION-REGROUP, SKILL-EVALS, LOOP); all other regions and hand-written "
+            "content are left untouched."
         ),
     )
     p.add_argument(
@@ -203,6 +204,15 @@ def _run_facts() -> None:
     )
     p.add_argument("--workspace", default="~/workspace", help="Root scanned for git repos")
     p.add_argument("--no-git", action="store_true", help="Skip repo-activity collection")
+    p.add_argument(
+        "--plans-root",
+        default="~/workspace",
+        help=(
+            "Root scanned for plan docs at <root>/*/.claude/docs/plans/*.md (loop tab). "
+            "Deliberately not librarian's ingested copies under data/raw/claude-docs/, "
+            "which would double-count the corpus"
+        ),
+    )
     p.add_argument(
         "--findings",
         default=str(Path("~/workspace/guacamayo/.claude/docs/review-findings.jsonl").expanduser()),
@@ -254,8 +264,8 @@ def _run_facts() -> None:
     if not args.no_git:
         from tools.cartographer.gitstore import refresh as refresh_git
 
-        commits, prs = refresh_git(Path(args.workspace).expanduser(), store)
-        print(f"Repo activity: {commits} commit-days, {prs} PRs")
+        commits, prs, issues = refresh_git(Path(args.workspace).expanduser(), store)
+        print(f"Repo activity: {commits} commit-days, {prs} PRs, {issues} issues")
 
     if not args.no_verdicts:
         from tools.cartographer.dashboard import parse_ledger
@@ -356,10 +366,13 @@ def _run_facts() -> None:
             render_experiments_region,
             render_friction_regroup_card,
             render_input_tokens_card,
+            render_loop_region,
             render_review_findings_region,
             render_skill_economics_card,
             render_tool_trends_card,
         )
+        from tools.cartographer.gitstore import read_issues
+        from tools.cartographer.loop import collect_plan_docs
 
         ctx_path = Path(args.context_dashboard).expanduser()
         if ctx_path.exists():
@@ -383,6 +396,10 @@ def _run_facts() -> None:
                 "TOOL-TRENDS": render_tool_trends_card(store),
                 "FRICTION-REGROUP": render_friction_regroup_card(store),
                 "SKILL-EVALS": render_eval_results_region(eval_results),
+                "LOOP": render_loop_region(
+                    collect_plan_docs(Path(args.plans_root).expanduser()),
+                    read_issues(store),
+                ),
             }
             injected = inject_regions(ctx_path, regions)
             print(f"Region injection: {injected}")

@@ -477,6 +477,16 @@ Keep analysis terse and actionable."""
 # ---------------------------------------------------------------------------
 
 
+class EmptyInputError(RuntimeError):
+    """Nothing reached the analysis stage.
+
+    Raised instead of returning a placeholder report. Returning one made an empty run
+    write a 67-byte "No session data available for analysis." file and exit 0, which is
+    byte-for-byte how a healthy run looks from the outside — the pipeline could not
+    distinguish "no input" from "fine" and stayed broken for eleven days (#60).
+    """
+
+
 def run_analysis() -> str:
     # Load .env so the crontab context can find the key
     load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env", override=False)
@@ -496,8 +506,12 @@ def run_analysis() -> str:
     cost_summary = _compute_cost_summary(SESSION_META_DIR)
 
     if not sessions_md and not friction_log and not facets:
-        log.info("cron.no_data", msg="No session or friction data to analyze")
-        return "No session data available for analysis."
+        raise EmptyInputError(
+            "no input to analyze — "
+            f"no session notes in {SESSIONS_DIR}, "
+            f"no friction log at {FRICTION_LOG}, "
+            f"no facets in {FACETS_DIR}"
+        )
 
     log.info(
         "cron.data_loaded",
@@ -633,10 +647,26 @@ def fetch_feed_posts() -> int:
 def run_cron() -> None:
     log.info("cron.start")
 
+    # Faults are collected rather than raised so that a starved stage does not discard
+    # work the other stages completed. They are re-read at the end to set the exit code.
+    problems: list[str] = []
+
     # Sync session notes to librarian raw/ for wiki ingest
     synced = _sync_sessions_to_raw(SESSIONS_DIR, LIBRARIAN_RAW_SESSIONS)
     if synced:
         log.info("cron.sessions_synced", count=synced, dest=str(LIBRARIAN_RAW_SESSIONS))
+
+    # Stages 1-3 all read from raw/sessions/. If it is still empty after the sync, then
+    # every one of them no-op'd — invisible unless it is said out loud.
+    if not any(LIBRARIAN_RAW_SESSIONS.glob("*.md")):
+        msg = (
+            f"no session notes in {LIBRARIAN_RAW_SESSIONS} after sync "
+            f"(source: {SESSIONS_DIR}) — sync, tagging and wiki session-log all no-op'd"
+        )
+        log.error(
+            "cron.sessions_starved", source=str(SESSIONS_DIR), dest=str(LIBRARIAN_RAW_SESSIONS)
+        )
+        problems.append(msg)
 
     # Tag any session files that are missing semantic frontmatter tags
     _tag_new_session_files(LIBRARIAN_RAW_SESSIONS)
@@ -652,16 +682,26 @@ def run_cron() -> None:
     # Fetch recent RSS/blog posts (opt-in via FEED_FETCH_ENABLED=true)
     feed_posts_fetched = fetch_feed_posts()
 
-    report = run_analysis()
-    out_path = save_report(report)
-    created_commands = extract_and_write_commands(report)
+    try:
+        report = run_analysis()
+    except EmptyInputError as exc:
+        # No report is written at all. A placeholder here is worse than nothing: it makes
+        # the insights directory look current while carrying no information.
+        log.error("cron.empty_input", reason=str(exc))
+        problems.append(str(exc))
+        out_path = None
+        created_commands: list[str] = []
+    else:
+        out_path = save_report(report)
+        created_commands = extract_and_write_commands(report)
 
     summary = {
-        "report": str(out_path),
+        "report": str(out_path) if out_path else None,
         "commands_created": created_commands,
         "sessions_synced": synced,
         "arxiv_papers_fetched": arxiv_papers_fetched,
         "feed_posts_fetched": feed_posts_fetched,
+        "problems": problems,
         "timestamp": datetime.now(tz=UTC).isoformat(),
     }
     summary_path = INSIGHTS_DIR / "latest.json"
@@ -670,5 +710,11 @@ def run_cron() -> None:
 
     # Rotate hook log if needed
     _rotate_hook_log()
+
+    if problems:
+        # The summary is written first so the failure leaves a durable trace, then the
+        # non-zero exit reaches cartographer-cron.sh, which logs "cron: FAILED (exit 1)".
+        log.error("cron.failed", problems=problems, count=len(problems))
+        sys.exit(1)
 
     log.info("cron.complete", **summary)

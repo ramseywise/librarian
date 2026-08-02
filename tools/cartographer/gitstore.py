@@ -56,6 +56,18 @@ PR_COLUMNS: dict[str, type] = {
     "is_bot": int,
 }
 
+# Issues carry the *workflow label*, which is the board's view of where a work item
+# sits. Joined against plan-doc `Status:` by the loop tab to surface drift (LIB #91).
+ISSUE_COLUMNS: dict[str, type] = {
+    "repo": str,
+    "number": int,
+    "title": str,
+    "state": str,
+    "labels": str,
+    "created_date": str,
+    "closed_date": str,
+}
+
 _SQL_TYPES = {str: "TEXT", int: "INTEGER", float: "REAL", bool: "INTEGER"}
 
 # Author names matching this are automation, not human work.
@@ -230,8 +242,10 @@ def _connect(store: Path) -> sqlite3.Connection:
     conn = sqlite3.connect(store)
     gcols = ", ".join(f"{n} {_SQL_TYPES[t]}" for n, t in GIT_COLUMNS.items())
     pcols = ", ".join(f"{n} {_SQL_TYPES[t]}" for n, t in PR_COLUMNS.items())
+    icols = ", ".join(f"{n} {_SQL_TYPES[t]}" for n, t in ISSUE_COLUMNS.items())
     conn.execute(f"CREATE TABLE IF NOT EXISTS git_activity ({gcols}, PRIMARY KEY (repo, date))")
     conn.execute(f"CREATE TABLE IF NOT EXISTS pull_requests ({pcols}, PRIMARY KEY (repo, number))")
+    conn.execute(f"CREATE TABLE IF NOT EXISTS issues ({icols}, PRIMARY KEY (repo, number))")
     return conn
 
 
@@ -241,6 +255,10 @@ def upsert_commits(rows: list[dict[str, Any]], store: Path) -> int:
 
 def upsert_prs(rows: list[dict[str, Any]], store: Path) -> int:
     return _upsert("pull_requests", PR_COLUMNS, rows, store)
+
+
+def upsert_issues(rows: list[dict[str, Any]], store: Path) -> int:
+    return _upsert("issues", ISSUE_COLUMNS, rows, store)
 
 
 def _upsert(table: str, columns: dict[str, type], rows: list[dict[str, Any]], store: Path) -> int:
@@ -269,6 +287,10 @@ def read_prs(store: Path) -> list[dict[str, Any]]:
     return _read("pull_requests", store)
 
 
+def read_issues(store: Path) -> list[dict[str, Any]]:
+    return _read("issues", store)
+
+
 def _read(table: str, store: Path) -> list[dict[str, Any]]:
     if not store.exists():
         return []
@@ -280,11 +302,19 @@ def _read(table: str, store: Path) -> list[dict[str, Any]]:
         conn.close()
 
 
-def refresh(workspace: Path, store: Path, since: str = "2026-04-01") -> tuple[int, int]:
-    """Collect commit + PR facts for every repo under `workspace`."""
+def refresh(workspace: Path, store: Path, since: str = "2026-04-01") -> tuple[int, int, int]:
+    """Collect commit + PR + issue facts for every repo under `workspace`."""
+    from tools.cartographer.loop import collect_issues
+
     commit_rows: list[dict[str, Any]] = []
     pr_rows: list[dict[str, Any]] = []
+    issue_rows: list[dict[str, Any]] = []
     for repo in discover_repos(workspace):
         commit_rows.extend(collect_commits(repo, since))
         pr_rows.extend(collect_prs(repo.name))
-    return upsert_commits(commit_rows, store), upsert_prs(pr_rows, store)
+        issue_rows.extend(collect_issues(repo.name))
+    return (
+        upsert_commits(commit_rows, store),
+        upsert_prs(pr_rows, store),
+        upsert_issues(issue_rows, store),
+    )

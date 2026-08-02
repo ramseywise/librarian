@@ -37,6 +37,13 @@ from tools.cartographer.factstore import (
     read_verdicts,
 )
 from tools.cartographer.gitstore import read_git_activity, read_prs
+from tools.cartographer.loop import (
+    PlanDoc,
+    detect_drift,
+    label_counts,
+    non_conforming,
+    status_counts,
+)
 from tools.cartographer.verdicts import parse_metric
 
 log = structlog.get_logger(__name__)
@@ -3194,3 +3201,115 @@ def _render_eval_results(results: list[dict] | None) -> str:
 def render_eval_results_region(results: list[dict] | None) -> str:
     """Return the injectable HTML for the SKILL-EVALS marker region."""
     return _render_eval_results(results)
+
+
+# ---------------------------------------------------------------------------
+# Workflow loop (LIB #91) — plan-doc Status vs. issue workflow label
+# ---------------------------------------------------------------------------
+
+
+def _render_loop(docs: list[PlanDoc] | None, issues: list[dict[str, Any]] | None) -> str:
+    """Render the LOOP marker region: where work sits, and where the two records disagree.
+
+    Two distributions are shown side by side rather than merged, because they are not
+    two views of one number: most plan docs carry no issue reference at all (35 of 126
+    have an `Issue:` line, measured 2026-08-02). Merging them would imply a join that
+    does not exist. Coverage is stated instead, so a small drift count reads as "few
+    disagreements among the joinable ones", not "the loop is healthy".
+    """
+    docs = docs or []
+    issues = issues or []
+    if not docs and not issues:
+        return (
+            '<div class="card">\n'
+            '      <div class="card-title">Workflow loop</div>\n'
+            '      <p class="card-note">No plan docs or issues collected. '
+            "Plan docs are read from <code>~/workspace/*/.claude/docs/plans/</code>; "
+            "issues need <code>gh</code> on PATH.</p>\n"
+            "    </div>"
+        )
+
+    statuses = status_counts(docs)
+    labels = label_counts(issues)
+    drifts = detect_drift(docs, issues)
+    bad = non_conforming(docs)
+    joinable = sum(1 for d in docs if d.issue is not None)
+
+    status_rows = "".join(
+        f"<tr><td>{html.escape(name)}</td><td>{count}</td></tr>" for name, count in statuses.items()
+    )
+    status_table = (
+        "<h4>Plan docs by Status</h4>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Status</th><th>Docs</th></tr></thead>"
+        f"<tbody>{status_rows}</tbody></table></div>"
+    )
+
+    label_rows = "".join(
+        f"<tr><td>{html.escape(name)}</td><td>{count}</td></tr>" for name, count in labels.items()
+    )
+    label_table = (
+        "<h4>Open issues by workflow label</h4>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Label</th><th>Issues</th></tr></thead>"
+        f"<tbody>{label_rows}</tbody></table></div>"
+    )
+
+    if drifts:
+        drift_rows = "".join(
+            f"<tr>"
+            f"<td>{html.escape(d.repo)}</td>"
+            f"<td>#{d.issue}</td>"
+            f"<td>{html.escape(d.status)}</td>"
+            f"<td>{html.escape(d.label)}</td>"
+            f"<td>{html.escape(d.reason)}</td>"
+            f"</tr>"
+            for d in sorted(drifts, key=lambda x: (x.repo, x.issue))
+        )
+        drift_table = (
+            f"<h4>Drift ({len(drifts)})</h4>"
+            '<div class="table-view"><table>'
+            "<thead><tr><th>Repo</th><th>Issue</th><th>Plan Status</th>"
+            "<th>Issue label</th><th>Disagreement</th></tr></thead>"
+            f"<tbody>{drift_rows}</tbody></table></div>"
+        )
+    else:
+        drift_table = (
+            "<h4>Drift (0)</h4>"
+            '<p class="card-note">No plan/issue disagreements among the joinable docs.</p>'
+        )
+
+    if bad:
+        bad_rows = "".join(
+            f"<tr><td>{html.escape(d.repo)}</td>"
+            f"<td>{html.escape(Path(d.path).name)}</td>"
+            f"<td>{html.escape(d.problem)}</td></tr>"
+            for d in sorted(bad, key=lambda x: (x.repo, x.path))
+        )
+        bad_table = (
+            f"<h4>Non-conforming Status ({len(bad)})</h4>"
+            '<div class="table-view"><table>'
+            "<thead><tr><th>Repo</th><th>Doc</th><th>Why the hook would reject it</th></tr></thead>"
+            f"<tbody>{bad_rows}</tbody></table></div>"
+        )
+    else:
+        bad_table = ""
+
+    return (
+        '<div class="card">\n'
+        '      <div class="card-title">Workflow loop</div>\n'
+        f'      <p class="card-note">{len(docs)} plan docs, {joinable} carrying an issue '
+        f"reference ({joinable * 100 // len(docs) if docs else 0}% joinable); "
+        f"{len(issues)} issues collected. Drift is only detectable on the joinable "
+        f"subset — the rest are unreported, not clean.</p>\n"
+        f"      {status_table}\n"
+        f"      {label_table}\n"
+        f"      {drift_table}\n"
+        f"      {bad_table}\n"
+        "    </div>"
+    )
+
+
+def render_loop_region(docs: list[PlanDoc] | None, issues: list[dict[str, Any]] | None) -> str:
+    """Return the injectable HTML for the LOOP marker region."""
+    return _render_loop(docs, issues)
