@@ -1014,6 +1014,14 @@ _REQUIRED_SECTIONS: dict[str, str] = {
 }
 _REQUIRED_SECTION_IDS: tuple[str, ...] = tuple(_REQUIRED_SECTIONS)
 
+# Reports generated before the contract was actually sent ran ~6.0-6.2k output tokens
+# (measured from insights-report-2026-07-30/31.html) — but those were reports the model
+# wrote freely, emitting none of the nine pinned ids. Once the contract reaches the model
+# it writes all nine sections and the report is much larger: both 8192 and 16384 truncated
+# on the 330-session corpus (verified 2026-08-02). Raise this rather than retrying if
+# ReportTruncatedError fires — a retry at the same ceiling truncates identically.
+_MAX_REPORT_TOKENS = 32768
+
 _SECTION_ID_LIST = "\n".join(
     f"- #{section_id:<15}: {desc}" for section_id, desc in _REQUIRED_SECTIONS.items()
 )
@@ -1077,17 +1085,42 @@ def _key_from_env_file() -> str:
 
 
 def call_claude(api_key: str, prompt: str, model: str = "claude-sonnet-4-6") -> str:
-    """Call the Anthropic API to generate an HTML report."""
+    """Call the Anthropic API to generate an HTML report.
+
+    _SYSTEM_PROMPT carries the pinned section-ID contract that _missing_section_ids
+    validates against, so it must be the system prompt on every call — including the
+    retry. Sending a generic system string instead makes the contract unsatisfiable:
+    the model is never told which ids to emit, and every run fails validation.
+
+    Streamed because a full nine-section report needs a max_tokens the SDK refuses to
+    serve non-streaming ("Streaming is required for operations that may take longer
+    than 10 minutes").
+    """
     import anthropic
 
     client = anthropic.Anthropic(api_key=api_key)
-    message = client.messages.create(
+    with client.messages.stream(
         model=model,
-        max_tokens=8192,
-        system="You are an expert data analyst generating HTML reports.",
+        max_tokens=_MAX_REPORT_TOKENS,
+        system=_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
-    )
+    ) as stream:
+        message = stream.get_final_message()
+    if message.stop_reason == "max_tokens":
+        raise ReportTruncatedError(
+            f"Report generation hit max_tokens={_MAX_REPORT_TOKENS} and was truncated. "
+            "Missing sections are a symptom of truncation here, not of the model "
+            "ignoring the contract — raise _MAX_REPORT_TOKENS rather than retrying."
+        )
     return message.content[0].text if message.content else ""
+
+
+class ReportTruncatedError(RuntimeError):
+    """Raised when generation stopped at max_tokens, so the HTML is incomplete.
+
+    Distinct from SectionContractError: a truncated report is missing trailing
+    sections for a mechanical reason, and retrying at the same limit cannot fix it.
+    """
 
 
 class SectionContractError(RuntimeError):
