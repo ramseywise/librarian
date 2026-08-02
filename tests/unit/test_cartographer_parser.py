@@ -9,11 +9,15 @@ import pytest
 
 from tools.cartographer.parser import (
     _REQUIRED_SECTION_IDS,
+    _SECTION_ID_LIST,
+    _SYSTEM_PROMPT,
+    ReportTruncatedError,
     SectionContractError,
     _context_bucket,
     _missing_section_ids,
     _usage_cost,
     aggregate,
+    call_claude,
     generate_report_html,
     iter_sessions,
     iter_subagent_sessions,
