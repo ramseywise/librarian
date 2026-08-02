@@ -3047,3 +3047,150 @@ def render_verdict_trajectories_region(verdict_rows: list[dict[str, Any]] | None
     reuse this rather than re-deriving the render.
     """
     return _render_verdict_trajectories(verdict_rows)
+
+
+# ---------------------------------------------------------------------------
+# Skill eval results (GUA #47 / LIB #64) — eval-results.jsonl aggregation
+# ---------------------------------------------------------------------------
+
+
+def parse_eval_results(path: Path) -> list[dict]:
+    """Read eval-results.jsonl, parse each line, return list of result dicts.
+
+    Schema: date, repo, skill, eval_id, status, score, notes.
+    Malformed lines are skipped with a warning — a single bad write must not
+    break the dashboard render.
+    """
+    results: list[dict] = []
+    if not path.exists():
+        return results
+    for i, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            results.append(json.loads(line))
+        except json.JSONDecodeError:
+            log.warning("dashboard.eval_results_parse_error", line=i, path=str(path))
+    return results
+
+
+def _render_eval_results(results: list[dict] | None) -> str:
+    """Render the SKILL-EVALS marker region from eval-results.jsonl rows.
+
+    Three tables:
+      1. Summary by repo — pass / fail / skip counts per repo.
+      2. Summary by skill — pass / fail / skip counts per skill (across repos).
+      3. Run dates present in the data (time dimension).
+
+    All counts are aggregated from whatever dates exist; the trend across
+    multiple dates cannot be verified until >=2 distinct run dates exist
+    (first additional run expected 2026-08-03).
+    """
+    if not results:
+        return (
+            '<div class="card">\n'
+            '      <div class="card-title">Skill evals</div>\n'
+            '      <p class="card-note">No eval results yet. Run '
+            "<code>guacamayo/scripts/eval-runner.sh</code> to populate "
+            "<code>.sounding/eval-results.jsonl</code>.</p>\n"
+            "    </div>"
+        )
+
+    # Aggregate by repo
+    repo_stats: dict[str, dict[str, int]] = {}
+    for r in results:
+        repo = r.get("repo", "unknown")
+        status = r.get("status", "unknown")
+        repo_stats.setdefault(repo, {"pass": 0, "fail": 0, "skip": 0})
+        if status in repo_stats[repo]:
+            repo_stats[repo][status] += 1
+        else:
+            repo_stats[repo].setdefault(status, 0)
+            repo_stats[repo][status] += 1
+
+    # Aggregate by skill (repo/skill pair → then roll up to skill name)
+    skill_stats: dict[str, dict[str, int]] = {}
+    for r in results:
+        skill = r.get("skill", "unknown")
+        status = r.get("status", "unknown")
+        skill_stats.setdefault(skill, {"pass": 0, "fail": 0, "skip": 0})
+        if status in skill_stats[skill]:
+            skill_stats[skill][status] += 1
+        else:
+            skill_stats[skill].setdefault(status, 0)
+            skill_stats[skill][status] += 1
+
+    # Run dates (time dimension)
+    run_dates = sorted({r.get("date", "")[:10] for r in results if r.get("date")})
+
+    total = len(results)
+    total_pass = sum(r.get("status") == "pass" for r in results)
+    total_fail = sum(r.get("status") == "fail" for r in results)
+    total_skip = sum(r.get("status") == "skip" for r in results)
+
+    # Repo table rows — sorted by repo name
+    repo_rows = "".join(
+        f"<tr>"
+        f"<td>{html.escape(repo)}</td>"
+        f"<td style='color:var(--success,#2a7d4f)'>{stats.get('pass', 0)}</td>"
+        f"<td style='color:var(--danger,#c0392b)'>{stats.get('fail', 0)}</td>"
+        f"<td style='color:var(--text-3)'>{stats.get('skip', 0)}</td>"
+        f"</tr>"
+        for repo, stats in sorted(repo_stats.items())
+    )
+    repo_table = (
+        "<h4>By repo</h4>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Repo</th><th>Pass</th><th>Fail</th><th>Skip</th></tr></thead>"
+        f"<tbody>{repo_rows}</tbody></table></div>"
+    )
+
+    # Skill table rows — sorted by fail desc, then pass desc
+    def _skill_sort_key(kv: tuple[str, dict[str, int]]) -> tuple[int, int, str]:
+        _, s = kv
+        return (-s.get("fail", 0), -s.get("pass", 0), kv[0])
+
+    skill_rows = "".join(
+        f"<tr>"
+        f"<td>{html.escape(skill)}</td>"
+        f"<td style='color:var(--success,#2a7d4f)'>{stats.get('pass', 0)}</td>"
+        f"<td style='color:var(--danger,#c0392b)'>{stats.get('fail', 0)}</td>"
+        f"<td style='color:var(--text-3)'>{stats.get('skip', 0)}</td>"
+        f"</tr>"
+        for skill, stats in sorted(skill_stats.items(), key=_skill_sort_key)
+    )
+    skill_table = (
+        "<h4>By skill</h4>"
+        '<div class="table-view"><table>'
+        "<thead><tr><th>Skill</th><th>Pass</th><th>Fail</th><th>Skip</th></tr></thead>"
+        f"<tbody>{skill_rows}</tbody></table></div>"
+    )
+
+    # Time dimension — dates present in data
+    dates_note = (
+        f"Run dates: {html.escape(', '.join(run_dates))}. "
+        f"Trend across multiple dates requires &ge;2 distinct run dates "
+        f"(next expected 2026-08-03)."
+        if len(run_dates) < 2
+        else f"Run dates ({len(run_dates)}): {html.escape(', '.join(run_dates))}."
+    )
+
+    return (
+        '<div class="card">\n'
+        '      <div class="card-title">Skill evals</div>\n'
+        f'      <p class="card-note">{total} cases: {total_pass} pass, '
+        f"{total_fail} fail, {total_skip} skip. "
+        f"Source: <code>guacamayo/.sounding/eval-results.jsonl</code> "
+        f"(written by <code>scripts/eval-runner.sh</code>).</p>\n"
+        f"      {repo_table}\n"
+        f"      {skill_table}\n"
+        f'      <p style="font-size:11px;color:var(--text-3);margin-top:8px">'
+        f"{dates_note}</p>\n"
+        "    </div>"
+    )
+
+
+def render_eval_results_region(results: list[dict] | None) -> str:
+    """Return the injectable HTML for the SKILL-EVALS marker region."""
+    return _render_eval_results(results)

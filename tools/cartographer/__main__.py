@@ -202,6 +202,11 @@ def _run_facts() -> None:
         help="Review findings JSONL for the review card",
     )
     p.add_argument(
+        "--eval-results",
+        default=str(Path("~/workspace/guacamayo/.sounding/eval-results.jsonl").expanduser()),
+        help="Skill eval results JSONL (written by guacamayo/scripts/eval-runner.sh) for the eval tab",
+    )
+    p.add_argument(
         "--ledger",
         default=str(Path("~/workspace/guacamayo/.sounding/tooling-ledger.md").expanduser()),
         help="Tooling ledger path for the experiments card",
@@ -332,8 +337,10 @@ def _run_facts() -> None:
     if not args.no_inject:
         from tools.cartographer.dashboard import (
             inject_regions,
+            parse_eval_results,
             parse_findings,
             parse_ledger,
+            render_eval_results_region,
             render_experiments_region,
             render_friction_regroup_card,
             render_input_tokens_card,
@@ -351,6 +358,10 @@ def _run_facts() -> None:
             )
             findings_path = Path(args.findings).expanduser()
             review_findings = parse_findings(findings_path) if findings_path.exists() else None
+            eval_results_path = Path(args.eval_results).expanduser()
+            eval_results = (
+                parse_eval_results(eval_results_path) if eval_results_path.exists() else None
+            )
 
             regions: dict[str, str] = {
                 "REVIEW-FINDINGS": render_review_findings_region(review_findings),
@@ -359,6 +370,7 @@ def _run_facts() -> None:
                 "SKILL-ECONOMICS": render_skill_economics_card(store),
                 "TOOL-TRENDS": render_tool_trends_card(store),
                 "FRICTION-REGROUP": render_friction_regroup_card(store),
+                "SKILL-EVALS": render_eval_results_region(eval_results),
             }
             injected = inject_regions(ctx_path, regions)
             print(f"Region injection: {injected}")
