@@ -136,6 +136,9 @@ CONFIRM_EXPENSIVE_OPS=1 make eval-trajectory  # unlock gated runs
 ---
 
 ## See Also
+- [[Eval-Driven Development (EDD)]] — extends
+- [[Golden Set Mechanics]] — extends
+- [[Eval vs Test Distinction]] — prerequisite-for
 - [[VA Eval Harness]]
 - [[RAG Evaluation]]
 - [[project-g Eval Architecture]]

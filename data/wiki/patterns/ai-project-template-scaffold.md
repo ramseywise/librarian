@@ -68,3 +68,5 @@ The template seeds a per-repo `SANYI.md` change contract on generation. When add
 - [[Puffin Consciousness Development Skills]]
 - [[NYC-DSSG Project]] — instance-of (primary consumer of templates)
 - [[Skill-Knowledge Information Flow]] — extends (template sync contract)
+- [[Eval-Driven Development (EDD)]] — extends (golden set as discovery-exit artifact)
+- [[Golden Set Mechanics]]

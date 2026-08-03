@@ -19,12 +19,12 @@ Librarian captures that knowledge once, structures it for retrieval, and surface
 ## Architecture
 
 ```
-Sessions ──────────────────────────────► raw/sessions/    ─┐
-Docs (.claude/skills/, CLAUDE.md) ─────► raw/claude-docs/  │
-Repo scraper (etl/scrape_repos.py) ─────► raw/repos/        │
-Google Drive ──MCP──────────────────────► raw/gdrive/        ├──► /ingest ──► data/wiki/
-Notion ────────MCP──────────────────────► raw/notion/        │
-Meetings, PDFs, web, books, articles ──► raw/*/            ─┘
+Sessions ──────────────────────────────► data/raw/sessions/    ─┐
+Docs (.claude/skills/, CLAUDE.md) ─────► data/raw/claude-docs/  │
+Repo scraper (core/scrape_repos.py) ─────► data/raw/repos/        │
+Google Drive ──MCP──────────────────────► data/raw/gdrive/        ├──► /ingest ──► data/wiki/
+Notion ────────MCP──────────────────────► data/raw/notion/        │
+Meetings, PDFs, web, books, articles ──► data/raw/*/            ─┘
 
                                             data/wiki/
                                               │
@@ -69,11 +69,11 @@ Meetings, PDFs, web, books, articles ──► raw/*/            ─┘
 ```
 
 That's it — this is the command people forget. Full pipeline mode pulls Notion + GDrive via
-MCP, scrapes local sources (`make scrape` + `etl/scrape_repos.py`), and compiles every changed
+MCP, scrapes local sources (`make scrape` + `core/scrape_repos.py`), and compiles every changed
 file into `data/wiki/` in one shot. Other variants:
 
 ```
-/ingest raw/sessions/    # targeted compile of one raw/ dir
+/ingest data/raw/sessions/    # targeted compile of one data/raw/ dir
 /ingest resolve          # walk through flagged conflicts in data/wiki/_conflicts.md
 /seed-kb --ingest        # scrape this machine's sessions/docs/bookmarks, then ingest
 ```
@@ -85,14 +85,14 @@ file into `data/wiki/` in one shot. Other variants:
 ```bash
 # 1. Install
 uv sync                  # core deps
-make install-api         # FastAPI + sentence-transformers + Gemini client
+make install-api         # FastAPI + sentence-transformers + Anthropic client
 make install-ui          # npm install for React UI
 
 # 2. Configure
 cp .env.example .env
 # Fill in:
 #   ANTHROPIC_API_KEY   — required for /ingest, /query, /lint slash commands
-#   GOOGLE_API_KEY      — required for graph UI chat agent (free at aistudio.google.com)
+#                         and for the graph UI chat agent (#96)
 #   NOTION_API_KEY      — optional, for Notion connector
 #   LINEAR_API_KEY      — optional, for Linear connector
 
@@ -103,8 +103,8 @@ code .                   # CLAUDE.md loads automatically; MCP server auto-starts
 **First run — seed from your existing docs:**
 
 ```
-/ingest raw/claude-docs/     # compile any existing .claude/ docs
-/ingest raw/sessions/        # compile Claude Code session history (batches of 20)
+/ingest data/raw/claude-docs/     # compile any existing .claude/ docs
+/ingest data/raw/sessions/        # compile Claude Code session history (batches of 20)
 ```
 
 **Then query:**
@@ -124,9 +124,9 @@ Drop any new raw source and ingest it immediately:
 
 ```bash
 # Example: paste a meeting transcript
-# raw/meetings/2026-07-05-architecture-review.md
+# data/raw/meetings/2026-07-05-architecture-review.md
 
-/ingest raw/meetings/2026-07-05-architecture-review.md
+/ingest data/raw/meetings/2026-07-05-architecture-review.md
 ```
 
 ### Weekly (5–10 minutes)
@@ -141,9 +141,9 @@ Full sync — pull new Notion/Drive content, scrape sessions, compile everything
 Optionally scrape repos you're actively working on:
 
 ```bash
-# Add repos to raw/repos/repos.txt, then:
-uv run python etl/scrape_repos.py
-/ingest raw/repos/
+# Add repos to data/raw/repos/repos.txt, then:
+uv run python core/scrape_repos.py
+/ingest data/raw/repos/
 ```
 
 ### Before any agent build session
@@ -178,9 +178,9 @@ get_domain_briefing("langgraph")  # via MCP in the agent itself
 | `data/wiki/` | LLM-compiled knowledge — one `.md` per concept, pattern, or decision; structured frontmatter, wikilinks |
 | `data/wiki/private/` | Company-specific pages, gitignored — same format, local only |
 | `CLAUDE.md` | Compiler contract — schema rules, ingest checklist, conflict policy, domain taxonomy |
-| `etl/` | Scrapers: `scrape_sessions.py` (Claude/Codex), `scrape_claude_docs.py` (workspace docs), `scrape_repos.py` (repos) |
+| `core/` | Scrapers: `scrape_sessions.py` (Claude/Codex), `scrape_claude_docs.py` (workspace docs), `scrape_repos.py` (repos) |
 | `app/mcp_server/` | FastMCP server: `search_wiki` (hybrid FTS + semantic + backlink rank), `read_page`, `list_domain`, `get_domain_briefing` |
-| `app/backend/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Gemini chat agent |
+| `app/backend/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Anthropic chat agent |
 | `app/frontend/` | React + Vite graph UI — Cytoscape.js force-directed graph, chat panel, live wiki watch |
 | `.claude/skills/` | `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb`, `/sanyi` — Claude Code slash commands |
 
@@ -252,13 +252,13 @@ The backend caches embeddings and UMAP layout in DuckDB — only recomputed when
 
 | Directory | Source | Scraper |
 |---|---|---|
-| `raw/sessions/` | Claude Code + Codex session JSONL | `etl/scrape_sessions.py` |
-| `raw/claude-docs/` | `.claude/` docs from workspace projects | `etl/scrape_claude_docs.py` |
-| `raw/repos/` | CLAUDE.md, skills, docs from configured repos | `etl/scrape_repos.py` + `repos.txt` |
+| `raw/sessions/` | Claude Code + Codex session JSONL | `core/scrape_sessions.py` |
+| `raw/claude-docs/` | `.claude/` docs from workspace projects | `core/scrape_claude_docs.py` |
+| `raw/repos/` | CLAUDE.md, skills, docs from configured repos | `core/scrape_repos.py` + `repos.txt` |
 | `raw/notion/` | Notion pages | MCP connector |
 | `raw/gdrive/` | Google Drive docs | MCP connector |
-| `raw/linear/` | Linear issues + projects | `etl/ingest_linear.py` |
-| `raw/pdfs/` | PDF text extracts | `etl/ingest_pdf.py` |
+| `raw/linear/` | Linear issues + projects | `core/ingest_linear.py` |
+| `raw/pdfs/` | PDF text extracts | `core/ingest_pdf.py` |
 | `raw/meetings/` | Meeting transcripts | Manual drop |
 | `raw/web/` | Web article captures | Manual drop or URL mode |
 | `raw/books/` | Book quotes + notes | Manual drop (see `CLAUDE.md` for format) |

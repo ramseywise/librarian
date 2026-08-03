@@ -34,7 +34,7 @@ SESSIONS_DIR = CLAUDE_DIR / "sessions"
 INSIGHTS_DIR = CLAUDE_DIR / "docs" / "insights"
 
 # Librarian raw/sessions/ — for wiki ingest
-LIBRARIAN_RAW_SESSIONS = Path(__file__).resolve().parent.parent.parent / "raw" / "sessions"
+LIBRARIAN_RAW_SESSIONS = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "sessions"
 LIBRARIAN_WIKI_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "wiki"
 
 

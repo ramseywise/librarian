@@ -27,19 +27,19 @@ fi
 ABS="$(python3 -c "import os,sys; print(os.path.normpath(sys.argv[1]))" "$ABS")"
 
 case "$ABS" in
-  "${REPO_ROOT}/raw/"*) ;;
-  *) exit 0 ;;  # outside raw/ — not our concern
+  "${REPO_ROOT}/data/raw/"*) ;;
+  *) exit 0 ;;  # outside data/raw/ — not our concern
 esac
 
 # The invariant is no-mutate, not no-write: only an EXISTING file is protected.
 if [[ -e "$ABS" ]]; then
   REL="${ABS#"${REPO_ROOT}/"}"
   cat >&2 <<EOF
-BLOCKED: ${REL} already exists under raw/.
+BLOCKED: ${REL} already exists under data/raw/.
 
-raw/ is immutable once written (SANYI.md, 不易 Buyi). Every wiki page's sources:
+data/raw/ is immutable once written (SANYI.md, 不易 Buyi). Every wiki page's sources:
 list resolves to raw files — mutating one silently invalidates every page citing
-it. Creating NEW files under raw/ is permitted; editing or overwriting one is not.
+it. Creating NEW files under data/raw/ is permitted; editing or overwriting one is not.
 
 If this source genuinely changed, add a new dated file alongside it instead.
 EOF

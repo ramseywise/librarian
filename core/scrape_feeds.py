@@ -121,7 +121,7 @@ DEFAULT_KEYWORDS: list[str] = [
 # Courtesy delay between feed requests — these are small blogs, not an API.
 RATE_LIMIT_SLEEP = 1.0
 
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "raw" / "web"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "data" / "raw" / "web"
 DEFAULT_SINCE_DAYS = 7
 MAX_ENTRIES_PER_FEED = 50
 
@@ -170,7 +170,7 @@ def _load_feed_urls_from_manifest() -> set[str]:
     """
     seen: set[str] = set()
 
-    manifest_path = REPO_ROOT / "raw" / "manifest.jsonl"
+    manifest_path = REPO_ROOT / "data" / "raw" / "manifest.jsonl"
     if manifest_path.exists():
         for line in manifest_path.read_text(encoding="utf-8").splitlines():
             line = line.strip()
@@ -185,7 +185,7 @@ def _load_feed_urls_from_manifest() -> set[str]:
                 seen.add(_canonical_url(url))
 
     # Fallback: scan existing feed captures for their url: frontmatter line.
-    web_dir = REPO_ROOT / "raw" / "web"
+    web_dir = REPO_ROOT / "data" / "raw" / "web"
     if web_dir.exists():
         for f in web_dir.glob("*-feed-*.md"):
             try:

@@ -1,15 +1,15 @@
 """
-Pre-ingest linter for raw/ filename conventions.
+Pre-ingest linter for data/raw/ filename conventions.
 
 Convention: YYYY-MM-DD-lowercase-slug.md
-Exempted dirs: raw/claude-docs/, raw/repos/ (mirror external structure, not user-dropped)
+Exempted dirs: data/raw/claude-docs/, data/raw/repos/ (mirror external structure, not user-dropped)
 """
 
 import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).parent.parent / "raw"
+ROOT = Path(__file__).parent.parent / "data" / "raw"
 
 # Dirs that are scraper output or mirror external structure — not user-dropped files
 EXEMPT_PREFIXES = {"claude-docs", "repos", "agent-skills", "claude-skills", "sessions"}

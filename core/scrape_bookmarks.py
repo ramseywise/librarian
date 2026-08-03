@@ -33,8 +33,8 @@ from core.base import REPO_ROOT, ScraperBase
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "raw" / "web"
-DEFAULT_BOOKMARKS_FILE = REPO_ROOT / "raw" / "web" / "bookmarks.txt"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "data" / "raw" / "web"
+DEFAULT_BOOKMARKS_FILE = REPO_ROOT / "data" / "raw" / "web" / "bookmarks.txt"
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; librarian-kb/1.0)"}
 

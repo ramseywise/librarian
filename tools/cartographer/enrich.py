@@ -24,7 +24,7 @@ log = structlog.get_logger(__name__)
 CLAUDE_DIR = Path.home() / ".claude"
 FACETS_DIR = CLAUDE_DIR / "usage-data" / "facets"
 SESSION_META_DIR = CLAUDE_DIR / "usage-data" / "session-meta"
-LIBRARIAN_RAW_SESSIONS = Path(__file__).resolve().parent.parent.parent / "raw" / "sessions"
+LIBRARIAN_RAW_SESSIONS = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "sessions"
 
 _MODEL_PRICING: dict[str, tuple[float, float, float, float]] = {
     "claude-haiku-4-5": (0.80, 4.0, 1.0, 0.08),

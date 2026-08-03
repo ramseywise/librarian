@@ -63,3 +63,6 @@ Weekly boundary (not a sprint):
 ## See Also
 - [[Claude Workflow System]] — extends
 - [[Branch Naming Convention Pattern]] — prerequisite-for
+- [[Specification by Example]] — extends (requirement-as-example, sharpens DoR)
+- [[TDD as Coding-Agent Harness]] — extends (test authored before agent implements)
+- [[Plan-Doc Status Enum]] — extends (state vocabulary behind DoR/DoD gates)

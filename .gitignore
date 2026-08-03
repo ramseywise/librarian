@@ -41,13 +41,15 @@ node_modules/
 **/.vite/
 
 # Raw ingest archive — personal/employer source material stays local-only.
-# raw/ at the repo root is where `cartographer --facts` derives session notes: verbatim
-# prompts and project paths, regenerable from ~/.claude/projects. Never committed (#60).
+# data/raw/ is where `cartographer --facts` derives session notes: verbatim prompts
+# and project paths, regenerable from ~/.claude/projects. Never committed (#60).
+# Consolidated from the old top-level raw/ in #96; the bare rule stays as a backstop
+# so a stale writer recreating raw/ cannot leak source material into a commit.
 raw/
 data/raw/
 data/db
 
-# Cartographer fact table — rebuildable from raw/sessions + ~/.claude/projects
+# Cartographer fact table — rebuildable from data/raw/sessions + ~/.claude/projects
 data/sessions.db
 data/sessions.db.bak-*
 

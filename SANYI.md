@@ -15,22 +15,22 @@ last-audit: 2026-07-20
 
 ## 不易 Buyi
 
-### raw/ is immutable once written
+### data/raw/ is immutable once written
 
 <!-- v1 said "append-only", which nine ETL writers contradict by design. The
      enforceable invariant is no-mutate, not no-write: ingest creates files,
      nothing rewrites them. A blanket write-block would break every ingest. -->
 
-- paths: raw/
-- contract: ETL may CREATE new files under raw/. No tooling or agent may edit,
+- paths: data/raw/
+- contract: ETL may CREATE new files under data/raw/. No tooling or agent may edit,
   overwrite, or delete an existing raw file. The wiki's provenance chain (every
   page's sources: list) resolves to raw files; mutating one silently invalidates
   every page citing it — a trust failure of the entire KB.
   Creation is explicitly permitted: core/ingest_notion.py, core/ingest_linear.py,
   core/ingest_pdf.py, core/seed_from_playground.py, and the four core/scrape_*.py
-  scripts all write into raw/ as intended behaviour.
+  scripts all write into data/raw/ as intended behaviour.
 - evidence: .claude/hooks/raw-immutable.sh (PreToolUse, Write|Edit) blocks
-  Edit/Write on an EXISTING raw/ path and permits creation; absolute and ../
+  Edit/Write on an EXISTING data/raw/ path and permits creation; absolute and ../
   paths are normalised before the check. tests/unit/test_raw_immutable_hook.py
   asserts both halves — mutation blocked, and creation permitted for all nine
   core/ ingest target dirs (cured 2026-07-20).
@@ -77,7 +77,7 @@ last-audit: 2026-07-20
 - paths: .env, .env.example, core/, app/, tools/
 - contract: API keys (Anthropic, Google, Notion, Linear) live only in .env
   (gitignored); .env.example carries names, never values; and no key value is
-  ever passed to a log call, written to a wiki page, or embedded in raw/.
+  ever passed to a log call, written to a wiki page, or embedded in data/raw/.
 - evidence: commit clause — .gitignore#L2 (.env untracked, only .env.example
   tracked, verified 2026-07-20) + global secrets_scan hook (PostToolUse).
   Logging clause — app/log_config.py#redact_secrets, a structlog processor that
@@ -101,12 +101,12 @@ last-audit: 2026-07-20
 
 ### Wiki provenance is traceable
 
-<!-- Ratified 2026-07-20. This is the invariant raw/-immutability exists to
+<!-- Ratified 2026-07-20. This is the invariant data/raw/-immutability exists to
      protect, and it is the one frontmatter field nothing currently checks. -->
 
 - paths: data/wiki/, .claude/hooks/wiki-lint.sh
 - contract: Every wiki page carries a non-empty sources: list, and every entry
-  in it resolves to a real raw/ file or an external URL. A page asserting
+  in it resolves to a real data/raw/ file or an external URL. A page asserting
   invented or unresolvable provenance is a trust failure of the KB.
 - evidence: .claude/hooks/wiki-lint.sh — sources: is in the required-field loop
   (L23), and each entry is resolved against the filesystem (URLs exempt), with
@@ -147,7 +147,7 @@ last-audit: 2026-07-20
 - paths: app/backend/agent.py
 - contract: Single chat agent with read-only wiki tools, streamed via SSE. New
   tools or multi-agent topology is control-flow growth needing justification. A
-  write-back tool would additionally touch the raw/-immutability and
+  write-back tool would additionally touch the data/raw/-immutability and
   wiki-provenance invariants above and is a Buyi-level change.
 - budget: 1 agent, 2 tools; growth needs justification
 - current: 1 agent / 2 tools — _search_wiki, _read_page (2026-07-20)
@@ -156,7 +156,7 @@ last-audit: 2026-07-20
 
 ### Scrape and ingest configuration
 
-- paths: raw/repos/repos.txt
+- paths: data/raw/repos/repos.txt
 - contract: Which repos get scraped is config, editable without touching
   core/scrape_repos.py.
 - evidence: core/scrape_repos.py#load_repos + --repos-file CLI override
@@ -172,13 +172,13 @@ last-audit: 2026-07-20
 
 ## Migrations
 
-- 2026-07-20: Buyi → Buyi (rescoped) / raw/ immutability — v1 declared
+- 2026-07-20: Buyi → Buyi (rescoped) / data/raw/ immutability — v1 declared
   "append-only", which nine ETL writers contradict by design; narrowed to
   "immutable once written" so the enforceable invariant (no mutation of
   existing files) is separated from permitted behaviour (creating new ones).
   (author: ramsey)
 - 2026-07-20: all four BY-4 debt records cured — each Buyi entry moved from
-  TARGET to an evidence line backed by a test: raw/ immutability
+  TARGET to an evidence line backed by a test: data/raw/ immutability
   (PreToolUse hook), data/wiki/private/ MCP exclusion (_is_private gate),
   wiki provenance (wiki-lint sources: check), and log redaction
   (structlog processor). Two latent bugs surfaced in the process: the

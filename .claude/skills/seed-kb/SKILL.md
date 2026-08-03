@@ -55,9 +55,9 @@ Report: "Scraped X .claude docs (across Y projects), Z sessions (A Claude, B Cod
 If `$ARGUMENTS` includes `--ingest` or the user says to ingest, run the `/ingest` skill on the new directories:
 
 ```
-/ingest raw/claude-docs/
-/ingest raw/sessions/
-/ingest raw/web/
+/ingest data/raw/claude-docs/
+/ingest data/raw/sessions/
+/ingest data/raw/web/
 ```
 
 Otherwise, remind the user they can run these when ready.

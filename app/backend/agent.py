@@ -7,9 +7,8 @@ from collections.abc import AsyncGenerator
 from pathlib import Path
 from typing import Any
 
+import anthropic
 import frontmatter
-from google import genai
-from google.genai import types
 
 from app.mcp_server.server import is_under_private
 
@@ -29,21 +28,22 @@ def _is_private(path: Path | str) -> bool:
     return is_under_private(path, PRIVATE_DIR)
 
 
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-5")
+MAX_TOKENS = 8192
 
-_client: genai.Client | None = None
+_client: anthropic.AsyncAnthropic | None = None
 
 
-def _get_client() -> genai.Client:
+def _get_client() -> anthropic.AsyncAnthropic:
     global _client
     if _client is None:
-        api_key = os.environ.get("GOOGLE_API_KEY")
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
             raise RuntimeError(
-                "GOOGLE_API_KEY is not set. "
+                "ANTHROPIC_API_KEY is not set. "
                 "Add it to your .env file or export it before starting the server."
             )
-        _client = genai.Client(api_key=api_key)
+        _client = anthropic.AsyncAnthropic(api_key=api_key)
     return _client
 
 
@@ -115,41 +115,39 @@ def _read_page(page_id: str) -> str:
     return f"# {title}\n\nSummary: {summary}\n\n{post.content}"
 
 
-_TOOLS = types.Tool(
-    function_declarations=[
-        types.FunctionDeclaration(
-            name="search_wiki",
-            description=(
-                "Search wiki pages for content matching the query. "
-                "Returns page IDs, summaries, and excerpts for the top matches."
-            ),
-            parameters=types.Schema(
-                type=types.Type.OBJECT,
-                properties={
-                    "query": types.Schema(
-                        type=types.Type.STRING,
-                        description="Search query using key terms from the question",
-                    )
-                },
-                required=["query"],
-            ),
+_TOOLS: list[dict[str, Any]] = [
+    {
+        "name": "search_wiki",
+        "description": (
+            "Search wiki pages for content matching the query. "
+            "Returns page IDs, summaries, and excerpts for the top matches."
         ),
-        types.FunctionDeclaration(
-            name="read_page",
-            description="Read the full content of a wiki page by its ID (kebab-case filename without .md).",
-            parameters=types.Schema(
-                type=types.Type.OBJECT,
-                properties={
-                    "page_id": types.Schema(
-                        type=types.Type.STRING,
-                        description="Page ID as shown in search results, e.g. 'langgraph-crag-pipeline'",
-                    )
-                },
-                required=["page_id"],
-            ),
-        ),
-    ]
-)
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search query using key terms from the question",
+                }
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "read_page",
+        "description": "Read the full content of a wiki page by its ID (kebab-case filename without .md).",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "page_id": {
+                    "type": "string",
+                    "description": "Page ID as shown in search results, e.g. 'langgraph-crag-pipeline'",
+                }
+            },
+            "required": ["page_id"],
+        },
+    },
+]
 
 _SYSTEM = """You are a discerning research analyst for a personal agent engineering knowledge base.
 Your job is not to recite documentation — it is to weigh evidence, surface trade-offs, flag gaps,
@@ -180,60 +178,51 @@ Keep the initial response tight. The user can ask for depth.
 
 Never invent content. Ground everything in what the wiki actually says."""
 
-_CONFIG = types.GenerateContentConfig(
-    system_instruction=_SYSTEM,
-    tools=[_TOOLS],
-)
-
 
 async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
     client = _get_client()
-    contents: list[types.Content] = [types.Content(role="user", parts=[types.Part(text=query)])]
+    messages: list[dict[str, Any]] = [{"role": "user", "content": query}]
     referenced_pages: set[str] = set()
 
     try:
-        # Tool-call turns: use non-streaming so chunk.text ambiguity with function_call
-        # parts doesn't swallow the response text. On the final text turn, yield the
-        # already-fetched response directly — no second LLM call needed.
         async with asyncio.timeout(300):  # 5-minute wall-clock bound (#33)
             for _ in range(8):
-                response = await client.aio.models.generate_content(
+                # Stream every turn: unlike Gemini, tool_use arrives as its own block
+                # type, so text deltas are never ambiguous with a pending call. Text on
+                # a tool-calling turn is preamble and is streamed as it comes.
+                async with client.messages.stream(
                     model=MODEL,
-                    contents=contents,
-                    config=_CONFIG,
-                )
-                candidate = response.candidates[0] if response.candidates else None
-                parts: list[types.Part] = (
-                    candidate.content.parts
-                    if candidate and candidate.content and candidate.content.parts
-                    else []
-                )
-                function_calls = [
-                    p.function_call for p in parts if p.function_call and p.function_call.name
-                ]
+                    max_tokens=MAX_TOKENS,
+                    system=_SYSTEM,
+                    tools=_TOOLS,
+                    messages=messages,
+                ) as stream:
+                    async for event in stream:
+                        if event.type == "content_block_delta" and event.delta.type == "text_delta":
+                            yield {"type": "token", "content": event.delta.text}
+                    response = await stream.get_final_message()
 
-                if not function_calls:
-                    # Final answer turn — yield from the already-fetched response (#27)
-                    if candidate and candidate.content:
-                        for part in candidate.content.parts or []:
-                            if part.text:
-                                yield {"type": "token", "content": part.text}
+                if response.stop_reason == "refusal":
+                    yield {
+                        "type": "token",
+                        "content": "\n\n[The model declined to answer this request.]",
+                    }
                     break
 
-                # Execute tool calls and append to history
-                model_parts: list[types.Part] = [
-                    types.Part(function_call=fc) for fc in function_calls
-                ]
-                contents.append(types.Content(role="model", parts=model_parts))
+                tool_uses = [b for b in response.content if b.type == "tool_use"]
+                if not tool_uses:
+                    break  # final answer turn — text already streamed above
 
-                response_parts: list[types.Part] = []
-                for fc in function_calls:
-                    args: dict[str, Any] = dict(fc.args or {})
-                    if fc.name == "search_wiki":
+                messages.append({"role": "assistant", "content": response.content})
+
+                tool_results: list[dict[str, Any]] = []
+                for block in tool_uses:
+                    args: dict[str, Any] = dict(block.input or {})
+                    if block.name == "search_wiki":
                         result = _search_wiki(args.get("query", ""))
                         for m in re.finditer(r"\(id: `([^`]+)`\)", result):
                             referenced_pages.add(m.group(1))
-                    elif fc.name == "read_page":
+                    elif block.name == "read_page":
                         page_id = args.get("page_id", "")
                         result = _read_page(page_id)
                         if not result.startswith("Page '"):
@@ -241,16 +230,15 @@ async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
                     else:
                         result = "Unknown tool."
 
-                    response_parts.append(
-                        types.Part(
-                            function_response=types.FunctionResponse(
-                                name=fc.name,
-                                response={"result": result},
-                            )
-                        )
+                    tool_results.append(
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": block.id,
+                            "content": result,
+                        }
                     )
 
-                contents.append(types.Content(role="user", parts=response_parts))
+                messages.append({"role": "user", "content": tool_results})
 
             valid_pages = {p for p in referenced_pages if next(WIKI_DIR.rglob(f"{p}.md"), None)}
             if valid_pages:

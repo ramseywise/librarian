@@ -139,3 +139,4 @@ Buyi is the one layer machines can't infer (business/safety intent isn't in any 
 - [[Claude Workflow System]]
 - [[Change-Contracts Rollout]] — instance-of
 - [[Code Review Drill — SANYI]] — instance-of
+- [[Silent Fallthrough in String-Keyed Discovery]] — instance-of (rename with no error signal)

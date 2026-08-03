@@ -27,8 +27,8 @@ from core.base import REPO_ROOT, ScraperBase
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_REPOS_FILE = REPO_ROOT / "raw" / "repos" / "repos.txt"
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "raw" / "repos"
+DEFAULT_REPOS_FILE = REPO_ROOT / "data" / "raw" / "repos" / "repos.txt"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "data" / "raw" / "repos"
 
 # Files and glob patterns to extract from each repo
 EXTRACT_GLOBS = [

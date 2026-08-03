@@ -134,6 +134,8 @@ Track: liked vs disliked score separation, Cohen's d, precision/recall/F1 agains
 ---
 
 ## See Also
+- [[Eval vs Test Distinction]] — prerequisite-for
+- [[Golden Set Mechanics]]
 - [[System Design — Unified Eval Harness]] — instance-of
 - [[project-g Eval Architecture]]
 - [[RAG Evaluation]]

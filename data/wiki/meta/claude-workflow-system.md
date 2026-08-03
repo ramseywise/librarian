@@ -328,3 +328,5 @@ A project-local instantiation of this skill (`code_debug` in [[Listen-Wiseer Pro
 - [[Skill-Knowledge Information Flow]] — extends (four-system parity model)
 - [[Agile Workflow Definitions]] — extends (DoR, DoD, cadence, ceremony mapping)
 - [[Documentation Boundary — Machine vs Human Docs]] — extends (who writes what)
+- [[Plan-Doc Status Enum]] — extends (Status vocabulary the skills read and write)
+- [[Silent Fallthrough in String-Keyed Discovery]] — extends (risk in skill doc discovery)

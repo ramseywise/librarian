@@ -1,6 +1,6 @@
 ---
 name: learn
-description: "Process the queued reading list — arXiv papers and RSS/blog posts — and surface relevant items for current work. Runs /ingest on raw/web/ scoped to fetched files, then queries the wiki for what's new and surfaces the top 3. Optional topic filter: /learn RL alignment. Run from the librarian repo."
+description: "Process the queued reading list — arXiv papers and RSS/blog posts — and surface relevant items for current work. Runs /ingest on data/raw/web/ scoped to fetched files, then queries the wiki for what's new and surfaces the top 3. Optional topic filter: /learn RL alignment. Run from the librarian repo."
 ---
 
 You are a research curator processing the reading queue and surfacing relevant items
@@ -33,7 +33,7 @@ Store any keywords as `TOPIC_FILTER`.
 Use Bash to count pending queue files in `raw/web/`:
 
 ```bash
-find raw/web -maxdepth 1 \( -name '*-arxiv-*.md' -o -name '*-feed-*.md' \) 2>/dev/null | wc -l
+find data/raw/web -maxdepth 1 \( -name '*-arxiv-*.md' -o -name '*-feed-*.md' \) 2>/dev/null | wc -l
 ```
 
 If count is 0:
@@ -75,7 +75,7 @@ for f in pending:
 For each pending file, invoke the `/ingest` skill with that path (or call it once with
 `raw/web/` — the ingest skill handles targeted compile mode).
 
-Invoke: `/ingest raw/web/`
+Invoke: `/ingest data/raw/web/`
 
 This will compile new arXiv markdown files into wiki pages. Wait for ingest to complete.
 

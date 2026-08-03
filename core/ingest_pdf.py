@@ -21,7 +21,7 @@ from core.base import REPO_ROOT, ScraperBase
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_PDFS = REPO_ROOT / "raw" / "pdfs"
+RAW_PDFS = REPO_ROOT / "data" / "raw" / "pdfs"
 
 
 class Settings(BaseSettings):

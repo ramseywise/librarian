@@ -5,7 +5,7 @@ Covers:
 - Path traversal via absolute path in page_id
 - Symlink-based escape from wiki root
 - Valid writeback still works (regression guard)
-- Missing GOOGLE_API_KEY raises RuntimeError rather than KeyError (GH #54)
+- Missing ANTHROPIC_API_KEY raises RuntimeError rather than KeyError (GH #54)
 """
 
 from __future__ import annotations
@@ -175,11 +175,11 @@ def test_writeback_does_not_duplicate_existing_link(client: TestClient, wiki: Pa
 
 
 # ---------------------------------------------------------------------------
-# GOOGLE_API_KEY guard (agent.py)
+# ANTHROPIC_API_KEY guard (agent.py)
 # ---------------------------------------------------------------------------
 
 
-def test_missing_google_api_key_raises_runtime_error(
+def test_missing_anthropic_api_key_raises_runtime_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """_get_client() must raise RuntimeError (not KeyError) when the key is absent."""
@@ -187,30 +187,27 @@ def test_missing_google_api_key_raises_runtime_error(
 
     # Reset the cached client so the factory runs again
     monkeypatch.setattr(agent_module, "_client", None)
-    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
 
-    with pytest.raises(RuntimeError, match="GOOGLE_API_KEY"):
+    with pytest.raises(RuntimeError, match="ANTHROPIC_API_KEY"):
         agent_module._get_client()
 
 
-def test_present_google_api_key_does_not_raise(
+def test_present_anthropic_api_key_does_not_raise(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """When GOOGLE_API_KEY is set, _get_client() must not raise."""
+    """When ANTHROPIC_API_KEY is set, _get_client() must not raise."""
     import app.backend.agent as agent_module
 
     monkeypatch.setattr(agent_module, "_client", None)
-    monkeypatch.setenv("GOOGLE_API_KEY", "fake-key-for-test")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "fake-key-for-test")
 
-    # genai.Client.__init__ may attempt a network call; we only care that
+    # AsyncAnthropic.__init__ does not call the network; we only care that
     # RuntimeError / KeyError is NOT raised during the guard check.
     try:
         agent_module._get_client()
     except RuntimeError as exc:
         # Guard raised — unexpected
         pytest.fail(f"_get_client() raised RuntimeError with key set: {exc}")
-    except Exception:
-        # Network/auth errors from genai are fine — the guard passed
-        pass
     finally:
         monkeypatch.setattr(agent_module, "_client", None)
