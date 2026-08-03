@@ -12,6 +12,22 @@ sources:
   - data/raw/claude-docs/guacamayo/agents/wander.md
   - data/raw/claude-docs/Parallax/agents/parallax.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/SKILL.md
+  - data/raw/claude-docs/Parallax/agents/intent-correctness.md
+  - data/raw/claude-docs/Parallax/agents/reliability-operations.md
+  - data/raw/claude-docs/Parallax/agents/security-privacy-data.md
+  - data/raw/claude-docs/Parallax/agents/architecture-docs.md
+  - data/raw/claude-docs/Parallax/agents/agent-runtime-tooling.md
+  - data/raw/claude-docs/Parallax/agents/accountability-safeguards.md
+  - data/raw/claude-docs/Parallax/agents/sanyi-review.md
+  - data/raw/claude-docs/Parallax/skills/intent-correctness/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/reliability-operations/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/security-privacy-data/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/architecture-docs/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/accountability-safeguards/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/agent-runtime-tooling/SKILL.md
+  - data/raw/claude-docs/Parallax/docs/documents/Parallax_Subagent_Architecture.md
+  - data/raw/claude-docs/Parallax/docs/documents/Evidence_Driven_PR_Review_System_Spec.md
+  - data/raw/claude-docs/Parallax/docs/superpowers/plans/2026-07-19-parallax-skills-implementation.md
 ---
 
 # Parallel Dimension Scanner Architecture
@@ -49,6 +65,10 @@ The cost is dispatch overhead and cross-dimension blindness — no single agent 
 correctness bug and a structure smell share a root cause. That reconciliation is pushed
 to the orchestrator that merges findings.
 
+Splitting judgment across agents does not mean splitting context acquisition — Parallax
+grounds every dimension from one brief built once by the orchestrator. See
+[[Shared Context Brief]].
+
 ## Conditional dispatch via signal detection
 
 Two of the six are **gated on repo signals** rather than always dispatched. A
@@ -61,6 +81,10 @@ Two of the six are **gated on repo signals** rather than always dispatched. A
 The gated agents are told the gate already passed: *"If you are running, the files have
 already been confirmed as agent code."* This keeps the agent from re-litigating its own
 activation and wasting turns on a check the dispatcher already made.
+
+A gate that misses is invisible in the output — Parallax adds a recovery path for exactly
+this, having its always-dispatched scanners report out-of-dimension signal to re-trigger
+the gated ones. See [[Corrective Follow-Up Dispatch]].
 
 ## The shared finding contract
 
@@ -114,7 +138,7 @@ to enforce something it merely describes.
 
 ## A second implementation of the same shape
 
-Parallax (a separate evidence-driven PR review system) reaches the same
+[[Parallax]] (a separate evidence-driven PR review system) reaches the same
 dimension-per-subagent decomposition — four always-dispatched dimensions, two gated on
 agent-system signal detection, one gated on `SANYI.md` — but relocates the rules this page
 enforces through prompts into an executable CLI, described in
@@ -122,6 +146,24 @@ enforces through prompts into an executable CLI, described in
 dispatch must be foreground and single-message because a subagent has no turn for
 background completions to land in, and verification is assigned to the producing subagent
 rather than the merger ([[Evidence Classification Model]]).
+
+Parallel dispatch also needs a partial-failure path that a sequential reviewer does not. A
+subagent whose output fails canonical-schema validation — "errored, hung, or returned
+malformed output," which are indistinguishable at that boundary — is retried up to twice,
+then dropped, with the review completing on the remaining subagents and the report naming
+which one failed rather than silently absorbing the gap. Finding IDs are namespaced per
+subagent (`PR-A-001`, `PR-B-001`, …) because seven agents assigning IDs concurrently would
+collide on a shared counter before the merge step ever ran. Both are consequences of
+choosing a mechanism the runtime actually enforces — see
+[[Verified Runtime Capability Constraint]].
+
+The dimension checklists themselves converge too. Parallax's four always-dispatched
+skills carry the same generic material as `scan-correctness`/`scan-safety`/`scan-structure`
+here, and its two agent-system-gated skills restate
+[[Agent Quality Review Checklist]] — split across two subagents rather than one, because
+runtime defects and accountability defects are found by reading different things. Both
+splits are dispatch-shaped, not taxonomy-shaped: the checklist boundary is drawn where a
+separate agent would have to look somewhere else.
 
 ## See Also
 - [[Merge Impact and Evidence State]] — extends
@@ -133,3 +175,8 @@ rather than the merger ([[Evidence Classification Model]]).
 - [[Deterministic Review Substrate]] — alternative-to
 - [[Evidence Classification Model]] — extends
 - [[Source Severity vs Merge Impact]] — extends
+- [[Corrective Follow-Up Dispatch]] — extends (recovery for missed conditional dispatch)
+- [[Shared Context Brief]] — prerequisite-for (one grounding pass for all dimensions)
+- [[Skill Preloading via Agent Definition]] — prerequisite-for (how each scanner's checklist reaches it)
+- [[Verified Runtime Capability Constraint]] — extends (partial-failure handling and ID namespacing)
+- [[Read-Only by Default with Explicit Authorization]] — prerequisite-for (the safe-command scope every scanner runs under)

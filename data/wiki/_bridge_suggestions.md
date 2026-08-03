@@ -14,7 +14,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## foundations ↔ meta (0 cross-links)
   - foundations: 11 pages
-  - meta: 12 pages
+  - meta: 13 pages
 
 ## foundations ↔ rag (0 cross-links)
   - foundations: 11 pages
@@ -26,11 +26,11 @@ Consider creating a bridge page or adding cross-references.
 
 ## interview ↔ meta (0 cross-links)
   - interview: 5 pages
-  - meta: 12 pages
+  - meta: 13 pages
 
 ## interview ↔ projects (0 cross-links)
   - interview: 5 pages
-  - projects: 6 pages
+  - projects: 8 pages
 
 ## adk ↔ interview (1 cross-links)
   - adk: 19 pages
@@ -42,12 +42,12 @@ Consider creating a bridge page or adding cross-references.
 
 ## foundations ↔ projects (2 cross-links)
   - foundations: 11 pages
-  - projects: 6 pages
+  - projects: 8 pages
 
 ## infra ↔ patterns (2 cross-links)
   - infra: 14 pages
-  - patterns: 27 pages
+  - patterns: 35 pages
 
 ## langgraph ↔ meta (2 cross-links)
   - langgraph: 16 pages
-  - meta: 12 pages
+  - meta: 13 pages

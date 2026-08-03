@@ -65,6 +65,7 @@ settled; a number that matters and nobody knows is Open. Both are honest; confla
 either blocks the gate spuriously or hides a real gap.
 
 ## See Also
+- [[Corrective Follow-Up Dispatch]] <!-- auto-linked -->
 - [[Scope-POC Design Interview]] — prerequisite-for
 - [[Copier Re-Entry as Capability Path]] — extends (a fired trigger becomes a re-render)
 - [[Asked vs Derived Scaffold Variables]] — extends (unknowns fall through to seeded defaults)

@@ -2,11 +2,12 @@
 title: SKILL.md Pattern
 tags: [adk, context-management, concept]
 summary: ADK skill declaration format — YAML frontmatter listing tools + natural language instruction body, enabling dynamic skill loading without hardcoding capabilities into the system prompt.
-updated: 2026-07-19
+updated: 2026-08-03
 sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
   - raw/sessions/claude-2026-07-19-what-is-this-mcp-buider-we-added-to-clau-6b9614e3.md
+  - data/raw/claude-docs/Parallax/docs/documents/Parallax_Subagent_Architecture.md
 ---
 
 # SKILL.md Pattern
@@ -77,6 +78,8 @@ skill-name/
 
 **Example:** `/mcp-builder` (vendored from Anthropic SDK) uses this layout: `SKILL.md` + `references/` (server patterns, tool schemas) + `scripts/evaluation.py` (MCP server eval harness).
 
+Authoring a `SKILL.md` does not by itself put it in any agent's context. For subagents, a companion agent definition must name it in a `skills:` field — see [[Skill Preloading via Agent Definition]], which documents what breaks when that second file is missing.
+
 ## See Also
 - [[ADK Scaffold Patterns]] <!-- auto-linked -->
 - [[ADK Context Engineering]]
@@ -84,4 +87,5 @@ skill-name/
 - [[Prefix Caching]]
 - [[MCP Protocol]]
 - [[Claude Workflow System]] — extends (skill architecture section)
+- [[Skill Preloading via Agent Definition]] — extends (the agent-side `skills:` field that loads it)
 - [[Claude Workflow System]]

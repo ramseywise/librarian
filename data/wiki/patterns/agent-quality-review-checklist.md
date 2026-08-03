@@ -5,6 +5,12 @@ summary: Nineteen agent-system-specific review checks across six families — pr
 updated: 2026-08-03
 sources:
   - data/raw/claude-docs/guacamayo/agents/agent-quality.md
+  - data/raw/claude-docs/Parallax/skills/accountability-safeguards/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/agent-runtime-tooling/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/intent-correctness/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/reliability-operations/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/security-privacy-data/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/architecture-docs/SKILL.md
 ---
 
 # Agent Quality Review Checklist
@@ -77,9 +83,65 @@ before accepting any claimed safeguard, rather than reading the prompt and belie
 The remaining checks are agent-specific versions of ordinary reliability concerns:
 termination (#9), idempotency (#6), partial failure (#10), and interruptibility (#18).
 
+## A convergent second expression
+
+Parallax splits the same material across two gated skills rather than one — both carrying
+the header "Only relevant for agent-system PRs." `agent-runtime-tooling` covers four
+runtime dimensions (tool side effects, workflow state and partial failure, retrieval and
+context, memory write-back); `accountability-safeguards` covers three accountability ones
+(evaluation, human responsibility, documented safeguards). The split is dispatch-shaped:
+runtime defects and accountability defects are found by reading different things, so they
+became separate subagents in [[Parallel Dimension Scanner Architecture]].
+
+Two items in that version have no counterpart in the nineteen above:
+
+**Evaluation is expanded past "missing."** Where check #19 asks only whether an eval
+harness exists, Parallax asks seven narrower questions: *is one successful run being
+overvalued; are repeated runs needed; is there a baseline; are deterministic graders
+possible; is an LLM judge calibrated; are trace and final output both evaluated; are cost
+and latency considered.* "Is one successful run being overvalued" is the sharpest — it
+targets a review that passed rather than an agent that lacks tests. Trace-and-final-output
+as separate objects is the other addition: an agent can reach the right answer by a route
+that will not generalize.
+
+**A prose-only safeguard becomes a contract candidate, not just a finding.** Check #17
+stops at flagging. Parallax routes it: if no contract already governs the gap, the
+reviewer recommends recording it as a [[SANYI Change-Contract System]] Buyi or Pending
+entry — "the same failure mode SANYI's BY-4 targets, applied proactively to invariants
+nobody has declared yet." If `SANYI.md` does not exist at all, the recommendation is to
+run `/sanyi init` instead. The drafting itself is delegated, since the safeguards reviewer
+does not carry the contract format; see [[Corrective Follow-Up Dispatch]].
+
+That turns the highest-value finding class from a per-PR observation into a durable
+declaration. The undeclared invariant is the actual defect; flagging one instance of it
+leaves the invariant undeclared.
+
+## Two distinctions the generic dimensions add
+
+The four always-dispatched Parallax skills are largely the generic checklists this page's
+sibling scanners already carry, with two clarifications worth keeping:
+
+- **Cross-usage consistency** (intent-correctness): when a diff modifies a shared
+  schema or type, check *all* of its usages across the repo, "not only the diff's own
+  callers." The diff's own call sites are the ones a reviewer naturally reads; the
+  unreferenced third consumer is where the break lands.
+- **Documentation accuracy is not a Definition-of-Done check** (architecture-docs): the
+  dimension asks whether docs still describe the code accurately *after* the diff —
+  catching pre-existing or diff-introduced drift — and is explicitly "distinct from a
+  Definition-of-Done check ('did this diff update its own docs')." A PR can satisfy DoD
+  and still leave the repo's docs wrong.
+
+Reliability-operations carries an evidence caveat rather than a new check: performance
+findings are "often incomplete without production data (query plans, load numbers)," and
+must be phrased as **Hypothesis** when unverified — the dimension where
+[[Evidence Classification Model]] most often forces a downgrade.
+
 ## See Also
 - [[Wander — Question-Generating Review Agent]] <!-- auto-linked -->
 - [[Parallel Dimension Scanner Architecture]] — extends
 - [[Merge Impact and Evidence State]] — prerequisite-for
 - [[ACI (Agent-Computer Interface)]] — extends
 - [[MCP Server Security Patterns]] — alternative-to
+- [[SANYI Change-Contract System]] — extends (prose-only safeguard → contract candidate)
+- [[Corrective Follow-Up Dispatch]] — extends (routing the safeguards gap for drafting)
+- [[Evidence Classification Model]] — prerequisite-for (perf findings default to hypothesis)

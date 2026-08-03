@@ -48,6 +48,7 @@ Every non-akira session treats human docs as **flag-only**.
 - When unsure: "who acts on this file — Claude in a future session, or a person?" Claude → loop writes it. Person → flag, don't write.
 
 ## See Also
+- [[Change-Contracts Rollout]] <!-- auto-linked -->
 - [[Karpathy LLM Wiki Pattern]] <!-- auto-linked -->
 - [[Claude Workflow System]] — extends
 - [[Puffin Consciousness Development Skills]] — instance-of (identity files follow machine-consumed rules)

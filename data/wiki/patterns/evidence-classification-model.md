@@ -7,6 +7,8 @@ sources:
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/evidence-model.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/SKILL.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/communication-and-handoff.md
+  - data/raw/claude-docs/Parallax/skills/parallax-shared/templates/github-comment.md
+  - data/raw/claude-docs/Parallax/docs/documents/Evidence_Driven_PR_Review_System_Spec.md
 ---
 
 # Evidence Classification Model
@@ -37,7 +39,9 @@ This is why `question` exists as a first-class state rather than being folded in
 have a finding at all, and collapsing it into a low-confidence defect claim would
 manufacture a problem out of missing information. The orchestrator applies the same
 principle upstream at Stage 0: "Missing context is not a code defect — record it as
-'unknown,' don't guess."
+'unknown,' don't guess." That upstream rule has its own dedicated field in the
+[[Shared Context Brief]], which separates confirmed facts from inferred assumptions from
+unknowns before any subagent is dispatched.
 
 ## Self-verification is the producer's job
 
@@ -88,6 +92,11 @@ GitHub comments, approve, request changes, delete, modify configuration.
 One rule generalizes past the list: "Unknown scripts must be inspected before execution."
 A verification step may not itself become an unreviewed side effect.
 
+Note the direction of the tradeoff: `Bash` was granted to all seven subagents *because*
+this model demands verification, and the read-only property was preserved by moving the
+boundary rather than withholding the tool — see
+[[Read-Only by Default with Explicit Authorization]].
+
 ## Malformed vs weakly evidenced
 
 The model draws a line between two failure modes that look similar from outside. A finding
@@ -111,3 +120,6 @@ system's severity and Parallax's own merge impact; see
 - [[Source Severity vs Merge Impact]] — extends
 - [[Deterministic Review Substrate]] — extends
 - [[Parallel Dimension Scanner Architecture]] — instance-of
+- [[Shared Context Brief]] — prerequisite-for (same discipline applied to inputs)
+- [[Parallax]] — instance-of (the system this model governs)
+- [[Read-Only by Default with Explicit Authorization]] — extends (the boundary around self-verification)

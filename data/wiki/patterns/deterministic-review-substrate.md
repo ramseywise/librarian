@@ -84,3 +84,6 @@ whether the rule was applied at all.
 - [[Parallel Dimension Scanner Architecture]] — alternative-to
 - [[Merge Impact and Evidence State]] — extends
 - [[SANYI Change-Contract System]] — instance-of
+- [[Corrective Follow-Up Dispatch]] — extends (reviewer signal as fallback when `detect-signals` misses)
+- [[Shared Context Brief]] — extends (tool output recorded verbatim in the brief and report)
+- [[Parallax]] — instance-of (the system this substrate belongs to)

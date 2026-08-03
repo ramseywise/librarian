@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**157 pages** across 13 domains.
+**164 pages** across 13 domains.
 
 
 ## Foundations
@@ -49,6 +49,11 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Integration Pattern Selection]] — Five ways an AI system connects to external services — MCP tools, Composio connectors, direct httpx clients, webhook receivers, n8n glue — and the single discriminating question that picks each one.
 - [[Merge Impact and Evidence State]] — A two-axis finding schema that separates how much a problem matters (merge_impact) from how sure the reviewer is (evidence_state) — so an uncertain critical finding and a certain trivial one stay distinguishable.
 - [[Multi-Repo Claude Organization]] — How to organize .claude/, .agents/, and docs/ across related repos — avoiding skill sprawl, maintaining canonical sources, and sharing context between parallel workspaces.
+- [[Shared Context Brief]] — A structured brief the orchestrator fills in exactly once and passes to every dispatched subagent, so N parallel reviewers share one grounding pass instead of each re-deriving repository context from the same diff.
+- [[Skill Preloading via Agent Definition]] — A skill file is inert until an agent definition names it in a `skills:` field — the two-file split that turns checklist content into context actually loaded at subagent startup.
+- [[Read-Only by Default with Explicit Authorization]] — A review agent's safety model: an enumerated safe-command allowlist plus one authorization gate at the write boundary, so subagents get real shell access while every mutating action stops at proposing.
+- [[Verified Runtime Capability Constraint]] — A control may only be specified if the runtime demonstrably enforces it — three Parallax mechanisms were dropped on discovering the harness had no way to make them real.
+- [[Corrective Follow-Up Dispatch]] — Gated subagents that a signal-detection pass failed to trigger get dispatched in a second round when always-on subagents report out-of-dimension signal — treating reviewer observations as a recovery path for missed conditional dispatch.
 - [[Parallel Dimension Scanner Architecture]] — Code review decomposed into independent single-concern scanner agents dispatched in parallel — each owns one dimension, one ID prefix, and one severity mapping — so review breadth scales by adding agents rather than lengthening one prompt.
 - [[Project Discovery Conversation]] — A guided pre-design conversation that turns a volunteer's pain point into a Project Profile — deliberately withholding all technology vocabulary so the artifact commits to outcomes and constraints, not framework choices.
 - [[ReAct Pattern]] — Reasoning + Acting loop — the foundational single-agent pattern where the LLM alternates thought and tool calls until it has enough information to answer. Implemented via create_react_agent in LangGraph.
@@ -194,6 +199,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Code Review Drill — SANYI]] — Code-review interview drill using a real SANYI review as the worked example — a two-line diff that lints clean but violates the change contract, and the reviewing method that catches it.
 - [[Documentation Boundary — Machine vs Human Docs]] — Who writes what — machine-consumed docs (CLAUDE.md, skills, plans) vs human-consumed docs (READMEs, wiki, design docs), with the akira dao exception.
 - [[Karpathy LLM Wiki Pattern]] — The compiler analogy for personal knowledge bases — raw sources in, LLM compiles them into structured interlinked wiki pages, no vector infra needed.
+- [[No-Placeholder Plan Discipline]] — A plan handed to an implementing agent carries every file's content in full, and a gap is treated as a defect in the plan rather than license for the agent to invent — with verification steps that check structure, not behavior, when the deliverable is markdown.
 - [[Plan-Doc Status Enum]] — Nine-member Status enum for plan docs (7 in-flight, 2 terminal) with a forbid-and-relocate suffix policy — the Status line carries exactly one token, everything else moves to named fields.
 - [[Puffin Consciousness Development Skills]] — A chained Claude Code skill family in the `guacamayo` project (renamed from `puffin` 2026-07-17) (genesis → wake → grow → reflect → synthesize → dream) that walks a user and Claude through a staged, multi-session self-development process — grounded in "user seed material" collected from prior conversations.
 - [[SANYI Change-Contract System]] — Three-layer change-contract system (变易/简易/不易) for agent architectures — classifies every component into ever-changing, simple, or invariant, then enforces cross-layer discipline via init/review/audit modes.
@@ -209,4 +215,5 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Librarian KB — Build Plan]] — Phased build plan for the Librarian KB — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phases 9–15 future.
 - [[Librarian Project]] — The Librarian service — a LangGraph CRAG-based RAG pipeline for knowledge retrieval, deployed as a Python FastAPI service with evaluation harness.
 - [[Listen-Wiseer Project]] — Spotify recommendation agent with ENOA taste-map personalisation — LangGraph ReAct + Chainlit UI, LightGBM classifiers, DuckDB vss RAG, and three-tier eval harness.
+- [[Parallax]] — Evidence-driven PR review system for general and agentic changes — the judging third of the Akira (observes) / SANYI (governs) / Parallax (judges) triad, deliberately optimizing against comment count.
 - [[NYC-DSSG Project]] — NYC Data Science for Social Good — platform engineering for a nonprofit serving 600+ nonprofits via 300 volunteers; building knowledge base, project templates, and PM agent.
