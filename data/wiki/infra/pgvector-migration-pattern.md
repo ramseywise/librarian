@@ -174,3 +174,4 @@ Consider Vertex AI embeddings when: already on GCP with ADC auth, processing at 
 - [[Embedder Warmup]]
 - [[Langfuse ADK Tracing Patterns]]
 - [[Synthetic Dataset Generation for RAG Eval]]
+- [[Split Service Deployment]] — related (Supabase Postgres as shared vector + app store)

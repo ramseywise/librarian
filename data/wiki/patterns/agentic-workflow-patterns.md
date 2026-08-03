@@ -99,3 +99,6 @@ Frameworks (Claude Agent SDK, Strands, Rivet, Vellum) help get started but add a
 - [[Send API Fan-out]]
 - [[Agents Interview Study Guide]] — prerequisite-for
 - [[Parallel Dimension Scanner Architecture]] — instance-of (parallelization/sectioning applied to review)
+- [[Agent Orchestration Patterns]] — related (project-scoping view of the same escalation ladder)
+- [[Single Prompt Baseline]] — instance-of (the "simplest solution" this page recommends starting from)
+- [[Multi-Agent Role Specialization]] — related (orchestrator-workers, with role-test caveats)

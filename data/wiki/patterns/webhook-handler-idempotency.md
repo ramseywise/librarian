@@ -63,3 +63,4 @@ cannot use webhooks at all and must fall back to polling — see
 - [[MCP Server Security Patterns]] — extends (the same authenticate-the-caller obligation)
 - [[Observability and Runtime Patterns]] — extends (async failures need traces to be visible)
 - [[Data Pipeline Pattern Selection]] — prerequisite-for (the event-driven pipeline depends on this)
+- [[Callable-By Integration Contract]] — part-of (the reverse-direction half of the contract)

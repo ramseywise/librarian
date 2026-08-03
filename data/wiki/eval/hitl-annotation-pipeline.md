@@ -86,3 +86,4 @@ See [[RAG Evaluation]] for the full judge suite architecture.
 - [[RAG Evaluation]]
 - [[Evaluation & Improvement Project (VIR)]]
 - [[PII Masking Approaches]]
+- [[Manual Review as Eval Bootstrap]] — related (ad-hoc precursor to systematized annotation)

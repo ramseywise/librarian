@@ -137,3 +137,4 @@ Cloud Build trigger on `main` branch:
 - [[PGVector Migration Pattern]]
 - [[Langfuse ADK Tracing Patterns]]
 - [[ADK Deployment Patterns]]
+- [[Single Service Deployment]] — instance-of (one container + managed DB on GCP)

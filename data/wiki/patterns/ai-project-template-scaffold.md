@@ -2,7 +2,7 @@
 title: AI Project Template Scaffold
 tags: [infra, pattern]
 summary: A generic, framework-agnostic starter repo pattern for standing up new AI agent projects — modeled on a mature reference project's skills/docs/infra layout plus a conventional data-science project skeleton (`.github`, `project_init.sh`, `.vscode`, `data/`, `docs/`, `infrastructure/`), kept as its own repo rather than nested under the reference project.
-updated: 2026-07-19
+updated: 2026-08-03
 sources:
   - raw/sessions/claude-2026-07-06-we-have-a-template-for-github-ai-project-268f0009.md
   - raw/sessions/claude-2026-07-14-what-is-the-git-origin-for-ai-project-te-c90bb5d6.md
@@ -10,6 +10,8 @@ sources:
   - raw/sessions/puffin-chat-2026-07-15-19-11.md
   - raw/sessions/claude-2026-07-16-so-i-m-thinking-about-comparing-our-ai-p-73f6b61f.md
   - raw/sessions/claude-2026-07-19-none-of-my-cicd-pipelines-run-we-need-to-d7cdbb90.md
+  - data/raw/claude-docs/ai-project-template/docs/research/multi-agent-tooling-parity.md
+  - data/raw/claude-docs/ai-project-template/docs/research/template-pillar-gaps.md
 ---
 
 # AI Project Template Scaffold
@@ -44,6 +46,25 @@ The template uses [Copier](https://copier.readthedocs.io/) as its generator (`co
 - **`/project-genesis`** (updated) — see [[Asked vs Derived Scaffold Variables]]. Step 0 reads existing `DESIGN.md` first; recommended sequence is `/scope-poc` → `/project-genesis`.
 - **`scripts/sync-global-skills.sh`** — one-way sync from `~/.claude/skills/` → `template/.claude/skills/`. The template vendors global skills because scaffolded projects have no access to `~/.claude`. Hard-fails on unknown skill names (since 2026-07-19).
 
+## Capability Roadmap Method (2026-07-14)
+
+When two downstream projects (project-mgmt-ai, grant-fundraising-ai) each arrived with tool
+stacks the template didn't cover, the roadmap was set by a [[Capability Parity Audit]] —
+every requested capability classified have/partial/gap against the *grepped* scaffold, then
+prioritized by how many projects shared the gap. Three shared gaps emerged
+(Supabase/pgvector, n8n reachability, CrewAI); the n8n item resolved to a
+[[Callable-By Integration Contract]] rather than new infrastructure.
+
+## Pillar Gap Analysis (2026-07-29)
+
+A second roadmap pass scored the template against the
+[[Six-Pillar Agent Engineering Assessment]] and intersected the result with a portfolio-wide
+scan of the five existing repos — [[Template Floor Raising]]. Outcome: **25/25 Must-tier
+requirements met, 5/17 Should, 2/11 Nice (65% overall)**, with Loop the weakest pillar at
+50% and Evaluation the strongest at 76%. The top three additions (verification-loop wrapper,
+token-budget utility, OTel spans) were each chosen because 4–5 of the 5 existing repos
+lacked them, not because any one project asked.
+
 ## CI/CD Standardization (2026-07-19)
 
 **Problem:** CI/CD pipelines were broken across repos. Root cause: no shared template for workflows.
@@ -72,6 +93,8 @@ The template seeds a per-repo `SANYI.md` change contract on generation. When add
 - [[Golden Set Mechanics]]
 - [[AI Project Archetypes]] — prerequisite-for (archetype determines copier parameters)
 - [[Scope-POC Design Interview]] — prerequisite-for (DESIGN.md precedes genesis)
+- [[DESIGN.md Artifact]] — extends (every scaffolded project ships the stub)
+- [[Design-Before-Infrastructure Sequencing]] — prerequisite-for (the HOW conversation runs second)
 - [[Deferred Decision Status]] — extends (Key Decisions table semantics)
 - [[Asked vs Derived Scaffold Variables]] — extends (the genesis interview over copier.yaml)
 - [[Copier Re-Entry as Capability Path]] — extends (post-render capability additions)
@@ -79,3 +102,6 @@ The template seeds a per-repo `SANYI.md` change contract on generation. When add
 - [[Integration Pattern Selection]] — extends (external_systems / optional_features toggles)
 - [[Copier Upstream Update Workflow]] — extends (how template changes reach generated repos)
 - [[Template Migrations for Structural Moves]] — extends (shipping structural moves downstream)
+- [[Capability Parity Audit]] — extends (how the capability roadmap is chosen)
+- [[Six-Pillar Agent Engineering Assessment]] — extends (the rubric the template is scored against)
+- [[Template Floor Raising]] — extends (how pillar gaps are prioritized into a backlog)

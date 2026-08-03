@@ -47,3 +47,4 @@ implementation is not legible at all.
 - [[Eval-Driven Development (EDD)]] — extends
 - [[Eval vs Test Distinction]]
 - [[TDD as Coding-Agent Harness]]
+- [[Conversational Test Fixture Design]] — instance-of (the expected artifact committed as the spec)

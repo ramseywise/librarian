@@ -81,3 +81,4 @@ written against the old one is part of the contract.
 - [[Scope-POC Design Interview]] — prerequisite-for
 - [[Copier Upstream Update Workflow]] — alternative-to (pulling the template's changes vs. changing your answers)
 - [[Template Migrations for Structural Moves]] — extends (structural edits the answers file can't express)
+- [[Template Floor Raising]] — contradicts (the case for making foundational capabilities default rather than opt-in)

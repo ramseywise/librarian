@@ -72,3 +72,5 @@ either blocks the gate spuriously or hides a real gap.
 - [[Merge Impact and Evidence State]] — alternative-to (also separates confidence from consequence)
 - [[SANYI Change-Contract System]] — extends
 - [[Claude Workflow System]] — extends
+- [[DESIGN.md Artifact]] — part-of (section 5 records resolved and open together)
+- [[Derived-and-Hidden Design Decisions]] — related (a decision never surfaced at all, vs. one recorded as deferred)

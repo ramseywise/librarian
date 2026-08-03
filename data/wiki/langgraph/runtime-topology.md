@@ -121,3 +121,6 @@ log.info(
 - [[Production Hardening Patterns]]
 - [[Agent Memory Types]]
 - [[Multi-Agent Orchestration Patterns]]
+- [[Deployment Topology Ladder]] — prerequisite-for (topology choice determines the required checkpointer)
+- [[Serverless Deployment]] — instance-of (the runtime where MemorySaver fails silently)
+- [[Six-Pillar Agent Engineering Assessment]] — part-of (durable state is the loop pillar's Should-tier gap)

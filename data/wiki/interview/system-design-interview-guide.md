@@ -77,3 +77,4 @@ For each box: know its failure mode and its scaling story.
 - [[System Design — Shared Code-Index Service]] — instance-of
 - [[System Design — Serverless Agent Backends]] — instance-of
 - [[System Design — Unified Eval Harness]] — instance-of
+- [[Block Attribute Inversion]] — instance-of (this rubric relocated into per-component metadata)

@@ -280,3 +280,4 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[PGVector Migration Pattern]]
 - [[Atlas Project]] — instance-of
 - [[Production Readiness Backlog]] — alternative-to
+- [[Cloud Service Deployment]] — prerequisite-for (24/7 availability is what hardening pays for)

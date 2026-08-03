@@ -132,3 +132,7 @@ they must reframe toward Document Generation.
 - [[NYC-DSSG Project]] — instance-of
 - [[Golden Set Mechanics]] — extends (retrieval hit_rate gate)
 - [[Integration Pattern Selection]] — extends (archetype constrains the plausible integrations)
+- [[Agent Orchestration Patterns]] — extends (archetype constrains the plausible orchestration)
+- [[Complexity Floor]] — constrains (each archetype's floor makes capacity a selection criterion)
+- [[Deployment Topology Ladder]] — related (archetype and topology are chosen in the same conversation)
+- [[Conversational Test Fixture Design]] — extends (three mutually-confusable fixtures pin the archetype boundaries)

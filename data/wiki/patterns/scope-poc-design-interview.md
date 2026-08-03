@@ -5,6 +5,8 @@ summary: A five-tier system-design interview that produces a DESIGN.md answering
 updated: 2026-08-03
 sources:
   - data/raw/claude-docs/ai-project-template/skills/scope-poc/SKILL.md
+  - data/raw/claude-docs/ai-project-template/docs/research/poc-system-design-interview.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-30-system-design-rigor-gap.md
 ---
 
 # Scope-POC Design Interview
@@ -30,6 +32,22 @@ different times.
 
 *"Have a real conversation (not a rigid checklist read aloud)... Skip a question if the
 answer is obvious from context already given."*
+
+## Where Tiers 4–5 came from (2026-07-30)
+
+The load/latency/spend and observability items in Tier 4, and "what breaks first" in Tier 5,
+are not original — they were added after the interview was scored against a system-design
+rubric and found to cover the *requirements* half well while systematically missing the
+*engineering* half. `Scale:` sat in DESIGN.md as a bare HTML comment with no interview
+question anywhere behind it, which is the mechanical reason trade-off narration was also
+empty: without load, latency, or a spend ceiling recorded, none of the rubric's trade-off
+axes can be reasoned about at all.
+
+Two findings shaped how the gaps were closed rather than merely listing them: observability
+and guardrails turned out to be [[Derived-and-Hidden Design Decisions]] — shipped as code,
+never chosen — and the missing content was better modeled as
+[[Block Attribute Inversion]], per-component metadata generated from the assembly, than as
+six more questions a first-time volunteer cannot answer.
 
 ## Ratify, don't adopt
 
@@ -133,6 +151,27 @@ actors → `primary_users`/`primary_chat_agent`, data classification → `data_s
 system boundaries with an external user + own backend → `frontend_backend_topology`).
 Anything still open is answered interactively during genesis.
 
+The originating research doc records the mapping question-by-question — tiers 2–4 carry a
+`Copier mapping` column, while tiers 1 and 5 carry a `Purpose` column instead:
+
+| Tier | Question | Maps to |
+|---|---|---|
+| 2 | What existing systems must this integrate with? | `include_mcp_server`, integration toggles |
+| 2 | What data flows IN? (documents, DB records, live API) | `vector_backend`, `include_meeting_intelligence` |
+| 2 | What does the AI produce? (text, structured, actions) | `primary_chat_agent` |
+| 2 | Fresh project or layering onto an existing repo? | `scaffold_full_project` |
+| 3 | Retrieval / generation / automation / orchestration? | `primary_chat_agent` (`lg_agent`/`adk_agent`/`none`) |
+| 3 | How will you evaluate "good"? Golden set? | `enable_structure_guard`, evals setup |
+| 3 | Eval loop — manual, graders, or user feedback? | `include_ragas_grader`, `include_promptfoo` |
+| 4 | Data classification? | `data_sensitivity` |
+| 4 | Multi-tenant requirement? | **No copier equivalent** — surfaces in DESIGN.md |
+| 4 | Who operates this? Budget? | `aws_region`, `vector_backend` complexity |
+
+That tiers 1 and 5 have no mapping column is the structural point: **problem framing and
+MVP scope do not become parameters.** They constrain which parameters are sensible without
+setting any — which is why they cannot be recovered from `.copier-answers.yml` later.
+The eval-loop row maps directly onto the [[Eval Ladder]] rungs.
+
 ## See Also
 - [[Specification by Example]] <!-- auto-linked -->
 - [[Project Discovery Conversation]] — prerequisite-for
@@ -143,3 +182,9 @@ Anything still open is answered interactively during genesis.
 - [[NYC-DSSG Project]] — instance-of (DSSG platform context block)
 - [[Golden Set Mechanics]] — extends
 - [[Skill Pipeline Dryrun Testing]] — extends (asserts which questions this skill skips and which it must still ask)
+- [[Deployment Topology Ladder]] — extends (the "who uses this?" answer selects a topology)
+- [[Local-Only Deployment]] — instance-of (the topology a prototype-scoped POC records)
+- [[DESIGN.md Artifact]] — part-of (the artifact this interview produces)
+- [[Design-Before-Infrastructure Sequencing]] — prerequisite-for (why this is a separate skill)
+- [[Block Attribute Inversion]] — extends (per-block metadata instead of more Tier 4 questions)
+- [[Derived-and-Hidden Design Decisions]] — extends (the toggles this interview never surfaced)

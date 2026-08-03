@@ -103,3 +103,7 @@ let a vendor tool own the specification.
 - [[HITL Annotation Pipeline]]
 - [[Scope-POC Design Interview]] — prerequisite-for (design-time metric targets become evals/targets.yaml)
 - [[Skill Pipeline Dryrun Testing]] — alternative-to (fixed unambiguous cases for a skill chain rather than a model)
+- [[Eval Ladder]] — part-of (rung 2 of the maturity progression)
+- [[Manual Review as Eval Bootstrap]] — prerequisite-for (failure patterns become the first golden cases)
+- [[User Feedback Loops]] — feeds (thumbs-down cases expand the set post-deploy)
+- [[Conversational Test Fixture Design]] — alternative-to (fixture authoring when the input is dialogue)

@@ -107,3 +107,6 @@ anti-scope pointing at the plan doc that decided it.
 - [[Project Discovery Conversation]] — prerequisite-for
 - [[Copier Upstream Update Workflow]] — extends (the answers file as the update baseline)
 - [[Integration Pattern Selection]] — extends (integration answers become render-time toggles)
+- [[Deployment Topology Ladder]] — extends (topology choice writes five coupled parameters)
+- [[Derived-and-Hidden Design Decisions]] — extends (when derivation crosses into hiding a design decision)
+- [[Block Attribute Inversion]] — complements (the derive-then-confirm asymmetry applied to design metadata)

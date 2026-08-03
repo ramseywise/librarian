@@ -116,3 +116,5 @@ becomes render-time configuration — see [[Asked vs Derived Scaffold Variables]
 - [[AI Project Archetypes]] — extends (archetype constrains the plausible integrations)
 - [[NYC-DSSG Project]] — instance-of (the n8n turnover argument)
 - [[Data Pipeline Pattern Selection]] — alternative-to (the sibling card: how data arrives, not how services connect)
+- [[Callable-By Integration Contract]] — complements (the inbound half: being reachable from a hosted tool)
+- [[Capability Parity Audit]] — extends (how a long tail of named tools collapses into these five)

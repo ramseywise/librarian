@@ -154,3 +154,4 @@ LANGFUSE_HOST=https://your-langfuse.internal
 - [[ADK Observability]]
 - [[Observability & Evaluation Glossary]]
 - [[Webhook Handler Idempotency]] — extends (async inbound events fail invisibly without traces)
+- [[Cloud Service Deployment]] — related (the rung where monitoring becomes mandatory)

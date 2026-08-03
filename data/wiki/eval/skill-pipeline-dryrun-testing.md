@@ -5,6 +5,7 @@ summary: Regression-testing a chain of conversational skills by simulating a use
 updated: 2026-08-03
 sources:
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/SKILL.md
+  - data/raw/claude-docs/ai-project-template/skills/design-dryrun/reference/scenarios.md
 ---
 
 # Skill Pipeline Dryrun Testing
@@ -37,6 +38,12 @@ A pipeline whose output is judgment-shaped can still be regression-tested if the
 are deliberately restricted to cases with no defensible second answer. Ambiguous scenarios
 would make every failure arguable and the harness worthless. This is the same discipline as a
 golden set that excludes genuinely contested cases — see [[Golden Set Mechanics]].
+
+Each scenario is authored in full in a companion reference file — the volunteer's verbatim
+speech as input, the complete expected profile as the oracle, and a short list naming the
+specific wrong answer it exists to catch. See [[Conversational Test Fixture Design]] for
+that form; notably, the three scenarios are mutually confusable by construction, so each
+one's most plausible wrong archetype is another's correct one.
 
 ## Asserting the skips, not just the output
 
@@ -109,3 +116,4 @@ that wasn't there before."*
 - [[Golden Set Mechanics]] — alternative-to (fixed cases for a deterministic pipeline rather than a model)
 - [[Eval-Driven Development (EDD)]] — instance-of (a regression harness gating skill edits)
 - [[Asked vs Derived Scaffold Variables]] — extends (stage 3 validates the hint→parameter mapping)
+- [[Conversational Test Fixture Design]] — part-of (how the three scenarios are authored)

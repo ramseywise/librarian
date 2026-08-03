@@ -139,3 +139,4 @@ When re-running calibration on GT dataset, isolate by query type — accounting-
 - [[Evaluation & Improvement Project (VIR)]]
 - [[RAG Eval Gate Contract]]
 - [[Grounding Claim Methodology]]
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (calibration is the setup cost of a usable judge)
