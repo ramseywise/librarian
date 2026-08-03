@@ -225,6 +225,7 @@ These are **different concerns** — do not conflate:
 | **Framework** | Framework-agnostic | LangGraph-specific |
 
 ## See Also
+- [[Eval-Driven Development (EDD)]] <!-- auto-linked -->
 - [[VA vs HCA Retrieval Evaluation]]
 - [[VA Eval Harness]]
 - [[LLM Grader Calibration Insights]]

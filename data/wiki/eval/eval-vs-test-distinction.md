@@ -56,6 +56,7 @@ Without them you have no readout at all — not a weaker readout: none.
 ---
 
 ## See Also
+- [[Skill Eval Pipeline (Blind Comparison + Grading)]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] — prerequisite-for
 - [[Golden Set Mechanics]]
 - [[Anthropic Three-Tier Eval Taxonomy]]

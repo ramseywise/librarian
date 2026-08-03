@@ -10,6 +10,8 @@ sources:
   - data/raw/claude-docs/guacamayo/agents/agent-quality.md
   - data/raw/claude-docs/guacamayo/agents/contracts.md
   - data/raw/claude-docs/guacamayo/agents/wander.md
+  - data/raw/claude-docs/Parallax/skills/parallax-shared/references/severity-and-decision.md
+  - data/raw/claude-docs/Parallax/skills/parallax-shared/references/evidence-model.md
 ---
 
 # Merge Impact and Evidence State
@@ -82,7 +84,19 @@ algorithmic complexity claims without measurement are speculation.
 checks it is pinned by rule (hardcoded secrets always `blocker`). See
 [[Parallel Dimension Scanner Architecture]] for the per-dimension mapping.
 
+## The same schema in Parallax
+
+The Parallax review system uses the same two-axis split with two refinements. Its
+evidence axis is formalized into four states with per-state phrasing rules and
+producer-side self-verification — see [[Evidence Classification Model]]. Its impact axis
+is further split, keeping an external tool's own severity unrewritten alongside Parallax's
+merge-impact judgment — see [[Source Severity vs Merge Impact]]. Both are validated by
+tooling rather than prompt instruction; see [[Deterministic Review Substrate]].
+
 ## See Also
 - [[Parallel Dimension Scanner Architecture]] — prerequisite-for
 - [[Wander — Question-Generating Review Agent]] — extends
 - [[SANYI Change-Contract System]] — instance-of
+- [[Evidence Classification Model]] — extends
+- [[Source Severity vs Merge Impact]] — extends
+- [[Deterministic Review Substrate]] — extends

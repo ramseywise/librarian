@@ -34,7 +34,8 @@ answer is obvious from context already given."*
 ## Ratify, don't adopt
 
 Step 0 scans for pre-existing answers — `roadmap.md`, milestone files, plan docs, an
-existing `DESIGN.md`, a `PROJECT-PROFILE.md` from discovery. A real dry-run found literal
+existing `DESIGN.md`, a `PROJECT-PROFILE.md` from discovery. A real dry-run
+(see [[Skill Pipeline Dryrun Testing]]) found literal
 scaffold parameters (`vector_backend=postgres`, `primary_chat_agent=lg_agent`) written
 verbatim in a milestone's "done when" clause.
 
@@ -133,9 +134,12 @@ system boundaries with an external user + own backend → `frontend_backend_topo
 Anything still open is answered interactively during genesis.
 
 ## See Also
+- [[Specification by Example]] <!-- auto-linked -->
 - [[Project Discovery Conversation]] — prerequisite-for
 - [[Deferred Decision Status]] — extends (status semantics for the Key Decisions table)
 - [[AI Project Archetypes]] — extends (archetype pre-fills Tier 3)
+- [[Asked vs Derived Scaffold Variables]] — prerequisite-for (Step 7 hands off to the genesis interview)
 - [[AI Project Template Scaffold]] — prerequisite-for
 - [[NYC-DSSG Project]] — instance-of (DSSG platform context block)
 - [[Golden Set Mechanics]] — extends
+- [[Skill Pipeline Dryrun Testing]] — extends (asserts which questions this skill skips and which it must still ask)

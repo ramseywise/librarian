@@ -95,9 +95,11 @@ let a vendor tool own the specification.
 ---
 
 ## See Also
+- [[System Design — Unified Eval Harness]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] — prerequisite-for
 - [[Eval vs Test Distinction]]
 - [[Anthropic Three-Tier Eval Taxonomy]] — extends
 - [[Synthetic Dataset Generation for RAG Eval]] — alternative-to
 - [[HITL Annotation Pipeline]]
 - [[Scope-POC Design Interview]] — prerequisite-for (design-time metric targets become evals/targets.yaml)
+- [[Skill Pipeline Dryrun Testing]] — alternative-to (fixed unambiguous cases for a skill chain rather than a model)

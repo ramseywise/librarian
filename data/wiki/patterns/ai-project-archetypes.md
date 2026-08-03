@@ -131,3 +131,4 @@ they must reframe toward Document Generation.
 - [[AI Project Template Scaffold]] — extends (archetype → copier parameters)
 - [[NYC-DSSG Project]] — instance-of
 - [[Golden Set Mechanics]] — extends (retrieval hit_rate gate)
+- [[Integration Pattern Selection]] — extends (archetype constrains the plausible integrations)

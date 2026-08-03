@@ -59,3 +59,5 @@ written to over-match, then be narrowed by hand.
 - [[Claude Workflow System]]
 - [[SANYI Change-Contract System]]
 - [[Parallel Dimension Scanner Architecture]] — extends (prose-only safeguard as the same defect class)
+- [[Template Migrations for Structural Moves]] — instance-of (a module relocation that leaves a stale target behind)
+- [[Copier Upstream Update Workflow]] — extends (structural renames arriving from upstream)

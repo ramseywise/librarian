@@ -132,6 +132,15 @@ Buyi is the one layer machines can't infer (business/safety intent isn't in any 
 
 > **Note:** the original `SKILL.md`/`README.md` ingest described `SANYI.md`'s sections differently (`## Components`, `## Buyi Enforcement`, `## Migrations`, `## Pending Violations`, with no per-entry field spec). Resolved 2026-07-17 in `contract-spec.md`'s favor — its six exact-match sections are what the live skill parses. The "SANYI.md Format" section above is authoritative; see [[Conflicts]] for the resolution record.
 
+## Consumption by external review systems
+
+When another review system aggregates SANYI findings, the severities above are treated as
+SANYI's own property and carried through unrewritten. Parallax's `sanyi-review` subagent is
+instructed to "use SANYI's codes and severities exactly as SANYI's own taxonomy assigns
+them," and records a separate merge-impact judgment beside them rather than overwriting —
+a `JY-2 warning` maps to `important` *or* `suggestion` depending on the PR, with the
+ambiguity marking where a human decides. See [[Source Severity vs Merge Impact]].
+
 ## See Also
 - [[ADK Context Engineering]]
 - [[Input Guardrails Pipeline]]
@@ -142,3 +151,5 @@ Buyi is the one layer machines can't infer (business/safety intent isn't in any 
 - [[Silent Fallthrough in String-Keyed Discovery]] — instance-of (rename with no error signal)
 - [[Parallel Dimension Scanner Architecture]] — extends (contracts as a peer review dimension)
 - [[Merge Impact and Evidence State]] — extends (violation code fixes merge impact)
+- [[Source Severity vs Merge Impact]] — extends (severity preserved, impact assigned separately)
+- [[Deterministic Review Substrate]] — instance-of (`sanyi-default-impact` as a CLI subcommand)

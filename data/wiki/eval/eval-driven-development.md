@@ -103,3 +103,4 @@ likely way to get an EDD adoption wrong.
 - [[Golden Set Mechanics]] — extends
 - [[Anthropic Three-Tier Eval Taxonomy]]
 - [[TDD as Coding-Agent Harness]] — alternative-to
+- [[Skill Pipeline Dryrun Testing]] — instance-of (a regression harness over a conversational pipeline)

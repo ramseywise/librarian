@@ -78,6 +78,7 @@ The remaining checks are agent-specific versions of ordinary reliability concern
 termination (#9), idempotency (#6), partial failure (#10), and interruptibility (#18).
 
 ## See Also
+- [[Wander — Question-Generating Review Agent]] <!-- auto-linked -->
 - [[Parallel Dimension Scanner Architecture]] — extends
 - [[Merge Impact and Evidence State]] — prerequisite-for
 - [[ACI (Agent-Computer Interface)]] — extends

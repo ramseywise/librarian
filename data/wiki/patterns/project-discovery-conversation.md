@@ -98,3 +98,6 @@ expected to be corrected if the design conversation reveals the initial archetyp
 - [[AI Project Template Scaffold]] — prerequisite-for
 - [[NYC-DSSG Project]] — instance-of
 - [[Claude Workflow System]] — extends
+- [[Integration Pattern Selection]] — extends (how the named external systems get connected)
+- [[Skill Pipeline Dryrun Testing]] — extends (regression harness asserting archetype and profile completeness)
+- [[Data Pipeline Pattern Selection]] — extends ("where does the data come from" as a discovery question)

@@ -1,7 +1,7 @@
 ---
 title: TDD as Coding-Agent Harness
 tags: [patterns, llm, pattern]
-summary: Using a failing test to constrain the agent that writes code — the clearest goal you can give it — plus the guardrail neither popular source addresses: an agent that writes both test and implementation can satisfy itself.
+summary: "Using a failing test to constrain the agent that writes code — the clearest goal you can give it — plus the guardrail neither popular source addresses: an agent that writes both test and implementation can satisfy itself."
 updated: 2026-08-03
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md

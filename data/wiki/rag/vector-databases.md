@@ -107,3 +107,4 @@ Best for: fully managed RAG on GCP. Two modes: Agentic RAG (Gemini ADK agentic l
 - [[Reciprocal Rank Fusion (RRF)]]
 - [[RAG Reranking]]
 - [[Agentic RAG — Advanced Patterns]]
+- [[Data Pipeline Pattern Selection]] — extends (backend choice scales with corpus size and deployment target)

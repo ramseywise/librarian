@@ -82,6 +82,7 @@ This is critical for edge cases — judge prompts trained on average-case behavi
 See [[RAG Evaluation]] for the full judge suite architecture.
 
 ## See Also
+- [[Skill Pipeline Dryrun Testing]] <!-- auto-linked -->
 - [[RAG Evaluation]]
 - [[Evaluation & Improvement Project (VIR)]]
 - [[PII Masking Approaches]]

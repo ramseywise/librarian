@@ -10,6 +10,8 @@ sources:
   - data/raw/claude-docs/guacamayo/agents/agent-quality.md
   - data/raw/claude-docs/guacamayo/agents/contracts.md
   - data/raw/claude-docs/guacamayo/agents/wander.md
+  - data/raw/claude-docs/Parallax/agents/parallax.md
+  - data/raw/claude-docs/Parallax/skills/parallax-shared/SKILL.md
 ---
 
 # Parallel Dimension Scanner Architecture
@@ -110,6 +112,17 @@ instructed to Grep for code backing before accepting a claimed safeguard. This i
 architectural version of [[Silent Fallthrough in String-Keyed Discovery]]: the system appears
 to enforce something it merely describes.
 
+## A second implementation of the same shape
+
+Parallax (a separate evidence-driven PR review system) reaches the same
+dimension-per-subagent decomposition — four always-dispatched dimensions, two gated on
+agent-system signal detection, one gated on `SANYI.md` — but relocates the rules this page
+enforces through prompts into an executable CLI, described in
+[[Deterministic Review Substrate]]. Two of its constraints have no analogue here:
+dispatch must be foreground and single-message because a subagent has no turn for
+background completions to land in, and verification is assigned to the producing subagent
+rather than the merger ([[Evidence Classification Model]]).
+
 ## See Also
 - [[Merge Impact and Evidence State]] — extends
 - [[Wander — Question-Generating Review Agent]] — extends
@@ -117,3 +130,6 @@ to enforce something it merely describes.
 - [[SANYI Change-Contract System]] — instance-of
 - [[Claude Workflow System]] — prerequisite-for
 - [[Agentic Workflow Patterns]] — instance-of (parallelization/sectioning)
+- [[Deterministic Review Substrate]] — alternative-to
+- [[Evidence Classification Model]] — extends
+- [[Source Severity vs Merge Impact]] — extends

@@ -84,3 +84,4 @@ Repos warranting full CI/CD and standardized templates: **librarian, guacamayo, 
 - [[AI Project Archetypes]] — extends (archetype selection for volunteer projects)
 - [[Project Discovery Conversation]] — prerequisite-for (entry point for new project ideas)
 - [[Scope-POC Design Interview]] — extends (DSSG platform context block; the five-tier framework)
+- [[Integration Pattern Selection]] — extends (n8n glue as insurance against volunteer turnover)

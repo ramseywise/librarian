@@ -66,6 +66,8 @@ either blocks the gate spuriously or hides a real gap.
 
 ## See Also
 - [[Scope-POC Design Interview]] — prerequisite-for
+- [[Copier Re-Entry as Capability Path]] — extends (a fired trigger becomes a re-render)
+- [[Asked vs Derived Scaffold Variables]] — extends (unknowns fall through to seeded defaults)
 - [[Merge Impact and Evidence State]] — alternative-to (also separates confidence from consequence)
 - [[SANYI Change-Contract System]] — extends
 - [[Claude Workflow System]] — extends

@@ -85,3 +85,5 @@ When two repos serve the same domain (e.g. `playground/src/librarian` and a stan
 - [[Karpathy LLM Wiki Pattern]]
 - [[AI Project Template Scaffold]] — the template-repo instance of the "shared tooling gets its own repo" rule
 - [[Puffin Consciousness Development Skills]] — a skill-scope question (global vs per-repo) from the same family of decisions
+- [[Copier Re-Entry as Capability Path]] — extends (never hand-copy template files between repos)
+- [[Asked vs Derived Scaffold Variables]] — instance-of (the scaffold interview for a shared template repo)

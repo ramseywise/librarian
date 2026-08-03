@@ -153,3 +153,4 @@ LANGFUSE_HOST=https://your-langfuse.internal
 - [[LangGraph Advanced Patterns]]
 - [[ADK Observability]]
 - [[Observability & Evaluation Glossary]]
+- [[Webhook Handler Idempotency]] — extends (async inbound events fail invisibly without traces)
