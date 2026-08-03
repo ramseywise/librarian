@@ -44,7 +44,7 @@ The template uses [Copier](https://copier.readthedocs.io/) as its generator (`co
 - **`DESIGN.md.jinja`** — always generated (not gated on a toggle). Pre-fills `data_sensitivity` from copier answer. Ships with clear placeholders if `/scope-poc` wasn't run.
 - **`/scope-poc` skill** — see [[Scope-POC Design Interview]]. Five-tier interview framework (problem/actors → system boundaries → AI design → constraints → MVP scope) for scoping a new project before implementation. DSSG-aware: auto-detects nonprofit-success-ai vs. project-mgmt-ai from repo names and loads shared platform context (Supabase, actor roles, Engagement lifecycle).
 - **`/project-genesis`** (updated) — see [[Asked vs Derived Scaffold Variables]]. Step 0 reads existing `DESIGN.md` first; recommended sequence is `/scope-poc` → `/project-genesis`.
-- **`scripts/sync-global-skills.sh`** — one-way sync from `~/.claude/skills/` → `template/.claude/skills/`. The template vendors global skills because scaffolded projects have no access to `~/.claude`. Hard-fails on unknown skill names (since 2026-07-19).
+- **`scripts/sync-global-skills.sh`** — one-way sync from `~/.claude/skills/` → `template/.claude/skills/`. The template vendors global skills because scaffolded projects have no access to `~/.claude`. Hard-fails on unknown skill names (since 2026-07-19). The sync is a transform, not a mirror — the two trees address the same file differently, so link targets and copier variables are rewritten in transit; see [[Sync as Render, Not Copy]]. Extending it to the capability payload required first fixing six defects in the canonical copies, since a mirror stamps every canon bug into every scaffolded project — see [[Payload Security Defects at Canon]].
 
 ## Capability Roadmap Method (2026-07-14)
 
@@ -54,6 +54,11 @@ every requested capability classified have/partial/gap against the *grepped* sca
 prioritized by how many projects shared the gap. Three shared gaps emerged
 (Supabase/pgvector, n8n reachability, CrewAI); the n8n item resolved to a
 [[Callable-By Integration Contract]] rather than new infrastructure.
+
+A later audit of the same payload found the parity question itself was malformed for
+part of the list: six of the fourteen capabilities never touch the runtime, so asking
+what their LangGraph version looks like has no answer. See
+[[Capability Runtime-Coupling Tiers]].
 
 ## Pillar Gap Analysis (2026-07-29)
 
@@ -105,3 +110,6 @@ The template seeds a per-repo `SANYI.md` change contract on generation. When add
 - [[Capability Parity Audit]] — extends (how the capability roadmap is chosen)
 - [[Six-Pillar Agent Engineering Assessment]] — extends (the rubric the template is scored against)
 - [[Template Floor Raising]] — extends (how pillar gaps are prioritized into a backlog)
+- [[Capability Runtime-Coupling Tiers]] — extends (T1/T2/T3 sorting of the payload)
+- [[Sync as Render, Not Copy]] — extends (how canon reaches the template)
+- [[Payload Security Defects at Canon]] — prerequisite-for (fix before the mirror lands)

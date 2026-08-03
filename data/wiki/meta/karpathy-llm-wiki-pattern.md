@@ -2,7 +2,7 @@
 title: Karpathy LLM Wiki Pattern
 tags: [llm, concept]
 summary: The compiler analogy for personal knowledge bases — raw sources in, LLM compiles them into structured interlinked wiki pages, no vector infra needed.
-updated: 2026-04-24
+updated: 2026-08-03
 sources:
   - raw/playground-docs/obsidian-kb-research.md
 ---
@@ -94,3 +94,4 @@ Every wiki page should list the `sources:` frontmatter field pointing back to th
 - [[MCP Protocol]]
 - [[RAG Retrieval Strategies]]
 - [[Session Knowledge Capture Patterns]]
+- [[Durable vs Performative Knowledge Split]] — complements (durable/performative axis alongside raw/compiled)

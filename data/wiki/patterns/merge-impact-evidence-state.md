@@ -100,3 +100,4 @@ tooling rather than prompt instruction; see [[Deterministic Review Substrate]].
 - [[Evidence Classification Model]] — extends
 - [[Source Severity vs Merge Impact]] — extends
 - [[Deterministic Review Substrate]] — extends
+- [[Scope-Gated Reporter Dispatch]] — extends (scope decides which reporters produce evidence at all)

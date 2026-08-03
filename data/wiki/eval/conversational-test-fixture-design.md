@@ -118,3 +118,4 @@ question non-optional downstream ([[Scope-POC Design Interview]]).
 - [[Project Discovery Conversation]] — prerequisite-for (the stage being fixtured)
 - [[Complexity Floor]] — constrains (capacity implies infrastructure restraint, asserted)
 - [[Asked vs Derived Scaffold Variables]] — extends (the hints table under test)
+- [[Human-Participant Skill Test Protocol]] — complements (live participants rather than authored fixtures)

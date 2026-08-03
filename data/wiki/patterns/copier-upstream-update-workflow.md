@@ -104,3 +104,4 @@ update leaves no artifact — the output is the updated project.
 - [[AI Project Template Scaffold]] — extends (the upstream side of the template contract)
 - [[Asked vs Derived Scaffold Variables]] — prerequisite-for (answers file is the update's baseline)
 - [[Silent Fallthrough in String-Keyed Discovery]] — extends (structural renames that don't announce themselves)
+- [[Sync as Render, Not Copy]] — alternative-to (reservoir→template render vs template→project update)

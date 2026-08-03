@@ -59,3 +59,4 @@ scaffold.
 - [[Copier Upstream Update Workflow]] — prerequisite-for (migrations run during the update)
 - [[Silent Fallthrough in String-Keyed Discovery]] — extends (the same rename-doesn't-crash failure shape)
 - [[AI Project Template Scaffold]] — extends (structural changes shipped downstream)
+- [[Sync as Render, Not Copy]] — complements (transforming content on the way into the template)

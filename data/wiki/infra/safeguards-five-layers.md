@@ -2,7 +2,7 @@
 title: Safeguards Architecture — Five Protection Layers
 tags: [infra, llm, pattern]
 summary: Five-layer runtime safety pipeline for production agents — input guardrails, routing confidence, retrieval quality (CRAG), post-generation grounding check, and escalation routing — each with distinct latency cost and failure mode.
-updated: 2026-07-19
+updated: 2026-08-03
 sources:
   - raw/claude-docs/playground/docs/support-agents/safeguards-architecture.md
 ---
@@ -59,6 +59,8 @@ Additionally: missing citation guard (KB called but no citations + no `insuffici
 
 **Do NOT use LLM-as-judge for runtime grounding.** Semantic grounding evaluation belongs in the offline eval pipeline ([[project-g Eval Architecture]]), not the hot path. Runtime check must be structural and sub-millisecond.
 
+**When the response is streamed**, this layer cannot simply inspect a finished string — see [[Streaming Output Scrubbing]] for the transform-in-transit seam and the carry-window technique that keeps a post-generation guard compatible with token streaming.
+
 ## Layer 5 — Escalation Routing
 
 Aggregates signals from all prior layers plus explicit user requests:
@@ -102,3 +104,6 @@ Gaps: context caching (TS only), multi-language escalation (Python: 7 langs, TS:
 - [[project-g Eval Architecture]] — extends (offline complement to runtime layers)
 - [[Grounding Claim Methodology]] — extends (the eval-side semantic grounding)
 - [[HITL and Interrupt Patterns]] — alternative-to (Layer 5 escalation)
+- [[Streaming Output Scrubbing]] — extends (Layer 4 under token streaming)
+- [[Payload Security Defects at Canon]] — complements (defects in the shipped payload, not the runtime layers)
+- [[AIE Code-Test Flaw Taxonomy]] — instance-of (the hand-rolled subset of these layers, under a timebox)

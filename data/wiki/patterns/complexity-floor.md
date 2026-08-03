@@ -53,3 +53,4 @@ refinements.
 - [[Deployment Topology Ladder]] — constrains (team-hours bound the reachable topology rung)
 - [[Split Service Deployment]] — instance-of (semester-tier only; no reduced version exists)
 - [[Capability Parity Audit]] — extends (an identified gap is not automatically work worth doing)
+- [[Capability Runtime-Coupling Tiers]] — extends (a flagged asymmetry is not automatically work)

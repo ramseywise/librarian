@@ -104,6 +104,11 @@ tomorrow.'"* A checkpoint needing external input (API keys, a real copier render
 the harness runnable on every skill change instead of only when the environment is fully
 provisioned.
 
+The harness deliberately does not measure comprehension — its scenarios were chosen to
+have unambiguous correct answers, which means no participant is ever confused by them.
+That gap is covered by a separate instrument with real first-time users:
+[[Human-Participant Skill Test Protocol]].
+
 The trigger for running it is any edit to `/project-discovery`, `/scope-poc`,
 `/project-genesis`, or the reference cards — those changes *"should not introduce friction
 that wasn't there before."*
@@ -117,3 +122,4 @@ that wasn't there before."*
 - [[Eval-Driven Development (EDD)]] — instance-of (a regression harness gating skill edits)
 - [[Asked vs Derived Scaffold Variables]] — extends (stage 3 validates the hint→parameter mapping)
 - [[Conversational Test Fixture Design]] — part-of (how the three scenarios are authored)
+- [[Human-Participant Skill Test Protocol]] — alternative-to (real users rather than a simulated one)

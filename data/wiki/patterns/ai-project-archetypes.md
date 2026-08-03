@@ -136,3 +136,4 @@ they must reframe toward Document Generation.
 - [[Complexity Floor]] — constrains (each archetype's floor makes capacity a selection criterion)
 - [[Deployment Topology Ladder]] — related (archetype and topology are chosen in the same conversation)
 - [[Conversational Test Fixture Design]] — extends (three mutually-confusable fixtures pin the archetype boundaries)
+- [[Human-Participant Skill Test Protocol]] — extends (facilitator pre-registers the expected archetype)

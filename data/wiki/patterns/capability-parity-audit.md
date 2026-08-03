@@ -114,3 +114,4 @@ records absence; it does not assert that the absence should be closed.
 - [[Asked vs Derived Scaffold Variables]] — extends (a new capability usually becomes a toggle)
 - [[Six-Pillar Agent Engineering Assessment]] — alternative-to (a fixed rubric rather than a per-consumer request matrix)
 - [[Template Floor Raising]] — complements (prioritize by portfolio weakness rather than consumer count)
+- [[Capability Runtime-Coupling Tiers]] — alternative-to (runtime-coupling axis rather than have/partial/gap)

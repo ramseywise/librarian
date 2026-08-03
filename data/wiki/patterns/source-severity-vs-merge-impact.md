@@ -92,3 +92,4 @@ accepting per-review variance in exchange for PR-specific context entering the d
 - [[Deterministic Review Substrate]] — extends
 - [[SANYI Change-Contract System]] — instance-of
 - [[Parallel Dimension Scanner Architecture]] — alternative-to
+- [[Scope-Gated Reporter Dispatch]] — extends (recording reporters that never ran)

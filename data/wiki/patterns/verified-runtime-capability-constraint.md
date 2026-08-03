@@ -91,3 +91,5 @@ is a defect in the plan, not license to fill it in. See
 - [[Read-Only by Default with Explicit Authorization]] — extends (a control that *is* enforceable)
 - [[No-Placeholder Plan Discipline]] — extends (the same rule at the plan layer)
 - [[Capability Parity Audit]] — complements (the same read-don't-recall rule applied to inventory)
+- [[Streaming Output Scrubbing]] — instance-of (shipped-but-unwired guards in a scaffold)
+- [[Payload Security Defects at Canon]] — instance-of (reading all 30 files surfaced what recall had not)

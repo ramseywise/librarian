@@ -2,14 +2,18 @@
 title: System Design Interview Study Guide
 tags: [interview, reference]
 summary: Method guide for the ML/LLM/agent system design round — 5-step process, trade-off narration formula, LLM reference architecture, bottleneck table, and failure mode reflexes.
-updated: 2026-07-19
+updated: 2026-08-03
 sources:
   - raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--interview-guide.md
 ---
 
 # System Design Interview Study Guide
 
-The highest-weight technical round in 2026 AIE/MLE loops. This guide covers the method; domain content lives in [[RAG Interview Study Guide]], [[Agents Interview Study Guide]], and [[Evals and Observability Interview Study Guide]].
+The highest-weight technical round in 2026 AIE/MLE loops. This guide covers the method; domain content lives in [[RAG Interview Study Guide]], [[Agents Interview Study Guide]], and [[Evals and Observability Interview Study Guide]]. That boundary is itself a rule — see [[Durable vs Performative Knowledge Split]].
+
+Between the 5-step process below (abstract) and those domain guides (deep) sits a third layer indexed by situation rather than by component: [[Situation-Indexed Decision Tree]].
+
+Step 1 below — clarify before designing — is a *live-round* rule. It inverts on an async take-home, where the graded behaviour is to state your interpretation and proceed; that round has its own defect list ([[AIE Code-Test Flaw Taxonomy]]) and its own scaling rule ([[Timebox-Scaled Deliverable Bar]]).
 
 ## The 5-Step Process (45–55 min, ~8 min/step)
 
@@ -78,3 +82,7 @@ For each box: know its failure mode and its scaling story.
 - [[System Design — Serverless Agent Backends]] — instance-of
 - [[System Design — Unified Eval Harness]] — instance-of
 - [[Block Attribute Inversion]] — instance-of (this rubric relocated into per-component metadata)
+- [[Situation-Indexed Decision Tree]] — extends (situation index over the §3 component table)
+- [[Durable vs Performative Knowledge Split]] — prerequisite-for (why method and domain live apart)
+- [[AIE Code-Test Flaw Taxonomy]] — alternative-to (the shipping round vs. the design round)
+- [[Timebox-Scaled Deliverable Bar]] — complements (async ambiguity protocol inverts step 1)

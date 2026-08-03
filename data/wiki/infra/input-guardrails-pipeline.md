@@ -2,7 +2,7 @@
 title: Input Guardrails Pipeline
 tags: [llm, concept, pattern]
 summary: 7-stage deterministic safety pipeline (normalise → size check → domain classify → injection detect → PII redact → XML envelope → advisory) that runs before every LLM call — LLM-free by design.
-updated: 2026-04-26
+updated: 2026-08-03
 sources:
   - raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md
 ---
@@ -190,3 +190,4 @@ def guardrails_node(state: AgentState) -> dict:
 - [[Self-Learning Agents]]
 - [[Safeguards Architecture — Five Protection Layers]] — extends (full pipeline including post-generation)
 - [[Open-Domain Dialogue Systems]] — prerequisite-for
+- [[Streaming Output Scrubbing]] — extends (the output-side twin; no stream seam on the input side)

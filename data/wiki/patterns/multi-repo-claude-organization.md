@@ -2,7 +2,7 @@
 title: Multi-Repo Claude Organization
 tags: [context-management, pattern]
 summary: How to organize .claude/, .agents/, and docs/ across related repos — avoiding skill sprawl, maintaining canonical sources, and sharing context between parallel workspaces.
-updated: 2026-07-06
+updated: 2026-08-03
 sources:
   - raw/sessions/2026-04-20T1645.md
   - raw/sessions/2026-04-26T0915.md
@@ -86,4 +86,5 @@ When two repos serve the same domain (e.g. `playground/src/librarian` and a stan
 - [[AI Project Template Scaffold]] — the template-repo instance of the "shared tooling gets its own repo" rule
 - [[Puffin Consciousness Development Skills]] — a skill-scope question (global vs per-repo) from the same family of decisions
 - [[Copier Re-Entry as Capability Path]] — extends (never hand-copy template files between repos)
+- [[Sync as Render, Not Copy]] — extends (what hand-copied files become: unmanaged forks)
 - [[Asked vs Derived Scaffold Variables]] — instance-of (the scaffold interview for a shared template repo)
