@@ -53,6 +53,12 @@ data/db
 data/sessions.db
 data/sessions.db.bak-*
 
+# Cron run summary — per-run operational telemetry, overwritten every sweep. Relocated
+# here from ~/.claude/docs/insights/ at #94, where the write recreated a directory that
+# is deliberately absent. Counts and problem strings only, but this is a PUBLIC repo and
+# problem strings carry local absolute paths: ignored, same as data/sessions.db.
+data/cron/
+
 # data/wiki/ is tracked — it is the repo's product, not rebuildable output.
 # Only private pages stay local.
 data/wiki/private/
