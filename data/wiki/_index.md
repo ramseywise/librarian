@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**134 pages** across 13 domains.
+**144 pages** across 13 domains.
 
 
 ## Foundations
@@ -20,6 +20,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Batch Normalization]] — Batch Normalization (Ioffe & Szegedy, 2015) normalizes layer inputs using mini-batch statistics during training to reduce internal covariate shift — enables higher learning rates, reduces sensitivity to initialization, and acts as a regularizer. Rethinking BatchNorm (Wu & Johnson, 2021) exposes pitfalls with EMA population statistics, train/inference inconsistency, and domain shift.
 - [[Dialogue Transformers — TED Policy]] — Transformer Embedding Dialogue (TED) policy (Rasa, 2020) applies self-attention at the discourse level — over dialogue turns rather than tokens — outperforming LSTM-based policies on sub-dialogue handling while being simpler and faster than REDP.
 - [[DIET Architecture]] — Dual Intent and Entity Transformer (Rasa, 2020) — a multi-task NLU architecture for joint intent classification and entity recognition that outperforms fine-tuned BERT while being 6x faster to train, using plug-and-play pre-trained embeddings with sparse features.
+- [[HDBSCAN with KMeans Fallback]] — Clustering selection strategy that tries density-based HDBSCAN first and falls back to KMeans when silhouette drops below 0.25 — plus the diagnostic discipline that treats a fallback as a feature-quality signal rather than a resolved choice.
 - [[Dilated Causal Convolutions]] — Convolutions with exponentially increasing dilation factors that preserve temporal causality while growing the receptive field exponentially with depth — the key architectural innovation in WaveNet for modeling long-range audio dependencies efficiently.
 - [[Neural Probabilistic Language Model]] — Bengio et al. (2003) introduced the idea of learning distributed word representations (embeddings) jointly with a neural network language model — fighting the curse of dimensionality by mapping words to a continuous vector space where semantically similar words have nearby representations.
 - [[Open-Domain Dialogue Systems]] — Survey of frameworks for open-domain conversation — retrieval-based (score candidates), generation-based (seq2seq/PLM), and hybrid methods — with two key goals (informative via knowledge grounding, controllable via persona/strategy/safety).
@@ -31,17 +32,23 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 ## Patterns
 
 - [[ACI (Agent-Computer Interface)]] — Tool design discipline for agents — the interface between agent and tools, analogous to HCI for humans. Good ACI determines whether the agent uses tools correctly or hallucinates parameters.
+- [[Agent Quality Review Checklist]] — Nineteen agent-system-specific review checks across six families — prompt/LLM smells, tool safety, workflow state, retrieval/context, memory write-back, and accountability — of which "safeguard in prose only" is named the highest-value finding.
 - [[Agent Scaffolding Skill Layers]] — A three-layer Claude Code skill design for scaffolding agents — a generic parallel-subagent factory (L1), standalone capability add-skills that read the target before generating (L2), and a domain-specific bundle that orchestrates L2 skills in sequence (L3).
 - [[Agentic Workflow Patterns]] — Anthropic's five composable workflow patterns for LLM agents — when to use each, and the ACI principle for tool design.
+- [[AI Project Archetypes]] — Four archetypes — Information Retrieval, Document Generation, Workflow Automation, Conversational Interface — that cover most nonprofit AI projects, each with a complexity floor, disambiguating questions, and a mapping to concrete scaffold parameters.
 - [[AI Project Template Scaffold]] — A generic, framework-agnostic starter repo pattern for standing up new AI agent projects — modeled on a mature reference project's skills/docs/infra layout plus a conventional data-science project skeleton (`.github`, `project_init.sh`, `.vscode`, `data/`, `docs/`, `infrastructure/`), kept as its own repo rather than nested under the reference project.
 - [[Branch Naming Convention Pattern]] — Ticket-linked, type-prefixed branch naming (`type-TICKET-slug`) with per-repo type taxonomies and a `hotfix` escape hatch for production-blocking bugs.
 - [[Chain of Thought]] — Inference-time technique where the LLM is prompted to show its reasoning before answering — improves accuracy on multi-step logic, arithmetic, and routing decisions with no training cost.
+- [[Merge Impact and Evidence State]] — A two-axis finding schema that separates how much a problem matters (merge_impact) from how sure the reviewer is (evidence_state) — so an uncertain critical finding and a certain trivial one stay distinguishable.
 - [[Multi-Repo Claude Organization]] — How to organize .claude/, .agents/, and docs/ across related repos — avoiding skill sprawl, maintaining canonical sources, and sharing context between parallel workspaces.
+- [[Parallel Dimension Scanner Architecture]] — Code review decomposed into independent single-concern scanner agents dispatched in parallel — each owns one dimension, one ID prefix, and one severity mapping — so review breadth scales by adding agents rather than lengthening one prompt.
+- [[Project Discovery Conversation]] — A guided pre-design conversation that turns a volunteer's pain point into a Project Profile — deliberately withholding all technology vocabulary so the artifact commits to outcomes and constraints, not framework choices.
 - [[ReAct Pattern]] — Reasoning + Acting loop — the foundational single-agent pattern where the LLM alternates thought and tool calls until it has enough information to answer. Implemented via create_react_agent in LangGraph.
 - [[Silent Fallthrough in String-Keyed Discovery]] — When a tool finds its working target by grepping a literal string, renaming that string doesn't crash — it selects a different target with no error, making the rename a flag-day change whose only defence is a call-site checklist.
 - [[Specification by Example]] — The classical practice (ATDD/SBE) of expressing a requirement as a concrete example rather than prose, producing an executable specification that cannot drift from the code.
 - [[TDD as Coding-Agent Harness]] — Using a failing test to constrain the agent that writes code — the clearest goal you can give it — plus the guardrail neither popular source addresses: an agent that writes both test and implementation can satisfy itself.
 - [[Track2Vec Playlist Co-Occurrence Embeddings]] — Item2vec-style technique — treat playlists as "sentences" and item IDs as "words", train Word2Vec over co-occurrence to get dense embeddings that capture human curation intent rather than content similarity.
+- [[Wander — Question-Generating Review Agent]] — A review agent that produces 3–5 pointed questions instead of findings — surfacing intent, edge cases, walked-past decisions, blast radius, and the conspicuously absent thing — as the "yin" complement to defect scanners.
 
 ## RAG
 
@@ -126,6 +133,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Direct Preference Optimization]] — Training-time technique that fine-tunes a model on human preference pairs (preferred vs rejected responses) without a reward model — replaces PPO/RLHF for preference alignment. Not applicable to API-only models.
 - [[Eval vs Test Distinction]] — A test tells you your code is broken; an eval tells you your product got worse — two different instruments with different targets, graders, cadences, and failure semantics.
 - [[Eval-Driven Development (EDD)]] — Writing the eval suite before the agent exists — ATDD reconstructed for non-deterministic systems, where first-ness buys honesty rather than design pressure.
+- [[Forecast Grader Thresholds]] — The pass/fail contract for time-series forecast evaluation — MASE against a naïve baseline, SMAPE, directional accuracy, and prediction-interval coverage — with the diagnostic each failure points to and the drift ratio that triggers retraining.
 - [[Golden Set Mechanics]] — The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
 - [[Grounding Claim Methodology]] — Claims-based grounding — the "yellow highlighter" approach to RAG verification, where the agent extracts verbatim supporting quotes from retrieved documents before writing the final answer, creating a verifiable paper trail.
 - [[HITL Annotation Pipeline]] — Human-in-the-loop annotation workflow for conversation data — two-queue structure (random + edge case), inter-annotator agreement as quality gate, and feedback routing to eval dataset vs failure taxonomy.
@@ -153,6 +161,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Prefix Caching]] — Claude's automatic KV cache reuse for repeated prompt prefixes — cuts latency and cost by 90% for static system prompts and long tool schemas.
 - [[Presidio PII Redaction for Langfuse]] — Presidio orchestration layer with spaCy fr_core_news_lg + CamemBERT NER + custom regex recognizers for French financial PII — wired into Langfuse via the SDK mask hook as a single interception point before traces leave the process.
 - [[Production Hardening Patterns]] — Checklist of production hardening fixes for the Librarian service — P0/P1/P2 issues, async I/O safety, SQL injection prevention, CORS, and Docker packaging.
+- [[Production Readiness Backlog]] — The pre-launch gap checklist for a RAG service going to managed cloud hosting — auth, CORS, structured logging, tests, CI gate, staging separation, probes, retries, migrations — each stated as current-state vs required.
 - [[Safeguards Architecture — Five Protection Layers]] — Five-layer runtime safety pipeline for production agents — input guardrails, routing confidence, retrieval quality (CRAG), post-generation grounding check, and escalation routing — each with distinct latency cost and failure mode.
 - [[System Design — Shared Code-Index Service]] — Interview-format system design writeup of the DSSG shared indexer — centralized indexer + query API with MCP as a thin read-only client, DuckDB single-writer risk, and the pgvector escape hatch.
 
@@ -181,6 +190,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 ## Projects
 
+- [[Atlas Project]] — Time-series forecasting and customer-segmentation agent system — Planner/Forecaster/Evaluator/Learner loop over ARIMA and Chronos models, an HDBSCAN-with-KMeans-fallback segmentation pipeline, and a Neo4j knowledge graph linking customers to segments and merchants.
 - [[Change-Contracts Rollout]] — 2026-07-17 decision record — SANYI promoted to the global skills reservoir, SANYI.md contracts drafted for playground/librarian/atlas, contract checks wired into review skills, template seeds contracts at scaffold time; akira rollout blocked on hardcoded scan paths.
 - [[Librarian Graph Explorer]] — Local React Flow wiki graph explorer — multi-dimensional edge types (wikilink/semantic/tag-shared), UMAP semantic layout, and agent chat with graph highlighting and wikilink write-back. Addresses the gap where Obsidian cannot do multi-edge toggling or embedding-based spatial layout.
 - [[Librarian KB — Build Plan]] — Phased build plan for the Librarian KB — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phases 9–15 future.

@@ -278,3 +278,5 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[ADK Scaffold Patterns]]
 - [[Cloud Run + Cloud SQL Pattern]]
 - [[PGVector Migration Pattern]]
+- [[Atlas Project]] — instance-of
+- [[Production Readiness Backlog]] — alternative-to

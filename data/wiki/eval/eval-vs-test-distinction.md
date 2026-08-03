@@ -60,3 +60,4 @@ Without them you have no readout at all — not a weaker readout: none.
 - [[Golden Set Mechanics]]
 - [[Anthropic Three-Tier Eval Taxonomy]]
 - [[RAG Eval Gate Contract]]
+- [[Forecast Grader Thresholds]] — instance-of

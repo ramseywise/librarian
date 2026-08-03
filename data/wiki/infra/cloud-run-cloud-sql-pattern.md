@@ -132,6 +132,7 @@ Cloud Build trigger on `main` branch:
 ---
 
 ## See Also
+- [[Production Readiness Backlog]] — extends
 - [[Production Hardening Patterns]]
 - [[PGVector Migration Pattern]]
 - [[Langfuse ADK Tracing Patterns]]

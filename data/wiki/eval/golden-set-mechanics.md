@@ -100,3 +100,4 @@ let a vendor tool own the specification.
 - [[Anthropic Three-Tier Eval Taxonomy]] — extends
 - [[Synthetic Dataset Generation for RAG Eval]] — alternative-to
 - [[HITL Annotation Pipeline]]
+- [[Scope-POC Design Interview]] — prerequisite-for (design-time metric targets become evals/targets.yaml)

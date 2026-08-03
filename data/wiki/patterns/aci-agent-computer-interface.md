@@ -50,3 +50,4 @@ All tools in the Librarian pipeline subclass `BaseTool Protocol` with explicit i
 - [[Agentic Workflow Patterns]]
 - [[MCP Protocol]] — MCP tool schemas as a structured ACI standard
 - [[Librarian RAG Architecture]]
+- [[Agent Quality Review Checklist]] — extends (tool-safety review checks)

@@ -132,3 +132,4 @@ can never fire on them — validation has to run elsewhere.
 - [[Claude Workflow System]] — instance-of
 - [[Agile Workflow Definitions]] — prerequisite-for
 - [[Documentation Boundary — Machine vs Human Docs]]
+- [[Deferred Decision Status]] — alternative-to (status enum for design decisions, not plan docs)

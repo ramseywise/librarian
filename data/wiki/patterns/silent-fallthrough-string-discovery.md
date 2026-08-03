@@ -58,3 +58,4 @@ written to over-match, then be narrowed by hand.
 - [[Plan-Doc Status Enum]] — instance-of
 - [[Claude Workflow System]]
 - [[SANYI Change-Contract System]]
+- [[Parallel Dimension Scanner Architecture]] — extends (prose-only safeguard as the same defect class)

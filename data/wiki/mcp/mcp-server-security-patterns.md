@@ -76,3 +76,4 @@ Typical sensitive finds in AI engineering repos:
 - [[MCP Protocol]]
 - [[SANYI Change-Contract System]]
 - [[Input Guardrails Pipeline]]
+- [[Agent Quality Review Checklist]] — alternative-to (review-time vs runtime enforcement)

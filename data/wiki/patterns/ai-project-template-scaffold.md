@@ -40,7 +40,7 @@ Comparing against a separate, more classically-structured data-science project t
 The template uses [Copier](https://copier.readthedocs.io/) as its generator (`copier.yaml` at root). Key additions from July 2026 sessions:
 
 - **`DESIGN.md.jinja`** — always generated (not gated on a toggle). Pre-fills `data_sensitivity` from copier answer. Ships with clear placeholders if `/scope-poc` wasn't run.
-- **`/scope-poc` skill** — five-tier interview framework (problem/actors → system boundaries → AI design → constraints → MVP scope) for scoping a new project before implementation. DSSG-aware: auto-detects nonprofit-success-ai vs. project-mgmt-ai from repo names and loads shared platform context (Supabase, actor roles, Engagement lifecycle).
+- **`/scope-poc` skill** — see [[Scope-POC Design Interview]]. Five-tier interview framework (problem/actors → system boundaries → AI design → constraints → MVP scope) for scoping a new project before implementation. DSSG-aware: auto-detects nonprofit-success-ai vs. project-mgmt-ai from repo names and loads shared platform context (Supabase, actor roles, Engagement lifecycle).
 - **`/project-genesis`** (updated) — Step 0 reads existing `DESIGN.md` first; recommended sequence is `/scope-poc` → `/project-genesis`.
 - **`scripts/sync-global-skills.sh`** — one-way sync from `~/.claude/skills/` → `template/.claude/skills/`. The template vendors global skills because scaffolded projects have no access to `~/.claude`. Hard-fails on unknown skill names (since 2026-07-19).
 
@@ -70,3 +70,7 @@ The template seeds a per-repo `SANYI.md` change contract on generation. When add
 - [[Skill-Knowledge Information Flow]] — extends (template sync contract)
 - [[Eval-Driven Development (EDD)]] — extends (golden set as discovery-exit artifact)
 - [[Golden Set Mechanics]]
+- [[AI Project Archetypes]] — prerequisite-for (archetype determines copier parameters)
+- [[Scope-POC Design Interview]] — prerequisite-for (DESIGN.md precedes genesis)
+- [[Deferred Decision Status]] — extends (Key Decisions table semantics)
+- [[Project Discovery Conversation]] — prerequisite-for (upstream of scaffold)

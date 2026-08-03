@@ -63,7 +63,8 @@ Both DSSG agent projects are platform-level. The key gate question for nonprofit
 
 ## System Design Framework (2026-07-15)
 
-A five-tier interview framework was synthesized for `/scope-poc`:
+A five-tier interview framework was synthesized for `/scope-poc` (see
+[[Scope-POC Design Interview]]):
 1. Problem / actors
 2. System boundaries
 3. AI design decisions
@@ -80,3 +81,6 @@ Repos warranting full CI/CD and standardized templates: **librarian, guacamayo, 
 - [[AI Project Template Scaffold]] — extends
 - [[Librarian Project]] — instance-of (KB for DSSG)
 - [[SANYI Change-Contract System]] — prerequisite-for
+- [[AI Project Archetypes]] — extends (archetype selection for volunteer projects)
+- [[Project Discovery Conversation]] — prerequisite-for (entry point for new project ideas)
+- [[Scope-POC Design Interview]] — extends (DSSG platform context block; the five-tier framework)

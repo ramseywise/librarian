@@ -55,3 +55,4 @@ feature-engineering pass, feeding the per-playlist LightGBM/CatBoost reranker (s
 - [[LightGBM vs CatBoost Comparison]]
 - [[Agentic Workflow Patterns]]
 - [[Neural Probabilistic Language Model]] — prerequisite-for
+- [[HDBSCAN with KMeans Fallback]] — alternative-to

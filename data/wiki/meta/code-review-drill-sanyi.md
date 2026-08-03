@@ -43,3 +43,4 @@ Asked to review a PR in an interview: state the invariants you'd check first (au
 ## See Also
 - [[SANYI Change-Contract System]] — instance-of
 - [[Change-Contracts Rollout]]
+- [[Merge Impact and Evidence State]] — extends (severity from layer, not reviewer mood)

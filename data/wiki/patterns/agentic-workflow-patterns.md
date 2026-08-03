@@ -98,3 +98,4 @@ Frameworks (Claude Agent SDK, Strands, Rivet, Vellum) help get started but add a
 - [[ACI (Agent-Computer Interface)]]
 - [[Send API Fan-out]]
 - [[Agents Interview Study Guide]] — prerequisite-for
+- [[Parallel Dimension Scanner Architecture]] — instance-of (parallelization/sectioning applied to review)
