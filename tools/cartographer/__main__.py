@@ -3,7 +3,7 @@
 Usage:
     uv run cartographer --dry-run          # Extract stats only (JSON → stdout)
     uv run cartographer                    # HTML report from session notes (+ JSONL if present)
-    uv run cartographer --cron             # Friction analysis → .claude/docs/insights/{date}.md
+    uv run cartographer --cron             # Weekly corpus sweep → data/cron/latest.json
     uv run cartographer --migrate          # Convert JSONL sessions → skeleton session notes
     uv run cartographer --compare          # Diff JSONL vs session notes by date
     uv run cartographer --enrich           # Backfill cost + facet data into session note frontmatter
