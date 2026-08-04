@@ -43,7 +43,7 @@ PRIVATE_DIR = WIKI_DIR / "private"
 DB_PATH = Path(".wiki_index.duckdb")
 LOGS_DIR = Path("logs")
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
-SCHEMA_VERSION = "2"
+SCHEMA_VERSION = "3"
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 DOMAINS = [
@@ -221,7 +221,7 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     # Collect all pages
     raw_pages: list[tuple] = []
     for page in sorted(WIKI_DIR.rglob("*.md")):
-        if page.name.startswith("."):
+        if page.name.startswith((".", "_")):
             continue
         # data/wiki/private/ is never indexed — Buyi confidentiality invariant
         if _is_private(page):
@@ -512,6 +512,9 @@ def read_page(path_or_title: str) -> str:
 
     candidate = Path(path_or_title)
     if candidate.exists():
+        if not candidate.resolve().is_relative_to(WIKI_DIR.resolve()):
+            _log_retrieval("read_page", path=str(candidate), found=False, outside_wiki=True)
+            return not_found
         if _is_private(candidate):
             _log_retrieval("read_page", path=str(candidate), found=False, private=True)
             return not_found
@@ -520,6 +523,9 @@ def read_page(path_or_title: str) -> str:
 
     wiki_candidate = WIKI_DIR / path_or_title
     if wiki_candidate.exists():
+        if not wiki_candidate.resolve().is_relative_to(WIKI_DIR.resolve()):
+            _log_retrieval("read_page", path=str(wiki_candidate), found=False, outside_wiki=True)
+            return not_found
         if _is_private(wiki_candidate):
             _log_retrieval("read_page", path=str(wiki_candidate), found=False, private=True)
             return not_found

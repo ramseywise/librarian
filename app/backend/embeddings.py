@@ -93,7 +93,7 @@ def compute_embeddings() -> tuple[list[str], np.ndarray]:
 
     page_ids: list[str] = []
     vecs: list[np.ndarray] = []
-    to_encode: list[tuple[str, str, str]] = []  # (path_str, page_id, text)
+    to_encode: list[tuple[str, str, str, str]] = []  # (path_str, page_id, text, chash)
 
     for md_file in md_files:
         path_str = str(md_file)

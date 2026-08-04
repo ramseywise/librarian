@@ -27,7 +27,7 @@ last-audit: 2026-07-20
   page's sources: list) resolves to raw files; mutating one silently invalidates
   every page citing it — a trust failure of the entire KB.
   Creation is explicitly permitted: core/ingest_notion.py, core/ingest_linear.py,
-  core/ingest_pdf.py, core/seed_from_playground.py, and the four core/scrape_*.py
+  core/ingest_pdf.py, and the four core/scrape_*.py
   scripts all write into data/raw/ as intended behaviour.
 - evidence: .claude/hooks/raw-immutable.sh (PreToolUse, Write|Edit) blocks
   Edit/Write on an EXISTING data/raw/ path and permits creation; absolute and ../
@@ -87,10 +87,10 @@ last-audit: 2026-07-20
   configure_logging(). Called at every process entry point that logs, so the
   processor is installed before the first log call rather than only where the
   MCP server happens to run: app/mcp_server/server.py:37; app/backend/main.py at
-  import (uvicorn imports the ASGI app and calls no main() of ours); the eight
+  import (uvicorn imports the ASGI app and calls no main() of ours); the seven
   structlog-using core/ scripts (ingest_linear, ingest_notion, ingest_pdf,
-  scrape_bookmarks, scrape_claude_docs, scrape_repos, scrape_sessions,
-  seed_from_playground), first statement of each main(); and the tools/ CLIs
+  scrape_bookmarks, scrape_claude_docs, scrape_repos,
+  scrape_sessions), first statement of each main(); and the tools/ CLIs
   (cartographer, codemap, presenter). tools/presenter/__main__.py previously
   configured structlog itself with no redact_secrets processor — a same-clause
   gap that reads as configured — and now calls the shared configure_logging().
