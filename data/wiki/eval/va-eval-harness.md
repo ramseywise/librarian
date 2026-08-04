@@ -228,6 +228,10 @@ From a cleanup session (2026-04-18) that consolidated a sprawling `evals/` root,
 - LangSmith metric helpers living in `metrics/` when they are really part of the experiments push path (they belong in `experiments/` or `utils/loaders`)
 
 ## See Also
+- [[Online Eval Sampling]] <!-- auto-linked -->
+- [[Eval Harness Anatomy]] <!-- auto-linked -->
+- [[Eval Suite Maintenance]] <!-- auto-linked -->
+- [[Heuristic Pipeline Metrics]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] <!-- auto-linked -->
 - [[System Design — Unified Eval Harness]] <!-- auto-linked -->
 - [[RAG Eval Gate Contract]] <!-- auto-linked -->

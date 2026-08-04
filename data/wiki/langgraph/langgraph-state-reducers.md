@@ -104,3 +104,5 @@ When compiling a subgraph, `checkpointer` controls persistence behavior:
 - [[LangGraph Advanced Patterns]]
 - [[Send API Fan-out]]
 - [[LangGraph BaseStore]]
+- [[Graph Topology Primitives]] — part-of (reducers as the concurrency primitive of graph state)
+- [[n8n AI Workflow Builder]] — instance-of (optimistic locking as single-writer enforcement in production)

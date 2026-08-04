@@ -1,7 +1,7 @@
 ---
 title: Derived-and-Hidden Design Decisions
 tags: [llm, decision]
-summary: A scaffold variable marked `when: false` ships the code correctly and prevents the design conversation entirely — the failure mode where observability and guardrails exist as files nobody chose, distinguished from legitimate derivation by whether a silent default has an irreversible failure mode.
+summary: "A scaffold variable marked `when: false` ships the code correctly and prevents the design conversation entirely — the failure mode where observability and guardrails exist as files nobody chose, distinguished from legitimate derivation by whether a silent default has an irreversible failure mode."
 updated: 2026-08-03
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-30-system-design-rigor-gap.md
@@ -99,6 +99,7 @@ whose implementation already ships should have been asked. Tier-conditioning the
 consistent with [[Complexity Floor]].
 
 ## See Also
+- [[Verified Runtime Capability Constraint]] <!-- auto-linked -->
 - [[Asked vs Derived Scaffold Variables]] — extends (when derivation is legitimate)
 - [[Block Attribute Inversion]] — complements (the topology/config split that produced the hidden set)
 - [[Scope-POC Design Interview]] — extends (the conversation that should have forced the decision)

@@ -114,11 +114,13 @@ published: YYYY-MM-DD
   - `data/wiki/langgraph/` — LangGraph state machines, CRAG, checkpointers, reducers, streaming
   - `data/wiki/adk/` — Google ADK, SKILL.md, VA patterns, voice, orchestration
   - `data/wiki/infra/` — Deployment, observability, caching, security, production hardening
-  - `data/wiki/patterns/` — Framework-agnostic agentic patterns (ReAct, CoT, ACI, workflow)
+  - `data/wiki/patterns/` — **Experiential knowledge: findings from your own build sessions.** Named, non-obvious mechanisms discovered while working (`silent-fallthrough-string-discovery`, `copier-re-entry-capability-path`), alongside the framework-agnostic classics (ReAct, CoT, ACI). This is the wiki's highest-value bucket and the core of the Karpathy use case — do not dilute it with textbook material. Externally-sourced concept knowledge belongs in a subject directory below.
   - `data/wiki/eval/` — Evaluation harnesses, LLM judges, annotation pipelines, preference alignment
   - `data/wiki/deep-agents/` — Deep Agents harness, middleware, state/store backends
   - `data/wiki/memory/` — Agent memory patterns (in-context, episodic, semantic, procedural)
   - `data/wiki/mcp/` — Model Context Protocol, tool schemas, A2A
+  - `data/wiki/prompting/` — Prompt engineering as a discipline: prompt construction, injection defence, structured output, few-shot design
+  - `data/wiki/context/` — Context engineering: assembly, compaction, window budgeting, retrieval-into-context (distinct from `context-management` runtime tactics in `infra/`)
   - `data/wiki/foundations/` — ML/DS/data-engineering fundamentals: classical ML, deep learning, NLP, data systems, MLOps
   - `data/wiki/interview/` — Coding-interview patterns (arrays/hashing, two pointers, sliding window, …), system design, prep references
   - `data/wiki/meta/` — Wiki-about-wiki: Karpathy pattern, Claude workflow system, session knowledge
@@ -126,6 +128,11 @@ published: YYYY-MM-DD
   - `data/wiki/private/` — Company/project-specific pages; **gitignored, never committed**. Move pages here when they contain proprietary context, client names, or internal project details. Use the same page format — they are still compiled and queryable locally.
   - `data/wiki/_index.md` — Auto-generated TOC, updated after every ingest. Do not list `data/wiki/private/` entries here.
   - `data/wiki/_conflicts.md` — Flagged contradictions between sources
+- **Source character decides the top-level split, then subject decides the directory.**
+  Ask first: is this something *you* discovered while building (→ `patterns/`), textbook
+  knowledge synthesized from an external source (→ a subject dir), or exam-performance
+  technique that is only true while interviewing (→ `interview/`)? These three decay at
+  different rates and serve different queries. Within the second bucket, route by subject.
 - **ADRs live in their domain directory** — not a flat `decisions/` dir. Use `type: decision` tag.
 - **Projects stay flat** in `data/wiki/projects/` until a project exceeds ~5 pages.
 

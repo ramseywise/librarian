@@ -47,6 +47,7 @@ deployment if required for every change.
 *"Bad eval with 10 real questions beats no eval with plans for 500."*
 
 ## See Also
+- [[Online Eval Sampling]] <!-- auto-linked -->
 - [[Eval Ladder]] — part-of (rung 1)
 - [[Golden Set Mechanics]] — upgrade-path (failure patterns become golden cases)
 - [[LLM-as-Judge Evaluation]] — prerequisite-for (human grades are the calibration target)

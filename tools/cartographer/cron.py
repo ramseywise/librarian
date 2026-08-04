@@ -38,8 +38,11 @@ SESSIONS_DIR = CLAUDE_DIR / "sessions"
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # Librarian raw/sessions/ — for wiki ingest
-LIBRARIAN_RAW_SESSIONS = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "sessions"
-LIBRARIAN_WIKI_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "wiki"
+LIBRARIAN_RAW_SESSIONS = _REPO_ROOT / "raw" / "sessions"
+LIBRARIAN_WIKI_DIR = _REPO_ROOT / "data" / "wiki"
+
+# Run summary — librarian's own operational telemetry, gitignored like data/sessions.db.
+CRON_SUMMARY_DIR = _REPO_ROOT / "data" / "cron"
 
 
 # ---------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [meta, reference]
 summary: Auto-generated table of contents for every page in data/wiki/, grouped by domain directory.
-updated: 2026-08-03
+updated: 2026-08-04
 sources:
   - data/wiki/
 ---
@@ -12,20 +12,32 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**200 pages** across 12 domains.
+**281 pages** across 17 domains.
 
 ## Foundations
 
 - [[Batch Normalization]] — Batch Normalization (Ioffe & Szegedy, 2015) normalizes layer inputs using mini-batch statistics during training to reduce internal covariate shift — enables higher learning rates, reduces sensitivity to initialization, and acts as a regularizer. Rethinking BatchNorm (Wu & Johnson, 2021) exposes pitfalls with EMA population statistics, train/inference inconsistency, and domain shift.
+- [[Bradley-Terry Preference Model]] — The pairwise-comparison model that converts human choices between two responses into a scalar reward — the shared formal core underneath RLHF reward models, DPO, and RLAIF preference models.
+- [[Constitutional AI and RLAIF]] — Anthropic's two-phase replacement for human preference labels — critique-and-revise SL-CAI followed by RLAIF against a written constitution — plus what AI feedback provably matches and where it still underperforms humans.
+- [[Data Engineering Foundations]] — The six stages of data engineering as a pipeline discipline — ingest, transform, orchestrate, warehouse, monitor, feature-serve — where each stage's job is to prepare data for the next, plus the modern-stack tools (DuckDB, Polars, Iceberg, Dagster) missing from Zoomcamp-era material.
+- [[Data Science Curriculum Layers]] — The tree-shaped ML curriculum — statistical foundations, then supervised learning branching to model evaluation and independently to unsupervised/ensembles/Bayesian — plus the six-layer analytics progression that precedes it and the branching decision that ends it.
 - [[Dialogue Transformers — TED Policy]] — Transformer Embedding Dialogue (TED) policy (Rasa, 2020) applies self-attention at the discourse level — over dialogue turns rather than tokens — outperforming LSTM-based policies on sub-dialogue handling while being simpler and faster than REDP.
 - [[DIET Architecture]] — Dual Intent and Entity Transformer (Rasa, 2020) — a multi-task NLU architecture for joint intent classification and entity recognition that outperforms fine-tuned BERT while being 6x faster to train, using plug-and-play pre-trained embeddings with sparse features.
 - [[Dilated Causal Convolutions]] — Convolutions with exponentially increasing dilation factors that preserve temporal causality while growing the receptive field exponentially with depth — the key architectural innovation in WaveNet for modeling long-range audio dependencies efficiently.
+- [[Git Branch Triage]] — Deciding what to do with in-flight work before switching context — the branch health check that separates merged from unmerged commits, the WIP-branch-versus-stash choice, and reading a stash diff before trusting it.
 - [[HDBSCAN with KMeans Fallback]] — Clustering selection strategy that tries density-based HDBSCAN first and falls back to KMeans when silhouette drops below 0.25 — plus the diagnostic discipline that treats a fallback as a feature-quality signal rather than a resolved choice.
+- [[Multi-Agent Reinforcement Learning]] — MARL, the non-stationarity problem it exists to solve, CTDE as the dominant answer, the value-decomposition and central-critic algorithm families, and the five challenges — including the ~10–20 agent scalability wall.
 - [[Neural Probabilistic Language Model]] — Bengio et al. (2003) introduced the idea of learning distributed word representations (embeddings) jointly with a neural network language model — fighting the curse of dimensionality by mapping words to a continuous vector space where semantically similar words have nearby representations.
+- [[Notebook Dependency Staleness]] — Migration maps for the three library breaks that strand old ML notebooks — sklearn 0.20→1.4, TensorFlow 1.x→2.x, PyMC3→PyMC 5 — plus the two-phase triage that distinguishes a mechanical import swap from a genuine rewrite.
 - [[Open-Domain Dialogue Systems]] — Survey of frameworks for open-domain conversation — retrieval-based (score candidates), generation-based (seq2seq/PLM), and hybrid methods — with two key goals (informative via knowledge grounding, controllable via persona/strategy/safety).
 - [[Positional Encoding]] — Sinusoidal or learned position signals injected into Transformer input embeddings — required because self-attention is permutation-invariant and has no inherent notion of sequence order.
+- [[Preference Optimization Algorithms]] — The PPO → DPO → GRPO → KTO/IPO/ORPO family — what each removes from the stage before it, the five-algorithm decision table, and why the field shifted from choosing an algorithm to designing a reward structure.
+- [[RLHF Pipeline]] — The three-stage InstructGPT pipeline — SFT, then a Bradley-Terry reward model on ~33k comparisons, then PPO with a KL penalty against the SFT policy — and why all three stages are load-bearing.
+- [[Reinforcement Learning Foundations]] — The MDP tuple (S, A, P, R, γ), the Markov property that makes RL tractable, the four algorithm families, and the exploration/exploitation tension — with how each maps onto LLM training and agentic tool use.
+- [[Reward Hacking and Overoptimization]] — The three failure modes of optimizing against a learned reward proxy — reward hacking, the inverse-U overoptimization curve against KL distance, and the ~15% alignment tax on academic NLP benchmarks.
 - [[Self-Attention Mechanism]] — Self-attention (intra-attention) relates different positions of a single sequence to compute a representation — the core primitive enabling Transformers to model long-range dependencies in O(1) path length.
 - [[Transformer Architecture]] — The Transformer model architecture (Vaswani et al., 2017) — encoder-decoder stacks of self-attention and feed-forward layers that replaced RNNs/CNNs for sequence transduction, enabling parallelized training and constant-length dependency paths.
+- [[TypeScript any Escapes]] — The three ways out of an `any` — a real type, `unknown` with narrowing, or a generic — plus why types files are the highest-leverage place to fix them and how exhaustive-deps catches stale closures rather than style violations.
 - [[WaveNet — Autoregressive Audio Generation]] — WaveNet (van den Oord et al., 2016) is a deep autoregressive generative model for raw audio waveforms using dilated causal convolutions — achieved state-of-the-art TTS naturalness (MOS >4.0) and demonstrated multi-speaker conditioning, music generation, and speech recognition from raw audio.
 
 ## Patterns
@@ -84,10 +96,73 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Wander — Question-Generating Review Agent]] — A review agent that produces 3–5 pointed questions instead of findings — surfacing intent, edge cases, walked-past decisions, blast radius, and the conspicuously absent thing — as the "yin" complement to defect scanners.
 - [[Webhook Handler Idempotency]] — Every inbound webhook handler must tolerate the same event arriving more than once — at-least-once delivery is the sender's contract, so deduplication is unambiguously the receiver's responsibility.
 
+## Prompting
+
+- [[Prompt Engineering]] — The pillar hub — prompt ⊂ context ⊂ harness, the "colleague with minimal context" golden rule, and the nine techniques with their authority hierarchy.
+- [[Few-Shot Prompting]] — Zero-shot versus few-shot, the three properties good examples need (relevant, diverse, structured) with the failure mode for each, and few-shot CoT.
+- [[XML Prompt Structuring]] — Tagging inputs so the model can tell instructions from data — the technique that addresses misattribution, which is the mechanism behind injection.
+- [[Structured Output]] — A structured-output prompt is a request, not a guarantee; always pair with harness-side schema validation and prefer constrained decoding where available.
+- [[Prompt Templates and Variables]] — The fixed-skeleton/variable split makes prompts versionable, evaluable, and — most importantly — makes the injection boundary explicit.
+- [[Long-Context Prompting]] — Longform data at the top (up to 30% quality improvement when the query appears last), XML tags for multi-document inputs, and grounding responses in extracted quotes.
+- [[Prompt Chaining]] — Why decomposition beats one large prompt (split attention, contamination), what it costs, and where chains cross into harness territory.
+- [[Prompt Injection]] — Instructions and data share one channel with no structural separation — the attack surface, Best-of-N power-law scaling, and defences ordered with least privilege first.
+
+## Context
+
+- [[Context Engineering]] — The pillar hub — the minimization objective, the four levers (Write → Select → Compress → Isolate) applied in order, and the four context types.
+- [[Why Context Is Finite]] — Attention divides a fixed budget across n² token pairs, so added tokens thin attention rather than expanding capacity; the marginal return curve turns negative, not merely flat.
+- [[Context Anatomy]] — What goes in the window and in what order — system-prompt altitude, the five layers organized by stability, and stable-before-dynamic ordering for cache prefix matching.
+- [[Context Retrieval Strategies]] — The shift from pre-computed retrieval to just-in-time context, the hybrid default with the ≥80%-of-turns test, and pre-retrieval pipeline ordering.
+- [[Context Compaction]] — Transforming interaction history into a continuation state — retention priority, why tool-result clearing is the highest-value move, and why state extraction is what makes compaction safe.
+- [[Memory as Context]] — Memory is the mechanism by which context outlives a window: episodic→semantic distillation, structured note-taking, index-plus-detail, and hygiene rules.
+- [[Multi-Agent Context]] — Sub-agent isolation is the highest-cost lever — the discarded window is the feature, orchestrator-holds-plan is the default, and isolation doubles as a security boundary.
+- [[Context Failure Modes]] — Five distinct failures (rot, poisoning, distraction, clash, injection) with separate mechanisms and fixes, plus the diagnostic flow.
+
+## Harness
+
+- [[Harness Engineering]] — The pillar hub — Agent = Model + Harness, the four parts (acceptance baseline, execution boundary, feedback signals, rollback), why reliability compounds negatively, and the ratchet.
+- [[Harness Anatomy]] — The nine harness components in three groups, why the filesystem is the foundational primitive, the layered mental model, and the causal build order.
+- [[Tool Design as Harness Surface]] — Tools as a harness contract rather than a context cost — ACI over API, the five-section tool spec, the four gating questions, and write-operation safety.
+- [[Execution Boundaries and Guardrails]] — Sandboxes, hooks, and permission gates — encode constraints rather than documenting them, trust zones, rollback, and why a role label is not a sandbox.
+- [[Canary Testing for Permission Boundaries]] — Deny rules are untested code — run each destructive route unguarded then guarded, and require a structured denial event, because a surviving file proves nothing.
+- [[Verification Loops]] — Two distinct failures needing two distinct fixes: a forced verification pass and an external evaluator — three kinds of reflection, asymmetric QA, and when a verifier is worth deleting.
+- [[Agent Retry Taxonomy]] — Which failures are retryable and which never are, retry at both call and node level, and feeding the error back as the move that makes a retry a re-plan.
+- [[Loop Detection and the Two-Retry Rule]] — The doom loop, per-file edit-count detection that forces re-planning rather than repair, and the reasoning sandwich.
+- [[Long-Horizon Execution]] — Coherence decay and context anxiety — state externalization makes the loop re-entrant, plans as first-class artifacts, context reset vs compaction, and Ralph loops.
+- [[Harness Orchestration]] — Subagents as a context firewall before they are an architecture — role separation, graph-based orchestration, the four multi-agent failure modes, and when not to go multi-agent.
+- [[Harness Maturity and Failure Modes]] — The five-stage maturity ladder, the six-stage per-task pipeline with its Approve gate, and the five ways teams fool themselves.
+- [[Production Reliability Primitives]] — Per-step checkpointing, cross-provider model fallback, fail-fast on ambiguity, and confidence-routed quarantine as the shape of HITL at volume.
+- [[Iterative Harness Simplification]] — Components encode assumptions about what the model can't do; when models improve those assumptions expire — strip one at a time and re-run the eval.
+- [[Agentic Engineering and the New SDLC]] — The vibe-coding-to-agentic-engineering stakes spectrum, per-phase SDLC transformation, the conductor/orchestrator split, the 80% problem, and the CapEx/OpEx case for the harness.
+- [[Agent Deployment Anti-Patterns]] — Eight recurring deployment failures that present as model limitations but are engineering-constraint failures, and the reframe that a documented rule is probabilistic while a hooked rule is deterministic.
+- [[Task Decomposition Patterns]] — Four axes for cutting work across agents — functional, spatial, temporal, data-driven — each a bet about where the dependencies aren't.
+- [[Protocol-Driven Multi-Agent Collaboration]] — Natural language inside a task, protocols between tasks — the nine conversational-coordination failures as classical distributed-systems failures, and the three foundations that prevent them.
+- [[Skill Authoring Discipline]] — Writing a skill rather than defining one — the description as routing logic under a token/precision tension, negative examples as the higher-leverage half, and skills-plus-network as an exfiltration path.
+
+## Loop
+
+- [[Loop Engineering]] — The fourth layer of the stack — designing the cycle that re-prompts, checks, and stops an agent when nobody is watching, replacing yourself as the person who prompts it.
+- [[Loop Termination Design]] — Stop rules are layered and independent — success verifier, iteration cap, budget cap, stall detector, escalation path — and the cap is the backstop, never the primary exit.
+- [[Loop Autonomy Ladder]] — Four rungs of handoff — tool approval, stop condition, trigger, session — climbed one at a time, each earned with a verifier that has been observed catching a real failure.
+- [[Evolve Loop]] — A slow loop pointed at a fast one that rewrites files rather than weights — four edit targets, a 5–10 run cadence, and the anti-busywork rule that makes "no change needed" a first-class success.
+- [[Recursive Self-Improvement]] — Level 4 at the frontier — the write boundary is the load-bearing design decision, a 3% hit rate is fine when attempts are cheap, and automating generation shifts the bottleneck onto verification.
+
+## Graph
+
+- [[Graph Engineering]] — The fifth layer of the stack — designing which nodes exist, which transitions are permitted, and how the runtime work graph mutates, so multi-agent work has an organizational structure rather than just more agents.
+- [[Graph Topology Primitives]] — Nodes, edges, state, durable execution, and typed edges — the agency budget per node, conditional edges as where control lives, and reducers as the concurrency primitive.
+- [[Loop-to-Graph Escalation]] — A loop is a graph with one node and an edge back to itself; escalation is a cost you justify with five specific signals, not a maturity level you graduate to.
+- [[Graph Governance and Attribution]] — Once work fans out across nodes, "the graph did it" is not an acceptable audit answer — identity propagation, per-node cost attribution, and approval gates placed where consequence concentrates.
+- [[Knowledge Graph Retrieval]] — Vector search finds things that sound like your question; graphs find things that are connected to your answer — but traversal depth compounds error, which makes entity resolution the load-bearing sub-problem.
+- [[Knowledge Graph as Shared Agent Memory]] — Loop → swarm → graph as three capacity unlocks: parallel workers rediscover the same findings because nothing connects them, and a typed KG turns fan-out from re-derivation into accumulation.
+- [[n8n AI Workflow Builder]] — A shipped supervisor-pattern LangGraph with published operational constants — five specialist subgraphs, prompt-only specialization, per-node iteration bounds, and an agent never allowed to fill its own context with the artifact it is editing.
+
 ## RAG
 
 - [[Bedrock KB vs LangGraph Decision]] — Decision framework for Bedrock Knowledge Bases vs. LangGraph CRAG pipeline — quality, observability, cost, and migration path analysis.
-- [[Agentic RAG — Advanced Patterns]] — Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, and A2A protocol mapping to LangGraph.
+- [[Agentic RAG — Advanced Patterns]] — Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
+- [[RAG Architecture Selection]] — The nine named RAG architectures as one selection space — what each buys and costs, the decision cheat-sheet, and Fusion RAG over heterogeneous sources (distinct from multi-query RAG-Fusion).
+- [[Text-to-SQL as a Retrieval Strategy]] — The structured branch of a hybrid retriever — dynamic schema subsetting, a semantic layer of retrieved few-shot SQL examples, mechanical validation that replaced a deleted LLM reviewer, and bounded error-as-context retry.
 - [[Conversation Repository Pattern]] — Two-table PostgreSQL schema for persisting multi-turn conversation state — conversations table for sessions, messages table for turns with JSONB trace and sources columns enabling trace-linked retrieval debugging.
 - [[CRAG Retry Logic]] — The confidence-gated conditional back-edge in a CRAG pipeline that re-enters retrieval when the reranker's top score falls below threshold — preventing low-confidence answers from reaching the user.
 - [[Embedder Warmup]] — Force-loading the embedding model during application startup (before the first request) to prevent a 3–8s cold-start spike on the first query in production.
@@ -98,6 +173,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[RAG Knowledge Preparation]] — The process of transforming human-readable documentation into machine-retrievable knowledge units — chunking, metadata tagging, rewriting for self-containment, and enforcing consistency.
 - [[RAG Reranking]] — Reranking strategies for RAG pipelines — cross-encoder vs LLM listwise, confidence scoring, and when each is appropriate.
 - [[RAG Retrieval Strategies]] — Comprehensive reference for chunking, embedding, vector store, and hybrid search strategies — component choices, tradeoffs, and swap paths used in the Librarian pipeline.
+- [[RL for Retrieval Policies]] — Modelling RAG as a sequential decision process — the five decision points and their reward signals, the three optimization patterns (online RL, per-subtask modules, Self-RAG), and why reward sparsity makes end-to-end RAG RL hard.
 - [[Reciprocal Rank Fusion (RRF)]] — Score-free fusion algorithm that combines multiple ranked lists by position — the standard method for merging BM25 and dense vector retrieval results, and for amplifying cross-query agreement in multi-query retrieval.
 - [[Semantic Cache for RAG Agents]] — Zero-retrieval-cost path for RAG agents — embed the query, cosine-match against a grader-validated golden seed, and short-circuit the full CRAG pipeline on high-similarity hits.
 - [[VA vs HCA Retrieval Evaluation]] — Benchmarking results comparing VA, HCA (Bedrock), and local RAG baselines across 935 Danish support questions — VA outperforms HCA on all dimensions (MRR 0.286 vs 0.248), but 47% corpus ceiling means data-ops fixes dominate model-level improvements.
@@ -126,7 +202,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 - [[ADK Context Engineering]] — How the ADK samples repo manages context — SKILL.md pattern, three skill-loading strategies, static vs dynamic instruction, and history compaction.
 - [[ADK Deployment Patterns]] — ADK deployment targets (Agent Engine vs Cloud Run vs GKE), CI/CD with WIF, service account architecture, event-driven triggers, and Terraform patterns.
-- [[ADK Eval Guide]] — ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, and user simulation for dynamic testing.
+- [[ADK Eval Guide]] — ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, user simulation, and Vertex AI managed pointwise/pairwise eval.
 - [[HITL and Interrupt Patterns]] — Six HITL patterns for LangGraph agents — static breakpoints, dynamic interrupt(), clarification loop (budget-bounded), scheduler confirmation gate, tool approval for irreversible actions, and time-travel/replay/fork.
 - [[ADK JS TypeScript Patterns]] — Google ADK TypeScript SDK (@google/adk 0.5.0) — LlmAgent, FunctionTool, structured Zod output, streaming NDJSON, and pitfall patterns for Next.js agent integration.
 - [[ADK Observability]] — Four-tier observability for ADK agents — Cloud Trace (always-on), prompt-response logging, BigQuery Agent Analytics plugin, and third-party platforms (AgentOps, Phoenix, MLflow, etc.).
@@ -149,14 +225,24 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Agent Memory Types]] — Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for VA agents — backed by LangGraph BaseStore.
 - [[Memory Architecture for VA Agents]] — Three-tier cognitive memory model (semantic/episodic/procedural), SQLite implementation pattern, context window management strategies, and self-improving reflection pattern for VA agents.
 - [[Self-Learning Agents]] — Four-level improvement stack for production agents — inference-time (ReAct, CoT, self-critique), session-time (reflection, procedural memory), operational (learning loop, HITL), and training-time (DPO). Most agents need the first three; DPO is a late-stage investment.
+- [[Memory Lifecycle]] — Five stages — represent, store, retrieve, use, update/forget — with the fifth being the one production systems skip, and consolidation designed so a failed merge can roll back instead of losing history.
+- [[Memory Decay Weighting]] — Exponential recency decay as a retrieval scorer — Memoria weights memories by e^(-alpha*age), which resolves stale-vs-current facts by ranking rather than by an explicit conflict-resolution step.
+- [[Memory Forms Taxonomy]] — The Forms/Functions/Dynamics survey framing — token, parametric, or latent substrate; factual, experiential, or working purpose — and why almost all agent memory work occupies one cell of a much larger space.
+- [[Memory Store Operations]] — Running a memory store in production — caching and async indexing for latency, memory hit rate as the metric that says whether memory is earning its cost, and the deletion requirement that makes memory a compliance surface.
+- [[Memory-Augmented Conversational RAG]] — Multi-turn retrieval breaks because the query is under-specified — the fixes are query rewriting against history, a when-to-retrieve policy, and asking a clarifying question instead of retrieving on an ambiguous turn.
 
 ## MCP
 
 - [[A2A Agent Protocol]] — Google's Agent-to-Agent open specification for inter-agent communication — task lifecycle, agent cards, and how it maps to LangGraph primitives.
+- [[Agent Interoperability Protocol Stack]] — The five open protocols standardizing agent integration — MCP, A2A, A2UI, AP2, UCP — partitioned by what sits on the other end of the boundary: data, agent, human, or money.
 - [[MCP Protocol]] — Model Context Protocol — how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery; includes AWS Bedrock AgentCore deployment pattern from the Hypernova PoC.
 - [[MCP Server Security Patterns]] — Security patterns for MCP servers — read-only invariant, sandbox isolation, secrets handling, and what to never expose over MCP.
+- [[Tool Design as Context Engineering]] — Tools consume context twice — definitions sit in the window permanently, results enter per call — so token-efficient results, unambiguous boundaries, and terse routing descriptions are context decisions, not API aesthetics.
 
 ## Evaluation
+
+- [[The Augmentation Gate]] — The A in RAG is the gate nobody evaluates — retrieval can be perfect and generation sound while the failure lives entirely in how much retrieved context got handed to the model.
+- [[Trajectory Over Outcome]] — Why an agent must be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are invisible to an outcome score.
 
 - [[Agentic KPI Trees]] — KPI tree pattern for agentic products — goal completion rate, no-touch rate, and transaction match accuracy as the primary success metrics for VA, document processing, and reconciliation agents.
 - [[Anthropic Three-Tier Eval Taxonomy]] — Practical agent evaluation framework from Anthropic — three tiers (unit/trajectory/e2e) mapped to cost, determinism, and failure coverage. Unit covers ~70% of regressions cheaply; trajectory checks routing paths; e2e is sparingly used for quality gates.
@@ -165,8 +251,13 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Direct Preference Optimization]] — Training-time technique that fine-tunes a model on human preference pairs (preferred vs rejected responses) without a reward model — replaces PPO/RLHF for preference alignment. Not applicable to API-only models.
 - [[Eval-Driven Development (EDD)]] — Writing the eval suite before the agent exists — ATDD reconstructed for non-deterministic systems, where first-ness buys honesty rather than design pressure.
 - [[RAG Eval Gate Contract]] — Eight-gate ownership contract for RAG evaluation pipelines — each gate answers a distinct question about corpus quality, retrieval, generation, and grader calibration, with strict handoff contracts between gates.
+- [[Eval Harness Anatomy]] — The vocabulary of agent evaluation — task, trial, grader, trajectory, outcome — plus the separation that makes it work: the evaluation harness treats the agent harness as the system under test, and capability evals want low pass rates while regression evals want ~100%.
+- [[Eval Maturity Ladder]] — Five levels of what eval infrastructure exists — vibes, deterministic gates, separated evaluator, eval sets plus tracing, continuous sampling with drift alerts — where most builders sit at 0 and production demands 3+, with trajectory-over-outcome and cost-per-success as the metrics that expose thrashing.
+- [[Eval Non-Determinism]] — Why one trial is an anecdote — pass@k when a single success suffices, pass^k when consistency is the product, and the arithmetic that makes a "75% reliable" agent pass three consecutive trials only 42% of the time.
+- [[Eval Suite Maintenance]] — Fix the evaluation system before changing the agent, read traces rather than scores, and treat a saturated suite as a stopped learning signal — paired regression and rolling-discovery sets keep the frontier moving.
 - [[Eval Ladder]] — A four-rung progression — manual review, golden-set grading, LLM-judge, user feedback — sequenced so each rung's failures supply the next rung's test cases, with an explicit "most POCs reach rung 2–3 and that's sufficient" stopping point.
 - [[Eval vs Test Distinction]] — A test tells you your code is broken; an eval tells you your product got worse — two different instruments with different targets, graders, cadences, and failure semantics.
+- [[Experiment Tracking Schemas]] — The metadata contract that makes an eval run reproducible and diffable — base trace fields, ExperimentRun/RagConfig/BedrockConfig/ChunkRecord, the instrumentation asymmetry between a custom pipeline and a managed KB, and the log-only-then-promote policy for grounding checks.
 - [[Forecast Grader Thresholds]] — The pass/fail contract for time-series forecast evaluation — MASE against a naïve baseline, SMAPE, directional accuracy, and prediction-interval coverage — with the diagnostic each failure points to and the drift ratio that triggers retraining.
 - [[Golden Set Mechanics]] — The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
 - [[Grounding Claim Methodology]] — Claims-based grounding — the "yellow highlighter" approach to RAG verification, where the agent extracts verbatim supporting quotes from retrieved documents before writing the final answer, creating a verifiable paper trail.
@@ -178,6 +269,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[LLM Grader Calibration Insights]] — Calibration evidence for LLM-as-judge graders in the project-g eval pipeline — custom v3 grader outperforms DeepEval defaults (+0.214 score delta vs +0.086), domain-shift is the main failure pattern, passage context is required for grounding accuracy. Grounding cross-check vs DeepEval shows near-zero agreement until article text is wired in.
 - [[Manual Review as Eval Bootstrap]] — Human eyeballs on 10–20 real queries as the deliberate first eval rung — zero setup, doesn't scale, and valuable precisely because its failure patterns become the criteria every automated approach above it needs.
 - [[Observability & Evaluation Glossary]] — Canonical vocabulary for agent observability and evaluation — the observability/tracking/tracing/monitoring/alerting hierarchy, offline vs online evaluation modes, heuristic vs LLM-judge metric types, dataset terminology, and rank-based retrieval metrics (MRR/precision@k/recall@k/ndcg@k/hit@k).
+- [[Online Eval Sampling]] — Score 10–20% of production traces by rule rather than at random — negative feedback, high-cost dialogues (cost as a thrashing proxy), fixed time windows as the control group, and a full 48-hour review after any model or prompt change — with human labels calibrating an LLM judge that would otherwise drift.
 - [[project-g Eval Architecture]] — Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the project-g HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
 - [[RAG Eval Metrics Suite]] — Eight-metric RAG evaluation framework covering stakeholder quality (faithfulness, naturalness, completeness, relevance), retrieval quality (contextual relevance, recall, document precision), and system calibration — split between runtime-compatible and offline-only metrics.
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]] — Three-agent pipeline for A/B testing Claude Code skills — a blind comparator scores two outputs on a rubric without knowing which skill produced them, a grader checks explicit expectations pass/fail with cited evidence, and a post-hoc analyzer unblinds the result to explain why the winner won and suggest concrete improvements to the loser.
@@ -189,6 +281,10 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 ## Infrastructure
 
+- [[Bounding Agents Rather Than Trusting Them]] — Constrain what the agent can do instead of trusting it to behave — four bounds (type/IO schemas, explicit state, escalation as an outcome, termination conditions) plus why guardrails without trajectory eval are unattributable.
+
+- [[Agent Security Risk Taxonomy]] — The sixteen agentic security risks in five families, and the architectural claim that mitigation belongs in the component that owns the risk rather than in a central supervisory layer.
+- [[Agent Management Layer]] — The six systems a production agent needs beyond the agent itself — evaluation frameworks, fallback/escalation, drift monitoring, HITL checkpoints, audit logging, and a defined handoff protocol — argued as 60% of the deployment, with HITL corrections doubling as the training-data pipeline only if they are logged.
 - [[Observability — LangFuse vs LangSmith Decision]] — Decision to use LangFuse first for RAG observability — native ragas/deepeval integrations, self-hostable, GDPR-friendly, and highest weighted score (8.58/10) for [client]'s AWS-hosted, high-compliance context.
 - [[Cloud Run + Cloud SQL Pattern]] — Single-container Cloud Run service (FastAPI + SPA) connected to Cloud SQL via the built-in Auth Proxy unix socket — no public IP, no SSL config, private GCP-internal networking by default.
 - [[Cloud Service Deployment]] — A long-running 24/7 hosted service — the same container as single-service plus monitoring, health checks, and env management, chosen when the system must be available without anyone starting it.
@@ -196,6 +292,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Input Guardrails Pipeline]] — 7-stage deterministic safety pipeline (normalise → size check → domain classify → injection detect → PII redact → XML envelope → advisory) that runs before every LLM call — LLM-free by design.
 - [[Langfuse ADK Tracing Patterns]] — Two-layer Langfuse instrumentation for ADK agents — OpenTelemetry auto-instrumentation plus manual @observe decorators produce a single unified trace tree; session grouping, RAG path tagging, and first-class Scores are the critical operational additions.
 - [[Langfuse Platform]] — Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by [client]'s AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
+- [[LangSmith Platform]] — LangSmith mechanics — auto-instrumentation for LangGraph vs manual @traceable wiring for ADK, datasets, evaluator functions as thin adapters over your own graders, annotation queues, and experiment comparison.
 - [[Local-Only Deployment]] — The zero-infrastructure rung — the AI runs on a developer's machine with no hosting and no external access, chosen when the only user is the developer and iteration speed matters more than availability.
 - [[Observability and Runtime Patterns]] — Observability tool choice (LangSmith vs Langfuse), tracing architecture, runtime topology and checkpointer alignment rules, trigger patterns, and key signals to monitor for VA agents.
 - [[PGVector Migration Pattern]] — Migrating a vector store from in-memory NumPy arrays to PostgreSQL + pgvector — preserving the public API, using cosine distance operator, adding an IVFFlat index, and moving embeddings to Cloud SQL without re-embedding.
@@ -225,6 +322,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 ## Meta
 
+- [[AI Engineering Curriculum Structure]] — The two-wave model of the learn-ai-engineering corpus — generative-ai as the application wave (seven pillars) and ai-engineering as the discipline wave (six foundations) — plus the dependency ordering behind the pillar sequence.
 - [[Agile Workflow Definitions]] — Definition of Ready, Definition of Done, WIP limits, weekly cadence, and ceremony-to-skill mapping for the Claude Code workflow system.
 - [[Claude Code Hook Architecture]] — Claude Code lifecycle hooks — PreToolUse/PostToolUse events, exit-code protocol (0=pass, 2=block), and the hook suite pattern used to enforce code quality automatically without mid-task reminders.
 - [[Claude Workflow System]] — Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints, and session notes — that automates context management across multi-phase engineering workflows.

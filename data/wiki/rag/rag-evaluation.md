@@ -2,7 +2,7 @@
 title: RAG Evaluation
 tags: [rag, eval, concept]
 summary: Three-tier evaluation architecture for RAG pipelines — golden datasets, LLM-as-judge, failure clustering, ragas vs deepeval, and retrieval lift measurement.
-updated: 2026-04-24
+updated: 2026-08-04
 sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/playground-docs/rag-agent-template-research.md
@@ -41,6 +41,11 @@ Supports stratified evaluation — track metrics by difficulty tier to see where
 | `retrieval_lift` | `rag_score - closed_book_score` | > 0 (RAG must beat no-context) |
 
 **Regression floors only go up, never down.** The comment in code says "update these (never lower them) when quality improves."
+
+**These metrics have a gap between them.** Retrieval metrics score what came back; the
+judge scores what was written. Neither scores the decision in between — how much of the
+retrieved set actually entered the prompt — which is where a high-recall, low-faithfulness
+system usually fails. See [[The Augmentation Gate]].
 
 ## LLM-as-Judge (`AnswerJudge`)
 
@@ -260,6 +265,8 @@ This is especially important for edge cases — judge prompts optimized on avera
 
 ## See Also
 - [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
+- [[Trajectory Over Outcome]] — extends (why the trajectory tier exists, not just what it measures)
+- [[The Augmentation Gate]] — complements (the component gate between retrieval and generation)
 - [[RAG Eval Metrics Suite]]
 - [[Synthetic Dataset Generation for RAG Eval]]
 - [[Conversation Repository Pattern]]
@@ -270,3 +277,4 @@ This is especially important for edge cases — judge prompts optimized on avera
 - [[Listen-Wiseer Project]]
 - [[HITL Annotation Pipeline]]
 - [[Evaluation & Improvement Project (VIR)]]
+- [[RAG Architecture Selection]] — prerequisite-for (component gates diagnose which failure an architecture change should target)

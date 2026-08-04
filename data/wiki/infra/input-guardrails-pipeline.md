@@ -13,6 +13,8 @@ sources:
 
 Guardrails must be **deterministic and LLM-free**. They run before any LLM call. An LLM-based guardrail can be bypassed by the same injection techniques it is defending against.
 
+> ⚠️ **Contested.** [[Prompt Injection]] cites OWASP guidance that a purpose-trained guardrail model is a legitimate *additional* layer — on the grounds that stage 4's pattern matching provably misses indirect injection in untrusted content. See `_conflicts.md`.
+
 ## The 7-Stage Pipeline
 
 Every user message passes through all stages in order before reaching the LLM.
@@ -184,6 +186,7 @@ def guardrails_node(state: AgentState) -> dict:
 | `xml_envelope` | Universal — rarely needs changing |
 
 ## See Also
+- [[Deterministic Review Substrate]] <!-- auto-linked -->
 - [[PII Masking Approaches]]
 - [[LangGraph Advanced Patterns]]
 - [[ADK Context Engineering]]

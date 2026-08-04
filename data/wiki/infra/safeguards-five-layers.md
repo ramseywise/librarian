@@ -100,6 +100,7 @@ Gaps: context caching (TS only), multi-language escalation (Python: 7 langs, TS:
 
 ## See Also
 - [[Input Guardrails Pipeline]] — prerequisite-for
+- [[Bounding Agents Rather Than Trusting Them]] — prerequisite-for (the design stance these layers implement)
 - [[CRAG Retry Logic]] — instance-of (Layer 3)
 - [[project-g Eval Architecture]] — extends (offline complement to runtime layers)
 - [[Grounding Claim Methodology]] — extends (the eval-side semantic grounding)
@@ -107,3 +108,7 @@ Gaps: context caching (TS only), multi-language escalation (Python: 7 langs, TS:
 - [[Streaming Output Scrubbing]] — extends (Layer 4 under token streaming)
 - [[Payload Security Defects at Canon]] — complements (defects in the shipped payload, not the runtime layers)
 - [[AIE Code-Test Flaw Taxonomy]] — instance-of (the hand-rolled subset of these layers, under a timebox)
+- [[Multi-Agent Context]] — extends (sub-agent isolation as a containment boundary for untrusted content)
+- [[Execution Boundaries and Guardrails]] — part-of (the five layers sit inside the harness's boundary layer)
+- [[Canary Testing for Permission Boundaries]] — extends (testing that a deny rule actually fires)
+- [[Agent Security Risk Taxonomy]] — complements (the risk classes these layers mitigate, and why mitigation distributes)

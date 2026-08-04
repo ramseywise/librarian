@@ -60,7 +60,13 @@ grading (free, fast) in CI; run LLM-judge on demand for quality audits."* The co
 non-determinism make it a poor fit for a per-PR gate.
 
 ## See Also
+- [[Eval vs Test Distinction]] <!-- auto-linked -->
 - [[Eval Ladder]] — part-of (rung 3)
 - [[Golden Set Mechanics]] — complements (heuristic in CI, judge on demand)
 - [[LLM Grader Calibration Insights]] — extends (calibration failure modes)
 - [[Manual Review as Eval Bootstrap]] — prerequisite-for (human grades calibrate the judge)
+- [[Eval Maturity Ladder]] — part-of (one of four layered grader types; source of the three judge biases)
+- [[Online Eval Sampling]] — extends (the judge as layer 2 over production traces)
+- [[Eval Harness Anatomy]] — part-of (one of the three grader types under the simplest-reliable rule)
+- [[Constitutional AI and RLAIF]] — instance-of (the same judge primitive used to generate training labels)
+- [[Bradley-Terry Preference Model]] — complements (pairwise comparison formalized as a scalar)

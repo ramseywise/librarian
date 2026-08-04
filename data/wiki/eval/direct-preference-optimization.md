@@ -69,3 +69,9 @@ DPO belongs at the "Scaled" stage — after the operational learning loop has ac
 - [[Chain of Thought]]
 - [[Agent Memory Types]]
 - [[Copilot Learning Loop]]
+- [[Preference Optimization Algorithms]] — part-of (DPO's place in the PPO→DPO→GRPO family)
+- [[RLHF Pipeline]] — alternative-to (the three-stage pipeline DPO collapses)
+- [[Bradley-Terry Preference Model]] — depends-on (the preference objective DPO fits directly)
+- [[Reward Hacking and Overoptimization]] — complements (the length problem DPO inherits from preference data)
+- [[Constitutional AI and RLAIF]] — complements (where the preference pairs can come from without human labelers)
+- [[Reinforcement Learning Foundations]] — prerequisite-for (MDP, policy, and the actor-critic split DPO discards)

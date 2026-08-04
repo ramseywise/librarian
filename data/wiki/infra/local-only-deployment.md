@@ -62,6 +62,7 @@ The "no security concerns" pro is real and underrated: nothing is exposed, so no
 no CORS, no secret rotation. Every rung above pays for its audience in security work.
 
 ## See Also
+- [[Serverless Deployment]] <!-- auto-linked -->
 - [[Deployment Topology Ladder]] — part-of
 - [[Single Service Deployment]] — upgrade-path
 - [[Complexity Floor]] — related (the weekend tier's only viable topology)

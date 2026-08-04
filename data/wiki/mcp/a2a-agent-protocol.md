@@ -92,3 +92,4 @@ Playground has three agents: researcher, presenter, cartographer. Currently they
 - [[MCP Protocol]]
 - [[LangGraph Advanced Patterns]]
 - [[Librarian RAG Architecture]]
+- [[Agent Interoperability Protocol Stack]] — part-of (A2A's place alongside MCP, A2UI, AP2, and UCP)

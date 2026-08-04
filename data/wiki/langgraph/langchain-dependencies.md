@@ -2,7 +2,7 @@
 title: LangChain Dependency Management
 tags: [langgraph, llm, reference]
 summary: Package structure and version policy for the LangChain ecosystem — langchain/langchain-core/langgraph/langsmith as the required core, provider/tool packages installed a la carte, and the langchain-community non-semver trap.
-updated: 2026-07-14
+updated: 2026-08-04
 sources:
   - raw/agent-skills/langchain-dependencies/SKILL.md
 ---
@@ -94,3 +94,4 @@ Breaking changes only occur at major version boundaries (1.x → 2.x) for semver
 - [[LangChain Fundamentals — create_agent, Tools, Structured Output]]
 - [[Deep Agents Framework]]
 - [[LangChain RAG Implementation Patterns]]
+- [[Notebook Dependency Staleness]] — complements (the same migrate-vs-pin decision in the ML notebook ecosystem)

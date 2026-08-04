@@ -2,7 +2,7 @@
 title: Reciprocal Rank Fusion (RRF)
 tags: [rag, concept]
 summary: Score-free fusion algorithm that combines multiple ranked lists by position — the standard method for merging BM25 and dense vector retrieval results, and for amplifying cross-query agreement in multi-query retrieval.
-updated: 2026-07-06
+updated: 2026-08-04
 sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/playground-docs/rag-agent-template-research.md
@@ -93,3 +93,4 @@ function rankByRrf(queryResultLists: KnowledgeBaseRetrievalResult[][]): Knowledg
 - [[LangGraph CRAG Pipeline]]
 - [[Semantic Cache for RAG Agents]]
 - [[Vector Database Comparison]]
+- [[RAG Architecture Selection]] — instance-of (Fusion RAG needs a scale-invariant merge across heterogeneous retrievers)

@@ -1,9 +1,10 @@
 ---
 title: ADK Eval Guide
 tags: [adk, eval, pattern]
-summary: ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, and user simulation for dynamic testing.
-updated: 2026-07-14
+summary: ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, user simulation, and Vertex AI managed pointwise/pairwise eval.
+updated: 2026-08-04
 sources:
+  - data/raw/repos/learn-ai-engineering/generative-ai--04-agentic-frameworks--notes--google-adk.md
   - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/SKILL.md
   - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/builtin-tools-eval.md
   - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/criteria-guide.md
@@ -375,6 +376,37 @@ Use `conversation_scenario` instead of `conversation` for dynamic multi-turn tes
 ```
 
 **Compatible criteria for user simulation:** `hallucinations_v1`, `safety_v1`, `rubric_based_final_response_quality_v1`, `rubric_based_tool_use_quality_v1`, `per_turn_user_simulator_quality_v1`. Trajectory-based criteria are NOT compatible (no ground truth).
+
+---
+
+## Vertex AI Managed Eval (post-hoc)
+
+Beyond the built-in criteria above, ADK's eval runner can dispatch to Vertex AI's managed
+evaluation service. Three modes, differing in what they compare against:
+
+| Mode | Compares | Output | Maps to |
+|---|---|---|---|
+| **Pointwise** | One candidate against a rubric | Judge score 0–5 | `rubric_based_final_response_quality_v1` |
+| **Pairwise** | Two model outputs against each other | Winner | — |
+| **AutoSxS** | Two systems, systematically across a set | Side-by-side report | — |
+
+**Evaluation is post-hoc, not runtime.** It runs via ADK's eval runner against saved JSONL,
+which means it cannot gate a request in flight — it is a batch judgement on recorded output.
+That distinction matters when choosing where a check lives: a guard that must block belongs
+inline (see [[Safeguards Architecture — Five Protection Layers]]), not here.
+
+Pairwise is the mode worth knowing about, because it answers a question the pointwise
+criteria structurally cannot: **is implementation A better than implementation B?** A
+rubric score of 3.8 vs 3.9 across two separate runs is not a reliable ranking — judge
+scores are noisy at that resolution, and the two runs saw different judge invocations.
+Asking one judge to pick a winner from both outputs removes that noise. This is the
+mechanism for an ADK-vs-LangGraph bake-off on the same task — see
+[[ADK vs LangGraph Decision]].
+
+The tradeoff: pairwise gives you a *ranking* without a *level*. It tells you A beat B, not
+whether either is good enough to ship. Pointwise and pairwise answer different questions,
+and a bake-off needs both — pairwise to choose, pointwise to decide whether the winner
+clears the bar.
 
 ---
 

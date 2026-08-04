@@ -57,6 +57,7 @@ Ingest: chunk → embed → index. Query: (rewrite) → retrieve → (rerank) �
 - Hallucination with citation — the model cites a real source for a wrong claim
 
 ## See Also
+- [[Durable vs Performative Knowledge Split]] <!-- auto-linked -->
 - [[RAG Retrieval Strategies]] — prerequisite-for
 - [[Agentic RAG — Advanced Patterns]] — extends
 - [[RAG Evaluation]] — instance-of

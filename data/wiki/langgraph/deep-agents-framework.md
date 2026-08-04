@@ -148,3 +148,6 @@ Reference files marked with `*` in the catalog are stubs pending wiki ingest —
 - [[Framework Selection — LangChain vs LangGraph vs Deep Agents]]
 - [[SKILL.md Pattern]]
 - [[LangGraph Advanced Patterns]]
+- [[Harness Anatomy]] — instance-of (middleware, sandbox, and state backends as harness components)
+- [[Harness Maturity and Failure Modes]] — instance-of (cited as a Stage 2→3 reference implementation)
+- [[Loop Detection and the Two-Retry Rule]] — implements (loop-detection middleware)

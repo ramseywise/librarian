@@ -47,6 +47,8 @@ Anthropic's independent guidance agrees: *"Single LLM calls with retrieval and i
 examples are often enough"* — see [[Agentic Workflow Patterns]].
 
 ## See Also
+- [[Multi-Step Graph Orchestration]] <!-- auto-linked -->
+- [[Chain of Thought]] <!-- auto-linked -->
 - [[Agent Orchestration Patterns]] — part-of
 - [[Single Agent With Tools]] — upgrade-path
 - [[Agentic Workflow Patterns]] — related

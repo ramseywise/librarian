@@ -93,6 +93,7 @@ expected to be corrected if the design conversation reveals the initial archetyp
   semester-scope system. Match ambition to capacity."*
 
 ## See Also
+- [[DESIGN.md Artifact]] <!-- auto-linked -->
 - [[AI Project Archetypes]] — extends
 - [[Scope-POC Design Interview]] — prerequisite-for (next pipeline stage; consumes the profile)
 - [[AI Project Template Scaffold]] — prerequisite-for

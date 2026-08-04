@@ -2,7 +2,7 @@
 title: Skill-Knowledge Information Flow
 tags: [meta, context-management, pattern]
 summary: How knowledge flows between the four parallel systems — global skills, ai-project-template, learn-ai-engineering, and the librarian wiki — and the sync contracts between them.
-updated: 2026-07-19
+updated: 2026-08-04
 sources:
   - raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
   - raw/sessions/claude-2026-07-19-should-we-simlink-our-global-skills-to-g-a103916b.md
@@ -95,3 +95,4 @@ The [[Claude Workflow System]] `workflow-` pipeline uses the wiki as grounding:
 - [[SKILL.md Pattern]] — prerequisite-for (skill resource layout)
 - [[Karpathy LLM Wiki Pattern]] — extends (wiki as grounding layer)
 - [[Multi-Repo Claude Organization]] — extends (cross-repo skill placement)
+- [[AI Engineering Curriculum Structure]] — instance-of (how the learn-ai-engineering corpus organises itself internally, upstream of the ingest contract above)

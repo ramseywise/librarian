@@ -57,6 +57,14 @@ Decision axes: knowledge freshness (RAG), behavior/format/style (fine-tune), dat
 - [[Prefix Caching]] — instance-of
 - [[RAG Interview Study Guide]] — extends
 - [[Direct Preference Optimization]] — instance-of
+- [[RLHF Pipeline]] — prerequisite-for (the three stages, asked about directly)
+- [[Bradley-Terry Preference Model]] — prerequisite-for (the pairwise objective under RLHF and DPO)
+- [[Reward Hacking and Overoptimization]] — extends (the failure modes a follow-up question probes)
+- [[Constitutional AI and RLAIF]] — extends (RLAIF as the AI-feedback variant)
+- [[Preference Optimization Algorithms]] — extends (the algorithm-choice comparison)
+- [[Reinforcement Learning Foundations]] — prerequisite-for (MDP, policy, actor-critic, exploration/exploitation)
+- [[Multi-Agent Reinforcement Learning]] — extends (CTDE, QMIX, MADDPG as asked about directly)
+- [[RL for Retrieval Policies]] — extends (RL applied to the retrieval decision points)
 - [[Transformer Architecture]] — prerequisite-for
 - [[Self-Attention Mechanism]] — prerequisite-for
 - [[Neural Probabilistic Language Model]] — prerequisite-for

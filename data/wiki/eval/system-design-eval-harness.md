@@ -44,6 +44,10 @@ Interview-format writeup of a system actually built (playground's `evals/`, shar
 3. Team: LangFuse experiments for run history; golden set grows by mining real failures, not by padding.
 
 ## See Also
+- [[Eval Suite Maintenance]] <!-- auto-linked -->
+- [[Eval Maturity Ladder]] <!-- auto-linked -->
+- [[Eval Harness Anatomy]] <!-- auto-linked -->
+- [[Eval Ladder]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] <!-- auto-linked -->
 - [[project-g Eval Architecture]] <!-- auto-linked -->
 - [[Anthropic Three-Tier Eval Taxonomy]] <!-- auto-linked -->

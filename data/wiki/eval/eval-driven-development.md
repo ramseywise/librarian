@@ -98,6 +98,8 @@ likely way to get an EDD adoption wrong.
 ---
 
 ## See Also
+- [[Eval Harness Anatomy]] <!-- auto-linked -->
+- [[Eval Ladder]] <!-- auto-linked -->
 - [[Eval vs Test Distinction]] — prerequisite-for
 - [[Specification by Example]] — extends
 - [[Golden Set Mechanics]] — extends

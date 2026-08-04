@@ -53,6 +53,7 @@ Haiku call: ~$0.001 per rewrite, ~100–200ms added latency on multi-turn only. 
 [[Summarization Node]] compresses *prior* history to fit in context. HistoryCondenser rewrites the *current* query using prior history. They address different problems and can coexist.
 
 ## See Also
+- [[Memory-Augmented Conversational RAG]] <!-- auto-linked -->
 - [[LangGraph CRAG Pipeline]]
 - [[RAG Retrieval Strategies]]
 - [[Summarization Node]]

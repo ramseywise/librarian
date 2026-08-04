@@ -141,6 +141,8 @@ class InvoiceAgentOutput(TypedDict):
 This prevents schema drift as agents evolve independently.
 
 ## See Also
+- [[Multi-Agent Role Specialization]] <!-- auto-linked -->
+- [[Single Agent With Tools]] <!-- auto-linked -->
 - [[Agentic Workflow Patterns]] <!-- auto-linked -->
 - [[Voice Agent Patterns]] <!-- auto-linked -->
 - [[ADK Observability]] <!-- auto-linked -->
@@ -151,6 +153,8 @@ This prevents schema drift as agents evolve independently.
 - [[Prefix Caching]]
 - [[ADK vs LangGraph Comparison]]
 - [[LangGraph Advanced Patterns]]
+- [[Task Decomposition Patterns]] — prerequisite-for (choosing the cut before choosing the topology)
+- [[Protocol-Driven Multi-Agent Collaboration]] — extends (delivery semantics and task graph on top of typed I/O)
 - [[VA Product Design Patterns]]
 - [[Runtime Topology and Checkpointer Alignment]]
 - [[ADK Workflow Agents]]

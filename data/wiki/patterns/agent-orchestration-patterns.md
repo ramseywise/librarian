@@ -66,7 +66,12 @@ This matches Anthropic's independent guidance in [[Agentic Workflow Patterns]] �
 agentic complexity only when it demonstrably improves outcomes.
 
 ## See Also
+- [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
+- [[Graph Engineering]] <!-- auto-linked -->
+- [[ACI (Agent-Computer Interface)]] <!-- auto-linked -->
+- [[Multi-Agent Orchestration Patterns]] <!-- auto-linked -->
 - [[Agentic Workflow Patterns]] — related (composable workflow patterns from Anthropic)
 - [[AI Project Archetypes]] — extends (archetype constrains the plausible orchestration)
 - [[Project Discovery Conversation]] — prerequisite-for
 - [[Complexity Floor]] — constrains
+- [[Multi-Agent Reinforcement Learning]] — complements (the same coordination-cost wall reached from RL theory)

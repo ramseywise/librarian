@@ -70,3 +70,4 @@ changing engagement rather than a regression, so pair it with [[Heuristic Pipeli
 - [[Golden Set Mechanics]] — feeds (thumbs-down cases become golden entries)
 - [[Copilot Learning Loop]] — related (usage signal as training feedback)
 - [[Heuristic Pipeline Metrics]] — complements
+- [[Online Eval Sampling]] — extends (negative feedback as one of four production sampling rules)

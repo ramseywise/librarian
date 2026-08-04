@@ -94,3 +94,5 @@ See [[Agent Memory Types]] for the reflection implementation.
 - [[ReAct Pattern]]
 - [[Self-Learning Agents]]
 - [[Agent Memory Types]]
+- [[Prompt Engineering]] — part-of (CoT as one technique among nine)
+- [[Few-Shot Prompting]] — composes-with (few-shot CoT: examples that show the reasoning chain)

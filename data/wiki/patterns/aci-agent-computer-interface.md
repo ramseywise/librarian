@@ -47,7 +47,10 @@ If any of these are ambiguous, the agent either calls the wrong tool, passes wro
 All tools in the Librarian pipeline subclass `BaseTool Protocol` with explicit input/output schemas. The `description` field on each tool is the ACI surface — vague descriptions are the first place to debug when the agent misbehaves.
 
 ## See Also
+- [[Multi-Agent Role Specialization]] <!-- auto-linked -->
 - [[Agentic Workflow Patterns]]
 - [[MCP Protocol]] — MCP tool schemas as a structured ACI standard
 - [[Librarian RAG Architecture]]
 - [[Agent Quality Review Checklist]] — extends (tool-safety review checks)
+- [[Tool Design as Harness Surface]] — extends (ACI as a harness contract, with the five-section tool spec)
+- [[Harness Anatomy]] — part-of (tools as one of the nine harness components)
