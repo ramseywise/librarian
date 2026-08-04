@@ -1,26 +1,27 @@
 """Eval runner: retrieval grader + answer grader over the golden dataset.
 
 Usage:
-    uv run python evals/run_eval.py
+    uv run python evals/run_eval.py           # oracle mode (default, gates floors)
+    uv run python evals/run_eval.py --live    # live retrieval (report-only)
 
-The runner exercises both graders against the golden dataset.  Because the
-live retrieval pipeline requires a running MCP server + embedder, this
-runner operates in *offline mode*: it simulates retrieval by returning the
-expected source pages in rank-1 position (a trivial oracle baseline) and
-uses the expected answer as the candidate answer.  This produces a 1.0
-baseline that proves the grader mechanics are wired correctly.
+Two modes:
 
-For real regression tracking, wire in actual pipeline output:
+*Oracle* (default): simulates retrieval by returning the expected source pages
+in rank-1 position and uses the expected answer as the candidate answer.  This
+produces a 1.0 baseline that proves the grader mechanics are wired correctly,
+and it gates on the regression floors (exit 1 below floor).
 
-    retrieved = pipeline.search(entry.query)          # list[RetrievalResult]
-    answer    = pipeline.answer(entry.query)           # str
-
-and pass those to the graders.  The EvalReport records the scores for
-comparison across runs.
+*Live* (`--live`): retrieval goes through the real search core
+(`app.mcp_server.server._search_rows` — BM25 + hybrid rerank), so hit-rate and
+MRR measure actual pipeline quality.  Answers stay oracle (live answer grading
+needs the LLM — separate concern).  Live mode is report-only: floors are
+printed for reference but never exit(1).  Retrieved paths are absolute; the
+grader's suffix matching handles the repo-relative golden `source_pages`, so
+no normalization is needed.
 
 Exit codes:
-    0 — all scores at or above floor thresholds
-    1 — one or more scores below floor
+    0 — all scores at or above floor thresholds (or --live mode)
+    1 — one or more scores below floor (oracle mode only)
 """
 
 from __future__ import annotations
@@ -65,6 +66,14 @@ def _oracle_answer(entry: GoldenEntry) -> str:
     return entry.expected_answer
 
 
+def _live_retrieval(entry: GoldenEntry) -> list[RetrievalResult]:
+    """Retrieve through the real search core (BM25 + hybrid rerank)."""
+    from app.mcp_server.server import _search_rows
+
+    rows = _search_rows(entry.query, domain="", limit=10, tool="eval")
+    return [RetrievalResult(page_path=row[0], score=float(row[6])) for row in rows]
+
+
 # ---------------------------------------------------------------------------
 # Runner
 # ---------------------------------------------------------------------------
@@ -74,13 +83,15 @@ def run(
     dataset_path: str | None = None,
     *,
     verbose: bool = False,
+    live: bool = False,
 ) -> EvalReport:
     entries = load_golden_dataset(dataset_path)
 
     retrieval_grader = RetrievalGrader()
     answer_grader = AnswerGrader()
 
-    retrieved_lists = [_oracle_retrieval(e) for e in entries]
+    retrieve = _live_retrieval if live else _oracle_retrieval
+    retrieved_lists = [retrieve(e) for e in entries]
     candidate_answers = [_oracle_answer(e) for e in entries]
 
     hit_rate, mrr, ret_results = retrieval_grader.grade_batch(entries, retrieved_lists)
@@ -124,13 +135,14 @@ def _print_failures(
             print(f"  {r.entry_id}: overlap={r.token_overlap:.2f} sim={r.semantic_similarity:.2f}")
 
 
-def _save_baseline(report: EvalReport, out_dir: Path) -> Path:
+def _save_baseline(report: EvalReport, out_dir: Path, prefix: str = "baseline") -> Path:
     """Persist baseline scores as JSON for regression tracking."""
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(tz=UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
-    out_path = out_dir / f"baseline-{ts}.json"
+    out_path = out_dir / f"{prefix}-{ts}.json"
     data = {
         "timestamp": ts,
+        "mode": "live" if prefix.startswith("live") else "oracle",
         "n_entries": report.n_entries,
         "hit_rate": report.hit_rate,
         "mean_reciprocal_rank": report.mean_reciprocal_rank,
@@ -163,17 +175,23 @@ def main() -> None:
         action="store_true",
         help="Save scores to evals/baselines/",
     )
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Retrieve via the live search core (report-only; floors do not gate)",
+    )
     args = parser.parse_args()
 
-    report = run(dataset_path=args.dataset, verbose=args.verbose)
+    report = run(dataset_path=args.dataset, verbose=args.verbose, live=args.live)
     print(report)
 
     if args.save_baseline:
         baseline_dir = Path(__file__).parent / "baselines"
-        path = _save_baseline(report, baseline_dir)
+        prefix = "live-baseline" if args.live else "baseline"
+        path = _save_baseline(report, baseline_dir, prefix=prefix)
         print(f"\nBaseline saved → {path}")
 
-    # Gate on floors
+    # Gate on floors — oracle mode only; live mode reports without failing
     failures = []
     if report.hit_rate < HIT_RATE_FLOOR:
         failures.append(f"hit_rate {report.hit_rate:.3f} < floor {HIT_RATE_FLOOR}")
@@ -184,9 +202,11 @@ def main() -> None:
         print("\nFLOOR VIOLATIONS:")
         for f in failures:
             print(f"  {f}")
-        sys.exit(1)
-
-    print("\nAll floors passed.")
+        if not args.live:
+            sys.exit(1)
+        print("(live mode is report-only — floors gate oracle mode)")
+    else:
+        print("\nAll floors passed.")
 
 
 if __name__ == "__main__":

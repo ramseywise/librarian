@@ -20,21 +20,18 @@ RELATIONSHIP_TYPES = {
 }
 
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
-DOMAIN_TAG_SET = {
-    "langgraph",
-    "rag",
-    "adk",
-    "mcp",
-    "memory",
-    "eval",
-    "infra",
-    "deep-agents",
-    "patterns",
-    "meta",
-    "projects",
-    "foundations",
-    "interview",
-}
+
+
+def _domain_tag_set() -> set[str]:
+    """Domain tags derived from disk: directories under data/wiki/, minus private/.
+
+    Same derivation as the MCP server's _domains() — replaces a hardcoded set that
+    had drifted (phantom deep-agents entry). Read at call time so tests can repoint
+    WIKI_DIR.
+    """
+    if not WIKI_DIR.is_dir():
+        return set()
+    return {d.name for d in WIKI_DIR.iterdir() if d.is_dir() and d.name != "private"}
 
 
 def _slug(title: str) -> str:
@@ -123,8 +120,9 @@ def parse_wiki() -> dict:
     # Skip same-directory pairs — intra-domain proximity is already captured by UMAP clustering.
     tag_map: dict[str, set[str]] = {}
     dir_map: dict[str, str] = {}
+    domain_tags = _domain_tag_set()
     for n in nodes:
-        tag_map[n["id"]] = {t for t in n["data"]["tags"] if t in DOMAIN_TAG_SET}
+        tag_map[n["id"]] = {t for t in n["data"]["tags"] if t in domain_tags}
         dir_map[n["id"]] = n["data"]["domain"][0]
 
     node_list = list(node_ids)

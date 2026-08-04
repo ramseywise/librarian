@@ -10,9 +10,10 @@ Tools:
   list_pages           — list pages by domain tag, directory, or all
   get_domain_briefing  — return all pages in a domain as a structured reference briefing
 
-Hybrid search: blends DuckDB FTS with cosine similarity (sentence-transformers).
-Falls back to FTS-only if sentence-transformers is not installed.
-Backlink counts are indexed and used as a ranking signal alongside relevance.
+Hybrid search: BM25 candidates (DuckDB fts extension) re-ranked with cosine
+similarity (sentence-transformers) and backlink count. Falls back to a tokenized
+per-term LIKE match when the fts extension is unavailable, and to text-only
+ranking when sentence-transformers is not installed.
 
 Usage:
     uv run python mcp_server/server.py
@@ -21,6 +22,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import re
 import struct
 from datetime import UTC, datetime
@@ -38,27 +40,28 @@ load_dotenv()
 configure_logging()  # installs the secret-redaction processor
 log = structlog.get_logger()
 
-WIKI_DIR = Path("data/wiki")
+# Anchored on __file__, not cwd — `make api` runs from app/ and must still find
+# the same wiki root and index as `make mcp` running from the repo root.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+WIKI_DIR = Path(os.getenv("WIKI_DIR", str(REPO_ROOT / "data" / "wiki")))
 PRIVATE_DIR = WIKI_DIR / "private"
-DB_PATH = Path(".wiki_index.duckdb")
+DB_PATH = Path(os.getenv("WIKI_DB_PATH", str(REPO_ROOT / ".wiki_index.duckdb")))
 LOGS_DIR = Path("logs")
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
-SCHEMA_VERSION = "3"
+SCHEMA_VERSION = "4"  # 3→4: paths stored absolute + BM25 fts index added
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
-DOMAINS = [
-    "rag",
-    "langgraph",
-    "adk",
-    "infra",
-    "patterns",
-    "eval",
-    "deep-agents",
-    "memory",
-    "mcp",
-    "meta",
-    "projects",
-]
+
+def _domains() -> list[str]:
+    """Domain names derived from disk: directories under data/wiki/, minus private/.
+
+    Replaces a hardcoded list that had drifted (6 directories missing, 1 phantom).
+    Read at call time so tests can repoint WIKI_DIR.
+    """
+    if not WIKI_DIR.is_dir():
+        return []
+    return sorted(d.name for d in WIKI_DIR.iterdir() if d.is_dir() and d.name != "private")
+
 
 mcp = FastMCP("librarian")
 
@@ -71,8 +74,26 @@ try:
 except ImportError:
     HAS_EMBEDDINGS = False
 
-# Optional FTS — installed at index-build time; absence is non-fatal but logged
+# Optional FTS — installed per connection; absence is non-fatal but logged
 HAS_FTS = False
+
+
+def _ensure_fts(con: duckdb.DuckDBPyConnection) -> bool:
+    """Install/load the DuckDB fts extension on this connection.
+
+    Returns True when fts is usable. The single seam for disabling BM25 in
+    tests (monkeypatch to `lambda con: False`) — search then takes the
+    tokenized-LIKE fallback.
+    """
+    global HAS_FTS
+    try:
+        con.execute("INSTALL fts")
+        con.execute("LOAD fts")
+        HAS_FTS = True
+    except Exception as exc:
+        log.warning("fts_install_failed", error=str(exc))
+        HAS_FTS = False
+    return HAS_FTS
 
 
 def _get_emb_model() -> SentenceTransformer:
@@ -104,11 +125,9 @@ def is_under_private(path: Path | str, private_dir: Path) -> bool:
     Buyi invariant "data/wiki/private/ never leaves the machine", clause (b). Resolved
     before comparison so ../ traversal and absolute paths cannot slip past.
 
-    private_dir is a parameter, not this module's PRIVATE_DIR, because callers
-    anchor their wiki root differently: the server uses a relative Path("data/wiki")
-    while app/backend/agent.py derives an absolute path from __file__. Sharing the
-    resolution logic while each caller supplies its own root keeps a second copy
-    from drifting, without making one caller's cwd decide the other's filter.
+    private_dir is a parameter, not this module's PRIVATE_DIR, so callers and
+    tests can supply their own root; `_is_private` binds it to PRIVATE_DIR read
+    at call time.
     """
     try:
         resolved = Path(path).resolve()
@@ -210,13 +229,7 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
 
-    global HAS_FTS
-    try:
-        con.execute("INSTALL fts")
-        con.execute("LOAD fts")
-        HAS_FTS = True
-    except Exception as exc:
-        log.warning("fts_install_failed", error=str(exc))
+    _ensure_fts(con)
 
     # Collect all pages
     raw_pages: list[tuple] = []
@@ -275,6 +288,17 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
         rows,
     )
 
+    global HAS_FTS
+    if HAS_FTS:
+        try:
+            con.execute(
+                "PRAGMA create_fts_index('pages', 'path', 'title', 'summary', 'content', "
+                "overwrite=1)"
+            )
+        except Exception as exc:
+            log.warning("fts_index_failed", error=str(exc))
+            HAS_FTS = False
+
     import time
 
     con.execute("INSERT INTO meta VALUES ('schema_version', ?)", [SCHEMA_VERSION])
@@ -328,77 +352,82 @@ def _resolve_domain_dir(domain: str) -> Path | None:
 
 
 # ---------------------------------------------------------------------------
-# MCP Tools
+# Search core — shared by the MCP tool, the chat agent, and the eval harness
 # ---------------------------------------------------------------------------
 
 
-@mcp.tool()
-def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = False) -> str:
-    """Search the wiki using hybrid search (FTS + semantic similarity + backlink rank).
+def _domain_filter(domain: str) -> tuple[str, list]:
+    """SQL fragment + params scoping a query to a domain (directory OR tag).
 
-    Results are ranked by a blend of: text match relevance, semantic closeness
-    (if sentence-transformers is installed), and inbound backlink count.
-
-    Args:
-        query:  Search terms
-        domain: Optional domain directory to scope the search
-                (e.g. 'rag', 'langgraph', 'adk', 'infra', 'patterns',
-                 'eval', 'deep-agents', 'memory', 'mcp', 'meta', 'projects')
-        limit:  Max results (default 10)
-        expand: SPIKE — also return pages one typed relationship hop from the
-                results (`prerequisite-for` / `extends`). Answers "what else do
-                I need to understand these hits?" Off by default.
-
-    Returns:
-        Matching pages with title, summary, path, backlink count, and a snippet.
+    Match on directory OR domain tag, not either/or: a page can live in one
+    subject directory while carrying another domain's tag (e.g. an interview
+    guide filed under foundations/ but tagged `interview`). Filtering by path
+    alone silently drops those from a --domain search.
     """
-    con = get_con()
-
-    tag_filter = ""
-    params: list = [query, query, query]
-
-    if domain:
-        # Match on directory OR domain tag, not either/or: a page can live in one
-        # subject directory while carrying another domain's tag (e.g. an interview
-        # guide filed under foundations/ but tagged `interview`). Filtering by path
-        # alone silently drops those from a --domain search.
-        domain_dir = _resolve_domain_dir(domain)
-        if domain_dir:
-            tag_filter = "AND (path LIKE ? OR lower(tags) LIKE '%' || lower(?) || '%')"
-            params.append(str(domain_dir) + "/%")
-            params.append(domain)
-        else:
-            tag_filter = "AND lower(tags) LIKE '%' || lower(?) || '%'"
-            params.append(domain)
-
-    # Fetch candidates — title match first, then recency, then backlinks
-    sql = f"""
-        SELECT path, title, tags, summary, content, backlinks, embedding
-        FROM pages
-        WHERE (
-            lower(content) LIKE '%' || lower(?) || '%'
-            OR lower(title) LIKE '%' || lower(?) || '%'
-            OR lower(summary) LIKE '%' || lower(?) || '%'
+    if not domain:
+        return "", []
+    domain_dir = _resolve_domain_dir(domain)
+    if domain_dir:
+        return (
+            "AND (path LIKE ? OR lower(tags) LIKE '%' || lower(?) || '%')",
+            [str(domain_dir) + "/%", domain],
         )
+    return "AND lower(tags) LIKE '%' || lower(?) || '%'", [domain]
+
+
+def _like_candidates(
+    con: duckdb.DuckDBPyConnection,
+    query: str,
+    tag_filter: str,
+    tag_params: list,
+    limit: int,
+) -> list[tuple]:
+    """Tokenized per-term OR LIKE fallback when fts is unavailable or matches nothing.
+
+    Each whitespace-separated term matches independently, so a multi-word query
+    like "compaction strategies" still finds "strategies for compacting context"
+    — the old whole-phrase LIKE required the exact phrase to appear verbatim.
+    """
+    terms = query.lower().split() or [query.lower()]
+    term_cond = " OR ".join(
+        ["(lower(content) LIKE ? OR lower(title) LIKE ? OR lower(summary) LIKE ?)"] * len(terms)
+    )
+    title_cond = " OR ".join(["lower(title) LIKE ?"] * len(terms))
+    like_params: list = []
+    for t in terms:
+        like_params += [f"%{t}%"] * 3
+    sql = f"""
+        SELECT path, title, tags, summary, content, backlinks, embedding, NULL AS score
+        FROM pages
+        WHERE ({term_cond})
         {tag_filter}
         ORDER BY
-            CASE WHEN lower(title) LIKE '%' || lower(?) || '%' THEN 0 ELSE 1 END,
+            CASE WHEN ({title_cond}) THEN 0 ELSE 1 END,
             backlinks DESC,
             updated DESC
         LIMIT ?
     """
-    params += [query, limit * 3]  # fetch 3× for re-ranking
-    try:
-        rows = con.execute(sql, params).fetchall()
-    finally:
-        con.close()
+    params = like_params + tag_params + [f"%{t}%" for t in terms] + [limit * 3]
+    return con.execute(sql, params).fetchall()
 
-    if not rows:
-        _log_retrieval("search_wiki", query=query, domain=domain, n_results=0, top_paths=[])
-        suffix = f" in domain '{domain}'" if domain else ""
-        return f"No wiki pages found for: {query!r}{suffix}"
 
-    # Hybrid re-ranking: blend FTS rank + cosine similarity + backlink boost
+def _rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
+    """Blend text relevance, semantic similarity, and backlink count.
+
+    rows are 8-tuples (path, title, tags, summary, content, backlinks, embedding,
+    score); returns 7-tuples with the blended score in place of the embedding.
+    BM25 rows carry a real relevance score (normalised against the max); fallback
+    rows have score NULL, so position in the SQL ordering stands in.
+    """
+    raw_scores = [r[7] for r in rows]
+    max_bm25 = max((s for s in raw_scores if s is not None), default=0.0)
+
+    def text_score(i: int) -> float:
+        s = raw_scores[i]
+        if s is not None and max_bm25 > 0:
+            return s / max_bm25
+        return 1.0 - (i / len(rows))
+
     if HAS_EMBEDDINGS and len(rows) > 1:
         try:
             model = _get_emb_model()
@@ -407,31 +436,112 @@ def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = Fa
 
             scored: list[tuple[float, tuple]] = []
             for i, row in enumerate(rows):
-                path, title, tags, summary, content, bl, emb_blob = row
-                # FTS rank: position in result set (0=best), normalised 0–1
-                fts_score = 1.0 - (i / len(rows))
-                # Backlink score: normalised 0–1
-                bl_score = bl / max_backlinks
-                # Semantic score
-                sem_score = 0.0
-                if emb_blob:
-                    page_vec = _blob_to_vec(emb_blob)
-                    sem_score = _cosine(q_vec, page_vec)
-                # Weighted blend
-                final = 0.5 * fts_score + 0.3 * sem_score + 0.2 * bl_score
+                bl, emb_blob = row[5], row[6]
+                sem_score = _cosine(q_vec, _blob_to_vec(emb_blob)) if emb_blob else 0.0
+                final = 0.5 * text_score(i) + 0.3 * sem_score + 0.2 * (bl / max_backlinks)
                 scored.append((final, row))
 
             scored.sort(key=lambda x: x[0], reverse=True)
-            rows = [r for _, r in scored[:limit]]
+            return [(*row[:6], score) for score, row in scored[:limit]]
         except Exception as e:
             log.warning("hybrid_rerank_failed", error=str(e))
-            rows = rows[:limit]
-    else:
-        rows = rows[:limit]
+
+    return [(*row[:6], text_score(i)) for i, row in enumerate(rows[:limit])]
+
+
+def _search_rows(
+    query: str, domain: str = "", limit: int = 10, tool: str = "search_wiki"
+) -> list[tuple]:
+    """Ranked wiki search returning raw rows — the single search core.
+
+    Returns up to `limit` 7-tuples (path, title, tags, summary, content,
+    backlinks, score), best first. Candidates come from BM25 (DuckDB fts);
+    falls back to a tokenized per-term LIKE match when fts is unavailable or
+    matches nothing. Logs retrieval telemetry under `tool`.
+    """
+    tag_filter, tag_params = _domain_filter(domain)
+
+    con = get_con()
+    try:
+        rows: list[tuple] = []
+        if _ensure_fts(con):
+            # DuckDB permits SELECT aliases in WHERE, so `score` filters directly
+            sql = f"""
+                SELECT path, title, tags, summary, content, backlinks, embedding,
+                       fts_main_pages.match_bm25(path, ?) AS score
+                FROM pages
+                WHERE score IS NOT NULL
+                {tag_filter}
+                ORDER BY score DESC
+                LIMIT ?
+            """
+            try:
+                rows = con.execute(sql, [query, *tag_params, limit * 3]).fetchall()
+            except Exception as e:
+                log.warning("fts_query_failed", error=str(e))
+                rows = []
+
+        if not rows:
+            rows = _like_candidates(con, query, tag_filter, tag_params, limit)
+    finally:
+        con.close()
+
+    if not rows:
+        _log_retrieval(tool, query=query, domain=domain, n_results=0, top_paths=[])
+        return []
+
+    ranked = _rerank(query, rows, limit)
+    _log_retrieval(
+        tool,
+        query=query,
+        domain=domain,
+        n_results=len(ranked),
+        top_paths=[r[0] for r in ranked[:5]],
+    )
+    return ranked
+
+
+# ---------------------------------------------------------------------------
+# MCP Tools
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = False) -> str:
+    """Search the wiki using hybrid search (BM25 + semantic similarity + backlink rank).
+
+    Results are ranked by a blend of: BM25 relevance, semantic closeness
+    (if sentence-transformers is installed), and inbound backlink count.
+
+    Args:
+        query:  Search terms
+        domain: Optional domain to scope the search — any directory under
+                data/wiki/ (e.g. 'rag', 'langgraph', 'patterns') or a domain tag
+        limit:  Max results (default 10)
+        expand: SPIKE — also return pages one typed relationship hop from the
+                results (`prerequisite-for` / `extends`). Answers "what else do
+                I need to understand these hits?" Off by default.
+
+    Returns:
+        Matching pages with title, summary, path, backlink count, and a snippet.
+    """
+    rows = _search_rows(query, domain=domain, limit=limit)
+
+    if not rows:
+        suffix = f" in domain '{domain}'" if domain else ""
+        return f"No wiki pages found for: {query!r}{suffix}"
 
     results = []
-    for path, title, tags, summary, content, backlinks, _ in rows:
-        idx = content.lower().find(query.lower())
+    for path, title, tags, summary, content, backlinks, _score in rows:
+        lower = content.lower()
+        idx = lower.find(query.lower())
+        if idx < 0:
+            # BM25 matches on stems, so the verbatim phrase may be absent —
+            # snippet around the first individual term that does appear
+            for term in query.lower().split():
+                idx = lower.find(term)
+                if idx >= 0:
+                    break
         snippet = ""
         if idx >= 0:
             start = max(0, idx - 80)
@@ -445,13 +555,6 @@ def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = Fa
             f"Summary: {summary}\n" + (f"Snippet: ...{snippet}..." if snippet else "")
         )
 
-    _log_retrieval(
-        "search_wiki",
-        query=query,
-        domain=domain,
-        n_results=len(rows),
-        top_paths=[r[0] for r in rows[:5]],
-    )
     body = f"Found {len(rows)} result(s):\n\n" + "\n\n---\n\n".join(results)
 
     if expand:
@@ -495,16 +598,11 @@ def _expansion_section(seed_paths: list[str]) -> str:
     )
 
 
-@mcp.tool()
-def read_page(path_or_title: str) -> str:
-    """Read a specific wiki page by file path or title.
+def _read_page_text(path_or_title: str) -> str:
+    """Resolve a page by path, wiki-relative path, slug, or title and return its text.
 
-    Args:
-        path_or_title: Either a relative path like 'data/wiki/rag/rag-retrieval-strategies.md'
-                       or a page title like 'RAG Retrieval Strategies'
-
-    Returns:
-        Full page content, or an error message if not found.
+    The single page-read core — the read_page MCP tool and the chat agent both
+    call this, so private exclusion and telemetry are enforced in one place.
     """
     # Private pages are indistinguishable from missing ones — a distinct "denied"
     # message would itself confirm the page exists.
@@ -557,22 +655,35 @@ def read_page(path_or_title: str) -> str:
 
 
 @mcp.tool()
+def read_page(path_or_title: str) -> str:
+    """Read a specific wiki page by file path or title.
+
+    Args:
+        path_or_title: Either a relative path like 'data/wiki/rag/rag-retrieval-strategies.md'
+                       or a page title like 'RAG Retrieval Strategies'
+
+    Returns:
+        Full page content, or an error message if not found.
+    """
+    return _read_page_text(path_or_title)
+
+
+@mcp.tool()
 def list_domain(domain: str) -> str:
     """List all pages in a domain directory, ordered by backlink count.
 
     This is an O(1) filesystem operation — no embedding or search needed.
 
     Args:
-        domain: Domain directory name — one of:
-                rag, langgraph, adk, infra, patterns, eval,
-                deep-agents, memory, mcp, meta, projects
+        domain: Domain directory name — any directory under data/wiki/
+                (e.g. rag, langgraph, context, interview)
 
     Returns:
         All pages in the domain with title, tags, summary, and backlink count.
     """
     domain_dir = _resolve_domain_dir(domain)
     if domain_dir is None:
-        valid = ", ".join(DOMAINS)
+        valid = ", ".join(_domains())
         return f"Unknown domain: {domain!r}. Valid domains: {valid}"
 
     pages = sorted(p for p in domain_dir.glob("*.md") if not p.name.startswith("_"))
@@ -619,9 +730,8 @@ def list_pages(tag: str = "", directory: str = "") -> str:
 
     Args:
         tag:       Domain tag to filter (e.g. 'adk', 'langgraph', 'rag')
-        directory: Subdirectory to list — use domain names:
-                   rag, langgraph, adk, infra, patterns, eval,
-                   deep-agents, memory, mcp, meta, projects
+        directory: Subdirectory to list — any domain directory under data/wiki/
+                   (e.g. rag, langgraph, context, interview)
 
     Returns:
         List of pages with title, tags, summary, and backlink count.
@@ -684,16 +794,15 @@ def get_domain_briefing(domain: str) -> str:
     decisions, and tradeoffs into context.
 
     Args:
-        domain: Domain directory name — one of:
-                rag, langgraph, adk, infra, patterns, eval,
-                deep-agents, memory, mcp, meta, projects
+        domain: Domain directory name — any directory under data/wiki/
+                (e.g. rag, langgraph, context, interview)
 
     Returns:
         Full content of all pages in the domain, ordered: decisions → patterns → concepts.
     """
     domain_dir = _resolve_domain_dir(domain)
     if domain_dir is None:
-        valid = ", ".join(DOMAINS)
+        valid = ", ".join(_domains())
         return f"Unknown domain: {domain!r}. Valid domains: {valid}"
 
     pages = sorted(p for p in domain_dir.glob("*.md") if not p.name.startswith("_"))

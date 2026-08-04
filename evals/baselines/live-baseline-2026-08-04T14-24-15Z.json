@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-08-04T14-24-15Z",
+  "mode": "live",
+  "n_entries": 50,
+  "hit_rate": 1.0,
+  "mean_reciprocal_rank": 0.905,
+  "mean_token_overlap": 1.0,
+  "mean_semantic_similarity": 1.0,
+  "floors": {
+    "hit_rate": 0.6,
+    "mrr": 0.4
+  }
+}
