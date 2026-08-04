@@ -2,7 +2,7 @@
 title: Agents Interview Study Guide
 tags: [interview, reference]
 summary: Exam-prep reference for agent architecture questions — workflow vs agent distinction, composable patterns, ACI tool design, harness engineering, long-horizon reliability, and memory taxonomy.
-updated: 2026-07-19
+updated: 2026-08-03
 sources:
   - raw/repos/learn-ai-engineering/interviewing--guides--4-agents--interview-guide.md
   - raw/repos/learn-ai-engineering/interviewing--notes--agents-design.md
@@ -76,3 +76,5 @@ See [[Agent Memory Types]].
 - [[ReAct Pattern]] — instance-of
 - [[RAG Interview Study Guide]] — extends
 - [[System Design Interview Study Guide]] — extends
+- [[Situation-Indexed Decision Tree]] — extends (the agent spine links down into this guide)
+- [[Durable vs Performative Knowledge Split]] — prerequisite-for (this guide is the durable side)

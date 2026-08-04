@@ -2,13 +2,17 @@
 title: SANYI Change-Contract System
 tags: [meta, pattern, concept]
 summary: Three-layer change-contract system (变易/简易/不易) for agent architectures — classifies every component into ever-changing, simple, or invariant, then enforces cross-layer discipline via init/review/audit modes.
-updated: 2026-07-17
+updated: 2026-08-03
 sources:
   - raw/claude-docs/project-g/skills/SANYI/SKILL.md
   - raw/claude-docs/project-g/skills/SANYI/README.md
   - raw/claude-docs/project-g/skills/SANYI/references/contract-spec.md
   - raw/claude-docs/project-g/skills/SANYI/references/interview-guide.md
   - raw/claude-docs/project-g/skills/SANYI/references/violations.md
+  - data/raw/claude-docs/Parallax/agents/sanyi-review.md
+  - data/raw/claude-docs/Parallax/agents/accountability-safeguards.md
+  - data/raw/claude-docs/Parallax/skills/sanyi/SKILL.md
+  - data/raw/claude-docs/Parallax/skills/accountability-safeguards/SKILL.md
 ---
 
 # SANYI Change-Contract System
@@ -132,6 +136,57 @@ Buyi is the one layer machines can't infer (business/safety intent isn't in any 
 
 > **Note:** the original `SKILL.md`/`README.md` ingest described `SANYI.md`'s sections differently (`## Components`, `## Buyi Enforcement`, `## Migrations`, `## Pending Violations`, with no per-entry field spec). Resolved 2026-07-17 in `contract-spec.md`'s favor — its six exact-match sections are what the live skill parses. The "SANYI.md Format" section above is authoritative; see [[Conflicts]] for the resolution record.
 
+## Vendoring into consuming systems
+
+Parallax carries the whole skill — `SKILL.md` plus all three references — as a **vendored
+copy, not a submodule**, with the provenance recorded in a header comment naming the
+upstream commit and copy date (`98240fc` / 2026-07-19) and the instruction: "Re-copy
+manually if SANYI is updated upstream; this file is not auto-synced." The three reference
+files are byte-identical to their upstream originals; only `SKILL.md` differs, by exactly
+that comment.
+
+The tradeoff is deliberate and worth naming: the consuming system gets the taxonomy
+preloaded in-context (which is what lets `sanyi-review` draft contract entries no other
+subagent can — see [[Corrective Follow-Up Dispatch]]), at the cost of a silent staleness
+window whenever upstream moves. Nothing detects the drift; the comment is the entire
+mechanism.
+
+## Consumption by external review systems
+
+When another review system aggregates SANYI findings, the severities above are treated as
+SANYI's own property and carried through unrewritten. Parallax's `sanyi-review` subagent is
+instructed to "use SANYI's codes and severities exactly as SANYI's own taxonomy assigns
+them," and records a separate merge-impact judgment beside them rather than overwriting —
+a `JY-2 warning` maps to `important` *or* `suggestion` depending on the PR, with the
+ambiguity marking where a human decides. See [[Source Severity vs Merge Impact]].
+
+The contract format is also treated as a capability that only one subagent holds. Parallax's
+safeguards reviewer is told to describe an undeclared-invariant gap but explicitly *not* to
+draft SANYI syntax — "you do not have SANYI's contract format preloaded" — so the
+orchestrator routes the finding to `sanyi-review`, the only subagent carrying this page's
+format in context, to draft a candidate Buyi or Pending entry. The draft is a recommendation
+only; writing into `SANYI.md` needs human approval. See [[Corrective Follow-Up Dispatch]].
+
+### BY-4 run proactively
+
+That routing carries a widening of what BY-4 is for. The code as written is reactive: it
+fires when a *declared* Buyi invariant turns out to have prompt-only backing. Parallax's
+safeguards dimension applies the same test to invariants nobody declared — a doc, system
+prompt, or config claiming a guardrail exists (an escalation path, a validation layer, a
+confidence gate) with no deterministic code behind it. The instruction names the
+relationship directly: recommend recording it as a candidate Buyi or Pending entry,
+"the same failure mode SANYI's BY-4 targets, applied proactively to invariants nobody has
+declared yet."
+
+The recommended output is a contract entry rather than a finding, which is the point. A
+finding closes with the PR; an undeclared invariant that was only ever a sentence in a
+prompt survives it. Pending is the natural landing spot — it enforces at Buyi strictness
+while the assignment is still disputed, so the gap is covered before anyone agrees on how
+to classify it. Where no `SANYI.md` exists at all, the recommendation degrades to running
+`/sanyi init`, since there is nothing to append to. See
+[[Agent Quality Review Checklist]], whose highest-value check this converts into a durable
+declaration.
+
 ## See Also
 - [[ADK Context Engineering]]
 - [[Input Guardrails Pipeline]]
@@ -139,3 +194,11 @@ Buyi is the one layer machines can't infer (business/safety intent isn't in any 
 - [[Claude Workflow System]]
 - [[Change-Contracts Rollout]] — instance-of
 - [[Code Review Drill — SANYI]] — instance-of
+- [[Silent Fallthrough in String-Keyed Discovery]] — instance-of (rename with no error signal)
+- [[Parallel Dimension Scanner Architecture]] — extends (contracts as a peer review dimension)
+- [[Merge Impact and Evidence State]] — extends (violation code fixes merge impact)
+- [[Source Severity vs Merge Impact]] — extends (severity preserved, impact assigned separately)
+- [[Deterministic Review Substrate]] — instance-of (`sanyi-default-impact` as a CLI subcommand)
+- [[Corrective Follow-Up Dispatch]] — extends (safeguard gap routed to `sanyi-review` for a candidate entry)
+- [[Agent Quality Review Checklist]] — extends (prose-only safeguard as a candidate Buyi entry)
+- [[Parallax]] — alternative-to (SANYI governs the contract; Parallax judges the change)

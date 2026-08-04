@@ -2,7 +2,7 @@
 title: Claude Workflow System
 tags: [context-management, llm, pattern]
 summary: Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints, and session notes — that automates context management across multi-phase engineering workflows.
-updated: 2026-07-19
+updated: 2026-08-03
 sources:
   - raw/sessions/claude-2026-04-11-i-want-to-refactor-this-insights-skill-f-394ba556.md
   - raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md
@@ -178,7 +178,7 @@ Reorganized 2026-07-17 into **5 named groups** (21 skills in `~/.claude/skills/`
 |---|---|
 | `/code-debug` | Quick fix from error (six-step scientific loop) |
 | `/code-refactor` | Quality-driven, invokes native `/simplify` as finishing pass |
-| `/code-review` | Standing quality review on diff — leveled: 1=lint, 2=+tests+akira, 3=+sanyi |
+| `/code-review` | Standing quality review on diff — leveled: 1=lint, 2=+tests+akira, 3=+sanyi (levels gate reporters by declared scope — see [[Scope-Gated Reporter Dispatch]]) |
 | `/code-pr` | Review an open PR |
 
 ### `design-` — Architecture & Planning (4 skills)
@@ -328,3 +328,10 @@ A project-local instantiation of this skill (`code_debug` in [[Listen-Wiseer Pro
 - [[Skill-Knowledge Information Flow]] — extends (four-system parity model)
 - [[Agile Workflow Definitions]] — extends (DoR, DoD, cadence, ceremony mapping)
 - [[Documentation Boundary — Machine vs Human Docs]] — extends (who writes what)
+- [[Parallel Dimension Scanner Architecture]] — extends (review dimensions as parallel agents)
+- [[Wander — Question-Generating Review Agent]] — extends (question output type)
+- [[Plan-Doc Status Enum]] — extends (Status vocabulary the skills read and write)
+- [[Silent Fallthrough in String-Keyed Discovery]] — extends (risk in skill doc discovery)
+- [[Scope-POC Design Interview]] — instance-of (design-phase skill in the pipeline)
+- [[Deferred Decision Status]] — extends (parking unknowns without blocking the gate)
+- [[Scope-Gated Reporter Dispatch]] — extends (which reporters run, and recording the ones that didn't)

@@ -128,3 +128,4 @@ The learning loop is what makes the 60% target a floor, not a ceiling.
 - [[HITL Annotation Pipeline]]
 - [[Evaluation & Improvement Project (VIR)]]
 - [[Production Hardening Patterns]]
+- [[User Feedback Loops]] — related (deployed-usage signal as the eval source)

@@ -26,7 +26,7 @@ from core.base import REPO_ROOT, ScraperBase
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_LINEAR = REPO_ROOT / "raw" / "linear"
+RAW_LINEAR = REPO_ROOT / "data" / "raw" / "linear"
 
 LINEAR_API = "https://api.linear.app/graphql"
 

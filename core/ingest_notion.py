@@ -27,7 +27,7 @@ from core.base import REPO_ROOT, ScraperBase
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_NOTION = REPO_ROOT / "raw" / "notion"
+RAW_NOTION = REPO_ROOT / "data" / "raw" / "notion"
 
 
 class Settings(BaseSettings):

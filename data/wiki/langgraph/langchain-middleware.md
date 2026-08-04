@@ -136,6 +136,8 @@ def check_output(state, runtime):
 - **Wrong resume syntax:** resume via `agent.invoke(Command(resume={...}), config=config)` — passing a plain dict (`agent.invoke({"resume": {...}})`) does not resume the interrupt.
 
 ## See Also
+- [[Graph Topology Primitives]] <!-- auto-linked -->
+- [[Harness Engineering]] <!-- auto-linked -->
 - [[Framework Selection — LangChain vs LangGraph vs Deep Agents]]
 - [[LangChain Fundamentals — create_agent, Tools, Structured Output]]
 - [[Deep Agents Framework]]

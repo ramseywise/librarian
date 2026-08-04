@@ -116,3 +116,4 @@ See [[Copilot Learning Loop]] for the full operational process.
 - [[LangGraph CRAG Pipeline]]
 - [[Copilot Learning Loop]]
 - [[VA Eval Harness]]
+- [[Atlas Project]] — instance-of

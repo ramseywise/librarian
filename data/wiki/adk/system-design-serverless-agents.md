@@ -48,3 +48,5 @@ Interview-format writeup of the constraints governing the atlas/DSSG-portal Type
 - [[ADK Context Engineering]]
 - [[System Design — Unified Eval Harness]]
 - [[System Design — Shared Code-Index Service]]
+- [[Serverless Deployment]] — instance-of (the topology this design realizes)
+- [[Split Service Deployment]] — related (Vercel frontend + external backend as the same stack)

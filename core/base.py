@@ -10,7 +10,7 @@ Provides:
 Subclass protocol:
     class MyScraper(ScraperBase):
         source_name = "my-source"
-        output_dir = REPO_ROOT / "raw" / "my-source"
+        output_dir = REPO_ROOT / "data" / "raw" / "my-source"
 
         def run(self, dry_run: bool = False) -> list[Path]:
             ...
@@ -45,7 +45,7 @@ class ScraperBase(ABC):
     """Base class for all core/ ETL scrapers."""
 
     source_name: str = ""  # override in subclass
-    output_dir: Path = REPO_ROOT / "raw"  # override in subclass
+    output_dir: Path = REPO_ROOT / "data" / "raw"  # override in subclass
 
     @abstractmethod
     def run(self, dry_run: bool = False) -> list[Path]:

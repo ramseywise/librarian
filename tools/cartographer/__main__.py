@@ -169,7 +169,7 @@ def _run_facts() -> None:
     p = argparse.ArgumentParser(description="Refresh the session fact table + dashboard")
     p.add_argument("--store", default=str(repo_root / "data" / "sessions.db"))
     p.add_argument("--projects-dir", default="~/.claude/projects")
-    p.add_argument("--notes-dir", default=str(repo_root / "raw" / "sessions"))
+    p.add_argument("--notes-dir", default=str(repo_root / "data" / "raw" / "sessions"))
     p.add_argument(
         "--no-derive",
         action="store_true",

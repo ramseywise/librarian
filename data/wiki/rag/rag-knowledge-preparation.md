@@ -103,3 +103,4 @@ Knowledge preparation is a prerequisite before loading content into a vector sto
 - [[[client] Knowledge Agent]]
 - [[LangGraph CRAG Pipeline]]
 - [[PII Masking Approaches]]
+- [[Data Pipeline Pattern Selection]] — extends (batch ingest as one of four data-arrival patterns)

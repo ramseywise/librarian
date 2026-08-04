@@ -63,6 +63,8 @@ Reach for the three-layer split when:
 - Scaffolding a full agent from scratch is common enough to be worth the parallel-subagent investment (L1) — for a one-off agent, a single sequential skill is simpler.
 
 ## See Also
+- [[Multi-Agent Role Specialization]] <!-- auto-linked -->
+- [[Skill Preloading via Agent Definition]] <!-- auto-linked -->
 - [[VA Product Design Patterns]] <!-- auto-linked -->
 - [[project-g Project]] — the concrete instance this pattern was extracted from (`agent-creation/` skill family)
 - [[VA Bedrock KB Reference]] — the RAG capability's generated retrieval-module template

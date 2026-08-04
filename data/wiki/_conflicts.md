@@ -47,6 +47,36 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 ---
 
+## Conflict: Test Coverage in a Code-Test Submission — 2026-08-03
+
+**Claim A** (from [[AIE Code-Test Flaw Taxonomy]], sourced from `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_format-and-flaws.md`):
+> What strong candidates actually do in the last 20 min … **NOT:** implement multi-turn conversation, add a web UI, tune the prompt template, **write a test suite**, implement a custom embedding model, add caching.
+
+**Claim B** (from new source `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_openai-work-trial.md`):
+> Even in a 1-hour timed test, include 2–3 tests: happy path, boundary, failure/error path — runnable with one command. Missing tests is (per this source) the single most cited rejection reason.
+
+**Status:** Unresolved — needs human review
+**Impact:** Which behaviour the code-test prep material tells a candidate to spend the final 20 minutes on. The two files are sibling research docs in the same LAE folder, and B is explicitly framed as a correction to A.
+
+**Note on the likely resolution:** [[Timebox-Scaled Deliverable Bar]] proposes that both are right at different windows — A's advice was derived from a 1-hour timed budget where the ~23-minute hardening pass already consumes the tail, while B addresses 1–6h async submissions graded as pull requests. But B asserts its floor *"even in a 1-hour timed test,"* which is a direct overlap, so the disagreement is real at that window and not fully dissolved by the dial. Confidence also differs: A is multi-source (Grigorev dataset, published Meta/Google rubrics); B is vendor-published single-source content marketing whose "most cited rejection reason" claim is uncorroborated. A secondary tension: B treats testing as a named grading band, while the Meta and Google rubrics quoted in A weight correctness > code quality > communication and name no testing band at all.
+
+---
+
+## Conflict: Should Guardrails Themselves Use an LLM? — 2026-08-04
+
+**Claim A** (from [[Input Guardrails Pipeline]], sourced from `raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md`):
+> Guardrails must be **deterministic and LLM-free**. They run before any LLM call. An LLM-based guardrail can be bypassed by the same injection techniques it is defending against.
+
+**Claim B** (from [[Prompt Injection]], sourced from `data/raw/repos/learn-ai-engineering/interviewing--notes--prompt-injection.md`, OWASP LLM Prompt Injection Prevention Cheat Sheet):
+> A separate model can act as a filter on inputs and outputs of the primary LLM ("LLM-as-judge" / "guardrail model"), at three placements: input screening, output screening, action screening. Explicitly positioned *"alongside the deterministic controls described above, not in place of them."* Concedes the guardrail is itself injectable, and adds that it should have a **different attack surface** than the primary model — a purpose-trained classifier (Llama Guard, ShieldGemma, Granite Guardian, Prompt Guard) rather than a chat model from the same family.
+
+**Status:** Unresolved — needs human review
+**Impact:** Whether librarian's own guardrail guidance permits a model-based screening layer, and whether [[Input Guardrails Pipeline]]'s stage list should gain an optional LLM stage for indirect-injection detection on retrieved/fetched content.
+
+**Note on the likely resolution:** The two may not fully contradict. A's "LLM-free" is stated as a property of *the pipeline* — the deterministic pre-LLM path — while B positions the guardrail model as an *additional* layer that does not replace any of A's stages. The genuine disagreement is narrower: A treats LLM-based screening as actively unsafe (bypassable by the same technique), B treats it as net-positive because a purpose-trained classifier has a different attack surface and catches indirect injection in untrusted content that regex provably misses. That last point is the strongest argument against A's absolutism — A's stage 4 is pure pattern matching, which OWASP states does not reliably catch indirect injection. Cost/latency is the practical dial: reserve model-based checks for high-risk paths (tool invocation, ingestion of external content), keep deterministic checks on routine traffic.
+
+---
+
 ## Ingest Errors
 
 *Sources that failed to parse during ingest.*

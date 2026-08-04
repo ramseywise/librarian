@@ -2,7 +2,7 @@
 title: RAG Interview Study Guide
 tags: [rag, interview, reference]
 summary: Exam-prep reference for RAG architecture questions — component choices, architecture variants, production judgment, measured benchmarks, and terminology traps.
-updated: 2026-07-19
+updated: 2026-08-03
 sources:
   - raw/repos/learn-ai-engineering/interviewing--guides--3-rag--interview-guide.md
   - raw/repos/learn-ai-engineering/interviewing--notes--rag.md
@@ -57,8 +57,11 @@ Ingest: chunk → embed → index. Query: (rewrite) → retrieve → (rerank) �
 - Hallucination with citation — the model cites a real source for a wrong claim
 
 ## See Also
+- [[Durable vs Performative Knowledge Split]] <!-- auto-linked -->
 - [[RAG Retrieval Strategies]] — prerequisite-for
 - [[Agentic RAG — Advanced Patterns]] — extends
 - [[RAG Evaluation]] — instance-of
 - [[Reciprocal Rank Fusion (RRF)]] — instance-of
 - [[Agents Interview Study Guide]] — extends
+- [[Situation-Indexed Decision Tree]] — extends (the RAG spine links down into this guide)
+- [[AIE Code-Test Flaw Taxonomy]] — instance-of (where this knowledge is graded as shipped code)

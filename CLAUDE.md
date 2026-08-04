@@ -12,7 +12,7 @@
 ## What This Repo Is
 
 A personal agent design reference following Karpathy's LLM Wiki pattern. Raw sources
-(Notion, Linear, meetings, PDFs, playground docs) go into `raw/` (append-only). Claude
+(Notion, Linear, meetings, PDFs, playground docs) go into `data/raw/` (append-only). Claude
 compiles them into `data/wiki/` (structured, interlinked markdown). Obsidian is the read and
 visualization UI. Claude Code is the write runtime. A local MCP server exposes the wiki
 to other agents.
@@ -21,13 +21,13 @@ The core use case: before starting a new agent build, load the KB to get grounde
 recommendations from accumulated design experience — your own hard-won patterns, not
 generic documentation.
 
-**Mental model:** `raw/` = source code. Claude = compiler. `data/wiki/` = executable output.
+**Mental model:** `data/raw/` = source code. Claude = compiler. `data/wiki/` = executable output.
 
 **Visualization:** Obsidian native graph view (wikilinks = edges). Install the Graph
 Analysis community plugin for cosine-similarity edges between pages. Do NOT use the
-Streamlit visualizer (`etl/visualize.py`) — it is deprecated.
+Streamlit visualizer — it was deprecated and the script has since been removed.
 
-**Agent layer:** `app/backend/agent.py` — a Gemini-based chat agent with its own wiki-search
+**Agent layer:** `app/backend/agent.py` — an Anthropic-based chat agent (#96) with its own wiki-search
 tool, streamed via SSE (`POST /api/chat/stream`) to the React graph UI's chat panel. No
 write-back tool exists yet (`/api/writeback` mutates a page's `## See Also` section directly
 from the UI, not via an agent tool call).
@@ -41,19 +41,19 @@ tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki to
 
 ## Directory Contract
 
-### `raw/` — Immutable Input Zone
+### `data/raw/` — Immutable Input Zone
 
-- **NEVER edit or delete files in `raw/`**. It is append-only.
+- **NEVER edit or delete files in `data/raw/`**. It is append-only.
 - Subdirectories by source type:
-  - `raw/notion/` — Notion page exports (use `YYYY-MM-DD-page-title.md`)
-  - `raw/linear/` — Linear issue/project dumps
-  - `raw/meetings/` — Meeting transcripts (use `YYYY-MM-DD-topic.md`)
-  - `raw/playground-docs/` — Research + plan docs from playground repo and `.claude/docs/archived/`
-  - `raw/pdfs/` — Extracted text from research PDFs
-  - `raw/web/` — Saved web research, bookmarks, article captures
-  - `raw/repos/` — CLAUDE.md, README, skill files, and docs scraped from active repos via `etl/scrape_repos.py`; configure which repos to scrape in `raw/repos/repos.txt`
-  - `raw/books/` — Curated quotes and notes from books (format below)
-  - `raw/articles/` — Web article captures with highlighted quotes (format below)
+  - `data/raw/notion/` — Notion page exports (use `YYYY-MM-DD-page-title.md`)
+  - `data/raw/linear/` — Linear issue/project dumps
+  - `data/raw/meetings/` — Meeting transcripts (use `YYYY-MM-DD-topic.md`)
+  - `data/raw/playground-docs/` — Research + plan docs from playground repo and `.claude/docs/archived/`
+  - `data/raw/pdfs/` — Extracted text from research PDFs
+  - `data/raw/web/` — Saved web research, bookmarks, article captures
+  - `data/raw/repos/` — CLAUDE.md, README, skill files, and docs scraped from active repos via `core/scrape_repos.py`; configure which repos to scrape in `data/raw/repos/repos.txt`
+  - `data/raw/books/` — Curated quotes and notes from books (format below)
+  - `data/raw/articles/` — Web article captures with highlighted quotes (format below)
 
 #### Source Confidence
 
@@ -67,7 +67,7 @@ All raw sources may include an optional `confidence` field in frontmatter:
 
 When a `low` confidence source contradicts a `high` confidence wiki claim, flag the conflict but note the disparity. When a `high` confidence source contradicts `medium`, update the wiki and note both sources. Default to `medium` if the field is absent.
 
-#### Book source format (`raw/books/<author-title.md>`)
+#### Book source format (`data/raw/books/<author-title.md>`)
 
 ```markdown
 ---
@@ -88,7 +88,7 @@ year: YYYY
 **Note:** Application or implication.
 ```
 
-#### Article source format (`raw/articles/<YYYY-MM-DD-slug.md>`)
+#### Article source format (`data/raw/articles/<YYYY-MM-DD-slug.md>`)
 
 ```markdown
 ---
@@ -114,11 +114,13 @@ published: YYYY-MM-DD
   - `data/wiki/langgraph/` — LangGraph state machines, CRAG, checkpointers, reducers, streaming
   - `data/wiki/adk/` — Google ADK, SKILL.md, VA patterns, voice, orchestration
   - `data/wiki/infra/` — Deployment, observability, caching, security, production hardening
-  - `data/wiki/patterns/` — Framework-agnostic agentic patterns (ReAct, CoT, ACI, workflow)
+  - `data/wiki/patterns/` — **Experiential knowledge: findings from your own build sessions.** Named, non-obvious mechanisms discovered while working (`silent-fallthrough-string-discovery`, `copier-re-entry-capability-path`), alongside the framework-agnostic classics (ReAct, CoT, ACI). This is the wiki's highest-value bucket and the core of the Karpathy use case — do not dilute it with textbook material. Externally-sourced concept knowledge belongs in a subject directory below.
   - `data/wiki/eval/` — Evaluation harnesses, LLM judges, annotation pipelines, preference alignment
   - `data/wiki/deep-agents/` — Deep Agents harness, middleware, state/store backends
   - `data/wiki/memory/` — Agent memory patterns (in-context, episodic, semantic, procedural)
   - `data/wiki/mcp/` — Model Context Protocol, tool schemas, A2A
+  - `data/wiki/prompting/` — Prompt engineering as a discipline: prompt construction, injection defence, structured output, few-shot design
+  - `data/wiki/context/` — Context engineering: assembly, compaction, window budgeting, retrieval-into-context (distinct from `context-management` runtime tactics in `infra/`)
   - `data/wiki/foundations/` — ML/DS/data-engineering fundamentals: classical ML, deep learning, NLP, data systems, MLOps
   - `data/wiki/interview/` — Coding-interview patterns (arrays/hashing, two pointers, sliding window, …), system design, prep references
   - `data/wiki/meta/` — Wiki-about-wiki: Karpathy pattern, Claude workflow system, session knowledge
@@ -126,6 +128,11 @@ published: YYYY-MM-DD
   - `data/wiki/private/` — Company/project-specific pages; **gitignored, never committed**. Move pages here when they contain proprietary context, client names, or internal project details. Use the same page format — they are still compiled and queryable locally.
   - `data/wiki/_index.md` — Auto-generated TOC, updated after every ingest. Do not list `data/wiki/private/` entries here.
   - `data/wiki/_conflicts.md` — Flagged contradictions between sources
+- **Source character decides the top-level split, then subject decides the directory.**
+  Ask first: is this something *you* discovered while building (→ `patterns/`), textbook
+  knowledge synthesized from an external source (→ a subject dir), or exam-performance
+  technique that is only true while interviewing (→ `interview/`)? These three decay at
+  different rates and serve different queries. Within the second bucket, route by subject.
 - **ADRs live in their domain directory** — not a flat `decisions/` dir. Use `type: decision` tag.
 - **Projects stay flat** in `data/wiki/projects/` until a project exceeds ~5 pages.
 
@@ -140,7 +147,7 @@ tags: [tag1, tag2]
 summary: One sentence — what this page is about and why it matters
 updated: YYYY-MM-DD
 sources:
-  - raw/path/to/source.md
+  - data/raw/path/to/source.md
 ---
 
 # Title
@@ -233,7 +240,7 @@ Run this checklist for **every** new raw source, without exception.
 7. **Add cross-references (bidirectional):** after updating pages, scan for opportunities to add `[[wikilinks]]` to related pages. Prefer linking atomic concept pages from within broader topic pages — this is how graph edges form. Every atomic concept page should appear as an inline `[[wikilink]]` inside at least one coarser page. **Additionally:** for each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships where the type is clear.
 8. **Update `data/wiki/_index.md`:** add any new pages to the appropriate section.
 9. **Check for orphans (blocking):** any new page MUST have at least one incoming backlink from another wiki page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
-10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run python etl/relinker.py` to discover additional semantic links. Review `data/wiki/_relink_suggestions.md` if generated.
+10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run python core/relinker.py` to discover additional semantic links. Review `data/wiki/_relink_suggestions.md` if generated.
 11. **Accumulator ceiling:** pages that receive per-session appended rows (e.g.
     `meta/session-log.md`) keep the last ~30 entries in full; when an append pushes
     past that, roll older entries into month-range summary rows at ingest time —
@@ -263,7 +270,7 @@ Run lint to find health issues. Check each of the following:
 - **Unresolved conflicts** — pages tagged `conflict` that haven't been resolved
 - **Dead wikilinks** — `[[Page]]` references that don't correspond to an existing file
 - **Missing summaries** — `summary:` field is empty or generic
-- **Orphan raw files** — files in `raw/` with no corresponding wiki coverage
+- **Orphan raw files** — files in `data/raw/` with no corresponding wiki coverage
 - **Untyped links** — `## See Also` entries without a `— type` annotation (>50% untyped = WARN)
 - **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain links (NOTE)
 - **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
@@ -280,7 +287,7 @@ telemetry (`logs/retrieval.jsonl`, written by the MCP server) — with three mov
 **merge** (union sources, successor absorbs all true content, merged page becomes a
 tombstone), **retire** (tombstone + `[[Successor]] — supersedes`), **compress**
 (accumulator ceiling). Always a dry-run report first; only Ramsey-approved moves are
-applied; raw/ is never touched. See `.claude/skills/compact-wiki/SKILL.md` and
+applied; data/raw/ is never touched. See `.claude/skills/compact-wiki/SKILL.md` and
 `.claude/docs/plans/2026-07-17-knowledge-compaction.md`.
 
 ## Wikilinks
@@ -327,10 +334,10 @@ When a new source contradicts an existing wiki claim:
 ```markdown
 ## Conflict: [Topic] — [YYYY-MM-DD]
 
-**Claim A** (from `[[Existing Page]]`, sourced from `raw/...`):
+**Claim A** (from `[[Existing Page]]`, sourced from `data/raw/...`):
 > Exact quote or paraphrase of claim A
 
-**Claim B** (from new source `raw/...`):
+**Claim B** (from new source `data/raw/...`):
 > Exact quote or paraphrase of claim B
 
 **Status:** Unresolved — needs human review
@@ -381,7 +388,7 @@ When searching for a page, check:
 
 ## What NOT to Do
 
-- **Do not** edit files in `raw/` — they are immutable inputs
+- **Do not** edit files in `data/raw/` — they are immutable inputs
 - **Do not** create summary files outside the `data/wiki/` structure — all knowledge belongs in wiki pages
 - **Do not** silently resolve conflicts — always flag them in `_conflicts.md`
 - **Do not** leave new pages without at least one backlink

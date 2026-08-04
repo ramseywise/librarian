@@ -1,12 +1,14 @@
 ---
 title: Agentic RAG — Advanced Patterns
-tags: [rag, pattern, concept]
-summary: Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, and A2A protocol mapping to LangGraph.
-updated: 2026-07-14
+tags: [rag, pattern]
+summary: Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
+updated: 2026-08-04
 sources:
   - raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
   - raw/agent-skills/advanced-rag-patterns/SKILL.md
   - raw/agent-skills/langchain-rag/references/advanced-patterns.md
+  - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
+  - data/raw/repos/learn-ai-engineering/generative-ai--02-rag-retrieval--rag.md
 ---
 
 # Agentic RAG — Advanced Patterns
@@ -137,6 +139,60 @@ Test these explicitly — they don't appear in standard QA evals:
 | Sensitive data exfiltration | Agent leaking retrieved PII in its response |
 | Scope violation | Retrieved context from wrong domain used to answer off-domain question |
 
+## Production-Readiness Gate
+
+Agentic RAG is the highest-cost architecture in the [[RAG Architecture Selection]] space —
+it inherits every failure mode of the underlying pipeline and adds the agent loop's own. The
+seven items below are stated as a gate rather than a wishlist: **skip even one and the
+system should not be considered production-ready.**
+
+| # | Requirement |
+|---|---|
+| 1 | Every retrieval and tool call is **logged with full provenance** |
+| 2 | The agent can **explain its reasoning path** on demand |
+| 3 | **Fallback behaviour** is defined for every failure mode |
+| 4 | **Cost per query** is measured and bounded |
+| 5 | **Latency** is within the product's SLA |
+| 6 | Adversarial and edge-case tests **pass** — see the table above |
+| 7 | Humans can **inspect and correct** the agent's decisions |
+
+Items 1, 2, and 7 form a single chain, and it is the one most often broken. Provenance
+logging is what makes the reasoning path reconstructable, and the reconstructable path is
+what a human needs in order to correct a decision. Without item 1, item 7 degrades into
+approving or rejecting an opaque answer — which is not correction, only a veto. See
+[[Experiment Tracking Schemas]] for the trace contract that satisfies items 1 and 2, and
+[[Agent Management Layer]] for item 7.
+
+Items 4 and 5 are why the gate is stricter here than for standard RAG: an agent's cost and
+latency are **unbounded by construction** unless something bounds them. A loop that decides
+its own next step has no natural stopping point, which is the argument for the latency
+budgets above and for explicit step caps.
+
+## Reliability Metrics
+
+Standard RAG metrics (recall@k, faithfulness) measure the pipeline. These five measure the
+**agent's judgement** — they have no meaning for a non-agentic pipeline because a linear
+pipeline makes no decisions to evaluate:
+
+| Metric | Question it answers |
+|---|---|
+| **Retrieval precision** | Are the retrieved passages actually relevant? |
+| **Evidence coverage per answer** | Is every claim in the answer backed by retrieved evidence? |
+| **Self-correction rate** | How often does the agent detect and fix its own error? |
+| **Human override frequency** | How often do humans have to intervene? |
+| **Time-to-trust** | How long until users stop double-checking the output? |
+
+Self-correction rate and human override frequency are the pair to watch, and they must be
+read **together**: a system with a high self-correction rate and a high override rate is
+correcting the wrong things — it is busy without being reliable. Falling override frequency
+alongside a stable self-correction rate is the actual signal of maturity.
+
+Time-to-trust is the only metric here that cannot be computed from traces. It is a
+human-adoption measure, and including it in an engineering scorecard is a deliberate claim:
+a system users do not trust has not shipped, regardless of its offline scores. It is also
+the metric that degrades first when an agent's failures are *unpredictable* rather than
+merely frequent — users can route around a known weakness, but not around an unreliable one.
+
 ## See Also
 - [[LangGraph BaseStore]] <!-- auto-linked -->
 - [[Librarian RAG Architecture]] <!-- auto-linked -->
@@ -147,3 +203,5 @@ Test these explicitly — they don't appear in standard QA evals:
 - [[A2A Agent Protocol]]
 - [[VA vs HCA Retrieval Evaluation]]
 - [[RAG Interview Study Guide]] — prerequisite-for
+- [[RL for Retrieval Policies]] — extends (Self-RAG as a learned retrieval policy, alongside online RL and per-subtask modules)
+- [[RAG Architecture Selection]] — part-of (the nine-architecture selection space these patterns sit inside, plus Fusion RAG)

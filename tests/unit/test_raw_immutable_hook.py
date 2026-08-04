@@ -1,9 +1,9 @@
-"""Evidence for Buyi "raw/ is immutable once written".
+"""Evidence for Buyi "data/raw/ is immutable once written".
 
 Cures the BY-4 debt record: immutability had docs-only enforcement (CLAUDE.md)
-with no deterministic guard. The guard must block mutation of EXISTING raw/
+with no deterministic guard. The guard must block mutation of EXISTING data/raw/
 files while permitting creation — the nine etl/ ingest scripts create new files
-under raw/ as intended behaviour, and a blanket write-block breaks all of them.
+under data/raw/ as intended behaviour, and a blanket write-block breaks all of them.
 """
 
 from __future__ import annotations
@@ -33,8 +33,8 @@ def run_hook(file_path: str) -> tuple[int, str]:
 
 @pytest.fixture()
 def existing_raw_file() -> Path:
-    """A real file under raw/, cleaned up afterwards."""
-    target = REPO / "raw" / "web" / "_immutability-fixture.md"
+    """A real file under data/raw/, cleaned up afterwards."""
+    target = REPO / "data" / "raw" / "web" / "_immutability-fixture.md"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("original content\n")
     yield target
@@ -54,20 +54,20 @@ def test_blocks_via_absolute_path(existing_raw_file: Path) -> None:
 
 
 def test_blocks_via_traversal_path(existing_raw_file: Path) -> None:
-    """A ../ path landing back inside raw/ is still a raw/ mutation."""
-    code, _ = run_hook(f"data/wiki/../../raw/web/{existing_raw_file.name}")
+    """A ../ path landing back inside data/raw/ is still a data/raw/ mutation."""
+    code, _ = run_hook(f"data/wiki/../../data/raw/web/{existing_raw_file.name}")
     assert code == BLOCK
 
 
 def test_permits_creating_new_raw_file() -> None:
-    """The ingest path — etl/ scripts create new files under raw/."""
-    code, err = run_hook("raw/web/_does-not-exist-a91f.md")
+    """The ingest path — core/ scripts create new files under data/raw/."""
+    code, err = run_hook("data/raw/web/_does-not-exist-a91f.md")
     assert code == ALLOW, f"creation must be permitted or ingest breaks: {err}"
 
 
 def test_permits_creating_raw_file_in_new_subdir() -> None:
     """ingest_pdf.py and friends may create a source dir that doesn't exist yet."""
-    code, err = run_hook("raw/brand-new-source-dir/first-file.md")
+    code, err = run_hook("data/raw/brand-new-source-dir/first-file.md")
     assert code == ALLOW, err
 
 
@@ -83,7 +83,7 @@ def test_ignores_empty_path() -> None:
 
 
 def test_every_etl_ingest_script_target_dir_stays_writable() -> None:
-    """The nine etl/ writers all create into raw/ subdirs — none may be blocked."""
+    """The nine core/ writers all create into data/raw/ subdirs — none may be blocked."""
     for subdir in (
         "notion",
         "linear",
@@ -95,5 +95,5 @@ def test_every_etl_ingest_script_target_dir_stays_writable() -> None:
         "books",
         "articles",
     ):
-        code, err = run_hook(f"raw/{subdir}/2026-07-20-new-ingest.md")
-        assert code == ALLOW, f"ingest into raw/{subdir}/ must be permitted: {err}"
+        code, err = run_hook(f"data/raw/{subdir}/2026-07-20-new-ingest.md")
+        assert code == ALLOW, f"ingest into data/raw/{subdir}/ must be permitted: {err}"

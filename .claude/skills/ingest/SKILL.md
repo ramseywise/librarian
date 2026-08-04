@@ -1,6 +1,6 @@
 ---
 name: ingest
-description: "Unified wiki pipeline. No args = full sync (pull Notion + GDrive via MCP + scrape local sources + compile all changed files into wiki). With a path = compile just that raw/ dir. With a URL = fetch → save → compile. With 'figma:<url>' = pull a specific Figma/FigJam file → save → compile."
+description: "Unified wiki pipeline. No args = full sync (pull Notion + GDrive via MCP + scrape local sources + compile all changed files into wiki). With a path = compile just that data/raw/ dir. With a URL = fetch → save → compile. With 'figma:<url>' = pull a specific Figma/FigJam file → save → compile."
 ---
 
 You are a disciplined wiki maintainer following the Karpathy LLM Wiki pattern. Your job is to compile raw sources into structured, interlinked knowledge pages.
@@ -34,7 +34,7 @@ Use the `mcp__claude_ai_Notion__notion-search`, `mcp__claude_ai_Notion__notion-f
 - Call `notion-fetch(id=<page-id>)` for each unique result
 - Deduplicate by page ID across all search results before fetching
 
-**Step 4 — Save to raw/notion/**:
+**Step 4 — Save to data/raw/notion/**:
 - Derive filename from page title: `raw/notion/YYYY-MM-DD-<title-slugified>.md` using the page's `last_edited_time` date
 - If a file with that name already exists and content is identical → skip
 - Otherwise write the fetched markdown content to the file
@@ -63,20 +63,20 @@ Run both scrapers from the librarian directory:
 cd /path/to/librarian && make scrape
 
 # Scrape CLAUDE.md, README, skill files, and docs from configured repos
-uv run python etl/scrape_repos.py
+uv run python core/scrape_repos.py
 ```
 
 `make scrape` pulls:
 - Claude Code docs from all workspace projects (`.claude/docs/`, `.claude/skills/`, `docs/`, `.agents/`)
 - Claude Code + Codex session notes → `raw/sessions/`
 
-`etl/scrape_repos.py` pulls:
+`core/scrape_repos.py` pulls:
 - CLAUDE.md, README.md, SANYI.md, `.claude/skills/**/*.md`, `docs/**/*.md` from repos listed in `raw/repos/repos.txt`
 - Saves to `raw/repos/<repo-name>/`
 
 ---
 
-### Phase 3 — Compile all changed raw/ into wiki
+### Phase 3 — Compile all changed data/raw/ into wiki
 
 Process every `raw/` subdirectory below, in priority order. For each, run the **Manifest Check** then **Ingest Protocol**.
 
@@ -97,7 +97,7 @@ Skip any subdirectory where all files match the manifest (nothing changed).
 
 #### Session resume pointer
 
-The manifest IS the resume pointer: `raw/manifest.jsonl` records every ingested file by hash. Already-ingested sessions are skipped automatically on every run. If the context window fills before all sessions are processed, stop and report how many remain — the next `/ingest raw/sessions/` picks up from the unprocessed remainder.
+The manifest IS the resume pointer: `raw/manifest.jsonl` records every ingested file by hash. Already-ingested sessions are skipped automatically on every run. If the context window fills before all sessions are processed, stop and report how many remain — the next `/ingest data/raw/sessions/` picks up from the unprocessed remainder.
 
 ---
 
@@ -138,7 +138,7 @@ When invoked as `/ingest resolve`:
 Before touching the manifest, run:
 
 ```bash
-cd /Users/ramsey.wise/Workspace/librarian && uv run python etl/lint_raw.py
+cd /Users/wiseer/workspace/librarian && uv run python core/lint_raw.py
 ```
 
 If any **ERRORS** are reported → stop and tell the user which files need renaming before ingesting. WARNINGs are advisory only; do not block on them.
@@ -178,7 +178,7 @@ Follow `CLAUDE.md` exactly for each file that passed the manifest check.
 9. **Update manifest** (see Step 9 below).
 10. **Relink pass:** after all files in this cycle are ingested, run the relinker to discover additional semantic links:
     ```bash
-    uv run --extra api python etl/relinker.py
+    uv run --extra api python core/relinker.py
     ```
     Review the output. If `data/wiki/_relink_suggestions.md` is generated, scan it for high-value links worth adding manually with typed relationships. Use `--dry-run` first if you want to preview changes without writing.
 
@@ -196,8 +196,8 @@ For `raw/books/` and `raw/articles/` sources, apply the same ingest protocol wit
 After ingesting each file:
 
 ```bash
-sha256sum raw/path/to/file.md
-echo '{"path": "raw/path/to/file.md", "hash": "sha256:<first16chars>", "ingested_at": "YYYY-MM-DD", "wiki_pages": ["data/wiki/...", "data/wiki/..."]}' >> raw/manifest.jsonl
+sha256sum data/raw/path/to/file.md
+echo '{"path": "data/raw/path/to/file.md", "hash": "sha256:<first16chars>", "ingested_at": "YYYY-MM-DD", "wiki_pages": ["data/wiki/...", "data/wiki/..."]}' >> data/raw/manifest.jsonl
 ```
 
 If updating an existing entry, replace the line (sed or temp file pattern).
@@ -209,13 +209,13 @@ If updating an existing entry, replace the line (sed or temp file pattern).
 ```
 Phase 1a (Notion):    N pages pulled, N skipped (identical)
 Phase 1b (GDrive):    N files pulled, N skipped
-Phase 2  (scrape):    N files written to raw/ (sessions + repos)
+Phase 2  (scrape):    N files written to data/raw/ (sessions + repos)
 Manifest check:       N unchanged (skipped), N new/changed
 Ingested:             N files
 Wiki pages created:   [list]
 Wiki pages updated:   [list]
 Conflicts flagged:    [list or none]
-Sessions remaining:   N files not yet ingested (run /ingest raw/sessions/ to continue)
+Sessions remaining:   N files not yet ingested (run /ingest data/raw/sessions/ to continue)
 Repos remaining:      N repos with no changes scraped since last run
 Manifest updated:     ✓
 ```

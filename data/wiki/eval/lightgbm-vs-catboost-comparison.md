@@ -2,7 +2,7 @@
 title: LightGBM vs CatBoost Comparison
 tags: [eval, comparison]
 summary: Methodology for comparing calibrated GBM rerankers head-to-head — fixing train/inference feature-distribution mismatch before comparing, native categorical handling, and Brier score/log-loss as the metrics that matter for calibrated probability scores.
-updated: 2026-07-14
+updated: 2026-08-04
 sources:
   - raw/claude-docs/listen-wiseer/docs/plans/phase3c_add_catboost.md
 ---
@@ -62,3 +62,4 @@ consumes the same per-playlist metrics JSONL files the CLI produces.
 - [[Listen-Wiseer Project]]
 - [[Track2Vec Playlist Co-Occurrence Embeddings]]
 - [[Anthropic Three-Tier Eval Taxonomy]]
+- [[Data Science Curriculum Layers]] — part-of (the Layer 5 ensemble-methods gap this fills)

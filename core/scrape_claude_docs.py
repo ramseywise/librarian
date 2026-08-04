@@ -30,7 +30,7 @@ from core.base import REPO_ROOT, ScraperBase
 load_dotenv()
 log = structlog.get_logger()
 
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "raw" / "claude-docs"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "data" / "raw" / "claude-docs"
 WORKSPACE_DIR = Path.home() / "workspace"
 USER_CLAUDE_DIR = Path.home() / ".claude"
 

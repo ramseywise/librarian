@@ -24,7 +24,7 @@ from core.base import REPO_ROOT, ScraperBase
 load_dotenv()
 log = structlog.get_logger()
 
-RAW_PLAYGROUND = REPO_ROOT / "raw" / "playground-docs"
+RAW_PLAYGROUND = REPO_ROOT / "data" / "raw" / "playground-docs"
 
 
 class Settings(BaseSettings):

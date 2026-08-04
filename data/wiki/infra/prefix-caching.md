@@ -57,3 +57,5 @@ The [client] ADK POC (April 2026) explicitly set "minimize LLM calls + optimize 
 - [[LangGraph CRAG Pipeline]]
 - [[LLM Fundamentals Interview Study Guide]] — prerequisite-for
 - [[Self-Attention Mechanism]] — prerequisite-for
+- [[Context Compaction]] — extends (compaction invalidates the cached prefix from the compaction point forward)
+- [[Context Anatomy]] — extends (stable-before-dynamic ordering as the prefix-match precondition)

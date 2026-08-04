@@ -93,6 +93,8 @@ async def query(request: QueryRequest) -> QueryResponse:
 ```
 
 ## See Also
+- [[Text-to-SQL as a Retrieval Strategy]] <!-- auto-linked -->
+- [[RL for Retrieval Policies]] <!-- auto-linked -->
 - [[RAG Retrieval Strategies]]
 - [[LangGraph CRAG Pipeline]]
 - [[Librarian RAG Architecture]]

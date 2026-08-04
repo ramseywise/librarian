@@ -29,7 +29,7 @@ for field in "title:" "tags:" "summary:" "updated:" "sources:"; do
   fi
 done
 
-# Provenance: every sources: entry must resolve to a real raw/ file or a URL.
+# Provenance: every sources: entry must resolve to a real data/raw/ file or a URL.
 # Buyi "Wiki provenance is traceable" — a page citing an unresolvable source is
 # a trust failure of the KB. Entries are the "  - <path-or-url>" lines that
 # follow sources: up to the next top-level frontmatter key.

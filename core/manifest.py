@@ -23,7 +23,7 @@ from datetime import date
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
-MANIFEST_PATH = REPO_ROOT / "raw" / "manifest.jsonl"
+MANIFEST_PATH = REPO_ROOT / "data" / "raw" / "manifest.jsonl"
 
 
 def _load() -> dict[str, dict]:
@@ -135,7 +135,7 @@ class ManifestSession:
         self._dirty = True
 
 
-def coverage_gaps(raw_dir: str | Path = "raw") -> list[dict]:
+def coverage_gaps(raw_dir: str | Path = "data/raw") -> list[dict]:
     """Return raw .md files with no manifest entry, grouped by directory."""
     root = REPO_ROOT / raw_dir
     entries = _load()

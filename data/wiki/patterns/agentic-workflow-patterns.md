@@ -89,6 +89,7 @@ Frameworks (Claude Agent SDK, Strands, Rivet, Vellum) help get started but add a
 **Recommendation:** start with LLM APIs directly. Most patterns can be implemented in a few lines. Use frameworks if needed, but understand what's underneath — incorrect assumptions about framework internals are a common error source. Reduce abstraction layers as you move to production.
 
 ## See Also
+- [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
 - [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Plan and Execute Pattern]]
 - [[LangGraph Advanced Patterns]]
@@ -98,3 +99,7 @@ Frameworks (Claude Agent SDK, Strands, Rivet, Vellum) help get started but add a
 - [[ACI (Agent-Computer Interface)]]
 - [[Send API Fan-out]]
 - [[Agents Interview Study Guide]] — prerequisite-for
+- [[Parallel Dimension Scanner Architecture]] — instance-of (parallelization/sectioning applied to review)
+- [[Agent Orchestration Patterns]] — related (project-scoping view of the same escalation ladder)
+- [[Single Prompt Baseline]] — instance-of (the "simplest solution" this page recommends starting from)
+- [[Multi-Agent Role Specialization]] — related (orchestrator-workers, with role-test caveats)

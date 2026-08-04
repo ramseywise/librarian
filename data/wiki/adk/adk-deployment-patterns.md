@@ -325,3 +325,5 @@ gcloud run services update-traffic SERVICE_NAME \
 - [[ADK Python API Reference]]
 - [[Production Hardening Patterns]]
 - [[Observability and Runtime Patterns]]
+- [[Deployment Topology Ladder]] — prerequisite-for (audience-first topology selection precedes GCP target choice)
+- [[Cloud Service Deployment]] — related (Cloud Run as the long-running realization)

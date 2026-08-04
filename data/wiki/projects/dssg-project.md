@@ -63,7 +63,8 @@ Both DSSG agent projects are platform-level. The key gate question for nonprofit
 
 ## System Design Framework (2026-07-15)
 
-A five-tier interview framework was synthesized for `/scope-poc`:
+A five-tier interview framework was synthesized for `/scope-poc` (see
+[[Scope-POC Design Interview]]):
 1. Problem / actors
 2. System boundaries
 3. AI design decisions
@@ -71,6 +72,47 @@ A five-tier interview framework was synthesized for `/scope-poc`:
 5. MVP scope
 
 Each tier maps to copier variables in the [[AI Project Template Scaffold]].
+
+## Platform Shape — The Shared Engagement Lifecycle (2026-07-15)
+
+Both platform projects are built around **one** lifecycle object, not two:
+
+`initial_meeting → budgeting → engagement_tracking → hackathon → membership_close`
+
+Stage ownership is split rather than duplicated:
+
+| Project | Actor | Stages owned |
+|---|---|---|
+| **nonprofit-success-ai** (customer portal) | NPO Client (external) | `initial_meeting → budgeting → engagement_tracking → membership_close` |
+| **project-mgmt-ai** (lifecycle backend) | DSSG core volunteers, Data Diplomats (internal) | `hackathon` |
+
+The handoff is a single field: project-mgmt-ai *"receives `Engagement.hackathon_project`
+from nonprofit-success-ai's stage transition"* when `Engagement.stage === 'hackathon'`.
+
+Three actor roles span the platform: **NPO Client** (external), **Data Diplomat** (cohort
+volunteer), **DSSG core volunteer** (staff/leads). The external/internal split is what
+forces a [[Split Service Deployment]] for the portal while the backend can stay internal.
+
+### Shared infrastructure — owned by neither project alone
+
+- Shared Supabase DB with `Business` / `Engagement` / `User` tables + RLS
+- Platform API (auth check + engagement read/write + KB query stub)
+- Comms sender triggered by `Engagement.stage` writes — *"plain transactional email — not n8n"*
+
+The comms note is a deliberate scope decision: the trigger is simple enough that workflow
+glue would be added complexity, not saved effort.
+
+### Per-project constraints
+
+- **nonprofit-success-ai** — stack is React 19 + Firebase Auth + Firestore with no backend
+  server; the Firebase-vs-Supabase migration is the *"highest-leverage decision per
+  roadmap §1."* AI scope is *"not yet defined"* (candidate: engagement summaries,
+  stage-transition suggestions, client chat). **Multi-tenancy is non-negotiable** — one
+  nonprofit must never see another's data.
+- **project-mgmt-ai** — README only, nothing built. Named scope risk: *"8-sprint proposal
+  covers too much; needs explicit MVP narrowing before sprint 1."* Auth *"must reuse
+  whatever nonprofit-success-ai lands on (single identity system)"* — the identity decision
+  is upstream of both projects.
 
 ## Production Repos (2026-07-19)
 
@@ -80,3 +122,10 @@ Repos warranting full CI/CD and standardized templates: **librarian, guacamayo, 
 - [[AI Project Template Scaffold]] — extends
 - [[Librarian Project]] — instance-of (KB for DSSG)
 - [[SANYI Change-Contract System]] — prerequisite-for
+- [[AI Project Archetypes]] — extends (archetype selection for volunteer projects)
+- [[Project Discovery Conversation]] — prerequisite-for (entry point for new project ideas)
+- [[Scope-POC Design Interview]] — extends (DSSG platform context block; the five-tier framework)
+- [[Integration Pattern Selection]] — extends (n8n glue as insurance against volunteer turnover)
+- [[DESIGN.md Artifact]] — extends (the design record both platform projects produce)
+- [[Design-Before-Infrastructure Sequencing]] — extends (DSSG platform work was the specific driver)
+- [[Split Service Deployment]] — instance-of (external NPO clients force the split topology)
