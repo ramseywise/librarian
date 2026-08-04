@@ -107,3 +107,5 @@ let a vendor tool own the specification.
 - [[Manual Review as Eval Bootstrap]] — prerequisite-for (failure patterns become the first golden cases)
 - [[User Feedback Loops]] — feeds (thumbs-down cases expand the set post-deploy)
 - [[Conversational Test Fixture Design]] — alternative-to (fixture authoring when the input is dialogue)
+- [[Eval Suite Maintenance]] — extends (the eight authoring rules, incl. negative cases and the two-expert test)
+- [[Eval Non-Determinism]] — complements (a golden row is scored over k trials, not one)

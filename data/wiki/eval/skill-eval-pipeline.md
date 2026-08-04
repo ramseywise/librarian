@@ -38,6 +38,7 @@ Runs only after the Blind Comparator has already declared a winner — its job i
 **Second mode — benchmark analysis:** the same analyzer agent also has a distinct job when reviewing multi-run benchmark data (not a head-to-head comparison): surface per-assertion patterns (does an expectation always pass/fail regardless of skill? pass with-skill only?) and cross-eval patterns (which eval types are consistently harder or more variable) as freeform, data-grounded observations — explicitly not skill-improvement suggestions and not a repeat of the run's own aggregate summary.
 
 ## See Also
+- [[Eval Harness Anatomy]] <!-- auto-linked -->
 - [[System Design — Unified Eval Harness]] <!-- auto-linked -->
 - [[project-g Eval Architecture]] <!-- auto-linked -->
 - [[Claude Workflow System]]

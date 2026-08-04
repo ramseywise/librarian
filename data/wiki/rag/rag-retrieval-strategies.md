@@ -307,3 +307,5 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[RAG API Design Patterns]]
 - [[Listen-Wiseer Project]]
 - [[Context Retrieval Strategies]] — extends (pre-computed retrieval against just-in-time context)
+- [[Knowledge Graph Retrieval]] — alternative-to (connection retrieval against similarity retrieval)
+- [[Memory-Augmented Conversational RAG]] — extends (the multi-turn case, where the query is not self-contained)

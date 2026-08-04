@@ -164,3 +164,4 @@ Practical consequence: **a harness needs periodic subtraction, not just addition
 - [[Context Engineering]] — depends-on
 - [[Harness Anatomy]] — part-of
 - [[ACI (Agent-Computer Interface)]] — instance-of
+- [[Loop Engineering]] — extends (the layer above: the harness supplies tools, the loop decides when to stop using them)

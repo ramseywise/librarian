@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**230 pages** across 15 domains.
+**251 pages** across 17 domains.
 
 ## Foundations
 
@@ -122,6 +122,24 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Production Reliability Primitives]] — Per-step checkpointing, cross-provider model fallback, fail-fast on ambiguity, and confidence-routed quarantine as the shape of HITL at volume.
 - [[Iterative Harness Simplification]] — Components encode assumptions about what the model can't do; when models improve those assumptions expire — strip one at a time and re-run the eval.
 
+## Loop
+
+- [[Loop Engineering]] — The fourth layer of the stack — designing the cycle that re-prompts, checks, and stops an agent when nobody is watching, replacing yourself as the person who prompts it.
+- [[Loop Termination Design]] — Stop rules are layered and independent — success verifier, iteration cap, budget cap, stall detector, escalation path — and the cap is the backstop, never the primary exit.
+- [[Loop Autonomy Ladder]] — Four rungs of handoff — tool approval, stop condition, trigger, session — climbed one at a time, each earned with a verifier that has been observed catching a real failure.
+- [[Evolve Loop]] — A slow loop pointed at a fast one that rewrites files rather than weights — four edit targets, a 5–10 run cadence, and the anti-busywork rule that makes "no change needed" a first-class success.
+- [[Recursive Self-Improvement]] — Level 4 at the frontier — the write boundary is the load-bearing design decision, a 3% hit rate is fine when attempts are cheap, and automating generation shifts the bottleneck onto verification.
+
+## Graph
+
+- [[Graph Engineering]] — The fifth layer of the stack — designing which nodes exist, which transitions are permitted, and how the runtime work graph mutates, so multi-agent work has an organizational structure rather than just more agents.
+- [[Graph Topology Primitives]] — Nodes, edges, state, durable execution, and typed edges — the agency budget per node, conditional edges as where control lives, and reducers as the concurrency primitive.
+- [[Loop-to-Graph Escalation]] — A loop is a graph with one node and an edge back to itself; escalation is a cost you justify with five specific signals, not a maturity level you graduate to.
+- [[Graph Governance and Attribution]] — Once work fans out across nodes, "the graph did it" is not an acceptable audit answer — identity propagation, per-node cost attribution, and approval gates placed where consequence concentrates.
+- [[Knowledge Graph Retrieval]] — Vector search finds things that sound like your question; graphs find things that are connected to your answer — but traversal depth compounds error, which makes entity resolution the load-bearing sub-problem.
+- [[Knowledge Graph as Shared Agent Memory]] — Loop → swarm → graph as three capacity unlocks: parallel workers rediscover the same findings because nothing connects them, and a typed KG turns fan-out from re-derivation into accumulation.
+- [[n8n AI Workflow Builder]] — A shipped supervisor-pattern LangGraph with published operational constants — five specialist subgraphs, prompt-only specialization, per-node iteration bounds, and an agent never allowed to fill its own context with the artifact it is editing.
+
 ## RAG
 
 - [[Bedrock KB vs LangGraph Decision]] — Decision framework for Bedrock Knowledge Bases vs. LangGraph CRAG pipeline — quality, observability, cost, and migration path analysis.
@@ -187,6 +205,9 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Agent Memory Types]] — Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for VA agents — backed by LangGraph BaseStore.
 - [[Memory Architecture for VA Agents]] — Three-tier cognitive memory model (semantic/episodic/procedural), SQLite implementation pattern, context window management strategies, and self-improving reflection pattern for VA agents.
 - [[Self-Learning Agents]] — Four-level improvement stack for production agents — inference-time (ReAct, CoT, self-critique), session-time (reflection, procedural memory), operational (learning loop, HITL), and training-time (DPO). Most agents need the first three; DPO is a late-stage investment.
+- [[Memory Lifecycle]] — Five stages — represent, store, retrieve, use, update/forget — with the fifth being the one production systems skip, and consolidation designed so a failed merge can roll back instead of losing history.
+- [[Memory Decay Weighting]] — Exponential recency decay as a retrieval scorer — Memoria weights memories by e^(-alpha*age), which resolves stale-vs-current facts by ranking rather than by an explicit conflict-resolution step.
+- [[Memory-Augmented Conversational RAG]] — Multi-turn retrieval breaks because the query is under-specified — the fixes are query rewriting against history, a when-to-retrieve policy, and asking a clarifying question instead of retrieving on an ambiguous turn.
 
 ## MCP
 
@@ -204,6 +225,10 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Direct Preference Optimization]] — Training-time technique that fine-tunes a model on human preference pairs (preferred vs rejected responses) without a reward model — replaces PPO/RLHF for preference alignment. Not applicable to API-only models.
 - [[Eval-Driven Development (EDD)]] — Writing the eval suite before the agent exists — ATDD reconstructed for non-deterministic systems, where first-ness buys honesty rather than design pressure.
 - [[RAG Eval Gate Contract]] — Eight-gate ownership contract for RAG evaluation pipelines — each gate answers a distinct question about corpus quality, retrieval, generation, and grader calibration, with strict handoff contracts between gates.
+- [[Eval Harness Anatomy]] — The vocabulary of agent evaluation — task, trial, grader, trajectory, outcome — plus the separation that makes it work: the evaluation harness treats the agent harness as the system under test, and capability evals want low pass rates while regression evals want ~100%.
+- [[Eval Maturity Ladder]] — Five levels of what eval infrastructure exists — vibes, deterministic gates, separated evaluator, eval sets plus tracing, continuous sampling with drift alerts — where most builders sit at 0 and production demands 3+, with trajectory-over-outcome and cost-per-success as the metrics that expose thrashing.
+- [[Eval Non-Determinism]] — Why one trial is an anecdote — pass@k when a single success suffices, pass^k when consistency is the product, and the arithmetic that makes a "75% reliable" agent pass three consecutive trials only 42% of the time.
+- [[Eval Suite Maintenance]] — Fix the evaluation system before changing the agent, read traces rather than scores, and treat a saturated suite as a stopped learning signal — paired regression and rolling-discovery sets keep the frontier moving.
 - [[Eval Ladder]] — A four-rung progression — manual review, golden-set grading, LLM-judge, user feedback — sequenced so each rung's failures supply the next rung's test cases, with an explicit "most POCs reach rung 2–3 and that's sufficient" stopping point.
 - [[Eval vs Test Distinction]] — A test tells you your code is broken; an eval tells you your product got worse — two different instruments with different targets, graders, cadences, and failure semantics.
 - [[Forecast Grader Thresholds]] — The pass/fail contract for time-series forecast evaluation — MASE against a naïve baseline, SMAPE, directional accuracy, and prediction-interval coverage — with the diagnostic each failure points to and the drift ratio that triggers retraining.
@@ -217,6 +242,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[LLM Grader Calibration Insights]] — Calibration evidence for LLM-as-judge graders in the project-g eval pipeline — custom v3 grader outperforms DeepEval defaults (+0.214 score delta vs +0.086), domain-shift is the main failure pattern, passage context is required for grounding accuracy. Grounding cross-check vs DeepEval shows near-zero agreement until article text is wired in.
 - [[Manual Review as Eval Bootstrap]] — Human eyeballs on 10–20 real queries as the deliberate first eval rung — zero setup, doesn't scale, and valuable precisely because its failure patterns become the criteria every automated approach above it needs.
 - [[Observability & Evaluation Glossary]] — Canonical vocabulary for agent observability and evaluation — the observability/tracking/tracing/monitoring/alerting hierarchy, offline vs online evaluation modes, heuristic vs LLM-judge metric types, dataset terminology, and rank-based retrieval metrics (MRR/precision@k/recall@k/ndcg@k/hit@k).
+- [[Online Eval Sampling]] — Score 10–20% of production traces by rule rather than at random — negative feedback, high-cost dialogues (cost as a thrashing proxy), fixed time windows as the control group, and a full 48-hour review after any model or prompt change — with human labels calibrating an LLM judge that would otherwise drift.
 - [[project-g Eval Architecture]] — Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the project-g HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
 - [[RAG Eval Metrics Suite]] — Eight-metric RAG evaluation framework covering stakeholder quality (faithfulness, naturalness, completeness, relevance), retrieval quality (contextual relevance, recall, document precision), and system calibration — split between runtime-compatible and offline-only metrics.
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]] — Three-agent pipeline for A/B testing Claude Code skills — a blind comparator scores two outputs on a rubric without knowing which skill produced them, a grader checks explicit expectations pass/fail with cited evidence, and a post-hoc analyzer unblinds the result to explain why the winner won and suggest concrete improvements to the loser.
@@ -228,6 +254,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 ## Infrastructure
 
+- [[Agent Management Layer]] — The six systems a production agent needs beyond the agent itself — evaluation frameworks, fallback/escalation, drift monitoring, HITL checkpoints, audit logging, and a defined handoff protocol — argued as 60% of the deployment, with HITL corrections doubling as the training-data pipeline only if they are logged.
 - [[Observability — LangFuse vs LangSmith Decision]] — Decision to use LangFuse first for RAG observability — native ragas/deepeval integrations, self-hostable, GDPR-friendly, and highest weighted score (8.58/10) for [client]'s AWS-hosted, high-compliance context.
 - [[Cloud Run + Cloud SQL Pattern]] — Single-container Cloud Run service (FastAPI + SPA) connected to Cloud SQL via the built-in Auth Proxy unix socket — no public IP, no SSL config, private GCP-internal networking by default.
 - [[Cloud Service Deployment]] — A long-running 24/7 hosted service — the same container as single-service plus monitoring, health checks, and env management, chosen when the system must be available without anyone starting it.

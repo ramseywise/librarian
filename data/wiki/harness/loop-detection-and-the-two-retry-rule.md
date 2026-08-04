@@ -58,7 +58,9 @@ The shape mirrors asymmetric QA in [[Verification Loops]] — **pay for judgment
 labor.**
 
 ## See Also
+- [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Agent Retry Taxonomy]] — extends
 - [[Verification Loops]] — complements
 - [[Execution Boundaries and Guardrails]] — complements
 - [[Harness Engineering]] — part-of
+- [[Loop Termination Design]] — complements (identical-action detection vs varied-but-stalled detection)

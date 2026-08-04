@@ -157,3 +157,6 @@ LANGFUSE_HOST=https://your-langfuse.internal
 - [[Cloud Service Deployment]] — related (the rung where monitoring becomes mandatory)
 - [[Verification Loops]] — extends (traces are the raw material for trace-driven harness improvement)
 - [[Harness Maturity and Failure Modes]] — complements (structured tracing is the Stage 2→3 gate)
+- [[Agent Management Layer]] — part-of (audit logging is one of six required production systems)
+- [[Evolve Loop]] — prerequisite-for (raw conversation history is the slow loop's richest input, and metrics don't carry it)
+- [[Graph Governance and Attribution]] — extends (adds graph/run/node identity as the attribution axis a flat trace lacks)

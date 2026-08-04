@@ -280,6 +280,7 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[PGVector Migration Pattern]]
 - [[Production Reliability Primitives]] — extends (per-step checkpointing, cross-provider fallback, confidence-routed quarantine)
 - [[Agent Retry Taxonomy]] — extends (which failures are retryable, and at which level)
+- [[Agent Management Layer]] — part-of (the generic six-system frame this checklist instantiates)
 - [[Execution Boundaries and Guardrails]] — complements (sandboxes, hooks, and cost ceilings)
 - [[Atlas Project]] — instance-of
 - [[Production Readiness Backlog]] — alternative-to

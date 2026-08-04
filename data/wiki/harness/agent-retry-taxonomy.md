@@ -69,3 +69,4 @@ rather than bad luck. See [[Loop Detection and the Two-Retry Rule]].
 - [[Loop Detection and the Two-Retry Rule]] — extends
 - [[Execution Boundaries and Guardrails]] — complements
 - [[Harness Engineering]] — part-of
+- [[Loop Termination Design]] — complements (error type decides strategy change; the cap decides the ceiling)

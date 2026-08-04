@@ -161,6 +161,7 @@ Cutting the inventory to what a first real harness needs:
 Six items. Everything else here is elaboration on those.
 
 ## See Also
+- [[Eval Harness Anatomy]] <!-- auto-linked -->
 - [[Harness Engineering]] — part-of
 - [[Tool Design as Harness Surface]] — extends
 - [[Execution Boundaries and Guardrails]] — extends

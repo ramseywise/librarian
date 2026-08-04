@@ -190,6 +190,8 @@ Low Document Precision + high Contextual Relevance → source-targeting or ranki
 ---
 
 ## See Also
+- [[Online Eval Sampling]] <!-- auto-linked -->
+- [[Eval Non-Determinism]] <!-- auto-linked -->
 - [[Manual Review as Eval Bootstrap]] <!-- auto-linked -->
 - [[Eval Ladder]] <!-- auto-linked -->
 - [[RAG Eval Gate Contract]] <!-- auto-linked -->

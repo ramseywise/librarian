@@ -243,9 +243,15 @@ retrieved**, which constrains hallucination at the point of writing rather than 
 afterward.
 
 ## See Also
+- [[Eval Suite Maintenance]] <!-- auto-linked -->
 - [[Harness Engineering]] — part-of
 - [[Agent Retry Taxonomy]] — complements
 - [[Loop Detection and the Two-Retry Rule]] — complements
 - [[Eval Ladder]] — depends-on
 - [[LLM-as-Judge Evaluation]] — implements
 - [[TDD as Coding-Agent Harness]] — instance-of
+- [[Loop Engineering]] — part-of (capability level 2 is this loop)
+- [[Loop Autonomy Ladder]] — prerequisite-for (rung 2 is where the verifier stops being optional)
+- [[Recursive Self-Improvement]] — extends (the write boundary enforces generator/evaluator separation structurally)
+- [[Knowledge Graph as Shared Agent Memory]] — extends (isolated verifier context as the structural fix for self-agreement bias)
+- [[Graph Engineering]] — complements (generate-then-verify is the highest-yield first graph)

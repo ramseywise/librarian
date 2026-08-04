@@ -66,6 +66,7 @@ This matches Anthropic's independent guidance in [[Agentic Workflow Patterns]] â
 agentic complexity only when it demonstrably improves outcomes.
 
 ## See Also
+- [[Graph Engineering]] <!-- auto-linked -->
 - [[ACI (Agent-Computer Interface)]] <!-- auto-linked -->
 - [[Multi-Agent Orchestration Patterns]] <!-- auto-linked -->
 - [[Agentic Workflow Patterns]] â€” related (composable workflow patterns from Anthropic)

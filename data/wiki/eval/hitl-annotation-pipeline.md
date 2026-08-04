@@ -82,6 +82,7 @@ This is critical for edge cases — judge prompts trained on average-case behavi
 See [[RAG Evaluation]] for the full judge suite architecture.
 
 ## See Also
+- [[Online Eval Sampling]] <!-- auto-linked -->
 - [[Conversational Test Fixture Design]] <!-- auto-linked -->
 - [[Skill Pipeline Dryrun Testing]] <!-- auto-linked -->
 - [[RAG Evaluation]]

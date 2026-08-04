@@ -73,3 +73,7 @@ replace any rung.
 - [[Verification Loops]] — complements (evals as the harness gate the agent cannot skip)
 - [[Harness Maturity and Failure Modes]] — depends-on (no binary eval is failure mode 5)
 - [[Iterative Harness Simplification]] — depends-on (subtraction is unmeasurable without a binary eval)
+- [[Recursive Self-Improvement]] — complements (an automatic gate that can fail the work is the prerequisite for a level-4 loop)
+- [[Eval Maturity Ladder]] — complements (the same staging read as infrastructure rather than grading approach)
+- [[Eval Harness Anatomy]] — depends-on (task/trial/grader vocabulary underneath every rung)
+- [[Online Eval Sampling]] — extends (rung 4 run continuously against production traffic)

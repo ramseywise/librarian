@@ -147,3 +147,6 @@ CONFIRM_EXPENSIVE_OPS=1 make eval-trajectory  # unlock gated runs
 - [[project-g Eval Architecture]]
 - [[HITL Annotation Pipeline]]
 - [[Observability — LangFuse vs LangSmith Decision]]
+- [[Eval Harness Anatomy]] — complements (the anatomy within a tier: task, trial, grader, trajectory, outcome)
+- [[Eval Non-Determinism]] — extends (why a tier-2 trajectory eval needs k trials, not one)
+- [[Eval Suite Maintenance]] — extends (capability→regression promotion and saturation)

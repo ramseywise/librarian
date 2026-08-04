@@ -69,8 +69,10 @@ unattended needs cost ceilings and rollback that a three-step agent never did.
 The harness doesn't get smaller. **It gets re-aimed.**
 
 ## See Also
+- [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Harness Maturity and Failure Modes]] — extends
 - [[Harness Engineering]] — part-of
 - [[Long-Horizon Execution]] — complements
 - [[Verification Loops]] — complements
 - [[Harness Anatomy]] — complements
+- [[Evolve Loop]] — complements (both optimize within a frame and neither can interrogate the frame)
