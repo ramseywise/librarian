@@ -198,13 +198,20 @@ uv run python app/mcp_server/server.py
 
 | Tool | Description |
 |---|---|
-| `search_wiki(query, domain, limit)` | Hybrid search: FTS + cosine similarity + backlink rank |
+| `search_wiki(query, domain, limit, expand)` | Hybrid search: FTS + cosine similarity + backlink rank. `domain` matches directory **or** domain tag. `expand=True` also returns pages one typed relationship hop away (spike) |
 | `read_page(path_or_title)` | Read a page by path or fuzzy title match |
 | `list_domain(domain)` | All pages in a domain, sorted by backlink count |
 | `list_pages(tag, directory)` | Filter pages by tag or directory |
 | `get_domain_briefing(domain)` | All pages in a domain concatenated — decisions first, then patterns, concepts |
 
 **Hybrid search** blends three signals: text match relevance (FTS), semantic similarity (sentence-transformers, if installed), and inbound backlink count. Falls back to FTS-only if sentence-transformers is absent.
+
+**Graph-aware retrieval** — `expand=True` walks the *typed* relationship subgraph
+(`prerequisite-for` / `extends`) one hop out from the results to answer "what else do I need
+to understand these hits?" It deliberately ignores untyped wikilinks: those run ~24 per page
+and would drown a context window, while typed edges are sparse and author-asserted. The
+rationale, measurements, and rejected alternatives are in
+[Wiki Graph Engineering](data/wiki/meta/wiki-graph-engineering.md).
 
 ---
 

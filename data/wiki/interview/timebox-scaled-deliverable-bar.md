@@ -1,8 +1,8 @@
 ---
 title: Timebox-Scaled Deliverable Bar
-tags: [interview, llm, pattern, conflict]
+tags: [interview, llm, pattern]
 summary: Test coverage, file organisation, and observability expectations are a dial set by the assignment window rather than a constant — the one-hour "don't write tests" advice inverts at three hours, and the async ambiguity protocol inverts the live-round clarify-first reflex.
-updated: 2026-08-03
+updated: 2026-08-04
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_openai-work-trial.md
 ---
@@ -87,7 +87,7 @@ for the general fix of indexing advice by situation rather than by topic.
   and advice for one does not transfer to the other. That non-transfer is the dial again.
 
 ## See Also
-- [[AIE Code-Test Flaw Taxonomy]] — contradicts (its one-hour test advice; see `_conflicts.md`)
+- [[AIE Code-Test Flaw Taxonomy]] — alternative-to (its advice holds at the 1h window, this dial above it; conflict resolved 2026-08-04, see `_conflicts.md`)
 - [[System Design Interview Study Guide]] — alternative-to (live-round clarify-first vs. async state-and-proceed)
 - [[Situation-Indexed Decision Tree]] — extends (advice indexed by situation, not by topic)
 - [[Durable vs Performative Knowledge Split]] — prerequisite-for (round-technique material, not durable knowledge)

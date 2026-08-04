@@ -209,7 +209,7 @@ Consider creating a bridge page or adding cross-references.
   - memory: 8 pages
 
 ## infra ↔ mcp (2 cross-links)
-  - infra: 25 pages
+  - infra: 27 pages
   - mcp: 5 pages
 
 ## interview ↔ meta (2 cross-links)
