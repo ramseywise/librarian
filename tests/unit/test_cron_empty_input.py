@@ -13,12 +13,19 @@ own starvation check for the sync/tag/wiki stages.
 Every test asserts BOTH directions. A guard that always fired would pass the empty cases
 and fail the populated ones, so this suite cannot go green on a job that always exits 1.
 
-See ramseywise/librarian#60.
+#60 closed cold start and left **stall** open, which this suite then certified as healthy:
+its `--cron` checks tested the destination, and once #60 derived 343 notes into it the
+destination could never be empty again. Production ran `sessions_synced: 0, problems: [],
+exit 0` with a dead source while the file was green. The source-emptiness cases at the
+bottom are that gap; the idle-week case is the over-correction guard.
+
+See ramseywise/librarian#60, ramseywise/librarian#94.
 """
 
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -166,7 +173,7 @@ def wired(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """
     root = tmp_path
     monkeypatch.setattr(cron, "SESSIONS_DIR", root / "sessions_dir")
-    monkeypatch.setattr(cron, "INSIGHTS_DIR", root / "insights_dir")
+    monkeypatch.setattr(cron, "CRON_SUMMARY_DIR", root / "cron_summary")
     monkeypatch.setattr(cron, "LIBRARIAN_RAW_SESSIONS", root / "raw_sessions")
     monkeypatch.setattr(cron, "LIBRARIAN_WIKI_DIR", root / "wiki")
     monkeypatch.setattr(cron, "_rotate_hook_log", lambda: None)
@@ -201,7 +208,7 @@ def test_summary_records_the_problem_when_starved(wired: Path) -> None:
     """latest.json is the durable trace — it must say why, not just stop existing."""
     with pytest.raises(SystemExit):
         cron.run_cron()
-    summary_path = wired / "insights_dir" / "latest.json"
+    summary_path = wired / "cron_summary" / "latest.json"
     assert summary_path.exists(), "no summary written — the failure left no trace"
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     assert any("raw_sessions" in p for p in summary["problems"])
@@ -210,8 +217,92 @@ def test_summary_records_the_problem_when_starved(wired: Path) -> None:
 def test_summary_is_clean_when_input_exists(wired: Path) -> None:
     _populate(wired)
     cron.run_cron()
-    summary = json.loads((wired / "insights_dir" / "latest.json").read_text(encoding="utf-8"))
+    summary = json.loads((wired / "cron_summary" / "latest.json").read_text(encoding="utf-8"))
     assert summary["problems"] == []
+
+
+def test_run_cron_writes_nothing_under_claude_dir(
+    wired: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The summary used to land in ~/.claude/docs/insights/, whose parent is deliberately
+    absent — `mkdir(parents=True)` recreated it on every run (#94).
+
+    CLAUDE_DIR is redirected at a tmpdir so the assertion is about what this run creates,
+    not about whatever the real ~/.claude happens to hold. Only SESSIONS_DIR may be read
+    from it, and reads create nothing.
+
+    FAILS IF: any output path is re-anchored under CLAUDE_DIR.
+    """
+    fake_claude = wired / "fake_claude"
+    fake_claude.mkdir()
+    monkeypatch.setattr(cron, "CLAUDE_DIR", fake_claude)
+    _populate(wired)
+
+    cron.run_cron()
+
+    assert list(fake_claude.iterdir()) == [], (
+        f"cron wrote under ~/.claude: {list(fake_claude.iterdir())}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# --cron stall: destination already populated, source broken
+#
+# The starvation check above tests the destination, so it stopped discriminating once
+# raw/sessions/ held anything (343 notes landed there at #60). These cover the state the
+# suite missed while production was stalled: full destination, zero synced, exit 0.
+# ---------------------------------------------------------------------------
+
+
+def _prepopulate_destination(root: Path) -> None:
+    """Put a note in raw/sessions/ without putting one in the source — the stalled shape."""
+    dest = root / "raw_sessions"
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "2098-01-01_120000_librarian.md").write_text(
+        "---\ntags: [context-management]\ndate: 2098-01-01\n---\n\n# Session\n",
+        encoding="utf-8",
+    )
+
+
+def test_run_cron_exits_non_zero_when_source_is_empty_but_destination_is_not(
+    wired: Path,
+) -> None:
+    """The stall. Destination full, source gone — every prior guard reads this as healthy."""
+    _prepopulate_destination(wired)
+    with pytest.raises(SystemExit) as exc:
+        cron.run_cron()
+    assert exc.value.code != 0, "a stalled source must not exit 0"
+
+
+def test_stalled_source_summary_names_the_source_path(wired: Path) -> None:
+    """Naming the destination would be actively misleading here — it is fine."""
+    _prepopulate_destination(wired)
+    with pytest.raises(SystemExit):
+        cron.run_cron()
+    summary = json.loads((wired / "cron_summary" / "latest.json").read_text(encoding="utf-8"))
+    assert any("sessions_dir" in p for p in summary["problems"]), (
+        f"problems did not name the source: {summary['problems']}"
+    )
+    assert summary["source_note_count"] == 0
+
+
+def test_run_cron_exits_zero_on_an_idle_week(wired: Path) -> None:
+    """Source populated, destination already holds the same note, so `synced == 0`.
+
+    The legitimate idle week. FAILS IF: the source guard over-corrects into a staleness
+    check — a guard that fires every quiet week is one that gets ignored.
+    """
+    _populate(wired)
+    dest = wired / "raw_sessions"
+    dest.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(wired / "sessions_dir" / "2099-01-01_120000_librarian.md", dest)
+
+    cron.run_cron()  # must not raise
+
+    summary = json.loads((wired / "cron_summary" / "latest.json").read_text(encoding="utf-8"))
+    assert summary["sessions_synced"] == 0, "nothing new should have synced"
+    assert summary["source_note_count"] == 1, "the source was populated"
+    assert summary["problems"] == [], f"an idle week must stay quiet: {summary['problems']}"
 
 
 def test_cron_needs_no_api_key(wired: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -27,15 +27,22 @@ import structlog
 
 log = structlog.get_logger(__name__)
 
-# --- Paths (all relative to ~/.claude) ---
+# --- Paths ---
 
+# ~/.claude is read-only from here: the session notes are its output, not ours. Nothing
+# under it is written — `~/.claude/docs/` in particular is deliberately absent and a
+# `mkdir(parents=True)` on a path inside it silently recreated it every run (#94).
 CLAUDE_DIR = Path.home() / ".claude"
 SESSIONS_DIR = CLAUDE_DIR / "sessions"
-INSIGHTS_DIR = CLAUDE_DIR / "docs" / "insights"
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # Librarian raw/sessions/ — for wiki ingest
-LIBRARIAN_RAW_SESSIONS = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "sessions"
-LIBRARIAN_WIKI_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "wiki"
+LIBRARIAN_RAW_SESSIONS = _REPO_ROOT / "raw" / "sessions"
+LIBRARIAN_WIKI_DIR = _REPO_ROOT / "data" / "wiki"
+
+# Run summary — librarian's own operational telemetry, gitignored like data/sessions.db.
+CRON_SUMMARY_DIR = _REPO_ROOT / "data" / "cron"
 
 
 # ---------------------------------------------------------------------------
@@ -313,6 +320,23 @@ def run_cron() -> None:
         )
         problems.append(msg)
 
+    # The check above tests the DESTINATION, which stops discriminating the moment it holds
+    # anything at all — 343 notes landed in it at #60, so it can never fire again. A source
+    # that has moved, emptied, or lost permissions is the stall case: `synced == 0` with a
+    # full destination reads as healthy forever. Test the source separately (#94).
+    #
+    # Deliberately source-EMPTINESS, not staleness: a genuinely idle week has a non-empty
+    # source with nothing new, and must stay quiet. A guard that fires every quiet week is a
+    # guard that gets ignored.
+    source_note_count = len(list(SESSIONS_DIR.glob("*.md"))) if SESSIONS_DIR.exists() else 0
+    if source_note_count == 0:
+        msg = (
+            f"session source {SESSIONS_DIR} holds no *.md — nothing could have synced; "
+            "the directory has moved, emptied, or lost permissions"
+        )
+        log.error("cron.source_starved", source=str(SESSIONS_DIR))
+        problems.append(msg)
+
     # Tag any session files that are missing semantic frontmatter tags
     _tag_new_session_files(LIBRARIAN_RAW_SESSIONS)
 
@@ -329,12 +353,15 @@ def run_cron() -> None:
 
     summary = {
         "sessions_synced": synced,
+        # Reads alongside sessions_synced to tell "nothing to do" from "source broken":
+        # 0 synced with a non-zero source count is an idle week, 0 with 0 is a fault.
+        "source_note_count": source_note_count,
         "arxiv_papers_fetched": arxiv_papers_fetched,
         "feed_posts_fetched": feed_posts_fetched,
         "problems": problems,
         "timestamp": datetime.now(tz=UTC).isoformat(),
     }
-    summary_path = INSIGHTS_DIR / "latest.json"
+    summary_path = CRON_SUMMARY_DIR / "latest.json"
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
