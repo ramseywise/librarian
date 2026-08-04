@@ -93,6 +93,7 @@ across a boundary the graph does not own.
 
 ## See Also
 - [[Eval Maturity Ladder]] — depends-on (items 1 and 3 are its levels 3 and 4)
+- [[Bounding Agents Rather Than Trusting Them]] — complements (escalation as a first-class outcome rather than error handling)
 - [[Online Eval Sampling]] — instance-of (the drift-monitoring mechanism)
 - [[Eval Suite Maintenance]] — extends (evals as living artifacts, and who owns them)
 - [[Observability and Runtime Patterns]] — implements (item 5)

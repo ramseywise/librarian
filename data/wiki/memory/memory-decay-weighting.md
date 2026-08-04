@@ -19,15 +19,29 @@ A shipped implementation: SQLite for structured storage + ChromaDB for vector se
 retrieval scored by **exponential decay weighting**.
 
 ```
-wᵢ = e^(−α · xᵢ)            α = 0.02, xᵢ = age in days
-w̃ᵢ = wᵢ / Σⱼ wⱼ            min-max normalized, then renormalized
+wᵢ = e^(−α · xᵢ)            α = 0.02, xᵢ = age in MINUTES
+x_norm = (x − x_min) / (x_max − x_min)    min-max normalized first
+w̃ᵢ = wᵢ / Σⱼ wⱼ            then renormalized to sum to 1
 top_k = 20
 ```
 
-At α = 0.02, a memory's weight halves roughly every **35 days** (`ln 2 / 0.02 ≈ 34.7`).
-That is the tunable that encodes your assumption about how fast the domain goes stale —
-preferences decay slowly, project state decays fast, and one α for both is a compromise
-that serves neither.
+The unit is **minutes**, which is easy to misread and changes the character of the
+mechanism completely. Applied to raw minutes, α = 0.02 gives a half-life of roughly
+**35 minutes** (`ln 2 / 0.02 ≈ 34.7`) — a within-session scorer, not a cross-session one.
+
+But the min-max normalization is applied *first*, and that is what makes the scheme work
+across sessions: `x_norm` maps the age range of the currently-retrieved set onto [0, 1],
+so decay is computed over **relative** age within the candidate set rather than absolute
+elapsed time. The practical consequence is that α does not encode a fixed half-life at
+all — it encodes **how sharply the newest candidates outrank the oldest ones**, whatever
+the actual time span happens to be. A set spanning an hour and a set spanning a year get
+the same weight curve.
+
+The source's own tuning guidance confirms this reading: higher α means the model "almost
+ignores anything older than a few sessions," lower α keeps older context relevant longer.
+That is a statement about rank sharpness across sessions, which a 35-minute absolute
+half-life could not produce. Normalization is also what stops very old triplets from
+underflowing to zero weight and dropping out entirely.
 
 **Reported effect:** ~400 average tokens retrieved per turn versus **115K** for
 full-context. Roughly a 99.7% reduction in what reaches the prompt.
@@ -63,3 +77,4 @@ recent" and "most correct" are not the same thing.
 - [[Agent Memory Types]] — complements (episodic store scoring)
 - [[RAG Retrieval Strategies]] — complements (recency as a re-ranking signal)
 - [[Reciprocal Rank Fusion (RRF)]] — alternative-to (fusing ranked lists vs re-weighting one)
+- [[Memory Store Operations]] — complements (decay and TTL as the staleness policy, operationally)

@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**276 pages** across 17 domains.
+**281 pages** across 17 domains.
 
 ## Foundations
 
@@ -227,6 +227,8 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Self-Learning Agents]] — Four-level improvement stack for production agents — inference-time (ReAct, CoT, self-critique), session-time (reflection, procedural memory), operational (learning loop, HITL), and training-time (DPO). Most agents need the first three; DPO is a late-stage investment.
 - [[Memory Lifecycle]] — Five stages — represent, store, retrieve, use, update/forget — with the fifth being the one production systems skip, and consolidation designed so a failed merge can roll back instead of losing history.
 - [[Memory Decay Weighting]] — Exponential recency decay as a retrieval scorer — Memoria weights memories by e^(-alpha*age), which resolves stale-vs-current facts by ranking rather than by an explicit conflict-resolution step.
+- [[Memory Forms Taxonomy]] — The Forms/Functions/Dynamics survey framing — token, parametric, or latent substrate; factual, experiential, or working purpose — and why almost all agent memory work occupies one cell of a much larger space.
+- [[Memory Store Operations]] — Running a memory store in production — caching and async indexing for latency, memory hit rate as the metric that says whether memory is earning its cost, and the deletion requirement that makes memory a compliance surface.
 - [[Memory-Augmented Conversational RAG]] — Multi-turn retrieval breaks because the query is under-specified — the fixes are query rewriting against history, a when-to-retrieve policy, and asking a clarifying question instead of retrieving on an ambiguous turn.
 
 ## MCP
@@ -238,6 +240,9 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Tool Design as Context Engineering]] — Tools consume context twice — definitions sit in the window permanently, results enter per call — so token-efficient results, unambiguous boundaries, and terse routing descriptions are context decisions, not API aesthetics.
 
 ## Evaluation
+
+- [[The Augmentation Gate]] — The A in RAG is the gate nobody evaluates — retrieval can be perfect and generation sound while the failure lives entirely in how much retrieved context got handed to the model.
+- [[Trajectory Over Outcome]] — Why an agent must be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are invisible to an outcome score.
 
 - [[Agentic KPI Trees]] — KPI tree pattern for agentic products — goal completion rate, no-touch rate, and transaction match accuracy as the primary success metrics for VA, document processing, and reconciliation agents.
 - [[Anthropic Three-Tier Eval Taxonomy]] — Practical agent evaluation framework from Anthropic — three tiers (unit/trajectory/e2e) mapped to cost, determinism, and failure coverage. Unit covers ~70% of regressions cheaply; trajectory checks routing paths; e2e is sparingly used for quality gates.
@@ -275,6 +280,8 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[VA Eval Harness]] — Agent evaluation harness for VA agents — four eval suites (routing, quality, behavioral, error handling), JSON evalset schema, tool_trajectory_avg_score metric, LLM-as-judge, Makefile flow, and CI regression gate. Production golden dataset: ~100 questions from 700-question Intercom set, Langfuse pipeline live, CS agent validated.
 
 ## Infrastructure
+
+- [[Bounding Agents Rather Than Trusting Them]] — Constrain what the agent can do instead of trusting it to behave — four bounds (type/IO schemas, explicit state, escalation as an outcome, termination conditions) plus why guardrails without trajectory eval are unattributable.
 
 - [[Agent Security Risk Taxonomy]] — The sixteen agentic security risks in five families, and the architectural claim that mitigation belongs in the component that owns the risk rather than in a central supervisory layer.
 - [[Agent Management Layer]] — The six systems a production agent needs beyond the agent itself — evaluation frameworks, fallback/escalation, drift monitoring, HITL checkpoints, audit logging, and a defined handoff protocol — argued as 60% of the deployment, with HITL corrections doubling as the training-data pipeline only if they are logged.

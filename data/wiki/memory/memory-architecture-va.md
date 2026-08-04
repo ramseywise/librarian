@@ -133,6 +133,7 @@ store.get(namespace=("agent", agent_name, user_id), key="history")
 ```
 
 ## See Also
+- [[Memory Forms Taxonomy]] <!-- auto-linked -->
 - [[Memory Lifecycle]] <!-- auto-linked -->
 - [[Agent Memory Types]]
 - [[Self-Learning Agents]]

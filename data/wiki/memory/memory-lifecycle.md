@@ -95,3 +95,5 @@ split this repo uses.
 - [[Memory-Augmented Conversational RAG]] — extends (stage C, in the multi-turn case)
 - [[Context Compaction]] — complements (the same lossy-compression problem inside one session)
 - [[Knowledge Graph as Shared Agent Memory]] — complements (reversibility as a write-path requirement)
+- [[Memory Forms Taxonomy]] — extends (Dynamics as a finer-grained view of these stages)
+- [[Memory Store Operations]] — implements (running the lifecycle in production)

@@ -100,6 +100,7 @@ Gaps: context caching (TS only), multi-language escalation (Python: 7 langs, TS:
 
 ## See Also
 - [[Input Guardrails Pipeline]] — prerequisite-for
+- [[Bounding Agents Rather Than Trusting Them]] — prerequisite-for (the design stance these layers implement)
 - [[CRAG Retry Logic]] — instance-of (Layer 3)
 - [[project-g Eval Architecture]] — extends (offline complement to runtime layers)
 - [[Grounding Claim Methodology]] — extends (the eval-side semantic grounding)

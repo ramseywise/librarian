@@ -42,6 +42,11 @@ Supports stratified evaluation — track metrics by difficulty tier to see where
 
 **Regression floors only go up, never down.** The comment in code says "update these (never lower them) when quality improves."
 
+**These metrics have a gap between them.** Retrieval metrics score what came back; the
+judge scores what was written. Neither scores the decision in between — how much of the
+retrieved set actually entered the prompt — which is where a high-recall, low-faithfulness
+system usually fails. See [[The Augmentation Gate]].
+
 ## LLM-as-Judge (`AnswerJudge`)
 
 Scores `(question, context, answer)` on 3 dimensions: faithfulness, relevance, completeness. Returns `JudgeResult` with `is_correct`, `score` (0–1), and reasoning.
@@ -260,6 +265,8 @@ This is especially important for edge cases — judge prompts optimized on avera
 
 ## See Also
 - [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
+- [[Trajectory Over Outcome]] — extends (why the trajectory tier exists, not just what it measures)
+- [[The Augmentation Gate]] — complements (the component gate between retrieval and generation)
 - [[RAG Eval Metrics Suite]]
 - [[Synthetic Dataset Generation for RAG Eval]]
 - [[Conversation Repository Pattern]]
