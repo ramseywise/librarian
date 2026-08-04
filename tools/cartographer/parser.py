@@ -125,7 +125,7 @@ def _is_human_turn(record: dict[str, Any]) -> bool:
     )
 
 
-WORKSPACE_ROOT = "/Users/wiseer/workspace"
+WORKSPACE_ROOT = os.getenv("WORKSPACE_ROOT", str(Path.home() / "workspace"))
 
 
 def _session_repos(records: list[dict[str, Any]]) -> dict[str, int]:

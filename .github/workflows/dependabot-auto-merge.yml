@@ -10,7 +10,7 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@main
     with:
-      lint-paths: "app etl tools tests"
+      lint-paths: "app core tools tests"
       test-command: "uv run pytest tests/unit/ -q"
 
   auto-merge:

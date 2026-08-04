@@ -8,25 +8,8 @@ from pathlib import Path
 from typing import Any
 
 import anthropic
-import frontmatter
 
-from app.mcp_server.server import is_under_private
-
-WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
-PRIVATE_DIR = WIKI_DIR / "private"
-
-
-def _is_private(path: Path | str) -> bool:
-    """True if path lies under this module's data/wiki/private/ — never served to the agent.
-
-    Shares the server's resolution logic (../ traversal, absolute and unresolvable
-    paths) but anchors on PRIVATE_DIR above. The server anchors on a relative
-    Path("data/wiki"), so under `make api` (cwd=app/) its own PRIVATE_DIR resolves to a
-    nonexistent app/data/wiki/private — binding to that would produce a filter that reads
-    as correct and excludes nothing. Read at call time so tests can repoint it.
-    """
-    return is_under_private(path, PRIVATE_DIR)
-
+from app.mcp_server import server
 
 MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-5")
 MAX_TOKENS = 8192
@@ -47,72 +30,34 @@ def _get_client() -> anthropic.AsyncAnthropic:
     return _client
 
 
+_FRONTMATTER_RE = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
+
+
+def _strip_frontmatter(text: str) -> str:
+    return _FRONTMATTER_RE.sub("", text, count=1).lstrip()
+
+
 def _search_wiki(query: str) -> str:
-    results: list[tuple[int, str, str, str, str]] = []
-    query_lower = query.lower()
-
-    for md_file in sorted(WIKI_DIR.rglob("*.md")):
-        # data/wiki/private/ is never searched — Buyi confidentiality invariant, clause (b).
-        # The agent reaches the same pages the MCP server does, so it enforces the
-        # same exclusion, via the same predicate.
-        if md_file.name.startswith("_") or _is_private(md_file):
-            continue
-        post = frontmatter.load(md_file)
-        title = str(post.get("title") or md_file.stem)
-        summary = str(post.get("summary") or "")
-        content = post.content
-
-        score = 0
-        for term in query_lower.split():
-            if len(term) < 3:
-                continue
-            if term in title.lower():
-                score += 3
-            if term in summary.lower():
-                score += 2
-            if term in content.lower():
-                score += 1
-
-        if score > 0:
-            results.append((score, title, summary, md_file.stem, content))
-
-    if not results:
+    # data/wiki/private/ is never searched — Buyi confidentiality invariant, clause (b).
+    # The server's search core indexes only public pages, so the agent inherits the
+    # exclusion (and retrieval telemetry) from the single implementation.
+    rows = server._search_rows(query, domain="", limit=8, tool="agent_search")
+    if not rows:
         return "No pages found matching that query."
 
-    results.sort(reverse=True, key=lambda x: x[0])
     parts = []
-    for _, title, summary, page_id, content in results[:8]:
-        excerpt = content[:200].replace("\n", " ")
+    for path, title, _tags, summary, content, _backlinks, _score in rows:
+        page_id = Path(path).stem
+        excerpt = _strip_frontmatter(content)[:200].replace("\n", " ")
         parts.append(f"**{title}** (id: `{page_id}`)\nSummary: {summary}\nExcerpt: {excerpt}...")
 
     return "\n\n---\n\n".join(parts)
 
 
 def _read_page(page_id: str) -> str:
-    # Both lookup paths are filtered: a private page must be unreachable by ID and
-    # by title alike, or the title fallback becomes the way around the ID check.
-    md_file = next(
-        (p for p in WIKI_DIR.rglob(f"{page_id}.md") if not _is_private(p)),
-        None,
-    )
-    if not md_file:
-        target = page_id.lower().replace("-", " ")
-        for f in WIKI_DIR.rglob("*.md"):
-            if f.name.startswith("_") or _is_private(f):
-                continue
-            post = frontmatter.load(f)
-            title = str(post.get("title") or f.stem)
-            if title.lower() == target:
-                md_file = f
-                break
-
-    if not md_file:
-        return f"Page '{page_id}' not found. Check ID with search_wiki first."
-
-    post = frontmatter.load(md_file)
-    title = post.get("title") or md_file.stem
-    summary = post.get("summary") or ""
-    return f"# {title}\n\nSummary: {summary}\n\n{post.content}"
+    # Private pages are unreachable by ID and by title alike — the server core
+    # applies the same predicate on every lookup path.
+    return server._read_page_text(page_id)
 
 
 _TOOLS: list[dict[str, Any]] = [
@@ -225,7 +170,7 @@ async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
                     elif block.name == "read_page":
                         page_id = args.get("page_id", "")
                         result = _read_page(page_id)
-                        if not result.startswith("Page '"):
+                        if not result.startswith(("Page not found:", "Multiple pages match")):
                             referenced_pages.add(page_id)
                     else:
                         result = "Unknown tool."
@@ -240,7 +185,9 @@ async def run_agent_stream(query: str) -> AsyncGenerator[dict[str, Any], None]:
 
                 messages.append({"role": "user", "content": tool_results})
 
-            valid_pages = {p for p in referenced_pages if next(WIKI_DIR.rglob(f"{p}.md"), None)}
+            valid_pages = {
+                p for p in referenced_pages if next(server.WIKI_DIR.rglob(f"{p}.md"), None)
+            }
             if valid_pages:
                 yield {"type": "highlight", "pages": list(valid_pages)}
     except Exception as exc:

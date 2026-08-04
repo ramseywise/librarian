@@ -54,6 +54,10 @@ def tmp_wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         "---\ntitle: Retired Page\ntags: [rag, tombstone]\nsummary: Retired\n"
         "updated: 2026-07-17\n---\n\n# Retired Page\n\nSee [[Alive Page]] — supersedes\n"
     )
+    (wiki / "_index.md").write_text(
+        "---\ntitle: Index\ntags: [meta]\nsummary: TOC\nupdated: 2026-07-17\n---\n\n"
+        "# Index\n\n[[Alive Page]] [[Retired Page]]\n"
+    )
     monkeypatch.setattr(server, "WIKI_DIR", wiki)
     monkeypatch.setattr(server, "HAS_EMBEDDINGS", False)
     return wiki
@@ -67,6 +71,21 @@ def test_build_index_skips_tombstones(tmp_wiki: Path, tmp_path: Path) -> None:
 
     assert any("alive.md" in p for p in paths)
     assert not any("retired.md" in p for p in paths)
+
+
+def test_build_index_skips_underscore_files(tmp_wiki: Path, tmp_path: Path) -> None:
+    """_index.md/_conflicts.md are meta files — never indexed, never counted as backlinks."""
+    con = duckdb.connect(str(tmp_path / "idx.duckdb"))
+    server.build_index(con)
+    rows = con.execute("SELECT path, backlinks FROM pages").fetchall()
+    con.close()
+
+    from pathlib import Path
+
+    assert not any(Path(path).name.startswith("_") for path, _ in rows)
+    # _index.md links [[Alive Page]]; excluded from the corpus it must not inflate counts
+    alive_backlinks = next(bl for path, bl in rows if "alive.md" in path)
+    assert alive_backlinks == 0
 
 
 def test_tombstone_still_readable(tmp_wiki: Path) -> None:

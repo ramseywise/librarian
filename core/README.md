@@ -29,7 +29,6 @@ source (Notion / Linear / web / PDFs / repos / sessions / ...)
 | `scrape_repos.py` | Local git repos listed in `raw/repos/repos.txt` | `raw/repos/` | none |
 | `scrape_claude_docs.py` | `.claude/` folders + `docs/` from all workspace projects | `raw/claude-docs/` | none |
 | `scrape_sessions.py` | Claude Code and Codex session JSONL | `raw/sessions/` | none |
-| `seed_from_playground.py` | playground repo `.claude/docs/` | `raw/playground-docs/` | none |
 
 ### Invocation
 

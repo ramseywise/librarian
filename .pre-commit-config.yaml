@@ -46,10 +46,10 @@ repos:
         pass_filenames: false
 
       - id: no-hardcoded-paths
-        name: no hardcoded /Users/ paths in src/
+        name: no hardcoded /Users/ paths
         language: pygrep
         entry: "/Users/"
-        files: ^src/
+        files: ^(app|core|tools)/
         types: [python]
 
       - id: no-pkl-staged

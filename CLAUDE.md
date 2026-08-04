@@ -168,6 +168,9 @@ Content...
 
 ### Domain Tags (first-class — always include at least one)
 
+> The canonical domain list is derived from disk: directories under `data/wiki/`
+> (excluding `private/`). The table below is illustrative, not normative.
+
 | Tag | Covers |
 |---|---|
 | `adk` | Google Agent Development Kit — patterns, APIs, deployment |

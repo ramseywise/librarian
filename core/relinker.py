@@ -3,7 +3,7 @@
 Discovers missing semantic links between wiki pages after an ingest cycle.
 Run after all pages are created/updated:
 
-    uv run --extra api python etl/relinker.py [--threshold 0.65] [--suggest-threshold 0.55] [--dry-run]
+    uv run --extra api python core/relinker.py [--threshold 0.65] [--suggest-threshold 0.55] [--dry-run]
 
 Requires the `api` optional dependency group (numpy, sentence-transformers, scikit-learn).
 

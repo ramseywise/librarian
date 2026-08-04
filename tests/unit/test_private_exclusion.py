@@ -94,6 +94,31 @@ def test_read_page_still_serves_public_pages(wiki: Path) -> None:
     assert "Public chunking notes." in result
 
 
+@pytest.mark.parametrize(
+    "attack_path",
+    [
+        "/etc/passwd",
+        ".env",
+        "../../.env",
+        "data/wiki/../../.env",
+    ],
+)
+def test_read_page_refuses_paths_outside_wiki(wiki: Path, attack_path: str) -> None:
+    """Existing files outside WIKI_DIR are indistinguishable from missing pages."""
+    result = server.read_page(attack_path)
+    assert "not found" in result.lower()
+    assert "root:" not in result  # /etc/passwd content
+    assert "API_KEY" not in result  # .env content
+
+
+def test_read_page_refuses_absolute_path_outside_wiki(wiki: Path, tmp_path: Path) -> None:
+    outside = tmp_path / "outside.txt"
+    outside.write_text("OUTSIDE_WIKI_MARKER")
+    result = server.read_page(str(outside))
+    assert "OUTSIDE_WIKI_MARKER" not in result
+    assert "not found" in result.lower()
+
+
 def test_list_pages_omits_private(wiki: Path) -> None:
     result = server.list_pages()
     assert "acme-engagement" not in result

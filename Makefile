@@ -1,6 +1,6 @@
 include ~/.claude/Makefile.common
 
-.PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval
+.PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live
 
 app:
 	docker compose up
@@ -43,6 +43,9 @@ setup-ollama:
 
 eval:
 	uv run python evals/run_eval.py --verbose --save-baseline
+
+eval-live:
+	uv run python evals/run_eval.py --live --verbose --save-baseline
 
 test:
 	uv run pytest tests/unit/ -v
@@ -103,3 +106,4 @@ help:
 	@echo "lint-raw         — validate data/raw/ filenames match YYYY-MM-DD-slug convention"
 	@echo "lint             — reminder: use /lint in Claude Code"
 	@echo "eval             — run retrieval + answer graders over golden dataset; save baseline"
+	@echo "eval-live        — eval against the live search core (report-only); save live baseline"

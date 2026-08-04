@@ -16,6 +16,7 @@ from typing import Any
 
 import pytest
 
+from tools.cartographer import parser
 from tools.cartographer.dashboard import (
     JULY_BOUNDARY,
     weekly_commits_by_repo,
@@ -54,6 +55,13 @@ def store(tmp_path: Path) -> Path:
 
 
 # --- parser: resolving repos from cwd ---------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def _pin_workspace_root(monkeypatch: pytest.MonkeyPatch) -> None:
+    """WORKSPACE_ROOT derives from HOME, which is /home/runner in CI -- pin it
+    to the root the hardcoded cwd paths below assume."""
+    monkeypatch.setattr(parser, "WORKSPACE_ROOT", "/Users/wiseer/workspace")
 
 
 def test_session_repos_counts_every_cwd_not_just_the_first() -> None:
