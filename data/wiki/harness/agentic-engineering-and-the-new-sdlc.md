@@ -140,6 +140,7 @@ the artifact lives and what it costs when it breaks — which is why the stakes 
 a methodology preference, is the right frame for the decision.
 
 ## See Also
+- [[Task Decomposition Patterns]] <!-- auto-linked -->
 - [[Multi-Agent Role Specialization]] <!-- auto-linked -->
 - [[Harness Engineering]] — depends-on (the machinery this SDLC presumes)
 - [[Context Engineering]] — depends-on (the six context types, as a discipline)

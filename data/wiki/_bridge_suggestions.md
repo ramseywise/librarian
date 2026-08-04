@@ -81,20 +81,16 @@ Consider creating a bridge page or adding cross-references.
   - prompting: 8 pages
 
 ## harness ↔ interview (0 cross-links)
-  - harness: 14 pages
+  - harness: 18 pages
   - interview: 9 pages
 
 ## harness ↔ meta (0 cross-links)
-  - harness: 14 pages
+  - harness: 18 pages
   - meta: 14 pages
 
 ## harness ↔ projects (0 cross-links)
-  - harness: 14 pages
+  - harness: 18 pages
   - projects: 8 pages
-
-## harness ↔ rag (0 cross-links)
-  - harness: 14 pages
-  - rag: 18 pages
 
 ## interview ↔ langgraph (0 cross-links)
   - interview: 9 pages
@@ -138,7 +134,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## loop ↔ rag (0 cross-links)
   - loop: 5 pages
-  - rag: 18 pages
+  - rag: 19 pages
 
 ## mcp ↔ memory (0 cross-links)
   - mcp: 5 pages
@@ -185,15 +181,7 @@ Consider creating a bridge page or adding cross-references.
   - langgraph: 16 pages
 
 ## harness ↔ memory (1 cross-links)
-  - harness: 14 pages
-  - memory: 6 pages
-
-## infra ↔ mcp (1 cross-links)
-  - infra: 23 pages
-  - mcp: 5 pages
-
-## infra ↔ memory (1 cross-links)
-  - infra: 23 pages
+  - harness: 18 pages
   - memory: 6 pages
 
 ## interview ↔ memory (1 cross-links)
@@ -207,10 +195,6 @@ Consider creating a bridge page or adding cross-references.
 ## loop ↔ patterns (1 cross-links)
   - loop: 5 pages
   - patterns: 53 pages
-
-## prompting ↔ rag (1 cross-links)
-  - prompting: 8 pages
-  - rag: 18 pages
 
 ## adk ↔ memory (2 cross-links)
   - adk: 19 pages
@@ -229,12 +213,16 @@ Consider creating a bridge page or adding cross-references.
   - projects: 8 pages
 
 ## infra ↔ loop (2 cross-links)
-  - infra: 23 pages
+  - infra: 24 pages
   - loop: 5 pages
 
-## infra ↔ prompting (2 cross-links)
-  - infra: 23 pages
-  - prompting: 8 pages
+## infra ↔ mcp (2 cross-links)
+  - infra: 24 pages
+  - mcp: 5 pages
+
+## infra ↔ memory (2 cross-links)
+  - infra: 24 pages
+  - memory: 6 pages
 
 ## interview ↔ meta (2 cross-links)
   - interview: 9 pages
@@ -255,3 +243,7 @@ Consider creating a bridge page or adding cross-references.
 ## mcp ↔ projects (2 cross-links)
   - mcp: 5 pages
   - projects: 8 pages
+
+## prompting ↔ rag (2 cross-links)
+  - prompting: 8 pages
+  - rag: 19 pages

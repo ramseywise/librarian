@@ -6,6 +6,7 @@ updated: 2026-08-04
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--01-what-a-harness-is.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agent-harness.md
 ---
 
 # Harness Engineering
@@ -122,6 +123,28 @@ Lines that cannot name their originating failure are speculative, and **speculat
 are what turn a checklist into an ignored wall of text**. This is the same drift as
 system-prompt altitude one layer down — see [[Context Anatomy]].
 
+### Constraints are encoded, not documented
+
+The ratchet has a failure mode: the cheapest response to any incident is to add a line to
+`AGENTS.md`, which makes the file grow while compliance falls. The corrective is that
+**a rule in documentation is probabilistic and a rule in a hook is deterministic**. The
+documented rule competes for attention with everything else in the window and its
+compliance rate degrades as the window fills; the hook's compliance rate is 100% regardless
+of context pressure. They are different mechanisms, not different strengths of one.
+
+So the ratchet's real instruction is *encode the constraint at the strongest available
+layer* — hook > linter > test > tool schema > instruction line — and reserve the
+instruction file for what genuinely cannot be mechanized. The test for any rule you rely
+on: **what happens if the agent ignores it?** If nothing catches it, the rule is
+documentation. See [[Agent Deployment Anti-Patterns]] (#8) and
+[[Execution Boundaries and Guardrails]].
+
+This also fixes the ~60-line ceiling, which otherwise reads as an arbitrary budget. The
+instruction file works as a **table of contents rather than a manual**: it points at where
+knowledge lives — skills, references, commands — instead of containing it, so the file
+stays navigable while the knowledge it indexes grows without bound. Bulk material belongs
+in progressively-disclosed bodies ([[SKILL.md Pattern]]), not resident text.
+
 ## Convergent Design as Evidence
 
 Claude Code, Cursor, Codex, Aider, and Cline *"look more like each other than their
@@ -167,3 +190,5 @@ Practical consequence: **a harness needs periodic subtraction, not just addition
 - [[Loop Engineering]] — extends (the layer above: the harness supplies tools, the loop decides when to stop using them)
 - [[Agentic Engineering and the New SDLC]] — complements (the same "skill issue" reframe reached from the process side, plus the TCO argument)
 - [[Agent Interoperability Protocol Stack]] — complements (what governs the boundary when the other side is not under your control)
+- [[Agent Deployment Anti-Patterns]] — instance-of (the eight deployment failures the reframe predicts)
+- [[Skill Authoring Discipline]] — implements (authoring the skill layer of the harness)

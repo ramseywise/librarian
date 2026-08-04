@@ -130,6 +130,7 @@ code-level controls are guarantees. Full treatment in [[Prompt Injection]].
 from a prompt problem.
 
 ## See Also
+- [[Protocol-Driven Multi-Agent Collaboration]] <!-- auto-linked -->
 - [[Context Anatomy]] <!-- auto-linked -->
 - [[Context Engineering]] — part-of
 - [[Why Context Is Finite]] — depends-on

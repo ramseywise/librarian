@@ -69,6 +69,7 @@ unattended needs cost ceilings and rollback that a three-step agent never did.
 The harness doesn't get smaller. **It gets re-aimed.**
 
 ## See Also
+- [[Agent Deployment Anti-Patterns]] <!-- auto-linked -->
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Harness Maturity and Failure Modes]] — extends
 - [[Harness Engineering]] — part-of

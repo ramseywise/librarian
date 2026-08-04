@@ -110,3 +110,4 @@ Gaps: context caching (TS only), multi-language escalation (Python: 7 langs, TS:
 - [[Multi-Agent Context]] — extends (sub-agent isolation as a containment boundary for untrusted content)
 - [[Execution Boundaries and Guardrails]] — part-of (the five layers sit inside the harness's boundary layer)
 - [[Canary Testing for Permission Boundaries]] — extends (testing that a deny rule actually fires)
+- [[Agent Security Risk Taxonomy]] — complements (the risk classes these layers mitigate, and why mitigation distributes)

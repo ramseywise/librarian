@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**270 pages** across 17 domains.
+**276 pages** across 17 domains.
 
 ## Foundations
 
@@ -134,6 +134,10 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Production Reliability Primitives]] — Per-step checkpointing, cross-provider model fallback, fail-fast on ambiguity, and confidence-routed quarantine as the shape of HITL at volume.
 - [[Iterative Harness Simplification]] — Components encode assumptions about what the model can't do; when models improve those assumptions expire — strip one at a time and re-run the eval.
 - [[Agentic Engineering and the New SDLC]] — The vibe-coding-to-agentic-engineering stakes spectrum, per-phase SDLC transformation, the conductor/orchestrator split, the 80% problem, and the CapEx/OpEx case for the harness.
+- [[Agent Deployment Anti-Patterns]] — Eight recurring deployment failures that present as model limitations but are engineering-constraint failures, and the reframe that a documented rule is probabilistic while a hooked rule is deterministic.
+- [[Task Decomposition Patterns]] — Four axes for cutting work across agents — functional, spatial, temporal, data-driven — each a bet about where the dependencies aren't.
+- [[Protocol-Driven Multi-Agent Collaboration]] — Natural language inside a task, protocols between tasks — the nine conversational-coordination failures as classical distributed-systems failures, and the three foundations that prevent them.
+- [[Skill Authoring Discipline]] — Writing a skill rather than defining one — the description as routing logic under a token/precision tension, negative examples as the higher-leverage half, and skills-plus-network as an exfiltration path.
 
 ## Loop
 
@@ -158,6 +162,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Bedrock KB vs LangGraph Decision]] — Decision framework for Bedrock Knowledge Bases vs. LangGraph CRAG pipeline — quality, observability, cost, and migration path analysis.
 - [[Agentic RAG — Advanced Patterns]] — Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
 - [[RAG Architecture Selection]] — The nine named RAG architectures as one selection space — what each buys and costs, the decision cheat-sheet, and Fusion RAG over heterogeneous sources (distinct from multi-query RAG-Fusion).
+- [[Text-to-SQL as a Retrieval Strategy]] — The structured branch of a hybrid retriever — dynamic schema subsetting, a semantic layer of retrieved few-shot SQL examples, mechanical validation that replaced a deleted LLM reviewer, and bounded error-as-context retry.
 - [[Conversation Repository Pattern]] — Two-table PostgreSQL schema for persisting multi-turn conversation state — conversations table for sessions, messages table for turns with JSONB trace and sources columns enabling trace-linked retrieval debugging.
 - [[CRAG Retry Logic]] — The confidence-gated conditional back-edge in a CRAG pipeline that re-enters retrieval when the reranker's top score falls below threshold — preventing low-confidence answers from reaching the user.
 - [[Embedder Warmup]] — Force-loading the embedding model during application startup (before the first request) to prevent a 3–8s cold-start spike on the first query in production.
@@ -271,6 +276,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 ## Infrastructure
 
+- [[Agent Security Risk Taxonomy]] — The sixteen agentic security risks in five families, and the architectural claim that mitigation belongs in the component that owns the risk rather than in a central supervisory layer.
 - [[Agent Management Layer]] — The six systems a production agent needs beyond the agent itself — evaluation frameworks, fallback/escalation, drift monitoring, HITL checkpoints, audit logging, and a defined handoff protocol — argued as 60% of the deployment, with HITL corrections doubling as the training-data pipeline only if they are logged.
 - [[Observability — LangFuse vs LangSmith Decision]] — Decision to use LangFuse first for RAG observability — native ragas/deepeval integrations, self-hostable, GDPR-friendly, and highest weighted score (8.58/10) for [client]'s AWS-hosted, high-compliance context.
 - [[Cloud Run + Cloud SQL Pattern]] — Single-container Cloud Run service (FastAPI + SPA) connected to Cloud SQL via the built-in Auth Proxy unix socket — no public IP, no SSL config, private GCP-internal networking by default.

@@ -123,3 +123,4 @@ This does not overturn the escalation ladder in [[Harness Orchestration]] — co
 - [[Claude Workflow System]]
 - [[Agentic Engineering and the New SDLC]] — part-of (skills as the dynamic-context mechanism in the new SDLC)
 - [[Harness Orchestration]] — complements (why skill loading removes role specialization as a reason to go multi-agent)
+- [[Skill Authoring Discipline]] — extends (how to write the description and body, given this format)

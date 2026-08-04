@@ -65,6 +65,7 @@ further attempts add no new information**, so a third failure genuinely indicate
 rather than bad luck. See [[Loop Detection and the Two-Retry Rule]].
 
 ## See Also
+- [[Agent Deployment Anti-Patterns]] <!-- auto-linked -->
 - [[Verification Loops]] — complements
 - [[Loop Detection and the Two-Retry Rule]] — extends
 - [[Execution Boundaries and Guardrails]] — complements
