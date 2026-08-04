@@ -2,7 +2,7 @@
 title: Data Pipeline Pattern Selection
 tags: [infra, comparison]
 summary: Four ways data reaches an AI system — batch ingest, event-driven, streaming, hybrid — chosen by one question about where the data comes from, with hybrid treated as a phase-2 evolution rather than a phase-1 option.
-updated: 2026-08-03
+updated: 2026-08-04
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/data-pipeline-patterns.md
 ---
@@ -112,3 +112,4 @@ plan rather than a surprise.
 - [[AI Project Archetypes]] — extends (archetype implies a default pipeline)
 - [[Deferred Decision Status]] — extends (the deferred second data path stays recorded)
 - [[AI Project Template Scaffold]] — instance-of (project_type / vector_backend toggles)
+- [[Data Engineering Foundations]] — complements (the six pipeline stages, orthogonal to how data arrives)

@@ -91,6 +91,7 @@ ceiling on the reward model that no amount of additional Stage 3 compute can lif
 policy will faithfully optimize toward whatever the labels actually encoded.
 
 ## See Also
+- [[Data Engineering Foundations]] <!-- auto-linked -->
 - [[Bradley-Terry Preference Model]] — part-of (the Stage 2 objective)
 - [[Reward Hacking and Overoptimization]] — extends (the three failure modes of Stage 3)
 - [[Preference Optimization Algorithms]] — alternative-to (offline methods that collapse or skip stages)

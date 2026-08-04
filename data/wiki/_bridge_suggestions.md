@@ -28,10 +28,6 @@ Consider creating a bridge page or adding cross-references.
   - context: 8 pages
   - langgraph: 16 pages
 
-## context ↔ meta (0 cross-links)
-  - context: 8 pages
-  - meta: 13 pages
-
 ## context ↔ projects (0 cross-links)
   - context: 8 pages
   - projects: 8 pages
@@ -45,31 +41,23 @@ Consider creating a bridge page or adding cross-references.
   - prompting: 8 pages
 
 ## foundations ↔ graph (0 cross-links)
-  - foundations: 18 pages
+  - foundations: 23 pages
   - graph: 7 pages
 
-## foundations ↔ harness (0 cross-links)
-  - foundations: 18 pages
-  - harness: 14 pages
-
 ## foundations ↔ loop (0 cross-links)
-  - foundations: 18 pages
+  - foundations: 23 pages
   - loop: 5 pages
 
 ## foundations ↔ mcp (0 cross-links)
-  - foundations: 18 pages
+  - foundations: 23 pages
   - mcp: 5 pages
 
 ## foundations ↔ memory (0 cross-links)
-  - foundations: 18 pages
+  - foundations: 23 pages
   - memory: 6 pages
 
-## foundations ↔ meta (0 cross-links)
-  - foundations: 18 pages
-  - meta: 13 pages
-
 ## foundations ↔ prompting (0 cross-links)
-  - foundations: 18 pages
+  - foundations: 23 pages
   - prompting: 8 pages
 
 ## graph ↔ interview (0 cross-links)
@@ -82,7 +70,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## graph ↔ meta (0 cross-links)
   - graph: 7 pages
-  - meta: 13 pages
+  - meta: 14 pages
 
 ## graph ↔ projects (0 cross-links)
   - graph: 7 pages
@@ -98,7 +86,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## harness ↔ meta (0 cross-links)
   - harness: 14 pages
-  - meta: 13 pages
+  - meta: 14 pages
 
 ## harness ↔ projects (0 cross-links)
   - harness: 14 pages
@@ -142,7 +130,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## loop ↔ meta (0 cross-links)
   - loop: 5 pages
-  - meta: 13 pages
+  - meta: 14 pages
 
 ## loop ↔ projects (0 cross-links)
   - loop: 5 pages
@@ -162,14 +150,14 @@ Consider creating a bridge page or adding cross-references.
 
 ## memory ↔ meta (0 cross-links)
   - memory: 6 pages
-  - meta: 13 pages
+  - meta: 14 pages
 
 ## memory ↔ prompting (0 cross-links)
   - memory: 6 pages
   - prompting: 8 pages
 
 ## meta ↔ prompting (0 cross-links)
-  - meta: 13 pages
+  - meta: 14 pages
   - prompting: 8 pages
 
 ## projects ↔ prompting (0 cross-links)
@@ -201,11 +189,11 @@ Consider creating a bridge page or adding cross-references.
   - memory: 6 pages
 
 ## infra ↔ mcp (1 cross-links)
-  - infra: 22 pages
+  - infra: 23 pages
   - mcp: 5 pages
 
 ## infra ↔ memory (1 cross-links)
-  - infra: 22 pages
+  - infra: 23 pages
   - memory: 6 pages
 
 ## interview ↔ memory (1 cross-links)
@@ -232,21 +220,25 @@ Consider creating a bridge page or adding cross-references.
   - context: 8 pages
   - loop: 5 pages
 
+## context ↔ meta (2 cross-links)
+  - context: 8 pages
+  - meta: 14 pages
+
 ## foundations ↔ projects (2 cross-links)
-  - foundations: 18 pages
+  - foundations: 23 pages
   - projects: 8 pages
 
 ## infra ↔ loop (2 cross-links)
-  - infra: 22 pages
+  - infra: 23 pages
   - loop: 5 pages
 
 ## infra ↔ prompting (2 cross-links)
-  - infra: 22 pages
+  - infra: 23 pages
   - prompting: 8 pages
 
 ## interview ↔ meta (2 cross-links)
   - interview: 9 pages
-  - meta: 13 pages
+  - meta: 14 pages
 
 ## langgraph ↔ mcp (2 cross-links)
   - langgraph: 16 pages
@@ -254,7 +246,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## langgraph ↔ meta (2 cross-links)
   - langgraph: 16 pages
-  - meta: 13 pages
+  - meta: 14 pages
 
 ## loop ↔ prompting (2 cross-links)
   - loop: 5 pages

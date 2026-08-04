@@ -2,7 +2,7 @@
 title: Observability — LangFuse vs LangSmith Decision
 tags: [infra, eval, decision]
 summary: Decision to use LangFuse first for RAG observability — native ragas/deepeval integrations, self-hostable, GDPR-friendly, and highest weighted score (8.58/10) for [client]'s AWS-hosted, high-compliance context.
-updated: 2026-06-05
+updated: 2026-08-04
 sources:
   - raw/playground-docs/rag-agent-template-research.md
   - raw/playground-docs/adk-orchestration-research.md
@@ -128,3 +128,4 @@ Patronus AI was previously self-hosted on-premise by the Advisor Production team
 - [[ADK Context Engineering]]
 - [[Langfuse Platform]]
 - [[AI Engineering Chapter @[client]]]
+- [[LangSmith Platform]] — complements (the mechanics behind the option this decision declined)

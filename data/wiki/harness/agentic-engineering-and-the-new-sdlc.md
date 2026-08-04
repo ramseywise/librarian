@@ -147,3 +147,5 @@ a methodology preference, is the right frame for the decision.
 - [[Specification by Example]] — complements (specs as the contract, for humans and agents alike)
 - [[Harness Orchestration]] — extends (the orchestrator mode, mechanically)
 - [[SKILL.md Pattern]] — instance-of (dynamic context loaded on demand)
+- [[Git Branch Triage]] — complements (branch hygiene when agents leave in-flight work behind)
+- [[TypeScript any Escapes]] — complements (lint rules that are correctness gates, not style)

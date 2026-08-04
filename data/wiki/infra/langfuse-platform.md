@@ -302,3 +302,4 @@ When using Google ADK v1.x, two instrumentation layers combine into a single tra
 - [[Experiment Tracking Schemas]] — complements (run_id joins platform scores to the config that produced them)
 - [[Online Eval Sampling]] — depends-on (which traces get the costed LLM graders)
 - [[Eval Suite Maintenance]] — implements (add-from-trace as the regression-fixture path)
+- [[LangSmith Platform]] — alternative-to (same capabilities in the LangChain ecosystem; auto-instrumented for LangGraph, manual for ADK)

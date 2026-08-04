@@ -12,19 +12,23 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**263 pages** across 17 domains.
+**270 pages** across 17 domains.
 
 ## Foundations
 
 - [[Batch Normalization]] — Batch Normalization (Ioffe & Szegedy, 2015) normalizes layer inputs using mini-batch statistics during training to reduce internal covariate shift — enables higher learning rates, reduces sensitivity to initialization, and acts as a regularizer. Rethinking BatchNorm (Wu & Johnson, 2021) exposes pitfalls with EMA population statistics, train/inference inconsistency, and domain shift.
 - [[Bradley-Terry Preference Model]] — The pairwise-comparison model that converts human choices between two responses into a scalar reward — the shared formal core underneath RLHF reward models, DPO, and RLAIF preference models.
 - [[Constitutional AI and RLAIF]] — Anthropic's two-phase replacement for human preference labels — critique-and-revise SL-CAI followed by RLAIF against a written constitution — plus what AI feedback provably matches and where it still underperforms humans.
+- [[Data Engineering Foundations]] — The six stages of data engineering as a pipeline discipline — ingest, transform, orchestrate, warehouse, monitor, feature-serve — where each stage's job is to prepare data for the next, plus the modern-stack tools (DuckDB, Polars, Iceberg, Dagster) missing from Zoomcamp-era material.
+- [[Data Science Curriculum Layers]] — The tree-shaped ML curriculum — statistical foundations, then supervised learning branching to model evaluation and independently to unsupervised/ensembles/Bayesian — plus the six-layer analytics progression that precedes it and the branching decision that ends it.
 - [[Dialogue Transformers — TED Policy]] — Transformer Embedding Dialogue (TED) policy (Rasa, 2020) applies self-attention at the discourse level — over dialogue turns rather than tokens — outperforming LSTM-based policies on sub-dialogue handling while being simpler and faster than REDP.
 - [[DIET Architecture]] — Dual Intent and Entity Transformer (Rasa, 2020) — a multi-task NLU architecture for joint intent classification and entity recognition that outperforms fine-tuned BERT while being 6x faster to train, using plug-and-play pre-trained embeddings with sparse features.
 - [[Dilated Causal Convolutions]] — Convolutions with exponentially increasing dilation factors that preserve temporal causality while growing the receptive field exponentially with depth — the key architectural innovation in WaveNet for modeling long-range audio dependencies efficiently.
+- [[Git Branch Triage]] — Deciding what to do with in-flight work before switching context — the branch health check that separates merged from unmerged commits, the WIP-branch-versus-stash choice, and reading a stash diff before trusting it.
 - [[HDBSCAN with KMeans Fallback]] — Clustering selection strategy that tries density-based HDBSCAN first and falls back to KMeans when silhouette drops below 0.25 — plus the diagnostic discipline that treats a fallback as a feature-quality signal rather than a resolved choice.
 - [[Multi-Agent Reinforcement Learning]] — MARL, the non-stationarity problem it exists to solve, CTDE as the dominant answer, the value-decomposition and central-critic algorithm families, and the five challenges — including the ~10–20 agent scalability wall.
 - [[Neural Probabilistic Language Model]] — Bengio et al. (2003) introduced the idea of learning distributed word representations (embeddings) jointly with a neural network language model — fighting the curse of dimensionality by mapping words to a continuous vector space where semantically similar words have nearby representations.
+- [[Notebook Dependency Staleness]] — Migration maps for the three library breaks that strand old ML notebooks — sklearn 0.20→1.4, TensorFlow 1.x→2.x, PyMC3→PyMC 5 — plus the two-phase triage that distinguishes a mechanical import swap from a genuine rewrite.
 - [[Open-Domain Dialogue Systems]] — Survey of frameworks for open-domain conversation — retrieval-based (score candidates), generation-based (seq2seq/PLM), and hybrid methods — with two key goals (informative via knowledge grounding, controllable via persona/strategy/safety).
 - [[Positional Encoding]] — Sinusoidal or learned position signals injected into Transformer input embeddings — required because self-attention is permutation-invariant and has no inherent notion of sequence order.
 - [[Preference Optimization Algorithms]] — The PPO → DPO → GRPO → KTO/IPO/ORPO family — what each removes from the stage before it, the five-algorithm decision table, and why the field shifted from choosing an algorithm to designing a reward structure.
@@ -33,6 +37,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Reward Hacking and Overoptimization]] — The three failure modes of optimizing against a learned reward proxy — reward hacking, the inverse-U overoptimization curve against KL distance, and the ~15% alignment tax on academic NLP benchmarks.
 - [[Self-Attention Mechanism]] — Self-attention (intra-attention) relates different positions of a single sequence to compute a representation — the core primitive enabling Transformers to model long-range dependencies in O(1) path length.
 - [[Transformer Architecture]] — The Transformer model architecture (Vaswani et al., 2017) — encoder-decoder stacks of self-attention and feed-forward layers that replaced RNNs/CNNs for sequence transduction, enabling parallelized training and constant-length dependency paths.
+- [[TypeScript any Escapes]] — The three ways out of an `any` — a real type, `unknown` with narrowing, or a generic — plus why types files are the highest-leverage place to fix them and how exhaustive-deps catches stale closures rather than style violations.
 - [[WaveNet — Autoregressive Audio Generation]] — WaveNet (van den Oord et al., 2016) is a deep autoregressive generative model for raw audio waveforms using dilated causal convolutions — achieved state-of-the-art TTS naturalness (MOS >4.0) and demonstrated multi-speaker conditioning, music generation, and speech recognition from raw audio.
 
 ## Patterns
@@ -192,7 +197,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 - [[ADK Context Engineering]] — How the ADK samples repo manages context — SKILL.md pattern, three skill-loading strategies, static vs dynamic instruction, and history compaction.
 - [[ADK Deployment Patterns]] — ADK deployment targets (Agent Engine vs Cloud Run vs GKE), CI/CD with WIF, service account architecture, event-driven triggers, and Terraform patterns.
-- [[ADK Eval Guide]] — ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, and user simulation for dynamic testing.
+- [[ADK Eval Guide]] — ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, user simulation, and Vertex AI managed pointwise/pairwise eval.
 - [[HITL and Interrupt Patterns]] — Six HITL patterns for LangGraph agents — static breakpoints, dynamic interrupt(), clarification loop (budget-bounded), scheduler confirmation gate, tool approval for irreversible actions, and time-travel/replay/fork.
 - [[ADK JS TypeScript Patterns]] — Google ADK TypeScript SDK (@google/adk 0.5.0) — LlmAgent, FunctionTool, structured Zod output, streaming NDJSON, and pitfall patterns for Next.js agent integration.
 - [[ADK Observability]] — Four-tier observability for ADK agents — Cloud Trace (always-on), prompt-response logging, BigQuery Agent Analytics plugin, and third-party platforms (AgentOps, Phoenix, MLflow, etc.).
@@ -274,6 +279,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Input Guardrails Pipeline]] — 7-stage deterministic safety pipeline (normalise → size check → domain classify → injection detect → PII redact → XML envelope → advisory) that runs before every LLM call — LLM-free by design.
 - [[Langfuse ADK Tracing Patterns]] — Two-layer Langfuse instrumentation for ADK agents — OpenTelemetry auto-instrumentation plus manual @observe decorators produce a single unified trace tree; session grouping, RAG path tagging, and first-class Scores are the critical operational additions.
 - [[Langfuse Platform]] — Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by [client]'s AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
+- [[LangSmith Platform]] — LangSmith mechanics — auto-instrumentation for LangGraph vs manual @traceable wiring for ADK, datasets, evaluator functions as thin adapters over your own graders, annotation queues, and experiment comparison.
 - [[Local-Only Deployment]] — The zero-infrastructure rung — the AI runs on a developer's machine with no hosting and no external access, chosen when the only user is the developer and iteration speed matters more than availability.
 - [[Observability and Runtime Patterns]] — Observability tool choice (LangSmith vs Langfuse), tracing architecture, runtime topology and checkpointer alignment rules, trigger patterns, and key signals to monitor for VA agents.
 - [[PGVector Migration Pattern]] — Migrating a vector store from in-memory NumPy arrays to PostgreSQL + pgvector — preserving the public API, using cosine distance operator, adding an IVFFlat index, and moving embeddings to Cloud SQL without re-embedding.
@@ -303,6 +309,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 ## Meta
 
+- [[AI Engineering Curriculum Structure]] — The two-wave model of the learn-ai-engineering corpus — generative-ai as the application wave (seven pillars) and ai-engineering as the discipline wave (six foundations) — plus the dependency ordering behind the pillar sequence.
 - [[Agile Workflow Definitions]] — Definition of Ready, Definition of Done, WIP limits, weekly cadence, and ceremony-to-skill mapping for the Claude Code workflow system.
 - [[Claude Code Hook Architecture]] — Claude Code lifecycle hooks — PreToolUse/PostToolUse events, exit-code protocol (0=pass, 2=block), and the hook suite pattern used to enforce code quality automatically without mid-task reminders.
 - [[Claude Workflow System]] — Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints, and session notes — that automates context management across multi-phase engineering workflows.
