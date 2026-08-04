@@ -80,13 +80,13 @@ last-audit: 2026-07-20
   ever passed to a log call, written to a wiki page, or embedded in data/raw/.
 - evidence: commit clause — .gitignore#L2 (.env untracked, only .env.example
   tracked, verified 2026-07-20) + global secrets_scan hook (PostToolUse).
-  Logging clause — app/log_config.py#redact_secrets, a structlog processor that
+  Logging clause — shared/log_config.py#redact_secrets, a structlog processor that
   drops values for key/token/secret-named fields (walking nested dicts and
   sequences) and masks recognisable Anthropic/Notion/Linear/Google/GitHub key
   formats even under an innocuous field name; installed ahead of the renderer by
   configure_logging(). Called at every process entry point that logs, so the
   processor is installed before the first log call rather than only where the
-  MCP server happens to run: app/mcp_server/server.py:37; app/backend/main.py at
+  MCP server happens to run: app/mcp_server/server.py:42; app/backend/main.py at
   import (uvicorn imports the ASGI app and calls no main() of ours); the seven
   structlog-using core/ scripts (ingest_linear, ingest_notion, ingest_pdf,
   scrape_bookmarks, scrape_claude_docs, scrape_repos,

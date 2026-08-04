@@ -56,7 +56,7 @@ Settings are loaded from `.env` via `core/researcher/_settings.py`.
 |--------|---------|
 | `manifest.py` | SHA-256 hash dedup registry (`raw/manifest.jsonl`). Use `ManifestSession` for batch ingest to avoid O(N²) file reads. |
 | `lint_raw.py` | Pre-ingest filename linter — enforces `YYYY-MM-DD-lowercase-slug.md` convention |
-| `relinker.py` | Post-ingest semantic relinking pass — discovers missing wiki links via embeddings. Bridges core/ and app/ (imports `app.backend.embeddings`). |
+| `relinker.py` | Post-ingest semantic relinking pass — discovers missing wiki links via embeddings (imports `shared.embeddings`). |
 
 ## Constraints
 

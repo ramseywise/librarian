@@ -29,12 +29,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import duckdb
+import frontmatter
 import structlog
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 
-from app.log_config import configure_logging
 from app.mcp_server.graph_expansion import build_typed_edges, expand_one_hop
+from core.wiki_common import WIKILINK_RE
+from shared.log_config import configure_logging
 
 load_dotenv()
 configure_logging()  # installs the secret-redaction processor
@@ -49,7 +51,6 @@ DB_PATH = Path(os.getenv("WIKI_DB_PATH", str(REPO_ROOT / ".wiki_index.duckdb")))
 LOGS_DIR = Path("logs")
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
 SCHEMA_VERSION = "4"  # 3→4: paths stored absolute + BM25 fts index added
-WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 
 def _domains() -> list[str]:
@@ -308,24 +309,25 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
 
 
 def _parse_frontmatter(text: str) -> dict:
-    """Parse YAML frontmatter (basic — handles our known fields)."""
-    if not text.startswith("---"):
+    """Parse YAML frontmatter via the same library wiki_parser and relinker use.
+
+    Replaced a hand-rolled line parser that dropped YAML block-list tags
+    (`tags:\\n  - rag`), indexing those pages with zero tags. Values are
+    normalised to the shapes call sites rely on: `tags` is always a list of
+    strings, every other value a string (`updated` parses as datetime.date
+    otherwise and would leak into the DuckDB insert).
+    """
+    try:
+        meta = dict(frontmatter.loads(text).metadata)
+    except Exception:
         return {}
-    end = text.find("---", 3)
-    if end == -1:
-        return {}
-    fm = text[3:end].strip()
-    meta: dict = {}
-    for line in fm.splitlines():
-        if ":" not in line:
-            continue
-        key, _, val = line.partition(":")
-        key = key.strip()
-        val = val.strip()
-        if key == "tags":
-            meta["tags"] = re.findall(r"[\w-]+", val)
-        else:
-            meta[key] = val.strip("\"'")
+    tags = meta.get("tags") or []
+    if isinstance(tags, str):
+        tags = [tags]
+    meta["tags"] = [str(t) for t in tags]
+    for key, val in meta.items():
+        if key != "tags" and not isinstance(val, str):
+            meta[key] = "" if val is None else str(val)
     return meta
 
 

@@ -9,7 +9,7 @@ clause, which previously held by convention only with no filter behind it.
 
 Usage (per ~/.claude/refs/logging.md):
 
-    from app.log_config import get_logger, configure_logging
+    from shared.log_config import get_logger, configure_logging
 
     configure_logging()                  # once, at entry point
     log = get_logger(__name__)           # module level

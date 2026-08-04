@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from app.log_config import configure_logging, get_logger
+from shared.log_config import configure_logging, get_logger
 
 from .agent import run_agent_stream
 from .wiki_parser import parse_wiki
@@ -49,7 +49,7 @@ async def _watch_and_broadcast(awatch: Callable[[str], AsyncIterator[object]]) -
 
 @contextlib.asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    # Both startup jobs need the `api` extra (.embeddings -> numpy/sentence-transformers,
+    # Both startup jobs need the `api` extra (shared.embeddings -> numpy/sentence-transformers,
     # _watch_and_broadcast -> watchfiles), and both are optimizations: warmup only
     # pre-loads a model, the watcher only pushes live graph updates. Neither is required
     # for the routes to answer. Degrade instead of failing startup, because CI installs
@@ -58,7 +58,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     try:
         from watchfiles import awatch
 
-        from .embeddings import warmup
+        from shared.embeddings import warmup
     except ImportError as e:
         log.warning("startup_jobs_skipped", reason="api extra not installed", error=str(e))
     else:
@@ -100,7 +100,7 @@ async def get_graph() -> dict[str, Any]:
 
 @app.get("/api/edges/semantic")
 async def get_semantic_edges(threshold: float = 0.65) -> list[dict]:
-    from .embeddings import semantic_edges
+    from shared.embeddings import semantic_edges
 
     return semantic_edges(threshold)
 

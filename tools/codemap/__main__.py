@@ -11,7 +11,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-from app.log_config import configure_logging
+from shared.log_config import configure_logging
 from tools.codemap.indexer import run
 
 

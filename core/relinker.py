@@ -24,9 +24,10 @@ from pathlib import Path
 
 import frontmatter
 
+from core.wiki_common import WIKILINK_RE
+
 REPO_ROOT = Path(__file__).parent.parent
 WIKI_DIR = REPO_ROOT / "data" / "wiki"
-WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 DOMAIN_TAG_SET = {
     "langgraph",
@@ -151,7 +152,7 @@ def relink(
         sys.path.insert(0, _repo_root_str)
     from sklearn.metrics.pairwise import cosine_similarity
 
-    from app.backend.embeddings import compute_embeddings
+    from shared.embeddings import compute_embeddings
 
     page_ids, vecs = compute_embeddings()
     if len(page_ids) < 2:

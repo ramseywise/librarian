@@ -16,7 +16,8 @@ from typing import Any
 
 import pytest
 
-from tools.cartographer import parser
+from shared import parser
+from shared.parser import _session_repos
 from tools.cartographer.dashboard import (
     JULY_BOUNDARY,
     weekly_commits_by_repo,
@@ -24,7 +25,6 @@ from tools.cartographer.dashboard import (
 )
 from tools.cartographer.factstore import ALL_COLUMNS, upsert
 from tools.cartographer.gitstore import upsert_commits
-from tools.cartographer.parser import _session_repos
 
 
 def _session(

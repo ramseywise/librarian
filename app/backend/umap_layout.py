@@ -8,7 +8,7 @@ import duckdb
 import numpy as np
 from umap import UMAP
 
-from .embeddings import compute_embeddings
+from shared.embeddings import compute_embeddings
 
 CANVAS_W = 2000
 CANVAS_H = 1500

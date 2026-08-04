@@ -8,7 +8,7 @@ import structlog
 from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
 
-from app.log_config import configure_logging
+from shared.log_config import configure_logging
 from tools.presenter._settings import settings
 
 console = Console()

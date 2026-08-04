@@ -2,7 +2,7 @@
 
 Provides:
   - source_name / output_dir attributes
-  - structlog setup (via app.log_config.configure_logging)
+  - structlog setup (via shared.log_config.configure_logging)
   - ManifestSession integration
   - dry-run guard
   - cli() classmethod: argparse boilerplate + instantiation + run
@@ -34,8 +34,8 @@ from pathlib import Path
 
 import structlog
 
-from app.log_config import configure_logging
 from core.manifest import ManifestSession
+from shared.log_config import configure_logging
 
 REPO_ROOT = Path(__file__).parent.parent
 log = structlog.get_logger()

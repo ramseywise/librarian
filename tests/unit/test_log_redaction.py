@@ -12,7 +12,7 @@ import json
 import pytest
 import structlog
 
-from app.log_config import REDACTED, configure_logging, redact_secrets
+from shared.log_config import REDACTED, configure_logging, redact_secrets
 
 FAKE_ANTHROPIC = "sk-ant-api03-AAAAAAAABBBBBBBBCCCCCCCCDDDDDDDD"
 FAKE_NOTION = "ntn_AAAAAAAABBBBBBBBCCCCCCCC"
