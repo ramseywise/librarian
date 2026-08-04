@@ -19,7 +19,7 @@ from typing import Any
 
 import structlog
 
-from tools.cartographer.parser import (
+from shared.parser import (
     _COST_CACHE_READ,
     _COST_CACHE_WRITE,
     _COST_INPUT,

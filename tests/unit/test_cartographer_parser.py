@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.cartographer.parser import (
+from shared.parser import (
     _REQUIRED_SECTION_IDS,
     _SECTION_ID_LIST,
     _SYSTEM_PROMPT,
@@ -552,7 +552,7 @@ def test_missing_section_ids_reports_absent_ones() -> None:
 def test_generate_report_html_all_nine_present_no_retry() -> None:
     """When the first response has all nine ids, call_claude is invoked exactly once."""
     full_html = _html_with_ids(*_REQUIRED_SECTION_IDS)
-    with patch("tools.cartographer.parser.call_claude", return_value=full_html) as mock_call:
+    with patch("shared.parser.call_claude", return_value=full_html) as mock_call:
         result = generate_report_html("fake-key", "prompt", "fake-model")
     assert result == full_html
     mock_call.assert_called_once()
@@ -564,7 +564,7 @@ def test_generate_report_html_missing_id_triggers_one_retry() -> None:
     incomplete_html = _html_with_ids(*_REQUIRED_SECTION_IDS[:-1])
     full_html = _html_with_ids(*_REQUIRED_SECTION_IDS)
     with patch(
-        "tools.cartographer.parser.call_claude",
+        "shared.parser.call_claude",
         side_effect=[incomplete_html, full_html],
     ) as mock_call:
         result = generate_report_html("fake-key", "prompt", "fake-model")
@@ -582,7 +582,7 @@ def test_generate_report_html_still_missing_after_retry_raises() -> None:
     still_incomplete_html = _html_with_ids(*_REQUIRED_SECTION_IDS[:-1])
     with (
         patch(
-            "tools.cartographer.parser.call_claude",
+            "shared.parser.call_claude",
             side_effect=[incomplete_html, still_incomplete_html],
         ) as mock_call,
         pytest.raises(SectionContractError) as exc_info,

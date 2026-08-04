@@ -49,7 +49,7 @@ repos:
         name: no hardcoded /Users/ paths
         language: pygrep
         entry: "/Users/"
-        files: ^(app|core|tools)/
+        files: ^(app|core|shared|tools)/
         types: [python]
 
       - id: no-pkl-staged

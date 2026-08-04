@@ -17,7 +17,7 @@ from typing import Any
 
 import structlog
 
-from tools.cartographer.enrich import _compute_cost
+from core.enrich import _compute_cost
 
 log = structlog.get_logger(__name__)
 

@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import sys
 
-from app.log_config import configure_logging
+from shared.log_config import configure_logging
 
 
 def main() -> None:
@@ -21,7 +21,7 @@ def main() -> None:
     """Route to the appropriate cartographer subcommand."""
     if "--cron" in sys.argv:
         sys.argv.remove("--cron")
-        from tools.cartographer.cron import run_cron
+        from core.cron import run_cron
 
         run_cron()
 
@@ -42,7 +42,7 @@ def main() -> None:
         _run_facts()
 
     else:
-        from tools.cartographer.parser import main as parser_main
+        from shared.parser import main as parser_main
 
         parser_main()
 
@@ -53,8 +53,8 @@ def _run_migrate() -> None:
     import json
     from pathlib import Path
 
-    from tools.cartographer.migrate import migrate_jsonl_to_notes
-    from tools.cartographer.parser import iter_sessions
+    from core.migrate import migrate_jsonl_to_notes
+    from shared.parser import iter_sessions
 
     p = argparse.ArgumentParser(description="Migrate JSONL sessions to session notes")
     p.add_argument("--projects-dir", default="~/.claude/projects")
@@ -94,8 +94,8 @@ def _run_compare() -> None:
     import argparse
     from pathlib import Path
 
-    from tools.cartographer.migrate import compare_sources
-    from tools.cartographer.parser import iter_sessions, parse_session_notes
+    from core.migrate import compare_sources
+    from shared.parser import iter_sessions, parse_session_notes
 
     p = argparse.ArgumentParser(description="Compare JSONL vs session notes")
     p.add_argument("--projects-dir", default="~/.claude/projects")
@@ -129,7 +129,7 @@ def _run_enrich() -> None:
     import argparse
     from pathlib import Path
 
-    from tools.cartographer.enrich import run_enrich
+    from core.enrich import run_enrich
 
     p = argparse.ArgumentParser(description="Enrich session notes with cost + facet data")
     p.add_argument(
@@ -155,7 +155,7 @@ def _run_facts() -> None:
     from datetime import UTC, datetime, timedelta
     from pathlib import Path
 
-    from tools.cartographer.cron import EmptyInputError
+    from core.cron import EmptyInputError
     from tools.cartographer.factstore import (
         from_findings_jsonl,
         from_jsonl,
@@ -272,8 +272,8 @@ def _run_facts() -> None:
     # zero rows — which is how it sat for weeks (#60).
     notes_dir = Path(args.notes_dir).expanduser()
     if not args.no_derive:
-        from tools.cartographer.migrate import derive_notes
-        from tools.cartographer.parser import iter_sessions
+        from core.migrate import derive_notes
+        from shared.parser import iter_sessions
 
         projects_dir = Path(args.projects_dir).expanduser()
         sessions = iter_sessions(projects_dir)

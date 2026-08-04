@@ -33,8 +33,8 @@ import structlog
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 
-from app.log_config import configure_logging
 from app.mcp_server.graph_expansion import build_typed_edges, expand_one_hop
+from shared.log_config import configure_logging
 
 load_dotenv()
 configure_logging()  # installs the secret-redaction processor

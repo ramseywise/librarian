@@ -1,6 +1,6 @@
 """Optional semantic search over symbols.
 
-Mirrors app/backend/embeddings.py's content-hash-cached embedding pattern,
+Mirrors shared/embeddings.py's content-hash-cached embedding pattern,
 applied to symbol name+kind+signature+docstring text instead of wiki page
 text, and app/mcp_server/server.py's HAS_EMBEDDINGS optional-import gate.
 Gracefully absent if sentence-transformers isn't installed — activates
