@@ -354,10 +354,15 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
     params: list = [query, query, query]
 
     if domain:
+        # Match on directory OR domain tag, not either/or: a page can live in one
+        # subject directory while carrying another domain's tag (e.g. an interview
+        # guide filed under foundations/ but tagged `interview`). Filtering by path
+        # alone silently drops those from a --domain search.
         domain_dir = _resolve_domain_dir(domain)
         if domain_dir:
-            tag_filter = "AND path LIKE ?"
+            tag_filter = "AND (path LIKE ? OR lower(tags) LIKE '%' || lower(?) || '%')"
             params.append(str(domain_dir) + "/%")
+            params.append(domain)
         else:
             tag_filter = "AND lower(tags) LIKE '%' || lower(?) || '%'"
             params.append(domain)

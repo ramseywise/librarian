@@ -2,7 +2,7 @@
 title: System Design Interview Study Guide
 tags: [interview, reference]
 summary: Method guide for the ML/LLM/agent system design round — 5-step process, trade-off narration formula, LLM reference architecture, bottleneck table, and failure mode reflexes.
-updated: 2026-08-03
+updated: 2026-08-04
 sources:
   - raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--interview-guide.md
 ---
@@ -60,13 +60,12 @@ For each box: know its failure mode and its scaling story.
 
 ## Bottleneck Table
 
-| Bottleneck | Cause | Mitigation |
-|---|---|---|
-| Token overload | prompt/response too large | truncate, summarize, stream, paginate |
-| Queue congestion | slow embedding/model service | shard queues, priority tiers |
-| Vector index bloat | stale docs | prune, compress, periodic rebuild |
-| Model cold start | on-prem spin-up | warm pools, pre-warming |
-| Rate-limited APIs | vendor throttling | backoff retries, caching, multi-provider |
+The five bottlenecks, their causes, and mitigations are durable infrastructure knowledge —
+they live in [[LLM System Bottleneck Table]]. Know the table cold; the exam cue is that
+naming the *cause* is what makes the mitigation follow, rather than reciting a list.
+
+Cost questions attached to this round ("why is this expensive, how would you cut it?")
+resolve to the prefill/decode split in [[LLM Inference Economics]].
 
 ## Failure Mode Reflexes
 
@@ -76,6 +75,8 @@ For each box: know its failure mode and its scaling story.
 - Hallucination → grounding scores, double-pass validation
 
 ## See Also
+- [[LLM System Bottleneck Table]] — prerequisite-for (the durable table this round examines)
+- [[LLM Inference Economics]] — prerequisite-for (the cost mechanism under the trade-off questions)
 - [[RAG Interview Study Guide]] — extends
 - [[Agents Interview Study Guide]] — extends
 - [[System Design — Shared Code-Index Service]] — instance-of
