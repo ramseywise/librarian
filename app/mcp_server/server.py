@@ -32,6 +32,7 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 
 from app.log_config import configure_logging
+from app.mcp_server.graph_expansion import build_typed_edges, expand_one_hop
 
 load_dotenv()
 configure_logging()  # installs the secret-redaction processor
@@ -332,7 +333,7 @@ def _resolve_domain_dir(domain: str) -> Path | None:
 
 
 @mcp.tool()
-def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
+def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = False) -> str:
     """Search the wiki using hybrid search (FTS + semantic similarity + backlink rank).
 
     Results are ranked by a blend of: text match relevance, semantic closeness
@@ -344,6 +345,9 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
                 (e.g. 'rag', 'langgraph', 'adk', 'infra', 'patterns',
                  'eval', 'deep-agents', 'memory', 'mcp', 'meta', 'projects')
         limit:  Max results (default 10)
+        expand: SPIKE — also return pages one typed relationship hop from the
+                results (`prerequisite-for` / `extends`). Answers "what else do
+                I need to understand these hits?" Off by default.
 
     Returns:
         Matching pages with title, summary, path, backlink count, and a snippet.
@@ -448,7 +452,47 @@ def search_wiki(query: str, domain: str = "", limit: int = 10) -> str:
         n_results=len(rows),
         top_paths=[r[0] for r in rows[:5]],
     )
-    return f"Found {len(rows)} result(s):\n\n" + "\n\n---\n\n".join(results)
+    body = f"Found {len(rows)} result(s):\n\n" + "\n\n---\n\n".join(results)
+
+    if expand:
+        body += _expansion_section([r[0] for r in rows])
+
+    return body
+
+
+def _expansion_section(seed_paths: list[str]) -> str:
+    """Render the one-hop typed-relationship neighbourhood of a result set.
+
+    Returns an empty string when nothing is one hop away, so a wiki region with
+    no typed annotations degrades to plain search rather than an empty header.
+    """
+    con = get_con()
+    try:
+        pages = con.execute("SELECT path, title, content FROM pages").fetchall()
+        edges = build_typed_edges(pages)
+        neighbours = expand_one_hop(seed_paths, edges)
+        if not neighbours:
+            return ""
+
+        meta = {
+            path: (title, summary)
+            for path, title, summary in con.execute(
+                "SELECT path, title, summary FROM pages"
+            ).fetchall()
+        }
+    finally:
+        con.close()
+
+    lines = [
+        f"- **{meta.get(path, (path, ''))[0]}** (`{path}`) "
+        f"— {rel} of `{Path(seed).stem}`\n"
+        f"  {meta.get(path, ('', ''))[1]}"
+        for path, rel, seed in neighbours
+    ]
+    return (
+        f"\n\n---\n\n**{len(neighbours)} page(s) one typed hop away** "
+        f"(prerequisite-for / extends):\n\n" + "\n".join(lines)
+    )
 
 
 @mcp.tool()
