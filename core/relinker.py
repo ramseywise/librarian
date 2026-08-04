@@ -24,9 +24,10 @@ from pathlib import Path
 
 import frontmatter
 
+from core.wiki_common import WIKILINK_RE
+
 REPO_ROOT = Path(__file__).parent.parent
 WIKI_DIR = REPO_ROOT / "data" / "wiki"
-WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 
 DOMAIN_TAG_SET = {
     "langgraph",

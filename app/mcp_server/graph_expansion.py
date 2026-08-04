@@ -25,13 +25,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-# Mirrors app/backend/wiki_parser.py — the graph UI already parses these. Kept as
-# a separate compiled pattern rather than an import so the MCP server does not
-# take a dependency on the FastAPI backend package.
-TYPED_LINK_RE = re.compile(
-    r"-\s*\[\[([^\]]+)\]\]\s*—\s*"
-    r"(extends|prerequisite-for|alternative-to|instance-of|contradicts|supersedes)"
-)
+from core.wiki_common import TYPED_LINK_RE
 
 # The two relationship types that express "you need this to understand that".
 EXPANSION_RELATIONSHIPS = frozenset({"prerequisite-for", "extends"})

@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
 import frontmatter
 
+from core.wiki_common import TYPED_LINK_RE, WIKILINK_RE
+
 WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
-WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
-TYPED_LINK_RE = re.compile(
-    r"-\s*\[\[([^\]]+)\]\]\s*—\s*(extends|prerequisite-for|alternative-to|instance-of|contradicts|supersedes)"
-)
 RELATIONSHIP_TYPES = {
     "extends",
     "prerequisite-for",

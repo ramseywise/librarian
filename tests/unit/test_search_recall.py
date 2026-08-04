@@ -89,3 +89,42 @@ def test_search_rows_scores_are_descending(wiki: Path) -> None:
     scores = [r[6] for r in rows]
     assert scores == sorted(scores, reverse=True)
     assert all(isinstance(s, float) for s in scores)
+
+
+BLOCK_LIST_TAGS_PAGE = """---
+title: Hybrid Search
+tags:
+  - rag
+  - pattern
+summary: Tags in YAML block-list form
+updated: 2026-08-04
+---
+
+# Hybrid Search
+
+BM25 fused with dense retrieval.
+"""
+
+
+def test_block_list_tags_parse() -> None:
+    """LIB-110 R4: the hand-rolled parser indexed block-list-tagged pages with zero tags."""
+    meta = server._parse_frontmatter(BLOCK_LIST_TAGS_PAGE)
+    assert meta.get("tags") == ["rag", "pattern"]
+
+
+def test_block_list_tagged_tombstone_stays_out_of_index(wiki: Path) -> None:
+    """A tombstone whose tags use block-list form must still be excluded from search."""
+    (wiki / "rag" / "old-retrieval-page.md").write_text(
+        "---\n"
+        "title: Old Retrieval Page\n"
+        "tags:\n"
+        "  - rag\n"
+        "  - tombstone\n"
+        "summary: Retired — superseded by Chunking.\n"
+        "updated: 2026-08-04\n"
+        "---\n\n"
+        "# Old Retrieval Page\n\n"
+        "Retired. Zombie retrieval verbiage that would otherwise rank.\n"
+    )
+    result = server.search_wiki("zombie retrieval verbiage")
+    assert "Old Retrieval Page" not in result
