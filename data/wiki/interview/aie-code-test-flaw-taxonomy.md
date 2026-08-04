@@ -1,8 +1,8 @@
 ---
 title: AIE Code-Test Flaw Taxonomy
-tags: [interview, llm, reference, conflict]
+tags: [interview, llm, reference]
 summary: The eleven recurring defects in LLM take-home submissions — context overflow, naive chunking, missing retry/timeout, ungrounded generation, JSON drift, swallowed exceptions — each with its detection cue and the minimal fix that fits inside a one-hour timebox.
-updated: 2026-08-03
+updated: 2026-08-04
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_format-and-flaws.md
 ---

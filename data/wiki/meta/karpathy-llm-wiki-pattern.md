@@ -96,3 +96,4 @@ Every wiki page should list the `sources:` frontmatter field pointing back to th
 - [[Session Knowledge Capture Patterns]]
 - [[Durable vs Performative Knowledge Split]] — complements (durable/performative axis alongside raw/compiled)
 - [[AI Engineering Curriculum Structure]] — instance-of (a source corpus that pre-organises itself before compilation, and splits its own material by decay rate)
+- [[Wiki Graph Engineering — Edge Quality Over Edge Count]] — extends (what the compiled graph's edges are actually worth at retrieval time)
