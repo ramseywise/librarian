@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**261 pages** across 17 domains.
+**263 pages** across 17 domains.
 
 ## Foundations
 
@@ -151,7 +151,8 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 ## RAG
 
 - [[Bedrock KB vs LangGraph Decision]] — Decision framework for Bedrock Knowledge Bases vs. LangGraph CRAG pipeline — quality, observability, cost, and migration path analysis.
-- [[Agentic RAG — Advanced Patterns]] — Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, and A2A protocol mapping to LangGraph.
+- [[Agentic RAG — Advanced Patterns]] — Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
+- [[RAG Architecture Selection]] — The nine named RAG architectures as one selection space — what each buys and costs, the decision cheat-sheet, and Fusion RAG over heterogeneous sources (distinct from multi-query RAG-Fusion).
 - [[Conversation Repository Pattern]] — Two-table PostgreSQL schema for persisting multi-turn conversation state — conversations table for sessions, messages table for turns with JSONB trace and sources columns enabling trace-linked retrieval debugging.
 - [[CRAG Retry Logic]] — The confidence-gated conditional back-edge in a CRAG pipeline that re-enters retrieval when the reranker's top score falls below threshold — preventing low-confidence answers from reaching the user.
 - [[Embedder Warmup]] — Force-loading the embedding model during application startup (before the first request) to prevent a 3–8s cold-start spike on the first query in production.
@@ -241,6 +242,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Eval Suite Maintenance]] — Fix the evaluation system before changing the agent, read traces rather than scores, and treat a saturated suite as a stopped learning signal — paired regression and rolling-discovery sets keep the frontier moving.
 - [[Eval Ladder]] — A four-rung progression — manual review, golden-set grading, LLM-judge, user feedback — sequenced so each rung's failures supply the next rung's test cases, with an explicit "most POCs reach rung 2–3 and that's sufficient" stopping point.
 - [[Eval vs Test Distinction]] — A test tells you your code is broken; an eval tells you your product got worse — two different instruments with different targets, graders, cadences, and failure semantics.
+- [[Experiment Tracking Schemas]] — The metadata contract that makes an eval run reproducible and diffable — base trace fields, ExperimentRun/RagConfig/BedrockConfig/ChunkRecord, the instrumentation asymmetry between a custom pipeline and a managed KB, and the log-only-then-promote policy for grounding checks.
 - [[Forecast Grader Thresholds]] — The pass/fail contract for time-series forecast evaluation — MASE against a naïve baseline, SMAPE, directional accuracy, and prediction-interval coverage — with the diagnostic each failure points to and the drift ratio that triggers retraining.
 - [[Golden Set Mechanics]] — The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
 - [[Grounding Claim Methodology]] — Claims-based grounding — the "yellow highlighter" approach to RAG verification, where the agent extracts verbatim supporting quotes from retrieved documents before writing the final answer, creating a verifiable paper trail.

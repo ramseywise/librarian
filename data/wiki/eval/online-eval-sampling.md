@@ -72,3 +72,4 @@ drift is invisible to CI and only online evaluation catches it.
 - [[Observability and Runtime Patterns]] — depends-on (traces are the sampling substrate)
 - [[User Feedback Loops]] — complements (negative feedback as a sampling trigger)
 - [[Loop Termination Design]] — complements (cost as a thrashing proxy)
+- [[Experiment Tracking Schemas]] — depends-on (prompt_version + git_commit + model as the attribution key for a drift signal)

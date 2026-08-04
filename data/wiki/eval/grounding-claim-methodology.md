@@ -97,3 +97,4 @@ But claims make the system much easier to evaluate because they expose the evide
 - [[RAG Reranking]]
 - [[Input Guardrails Pipeline]]
 - [[Observability & Evaluation Glossary]] — grounding vs citation_hallucination vs grounding.hallucination_rate distinction
+- [[Experiment Tracking Schemas]] — extends (the log-only-then-promote policy governing when a tier becomes a hard fail)
