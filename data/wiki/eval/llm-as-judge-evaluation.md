@@ -60,6 +60,7 @@ grading (free, fast) in CI; run LLM-judge on demand for quality audits."* The co
 non-determinism make it a poor fit for a per-PR gate.
 
 ## See Also
+- [[Eval vs Test Distinction]] <!-- auto-linked -->
 - [[Eval Ladder]] — part-of (rung 3)
 - [[Golden Set Mechanics]] — complements (heuristic in CI, judge on demand)
 - [[LLM Grader Calibration Insights]] — extends (calibration failure modes)

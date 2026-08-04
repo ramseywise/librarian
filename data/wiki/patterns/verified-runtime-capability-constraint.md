@@ -83,6 +83,7 @@ is a defect in the plan, not license to fill it in. See
 [[No-Placeholder Plan Discipline]].
 
 ## See Also
+- [[Capability Runtime-Coupling Tiers]] <!-- auto-linked -->
 - [[Parallax]] — instance-of
 - [[Skill Preloading via Agent Definition]] — extends (the verified mechanism this rule selected)
 - [[Agent Quality Review Checklist]] — extends (prose-only safeguard, at the spec layer)

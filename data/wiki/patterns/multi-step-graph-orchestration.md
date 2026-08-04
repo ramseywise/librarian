@@ -61,6 +61,7 @@ points; resumable via checkpointed state.
 once built; overkill for simple tasks.
 
 ## See Also
+- [[Chain of Thought]] <!-- auto-linked -->
 - [[Agent Orchestration Patterns]] — part-of
 - [[Single Agent With Tools]] — upgrade-from
 - [[Multi-Agent Role Specialization]] — upgrade-path

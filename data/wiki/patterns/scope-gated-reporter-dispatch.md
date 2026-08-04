@@ -84,6 +84,7 @@ Attaching this to the review rather than to a separate cleanup task means branch
 rot gets collected at the moment someone is already looking at the repo's state.
 
 ## See Also
+- [[Corrective Follow-Up Dispatch]] <!-- auto-linked -->
 - [[Source Severity vs Merge Impact]] — extends (the same refusal to let silence mean approval)
 - [[Merge Impact and Evidence State]] — prerequisite-for
 - [[Claude Workflow System]] — instance-of (the review phase this dispatches within)

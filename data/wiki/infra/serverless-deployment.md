@@ -69,6 +69,7 @@ The chat-application exclusion is significant given how many AI POCs default to 
 interface — serverless and conversational UX are frequently incompatible defaults.
 
 ## See Also
+- [[Single Service Deployment]] <!-- auto-linked -->
 - [[Deployment Topology Ladder]] — part-of
 - [[Cloud Service Deployment]] — alternative-to (same audience, opposite traffic shape)
 - [[Runtime Topology and Checkpointer Alignment]] — constrains (checkpointer must be external)

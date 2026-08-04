@@ -82,6 +82,9 @@ the checkpointer *"exists as optional skill, not default."* Documented-but-unwir
 as absent, because a scaffold's job is to produce the wiring.
 
 ## See Also
+- [[Agent Quality Review Checklist]] <!-- auto-linked -->
+- [[Parallel Dimension Scanner Architecture]] <!-- auto-linked -->
+- [[DESIGN.md Artifact]] <!-- auto-linked -->
 - [[Capability Parity Audit]] — alternative-to (per-consumer request matrix rather than a fixed rubric)
 - [[Template Floor Raising]] — extends (what to do with the gap list once produced)
 - [[AI Project Template Scaffold]] — instance-of (the artifact under assessment)

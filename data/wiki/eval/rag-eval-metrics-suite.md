@@ -190,6 +190,8 @@ Low Document Precision + high Contextual Relevance → source-targeting or ranki
 ---
 
 ## See Also
+- [[Manual Review as Eval Bootstrap]] <!-- auto-linked -->
+- [[Eval Ladder]] <!-- auto-linked -->
 - [[RAG Eval Gate Contract]] <!-- auto-linked -->
 - [[project-g Eval Architecture]] <!-- auto-linked -->
 - [[HITL Annotation Pipeline]] <!-- auto-linked -->

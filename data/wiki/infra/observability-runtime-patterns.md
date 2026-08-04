@@ -155,3 +155,5 @@ LANGFUSE_HOST=https://your-langfuse.internal
 - [[Observability & Evaluation Glossary]]
 - [[Webhook Handler Idempotency]] — extends (async inbound events fail invisibly without traces)
 - [[Cloud Service Deployment]] — related (the rung where monitoring becomes mandatory)
+- [[Verification Loops]] — extends (traces are the raw material for trace-driven harness improvement)
+- [[Harness Maturity and Failure Modes]] — complements (structured tracing is the Stage 2→3 gate)

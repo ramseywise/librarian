@@ -136,6 +136,9 @@ CONFIRM_EXPENSIVE_OPS=1 make eval-trajectory  # unlock gated runs
 ---
 
 ## See Also
+- [[Manual Review as Eval Bootstrap]] <!-- auto-linked -->
+- [[Heuristic Pipeline Metrics]] <!-- auto-linked -->
+- [[Eval Ladder]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] — extends
 - [[Golden Set Mechanics]] — extends
 - [[Eval vs Test Distinction]] — prerequisite-for

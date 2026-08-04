@@ -184,3 +184,4 @@ See [[VA Hypernova MCP]] for the full production deployment of this pattern.
 - [[VA Hypernova MCP]]
 - [[AI Engineering Chapter @[client]]]
 - [[Integration Pattern Selection]] — alternative-to (MCP against Composio, direct clients, webhooks, and n8n)
+- [[Tool Design as Context Engineering]] — extends (tool definitions and results as context surfaces)

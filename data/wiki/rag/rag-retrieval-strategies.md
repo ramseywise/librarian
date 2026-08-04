@@ -306,3 +306,4 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[Bedrock KB vs LangGraph Decision]]
 - [[RAG API Design Patterns]]
 - [[Listen-Wiseer Project]]
+- [[Context Retrieval Strategies]] — extends (pre-computed retrieval against just-in-time context)

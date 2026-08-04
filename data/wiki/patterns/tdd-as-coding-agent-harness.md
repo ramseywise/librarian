@@ -70,3 +70,5 @@ provisional worktree commits, applied to tests.
 - [[Eval-Driven Development (EDD)]] — alternative-to
 - [[Specification by Example]] — extends
 - [[Eval vs Test Distinction]]
+- [[Verification Loops]] — part-of (the general case: verification as a gate the agent cannot skip)
+- [[Harness Engineering]] — part-of (a failing test is one acceptance baseline among four harness parts)

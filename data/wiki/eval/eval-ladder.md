@@ -59,6 +59,10 @@ usage. These measure operational health, never answer quality, and complement ra
 replace any rung.
 
 ## See Also
+- [[Skill Eval Pipeline (Blind Comparison + Grading)]] <!-- auto-linked -->
+- [[Eval vs Test Distinction]] <!-- auto-linked -->
+- [[Skill Pipeline Dryrun Testing]] <!-- auto-linked -->
+- [[ADK Eval Guide]] <!-- auto-linked -->
 - [[Golden Set Mechanics]] — extends (rung 2, with full case-shape mechanics)
 - [[Manual Review as Eval Bootstrap]] — part-of
 - [[LLM-as-Judge Evaluation]] — part-of
@@ -66,3 +70,6 @@ replace any rung.
 - [[Heuristic Pipeline Metrics]] — complements
 - [[Complexity Floor]] — related (eval maturity tracks project tier)
 - [[Six-Pillar Agent Engineering Assessment]] — extends (the eval pillar is one of six scored the same way)
+- [[Verification Loops]] — complements (evals as the harness gate the agent cannot skip)
+- [[Harness Maturity and Failure Modes]] — depends-on (no binary eval is failure mode 5)
+- [[Iterative Harness Simplification]] — depends-on (subtraction is unmeasurable without a binary eval)

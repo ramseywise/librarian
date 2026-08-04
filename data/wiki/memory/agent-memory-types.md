@@ -335,3 +335,4 @@ For Deep Agents, memory is surfaced through pluggable backends rather than direc
 - [[LangGraph BaseStore]]
 - [[Self-Learning Agents]]
 - [[Chain of Thought]]
+- [[Memory as Context]] — extends (memory framed as a context sub-component; episodic→semantic distillation, index-plus-detail, hygiene)

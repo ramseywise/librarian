@@ -2,7 +2,9 @@
 
 Reads raw/repos/repos.txt — one repo path per line (# for comments).
 For each repo, extracts: CLAUDE.md, README.md, .claude/skills/**/*.md,
-docs/**/*.md, .agents/**/*.md, SANYI.md, interviewing/**/*.md.
+docs/**/*.md, .agents/**/*.md, SANYI.md, plus the learn-ai-engineering
+knowledge base (interviewing/, ai-engineering/, generative-ai/, and the
+data-*/programming subject domains). See EXTRACT_GLOBS.
 
 Idempotent: skips files whose content hasn't changed since last scrape.
 
@@ -40,7 +42,22 @@ EXTRACT_GLOBS = [
     "docs/**/*.md",
     ".agents/**/*.md",
     "src/agents/akira/findings/*.md",
-    "interviewing/**/*.md",  # learn-ai-engineering interview KB
+    # learn-ai-engineering knowledge base. Depth-limited on purpose: the pillar
+    # dirs also hold vendored third-party repos (Prompt-Engineering-Guide-main,
+    # learn-harness-engineering-main, Knowledge_Graphs_for_RAG-main/notes/, ...)
+    # that a recursive ** would pull in at ~50x the volume of the authored notes.
+    "CURRICULUM.md",
+    "interviewing/**/*.md",
+    "ai-engineering/*.md",
+    "ai-engineering/*/*.md",
+    "ai-engineering/*/notes/*.md",
+    "generative-ai/*.md",
+    "generative-ai/*/*.md",
+    "generative-ai/*/notes/*.md",
+    "data-engineering/*.md",
+    "data-science/*.md",
+    "data-analytics/*.md",
+    "programming/*.md",
 ]
 
 # Never extract these (build artifacts, lock files, etc.)

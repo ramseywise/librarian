@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [meta, reference]
 summary: Auto-generated table of contents for every page in data/wiki/, grouped by domain directory.
-updated: 2026-08-03
+updated: 2026-08-04
 sources:
   - data/wiki/
 ---
@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**200 pages** across 12 domains.
+**230 pages** across 15 domains.
 
 ## Foundations
 
@@ -83,6 +83,44 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Verified Runtime Capability Constraint]] — A design rule that a control may only be specified if the runtime demonstrably enforces it — three separate Parallax mechanisms (a timeout budget, a cost cap, a submodule-vendored skill) were dropped on discovering the harness had no way to make them real.
 - [[Wander — Question-Generating Review Agent]] — A review agent that produces 3–5 pointed questions instead of findings — surfacing intent, edge cases, walked-past decisions, blast radius, and the conspicuously absent thing — as the "yin" complement to defect scanners.
 - [[Webhook Handler Idempotency]] — Every inbound webhook handler must tolerate the same event arriving more than once — at-least-once delivery is the sender's contract, so deduplication is unambiguously the receiver's responsibility.
+
+## Prompting
+
+- [[Prompt Engineering]] — The pillar hub — prompt ⊂ context ⊂ harness, the "colleague with minimal context" golden rule, and the nine techniques with their authority hierarchy.
+- [[Few-Shot Prompting]] — Zero-shot versus few-shot, the three properties good examples need (relevant, diverse, structured) with the failure mode for each, and few-shot CoT.
+- [[XML Prompt Structuring]] — Tagging inputs so the model can tell instructions from data — the technique that addresses misattribution, which is the mechanism behind injection.
+- [[Structured Output]] — A structured-output prompt is a request, not a guarantee; always pair with harness-side schema validation and prefer constrained decoding where available.
+- [[Prompt Templates and Variables]] — The fixed-skeleton/variable split makes prompts versionable, evaluable, and — most importantly — makes the injection boundary explicit.
+- [[Long-Context Prompting]] — Longform data at the top (up to 30% quality improvement when the query appears last), XML tags for multi-document inputs, and grounding responses in extracted quotes.
+- [[Prompt Chaining]] — Why decomposition beats one large prompt (split attention, contamination), what it costs, and where chains cross into harness territory.
+- [[Prompt Injection]] — Instructions and data share one channel with no structural separation — the attack surface, Best-of-N power-law scaling, and defences ordered with least privilege first.
+
+## Context
+
+- [[Context Engineering]] — The pillar hub — the minimization objective, the four levers (Write → Select → Compress → Isolate) applied in order, and the four context types.
+- [[Why Context Is Finite]] — Attention divides a fixed budget across n² token pairs, so added tokens thin attention rather than expanding capacity; the marginal return curve turns negative, not merely flat.
+- [[Context Anatomy]] — What goes in the window and in what order — system-prompt altitude, the five layers organized by stability, and stable-before-dynamic ordering for cache prefix matching.
+- [[Context Retrieval Strategies]] — The shift from pre-computed retrieval to just-in-time context, the hybrid default with the ≥80%-of-turns test, and pre-retrieval pipeline ordering.
+- [[Context Compaction]] — Transforming interaction history into a continuation state — retention priority, why tool-result clearing is the highest-value move, and why state extraction is what makes compaction safe.
+- [[Memory as Context]] — Memory is the mechanism by which context outlives a window: episodic→semantic distillation, structured note-taking, index-plus-detail, and hygiene rules.
+- [[Multi-Agent Context]] — Sub-agent isolation is the highest-cost lever — the discarded window is the feature, orchestrator-holds-plan is the default, and isolation doubles as a security boundary.
+- [[Context Failure Modes]] — Five distinct failures (rot, poisoning, distraction, clash, injection) with separate mechanisms and fixes, plus the diagnostic flow.
+
+## Harness
+
+- [[Harness Engineering]] — The pillar hub — Agent = Model + Harness, the four parts (acceptance baseline, execution boundary, feedback signals, rollback), why reliability compounds negatively, and the ratchet.
+- [[Harness Anatomy]] — The nine harness components in three groups, why the filesystem is the foundational primitive, the layered mental model, and the causal build order.
+- [[Tool Design as Harness Surface]] — Tools as a harness contract rather than a context cost — ACI over API, the five-section tool spec, the four gating questions, and write-operation safety.
+- [[Execution Boundaries and Guardrails]] — Sandboxes, hooks, and permission gates — encode constraints rather than documenting them, trust zones, rollback, and why a role label is not a sandbox.
+- [[Canary Testing for Permission Boundaries]] — Deny rules are untested code — run each destructive route unguarded then guarded, and require a structured denial event, because a surviving file proves nothing.
+- [[Verification Loops]] — Two distinct failures needing two distinct fixes: a forced verification pass and an external evaluator — three kinds of reflection, asymmetric QA, and when a verifier is worth deleting.
+- [[Agent Retry Taxonomy]] — Which failures are retryable and which never are, retry at both call and node level, and feeding the error back as the move that makes a retry a re-plan.
+- [[Loop Detection and the Two-Retry Rule]] — The doom loop, per-file edit-count detection that forces re-planning rather than repair, and the reasoning sandwich.
+- [[Long-Horizon Execution]] — Coherence decay and context anxiety — state externalization makes the loop re-entrant, plans as first-class artifacts, context reset vs compaction, and Ralph loops.
+- [[Harness Orchestration]] — Subagents as a context firewall before they are an architecture — role separation, graph-based orchestration, the four multi-agent failure modes, and when not to go multi-agent.
+- [[Harness Maturity and Failure Modes]] — The five-stage maturity ladder, the six-stage per-task pipeline with its Approve gate, and the five ways teams fool themselves.
+- [[Production Reliability Primitives]] — Per-step checkpointing, cross-provider model fallback, fail-fast on ambiguity, and confidence-routed quarantine as the shape of HITL at volume.
+- [[Iterative Harness Simplification]] — Components encode assumptions about what the model can't do; when models improve those assumptions expire — strip one at a time and re-run the eval.
 
 ## RAG
 
@@ -155,6 +193,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[A2A Agent Protocol]] — Google's Agent-to-Agent open specification for inter-agent communication — task lifecycle, agent cards, and how it maps to LangGraph primitives.
 - [[MCP Protocol]] — Model Context Protocol — how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery; includes AWS Bedrock AgentCore deployment pattern from the Hypernova PoC.
 - [[MCP Server Security Patterns]] — Security patterns for MCP servers — read-only invariant, sandbox isolation, secrets handling, and what to never expose over MCP.
+- [[Tool Design as Context Engineering]] — Tools consume context twice — definitions sit in the window permanently, results enter per call — so token-efficient results, unambiguous boundaries, and terse routing descriptions are context decisions, not API aesthetics.
 
 ## Evaluation
 

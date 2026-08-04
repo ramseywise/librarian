@@ -278,6 +278,9 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[ADK Scaffold Patterns]]
 - [[Cloud Run + Cloud SQL Pattern]]
 - [[PGVector Migration Pattern]]
+- [[Production Reliability Primitives]] — extends (per-step checkpointing, cross-provider fallback, confidence-routed quarantine)
+- [[Agent Retry Taxonomy]] — extends (which failures are retryable, and at which level)
+- [[Execution Boundaries and Guardrails]] — complements (sandboxes, hooks, and cost ceilings)
 - [[Atlas Project]] — instance-of
 - [[Production Readiness Backlog]] — alternative-to
 - [[Cloud Service Deployment]] — prerequisite-for (24/7 availability is what hardening pays for)

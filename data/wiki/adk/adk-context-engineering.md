@@ -245,6 +245,8 @@ The skill `description` field is the only thing Claude reads when deciding wheth
 ---
 
 ## See Also
+- [[Context Anatomy]] <!-- auto-linked -->
+- [[Context Engineering]] <!-- auto-linked -->
 - [[ADK Python API Reference]]
 - [[ADK vs LangGraph Comparison]]
 - [[Agent Memory Types]]

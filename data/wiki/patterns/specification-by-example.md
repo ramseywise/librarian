@@ -44,6 +44,7 @@ implementation is not legible at all.
 ---
 
 ## See Also
+- [[Capability Runtime-Coupling Tiers]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] — extends
 - [[Eval vs Test Distinction]]
 - [[TDD as Coding-Agent Harness]]

@@ -37,6 +37,7 @@ spikes points at infrastructure.
 - `optional_features: [promptfoo]` adds HTTP-level performance testing.
 
 ## See Also
+- [[Manual Review as Eval Bootstrap]] <!-- auto-linked -->
 - [[Eval Ladder]] — complements (orthogonal health axis)
 - [[User Feedback Loops]] — complements (separates engagement shift from regression)
 - [[RAG Eval Metrics Suite]] — extends (retrieval-specific metrics)
