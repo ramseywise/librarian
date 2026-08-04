@@ -2,7 +2,7 @@
 title: LLM Fundamentals Interview Study Guide
 tags: [llm, interview, reference, foundations]
 summary: Exam-prep reference for LLM theory questions — transformer architecture, training pipeline, adaptation menu, inference economics, and failure modes.
-updated: 2026-07-19
+updated: 2026-08-04
 sources:
   - raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--interview-guide.md
   - raw/pdfs/attention-is-all-you-need.md
@@ -38,13 +38,13 @@ Decision axes: knowledge freshness (RAG), behavior/format/style (fine-tune), dat
 
 ## Inference Economics
 
-- **Prefill** — prompt processing, parallel, cheap/token
-- **Decode** — output generation, sequential, expensive/token
-- Why output-length discipline and streaming matter
-- Quantization (8/4-bit) trades quality for memory/latency
-- Distillation for the 80% of traffic a small model can serve
-- Speculative decoding as a latency trick
-- Serving metrics: TTFT, tokens/sec, p95
+Durable content lives in [[LLM Inference Economics]] — the prefill/decode split, the four
+levers (quantization, distillation, speculative decoding, output-length discipline), and
+the serving metrics (TTFT, tokens/sec, p95).
+
+Exam cue: the follow-up is almost always "so why is *output* the expensive part?" Answer
+with the mechanism — decode is sequential because token *n+1* needs token *n* — not with
+the price sheet.
 
 ## Failure Modes (Know Mechanisms, Not Vibes)
 
@@ -54,6 +54,7 @@ Decision axes: knowledge freshness (RAG), behavior/format/style (fine-tune), dat
 - **Distribution shift** — fine-tuned models fail on out-of-distribution inputs; eval on held-out domains before deployment.
 
 ## See Also
+- [[LLM Inference Economics]] — prerequisite-for (the durable cost mechanism this round examines)
 - [[Prefix Caching]] — instance-of
 - [[RAG Interview Study Guide]] — extends
 - [[Direct Preference Optimization]] — instance-of
