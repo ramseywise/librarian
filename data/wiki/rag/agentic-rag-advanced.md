@@ -7,6 +7,7 @@ sources:
   - raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
   - raw/agent-skills/advanced-rag-patterns/SKILL.md
   - raw/agent-skills/langchain-rag/references/advanced-patterns.md
+  - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
 ---
 
 # Agentic RAG — Advanced Patterns
@@ -147,3 +148,4 @@ Test these explicitly — they don't appear in standard QA evals:
 - [[A2A Agent Protocol]]
 - [[VA vs HCA Retrieval Evaluation]]
 - [[RAG Interview Study Guide]] — prerequisite-for
+- [[RL for Retrieval Policies]] — extends (Self-RAG as a learned retrieval policy, alongside online RL and per-subtask modules)

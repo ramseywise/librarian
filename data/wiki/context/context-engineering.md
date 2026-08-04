@@ -98,3 +98,4 @@ added context source is added attack surface*. See [[Prompt Injection]] and
 - [[Harness Engineering]] — extends (the layer above: context is what the harness assembles)
 - [[Harness Orchestration]] — implements (subagents as the isolate lever)
 - [[Long-Horizon Execution]] — extends (what to do when context runs out)
+- [[Agentic Engineering and the New SDLC]] — instance-of (the six context types and the static/dynamic split, in an SDLC frame)

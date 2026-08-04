@@ -93,6 +93,7 @@ async def query(request: QueryRequest) -> QueryResponse:
 ```
 
 ## See Also
+- [[RL for Retrieval Policies]] <!-- auto-linked -->
 - [[RAG Retrieval Strategies]]
 - [[LangGraph CRAG Pipeline]]
 - [[Librarian RAG Architecture]]

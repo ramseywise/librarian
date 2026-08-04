@@ -146,6 +146,7 @@ For anything that mutates, sends, or spends:
 > is how one transient timeout becomes three charged invoices.**
 
 ## See Also
+- [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
 - [[Harness Maturity and Failure Modes]] <!-- auto-linked -->
 - [[Iterative Harness Simplification]] <!-- auto-linked -->
 - [[Harness Engineering]] — part-of

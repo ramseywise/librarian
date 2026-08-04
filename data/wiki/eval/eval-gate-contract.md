@@ -142,3 +142,4 @@ Track: liked vs disliked score separation, Cohen's d, precision/recall/F1 agains
 - [[LLM Grader Calibration Insights]]
 - [[Reciprocal Rank Fusion (RRF)]]
 - [[CRAG Retry Logic]]
+- [[RL for Retrieval Policies]] — complements (component gates as the eval-side answer to sub-task/end-task reward divergence)

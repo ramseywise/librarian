@@ -2,12 +2,13 @@
 title: SKILL.md Pattern
 tags: [adk, context-management, concept]
 summary: ADK skill declaration format — YAML frontmatter listing tools + natural language instruction body, enabling dynamic skill loading without hardcoding capabilities into the system prompt.
-updated: 2026-08-03
+updated: 2026-08-04
 sources:
   - raw/playground-docs/librarian-stack-audit.md
   - raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
   - raw/sessions/claude-2026-07-19-what-is-this-mcp-buider-we-added-to-clau-6b9614e3.md
   - data/raw/claude-docs/Parallax/docs/documents/Parallax_Subagent_Architecture.md
+  - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agents-google-adk.md
 ---
 
 # SKILL.md Pattern
@@ -80,6 +81,37 @@ skill-name/
 
 Authoring a `SKILL.md` does not by itself put it in any agent's context. For subagents, a companion agent definition must name it in a `skills:` field — see [[Skill Preloading via Agent Definition]], which documents what breaks when that second file is missing.
 
+## Skill Components
+
+One required file, three optional directories — the same shape as the Claude Code layout above, stated as a general contract:
+
+| Component | Required | Contents |
+|---|---|---|
+| `SKILL.md` | **Yes** | Name, description, activation criteria, instructions, usage guidance |
+| `scripts/` | No | Executable code — deterministic logic that should not be regenerated |
+| `references/` | No | Large domain knowledge kept outside the prompt until needed — PDFs, manuals, tax rules, compliance docs |
+| `assets/` | No | JSON schemas, templates, email formats, structured resources |
+
+The `references/` rationale is the load-bearing one: it exists so that domain knowledge too large for a system prompt is still *reachable*, without being *resident*. That is progressive disclosure applied at the skill boundary — see [[Context Engineering]].
+
+## Skills vs MCP vs Instruction Files
+
+Three mechanisms that are routinely confused because all three "give the agent capability." They occupy different slots:
+
+| Mechanism | Supplies | Loading |
+|---|---|---|
+| **MCP** | Data, APIs, platform access | Tool schemas, resident once connected |
+| **Skills** | What to *do* — procedure and judgment | On demand, by activation criteria |
+| **`AGENTS.md` / instruction file** | Global rules and conventions | Always loaded |
+
+MCP gets the agent *reach*; skills tell it *what to do with that reach*; the instruction file sets what holds regardless of task. A capability gap is usually a missing MCP server, a behavior gap is usually a missing skill, and a repeated-mistake gap belongs in the instruction file — which is the ratchet described in [[Harness Engineering]].
+
+## Why the Multi-Agent Calculus Shifted
+
+Multi-agent architectures were previously the answer to "one agent cannot hold every specialization." Dynamic skill loading weakens that argument: **one general-purpose agent that loads skills on demand can flex into many specialist roles** without paying for separate deployments, memory stores, routing logic, and per-agent maintenance.
+
+This does not overturn the escalation ladder in [[Harness Orchestration]] — context that genuinely doesn't fit, differing trust levels, external evaluation, and truly independent branches are still real reasons to split. It removes *role specialization alone* from that list. Skills are the cheaper answer when specialization is the only motivation.
+
 ## See Also
 - [[ADK Scaffold Patterns]] <!-- auto-linked -->
 - [[ADK Context Engineering]]
@@ -89,3 +121,5 @@ Authoring a `SKILL.md` does not by itself put it in any agent's context. For sub
 - [[Claude Workflow System]] — extends (skill architecture section)
 - [[Skill Preloading via Agent Definition]] — extends (the agent-side `skills:` field that loads it)
 - [[Claude Workflow System]]
+- [[Agentic Engineering and the New SDLC]] — part-of (skills as the dynamic-context mechanism in the new SDLC)
+- [[Harness Orchestration]] — complements (why skill loading removes role specialization as a reason to go multi-agent)

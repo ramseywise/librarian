@@ -68,3 +68,5 @@ non-determinism make it a poor fit for a per-PR gate.
 - [[Eval Maturity Ladder]] — part-of (one of four layered grader types; source of the three judge biases)
 - [[Online Eval Sampling]] — extends (the judge as layer 2 over production traces)
 - [[Eval Harness Anatomy]] — part-of (one of the three grader types under the simplest-reliable rule)
+- [[Constitutional AI and RLAIF]] — instance-of (the same judge primitive used to generate training labels)
+- [[Bradley-Terry Preference Model]] — complements (pairwise comparison formalized as a scalar)

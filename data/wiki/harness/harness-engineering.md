@@ -165,3 +165,5 @@ Practical consequence: **a harness needs periodic subtraction, not just addition
 - [[Harness Anatomy]] — part-of
 - [[ACI (Agent-Computer Interface)]] — instance-of
 - [[Loop Engineering]] — extends (the layer above: the harness supplies tools, the loop decides when to stop using them)
+- [[Agentic Engineering and the New SDLC]] — complements (the same "skill issue" reframe reached from the process side, plus the TCO argument)
+- [[Agent Interoperability Protocol Stack]] — complements (what governs the boundary when the other side is not under your control)

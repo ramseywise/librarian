@@ -62,3 +62,4 @@ Without them you have no readout at all — not a weaker readout: none.
 - [[Anthropic Three-Tier Eval Taxonomy]]
 - [[RAG Eval Gate Contract]]
 - [[Forecast Grader Thresholds]] — instance-of
+- [[Agentic Engineering and the New SDLC]] — extends (output vs trajectory evaluation, and tests as the intent-communication channel)

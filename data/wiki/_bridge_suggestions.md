@@ -12,10 +12,6 @@ Consider creating a bridge page or adding cross-references.
   - adk: 19 pages
   - graph: 7 pages
 
-## adk ↔ harness (0 cross-links)
-  - adk: 19 pages
-  - harness: 13 pages
-
 ## adk ↔ loop (0 cross-links)
   - adk: 19 pages
   - loop: 5 pages
@@ -40,45 +36,49 @@ Consider creating a bridge page or adding cross-references.
   - context: 8 pages
   - projects: 8 pages
 
-## eval ↔ foundations (0 cross-links)
+## eval ↔ mcp (0 cross-links)
   - eval: 33 pages
-  - foundations: 11 pages
+  - mcp: 5 pages
 
 ## eval ↔ prompting (0 cross-links)
   - eval: 33 pages
   - prompting: 8 pages
 
 ## foundations ↔ graph (0 cross-links)
-  - foundations: 11 pages
+  - foundations: 18 pages
   - graph: 7 pages
 
 ## foundations ↔ harness (0 cross-links)
-  - foundations: 11 pages
-  - harness: 13 pages
+  - foundations: 18 pages
+  - harness: 14 pages
 
 ## foundations ↔ loop (0 cross-links)
-  - foundations: 11 pages
+  - foundations: 18 pages
   - loop: 5 pages
 
+## foundations ↔ mcp (0 cross-links)
+  - foundations: 18 pages
+  - mcp: 5 pages
+
 ## foundations ↔ memory (0 cross-links)
-  - foundations: 11 pages
+  - foundations: 18 pages
   - memory: 6 pages
 
 ## foundations ↔ meta (0 cross-links)
-  - foundations: 11 pages
+  - foundations: 18 pages
   - meta: 13 pages
 
 ## foundations ↔ prompting (0 cross-links)
-  - foundations: 11 pages
+  - foundations: 18 pages
   - prompting: 8 pages
-
-## foundations ↔ rag (0 cross-links)
-  - foundations: 11 pages
-  - rag: 16 pages
 
 ## graph ↔ interview (0 cross-links)
   - graph: 7 pages
   - interview: 9 pages
+
+## graph ↔ mcp (0 cross-links)
+  - graph: 7 pages
+  - mcp: 5 pages
 
 ## graph ↔ meta (0 cross-links)
   - graph: 7 pages
@@ -93,20 +93,20 @@ Consider creating a bridge page or adding cross-references.
   - prompting: 8 pages
 
 ## harness ↔ interview (0 cross-links)
-  - harness: 13 pages
+  - harness: 14 pages
   - interview: 9 pages
 
 ## harness ↔ meta (0 cross-links)
-  - harness: 13 pages
+  - harness: 14 pages
   - meta: 13 pages
 
 ## harness ↔ projects (0 cross-links)
-  - harness: 13 pages
+  - harness: 14 pages
   - projects: 8 pages
 
 ## harness ↔ rag (0 cross-links)
-  - harness: 13 pages
-  - rag: 16 pages
+  - harness: 14 pages
+  - rag: 17 pages
 
 ## interview ↔ langgraph (0 cross-links)
   - interview: 9 pages
@@ -115,6 +115,10 @@ Consider creating a bridge page or adding cross-references.
 ## interview ↔ loop (0 cross-links)
   - interview: 9 pages
   - loop: 5 pages
+
+## interview ↔ mcp (0 cross-links)
+  - interview: 9 pages
+  - mcp: 5 pages
 
 ## interview ↔ projects (0 cross-links)
   - interview: 9 pages
@@ -146,7 +150,15 @@ Consider creating a bridge page or adding cross-references.
 
 ## loop ↔ rag (0 cross-links)
   - loop: 5 pages
-  - rag: 16 pages
+  - rag: 17 pages
+
+## mcp ↔ memory (0 cross-links)
+  - mcp: 5 pages
+  - memory: 6 pages
+
+## mcp ↔ prompting (0 cross-links)
+  - mcp: 5 pages
+  - prompting: 8 pages
 
 ## memory ↔ meta (0 cross-links)
   - memory: 6 pages
@@ -163,6 +175,10 @@ Consider creating a bridge page or adding cross-references.
 ## projects ↔ prompting (0 cross-links)
   - projects: 8 pages
   - prompting: 8 pages
+
+## adk ↔ harness (1 cross-links)
+  - adk: 19 pages
+  - harness: 14 pages
 
 ## adk ↔ interview (1 cross-links)
   - adk: 19 pages
@@ -185,8 +201,12 @@ Consider creating a bridge page or adding cross-references.
   - langgraph: 16 pages
 
 ## harness ↔ memory (1 cross-links)
-  - harness: 13 pages
+  - harness: 14 pages
   - memory: 6 pages
+
+## infra ↔ mcp (1 cross-links)
+  - infra: 22 pages
+  - mcp: 5 pages
 
 ## infra ↔ memory (1 cross-links)
   - infra: 22 pages
@@ -196,13 +216,17 @@ Consider creating a bridge page or adding cross-references.
   - interview: 9 pages
   - memory: 6 pages
 
+## loop ↔ mcp (1 cross-links)
+  - loop: 5 pages
+  - mcp: 5 pages
+
 ## loop ↔ patterns (1 cross-links)
   - loop: 5 pages
   - patterns: 53 pages
 
 ## prompting ↔ rag (1 cross-links)
   - prompting: 8 pages
-  - rag: 16 pages
+  - rag: 17 pages
 
 ## adk ↔ context (2 cross-links)
   - adk: 19 pages
@@ -212,16 +236,12 @@ Consider creating a bridge page or adding cross-references.
   - adk: 19 pages
   - memory: 6 pages
 
-## context ↔ foundations (2 cross-links)
-  - context: 8 pages
-  - foundations: 11 pages
-
 ## context ↔ loop (2 cross-links)
   - context: 8 pages
   - loop: 5 pages
 
 ## foundations ↔ projects (2 cross-links)
-  - foundations: 11 pages
+  - foundations: 18 pages
   - projects: 8 pages
 
 ## infra ↔ loop (2 cross-links)
@@ -236,6 +256,10 @@ Consider creating a bridge page or adding cross-references.
   - interview: 9 pages
   - meta: 13 pages
 
+## langgraph ↔ mcp (2 cross-links)
+  - langgraph: 16 pages
+  - mcp: 5 pages
+
 ## langgraph ↔ meta (2 cross-links)
   - langgraph: 16 pages
   - meta: 13 pages
@@ -243,3 +267,7 @@ Consider creating a bridge page or adding cross-references.
 ## loop ↔ prompting (2 cross-links)
   - loop: 5 pages
   - prompting: 8 pages
+
+## mcp ↔ projects (2 cross-links)
+  - mcp: 5 pages
+  - projects: 8 pages
