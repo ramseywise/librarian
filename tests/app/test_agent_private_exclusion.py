@@ -1,6 +1,6 @@
 """Evidence for Buyi "data/wiki/private/ never leaves the machine", clause (b) — agent side.
 
-tests/unit/test_private_exclusion.py covers the MCP server. The chat agent in
+tests/app/test_private_exclusion.py covers the MCP server. The chat agent in
 app/backend/agent.py used to reach the same pages through its own rglob walk; since
 the S7 collapse it delegates to server._search_rows/_read_page_text, so these tests
 now prove the delegation preserves the exclusion end-to-end from the agent's entry

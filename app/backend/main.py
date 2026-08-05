@@ -54,7 +54,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     # pre-loads a model, the watcher only pushes live graph updates. Neither is required
     # for the routes to answer. Degrade instead of failing startup, because CI installs
     # `--group dev` with no extras and TestClient-as-context-manager runs this lifespan —
-    # a hard import here failed every test in tests/unit/test_writeback_security.py.
+    # a hard import here failed every test in tests/app/test_writeback_security.py.
     try:
         from watchfiles import awatch
 

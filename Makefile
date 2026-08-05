@@ -48,10 +48,10 @@ eval-live:
 	uv run python evals/run_eval.py --live --verbose --save-baseline
 
 test:
-	uv run pytest tests/unit/ -v
+	uv run pytest tests/ --ignore=tests/e2e -v
 
 test-watch:
-	uv run ptw tests/unit/ -- -v
+	uv run ptw tests/ --ignore=tests/e2e -- -v
 
 test-e2e:
 	uv run pytest tests/e2e/ -v -m e2e
