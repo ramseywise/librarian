@@ -7,15 +7,16 @@ Run after all pages are created/updated:
 
 Requires the `api` optional dependency group (numpy, sentence-transformers, scikit-learn).
 
+Suggest-only: this pass never modifies a wiki page. Every candidate it finds is a
+proposal for human review; the only files it writes are the two suggestion files.
+
 Produces:
-- Auto-added links (appended to See Also with <!-- auto-linked --> comment)
-- data/wiki/_relink_suggestions.md (candidates between suggest and auto thresholds)
+- data/wiki/_relink_suggestions.md (auto-tier, mid-tier, and orphan-backfill candidates)
 - data/wiki/_bridge_suggestions.md (cross-domain gaps)
 """
 
 from __future__ import annotations
 
-import re
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -60,9 +61,9 @@ class PageInfo:
 
 @dataclass
 class RelinkReport:
-    auto_linked: list[tuple[str, str, float]]  # (source_stem, target_stem, score)
+    auto_candidates: list[tuple[str, str, float]]  # (source_stem, target_stem, adjusted_score)
     suggested: list[tuple[str, str, float]]
-    orphans_backfilled: list[tuple[str, str]]  # (hub_stem, orphan_stem)
+    orphan_candidates: list[tuple[str, str, float]]  # (hub_stem, orphan_stem, raw_cosine)
     bridge_gaps: list[tuple[str, str, int]]  # (domain_a, domain_b, cross_link_count)
 
 
@@ -123,23 +124,6 @@ def compute_adjusted_score(base_score: float, source: PageInfo, target: PageInfo
     return score
 
 
-def append_see_also(page_path: Path, link_title: str, comment: str = "auto-linked") -> None:
-    content = page_path.read_text()
-
-    entry = f"- [[{link_title}]] <!-- {comment} -->"
-
-    # Line-exact anchor: pages may QUOTE "## See Also" in prose or inline code
-    # (a substring replace once corrupted such a page) — only a real heading
-    # line counts as the section.
-    match = re.search(r"^## See Also[ \t]*$", content, flags=re.MULTILINE)
-    if match:
-        content = content[: match.end()] + f"\n{entry}" + content[match.end() :]
-    else:
-        content = content.rstrip() + f"\n\n## See Also\n{entry}\n"
-
-    page_path.write_text(content)
-
-
 def relink(
     pages: dict[str, PageInfo],
     auto_threshold: float = 0.65,
@@ -163,7 +147,7 @@ def relink(
 
     scope = set(changed_pages) if changed_pages else set(pages.keys())
 
-    auto_linked: list[tuple[str, str, float]] = []
+    auto_candidates: list[tuple[str, str, float]] = []
     suggested: list[tuple[str, str, float]] = []
 
     for stem in scope:
@@ -190,16 +174,12 @@ def relink(
 
         for target_stem, score in top_5:
             if score >= auto_threshold:
-                auto_linked.append((stem, target_stem, score))
-                if not dry_run:
-                    append_see_also(info.path, pages[target_stem].title)
-                    info.outgoing_links.add(target_stem)
-                    pages[target_stem].incoming_links.add(stem)
+                auto_candidates.append((stem, target_stem, score))
             elif score >= suggest_threshold:
                 suggested.append((stem, target_stem, score))
 
     # Orphan backfill: pages with zero incoming links
-    orphans_backfilled: list[tuple[str, str]] = []
+    orphan_candidates: list[tuple[str, str, float]] = []
     for stem, info in pages.items():
         if info.incoming_links:
             continue
@@ -218,28 +198,26 @@ def relink(
                 best_score = score
                 best_hub = other_stem
         if best_hub and best_score > 0.3:
-            orphans_backfilled.append((best_hub, stem))
-            if not dry_run:
-                append_see_also(pages[best_hub].path, info.title, comment="backfill")
-                pages[best_hub].outgoing_links.add(stem)
-                info.incoming_links.add(best_hub)
+            orphan_candidates.append((best_hub, stem, best_score))
 
     # Bridge gap detection
     bridge_gaps = detect_bridge_gaps(pages)
 
-    # Write suggestions file
-    if suggested and not dry_run:
-        write_suggestions(suggested, pages)
+    report = RelinkReport(
+        auto_candidates=auto_candidates,
+        suggested=suggested,
+        orphan_candidates=orphan_candidates,
+        bridge_gaps=bridge_gaps,
+    )
+
+    # Write suggestions file — any candidate tier is enough to warrant one.
+    if (auto_candidates or suggested or orphan_candidates) and not dry_run:
+        write_suggestions(report, pages)
 
     if bridge_gaps and not dry_run:
         write_bridge_suggestions(bridge_gaps, pages)
 
-    return RelinkReport(
-        auto_linked=auto_linked,
-        suggested=suggested,
-        orphans_backfilled=orphans_backfilled,
-        bridge_gaps=bridge_gaps,
-    )
+    return report
 
 
 def detect_bridge_gaps(pages: dict[str, PageInfo]) -> list[tuple[str, str, int]]:
@@ -270,7 +248,28 @@ def detect_bridge_gaps(pages: dict[str, PageInfo]) -> list[tuple[str, str, int]]
     return gaps
 
 
-def write_suggestions(suggested: list[tuple[str, str, float]], pages: dict[str, PageInfo]) -> None:
+def write_suggestions(report: RelinkReport, pages: dict[str, PageInfo]) -> None:
+    def _title(stem: str) -> str:
+        return pages[stem].title if stem in pages else stem
+
+    def _section(
+        heading: str,
+        blurb: list[str],
+        entries: list[tuple[str, str, float]],
+        score_label: str,
+    ) -> list[str]:
+        # An empty section reads as "checked, found nothing" — omit it instead.
+        if not entries:
+            return []
+        out = [f"## {heading}", ""]
+        out.extend(blurb)
+        for source, target, score in sorted(entries, key=lambda x: -x[2]):
+            out.append(
+                f"- [[{_title(source)}]] → [[{_title(target)}]] ({score_label}: {score:.3f})"
+            )
+        out.append("")
+        return out
+
     lines = [
         "---",
         "title: Relink Suggestions",
@@ -279,15 +278,44 @@ def write_suggestions(suggested: list[tuple[str, str, float]], pages: dict[str, 
         "",
         "# Relink Suggestions",
         "",
-        "Pages below scored above the suggestion threshold but below auto-link.",
-        "Review and add as typed links if appropriate, or dismiss by deleting the entry.",
+        "Candidates from the post-ingest relink pass. The relinker does not modify wiki",
+        "pages — every entry here is a proposal. Add the good ones as **typed** links",
+        "(`- [[Page]] — extends`); dismiss the rest by deleting the entry.",
         "",
     ]
-    for source, target, score in sorted(suggested, key=lambda x: -x[2]):
-        src_title = pages[source].title if source in pages else source
-        tgt_title = pages[target].title if target in pages else target
-        lines.append(f"- [[{src_title}]] → [[{tgt_title}]] (score: {score:.3f})")
-    lines.append("")
+
+    lines.extend(
+        _section(
+            "Auto-Link Candidates (score ≥ 0.65)",
+            [
+                "Formerly written directly to pages. Highest-confidence pairs — still",
+                "untyped proposals.",
+                "",
+            ],
+            report.auto_candidates,
+            "score",
+        )
+    )
+    lines.extend(
+        _section(
+            "Relink Candidates (0.55 ≤ score < 0.65)",
+            [],
+            report.suggested,
+            "score",
+        )
+    )
+    lines.extend(
+        _section(
+            "Orphan Backfill (raw cosine ≥ 0.3)",
+            [
+                "Pages with zero incoming links, paired with their nearest linked hub. Add",
+                "the link to the **hub** page's See Also, pointing at the orphan.",
+                "",
+            ],
+            report.orphan_candidates,
+            "cosine",
+        )
+    )
 
     (WIKI_DIR / "_relink_suggestions.md").write_text("\n".join(lines))
 
@@ -325,7 +353,11 @@ def main() -> None:
     parser.add_argument(
         "--suggest-threshold", type=float, default=0.55, help="Suggestion threshold"
     )
-    parser.add_argument("--dry-run", action="store_true", help="Report only, don't modify files")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Report to stdout only; do not write the suggestion files",
+    )
     parser.add_argument("--changed", nargs="*", help="Only relink these page stems (default: all)")
     args = parser.parse_args()
 
@@ -348,15 +380,15 @@ def main() -> None:
     )
 
     print(f"\nResults {'(dry run)' if args.dry_run else ''}:")
-    print(f"  Auto-linked: {len(report.auto_linked)}")
-    for src, tgt, score in report.auto_linked[:10]:
+    print(f"  Auto-link candidates: {len(report.auto_candidates)}")
+    for src, tgt, score in report.auto_candidates[:10]:
         print(f"    {pages[src].title} → {pages[tgt].title} ({score:.3f})")
     print(f"  Suggested: {len(report.suggested)}")
     for src, tgt, score in report.suggested[:10]:
         print(f"    {pages[src].title} → {pages[tgt].title} ({score:.3f})")
-    print(f"  Orphans backfilled: {len(report.orphans_backfilled)}")
-    for hub, orphan in report.orphans_backfilled[:10]:
-        print(f"    {pages[hub].title} → {pages[orphan].title}")
+    print(f"  Orphan candidates: {len(report.orphan_candidates)}")
+    for hub, orphan, score in report.orphan_candidates[:10]:
+        print(f"    {pages[hub].title} → {pages[orphan].title} ({score:.3f})")
     print(f"  Bridge gaps: {len(report.bridge_gaps)}")
     for d1, d2, count in report.bridge_gaps[:10]:
         print(f"    {d1} ↔ {d2} ({count} cross-links)")
