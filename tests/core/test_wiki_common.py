@@ -1,47 +1,46 @@
-"""Characterization tests for the two colliding slugify variants (LIB-110 Step B2).
+"""Pins for the unified slugify (LIB-110 Step B3).
 
-Variant A (`wiki_parser._slug`, `relinker._slug`):
-    title.lower().strip().replace(" ", "-")
-Variant B (`graph_expansion._slug`, inline in `server.py`):
-    re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+Step B2 characterized the two colliding variants (A: lower+replace-space,
+B: regex collapse) and measured blast radius 0 over the live wiki; B3 collapsed
+both onto variant B as `core.wiki_common.slugify`. These tests pin the single
+semantic and assert every former call site resolves to the same function, so a
+local re-definition would fail here rather than silently re-forking resolution.
 
-No prior test pinned either variant on punctuated input (plan R1). These pin
-CURRENT behavior so Step B3's unification is a measured change, not a silent
-one. When B3 lands, collapse each divergent pair into the single chosen
-expectation and assert one slugify for the whole repo.
+Out-of-scope variants (presenter filename slug, scrape_* raw-file slug) keep
+their own definitions deliberately — see the LIB-110 plan, Out of Scope.
 """
 
 import pytest
 
-from app.backend.wiki_parser import _slug as slug_a_parser
-from app.mcp_server.graph_expansion import _slug as slug_b
-from core.relinker import _slug as slug_a_relinker
+from core.wiki_common import slugify
 
-# (input, variant A output, variant B output)
+# (input, expected slug) — the divergent cases from B2, now with one answer.
 CASES = [
-    ("RAG & Retrieval", "rag-&-retrieval", "rag-retrieval"),
-    ("RLHF Pipeline's Cost", "rlhf-pipeline's-cost", "rlhf-pipeline-s-cost"),
-    ("", "", ""),
-    ("Café Décor", "café-décor", "caf-d-cor"),
-    ("Semantic  Cache", "semantic--cache", "semantic-cache"),
-    ("  Padded Title  ", "padded-title", "padded-title"),
-    ("(Retrieval)", "(retrieval)", "retrieval"),
-    ("Trailing!", "trailing!", "trailing"),
-    ("Semantic Cache", "semantic-cache", "semantic-cache"),
+    ("RAG & Retrieval", "rag-retrieval"),
+    ("RLHF Pipeline's Cost", "rlhf-pipeline-s-cost"),
+    ("", ""),
+    ("Café Décor", "caf-d-cor"),
+    ("Semantic  Cache", "semantic-cache"),
+    ("  Padded Title  ", "padded-title"),
+    ("(Retrieval)", "retrieval"),
+    ("Trailing!", "trailing"),
+    ("Semantic Cache", "semantic-cache"),
+    ("CRAG Retry Logic\\", "crag-retry-logic"),
 ]
 
 
-@pytest.mark.parametrize(("text", "expected_a", "_b"), CASES)
-def test_variant_a_current_behavior(text: str, expected_a: str, _b: str) -> None:
-    assert slug_a_parser(text) == expected_a
+@pytest.mark.parametrize(("text", "expected"), CASES)
+def test_slugify(text: str, expected: str) -> None:
+    assert slugify(text) == expected
 
 
-@pytest.mark.parametrize(("text", "_a", "expected_b"), CASES)
-def test_variant_b_current_behavior(text: str, _a: str, expected_b: str) -> None:
-    assert slug_b(text) == expected_b
+def test_single_definition_across_consumers() -> None:
+    """All link-resolution modules must share the one slugify."""
+    import app.backend.wiki_parser as wiki_parser
+    import app.mcp_server.graph_expansion as graph_expansion
+    import app.mcp_server.server as server
+    import core.relinker as relinker
 
-
-@pytest.mark.parametrize(("text", "_a", "_b"), CASES)
-def test_both_a_sites_agree(text: str, _a: str, _b: str) -> None:
-    """relinker and wiki_parser must stay in lockstep until B3 deletes both."""
-    assert slug_a_parser(text) == slug_a_relinker(text)
+    for module in (wiki_parser, graph_expansion, server, relinker):
+        assert module.slugify is slugify
+        assert not hasattr(module, "_slug")

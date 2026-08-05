@@ -25,7 +25,7 @@ from pathlib import Path
 
 import frontmatter
 
-from core.wiki_common import WIKILINK_RE
+from core.wiki_common import WIKILINK_RE, slugify
 
 REPO_ROOT = Path(__file__).parent.parent
 WIKI_DIR = REPO_ROOT / "data" / "wiki"
@@ -67,10 +67,6 @@ class RelinkReport:
     bridge_gaps: list[tuple[str, str, int]]  # (domain_a, domain_b, cross_link_count)
 
 
-def _slug(title: str) -> str:
-    return title.lower().strip().replace(" ", "-")
-
-
 def load_pages() -> dict[str, PageInfo]:
     pages: dict[str, PageInfo] = {}
     for md_file in sorted(WIKI_DIR.rglob("*.md")):
@@ -99,13 +95,13 @@ def build_link_graph(pages: dict[str, PageInfo]) -> None:
     slug_to_stem: dict[str, str] = {}
     for stem, info in pages.items():
         slug_to_stem[stem] = stem
-        slug_to_stem[_slug(info.title)] = stem
+        slug_to_stem[slugify(info.title)] = stem
 
     for stem, info in pages.items():
         content = info.path.read_text()
         for match in WIKILINK_RE.finditer(content):
             raw = match.group(1).strip()
-            target_slug = _slug(raw)
+            target_slug = slugify(raw)
             target_stem = slug_to_stem.get(target_slug, target_slug)
             if target_stem in pages and target_stem != stem:
                 info.outgoing_links.add(target_stem)

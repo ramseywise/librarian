@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import struct
 from datetime import UTC, datetime
 from pathlib import Path
@@ -35,7 +34,7 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 
 from app.mcp_server.graph_expansion import build_typed_edges, expand_one_hop
-from core.wiki_common import WIKILINK_RE
+from core.wiki_common import WIKILINK_RE, slugify
 from shared.log_config import configure_logging
 
 load_dotenv()
@@ -187,7 +186,7 @@ def _compute_backlinks(pages: list[tuple]) -> dict[str, int]:
     """Count inbound wikilinks for each page slug."""
     slug_to_path: dict[str, str] = {}
     for path, title, *_ in pages:
-        slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+        slug = slugify(title)
         slug_to_path[slug] = path
         # also register by stem
         stem = Path(path).stem
@@ -197,8 +196,8 @@ def _compute_backlinks(pages: list[tuple]) -> dict[str, int]:
     for path, *__, content in pages:
         for match in WIKILINK_RE.finditer(content):
             raw = match.group(1).strip()
-            slug = re.sub(r"[^a-z0-9]+", "-", raw.lower()).strip("-")
-            target = slug_to_path.get(slug) or slug_to_path.get(raw.lower().replace(" ", "-"))
+            slug = slugify(raw)
+            target = slug_to_path.get(slug)
             if target and target != path and target in counts:
                 counts[target] += 1
     return counts
@@ -632,7 +631,7 @@ def _read_page_text(path_or_title: str) -> str:
         _log_retrieval("read_page", path=str(wiki_candidate), found=True)
         return wiki_candidate.read_text(encoding="utf-8")
 
-    slug = re.sub(r"[^a-z0-9]+", "-", path_or_title.lower()).strip("-")
+    slug = slugify(path_or_title)
     matches = [p for p in WIKI_DIR.rglob(f"*{slug}*.md") if not _is_private(p)]
     if not matches:
         words = path_or_title.lower().split()

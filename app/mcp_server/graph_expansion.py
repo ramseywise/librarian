@@ -22,10 +22,9 @@ approaches, which is noise when the caller asked about one thing.
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 
-from core.wiki_common import TYPED_LINK_RE
+from core.wiki_common import TYPED_LINK_RE, slugify
 
 # The two relationship types that express "you need this to understand that".
 EXPANSION_RELATIONSHIPS = frozenset({"prerequisite-for", "extends"})
@@ -37,11 +36,6 @@ INVERSE_LABEL = {
     "prerequisite-for": "builds-on",
     "extends": "extended-by",
 }
-
-
-def _slug(text: str) -> str:
-    """Normalise a title or filename stem to a comparable slug."""
-    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
 
 
 def build_typed_edges(pages: list[tuple[str, str, str]]) -> list[tuple[str, str, str]]:
@@ -57,14 +51,14 @@ def build_typed_edges(pages: list[tuple[str, str, str]]) -> list[tuple[str, str,
     """
     slug_to_path: dict[str, str] = {}
     for path, title, _ in pages:
-        slug_to_path[_slug(title)] = path
-        slug_to_path[_slug(Path(path).stem)] = path
+        slug_to_path[slugify(title)] = path
+        slug_to_path[slugify(Path(path).stem)] = path
 
     edges: list[tuple[str, str, str]] = []
     seen: set[tuple[str, str, str]] = set()
     for path, _, content in pages:
         for match in TYPED_LINK_RE.finditer(content):
-            target = slug_to_path.get(_slug(match.group(1).strip()))
+            target = slug_to_path.get(slugify(match.group(1).strip()))
             if not target or target == path:
                 continue
             edge = (path, target, match.group(2))
