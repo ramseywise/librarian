@@ -180,7 +180,12 @@ Follow `CLAUDE.md` exactly for each file that passed the manifest check.
     ```bash
     uv run --extra api python core/relinker.py
     ```
-    Review the output. If `data/wiki/_relink_suggestions.md` is generated, scan it for high-value links worth adding manually with typed relationships. Use `--dry-run` first if you want to preview changes without writing.
+    The relinker is **suggest-only** — it never modifies a wiki page. It writes
+    `data/wiki/_relink_suggestions.md` (auto-tier, mid-tier, and orphan-backfill
+    candidates) and `data/wiki/_bridge_suggestions.md`. Scan the suggestions for
+    high-value links and add them manually with typed relationships; dismiss the rest
+    by deleting the entry. Use `--dry-run` to report to stdout without writing the
+    suggestion files.
 
 ### Book and article source handling
 

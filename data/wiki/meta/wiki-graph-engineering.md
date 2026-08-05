@@ -2,7 +2,7 @@
 title: Wiki Graph Engineering — Edge Quality Over Edge Count
 tags: [meta, rag, decision]
 summary: Why librarian's link graph under-connects, why the typed-relationship subgraph is the layer worth querying, and the design choices behind one-hop retrieval expansion.
-updated: 2026-08-04
+updated: 2026-08-05
 sources:
   - data/wiki/_relink_suggestions.md
   - data/wiki/_bridge_suggestions.md
@@ -49,6 +49,27 @@ individually. A gap between two well-populated domains usually means a **missing
 bridge page**: the concept that connects them does not exist yet. The gap report
 is better read as a generative prompt ("what page is missing here?") than as a
 lint queue.
+
+### Cosine backfill made suggest-only (2026-08-05, #106)
+
+The relinker used to act on its own similarity scores: any pair at or above 0.65
+got an **untyped** `- [[Page]] <!-- auto-linked -->` appended to the source page,
+and unreferenced pages got linked from their nearest hub at raw cosine 0.3. That
+0.65 is not a cosine gate — `compute_adjusted_score` adds +0.1 same-domain, +0.05
+per shared tag, and +0.1 for a pattern/concept pairing, so a ~0.50 cosine crosses
+it on bonuses alone.
+
+This grew exactly the population this page says to stop growing, and grew it in
+the layer retrieval cannot traverse: an untyped edge is invisible to
+`search_wiki(expand=True)` and still counts against the >50%-untyped lint WARN.
+`core/relinker.py` now writes **no** wiki pages — all three tiers (auto, mid-band,
+orphan backfill) land in `data/wiki/_relink_suggestions.md` as labelled proposals,
+and a human adds the good ones *with a type*. The thresholds are unchanged; they
+now only decide which section a suggestion appears under.
+
+The 108 pages already carrying `<!-- auto-linked -->` and 3 carrying
+`<!-- backfill -->` were left in place — retro-auditing them is a per-link
+judgement call for a curation pass, not part of stopping the writes.
 
 ## One-Hop Retrieval Expansion (spike, 2026-08-04)
 

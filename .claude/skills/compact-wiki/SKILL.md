@@ -29,6 +29,9 @@ Rationale and evidence base: `.claude/docs/plans/2026-07-17-knowledge-compaction
    ~300 lines (reference dumps, accumulators).
 3. **Similarity**: read `data/wiki/_relink_suggestions.md` if present; optionally run
    `uv run python core/relinker.py` first. High-similarity pairs = merge candidates.
+   The relinker is suggest-only, so this file is now its *complete* output — the
+   auto-tier pairs it used to write straight into pages appear here too, under
+   `## Auto-Link Candidates`. That tier is the strongest merge evidence in the file.
 4. **Retrieval** (if `logs/retrieval.jsonl` has data): per-page retrieval counts over
    the window; co-retrieval pairs = paths appearing together in one `search_wiki`
    result set ≥3 times. Aggregate with a short python snippet, don't read the file raw.
