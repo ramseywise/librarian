@@ -4,7 +4,7 @@ from pathlib import Path
 
 import frontmatter
 
-from core.wiki_common import TYPED_LINK_RE, WIKILINK_RE
+from core.wiki_common import TYPED_LINK_RE, WIKILINK_RE, slugify
 
 WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
 RELATIONSHIP_TYPES = {
@@ -31,10 +31,6 @@ def _domain_tag_set() -> set[str]:
     return {d.name for d in WIKI_DIR.iterdir() if d.is_dir() and d.name != "private"}
 
 
-def _slug(title: str) -> str:
-    return title.lower().strip().replace(" ", "-")
-
-
 def parse_wiki() -> dict:
     nodes: list[dict] = []
     edges: list[dict] = []
@@ -53,7 +49,7 @@ def parse_wiki() -> dict:
 
         page_slugs[page_id] = title
         # also register by title slug so wikilinks resolve
-        page_slugs[_slug(title)] = title
+        page_slugs[slugify(title)] = title
 
         domain = [md_file.parent.name]
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
@@ -89,12 +85,12 @@ def parse_wiki() -> dict:
         # Extract typed relationships from See Also sections
         typed_links: dict[str, str] = {}
         for match in TYPED_LINK_RE.finditer(content):
-            link_target = _slug(match.group(1).strip())
+            link_target = slugify(match.group(1).strip())
             typed_links[link_target] = match.group(2)
 
         for match in WIKILINK_RE.finditer(content):
             raw = match.group(1).strip()
-            target_id = _slug(raw) if _slug(raw) in node_ids else raw.lower().replace(" ", "-")
+            target_id = slugify(raw)
             if target_id not in node_ids or target_id == source_id:
                 continue
             key = (source_id, target_id)
