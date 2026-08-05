@@ -490,7 +490,7 @@ def test_classify_intent_unknown() -> None:
 
 
 def test_friction_label_count_stored(tmp_path: Path) -> None:
-    from tests.unit.test_cartographer_parser import _assistant, _user, _write_jsonl
+    from tests.shared.test_cartographer_parser import _assistant, _user, _write_jsonl
 
     _write_jsonl(
         tmp_path / "proj" / "sess-1.jsonl",
@@ -505,7 +505,7 @@ def test_friction_label_count_stored(tmp_path: Path) -> None:
 
 
 def test_agent_spawns_stored_as_json(tmp_path: Path) -> None:
-    from tests.unit.test_cartographer_parser import (
+    from tests.shared.test_cartographer_parser import (
         _assistant_with_tools,
         _user,
         _write_jsonl,
@@ -688,7 +688,7 @@ def test_jsonl_adapter_attributes_errors_by_category(tmp_path: Path) -> None:
     """Classification happens at parse time in _to_fact_from_jsonl: the parser
     discards raw error text after reducing it to the error_kind count dict, so
     this is the only point attribution can be applied."""
-    from tests.unit.test_cartographer_parser import _assistant, _user, _write_jsonl
+    from tests.shared.test_cartographer_parser import _assistant, _user, _write_jsonl
 
     records = [
         _user("2026-07-20T10:00:00Z"),
@@ -739,7 +739,7 @@ def test_jsonl_adapter_attributes_errors_by_category(tmp_path: Path) -> None:
 def test_jsonl_adapter_stores_bash_antipatterns_from_parser(tmp_path: Path) -> None:
     """bash_antipatterns is written from the value the parser already computes --
     no re-derivation in factstore."""
-    from tests.unit.test_cartographer_parser import _assistant_with_tools, _user, _write_jsonl
+    from tests.shared.test_cartographer_parser import _assistant_with_tools, _user, _write_jsonl
 
     tools = [
         {"type": "tool_use", "name": "Bash", "input": {"command": "cat foo.txt"}},

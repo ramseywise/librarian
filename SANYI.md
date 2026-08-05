@@ -31,7 +31,7 @@ last-audit: 2026-07-20
   scripts all write into data/raw/ as intended behaviour.
 - evidence: .claude/hooks/raw-immutable.sh (PreToolUse, Write|Edit) blocks
   Edit/Write on an EXISTING data/raw/ path and permits creation; absolute and ../
-  paths are normalised before the check. tests/unit/test_raw_immutable_hook.py
+  paths are normalised before the check. tests/hooks/test_raw_immutable_hook.py
   asserts both halves — mutation blocked, and creation permitted for all nine
   core/ ingest target dirs (cured 2026-07-20).
 
@@ -56,7 +56,7 @@ last-audit: 2026-07-20
   build_index, _index_needs_rebuild, read_page, list_pages, and
   _resolve_domain_dir (which blocks list_domain + get_domain_briefing from
   addressing private as a domain); read_page returns the not-found message so a
-  denial cannot confirm the page exists. tests/unit/test_private_exclusion.py
+  denial cannot confirm the page exists. tests/app/test_private_exclusion.py
   covers all six paths incl. ../ traversal; verified against the live wiki
   2026-07-20 — 130 pages indexed, 0 private, 5 private pages on disk.
   Chat agent — app/backend/agent.py#_is_private gates both wiki tools the Gemini
@@ -68,7 +68,7 @@ last-audit: 2026-07-20
   their own private root: the server anchors on a relative Path("data/wiki"),
   which under `make api` (cwd=app/) resolves to a nonexistent app/data/wiki/private, so
   binding the agent to the server's own PRIVATE_DIR would read as correct and
-  exclude nothing. tests/unit/test_agent_private_exclusion.py covers both tools,
+  exclude nothing. tests/app/test_agent_private_exclusion.py covers both tools,
   the title fallback, and that cwd-independence as a regression test; its four
   leak cases fail against the pre-cure agent (cured 2026-07-20).
 
@@ -96,7 +96,7 @@ last-audit: 2026-07-20
   gap that reads as configured — and now calls the shared configure_logging().
   Entry points that only print() (core/relinker.py, core/lint_raw.py,
   core/manifest.py, core/screenshot.py) bind no logger and are out of scope.
-  tests/unit/test_log_redaction.py asserts field-name, nested, value-shape, and
+  tests/shared/test_log_redaction.py asserts field-name, nested, value-shape, and
   end-to-end rendered-output cases (cured 2026-07-20).
 
 ### Wiki provenance is traceable
@@ -110,7 +110,7 @@ last-audit: 2026-07-20
   invented or unresolvable provenance is a trust failure of the KB.
 - evidence: .claude/hooks/wiki-lint.sh — sources: is in the required-field loop
   (L23), and each entry is resolved against the filesystem (URLs exempt), with
-  empty/inline-empty lists flagged. tests/unit/test_wiki_lint_sources.py covers
+  empty/inline-empty lists flagged. tests/hooks/test_wiki_lint_sources.py covers
   missing field, unresolvable path, URL, resolvable path, and empty list.
   The same pass fixed a latent `grep -oP` failure that, under `set -e`, aborted
   the hook (exit 2) before the orphan check ran on BSD grep — the environment

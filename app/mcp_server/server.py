@@ -50,7 +50,7 @@ PRIVATE_DIR = WIKI_DIR / "private"
 DB_PATH = Path(os.getenv("WIKI_DB_PATH", str(REPO_ROOT / ".wiki_index.duckdb")))
 LOGS_DIR = Path("logs")
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
-SCHEMA_VERSION = "4"  # 3→4: paths stored absolute + BM25 fts index added
+SCHEMA_VERSION = "5"  # 4→5: forces re-parse after R4 frontmatter fix (block-list tags)
 
 
 def _domains() -> list[str]:
