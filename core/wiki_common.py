@@ -10,10 +10,17 @@ from __future__ import annotations
 import re
 
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
+CANONICAL_LINK_TYPES = frozenset(
+    {"extends", "prerequisite-for", "alternative-to", "instance-of", "contradicts", "supersedes"}
+)
 TYPED_LINK_RE = re.compile(
     r"-\s*\[\[([^\]]+)\]\]\s*—\s*"
     r"(extends|prerequisite-for|alternative-to|instance-of|contradicts|supersedes)"
 )
+# Open type capture — matches the same anchored syntax with *any* type token, so
+# annotations whose type is not canonical can be censused instead of silently
+# dropped (they render identically in Obsidian either way).
+ANY_TYPED_LINK_RE = re.compile(r"-\s*\[\[([^\]]+)\]\]\s*—\s*([a-z][a-z0-9-]*)")
 
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
 

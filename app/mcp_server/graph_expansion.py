@@ -72,7 +72,7 @@ def expand_one_hop(
     seed_paths: list[str],
     edges: list[tuple[str, str, str]],
     max_expansions: int = 5,
-) -> list[tuple[str, str, str]]:
+) -> list[tuple[str, str, frozenset[str]]]:
     """Find pages one typed hop from the seeds.
 
     Traversal is bidirectional by design. `prerequisite-for` is written on the
@@ -89,17 +89,19 @@ def expand_one_hop(
                         without it a well-connected seed set can pull in dozens.
 
     Returns:
-        (neighbour_path, relationship, seed_path) triples, ordered by how many
-        distinct seeds reached each neighbour (descending). A page reached from
-        several seeds is more likely to be genuinely central to the query than
-        one reached from a single hit.
+        (neighbour_path, relationship, seed_paths) triples — seed_paths is the
+        frozenset of every seed that reached the neighbour, so callers can score
+        against the best-ranked seed — ordered by how many distinct seeds
+        reached each neighbour (descending). A page reached from several seeds
+        is more likely to be genuinely central to the query than one reached
+        from a single hit.
     """
     seeds = set(seed_paths)
     if not seeds:
         return []
 
-    # neighbour -> (set of seeds that reached it, one representative edge)
-    reached: dict[str, tuple[set[str], str, str]] = {}
+    # neighbour -> (set of seeds that reached it, one representative edge label)
+    reached: dict[str, tuple[set[str], str]] = {}
 
     def record(neighbour: str, relationship: str, seed: str) -> None:
         if neighbour in seeds:
@@ -107,7 +109,7 @@ def expand_one_hop(
         if neighbour in reached:
             reached[neighbour][0].add(seed)
         else:
-            reached[neighbour] = ({seed}, relationship, seed)
+            reached[neighbour] = ({seed}, relationship)
 
     # Direction matters and the annotation is written from the *linking* page's
     # point of view. `[[RLHF Pipeline]] — prerequisite-for` on the LLM guide
@@ -125,4 +127,4 @@ def expand_one_hop(
             record(source, INVERSE_LABEL[relationship], target)
 
     ranked = sorted(reached.items(), key=lambda kv: (-len(kv[1][0]), kv[0]))
-    return [(path, rel, seed) for path, (_, rel, seed) in ranked[:max_expansions]]
+    return [(path, rel, frozenset(seed_set)) for path, (seed_set, rel) in ranked[:max_expansions]]

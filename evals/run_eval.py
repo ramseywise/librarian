@@ -26,6 +26,7 @@ Exit codes:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from datetime import UTC, datetime
@@ -66,12 +67,17 @@ def _oracle_answer(entry: GoldenEntry) -> str:
     return entry.expected_answer
 
 
-def _live_retrieval(entry: GoldenEntry) -> list[RetrievalResult]:
+def _live_retrieval(entry: GoldenEntry, arm: str = "sem") -> list[RetrievalResult]:
     """Retrieve through the real search core (BM25 + hybrid rerank)."""
     from app.mcp_server.server import _search_rows
 
-    rows = _search_rows(entry.query, domain="", limit=10, tool="eval")
+    rows = _search_rows(entry.query, domain="", limit=10, tool="eval", expand=(arm == "graph"))
     return [RetrievalResult(page_path=row[0], score=float(row[6])) for row in rows]
+
+
+def _resolve_dataset_path(dataset_path: str | None) -> Path:
+    """Mirror load_golden_dataset's default so provenance can hash the file."""
+    return Path(dataset_path) if dataset_path else Path(__file__).parent / "golden_dataset.json"
 
 
 # ---------------------------------------------------------------------------
@@ -84,22 +90,45 @@ def run(
     *,
     verbose: bool = False,
     live: bool = False,
+    arm: str = "sem",
 ) -> EvalReport:
     entries = load_golden_dataset(dataset_path)
 
     retrieval_grader = RetrievalGrader()
     answer_grader = AnswerGrader()
 
-    retrieve = _live_retrieval if live else _oracle_retrieval
-    retrieved_lists = [retrieve(e) for e in entries]
+    restore_embeddings = None
+    if live and arm == "lex":
+        # Lexical arm: drop the semantic + backlink blend so ranking is BM25-only.
+        # The index must exist BEFORE the flag flips — build_index also consults
+        # HAS_EMBEDDINGS, and a rebuild triggered mid-run would persist an
+        # embedding-less index that later sem/graph arms silently rank against.
+        from app.mcp_server import server
+
+        server.get_con().close()
+        restore_embeddings = server.HAS_EMBEDDINGS
+        server.HAS_EMBEDDINGS = False
+
+    try:
+        if live:
+            retrieved_lists = [_live_retrieval(e, arm=arm) for e in entries]
+        else:
+            retrieved_lists = [_oracle_retrieval(e) for e in entries]
+    finally:
+        if restore_embeddings is not None:
+            from app.mcp_server import server
+
+            server.HAS_EMBEDDINGS = restore_embeddings
+
     candidate_answers = [_oracle_answer(e) for e in entries]
 
-    hit_rate, mrr, ret_results = retrieval_grader.grade_batch(entries, retrieved_lists)
+    hit_rate, mrr, mean_recall, ret_results = retrieval_grader.grade_batch(entries, retrieved_lists)
     mean_overlap, mean_sim, ans_results = answer_grader.grade_batch(entries, candidate_answers)
 
     report = EvalReport(
         hit_rate=hit_rate,
         mean_reciprocal_rank=mrr,
+        mean_expected_set_recall=mean_recall,
         mean_token_overlap=mean_overlap,
         mean_semantic_similarity=mean_sim,
         retrieval_results=ret_results,
@@ -135,17 +164,50 @@ def _print_failures(
             print(f"  {r.entry_id}: overlap={r.token_overlap:.2f} sim={r.semantic_similarity:.2f}")
 
 
-def _save_baseline(report: EvalReport, out_dir: Path, prefix: str = "baseline") -> Path:
-    """Persist baseline scores as JSON for regression tracking."""
+def _edge_count() -> int:
+    """Row count of the materialized typed-edges table."""
+    from app.mcp_server.server import get_con
+
+    con = get_con()
+    try:
+        return con.execute("SELECT count(*) FROM edges").fetchone()[0]
+    finally:
+        con.close()
+
+
+def _save_baseline(
+    report: EvalReport,
+    out_dir: Path,
+    prefix: str = "baseline",
+    *,
+    arm: str | None = None,
+    dataset_file: Path | None = None,
+) -> Path:
+    """Persist baseline scores + run provenance as JSON for regression tracking.
+
+    Provenance pins what the numbers were measured against — a baseline whose
+    golden set, embedding model, or edge count has since changed is not
+    comparable, and without the hash that drift is invisible.
+    """
+    from app.mcp_server.server import EMB_MODEL_ID
+
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(tz=UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
     out_path = out_dir / f"{prefix}-{ts}.json"
+    live = prefix.startswith("live")
+    dataset_file = dataset_file if dataset_file is not None else _resolve_dataset_path(None)
     data = {
         "timestamp": ts,
-        "mode": "live" if prefix.startswith("live") else "oracle",
+        "mode": "live" if live else "oracle",
+        "arm": arm if live else None,
+        "dataset": dataset_file.name,
+        "golden_set_hash": hashlib.sha256(dataset_file.read_bytes()).hexdigest(),
+        "embedding_model_id": EMB_MODEL_ID,
+        "edge_count": _edge_count() if live else None,
         "n_entries": report.n_entries,
         "hit_rate": report.hit_rate,
         "mean_reciprocal_rank": report.mean_reciprocal_rank,
+        "mean_expected_set_recall": report.mean_expected_set_recall,
         "mean_token_overlap": report.mean_token_overlap,
         "mean_semantic_similarity": report.mean_semantic_similarity,
         "floors": {
@@ -180,15 +242,33 @@ def main() -> None:
         action="store_true",
         help="Retrieve via the live search core (report-only; floors do not gate)",
     )
+    parser.add_argument(
+        "--arm",
+        choices=["lex", "sem", "graph"],
+        default="sem",
+        help="Live-mode ablation arm: lex (BM25 only), sem (current pipeline), "
+        "graph (sem + one-hop typed expansion)",
+    )
     args = parser.parse_args()
 
-    report = run(dataset_path=args.dataset, verbose=args.verbose, live=args.live)
+    if args.arm != "sem" and not args.live:
+        parser.error("--arm applies to live mode only (add --live)")
+
+    report = run(dataset_path=args.dataset, verbose=args.verbose, live=args.live, arm=args.arm)
     print(report)
 
     if args.save_baseline:
         baseline_dir = Path(__file__).parent / "baselines"
-        prefix = "live-baseline" if args.live else "baseline"
-        path = _save_baseline(report, baseline_dir, prefix=prefix)
+        dataset_file = _resolve_dataset_path(args.dataset)
+        if args.live:
+            prefix = f"live-{args.arm}"
+            if "multihop" in dataset_file.stem:
+                prefix += "-multihop"
+        else:
+            prefix = "baseline"
+        path = _save_baseline(
+            report, baseline_dir, prefix=prefix, arm=args.arm, dataset_file=dataset_file
+        )
         print(f"\nBaseline saved → {path}")
 
     # Gate on floors — oracle mode only; live mode reports without failing

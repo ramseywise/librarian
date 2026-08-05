@@ -34,7 +34,7 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 
 from app.mcp_server.graph_expansion import build_typed_edges, expand_one_hop
-from core.wiki_common import WIKILINK_RE, slugify
+from core.wiki_common import ANY_TYPED_LINK_RE, CANONICAL_LINK_TYPES, WIKILINK_RE, slugify
 from shared.log_config import configure_logging
 
 load_dotenv()
@@ -49,7 +49,7 @@ PRIVATE_DIR = WIKI_DIR / "private"
 DB_PATH = Path(os.getenv("WIKI_DB_PATH", str(REPO_ROOT / ".wiki_index.duckdb")))
 LOGS_DIR = Path("logs")
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
-SCHEMA_VERSION = "5"  # 4→5: forces re-parse after R4 frontmatter fix (block-list tags)
+SCHEMA_VERSION = "6"  # 5→6: adds the materialized edges table (LIB-114 Step 1)
 
 
 def _domains() -> list[str]:
@@ -96,10 +96,13 @@ def _ensure_fts(con: duckdb.DuckDBPyConnection) -> bool:
     return HAS_FTS
 
 
+EMB_MODEL_ID = "all-MiniLM-L6-v2"
+
+
 def _get_emb_model() -> SentenceTransformer:
     global _emb_model
     if _emb_model is None:
-        _emb_model = SentenceTransformer("all-MiniLM-L6-v2")
+        _emb_model = SentenceTransformer(EMB_MODEL_ID)
     return _emb_model
 
 
@@ -212,6 +215,7 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
 
     con.execute("DROP TABLE IF EXISTS meta")
     con.execute("DROP TABLE IF EXISTS pages")
+    con.execute("DROP TABLE IF EXISTS edges")
 
     con.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, val TEXT)")
 
@@ -228,6 +232,7 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
         )
     """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
+    con.execute("CREATE TABLE edges (source_path TEXT, target_path TEXT, relationship TEXT)")
 
     _ensure_fts(con)
 
@@ -256,6 +261,21 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
         )
 
     backlinks = _compute_backlinks(raw_pages)
+
+    # Materialize typed edges once at build time — expansion reads the table
+    # instead of re-parsing every page body per call. Census annotations whose
+    # type is not canonical so schema entropy is visible in the build log.
+    typed_edges = build_typed_edges(
+        [(path, title, content) for path, title, *_, content in raw_pages]
+    )
+    if typed_edges:
+        con.executemany("INSERT INTO edges VALUES (?, ?, ?)", typed_edges)
+    n_unrecognized = sum(
+        1
+        for *_, content in raw_pages
+        for m in ANY_TYPED_LINK_RE.finditer(content)
+        if m.group(2) not in CANONICAL_LINK_TYPES
+    )
 
     # Compute embeddings if available
     embeddings: dict[str, bytes] = {}
@@ -304,7 +324,13 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     con.execute("INSERT INTO meta VALUES ('schema_version', ?)", [SCHEMA_VERSION])
     con.execute("INSERT INTO meta VALUES ('built_at', ?)", [str(time.time())])
 
-    log.info("index_built", page_count=len(rows), with_embeddings=bool(embeddings))
+    log.info(
+        "index_built",
+        page_count=len(rows),
+        with_embeddings=bool(embeddings),
+        typed_edges=len(typed_edges),
+        unrecognized_annotations=n_unrecognized,
+    )
 
 
 def _parse_frontmatter(text: str) -> dict:
@@ -451,7 +477,7 @@ def _rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
 
 
 def _search_rows(
-    query: str, domain: str = "", limit: int = 10, tool: str = "search_wiki"
+    query: str, domain: str = "", limit: int = 10, tool: str = "search_wiki", expand: bool = False
 ) -> list[tuple]:
     """Ranked wiki search returning raw rows — the single search core.
 
@@ -459,6 +485,10 @@ def _search_rows(
     backlinks, score), best first. Candidates come from BM25 (DuckDB fts);
     falls back to a tokenized per-term LIKE match when fts is unavailable or
     matches nothing. Logs retrieval telemetry under `tool`.
+
+    expand=True additionally merges pages one typed hop from the results into
+    the ranked rows (LIB-114 Step 2). Default off — production `search_wiki`
+    keeps its prose expansion section; this path is exercised by the eval.
     """
     tag_filter, tag_params = _domain_filter(domain)
 
@@ -492,14 +522,69 @@ def _search_rows(
         return []
 
     ranked = _rerank(query, rows, limit)
+    expansion_edges: list[tuple[str, str, str]] = []
+    if expand:
+        ranked, expansion_edges = _expand_rows(ranked, limit)
+    extra = {"expansion_edges": expansion_edges} if expansion_edges else {}
     _log_retrieval(
         tool,
         query=query,
         domain=domain,
         n_results=len(ranked),
         top_paths=[r[0] for r in ranked[:5]],
+        **extra,
     )
     return ranked
+
+
+# Score multiplier for expanded pages relative to the best seed that reached
+# them. Pre-registered at 0.5 (plan LIB-114, Open Question 4); the eval's
+# sensitivity check overrides the module global, so read at call time.
+EXPANSION_DECAY = 0.5
+
+
+def _expand_rows(ranked: list[tuple], limit: int) -> tuple[list[tuple], list[tuple[str, str, str]]]:
+    """Merge one-hop typed neighbours into ranked rows (LIB-114 Step 2).
+
+    Each neighbour scores EXPANSION_DECAY × the best score among the seeds that
+    reached it. The merge is a stable sort by score with direct rows first, so
+    an expanded page never displaces a direct hit whose score meets or exceeds
+    its own — it fills ranks after the last such hit. Returns the re-capped
+    rows plus the fired edges as (seed, neighbour, relationship) triples.
+    """
+    seed_scores = {r[0]: r[6] for r in ranked}
+    con = get_con()
+    try:
+        edges = con.execute("SELECT source_path, target_path, relationship FROM edges").fetchall()
+        neighbours = expand_one_hop(list(seed_scores), edges, max_expansions=limit)
+        if not neighbours:
+            return ranked, []
+        placeholders = ", ".join("?" for _ in neighbours)
+        nb_rows = {
+            row[0]: row
+            for row in con.execute(
+                f"SELECT path, title, tags, summary, content, backlinks FROM pages "
+                f"WHERE path IN ({placeholders})",
+                [path for path, _, _ in neighbours],
+            ).fetchall()
+        }
+    finally:
+        con.close()
+
+    expanded: list[tuple] = []
+    fired: list[tuple[str, str, str]] = []
+    for nb_path, rel, seeds in neighbours:
+        nb_row = nb_rows.get(nb_path)
+        if nb_row is None:
+            continue
+        expanded.append((*nb_row, EXPANSION_DECAY * max(seed_scores[s] for s in seeds)))
+        fired.extend((seed, nb_path, rel) for seed in sorted(seeds))
+
+    # Stable sort: equal scores keep direct-before-expanded order, and expanded
+    # rows keep expand_one_hop's distinct-seed-count ordering among themselves.
+    merged = ranked + expanded
+    merged.sort(key=lambda r: r[6], reverse=True)
+    return merged[:limit], fired
 
 
 # ---------------------------------------------------------------------------
@@ -572,8 +657,7 @@ def _expansion_section(seed_paths: list[str]) -> str:
     """
     con = get_con()
     try:
-        pages = con.execute("SELECT path, title, content FROM pages").fetchall()
-        edges = build_typed_edges(pages)
+        edges = con.execute("SELECT source_path, target_path, relationship FROM edges").fetchall()
         neighbours = expand_one_hop(seed_paths, edges)
         if not neighbours:
             return ""
@@ -589,9 +673,9 @@ def _expansion_section(seed_paths: list[str]) -> str:
 
     lines = [
         f"- **{meta.get(path, (path, ''))[0]}** (`{path}`) "
-        f"— {rel} of `{Path(seed).stem}`\n"
+        f"— {rel} of `{Path(sorted(seeds)[0]).stem}`\n"
         f"  {meta.get(path, ('', ''))[1]}"
-        for path, rel, seed in neighbours
+        for path, rel, seeds in neighbours
     ]
     return (
         f"\n\n---\n\n**{len(neighbours)} page(s) one typed hop away** "

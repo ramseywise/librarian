@@ -275,6 +275,7 @@ Run lint to find health issues. Check each of the following:
 - **Missing summaries** — `summary:` field is empty or generic
 - **Orphan raw files** — files in `data/raw/` with no corresponding wiki coverage
 - **Untyped links** — `## See Also` entries without a `— type` annotation (>50% untyped = WARN)
+- **Unrecognized link types** — typed-syntax annotations whose type is not canonical (WARN)
 - **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain links (NOTE)
 - **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 
