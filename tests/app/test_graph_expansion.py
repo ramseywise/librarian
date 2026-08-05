@@ -86,7 +86,9 @@ def test_expansion_labels_reverse_traversal_as_inverse() -> None:
 def test_expansion_excludes_untyped_and_non_expansion_relationships() -> None:
     """`instance-of` is a real edge but not one we traverse."""
     edges = build_typed_edges(PAGES)
-    assert all(r in EXPANSION_RELATIONSHIPS or True for _, _, r in edges)
+    # Precondition: the fixture must contain an edge type we do NOT traverse,
+    # otherwise the exclusion assertions below pass vacuously.
+    assert any(r not in EXPANSION_RELATIONSHIPS for _, _, r in edges)
     out = expand_one_hop(["infra/inference-economics.md"], edges)
     # prefix-caching is reachable from the seed only via `instance-of` (forward)
     # and `extends` (backward) — the latter is in scope, so it appears, but as
