@@ -2,7 +2,7 @@
 title: Wiki Graph Engineering — Edge Quality Over Edge Count
 tags: [meta, rag, decision]
 summary: Why librarian's link graph under-connects, why the typed-relationship subgraph is the layer worth querying, and the design choices behind one-hop retrieval expansion.
-updated: 2026-08-05
+updated: 2026-08-06
 sources:
   - data/wiki/_relink_suggestions.md
   - data/wiki/_bridge_suggestions.md
@@ -10,7 +10,33 @@ sources:
 
 # Wiki Graph Engineering — Edge Quality Over Edge Count
 
-Measured 2026-08-04 against the live wiki (281 pages):
+## Pinned Denominator (2026-08-06)
+
+Counted with the canonical regexes in `core/wiki_common.py` (`WIKILINK_RE`,
+`TYPED_LINK_RE`) over public non-underscore pages; the typed count is
+materialized as the `edges` table at index build and reproduced by
+`SELECT count(*) FROM edges`:
+
+| Signal | Count | Command |
+|---|---|---|
+| Pages | 284 | `find data/wiki -name '*.md' ! -path '*/private/*' ! -name '_*' \| wc -l` |
+| Wikilink occurrences (body pages) | 2,949 | `WIKILINK_RE` over the same file set |
+| Wikilink occurrences (incl. `_`-files) | 5,073 | `WIKILINK_RE`, underscore files included |
+| Canonical typed edges | 735 | `TYPED_LINK_RE`; equals `SELECT count(*) FROM edges` |
+| — of which traversal (`prerequisite-for`/`extends`) | 484 | edges table filtered |
+| Any-syntax typed annotations (incl. non-canonical) | 1,216 | `ANY_TYPED_LINK_RE` |
+| Pages with ≥1 canonical typed edge (in or out) | 235 / 284 | adjacency over edges table |
+
+**The earlier 6,887 / 543 / 375 figures (measured 2026-08-04) are deprecated
+as non-reproducible.** Re-counting the exact 2026-08-04 git tree with the
+canonical regexes gives 5,072 wikilinks and 735 canonical typed edges — no
+counting rule tested (body-only, underscore-inclusive, raw `[[` opens)
+reproduces 6,887 or 543. They predate the LIB-110 regex consolidation and
+were never pinned to a command; the qualitative claims below survive under
+the corrected numbers (typed edges are still ~14% of occurrences, still the
+sparse high-precision layer).
+
+Historic table (2026-08-04, deprecated):
 
 | Signal | Count |
 |---|---|
@@ -76,7 +102,8 @@ judgement call for a curation pass, not part of stopping the writes.
 `search_wiki(..., expand=True)` returns pages one typed hop from the primary
 results. Design choices:
 
-**Only `prerequisite-for` and `extends` are traversed** (375 of 543 typed edges).
+**Only `prerequisite-for` and `extends` are traversed** (484 of 735 typed edges,
+pinned count above).
 Both express directional dependency — "what else do I need to understand this
 hit?" `alternative-to` and `contradicts` are excluded: useful to a human reader,
 but they pull in competing approaches, which is noise when the caller asked
@@ -123,6 +150,7 @@ which is the kind of thing that gets built and then quietly unmaintained. Wait
 until a query demands it.
 
 ## See Also
+- [[Typed-Graph Retrieval Ablation]] — the 2026-08-06 three-arm eval that answered whether traversing this layer helps retrieval (null at 284 pages)
 - [[Karpathy LLM Wiki Pattern]] — extends (the compile model this refines)
 - [[Librarian RAG Architecture]] — extends (retrieval stack this modifies)
 - [[Documentation Boundary — Machine vs Human Docs]] — prerequisite-for (who may write what)

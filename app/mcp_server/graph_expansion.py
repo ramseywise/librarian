@@ -5,15 +5,18 @@ enough to be worth querying at retrieval time.
 
 The wiki has two kinds of edge and they behave very differently:
 
-    total wikilink edges   6887   (~24 per page — mentions, prose links, index rows)
-    typed relationship     543    (7%; `— extends`, `— prerequisite-for`, ...)
+    wikilink occurrences   5073   (~18 per page — mentions, prose links, index rows)
+    typed relationship     735    (14%; `— extends`, `— prerequisite-for`, ...)
 
-Expanding along *all* edges would drown a context window: at 24 neighbours per
-hit, a 10-result search becomes a 240-page neighbourhood. The typed subgraph is
-the opposite shape — sparse, author-asserted, and still covering 189 of 281
-pages at a median out-degree of 2. That is the layer worth traversing.
+(Pinned 2026-08-06 with core/wiki_common.py regexes; the typed count equals
+`SELECT count(*) FROM edges`. See data/wiki/meta/wiki-graph-engineering.md.)
 
-We expand along `prerequisite-for` and `extends` only (375 of the 543 typed
+Expanding along *all* edges would drown a context window: at ~18 neighbours per
+hit, a 10-result search becomes a ~180-page neighbourhood. The typed subgraph is
+the opposite shape — sparse, author-asserted, and still covering 235 of 284
+pages. That is the layer worth traversing.
+
+We expand along `prerequisite-for` and `extends` only (484 of the 735 typed
 edges). Both are *directional dependencies*: they answer "what must I also know
 to make sense of this hit?" `alternative-to` and `contradicts` are deliberately
 excluded — they are genuinely useful to a reader but they pull in competing

@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-08-06T07-47-22Z",
+  "mode": "live",
+  "arm": "lex",
+  "dataset": "golden_dataset.json",
+  "golden_set_hash": "1e50d3ffd24e09aad58554f09f09cfd950f5177cca5314a6f38f6b57189d7e04",
+  "embedding_model_id": "all-MiniLM-L6-v2",
+  "edge_count": 735,
+  "n_entries": 50,
+  "hit_rate": 1.0,
+  "mean_reciprocal_rank": 0.7913333333333334,
+  "mean_expected_set_recall": 1.0,
+  "mean_token_overlap": 1.0,
+  "mean_semantic_similarity": 1.0,
+  "floors": {
+    "hit_rate": 0.6,
+    "mrr": 0.4
+  }
+}

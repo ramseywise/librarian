@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [meta, reference]
 summary: Auto-generated table of contents for every page in data/wiki/, grouped by domain directory.
-updated: 2026-08-04
+updated: 2026-08-06
 sources:
   - data/wiki/
 ---
@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**281 pages** across 17 domains.
+**285 pages** across 17 domains.
 
 ## Foundations
 
@@ -160,6 +160,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 ## RAG
 
 - [[Bedrock KB vs LangGraph Decision]] — Decision framework for Bedrock Knowledge Bases vs. LangGraph CRAG pipeline — quality, observability, cost, and migration path analysis.
+- [[Typed-Graph Retrieval Ablation]] — Pre-registered three-arm ablation of one-hop typed-graph expansion — null result at 284 pages; semantic retrieval is already at recall ceiling, so expansion stays off by default.
 - [[Agentic RAG — Advanced Patterns]] — Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
 - [[RAG Architecture Selection]] — The nine named RAG architectures as one selection space — what each buys and costs, the decision cheat-sheet, and Fusion RAG over heterogeneous sources (distinct from multi-query RAG-Fusion).
 - [[Text-to-SQL as a Retrieval Strategy]] — The structured branch of a hybrid retriever — dynamic schema subsetting, a semantic layer of retrieved few-shot SQL examples, mechanical validation that replaced a deleted LLM reviewer, and bounded error-as-context retry.
@@ -338,6 +339,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Session Insights]] — Compiled insights from 42 facet-analyzed Claude Code sessions — friction patterns, recurring themes, skill candidates, and learning outcomes.
 - [[Session Knowledge Capture Patterns]] — Patterns for capturing, enriching, and classifying session knowledge — output type taxonomy, pre-compact enrichment, and the session-as-source-of-truth approach.
 - [[Skill-Knowledge Information Flow]] — How knowledge flows between the four parallel systems — global skills, ai-project-template, learn-ai-engineering, and the librarian wiki — and the sync contracts between them.
+- [[Wiki Graph Engineering — Edge Quality Over Edge Count]] — Why the link graph under-connects, why the typed-relationship subgraph is the layer worth querying, and the pinned edge-count denominator behind one-hop retrieval expansion.
 
 ## Projects
 
