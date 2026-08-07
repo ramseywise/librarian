@@ -224,10 +224,49 @@ def test_retrieval_grader_batch_hit_rate_and_mrr() -> None:
         [RetrievalResult("data/wiki/rag/x.md"), RetrievalResult("data/wiki/rag/b.md")],  # rank-2
         [RetrievalResult("data/wiki/rag/x.md")],  # miss
     ]
-    hit_rate, mrr, results = grader.grade_batch(entries, retrieved)
+    hit_rate, mrr, mean_recall, results = grader.grade_batch(entries, retrieved)
     assert hit_rate == pytest.approx(2 / 3)
     assert mrr == pytest.approx((1.0 + 0.5 + 0.0) / 3)
+    assert mean_recall == pytest.approx(2 / 3)  # single-page entries: recall == hit
     assert len(results) == 3
+
+
+@pytest.mark.unit
+def test_expected_set_recall_partial_coverage() -> None:
+    """2 expected, 1 retrieved → recall 0.5 while hit stays True.
+
+    This is the divergence hit-rate can't see: a multi-page entry is a 'hit'
+    the moment any one expected page appears, but expected-set recall keeps
+    penalising the missing pages — the metric the graph arm is meant to move.
+    """
+    grader = RetrievalGrader()
+    entry = _make_entry(
+        source_pages=[
+            "data/wiki/rag/reciprocal-rank-fusion.md",
+            "data/wiki/rag/rag-retrieval-strategies.md",
+        ]
+    )
+    retrieved = [
+        RetrievalResult("data/wiki/rag/rag-retrieval-strategies.md", score=0.9),
+        RetrievalResult("data/wiki/rag/unrelated.md", score=0.8),
+    ]
+    result = grader.grade_entry(entry, retrieved)
+    assert result.hit is True
+    assert result.expected_set_recall == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+def test_expected_set_recall_full_and_empty() -> None:
+    grader = RetrievalGrader()
+    entry = _make_entry(source_pages=["data/wiki/rag/a.md", "data/wiki/rag/b.md"])
+    full = grader.grade_entry(
+        entry,
+        [RetrievalResult("data/wiki/rag/b.md"), RetrievalResult("data/wiki/rag/a.md")],
+    )
+    assert full.expected_set_recall == pytest.approx(1.0)
+
+    empty = grader.grade_entry(entry, [])
+    assert empty.expected_set_recall == pytest.approx(0.0)
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,266 @@
+[
+  {
+    "id": "mh-001",
+    "category": "multi-hop",
+    "query": "How does the eval maturity progression determine when a team should introduce LLM-as-judge grading, and what setup cost does that grading approach require before it produces trustworthy scores?",
+    "expected_answer": "LLM-as-judge is rung 3 in the four-rung eval ladder (manual review, golden-set grading, LLM-judge, user feedback), introduced around week 4+ of refining once golden-set failures reveal quality criteria—like tone or completeness—that heuristic grading can't express, and it runs via `make eval-gate` in CI. Before those scores mean anything, the judge needs calibration: writing 3-5 quality criteria, creating 5-10 human-graded sample outputs, writing a judge prompt, and running the judge on the samples until it agrees with human grades. Because the judge is non-deterministic and costs money per run, the recommendation is to run cheap heuristic golden-set grading in CI and reserve LLM-judge for on-demand quality audits rather than a per-PR gate.",
+    "source_pages": [
+      "data/wiki/eval/eval-ladder.md",
+      "data/wiki/eval/llm-as-judge-evaluation.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-002",
+    "category": "multi-hop",
+    "query": "In eval-driven development, why does the eval suite have to exist before tuning starts, and how does that relate to sizing the golden set at spec time versus after launch?",
+    "expected_answer": "EDD requires authoring the behavioral case set before the agent can satisfy it, because every tuning change is a global change—a prompt tweak that fixes three failures can silently break four others, so with only a handful of cases you'd see the fixes and miss the regressions and ship anyway. This is why the golden set only needs to be small (20-50 cases) at discovery-exit/initial spec time: it exists to define planned capabilities honestly before the agent exists, not to catch every regression yet. The set is meant to grow toward CI-scale numbers (100-1,000) only after launch, fed by real production failures, rather than being over-specced as a genesis-time obligation.",
+    "source_pages": [
+      "data/wiki/eval/golden-set-mechanics.md",
+      "data/wiki/eval/eval-driven-development.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-003",
+    "category": "multi-hop",
+    "query": "Why is scoring an agent on pass^k over multiple trials still not enough to trust that agent, and what does trajectory-level evaluation catch that even a multi-trial outcome metric misses?",
+    "expected_answer": "Pass^k measures whether all k trials succeed, and it falls sharply as k rises—a 75% per-trial success rate only passes three consecutive trials about 42% of the time—which already shows raw per-trial pass rates flatter agents run unattended or facing users who need reliability every time. But pass^k, like any outcome metric, still only scores the final answer over repeated samples; it can't detect a 'lucky trajectory,' such as an agent that got the right answer via a wrong tool route or a retry that discarded correct evidence it had already retrieved. Trajectory evaluation catches these by scoring individual nodes (routing choice, whether retry evidence survived, whether escalation fired correctly) as deterministic, mechanically checkable assertions—failures invisible to any outcome-based metric, no matter how many trials it runs.",
+    "source_pages": [
+      "data/wiki/eval/eval-non-determinism.md",
+      "data/wiki/eval/trajectory-over-outcome.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-004",
+    "category": "multi-hop",
+    "query": "How does the VA eval harness's routing-accuracy suite map onto Anthropic's three-tier eval taxonomy, and what score floor does it enforce in CI?",
+    "expected_answer": "The VA eval harness's routing accuracy suite corresponds to Tier 2 (trajectory evals) in Anthropic's taxonomy—it checks whether the agent routes to the right domain/subagent, analogous to asserting the ordered list of nodes/tools visited, and it's implemented via the `tool_trajectory_avg_score` metric (exact match on tool name and args, 1.0 = perfect). The VA harness explicitly cites the Anthropic three-tier taxonomy as the framework underlying its four suites. In CI, `make eval-routing eval-behavioral` runs with a routing score floor of 0.85 and a behavioral floor of 0.90 (`check_floor.py`), failing the build if routing drops below that threshold to catch prompt/routing regressions before production.",
+    "source_pages": [
+      "data/wiki/eval/anthropic-eval-taxonomy.md",
+      "data/wiki/eval/va-eval-harness.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-005",
+    "category": "multi-hop",
+    "query": "If an eval's pass rate drops, why shouldn't that be treated as a code test failure, and what debugging order does the maintenance discipline prescribe before touching the agent itself?",
+    "expected_answer": "Tests and evals are different instruments: a test failing means the code is wrong (deterministic assertion, always a bug), while an eval score dropping means something moved—prompt, model, data, or code—and could be noise rather than a real regression, since evals measure a pass rate over a set against a threshold rather than an exact match. Because of this ambiguity, the maintenance discipline says never assume the agent got worse first: check infrastructure errors/timeouts, then inspect failed traces and grader decisions, then check whether failures concentrate in one task category, and only then modify the model, prompt, tools, or agent logic. Skipping straight to step 4 means tuning a real agent against a broken measurement, which can make the number improve while the agent actually gets worse.",
+    "source_pages": [
+      "data/wiki/eval/eval-vs-test-distinction.md",
+      "data/wiki/eval/eval-suite-maintenance.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-006",
+    "category": "multi-hop",
+    "query": "Both the RAG cross-encoder reranker and the LightGBM/CatBoost playlist reranker produce scores meant to be compared on a consistent scale—what mechanism does each use to get there, and why does that matter for downstream use of the score?",
+    "expected_answer": "The RAG cross-encoder reranker (`ms-marco-MiniLM-L-6-v2`) produces unbounded raw logits per (query, chunk) pair and applies a sigmoid to map them into a consistent [0,1] range, which is what lets the CRAG confidence gate compare `max(relevance_score)` against a fixed threshold. The LightGBM/CatBoost comparison instead evaluates whether GBM outputs are well-calibrated probabilities usable directly as a rerank score, using Brier score and log-loss rather than AUC—because a miscalibrated-but-well-ranked model still produces unusable absolute scores. Both cases treat calibration (not just ranking accuracy) as the property that makes a reranker's score safe to threshold or compare downstream.",
+    "source_pages": [
+      "data/wiki/rag/rag-reranking.md",
+      "data/wiki/eval/lightgbm-vs-catboost-comparison.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-007",
+    "category": "multi-hop",
+    "query": "When a copilot agent implements episodic memory using LangGraph's cross-thread store, what write-timing tradeoff should it make, and how does that store's data differ in kind from what the checkpointer holds?",
+    "expected_answer": "Episodic memory (past conversation summaries per user) is implemented via BaseStore, which persists data across threads, unlike the checkpointer which only holds full state snapshots for a single thread. For write timing, background writes (an async task spawned after the run completes) are preferred for episodic session summaries since they add no latency, versus hot-path writes which are only justified when the memory is needed within the same run (e.g. a procedural update affecting the current response). Implementation-wise, this costs about one Haiku call per session (~$0.0001) and is considered high ROI since it enables 'last time you asked about X' recall.",
+    "source_pages": [
+      "data/wiki/memory/agent-memory-types.md",
+      "data/wiki/langgraph/langgraph-basestore.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-008",
+    "category": "multi-hop",
+    "query": "How does Memoria's exponential decay scoring avoid needing the explicit conflict-resolution step that memory lifecycle theory says is required for a true memory system, and what does that tradeoff cost?",
+    "expected_answer": "Memory lifecycle theory holds that a store which only appends facts (like both 'user is vegetarian' and 'user ordered steak') has no way to know which is current — that's a log, not memory, and stage E (update/forget) requires detecting the contradiction to resolve it. Memoria's decay weighting sidesteps this: it scores every memory by recency (w = e^(-alpha*age), min-max normalized so ranking reflects relative age within the retrieved set) so the newer fact simply outranks the older one at read time, without anything ever noticing they conflict. The cost is that stable, durable facts decay at the same rate as volatile ones, so a preference stated once and never contradicted will eventually rank below noise — the usual fix is a two-tier design with a small always-injected profile for durable facts and decay applied only to the episodic layer beneath it.",
+    "source_pages": [
+      "data/wiki/memory/memory-decay-weighting.md",
+      "data/wiki/memory/memory-lifecycle.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-009",
+    "category": "multi-hop",
+    "query": "What specific message-count parameters does the LangGraph summarization node use, and how does that concrete implementation map onto the general compaction pipeline's retention priorities?",
+    "expected_answer": "The LangGraph summarization node fires when message history reaches an 8-message trigger threshold, summarizes the older messages with Haiku, and retains the last 4 messages verbatim as overlap, replacing the summarized portion with a single SystemMessage. This maps directly onto the general compaction pipeline's principle that recent turns must be preserved verbatim (since the agent's immediate working state lives there) while older reasoning gets summarized — the node's 4-message overlap is a concrete instance of that 'preserve recent messages verbatim' retention step, and its use of a separate cheap model (Haiku) reflects treating the summarization step as lossy-but-bounded compression of the middle of the conversation.",
+    "source_pages": [
+      "data/wiki/context/context-compaction.md",
+      "data/wiki/langgraph/summarization-node.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-010",
+    "category": "multi-hop",
+    "query": "Why does 'context rot' happen even when a fact is verbatim present in the window, and which failure mode in the broader failure taxonomy is this, versus the one caused by high volume of merely plausible content?",
+    "expected_answer": "Context rot happens because attention is a fixed budget divided across n-squared pairwise token relationships in a transformer — adding tokens doesn't expand capacity, it thins attention across more claimants, so exact-match retrieval of a planted fact degrades as filler increases even though the fact is unmodified and present. In the context failure-modes taxonomy, this is 'Rot' (occupancy grows, recall degrades, correct earlier in a session but wrong later) — distinct from 'Distraction,' where attention drifts to individually plausible but marginal content (e.g. retrieving 40 relevant-ish documents when only 3 answer the question), which is a volume-of-plausible-content problem rather than an attention-thinning-with-occupancy problem.",
+    "source_pages": [
+      "data/wiki/context/why-context-is-finite.md",
+      "data/wiki/context/context-failure-modes.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-011",
+    "category": "multi-hop",
+    "query": "Why must a timestamp never be placed at the top of a system prompt, and what ordering rule for the rest of the window follows from the same underlying caching mechanism?",
+    "expected_answer": "Prompt caching works by exact-match prefix matching on Claude's KV cache, so a timestamp at the top of the system prompt breaks byte-identity on every call and destroys cache reuse for the entire window, forcing full-prefix reprocessing (~100% token cost) instead of only paying for the novel suffix (~10%). This is why context should be ordered stable-before-dynamic: system prompt, tools, and stable memory form the static cacheable prefix, while retrieved docs, history, and runtime state (which change per call) go after it, with the current query last — runtime injection like date/time belongs in a dynamic layer assembled programmatically rather than baked into the cached prefix.",
+    "source_pages": [
+      "data/wiki/infra/prefix-caching.md",
+      "data/wiki/context/context-anatomy.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-012",
+    "category": "multi-hop",
+    "query": "Why can't prompt injection be fully fixed with in-context defences, and what is the one layered defence against it that actually provides a guarantee rather than a probability?",
+    "expected_answer": "Injection can't be fully fixed at the prompt layer because LLMs process instructions and data in the same channel with no structural separation — an attacker's text has no principled marker distinguishing it from a legitimate instruction, so defences like structural delimiting, trust zones, and instruction hierarchy are all probabilistic and can in principle be talked around. The context-failure-modes taxonomy identifies code-level enforcement as the load-bearing exception: a permission hook or other code-level control cannot be talked out of denying a write, unlike every context-level defence, which is why architectures should assume injection eventually succeeds and bound impact via things like least privilege and egress control rather than trying to prevent it outright.",
+    "source_pages": [
+      "data/wiki/prompting/prompt-injection.md",
+      "data/wiki/context/context-failure-modes.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-013",
+    "category": "multi-hop",
+    "query": "When a RAG API endpoint sends multiple query reformulations to the retrieval graph in parallel, how does RRF's cross-query consensus fusion relate to the global deduplication step the API applies before returning results?",
+    "expected_answer": "The RAG API design pattern runs 2-3 LLM-generated query variants through the retrieval graph in parallel via asyncio.gather, then merges and globally deduplicates results by chunk_id or content fingerprint (highest score wins) before returning them in the typed QueryResponse. RRF is the fusion mechanism that should occur upstream of that dedup step: it merges the multiple ranked lists from BM25, dense, and multi-query results by rank position rather than raw score, promoting chunks that multiple query variants agree on (e.g. a chunk ranked #2 in two lists beats one ranked #2 in only one list) even though the API's own dedup_global function operates on raw scores, not RRF scores. RRF's implementation preserves maxRawScore rather than the RRF score specifically so that downstream score-threshold and dedup logic like the API's continues to operate on the original cosine scale.",
+    "source_pages": [
+      "data/wiki/rag/reciprocal-rank-fusion.md",
+      "data/wiki/rag/rag-api-design-patterns.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-014",
+    "category": "multi-hop",
+    "query": "Why does a semantic cache hit save more than just retrieval time, in terms of the prefill/decode cost split of LLM inference?",
+    "expected_answer": "A semantic cache hit skips embedding, retrieval, reranking, and LLM generation entirely, saving roughly 3-6 seconds and 2+ LLM calls versus running the full CRAG pipeline. Since decode (sequential, one token at a time) is the expensive phase of inference while prefill is cheap and parallel, avoiding generation calls altogether removes the costliest part of the request rather than just shortening the prompt fed into prefill. This is why the cache's config target is aggressive (hits must return in ≤500ms end-to-end) — it eliminates the decode-dominated generation step rather than merely optimizing it via levers like output-length discipline or quantization.",
+    "source_pages": [
+      "data/wiki/rag/semantic-cache.md",
+      "data/wiki/infra/llm-inference-economics.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-015",
+    "category": "multi-hop",
+    "query": "How does the confidence gate in the LangGraph CRAG pipeline's graph topology implement the retry logic's off-by-one gotcha around retry_count?",
+    "expected_answer": "The LangGraph CRAG pipeline's QualityGate node compares confidence_score (from RerankerAgent) against a threshold (default 0.3 in the pipeline doc, though CRAG Retry Logic cites 0.4) and, on failure, loops back to the retrieve node with incremented retry_count rather than restarting the whole graph — a surgical mid-pipeline re-entry rather than a full LoopAgent restart. The retry logic doc details the implementation gotcha in this gate: in one production version, grade_docs increments retry_count before returning, so after the first pass retry_count is already 1, and check_sufficient only allows a retry while retry_count < 2 — meaning the gate as coded permits exactly one real retry, matching the pipeline doc's stated default of max_crag_retries=1, even though the increment-then-check ordering makes it easy to misread as allowing two retries.",
+    "source_pages": [
+      "data/wiki/langgraph/langgraph-crag-pipeline.md",
+      "data/wiki/rag/crag-retry-logic.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-016",
+    "category": "multi-hop",
+    "query": "When using the Send API to fan out to a dynamic number of parallel worker nodes, what state reducer should the shared results field use, and what happens if you leave it as the default?",
+    "expected_answer": "Send dispatches a runtime-determined number of parallel branches (one per chunk, query reformulation, or tool call), each returning a partial state update, and these all complete as a single super-step that must be merged into shared state at the join node. If the target field uses the default reducer (overwrite/last-write-wins), the parallel branches will silently clobber each other's results, leaving only the final write; to correctly accumulate results from all branches, the field must instead be declared with a reducer like Annotated[list, operator.add] (or add_messages for chat message lists) so the reducer appends/merges every branch's output rather than replacing it.",
+    "source_pages": [
+      "data/wiki/langgraph/send-api-fanout.md",
+      "data/wiki/langgraph/langgraph-state-reducers.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-017",
+    "category": "multi-hop",
+    "query": "Given the layered relationship between LangChain, LangGraph, and Deep Agents, why was ADK rejected in favor of LangGraph for Librarian's CRAG retrieval pipeline specifically, rather than being a question of which of the three layered frameworks to use?",
+    "expected_answer": "The framework-selection guide frames LangChain, LangGraph, and Deep Agents as layered (foundation, orchestration, batteries-included) rather than competing, with LangGraph chosen when you need complex control flow like branching/loops (explicitly citing CRAG retry as an example) or persistent state within a session. The ADK vs LangGraph decision doc explains that ADK sits outside this LangChain-family stack entirely and was rejected because its LoopAgent can only restart the full condense→analyze sequence rather than model Librarian's surgical conditional back-edge into just the retrieve node, its session state is an untyped mutable dict versus LangGraph's typed LibrarianState, and Claude/Anthropic support requires an unproven LiteLLM adapter since ADK is Gemini-native — concluding the gap was vocabulary, not architecture, so a ~2-day rename-only alignment was done instead of a full port.",
+    "source_pages": [
+      "data/wiki/adk/adk-vs-langgraph.md",
+      "data/wiki/langgraph/framework-selection.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-018",
+    "category": "multi-hop",
+    "query": "How does knowledge graph retrieval's traversal-depth error compounding relate to when GraphRAG is worth using inside an agentic RAG system?",
+    "expected_answer": "Knowledge graph retrieval shows multi-hop accuracy of 53.4% versus 42.9% for vector-only, but warns that traversal depth compounds error multiplicatively — at 85% per-hop accuracy, a 5-hop traversal is only ~44% trustworthy (0.85^5) — making entity resolution the load-bearing sub-problem and bounded traversal depth a necessity rather than an optional feature. The agentic RAG advanced patterns page positions GraphRAG (entity/relationship extraction, community detection, graph traversal instead of vector search) as the right tool specifically for relationship-traversal questions like \"what do all invoices for customer X have in common,\" explicitly warning it is overkill and adds significant pipeline complexity for simple factual lookups — the same boundary implied by the compounding-error caveat, since shallow single-hop questions don't need a graph and deep traversal must be budgeted rather than assumed reliable.",
+    "source_pages": [
+      "data/wiki/graph/knowledge-graph-retrieval.md",
+      "data/wiki/rag/agentic-rag-advanced.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-019",
+    "category": "multi-hop",
+    "query": "If I'm exposing a wiki knowledge base as an MCP server that other agents can connect to, what invariant should the tool set enforce, and how does that relate to MCP's separation of tool definitions from the agent?",
+    "expected_answer": "MCP separates tool definitions from the agent so tools are served independently and discovered by the agent at runtime, rather than being baked in at construction time — the copilot just calls a tool like the librarian MCP tool without knowing the backend. Because tools become an independently deployed surface, a knowledge-serving MCP server like the Librarian's must enforce a read-only invariant: all its tools (search_wiki, read_page, list_domain, list_pages, get_domain_briefing) are read-only, with no write/append/delete tool exposed. This invariant is enforced at the tool-definition layer itself (not via a soft prompt instruction), which is exactly the kind of security-consequential rule that benefits from MCP's decoupled, versionable tool-server boundary.",
+    "source_pages": [
+      "data/wiki/mcp/mcp-protocol.md",
+      "data/wiki/mcp/mcp-server-security-patterns.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-020",
+    "category": "multi-hop",
+    "query": "How do the ACI concept of tool design and the context-engineering view of tools converge on the same rule for tool descriptions and error messages?",
+    "expected_answer": "ACI (Agent-Computer Interface) frames tool design as an interface problem: descriptions should state when to use a tool (and when not to, to disambiguate from similar tools), and error messages should be actionable rather than raw stack traces, since ambiguity causes agents to call the wrong tool or misuse parameters. The context-engineering view arrives at the identical prescriptions from a token-budget angle: tool descriptions are 'routing logic' that must be terse because they sit permanently in the context window, and errors should be structured and actionable (e.g. {\"error_code\": \"not_found\", \"is_fatal\": false}) because a stack trace is 500 tokens of noise the agent can't use. Both treat tool overlap/ambiguous boundaries as the central failure to eliminate — ACI as a reasoning-failure look-alike, context engineering as wasted resident tokens.",
+    "source_pages": [
+      "data/wiki/mcp/tool-design-as-context-engineering.md",
+      "data/wiki/patterns/aci-agent-computer-interface.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-021",
+    "category": "multi-hop",
+    "query": "Why is sub-agent isolation described as the most expensive context lever, and how does that cost show up in the Explorer/Executor role pattern used in harness orchestration?",
+    "expected_answer": "Isolation is the most expensive of the four context-engineering levers because real tokens multiply across agents while cross-agent context is lost — e.g. three sub-agents spending 80k tokens each is 240k of real spend to produce 6k of visible output for the orchestrator, and the sub-agent's window is discarded (not merged) once it returns its summary. Harness orchestration's Explorer/Executor pattern is a deliberate, cheap application of that costly lever: the Explorer gets only read-only tools and runs in an isolated, disposable context on a cheaper model, so exploration noise never pollutes the orchestrator, which stays small and holds the plan. This works only because the Explorer's prompt is scoped and bounded and it returns a condensed summary rather than its full history — the same 'summary, not transcript' discipline multi-agent context describes as the mechanism that makes isolation pay off instead of just multiplying cost.",
+    "source_pages": [
+      "data/wiki/harness/harness-orchestration.md",
+      "data/wiki/context/multi-agent-context.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-022",
+    "category": "multi-hop",
+    "query": "An agent keeps failing the same test gate after two retries — how should the harness distinguish this from an agent stuck in a doom loop of mutating the same broken solution, and what's the correct next move in each case?",
+    "expected_answer": "The two-retry rule says that after two failures on the same gate, the problem is in the context or specification, not the execution — a third attempt spends money confirming what's already known, so the harness should stop retrying and instead treat the failure as a signal that the spec or provided context is wrong (this only holds if the error was already fed back as context, per the Agent Retry Taxonomy). A doom loop is a related but distinct failure — 10+ small mutations of a broken solution converging on nothing — detected via per-file edit-count tracking, and its fix is not a hard stop but a forced 'reconsider your approach' prompt that pushes the agent to re-plan rather than repair. Both are treated as harness bugs with a common design principle: past a small attempt budget, more attempts don't produce new information, so the intervention must change the agent's strategy (re-plan, or escalate) rather than let it keep repeating.",
+    "source_pages": [
+      "data/wiki/harness/verification-loops.md",
+      "data/wiki/harness/loop-detection-and-the-two-retry-rule.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "mh-023",
+    "category": "multi-hop",
+    "query": "For a long-running agent loop, why is an iteration/budget cap alone insufficient, and how does externalizing state to files support the stall-detection and escalation mechanisms that are supposed to catch what the cap misses?",
+    "expected_answer": "A cap is only a safety backstop, not a working verifier — a loop whose normal exit is hitting max_iterations has no real success check, and caps alone can't distinguish productive work from thrashing (budget cap) or silently truncate progress that was still advancing (iteration cap); only a stall detector bounds the duration of unproductive-but-varied work, and it requires progress to be observable (a changing file, a shrinking failure count). Long-horizon execution's answer is to externalize progress to files rather than keep it only in the context window, which makes the loop re-entrant and gives the stall detector something concrete to read between iterations. That same state externalization is what makes the escalation path meaningful: when the cap or stall detector fires, the run can hand off to a fresh context (or a human) with the plan file and progress log intact, rather than losing everything that lived only in a window that's about to be discarded.",
+    "source_pages": [
+      "data/wiki/loop/loop-termination-design.md",
+      "data/wiki/harness/long-horizon-execution.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "mh-024",
+    "category": "multi-hop",
+    "query": "Where does the input guardrails pipeline sit within the five-layer safeguards architecture, and why must both stay deterministic and LLM-free rather than using an LLM to check itself?",
+    "expected_answer": "The 7-stage input guardrails pipeline (normalise, size check, domain classify, injection detect, PII redact, XML envelope, advisory notes) is Layer 1 of the five-layer safeguards architecture, running pre-input in under 1ms before any LLM call, ahead of the routing confidence gate (Layer 2), retrieval quality gate/CRAG (Layer 3), post-generation grounding check (Layer 4), and escalation routing (Layer 5). Both pages insist on deterministic, LLM-free checks: the guardrails pipeline argues an LLM-based guardrail can be bypassed by the same injection techniques it's meant to catch, and the safeguards architecture explicitly forbids LLM-as-judge for its Layer 4 grounding check, reserving semantic/LLM-based grounding evaluation for the offline eval pipeline rather than the hot runtime path. Layer 1 is deterministic and near-instant (<1ms) precisely so the fast, cheap, gameable-resistant checks run first, before the costlier retrieval and generation stages.",
+    "source_pages": [
+      "data/wiki/infra/safeguards-five-layers.md",
+      "data/wiki/infra/input-guardrails-pipeline.md"
+    ],
+    "difficulty": "medium"
+  }
+]

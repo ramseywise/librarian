@@ -5,15 +5,18 @@ enough to be worth querying at retrieval time.
 
 The wiki has two kinds of edge and they behave very differently:
 
-    total wikilink edges   6887   (~24 per page — mentions, prose links, index rows)
-    typed relationship     543    (7%; `— extends`, `— prerequisite-for`, ...)
+    wikilink occurrences   5073   (~18 per page — mentions, prose links, index rows)
+    typed relationship     735    (14%; `— extends`, `— prerequisite-for`, ...)
 
-Expanding along *all* edges would drown a context window: at 24 neighbours per
-hit, a 10-result search becomes a 240-page neighbourhood. The typed subgraph is
-the opposite shape — sparse, author-asserted, and still covering 189 of 281
-pages at a median out-degree of 2. That is the layer worth traversing.
+(Pinned 2026-08-06 with core/wiki_common.py regexes; the typed count equals
+`SELECT count(*) FROM edges`. See data/wiki/meta/wiki-graph-engineering.md.)
 
-We expand along `prerequisite-for` and `extends` only (375 of the 543 typed
+Expanding along *all* edges would drown a context window: at ~18 neighbours per
+hit, a 10-result search becomes a ~180-page neighbourhood. The typed subgraph is
+the opposite shape — sparse, author-asserted, and still covering 235 of 284
+pages. That is the layer worth traversing.
+
+We expand along `prerequisite-for` and `extends` only (484 of the 735 typed
 edges). Both are *directional dependencies*: they answer "what must I also know
 to make sense of this hit?" `alternative-to` and `contradicts` are deliberately
 excluded — they are genuinely useful to a reader but they pull in competing
@@ -72,7 +75,7 @@ def expand_one_hop(
     seed_paths: list[str],
     edges: list[tuple[str, str, str]],
     max_expansions: int = 5,
-) -> list[tuple[str, str, str]]:
+) -> list[tuple[str, str, frozenset[str]]]:
     """Find pages one typed hop from the seeds.
 
     Traversal is bidirectional by design. `prerequisite-for` is written on the
@@ -89,17 +92,19 @@ def expand_one_hop(
                         without it a well-connected seed set can pull in dozens.
 
     Returns:
-        (neighbour_path, relationship, seed_path) triples, ordered by how many
-        distinct seeds reached each neighbour (descending). A page reached from
-        several seeds is more likely to be genuinely central to the query than
-        one reached from a single hit.
+        (neighbour_path, relationship, seed_paths) triples — seed_paths is the
+        frozenset of every seed that reached the neighbour, so callers can score
+        against the best-ranked seed — ordered by how many distinct seeds
+        reached each neighbour (descending). A page reached from several seeds
+        is more likely to be genuinely central to the query than one reached
+        from a single hit.
     """
     seeds = set(seed_paths)
     if not seeds:
         return []
 
-    # neighbour -> (set of seeds that reached it, one representative edge)
-    reached: dict[str, tuple[set[str], str, str]] = {}
+    # neighbour -> (set of seeds that reached it, one representative edge label)
+    reached: dict[str, tuple[set[str], str]] = {}
 
     def record(neighbour: str, relationship: str, seed: str) -> None:
         if neighbour in seeds:
@@ -107,7 +112,7 @@ def expand_one_hop(
         if neighbour in reached:
             reached[neighbour][0].add(seed)
         else:
-            reached[neighbour] = ({seed}, relationship, seed)
+            reached[neighbour] = ({seed}, relationship)
 
     # Direction matters and the annotation is written from the *linking* page's
     # point of view. `[[RLHF Pipeline]] — prerequisite-for` on the LLM guide
@@ -125,4 +130,4 @@ def expand_one_hop(
             record(source, INVERSE_LABEL[relationship], target)
 
     ranked = sorted(reached.items(), key=lambda kv: (-len(kv[1][0]), kv[0]))
-    return [(path, rel, seed) for path, (_, rel, seed) in ranked[:max_expansions]]
+    return [(path, rel, frozenset(seed_set)) for path, (seed_set, rel) in ranked[:max_expansions]]

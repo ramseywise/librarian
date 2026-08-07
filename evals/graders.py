@@ -45,6 +45,7 @@ class RetrievalGraderResult:
     entry_id: str
     hit: bool  # at least one expected source page in retrieved results
     reciprocal_rank: float  # 1/rank of first expected page; 0 if not found
+    expected_set_recall: float  # |expected pages retrieved| / |expected|
     retrieved_paths: list[str]
     expected_paths: list[str]
 
@@ -66,6 +67,7 @@ class EvalReport:
 
     hit_rate: float
     mean_reciprocal_rank: float
+    mean_expected_set_recall: float
     mean_token_overlap: float
     mean_semantic_similarity: float
     retrieval_results: list[RetrievalGraderResult] = field(default_factory=list)
@@ -77,6 +79,7 @@ class EvalReport:
             f"Entries evaluated : {self.n_entries}",
             f"Hit rate          : {self.hit_rate:.3f}  (floor >= 0.60)",
             f"Mean recip. rank  : {self.mean_reciprocal_rank:.3f}  (floor >= 0.40)",
+            f"Expected-set rec. : {self.mean_expected_set_recall:.3f}",
             f"Token overlap     : {self.mean_token_overlap:.3f}",
             f"Semantic sim.     : {self.mean_semantic_similarity:.3f}",
         ]
@@ -104,10 +107,15 @@ class RetrievalGrader:
     ) -> RetrievalGraderResult:
         retrieved_paths = [r.page_path for r in retrieved]
         rr = self._reciprocal_rank(entry.source_pages, retrieved_paths)
+        matched = sum(
+            any(self._matches(exp, p) for p in retrieved_paths) for exp in entry.source_pages
+        )
+        recall = matched / len(entry.source_pages) if entry.source_pages else 0.0
         return RetrievalGraderResult(
             entry_id=entry.id,
             hit=rr > 0,
             reciprocal_rank=rr,
+            expected_set_recall=recall,
             retrieved_paths=retrieved_paths,
             expected_paths=entry.source_pages,
         )
@@ -116,14 +124,15 @@ class RetrievalGrader:
         self,
         entries: list[GoldenEntry],
         retrieved_per_entry: list[list[RetrievalResult]],
-    ) -> tuple[float, float, list[RetrievalGraderResult]]:
-        """Grade a batch. Returns (hit_rate, mrr, per_entry_results)."""
+    ) -> tuple[float, float, float, list[RetrievalGraderResult]]:
+        """Grade a batch. Returns (hit_rate, mrr, mean_recall, per_entry_results)."""
         results = [
             self.grade_entry(e, r) for e, r in zip(entries, retrieved_per_entry, strict=True)
         ]
         hit_rate = sum(r.hit for r in results) / len(results) if results else 0.0
         mrr = sum(r.reciprocal_rank for r in results) / len(results) if results else 0.0
-        return hit_rate, mrr, results
+        mean_recall = sum(r.expected_set_recall for r in results) / len(results) if results else 0.0
+        return hit_rate, mrr, mean_recall, results
 
     # ------------------------------------------------------------------
     # internals
