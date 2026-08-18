@@ -164,9 +164,10 @@ get_domain_briefing("langgraph")  # via MCP in the agent itself
 ### Architecture governance (PRs)
 
 ```
-/sanyi review     # check if the diff violates the SANYI change contract
 /code-review      # correctness + simplification pass
 ```
+
+The `contracts` review dimension (via `uv run --project ~/workspace/guacamayo review-cli run`) checks the diff against `SANYI.md` automatically.
 
 ---
 
@@ -182,7 +183,7 @@ get_domain_briefing("langgraph")  # via MCP in the agent itself
 | `app/mcp_server/` | FastMCP server: `search_wiki` (hybrid FTS + semantic + backlink rank), `read_page`, `list_domain`, `get_domain_briefing` |
 | `app/backend/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Anthropic chat agent |
 | `app/frontend/` | React + Vite graph UI — Cytoscape.js force-directed graph, chat panel, live wiki watch |
-| `.claude/skills/` | `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb`, `/sanyi` — Claude Code slash commands |
+| `.claude/skills/` | `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb` — Claude Code slash commands |
 
 ---
 
@@ -282,24 +283,19 @@ The backend caches embeddings and UMAP layout in DuckDB — only recomputed when
 | `/lint` | Health check — orphans, dead links, stale pages, unresolved conflicts |
 | `/adk-context [domain]` | Curated briefing for a build session |
 | `/seed-kb` | Scrape sessions + docs then prompt to ingest |
-| `/sanyi [init \| review \| audit]` | Change-contract governance — detect cross-layer violations |
 
 ---
 
 ## Architecture Governance (SANYI)
 
-The repo includes the [SANYI change-contract system](data/wiki/meta/sanyi-change-contract-system.md) for detecting architectural decay across PRs.
+The repo includes the [SANYI change-contract system](data/wiki/meta/sanyi-change-contract.md) for detecting architectural decay across PRs.
 
 Layers for this repo:
 - **Bianyi** (ever-changing): wiki page content, ingest prompts, domain taxonomy config
 - **Jianyi** (bounded): MCP tool schemas, wiki frontmatter spec, manifest format
 - **Buyi** (invariant): source attribution (never serve without grounded source), manifest dedup, conflict flagging, MCP read-only constraint
 
-```
-/sanyi init     # create SANYI.md contract
-/sanyi review   # check a diff against the contract
-/sanyi audit    # full repo health check
-```
+SANYI.md is the hand-maintained contract; `CLAUDE.md` carries the ingest checklist and conflict policy. The `contracts` review dimension reads `SANYI.md` and enforces all three layers automatically on every diff.
 
 ---
 
