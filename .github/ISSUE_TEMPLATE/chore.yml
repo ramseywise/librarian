@@ -1,0 +1,45 @@
+name: 🧹 Chore
+description: Tooling, docs, CI, dependencies, or ledger upkeep
+title: "[Chore] "
+labels: ["chore", "backlog"]
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues for this
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - tooling
+        - docs
+        - ci
+        - dependencies
+        - ledger / telemetry
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs doing
+    validations:
+      required: true
+
+  - type: textarea
+    id: done_when
+    attributes:
+      label: Done when
+      description: >
+        The stopping condition. `/workflow-scope` routes chores to a plan with a scope
+        boundary and a done-when condition — chores without one expand until someone
+        notices.
+      placeholder: "ruff check passes on `tools/` with no per-file ignores remaining."
+    validations:
+      required: true
