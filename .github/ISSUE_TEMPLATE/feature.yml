@@ -1,0 +1,43 @@
+name: ✨ Feature
+description: A new capability that does not exist yet
+title: "[Feature] "
+labels: ["enhancement", "backlog"]
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues for this
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What is hard or impossible today. Describe the need, not the solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: >
+        What must be true for this to be done. `/workflow-scope` routes features to a
+        plan with acceptance criteria and a test plan — this field seeds both, so write
+        conditions that can be checked, not aspirations.
+      placeholder: |
+        - [ ] `/query` accepts a repo filter
+        - [ ] Results outside the named repo are excluded
+        - [ ] Existing unfiltered behavior is unchanged when the filter is absent
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Including doing nothing, and why that is not enough.
+    validations:
+      required: false
