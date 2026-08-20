@@ -885,3 +885,81 @@ def test_system_prompt_is_generated_from_the_required_sections_dict() -> None:
     assert _SECTION_ID_LIST in _SYSTEM_PROMPT
     for section_id in _REQUIRED_SECTION_IDS:
         assert section_id in _SECTION_ID_LIST
+
+
+# --- LIB-125: tool_sequence column -------------------------------------------
+
+
+@pytest.mark.unit
+def test_tool_sequence_extraction(tmp_path: Path) -> None:
+    """Synthetic JSONL with known tool calls produces correct JSON array in tool_sequence."""
+
+    def _tool_block(name: str) -> dict[str, Any]:
+        return {"type": "tool_use", "id": f"id-{name}", "name": name, "input": {}}
+
+    path = tmp_path / "proj" / "sess-1.jsonl"
+    _write_jsonl(
+        path,
+        [
+            _user("2026-07-18T10:00:00Z"),
+            _assistant_with_tools(
+                "2026-07-18T10:00:05Z",
+                [_tool_block("Read"), _tool_block("Glob"), _tool_block("Bash")],
+            ),
+            _assistant_with_tools(
+                "2026-07-18T10:00:10Z",
+                [_tool_block("Edit"), _tool_block("Bash")],
+            ),
+        ],
+    )
+    session = parse_session(path)
+    assert session is not None
+    assert session["tool_sequence"] == ["Read", "Glob", "Bash", "Edit", "Bash"]
+
+    from tools.cartographer.factstore import from_jsonl
+
+    rows = from_jsonl(tmp_path)
+    assert len(rows) == 1
+    assert json.loads(rows[0]["tool_sequence"]) == ["Read", "Glob", "Bash", "Edit", "Bash"]
+
+
+@pytest.mark.unit
+def test_tool_sequence_null_for_sessions_without_tool_calls(tmp_path: Path) -> None:
+    """A session with only human turns produces an empty list (not a crash or None)."""
+    path = tmp_path / "proj" / "sess-1.jsonl"
+    _write_jsonl(
+        path,
+        [_user("2026-07-18T10:00:00Z"), _assistant("2026-07-18T10:00:05Z")],
+    )
+    session = parse_session(path)
+    assert session is not None
+    # Parser returns [] for no tool calls -- never None
+    assert session["tool_sequence"] == []
+
+    from tools.cartographer.factstore import from_jsonl
+
+    rows = from_jsonl(tmp_path)
+    assert len(rows) == 1
+    # Factstore serialises [] as "[]" (not NULL) -- absence of tool calls is distinguishable
+    # from a pre-migration row (NULL). Both are falsy but must stay semantically distinct.
+    assert rows[0]["tool_sequence"] == "[]"
+
+
+@pytest.mark.unit
+def test_tool_sequence_migration_idempotency(tmp_path: Path) -> None:
+    """Calling _connect (the migration path) twice on the same DB is a no-op."""
+
+    from tools.cartographer.factstore import _connect
+
+    store = tmp_path / "sessions.db"
+    # First call creates the table and adds tool_sequence
+    conn1 = _connect(store)
+    cols_after_first = {row[1] for row in conn1.execute("PRAGMA table_info(sessions)")}
+    conn1.close()
+    assert "tool_sequence" in cols_after_first
+
+    # Second call on the same DB must not raise and must not duplicate the column
+    conn2 = _connect(store)
+    cols_after_second = {row[1] for row in conn2.execute("PRAGMA table_info(sessions)")}
+    conn2.close()
+    assert cols_after_second == cols_after_first, "second _connect changed the schema"
