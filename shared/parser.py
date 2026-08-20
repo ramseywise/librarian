@@ -232,12 +232,15 @@ def parse_session(path: Path) -> dict[str, Any] | None:
             first_prompt = txt[:200]
             break
 
-    # Tool counts from assistant messages
+    # Tool counts and ordered sequence from assistant messages
     tool_counts: dict[str, int] = defaultdict(int)
+    tool_sequence: list[str] = []
     for record in asst_msgs:
         for block in record.get("message", {}).get("content", []):
             if isinstance(block, dict) and block.get("type") == "tool_use":
-                tool_counts[block.get("name", "unknown")] += 1
+                name = block.get("name", "unknown")
+                tool_counts[name] += 1
+                tool_sequence.append(name)
 
     # Agent spawn metadata from parent sessions
     agent_spawns: list[dict[str, str | None]] = []
@@ -593,6 +596,9 @@ def parse_session(path: Path) -> dict[str, Any] | None:
         "entrypoint": entrypoint,
         "turns_since_last_compact": turns_since_last_compact,
         "compact_trigger": compact_trigger,
+        # Ordered list of tool call names in session sequence order (LIB-125).
+        # None is never returned -- sessions with no tool calls produce [].
+        "tool_sequence": tool_sequence,
     }
 
 

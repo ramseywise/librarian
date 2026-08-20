@@ -120,6 +120,11 @@ NULLABLE_COLUMNS: dict[str, type] = {
     "errors_tool": int,
     "errors_unknown": int,
     "bash_antipatterns": int,
+    # Ordered tool-call sequence (LIB-125). JSON array of tool names in session
+    # order, e.g. '["Read","Glob","Bash","Edit"]'. NULL for pre-migration rows
+    # (re-parse retained JSONL to backfill). Empty array [] for sessions with no
+    # tool calls. Serialised by _to_fact_from_jsonl when tool_sequence is [].
+    "tool_sequence": str,
 }
 
 # `attributionAgent` (the subagent-type name) is emitted only by CLI 2.1.201+.
@@ -761,6 +766,16 @@ def _to_fact_from_jsonl(session: dict[str, Any], source_path: str) -> dict[str, 
         "errors_tool": attributed[ERROR_CATEGORY_TOOL],
         "errors_unknown": attributed[ERROR_CATEGORY_UNKNOWN],
         "bash_antipatterns": session.get("bash_antipatterns", 0),
+        # tool_sequence: JSON array of ordered tool names (LIB-125). None when
+        # the list is absent (pre-migration stored rows); [] serialised as "[]"
+        # for sessions that made no tool calls. Use tool_counts["Skill"]=0 (not
+        # skill_costs) to check skill coverage: tool_counts is the raw call
+        # count and zero means no skill was invoked at all, regardless of name.
+        "tool_sequence": (
+            json.dumps(session["tool_sequence"])
+            if session.get("tool_sequence") is not None
+            else None
+        ),
     }
     row["is_meta"] = _classify_meta({**row, "edited_paths": session.get("edited_paths", [])})
     return row
