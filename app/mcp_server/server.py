@@ -21,9 +21,11 @@ Usage:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import struct
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -49,7 +51,7 @@ PRIVATE_DIR = WIKI_DIR / "private"
 DB_PATH = Path(os.getenv("WIKI_DB_PATH", str(REPO_ROOT / ".wiki_index.duckdb")))
 LOGS_DIR = Path("logs")
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
-SCHEMA_VERSION = "6"  # 5→6: adds the materialized edges table (LIB-114 Step 1)
+SCHEMA_VERSION = "7"  # 6→7: adds content_hash for incremental indexing (LIB-124)
 
 
 def _domains() -> list[str]:
@@ -166,18 +168,60 @@ def _log_retrieval(tool: str, **fields: object) -> None:
 
 
 def _index_needs_rebuild(con: duckdb.DuckDBPyConnection) -> bool:
-    """Return True if the index is absent, stale, or schema-mismatched."""
+    """Return True if the index is absent or schema-mismatched (full rebuild required).
+
+    Stale pages after a valid schema are handled by _stale_pages(), which uses
+    content hashes for page-level change detection.
+    """
     try:
         version = con.execute("SELECT val FROM meta WHERE key = 'schema_version'").fetchone()
-        if not version or version[0] != SCHEMA_VERSION:
-            return True
-        built_at = float(con.execute("SELECT val FROM meta WHERE key = 'built_at'").fetchone()[0])
-        # Rebuild if any wiki page is newer than the index
-        return any(
-            p.stat().st_mtime > built_at for p in WIKI_DIR.rglob("*.md") if not _is_private(p)
-        )
+        # Schema is valid when version matches — stale pages handled by _stale_pages()
+        return not version or version[0] != SCHEMA_VERSION
     except Exception:
         return True
+
+
+def _content_hash(path: Path) -> str:
+    """SHA-256 of page bytes, first 16 hex chars — same convention as shared/embeddings.py."""
+    return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+
+
+def _stale_pages(con: duckdb.DuckDBPyConnection) -> list[Path]:
+    """Return paths of wiki pages whose content hash differs from the indexed hash.
+
+    Returns an empty list when the index is fully fresh and no pages have been deleted.
+    """
+    try:
+        indexed: dict[str, str] = {
+            row[0]: row[1] for row in con.execute("SELECT path, content_hash FROM pages").fetchall()
+        }
+    except Exception:
+        return list(WIKI_DIR.rglob("*.md"))
+
+    stale: list[Path] = []
+    current_paths: set[str] = set()
+    for p in WIKI_DIR.rglob("*.md"):
+        if _is_private(p) or p.name.startswith((".", "_")):
+            continue
+        current_paths.add(str(p))
+        chash = _content_hash(p)
+        if indexed.get(str(p)) != chash:
+            stale.append(p)
+    return stale
+
+
+def _has_deleted_pages(con: duckdb.DuckDBPyConnection) -> bool:
+    """Return True if any page in the index no longer exists on disk."""
+    try:
+        indexed_paths = {r[0] for r in con.execute("SELECT path FROM pages").fetchall()}
+    except Exception:
+        return False
+    current_paths = {
+        str(p)
+        for p in WIKI_DIR.rglob("*.md")
+        if not _is_private(p) and not p.name.startswith((".", "_"))
+    }
+    return bool(indexed_paths - current_paths)
 
 
 # ---------------------------------------------------------------------------
@@ -196,7 +240,8 @@ def _compute_backlinks(pages: list[tuple]) -> dict[str, int]:
         slug_to_path[stem] = path
 
     counts: dict[str, int] = {p[0]: 0 for p in pages}
-    for path, *__, content in pages:
+    for row in pages:
+        path, content = row[0], row[5]
         for match in WIKILINK_RE.finditer(content):
             raw = match.group(1).strip()
             slug = slugify(raw)
@@ -206,11 +251,39 @@ def _compute_backlinks(pages: list[tuple]) -> dict[str, int]:
     return counts
 
 
-def build_index(con: duckdb.DuckDBPyConnection) -> None:
-    """Build or rebuild the DuckDB FTS index over data/wiki/ pages."""
-    if not _index_needs_rebuild(con):
-        return
+def _read_pages(paths: list[Path]) -> list[tuple]:
+    """Parse frontmatter + text for the given pages.
 
+    Returns tuples of (path_str, title, tags, summary, updated, content, content_hash).
+    Tombstone pages are excluded (same rule as _full_rebuild).
+    """
+    raw: list[tuple] = []
+    for page in paths:
+        text = page.read_text(encoding="utf-8", errors="ignore")
+        meta = _parse_frontmatter(text)
+        if "tombstone" in meta.get("tags", []):
+            continue
+        chash = _content_hash(page)
+        raw.append(
+            (
+                str(page),
+                meta.get("title", page.stem),
+                " ".join(meta.get("tags", [])),
+                meta.get("summary", ""),
+                meta.get("updated", ""),
+                text,
+                chash,
+            )
+        )
+    return raw
+
+
+def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
+    """Drop and recreate all index tables, then re-index every wiki page.
+
+    Called when the schema version mismatches or the index is absent.
+    After this runs, subsequent calls take the incremental path via _stale_pages().
+    """
     log.info("rebuilding_index")
 
     con.execute("DROP TABLE IF EXISTS meta")
@@ -221,14 +294,15 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
 
     con.execute("""
         CREATE TABLE pages (
-            path      TEXT PRIMARY KEY,
-            title     TEXT,
-            tags      TEXT,
-            summary   TEXT,
-            updated   TEXT,
-            content   TEXT,
-            backlinks INTEGER DEFAULT 0,
-            embedding BLOB
+            path         TEXT PRIMARY KEY,
+            title        TEXT,
+            tags         TEXT,
+            summary      TEXT,
+            updated      TEXT,
+            content      TEXT,
+            backlinks    INTEGER DEFAULT 0,
+            embedding    BLOB,
+            content_hash TEXT
         )
     """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
@@ -237,43 +311,26 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
     _ensure_fts(con)
 
     # Collect all pages
-    raw_pages: list[tuple] = []
-    for page in sorted(WIKI_DIR.rglob("*.md")):
-        if page.name.startswith((".", "_")):
-            continue
-        # data/wiki/private/ is never indexed — Buyi confidentiality invariant
-        if _is_private(page):
-            continue
-        text = page.read_text(encoding="utf-8", errors="ignore")
-        meta = _parse_frontmatter(text)
-        # Tombstones stay followable via read_page but never rank in search
-        if "tombstone" in meta.get("tags", []):
-            continue
-        raw_pages.append(
-            (
-                str(page),
-                meta.get("title", page.stem),
-                " ".join(meta.get("tags", [])),
-                meta.get("summary", ""),
-                meta.get("updated", ""),
-                text,
-            )
-        )
+    all_paths = [
+        page
+        for page in sorted(WIKI_DIR.rglob("*.md"))
+        if not page.name.startswith((".", "_")) and not _is_private(page)
+    ]
+    raw_pages = _read_pages(all_paths)
 
+    # raw_pages tuples: (path, title, tags, summary, updated, content, content_hash)
     backlinks = _compute_backlinks(raw_pages)
 
     # Materialize typed edges once at build time — expansion reads the table
     # instead of re-parsing every page body per call. Census annotations whose
     # type is not canonical so schema entropy is visible in the build log.
-    typed_edges = build_typed_edges(
-        [(path, title, content) for path, title, *_, content in raw_pages]
-    )
+    typed_edges = build_typed_edges([(row[0], row[1], row[5]) for row in raw_pages])
     if typed_edges:
         con.executemany("INSERT INTO edges VALUES (?, ?, ?)", typed_edges)
     n_unrecognized = sum(
         1
-        for *_, content in raw_pages
-        for m in ANY_TYPED_LINK_RE.finditer(content)
+        for row in raw_pages
+        for m in ANY_TYPED_LINK_RE.finditer(row[5])
         if m.group(2) not in CANONICAL_LINK_TYPES
     )
 
@@ -299,12 +356,13 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
             content,
             backlinks.get(path, 0),
             embeddings.get(path),
+            chash,
         )
-        for path, title, tags, summary, updated, content in raw_pages
+        for path, title, tags, summary, updated, content, chash in raw_pages
     ]
 
     con.executemany(
-        "INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         rows,
     )
 
@@ -319,8 +377,6 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
             log.warning("fts_index_failed", error=str(exc))
             HAS_FTS = False
 
-    import time
-
     con.execute("INSERT INTO meta VALUES ('schema_version', ?)", [SCHEMA_VERSION])
     con.execute("INSERT INTO meta VALUES ('built_at', ?)", [str(time.time())])
 
@@ -331,6 +387,108 @@ def build_index(con: duckdb.DuckDBPyConnection) -> None:
         typed_edges=len(typed_edges),
         unrecognized_annotations=n_unrecognized,
     )
+
+
+def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
+    """Re-index a subset of pages without touching the rest of the corpus.
+
+    Called for incremental updates when the schema is valid but some pages have
+    changed content. Also handles deleted pages (tombstones in DB but not on disk).
+    """
+    raw_pages = _read_pages(pages)
+    if not raw_pages:
+        # All changed pages were tombstones — skip re-embed, still prune deleted
+        raw_pages = []
+
+    # Recompute backlinks over full corpus — a page's backlink count depends on
+    # all other pages' content. This is one dict comprehension, not re-embedding.
+    all_paths = [
+        p
+        for p in WIKI_DIR.rglob("*.md")
+        if not _is_private(p) and not p.name.startswith((".", "_"))
+    ]
+    all_raw = _read_pages(all_paths)
+    backlinks = _compute_backlinks(all_raw)
+
+    # Embed only the changed pages
+    embeddings: dict[str, bytes] = {}
+    if HAS_EMBEDDINGS and raw_pages:
+        try:
+            model = _get_emb_model()
+            texts = [f"{r[1]}. {r[3]}\n\n{r[5][:600]}" for r in raw_pages]
+            vecs = model.encode(texts, normalize_embeddings=True)
+            for i, row in enumerate(raw_pages):
+                embeddings[row[0]] = _vec_to_blob(vecs[i].tolist())
+        except Exception as e:
+            log.warning("embedding_failed", error=str(e))
+
+    if raw_pages:
+        rows = [
+            (
+                path,
+                title,
+                tags,
+                summary,
+                updated,
+                content,
+                backlinks.get(path, 0),
+                embeddings.get(path),
+                chash,
+            )
+            for path, title, tags, summary, updated, content, chash in raw_pages
+        ]
+        con.executemany("INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+
+    # Update backlink counts for ALL pages whose count changed — handles the case
+    # where an edited page removed a link to another page (R3 mitigation).
+    indexed_paths = {r[0] for r in con.execute("SELECT path FROM pages").fetchall()}
+    for path_str in indexed_paths:
+        new_count = backlinks.get(path_str, 0)
+        con.execute(
+            "UPDATE pages SET backlinks = ? WHERE path = ? AND backlinks != ?",
+            [new_count, path_str, new_count],
+        )
+
+    # Rebuild FTS index — DuckDB FTS has no row-level update API; overwrite=1 re-reads
+    # indexed columns from the table (fast) but cannot be avoided.
+    global HAS_FTS
+    if HAS_FTS:
+        try:
+            con.execute(
+                "PRAGMA create_fts_index('pages', 'path', 'title', 'summary', 'content', "
+                "overwrite=1)"
+            )
+        except Exception as exc:
+            log.warning("fts_index_failed", error=str(exc))
+
+    # Prune deleted pages: in DB but not on disk
+    current_paths = {
+        str(p)
+        for p in WIKI_DIR.rglob("*.md")
+        if not _is_private(p) and not p.name.startswith((".", "_"))
+    }
+    removed = indexed_paths - current_paths
+    if removed:
+        con.executemany("DELETE FROM pages WHERE path = ?", [(p,) for p in removed])
+        for p in removed:
+            con.execute("DELETE FROM edges WHERE source_path = ? OR target_path = ?", [p, p])
+        log.info("index_pruned", removed_count=len(removed))
+
+    con.execute("UPDATE meta SET val = ? WHERE key = 'built_at'", [str(time.time())])
+    log.info("incremental_index_update", stale_count=len(pages))
+
+
+def build_index(con: duckdb.DuckDBPyConnection) -> None:
+    """Build or incrementally update the DuckDB index over data/wiki/ pages."""
+    if _index_needs_rebuild(con):
+        _full_rebuild(con)
+        return
+
+    stale = _stale_pages(con)
+    if not stale and not _has_deleted_pages(con):
+        return  # index is fresh — nothing to do
+
+    _update_pages(con, stale)
 
 
 def _parse_frontmatter(text: str) -> dict:
