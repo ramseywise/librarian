@@ -38,7 +38,7 @@ viz = [
 api = [
     "fastapi>=0.141.1",
     "uvicorn[standard]>=0.52.3",
-    "sentence-transformers>=5.7.0",
+    "sentence-transformers>=6.0.0",
     "watchfiles>=1.2.0",
     "websockets>=16.1.1",
     # Ceiling, not a preference: umap-learn -> numba caps at numpy<2.5 (numba 0.66.0,
