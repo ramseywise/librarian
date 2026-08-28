@@ -25,7 +25,7 @@ presenter = "tools.presenter.__main__:main"
 
 [project.optional-dependencies]
 viz = [
-    "streamlit>=1.61.1",
+    "streamlit>=1.62.0",
     "st-cytoscape>=0.0.3",
     "networkx>=3.3",
     "python-frontmatter>=1.3.0",
@@ -60,7 +60,7 @@ presenter = [
     # renderer.py imports both directly; lxml is python-pptx's own dependency but
     # is named here because the import is first-party, not incidental.
     "python-pptx>=1.0.2",
-    "lxml>=5.3.0",
+    "lxml>=6.1.2",
     # providers.py, only on the image_provider="replicate" path.
     "replicate>=1.0.0",
     # viz_classifier.py reads viz_prompt_library.yaml. Was importable only by
@@ -86,7 +86,7 @@ package = true
 # must therefore be listed here, not only under [project.optional-dependencies].
 [dependency-groups]
 dev = [
-    "ruff>=0.16.3",
+    "ruff>=0.16.4",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "pytest-watch>=4.2.0",
