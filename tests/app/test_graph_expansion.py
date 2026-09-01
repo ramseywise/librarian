@@ -189,7 +189,7 @@ def test_expansion_section_reads_edges_table(typed_wiki: Path) -> None:
 
 def test_search_rows_expand_merges_neighbour_with_decay(typed_wiki: Path) -> None:
     """The one-hop neighbour joins the rows at DECAY × its best seed's score."""
-    rows = server._search_rows("ZQUERYMARKER", expand=True)
+    rows, _ = server._search_rows("ZQUERYMARKER", expand=True)
     by_name = {Path(r[0]).name: r for r in rows}
     assert set(by_name) == {"chunking.md", "reranking.md"}
 
@@ -201,7 +201,7 @@ def test_search_rows_expand_merges_neighbour_with_decay(typed_wiki: Path) -> Non
 
 def test_search_rows_without_expand_is_unchanged(typed_wiki: Path) -> None:
     """expand=False (the production default) returns only direct hits."""
-    rows = server._search_rows("ZQUERYMARKER")
+    rows, _ = server._search_rows("ZQUERYMARKER")
     assert [Path(r[0]).name for r in rows] == ["chunking.md"]
 
 

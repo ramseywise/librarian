@@ -596,53 +596,121 @@ def _like_candidates(
     return con.execute(sql, params).fetchall()
 
 
+RRF_K = 60
+
+
+def _rrf_ranks(order: list[int], k: int = RRF_K) -> dict[int, float]:
+    """Map each row index to its 1/(k + rank) contribution for one channel.
+
+    `order` is row indices best-first. Ties are not detected — callers sort on a
+    channel's own scores, so equal scores take an arbitrary but stable order.
+    """
+    return {idx: 1.0 / (k + rank) for rank, idx in enumerate(order, start=1)}
+
+
 def _rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
-    """Blend text relevance, semantic similarity, and backlink count.
+    """Fuse BM25, semantic, and backlink channels with Reciprocal Rank Fusion.
 
     rows are 8-tuples (path, title, tags, summary, content, backlinks, embedding,
-    score); returns 7-tuples with the blended score in place of the embedding.
-    BM25 rows carry a real relevance score (normalised against the max); fallback
-    rows have score NULL, so position in the SQL ordering stands in.
-    """
-    raw_scores = [r[7] for r in rows]
-    max_bm25 = max((s for s in raw_scores if s is not None), default=0.0)
+    score); returns 7-tuples with the fused score in place of the embedding.
 
-    def text_score(i: int) -> float:
-        s = raw_scores[i]
-        if s is not None and max_bm25 > 0:
-            return s / max_bm25
-        return 1.0 - (i / len(rows))
+    Each channel contributes 1/(RRF_K + rank) per row. RRF replaces the previous
+    fixed 0.5/0.3/0.2 weighted blend of raw scores, whose weights only made sense
+    when all three channels were on comparable scales — BM25 was max-normalised
+    (so the top hit always scored 1.0 regardless of absolute relevance), cosine
+    sat on its own [-1, 1], and backlinks were normalised against whatever the
+    candidate set's maximum happened to be. Ranks are scale-free, so a channel
+    can no longer dominate by having a wider numeric range.
+
+    Channels are included only when they carry signal: the semantic channel needs
+    embeddings, the backlink channel needs at least one non-zero count. A row
+    absent from a channel contributes nothing for it rather than a zero rank,
+    which is what keeps a missing embedding from being read as "maximally
+    dissimilar".
+    """
+    if not rows:
+        return []
+
+    raw_scores = [r[7] for r in rows]
+    have_bm25 = any(s is not None for s in raw_scores)
+
+    channels: list[dict[int, float]] = []
+
+    # Text channel: BM25 score order when fts ran, else the SQL fallback's own
+    # ordering (title-match, backlinks, recency), which is already best-first.
+    if have_bm25:
+        text_order = sorted(
+            range(len(rows)),
+            key=lambda i: raw_scores[i] if raw_scores[i] is not None else float("-inf"),
+            reverse=True,
+        )
+    else:
+        text_order = list(range(len(rows)))
+    channels.append(_rrf_ranks(text_order))
 
     if HAS_EMBEDDINGS and len(rows) > 1:
         try:
             model = _get_emb_model()
             q_vec = model.encode([query], normalize_embeddings=True)[0].tolist()
-            max_backlinks = max(r[5] for r in rows) or 1
-
-            scored: list[tuple[float, tuple]] = []
-            for i, row in enumerate(rows):
-                bl, emb_blob = row[5], row[6]
-                sem_score = _cosine(q_vec, _blob_to_vec(emb_blob)) if emb_blob else 0.0
-                final = 0.5 * text_score(i) + 0.3 * sem_score + 0.2 * (bl / max_backlinks)
-                scored.append((final, row))
-
-            scored.sort(key=lambda x: x[0], reverse=True)
-            return [(*row[:6], score) for score, row in scored[:limit]]
+            sims = {
+                i: _cosine(q_vec, _blob_to_vec(row[6])) for i, row in enumerate(rows) if row[6]
+            }
+            if sims:
+                sem_order = sorted(sims, key=lambda i: sims[i], reverse=True)
+                channels.append(_rrf_ranks(sem_order))
         except Exception as e:
             log.warning("hybrid_rerank_failed", error=str(e))
 
-    return [(*row[:6], text_score(i)) for i, row in enumerate(rows[:limit])]
+    # Backlinks only rank when they discriminate — an all-zero column would
+    # otherwise inject an arbitrary tie-break order as if it were evidence.
+    backlinks = {i: row[5] for i, row in enumerate(rows) if row[5]}
+    if backlinks:
+        bl_order = sorted(backlinks, key=lambda i: backlinks[i], reverse=True)
+        channels.append(_rrf_ranks(bl_order))
+
+    fused = [
+        (sum(ch.get(i, 0.0) for ch in channels), i, row) for i, row in enumerate(rows)
+    ]
+    # Sort on (score, -original index) so equal-scoring rows keep candidate order.
+    fused.sort(key=lambda t: (t[0], -t[1]), reverse=True)
+    return [(*row[:6], score) for score, _, row in fused[:limit]]
+
+
+def _degradation_reasons(con: duckdb.DuckDBPyConnection, *, has_fts: bool) -> list[str]:
+    """Names of the retrieval capabilities currently missing, best-effort.
+
+    `get_con()` runs build_index(), so a stale index normally self-heals before
+    any search. It stays stale only when that refresh failed (unreadable page,
+    write error) — which is exactly the case worth surfacing, because results
+    are then served from content that no longer matches disk.
+    """
+    reasons: list[str] = []
+    if not has_fts:
+        reasons.append("no_fts")
+    try:
+        if _stale_pages(con) or _has_deleted_pages(con):
+            reasons.append("stale_index")
+    except Exception as e:  # never let a health probe break retrieval
+        log.warning("degradation_probe_failed", error=str(e))
+    return reasons
 
 
 def _search_rows(
     query: str, domain: str = "", limit: int = 10, tool: str = "search_wiki", expand: bool = False
-) -> list[tuple]:
+) -> tuple[list[tuple], list[str]]:
     """Ranked wiki search returning raw rows — the single search core.
 
-    Returns up to `limit` 7-tuples (path, title, tags, summary, content,
-    backlinks, score), best first. Candidates come from BM25 (DuckDB fts);
-    falls back to a tokenized per-term LIKE match when fts is unavailable or
-    matches nothing. Logs retrieval telemetry under `tool`.
+    Returns `(rows, degraded)`: up to `limit` 7-tuples (path, title, tags,
+    summary, content, backlinks, score) best first, plus the names of any
+    retrieval capabilities that were unavailable for this query (`no_fts`,
+    `stale_index`) — empty when the pipeline ran at full strength. Callers that
+    surface results to a model or a human are expected to pass that list on;
+    silently serving LIKE-fallback results as if they were BM25-ranked is what
+    this second element exists to prevent.
+
+    Candidates come from BM25 (DuckDB fts); falls back to a tokenized per-term
+    LIKE match when fts is unavailable or matches nothing. Logs retrieval
+    telemetry under `tool`.
 
     expand=True additionally merges pages one typed hop from the results into
     the ranked rows (LIB-114 Step 2). Default off — production `search_wiki`
@@ -653,7 +721,9 @@ def _search_rows(
     con = get_con()
     try:
         rows: list[tuple] = []
-        if _ensure_fts(con):
+        fts_ok = _ensure_fts(con)
+        degraded = _degradation_reasons(con, has_fts=fts_ok)
+        if fts_ok:
             # DuckDB permits SELECT aliases in WHERE, so `score` filters directly
             sql = f"""
                 SELECT path, title, tags, summary, content, backlinks, embedding,
@@ -667,17 +737,26 @@ def _search_rows(
             try:
                 rows = con.execute(sql, [query, *tag_params, limit * 3]).fetchall()
             except Exception as e:
+                # fts loaded but the query failed — results are about to come
+                # from LIKE, so this is the same degradation as no fts at all.
                 log.warning("fts_query_failed", error=str(e))
                 rows = []
+                if "no_fts" not in degraded:
+                    degraded.append("no_fts")
 
         if not rows:
             rows = _like_candidates(con, query, tag_filter, tag_params, limit)
     finally:
         con.close()
 
+    if degraded:
+        log.warning("retrieval_degraded", tool=tool, reasons=degraded)
+
     if not rows:
-        _log_retrieval(tool, query=query, domain=domain, n_results=0, top_paths=[])
-        return []
+        _log_retrieval(
+            tool, query=query, domain=domain, n_results=0, top_paths=[], degraded=degraded
+        )
+        return [], degraded
 
     ranked = _rerank(query, rows, limit)
     expansion_edges: list[tuple[str, str, str]] = []
@@ -690,9 +769,10 @@ def _search_rows(
         domain=domain,
         n_results=len(ranked),
         top_paths=[r[0] for r in ranked[:5]],
+        degraded=degraded,
         **extra,
     )
-    return ranked
+    return ranked, degraded
 
 
 # Score multiplier for expanded pages relative to the best seed that reached
@@ -768,12 +848,15 @@ def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = Fa
 
     Returns:
         Matching pages with title, summary, path, backlink count, and a snippet.
+        Leads with a warning line when retrieval ran degraded (full-text search
+        unavailable, or the index is behind the files on disk).
     """
-    rows = _search_rows(query, domain=domain, limit=limit)
+    rows, degraded = _search_rows(query, domain=domain, limit=limit)
+    warning = _degraded_notice(degraded)
 
     if not rows:
         suffix = f" in domain '{domain}'" if domain else ""
-        return f"No wiki pages found for: {query!r}{suffix}"
+        return f"{warning}No wiki pages found for: {query!r}{suffix}"
 
     results = []
     for path, title, tags, summary, content, backlinks, _score in rows:
@@ -799,12 +882,31 @@ def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = Fa
             f"Summary: {summary}\n" + (f"Snippet: ...{snippet}..." if snippet else "")
         )
 
-    body = f"Found {len(rows)} result(s):\n\n" + "\n\n---\n\n".join(results)
+    body = warning + f"Found {len(rows)} result(s):\n\n" + "\n\n---\n\n".join(results)
 
     if expand:
         body += _expansion_section([r[0] for r in rows])
 
     return body
+
+
+# Degradation reason → what the caller loses. Phrased for a model reading the
+# tool output: it should know to widen its query or re-read a page rather than
+# treat a thin result set as evidence the wiki has nothing.
+_DEGRADED_NOTES = {
+    "no_fts": "full-text search is unavailable, so results come from a weaker "
+    "substring match and ranking is less reliable",
+    "stale_index": "the search index is behind the files on disk, so results may "
+    "omit or misquote recent edits",
+}
+
+
+def _degraded_notice(degraded: list[str]) -> str:
+    """Render a leading warning block for degraded retrieval ('' when healthy)."""
+    if not degraded:
+        return ""
+    notes = [_DEGRADED_NOTES.get(r, r) for r in degraded]
+    return "**DEGRADED RETRIEVAL** — " + "; ".join(notes) + ".\n\n"
 
 
 def _expansion_section(seed_paths: list[str]) -> str:
