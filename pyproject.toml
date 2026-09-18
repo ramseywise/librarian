@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Personal agent design reference — compiled wiki, MCP server, Claude Code skills"
 requires-python = ">=3.12"
 dependencies = [
-    "anthropic>=1.4.0",
+    "anthropic>=1.6.0",
     "fastmcp>=4.0.3",
     "duckdb>=1.5.5",
     "pdfplumber>=0.11.10",
@@ -25,7 +25,7 @@ presenter = "tools.presenter.__main__:main"
 
 [project.optional-dependencies]
 viz = [
-    "streamlit>=1.63.0",
+    "streamlit>=1.64.0",
     "st-cytoscape>=0.0.3",
     "networkx>=3.3",
     "python-frontmatter>=1.3.0",
@@ -47,7 +47,7 @@ api = [
     # bump only bought an import error on /api/layout/umap. Raise this when numba ships
     # numpy 2.5 support; Dependabot must not lift it unilaterally.
     "numpy>=2.4,<2.5",
-    "scikit-learn>=1.9.0",
+    "scikit-learn>=1.9.1",
     "ollama>=0.6.2",
 ]
 codemap = [
@@ -86,12 +86,12 @@ package = true
 # must therefore be listed here, not only under [project.optional-dependencies].
 [dependency-groups]
 dev = [
-    "ruff>=0.16.6",
+    "ruff>=0.16.7",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "pytest-watch>=4.2.0",
     "httpx>=0.27.0",
-    "playwright>=1.62.0",
+    "playwright>=1.63.0",
     "tree-sitter-python>=0.25.0",
     "tree-sitter>=0.26.0",
     # tests/app/test_writeback_security.py imports fastapi.testclient. Also in the
