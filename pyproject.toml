@@ -4,9 +4,9 @@ version = "0.1.0"
 description = "Personal agent design reference — compiled wiki, MCP server, Claude Code skills"
 requires-python = ">=3.12"
 dependencies = [
-    "anthropic>=1.8.0",
-    "fastmcp>=4.0.5",
-    "duckdb>=1.5.5",
+    "anthropic>=1.9.0",
+    "fastmcp>=4.0.10",
+    "duckdb>=1.5.6",
     "pdfplumber>=0.11.10",
     "pydantic>=2.13.5",
     "pydantic-settings>=2.15.0",
@@ -33,10 +33,10 @@ viz = [
     # Floors, not features: without them the numpy<2.5 ceiling lets the resolver
     # backtrack to llvmlite 0.36 (py<3.10 only) and the build dies in setup.py.
     "numba>=0.65.1",
-    "llvmlite>=0.49.0",
+    "llvmlite>=0.50.0",
 ]
 api = [
-    "fastapi>=0.141.1",
+    "fastapi>=0.142.0",
     "uvicorn[standard]>=0.53.0",
     "sentence-transformers>=6.1.0",
     "watchfiles>=1.3.0",
@@ -48,12 +48,12 @@ api = [
     # numpy 2.5 support; Dependabot must not lift it unilaterally.
     "numpy>=2.4,<2.5",
     "scikit-learn>=1.9.1",
-    "ollama>=0.6.2",
+    "ollama>=0.6.3",
 ]
 codemap = [
     "tree-sitter>=0.24.0",
     "tree-sitter-python>=0.23.0",
-    "fastapi>=0.141.1",
+    "fastapi>=0.142.0",
     "uvicorn[standard]>=0.53.0",
 ]
 presenter = [
@@ -86,7 +86,7 @@ package = true
 # must therefore be listed here, not only under [project.optional-dependencies].
 [dependency-groups]
 dev = [
-    "ruff>=0.16.8",
+    "ruff>=0.16.9",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "pytest-watch>=4.2.0",
@@ -96,7 +96,7 @@ dev = [
     "tree-sitter>=0.26.0",
     # tests/app/test_writeback_security.py imports fastapi.testclient. Also in the
     # `api` extra, but extras are not installed by `uv sync --group dev`.
-    "fastapi>=0.141.1",
+    "fastapi>=0.142.0",
 ]
 
 [tool.ruff]
