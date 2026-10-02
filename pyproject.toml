@@ -37,7 +37,7 @@ viz = [
 ]
 api = [
     "fastapi>=0.142.0",
-    "uvicorn[standard]>=0.53.0",
+    "uvicorn[standard]>=0.54.0",
     "sentence-transformers>=6.1.0",
     "watchfiles>=1.3.0",
     "websockets>=16.1.1",
@@ -54,7 +54,7 @@ codemap = [
     "tree-sitter>=0.24.0",
     "tree-sitter-python>=0.23.0",
     "fastapi>=0.142.0",
-    "uvicorn[standard]>=0.53.0",
+    "uvicorn[standard]>=0.54.0",
 ]
 presenter = [
     # renderer.py imports both directly; lxml is python-pptx's own dependency but
