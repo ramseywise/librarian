@@ -2,9 +2,10 @@
 title: Prompt Injection
 tags: [llm, agents, concept, conflict]
 summary: Manipulating model behaviour via adversarial input, exploiting the fact that LLMs process instructions and data in the same channel — mitigated by separation, least privilege, and HITL, never fully solved.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--notes--prompt-injection.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--7-security-safety--prompt-injection.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
 ---
 
@@ -133,3 +134,5 @@ Unresolved. See `_conflicts.md`.
 - [[XML Prompt Structuring]] — mitigated-by
 - [[Prompt Templates and Variables]] — mitigated-by
 - [[Agentic RAG — Advanced Patterns]] — attack-surface
+- [[Security and Safety Interview Study Guide]] — prerequisite-for (the interview-shaped containment answer)
+- [[Keyless Injection Regression Suite]] — extends (adversarial twins, schema-omission and delimiter-placement tests)

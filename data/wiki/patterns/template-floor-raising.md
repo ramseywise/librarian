@@ -2,7 +2,7 @@
 title: Template Floor Raising
 tags: [infra, pattern]
 summary: Prioritizing scaffold work by cross-portfolio gap frequency rather than by any single project's needs — the template's job is to make the weakness every existing repo shares impossible to inherit, so new projects start above the portfolio's floor.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/template-pillar-gaps.md
 ---
@@ -110,3 +110,5 @@ checklist scaffolds no behavior at all; it scaffolds the audit.
 - [[Copier Upstream Update Workflow]] — related (how a raised floor reaches already-generated repos)
 - [[Complexity Floor]] — related (a floor on project ambition rather than on scaffold quality)
 - [[Eval Ladder]] — related (maturity progression the floor is meant to advance)
+- [[Template Only Decided Patterns]] — contradicts (hold undecided capabilities out of the template even when they would raise the floor)
+- [[Role-Scoped Parity]] — related (which role's floor is being raised)

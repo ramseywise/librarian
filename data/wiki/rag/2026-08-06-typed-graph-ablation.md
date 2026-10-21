@@ -2,7 +2,7 @@
 title: Typed-Graph Retrieval Ablation
 tags: [rag, eval, decision]
 summary: Pre-registered three-arm ablation of one-hop typed-graph expansion — null result at 284 pages; semantic retrieval is already at recall ceiling, so expansion stays off by default.
-updated: 2026-08-06
+updated: 2026-10-17
 sources:
   - evals/golden_multihop.json
   - evals/baselines/live-lex-2026-08-06T07-47-22Z.json
@@ -14,6 +14,8 @@ sources:
   - evals/baselines/live-graph-multihop-decay03-2026-08-06T07-49-33Z.json
   - evals/baselines/live-graph-multihop-decay07-2026-08-06T07-49-36Z.json
   - .claude/docs/plans/2026-08-05-typed-graph-retrieval.md
+  - data/raw/repos/librarian/.claude--docs--plans--2026-08-05-typed-graph-retrieval.md
+  - data/raw/repos/librarian/.claude--docs--prompts--2026-08-05-typed-graph-retrieval.md
 ---
 
 # Typed-Graph Retrieval Ablation
@@ -88,7 +90,43 @@ are permanent fixtures (`evals/run_eval.py --live --arm {lex,sem,graph}
 Secondary guard: decay stays ≤0.5 if expansion is ever enabled — 0.7
 measurably harms recall.
 
+## Building the Falsifying Apparatus First
+
+The research pass before the ablation (2026-08-05) found that the experiment as first
+specced could not have produced an answer. Four findings had to be fixed before any arm
+ran:
+
+- **The premise was stale (F1).** The spawn prompt's "established facts" described an
+  untyped graph. In fact 735 canonical typed edges already existed across 202 pages, and
+  one-hop expansion was already wired. The question changed from "should edges be typed?"
+  to "does the existing typed layer measurably help?" See
+  [[Verify the Issue's Premise Before Planning]].
+- **Expansion was invisible to the eval (F3).** `search_wiki(expand=True)` appended the
+  expanded pages as markdown prose after the ranked results. They never entered the
+  ranked rows, and the eval's live mode called the row function directly. Under any flag
+  setting, the expansion arm and the semantic arm would have scored the same.
+- **The metric was at ceiling (F4).** The baseline was hit-rate 1.00 and MRR 0.905
+  (n=50), where a "hit" meant *any* expected page appeared. Expansion could not raise
+  hit-rate, and could raise MRR by at most 0.095. The fix was an expected-set recall@10
+  metric plus a multi-hop golden subset whose answers need two or more pages. The subset
+  was authored blind to the edge list, so the edges could not leak into the answers.
+- **The telemetry was polluted (F10).** The retrieval log ended in pytest tmp-path
+  entries. Anything reading it as evidence, compaction included, inherited the noise.
+  Test traffic was diverted before any measurement.
+
+Two side findings: 481 annotations with invented types were silently dropped by the
+parser ([[Closed-Vocabulary Parser Silently Drops Invented Types]]). And on storage (F6),
+inline `## See Also` annotations remain the authoring source of truth. The index should
+build an `edges(source, target, type)` table from them at build time, not move types into
+frontmatter. The literature put the burden of proof on the graph (F8: BEIR, Rosa et al.,
+Han et al. found GraphRAG loses on single-hop QA, misses ~35% of answer entities during
+KG extraction, and costs far more to build). That is why a null result was the expected
+outcome rather than a disappointment.
+
 ## See Also
 - [[Wiki Graph Engineering — Edge Quality Over Edge Count]] — extends
 - [[RAG Evaluation]] — instance-of
 - [[Eval-Driven Development (EDD)]] — instance-of
+- [[Embeddings That Only Rerank Cannot Recall]] — extends (why the lexical arm sets the ceiling)
+- [[Closed-Vocabulary Parser Silently Drops Invented Types]] — extends (the 481 dropped annotations found in the census)
+- [[Compiled-Prose KB vs Graph-Native Store]] — extends

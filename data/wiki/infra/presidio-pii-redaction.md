@@ -2,9 +2,9 @@
 title: Presidio PII Redaction for Langfuse
 tags: [infra, pattern]
 summary: Presidio orchestration layer with spaCy fr_core_news_lg + CamemBERT NER + custom regex recognizers for French financial PII — wired into Langfuse via the SDK mask hook as a single interception point before traces leave the process.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/chat-agent/docs/[client]_pii_redaction_decision.md
+  - data/raw/claude-docs/chat-agent/docs/client-a_pii_redaction_decision.md
 ---
 
 # Presidio PII Redaction for Langfuse
@@ -170,3 +170,4 @@ The Langfuse SDK batches and flushes spans asynchronously — redaction adds lat
 - [[Langfuse ADK Tracing Patterns]]
 - [[Langfuse Platform]]
 - [[Input Guardrails Pipeline]]
+- [[Deterministic Scrub Before LLM Review]] — alternative-to (ingest-time scrub of eval fixtures: regex first, LLM review second)

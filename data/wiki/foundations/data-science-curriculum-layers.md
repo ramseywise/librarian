@@ -2,12 +2,14 @@
 title: Data Science Curriculum Layers
 tags: [foundations, concept]
 summary: "The tree-shaped ML curriculum — statistical foundations, then supervised learning branching to model evaluation and independently to unsupervised/ensembles/Bayesian — plus the six-layer analytics progression that precedes it and the branching decision that ends it."
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-science--README.md
   - data/raw/repos/learn-ai-engineering/data-analytics--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-analytics--README.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-21_data-science_inventory.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-21_data-analytics_inventory.md
 ---
 
 # Data Science Curriculum Layers
@@ -97,6 +99,23 @@ asked. See [[Eval vs Test Distinction]].
 The named coverage gap is at Layer 5: the material uses scikit-learn's
 `GradientBoostingClassifier`, while **XGBoost and LightGBM are the actual tabular SOTA**
 and have no hands-on treatment. See [[LightGBM vs CatBoost Comparison]].
+
+## Modern-practice gaps beyond Layer 5
+
+Inventories of both curricula listed what a current practitioner uses that the material
+does not teach. The XGBoost gap above is one entry of a longer list:
+
+- **Data science:** experiment tracking, seed management for reproducibility,
+  hyperparameter search (Optuna), PyTorch (the material is TF/Keras-era), Polars, causal
+  inference, time-series methods beyond LSTM, hands-on SHAP explanation, fairness metrics,
+  and methods for imbalanced classes.
+- **Analytics:** SQL, BI and dashboarding, and A/B test power analysis (sample size before
+  the test, not just significance after it).
+
+The two lists share a pattern. What is missing is mostly the **workflow around the model**
+(tracking, reproducibility, tuning, explanation) and the **question before the analysis**
+(causality, power), not new algorithms. Course material teaches the fit-and-score step
+because that is what fits in a notebook.
 
 ## Provenance discipline
 

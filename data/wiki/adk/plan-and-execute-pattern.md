@@ -2,10 +2,12 @@
 title: Plan and Execute Pattern
 tags: [langgraph, pattern]
 summary: Separating planning from execution for multi-step agent tasks — Planner, Executor, Replanner, and Responder nodes with HITL confirmation gate.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/agentic-rag-copilot-research.md
-  - raw/agent-skills/langchain-rag/references/advanced-patterns.md
+  - data/raw/articles/2026-07-19-ai-agents-in-langgraph.md
+  - data/raw/articles/2026-07-19-internet-search-agent.md
+  - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
+  - data/raw/agent-skills/langchain-rag/references/advanced-patterns.md
 ---
 
 # Plan and Execute Pattern
@@ -98,6 +100,22 @@ ReAct is fine for 1-2 tool calls. For "create invoice for customer X with produc
 Priority 2 for copilot build (after breakpoints). Effort: ~3 days. Blocks multi-step action tasks.
 
 See [[LangGraph Advanced Patterns]] for the priority order of advanced patterns.
+
+## Worked Examples: Essay Writer and Workflow Search Agent
+
+- **Essay writer (LangGraph course):** planner node → outline; writer node fills each
+  section; reflection node critiques; editor node synthesises. The planner's output becomes
+  state the writer iterates over, and a reducer aggregates section results.
+- **Workflow search agent (personal project):** a *simple* search agent answers one query;
+  a *workflow* agent first generates a structured outline, then fills each section with
+  multi-step search + synthesis. Two mechanisms worth reusing:
+  - **Retry with query reformulation** — when a search returns insufficient content, the
+    LLM rewrites the query and retries before giving up. This needs an explicit quality
+    signal (result count, snippet relevance) to decide "insufficient".
+  - **Two-tier retrieval** — search snippets first; full-page crawl only when snippet
+    quality is too low. Crawling is the slower, denser, costlier tier.
+  - Persistence is configuration: Postgres in production, SQLite locally, in-memory in the
+    studio — same agent code.
 
 ## See Also
 - [[Agentic Workflow Patterns]]

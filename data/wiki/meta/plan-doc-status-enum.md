@@ -1,10 +1,23 @@
 ---
 title: Plan-Doc Status Enum
-tags: [llm, reference]
+tags: [llm, reference, conflict]
 summary: Nine-member Status enum for plan docs (7 in-flight, 2 terminal) with a forbid-and-relocate suffix policy — the Status line carries exactly one token, everything else moves to named fields.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/guacamayo/docs/specs/plan-doc-status-enum.md
+  - data/raw/claude-docs/galactus/skills/proto-plan/SKILL.md
+  - data/raw/claude-docs/galactus/skills/proto-refine/SKILL.md
+  - data/raw/claude-docs/galactus/skills/proto-review/SKILL.md
+  - data/raw/claude-docs/galactus/skills/proto-execute/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-review/SKILL.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-14-pipeline-orchestration.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-pipeline-orchestration.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-14-gal-14-observed-transitions.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-gal-14-observed-transitions.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-31-GUA-73-status-enum-design.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-31-GUA-73-status-enum-design.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-08-01-CLA-74-status-writers-validation.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-08-01-CLA-74-status-writers-validation.md
 ---
 
 # Plan-Doc Status Enum
@@ -66,7 +79,7 @@ set-membership test.
 |---|---|---|---|
 | release pointer | `Released:` | `<file> [<version>]` | optional |
 | partial breakdown | `Outstanding:` | free prose | optional |
-| pending gate | `Review:` | `pending` \| `passed` | **required on `EXECUTED`** |
+| pending gate | `Review:` | `pending` \| `passed` (later widened — see below) | **required on `EXECUTED`** |
 | evidence / PR | `Evidence:` | free prose | optional |
 | supersession | `Superseded-by:` | plan-doc filename | **required on `SUPERSEDED`** |
 | bare completion date | `Completed:` | `YYYY-MM-DD` | optional |
@@ -92,6 +105,21 @@ The cost is real and was accepted: space is what every writer emitted and what a
 in-flight docs carried, so underscore is a **flag-day change** — the grep fix and
 the doc rewrite must land atomically or active-doc discovery breaks *silently*.
 See [[Silent Fallthrough in String-Keyed Discovery]].
+
+The migration that followed (CLA-74) found a way around the flag-day. For one
+migration cycle, readers accept a permissive regex,
+`^Status:[[:space:]]*IN[ _-]PROGRESS` (case-insensitive). Writers emit only the
+canonical token, and the validator warns only on newly written lines. Work went in
+the order readers, then writers, then validator. The inventory reached **10** sites,
+4 behavioural and 6 prose. The tenth was a PreCompact hook in `settings.json` that
+nobody had listed. Missing it would have silently stopped compaction checkpointing.
+
+## Corpus-first design (GUA-73)
+
+The enum was derived bottom-up from the values that actually appeared in plan docs.
+An earlier top-down pass, which started from pipeline phases, produced a 6-state
+proposal that could not express `SUPERSEDED`, `COMPLETE` or `DONE`. The issue named
+2 consumers of the Status line. The audit found **9 call sites across 6 skills**.
 
 ---
 
@@ -127,9 +155,57 @@ can never fire on them — validation has to run elsewhere.
 
 ---
 
+## Edge rules in the galactus proto-* skills
+
+The galactus pipeline skills (2026-10) write the enum under stricter edge discipline:
+
+- **A skill cannot write both ends of an edge it is the midpoint of.** `/proto-review` never
+  writes `COMPLETE` in the same pass that writes `EXECUTED`. The `EXECUTED → COMPLETE` edge
+  means "a human read the review and accepted it."
+- **COMPLETE is validated by value, not presence.** A hook rejects `COMPLETE` unless
+  `Review: passed` and a `Completed:` date are present, so all four lines (`Review:`,
+  `Completed:`, `Status:`, `From:`) are written in one Edit. A doc can never read "done"
+  over a review that never resolved.
+- **`From:` names the state actually advanced from**, read from the doc before it is
+  overwritten. If the operator waved execution through from `PLANNED`, `From:` says
+  `PLANNED` and the hook rejects the edge, "which is the gate working." A doc already
+  `IN_PROGRESS` is a resumption, not a transition.
+- **Routing is derived, not inferred from the string.** `/proto-execute` runs a
+  `derive-phases` CLI over the doc. Exit 1 means the doc did not route at all, which is a
+  derivation failure, not "nothing to do."
+- **SUPERSEDED is written by skills on two exits**, each with a required `Superseded-by:`:
+  `/proto-refine` on a NEEDS-SPLIT verdict (naming the split docs), and `/proto-plan` when
+  the `EXECUTED → PLANNED` loop-back hits its bound of 2 on the third arrival ("the work is
+  mis-scoped rather than mis-planned"). "SUPERSEDED is terminal for this doc but not for
+  the work." See the conflict note below.
+- The readiness gate writes a second axis beside Status (see
+  [[Plan Epistemic State Axis]]), sized by [[Size the Gate to the Blast Radius]].
+
+> **Conflict (2026-10-16):** the transition table above lists `SUPERSEDED` as written
+> "manual"; the galactus proto-plan and proto-refine skills write it automatically on
+> loop-back exhaustion and NEEDS-SPLIT. See `_conflicts.md`.
+
+## `Review:` maps from the verdict, never free text
+
+The review stage later widened `Review:` to four values, set mechanically from its verdict:
+*(not run)* → `pending`; `approve` / `comment` → `passed`; `request_changes` → `failed`;
+`insufficient_context` → `blocked`. **A verdict never writes `pending`** — doing so makes
+"rejected", "could not decide" and "nobody has looked" the same token, the defect the
+table exists to remove.
+
 ## See Also
 - [[Silent Fallthrough in String-Keyed Discovery]] — extends
 - [[Claude Workflow System]] — instance-of
 - [[Agile Workflow Definitions]] — prerequisite-for
 - [[Documentation Boundary — Machine vs Human Docs]]
 - [[Deferred Decision Status]] — alternative-to (status enum for design decisions, not plan docs)
+- [[Shadow Signal Before Gate Change]] — related (BLOCKED-on-decision as a non-dispatchable step state)
+- [[Workflow Pipeline Telemetry Audit]] — related (BUILT vs accepted as a status-vocabulary failure)
+- [[Capability vs Phase Skills]] — extends (which skills may advance Status:)
+- [[Auditable Track Router]] — extends (a `Track:` line beside `Status:`)
+- [[Plan Epistemic State Axis]] — extends (the epistemic field written beside Status:)
+- [[Size the Gate to the Blast Radius]] — extends (how the READY gate scales)
+- [[Path-Verified Build State Markers]] — extends (BUILT/ABSENT/UNVERIFIED in scope docs)
+- [[Topic-Lifecycle Docs Layout]] — related (where plan docs live as their status changes)
+- [[Map Every State to Its Writer]] — extends (which states had no writer, and the corpus evidence)
+- [[Observed Transitions, Not Declared]] — extends (PreToolUse verification of From:)

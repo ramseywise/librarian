@@ -2,9 +2,12 @@
 title: LangSmith Platform
 tags: [infra, eval, concept]
 summary: "LangSmith mechanics — auto-instrumentation for LangGraph vs manual @traceable wiring for ADK, datasets, evaluator functions, annotation queues, and experiment comparison; the counterpart to Langfuse Platform."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/claude-docs/playground/docs/frameworks/langsmith.md
   - data/raw/repos/learn-ai-engineering/generative-ai--04-agentic-frameworks--notes--langsmith.md
+  - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
+  - data/raw/claude-docs/project-g/docs/frameworks/langsmith.md
 ---
 
 # LangSmith Platform
@@ -142,6 +145,24 @@ makes an ADK-vs-LangGraph comparison meaningful. Note the constraint this inheri
 wiring asymmetry above: the comparison is only fair for metrics computed on the final
 output. Anything trajectory-level favours the auto-instrumented framework by construction.
 See [[ADK vs LangGraph Comparison]].
+
+## Trace-as-eval-surface patterns
+
+From a comparison audit against a Langfuse-native agent template, the patterns worth
+replicating in either platform:
+
+- **Prompt version as run metadata**, not only a field inside the response JSON — otherwise
+  filtering by version means parsing response bodies.
+- **One child run per guardrail layer** (`guardrail.unicode`, `guardrail.injection`, …) with a
+  `blocked` output, so block rate per layer is a dashboard query.
+- **Loop depth and cache-hit as run tags** — increment a retrieval counter in graph state and
+  emit `retrieval_attempts`, `cache_hit`, and reranker backend at END; corrective-loop
+  efficiency then comes from trace metadata alone.
+- **Grader scores posted back as feedback** on the production run (score + reasoning +
+  prompt version), so clicking a trace shows its quality breakdown.
+- LangSmith auto-traces LangGraph nodes; ADK aligns more naturally with Langfuse's
+  `@observe` spans — for a standalone ADK service, consider Langfuse even when the rest of
+  the stack is on LangSmith.
 
 ## See Also
 - [[Langfuse ADK Tracing Patterns]] <!-- auto-linked -->

@@ -2,15 +2,15 @@
 title: Librarian RAG Architecture
 tags: [rag, langgraph, pattern]
 summary: The five-agent Librarian pipeline — Plan, Retrieval, Reranker, Generation, and Eval agents wired by a LangGraph StateGraph with CRAG retry loop.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/librarian-architecture-decisions.md
-  - raw/playground-docs/rag-tradeoffs.md
-  - raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md
-  - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
-  - raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
-  - raw/claude-docs/playground/docs/plans/rag-migration-plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-architecture-decisions.md
+  - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
+  - data/raw/claude-docs/playground/docs/plans/rag-migration-plan.md
 ---
 
 # Librarian RAG Architecture
@@ -215,3 +215,4 @@ See [[Bedrock KB vs LangGraph Decision]] for the build vs buy trade-off analysis
 - [[ADK vs LangGraph Comparison]]
 - [[Librarian Project]]
 - [[Orchestration Architecture Decision]]
+- [[Retrieval Service Returns Documents, Not Answers]] — related (the same retrieval-only contract for a shared support-RAG service)

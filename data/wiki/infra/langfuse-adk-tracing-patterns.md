@@ -4,8 +4,8 @@ tags: [infra, eval, adk, pattern]
 summary: Two-layer Langfuse instrumentation for ADK agents — OpenTelemetry auto-instrumentation plus manual @observe decorators produce a single unified trace tree; session grouping, RAG path tagging, and first-class Scores are the critical operational additions.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/chat-agent/docs/LANGFUSE.md
-  - raw/claude-docs/chat-agent/docs/LANGFUSE_TRACING_REPORT.md
+  - data/raw/claude-docs/chat-agent/docs/LANGFUSE.md
+  - data/raw/claude-docs/chat-agent/docs/LANGFUSE_TRACING_REPORT.md
 ---
 
 # Langfuse ADK Tracing Patterns
@@ -175,8 +175,8 @@ This adds an `embed_query` child span under `vector_search`, separating Gemini e
 ---
 
 ## See Also
-- [[LangSmith project-g]] <!-- auto-linked -->
-- [[Langfuse project-g]] <!-- auto-linked -->
+- LangSmith project-g <!-- auto-linked -->
+- Langfuse project-g <!-- auto-linked -->
 - [[Langfuse Platform]]
 - [[ADK Observability]]
 - [[CRAG Retry Logic]]

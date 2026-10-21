@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "librarian": {
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "app/mcp_server/server.py"
+      ],
+      "env": {
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
+      }
+    }
+  }
+}

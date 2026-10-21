@@ -2,10 +2,12 @@
 title: MCP Server Security Patterns
 tags: [mcp, infra, pattern]
 summary: Security patterns for MCP servers — read-only invariant, sandbox isolation, secrets handling, and what to never expose over MCP.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/sessions/2026-04-24T1048.md
-  - raw/sessions/claude-2026-04-24-qq-do-i-need-to-push-playground-infrastr-108c3f61.md
+  - data/raw/sessions/2026-04-24T1048.md
+  - data/raw/sessions/claude-2026-04-24-qq-do-i-need-to-push-playground-infrastr-108c3f61.md
+  - data/raw/claude-docs/guacamayo/docs/research/2026-08-20_tencentdb-memory_parity.md
+  - data/raw/repos/librarian/SANYI.md
 ---
 
 # MCP Server Security Patterns
@@ -72,9 +74,28 @@ Typical sensitive finds in AI engineering repos:
 - Notion/Linear dumps in `raw/` containing internal project names
 - Session JSONL files containing prompt conversations with client data
 
+## Private Pages: Fail Closed, Say "Not Found"
+
+librarian's private-path guard (`is_under_private()`) resolves symlinks before checking,
+fails closed, and is enforced at every read call site (11 at review time). A request for
+a private page returns **"page not found"**, not "denied" — a distinct denial would
+confirm the page exists, leaking its name and existence to the caller.
+
+**Gate every read path, not just the server.** In the same codebase, the chat agent read
+the wiki through its own `rglob`, which bypassed the server's private gate entirely. Until
+that was found, both of the agent's wiki tools served private pages into the chat UI.
+The fix had a second trap. The server anchored its private root on a relative
+`Path("data/wiki")`. Under `make api` the working directory is `app/`, so that path
+resolves to a nonexistent `app/data/wiki/private`. Binding the agent to the server's
+constant would have *looked* correct and excluded nothing. Both callers now share one
+path-resolution helper but pass their own absolute private root. A regression test pins
+the behaviour independent of the working directory. Lesson: a relative path anchor in an
+exclusion rule fails open, and it fails silently.
+
 ## See Also
 - [[MCP Protocol]]
 - [[SANYI Change-Contract System]]
 - [[Input Guardrails Pipeline]]
 - [[Agent Quality Review Checklist]] — alternative-to (review-time vs runtime enforcement)
 - [[Webhook Handler Idempotency]] — alternative-to (inbound HTTP surface with the same authenticate-the-caller obligation)
+- [[Curl-Bridge Context Injection]] — alternative-to (proxy-side allowlist + identity overwrite instead of tools)

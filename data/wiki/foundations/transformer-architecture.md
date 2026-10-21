@@ -4,7 +4,7 @@ tags: [foundations, llm, concept]
 summary: The Transformer model architecture (Vaswani et al., 2017) — encoder-decoder stacks of self-attention and feed-forward layers that replaced RNNs/CNNs for sequence transduction, enabling parallelized training and constant-length dependency paths.
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2017-06-12-attention-is-all-you-need.md
+  - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
 ---
 
 # Transformer Architecture

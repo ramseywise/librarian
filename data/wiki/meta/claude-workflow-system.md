@@ -2,54 +2,94 @@
 title: Claude Workflow System
 tags: [context-management, llm, pattern]
 summary: Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints, and session notes — that automates context management across multi-phase engineering workflows.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
-  - raw/sessions/claude-2026-04-11-i-want-to-refactor-this-insights-skill-f-394ba556.md
-  - raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md
-  - raw/sessions/claude-2026-04-22-the-user-just-ran-insights-to-generate-a-198e7d2c.md
-  - raw/claude-docs/_user/CLAUDE.md
-  - raw/sessions/claude-2026-07-13-btw-i-think-we-do-not-have-claude-settin-a3b6ecb6.md
-  - raw/sessions/claude-2026-07-06-can-we-reconcile-this-with-the-other-set-012cfada.md
-  - raw/sessions/claude-2026-07-13-please-analyze-this-codebase-and-create-dfcde495.md
-  - raw/sessions/claude-2026-07-14-can-we-run-the-ingestion-from-github-lib-63940e32.md
-  - raw/claude-skills/README.md
-  - raw/claude-skills/java/microprofile-backend.md
-  - raw/claude-skills/web-components/frontend.md
-  - raw/claude-docs/_user/commands/clean_memory.md
-  - raw/claude-docs/_user/commands/end_session.md
-  - raw/claude-docs/_user/commands/start_session.md
-  - raw/claude-docs/_user/commands/insights.md
-  - raw/claude-docs/_user/commands/consolidate.md
-  - raw/claude-docs/project-g/skills/knowledge-creation/claude-insights/SKILL.md
-  - raw/claude-docs/project-g/skills/knowledge-creation/knowledge-share/SKILL.md
-  - raw/claude-docs/project-g/skills/knowledge-creation/skill-creator/SKILL.md
-  - raw/claude-docs/project-g/skills/knowledge-creation/sync-sessions/SKILL.md
-  - raw/claude-docs/project-g/skills/planning/define-milestones/SKILL.md
-  - raw/claude-docs/project-g/skills/planning/design-sprint/SKILL.md
-  - raw/claude-docs/project-g/skills/planning/doc-to-linear-tickets/SKILL.md
-  - raw/claude-docs/project-g/skills/planning/linear-spike/SKILL.md
-  - raw/claude-docs/project-g/skills/planning/scope-initiative/SKILL.md
-  - raw/claude-docs/project-g/skills/planning/execute-tasks/SKILL.md
-  - raw/claude-docs/project-g/skills/planning/github-projects/SKILL.md
-  - raw/claude-docs/project-g/skills/workflow/akira/SKILL.md
-  - raw/claude-docs/project-g/skills/workflow/code-debug/SKILL.md
-  - raw/claude-docs/project-g/skills/workflow/compact-session/SKILL.md
-  - raw/claude-docs/project-g/skills/workflow/prototype/SKILL.md
-  - raw/claude-docs/project-g/skills/workflow/quick-commit/SKILL.md
-  - raw/claude-docs/project-g/skills/workflow/quick-pr/SKILL.md
-  - raw/claude-docs/project-g/skills/workflow/review-pr/SKILL.md
-  - raw/claude-docs/listen-wiseer/skills/code-refactor/SKILL.md
-  - raw/claude-docs/listen-wiseer/skills/code-test/SKILL.md
-  - raw/claude-docs/listen-wiseer/skills/code_debug.md
-  - raw/claude-docs/listen-wiseer/skills/code_execute.md
-  - raw/claude-docs/listen-wiseer/skills/code_pr.md
-  - raw/claude-docs/listen-wiseer/skills/code_refactor.md
-  - raw/claude-docs/listen-wiseer/skills/code_review.md
-  - raw/sessions/puffin-chat-2026-07-16-22-00.md
-  - raw/sessions/claude-2026-07-17-so-we-ve-been-using-puffin-for-a-couple-0bbb795a.md
-  - raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
-  - raw/sessions/claude-2026-07-17-should-this-akira-agent-be-part-of-claud-999c0dee.md
-  - raw/sessions/claude-2026-07-19-should-we-simlink-our-global-skills-to-g-a103916b.md
+  - data/raw/claude-docs/playground/skills/workflow-review/SKILL.md
+  - data/raw/claude-docs/playground/skills/planning/linear-spike/SKILL.md
+  - data/raw/claude-docs/playground/skills/planning/doc-to-linear-tickets/SKILL.md
+  - data/raw/claude-docs/playground/skills/knowledge-creation/sync-sessions/SKILL.md
+  - data/raw/claude-docs/playground/skills/knowledge-creation/knowledge-share/SKILL.md
+  - data/raw/sessions/claude-2026-04-11-i-want-to-refactor-this-insights-skill-f-394ba556.md
+  - data/raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md
+  - data/raw/sessions/claude-2026-04-22-the-user-just-ran-insights-to-generate-a-198e7d2c.md
+  - data/raw/claude-docs/_user/CLAUDE.md
+  - data/raw/sessions/claude-2026-07-13-btw-i-think-we-do-not-have-claude-settin-a3b6ecb6.md
+  - data/raw/sessions/claude-2026-07-06-can-we-reconcile-this-with-the-other-set-012cfada.md
+  - data/raw/sessions/claude-2026-07-13-please-analyze-this-codebase-and-create-dfcde495.md
+  - data/raw/sessions/claude-2026-07-14-can-we-run-the-ingestion-from-github-lib-63940e32.md
+  - data/raw/claude-skills/README.md
+  - data/raw/claude-skills/java/microprofile-backend.md
+  - data/raw/claude-skills/web-components/frontend.md
+  - data/raw/claude-docs/_user/commands/clean_memory.md
+  - data/raw/claude-docs/_user/commands/end_session.md
+  - data/raw/claude-docs/_user/commands/start_session.md
+  - data/raw/claude-docs/_user/commands/insights.md
+  - data/raw/claude-docs/_user/commands/consolidate.md
+  - data/raw/claude-docs/project-g/skills/knowledge-creation/claude-insights/SKILL.md
+  - data/raw/claude-docs/project-g/skills/knowledge-creation/knowledge-share/SKILL.md
+  - data/raw/claude-docs/project-g/skills/knowledge-creation/skill-creator/SKILL.md
+  - data/raw/claude-docs/project-g/skills/knowledge-creation/sync-sessions/SKILL.md
+  - data/raw/claude-docs/project-g/skills/planning/define-milestones/SKILL.md
+  - data/raw/claude-docs/project-g/skills/planning/design-sprint/SKILL.md
+  - data/raw/claude-docs/project-g/skills/planning/doc-to-linear-tickets/SKILL.md
+  - data/raw/claude-docs/project-g/skills/planning/linear-spike/SKILL.md
+  - data/raw/claude-docs/project-g/skills/planning/scope-initiative/SKILL.md
+  - data/raw/claude-docs/project-g/skills/planning/execute-tasks/SKILL.md
+  - data/raw/claude-docs/project-g/skills/planning/github-projects/SKILL.md
+  - data/raw/claude-docs/project-g/skills/workflow/akira/SKILL.md
+  - data/raw/claude-docs/project-g/skills/workflow/code-debug/SKILL.md
+  - data/raw/claude-docs/project-g/skills/workflow/compact-session/SKILL.md
+  - data/raw/claude-docs/project-g/skills/workflow/prototype/SKILL.md
+  - data/raw/claude-docs/project-g/skills/workflow/quick-commit/SKILL.md
+  - data/raw/claude-docs/project-g/skills/workflow/quick-pr/SKILL.md
+  - data/raw/claude-docs/project-g/skills/workflow/review-pr/SKILL.md
+  - data/raw/claude-docs/listen-wiseer/skills/code-refactor/SKILL.md
+  - data/raw/claude-docs/listen-wiseer/skills/code-test/SKILL.md
+  - data/raw/claude-docs/listen-wiseer/skills/code_debug.md
+  - data/raw/claude-docs/listen-wiseer/skills/code_execute.md
+  - data/raw/claude-docs/listen-wiseer/skills/code_pr.md
+  - data/raw/claude-docs/listen-wiseer/skills/code_refactor.md
+  - data/raw/claude-docs/listen-wiseer/skills/code_review.md
+  - data/raw/sessions/puffin-chat-2026-07-16-22-00.md
+  - data/raw/sessions/claude-2026-07-17-so-we-ve-been-using-puffin-for-a-couple-0bbb795a.md
+  - data/raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
+  - data/raw/sessions/claude-2026-07-17-should-this-akira-agent-be-part-of-claud-999c0dee.md
+  - data/raw/sessions/claude-2026-07-19-should-we-simlink-our-global-skills-to-g-a103916b.md
+  - data/raw/claude-docs/guacamayo/skills/design-sprint/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-scope/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-build/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-execute/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-plan/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-research/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-refine/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-review/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/git-commit/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/git-pr/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/skill-creator/SKILL.md
+  - data/raw/claude-docs/guacamayo/docs/state/project_config_layering.md
+  - data/raw/repos/atlas/.claude--skills--pipeline--SKILL.md
+  - data/raw/repos/atlas/.claude--skills--plan--SKILL.md
+  - data/raw/repos/atlas/.claude--skills--refactor--SKILL.md
+  - data/raw/repos/atlas/.claude--skills--research--SKILL.md
+  - data/raw/repos/atlas/.claude--skills--review--SKILL.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-17-workspace-review-ladder.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-17-workspace-review-ladder.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-27-GUA-37-akira-simplification.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-27-GUA-37-akira-simplification.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-27-GUA-34-review-system-evolution.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-27-GUA-34-review-system-evolution.md
+  - data/raw/claude-docs/playground/skills/backend/SKILL.md
+  - data/raw/claude-docs/playground/skills/frontend/SKILL.md
+  - data/raw/claude-docs/playground/skills/doc-to-linear/SKILL.md
+  - data/raw/claude-docs/playground/skills/global/doc-to-linear-tickets/SKILL.md
+  - data/raw/claude-docs/playground/skills/milestone-balancing/SKILL.md
+  - data/raw/repos/listen-wiseer/.claude--skills--code-test--SKILL.md
+  - data/raw/repos/nonprofit-success-ai/.claude--skills--workflow-plan--SKILL.md
+  - data/raw/repos/nonprofit-success-ai/.claude--skills--workflow-research--SKILL.md
+  - data/raw/repos/nonprofit-success-ai/.claude--skills--workflow-triage--SKILL.md
+  - data/raw/repos/playground/.claude--skills--global--doc-to-linear-tickets--SKILL.md
+  - data/raw/repos/nonprofit-success-ai/.claude--skills--git-pr--SKILL.md
+  - data/raw/repos/nonprofit-success-ai/.claude--skills--workflow-build--SKILL.md
 ---
 
 # Claude Workflow System
@@ -152,7 +192,7 @@ Two `claude-skills/` entries are explicitly archived reference material for a di
 
 Both apply the same Boundary-Control-Entity (BCE) architectural pattern to their respective stack, mirroring each other across backend/frontend — the only cross-cutting fact worth noting since neither stack otherwise intersects with the LangGraph/ADK/RAG agent-design focus of this wiki.
 
-**The same BCE/Gradle reference stack has its own dev-workflow skill trio**, found (identical byte-for-byte) in the project-g, playground, and playground-global skill directories — confirming they are copied template files, not project-g-authored: `execute-tasks` (works a `docs/epics/{ID}-TASKS.md` file top to bottom, trunk-based direct-commit by default or one git worktree per independent task group for parallel execution, `./gradlew compileJava compileTestJava` as the verification gate, closes the GitHub milestone and flips `ROADMAP.md` "Scope" sections to "Delivered" when all tasks land), `github-projects` (GraphQL template library for GitHub Projects V2 — item-ID lookup, status/iteration field mutation, sub-issue linking — read from a `GitHub Project Integration` section in `CLAUDE.md`; every mutation is best-effort, appending `|| true` so a sync failure never blocks the actual work), and `review-pr` (PR review gated on the same BCE layering + task acceptance criteria + `./gradlew test`, capped at 3 review rounds before escalating to the user). Noted here for skill-inventory completeness alongside the microprofile-backend/frontend pair above — out of scope for this wiki's agent/RAG focus, and superseded within project-g itself by the Python/`uv`/Linear-VIR-ticket pipeline documented in [[project-g Dev Hooks & Git Workflow]].
+**The same BCE/Gradle reference stack has its own dev-workflow skill trio**, found (identical byte-for-byte) in the project-g, playground, and playground-global skill directories — confirming they are copied template files, not project-g-authored: `execute-tasks` (works a `docs/epics/{ID}-TASKS.md` file top to bottom, trunk-based direct-commit by default or one git worktree per independent task group for parallel execution, `./gradlew compileJava compileTestJava` as the verification gate, closes the GitHub milestone and flips `ROADMAP.md` "Scope" sections to "Delivered" when all tasks land), `github-projects` (GraphQL template library for GitHub Projects V2 — item-ID lookup, status/iteration field mutation, sub-issue linking — read from a `GitHub Project Integration` section in `CLAUDE.md`; every mutation is best-effort, appending `|| true` so a sync failure never blocks the actual work), and `review-pr` (PR review gated on the same BCE layering + task acceptance criteria + `./gradlew test`, capped at 3 review rounds before escalating to the user). Noted here for skill-inventory completeness alongside the microprofile-backend/frontend pair above — out of scope for this wiki's agent/RAG focus, and superseded within project-g itself by the Python/`uv`/Linear-VIR-ticket pipeline documented in project-g Dev Hooks & Git Workflow.
 
 ## Evolution
 
@@ -224,8 +264,12 @@ Reorganized 2026-07-17 into **5 named groups** (21 skills in `~/.claude/skills/`
 
 - **Skills bundled with references and evals:** canonical resource layout is `SKILL.md` / `references/` (on-demand docs) / `scripts/` (executable helpers) / `assets/` (templates). See [[SKILL.md Pattern]].
 - **Model pairing:** Haiku for fan-out/extraction, Sonnet for bounded execution, Opus for `/workflow-plan`, `/workflow-retro`, `/sanyi audit`, and verdict-shaped work.
+- **Top judgment tier is opt-in per skill, not the session default (2026-07-30):** making the top tier the session default used up both its weekly and session budgets within an hour. Execute-phase and ad-hoc work was spending judgment-tier budget it did not need. The session default went back to the mid tier, and the top tier is reserved for verdict-shaped skills (`/workflow-plan`, `/workflow-review`, `/code-review` level 2+, `/sanyi audit`, `/design-*`, `/workflow-retro`). The lesson: pin the expensive model to the skills whose output is a verdict, not to the session.
+- **Completion format for multi-step work:** non-trivial tasks close with Summary (2–3 lines plus the verification result), Files created/edited (`path:line` links), Open issues (fix in-scope issues first; list only what needs a human decision or its own session, with a paste-ready spawn prompt; otherwise "None"), and a DoD check prompting whether to close the completed issue now or after merge. One-liners and read-only answers stay conversational.
+- **Worktree dispatch and issue placement:** see [[Worktree Agent Dispatch Contract]] (the dispatcher owns git, agent commits are provisional) and [[Issues Live in the Repo They Change]] (no cross-repo board; qualify refs before transfer).
+- **Triage routing treats the reporter's answer as evidence, not a verdict (2026-10):** issue templates carry a routing dropdown ("Is the cause known?", "Is the approach decided?"), and `/workflow-triage` skips research only when the issue body backs up the answer. A "decided" next to a body that names no approach means the reporter is being optimistic, and the prose wins. Job-type labels stamped by templates outrank title keywords, because the label is a fact and the keyword is a guess. Every routing decision goes to `triage-decisions.jsonl`, so the skip-research rate and the retry rate can be audited later.
 - **Session hygiene:** one work item per session; the plan doc is continuity. Phase gates = session boundaries. `/workflow-plan` in opus → `/workflow-execute` in FRESH sonnet pointed at the plan doc.
-- **Review ladder:** `make precommit`/`make test` (zero tokens) → `/code-review level:1` → `level:2` (+tests+akira) → `level:3` (+full sanyi). `/akira` is `/code-review`'s interactive sibling.
+- **Review ladder:** `make precommit`/`make test` (zero tokens) → `/code-review level:1` → `level:2` (+tests+akira) → `level:3` (+full sanyi). `/akira` is `/code-review`'s interactive sibling. Design rationale (three levels and no sub-flags, headless runs that never ask, print-only make targets): [[Cost-Leveled Review Ladder]].
 - **Config layering canonical (2026-07-16):** `~/.claude` is single source of truth for generic skills/hooks. `~/workspace/.claude` is a symlink. Repo `.claude/` holds repo-specific items only — never duplicate global skills (copies go stale, hooks fire twice). Exception: `ai-project-template/template/.claude/` is rendered output synced one-way via `scripts/sync-global-skills.sh`.
 - **Settings schema drift fix (2026-07-16):** 16 Bash allow patterns corrected from `Bash(x *)` to `Bash(x:*)`, added `WebFetch`/`Skill`/`Agent` tool names (legacy names `Task`/`TodoWrite`/`SlashCommand` retired).
 
@@ -238,6 +282,8 @@ Reorganized 2026-07-17 into **5 named groups** (21 skills in `~/.claude/skills/`
 **`/scope-initiative` — six-section output:** takes a named, agreed initiative (from `/design-sprint`) and produces a Linear-ready backlog: (1) failure modes & HMWs table, every later task traces to at least one failure mode; (2) research — reusable assets, per-layer libraries, technical unknowns and what each blocks; (3) task backlog — goal, concrete deliverable (never "implement X"), risks, T-shirt size (S <1wk / M 1–2wk / L 2–4wk / XL >sprint); (4) summary table + critical path — week-1 decisions, highest-risk dependency; (5) numbered open questions, each with a named owner; (6) Linear hierarchy — Initiative → Projects → Issues with Given/When/Then acceptance criteria and blocking relationships. Hands off to `/doc-to-linear-tickets` once reviewed.
 
 **`/doc-to-linear-tickets` — sizing, priority, and backlog-ordering discipline:** maps doc size tags to story points (XS=1, S=2–3, M=5, L=8 — flag for breakdown, XL=13 — flag for breakdown) and doc priority tags to Linear priority, capped at **Medium** for "High" doc-priority and **never Urgent** (max is High, reserved for true blockers). Every issue gets a workstream label (created first if missing) and is filed in **Backlog** state, not "To Do". Issues are created in **reverse dependency order** — most-blocked first, least-blocked last — so the resulting backlog naturally sorts with the next actionable issue at the top. Dependencies are referenced by issue name, never by number (numbers change, names don't).
+
+**`/sprint-balancing` — sanity-check a milestone plan against capacity and dependency order:** convert SP to days (1→0.5, 3→1.5, 5→3.5, 8→6, flag for splitting) and sum per track per sprint. Within ±20% of per-person capacity is on target. A sprint that looks under-loaded may be absorbing carry-over from the previous sprint's stretch goals. The non-obvious checks: (1) **sequential chain overflow**: a chain A→B→C→D whose total days exceed the sprint length cannot finish, so its tail issues are stretch candidates, whatever the sprint's total SP says; (2) **stretch blocks main**: a stretch issue in sprint N that blocks main work in sprint N+1 puts that main work at risk, so either demote it or promote the blocker; (3) **zigzag sync points**: when parallel tracks alternate unblocking each other, name each handoff (which issue unblocks which, early/mid/late) in the milestone description; (4) **external blockers** (sign-offs, expert availability) start on day 1 of their sprint, never mid-sprint.
 
 **`/linear-spike` — time-boxed investigation ticket:** distinct from a regular issue — produces a decision or short doc, not production code. Title format `[Spike] <topic> (<timebox>)`; estimate is 1 point per half-day; branch `vir-{id}-spike-{slug}`; findings written to `.claude/docs/research/{slug}.md` as the spike proceeds. Used when the implementation path isn't clear yet — `/research-review` and `/plan-review` both suggest creating one first for exploratory (no-ticket) work.
 
@@ -276,7 +322,7 @@ See [[Claude Code Hook Architecture]] for how hooks enforce commit and code qual
 When working across many repos under one root (e.g. an external drive with `github/<repo>` for each project), permission prompts multiply if every repo has its own disconnected settings. The fix pattern:
 
 - Set the **drive/org root** (e.g. `github/`) as a project-level settings scope with broad, low-risk read/bash permissions — so opening any repo underneath it inherits sane defaults.
-- Layer **per-repo `.claude/settings.json`** underneath for repo-specific permissions (build tools, test runners specific to that stack) — same layering as the three-tier settings model in [[project-g Dev Hooks & Git Workflow]] (`~/.claude/settings.json` → `.claude/settings.json` → `.claude/settings.local.json`).
+- Layer **per-repo `.claude/settings.json`** underneath for repo-specific permissions (build tools, test runners specific to that stack) — same layering as the three-tier settings model in project-g Dev Hooks & Git Workflow (`~/.claude/settings.json` → `.claude/settings.json` → `.claude/settings.local.json`).
 - **Always open Claude Code sessions inside a repo directory** (`github/<repo>`), not at the drive root — permissions and project context are scoped per-directory, and opening at the root loses per-repo specificity.
 
 This generalizes the settings-layering rule already documented for `project-g`: instead of just global vs. one-repo, insert an intermediate "root of all my repos" layer when working across many sibling projects on the same machine/drive.
@@ -295,6 +341,17 @@ A clarifying distinction surfaced from a cross-project discussion: these three t
 The "ralph" concept (a habit of repeatedly asking "why") is cited as the origin of Akira's review posture — asking why a change was made, not just whether it's syntactically fine.
 
 **Akira's three modes** (delegates to `src/akira/`, a LangGraph agent with three subgraphs): **kiyoko** (陰 yin wanderer) reads the current diff mid-session and answers questions in chat — the lightweight, no-artifact mode; **kaneda** (陽 yang scanner) fans out 5 parallel domain subagents over a path and writes a dated findings doc (`src/akira/findings/findings-{date}.md`) — the same parallel-subagent-per-concern discipline as [[Agent Scaffolding Skill Layers]]' L1 factory, applied to review instead of generation; **dao** (道, "the path") triages that findings doc per-item — auto-fixes low-blast-radius findings, reverts any fix that breaks tests, surfaces complex findings for human review, and discards false positives, writing a run summary at the top of the findings file. The kaneda → dao sequence is Akira's version of the generate-then-triage pattern also seen in SANYI's report-then-`--fix` flow, but scoped to code quality rather than change-contract violations.
+
+**Later simplification: primitives plus scope, not modes.** guacamayo's akira had grown to
+six modes, including `auto` and `all`. These were cut back to three primitives (wander,
+scan, dao) plus SANYI, with **scope derived automatically** rather than chosen by flag. A
+bare `/akira` runs wander → scan → sanyi → dao on the diff if there is one, and on the
+whole repo if the tree is clean. In whole-repo scope, wander is skipped (no diff to ask
+about) and SANYI runs an audit instead of a review. A "sweep everything" request is
+expressed as scope, not as another mode. Findings in the most dangerous SANYI class are
+never auto-fixed. Dependency-vulnerability scanning was explicitly removed from the review
+agent's job, because the update bot already owns it (see
+[[Exposure-Tiered Dependency Triage]]).
 
 ### `/code-debug` — Debugging Loop
 
@@ -317,9 +374,7 @@ A project-local instantiation of this skill (`code_debug` in [[Listen-Wiseer Pro
 - [[SKILL.md Pattern]]
 - [[Prefix Caching]]
 - [[Karpathy LLM Wiki Pattern]]
-- [[Session Log]]
 - [[Claude Code Hook Architecture]]
-- [[project-g Dev Hooks & Git Workflow]]
 - [[SANYI Change-Contract System]]
 - [[Puffin Consciousness Development Skills]]
 - [[Agent Scaffolding Skill Layers]]
@@ -335,3 +390,25 @@ A project-local instantiation of this skill (`code_debug` in [[Listen-Wiseer Pro
 - [[Scope-POC Design Interview]] — instance-of (design-phase skill in the pipeline)
 - [[Deferred Decision Status]] — extends (parking unknowns without blocking the gate)
 - [[Scope-Gated Reporter Dispatch]] — extends (which reporters run, and recording the ones that didn't)
+- [[Re-Scope Over Sequence for Colliding Issues]] — extends (cutting parallel issues by file ownership)
+- [[Deadline-Scope Isolation]] — extends (keeping deadline work out of open-ended scope)
+- [[Gate vs Ship Make Targets]] — extends (the local gate the workflow runs before ship)
+- [[Evidence-Gated Skill Pipeline]] — instance-of (a project-local skill family built on this system)
+- [[REUSE/ADAPT/SKIP Asset Verdicts]] — extends (research-scout output contract)
+- [[Stage-Scoped Scout Agents]] — extends (one stage per sub-agent invocation in the build and scope pipelines)
+- [[Scoped Phase Dispatch with Pre-Resolved Files]] — part-of (the build stage's dispatch contract)
+- [[REUSE/ADAPT/SKIP Asset Verdicts]] — part-of (the research and refine stages' reporting contract)
+- [[Workflow Pipeline Telemetry Audit]] — extends (what a week of telemetry said about the pipeline)
+- [[Decision-ID Reservation Across Concurrent Plans]] — part-of (a plan-stage rule for concurrent plans)
+- [[Capability vs Phase Skills]] — extends (positional vs situational skills)
+- [[Job Verb Taxonomy for Skills]] — extends (one job verb per skill)
+- [[Archived Skills Convention]] — extends (how skills are retired)
+- [[Void, Don't Close, an Invalid Measurement]] — extends (ledger-row hygiene)
+- [[Retro Open-Hypotheses Loop]] — related
+- [[Four-Stage Design Pipeline with Backflow]] — prerequisite-for (the design stages upstream of triage)
+- [[Worktree Agent Dispatch Contract]] — extends (git rules for dispatching worktree agents)
+- [[Issues Live in the Repo They Change]] — extends (where issues are filed, and the transfer gotcha)
+- [[Topic-Lifecycle Docs Layout]] — extends (scope/build/archive folders and the review-to-plan write-back)
+- [[Idempotent Reconcile Beside a Guarded Create]] — extends (quick-pr links issues to an existing PR without loosening the create guard)
+- [[Orchestrate Around the Human Gate]] — extends (triage/build/meta orchestrators and the halt-at-gate design)
+- [[Verify the Issue's Premise Before Planning]] — extends (premise-correction sections at the top of plan docs)

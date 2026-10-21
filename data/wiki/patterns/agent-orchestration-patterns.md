@@ -55,7 +55,7 @@ Pattern first, framework second:
 
 Every pattern in this source carries the same warning in a different form:
 
-- Single agent: *"Most DSSG projects need this level and no more. Resist the urge to build
+- Single agent: *"Most volunteer-team projects need this level and no more. Resist the urge to build
   multi-agent systems when one agent with good tools would work."*
 - Graph: *"Start with a single agent. If you find yourself writing 'if the tool result
   shows X, then call tool Y' — that's a graph wanting to exist. Refactor into LangGraph

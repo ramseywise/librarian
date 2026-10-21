@@ -2,11 +2,12 @@
 title: Bedrock KB vs LangGraph Decision
 tags: [rag, infra, decision]
 summary: Decision framework for Bedrock Knowledge Bases vs. LangGraph CRAG pipeline — quality, observability, cost, and migration path analysis.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/bedrock-kb-research.md
-  - raw/playground-docs/librarian-architecture-decisions.md
-  - raw/sessions/claude-2026-04-12-ok-we-have-this-doc-that-is-a-comparison-8d1a71b0.md
+  - data/raw/meetings/2026-06-25-bedrock-local-config.md
+  - data/raw/claude-docs/playground/docs/archived/bedrock-kb-research.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-architecture-decisions.md
+  - data/raw/sessions/claude-2026-04-12-ok-we-have-this-doc-that-is-a-comparison-8d1a71b0.md
 ---
 
 # Bedrock KB vs LangGraph Decision
@@ -129,9 +130,24 @@ The hallucination risk gap is the decisive factor for production use: when Bedro
 
 The eval gate: add `BedrockRetriever` adapter to the eval pipeline so Bedrock KB can be benchmarked against LangGraph CRAG on the same test set (hit_rate, MRR, faithfulness). This is the missing data point that should drive the A vs C decision.
 
+## Managed-KB Operating Notes
+
+From running a Bedrock KB behind an application in production:
+
+- **Use `retrieve`, not `retrieve_and_generate`.** Raw chunk retrieval keeps generation,
+  citation and filtering in the application layer — the precondition for the migration
+  path above and for any eval of retrieval separate from generation.
+- **Gate and dedupe at the app boundary.** A `/chunks` endpoint applied a score threshold
+  (0.4) and deduplication before chunks reached the agent.
+- **Provision the vector store manually for production.** Let the console auto-create
+  OpenSearch Serverless for experiments; create and size it explicitly for high-traffic
+  environments.
+- **Tag KB resources for cost attribution**, and treat chunking (hierarchical / fixed /
+  semantic / none) plus an optional pre-processing Lambda for boilerplate removal as the
+  main ingest-side levers.
+
 ## See Also
 - [[ADK vs LangGraph Decision]]
 - [[Orchestration Architecture Decision]]
 - [[Librarian RAG Architecture]]
 - [[RAG Evaluation]]
-- [[Evaluation & Improvement Project (VIR)]] — concrete use case: [product] → Bedrock KB ingestion for HC Virtual Assistant MVP

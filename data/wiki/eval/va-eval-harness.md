@@ -2,12 +2,16 @@
 title: VA Eval Harness
 tags: [eval, langgraph, adk, concept, pattern]
 summary: "Agent evaluation harness for VA agents — four eval suites (routing, quality, behavioral, error handling), JSON evalset schema, tool_trajectory_avg_score metric, LLM-as-judge, Makefile flow, and CI regression gate. Production golden dataset: ~100 questions from 700-question Intercom set, Langfuse pipeline live, CS agent validated."
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/docs/research/evaluation-and-learning/eval-harness.md
-  - raw/notion/2026-07-03-golden-dataset-alignment-notes.md
-  - raw/claude-docs/playground/docs/tooling/eval-harness.md
-  - raw/sessions/claude-2026-04-18-i-started-cleaning-up-evals-but-still-ne-57042538.md
+  - data/raw/claude-docs/playground/skills/eval-creation/va-eval/SKILL.md
+  - data/raw/claude-docs/playground/docs/evals/eval-harness-patterns.md
+  - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/eval-harness.md
+  - data/raw/notion/2026-07-03-golden-dataset-alignment-notes.md
+  - data/raw/claude-docs/playground/docs/tooling/eval-harness.md
+  - data/raw/sessions/claude-2026-04-18-i-started-cleaning-up-evals-but-still-ne-57042538.md
+  - data/raw/claude-docs/project-g/docs/evals/eval-harness-patterns.md
+  - data/raw/claude-docs/playground/docs/plans/va-routing-eval.md
 ---
 
 # VA Eval Harness
@@ -135,9 +139,34 @@ eval-case:
 
 Fail CI if routing score drops below floor — prevents prompt/routing regressions from reaching production.
 
+## Routing Baseline First
+
+Before migrating or changing anything, measure the router on its own. Score exact-match
+`classified_intent` against `expected_intent` on the real-ticket fixtures:
+
+| Routing accuracy | Meaning | Action |
+|---|---|---|
+| > 85% | Solid | Proceed with migration |
+| 70–85% | Acceptable | Note the failure clusters, add correction examples to the router prompt, proceed |
+| < 70% | Broken | Fix the router prompt before anything else |
+
+Two traps showed up before the first run:
+
+- **Swapped ports.** The harness had two services' ports swapped relative to
+  docker-compose, so each suite was scoring the wrong runtime.
+- **Missing metadata scores zero.** The routing grader reads `classified_intent` from
+  response metadata. If a runtime doesn't return it, every routing check scores 0, which
+  looks like a broken router. Curl one request and check the field first.
+
+Group failures by expected intent. The typical clusters were support misrouted
+elsewhere (needs a stronger support fallback), insights vs accounting (boundary
+definitions), and banking vs expense (ambiguous phrasing, add examples).
+
+The fixtures come from real tickets scrubbed under [[Deterministic Scrub Before LLM Review]].
+
 ## Production Golden Dataset (2026-07)
 
-Status as of 2026-07-03 team alignment meeting (Jeremy, Dan, Yan, Anders, Sebastian, Daniel Tadros):
+Status as of a 2026-07-03 team alignment meeting:
 
 | Component | Status |
 |---|---|
@@ -146,18 +175,18 @@ Status as of 2026-07-03 team alignment meeting (Jeremy, Dan, Yan, Anders, Sebast
 | Full conversation context | Captured in separate column |
 | Evaluation pipeline | Live in Langfuse; runnable from terminal against staging, production, or dev |
 | Basic eval metrics | Connected to Langfuse eval pipeline (from VA agents and project-g) |
-| Dataset representativeness | Frequency analysis applied only across Ramsey's 700 questions — known limitation |
+| Dataset representativeness | Frequency analysis applied only across the 700-question subset — known limitation |
 | Answer quality evaluation | Next step after retrieval evaluation is stable |
 
-**Dataset lineage:** 24,000 real Danish Intercom conversations → Ramsey's 700-question URL-cited subset (frequency analyzed) → Jeremy's ~100 questions selected by likelihood of addressing common customer concerns.
+**Dataset lineage:** 24,000 real Danish Intercom conversations → a 700-question URL-cited subset (frequency analyzed) → ~100 questions selected by likelihood of addressing common customer concerns.
 
 **Key team decisions:**
 - ~100 question dataset is sufficient to unblock the pipeline; representativeness is a known limitation for next iteration
-- **Retrieval eval first**, then answer quality eval (Daniel Tadros raised that correct article link ≠ complete/accurate generated answer — agreed as next step)
+- **Retrieval eval first**, then answer quality eval (a reviewer raised that correct article link ≠ complete/accurate generated answer — agreed as next step)
 - Langfuse is the eval pipeline surface — one-click experiment run (similar to MLflow)
 - CS agent validation of URL labels is the human-in-the-loop quality gate
 
-**Anders' concern:** 100 questions may skew toward edge cases rather than most frequently asked questions. Open: representative enough as a reliable baseline? To be resolved before any lock-in decision.
+**Open concern:** 100 questions may skew toward edge cases rather than most frequently asked questions. Open: representative enough as a reliable baseline? To be resolved before any lock-in decision.
 
 **Ground truth bias note:** The URL-cited ground truth skews toward single-document-answerable questions — more likely to be resolved than typical support traffic. The retrieval ceiling metrics apply to this slice, not full support volume.
 
@@ -245,3 +274,5 @@ From a cleanup session (2026-04-18) that consolidated a sprawling `evals/` root,
 - [[Production Hardening Patterns]]
 - [[ADK Eval Guide]]
 - [[ADK User Simulation Eval]]
+- [[Deterministic Scrub Before LLM Review]] — prerequisite-for (how real tickets become PII-free fixtures)
+- [[Stub Backend Is Permanent Dev Infrastructure]] — related (the runtimes and stub backend under test)

@@ -2,9 +2,10 @@
 title: Protocol-Driven Multi-Agent Collaboration
 tags: [agents, infra, pattern]
 summary: "Why multi-agent coordination has to be a protocol rather than a conversation — the nine failure modes conversational handoff produces, the six things a protocol must define, and the three foundations: communication protocol, task graph, and isolation boundary."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-design.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-design.md
 ---
 
 # Protocol-Driven Multi-Agent Collaboration
@@ -131,3 +132,4 @@ available.
 - [[Agent Security Risk Taxonomy]] — complements (R11–R13, the same boundary from the threat side)
 - [[Execution Boundaries and Guardrails]] — implements (the isolation boundary, mechanically)
 - [[Production Reliability Primitives]] — extends (durable messaging, idempotency, explicit state in production)
+- [[Provenance-Tracked Agent Beliefs]] — extends (belief provenance and peer models in the message layer)

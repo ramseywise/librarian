@@ -4,7 +4,7 @@ tags: [infra, langgraph, concept]
 summary: Critical rule — checkpointer backend must match runtime hosting model. MemorySaver fails silently in Lambda and multi-worker deployments. Covers trigger patterns, observability tool choice (LangSmith vs Langfuse/GDPR), and key production signals.
 updated: 2026-04-26
 sources:
-  - raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
+  - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
 ---
 
 # Runtime Topology and Checkpointer Alignment

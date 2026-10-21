@@ -2,11 +2,13 @@
 title: Harness Engineering
 tags: [llm, agents, infra, concept]
 summary: "Agent = Model + Harness — the discipline of building everything between request and output except the weights, and why reliability compounding makes the harness dominate the model."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--01-what-a-harness-is.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agent-harness.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--harness-engineering.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--agent-harness.md
 ---
 
 # Harness Engineering
@@ -145,6 +147,26 @@ knowledge lives — skills, references, commands — instead of containing it, s
 stays navigable while the knowledge it indexes grows without bound. Bulk material belongs
 in progressively-disclosed bodies ([[SKILL.md Pattern]]), not resident text.
 
+## The Context ↔ Harness Boundary
+
+| Context engineering | Harness engineering |
+|---|---|
+| What goes in the window on *this* call | The loop that decides *whether and when* to call |
+| Which documents, memory, tool results to inject | Which tools exist at all, and what they may do |
+| Token budget within one assembly | Cost envelope across a whole run |
+| Compaction as a technique | Compaction as middleware that fires on a trigger |
+
+The crossing point: **the moment assembly becomes stateful and conditional** — a loop
+deciding when to retrieve, compact, verify, or spawn — you have left context engineering and
+entered harness engineering.
+
+A five-component checklist for the harness side: context assembly per step, tool
+orchestration (validation, parsing, error handling), verification loops, **cost envelope
+management** (per-task budget ceilings against runaway spend), and observability/evaluation.
+The source literature claims reliability gains of roughly 5–15% from prompt work, 15–30% from
+context work, and 50–80% from harness work. Treat the numbers as directional; the ordering is
+the claim.
+
 ## Convergent Design as Evidence
 
 Claude Code, Cursor, Codex, Aider, and Cline *"look more like each other than their
@@ -182,6 +204,7 @@ Practical consequence: **a harness needs periodic subtraction, not just addition
 7. [[Harness Maturity and Failure Modes]] — the five-stage model, production primitives, iterative simplification
 
 ## See Also
+- [[Spec, Verifier, Environment Layering]] — extends (a practitioner framing of the same harness as spec + verifier + workshop)
 - [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Prompt Engineering]] <!-- auto-linked -->
 - [[Context Engineering]] — depends-on

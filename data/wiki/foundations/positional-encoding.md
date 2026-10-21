@@ -4,7 +4,7 @@ tags: [foundations, llm, concept]
 summary: Sinusoidal or learned position signals injected into Transformer input embeddings — required because self-attention is permutation-invariant and has no inherent notion of sequence order.
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2017-06-12-attention-is-all-you-need.md
+  - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
 ---
 
 # Positional Encoding

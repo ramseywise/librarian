@@ -2,10 +2,10 @@
 title: Observability and Runtime Patterns
 tags: [infra, concept]
 summary: Observability tool choice (LangSmith vs Langfuse), tracing architecture, runtime topology and checkpointer alignment rules, trigger patterns, and key signals to monitor for VA agents.
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
-  - raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
-  - raw/agent-skills/observability/SKILL.md
+  - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
+  - data/raw/agent-skills/observability/SKILL.md
 ---
 
 # Observability and Runtime Patterns
@@ -162,3 +162,4 @@ LANGFUSE_HOST=https://your-langfuse.internal
 - [[Graph Governance and Attribution]] — extends (adds graph/run/node identity as the attribution axis a flat trace lacks)
 - [[Experiment Tracking Schemas]] — complements (the metadata contract that makes a traced run reproducible and diffable)
 - [[LangSmith Platform]] — instance-of (wiring, datasets, evaluators, and annotation queues for the LangSmith backend)
+- [[Ship Logging Before Features]] — extends (serve-time logs cannot be backfilled)

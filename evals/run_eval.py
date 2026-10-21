@@ -12,16 +12,21 @@ produces a 1.0 baseline that proves the grader mechanics are wired correctly,
 and it gates on the regression floors (exit 1 below floor).
 
 *Live* (`--live`): retrieval goes through the real search core
-(`app.mcp_server.server._search_rows` — BM25 + hybrid rerank), so hit-rate and
+(`app.mcp_server.server._search_rows` — BM25 + RRF rerank), so hit-rate and
 MRR measure actual pipeline quality.  Answers stay oracle (live answer grading
-needs the LLM — separate concern).  Live mode is report-only: floors are
-printed for reference but never exit(1).  Retrieved paths are absolute; the
-grader's suffix matching handles the repo-relative golden `source_pages`, so
-no normalization is needed.
+needs the LLM — separate concern).  Retrieved paths are absolute; the grader's
+suffix matching handles the repo-relative golden `source_pages`, so no
+normalization is needed.
+
+Live arms with a committed baseline gate against their own floors
+(`LIVE_ARM_FLOORS`): `sem` is the healthy pipeline, `nofts` is the degraded
+substring-fallback path taken when the fts extension is unavailable.  Both are
+gated so a ranking change cannot improve one arm at the other's expense.  The
+`lex` and `graph` ablations remain report-only.
 
 Exit codes:
-    0 — all scores at or above floor thresholds (or --live mode)
-    1 — one or more scores below floor (oracle mode only)
+    0 — all scores at or above the applicable floors
+    1 — one or more scores below floor (oracle mode, or a gated live arm)
 """
 
 from __future__ import annotations
@@ -51,6 +56,21 @@ from evals.graders import (
 HIT_RATE_FLOOR = 0.60
 MRR_FLOOR = 0.40
 
+# Per-arm live floors, derived from the committed baselines minus a tolerance for
+# run-to-run noise (embedding nondeterminism, tie order). The `nofts` arm scores
+# far below the oracle floors by construction — retrieval there is substring
+# matching — so gating it against HIT_RATE_FLOOR/MRR_FLOOR would either fail
+# permanently or force those floors down and stop protecting the healthy arm.
+# Each arm is therefore gated against its own measured baseline.
+LIVE_FLOOR_TOLERANCE = 0.05
+
+LIVE_ARM_FLOORS: dict[str, dict[str, float]] = {
+    # evals/baselines/live-baseline-2026-08-04T14-24-15Z.json — hit 1.0, MRR 0.905
+    "sem": {"hit_rate": 0.95, "mrr": 0.85},
+    # evals/baselines/live-nofts-baseline-2026-08-04T14-24-43Z.json — hit 0.58, MRR 0.295
+    "nofts": {"hit_rate": 0.53, "mrr": 0.245},
+}
+
 
 # ---------------------------------------------------------------------------
 # Oracle simulation helpers
@@ -68,10 +88,12 @@ def _oracle_answer(entry: GoldenEntry) -> str:
 
 
 def _live_retrieval(entry: GoldenEntry, arm: str = "sem") -> list[RetrievalResult]:
-    """Retrieve through the real search core (BM25 + hybrid rerank)."""
+    """Retrieve through the real search core (BM25 + RRF rerank)."""
     from app.mcp_server.server import _search_rows
 
-    rows = _search_rows(entry.query, domain="", limit=10, tool="eval", expand=(arm == "graph"))
+    rows, _degraded = _search_rows(
+        entry.query, domain="", limit=10, tool="eval", expand=(arm == "graph")
+    )
     return [RetrievalResult(page_path=row[0], score=float(row[6])) for row in rows]
 
 
@@ -98,6 +120,7 @@ def run(
     answer_grader = AnswerGrader()
 
     restore_embeddings = None
+    restore_fts = None
     if live and arm == "lex":
         # Lexical arm: drop the semantic + backlink blend so ranking is BM25-only.
         # The index must exist BEFORE the flag flips — build_index also consults
@@ -108,6 +131,16 @@ def run(
         server.get_con().close()
         restore_embeddings = server.HAS_EMBEDDINGS
         server.HAS_EMBEDDINGS = False
+    elif live and arm == "nofts":
+        # Degraded arm: force the tokenized-LIKE fallback so the floor gate covers
+        # the path taken when the fts extension is unavailable. Same ordering
+        # constraint as `lex` — build the index while fts still works, so the arm
+        # measures degraded *retrieval*, not a degraded index.
+        from app.mcp_server import server
+
+        server.get_con().close()
+        restore_fts = server._ensure_fts
+        server._ensure_fts = lambda con: False
 
     try:
         if live:
@@ -115,10 +148,12 @@ def run(
         else:
             retrieved_lists = [_oracle_retrieval(e) for e in entries]
     finally:
-        if restore_embeddings is not None:
-            from app.mcp_server import server
+        from app.mcp_server import server
 
+        if restore_embeddings is not None:
             server.HAS_EMBEDDINGS = restore_embeddings
+        if restore_fts is not None:
+            server._ensure_fts = restore_fts
 
     candidate_answers = [_oracle_answer(e) for e in entries]
 
@@ -244,10 +279,11 @@ def main() -> None:
     )
     parser.add_argument(
         "--arm",
-        choices=["lex", "sem", "graph"],
+        choices=["lex", "sem", "graph", "nofts"],
         default="sem",
         help="Live-mode ablation arm: lex (BM25 only), sem (current pipeline), "
-        "graph (sem + one-hop typed expansion)",
+        "graph (sem + one-hop typed expansion), nofts (fts forced off — the "
+        "degraded substring-fallback path)",
     )
     args = parser.parse_args()
 
@@ -271,20 +307,31 @@ def main() -> None:
         )
         print(f"\nBaseline saved → {path}")
 
-    # Gate on floors — oracle mode only; live mode reports without failing
+    # Gate on floors. Oracle mode uses the global floors. Live mode gates only
+    # the arms with a committed baseline (sem, nofts) — `lex` and `graph` are
+    # ablations with no regression contract, so they stay report-only.
+    if args.live:
+        floors = LIVE_ARM_FLOORS.get(args.arm)
+        gating = floors is not None
+    else:
+        floors = {"hit_rate": HIT_RATE_FLOOR, "mrr": MRR_FLOOR}
+        gating = True
+
     failures = []
-    if report.hit_rate < HIT_RATE_FLOOR:
-        failures.append(f"hit_rate {report.hit_rate:.3f} < floor {HIT_RATE_FLOOR}")
-    if report.mean_reciprocal_rank < MRR_FLOOR:
-        failures.append(f"MRR {report.mean_reciprocal_rank:.3f} < floor {MRR_FLOOR}")
+    if floors is not None:
+        if report.hit_rate < floors["hit_rate"]:
+            failures.append(f"hit_rate {report.hit_rate:.3f} < floor {floors['hit_rate']}")
+        if report.mean_reciprocal_rank < floors["mrr"]:
+            failures.append(f"MRR {report.mean_reciprocal_rank:.3f} < floor {floors['mrr']}")
 
     if failures:
         print("\nFLOOR VIOLATIONS:")
         for f in failures:
             print(f"  {f}")
-        if not args.live:
+        if gating:
             sys.exit(1)
-        print("(live mode is report-only — floors gate oracle mode)")
+    elif floors is None:
+        print(f"\n(arm '{args.arm}' has no regression floor — report-only)")
     else:
         print("\nAll floors passed.")
 

@@ -2,7 +2,7 @@
 title: Execution Boundaries and Guardrails
 tags: [llm, agents, infra, concept]
 summary: "Sandboxes, hooks, and permission gates — the controls that cannot be argued with, governed by one rule: encode constraints rather than documenting them, and enforce invariants rather than implementations."
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--04-execution-boundaries.md
 ---
@@ -185,3 +185,4 @@ discipline — see [[Canary Testing for Permission Boundaries]].
 - [[Tool Design as Harness Surface]] — depends-on
 - [[Safeguards Architecture — Five Protection Layers]] — implements
 - [[Read-Only by Default with Explicit Authorization]] — complements
+- [[Reversibility Cliff]] — extends (locating the unattended-action boundary at notification, with evidence)

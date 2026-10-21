@@ -2,13 +2,15 @@
 title: Agentic RAG — Advanced Patterns
 tags: [rag, pattern]
 summary: Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
-  - raw/agent-skills/advanced-rag-patterns/SKILL.md
-  - raw/agent-skills/langchain-rag/references/advanced-patterns.md
+  - data/raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
+  - data/raw/agent-skills/advanced-rag-patterns/SKILL.md
+  - data/raw/agent-skills/langchain-rag/references/advanced-patterns.md
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
   - data/raw/repos/learn-ai-engineering/generative-ai--02-rag-retrieval--rag.md
+  - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--rag.md
 ---
 
 # Agentic RAG — Advanced Patterns

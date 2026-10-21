@@ -2,10 +2,15 @@
 title: Multi-Agent Orchestration Patterns
 tags: [adk, langgraph, deep-agents, concept]
 summary: Multi-agent architecture patterns — supervisor/handoff/parallel swarm trade-offs, try-agent history for fallback routing, tool count budget, and the [client] ADK POC selection rationale.
-updated: 2026-04-26
+updated: 2026-10-17
 sources:
-  - raw/gdrive/2026-04-15-adk-overview-poc-architecture.md
-  - raw/claude-docs/playground/docs/research/agentic-ai/orchestration-patterns.md
+  - data/raw/gdrive/2026-04-15-adk-overview-poc-architecture.md
+  - data/raw/claude-docs/playground/docs/research/agentic-ai/orchestration-patterns.md
+  - data/raw/claude-docs/playground/docs/archived/py-copilot-research.md
+  - data/raw/claude-docs/playground/docs/archived/py-copilot-plan.md
+  - data/raw/claude-docs/playground/docs/archived/ts-copilot-plan.md
+  - data/raw/claude-docs/playground/docs/plans/hardening.md
+  - data/raw/repos/playground/.claude--docs--plans--hardening.md
 ---
 
 # Multi-Agent Orchestration Patterns
@@ -121,6 +126,10 @@ Already tried: {tried_agents}. Do NOT route to these again. Choose a different a
 Tool count directly affects routing quality. See [[VA Product Design Patterns]] for the full budget table.
 
 **Split signal:** at 20+ tools, split into domain sub-agents. Each stays under 12 tools; the supervisor routes between them.
+
+**Schema quality moves the threshold.** In a TypeScript copilot on Gemini Flash, quality degrades at about 25 tools, so the planned growth from 18 to 28 tools was added in two tranches with an evaluation after each. Porting the same agent to ADK Python made things worse: auto-generated schemas from type hints and docstrings are less precise than explicit Zod schemas (a missing `Args:` entry means no description at all), which lowers the safe tool count further. The recommendation was to start with the split: a router with no tools, sub-agents of at most 12 tools each, and explicit `FunctionTool` wrapping for tools with nested parameters.
+
+**Guard empty domains.** A stub domain whose tool set is still empty (`frozenset([])`) shouldn't reach the LLM. A routed query then produces a silent failure or a cryptic model error. Check `_domain_available(tools)` at the top of the domain node and return a structured `{"status": "not_available"}` result with `done: True`. The guard is a no-op for populated domains.
 
 ## Typed I/O Contracts Between Agents
 

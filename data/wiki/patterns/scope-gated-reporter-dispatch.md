@@ -2,10 +2,13 @@
 title: Scope-Gated Reporter Dispatch
 tags: [llm, pattern]
 summary: Sizing a review to the change by declaring a scope up front, then recording each reporter's skip with its reason in the verdict — so "not run" is visible evidence rather than an absent section a reader mistakes for a clean pass.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-24-AIT-18-review-verdict.md
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-24-LAE-39-review-verdict.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-24-GUA-23-review-verdict.md
+  - data/raw/claude-docs/.claude/docs/plans/2026-07-24-GUA-16-review-verdict.md
+  - data/raw/claude-docs/atlas/docs/plans/2026-07-24-ATL-22-review-verdict.md
 ---
 
 # Scope-Gated Reporter Dispatch
@@ -58,12 +61,20 @@ evidence rather than an untracked judgment.
 
 ## Observed instances
 
-Both recorded instances gate identically at `approve` with lightweight scope:
+Five recorded instances, all at `approve`; three lightweight, two with the heavy reporters run:
 
 | PR | Change shape | akira-scan | SANYI |
 |---|---|---|---|
 | AIT #18 | vendored skill sync + dependabot workflow | skipped (scope) | skipped (no SANYI.md) |
 | LAE #74 | structural cleanup + 30 dependabot bumps, 36 commits | skipped (scope) | skipped (no SANYI.md) |
+| ATL-22 | dependabot config + workflow template sync | skipped (scope) | skipped (no SANYI.md) |
+| GUA-16 | user-level `.claude` config repo — skills, hooks, settings | run (full scope) | skipped (no SANYI.md) |
+| GUA-23 | new review-backbone package, 6 plan steps, 79 tests | plan-fidelity ran (0 deviations); lint/tests ran | skipped (no SANYI.md) |
+
+GUA-16 is the useful outlier: a **config repo with no application code** still scored
+*full* scope, because its skills and hooks are the logic other repos execute. The lint and
+test reporters were recorded as "n/a — no code to lint/test" rather than omitted, which is
+the empty-row rule applied to a repo where the usual reporters have nothing to run on.
 
 Note that **commit count does not drive scope** — LAE-39's 36 commits still
 scored lightweight, because the axis is *whether code logic changed*, not
@@ -89,3 +100,9 @@ rot gets collected at the moment someone is already looking at the repo's state.
 - [[Merge Impact and Evidence State]] — prerequisite-for
 - [[Claude Workflow System]] — instance-of (the review phase this dispatches within)
 - [[Parallel Dimension Scanner Architecture]] — alternative-to (run all dimensions vs gate by scope)
+- [[Rationale-Blind Worst-Case Review]] — extends (a consequence-only reporter dispatched the same way)
+- [[Silence Reads as Clean]] — extends (the general defect this dispatch rule guards against)
+- [[Deterministic Signal Detection for Dispatch]] — alternative-to (detected signals vs declared scope as the dispatch input)
+- [[Review Reporter Ground Rules]] — extends
+- [[Derive the Gate, Don't Copy It]] — extends
+- [[Cross-Dimensional Review Adjudicator]] — prerequisite-for

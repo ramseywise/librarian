@@ -4,7 +4,7 @@ tags: [langgraph, adk, concept, pattern]
 summary: Reasoning + Acting loop — the foundational single-agent pattern where the LLM alternates thought and tool calls until it has enough information to answer. Implemented via create_react_agent in LangGraph.
 updated: 2026-04-26
 sources:
-  - raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
+  - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
 
 # ReAct Pattern

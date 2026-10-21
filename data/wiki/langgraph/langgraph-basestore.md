@@ -2,10 +2,11 @@
 title: LangGraph BaseStore
 tags: [langgraph, memory, concept]
 summary: LangGraph's cross-thread persistent key-value store with optional vector search — the standard backend for episodic, semantic, and procedural agent memory.
-updated: 2026-04-24
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/rag-agent-template-research.md
+  - data/raw/articles/2026-07-19-long-term-agentic-memory-langgraph.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
 ---
 
 # LangGraph BaseStore
@@ -60,7 +61,24 @@ results = store.search(namespace=("user", user_id), query="past investment advic
 
 `langmem` is a wrapper library that builds agent-ready memory tools on top of BaseStore — `create_memory_store_manager()`, `create_search_memory_tool()`. Reduces boilerplate for the common patterns.
 
+## Namespace Design and Background Consolidation
+
+- **Checkpointer = session memory; BaseStore = cross-session memory.** Confusing the two is
+  the commonest architecture error.
+- **Namespaces are the key design decision.** `(user_id, memory_type)` tuples partition
+  per-user facts, per-conversation preferences and shared world knowledge in one store. A
+  wrong namespace leaks across users (a privacy failure) or pollutes reasoning with another
+  session's context.
+- **Consolidate after the conversation, not during it.** A background node triggered on
+  conversation completion extracts key facts and writes them to the store, so extraction
+  never adds live latency (the same sleep-time pattern as
+  [[MemGPT / Letta Virtual Context Memory]]'s consolidation, moved out of the turn).
+- **With a vector-capable backend** (Postgres + pgvector, in-memory with numpy), personal
+  memory becomes a private RAG store: retrieve from BaseStore and from the shared corpus,
+  reason over both.
+
 ## See Also
 - [[Agent Memory Types]]
 - [[LangGraph Advanced Patterns]]
 - [[Production Hardening Patterns]]
+- [[MemGPT / Letta Virtual Context Memory]] — alternative-to (in-turn agent-managed paging vs post-session consolidation)

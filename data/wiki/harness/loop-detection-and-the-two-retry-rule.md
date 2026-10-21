@@ -2,9 +2,11 @@
 title: Loop Detection and the Two-Retry Rule
 tags: [llm, agents, infra, pattern]
 summary: "The doom loop produces ten mutations of a broken solution — detection tracks per-file edit counts and forces re-planning rather than repair, because past two failures the problem is the spec, not the execution."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/claude-docs/playground/skills/workflow-triage/SKILL.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
+  - data/raw/repos/nonprofit-success-ai/.claude--skills--workflow-triage--SKILL.md
 ---
 
 # Loop Detection and the Two-Retry Rule
@@ -57,6 +59,15 @@ middle, where work is mechanical.** This split avoids timeouts while preserving 
 The shape mirrors asymmetric QA in [[Verification Loops]] — **pay for judgment, economize on
 labor.**
 
+## Stage pipelines: one retry, then the orchestrator decides
+
+A triage orchestrator that dispatches research, plan and refine as subagents allows **one
+retry per stage**. After that, the main model resolves the gap itself instead of
+dispatching a third attempt. Two failed attempts at the same stage mean the problem needs
+judgment, not another sample. The retry counter turned out to be a weak signal in
+practice: it read 0 in 134 of 135 ledger rows, while plans failed a day later at build.
+See [[Gate Pass Rate Measures Effort, Not Readiness]].
+
 ## See Also
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Agent Retry Taxonomy]] — extends
@@ -64,3 +75,4 @@ labor.**
 - [[Execution Boundaries and Guardrails]] — complements
 - [[Harness Engineering]] — part-of
 - [[Loop Termination Design]] — complements (identical-action detection vs varied-but-stalled detection)
+- [[Gate Pass Rate Measures Effort, Not Readiness]] — related (the retry counter as a non-signal)

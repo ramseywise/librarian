@@ -2,14 +2,15 @@
 title: Agent Memory Types
 tags: [memory, langgraph, concept]
 summary: Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for VA agents — backed by LangGraph BaseStore.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/agentic-rag-copilot-research.md
-  - raw/playground-docs/librarian-components.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md
-  - raw/gdrive/2026-04-24-langgraph-yan.md
-  - raw/claude-docs/playground/docs/research/agentic-ai/memory-architecture.md
-  - raw/agent-skills/langchain-rag/references/advanced-patterns.md
+  - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-components.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md
+  - data/raw/gdrive/2026-04-24-langgraph-yan.md
+  - data/raw/claude-docs/playground/docs/research/agentic-ai/memory-architecture.md
+  - data/raw/agent-skills/langchain-rag/references/advanced-patterns.md
+  - data/raw/claude-docs/playground/docs/components.md
 ---
 
 # Agent Memory Types
@@ -341,3 +342,5 @@ For Deep Agents, memory is surfaced through pluggable backends rather than direc
 - [[Memory-Augmented Conversational RAG]] — complements (history as the input to query rewriting)
 - [[Knowledge Graph as Shared Agent Memory]] — complements (a cross-session semantic store shared across agents)
 - [[Memory Forms Taxonomy]] — complements (the survey space these practitioner types occupy one cell of)
+- [[MemGPT / Letta Virtual Context Memory]] — extends (agent-managed paging between in-context core and archival stores)
+- [[Multi-Writer Agent Memory Systems Comparison]] — extends (adopting a memory layer for a shared team store)

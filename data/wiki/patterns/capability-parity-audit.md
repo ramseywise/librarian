@@ -2,9 +2,13 @@
 title: Capability Parity Audit
 tags: [llm, pattern]
 summary: A method for deciding what a shared template should absorb next — classify every requested capability as have / partial / gap against the template's *verified* current state, then prioritize by how many consumers share the gap rather than by how loudly any one asked.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/multi-agent-tooling-parity.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-10-ml-capability-parity.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-10-ml-capability-parity.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-10-voice-capability-parity.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-10-voice-capability-parity.md
 ---
 
 # Capability Parity Audit
@@ -103,6 +107,31 @@ non-recommendations, each closing a plausible misreading of the matrix:
 Writing these down is what keeps the matrix from being read as a to-do list. A `gap` cell
 records absence; it does not assert that the absence should be closed.
 
+## Sibling-repo harvest and the disconfirming pass
+
+Two galactus parity plans (tabular ML and realtime voice) applied the audit inside one
+repo and added two moves:
+
+- **Grep sibling repos before costing a gap.** The ML audit first priced the template's
+  gap list as net-new. A later capability grep of a sibling recommender repo found
+  calibration, class weighting, persistence, train/serve shared code, and a comparison
+  harness already in production there. That turned the phase from *write from scratch*
+  into *extract and generalise*, leaving only sampling, leakage-safe splitting, PR curves,
+  and drift as genuinely new. Harvest sources were explicitly **not** refactor targets.
+- **Rules already written are a gap too.** The global ML ref already required pipeline
+  wrapping, calibration, and joblib persistence, and the scaffold implemented none of
+  them. *"The rules exist; the scaffold does not implement them."* Closing that gap is
+  mostly implementing conventions that are already written down. A rule the scaffold
+  knowingly breaks has to be amended in the same change (the pandas-vs-Polars line was).
+- **Treat a suspiciously clean verdict as a finding to check.** The voice audit found
+  0 of 30 skills SKIP. It checked that the scout was willing to reject anything (it had
+  returned SKIPs on another asset set), lowered confidence to Medium-High, flagged the
+  unread depth of the REUSE set as a key unknown, and planned a sweep with a
+  stop-and-replan trigger at more than 3 hits.
+- **Build the new capability in the shape of the existing tooling**: same pipeline
+  spine, same enforcement ladder, same "reporters catch silent failures" pattern. Do not
+  build a parallel ML or voice process.
+
 ## See Also
 - [[Integration Pattern Selection]] — extends (what the long tail collapses into)
 - [[Callable-By Integration Contract]] — extends (the shape a shared gap resolved to)
@@ -115,3 +144,6 @@ records absence; it does not assert that the absence should be closed.
 - [[Six-Pillar Agent Engineering Assessment]] — alternative-to (a fixed rubric rather than a per-consumer request matrix)
 - [[Template Floor Raising]] — complements (prioritize by portfolio weakness rather than consumer count)
 - [[Capability Runtime-Coupling Tiers]] — alternative-to (runtime-coupling axis rather than have/partial/gap)
+- [[Role-Scoped Parity]] — extends (parity judged per role, not as one scalar)
+- [[REUSE/ADAPT/SKIP Asset Verdicts]] — alternative-to (per-asset verdicts with a mandatory salvage column)
+- [[Archived Skills Convention]] — extends (what happens to the fold candidates)

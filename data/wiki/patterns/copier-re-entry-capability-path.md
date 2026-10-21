@@ -2,9 +2,13 @@
 title: Copier Re-Entry as Capability Path
 tags: [infra, pattern]
 summary: Treating `.copier-answers.yml` as durable scaffold state so that flipping a template answer and re-rendering is the *only* sanctioned way a component enters a generated repo — which turns "scaffold the MVP now, add later" into a real guarantee rather than advice.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-genesis/SKILL.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-17-template-core-redesign.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-17-template-core-redesign.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-19-genesis-lifecycle-architecture.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-19-genesis-lifecycle-architecture.md
 ---
 
 # Copier Re-Entry as Capability Path
@@ -74,6 +78,19 @@ honored by `-d`: `include_calendar_integration=true` → `calendar` in `external
 `project_type=existing_repo`. Migrating an interview to new axes without breaking documents
 written against the old one is part of the contract.
 
+## Re-entry hazards found in practice (2026-07)
+
+- **Staging moves must be idempotent.** `_tasks` that `mv _scaffold/X dst` fail with
+  "Directory not empty" on a re-render, so `copier update` landed zero files while
+  reporting success. `mkdir -p dst && cp -R _scaffold/X/. dst/` is safe on both first
+  render and re-entry; add a CI row that renders, then re-renders, and diffs.
+- **Answers and design.yaml record different times.** `.copier-answers.yml` records what
+  was decided at render; `design.yaml` records what is now true and is stage-gated (inert
+  until the stage is marked complete). Re-entry should report divergence between the two
+  rather than silently trusting either.
+- **Multiselect additions merge, not replace.** Adding one item to a list answer must be
+  an additive merge, or re-entry clobbers the existing selection.
+
 ## See Also
 - [[Asked vs Derived Scaffold Variables]] — prerequisite-for
 - [[AI Project Template Scaffold]] — extends
@@ -82,3 +99,6 @@ written against the old one is part of the contract.
 - [[Copier Upstream Update Workflow]] — alternative-to (pulling the template's changes vs. changing your answers)
 - [[Template Migrations for Structural Moves]] — extends (structural edits the answers file can't express)
 - [[Template Floor Raising]] — contradicts (the case for making foundational capabilities default rather than opt-in)
+- [[Template Only Decided Patterns]] — extends (re-entry only offers capabilities whose shape is decided)
+- [[Capability Catalog with Preconditions]] — extends (declared requires/sets/conflicts_with fronting re-entry)
+- [[Execute Every Toggle Configuration]] — related (re-render belongs in the toggle matrix)

@@ -2,9 +2,10 @@
 title: Memory Store Operations
 tags: [memory, infra, reference]
 summary: "Running a memory store in production — caching and async indexing for latency, memory hit rate as the metric that says whether memory is earning its cost, and the deletion requirement that makes memory a compliance surface rather than a cache."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
 ---
 
 # Memory Store Operations

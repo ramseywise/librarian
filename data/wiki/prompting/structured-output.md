@@ -2,7 +2,7 @@
 title: Structured Output
 tags: [llm, concept]
 summary: Requesting JSON or a schema-conformant response so downstream code can parse it — reliable only when paired with harness-side validation.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
 ---
@@ -39,3 +39,6 @@ over prompt-level requests — it moves the guarantee from probabilistic to stru
 ## See Also
 - [[Prompt Engineering]] — part-of
 - [[XML Prompt Structuring]] — alternative-to
+- [[Graded-Uncertainty Enrichment Contract]] — extends (how a schema represents what the model could not determine)
+- [[Length Limits Are a Fit Layer, Not a Prompt]] — extends (length and layout limits enforced in code after generation)
+- [[Free Text With Deterministic Repair Over SDK-Enforced Schema]] — alternative-to (a decision to keep text generation plus a deterministic repair chain)

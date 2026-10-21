@@ -2,12 +2,12 @@
 title: RAG Reranking
 tags: [rag, concept]
 summary: Reranking strategies for RAG pipelines — cross-encoder vs LLM listwise, confidence scoring, and when each is appropriate.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/rag-tradeoffs.md
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/rag-agent-template-research.md
-  - raw/agent-skills/langchain-rag/references/rag-strategies.md
+  - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
+  - data/raw/agent-skills/langchain-rag/references/rag-strategies.md
 ---
 
 # RAG Reranking
@@ -83,3 +83,5 @@ Too many into reranker → latency spike. Too few → no gain over CRAG grading 
 - [[RAG Evaluation]]
 - [[CRAG Retry Logic]]
 - [[Reciprocal Rank Fusion (RRF)]]
+- [[Specificity-Adaptive Ranking and Slate Composition]] — alternative-to (a deterministic rubric over catalogue rows instead of a learned reranker)
+- [[Borderline-Band Sufficiency Probe]] — extends (rerank scores as ordinal signals with an LLM tiebreak in the uncertain band)

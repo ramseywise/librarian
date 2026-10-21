@@ -4,8 +4,8 @@ tags: [infra, pattern]
 summary: Ticket-linked, type-prefixed branch naming (`type-TICKET-slug`) with per-repo type taxonomies and a `hotfix` escape hatch for production-blocking bugs.
 updated: 2026-07-14
 sources:
-  - raw/notion/2026-06-03-branch-naming-convention-va-team.md
-  - raw/claude-docs/project-g/skills/workflow/quick-commit/SKILL.md
+  - data/raw/notion/2026-06-03-branch-naming-convention-va-team.md
+  - data/raw/claude-docs/project-g/skills/workflow/quick-commit/SKILL.md
 ---
 
 # Branch Naming Convention Pattern
@@ -55,4 +55,3 @@ Pair this convention with a pre-commit or pre-push hook that blocks commits on a
 
 ## See Also
 - [[Multi-Repo Claude Organization]]
-- [[project-g Dev Hooks & Git Workflow]]

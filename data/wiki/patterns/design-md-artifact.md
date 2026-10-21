@@ -2,9 +2,13 @@
 title: DESIGN.md Artifact
 tags: [llm, reference]
 summary: The six-section design record every scaffolded project ships — problem, actors, C4 system context, MVP scope, key decisions, and non-functional constraints — shipped as a placeholder stub when unfilled so the skipped conversation stays visible.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/poc-system-design-interview.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-18-template-full-mirror-redesign.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-18-template-full-mirror-redesign.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-16-production-hardening.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-16-production-hardening.md
 ---
 
 # DESIGN.md Artifact
@@ -71,6 +75,14 @@ This is the clearest case for DESIGN.md existing as an artifact separate from
 `.copier-answers.yml`: it holds the design decisions that **no template variable can
 carry**. See [[Asked vs Derived Scaffold Variables]] for what the answers file does hold.
 
+## Decisions live once; ask for the naive baseline
+
+- Render DESIGN.md's Key Decisions table **from design.yaml** rather than maintaining it
+  by hand, so a decision exists in one place and the doc cannot drift from the config.
+- Include a **naive-baseline** question in the design interview ("what would the simplest
+  non-AI approach score?") and a line for it in DESIGN.md, so eval targets are anchored to
+  something a project has to beat.
+
 ## See Also
 - [[Scope-POC Design Interview]] — part-of (the interview that populates it)
 - [[Design-Before-Infrastructure Sequencing]] — prerequisite-for
@@ -79,3 +91,4 @@ carry**. See [[Asked vs Derived Scaffold Variables]] for what the answers file d
 - [[Documentation Boundary — Machine vs Human Docs]] — related (which docs are machine- vs human-consumed)
 - [[Derived-and-Hidden Design Decisions]] — instance-of (the artifact that passes its gate while Scale: is empty)
 - [[Block Attribute Inversion]] — extends (per-block metadata as generated DESIGN.md content)
+- [[Three-Doc Spec Split]] — alternative-to (scope/requirements/roadmap instead of a single design artifact)

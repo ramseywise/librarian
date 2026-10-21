@@ -4,7 +4,7 @@ tags: [eval, comparison]
 summary: Methodology for comparing calibrated GBM rerankers head-to-head — fixing train/inference feature-distribution mismatch before comparing, native categorical handling, and Brier score/log-loss as the metrics that matter for calibrated probability scores.
 updated: 2026-08-04
 sources:
-  - raw/claude-docs/listen-wiseer/docs/plans/phase3c_add_catboost.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase3c_add_catboost.md
 ---
 
 # LightGBM vs CatBoost Comparison

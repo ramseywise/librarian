@@ -4,8 +4,8 @@ tags: [foundations, llm, concept]
 summary: Self-attention (intra-attention) relates different positions of a single sequence to compute a representation — the core primitive enabling Transformers to model long-range dependencies in O(1) path length.
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2017-06-12-attention-is-all-you-need.md
-  - raw/pdfs/2020-10-01-rasa-dialogue-transformers.md
+  - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
+  - data/raw/pdfs/2020-10-01-rasa-dialogue-transformers.md
 ---
 
 # Self-Attention Mechanism

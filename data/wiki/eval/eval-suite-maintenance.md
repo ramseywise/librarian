@@ -2,9 +2,12 @@
 title: Eval Suite Maintenance
 tags: [eval, llm, agents, pattern]
 summary: "Fix the evaluation system before changing the agent — a dropped score is a claim about the eval as much as about the agent, and a suite everyone passes is saturated rather than solved."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/claude-docs/akira/docs/product-feasibility.md
+  - data/raw/claude-docs/kiez-archive/docs/product-feasibility.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
 ---
 
 # Eval Suite Maintenance
@@ -84,7 +87,13 @@ The structural answer is **two suites running side by side**:
 | **Rolling discovery** | New production failures | Low pass — that is the point |
 
 A regression suite at 100% and no discovery set means you have stopped learning anything
-about the agent. This is the [[Eval Harness Anatomy]] capability→regression promotion
+about the agent.
+
+The two populations are **never averaged**. One recommender project (repo akira) deliberately
+over-sampled hard queries — sparse events, recurring series, niche venues — but kept them in a
+separate capability suite so the headline product metrics on the regression suite stayed
+honest; a low capability score is a *finding*, not a regression, and the same partition is
+applied to synthetic-query strata. This is the [[Eval Harness Anatomy]] capability→regression promotion
 running continuously rather than once.
 
 ## The maintenance loop
@@ -116,3 +125,6 @@ Add new failures and harder cases
 - [[Golden Set Mechanics]] — complements (curation rules for the rows themselves)
 - [[Online Eval Sampling]] — extends (where new discovery rows come from in production)
 - [[Eval-Driven Development (EDD)]] — complements
+- [[Ship Logging Before Features]] — related (the regression/capability split applied to a recommender)
+- [[One Check Shape for Quality Verdicts]] — extends (fixtures exported from human overturns as the regression path)
+- [[Eval Falsifiability]] — prerequisite-for

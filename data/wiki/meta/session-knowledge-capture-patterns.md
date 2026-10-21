@@ -2,11 +2,11 @@
 title: Session Knowledge Capture Patterns
 tags: [context-management, pattern]
 summary: Patterns for capturing, enriching, and classifying session knowledge — output type taxonomy, pre-compact enrichment, and the session-as-source-of-truth approach.
-updated: 2026-07-05
+updated: 2026-10-16
 sources:
-  - raw/sessions/2026-04-22T0647.md
-  - raw/sessions/2026-04-26T1702-compact-Workspace.md
-  - raw/sessions/2026-04-27T1230-compact-librarian.md
+  - data/raw/sessions/2026-04-22T0647.md
+  - data/raw/sessions/2026-04-26T1702-compact-Workspace.md
+  - data/raw/sessions/2026-04-27T1230-compact-librarian.md
 ---
 
 # Session Knowledge Capture Patterns
@@ -86,3 +86,5 @@ Sessions tagged only `chat` or `config` with no `key_output` → manifest and sk
 - [[Claude Workflow System]]
 - [[Session Insights]]
 - [[Karpathy LLM Wiki Pattern]]
+- [[Append-Only Log Writer Invariants]] — extends (the write contract for accumulator logs)
+- [[Deterministic Skill-Candidate Detection]] — alternative-to (counter-based rather than hand-noted)

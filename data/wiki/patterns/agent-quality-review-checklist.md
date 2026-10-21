@@ -2,7 +2,7 @@
 title: Agent Quality Review Checklist
 tags: [llm, eval, reference]
 summary: Nineteen agent-system-specific review checks across six families — prompt/LLM smells, tool safety, workflow state, retrieval/context, memory write-back, and accountability — of which "safeguard in prose only" is named the highest-value finding.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
   - data/raw/claude-docs/guacamayo/agents/agent-quality.md
   - data/raw/claude-docs/Parallax/skills/accountability-safeguards/SKILL.md
@@ -11,6 +11,7 @@ sources:
   - data/raw/claude-docs/Parallax/skills/reliability-operations/SKILL.md
   - data/raw/claude-docs/Parallax/skills/security-privacy-data/SKILL.md
   - data/raw/claude-docs/Parallax/skills/architecture-docs/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/agent-quality/SKILL.md
 ---
 
 # Agent Quality Review Checklist

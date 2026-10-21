@@ -2,8 +2,9 @@
 title: No-Placeholder Plan Discipline
 tags: [llm, pattern]
 summary: A plan handed to an implementing agent carries every file's content in full, and a gap is treated as a defect in the plan rather than license for the agent to invent — with verification steps that check structure, not behavior, when the deliverable is markdown.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
+  - data/raw/claude-docs/playground/skills/workflow-plan/SKILL.md
   - data/raw/claude-docs/Parallax/docs/superpowers/plans/2026-07-19-parallax-skills-implementation.md
 ---
 
@@ -59,6 +60,16 @@ version of the inert-skill failure in [[Skill Preloading via Agent Definition]].
 verification is the only layer that catches it, which is why the checks are keyed to exact
 field names rather than to whether the file "looks like a skill."
 
+## Elicit the goal before the steps
+
+A task description is not a goal. The goal is the decision the work drives, which is the
+one thing that can never be inferred from the codebase. Before drafting steps, ask 1–3
+pointed questions ("what will you do differently once this exists?"). Then list the
+assumptions that shape the plan (approach, scope boundary, exclusions, irreversible
+choices) and require explicit sign-off on each. An unconfirmed assumption is a drift
+opportunity, and silence is not sign-off. Confirmed decisions land in the plan as dated,
+resolved open questions.
+
 ## See Also
 - [[Parallax]] — instance-of
 - [[Skill Preloading via Agent Definition]] — extends (what a wrong frontmatter key costs)
@@ -66,3 +77,4 @@ field names rather than to whether the file "looks like a skill."
 - [[Deferred Decision Status]] — alternative-to (naming a gap rather than silently filling it)
 - [[Claude Workflow System]] — prerequisite-for (the plan-and-execute pipeline this governs)
 - [[SANYI Change-Contract System]] — instance-of (the vendored-by-copy source)
+- [[Scoped Phase Dispatch with Pre-Resolved Files]] — extends (a path that does not resolve is a plan defect, caught before dispatch)

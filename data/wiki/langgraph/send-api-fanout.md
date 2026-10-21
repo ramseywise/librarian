@@ -4,7 +4,7 @@ tags: [langgraph, concept]
 summary: LangGraph's Send API enables dynamic map-reduce parallelism — fan out to N workers at runtime without knowing N at graph compile time.
 updated: 2026-04-24
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
 ---
 
 # Send API Fan-out

@@ -2,8 +2,9 @@
 title: Parallel Dimension Scanner Architecture
 tags: [llm, pattern]
 summary: Code review decomposed into independent single-concern scanner agents dispatched in parallel — each owns one dimension, one ID prefix, and one severity mapping — so review breadth scales by adding agents rather than lengthening one prompt.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
+  - data/raw/claude-docs/playground/agents/review.md
   - data/raw/claude-docs/guacamayo/agents/correctness.md
   - data/raw/claude-docs/guacamayo/agents/safety.md
   - data/raw/claude-docs/guacamayo/agents/structure.md
@@ -28,6 +29,32 @@ sources:
   - data/raw/claude-docs/Parallax/docs/documents/Parallax_Subagent_Architecture.md
   - data/raw/claude-docs/Parallax/docs/documents/Evidence_Driven_PR_Review_System_Spec.md
   - data/raw/claude-docs/Parallax/docs/superpowers/plans/2026-07-19-parallax-skills-implementation.md
+  - data/raw/claude-docs/galactus/agents/review.md
+  - data/raw/claude-docs/guacamayo/agents/review.md
+  - data/raw/claude-docs/galactus/docs/specs/2026-08-09-prototyping-review-subsystem.md
+  - data/raw/claude-docs/galactus/skills/review-shared/SKILL.md
+  - data/raw/claude-docs/galactus/skills/proto-review/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/safety/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/structure/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/correctness/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-shared/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-architecture/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-correctness/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-intent/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-performance/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-runtime/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-safety/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-testing/SKILL.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-09-prototyping-review-subsystem.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-09-prototyping-review-subsystem.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-20-parallax-integration.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-20-parallax-integration.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-27-GUA-34-review-system-evolution.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-27-GUA-34-review-system-evolution.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-27-review-agent-architecture.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-27-review-agent-architecture.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-22-akira-model-experiment.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-22-akira-model-experiment.md
 ---
 
 # Parallel Dimension Scanner Architecture
@@ -165,6 +192,83 @@ runtime defects and accountability defects are found by reading different things
 splits are dispatch-shaped, not taxonomy-shaped: the checklist boundary is drawn where a
 separate agent would have to look somewhere else.
 
+## Galactus variant: one generic agent, N dispatches
+
+The galactus prototyping repo collapses the per-dimension agent files into **one** generic
+`review` agent (haiku, read-only, preloads `review-shared`), dispatched once per dimension
+with exactly one `review-*` skill loaded. The agent carries no dimension knowledge; the
+skill does. `review/validate.py` rejects a finding whose id prefix does not match the
+dispatched dimension as a **skill-load failure**, distinct from an honest empty `[]`.
+
+The spec behind it is explicit about what is load-bearing: only **latency** and **verdict
+determinism** justified the architecture; durability of findings was rejected as a goal;
+and dimension isolation is justified by *attention*, not expertise — seven checklists in
+one prompt compete for attention and silently prioritise whichever came first. See
+[[When a Lens Earns Agenthood]].
+
+## Dispatch states and the computed verdict (galactus proto-review)
+
+The galactus `/proto-review` orchestration over the same eleven dimensions pins down what
+the orchestrator may and may not do:
+
+- **Three dispatch states, load-bearing.** `completed` (a valid array, **including an empty
+  one**), `failed` (error, timeout, malformed output, never returned), `skipped` (signal
+  detection did not activate it; the reason is carried to the report). Every dimension gets
+  a row every run, including skipped ones.
+- **Foreground, concurrent dispatch.** All reporters go out in one message with
+  `run_in_background: false`. A backgrounded dispatch lets the merge run before the
+  reporters return.
+- **Validation retries once, then `failed`.** The orchestrator never hand-repairs a
+  reporter's findings.
+- **Conditional dimensions get only the triggering file subset**, while the seven
+  always-on dimensions get the full list. More than ~25 changed files is reported as
+  degraded coverage: `approve` on a large diff is a weaker claim than on a small one.
+- **The verdict is computed by running the ladder** (`review.cli verdict` → `verdict.py`),
+  not restated in prose and never adjusted. "A prose copy drifts from the implementation."
+  Rung 0 is the conjunction of an injection hit and a completed-but-empty dispatch (see
+  [[Silence Reads as Clean]]).
+- A corrective round runs at most once per review, deduped on (file, lines, claim title).
+
+
+## How guacamayo's decision oscillated
+
+The one-agent-per-dimension split was not reached in one step, and the history is the
+lesson:
+
+1. **Parallax import (07-20): one ref, not seven agents.** The plan was to "import
+   Parallax patterns, not wholesale". The dimension checklists went into a single
+   reference consumed by the existing scan agent, which was cheaper. The stated exit was
+   "split later if scan quality suffers". The merge-verdict hook started as advisory on
+   PostToolUse after `gh pr merge` (advisory PreToolUse hooks had proven ineffective), to
+   be promoted to blocking once the ledger showed evidence.
+2. **Evolution review (07-27): still no.** "Seven subagents cost-prohibitive" kept the
+   single expanded prompt. This was the same day a deterministic CLI that the review had
+   called over-engineering was already built (see [[Deterministic Review Substrate]]).
+3. **Architecture refinement (later on 07-27): yes, with validators first.** The
+   disconfirming evidence was "prose rules don't scale": the first sweep produced
+   inconsistent severity labels. The system was already multi-agent. What it lacked was a
+   **validation layer**: markdown says what to look for, and Python enforces structure.
+   The three roles were reframed as scan / wander / dao (actuator), with SANYI as a
+   contracts *scanner peer* rather than a separate system. The build order was **dao
+   before scan**: the validators must exist before the scanners whose output they check.
+   Agentic review was quoted at about a 67% false-positive rate, and verification gates
+   are what bring that down. Cross-repo trends come from the review log, where 3+
+   recurrences promote a finding class to blocker.
+
+Two supporting notes:
+
+- **Parallel with gates, not debate.** Multi-agent debate often fails to beat a single
+  agent given the same compute, so the design chose independent parallel scanners plus
+  deterministic validation rather than agents arguing.
+- **Audit overlap before building.** A refinement pass found 3 of 4 planned tasks already
+  done, which narrowed the issue to the remaining reliability and ops checklist items.
+
+The same review pass recorded two failure modes. **A review goes stale after a rebase.**
+The check-review gate passed on an artifact older than the last commit, and the fix is to
+compare the review file's timestamp with the latest commit. **Hypotheses phrased as
+blockers erode trust** in the whole report (see [[Evidence Classification Model]]). Model
+choice per scanner is covered in [[Review Model Tiering by Breadth and Severity Bias]].
+
 ## See Also
 - [[Merge Impact and Evidence State]] — extends
 - [[Wander — Question-Generating Review Agent]] — extends
@@ -180,3 +284,12 @@ separate agent would have to look somewhere else.
 - [[Skill Preloading via Agent Definition]] — prerequisite-for (how each scanner's checklist reaches it)
 - [[Verified Runtime Capability Constraint]] — extends (partial-failure handling and ID namespacing)
 - [[Read-Only by Default with Explicit Authorization]] — prerequisite-for (the safe-command scope every scanner runs under)
+- [[Cross-Sweep Finding Fingerprint]] — extends (tracking findings across sweeps and repos)
+- [[Deterministic Signal Detection for Dispatch]] — prerequisite-for (regex signals decide which dimensions run)
+- [[Cross-Dimensional Review Adjudicator]] — extends (the merge step after reporters return)
+- [[Review Reporter Ground Rules]] — part-of (the shared trust rules every scanner instance runs under)
+- [[When a Lens Earns Agenthood]] — prerequisite-for (why a dimension is an agent dispatch and not a section)
+- [[An Unrun Scan Is Not a Clean Scan]] — extends (what a dimension emits when it has nothing to run on)
+- [[Quoted Span as Proof of Reading]] — extends (why a validation failure is never hand-repaired)
+- [[Every Registration Site Needs a Guard]] — extends (adding a dimension touches five sites; the arbiter test covered two)
+- [[Review Model Tiering by Breadth and Severity Bias]] — related (which model runs each scanner, and the cross-model merge rule)

@@ -1,10 +1,13 @@
 ---
 title: Notebook Dependency Staleness
-tags: [foundations, reference]
+tags: [foundations, reference, conflict]
 summary: "Migration maps for the three library breaks that strand old ML notebooks — sklearn 0.20→1.4, TensorFlow 1.x→2.x, PyMC3→PyMC 5 — plus the two-phase triage that distinguishes a mechanical import swap from a genuine rewrite."
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--CURRICULUM.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_sklearn_migration.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_tf_migration.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_pymc_migration.md
 ---
 
 # Notebook Dependency Staleness
@@ -50,6 +53,20 @@ Fully Phase 1 — no rewrites needed across the corpus.
 | `GridSearchCV(iid=True)` | Remove the param | Removed in 1.0 |
 | `LogisticRegression()` | `LogisticRegression(max_iter=1000)` | Default iterations no longer converge on some datasets |
 
+A per-library migration pass added four more rows, two of them silent:
+
+| Old | New | Break |
+|---|---|---|
+| `cross_val_score(est, X, y)` with no `cv` | Default `cv` is now 5 folds, not 3 | Changed in 0.22. Same code, different scores, no warning |
+| `DummyClassifier()` with no `strategy` | Default is now `"prior"`, not `"stratified"` | A baseline that silently changes what it predicts |
+| `FeatureUnion` with a `None` transformer | `"drop"` | Changed in 1.1 |
+| `mean_squared_error(..., squared=False)` | `root_mean_squared_error(...)` | `squared=` deprecated in 1.4 |
+
+The `cv` default change is the clearest case of a behavioral break. A notebook written
+against 3-fold CV still runs and still prints a score, and the score no longer matches the
+one recorded in its own markdown. Pin `cv=` explicitly whenever a result is meant to be
+reproducible.
+
 The `max_iter` row is the one that doesn't announce itself: the code runs, emits a
 convergence warning, and returns a worse model. **Silent degradation is more dangerous than
 an ImportError** — a break that raises gets fixed, a break that warns gets scrolled past.
@@ -75,6 +92,12 @@ separated graph definition from execution, TF2 collapsed them. `tf.compat.v1` wi
 `disable_v2_behavior()` restores the old model wholesale, which is why it works as a Phase 1
 bridge — and also why it is a holding action rather than a migration.
 
+A third strategy, **rewriting in PyTorch**, was evaluated and rejected for one class of
+notebook. Exercises built on TF-specific pretrained weights (YOLO detection, face
+recognition embeddings) cannot be ported by translating code. They need equivalent weights,
+and community ports vary in fidelity. The weights make up the dependency, so the framework
+choice is not free.
+
 ## PyMC3 → PyMC 5
 
 PyMC3 broke at v4. Some removals have no successor in the library at all.
@@ -86,17 +109,26 @@ PyMC3 broke at v4. Some removals have no successor in the library at all.
 | `pm.traceplot(trace)` | `az.plot_trace(trace)` (arviz) |
 | `pm.summary(trace)` | `az.summary(trace)` — same DataFrame interface |
 | `pm.plot_posterior(trace)` | `az.plot_posterior(trace)` |
-| `pm.sample(draws, init='MAP')` | `pm.sample(draws)`, or `initvals=pm.find_MAP()` |
+| `pm.sample(draws, init='MAP')` | `pm.sample(draws)`, or `initvals=pm.find_MAP()` (disputed; see `_conflicts.md`) |
 | `pm.glm.GLM.from_formula(...)` | Removed — use the `bambi` library |
 | `pm.iter_sample(...)` | Removed — `pm.sample` with progressive callbacks |
 | `traces.varnames` | `list(idata.posterior.data_vars)` — InferenceData format |
 | Theano custom ops | PyTensor equivalents |
+| `trace['x']` | `idata.posterior['x'].values.flatten()` |
 
 Two rows are structural rather than cosmetic. **The plotting and summary functions moved
 out of the library into arviz** — PyMC narrowed to modelling and inference and handed
 diagnostics to a separate package. And `traces.varnames` → `idata.posterior.data_vars`
 reflects a change in the *return type*: traces became xarray-backed InferenceData, so
 downstream code that indexed traces needs rethinking rather than renaming.
+
+The backend changed twice on the way: **Theano (PyMC3) → Aesara (PyMC 4) → PyTensor
+(PyMC 5)**. Code that skipped PyMC 4 can still contain Aesara-era references that look
+current but are not. When an upstream textbook publishes `_current` versions of its
+notebooks, use those as the reference migration rather than porting from scratch. Verify a
+migrated notebook by **relative consistency** (similar posterior means, intervals, and
+diagnostics), not by exact match. MCMC output is stochastic, so an exact diff fails even
+when the port is correct.
 
 `pm.glm` and `pm.iter_sample` were removed with no in-library successor, which is the case
 where **pinning beats porting**. The audit's resolution for one such notebook — a completed

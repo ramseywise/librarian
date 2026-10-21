@@ -4,7 +4,7 @@ tags: [llm, pattern]
 summary: Item2vec-style technique — treat playlists as "sentences" and item IDs as "words", train Word2Vec over co-occurrence to get dense embeddings that capture human curation intent rather than content similarity.
 updated: 2026-07-14
 sources:
-  - raw/claude-docs/listen-wiseer/docs/plans/phase3a_preprocessing.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase3a_preprocessing.md
 ---
 
 # Track2Vec Playlist Co-Occurrence Embeddings

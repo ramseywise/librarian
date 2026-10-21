@@ -4,7 +4,7 @@ tags: [adk, langgraph, concept, pattern]
 summary: Product design patterns for embedded VA agents — three interaction levels, structured output as UI contract, page context awareness, escalation triggers, and tool count budget for routing quality.
 updated: 2026-04-26
 sources:
-  - raw/claude-docs/playground/docs/research/agentic-ai/va-product-patterns.md
+  - data/raw/claude-docs/playground/docs/research/agentic-ai/va-product-patterns.md
 ---
 
 # VA Product Design Patterns

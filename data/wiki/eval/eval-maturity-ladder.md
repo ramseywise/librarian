@@ -2,7 +2,7 @@
 title: Eval Maturity Ladder
 tags: [eval, llm, agents, reference]
 summary: "Five levels of what eval infrastructure exists — vibes, deterministic gates, separated evaluator, eval sets plus tracing, continuous sampling — with most builders at 0 and production demanding 3+."
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-maturity-ladder.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--README.md
@@ -126,3 +126,5 @@ gate**.
 - [[Verification Loops]] — depends-on (level 2 is generator/evaluator separation, made behavioral)
 - [[LLM-as-Judge Evaluation]] — depends-on (the three biases and the calibration requirement)
 - [[Observability and Runtime Patterns]] — prerequisite-for (level 3 needs tracing to exist)
+- [[UNGATED Metric Convention]] — extends (how a metric is carried before it earns a threshold)
+- [[Q0–Q5 Quality Ladder]] — alternative-to (per-feature ladder with named owners)

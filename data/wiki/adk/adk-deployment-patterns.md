@@ -4,16 +4,16 @@ tags: [adk, infra, pattern]
 summary: ADK deployment targets (Agent Engine vs Cloud Run vs GKE), CI/CD with WIF, service account architecture, event-driven triggers, and Terraform patterns.
 updated: 2026-07-14
 sources:
-  - raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/SKILL.md
-  - raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/agent-engine.md
-  - raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/cloud-run.md
-  - raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/event-driven.md
-  - raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/terraform-patterns.md
-  - raw/agent-skills/adk-deploy-guide/SKILL.md
-  - raw/agent-skills/adk-deploy-guide/references/agent-engine.md
-  - raw/agent-skills/adk-deploy-guide/references/cloud-run.md
-  - raw/agent-skills/adk-deploy-guide/references/event-driven.md
-  - raw/agent-skills/adk-deploy-guide/references/terraform-patterns.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/SKILL.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/agent-engine.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/cloud-run.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/event-driven.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/terraform-patterns.md
+  - data/raw/agent-skills/adk-deploy-guide/SKILL.md
+  - data/raw/agent-skills/adk-deploy-guide/references/agent-engine.md
+  - data/raw/agent-skills/adk-deploy-guide/references/cloud-run.md
+  - data/raw/agent-skills/adk-deploy-guide/references/event-driven.md
+  - data/raw/agent-skills/adk-deploy-guide/references/terraform-patterns.md
 ---
 
 # ADK Deployment Patterns

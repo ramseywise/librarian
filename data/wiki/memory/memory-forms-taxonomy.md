@@ -2,9 +2,10 @@
 title: Memory Forms Taxonomy
 tags: [memory, llm, reference]
 summary: "The Forms/Functions/Dynamics survey framing — memory as token, parametric, or latent substrate; factual, experiential, or working purpose — and why almost all agent memory work occupies one cell of a much larger space."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
 ---
 
 # Memory Forms Taxonomy

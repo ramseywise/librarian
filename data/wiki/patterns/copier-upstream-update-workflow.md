@@ -2,7 +2,7 @@
 title: Copier Upstream Update Workflow
 tags: [infra, pattern]
 summary: Pulling template changes into an already-scaffolded project — a clean-tree gate, a mandatory `--pretend --diff` preview, impact-categorized change review, and conflict resolution that preserves local intent over template defaults.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/template-update/SKILL.md
 ---
@@ -105,3 +105,4 @@ update leaves no artifact — the output is the updated project.
 - [[Asked vs Derived Scaffold Variables]] — prerequisite-for (answers file is the update's baseline)
 - [[Silent Fallthrough in String-Keyed Discovery]] — extends (structural renames that don't announce themselves)
 - [[Sync as Render, Not Copy]] — alternative-to (reservoir→template render vs template→project update)
+- [[Changing a Derived Default Is a Migration]] — related (a template-side default change that lands as a layout migration)

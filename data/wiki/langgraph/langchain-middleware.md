@@ -4,7 +4,7 @@ tags: [langgraph, llm, pattern]
 summary: LangChain's create_agent() middleware API — HumanInTheLoopMiddleware for tool-call approval, wrap_tool_call/before_model/after_model hooks for custom logic, and Command-based resume — the mechanism Framework Selection means when it says "LangGraph has no middleware."
 updated: 2026-07-14
 sources:
-  - raw/agent-skills/langchain-middleware/SKILL.md
+  - data/raw/agent-skills/langchain-middleware/SKILL.md
 ---
 
 # LangChain Agent Middleware

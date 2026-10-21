@@ -4,7 +4,7 @@ tags: [rag, memory, pattern]
 summary: Two-table PostgreSQL schema for persisting multi-turn conversation state — conversations table for sessions, messages table for turns with JSONB trace and sources columns enabling trace-linked retrieval debugging.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/chat-agent/docs/architecture/conversation_repository.md
+  - data/raw/claude-docs/chat-agent/docs/architecture/conversation_repository.md
 ---
 
 # Conversation Repository Pattern

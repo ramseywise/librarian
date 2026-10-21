@@ -2,10 +2,13 @@
 title: Wiki Graph Engineering — Edge Quality Over Edge Count
 tags: [meta, rag, decision]
 summary: Why librarian's link graph under-connects, why the typed-relationship subgraph is the layer worth querying, and the design choices behind one-hop retrieval expansion.
-updated: 2026-08-06
+updated: 2026-10-17
 sources:
   - data/wiki/_relink_suggestions.md
   - data/wiki/_bridge_suggestions.md
+  - data/raw/repos/librarian/.claude--docs--plans--2026-08-05-LIB-106-relinker-suggest-only.md
+  - data/raw/repos/librarian/.claude--docs--plans--2026-08-04-LIB-110-restructure-shared-extraction.md
+  - data/raw/repos/librarian/.claude--docs--plans--2026-08-05-typed-graph-retrieval.md
 ---
 
 # Wiki Graph Engineering — Edge Quality Over Edge Count
@@ -154,3 +157,6 @@ until a query demands it.
 - [[Karpathy LLM Wiki Pattern]] — extends (the compile model this refines)
 - [[Librarian RAG Architecture]] — extends (retrieval stack this modifies)
 - [[Documentation Boundary — Machine vs Human Docs]] — prerequisite-for (who may write what)
+- [[Demote the Auto-Writer Before a Semantic Change]] — extends (why the relinker went suggest-only before slug unification)
+- [[Closed-Vocabulary Parser Silently Drops Invented Types]] — extends (invented edge types never become edges)
+- [[Evidence-Driven Wiki Compaction]] — extends (relinker evidence consumed by compaction)

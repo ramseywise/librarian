@@ -2,12 +2,14 @@
 title: LLM Grader Calibration Insights
 tags: [eval, concept]
 summary: Calibration evidence for LLM-as-judge graders in the project-g eval pipeline — custom v3 grader outperforms DeepEval defaults (+0.214 score delta vs +0.086), domain-shift is the main failure pattern, passage context is required for grounding accuracy. Grounding cross-check vs DeepEval shows near-zero agreement until article text is wired in.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/docs/evals/llm-calibration-insights.md
-  - raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
-  - raw/claude-docs/project-g/docs/evals/llm-calibration-insights.md
-  - raw/claude-docs/project-g/docs/evals/grader_methodology.md
+  - data/raw/claude-docs/playground/docs/evals/llm-calibration-insights.md
+  - data/raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
+  - data/raw/claude-docs/project-g/docs/evals/llm-calibration-insights.md
+  - data/raw/claude-docs/project-g/docs/evals/grader_methodology.md
+  - data/raw/claude-docs/project-g/docs/plans/VIR-212-gt-verification.md
+  - data/raw/repos/playground/.claude--docs--evals--llm-calibration-insights.md
 ---
 
 # LLM Grader Calibration Insights
@@ -130,13 +132,41 @@ Custom graders calibrated on BKH show strong Δ on BKH but near-zero Δ on VA st
 
 When re-running calibration on GT dataset, isolate by query type — accounting-specific queries vs nav/UI queries to see if Δ holds within domain before drawing cross-domain conclusions.
 
+## Edge-Case Study: Where Graders and Humans Disagree (VIR-212)
+
+Ordering rule from the v1.0 calibration plan: **verify ground truth first, then fix graders,
+then calibrate** — fixing grader bugs on top of unverified GT compounds noise. Three silent
+pipeline defects were found before any calibration was trusted: empty-passage rows falling
+back to URL title strings as RAGAS context, old/new KB domain mismatch in URL overlap, and
+cached article text that existed but was never wired in (see
+[[Measurement Fix Mistaken for Model Gain]]). A fourth was cheap leverage: an already-rated
+pool with zero grader scores — grading it tripled the calibration n without new data.
+
+The disagreement study then sorted every grader-vs-human disagreement into a four-way
+taxonomy — `URL_MISMATCH | THRESHOLD_NOISE | GENUINE_AMBIGUITY | LAYER4_FAILURE` — so only
+the last two are treated as grader or agent defects.
+
+- **Class imbalance breaks F1 thresholding.** At 249 liked : 26 disliked, the F1-optimal
+  threshold degenerates; Cohen's d (liked vs disliked score separation) is the primary
+  signal, with macro-F1 shown alongside binary F1. Four graders cleared d ≥ 0.4
+  (answer relevancy 1.35, escalation 0.91, a framework judge 0.81, completeness 0.80).
+- **Ensembles beat single graders.** A 2-of-4 majority vote reached F1 0.916.
+- **Per-group minimum.** Target ≥110 rated items per liked/disliked group before trusting
+  calibration numbers.
+- **Silent all-zero runs.** 300 rows graded with missing cloud credentials came back all-0
+  rather than erroring — check score distributions before reading means.
+- **Defer LLM re-rating of human labels** until a calibrated grader exists; flag for human
+  review instead.
+
 ## See Also
 - [[VA vs HCA Retrieval Evaluation]]
 - [[project-g Eval Architecture]]
 - [[VA Eval Harness]]
 - [[RAG Evaluation]]
 - [[HITL Annotation Pipeline]]
-- [[Evaluation & Improvement Project (VIR)]]
 - [[RAG Eval Gate Contract]]
 - [[Grounding Claim Methodology]]
 - [[LLM-as-Judge Evaluation]] — prerequisite-for (calibration is the setup cost of a usable judge)
+- [[Human Agreement Ceiling Protocol]] — extends
+- [[Measurement Fix Mistaken for Model Gain]] — extends (scorer artifacts that read as model quality)
+- [[Warranted vs Executed Escalation]] — extends (a grader that doubles as its own calibration harness)

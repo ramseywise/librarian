@@ -2,7 +2,7 @@
 title: Recursive Self-Improvement
 tags: [llm, agents, eval, concept]
 summary: "Level 4 at the frontier — the write boundary is the load-bearing design decision, a 3% hit rate is fine when attempts are cheap, and automating generation shifts the bottleneck onto verification."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
 ---
@@ -129,3 +129,4 @@ authors, by *breaking the inner loop's deterministic search patterns*.
 - [[Verification Loops]] — depends-on
 - [[Loop Autonomy Ladder]] — depends-on
 - [[Eval Ladder]] — complements
+- [[Training-Agent Disaggregation]] — alternative-to (improve the weights from traces instead of rewriting the harness)

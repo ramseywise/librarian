@@ -41,9 +41,12 @@ def _search_wiki(query: str) -> str:
     # data/wiki/private/ is never searched — Buyi confidentiality invariant, clause (b).
     # The server's search core indexes only public pages, so the agent inherits the
     # exclusion (and retrieval telemetry) from the single implementation.
-    rows = server._search_rows(query, domain="", limit=8, tool="agent_search")
+    rows, degraded = server._search_rows(query, domain="", limit=8, tool="agent_search")
+    # The chat agent sees the same degradation notice the MCP tool emits — it is
+    # the signal that a thin result set reflects the retrieval path, not the wiki.
+    warning = server._degraded_notice(degraded)
     if not rows:
-        return "No pages found matching that query."
+        return warning + "No pages found matching that query."
 
     parts = []
     for path, title, _tags, summary, content, _backlinks, _score in rows:
@@ -51,7 +54,7 @@ def _search_wiki(query: str) -> str:
         excerpt = _strip_frontmatter(content)[:200].replace("\n", " ")
         parts.append(f"**{title}** (id: `{page_id}`)\nSummary: {summary}\nExcerpt: {excerpt}...")
 
-    return "\n\n---\n\n".join(parts)
+    return warning + "\n\n---\n\n".join(parts)
 
 
 def _read_page(page_id: str) -> str:

@@ -2,10 +2,12 @@
 title: LLM Fundamentals Interview Study Guide
 tags: [llm, interview, reference, foundations]
 summary: Exam-prep reference for LLM theory questions — transformer architecture, training pipeline, adaptation menu, inference economics, and failure modes.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
-  - raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--interview-guide.md
-  - raw/pdfs/attention-is-all-you-need.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--interview-guide.md
+  - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--paper-canon.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--llm-fundamentals.md
 ---
 
 # LLM Fundamentals Interview Study Guide
@@ -52,6 +54,28 @@ the price sheet.
 - **Context rot** — O(n²) attention degrades on long contexts; compression/retrieval is the fix.
 - **Reward hacking** — optimization pressure finds adversarial inputs that score high on the proxy metric but not the true objective.
 - **Distribution shift** — fine-tuned models fail on out-of-distribution inputs; eval on held-out domains before deployment.
+
+## Paper Canon (Read by Lineage, Not Date)
+
+A short, closed list of ten architecture papers an interviewer can expect you to name, date,
+and explain in two sentences. Read them in lineage order, where each answers what the
+previous leaves open:
+
+1. **Transformer (2017)** — the substrate: self-attention replaces sequential RNNs.
+2. **BERT (2018) → GPT-1 (2018)** — the encoder/decoder fork. Know why decoder-only won for
+   generation and where encoders still live (embeddings, rerankers).
+3. **LoRA (2021) → PEFT survey (2023)** — adaptation without full fine-tuning; LoRA is the one
+   you will be asked to explain.
+4. **RAG (2020)** — the alternative to adaptation: change the context, not the weights. The
+   fine-tune-vs-RAG question is the most-asked of the set.
+5. **VAE (2013) → GAN (2014) → Latent Diffusion (2022)** — each fixes the last (blurry samples
+   → unstable training → compute cost).
+6. **ViT (2020)** — transformers past text; the bridge to multimodal.
+
+The canon is architecture-heavy. An AI-engineering loop dwells more on what it skips:
+alignment (InstructGPT, DPO, Constitutional AI), reasoning/agents (CoT, ReAct, Reflexion,
+Tree of Thoughts), eval (RAGAS, ARES, TruthfulQA), and systems reality (Hidden Technical
+Debt in ML Systems).
 
 ## See Also
 - [[LLM Inference Economics]] — prerequisite-for (the durable cost mechanism this round examines)

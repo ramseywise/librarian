@@ -2,11 +2,17 @@
 title: Agile Workflow Definitions
 tags: [llm, pattern]
 summary: Definition of Ready, Definition of Done, WIP limits, weekly cadence, and ceremony-to-skill mapping for the Claude Code workflow system.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
+  - data/raw/claude-docs/playground/skills/workflow-refine/SKILL.md
   - raw/claude-docs/_user/rules/agile.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/definition-of-done.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/interview-mode.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-refine/SKILL.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-20-agile-workflow-system.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-20-agile-workflow-system.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-28-GUA-42-auto-label-hook.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-28-GUA-42-auto-label-hook.md
 ---
 
 # Agile Workflow Definitions
@@ -100,6 +106,47 @@ Weekly boundary (not a sprint):
 | Ship | `make lint` → `make test` → `make push` → `make ship` | PR + merge |
 | Retro | `/workflow-retro` | findings → issues (stop/improve) or ledger (keep) |
 
+## Why a board at all: retro output had no destination
+
+The agile layer was added because a retro produced 10 findings across 8 threads with
+nowhere to put them. The output was too large to act on and **evaporated when the
+transcript scrolled**. The global CLAUDE.md pointed at a backlog file that did not
+exist. Plan docs had four statuses with no BLOCKED and no refinement stage, so an idea
+and a fully scoped ticket looked the same. With no cadence forcing a re-check, half the
+tooling ledger stayed at `hypothesis` indefinitely.
+
+The decision split ownership by kind of content: **issues hold state, markdown holds
+thinking.** Issues carry ticket state, labels and the cross-repo view. A plan doc
+carries research, plan and review, but never authoritative state. An inbox file holds
+ideas that have not earned a ticket. The first run routed every retro finding by tag:
+*stop* and *just do* were applied that session, *keep* graduated to `verified` in the
+ledger, and *improve* became six backlog issues. Several of those issues became their
+own design pages ([[Pipeline-Absorbed Skills]], [[Config Reference Rot]],
+[[Harness Events Are Not Task Failures]]).
+
+
+## Skill invocations drive label transitions
+
+Labels went stale because transitions were manual: a fleet dispatch ran 14 agents across 7
+repos without updating a single label. The workflow skills already *are* the state
+machine, so a hook enforces it. A PostToolUse hook on the `Skill` tool does the following:
+
+1. Maps the skill to a transition: plan moves `backlog → refinement`, refine (pass) moves
+   `refinement → ready`, execute moves `in-progress → in-review`.
+2. Parses the branch for `PREFIX-NUM-`, with a prefix → repo table.
+3. Checks the current labels first, so the edit is idempotent.
+4. Calls `gh issue edit`.
+
+Design constraints:
+
+- **Advisory sync, never blocking.** Every `gh` failure is caught and logged, and the hook
+  still exits 0.
+- **Graceful skips.** No branch, `bug/`/`spike/` branches, or an unknown prefix make the
+  hook a no-op.
+- **PostToolUse cannot see "start".** The `ready → in-progress` transition would need a
+  PreToolUse hook, so the MVP only records completion.
+- `closed` stays native to the platform via the PR merge.
+
 ## See Also
 - [[Claude Workflow System]] — extends
 - [[Branch Naming Convention Pattern]] — prerequisite-for
@@ -108,3 +155,6 @@ Weekly boundary (not a sprint):
 - [[Plan-Doc Status Enum]] — extends (state vocabulary behind DoR/DoD gates)
 - [[Parallel Dimension Scanner Architecture]] — extends (DoD assessed per review dimension)
 - [[Evidence Classification Model]] — extends (how review findings against DoD are qualified)
+- [[Chain Length Beats Point Total in Sprint Planning]] — extends (sprint feasibility beyond point totals)
+- [[Retro Open-Hypotheses Loop]] — extends (the retro whose findings now land as issues)
+- [[Exposure-Tiered Dependency Triage]] — related (unplanned dependency work that the DoD did not cover)

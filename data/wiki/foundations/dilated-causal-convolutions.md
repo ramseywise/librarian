@@ -4,7 +4,7 @@ tags: [foundations, concept]
 summary: Convolutions with exponentially increasing dilation factors that preserve temporal causality while growing the receptive field exponentially with depth — the key architectural innovation in WaveNet for modeling long-range audio dependencies efficiently.
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2016-09-12-wavenet.md
+  - data/raw/pdfs/2016-09-12-wavenet.md
 ---
 
 # Dilated Causal Convolutions

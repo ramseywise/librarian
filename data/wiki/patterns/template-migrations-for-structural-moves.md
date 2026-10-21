@@ -2,9 +2,11 @@
 title: Template Migrations for Structural Moves
 tags: [infra, pattern]
 summary: A file-level merge cannot express "this module moved" — template `_migrations` supply the missing structural edit, and degrade to a loud WARN rather than a silent overwrite when the file being moved was hand-edited.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/template-update/SKILL.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-19-genesis-lifecycle-architecture.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-19-genesis-lifecycle-architecture.md
 ---
 
 # Template Migrations for Structural Moves
@@ -55,8 +57,19 @@ This is the same asymmetry that makes `.copier-answers.yml` authoritative in
 [[Copier Re-Entry as Capability Path]] — structural facts about the scaffold live with the
 scaffold.
 
+## Variable renames silently lose answers
+
+Renaming a copier variable drops the old answer on `copier update`: unknown keys in
+`.copier-answers.yml` are stripped before render (observed on copier 9.17.0), so an
+`{% if old_name is defined %}` fallback in the new default never fires. The only reliable
+fix is a pre-render migration that rewrites the answers file. Cheaper still: keep a
+derived seed under the old name rather than renaming. Whether a human ever supplied the
+value is what makes a variable answer-carrying — derived-only variables can be renamed
+freely. Pin and tag template versions so `--vcs-ref` targets a known migration set.
+
 ## See Also
 - [[Copier Upstream Update Workflow]] — prerequisite-for (migrations run during the update)
 - [[Silent Fallthrough in String-Keyed Discovery]] — extends (the same rename-doesn't-crash failure shape)
 - [[AI Project Template Scaffold]] — extends (structural changes shipped downstream)
 - [[Sync as Render, Not Copy]] — complements (transforming content on the way into the template)
+- [[Read-Every-Consumer Migration]] — related (enumerating every reader before a structural move)

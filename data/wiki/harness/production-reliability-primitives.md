@@ -2,9 +2,11 @@
 title: Production Reliability Primitives
 tags: [llm, agents, infra, pattern]
 summary: "Four unglamorous mechanisms that keep a Stage 2–3 harness running under real traffic — per-step checkpointing, cross-provider fallback, fail-fast on ambiguity, and confidence-routed quarantine."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--08-maturity-and-failure-modes.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
 ---
 
 # Production Reliability Primitives
@@ -88,3 +90,4 @@ running in the direction of less human work.**
 - [[Agent Retry Taxonomy]] — extends
 - [[Execution Boundaries and Guardrails]] — complements
 - [[Harness Engineering]] — instance-of
+- [[Pull-Only Event Transport]] — instance-of (idempotent re-read as the replay primitive for a local poller)
