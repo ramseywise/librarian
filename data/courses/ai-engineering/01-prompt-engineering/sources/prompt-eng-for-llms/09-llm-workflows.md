@@ -1,8 +1,8 @@
 ---
-imported_hash: e56d92a2956fed3b
+imported_hash: 3cd3ddfe5ea4ac10
 title: Ch 9 — LLM Workflows
 summary: 'Current LLMs are far from AGI: they''re bad at reasoning and math, rarely produce genuinely novel knowledge, and can''t learn outside training.'
-order: 70
+order: 35
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/09-llm-workflows.md

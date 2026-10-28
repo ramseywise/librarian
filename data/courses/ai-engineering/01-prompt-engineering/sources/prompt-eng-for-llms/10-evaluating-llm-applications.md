@@ -1,8 +1,8 @@
 ---
-imported_hash: 6c117015aaa120d7
+imported_hash: a1284cd2cfbbcefd
 title: Ch 10 — Evaluating LLM Applications
 summary: An evaluation framework is what lets you tell whether a change to model, prompt, or architecture is progress, noise, or regression.
-order: 71
+order: 36
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/10-evaluating-llm-applications.md

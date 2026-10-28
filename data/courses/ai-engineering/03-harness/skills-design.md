@@ -1,8 +1,8 @@
 ---
-imported_hash: 9dc73461344d2c7a
+imported_hash: 757780bff9419157
 title: Skills Design
 summary: 'A packaged procedure the agent loads on demand: a name, a description, and a body of instructions, templates, and examples.'
-order: 8
+order: 10
 kind: reading
 source: learn-ai-engineering/ai-engineering/03-harness/skills-design.md
 ---
@@ -17,7 +17,7 @@ source: learn-ai-engineering/ai-engineering/03-harness/skills-design.md
 
 A packaged procedure the agent loads on demand: a name, a description, and a body of instructions, templates, and examples. Only the name and description stay resident in the context window; the body loads when the task activates it.
 
-That split is why skills work — see [02-context/notes/02](../02-context/notes/02-context-anatomy.md#layer-2--on-demand-knowledge) for the progressive-disclosure mechanism and [02-context/notes/05](../02-context/notes/05-memory-as-context.md#index-plus-detail) for the same pattern applied to memory.
+That split is why skills work — see [02-context/notes/02](../02-context/notes/02-context-anatomy.md#layer-2--on-demand-knowledge) for the progressive-disclosure mechanism and [02-context/notes/05](../02-context/notes/06-memory.md#index-plus-detail) for the same pattern applied to memory.
 
 ---
 
@@ -75,7 +75,7 @@ A worked example in the body beats a paragraph describing the desired format.
 
 ## 4. Design for long runs early
 
-Container reuse and compaction are cheaper to build in than to retrofit. A skill that will run for more than a few minutes needs to assume it will be interrupted — write progress to disk, resume from checkpoint. See [02-context/notes/04](../02-context/notes/04-compression-compaction.md#crash-recovery).
+Container reuse and compaction are cheaper to build in than to retrofit. A skill that will run for more than a few minutes needs to assume it will be interrupted — write progress to disk, resume from checkpoint. See [02-context/notes/04](../02-context/notes/05-compression-compaction.md#crash-recovery).
 
 ---
 
@@ -105,7 +105,7 @@ Defensible default posture:
 
 Assume tool output is untrusted. Avoid combining open internet access with powerful procedures in consumer-facing flows where users expect strong confirmation controls.
 
-See [02-context/notes/07](../02-context/notes/07-context-failure-modes.md#prompt-injection) and [agents-guardrails.md](agents-guardrails.md).
+See [02-context/notes/07](../02-context/notes/11-failure-modes.md#prompt-injection) and [agents-guardrails.md](agents-guardrails.md).
 
 ---
 

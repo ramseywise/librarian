@@ -1,8 +1,8 @@
 ---
-imported_hash: b7f87a3a9aba9acb
+imported_hash: 86483e16f9f04f8e
 title: 1 — How Models Read Prompts
 summary: The model is a mimic, not an oracle. Don't ask "how would a reasonable person reply to this?" Ask "if I pulled a random document from the training set that started with exactly this text, how would it continue?" Every higher-level capabilit…
-order: 15
+order: 14
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/01-how-models-read-prompts.md

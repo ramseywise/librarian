@@ -1,8 +1,8 @@
 ---
-imported_hash: a4c70b2ae062b933
+imported_hash: 16c4ab70eb948aab
 title: 3 — Core Techniques
 summary: 'Instruction only, no examples. Instruction tuning (FLAN) and RLHF are what make this work: the model has seen enough instruction→response pairs to generalize.'
-order: 17
+order: 16
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/03-core-techniques.md
@@ -219,7 +219,7 @@ Loop: attempt → evaluate → reflect → retry with the reflection in context.
 ## Go deeper
 
 - Book: [Ch 5](../sources/prompt-eng-for-llms/05-prompt-content.md) (few-shot drawbacks) · [Ch 8](../sources/prompt-eng-for-llms/08-conversational-agency.md) (CoT, ReAct, plan-and-solve, Reflexion, branch-solve-merge)
-- Papers for every technique on this page: [references.md](../references.md#technique-papers)
+- Papers for every technique on this page: [references.md](../readme.md#technique-papers)
 - Worked prompts: [prompt-library.md](prompt-library.md)
 
 ---

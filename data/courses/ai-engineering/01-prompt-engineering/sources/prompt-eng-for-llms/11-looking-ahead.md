@@ -1,8 +1,8 @@
 ---
-imported_hash: a15a335a05642e58
+imported_hash: 6892d4c9b5592eb4
 title: Ch 11 — Looking Ahead
 summary: 'Closing chapter: extrapolates three trend lines (multimodality, UX/UI, raw intelligence) and restates the book''s two core lessons as durable mental models for prompt engineering.'
-order: 72
+order: 37
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/11-looking-ahead.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: f0f5486fcd4a5911
+imported_hash: 5bd9efccc2a15d5f
 title: Only set keys for the LLMs you want to use
 summary: liteLLM is package to simplify calling OpenAI, Azure, Llama2, Cohere, Anthropic, Huggingface API Endpoints.
-order: 10
+order: 9
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-litellm-intro.ipynb

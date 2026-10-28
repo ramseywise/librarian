@@ -1,8 +1,8 @@
 ---
-imported_hash: 49700f85b35e671a
+imported_hash: 4f92d5a813475061
 title: Prompt Engineering for LLMs — chapter notes index
 summary: One note per chapter of Prompt Engineering for LLMs (John Berryman & Albert Ziegler, O'Reilly, 2024).
-order: 61
+order: 26
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/00-overview.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: f55f2912424a42aa
+imported_hash: 3eb85b8fbb74f05e
 title: 3 — Tool Design as Harness Surface
 summary: Tool design follows ACI principles — Agent-Computer Interface, not Application Programming Interface.
-order: 11
+order: 13
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness/notes/03-tool-design.md

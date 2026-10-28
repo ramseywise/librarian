@@ -1,8 +1,8 @@
 ---
-imported_hash: b36b99bd0cb4cbf5
+imported_hash: a00d54130088cead
 title: API configuration
 summary: 'I adopted prompt template from here: https://github.com/reasoning-machines/pal/blob/main/pal/prompt/dateunderstandingprompt.py'
-order: 12
+order: 11
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-pal.ipynb

@@ -1,8 +1,8 @@
 ---
-imported_hash: d27cadc3f21eca92
+imported_hash: c2832d300af4d683
 title: 10 — Adversarial Prompting and Prompt Risks
 summary: A prompt is a single document. Instructions and data share one channel, and the model has no hard boundary between "text I should obey" and "text I should process" (01).
-order: 24
+order: 23
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/10-adversarial-prompting.md
@@ -99,7 +99,7 @@ A:
 
 ## Go deeper
 
-- Willison on prompt injection, the OWASP LLM Top 10, NIST's adversarial ML taxonomy, and injection papers: [references.md](../references.md#safety-and-adversarial)
+- Willison on prompt injection, the OWASP LLM Top 10, NIST's adversarial ML taxonomy, and injection papers: [references.md](../readme.md#safety-and-adversarial)
 - Book: [Ch 3](../sources/prompt-eng-for-llms/03-moving-to-chat.md) (why ChatML resists injection) · [Ch 8](../sources/prompt-eng-for-llms/08-conversational-agency.md) (system-prompt extraction tricks, dangerous tools)
 
 ---

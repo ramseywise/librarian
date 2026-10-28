@@ -1,8 +1,8 @@
 ---
-imported_hash: d8dadc34cd042633
+imported_hash: 2cb39be355669540
 title: The Karpathy Method — spec, verifier, environment
 summary: Secondary-source distillation of Karpathy's AISN 2026 framing, as relayed by a YouTube breakdown.
-order: 6
+order: 7
 kind: reading
 source: learn-ai-engineering/ai-engineering/03-harness/karpathy-method.md
 ---

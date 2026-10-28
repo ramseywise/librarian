@@ -1,5 +1,5 @@
 ---
-imported_hash: 36ca6a4df0e4def9
+imported_hash: 4d874db148281c51
 title: Recurring Sources
 summary: Sources swept periodically for material that belongs in the six pillars.
 order: 2
@@ -37,7 +37,7 @@ good, prefer citing the primary source it draws on. Value is coverage and cadenc
 |---|---|---|---|
 | [AI Builder Club](https://www.aibuilderclub.com/blog) | weekly | all six pillars; ~86 posts as of 2026-07 | 2026-07-30 |
 | [MarkTechPost](https://www.marktechpost.com/) | daily | loop, graph, papers | 2026-07-31 |
-| [dair.ai](https://github.com/dair-ai) | weekly | prompt, papers | vendored snapshot — see below |
+| [dair.ai](https://github.com/dair-ai) | weekly | prompt, papers | guide absorbed 2026-10-28 — see below |
 
 ---
 
@@ -50,7 +50,7 @@ five-layer stack: prompt → context → harness → loop → graph, **omitting 
 our six-pillar model treats eval as a peer foundation and is the better frame).
 
 Landed in the 2026-07-30 sweep:
-- [04-loop/loop-autonomy-ladder.md](../04-loop/loop-autonomy-ladder.md)
+- [04-loop/loop-autonomy-ladder.md](04-loop/loop-autonomy-ladder.md)
 - [04-loop/evolve-loop.md](../04-loop/evolve-loop.md)
 - [06-eval/eval-maturity-ladder.md](../06-eval/eval-maturity-ladder.md)
 - [05-graph/graph-engineering.md](../05-graph/graph-engineering.md) §11 — escalation framing + decision tree
@@ -81,9 +81,14 @@ Landed in the 2026-07-31 sweep:
 
 ### dair.ai
 
-**Not automated** — vendored git snapshots, refreshed by hand:
-- [01-prompt/Prompt-Engineering-Guide-main/](01-prompt/Prompt-Engineering-Guide-main/)
-- [readings/AI-Papers-of-the-Week/](readings/AI-Papers-of-the-Week/)
+**Not automated.**
+- *Prompt Engineering Guide*: the snapshot was **removed on 2026-10-28**. Its English
+  pages were merged into [01-prompt-engineering/notes/](01-prompt-engineering/notes/), with each
+  note listing its `promptingguide.ai` sources in its frontmatter, and its notebooks were kept in
+  [01-prompt-engineering/notebooks/](01-prompt-engineering/notebooks/). To check for new
+  material, browse [promptingguide.ai](https://www.promptingguide.ai/) and compare it against
+  [01-prompt-engineering/README.md](../01-prompt-engineering/readme.md#references).
+- [readings/AI-Papers-of-the-Week/](readings/AI-Papers-of-the-Week/): a vendored git snapshot, refreshed by hand.
 
 ### librarian / cartographer
 

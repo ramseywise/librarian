@@ -1,8 +1,8 @@
 ---
-imported_hash: 0419da3c366bac09
+imported_hash: dbcb67a54f753bdd
 title: Ch 3 — Moving to Chat
 summary: A base model only completes documents — it has no concept of "answer this question." Prompt it with What is a good dish for chicken?
-order: 64
+order: 29
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/03-moving-to-chat.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: 88dfa2f95469a2ff
+imported_hash: 75ac4d08d39ab1d6
 title: Ch 1 — Introduction to Prompt Engineering
 summary: 'At the core, an LLM does one thing: predict the probability distribution of the next word (token) given a context.'
-order: 62
+order: 27
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/01-introduction.md

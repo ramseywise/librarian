@@ -1,8 +1,8 @@
 ---
-imported_hash: c9a1e8078742adc1
+imported_hash: 558b5068c5978af9
 title: update or install the necessary libraries
 summary: Install or update the OpenAI Python library first
-order: 5
+order: 4
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-chatgpt-intro.ipynb

@@ -1,8 +1,8 @@
 ---
-imported_hash: d856829a3935993e
+imported_hash: 52c22726cd5308b8
 title: Ch 6 — Assembling the Prompt
 summary: 'Optional trailing newline convention: not required, but ending every prompt element with \n simplifies string-concat code and token-length bookkeeping.'
-order: 67
+order: 32
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/06-assembling-the-prompt.md

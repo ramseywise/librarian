@@ -1,8 +1,8 @@
 ---
-imported_hash: 9ae7a5ef6af6be98
+imported_hash: ce5ef82ca75d7775
 title: 7 — Prompting Reasoning Models
 summary: 'Anthropic-specific notes: - With extended thinking, high-level instructions beat prescriptive ones.'
-order: 21
+order: 20
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/07-prompting-reasoning-models.md
@@ -10,7 +10,7 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/07-promp
 
 # 7 — Prompting Reasoning Models
 
-> Reasoning models are trained to produce chain-of-thought natively before they answer. Much of [03](03-core-techniques.md) is built into them, so the prompting advice shifts from *how to think* to *what to achieve*. Model behavior here changes quickly; treat the specifics as dated, and check the vendor guides in [references.md](../references.md#vendor-guides).
+> Reasoning models are trained to produce chain-of-thought natively before they answer. Much of [03](03-core-techniques.md) is built into them, so the prompting advice shifts from *how to think* to *what to achieve*. Model behavior here changes quickly; treat the specifics as dated, and check the vendor guides in [references.md](../readme.md#vendor-guides).
 
 ---
 
@@ -81,6 +81,22 @@ Simple extraction, classification and rewriting rarely need one.
 
 ---
 
+## Prompting deep-research agents
+
+Deep-research products (OpenAI, Gemini and Claude Research) are reasoning models trained with RL to plan, search, browse and synthesize over minutes. Each run is slow and expensive, so **get the prompt right the first time**:
+
+- **Give it a plan and be specific** about the scope, the time period, and the sources you trust.
+- **Answer its clarifying questions thoroughly.** That's the cheapest point to steer the run.
+- **Supply keywords.** The model turns your prompt into search queries, so precise terms (product names, technical terms, brands) save searches.
+- **Use clear task verbs**, such as *compare*, *recommend* or *report*, to signal the kind of output you want.
+- **Specify the report format**: sections, tables, columns, and length.
+- **Upload the documents you already have**, especially for technical or niche topics the web covers poorly.
+- **Verify the sources yourself.** Known weaknesses are citation errors, a bias toward certain domains, date-sensitive queries, and paywalled content.
+
+Use deep research only for multi-source, time-sensitive questions that need careful synthesis. A plain reasoning model or a standard model is enough for everything else. Building your own deep agent is covered in [03-harness/deep-agents.md](../../03-harness/deep-agents.md).
+
+---
+
 ## What doesn't change
 
 The book's closing lessons hold for reasoning models too — maybe more so:
@@ -94,7 +110,7 @@ The book's closing lessons hold for reasoning models too — maybe more so:
 
 ## Go deeper
 
-- DAIR *Reasoning LLMs Guide*, Anthropic extended-thinking tips, and the reasoning papers: [references.md](../references.md#reasoning-models)
+- DAIR *Reasoning LLMs Guide*, Anthropic extended-thinking tips, and the reasoning papers: [references.md](../readme.md#reasoning-models)
 - Book: [Ch 11](../sources/prompt-eng-for-llms/11-looking-ahead.md) (intelligence trends, the two durable lessons)
 
 ---

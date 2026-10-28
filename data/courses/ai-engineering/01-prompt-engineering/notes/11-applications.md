@@ -1,8 +1,8 @@
 ---
-imported_hash: 92e0d1605bfb2466
+imported_hash: 2c0b7e66be1aef4b
 title: 11 — Applications
 summary: 'The use cases: eval sets (09), training data for a small local model (distilling a big model into a cheap one), and test fixtures.'
-order: 25
+order: 24
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/11-applications.md
@@ -70,7 +70,7 @@ A concise counter-argument query related to the argument #N:
 - Label ~20 examples and **randomly sample 2–8 per prompt** for diversity.
 - In the paper, ~50k synthetic pairs matched the quality of a model trained on a comparable amount of human labels.
 
-Retrieval itself belongs to [02-context](../../02-context/notes/03-retrieval-strategies.md).
+Retrieval itself belongs to [02-context](../../02-context/notes/04-retrieval.md).
 
 ### Pitfalls
 
@@ -110,7 +110,7 @@ Multimodal CoT (rationale first, then answer) is in [03](03-core-techniques.md#c
 
 ## Go deeper
 
-- Papers (TinyStories, phi-1, Promptagator, Codex/HumanEval): [references.md](../references.md#applications)
+- Papers (TinyStories, phi-1, Promptagator, Codex/HumanEval): [references.md](../readme.md#applications)
 - Worked prompts by task: [prompt-library.md](prompt-library.md)
 
 ---

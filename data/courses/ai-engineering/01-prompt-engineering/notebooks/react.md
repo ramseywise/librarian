@@ -1,8 +1,8 @@
 ---
-imported_hash: 9bc32c7c90ad4de2
+imported_hash: a75cd1976f4ebc7a
 title: update or install the necessary libraries
 summary: ''
-order: 14
+order: 13
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/react.ipynb

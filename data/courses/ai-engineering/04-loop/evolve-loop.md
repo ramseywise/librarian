@@ -1,8 +1,8 @@
 ---
-imported_hash: 2dff6a6ab5c0d6d0
+imported_hash: b1cd2845009d358c
 title: The Evolve Loop — loops that rewrite themselves
 summary: 'The critical distinction from RSI as usually discussed: it does not retrain weights, it rewrites files.'
-order: 3
+order: 2
 kind: reading
 source: learn-ai-engineering/ai-engineering/04-loop/evolve-loop.md
 ---

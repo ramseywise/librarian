@@ -1,8 +1,8 @@
 ---
-imported_hash: 4d6f7e6ca3b21f53
+imported_hash: 561860a27254a46f
 title: 4 — Execution Boundaries and Guardrails
 summary: A sandbox gives the agent a safe operating environment to act, observe results, and make progress — which is what makes autonomous execution tolerable.
-order: 12
+order: 14
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness/notes/04-execution-boundaries.md

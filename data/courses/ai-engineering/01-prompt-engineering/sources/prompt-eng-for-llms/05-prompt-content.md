@@ -1,8 +1,8 @@
 ---
-imported_hash: e9d003f78a7b6d94
+imported_hash: d4be13215794c9a1
 title: Ch 5 — Prompt Content
 summary: 'The line is blurry and depends on how you built the app: a hardcoded rule ("don''t recommend self-help books") is static/clarification; the same rule inferred from a user''s message history is dynamic/context.'
-order: 66
+order: 31
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/05-prompt-content.md

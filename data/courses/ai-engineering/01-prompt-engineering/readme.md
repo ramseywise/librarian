@@ -1,5 +1,5 @@
 ---
-imported_hash: 8a1246e2fab5b1c0
+imported_hash: ca0ab0ab53d3492e
 title: 01 — Prompt Engineering
 summary: Prompt engineering is the craft of writing instructions and examples that consistently elicit desired outputs from language models.
 order: 1
@@ -11,41 +11,285 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/README.md
 
 > Depth layer. Summary: [interviewing/guides/2-llm-fundamentals](../../interviewing/guides/2-llm-fundamentals/00-overview.md)
 > Position in the stack: innermost — *context contains prompts*.
-> Deep note: [prompt-engineering.md](prompt-engineering.md)
+> Jump to: [Rules of thumb](#rules-of-thumb) · [Topic notes](#topic-notes-notes) · [References](#references)
 
 ---
 
 ## What it is
 
-Prompt engineering is the craft of writing instructions and examples that consistently elicit desired outputs from language models. It governs what you *ask* and how you *structure* the ask — not what you put in the context window alongside it (that's context engineering).
+Prompt engineering is the craft of writing instructions and examples that consistently elicit desired outputs from language models. It governs what you *ask* and how you *structure* the ask — not what you put in the context window alongside it. Once you're deciding *which documents, memory or tool outputs to include*, you're doing context engineering ([02-context](../02-context/readme.md)).
+
+| Prompt engineering | Context engineering |
+|---|---|
+| The instructions and examples themselves | What to *include* alongside them |
+| Phrasing, structure, XML, output format | Which documents, memory, tool outputs and history to inject |
+| Role, CoT, few-shot, sampling | Window composition, token budget, retrieval |
 
 **Inherits the weaknesses of:** nothing — this is the innermost layer. But its failures propagate outward: a poorly engineered prompt degrades context utilization, loop reliability, and eval scores at every layer above it.
 
 ---
 
-## Resource map
+## The mental model
 
-### Deep notes
-- [prompt-engineering.md](prompt-engineering.md) — core techniques: system prompts, zero-shot/few-shot, chain-of-thought, structured output, XML structuring, prompt templates, prompt chaining, long-context patterns, and the prompt↔context boundary.
+**A prompt is a document the model continues.** Every rule below follows from that ([01](notes/01-how-models-read-prompts.md)):
+
+- It reads **tokens**, left to right, once. **Order matters**, and it can't look ahead or take back what it wrote.
+- It produces **plausible** text, not true text. Hallucination is the same behavior as fluency.
+- A chat model is a completion model continuing a **transcript**. The system and user roles are document structure, not a security boundary.
+
+**Golden rule (Anthropic):** show your prompt to a colleague with no context. If they'd be confused, so will the model.
+
+---
+
+## Rules of thumb
+
+The rules from the topic notes on one page. Each group links to the note that explains it.
+
+**Writing the prompt** ([02](notes/02-prompt-anatomy.md))
+- Be clear, direct and specific. Say *what to do* rather than what not to do, and **explain why** a constraint exists.
+- Separate instructions from data with **XML tags or delimiters**, and use consistent tag names.
+- **Long content first, question last.** Ask the model to quote the relevant parts before it answers.
+- Pick a **familiar document type** (email, report, transcript) that the model has seen completed many times.
+- Version the **template**, not the rendered prompt.
+
+**Choosing a technique** ([03](notes/03-core-techniques.md))
+- Start with **zero-shot**. Add **few-shot** examples (diverse, consistent, shuffled) for format or style.
+- Use **CoT** for multi-step reasoning on standard models. Use **self-consistency** when you can afford several samples.
+- Use **PAL** for arithmetic, **ReAct** for tool use, and **Reflexion** when there's a checkable signal to retry against.
+
+**Controlling output** ([04](notes/04-controlling-output.md))
+- Lower the temperature for factual or parseable output. Set stop sequences.
+- Climb the structured-output ladder only as far as you need: ask → show → fence → prefill → constrained decoding → tool schema.
+
+**Tools, chains and models** ([05](notes/05-tools-and-function-calling.md), [06](notes/06-chaining-and-workflows.md), [07](notes/07-prompting-reasoning-models.md))
+- Tool names and descriptions *are* prompts. **Gate side effects in code**, not in the prompt.
+- If one prompt does too much, **split it into a chain**. Use a workflow before an agent.
+- With **reasoning models**, state the goal rather than the steps, drop "think step by step", and tune *effort* rather than wording.
+
+**Shipping** ([08](notes/08-prompt-optimization.md), [09](notes/09-evaluating-prompts.md), [10](notes/10-adversarial-prompting.md))
+- **Build the eval before you tune the prompt.** Change one thing at a time and re-score.
+- For LLM judges: **specific, ordinal, multi-aspect** questions, and never self-grading.
+- **Assume the system prompt will leak, and assume injection will happen.** Least privilege, human approval in code, and quarantined models are the defenses that hold.
+
+---
+
+## Where to start
+
+- **New to this:** watch the [DAIR lecture](https://youtu.be/dOxUroR57xs) (1 h), read notes 01–06 alongside book Ch 1–9 and run the matching [notebooks](#primary-sources-in-this-pillar), then read notes 07–11.
+- **Building something now:** the [vendor guides](#vendor-guides) for your model, then [09 — evaluating prompts](notes/09-evaluating-prompts.md).
+- **Need an example prompt:** the [prompt library](notes/prompt-library.md).
+- **Security:** [10](notes/10-adversarial-prompting.md) and [prompt-injection.md](../../interviewing/guides/7-security-safety/prompt-injection.md).
+
+---
+
+## Layout
+
+```
+01-prompt-engineering/
+├── README.md               ← you are here: summary, rules of thumb, all references
+├── notes/                  ← the topic notes (read in order), plus the DAIR lecture slides
+├── sources/
+│   ├── prompt-eng-for-llms/  ← per-chapter book notes, figures (images/), chapter PDFs (reading/)
+│   └── images/               ← the DAIR guide's figures
+└── notebooks/              ← runnable examples (mapped to notes under References)
+```
+
+### Topic notes ([notes/](notes/))
+
+**Foundations**
+1. [How models read prompts](notes/01-how-models-read-prompts.md) — tokens, autoregression, attention order, truth bias, and chat as a transcript.
+2. [Prompt anatomy](notes/02-prompt-anatomy.md) — the elements, writing instructions, ordering, document types, templates.
+
+**Techniques**
+
+3. [Core techniques](notes/03-core-techniques.md) — zero/few-shot, CoT, self-consistency, ToT, PAL, ReAct, Reflexion and more, with a "which technique when" table.
+4. [Controlling output](notes/04-controlling-output.md) — sampling, stop sequences, the structured-output ladder, logprobs, fine-tuning.
+5. [Tools and function calling](notes/05-tools-and-function-calling.md) — the loop, writing tool definitions, safety gates, debugging.
+6. [Chaining and workflows](notes/06-chaining-and-workflows.md) — prompt chains, topologies, Anthropic's workflow patterns, workflows vs. agents.
+7. [Prompting reasoning models](notes/07-prompting-reasoning-models.md) — what changes, effort settings, failure modes, deep-research agents.
+
+**Practice**
+
+8. [Prompt optimization](notes/08-prompt-optimization.md) — prompts as versioned artifacts, APE/OPRO, meta-prompting, DSPy.
+9. [Evaluating prompts](notes/09-evaluating-prompts.md) — the offline tech tree, LLM-as-judge (SOMA), online metrics, a case study.
+10. [Adversarial prompting](notes/10-adversarial-prompting.md) — injection, leaking, jailbreaks, layered defenses, bias, factuality.
+11. [Applications](notes/11-applications.md) — synthetic data, code, images and multimodal prompts.
+
+**Reference:** [prompt-library.md](notes/prompt-library.md) — copyable example prompts by task.
 
 ### Book notes — *Prompt Engineering for LLMs* (Berryman & Ziegler, O'Reilly 2024)
-- [prompt-eng-for-llms/00-overview.md](prompt-eng-for-llms/00-overview.md) — index of the
+- [sources/prompt-eng-for-llms/00-overview.md](sources/prompt-eng-for-llms/00-overview.md) — index of the
   11 per-chapter notes (`01-introduction` … `11-looking-ahead`), with figure screenshots
-  and `PDF p. N` quote citations. Chapters 9 and 10 cross-link to the `04-loop` and
-  `06-eval` pillars.
+  and `PDF p. N` quote citations. PDFs are in [sources/prompt-eng-for-llms/reading/](sources/prompt-eng-for-llms/reading/).
+  Chapters 9 and 10 cross-link to the `04-loop` and `06-eval` pillars.
 
 ### Interviewing guides
 - [2-llm-fundamentals](../../interviewing/guides/2-llm-fundamentals/00-overview.md) — compressed summary for interview prep.
 - [7-security-safety](../../interviewing/guides/7-security-safety/00-overview.md) — security angle on prompt injection.
     - [prompt-injection.md](../../interviewing/guides/7-security-safety/prompt-injection.md) — the security facet: adversarial input manipulation.
 
-### External references
-- Anthropic interactive tutorial: https://github.com/anthropics/prompt-eng-interactive-tutorial
-- Anthropic best practices: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices
-- OpenAI guide: https://platform.openai.com/docs/guides/prompt-engineering
-
 ### Next layer
 → [02-context/](../02-context/readme.md) — context engineering assembles the window that delivers your prompts.
+
+---
+
+## References
+
+Every source behind the notes, in one place. Local files come first, followed by vendor docs and papers grouped to match the notes. arXiv IDs resolve at `https://arxiv.org/abs/<id>`. **★** marks the one or two to read first in each section.
+
+### Primary sources (in this pillar)
+
+| Source | Where | Use it for |
+|---|---|---|
+| ★ Berryman & Ziegler, *Prompt Engineering for LLMs* (O'Reilly 2024) | PDFs: [sources/prompt-eng-for-llms/reading/](sources/prompt-eng-for-llms/reading/) · chapter notes: [sources/prompt-eng-for-llms/](sources/prompt-eng-for-llms/00-overview.md) | The backbone of notes 01, 02, 04, 05, 06 and 09. Written by two of the original GitHub Copilot engineers |
+| DAIR.AI *Prompt Engineering Guide* | [promptingguide.ai](https://www.promptingguide.ai/) · [GitHub](https://github.com/dair-ai/Prompt-Engineering-Guide) | The technique catalog (notes 03, 08, 10, 11). Its pages are absorbed into the notes, so check the live site for new additions |
+| DAIR lecture (Elvis Saravia) | [video](https://youtu.be/dOxUroR57xs) · [slides (PDF)](notes/dair-prompt-engineering-lecture.pdf) · [figures](sources/images/) | A one-hour overview; a good first pass |
+| Notebooks | [notebooks/](notebooks/) | Runnable versions of the techniques (see the table below) |
+
+| Notebook | Pairs with |
+|---|---|
+| [pe-lecture.ipynb](notebooks/pe-lecture.md), [pe-chatgpt-intro.ipynb](notebooks/pe-chatgpt-intro.md), [pe-litellm-intro.ipynb](notebooks/pe-litellm-intro.md) | [02 — anatomy](notes/02-prompt-anatomy.md), [03 — core techniques](notes/03-core-techniques.md) |
+| [pe-pal.ipynb](notebooks/pe-pal.md), [react.ipynb](notebooks/react.md) | [03 — PAL, ReAct](notes/03-core-techniques.md#pal--program-aided-language-models) |
+| [pe-function-calling.ipynb](notebooks/pe-function-calling.md) | [05 — tools](notes/05-tools-and-function-calling.md) |
+| [pe-chatgpt-langchain.ipynb](notebooks/pe-chatgpt-langchain.md), [pe-rag.ipynb](notebooks/pe-rag.md) | [06 — chaining](notes/06-chaining-and-workflows.md) |
+| [pe-chatgpt-adversarial.ipynb](notebooks/pe-chatgpt-adversarial.md) | [10 — adversarial](notes/10-adversarial-prompting.md) |
+| [pe-code-llama.ipynb](notebooks/pe-code-llama.md), [pe-mixtral-introduction.ipynb](notebooks/pe-mixtral-introduction.md) | [11 — code](notes/11-applications.md#code), open-weight models |
+| [gemini-context-caching.ipynb](notebooks/gemini-context-caching.md) | [02-context](../02-context/readme.md) |
+
+### Elsewhere in this repo
+
+These are books and papers already on disk that cover prompting from another angle.
+
+| Reading | Where | Why |
+|---|---|---|
+| ★ Huyen, *AI Engineering* (O'Reilly 2025) — **Ch 5, Prompt Engineering** | [readings/ai_engineering/ai engineer/](<../readings/ai_engineering/ai engineer/5. Prompt Engineering _ AI Engineering.pdf>) | The best single chapter on prompting *as engineering*: in-context learning, prompt attacks and defenses, and prompt versioning. Ch 3–4 (evaluation) go with [09](notes/09-evaluating-prompts.md) |
+| Phoenix & Taylor, *Prompt Engineering for Generative AI* (O'Reilly 2024) | [generative-ai/01-llm-fundamentals/readings/](<../../generative-ai/01-llm-fundamentals/readings/>) | The "five principles of prompting" (Ch 1), text-generation practice (Ch 3) and LangChain chaining (Ch 4). Ch 7–9 cover image prompting |
+| *Building Applications with AI Agents* — Ch 4 (Tool Use), Ch 12 (Protecting Agentic Systems) | [readings/ai_engineering/ai_agent_applications/](<../readings/ai_engineering/ai_agent_applications/>) | Goes deeper than [05](notes/05-tools-and-function-calling.md) and [10](notes/10-adversarial-prompting.md) |
+| Wei et al., *Chain-of-Thought Prompting* (2201.11903) | [readings/general/2201.11903v6.pdf](../readings/general/2201.11903v6.pdf) | The CoT paper ([03](notes/03-core-techniques.md#chain-of-thought)) |
+| Ouyang et al., *InstructGPT* (2203.02155) | [readings/general/2203.02155v1.pdf](../readings/general/2203.02155v1.pdf) | Why chat models follow instructions ([01](notes/01-how-models-read-prompts.md)) |
+| Bai et al., *Constitutional AI* (2212.08073) | [readings/general/2212.08073v1.pdf](../readings/general/2212.08073v1.pdf) | Principles-as-prompts; model self-critique |
+| Manakul et al., *SelfCheckGPT* (2303.08896) | [readings/general/2303.08896v3.pdf](../readings/general/2303.08896v3.pdf) | Sampling-consistency hallucination checks ([10 — factuality](notes/10-adversarial-prompting.md#factuality)) |
+| Zhao et al., *A Survey of LLMs* (2303.18223) | [readings/general/2303.18223v16.pdf](../readings/general/2303.18223v16.pdf) | Its section on prompting and in-context learning |
+
+### Vendor guides
+
+Vendor guides are the most up-to-date advice for each model family. Re-read them when you switch models.
+
+**Anthropic**
+- ★ [Claude prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices) — the current single page
+- [Prompt engineering overview](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview) — XML tags, examples, prefill, chaining
+- [Interactive prompt engineering tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial) — nine chapters of exercises, in notebooks
+- [Building effective agents](https://www.anthropic.com/research/building-effective-agents) — the workflow taxonomy in [06](notes/06-chaining-and-workflows.md#workflow-patterns-anthropics-taxonomy)
+- [Writing tools for agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — tool descriptions as prompts ([05](notes/05-tools-and-function-calling.md))
+
+**OpenAI**
+- [Prompt engineering guide](https://platform.openai.com/docs/guides/prompt-engineering)
+- [Function calling](https://platform.openai.com/docs/guides/function-calling) · [Structured outputs](https://platform.openai.com/docs/guides/structured-outputs) ([04](notes/04-controlling-output.md#structured-output))
+- [Reasoning best practices](https://platform.openai.com/docs/guides/reasoning-best-practices) ([07](notes/07-prompting-reasoning-models.md))
+
+**Google**
+- [Gemini prompting strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies) · [Gemini thinking](https://ai.google.dev/gemini-api/docs/thinking)
+
+### Technique papers
+
+These are the papers behind [03 — core techniques](notes/03-core-techniques.md), in the order the note covers them.
+
+| Technique | Paper | arXiv |
+|---|---|---|
+| Few-shot / in-context learning | Brown et al., *Language Models are Few-Shot Learners* (GPT-3) | 2005.14165 |
+| What makes few-shot work | ★ Min et al., *Rethinking the Role of Demonstrations* | 2202.12837 |
+| Instruction tuning (why zero-shot works) | Wei et al., *Finetuned Language Models Are Zero-Shot Learners* (FLAN) | 2109.01652 |
+| Chain-of-thought | ★ Wei et al. | 2201.11903 |
+| Zero-shot CoT ("Let's think step by step") | Kojima et al. | 2205.11916 |
+| Auto-CoT | Zhang et al. | 2210.03493 |
+| Multimodal CoT | Zhang et al. | 2302.00923 |
+| GraphPrompt | Liu et al. | 2302.08043 |
+| Self-consistency | Wang et al. | 2203.11171 |
+| Generated knowledge | Liu et al. | 2110.08387 |
+| Tree of Thoughts | Yao et al. · Long | 2305.10601 · 2305.08291 |
+| PAL — program-aided LMs | Gao et al. | 2211.10435 |
+| ReAct | ★ Yao et al. | 2210.03629 |
+| ART — automatic reasoning and tool use | Paranjape et al. | 2303.09014 |
+| Active-Prompt | Diao et al. | 2302.12246 |
+| Directional stimulus prompting | Li et al. | 2302.11520 |
+| Reflexion | Shinn et al. | 2303.11366 |
+
+**Background:** Kaplan et al., *Scaling Laws* (2001.08361) · Christiano et al., *RLHF from human preferences* (1706.03741) · Bubeck et al., *Sparks of AGI* (2303.12712) — the source of the TiKZ unicorn and other probes in the [prompt library](notes/prompt-library.md).
+
+### Prompt optimization
+
+For [08](notes/08-prompt-optimization.md).
+
+| Method | Paper / link | arXiv |
+|---|---|---|
+| APE — automatic prompt engineer | ★ Zhou et al., *LLMs Are Human-Level Prompt Engineers* | 2211.01910 |
+| OPRO — LLM as optimizer | Yang et al., *Large Language Models as Optimizers* | 2309.03409 |
+| Prompt-OIRL | Sun et al. | 2309.06553 |
+| AutoPrompt | Shin et al. | 2010.15980 |
+| Prefix tuning | Li & Liang | 2101.00190 |
+| Prompt tuning (soft prompts) | Lester et al. | 2104.08691 |
+| Meta-prompting (structure-oriented) | Zhang et al. | 2311.11482 |
+| DSPy | ★ Khattab et al. · [dspy.ai](https://dspy.ai) | 2310.03714 |
+| TextGrad | Yuksekgonul et al. | 2406.07496 |
+
+### Reasoning models
+
+For [07](notes/07-prompting-reasoning-models.md). This area moves fastest, so check the vendor guides above first.
+
+- ★ DAIR *Reasoning LLMs Guide* — [promptingguide.ai/guides/reasoning-llms](https://www.promptingguide.ai/guides/reasoning-llms)
+- DeepSeek-AI, *DeepSeek-R1: Incentivizing Reasoning Capability via RL* — 2501.12948
+- Raschka, [*Understanding Reasoning LLMs*](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms) — an overview of how reasoning models are trained
+- *The Pitfalls of Reasoning for Instruction Following* — 2505.11423 (explicit CoT hurts instruction-following)
+- Anthropic, *Reasoning Models Don't Always Say What They Think* — 2505.05410 (CoT faithfulness)
+- Shojaee et al., [*The Illusion of Thinking*](https://machinelearning.apple.com/research/illusion-of-thinking) (Apple, 2025) — collapse on harder puzzles; read it with the rebuttals it prompted
+
+### Evaluation
+
+For [09](notes/09-evaluating-prompts.md). Deeper material is in [06-eval](../06-eval/readme.md).
+
+- ★ Book Ch 10 — [sources/prompt-eng-for-llms/10-evaluating-llm-applications.md](sources/prompt-eng-for-llms/10-evaluating-llm-applications.md)
+- Clavié et al., *Large Language Models in the Workplace* — 2303.07142 (the case-study table)
+- Huyen, *AI Engineering* Ch 3–4 — [readings/ai_engineering/ai engineer/](<../readings/ai_engineering/ai engineer/>)
+- Zheng et al., *Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena* — 2306.05685 (judge biases: position, verbosity, self-preference)
+- Husain, [*Your AI Product Needs Evals*](https://hamel.dev/blog/posts/evals/) — the practitioner's case for building the eval first
+
+### Safety and adversarial
+
+For [10](notes/10-adversarial-prompting.md). For interview depth, see [interviewing/7-security-safety/prompt-injection.md](../../interviewing/guides/7-security-safety/prompt-injection.md).
+
+- ★ Willison, [*Prompt injection attacks against GPT-3*](https://simonwillison.net/2022/Sep/12/prompt-injection/) (2022) — where the name comes from
+- Willison, [*The Dual LLM pattern*](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/) — the quarantined-model defense
+- Greshake et al., *Not What You've Signed Up For* (indirect prompt injection) — 2302.12173
+- Debenedetti et al., *Defeating Prompt Injections by Design* (CaMeL) — 2503.18813
+- [OWASP Top 10 for LLM Applications](https://genai.owasp.org/llm-top-10/) — LLM01 is prompt injection
+- NIST, [*Adversarial Machine Learning: A Taxonomy*](https://csrc.nist.gov/pubs/ai/100/2/e2023/final) (AI 100-2)
+- Kang et al., *Exploiting Programmatic Behavior of LLMs* — 2302.05733 (jailbreaks as programs)
+- 2303.07320 — cited on the DAIR adversarial page
+- Armstrong & Gorman, *Using GPT-Eliezer against ChatGPT jailbreaking* (LessWrong, 2022) — the input-screening prompt
+- Nardo, *The Waluigi Effect* (LessWrong, 2023)
+- Lin et al., *TruthfulQA* — 2109.07958 (measuring imitative falsehoods)
+
+### Applications
+
+For [11](notes/11-applications.md).
+
+| Topic | Paper | arXiv |
+|---|---|---|
+| Combinatorial seeding | Eldan & Li, *TinyStories* | 2305.07759 |
+| Textbook-quality synthetic data | Gunasekar et al., *Textbooks Are All You Need* (phi-1) | 2306.11644 |
+| Synthetic retrieval queries | Dai et al., *Promptagator* | 2209.11755 |
+| Code generation and HumanEval | Chen et al., *Evaluating LLMs Trained on Code* (Codex) | 2107.03374 |
+| Tool-use fine-tuning | Patil et al., *Gorilla* · Qin et al., *ToolLLM* | 2305.15334 · 2307.16789 |
+
+### Other readings
+
+These are broader or more opinionated pieces, good once the notes feel familiar.
+
+- ★ Schulhoff et al., *The Prompt Report: A Systematic Survey of Prompting Techniques* — 2406.06608. A taxonomy of 58 text techniques, with terminology; the best "did I miss anything?" check
+- Weng, [*Prompt Engineering*](https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/) (2023) — a dense, research-oriented survey
+- Yan, [*Prompting Fundamentals and How to Apply Them Effectively*](https://eugeneyan.com/writing/prompting/) — a practitioner's view with production examples
+- [Learn Prompting](https://learnprompting.org) — a beginner-friendly open course, an alternative to DAIR
+- Context engineering — the successor framing (Karpathy, LangChain, Schmid, Lance Martin). Collected in [02-context](../02-context/readme.md)
 
 ---
 
@@ -61,160 +305,3 @@ Key topics for this pillar:
 - Prompt injection: structural delimiting of untrusted content, deny-list patterns, instruction hierarchy (system prompt > developer context > user input)
 - Credential and secret custody — rules for what must never appear in a prompt context window
 - Write-operation confirm gate — two-phase pattern for irreversible actions triggered by prompt instructions
-
-
-
-# Prompt Engineering Guide
-
-<h5 align="center">
-  Sponsored by&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://serpapi.com/"><img src="https://cdn.rawgit.com/standard/standard/master/docs/logos/serpapi.png" height=35 valign="middle"></a>
-</h5>
-
-Prompt engineering is a relatively new discipline for developing and optimizing prompts to efficiently use language models (LMs) for a wide variety of applications and research topics. Prompt engineering skills help to better understand the capabilities and limitations of large language models (LLMs). Researchers use prompt engineering to improve the capacity of LLMs on a wide range of common and complex tasks such as question answering and arithmetic reasoning. Developers use prompt engineering to design robust and effective prompting techniques that interface with LLMs and other tools.
-
-Motivated by the high interest in developing with LLMs, we have created this new prompt engineering guide that contains all the latest papers, learning guides, lectures, references, and tools related to prompt engineering for LLMs.
-
-🌐 [Prompt Engineering Guide (Web Version)](https://www.promptingguide.ai/)
-
-🎉 We are excited to launch our new prompt engineering, RAG, and AI Agents courses under the DAIR.AI Academy. [Join Now](https://academy.dair.ai/pricing)!
-
-The courses are meant to compliment this guide and provide a more hands-on approach to learning about prompt engineering, context engineering, and AI Agents.
-
-Use code PROMPTING20 to get an extra 20% off.
-
-Happy Prompting!
-
----
-## Announcements / Updates
-
-- 🎓 We now offer self-paced prompt engineering courses under our DAIR.AI Academy. [Join Now](https://academy.dair.ai/pricing)!
-- 🎓 New course on Prompt Engineering for LLMs announced! [Enroll here](https://academy.dair.ai/courses/introduction-prompt-engineering)!
-- 💼 We now offer several [services](https://www.promptingguide.ai/services) like corporate training, consulting, and talks.
-- 🌐 We now support 13 languages! Welcoming more translations.
-- 👩‍🎓 We crossed 3 million learners in January 2024!
-- 🎉 We have launched a new web version of the guide [here](https://www.promptingguide.ai/)
-- 🔥 We reached #1 on Hacker News on 21 Feb 2023
-- 🎉 The First Prompt Engineering Lecture went live [here](https://youtu.be/dOxUroR57xs)
-
-[Join our Discord](https://discord.gg/YbMT8k6GfX)
-
-[Follow us on Twitter](https://twitter.com/dair_ai)
-
-[Subscribe to our YouTube](https://www.youtube.com/channel/UCyna_OxOWL7IEuOwb7WhmxQ)
-
-[Subscribe to our Newsletter](https://nlpnews.substack.com/)
-
----
-
-## Guides
-You can also find the most up-to-date guides on our new website [https://www.promptingguide.ai/](https://www.promptingguide.ai/).
-
-- [Prompt Engineering - Introduction](https://www.promptingguide.ai/introduction)
-  - [Prompt Engineering - LLM Settings](https://www.promptingguide.ai/introduction/settings)
-  - [Prompt Engineering - Basics of Prompting](https://www.promptingguide.ai/introduction/basics)
-  - [Prompt Engineering - Prompt Elements](https://www.promptingguide.ai/introduction/elements)
-  - [Prompt Engineering - General Tips for Designing Prompts](https://www.promptingguide.ai/introduction/tips)
-  - [Prompt Engineering - Examples of Prompts](https://www.promptingguide.ai/introduction/examples)
-- [Prompt Engineering - Techniques](https://www.promptingguide.ai/techniques)
-  - [Prompt Engineering - Zero-Shot Prompting](https://www.promptingguide.ai/techniques/zeroshot)
-  - [Prompt Engineering - Few-Shot Prompting](https://www.promptingguide.ai/techniques/fewshot)
-  - [Prompt Engineering - Chain-of-Thought Prompting](https://www.promptingguide.ai/techniques/cot)
-  - [Prompt Engineering - Self-Consistency](https://www.promptingguide.ai/techniques/consistency)
-  - [Prompt Engineering - Generate Knowledge Prompting](https://www.promptingguide.ai/techniques/knowledge)
-  - [Prompt Engineering - Prompt Chaining](https://www.promptingguide.ai/techniques/prompt_chaining)
-  - [Prompt Engineering - Tree of Thoughts (ToT)](https://www.promptingguide.ai/techniques/tot)
-  - [Prompt Engineering - Retrieval Augmented Generation](https://www.promptingguide.ai/techniques/rag)
-  - [Prompt Engineering - Automatic Reasoning and Tool-use (ART)](https://www.promptingguide.ai/techniques/art)
-  - [Prompt Engineering - Automatic Prompt Engineer](https://www.promptingguide.ai/techniques/ape)
-  - [Prompt Engineering - Active-Prompt](https://www.promptingguide.ai/techniques/activeprompt)
-  - [Prompt Engineering - Directional Stimulus Prompting](https://www.promptingguide.ai/techniques/dsp)
-  - [Prompt Engineering - Program-Aided Language Models](https://www.promptingguide.ai/techniques/pal)
-  - [Prompt Engineering - ReAct Prompting](https://www.promptingguide.ai/techniques/react)
-  - [Prompt Engineering - Multimodal CoT Prompting](https://www.promptingguide.ai/techniques/multimodalcot)
-  - [Prompt Engineering - Graph Prompting](https://www.promptingguide.ai/techniques/graph)
-- [Prompt Engineering - Applications](https://www.promptingguide.ai/applications)
-  - [Prompt Engineering - Function Calling](https://www.promptingguide.ai/applications/function_calling)
-  - [Prompt Engineering - Generating Data](https://www.promptingguide.ai/applications/generating)
-  - [Prompt Engineering - Generating Synthetic Dataset for RAG](https://www.promptingguide.ai/applications/synthetic_rag)
-  - [Prompt Engineering - Takling Generated Datasets Diversity](https://www.promptingguide.ai/applications/generating_textbooks)
-  - [Prompt Engineering - Generating Code](https://www.promptingguide.ai/applications/coding)
-  - [Prompt Engineering - Graduate Job Classification Case Study](https://www.promptingguide.ai/applications/workplace_casestudy)
-- [Prompt Engineering - Prompt Hub](https://www.promptingguide.ai/prompts)
-  - [Prompt Engineering - Classification](https://www.promptingguide.ai/prompts/classification)
-  - [Prompt Engineering - Coding](https://www.promptingguide.ai/prompts/coding)
-  - [Prompt Engineering - Creativity](https://www.promptingguide.ai/prompts/creativity)
-  - [Prompt Engineering - Evaluation](https://www.promptingguide.ai/prompts/evaluation)
-  - [Prompt Engineering - Information Extraction](https://www.promptingguide.ai/prompts/information-extraction)
-  - [Prompt Engineering - Image Generation](https://www.promptingguide.ai/prompts/image-generation)
-  - [Prompt Engineering - Mathematics](https://www.promptingguide.ai/prompts/mathematics)
-  - [Prompt Engineering - Question Answering](https://www.promptingguide.ai/prompts/question-answering)
-  - [Prompt Engineering - Reasoning](https://www.promptingguide.ai/prompts/reasoning)
-  - [Prompt Engineering - Text Summarization](https://www.promptingguide.ai/prompts/text-summarization)
-  - [Prompt Engineering - Truthfulness](https://www.promptingguide.ai/prompts/truthfulness)
-  - [Prompt Engineering - Adversarial Prompting](https://www.promptingguide.ai/prompts/adversarial-prompting)
-- [Prompt Engineering - Models](https://www.promptingguide.ai/models)
-  - [Prompt Engineering - ChatGPT](https://www.promptingguide.ai/models/chatgpt)
-  - [Prompt Engineering - Code Llama](https://www.promptingguide.ai/models/code-llama)
-  - [Prompt Engineering - Flan](https://www.promptingguide.ai/models/flan)
-  - [Prompt Engineering - Gemini](https://www.promptingguide.ai/models/gemini)
-  - [Prompt Engineering - GPT-4](https://www.promptingguide.ai/models/gpt-4)
-  - [Prompt Engineering - LLaMA](https://www.promptingguide.ai/models/llama)
-  - [Prompt Engineering - Mistral 7B](https://www.promptingguide.ai/models/mistral-7b)
-  - [Prompt Engineering - Mixtral](https://www.promptingguide.ai/models/mixtral)
-  - [Prompt Engineering - OLMo](https://www.promptingguide.ai/models/olmo)
-  - [Prompt Engineering - Phi-2](https://www.promptingguide.ai/models/phi-2)
-  - [Prompt Engineering - Model Collection](https://www.promptingguide.ai/models/collection)
-- [Prompt Engineering - Risks and Misuses](https://www.promptingguide.ai/risks)
-  - [Prompt Engineering - Adversarial Prompting](https://www.promptingguide.ai/risks/adversarial)
-  - [Prompt Engineering - Factuality](https://www.promptingguide.ai/risks/factuality)
-  - [Prompt Engineering - Biases](https://www.promptingguide.ai/risks/biases)
-- [Prompt Engineering - Papers](https://www.promptingguide.ai/papers)
-  - [Prompt Engineering - Overviews](https://www.promptingguide.ai/papers#overviews)
-  - [Prompt Engineering - Approaches](https://www.promptingguide.ai/papers#approaches)
-  - [Prompt Engineering - Applications](https://www.promptingguide.ai/papers#applications)
-  - [Prompt Engineering - Collections](https://www.promptingguide.ai/papers#collections)
-- [Prompt Engineering - Tools](https://www.promptingguide.ai/tools)
-- [Prompt Engineering - Notebooks](https://www.promptingguide.ai/notebooks)
-- [Prompt Engineering - Datasets](https://www.promptingguide.ai/datasets)
-- [Prompt Engineering - Additional Readings](https://www.promptingguide.ai/readings)
-
-
----
-## Lecture
-
-We have published a 1 hour lecture that provides a comprehensive overview of prompting techniques, applications, and tools.
-- [Video Lecture](https://youtu.be/dOxUroR57xs)
-- [Notebook with code](https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/notebooks/pe-lecture.ipynb)
-- [Slides](https://github.com/dair-ai/Prompt-Engineering-Guide/blob/main/lecture/Prompt-Engineering-Lecture-Elvis.pdf)
-
----
-## Running the guide locally
-
-To run the guide locally, for example to check the correct implementation of a new translation, you will need to:
-
-1. Install Node >=18.0.0
-1. Install `pnpm` if not present in your system. Check [here](https://pnpm.io/installation) for detailed instructions.
-1. Install the dependencies: `pnpm i next react react-dom nextra nextra-theme-docs`
-1. Boot the guide with `pnpm dev`
-2. Browse the guide at `http://localhost:3000/`
-
----
-## Appearances
-Some places where we have been featured:
-- Wall Street Journal - [ChatGPT Can Give Great Answers. But Only If You Know How to Ask the Right Question](https://www.wsj.com/articles/chatgpt-ask-the-right-question-12d0f035)
-- Forbes - [Mom, Dad, I Want To Be A Prompt Engineer](https://www.forbes.com/sites/craigsmith/2023/04/05/mom-dad-i-want-to-be-a-prompt-engineer/?sh=7f1213159c8e)
-- Markettechpost - [Best Free Prompt Engineering Resources (2023)](https://www.marktechpost.com/2023/04/04/best-free-prompt-engineering-resources-2023/)
-
-
----
-If you are using the guide for your work or research, please cite us as follows:
-
-```
-@article{Saravia_Prompt_Engineering_Guide_2022,
-author = {Saravia, Elvis},
-journal = {https://github.com/dair-ai/Prompt-Engineering-Guide},
-month = {12},
-title = {{Prompt Engineering Guide}},
-year = {2022}
-}
-```

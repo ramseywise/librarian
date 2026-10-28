@@ -1,8 +1,8 @@
 ---
-imported_hash: 8045aa570ddbfbde
+imported_hash: f4de0d7cf0bae63b
 title: Ch 8 — Conversational Agency
 summary: The app owns steps 4–5 (invoking, appending); the model only ever proposes calls and consumes results — it never talks to the real world directly.
-order: 69
+order: 34
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/08-conversational-agency.md

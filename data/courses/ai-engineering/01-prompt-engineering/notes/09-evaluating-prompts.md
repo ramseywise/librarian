@@ -1,8 +1,8 @@
 ---
-imported_hash: 8f07e4be8abd8bce
+imported_hash: 4ed95a79043f3eda
 title: 9 — Evaluating Prompts
 summary: The evaluation framework is the oldest part of the GitHub Copilot codebase — older than the prompts or the UI.
-order: 23
+order: 22
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md
@@ -122,7 +122,7 @@ Lessons:
 
 - Book: [Ch 10](../sources/prompt-eng-for-llms/10-evaluating-llm-applications.md) (offline tech tree, SOMA, online metrics)
 - Eval systems and grounding methodology: [06-eval](../../06-eval/readme.md) · [eval-harness.md](../../06-eval/eval-harness.md) · [eval-maturity-ladder.md](../../06-eval/eval-maturity-ladder.md)
-- Papers and tools: [references.md](../references.md#evaluation)
+- Papers and tools: [references.md](../readme.md#evaluation)
 
 ---
 

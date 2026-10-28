@@ -1,8 +1,8 @@
 ---
-imported_hash: 2da86ffa1c20a95f
+imported_hash: 30cafe4028a7d4b6
 title: Ch 4 — Designing LLM Applications
 summary: An LLM application is a transformation layer between the user's problem domain and the model's text domain.
-order: 65
+order: 30
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/04-designing-llm-applications.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: 89833140c323b13e
+imported_hash: 58f9370da780b638
 title: 8 — Prompt Optimization
 summary: The proposer can be you, an LLM (APE, OPRO, meta-prompting), or a framework (DSPy, TextGrad).
-order: 22
+order: 21
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/08-prompt-optimization.md
@@ -108,7 +108,7 @@ Before reaching for a framework:
 
 ## Go deeper
 
-- Papers (APE, OPRO, meta-prompting, DSPy, TextGrad, soft prompts): [references.md](../references.md#prompt-optimization)
+- Papers (APE, OPRO, meta-prompting, DSPy, TextGrad, soft prompts): [references.md](../readme.md#prompt-optimization)
 - Book: [Ch 9](../sources/prompt-eng-for-llms/09-llm-workflows.md) (collecting task I/O for optimization)
 
 ---

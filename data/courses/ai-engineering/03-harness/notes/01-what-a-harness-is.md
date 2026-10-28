@@ -1,8 +1,8 @@
 ---
-imported_hash: 22adfe9f2b542cc5
+imported_hash: 8c5b7c17bc677386
 title: 1 — What a Harness Is
 summary: A raw model is a text transformer. It becomes an agent only when something gives it durable state, tool execution, feedback loops, and enforceable constraints.
-order: 9
+order: 11
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness/notes/01-what-a-harness-is.md
@@ -49,6 +49,8 @@ The minimal decomposition — a harness comprises at least:
 
 A system missing any one of these is not a harness — it is a prompt with tools attached. The most commonly missing part is **rollback**, and the most commonly *faked* one is the acceptance baseline (a vibes-based "looks good" instead of a binary check).
 
+Contrast this with the classic **agent = LLM + planning + tools + memory** decomposition (Weng 2023, the DAIR agents guide). That framing describes what the *model* does. These four parts describe what the *system around it* has to guarantee. Planning, tools and memory map onto harness components ([note 02](02-harness-anatomy.md)). None of the four parts above appear in the classic framing, and that gap is why agents built from it alone are unreliable.
+
 ---
 
 ## Why the harness dominates the model
@@ -77,6 +79,29 @@ Most agent failures are **configuration problems, not model limitations**. Human
 | Rated its own work 9/10 | "It's sycophantic" | Generator and evaluator are the same agent |
 
 Each right-hand cell is a build task. That's the whole discipline in one table.
+
+### Five ways a capable model fails without a harness
+
+For a coding agent working in a real repo, the failures fall into five recurring shapes. Each one maps to a harness fix, not a model upgrade:
+
+| Failure | What it looks like | Harness fix |
+|---|---|---|
+| **Vague requirements** | Builds something plausible that isn't what you meant | Feature list with verifiable behaviors ([practice/03](practice/03-scope-and-done.md)) |
+| **Implicit conventions** | Breaks rules that live only in people's heads | Repo as system of record ([practice/01](practice/01-repo-as-system-of-record.md)) |
+| **Incomplete environment** | Spends the session fighting setup, or "fixes" the wrong thing | `init.sh` plus a startup-readiness check ([practice/02](practice/02-session-lifecycle.md)) |
+| **No verification** | Claims done when it isn't | Termination checks ([note 05](05-verification-loops.md#the-three-layer-termination-check)) |
+| **Cross-session loss** | Each session re-derives or undoes the last one | Progress log plus handoff ([practice/02](practice/02-session-lifecycle.md)) |
+
+### Fix the harness first
+
+The working loop that comes out of the reframe:
+
+1. **Run** the task on a fixed model.
+2. **Attribute** the failure to one subsystem: instructions, tools, environment, state or feedback ([note 02](02-harness-anatomy.md#the-five-subsystems)).
+3. **Fix that subsystem**, and only that one.
+4. **Re-run** the same task and compare.
+
+Change the model only after several rounds of this stop helping. Swapping models first hides which part of the harness was missing, so the same failure comes back under the next model.
 
 ---
 

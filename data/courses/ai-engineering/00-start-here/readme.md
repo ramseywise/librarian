@@ -1,5 +1,5 @@
 ---
-imported_hash: d4b5dbe2e8229424
+imported_hash: 2910b7e057d56458
 title: AI Engineering
 summary: All six are peer foundations. Graph is ordered fifth (after loop) because it presumes loop mastery, but it is a first-class discipline — not a frontier add-on.
 order: 1
@@ -37,7 +37,7 @@ All six are peer foundations. Graph is ordered fifth (after loop) because it *pr
 
 | Foundation | Depth (here) | Summary guide | Seed note(s) |
 |---|---|---|---|
-| prompt | [01-prompt/](01-prompt/README.md) | [2-llm-fundamentals](../interviewing/guides/2-llm-fundamentals/00-overview.md) | [prompt-engineering.md](01-prompt/prompt-engineering.md) (new), [prompt-injection.md](../interviewing/guides/7-security-safety/prompt-injection.md) (security) |
+| prompt | [01-prompt-engineering/](../01-prompt-engineering/readme.md) | [2-llm-fundamentals](../interviewing/guides/2-llm-fundamentals/00-overview.md) | [README](../01-prompt-engineering/readme.md#rules-of-thumb) (summary), [notes/](01-prompt-engineering/notes/), [prompt-injection.md](../interviewing/guides/7-security-safety/prompt-injection.md) (security) |
 | context | [02-context/](../02-context/readme.md) | [5-context-cost](../interviewing/guides/5-context-cost/00-overview.md) | [context-engineering.md](../02-context/context-engineering.md), [memory.md](../05-graph/memory.md) |
 | harness | [03-harness/](../03-harness/readme.md) | [4-agents](../interviewing/guides/4-agents/00-overview.md) | [agent-harness.md](../03-harness/agent-harness.md), [agents-design.md](../03-harness/agents-design.md) |
 | loop | [04-loop/](../04-loop/readme.md) | [4-agents](../interviewing/guides/4-agents/00-overview.md) | [loop-engineering.md](../04-loop/loop-engineering.md), [reliable-agents.md](../03-harness/reliable-agents.md) |
@@ -62,7 +62,7 @@ primary source underneath). Update the sweep date and landed-notes list on each 
 
 No content is duplicated across `ai-engineering/` and `generative-ai/`. The cleaned operational
 notes (frontmatter `origin:`/`confidence:`) live *inside* each pillar directory (e.g.
-`01-prompt/prompt-engineering.md`), not in a separate `interviewing/notes/` layer — the five
+`01-prompt-engineering/README.md`), not in a separate `interviewing/notes/` layer — the five
 files remaining in `interviewing/notes/` (`agents-self-training.md`, `case-interview.md`,
 `foundations.md`, `reading-list.md`, `security.md`) are the ones not yet claimed by a pillar.
 `interviewing/guides/` is the only pointer-only layer: it summarizes for exam prep and links

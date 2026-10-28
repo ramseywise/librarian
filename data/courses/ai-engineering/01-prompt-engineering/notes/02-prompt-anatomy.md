@@ -1,8 +1,8 @@
 ---
-imported_hash: 000559707b41efe5
+imported_hash: ff1e44234a2c2571
 title: 2 — Prompt Anatomy
 summary: Chat models give you 1, 3 and 4 almost for free through fine-tuning.
-order: 16
+order: 15
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/02-prompt-anatomy.md

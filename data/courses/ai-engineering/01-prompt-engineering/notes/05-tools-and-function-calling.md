@@ -1,8 +1,8 @@
 ---
-imported_hash: 309581a779532295
+imported_hash: c9eefa38955dfcfe
 title: 5 — Tools and Function Calling
 summary: The model never touches the world. It proposes a call, and your code executes it and appends the result.
-order: 19
+order: 18
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/05-tools-and-function-calling.md
@@ -110,7 +110,7 @@ For UX, show tool activity to users and let them inspect and **edit arguments an
 - Book: [Ch 8](../sources/prompt-eng-for-llms/08-conversational-agency.md) (internal format, tool guidelines, conversational agent, UX)
 - Agent-level tool design, MCP, skills: [03-harness/notes/03-tool-design.md](../../03-harness/notes/03-tool-design.md)
 - Runnable: [notebooks/pe-function-calling.ipynb](../notebooks/pe-function-calling.md) · [notebooks/react.ipynb](../notebooks/react.md) · [notebooks/pe-chatgpt-langchain.ipynb](../notebooks/pe-chatgpt-langchain.md)
-- Vendor tool-use docs and benchmarks: [references.md](../references.md#vendor-guides)
+- Vendor tool-use docs and benchmarks: [references.md](../readme.md#vendor-guides)
 
 ---
 

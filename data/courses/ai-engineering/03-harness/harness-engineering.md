@@ -1,8 +1,8 @@
 ---
-imported_hash: 6f6da142a47d72ee
+imported_hash: 76b6044aaef5a275
 title: Harness Engineering
 summary: 'Harness engineering is the third layer: the harness assembles context, and context contains prompts.'
-order: 5
+order: 6
 kind: reading
 source: learn-ai-engineering/ai-engineering/03-harness/harness-engineering.md
 ---

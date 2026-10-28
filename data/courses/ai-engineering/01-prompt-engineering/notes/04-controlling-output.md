@@ -1,8 +1,8 @@
 ---
-imported_hash: 4104423d2e813155
+imported_hash: 08ef1c9cdc283a15
 title: 4 — Controlling Output
 summary: Every token before the solution costs latency and money.
-order: 18
+order: 17
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/04-controlling-output.md
@@ -128,7 +128,7 @@ Reach for it when the static part of your prompt is long, stable, and still not 
 ## Go deeper
 
 - Book: [Ch 7](../sources/prompt-eng-for-llms/07-taming-the-model.md) (preamble types, logprobs, calibration, model choice, fine-tuning)
-- Vendor docs on structured outputs and sampling: [references.md](../references.md#vendor-guides)
+- Vendor docs on structured outputs and sampling: [references.md](../readme.md#vendor-guides)
 - Runnable: [notebooks/pe-chatgpt-intro.ipynb](../notebooks/pe-chatgpt-intro.md) (parameters) · [notebooks/pe-mixtral-introduction.ipynb](../notebooks/pe-mixtral-introduction.md) (open-weight model)
 
 ---

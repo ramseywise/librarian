@@ -1,8 +1,8 @@
 ---
-imported_hash: 79827fe817ba8e8c
+imported_hash: 9337d9a1d693d2a4
 title: 6 — Chaining and Workflows
 summary: Splitting into steps buys back strength. Each prompt has one job, a short context, and an output you can check.
-order: 20
+order: 19
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/06-chaining-and-workflows.md
@@ -129,7 +129,7 @@ Run **batch** for a known set of items (simpler) and **streaming** for open-ende
 ## Go deeper
 
 - Book: [Ch 9](../sources/prompt-eng-for-llms/09-llm-workflows.md) (Shopify DAG worked example, advanced workflows)
-- Anthropic, *Building Effective Agents*, and the chaining docs: [references.md](../references.md#vendor-guides)
+- Anthropic, *Building Effective Agents*, and the chaining docs: [references.md](../readme.md#vendor-guides)
 - Runnable: [notebooks/pe-chatgpt-langchain.ipynb](../notebooks/pe-chatgpt-langchain.md)
 
 ---

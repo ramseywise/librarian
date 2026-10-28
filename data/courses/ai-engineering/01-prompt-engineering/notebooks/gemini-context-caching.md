@@ -1,8 +1,8 @@
 ---
-imported_hash: ba6299f12e86f864
+imported_hash: 6f72ce173e9dffa4
 title: Wait for the file to finish processing
 summary: genai.configure(apikey=os.environ["GEMINIAPIKEY"])
-order: 3
+order: 2
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/gemini-context-caching.ipynb

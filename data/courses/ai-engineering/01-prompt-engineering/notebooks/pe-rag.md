@@ -1,8 +1,8 @@
 ---
-imported_hash: 3482dfb302224b8a
+imported_hash: b6698a93ffe41382
 title: Getting Started with RAG
 summary: While large language models (LLMs) show powerful capabilities that power advanced use cases, they suffer from issues such as factual inconsistency and hallucination.
-order: 13
+order: 12
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-rag.ipynb

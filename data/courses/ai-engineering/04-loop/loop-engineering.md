@@ -1,8 +1,8 @@
 ---
-imported_hash: 012c0a5fe58121c3
+imported_hash: dacd47dcbe2f33c4
 title: Loop Engineering — deep note
 summary: Loop engineering is designing the cycle that keeps an agent correct and productive when nobody is watching.
-order: 5
+order: 3
 kind: reading
 source: learn-ai-engineering/ai-engineering/04-loop/loop-engineering.md
 ---

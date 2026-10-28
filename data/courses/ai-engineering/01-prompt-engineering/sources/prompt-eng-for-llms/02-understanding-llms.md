@@ -1,8 +1,8 @@
 ---
-imported_hash: 99883d4772ff20c5
+imported_hash: 494a3d197b166504
 title: Ch 2 — Understanding LLMs
 summary: 'An LLM is a string-in, string-out service: prompt → completion.'
-order: 63
+order: 28
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/02-understanding-llms.md

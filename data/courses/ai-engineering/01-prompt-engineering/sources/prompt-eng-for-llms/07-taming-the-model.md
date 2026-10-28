@@ -1,8 +1,8 @@
 ---
-imported_hash: 0fdd433878c7694d
+imported_hash: 3968e02e0acddbfa
 title: Ch 7 — Taming the Model
 summary: 'A completion has four parts: preamble, relevant solution, recognizable end, fluffy postscript.'
-order: 68
+order: 33
 kind: reading
 section: Sources / Prompt eng for llms
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/07-taming-the-model.md
