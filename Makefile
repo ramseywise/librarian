@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: app app-build obsidian api ui mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
+.PHONY: app app-build obsidian api ui import-courses mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
 
 app:
 	docker compose up
@@ -15,6 +15,11 @@ obsidian:
 
 api:
 	cd app && uv run --extra api uvicorn backend.main:app --reload --port 8000
+
+# Sync coursework from ../learn-ai-engineering into data/courses/ (idempotent; local
+# edits are kept). Pass ARGS="--dry-run" or ARGS="--subject generative-ai".
+import-courses:
+	uv run python core/import_courses.py $(ARGS)
 
 mcp:
 	uv run python app/mcp_server/server.py
@@ -98,6 +103,7 @@ help:
 	@echo "mcp              — start MCP server (local, used by Claude Code)"
 	@echo "api              — start FastAPI backend directly (port 8000)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
+	@echo "import-courses   — sync ../learn-ai-engineering coursework into data/courses/"
 	@echo "install-ui       — npm install for app/frontend/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"

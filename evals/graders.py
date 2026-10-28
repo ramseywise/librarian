@@ -1,17 +1,27 @@
 """Answer-quality graders for the Librarian query/answer path.
 
-Two graders:
+Deterministic graders (no LLM calls, safe to run in CI):
 - RetrievalGrader: hit_rate and mean_reciprocal_rank against expected source pages.
 - AnswerGrader: token_overlap and semantic_similarity against expected answers.
+- AgentGrader: expected source-page recall over the pages a chat-agent run read/cited,
+  plus citation grounding.
 
-Both are deterministic (no LLM calls) and safe to run in CI.
+Billable (opt-in only):
+- LLMJudgeGrader: one model call per entry scoring the agent's answer against
+  expected_answer. Never constructed unless run_eval.py is given --judge.
 """
 
 from __future__ import annotations
 
+import json
 import math
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import anthropic
 
 # ---------------------------------------------------------------------------
 # Data contracts
@@ -261,6 +271,196 @@ class AnswerGrader:
 
 
 # ---------------------------------------------------------------------------
+# Agent grader (deterministic)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class AgentRun:
+    """What one chat-agent run produced, collected from its SSE events."""
+
+    answer: str
+    pages_read: list[str]
+    cited: list[str]
+    ungrounded: list[str]
+
+
+@dataclass
+class AgentGraderResult:
+    """Per-entry agent grader output."""
+
+    entry_id: str
+    read_recall: float  # |expected pages read| / |expected|
+    cited_recall: float  # |expected pages cited| / |expected|
+    grounded: bool  # no citation to a page left unread in this run
+    has_citation: bool
+    expected_ids: list[str]
+    pages_read: list[str]
+    cited: list[str]
+    ungrounded: list[str]
+
+
+@dataclass
+class AgentEvalReport:
+    """Aggregate agent-mode scores. Report-only — see run_eval.run_agent_eval."""
+
+    n_entries: int
+    mean_read_recall: float
+    mean_cited_recall: float
+    grounded_rate: float
+    citation_rate: float
+    mean_judge_score: float | None = None  # 1–5; None when --judge was not given
+    n_judged: int = 0
+    results: list[AgentGraderResult] = field(default_factory=list)
+    judge_results: list[JudgeResult] = field(default_factory=list)
+
+    def __str__(self) -> str:
+        lines = [
+            f"Entries evaluated : {self.n_entries}",
+            f"Read recall       : {self.mean_read_recall:.3f}",
+            f"Cited recall      : {self.mean_cited_recall:.3f}",
+            f"Grounded rate     : {self.grounded_rate:.3f}",
+            f"Citation rate     : {self.citation_rate:.3f}",
+        ]
+        if self.mean_judge_score is not None:
+            lines.append(
+                f"Judge score (1-5) : {self.mean_judge_score:.2f}  "
+                f"({self.n_judged}/{self.n_entries} parsed)"
+            )
+        lines.append("(agent mode is report-only — no floor until a baseline is measured)")
+        return "\n".join(lines)
+
+
+def _page_id(path: str) -> str:
+    """Golden source_pages are repo-relative paths; the agent speaks in filename stems."""
+    return Path(path).stem.lower()
+
+
+class AgentGrader:
+    """Grades a chat-agent run against an entry's expected source pages.
+
+    read_recall asks "did the agent find and read the right pages"; cited_recall asks
+    "did it attribute its answer to them". A run can read everything and cite nothing,
+    which is exactly the gap prompt-only grounding left unmeasured.
+    """
+
+    def grade_entry(self, entry: GoldenEntry, run: AgentRun) -> AgentGraderResult:
+        expected = list(dict.fromkeys(_page_id(p) for p in entry.source_pages))
+        read = {p.lower() for p in run.pages_read}
+        cited = {c.lower() for c in run.cited}
+
+        def recall(found: set[str]) -> float:
+            return sum(e in found for e in expected) / len(expected) if expected else 0.0
+
+        return AgentGraderResult(
+            entry_id=entry.id,
+            read_recall=recall(read),
+            cited_recall=recall(cited),
+            grounded=not run.ungrounded,
+            has_citation=bool(run.cited),
+            expected_ids=expected,
+            pages_read=run.pages_read,
+            cited=run.cited,
+            ungrounded=run.ungrounded,
+        )
+
+    def grade_batch(
+        self, entries: list[GoldenEntry], runs: list[AgentRun]
+    ) -> tuple[list[AgentGraderResult], dict[str, float]]:
+        """Returns (per_entry_results, means keyed by metric name)."""
+        results = [self.grade_entry(e, r) for e, r in zip(entries, runs, strict=True)]
+        n = len(results) or 1
+        means = {
+            "read_recall": sum(r.read_recall for r in results) / n,
+            "cited_recall": sum(r.cited_recall for r in results) / n,
+            "grounded_rate": sum(r.grounded for r in results) / n,
+            "citation_rate": sum(r.has_citation for r in results) / n,
+        }
+        return results, means
+
+
+# ---------------------------------------------------------------------------
+# LLM judge (billable — opt-in only)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class JudgeResult:
+    """Per-entry judge output. score is None when the reply could not be parsed."""
+
+    entry_id: str
+    score: int | None
+    rationale: str
+
+
+_JUDGE_SYSTEM = """You grade answers from a knowledge-base assistant against a reference answer.
+
+Score 1-5 for factual agreement with the reference:
+5 — every key claim in the reference is present and nothing contradicts it
+4 — most key claims present, nothing contradicts it
+3 — some key claims present, or a minor contradiction
+2 — few key claims present, or a material contradiction
+1 — wrong, off-topic, or a refusal
+
+Extra correct detail beyond the reference is not penalised. Ignore inline citation
+markers like [page:some-id] and ignore formatting.
+
+Reply with only a JSON object: {"score": <1-5>, "rationale": "<one sentence>"}"""
+
+_JSON_OBJ_RE = re.compile(r"\{.*\}", re.DOTALL)
+
+
+def parse_judge_reply(text: str) -> tuple[int | None, str]:
+    """Extract (score, rationale); (None, raw) if the reply is not a valid verdict.
+
+    Unparseable replies are excluded from the mean rather than scored 0 — a parse
+    failure is a judge problem, not evidence about the answer.
+    """
+    m = _JSON_OBJ_RE.search(text)
+    if not m:
+        return None, text.strip()
+    try:
+        obj = json.loads(m.group(0))
+    except json.JSONDecodeError:
+        return None, text.strip()
+    score = obj.get("score")
+    if not isinstance(score, int) or isinstance(score, bool) or not 1 <= score <= 5:
+        return None, text.strip()
+    return score, str(obj.get("rationale", ""))
+
+
+class LLMJudgeGrader:
+    """Scores an agent answer against expected_answer with one model call per entry.
+
+    BILLABLE. The client is injected (an anthropic.AsyncAnthropic in real use, a fake
+    in tests); nothing here reads the environment.
+    """
+
+    def __init__(
+        self, client: anthropic.AsyncAnthropic, model: str, max_tokens: int = 2048
+    ) -> None:
+        self.client = client
+        self.model = model
+        self.max_tokens = max_tokens
+
+    async def grade_entry(self, entry: GoldenEntry, answer: str) -> JudgeResult:
+        prompt = (
+            f"Question:\n{entry.query}\n\n"
+            f"Reference answer:\n{entry.expected_answer}\n\n"
+            f"Candidate answer:\n{answer}"
+        )
+        resp = await self.client.messages.create(
+            model=self.model,
+            max_tokens=self.max_tokens,
+            system=_JUDGE_SYSTEM,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        text = "".join(b.text for b in resp.content if b.type == "text")
+        score, rationale = parse_judge_reply(text)
+        return JudgeResult(entry_id=entry.id, score=score, rationale=rationale)
+
+
+# ---------------------------------------------------------------------------
 # Dataset loader
 # ---------------------------------------------------------------------------
 
@@ -272,9 +472,6 @@ def load_golden_dataset(path: str | None = None) -> list[GoldenEntry]:
         path: Optional explicit path. Defaults to golden_dataset.json
               in the same directory as this file.
     """
-    import json
-    from pathlib import Path
-
     if path is None:
         path = str(Path(__file__).parent / "golden_dataset.json")
 

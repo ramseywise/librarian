@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, type KeyboardEvent } from "react";
-import type { ChatMessage } from "../hooks/useChatStream";
+import type { ChatMessage, Grounding } from "../hooks/useChatStream";
 
 interface Props {
   messages: ChatMessage[];
@@ -53,6 +53,7 @@ export function ChatPanel({ messages, streaming, onSend, onClearHighlights }: Pr
               {m.content}
               {m.streaming && <span style={{ color: "#555" }}>▋</span>}
             </div>
+            {m.grounding && !m.streaming && <GroundingLine grounding={m.grounding} />}
           </div>
         ))}
         <div ref={bottomRef} />
@@ -83,6 +84,31 @@ export function ChatPanel({ messages, streaming, onSend, onClearHighlights }: Pr
     </div>
   );
 }
+
+// Sources the answer cited, plus any it cited without reading in that turn — the
+// backend's grounding check. Plain ids; the graph highlight already shows what was read.
+function GroundingLine({ grounding }: { grounding: Grounding }) {
+  const grounded = grounding.cited.filter((c) => !grounding.ungrounded.includes(c));
+  if (grounding.cited.length === 0) {
+    return <div style={groundingStyle}>no citations</div>;
+  }
+  return (
+    <div style={groundingStyle}>
+      {grounded.length > 0 && <div>sources: {grounded.join(", ")}</div>}
+      {grounding.ungrounded.length > 0 && (
+        <div style={{ color: "#c9a227" }}>
+          cited but not read: {grounding.ungrounded.join(", ")}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const groundingStyle: React.CSSProperties = {
+  marginTop: 6,
+  fontSize: 10,
+  color: "#666",
+};
 
 const panelStyle: React.CSSProperties = {
   display: "flex",

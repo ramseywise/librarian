@@ -24,6 +24,13 @@ substring-fallback path taken when the fts extension is unavailable.  Both are
 gated so a ranking change cannot improve one arm at the other's expense.  The
 `lex` and `graph` ablations remain report-only.
 
+*Agent* (`--agent`, BILLABLE): runs each query through the real chat agent
+(`app.backend.agent.run_agent_stream`, the path the UI uses) and grades the run with
+`AgentGrader` — expected source-page recall over pages read and pages cited, plus
+citation grounding. `--judge` adds `LLMJudgeGrader` (one more billable call per entry)
+scoring the answer against `expected_answer`. `--limit N` caps the entries run.
+Report-only: no floor until a baseline has been measured.
+
 Exit codes:
     0 — all scores at or above the applicable floors
     1 — one or more scores below floor (oracle mode, or a gated live arm)
@@ -31,23 +38,36 @@ Exit codes:
 
 from __future__ import annotations
 
+import argparse
+import asyncio
 import hashlib
 import json
+import os
 import sys
+from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 # Make the evals package importable when run as a script from the repo root.
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from evals.graders import (
+    AgentEvalReport,
+    AgentGrader,
+    AgentRun,
     AnswerGrader,
     EvalReport,
     GoldenEntry,
+    JudgeResult,
+    LLMJudgeGrader,
     RetrievalGrader,
     RetrievalResult,
     load_golden_dataset,
 )
+
+if TYPE_CHECKING:
+    import anthropic
 
 # ---------------------------------------------------------------------------
 # Regression floors (from data/wiki/rag/rag-evaluation.md — never lower these)
@@ -255,13 +275,155 @@ def _save_baseline(
 
 
 # ---------------------------------------------------------------------------
+# Agent mode (BILLABLE — every entry is a real agent run)
+# ---------------------------------------------------------------------------
+
+# Judge model: same default as the agent. Override with EVAL_JUDGE_MODEL to trade
+# judge quality for cost once the judge has been calibrated against human grades.
+JUDGE_MODEL = os.getenv("EVAL_JUDGE_MODEL", "claude-opus-5-5")
+
+
+async def collect_agent_run(
+    query: str, *, client: anthropic.AsyncAnthropic, model: str | None = None
+) -> AgentRun:
+    """Drive run_agent_stream to completion and collect what the grader needs.
+
+    Consumes the same SSE events the UI does, so the eval measures the shipped path.
+    Telemetry lines are tagged source="eval" so they can be filtered from chat traffic.
+    """
+    from app.backend import agent
+
+    tokens: list[str] = []
+    grounding: dict[str, list[str]] = {"pages_read": [], "cited": [], "ungrounded": []}
+    async for event in agent.run_agent_stream(
+        query, client=client, model=model or agent.MODEL, source="eval"
+    ):
+        if event["type"] == "token":
+            tokens.append(event["content"])
+        elif event["type"] == "grounding":
+            grounding = event
+    return AgentRun(
+        answer="".join(tokens),
+        pages_read=list(grounding["pages_read"]),
+        cited=list(grounding["cited"]),
+        ungrounded=list(grounding["ungrounded"]),
+    )
+
+
+async def run_agent_eval(
+    entries: list[GoldenEntry],
+    *,
+    client: anthropic.AsyncAnthropic,
+    model: str | None = None,
+    judge: LLMJudgeGrader | None = None,
+) -> AgentEvalReport:
+    """Run and grade the chat agent over `entries`.
+
+    Sequential on purpose: one entry at a time keeps rate-limit behaviour and per-run
+    telemetry easy to read, and the golden sets are small.
+
+    No gating threshold: agent-mode scores have never been measured, and a floor set
+    before a baseline exists is a guess. Gate it the way the live arms were gated —
+    measure, commit the baseline, then set floor = baseline - tolerance.
+    """
+    runs = [await collect_agent_run(e.query, client=client, model=model) for e in entries]
+    results, means = AgentGrader().grade_batch(entries, runs)
+
+    judge_results: list[JudgeResult] = []
+    if judge is not None:
+        judge_results = [
+            await judge.grade_entry(e, r.answer) for e, r in zip(entries, runs, strict=True)
+        ]
+    scores = [j.score for j in judge_results if j.score is not None]
+
+    return AgentEvalReport(
+        n_entries=len(entries),
+        mean_read_recall=means["read_recall"],
+        mean_cited_recall=means["cited_recall"],
+        grounded_rate=means["grounded_rate"],
+        citation_rate=means["citation_rate"],
+        mean_judge_score=sum(scores) / len(scores) if scores else None,
+        n_judged=len(scores),
+        results=results,
+        judge_results=judge_results,
+    )
+
+
+def _print_agent_failures(report: AgentEvalReport) -> None:
+    for r in report.results:
+        if r.read_recall < 1.0 or not r.grounded:
+            print(
+                f"  {r.entry_id}: read_recall={r.read_recall:.2f} "
+                f"cited_recall={r.cited_recall:.2f} expected={r.expected_ids} "
+                f"read={r.pages_read} ungrounded={r.ungrounded}"
+            )
+    for j in report.judge_results:
+        if j.score is None or j.score <= 2:
+            print(f"  {j.entry_id}: judge={j.score} — {j.rationale}")
+
+
+def _save_agent_baseline(
+    report: AgentEvalReport, out_dir: Path, *, dataset_file: Path, model: str
+) -> Path:
+    """Persist agent-mode scores + provenance. Not consumed by any gate yet."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    ts = datetime.now(tz=UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
+    prefix = "agent-multihop" if "multihop" in dataset_file.stem else "agent"
+    out_path = out_dir / f"{prefix}-baseline-{ts}.json"
+    data = {
+        "timestamp": ts,
+        "mode": "agent",
+        "model": model,
+        "judge_model": JUDGE_MODEL if report.judge_results else None,
+        "dataset": dataset_file.name,
+        "golden_set_hash": hashlib.sha256(dataset_file.read_bytes()).hexdigest(),
+        "n_entries": report.n_entries,
+        "mean_read_recall": report.mean_read_recall,
+        "mean_cited_recall": report.mean_cited_recall,
+        "grounded_rate": report.grounded_rate,
+        "citation_rate": report.citation_rate,
+        "mean_judge_score": report.mean_judge_score,
+        "n_judged": report.n_judged,
+        "per_entry": [asdict(r) for r in report.results],
+        "judge": [asdict(j) for j in report.judge_results],
+    }
+    out_path.write_text(json.dumps(data, indent=2))
+    return out_path
+
+
+def _main_agent(args: argparse.Namespace) -> None:
+    import anthropic
+    from dotenv import load_dotenv
+
+    from app.backend import agent
+
+    load_dotenv(Path(__file__).parent.parent / ".env")
+    entries = load_golden_dataset(args.dataset)
+    if args.limit:
+        entries = entries[: args.limit]
+
+    client = anthropic.AsyncAnthropic()
+    judge = LLMJudgeGrader(client, JUDGE_MODEL) if args.judge else None
+    report = asyncio.run(run_agent_eval(entries, client=client, judge=judge))
+    print(report)
+    if args.verbose:
+        _print_agent_failures(report)
+    if args.save_baseline:
+        path = _save_agent_baseline(
+            report,
+            Path(__file__).parent / "baselines",
+            dataset_file=_resolve_dataset_path(args.dataset),
+            model=agent.MODEL,
+        )
+        print(f"\nBaseline saved → {path}")
+
+
+# ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
 
 
 def main() -> None:
-    import argparse
-
     parser = argparse.ArgumentParser(
         description="Run answer-quality graders over the golden dataset."
     )
@@ -285,10 +447,31 @@ def main() -> None:
         "graph (sem + one-hop typed expansion), nofts (fts forced off — the "
         "degraded substring-fallback path)",
     )
+    parser.add_argument(
+        "--agent",
+        action="store_true",
+        help="BILLABLE: run each query through the chat agent and grade source-page "
+        "recall + citation grounding (report-only)",
+    )
+    parser.add_argument(
+        "--judge",
+        action="store_true",
+        help="BILLABLE: with --agent, also score answers with the LLM judge",
+    )
+    parser.add_argument(
+        "--limit", type=int, default=0, help="With --agent, run only the first N entries"
+    )
     args = parser.parse_args()
 
     if args.arm != "sem" and not args.live:
         parser.error("--arm applies to live mode only (add --live)")
+    if (args.judge or args.limit) and not args.agent:
+        parser.error("--judge and --limit apply to agent mode only (add --agent)")
+    if args.agent:
+        if args.live:
+            parser.error("--agent and --live are separate modes")
+        _main_agent(args)
+        return
 
     report = run(dataset_path=args.dataset, verbose=args.verbose, live=args.live, arm=args.arm)
     print(report)

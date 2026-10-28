@@ -136,6 +136,21 @@ published: YYYY-MM-DD
 - **ADRs live in their domain directory** — not a flat `decisions/` dir. Use `type: decision` tag.
 - **Projects stay flat** in `data/wiki/projects/` until a project exceeds ~5 pages.
 
+### `data/courses/` — Coursework (authored, editable)
+
+- Learning content served by the Courses tab of the graph UI (`app/backend/courses.py`).
+  It is **not** raw input and **not** compiled wiki: edit it directly, add lessons freely.
+- Layout: `<course>/<module>/[section dirs/]<lesson>.md`; `_course.md` and `_module.md`
+  hold `title` / `summary` / `order` frontmatter. Lesson frontmatter: `title`, `summary`,
+  `order`, optional `section`, `kind` (`reading` | `notebook`), and `wiki: [page-id, …]`
+  to link concepts explicitly. Inline `[[Wiki Page]]` links work too. Images go in the
+  module's `assets/` and are referenced relatively.
+- Seeded from `../learn-ai-engineering` by `make import-courses` (`core/import_courses.py`).
+  Files with an `imported_hash:` line are importer-generated; editing one turns it into a
+  local file the importer will never overwrite or delete. Files without the line are
+  hand-authored and are never touched. Do not hand-edit the `imported_hash` value.
+- Private and tombstoned wiki pages are never linked from lessons.
+
 ---
 
 ## Page Format (required on every wiki page)

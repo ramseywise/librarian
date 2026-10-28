@@ -1,10 +1,40 @@
 import { useState, useCallback } from "react";
 
+export interface Grounding {
+  cited: string[];
+  pagesRead: string[];
+  ungrounded: string[];
+}
+
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
   streaming: boolean;
+  error?: boolean;
+  grounding?: Grounding;
+}
+
+interface HistoryTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
+// Prior turns sent with each query. Only completed user→assistant pairs go out: an
+// errored or empty reply drops its pair, so the transcript alternates and ends on
+// "assistant" — the shape POST /api/chat/stream validates. The backend trims to its
+// own turn/char bounds, so no cap is applied here.
+function toHistory(messages: ChatMessage[]): HistoryTurn[] {
+  const turns: HistoryTurn[] = [];
+  for (let i = 0; i + 1 < messages.length; i++) {
+    const u = messages[i];
+    const a = messages[i + 1];
+    if (u.role !== "user" || a.role !== "assistant") continue;
+    if (a.error || a.streaming || !a.content.trim() || !u.content.trim()) continue;
+    turns.push({ role: "user", content: u.content }, { role: "assistant", content: a.content });
+    i++;
+  }
+  return turns;
 }
 
 export function useChatStream(onHighlight: (pages: string[]) => void) {
@@ -29,6 +59,7 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
         streaming: true,
       };
 
+      const history = toHistory(messages);
       setMessages((prev) => [...prev, userMsg, assistantMsg]);
       setStreaming(true);
 
@@ -36,9 +67,10 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
         const resp = await fetch("/api/chat/stream", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query }),
+          body: JSON.stringify({ query, history }),
         });
 
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         if (!resp.body) throw new Error("No response body");
 
         const reader = resp.body.getReader();
@@ -65,6 +97,15 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
                       ? { ...m, content: m.content + (event.content as string) }
                       : m
                   )
+                );
+              } else if (event.type === "grounding") {
+                const grounding: Grounding = {
+                  cited: event.cited as string[],
+                  pagesRead: event.pages_read as string[],
+                  ungrounded: event.ungrounded as string[],
+                };
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === assistantId ? { ...m, grounding } : m))
                 );
               } else if (event.type === "highlight") {
                 onHighlight(event.pages as string[]);
@@ -94,14 +135,14 @@ export function useChatStream(onHighlight: (pages: string[]) => void) {
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantId
-              ? { ...m, content: "[Error: could not reach API]", streaming: false }
+              ? { ...m, content: "[Error: could not reach API]", streaming: false, error: true }
               : m
           )
         );
         setStreaming(false);
       }
     },
-    [streaming, onHighlight]
+    [streaming, onHighlight, messages]
   );
 
   return { messages, streaming, sendQuery };
