@@ -2,7 +2,7 @@
 title: Eval Ladder
 tags: [eval, llm, planning]
 summary: A four-rung progression — manual review, golden-set grading, LLM-judge, user feedback — sequenced so each rung's failures supply the next rung's test cases, with an explicit "most POCs reach rung 2–3 and that's sufficient" stopping point.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
 ---
@@ -37,7 +37,7 @@ without rung 1 encodes what you *imagine* users ask.
 
 ## Where to stop
 
-> *"Most DSSG POCs reach step 2–3 by demo day — that's sufficient to prove the system
+> *"Most volunteer-team POCs reach step 2–3 by demo day — that's sufficient to prove the system
 > works reliably."*
 
 The ladder is not an obligation to reach rung 4. Rung 4 is unavailable pre-deployment by
@@ -77,3 +77,5 @@ replace any rung.
 - [[Eval Maturity Ladder]] — complements (the same staging read as infrastructure rather than grading approach)
 - [[Eval Harness Anatomy]] — depends-on (task/trial/grader vocabulary underneath every rung)
 - [[Online Eval Sampling]] — extends (rung 4 run continuously against production traffic)
+- [[Traffic-Gated Evaluation Ladder]] — extends (rungs gated on available traffic, with what each can and cannot decide)
+- [[Q0–Q5 Quality Ladder]] — alternative-to

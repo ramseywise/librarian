@@ -2,9 +2,10 @@
 title: Wander — Question-Generating Review Agent
 tags: [llm, pattern]
 summary: A review agent that produces 3–5 pointed questions instead of findings — surfacing intent, edge cases, walked-past decisions, blast radius, and the conspicuously absent thing — as the "yin" complement to defect scanners.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/guacamayo/agents/wander.md
+  - data/raw/claude-docs/galactus/agents/wander.md
 ---
 
 # Wander — Question-Generating Review Agent
@@ -63,7 +64,16 @@ and the test never written — absences leave no line to flag. Wander covers tha
 changing the output type rather than the checklist, and the anti-padding rule is what
 keeps it from filling the gap with noise.
 
+## Galactus variant
+
+The galactus copy keys questions as `WA-NNN`, and each carries a required **"Missing
+context:"** line naming what the author would have to supply for the question to close —
+so a question is a typed gap, not a rhetorical flourish.
+
 ## See Also
 - [[Parallel Dimension Scanner Architecture]] — extends
 - [[Merge Impact and Evidence State]] — extends
 - [[Claude Workflow System]] — instance-of
+- [[Rationale-Blind Worst-Case Review]] — alternative-to (worst-case consequences vs open questions)
+- [[Review Reporter Ground Rules]] — alternative-to
+- [[Review Model Tiering by Breadth and Severity Bias]] — related (small models drift wander questions back into defect reports)

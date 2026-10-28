@@ -2,10 +2,15 @@
 title: Librarian KB — Build Plan
 tags: [llm, infra, mcp, langgraph, rag, project]
 summary: Phased build plan for the Librarian KB — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phases 9–15 future.
-updated: 2026-04-25
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/docs/archived/obsidian-kb-plan.md
-  - raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
+  - data/raw/claude-docs/playground/docs/archived/obsidian-kb-plan.md
+  - data/raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
+  - data/raw/claude-docs/playground/master-plan.md
+  - data/raw/repos/librarian/README.md
+  - data/raw/repos/librarian/CLAUDE.md
+  - data/raw/repos/librarian/.claude--skills--seed-kb--SKILL.md
+  - data/raw/repos/librarian/.claude--skills--adk-context--SKILL.md
 ---
 
 # Librarian KB — Build Plan

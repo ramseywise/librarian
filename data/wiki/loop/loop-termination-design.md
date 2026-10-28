@@ -2,10 +2,14 @@
 title: Loop Termination Design
 tags: [llm, agents, infra, pattern]
 summary: "Stop rules are layered and independent — success verifier, iteration cap, budget cap, stall detector, escalation path — and the cap is the backstop, never the primary exit."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--README.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-14-orchestrator-design.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-orchestrator-design.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-14-pipeline-orchestration.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-pipeline-orchestration.md
 ---
 
 # Loop Termination Design
@@ -77,6 +81,23 @@ termination*:
 Both make the same design point: the framework gives you the cap for free and leaves the
 verifier to you, **which is exactly backwards from the order of importance.**
 
+## Exhaustion needs a legal destination (galactus)
+
+"Bound the attempts, then convert exhaustion into a typed result" is half the rule. The
+galactus control-plane design found the other half: a typed result with nowhere to go
+predicts its own failure — **an operator facing a stuck pipeline hand-edits the state field
+to unblock it**, routing around transition integrity, and the hand edit is
+indistinguishable from a real transition. So exhaustion was given a legal terminal: an
+otherwise-unclaimed `SUPERSEDED` state that requires a `Superseded-by:` pointer (to the
+re-scoped doc, the split docs, an upstream scope artifact, or `none — <reason>`). It is
+terminal for the document but not for the work, and forces the operator to record where the
+work went. The same mechanism carries escalation across a boundary the state machines don't
+share (build back to framing) without unifying their vocabularies.
+
+The bound's **value** should not be copied across loop types: a re-dispatch is cheap, a
+re-plan is a whole session; the design used 2 for review→plan with the second exhaustion
+producing "needs human re-scope."
+
 ## See Also
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Loop Engineering]] — part-of
@@ -84,3 +105,5 @@ verifier to you, **which is exactly backwards from the order of importance.**
 - [[Loop Detection and the Two-Retry Rule]] — complements
 - [[Agent Retry Taxonomy]] — complements
 - [[Verification Loops]] — depends-on
+- [[Map Every State to Its Writer]] — extends (the orphan state that became the exhaustion terminal)
+- [[Reproduce to Tell a Break From a Stuck Agent]] — extends (harness exhaustion masquerading as a break)

@@ -61,14 +61,6 @@
       "env": {
         "LINEAR_API_KEY": "${LINEAR_API_KEY}"
       }
-    },
-    "librarian": {
-      "command": "uv",
-      "args": ["run", "python", "app/mcp_server/server.py"],
-      "cwd": "/Users/wiseer/workspace/librarian",
-      "env": {
-        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}"
-      }
     }
   }
 }

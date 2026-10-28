@@ -5,7 +5,7 @@ import contextlib
 import json
 from collections.abc import AsyncIterator, Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, Self
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
@@ -13,11 +13,12 @@ from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, model_validator
 
 from shared.log_config import configure_logging, get_logger
 
 from .agent import run_agent_stream
+from .courses import router as courses_router
 from .wiki_parser import parse_wiki
 
 # At import, not in a main(): uvicorn imports this module as an ASGI app and never
@@ -78,6 +79,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(courses_router)
 
 
 @app.websocket("/ws")
@@ -121,14 +123,45 @@ async def umap_layout() -> dict[str, dict]:
     return compute_umap_positions()
 
 
+# Per-message bound at the boundary; the agent applies the tighter count/total-chars
+# trim (agent.MAX_HISTORY_TURNS / MAX_HISTORY_CHARS). This cap only rejects payloads
+# no real chat produces. The list cap is loose for the same reason — the client may
+# send its whole transcript and let the agent keep the tail.
+_MAX_MESSAGE_CHARS = 32_000
+_MAX_HISTORY_ITEMS = 200
+
+
+class ChatTurn(BaseModel):
+    """One prior text-only turn. Tool blocks never cross the wire."""
+
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=_MAX_MESSAGE_CHARS)
+
+
 class ChatRequest(BaseModel):
-    query: str
+    query: str = Field(min_length=1, max_length=_MAX_MESSAGE_CHARS)
+    history: list[ChatTurn] = Field(default_factory=list, max_length=_MAX_HISTORY_ITEMS)
+
+    @model_validator(mode="after")
+    def _alternating(self) -> Self:
+        # The new query is appended as the next user turn, so history must alternate
+        # user/assistant and end on assistant. Reject rather than repair: a malformed
+        # transcript means a client bug, and silently merging turns would hide it.
+        for i, turn in enumerate(self.history):
+            expected = "user" if i % 2 == 0 else "assistant"
+            if turn.role != expected:
+                raise ValueError(f"history[{i}] must have role {expected!r}")
+        if self.history and self.history[-1].role != "assistant":
+            raise ValueError("history must end with an assistant turn")
+        return self
 
 
 @app.post("/api/chat/stream")
 async def chat_stream(req: ChatRequest) -> StreamingResponse:
+    history = [t.model_dump() for t in req.history]
+
     async def generate() -> AsyncIterator[str]:
-        async for event in run_agent_stream(req.query):
+        async for event in run_agent_stream(req.query, history):
             yield f"data: {json.dumps(event)}\n\n"
 
     return StreamingResponse(

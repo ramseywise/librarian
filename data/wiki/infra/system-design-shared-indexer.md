@@ -1,15 +1,19 @@
 ---
 title: System Design — Shared Code-Index Service
 tags: [infra, rag, mcp, reference]
-summary: Interview-format system design writeup of the DSSG shared indexer — centralized indexer + query API with MCP as a thin read-only client, DuckDB single-writer risk, and the pgvector escape hatch.
-updated: 2026-07-17
+summary: Interview-format system design writeup of a volunteer org's shared team indexer — centralized indexer + query API with MCP as a thin read-only client, DuckDB single-writer risk, and the pgvector escape hatch.
+updated: 2026-10-17
 sources:
-  - raw/repos/librarian/CLAUDE.md
+  - data/raw/repos/librarian/CLAUDE.md
+  - data/raw/claude-docs/guacamayo/docs/state/research_agentic_kb_for_code.md
+  - data/raw/claude-docs/guacamayo/docs/state/project_librarian_dssg_extension.md
+  - data/raw/repos/librarian/.claude--docs--plans--codemap-code-index.md
+  - data/raw/repos/librarian/.claude--skills--codemap--SKILL.md
 ---
 
 # System Design — Shared Code-Index Service
 
-Interview-format writeup of a system actually designed (librarian → DSSG team knowledge base, decided 2026-07-15). Format: requirements → constraints → architecture → tradeoffs → scaling.
+Interview-format writeup of a system actually designed (librarian → a volunteer team's shared knowledge base, decided 2026-07-15). Format: requirements → constraints → architecture → tradeoffs → scaling.
 
 ## Requirements
 
@@ -45,3 +49,4 @@ Interview-format writeup of a system actually designed (librarian → DSSG team 
 - [[Librarian KB — Build Plan]] — extends
 - [[Librarian Project]]
 - [[Karpathy LLM Wiki Pattern]] — prerequisite-for
+- [[Code Retrieval: Structural Index and Agentic Search]] — prerequisite-for (the field survey behind the two-path split)

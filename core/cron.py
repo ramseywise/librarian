@@ -35,10 +35,10 @@ log = structlog.get_logger(__name__)
 CLAUDE_DIR = Path.home() / ".claude"
 SESSIONS_DIR = CLAUDE_DIR / "sessions"
 
-_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+_REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # Librarian raw/sessions/ — for wiki ingest
-LIBRARIAN_RAW_SESSIONS = _REPO_ROOT / "raw" / "sessions"
+LIBRARIAN_RAW_SESSIONS = _REPO_ROOT / "data" / "raw" / "sessions"
 LIBRARIAN_WIKI_DIR = _REPO_ROOT / "data" / "wiki"
 
 # Run summary — librarian's own operational telemetry, gitignored like data/sessions.db.

@@ -2,9 +2,10 @@
 title: RAG Eval Metrics Suite
 tags: [eval, rag, pattern]
 summary: Eight-metric RAG evaluation framework covering stakeholder quality (faithfulness, naturalness, completeness, relevance), retrieval quality (contextual relevance, recall, document precision), and system calibration — split between runtime-compatible and offline-only metrics.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/chat-agent/docs/eval/eval_metrics.md
+  - data/raw/claude-docs/chat-agent/docs/eval/eval_metrics.md
+  - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
 ---
 
 # RAG Eval Metrics Suite
@@ -177,6 +178,23 @@ Low Document Precision + high Contextual Relevance → source-targeting or ranki
 | −1.0 to −0.5 | Systematically inverted — HIGH answers are less complete |
 
 **Note:** Population-level metric only. Requires all three confidence tiers represented with ≥ 5 items each. Needs ~300+ item test set.
+
+**Cheaper variant without expected answers.** An agent that already emits a self-assessed
+`relevance_score` (0–1) can be calibrated against any existing quality grader instead of
+completeness-vs-reference: bucket the score into HIGH (≥0.7) / MEDIUM (0.4–0.7) / LOW (<0.4)
+and compute mean grounding ratio per bucket. Healthy when tiers rank-order with quality;
+broken when HIGH and LOW buckets score the same — the self-assessment adds no information.
+Build it as a **run-level aggregator**, not a per-item grader; it needs no new LLM calls.
+Exclude semantic-cache hits — they bypass the pipeline and never produce a confidence score.
+See [[Confidence That Is Not a Probability]] for checking the score is a probability at all.
+
+**Four evaluation planes.** Passage relevance (context precision), claim support
+(faithfulness / grounding), intent alignment and coverage (relevancy, completeness), and
+**confidence reliability** (this metric) are distinct; an audit of one project found the
+first three covered and the fourth missing. Also distinct and often confused by name:
+*retrieval* precision/recall/F1 (were the right URLs retrieved?) vs *response* F1
+(claim-level precision/recall against an expected answer, with hallucination count).
+Having the first says nothing about the second.
 
 ---
 

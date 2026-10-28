@@ -2,9 +2,11 @@
 title: Golden Set Mechanics
 tags: [eval, llm, reference]
 summary: The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-plan/references/golden-set-authoring.md
+  - data/raw/claude-docs/guacamayo/skills/workflow-plan/SKILL.md
 ---
 
 # Golden Set Mechanics
@@ -94,6 +96,18 @@ let a vendor tool own the specification.
 
 ---
 
+## Traceability and the authoring gate
+
+guacamayo's plan stage authors goldens from design-table rows with a `source_risk` field:
+the in-scope or open-question bullet the case traces to, quoted verbatim. A case that
+traces to nothing is a case nobody asked for, and the gate fails on an empty or unmatched
+`source_risk` at any count — which also makes padding visible as duplication. Grader is
+chosen per case, cheapest that can decide (`code` for substring/regex/enum/boolean,
+`judge` only for tone, completeness or reasoning); a case neither can decide is not ready.
+Gate thresholds: **<10 cases FAIL, 10–19 WARN, ≥20 PASS**, with positive and `must_not`
+cases balanced. As of 2026-08 no gate skill enforced this — the thresholds were an
+authoring target applied by hand.
+
 ## See Also
 - [[System Design — Unified Eval Harness]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] — prerequisite-for
@@ -109,3 +123,4 @@ let a vendor tool own the specification.
 - [[Conversational Test Fixture Design]] — alternative-to (fixture authoring when the input is dialogue)
 - [[Eval Suite Maintenance]] — extends (the eight authoring rules, incl. negative cases and the two-expert test)
 - [[Eval Non-Determinism]] — complements (a golden row is scored over k trials, not one)
+- [[Answer Criteria with Named Wrong Answers]] — extends (named wrong answers as adversarial case seeds)

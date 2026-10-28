@@ -2,10 +2,11 @@
 title: Data Engineering Foundations
 tags: [foundations, concept]
 summary: "The six stages of data engineering as a pipeline discipline — ingest, transform, orchestrate, warehouse, monitor, feature-serve — where each stage's job is to prepare data for the next, plus the modern-stack tools (DuckDB, Polars, Iceberg, Dagster) missing from Zoomcamp-era material."
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-engineering--README.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-21_data-engineering_inventory.md
 ---
 
 # Data Engineering Foundations
@@ -41,6 +42,23 @@ tooling, because from the pipeline's point of view a distribution shift and a br
 upstream feed are the same class of event: the data stopped looking like it used to. This
 is the pipeline-side counterpart to agent observability — see
 [[Observability and Runtime Patterns]].
+
+### Per-stage practice and the question interviewers probe
+
+| Stage | Practices that define it | What interviewers probe |
+|---|---|---|
+| Ingest | Idempotency (upserts, dedup keys), partitioning, freshness SLAs, CDC for operational sources | *"Idempotency is the word interviewers listen for"* |
+| Transform | SQL-first, versioned, tested models; Kimball modelling; all transforms in source control with CI tests | Layering (staging → core → marts) |
+| Orchestrate | Sensor triggers, backoff retries, task-state observability, scaling idle compute down | Backfill design, idempotent reruns |
+| Warehouse | Star schema, slowly changing dimensions (SCD), partitioning, ACID via lakehouse table formats | Partitioning strategy, cost per query |
+| Monitor | Expectations at ingest, lineage, PII classification, ML drift (input, concept, feedback-loop latency) | The monitoring hierarchy: SLO → alert → retrain trigger |
+| Feature-serve | Offline + online store, feature-code lineage, train/serve consistency; embeddings as features | *When* to adopt a feature store: only when features are reused across teams **and** train/serve skew already exists |
+
+The feature-store row works as an adoption test, not just a description. A feature store
+pays for itself only when both conditions hold. Adopting one before that adds
+infrastructure without a problem for it to solve. The source also notes that the toolset
+grew from three core tools (Hadoop, Spark, Kafka) to roughly thirty. That growth is the
+reason the stages are defined by responsibility and not by tool.
 
 ## Orchestration is a stage, not a tool
 
@@ -91,3 +109,5 @@ See [[RAG Eval Gate Contract]].
 - [[Observability and Runtime Patterns]] — instance-of (stage 5 monitoring, applied to agent runtimes)
 - [[RAG Eval Gate Contract]] — prerequisite-for (corpus quality as the first gate, fed by these pipelines)
 - [[Agent Retry Taxonomy]] — complements (retry semantics as a cross-layer design problem)
+- [[Data Clusters by Writer and Trust]] — extends (cluster tables by who writes them and how much you trust it)
+- [[Change the Channel, Not the Count]] — extends (source portfolio and rights as pipeline inputs)

@@ -2,16 +2,19 @@
 title: ADK Python API Reference
 tags: [adk, reference]
 summary: Quick reference for the Google ADK Python SDK — agent types, tools, state, callbacks, plugins, artifacts, memory, context caching, and context compaction.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/SKILL.md
-  - raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/references/python.md
-  - raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/references/docs-index.md
-  - raw/claude-docs/project-g/.agents/skills/adk-dev-guide/SKILL.md
-  - raw/agent-skills/adk-cheatsheet/SKILL.md
-  - raw/agent-skills/adk-cheatsheet/references/docs-index.md
-  - raw/agent-skills/adk-cheatsheet/references/python.md
-  - raw/claude-skills/google-adk/adk-python.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/SKILL.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/references/python.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-cheatsheet/references/docs-index.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-dev-guide/SKILL.md
+  - data/raw/agent-skills/adk-cheatsheet/SKILL.md
+  - data/raw/agent-skills/adk-cheatsheet/references/docs-index.md
+  - data/raw/agent-skills/adk-cheatsheet/references/python.md
+  - data/raw/claude-skills/google-adk/adk-python.md
+  - data/raw/claude-docs/playground/docs/frameworks/google-adk.md
+  - data/raw/repos/playground/.claude--docs--frameworks--google-adk.md
+  - data/raw/claude-docs/project-g/docs/frameworks/google-adk.md
 ---
 
 # ADK Python API Reference

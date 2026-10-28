@@ -2,7 +2,7 @@
 title: Sync as Render, Not Copy
 tags: [llm, patterns, pattern]
 summary: When one canonical source ships into a second tree that addresses it differently, the sync must transform link targets and variable names rather than mirror bytes — a byte-for-byte copy cannot serve both contexts, and hand-copied files drift backwards.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-19-agents-skills-sync.md
 ---
@@ -105,3 +105,5 @@ cost that looks identical to an accident unless someone writes down which it was
 - [[Template Migrations for Structural Moves]] — complements
 - [[AI Project Template Scaffold]] — instance-of
 - [[Multi-Repo Claude Organization]] — prerequisite-for (the reservoir/template layering)
+- [[Vendored Hooks Resolve to the Global Copy]] — instance-of (vendored hooks kept byte-identical to canon by a parity check)
+- [[Name-Only Sync Guards Miss Content Drift]] — extends (what the sync guard must check beyond names)

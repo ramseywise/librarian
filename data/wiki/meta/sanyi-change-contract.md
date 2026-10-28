@@ -2,17 +2,46 @@
 title: SANYI Change-Contract System
 tags: [meta, pattern, concept]
 summary: Three-layer change-contract system (变易/简易/不易) for agent architectures — classifies every component into ever-changing, simple, or invariant, then enforces cross-layer discipline via init/review/audit modes.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/project-g/skills/SANYI/SKILL.md
-  - raw/claude-docs/project-g/skills/SANYI/README.md
-  - raw/claude-docs/project-g/skills/SANYI/references/contract-spec.md
-  - raw/claude-docs/project-g/skills/SANYI/references/interview-guide.md
-  - raw/claude-docs/project-g/skills/SANYI/references/violations.md
+  - data/raw/claude-docs/project-g/skills/SANYI/SKILL.md
+  - data/raw/claude-docs/project-g/skills/SANYI/README.md
+  - data/raw/claude-docs/project-g/skills/SANYI/references/contract-spec.md
+  - data/raw/claude-docs/project-g/skills/SANYI/references/interview-guide.md
+  - data/raw/claude-docs/project-g/skills/SANYI/references/violations.md
   - data/raw/claude-docs/Parallax/agents/sanyi-review.md
+  - data/raw/claude-docs/ai-project-template/docs/research/2026-08-29_diskoe-parity_template-conventions.md
   - data/raw/claude-docs/Parallax/agents/accountability-safeguards.md
   - data/raw/claude-docs/Parallax/skills/sanyi/SKILL.md
   - data/raw/claude-docs/Parallax/skills/accountability-safeguards/SKILL.md
+  - data/raw/claude-docs/akira/skills/contract/SKILL.md
+  - data/raw/claude-docs/diskoe/skills/contract/SKILL.md
+  - data/raw/claude-docs/kiez-archive/skills/contract/SKILL.md
+  - data/raw/claude-docs/playground/skills/contract/SKILL.md
+  - data/raw/claude-docs/akira/skills/contract/references/interview-guide.md
+  - data/raw/claude-docs/diskoe/skills/contract/references/interview-guide.md
+  - data/raw/claude-docs/kiez-archive/skills/contract/references/interview-guide.md
+  - data/raw/claude-docs/playground/skills/contract/references/interview-guide.md
+  - data/raw/claude-docs/akira/skills/contract/references/violations.md
+  - data/raw/claude-docs/diskoe/skills/contract/references/violations.md
+  - data/raw/claude-docs/kiez-archive/skills/contract/references/violations.md
+  - data/raw/claude-docs/playground/skills/contract/references/violations.md
+  - data/raw/claude-docs/akira/skills/review-contracts/SKILL.md
+  - data/raw/claude-docs/diskoe/skills/review-contracts/SKILL.md
+  - data/raw/claude-docs/kiez-archive/skills/review-contracts/SKILL.md
+  - data/raw/claude-docs/playground/skills/review-contracts/SKILL.md
+  - data/raw/claude-docs/galactus/skills/review-contracts/SKILL.md
+  - data/raw/claude-docs/galactus/skills/review-contracts/references/violations.md
+  - data/raw/claude-docs/guacamayo/skills/contracts/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/review-contracts/SKILL.md
+  - data/raw/claude-docs/guacamayo/docs/state/project_contracts_rollout.md
+  - data/raw/repos/akira/SANYI.md
+  - data/raw/repos/diskoe/SANYI.md
+  - data/raw/repos/atlas/SANYI.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-20-gh-4-akira-sanyi-research.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-20-gh-4-akira-sanyi-research.md
+  - data/raw/repos/playground/SANYI.md
+  - data/raw/repos/librarian/SANYI.md
 ---
 
 # SANYI Change-Contract System
@@ -36,7 +65,7 @@ sources:
 
 ## Violation Codes (per `violations.md` — authoritative)
 
-> Resolved 2026-07-17: an earlier ingest (2026-07-05, from `SKILL.md`/`README.md`) carried a pre-reconciliation taxonomy that assigned different meanings to the same codes. `references/violations.md` declares itself authoritative and the live skill copies match it, so its table stands. See [[Conflicts]] for the resolution record.
+> Resolved 2026-07-17: an earlier ingest (2026-07-05, from `SKILL.md`/`README.md`) carried a pre-reconciliation taxonomy that assigned different meanings to the same codes. `references/violations.md` declares itself authoritative and the live skill copies match it, so its table stands. See the conflicts log for the resolution record.
 
 Codes are keyed by the layer whose contract is violated — BY-\* are Buyi blockers, JY-\* are Jianyi entropy warnings, BN-1 is the Bianyi info-level finding.
 
@@ -134,7 +163,7 @@ Buyi is the one layer machines can't infer (business/safety intent isn't in any 
 
 **Anti-staleness rules:** every review/audit run updates `current` stamps (audit also refreshes `last-audit`); a dangling `paths` match (UN-2) is always reported, never silently skipped; Pending defaults to strictest enforcement so parking is safe but not free; Debt excludes known violations from future reports so reviews stay quiet about history and loud about news; layer migrations must leave a `## Migrations` record — an unrecorded move is MG-1, except the one direction that's always the more specific BY-2 blocker: silently making an invariant bypassable.
 
-> **Note:** the original `SKILL.md`/`README.md` ingest described `SANYI.md`'s sections differently (`## Components`, `## Buyi Enforcement`, `## Migrations`, `## Pending Violations`, with no per-entry field spec). Resolved 2026-07-17 in `contract-spec.md`'s favor — its six exact-match sections are what the live skill parses. The "SANYI.md Format" section above is authoritative; see [[Conflicts]] for the resolution record.
+> **Note:** the original `SKILL.md`/`README.md` ingest described `SANYI.md`'s sections differently (`## Components`, `## Buyi Enforcement`, `## Migrations`, `## Pending Violations`, with no per-entry field spec). Resolved 2026-07-17 in `contract-spec.md`'s favor — its six exact-match sections are what the live skill parses. The "SANYI.md Format" section above is authoritative; see the conflicts log for the resolution record.
 
 ## Vendoring into consuming systems
 
@@ -150,6 +179,16 @@ preloaded in-context (which is what lets `sanyi-review` draft contract entries n
 subagent can — see [[Corrective Follow-Up Dispatch]]), at the cost of a silent staleness
 window whenever upstream moves. Nothing detects the drift; the comment is the entire
 mechanism.
+
+### Templating the contract itself (diskoe parity research)
+
+A later audit of a mature consumer (diskoe) found its `SANYI.md` was written at maturity,
+after the component boundaries had settled — not at project genesis. Shipping a
+`SANYI.md.jinja` from the scaffold therefore carries a specific risk: a contract drafted
+before any component exists is either blank or filled with guesses, and both get ignored.
+The recorded mitigation is to template only the skeleton and the rule that matters most
+(the BY-4 rule, kept as a template comment so it survives an empty table), and to let the
+contract fill in once the three layers are observable in the code.
 
 ## Consumption by external review systems
 
@@ -187,6 +226,73 @@ to classify it. Where no `SANYI.md` exists at all, the recommendation degrades t
 [[Agent Quality Review Checklist]], whose highest-value check this converts into a durable
 declaration.
 
+## Spec-fed variant (akira, 2026-10)
+
+The akira copy localizes the layer names but keeps the BY-/JY-/BN- code letters so findings
+stay portable across repos (a merge-impact table keys on them). Authoring (`/contract`) and
+enforcement (`review-contracts`) are separate skills sharing one violations taxonomy.
+Initialization runs **specs → code → human**: candidate invariants come from spec guarantees,
+each with a citation; post-mortems are the richest source because a rule earned by a defect
+has already passed the admission test. Out-of-scope is not an invariant, and specs are
+inputs, never outputs. Seeded debt must be honest because enforcement reports only NEW
+violations, and a symbol-scoped glob must still match a relocated constant. Worked case: a
+documented column that never existed made one filter fail closed and a content-hash read
+fail open; a schema-drift check in the gate is the guard.
+
+## Review-dimension notes (galactus review-contracts)
+
+The galactus `review-contracts` dimension carries the violation table as a read-only
+reporter and adds three points:
+
+- **"The enforcer must not rewrite the verdict."** Auto-fixing a Buyi constraint is itself a
+  Buyi violation. A Jianyi fix needs redesign or a justification, not field deletion ("a
+  tool that deletes schema fields to satisfy a budget is a disaster generator"). Even BN-1,
+  the one mechanical fix, is out of scope for a review dimension, which reports and never
+  edits.
+- **Relocating a constant can drop it out of coverage.** When the covering contract entry is
+  symbol-scoped (`backend/config.py#ESCALATION_*`), a moved constant's name must still match
+  the glob, or the move silently takes the value out of the contract.
+- **Deferred and rejected scope is written down so it cannot silently come back.**
+  Deterministic flow-budget metrics (graph fan-out, depth, cycles) are deferred until
+  scripts can count them. Buyi sub-tiers stay rejected (2026-06-13).
+
+## A filled contract (akira SANYI.md)
+
+The akira repo's contract file shows the format under real load. Each Buyi entry carries
+a `budget` and a dated `current` baseline, and cites the defect that earned it. The
+**Pending** layer holds a disputed entry until a migration lands: a set of dependency rules
+that read as Buyi but were enforced only by review mid-refactor. The **Debt** section
+records three BY-4 entries. An example is a tap-count budget declared in the requirements
+and measured by nothing: "an unmeasured budget is not a budget", so it is recorded as debt,
+not promoted to Buyi.
+
+## A ratified contract (librarian SANYI.md v2)
+
+librarian's first contract (v1) was written from intent. When the init interview was
+finally held (2026-07-20), every v1 entry was checked against the implementation. **Four
+of five were false as written.** v2's rule: nothing counts as "already true" unless it
+carries an evidence line backed by a test. Entries that state intent the code does not
+yet meet are marked TARGET and carried as debt. All four BY-4 debts were cured the same
+day. What the re-verification caught:
+
+- **The invariant was worded wrong.** "data/raw/ is append-only" was contradicted by
+  design by nine ETL writers. The enforceable invariant is **no-mutate, not no-write**:
+  ingest may create files, and nothing may rewrite them. A blanket write-block would
+  have broken every ingest. The PreToolUse hook enforces exactly that.
+- **A guard covered one read path out of two.** The private-page exclusion gated the MCP
+  server, but the chat agent reached the wiki through its own `rglob` and served private
+  pages into the chat panel ([[MCP Server Security Patterns]]).
+- **A check was dead without anyone noticing.** The lint hook used `grep -oP`, which BSD
+  grep on macOS does not support. Under `set -e` the hook aborted before the orphan check
+  ever ran.
+- **The budget was measured on the wrong scope.** v1 recorded a 5-tool MCP budget by
+  counting one file. A second module registered 7 more, so the real count was already 12,
+  140% of a budget nobody had noticed. v2 records 12 and requires justification for
+  additions.
+
+The lesson generalises: a contract written without measurement is a list of beliefs, and
+its first real audit is likely to falsify most of it.
+
 ## See Also
 - [[ADK Context Engineering]]
 - [[Input Guardrails Pipeline]]
@@ -202,3 +308,8 @@ declaration.
 - [[Corrective Follow-Up Dispatch]] — extends (safeguard gap routed to `sanyi-review` for a candidate entry)
 - [[Agent Quality Review Checklist]] — extends (prose-only safeguard as a candidate Buyi entry)
 - [[Parallax]] — alternative-to (SANYI governs the contract; Parallax judges the change)
+- [[Prototype Pipeline Handoff Signals]] — extends (the pipeline exit should generate the SANYI skeleton)
+- [[Contract-Anchored Findings Get Fixed]] — prerequisite-for (measured fix rate of contract-cited findings)
+- [[Cost-Leveled Review Ladder]] — related (L3 runs the full audit; why akira and SANYI do not share a scan layer)
+- [[A Partial Fix of a Duplicated Doc Is Worse Than None]] — related (duplicated contract docs drift when one copy is fixed)
+- [[A Clean Contract Review Is Only as Wide as the Contract]] — related (contract gaps surfaced by clean reviews; amendment with conditions)

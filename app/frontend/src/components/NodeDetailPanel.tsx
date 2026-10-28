@@ -1,4 +1,8 @@
+import { useEffect, useState } from "react";
 import type { WikiNodeData } from "../types";
+import type { LessonOutline } from "../courses/types";
+
+type ConceptLesson = LessonOutline & { course: string };
 
 const TAG_COLORS: Record<string, string> = {
   // Domain tags
@@ -25,9 +29,11 @@ interface Props {
   onClose: () => void;
   onTagClick?: (tag: string) => void;
   activeTags?: Set<string>;
+  onOpenLesson?: (lessonId: string) => void;
 }
 
-export function NodeDetailPanel({ data, highlighted, lastQuery, onClose, onTagClick, activeTags }: Props) {
+export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose, onTagClick, activeTags, onOpenLesson }: Props) {
+  const lessons = useConceptLessons(nodeId);
   const primaryDomain = (data.domain as string[])[0] ?? "infra";
   const color = TAG_COLORS[primaryDomain] ?? "#607D8B";
   const fileName = data.path ? String(data.path).split("/").pop() : null;
@@ -97,6 +103,22 @@ export function NodeDetailPanel({ data, highlighted, lastQuery, onClose, onTagCl
         })}
       </div>
 
+      {/* Course lessons that cover this concept */}
+      {lessons.length > 0 && onOpenLesson && (
+        <div style={{ padding: "0 20px 14px" }}>
+          <div style={{ fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
+            Lessons
+          </div>
+          {lessons.slice(0, 6).map((l) => (
+            <button key={l.id} onClick={() => onOpenLesson(l.id)} style={lessonBtnStyle}>
+              <span style={{ color: "#64b5f6" }}>{l.title}</span>
+              <span style={{ color: "#555", marginLeft: 6 }}>{l.course}</span>
+            </button>
+          ))}
+          {lessons.length > 6 && <div style={{ fontSize: 11, color: "#555" }}>+{lessons.length - 6} more</div>}
+        </div>
+      )}
+
       {/* Footer meta */}
       <div style={footerStyle}>
         {fileName && (
@@ -113,6 +135,31 @@ export function NodeDetailPanel({ data, highlighted, lastQuery, onClose, onTagCl
     </div>
   );
 }
+
+function useConceptLessons(pageId: string): ConceptLesson[] {
+  const [lessons, setLessons] = useState<ConceptLesson[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    setLessons([]);
+    fetch(`/api/courses/concept/${encodeURIComponent(pageId)}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((ls) => !cancelled && setLessons(ls))
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [pageId]);
+  return lessons;
+}
+
+const lessonBtnStyle: React.CSSProperties = {
+  display: "block",
+  background: "none",
+  border: "none",
+  padding: "3px 0",
+  fontSize: 12,
+  textAlign: "left",
+  cursor: "pointer",
+  fontFamily: "inherit",
+};
 
 const panelStyle: React.CSSProperties = {
   position: "absolute",

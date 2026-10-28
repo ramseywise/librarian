@@ -2,9 +2,10 @@
 title: Agentic Engineering and the New SDLC
 tags: [llm, agents, infra, concept]
 summary: "The vibe-coding-to-agentic-engineering stakes spectrum, how each SDLC phase shifts when agents do the implementation, the conductor/orchestrator role split, the 80% problem, and the TCO argument for investing in the harness."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agents-google-adk.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-google-adk.md
 ---
 
 # Agentic Engineering and the New SDLC

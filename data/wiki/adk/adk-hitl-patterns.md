@@ -2,9 +2,11 @@
 title: HITL and Interrupt Patterns
 tags: [adk, langgraph, pattern, concept]
 summary: Six HITL patterns for LangGraph agents — static breakpoints, dynamic interrupt(), clarification loop (budget-bounded), scheduler confirmation gate, tool approval for irreversible actions, and time-travel/replay/fork.
-updated: 2026-07-05
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/docs/research/agentic-ai/hitl-and-interrupts.md
+  - data/raw/articles/2026-07-19-ai-agents-in-langgraph.md
+  - data/raw/claude-docs/playground/docs/research/agentic-ai/hitl-and-interrupts.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-hitl.md
 ---
 
 # HITL and Interrupt Patterns
@@ -114,6 +116,20 @@ def supervisor_node(state):
     chosen = available[0]
     return {"next_agent": chosen, "tried_agents": state["tried_agents"] + [chosen]}
 ```
+
+## Pattern 6: Resume-Value Triage (Confidence Gate)
+
+A scaffolded HITL gate (atlas `new-agent` cap-hitl spec) that is **env-gated and default-off**
+(`HITL_GATES_ENABLED`, `HITL_CONFIDENCE_THRESHOLD=0.3`). It interrupts only when
+`confidence_score` falls below the threshold or the classifier returned `intent == "ambiguous"`;
+otherwise it passes through. The resume value from `Command(resume=...)` is triaged three ways:
+
+- `pass` — keep the agent's best guess unchanged.
+- A valid intent token — override the classification and set `confidence_score=1.0`.
+- Any other text — treat it as a clarification that replaces the query.
+
+Every path sets `hitl_reviewed=True`, so downstream nodes (and evals) can tell a human-touched
+turn from an autonomous one. One free-text channel carries three intents without a form.
 
 ## LangGraph HITL Summary
 

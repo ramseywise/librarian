@@ -2,9 +2,16 @@
 title: Asked vs Derived Scaffold Variables
 tags: [infra, pattern]
 summary: A scaffold interview that splits ~20 template variables into six asked out loud, eight derived-then-confirmed, and the rest left silently defaulted — with the split decided by blast radius of a wrong guess, not by how many variables exist.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-genesis/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/design-prototype/SKILL.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-19-genesis-lifecycle-architecture.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-19-genesis-lifecycle-architecture.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-15-fast-loop-borrowables.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-15-fast-loop-borrowables.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-15-gal-27-band-contract-hitl-gates.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-15-gal-27-band-contract-hitl-gates.md
 ---
 
 # Asked vs Derived Scaffold Variables
@@ -99,6 +106,23 @@ files... If you're tempted to add phases, growth logs, or reflection steps here,
 scope creep back toward the thing that was explicitly ruled out — don't."* An explicit
 anti-scope pointing at the plan doc that decided it.
 
+## Asked set is not the interviewed set
+
+Shrinking the copier prompts did not shrink what genesis has to learn: the design
+interview still gathers everything the derivations depend on, then passes it as
+`--data-file`. A variable is answer-carrying if a human ever supplied its value, whether
+through a prompt or the interview — which is what matters for renames (see
+[[Template Migrations for Structural Moves]]).
+
+
+## Propose-and-confirm and its warning sign (galactus, 2026-08)
+
+A triage band at intake proposes values derived from context and asks the operator to
+confirm. **A confirmation costs seconds; an open question costs minutes.** That asymmetry
+is what fits intake into a 5–10 minute band. The risk is that propose-and-confirm drifts
+into leading the operator to the proposal. The mitigation is that decision records capture
+confirmed versus overridden, and **an override rate of zero is itself the warning sign**.
+
 ## See Also
 - [[Copier Re-Entry as Capability Path]] — extends
 - [[Scope-POC Design Interview]] — prerequisite-for (DESIGN.md pre-answers the interview)
@@ -110,3 +134,7 @@ anti-scope pointing at the plan doc that decided it.
 - [[Deployment Topology Ladder]] — extends (topology choice writes five coupled parameters)
 - [[Derived-and-Hidden Design Decisions]] — extends (when derivation crosses into hiding a design decision)
 - [[Block Attribute Inversion]] — complements (the derive-then-confirm asymmetry applied to design metadata)
+- [[Test Derived Defaults Without Overrides]] — extends (the test obligation derived variables create)
+- [[Build the Checker Before the Generator]] — extends (the same prototype skill's build-order rule)
+- [[Changing a Derived Default Is a Migration]] — extends (derived defaults are re-derived on every update)
+- [[Hoist Irreversible Decisions to the Attended Band]] — extends (propose-and-confirm is how hoisted decisions stay cheap)

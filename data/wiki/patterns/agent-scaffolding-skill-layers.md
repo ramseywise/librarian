@@ -2,14 +2,31 @@
 title: Agent Scaffolding Skill Layers
 tags: [pattern, context-management]
 summary: A three-layer Claude Code skill design for scaffolding agents — a generic parallel-subagent factory (L1), standalone capability add-skills that read the target before generating (L2), and a domain-specific bundle that orchestrates L2 skills in sequence (L3).
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/project-g/skills/agent-creation/new-agent/SKILL.md
-  - raw/claude-docs/project-g/skills/agent-creation/new-support-agent/SKILL.md
-  - raw/claude-docs/project-g/skills/agent-creation/add-rag/SKILL.md
-  - raw/claude-docs/project-g/skills/agent-creation/add-guardrails/SKILL.md
-  - raw/claude-docs/project-g/skills/agent-creation/add-hitl/SKILL.md
-  - raw/claude-docs/project-g/skills/agent-creation/add-eval/SKILL.md
+  - data/raw/claude-docs/playground/skills/agent-creation/new-support-agent/SKILL.md
+  - data/raw/claude-docs/playground/skills/agent-creation/add-rag/SKILL.md
+  - data/raw/claude-docs/playground/skills/agent-creation/add-hitl/SKILL.md
+  - data/raw/claude-docs/playground/skills/agent-creation/add-guardrails/SKILL.md
+  - data/raw/claude-docs/playground/skills/agent-creation/add-eval/SKILL.md
+  - data/raw/claude-docs/project-g/skills/agent-creation/new-agent/SKILL.md
+  - data/raw/claude-docs/project-g/skills/agent-creation/new-support-agent/SKILL.md
+  - data/raw/claude-docs/project-g/skills/agent-creation/add-rag/SKILL.md
+  - data/raw/claude-docs/project-g/skills/agent-creation/add-guardrails/SKILL.md
+  - data/raw/claude-docs/project-g/skills/agent-creation/add-hitl/SKILL.md
+  - data/raw/claude-docs/project-g/skills/agent-creation/add-eval/SKILL.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--SKILL.md
+  - data/raw/repos/atlas/.agents--skills--langgraph-scaffold--SKILL.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-genai.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-hitl.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-kg.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-langchain.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-rag.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-rlhf.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-search.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-streaming.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-vision.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--infra.md
 ---
 
 # Agent Scaffolding Skill Layers
@@ -62,13 +79,26 @@ Reach for the three-layer split when:
 - Multiple domain archetypes exist (support agent, forecasting agent, ops agent) that differ only in *which* capabilities they bundle and in what order — L3 skills are then thin compositions, not new logic.
 - Scaffolding a full agent from scratch is common enough to be worth the parallel-subagent investment (L1) — for a one-off agent, a single sequential skill is simpler.
 
+## Variant: thin orchestrator over a shared reference library (atlas)
+
+Atlas's `/new-agent` is a different cut of the same idea. The orchestrator holds no
+framework knowledge. It decides the framework, never silently defaulting, and then follows
+a scaffold skill in a tool-agnostic `.agents/skills/` library. Its LangGraph scaffold writes
+a `DESIGN_SPEC.md` first and refuses `InMemorySaver` as the only checkpointer when the spec
+needs production persistence. It always threads `thread_id` through a service entrypoint
+and asks before choosing a deployment shape. The final report must name every requirement
+the scaffold did not implement rather than dropping it silently.
+
+Its capability specs are per-token code templates (`specs/cap-<token>.md`) that the
+orchestrator splices in: `rag`, `hitl`, `streaming` and `infra`, plus `genai`, `kg`,
+`langchain`, `rlhf`, `search` and `vision`. The `hitl` spec is a default-off,
+env-gated confidence gate (see [[HITL and Interrupt Patterns]]).
+
 ## See Also
 - [[Multi-Agent Role Specialization]] <!-- auto-linked -->
 - [[Skill Preloading via Agent Definition]] <!-- auto-linked -->
 - [[VA Product Design Patterns]] <!-- auto-linked -->
-- [[project-g Project]] — the concrete instance this pattern was extracted from (`agent-creation/` skill family)
-- [[VA Bedrock KB Reference]] — the RAG capability's generated retrieval-module template
-- [[project-g Safeguards Architecture]] — the guardrails capability's 5-layer target
 - [[Send API Fan-out]] — the same parallel-dispatch discipline applied to LangGraph graph execution
 - [[Multi-Repo Claude Organization]] — the broader skill-scope (global vs per-repo) decision this pattern lives inside
 - [[SKILL.md Pattern]]
+- [[Atlas Project]] — instance-of

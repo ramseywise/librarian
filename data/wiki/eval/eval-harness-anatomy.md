@@ -2,10 +2,11 @@
 title: Eval Harness Anatomy
 tags: [eval, llm, agents, reference]
 summary: "Task, trial, grader, trajectory, outcome — and the separation that makes the whole thing work: the evaluation harness treats the agent harness as the system under test."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--README.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
 ---
 
 # Eval Harness Anatomy

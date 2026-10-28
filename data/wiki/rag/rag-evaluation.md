@@ -2,13 +2,13 @@
 title: RAG Evaluation
 tags: [rag, eval, concept]
 summary: Three-tier evaluation architecture for RAG pipelines — golden datasets, LLM-as-judge, failure clustering, ragas vs deepeval, and retrieval lift measurement.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/rag-agent-template-research.md
-  - raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md
-  - raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
-  - raw/linear/2026-04-24-evaluation-and-improvement.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
+  - data/raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
+  - data/raw/linear/2026-04-24-evaluation-and-improvement.md
 ---
 
 # RAG Evaluation
@@ -240,7 +240,7 @@ For product-embedded RAG, the retrieval-level metrics (hit_rate, MRR) need to ma
 
 Before launching a new system, establish a performance baseline using the **existing system's conversation data** — not synthetic golden sets. This gives a concrete "beat this" target.
 
-Pattern from [[Evaluation & Improvement Project (VIR)]]:
+Pattern from Evaluation & Improvement Project (VIR):
 - Export historical conversations from the prior system (BookKeeping Hero in this case)
 - Run EDA to understand conversation structure, quality distribution, and failure modes
 - Extract explicit feedback signals (thumbs up/down) as gold labels — these are real user judgements, not annotator opinions
@@ -276,5 +276,4 @@ This is especially important for edge cases — judge prompts optimized on avera
 - [[Librarian RAG Architecture]]
 - [[Listen-Wiseer Project]]
 - [[HITL Annotation Pipeline]]
-- [[Evaluation & Improvement Project (VIR)]]
 - [[RAG Architecture Selection]] — prerequisite-for (component gates diagnose which failure an architecture change should target)

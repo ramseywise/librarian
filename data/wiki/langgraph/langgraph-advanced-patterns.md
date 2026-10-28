@@ -2,15 +2,20 @@
 title: LangGraph Advanced Patterns
 tags: [langgraph, pattern]
 summary: Advanced LangGraph patterns beyond the basics — subgraphs, Send API fan-out, streaming modes, time-travel, breakpoints/interrupts, error handling, and Plan-and-Execute.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/agentic-rag-copilot-research.md
-  - raw/playground-docs/adk-samples-patterns-analysis.md
-  - raw/playground-docs/rag-agent-template-research.md
-  - raw/gdrive/2026-04-24-langgraph-yan.md
-  - raw/agent-skills/langgraph-fundamentals/SKILL.md
-  - raw/agent-skills/langgraph-human-in-the-loop/SKILL.md
-  - raw/claude-skills/langgraph/langgraph.md
+  - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
+  - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
+  - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
+  - data/raw/gdrive/2026-04-24-langgraph-yan.md
+  - data/raw/agent-skills/langgraph-fundamentals/SKILL.md
+  - data/raw/agent-skills/langgraph-human-in-the-loop/SKILL.md
+  - data/raw/claude-skills/langgraph/langgraph.md
+  - data/raw/claude-docs/playground/docs/frameworks/langgraph.md
+  - data/raw/repos/playground/.claude--docs--frameworks--langgraph.md
+  - data/raw/claude-docs/project-g/docs/frameworks/langgraph.md
+  - data/raw/claude-docs/playground/docs/plans/hardening.md
+  - data/raw/repos/playground/.claude--docs--plans--hardening.md
 ---
 
 # LangGraph Advanced Patterns
@@ -181,6 +186,8 @@ checkpointer = AsyncRedisSaver(ttl=86400)  # 24h TTL
 ```
 
 Template: `MemorySaver` default, `checkpointer` param for injection.
+
+**In-process session wrappers need a TTL too.** A gateway kept a plain `dict[session_id, _Session]` (interrupt queue, lock) that grew without bound: a memory leak under load. Since the Postgres checkpointer holds the actual conversation state, evicting the wrapper loses nothing except in-flight interrupt state. The next request rebuilds it and resumes from the checkpoint. The fix was to swap in `cachetools.TTLCache(maxsize=500, ttl=1800)`, a `MutableMapping`, so the call sites didn't change. Both values are env-tunable.
 
 ## Time Travel — Replay vs Fork
 

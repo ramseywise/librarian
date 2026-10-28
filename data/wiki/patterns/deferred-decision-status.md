@@ -2,7 +2,7 @@
 title: Deferred Decision Status
 tags: [llm, pattern]
 summary: A three-value status for design decisions — Resolved / Open / Deferred(trigger) — where a deferral must name the concrete event that reopens it, and a triggerless deferral silently degrades to Open so it still blocks the gate.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/scope-poc/SKILL.md
 ---
@@ -74,3 +74,11 @@ either blocks the gate spuriously or hides a real gap.
 - [[Claude Workflow System]] — extends
 - [[DESIGN.md Artifact]] — part-of (section 5 records resolved and open together)
 - [[Derived-and-Hidden Design Decisions]] — related (a decision never surfaced at all, vs. one recorded as deferred)
+- [[Named-Trigger Deferral]] — extends (a deferral must name the measurable trigger that reopens it)
+- [[Shadow Signal Before Gate Change]] — extends (a step conditional on an undecided question is BLOCKED, not deferred)
+- [[Decision-ID Reservation Across Concurrent Plans]] — extends (how registry rows get their IDs under concurrency)
+- [[The Free Decision Is the Long-Lead Item]] — extends (a decision with no dependencies that gates a calendar clock should be made now, not deferred)
+- [[Profile Then Select]] — instance-of (parked ML config questions with revisit triggers)
+- [[Assumption Audit]] — extends (audited assumptions become deferrals)
+- [[Two-Axis Claim Schema]] — extends (a deferral as a claim whose `settles` is the trigger)
+- [[Confirm vs Decide Decision Packet]] — related (how open decisions are put to an exec for answer)

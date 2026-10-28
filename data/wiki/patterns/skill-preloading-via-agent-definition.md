@@ -2,11 +2,12 @@
 title: Skill Preloading via Agent Definition
 tags: [llm, context-management, pattern]
 summary: A skill file is inert until an agent definition names it in a `skills:` field — the two-file split (`.claude/skills/<name>/SKILL.md` plus `.claude/agents/<name>.md`) is what turns checklist content into context actually loaded at subagent startup.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
   - data/raw/claude-docs/Parallax/docs/documents/Parallax_Subagent_Architecture.md
   - data/raw/claude-docs/Parallax/docs/documents/Evidence_Driven_PR_Review_System_Spec.md
   - data/raw/claude-docs/Parallax/docs/superpowers/plans/2026-07-19-parallax-skills-implementation.md
+  - data/raw/claude-docs/guacamayo/docs/tooling-ledger.md
 ---
 
 # Skill Preloading via Agent Definition
@@ -93,6 +94,14 @@ The implementation plan turns both into hard constraints on the agent building t
 checklist bullets copied *verbatim*, SANYI's files *byte-identical* but for a provenance
 comment, and no placeholder anywhere. See [[No-Placeholder Plan Discipline]], which also
 records the `allowed-tools:`/`tools:` frontmatter mix-up this design is vulnerable to.
+
+## Placement inertness, a sibling failure
+
+The same "present but untriggerable" defect occurs one level up: a vendored skill with
+valid SKILL.md frontmatter and scripts was filed under a refs directory instead of the
+skills directory, so no `Refs:` line pointed at it and the Skill tool could not see it — it
+was inert from the day it was added until moved. The ledger row that recorded the move set
+a presence metric (invoked within the next 3 relevant sessions) to confirm it now fires.
 
 ## See Also
 - [[Skill-Knowledge Information Flow]] <!-- auto-linked -->

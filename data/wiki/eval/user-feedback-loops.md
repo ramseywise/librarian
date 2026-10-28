@@ -2,9 +2,21 @@
 title: User Feedback Loops
 tags: [eval, llm, infra]
 summary: Explicit ratings or implicit usage signals from deployed users — the only eval source that catches "technically correct but unhelpful", slow and sparse and biased, whose real payoff is converting thumbs-down cases into permanent golden-set entries.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
+  - data/raw/claude-docs/akira/docs/research/2026-09-20-dis345-favourite-holdout-judgments.md
+  - data/raw/claude-docs/diskoe/docs/research/2026-09-20-dis345-favourite-holdout-judgments.md
+  - data/raw/claude-docs/akira/docs/plans/2026-09-16-dis288-favourites-feedback-loop.md
+  - data/raw/claude-docs/diskoe/docs/plans/2026-09-16-dis288-favourites-feedback-loop.md
+  - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-16-dis288-favourites-feedback-loop.md
+  - data/raw/repos/akira/.claude--docs--plans--2026-09-16-dis288-favourites-feedback-loop.md
+  - data/raw/repos/diskoe/.claude--docs--plans--2026-09-16-dis288-favourites-feedback-loop.md
+  - data/raw/claude-docs/akira/docs/plans/2026-09-20-dis345-favourite-holdout-judgments.md
+  - data/raw/claude-docs/diskoe/docs/plans/2026-09-20-dis345-favourite-holdout-judgments.md
+  - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-20-dis345-favourite-holdout-judgments.md
+  - data/raw/repos/akira/.claude--docs--plans--2026-09-20-dis345-favourite-holdout-judgments.md
+  - data/raw/repos/diskoe/.claude--docs--plans--2026-09-20-dis345-favourite-holdout-judgments.md
 ---
 
 # User Feedback Loops
@@ -65,9 +77,39 @@ angry users rate more**; requires deployment first.
 The bias matters when reading rates as quality: a falling thumbs-up ratio may reflect
 changing engagement rather than a regression, so pair it with [[Heuristic Pipeline Metrics]].
 
+## Favourites as a Held-Out Signal, Not Ground Truth
+
+A proposal to treat user favourites as relevance labels was scoped down to a **held-out
+validation signal**: compare favourites against existing rater-graded moments instead of
+training or gating on them. Three traps surfaced:
+
+- Reusing an existing holdout constant for a new purpose hides a second decision. Name
+  it separately.
+- Stamping rows with version values that weren't actually in force would break the
+  row-level invariant that a stamp means "produced by this version".
+- **Check volume first.** Both source tables had 0 rows, so the design question was
+  premature.
+
+The executed decision (akira, 2026-09-20) recorded the reason for the scoping as a
+**leakage asymmetry**: held-out rows exist precisely so they can score a corpus from
+outside. Using them to *validate* a corpus they were never part of is not circular;
+inserting them into that corpus as ground truth would be. Two practical consequences:
+
+- **Stop the code promising a path nobody will build.** Source comments still said the
+  holdout enum value would be populated "once" an earlier issue shipped. That issue had
+  shipped and nothing wrote the value. The fix was comment-and-spec only: re-document the
+  enum value as validation-only, keep the seam, no migration, no populator, at zero rows.
+- **Name the unbuilt prerequisite instead of filing it.** Writing real judgment rows would
+  need the serving log to retain the full scored candidate and the version columns it
+  never wrote. That gap was recorded as a named follow-up in the decision row, so it is
+  not rediscovered as a surprise.
+
 ## See Also
 - [[Eval Ladder]] — part-of (rung 4)
 - [[Golden Set Mechanics]] — feeds (thumbs-down cases become golden entries)
 - [[Copilot Learning Loop]] — related (usage signal as training feedback)
 - [[Heuristic Pipeline Metrics]] — complements
 - [[Online Eval Sampling]] — extends (negative feedback as one of four production sampling rules)
+- [[Explore Slice for Position Bias]] — extends (a feedback loop that cannot learn from its own ranking)
+- [[Outcome Signal Ladder]] — extends (which proxy counts as the outcome before attendance is loggable)
+- [[Write-Time Deterministic Holdout]] — extends (the hash-split column that made favourites holdable before any consumer existed)

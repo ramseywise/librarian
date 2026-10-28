@@ -2,9 +2,10 @@
 title: Loop Autonomy Ladder
 tags: [llm, agents, infra, pattern]
 summary: "Four rungs of handoff — tool approval, stop condition, trigger, session — climbed one at a time, each earned with a verifier that has been observed catching a real failure."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-autonomy-ladder.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--loop-engineering.md
 ---
 
 # Loop Autonomy Ladder

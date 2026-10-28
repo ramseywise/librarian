@@ -2,9 +2,11 @@
 title: Git Branch Triage
 tags: [foundations, reference]
 summary: "Deciding what to do with in-flight work before switching context — the branch health check that separates merged from unmerged commits, the WIP-branch-versus-stash choice, and reading a stash diff before trusting it."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/claude-docs/playground/docs/dev/git.md
   - data/raw/repos/learn-ai-engineering/programming--git.md
+  - data/raw/claude-docs/project-g/docs/dev/git.md
 ---
 
 # Git Branch Triage
@@ -90,3 +92,5 @@ always wrong.
 ## See Also
 - [[Data Science Curriculum Layers]] — complements (the programming-tooling layer beneath the curriculum)
 - [[TypeScript any Escapes]] — complements (the other half of the day-to-day tooling reference)
+- [[Repo Weight Triage — GC Before LFS]] — extends (triage for repo size rather than in-flight work)
+- [[Verify Merge State by Content, Not Label]] — extends (review-time version: labels and messages are stale caches)

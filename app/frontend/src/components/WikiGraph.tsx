@@ -32,6 +32,8 @@ const EDGE_STYLES: Record<string, React.CSSProperties> = {
 
 interface WikiGraphProps {
   highlightedPages?: Set<string>;
+  /** Wiki page to pan/zoom to — set when arriving from a course lesson's concept link. */
+  focusPage?: string | null;
   onNodeSelect?: (node: SelectedNode | null) => void;
   onBrief?: (domain: string) => void;
   activeTags: Set<string>;
@@ -46,7 +48,7 @@ function AutoFit({ version }: { version: number }) {
   return null;
 }
 
-function WikiGraphInner({ highlightedPages, onNodeSelect, onBrief, activeTags, onActiveTagsChange }: WikiGraphProps) {
+function WikiGraphInner({ highlightedPages, focusPage, onNodeSelect, onBrief, activeTags, onActiveTagsChange }: WikiGraphProps) {
   const {
     baseNodes,
     wikilinkEdges,
@@ -210,6 +212,13 @@ function WikiGraphInner({ highlightedPages, onNodeSelect, onBrief, activeTags, o
     }));
     setEdges(styled);
   }, [edgeVis, wikilinkEdges, semanticEdges, tagSharedEdges, highlightedPages, activeTags, focusNodeId, baseNodes, setEdges]);
+
+  useEffect(() => {
+    if (!focusPage || !baseNodes.length) return;
+    requestAnimationFrame(() =>
+      fitView({ nodes: [{ id: focusPage }], padding: 2, maxZoom: 1.2, duration: 400 })
+    );
+  }, [focusPage, baseNodes.length, fitView]);
 
   // Re-apply dimming when highlight/focus/overview state changes (not activeTags — handled by filter layout)
   useEffect(() => {

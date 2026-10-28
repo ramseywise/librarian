@@ -2,7 +2,7 @@
 title: Corrective Follow-Up Dispatch
 tags: [llm, pattern]
 summary: Gated subagents that a signal-detection pass failed to trigger get dispatched in a second round when always-on subagents report out-of-dimension signal — treating reviewer observations as a recovery path for missed conditional dispatch.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
   - data/raw/claude-docs/Parallax/agents/parallax.md
   - data/raw/claude-docs/Parallax/agents/intent-correctness.md
@@ -85,3 +85,5 @@ guarantee fired, look for evidence of it.
 - [[Agentic Workflow Patterns]] — instance-of (routing)
 - [[Shared Context Brief]] — prerequisite-for (second round reuses the same brief)
 - [[Parallax]] — instance-of
+- [[Deterministic Signal Detection for Dispatch]] — prerequisite-for (the detector whose misses this round recovers)
+- [[Review Reporter Ground Rules]] — extends

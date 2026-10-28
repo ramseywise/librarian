@@ -4,8 +4,8 @@ tags: [langgraph, context-management, concept]
 summary: A LangGraph node that compresses conversation history when it exceeds a trigger threshold — keeps context window usage bounded while preserving conversational continuity.
 updated: 2026-04-24
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/adk-samples-patterns-analysis.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
 ---
 
 # Summarization Node

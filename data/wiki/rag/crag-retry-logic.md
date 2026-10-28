@@ -2,11 +2,14 @@
 title: CRAG Retry Logic
 tags: [rag, langgraph, concept]
 summary: The confidence-gated conditional back-edge in a CRAG pipeline that re-enters retrieval when the reranker's top score falls below threshold — preventing low-confidence answers from reaching the user.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/rag-agent-template-research.md
-  - raw/agent-skills/langchain-rag/references/rag-strategies.md
+  - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
+  - data/raw/agent-skills/langchain-rag/references/rag-strategies.md
+  - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
+  - data/raw/claude-docs/project-g/docs/support-agents/invocation-flow.md
 ---
 
 # CRAG Retry Logic
@@ -61,3 +64,8 @@ Each retry adds: ~100ms Haiku reformulation + ~150ms retrieval + ~300ms rerankin
 - [[RAG Reranking]]
 - [[RAG Evaluation]]
 - [[Reciprocal Rank Fusion (RRF)]]
+- [[Score-Delta Retry Guard]] — prerequisite-for (an early-exit edge for futile retries)
+- [[Provenance-Tiered Confidence Gate]] — alternative-to (the gate when there is no reranker score, e.g. web search)
+- [[Prompted Reflection vs Graph-Gated CRAG]] — extends (prompted tool loop vs explicit gates, and what the loop measurably buys)
+- [[Borderline-Band Sufficiency Probe]] — extends (hybrid score + LLM sufficiency routing)
+- [[Hedging Belongs in the Gate, Not the Answer]] — related

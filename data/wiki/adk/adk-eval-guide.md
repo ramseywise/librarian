@@ -2,19 +2,22 @@
 title: ADK Eval Guide
 tags: [adk, eval, pattern]
 summary: ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, user simulation, and Vertex AI managed pointwise/pairwise eval.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--04-agentic-frameworks--notes--google-adk.md
-  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/SKILL.md
-  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/builtin-tools-eval.md
-  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/criteria-guide.md
-  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/multimodal-eval.md
-  - raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/user-simulation.md
-  - raw/agent-skills/adk-eval-guide/SKILL.md
-  - raw/agent-skills/adk-eval-guide/references/builtin-tools-eval.md
-  - raw/agent-skills/adk-eval-guide/references/criteria-guide.md
-  - raw/agent-skills/adk-eval-guide/references/multimodal-eval.md
-  - raw/agent-skills/adk-eval-guide/references/user-simulation.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-eval-guide/SKILL.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/builtin-tools-eval.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/criteria-guide.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/multimodal-eval.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-eval-guide/references/user-simulation.md
+  - data/raw/agent-skills/adk-eval-guide/SKILL.md
+  - data/raw/agent-skills/adk-eval-guide/references/builtin-tools-eval.md
+  - data/raw/agent-skills/adk-eval-guide/references/criteria-guide.md
+  - data/raw/agent-skills/adk-eval-guide/references/multimodal-eval.md
+  - data/raw/agent-skills/adk-eval-guide/references/user-simulation.md
+  - data/raw/claude-docs/playground/docs/frameworks/google-adk.md
+  - data/raw/repos/playground/.claude--docs--frameworks--google-adk.md
+  - data/raw/claude-docs/project-g/docs/frameworks/google-adk.md
 ---
 
 # ADK Eval Guide

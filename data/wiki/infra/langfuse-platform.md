@@ -2,15 +2,20 @@
 title: Langfuse Platform
 tags: [infra, eval, concept]
 summary: Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by [client]'s AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/articles/2026-07-19-langfuse-multi-agent-eval.md
+  - data/raw/articles/2026-07-19-langfuse-mcp-python.md
+  - data/raw/articles/2026-07-19-learning-langfuse.md
   - data/raw/repos/learn-ai-engineering/generative-ai--04-agentic-frameworks--notes--langfuse.md
-  - raw/gdrive/2026-05-15-ai-chapter-meeting-1.md
-  - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
-  - raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
-  - raw/notion/2026-06-01-chat-agent-rfc.md
-  - raw/claude-docs/project-g/docs/frameworks/langfuse.md
-  - raw/agent-skills/observability/SKILL.md
+  - data/raw/gdrive/2026-05-15-ai-chapter-meeting-1.md
+  - data/raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
+  - data/raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
+  - data/raw/notion/2026-06-01-chat-agent-rfc.md
+  - data/raw/claude-docs/project-g/docs/frameworks/langfuse.md
+  - data/raw/agent-skills/observability/SKILL.md
+  - data/raw/claude-docs/playground/docs/frameworks/langfuse.md
+  - data/raw/repos/playground/.claude--docs--frameworks--langfuse.md
 ---
 
 # Langfuse Platform
@@ -289,11 +294,31 @@ The Langfuse SDK accepts a `mask` function at client initialization applied to a
 
 When using Google ADK v1.x, two instrumentation layers combine into a single trace tree: ADK's OpenTelemetry auto-instrumentation (LLM calls, tool executions) + manual `@observe` decorators (retrieval steps, custom spans). Critical operational additions: session ID grouping, RAG path tagging, retrieval quality as a first-class Score. See [[Langfuse ADK Tracing Patterns]] for patterns and the gap checklist.
 
+## Hands-On Notes: Span Trees, Judge Modes, and an MCP Front End
+
+From personal Langfuse projects:
+
+- **The span tree is the unit.** Root trace → generation spans → tool spans → sub-agent
+  spans, each with latency, tokens and cost. Graph-structured agents (LangGraph, ADK) trace
+  more cleanly than monolithic loops because nodes map onto spans; in a ReAct trace each
+  tool call is a child of its generation span, which gives per-tool latency and error
+  attribution. In triage → specialist systems the child agent's spans nest under the
+  parent trace, preserving the delegation chain for routing-failure debugging.
+- **Three judge modes:** manual scoring in the UI → dataset runs with expected outputs and a
+  judge prompt → built-in evaluators with preset rubrics (lower setup, less rubric control).
+  **Cosine similarity** to a reference is cheaper but only measures semantic closeness —
+  fine for paraphrase/topicality, wrong for factual accuracy or safety.
+- **An MCP server over Langfuse** exposes traces as tools (list/filter traces by date,
+  agent, status; trace detail; p50/p95/p99 latency; cost per agent type; error rate by
+  tool), so a Claude session or a supervisor agent can query observability without the
+  dashboard. Filtering on an `agent_version` tag gives same-window A/B comparison of two
+  prompt versions; a polling budget-alert tool turns spend thresholds into notifications.
+  Structured multi-specialist eval verdicts attach as scores (see [[Specialist Verdict Panel]]).
+
 ## See Also
 - [[Langfuse ADK Tracing Patterns]]
 - [[Presidio PII Redaction for Langfuse]]
 - [[Observability — LangFuse vs LangSmith Decision]]
-- [[AI Engineering Chapter @[client]]]
 - [[[client] Chat Agent]]
 - [[Input Guardrails Pipeline]]
 - [[RAG Evaluation]]
@@ -303,3 +328,6 @@ When using Google ADK v1.x, two instrumentation layers combine into a single tra
 - [[Online Eval Sampling]] — depends-on (which traces get the costed LLM graders)
 - [[Eval Suite Maintenance]] — implements (add-from-trace as the regression-fixture path)
 - [[LangSmith Platform]] — alternative-to (same capabilities in the LangChain ecosystem; auto-instrumented for LangGraph, manual for ADK)
+- [[One Check Shape for Quality Verdicts]] — related (trace is where you debug a call; the verdict store is where you read the rate)
+- [[A Trace Is Not a Number of Record]] — extends (why spend/error numbers need a separate ledger even with tracing wired)
+- [[Specialist Verdict Panel]] — complements (structured per-dimension verdicts attached as scores)

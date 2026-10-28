@@ -2,9 +2,11 @@
 title: Online Eval Sampling
 tags: [eval, infra, llm, pattern]
 summary: "Score 10–20% of production traces by rule rather than at random — negative feedback, high-cost dialogues, time windows, and a full 48-hour review after any model or prompt change."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--observability.md
 ---
 
 # Online Eval Sampling
@@ -73,3 +75,4 @@ drift is invisible to CI and only online evaluation catches it.
 - [[User Feedback Loops]] — complements (negative feedback as a sampling trigger)
 - [[Loop Termination Design]] — complements (cost as a thrashing proxy)
 - [[Experiment Tracking Schemas]] — depends-on (prompt_version + git_commit + model as the attribution key for a drift signal)
+- [[Publish Automatically, Sample for Review]] — instance-of (a publish-time random sample graded by an operator)

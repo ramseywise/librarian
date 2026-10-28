@@ -2,18 +2,20 @@
 title: ADK vs LangGraph Comparison
 tags: [adk, langgraph, comparison]
 summary: Side-by-side mental model comparison of Google ADK and LangGraph — primitive mappings, weighted scoring (LangGraph 716/845 for AWS/ADK-compatible context), VA team production findings, and the recommended vocabulary alignment approach.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/adk-orchestration-research.md
-  - raw/playground-docs/adk-samples-patterns-analysis.md
-  - raw/playground-docs/orchestration-rollout-plan.md
-  - raw/gdrive/2026-04-15-adk-overview-poc-architecture.md
-  - raw/meetings/2026-04-15-langgraph-huddle.md
-  - raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
-  - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
-  - raw/notion/2026-04-21-agt09-adk-vs-langgraph-spike.md
-  - raw/sessions/claude-2026-04-12-i-added-a-folder-google-adk-masterclass-406fcc7f.md
-  - raw/agent-skills/deep-agents-orchestration/references/langgraph-compat.md
+  - data/raw/claude-docs/playground/docs/archived/adk-orchestration-research.md
+  - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
+  - data/raw/claude-docs/playground/docs/archived/orchestration-rollout-plan.md
+  - data/raw/gdrive/2026-04-15-adk-overview-poc-architecture.md
+  - data/raw/meetings/2026-04-15-langgraph-huddle.md
+  - data/raw/notion/2026-05-13-compare-langgraph-adk-langfuse-langsmith.md
+  - data/raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
+  - data/raw/notion/2026-04-21-agt09-adk-vs-langgraph-spike.md
+  - data/raw/sessions/claude-2026-04-12-i-added-a-folder-google-adk-masterclass-406fcc7f.md
+  - data/raw/agent-skills/deep-agents-orchestration/references/langgraph-compat.md
+  - data/raw/claude-docs/playground/docs/archived/langgraph-adk-compat.md
+  - data/raw/claude-docs/playground/docs/archived/rag-poc-upgrade-plan.md
 ---
 
 # ADK vs LangGraph Comparison
@@ -179,6 +181,16 @@ Add ADK-style `before_run`/`after_run` hooks to each agent class. Makes observab
 
 Blockers: ADK is Gemini-native (Claude requires adapters), `LoopAgent` can't model Librarian's surgical CRAG back-edge, typed `LibrarianState` becomes untyped session dict, LangFuse wiring is LangGraph-specific. Migration cost high; gain is vocabulary only — which Level 1 achieves for free.
 
+## A/B Fairness: Share Agent Instances, Don't Re-implement
+
+A compatibility audit (playground, 2026-04) found that the ADK tools had re-implemented the retriever, reranker and condenser agents rather than calling them. The copies had lost caching, dedup and grading, and their prompts had drifted. Any ADK-vs-LangGraph comparison run on that code would have measured the reimplementation, not the paradigm. The fix:
+
+- ADK tools become **thin adapters** over the same agents.
+- A shared `create_agents()` factory hands **the same instances** to both orchestrators.
+- A parity test pins the two tool wrappers to identical outputs.
+
+See [[The Untested Copy Wins]].
+
 ## ADK + LangGraph Hybrid Option
 
 Wrap the compiled LangGraph graph as a single ADK `BaseAgent`:
@@ -231,21 +243,19 @@ The VA team conducted a formal weighted evaluation before committing to LangGrap
 
 Python wins primarily on: team expertise ratio (7:1 Python), ML library ecosystem, ADK + LangGraph native support.
 
-The "Brain and Limbs" hybrid option was also considered: Python for orchestration/RAG brain + TypeScript for tool execution via MCP. This is essentially the va-hypernova architecture — Python agent, TypeScript tools over MCP. See [[VA Hypernova MCP]].
+The "Brain and Limbs" hybrid option was also considered: Python for orchestration/RAG brain + TypeScript for tool execution via MCP. This is essentially the va-hypernova architecture — Python agent, TypeScript tools over MCP. See VA Hypernova MCP.
 
 ### VA team transition plan
 
 The VA team ([product].dk virtual assistant) is transitioning to LangGraph for its next iteration. Current production is Google ADK + Next.js (va-agents on AWS ECS). The transition is enabled by extracting tools into the MCP layer (va-hypernova) — the agent framework can change without rewriting the tool layer.
 
 ## See Also
-- [[VA LangGraph Migration Roadmap]] <!-- backfill -->
-- [[project-g Agent Feature Parity]] <!-- backfill -->
+- VA LangGraph Migration Roadmap <!-- backfill -->
+- project-g Agent Feature Parity <!-- backfill -->
 - [[ADK JS TypeScript Patterns]]
 - [[ADK vs LangGraph Decision]]
 - [[LangGraph CRAG Pipeline]]
 - [[ADK Context Engineering]]
 - [[Multi-Agent Orchestration Patterns]]
 - [[Librarian RAG Architecture]]
-- [[VA Agent Project]]
-- [[VA Hypernova MCP]]
-- [[AI Engineering Chapter @[client]]]
+- [[Retrieval Service Returns Documents, Not Answers]] — related (two orchestrators sharing one retrieval backend)

@@ -2,23 +2,25 @@
 title: Librarian Project
 tags: [rag, langgraph, project]
 summary: The Librarian service — a LangGraph CRAG-based RAG pipeline for knowledge retrieval, deployed as a Python FastAPI service with evaluation harness.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/librarian-architecture-decisions.md
-  - raw/playground-docs/rag-tradeoffs.md
-  - raw/playground-docs/librarian-ts-parity-research.md
-  - raw/playground-docs/rag-core-infra-review.md
-  - raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
-  - raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
-  - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
-  - raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md
-  - raw/sessions/claude-2026-04-11-can-we-transfer-the-code-from-cs-agent-a-deb81c96.md
-  - raw/sessions/claude-2026-04-11-resolving-deltas-100-72-72-completed-wit-fe1c0bd1.md
-  - raw/sessions/claude-2026-04-11-shhould-src-agents-infra-live-under-src-f5cfe1b3.md
-  - raw/sessions/claude-2026-04-14-i-want-librarian-to-remain-as-solely-a-h-48cd8a0e.md
-  - raw/sessions/claude-2026-04-14-what-is-the-difference-between-playgroun-3def7093.md
-  - raw/sessions/claude-2026-04-15-how-does-rag-poc-master-compare-to-playg-b269ccf1.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-architecture-decisions.md
+  - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-ts-parity-research.md
+  - data/raw/claude-docs/playground/docs/archived/rag-core-infra-review.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
+  - data/raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md
+  - data/raw/sessions/claude-2026-04-11-can-we-transfer-the-code-from-cs-agent-a-deb81c96.md
+  - data/raw/sessions/claude-2026-04-11-resolving-deltas-100-72-72-completed-wit-fe1c0bd1.md
+  - data/raw/sessions/claude-2026-04-11-shhould-src-agents-infra-live-under-src-f5cfe1b3.md
+  - data/raw/sessions/claude-2026-04-14-i-want-librarian-to-remain-as-solely-a-h-48cd8a0e.md
+  - data/raw/sessions/claude-2026-04-14-what-is-the-difference-between-playgroun-3def7093.md
+  - data/raw/sessions/claude-2026-04-15-how-does-rag-poc-master-compare-to-playg-b269ccf1.md
+  - data/raw/repos/librarian/.claude--docs--plans--2026-07-17-knowledge-compaction.md
+  - data/raw/repos/librarian/.claude--docs--CHANGELOG.md
 ---
 
 # Librarian Project
@@ -138,3 +140,5 @@ The `librarian` GitHub repo (this one) is a separate knowledge base following th
 - [[Production Hardening Patterns]]
 - [[ADK vs LangGraph Decision]]
 - [[Karpathy LLM Wiki Pattern]]
+- [[Knowledge Base Recompile Stage]] — extends (retrieval telemetry, tombstones and the /compact-wiki ritual)
+- [[Freshness Key Blind to Content Semantics]] — instance-of (the MCP search index's rebuild trap)

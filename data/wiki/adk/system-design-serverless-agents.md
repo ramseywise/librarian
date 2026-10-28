@@ -4,12 +4,12 @@ tags: [adk, infra, reference]
 summary: Interview-format system design writeup of running agent systems on serverless (Vercel Functions / Next.js API routes) — stateless invocations, session state in Postgres, streaming within platform timeouts, and the designed handoff to a stateful phase 2.
 updated: 2026-07-17
 sources:
-  - raw/repos/atlas/CLAUDE.md
+  - data/raw/repos/atlas/CLAUDE.md
 ---
 
 # System Design — Serverless Agent Backends
 
-Interview-format writeup of the constraints governing the atlas/DSSG-portal TypeScript agent stack (Vercel AI SDK / ADK TS on Vercel Functions). Format: requirements → constraints → architecture → tradeoffs → scaling.
+Interview-format writeup of the constraints governing the atlas/nonprofit-portal TypeScript agent stack (Vercel AI SDK / ADK TS on Vercel Functions). Format: requirements → constraints → architecture → tradeoffs → scaling.
 
 ## Requirements
 

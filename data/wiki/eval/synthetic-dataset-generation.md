@@ -2,11 +2,13 @@
 title: Synthetic Dataset Generation for RAG Eval
 tags: [eval, rag, pattern]
 summary: Four-mode pipeline for generating and maintaining a versioned synthetic test dataset from a knowledge base — article fingerprinting drives incremental refresh, stable content-derived IDs make Langfuse upserts idempotent, and four query categories cover the full quality surface.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/chat-agent/docs/eval/pipeline.md
-  - raw/claude-docs/chat-agent/docs/plans/synthetic_dataset_generation.md
-  - raw/claude-docs/chat-agent/docs/plans/aif32_code_review_fixes.md
+  - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
+  - data/raw/claude-docs/chat-agent/docs/eval/pipeline.md
+  - data/raw/claude-docs/chat-agent/docs/plans/synthetic_dataset_generation.md
+  - data/raw/claude-docs/chat-agent/docs/plans/aif32_code_review_fixes.md
+  - data/raw/repos/datathon_mcp/.claude--docs--research--awo-welfare-data-harvester.md
 ---
 
 # Synthetic Dataset Generation for RAG Eval
@@ -229,3 +231,7 @@ A code review of the `eval/dataset/` pipeline surfaced one correctness bug and s
 - [[LLM Grader Calibration Insights]]
 - [[VA Eval Harness]]
 - [[PGVector Migration Pattern]]
+- [[Synthesize the Cheap Half]] — extends (which half of an evaluation is safe to synthesize)
+- [[Consequence-Flagged KB Audit]] — extends (upstream audit that is the source of the financial_risk stratum and authoritative-article choices)
+- [[Answer Criteria with Named Wrong Answers]] — related (per-topic fail-if lists for the same bot)
+- [[Proxy Schema Overfits the Guess]] — extends (a synthetic source whose guessed fields hardened into required ones)

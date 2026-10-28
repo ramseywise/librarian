@@ -1,45 +1,77 @@
 ---
 title: Listen-Wiseer Project
-tags: [langgraph, rag, memory, eval, project]
+tags: [langgraph, rag, memory, eval, project, conflict]
 summary: Spotify recommendation agent with ENOA taste-map personalisation — LangGraph ReAct + Chainlit UI, LightGBM classifiers, DuckDB vss RAG, and three-tier eval harness.
-updated: 2026-07-19
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/listen-wiseer/memory/project_listen_wiseer.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase4a_agent_chainlit.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase5a_rag.md
-  - raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
-  - raw/claude-docs/listen-wiseer/docs/research/infra_support.md
-  - raw/claude-docs/listen-wiseer/docs/research/peer-repos.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase6_refactor.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase7a-exploration-tools.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase7b-intent-refactor-ux.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase7c-memory-genre-polish.md
-  - raw/claude-docs/listen-wiseer/docs/research/music-agent/exploration-architecture.md
-  - raw/claude-docs/listen-wiseer/docs/research/music-agent/recommender-design.md
-  - raw/claude-docs/listen-wiseer/docs/research/music-agent/peer-repos.md
-  - raw/claude-docs/listen-wiseer/docs/research/music-agent/spotify-repos.md
-  - raw/claude-docs/listen-wiseer/docs/research/evaluation/eval-harness.md
-  - raw/claude-docs/listen-wiseer/docs/README.md
-  - raw/sessions/claude-2026-07-07-this-github-listen-wiseer-has-gone-throu-0cd5da0c.md
-  - raw/claude-docs/listen-wiseer/docs/plans/peer-repo-improvements.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase1_flask_origin.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase2a_infra_refactor.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase2b_recommendation_layer.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase2c_etl_lastfm.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase2d_etl_sync_hardening.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase2e_genre_tables.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase3a_preprocessing.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase3b_train.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase3c_add_catboost.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase3d_eda.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase5b_intent.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase5c_eval.md
-  - raw/claude-docs/listen-wiseer/docs/plans/phase6_dashboard.md
-  - raw/claude-docs/listen-wiseer/docs/research/music-agent/recommender-design-v1.md
-  - raw/claude-docs/listen-wiseer/docs/research/spotify-folder-repos.md
-  - raw/claude-docs/listen-wiseer/memory/MEMORY.md
-  - raw/claude-docs/listen-wiseer/memory/user_profile.md
+  - data/raw/playground-docs/2026-07-13-puffin-agentic-protocols-general-vs-specific.md
+  - data/raw/playground-docs/2026-07-13-puffin-listen-wiseer-knowledge-plan.md
+  - data/raw/claude-docs/listen-wiseer/memory/project_listen_wiseer.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase4a_agent_chainlit.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase4b_memory.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase5a_rag.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/eval-harness.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/infra_support.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/peer-repos.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase6_refactor.md
+  - data/raw/claude-docs/listen-wiseer/docs/CHANGELOG.md
+  - data/raw/claude-docs/listen-wiseer/docs/ttd.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase7a-exploration-tools.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase7b-intent-refactor-ux.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase7c-memory-genre-polish.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/music-agent/exploration-architecture.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/music-agent/recommender-design.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/music-agent/peer-repos.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/music-agent/spotify-repos.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/evaluation/eval-harness.md
+  - data/raw/claude-docs/listen-wiseer/docs/README.md
+  - data/raw/sessions/claude-2026-07-07-this-github-listen-wiseer-has-gone-throu-0cd5da0c.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/peer-repo-improvements.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase1_flask_origin.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase2a_infra_refactor.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase2b_recommendation_layer.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase2c_etl_lastfm.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase2d_etl_sync_hardening.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase2e_genre_tables.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase3a_preprocessing.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase3b_train.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase3c_add_catboost.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase3d_eda.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase5b_intent.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase5c_eval.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase6_dashboard.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/music-agent/recommender-design-v1.md
+  - data/raw/claude-docs/listen-wiseer/docs/research/spotify-folder-repos.md
+  - data/raw/claude-docs/listen-wiseer/memory/MEMORY.md
+  - data/raw/claude-docs/listen-wiseer/memory/user_profile.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/LIS-77-plan.md
+  - data/raw/claude-docs/listen-wiseer/docs/plans/phase8-rag-rightsize-agentic-search.md
+  - data/raw/claude-docs/listen-wiseer/docs/reviews/phase8-rag-rightsize-agentic-search.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--LIS-77-plan.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase1_flask_origin.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase2a_infra_refactor.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase2b_recommendation_layer.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase2c_etl_lastfm.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase2d_etl_sync_hardening.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase2e_genre_tables.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase3a_preprocessing.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase3b_train.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase3c_add_catboost.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase3d_eda.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase4a_agent_chainlit.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase4b_memory.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase5a_rag.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase5b_intent.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase5c_eval.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase6_dashboard.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase6_refactor.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase7a-exploration-tools.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase7b-intent-refactor-ux.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase7c-memory-genre-polish.md
+  - data/raw/repos/listen-wiseer/.claude--docs--plans--phase8-rag-rightsize-agentic-search.md
+  - data/raw/repos/listen-wiseer/.claude--docs--reviews--phase8-rag-rightsize-agentic-search.md
+  - data/raw/repos/listen-wiseer/CLAUDE.md
+  - data/raw/repos/listen-wiseer/README.md
 ---
 
 # Listen-Wiseer Project
@@ -154,7 +186,7 @@ START → trim_history → classify_intent → [route_after_classify]
 | Memory store | `AsyncPostgresStore` (prod) / `InMemoryStore` (dev, via `MEMORY_STORE_URL`) | Cross-session taste/episodic memory persistence |
 | Checkpointer | AsyncPostgresSaver (prod) / MemorySaver (dev) | Postgres via Docker Compose |
 | LLM client | `langchain-anthropic` `ChatAnthropic` over raw SDK | LangFuse span visibility |
-| Eval framework | LangFuse + RAGAS + DeepEval | LangFuse: free tier + RAGAS native integration; DeepEval: `ToolCorrectnessMetric` fills agent eval gap |
+| Eval framework | LangFuse + RAGAS + DeepEval | LangFuse: free tier + RAGAS native integration; DeepEval: `ToolCorrectnessMetric` fills agent eval gap  **Conflict:** the repo's CLAUDE.md says deepeval was never imported and was removed 2026-07-19; ragas + langfuse carry the harness (see `_conflicts.md`) |
 
 **Eval harness module layout** (instantiates [[Anthropic Three-Tier Eval Taxonomy]] for this project): `evals/agent/intent_eval.py` (Tier 1 — deterministic, imports `QueryAnalyzer` directly, no DuckDB import chain), `evals/agent/trajectory_eval.py` (Tier 2), `evals/agent/graders.py` (Tier 3 — RAGAS + DeepEval, Haiku-backed), `evals/agent/cost_gate.py` (single `CONFIRM_EXPENSIVE_OPS` env-var source of truth — `evals/graders/answer_eval.py` was refactored to import from here instead of a hardcoded bool), and `evals/run_agent_eval.py --tier {1,2,3,all}` as the single CLI entry point wired to `make eval-unit`/`eval-trajectory`/`eval-e2e`. Golden dataset: `evals/datasets/golden_intent.jsonl`, 50 hand-crafted `AgentGoldenSample` rows (10 per intent × 5 intents, with adversarial/ambiguous samples spread across intents).
 
@@ -172,9 +204,12 @@ START → trim_history → classify_intent → [route_after_classify]
 - **Git LFS blocker**: `listen_wiseer.db` via LFS — other envs can't pull. Decision deferred.
 - `models/` and `data/cache/` gitignored — regenerate after pull with `make train`
 - `RecommendationEngine` raises `FileNotFoundError` if pkl files missing — wrap in try/except
-- **32 test failures** are all `duckdb.IOError` (missing LFS DB) — not regressions
+- **32 test failures** are all `duckdb.IOError` (missing LFS DB) — not regressions *(stale by Phase 8: a re-measured baseline on a fixed venv was 443 passed / 3 skipped / 0 failed)*
 - `full tests/unit/` suite hangs on some later test files — use targeted runs
 - **REDIS_URL** needed for cross-session memory persistence; `InMemoryStore` for dev
+- **libomp load order**: LightGBM and torch (via `sentence-transformers`) vendor different `libomp.dylib` builds. If torch's loads first, LightGBM training segfaults with no traceback. `tests/conftest.py` imports `lightgbm` at module scope to pin the order; don't remove it. `KMP_DUPLICATE_LIB_OK` does not help ([[Native Library Load-Order Collision]])
+- **deepeval removed (2026-07-19)**: never imported, but its autoloaded pytest plugin imported `langchain.schema` (gone in langchain 1.x) and broke collection. Don't re-add it without checking langchain 1.x support
+- **Python pin**: `requires-python = ">=3.11"` has no upper bound, so `uv sync` on a 3.13+ default interpreter fails to build `gensim`. The committed `.python-version` (3.11) is load-bearing
 
 ## Gaps vs Peer Repos
 
@@ -220,11 +255,67 @@ A review session flagged that the project has been through many revisions and is
 
 Both items are pre-implementation research/plan-stage decisions (not yet executed) as of this review.
 
+## Phase 8 — RAG Right-Sizing + Agentic Web Search (2026-07-07, executed)
+
+Both follow-ups above were closed in Phase 8. The original `rag_core/` was deleted outright
+rather than cleaned up: genre lookup did not justify a vector store. The single Tavily call
+became an agentic search node — query decomposition into sub-queries, parallel Tavily
+fan-out, and a **confidence gate** (high / medium / low) on the merged results modelled on
+[[CRAG Retry Logic]], with low confidence routed to a retry/reformulate branch. Eighteen
+tests were added with the phase; the review pass still found a multi-turn defect the tests
+could not see — `format_response` walked message history backwards collecting citations with
+no turn boundary, leaking the previous turn's sources into the current answer
+([[Turn-Bounded Citation Walk]]). Fixed by stopping at the most recent `HumanMessage`, with
+six regression tests. A test-driven checklist (`ttd.md`) tracks remaining coverage.
+
+Detail from the Phase 8 plan and review: the gate shipped with three provenance tiers
+(direct answer / raw results / nothing) rather than four, and only `low` produces the honest
+non-answer; the tier rides in a `content_and_artifact` tool artifact that the validation node
+reads to gate corrective retries ([[Provenance-Tiered Confidence Gate]]). The delete-vs-archive
+reasoning, the eval-tree lineage leak, and the stabilize-pass findings (unbounded
+`requires-python`, an eval plugin's telemetry hang, a stale "32 failures" baseline that was
+really 0) are in [[Delete an Unfinished RAG Retrofit, Don't Archive It]]. The review used eight
+parallel finder angles; its five non-blocking notes were deliberate coupling (validation node
+duck-typing one tool pair's artifact shape), per-call client construction, a thread pool spun
+up for single queries, two duplicate URL-dedup helpers, and a call site passing an empty
+`entities` dict that silently disables one complexity signal.
+
+## LIS-77 — Runtime Bugs Behind a Green Suite (2026-07-30)
+
+A repo-wide review sweep found two runtime bugs with ~470 passing tests: a function-local
+import of a nonexistent `_llm` name inside the search synthesis helper (the only multi-hit
+test patched the helper itself), and an unawaited `async get_store()` handed to the sync
+fire-and-forget scheduler of the Phase 4b background prompt optimizer — meaning the optimizer
+had been receiving a coroutine instead of a store. See [[Mocked-Away Body Hides the Defect]].
+
 ## Memory & Workflow Conventions
 
 The project's own Claude memory (`memory/MEMORY.md`, `memory/user_profile.md`) instantiates the same conventions as [[Claude Workflow System]]: memory kept minimal (user profile + project decisions + genuinely non-obvious lessons only, no project-relative memory dir), all pipeline phases (research → plan → execute → review) run directly in the main conversation context rather than subagents, and formatting/test gates (ruff, pytest) are enforced via hooks rather than run manually. Dev stack recorded: `uv`, `ruff`, `pytest`, Pydantic v2, PyTorch/HuggingFace, Polars, numpy, scikit-learn, `langchain-anthropic` for LangFuse-traced LLM calls.
 
 This project's `.claude/skills/` also defines a six-skill generic dev-workflow family (`code_debug`, `code_execute`, `code_pr`, `code_refactor`, `code_review`, `code_test`) — see the "Listen-Wiseer Generic Dev-Workflow Skill Family" section of [[Claude Workflow System]] for the compiled detail; these are project-local instantiations of the same `/code-debug`, `/execute-plan`, `/quick-pr`, `/code-review`, and (for `/consolidate`, previously a content-less stub) refactor skills already tracked there.
+
+## Knowledge System Plan (2026-07-13, superseded in part)
+
+A planning pass for a music-knowledge layer beyond Spotify similarity. Later phases took a
+lighter path (DuckDB vss, then web search for artist context — see Phase 8 above), but the
+reasoning is recorded:
+
+- **APIs over scraping.** Spotify audio features, MusicBrainz (artist relationships,
+  credits), Discogs (label and track credits), the Wikipedia API and Genius cover the core
+  domains; scraping only for gaps.
+- **Graph shape:** Artist/Song/Album/Label plus Key/Mode/RhythmPattern nodes; a **typed**
+  `collaborated_with` edge (featured | produced | co-wrote | session), because the edge type
+  changes its recommendation weight.
+- **Hosted graph DB over embedded** for future multi-agent access: an embedded,
+  single-process graph store is awkward once several agents need concurrent access.
+- **Three pipelines, not one:** audio features → feature-vector similarity + rerank;
+  collaboration graph → structured ingest into the graph DB; narrative text → multilingual
+  embeddings into a vector store (artist material spans many languages).
+- **Keep divergent signals side by side.** Listener-behaviour similarity and
+  music-theory similarity will often disagree; store both with source and surface the
+  disagreement rather than merging — the wiki's flag-not-overwrite rule. Multi-agent message
+  types for this (song annotation, typed collaboration edges, recommendation rationale,
+  graph-conflict flags) are in [[Provenance-Tracked Agent Beliefs]].
 
 ## See Also
 - [[Agent Memory Types]]
@@ -237,3 +328,10 @@ This project's `.claude/skills/` also defines a six-skill generic dev-workflow f
 - [[Track2Vec Playlist Co-Occurrence Embeddings]]
 - [[LightGBM vs CatBoost Comparison]]
 - [[Claude Workflow System]]
+- [[Turn-Bounded Citation Walk]] — instance-of (Phase 8 review finding)
+- [[Kiez Project]] — related (sibling personal project)
+- [[Provenance-Tiered Confidence Gate]] — instance-of (Phase 8 search confidence)
+- [[Delete an Unfinished RAG Retrofit, Don't Archive It]] — instance-of (Phase 8 decision)
+- [[Mocked-Away Body Hides the Defect]] — instance-of (LIS-77)
+- [[Provenance-Tracked Agent Beliefs]] — related (multi-agent protocol sketched for the knowledge layer)
+- [[Native Library Load-Order Collision]] — instance-of (libomp collision and deepeval plugin trap)

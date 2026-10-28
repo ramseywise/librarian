@@ -2,13 +2,16 @@
 title: Production Hardening Patterns
 tags: [infra, rag, langgraph, pattern]
 summary: Checklist of production hardening fixes for the Librarian service — P0/P1/P2 issues, async I/O safety, SQL injection prevention, CORS, and Docker packaging.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
-  - raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
-  - raw/claude-docs/playground/docs/archived/infra-security-triage/plan.md
-  - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
-  - raw/claude-skills/langgraph/langgraph.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
+  - data/raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
+  - data/raw/claude-docs/playground/docs/archived/infra-security-triage/plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
+  - data/raw/claude-skills/langgraph/langgraph.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-08-01-49-llm-starter-kit.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--2026-08-01-49-llm-starter-kit.md
+  - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--incident-story.md
 ---
 
 # Production Hardening Patterns
@@ -74,6 +77,11 @@ client = AsyncAnthropic(max_retries=3)  # exponential backoff, capped at 30s
 
 Retry on: `RateLimitError`, `APIConnectionError`, `InternalServerError`. **Do not** retry `AuthenticationError` or `BadRequestError` — those are caller errors.
 
+**Don't stack a hand-rolled loop on the SDK's own retry.** The Anthropic SDK already retries
+429/5xx/connection errors with exponential backoff (`max_retries`, default 2). A manual
+loop of 5 on top of 3 SDK attempts is 15 calls per request — configure `max_retries` and
+`timeout` on the client factory instead of wrapping it.
+
 ---
 
 ## P1 — High Priority (Fix Before Sustained Traffic)
@@ -132,6 +140,8 @@ Pass `revision=cfg.embedding_model_revision or None` to `SentenceTransformer()`.
 RUN python -c "from sentence_transformers import SentenceTransformer; \
     SentenceTransformer('intfloat/multilingual-e5-large')"
 ```
+
+**Failure shape when unpinned (medium confidence — illustrative incident from interview-prep material):** a bulk re-ingest under a silently updated hosted embedding model leaves vectors from two model generations in one index; queries embedded with the new model rank old-generation vectors on top, and citations go stale with no errors or latency change. Three guards: pin the model version in committed config (upgrading = explicit config change + full re-ingest); after any ingest, assert every vector carries the same model-version metadata tag; gate the index swap on a golden-set retrieval eval. Latency/error monitoring cannot see this — it needs a correctness signal.
 
 ---
 
@@ -268,6 +278,8 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 ---
 
 ## See Also
+- [[Closed-Beta Access Mechanisms]] — related (gating a pre-launch app by audience)
+- [[Uptime Probe Asserts the Journey]] — related
 - [[Librarian RAG Architecture]]
 - [[LangGraph CRAG Pipeline]]
 - [[Librarian Project]]
@@ -285,3 +297,11 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[Atlas Project]] — instance-of
 - [[Production Readiness Backlog]] — alternative-to
 - [[Cloud Service Deployment]] — prerequisite-for (24/7 availability is what hardening pays for)
+- [[Rate-Limit Keying: Identity Over IP]] — extends (what to key anonymous rate limits on)
+- [[Project Deep-Dive Interview Study Guide]] — instance-of (embedding-version incident told as a five-part story)
+- [[Every Column Names Its Reader]] — extends (schema conventions earned from a live audit)
+- [[Migration Done Means Pushed and Probed]] — extends
+- [[Written-but-Inert RLS Policies]] — extends
+- [[Silent Failure Catalogue]] — extends
+- [[Service Surface Defect Checklist]] — extends (ten concrete surface defects)
+- [[Prototype Hardening Pass]] — extends (the pre-demo checklist)

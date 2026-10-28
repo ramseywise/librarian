@@ -2,10 +2,12 @@
 title: HDBSCAN with KMeans Fallback
 tags: [foundations, pattern]
 summary: Clustering selection strategy that tries density-based HDBSCAN first and falls back to KMeans when silhouette drops below 0.25 — plus the diagnostic discipline that treats a fallback as a feature-quality signal rather than a resolved choice.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/atlas/skills/segment-analysis/SKILL.md
   - data/raw/claude-docs/atlas/skills/eval-report/SKILL.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-cluster.md
+
 ---
 
 # HDBSCAN with KMeans Fallback
@@ -53,6 +55,18 @@ majority of silhouette failures are not clustering problems.
 Cluster sizes below 3 are called out separately from the aggregate scores, because a good
 mean silhouette can hide a degenerate two-point cluster.
 
+## The all-noise edge case (scaffold template notes)
+
+On small inputs (fewer than about 20 samples) or near-identical series, HDBSCAN labels
+**every** point as noise (`-1`), so there are zero clusters and no silhouette to compare.
+The labeler must handle this explicitly with an "Unclustered" segment and
+`n_segments = max(1, …)`, or an empty segment map breaks downstream code silently. The
+evaluator should set the next cycle's strategy to KMeans. The same template notes warn
+against declaring strategy fields no node reads, such as an unwired `umap_n_components`.
+They also say to guard UMAP with `n_samples > n_components + 1`.
+
 ## See Also
 - [[Atlas Project]] — instance-of
 - [[Track2Vec Playlist Co-Occurrence Embeddings]] — alternative-to
+- [[Data Sufficiency Refusal]] — extends (refusing to report a metric the data cannot support)
+- [[Clustering Validation Against Named Baselines]] — alternative-to (centroid method validated against baselines)

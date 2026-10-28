@@ -4,7 +4,7 @@ tags: [foundations, voice, concept]
 summary: WaveNet (van den Oord et al., 2016) is a deep autoregressive generative model for raw audio waveforms using dilated causal convolutions — achieved state-of-the-art TTS naturalness (MOS >4.0) and demonstrated multi-speaker conditioning, music generation, and speech recognition from raw audio.
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2016-09-12-wavenet.md
+  - data/raw/pdfs/2016-09-12-wavenet.md
 ---
 
 # WaveNet — Autoregressive Audio Generation

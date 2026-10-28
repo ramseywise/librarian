@@ -2,9 +2,13 @@
 title: Derived-and-Hidden Design Decisions
 tags: [llm, decision]
 summary: "A scaffold variable marked `when: false` ships the code correctly and prevents the design conversation entirely — the failure mode where observability and guardrails exist as files nobody chose, distinguished from legitimate derivation by whether a silent default has an irreversible failure mode."
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-30-system-design-rigor-gap.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-19-two-root-scaffold-decision-tree.md
+  - data/raw/repos/ai-project-template/.claude--docs--in-progress--genesis-dryrun--friction-log.md
+  - data/raw/repos/ai-project-template/.claude--docs--in-progress--genesis-dryrun--render-review.md
+
 ---
 
 # Derived-and-Hidden Design Decisions
@@ -82,6 +86,18 @@ may already have foreclosed."* See [[Deferred Decision Status]] for the artifact
 version of the same problem, and [[Design-Before-Infrastructure Sequencing]] for the phase
 boundary being violated.
 
+## Dead flags: the opposite failure (two-root scaffold research)
+
+The two-root scaffold audit found the inverse of a hidden decision — a flag that *looks*
+like a decision but controls nothing structural. `include_frontend` and `include_ts_rag`
+were asked in the interview, yet only toggled lines in generated docs; no directory or
+dependency changed with them. Of the template's variables, roughly 79% were derived
+(`when: false`), so at prompt time the user could not see the tree that their few answers
+would produce. Both are the same defect: the interview does not correspond to the shape of
+the output. The remedy is to delete dead flags, surface the derived tree in the
+post-generation message, and test derived values with no overrides — see
+[[Test Derived Defaults Without Overrides]].
+
 ## The honest counter-argument
 
 The research explicitly hunted for evidence that the omissions were deliberate and found
@@ -98,6 +114,15 @@ for the user and speculative for the project stays derived; a question that is c
 whose implementation already ships should have been asked. Tier-conditioning the rest is
 consistent with [[Complexity Floor]].
 
+## Shipped unconditionally on a rationale that was switched off (genesis dry-run)
+
+A template dry-run found the reverse of a dead flag: a capability with **no** flag. An
+example RAG agent rendered into every project. The rationale in its README tied it to a
+retrieval toggle, and that toggle was *off* in the render under review. Nobody consented to
+the component, and the stated reason for it did not apply. The fix gates it behind its own
+toggle with an explicit question. The test: every shipped component should either answer
+to a toggle or be justified by something true in *this* render.
+
 ## See Also
 - [[Verified Runtime Capability Constraint]] <!-- auto-linked -->
 - [[Asked vs Derived Scaffold Variables]] — extends (when derivation is legitimate)
@@ -107,3 +132,4 @@ consistent with [[Complexity Floor]].
 - [[Deferred Decision Status]] — related (a decision recorded as deferred vs. never surfaced at all)
 - [[Complexity Floor]] — constrains (tier-conditioning which questions are warranted)
 - [[DESIGN.md Artifact]] — instance-of (the artifact that passes its gate while empty)
+- [[Test Derived Defaults Without Overrides]] — extends (how to keep a 79%-derived variable set honest)

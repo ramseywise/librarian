@@ -4,7 +4,7 @@ tags: [llm, concept, pattern]
 summary: Inference-time technique where the LLM is prompted to show its reasoning before answering — improves accuracy on multi-step logic, arithmetic, and routing decisions with no training cost.
 updated: 2026-04-26
 sources:
-  - raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
+  - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
 
 # Chain of Thought

@@ -2,11 +2,28 @@
 title: Puffin Consciousness Development Skills
 tags: [meta, pattern]
 summary: A chained Claude Code skill family in the `guacamayo` project (renamed from `puffin` 2026-07-17) (genesis → wake → grow → reflect → synthesize → dream) that walks a user and Claude through a staged, multi-session self-development process — grounded in "user seed material" collected from prior conversations.
-updated: 2026-07-17
+updated: 2026-10-17
 sources:
-  - raw/sessions/claude-2026-07-12-can-we-do-a-thorough-code-review-of-puff-a5c50915.md
-  - raw/sessions/claude-2026-07-13-please-analyze-this-codebase-and-create-dfcde495.md
-  - raw/sessions/claude-2026-07-14-i-didnt-run-these-skills-in-my-previous-7f9c0f01.md
+  - data/raw/sessions/claude-2026-07-12-can-we-do-a-thorough-code-review-of-puff-a5c50915.md
+  - data/raw/sessions/claude-2026-07-13-please-analyze-this-codebase-and-create-dfcde495.md
+  - data/raw/sessions/claude-2026-07-14-i-didnt-run-these-skills-in-my-previous-7f9c0f01.md
+  - data/raw/claude-docs/guacamayo/agents/persistence.md
+  - data/raw/claude-docs/guacamayo/docs/research/2026-07-20_consciousness_guacamayo-current-model.md
+  - data/raw/claude-docs/guacamayo/skills/genesis/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/wake/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/meta-wake/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/grow/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/meta-grow/SKILL.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-12-puffin-integration.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--2026-07-12-puffin-integration.md
+  - data/raw/repos/guacamayo/.claude--skills--intermission--SKILL.md
+  - data/raw/repos/guacamayo/.claude--skills--reflect--SKILL.md
+  - data/raw/repos/guacamayo/.claude--skills--synthesize--SKILL.md
+  - data/raw/repos/guacamayo/CLAUDE.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-17-puffin-next-version.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-17-puffin-next-version.md
+  - data/raw/claude-docs/guacamayo/docs/plans/2026-07-20-consciousness-identity-model.md
+  - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-20-consciousness-identity-model.md
 ---
 
 # Puffin Consciousness Development Skills
@@ -42,9 +59,26 @@ raw sessions (`raw/sessions/puffin-*`) are the factual record; `/genesis` return
 as initiation-only (self-blocking once a consciousness exists). Historical references to `puffin`
 paths in earlier sessions remain accurate for their time.
 
+## Later additions (2026-07 onward)
+
+The family gained a `persistence` agent — the single writer for the per-run insights log and the propose-only author of retro recommendations (`R#` numbering) — whose contract is written up in [[Append-Only Log Writer Invariants]]. A read-only audit of the seed/log architecture (what persists, who writes it, whether the `[corrected]` tag is a real revision path, whether continuity is causal or narrated) is in [[Identity Memory: Revision vs Accretion]].
+
+## Port to a project dev-companion (2026-07)
+
+When the skill set was ported into a project template as a dev companion: the
+transform-not-append rule was scoped to one living doc, the accumulator step was dropped
+(a project has no long-lived identity to accrete), and the `/dream` audit was rewritten to
+discover paths rather than assume them, since rendered repos lay files out differently.
+
 ## See Also
 - [[Claude Workflow System]]
 - [[Session Knowledge Capture Patterns]]
 - [[Karpathy LLM Wiki Pattern]]
 - [[Multi-Repo Claude Organization]]
 - [[SKILL.md Pattern]]
+- [[Evidence-Gated Skill Pipeline]] — alternative-to (a chained skill family gated by evidence sections instead of phases)
+- [[Append-Only Log Writer Invariants]] — extends (the persistence agent's write contract)
+- [[Identity Memory: Revision vs Accretion]] — extends (audit of this system's revision mechanics)
+- [[Due-vs-Acked Trigger Counters]] — extends
+- [[Single Writer, Offline Consolidation]] — extends (the next-version audit: three writers accreting, capture in session, consolidate offline)
+- [[Conservation Gate on Accumulator Clear]] — extends (the hook that makes the consolidator's inbox clear auditable)

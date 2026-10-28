@@ -2,9 +2,11 @@
 title: Verification Loops
 tags: [llm, agents, eval, concept]
 summary: "Models stop at the first plausible solution and rate their own work generously — two distinct failures needing two distinct fixes: a forced verification pass, and an external evaluator that never generates."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
 ---
 
 # Verification Loops
@@ -255,3 +257,7 @@ afterward.
 - [[Recursive Self-Improvement]] — extends (the write boundary enforces generator/evaluator separation structurally)
 - [[Knowledge Graph as Shared Agent Memory]] — extends (isolated verifier context as the structural fix for self-agreement bias)
 - [[Graph Engineering]] — complements (generate-then-verify is the highest-yield first graph)
+- [[Scan-Floor Guard Against Silent No-Op Checks]] — extends (a verifier must prove it exercised something)
+- [[Artifact Is Not Evidence: Push and Probe]] — extends (verify the behaviour, not the artifact)
+- [[Build the Checker Before the Generator]] — prerequisite-for
+- [[Spec, Verifier, Environment Layering]] — extends (criteria before work, second-model critic, external signal)

@@ -60,7 +60,7 @@ Run both scrapers from the librarian directory:
 
 ```bash
 # Scrape Claude Code docs + session notes from all workspace projects
-cd /path/to/librarian && make scrape
+make scrape   # run from the repo root
 
 # Scrape CLAUDE.md, README, skill files, and docs from configured repos
 uv run python core/scrape_repos.py
@@ -138,7 +138,7 @@ When invoked as `/ingest resolve`:
 Before touching the manifest, run:
 
 ```bash
-cd /Users/wiseer/workspace/librarian && uv run python core/lint_raw.py
+uv run python core/lint_raw.py   # run from the repo root
 ```
 
 If any **ERRORS** are reported → stop and tell the user which files need renaming before ingesting. WARNINGs are advisory only; do not block on them.

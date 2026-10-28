@@ -2,8 +2,9 @@
 title: Trajectory Over Outcome
 tags: [eval, agents, concept]
 summary: "Why an agent has to be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are the two decisions an outcome score cannot see."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
   - own-prose
 ---
 
@@ -110,6 +111,18 @@ escalation, and termination conditions; an outcome score confirms the system wor
 says nothing about which bound is load-bearing. See
 [[Bounding Agents Rather Than Trusting Them]].
 
+## Router evals as the cheap first layer
+
+A course sequence for agent eval (build → trace → router evals → trajectory evals →
+structured evals) makes the same split operational. **Tracing comes first** — you cannot
+evaluate a path you did not record. **Router evals** then score each routing decision
+binary pass/fail ("was the right skill/tool chosen for this input?") and aggregate to a
+routing accuracy; they are cheap and catch a large class of failures before any full-path
+scoring. **Trajectory evals** score the whole action sequence, which is what catches a
+right answer reached by a wrong path — e.g. an unauthorised API call on the way. Final-answer
+quality is then scored per dimension rather than as one number (see
+[[Specialist Verdict Panel]]).
+
 ## See Also
 - [[Eval Non-Determinism]] <!-- auto-linked -->
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
@@ -122,3 +135,4 @@ says nothing about which bound is load-bearing. See
 - [[Agent Retry Taxonomy]] — instance-of (the retry that discarded correct sources)
 - [[The Augmentation Gate]] — complements (the same cheap-gates-before-expensive-judge argument, for RAG)
 - [[Loop Detection and the Two-Retry Rule]] — implements (the stopping-point decision, mechanically)
+- [[Specialist Verdict Panel]] — complements (final-answer dimensions scored independently)

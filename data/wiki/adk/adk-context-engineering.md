@@ -2,15 +2,21 @@
 title: ADK Context Engineering
 tags: [adk, context-management, pattern]
 summary: How the ADK samples repo manages context — SKILL.md pattern, three skill-loading strategies, static vs dynamic instruction, and history compaction.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/adk-samples-patterns-analysis.md
-  - raw/playground-docs/rag-agent-template-research.md
-  - raw/claude-docs/playground/agents/analyzer.md
-  - raw/claude-docs/playground/agents/comparator.md
-  - raw/claude-docs/playground/agents/grader.md
-  - raw/claude-docs/playground/skills/a2ui-workspace/README.md
-  - raw/sessions/claude-2026-04-17-can-you-scan-the-adk-samples-main-i-adde-7a25dbd0.md
+  - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
+  - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
+  - data/raw/claude-docs/playground/agents/analyzer.md
+  - data/raw/claude-docs/playground/agents/comparator.md
+  - data/raw/claude-docs/playground/agents/grader.md
+  - data/raw/claude-docs/playground/skills/a2ui-workspace/README.md
+  - data/raw/sessions/claude-2026-04-17-can-you-scan-the-adk-samples-main-i-adde-7a25dbd0.md
+  - data/raw/claude-docs/playground/docs/archived/py-copilot-research.md
+  - data/raw/claude-docs/playground/docs/archived/py-copilot-plan.md
+  - data/raw/claude-docs/playground/skills/a2ui-workspace/iteration-1/benchmark.md
+  - data/raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/benchmark.md
+  - data/raw/claude-docs/playground/skills/a2ui-workspace/iteration-3/benchmark.md
+  - data/raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-debug-blank-screen/with_skill/outputs/response.md
 ---
 
 # ADK Context Engineering
@@ -162,6 +168,15 @@ Voice agents require Strategy C (all-preloaded) because voice activity detection
 
 **Risk if set on root:** ADK enforces that the router's routing-decision text conforms to the output schema. It won't, and the call fails with a validation error that looks like a model output problem.
 
+### Pydantic `output_schema` rough edges (ADK Python)
+
+Recorded while porting a TypeScript copilot (Zod `outputSchema`) to ADK Python (playground, 2026-04):
+
+- **null vs omitted.** Gemini sometimes emits `null` for an optional nested object and sometimes leaves the key out. Pydantic accepts both, but ADK's schema generation can mark an `Optional` field as `required`.
+- **Empty lists.** The instruction has to say it outright: "use an empty array `[]`, never omit the field". Back that up by validating the response against fixtures that cover the all-null and nested cases.
+- **Literal unions.** Single-value `Literal`s become `const` and work. Multi-value unions (`Literal["bar","line","pie"]`) need checking.
+- **Shared session store.** Two services that share one Postgres session DB need distinct runner `app_name` values (`copilot-ts` / `copilot-py`), or their session namespaces collide.
+
 ## ContextVar vs session.state (ADK Python)
 
 In ADK Python multi-agent, `asyncio.create_task()` copies a context snapshot — `ContextVar` mutations after creation are invisible to child tasks. **Use `session.state` as the primary auth channel for multi-agent**, not `ContextVar`.
@@ -252,4 +267,4 @@ The skill `description` field is the only thing Claude reads when deciding wheth
 - [[Agent Memory Types]]
 - [[LangGraph Advanced Patterns]]
 - [[MCP Protocol]]
-- [[VA Agent Project]]
+- [[A2UI Protocol]] — related (the protocol the a2ui skill benchmark measured)

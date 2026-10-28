@@ -2,9 +2,11 @@
 title: Semantic Cache for RAG Agents
 tags: [rag, infra, pattern]
 summary: Zero-retrieval-cost path for RAG agents — embed the query, cosine-match against a grader-validated golden seed, and short-circuit the full CRAG pipeline on high-similarity hits.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/project-g/docs/rag/semantic-cache.md
+  - data/raw/claude-docs/playground/docs/rag/semantic-cache.md
+  - data/raw/claude-docs/project-g/docs/rag/semantic-cache.md
+  - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
 ---
 
 # Semantic Cache for RAG Agents
@@ -117,6 +119,18 @@ The same `multilingual-e5-base` embedding model routes by intent type using pre-
 - **Language mismatch:** Cache built from Danish queries — English queries score lower, fall through to CRAG (correct behaviour).
 - **Small seed:** If golden dataset yields < 50 high-scoring rows, hit rate on real traffic will be negligible. Expand seed by running the agent on a broader stratified set.
 
+## Eval Implications
+
+- **Split every grader by `cache_hit`**, not just the composite score — hits and misses are
+  different systems.
+- **Hits have no runtime confidence.** A hit returns a stored answer graded at seed time, so
+  there is no `relevance_score` to calibrate; exclude hits from confidence calibration and
+  report the seed-time score separately as cache answer quality.
+- **Staleness needs a reference-based grader.** Grounding and relevancy can both stay high on
+  a stale cached answer. Claim-level F1 of the hit against a freshly generated pipeline answer
+  for the same query (target ≥0.7) is the staleness guard. Other targets: hit composite ≥
+  baseline, miss-path ΔMRR ≥ 0, hit latency ≤ 500ms.
+
 ---
 
 ## See Also
@@ -127,4 +141,3 @@ The same `multilingual-e5-base` embedding model routes by intent type using pre-
 - [[CRAG Retry Logic]]
 - [[RAG Retrieval Strategies]]
 - [[Agentic RAG — Advanced Patterns]]
-- [[VA Bedrock KB Reference]]

@@ -2,9 +2,10 @@
 title: Evals and Observability Interview Study Guide
 tags: [eval, interview, reference]
 summary: Exam-prep reference for eval and observability questions — vocabulary, grader types, three-tier taxonomy, pass@k vs pass^k, and the tracing-first discipline.
-updated: 2026-07-19
+updated: 2026-10-17
 sources:
-  - raw/repos/learn-ai-engineering/interviewing--guides--6-evals-observability--interview-guide.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--6-evals-observability--interview-guide.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--evals-observability.md
 ---
 
 # Evals and Observability Interview Study Guide

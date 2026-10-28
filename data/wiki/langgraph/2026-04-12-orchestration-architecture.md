@@ -4,8 +4,8 @@ tags: [langgraph, adk, infra, decision]
 summary: Three architecture options for the Librarian service deployment — full Bedrock, full LangGraph, or polyglot — with tradeoffs and the recommended migration path.
 updated: 2026-04-24
 sources:
-  - raw/playground-docs/librarian-architecture-decisions.md
-  - raw/playground-docs/orchestration-rollout-plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-architecture-decisions.md
+  - data/raw/claude-docs/playground/docs/archived/orchestration-rollout-plan.md
 ---
 
 # Orchestration Architecture Decision

@@ -225,6 +225,30 @@ make ui    # Vite dev server on :5173
 
 The backend caches embeddings and UMAP layout in DuckDB — only recomputed when wiki pages change.
 
+### Courses
+
+The **Courses** tab (`#/courses`) is a learning UI over `data/courses/`: a course catalog,
+module/lesson sidebar with progress, rendered lessons (GFM, KaTeX math, images, copyable
+code), on-page TOC, and lesson search. Lessons are linked to wiki pages — explicit
+`wiki: [page-id]` frontmatter, inline `[[wikilinks]]`, and verbatim mentions of multi-word
+wiki titles — so "Concepts in the graph" jumps to the node in the graph, and a graph
+node's detail panel lists the lessons that cover it. Progress is per-browser (localStorage).
+
+Content is plain markdown, laid out `<course>/<module>/[section dirs/]<lesson>.md` with
+`_course.md` / `_module.md` frontmatter (`title`, `summary`, `order`). Seed or refresh it
+from learn-ai-engineering with:
+
+```bash
+make import-courses                     # all subjects
+make import-courses ARGS="--dry-run"    # report only
+```
+
+The importer converts MDX (Nextra components) and notebooks (outputs dropped) to
+markdown, copies images into module `assets/`, and lists vendored repo snapshots and
+PDFs on the module instead of importing them. It is idempotent: each generated file
+carries an `imported_hash`, so a file you edit in librarian — or author from scratch —
+is never overwritten or deleted by a later import.
+
 ---
 
 ## Wiki Invariants

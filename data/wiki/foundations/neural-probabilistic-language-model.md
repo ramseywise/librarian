@@ -4,7 +4,7 @@ tags: [foundations, llm, concept]
 summary: Bengio et al. (2003) introduced the idea of learning distributed word representations (embeddings) jointly with a neural network language model — fighting the curse of dimensionality by mapping words to a continuous vector space where semantically similar words have nearby representations.
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2003-02-01-neural-probabilistic-language-model.md
+  - data/raw/pdfs/2003-02-01-neural-probabilistic-language-model.md
 ---
 
 # Neural Probabilistic Language Model

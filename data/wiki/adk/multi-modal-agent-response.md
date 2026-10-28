@@ -2,10 +2,11 @@
 title: Multi-Modal Agent Response
 tags: [adk, mcp, pattern, concept]
 summary: Agent response pattern where output can include text, data visualizations, interactive UI components, and full task surfaces — moving beyond chat to structured elicitation and guided execution.
-updated: 2026-04-25
+updated: 2026-10-17
 sources:
-  - raw/notion/2026-04-09-copilot-why-what-how.md
-  - raw/claude-docs/playground/docs/plans/va-agent-systems.md
+  - data/raw/notion/2026-04-09-copilot-why-what-how.md
+  - data/raw/claude-docs/playground/docs/plans/va-agent-systems.md
+  - data/raw/claude-docs/playground/docs/archived/ts-copilot-research.md
 ---
 
 # Multi-Modal Agent Response
@@ -54,7 +55,7 @@ Structured elicitation maps across the three-level interaction hierarchy (from [
 
 ## VA Agent Implementation
 
-The [[VA Agent Project]] `AssistantResponse` schema demonstrates this pattern in production:
+The VA Agent Project `AssistantResponse` schema demonstrates this pattern in production:
 
 ```python
 class AssistantResponse(BaseModel):
@@ -85,7 +86,6 @@ For action-oriented workflows (create invoice, correct categorization), lean tow
 
 ## See Also
 - [[[client] Copilot Architecture]]
-- [[VA Agent Project]]
 - [[ACI (Agent-Computer Interface)]]
 - [[Plan and Execute Pattern]]
 - [[Agentic Workflow Patterns]]

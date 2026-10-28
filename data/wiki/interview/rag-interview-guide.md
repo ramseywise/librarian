@@ -2,10 +2,11 @@
 title: RAG Interview Study Guide
 tags: [rag, interview, reference]
 summary: Exam-prep reference for RAG architecture questions — component choices, architecture variants, production judgment, measured benchmarks, and terminology traps.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
-  - raw/repos/learn-ai-engineering/interviewing--guides--3-rag--interview-guide.md
-  - raw/repos/learn-ai-engineering/interviewing--notes--rag.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--3-rag--interview-guide.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--rag.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--rag.md
 ---
 
 # RAG Interview Study Guide

@@ -2,9 +2,12 @@
 title: Context Compaction
 tags: [llm, agents, concept]
 summary: Transforming a large interaction history into a smaller continuation state — the technique that separates an agent that dies at the window limit from one that runs for hours.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--04-compression-compaction.md
+  - data/raw/claude-docs/project-g/docs/support-agents/invocation-flow.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--context-management.md
 ---
 
 # Context Compaction
@@ -123,6 +126,14 @@ the prefix. Worth it, but it means:
   preserving a cacheable prefix
 - Compacting at phase boundaries amortizes the cost across the phase that follows
 
+## Pruning stale tool results in multi-step agents
+
+In a multi-step support turn, each knowledge-base tool call appends its full passage text,
+so by step 4 the context holds three full result sets. A per-step `prune_old_passages`
+callback strips passage **text** from all but the most recent tool response and keeps the
+ID, URL, title and score. Citations to earlier passages still resolve, and the bulk is
+gone. The same pruning was implemented in both the Python and the TypeScript agents.
+
 ## See Also
 - [[Long-Horizon Execution]] <!-- auto-linked -->
 - [[Context Anatomy]] <!-- auto-linked -->
@@ -130,3 +141,4 @@ the prefix. Worth it, but it means:
 - [[Context Failure Modes]] — mitigates
 - [[Memory as Context]] — extends
 - [[Context Retrieval Strategies]] — complements
+- [[Compression Strips the Epistemic Frame]] — extends (hedging and provenance are the first casualties)

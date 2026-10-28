@@ -2,9 +2,10 @@
 title: Reinforcement Learning Foundations
 tags: [foundations, llm, concept]
 summary: "The MDP tuple (S, A, P, R, γ), the Markov property that makes RL tractable, the four algorithm families, and the exploration/exploitation tension — with how each maps onto LLM training and agentic tool use."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--rl.md
 ---
 
 # Reinforcement Learning Foundations
@@ -94,3 +95,5 @@ task complete?) and the difficulty is credit assignment across a long trajectory
 - [[Multi-Agent Reinforcement Learning]] — extends (the same MDP with multiple interacting policies)
 - [[RL for Retrieval Policies]] — instance-of (RAG as a sequential decision process)
 - [[Reward Hacking and Overoptimization]] — complements (what goes wrong when the reward is a learned proxy)
+- [[RL Training Frameworks for LLMs]] — extends (the distributed systems that run these algorithms on LLMs)
+- [[Training-Agent Disaggregation]] — extends (traces of an existing agent as MDP rollouts for an external trainer)

@@ -4,7 +4,7 @@ tags: [mcp, infra, concept]
 summary: Google's Agent-to-Agent open specification for inter-agent communication — task lifecycle, agent cards, and how it maps to LangGraph primitives.
 updated: 2026-04-24
 sources:
-  - raw/playground-docs/agentic-rag-copilot-research.md
+  - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
 ---
 
 # A2A Agent Protocol

@@ -2,9 +2,14 @@
 title: Safeguards Architecture — Five Protection Layers
 tags: [infra, llm, pattern]
 summary: Five-layer runtime safety pipeline for production agents — input guardrails, routing confidence, retrieval quality (CRAG), post-generation grounding check, and escalation routing — each with distinct latency cost and failure mode.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/docs/support-agents/safeguards-architecture.md
+  - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
+  - data/raw/claude-docs/playground/docs/support-agents/safeguards-architecture.md
+  - data/raw/claude-docs/project-g/docs/support-agents/invocation-flow.md
+  - data/raw/repos/playground/.claude--docs--support-agents--safeguards-architecture.md
+  - data/raw/claude-docs/project-g/docs/support-agents/safeguards-architecture.md
+  - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--support-agent.md
 ---
 
 # Safeguards Architecture — Five Protection Layers
@@ -61,6 +66,20 @@ Additionally: missing citation guard (KB called but no citations + no `insuffici
 
 **When the response is streamed**, this layer cannot simply inspect a finished string — see [[Streaming Output Scrubbing]] for the transform-in-transit seam and the carry-window technique that keeps a post-generation guard compatible with token streaming.
 
+### Where the structural check is blind
+
+- **Tier 3 being soft-only lets fabricated quotes through.** The check with the most
+  meaning (is the quote verbatim in the passage?) never escalates. A supporting quote
+  with zero token overlap still passes. Make `score == 0` a configurable hard fail.
+- **Self-rated relevance below threshold only logs.** It should be a configurable gate.
+- **The missing-citation guard needs a KB that returns results.** If the KB always
+  returns poor passages, the model answers from memory and the guard never fires. A
+  retrieval-side gate (CRAG) is the complementary check: grounding rejects bad answers,
+  but improves nothing before generation.
+- **Schema coupling fails silently.** A bare `catch {}` around claim parsing swallows
+  errors when the `citations`/`claims` keys change. At the very least, log them.
+- **Failures that only reach the console** never feed dashboards or the eval pipeline.
+
 ## Layer 5 — Escalation Routing
 
 Aggregates signals from all prior layers plus explicit user requests:
@@ -70,6 +89,20 @@ Aggregates signals from all prior layers plus explicit user requests:
 - Coverage gaps detected by Layer 3
 
 **Gap:** Currently regex-only in most implementations. Not yet wired to aggregate grounding failures or low-confidence signals as compound escalation triggers.
+
+## Confirm Gate for Write Operations
+
+A `confirm: bool` field in the response schema gates nothing unless the write path uses
+it. The two-phase design:
+
+- **Phase 1:** asked to edit a record, the agent does **not** call the write tool. It
+  summarizes the intended change, sets `confirm: true` and stores the planned tool call
+  as `pending_action` in session state.
+- **Phase 2:** the next user turn contains an affirmation after a `confirm: true` reply,
+  so the agent executes the stored `pending_action`.
+
+The approval lives in session state across turns, not in the model's memory of the
+previous message.
 
 ## Latency Budget
 
@@ -112,3 +145,7 @@ Gaps: context caching (TS only), multi-language escalation (Python: 7 langs, TS:
 - [[Execution Boundaries and Guardrails]] — part-of (the five layers sit inside the harness's boundary layer)
 - [[Canary Testing for Permission Boundaries]] — extends (testing that a deny rule actually fires)
 - [[Agent Security Risk Taxonomy]] — complements (the risk classes these layers mitigate, and why mitigation distributes)
+- [[Score-Delta Retry Guard]] — prerequisite-for (the score delta guard in detail)
+- [[Prompted Reflection vs Graph-Gated CRAG]] — extends (in-flight reflection does not replace Layer 4 grounding)
+- [[Warranted vs Executed Escalation]] — extends (score-floor escalation enforcement and how escalation is graded)
+- [[System Design Interview Study Guide]] — instance-of (the support-agent worked example rehearses these layers)

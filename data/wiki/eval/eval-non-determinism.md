@@ -2,9 +2,10 @@
 title: Eval Non-Determinism
 tags: [eval, llm, agents, concept]
 summary: "A single trial is an anecdote — run k trials and report pass@k when one success suffices, pass^k when consistency is the product, because a 75% agent passes three consecutive trials only 42% of the time."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
 ---
 
 # Eval Non-Determinism
@@ -64,3 +65,4 @@ Multi-trial evaluation multiplies eval cost by k. Two things follow:
 - [[Eval Suite Maintenance]] — complements (environment reset between trials)
 - [[Loop Termination Design]] — complements (per-trial reliability is what a retry cap is compensating for)
 - [[Knowledge Graph Retrieval]] — complements (the same multiplicative compounding, applied to traversal depth)
+- [[UNGATED Metric Convention]] — prerequisite-for

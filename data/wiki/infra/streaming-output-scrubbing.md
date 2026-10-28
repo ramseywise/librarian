@@ -2,9 +2,11 @@
 title: Streaming Output Scrubbing
 tags: [infra, llm, pattern]
 summary: Scrubbing secrets from a streamed LLM response in transit via a TransformStream with a carry window — the only seam that preserves streaming while guaranteeing scrubbed bytes are the only bytes the caller sees.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/AIT-50-plan.md
+  - data/raw/claude-docs/ai-project-template/docs/reviews/AIT-43-review.md
+  - data/raw/repos/ai-project-template/.claude--docs--reviews--AIT-43-review.md
 ---
 
 # Streaming Output Scrubbing
@@ -80,8 +82,18 @@ mutation-style wiring tests where each docstring names the exact edit that makes
 the test fail — import alone proves nothing, since an import satisfies a linter
 while the call site stays empty.
 
+The orphan was surfaced by an unimported-module guard that builds the import graph
+directly — after the off-the-shelf lint rule for unused modules passed a planted orphan
+under flat config (see [[Scan-Floor Guard Against Silent No-Op Checks]]). The same
+review deferred, rather than fixed, two follow-ons: wiring an output check around a
+streaming response is a design decision (what does a mid-stream block do to the
+stream?), and an injection regex requiring `previous|prior|above` right after an
+optional `all|any` let "Disregard *the* above" through. The failing fixture was
+rephrased instead of widening a security pattern inside an unrelated issue.
+
 ## See Also
 - [[Input Guardrails Pipeline]] — prerequisite-for
 - [[Safeguards Architecture — Five Protection Layers]] — instance-of (the post-generation layer)
 - [[Verified Runtime Capability Constraint]] — extends
 - [[PII Masking Approaches]] — alternative-to
+- [[In-Band Stream Errors Read as Bad Answers]] — related (errors inside the same stream seam)

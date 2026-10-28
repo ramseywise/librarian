@@ -4,7 +4,7 @@ tags: [rag, concept, pattern]
 summary: Three design patterns for exposing a RAG service cleanly — multi-query surface (LLM sends 2-3 query variants), fingerprint-based global deduplication, and typed Pydantic response contract at the HTTP boundary.
 updated: 2026-04-26
 sources:
-  - raw/claude-docs/playground/docs/research/rag/rag-api-design.md
+  - data/raw/claude-docs/playground/docs/research/rag/rag-api-design.md
 ---
 
 # RAG API Design Patterns

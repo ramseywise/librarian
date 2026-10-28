@@ -2,10 +2,11 @@
 title: VA vs HCA Retrieval Evaluation
 tags: [rag, eval, comparison]
 summary: Benchmarking results comparing VA, HCA (Bedrock), and local RAG baselines across 935 Danish support questions — VA outperforms HCA on all dimensions (MRR 0.286 vs 0.248), but 47% corpus ceiling means data-ops fixes dominate model-level improvements.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
-  - raw/meetings/2026-06-23-onboarding-shyamali-session1.md
+  - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
+  - data/raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
+  - data/raw/meetings/2026-06-23-onboarding-shyamali-session1.md
 ---
 
 # VA vs HCA Retrieval Evaluation
@@ -147,3 +148,4 @@ This evaluation uses n=754 URL-cited questions as ground truth. A separate, cura
 - [[Agentic RAG — Advanced Patterns]]
 - [[[client] Knowledge Agent]]
 - [[CRAG Retry Logic]]
+- [[Consequence-Flagged KB Audit]] — extends (how to find the corpus-ceiling defects before tuning retrieval)

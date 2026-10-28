@@ -1,10 +1,14 @@
 """Scrape local git repos → raw/repos/
 
 Reads raw/repos/repos.txt — one repo path per line (# for comments).
-For each repo, extracts: CLAUDE.md, README.md, .claude/skills/**/*.md,
-docs/**/*.md, .agents/**/*.md, SANYI.md, plus the learn-ai-engineering
-knowledge base (interviewing/, ai-engineering/, generative-ai/, and the
-data-*/programming subject domains). See EXTRACT_GLOBS.
+For each repo, extracts: CLAUDE.md, README.md, SANYI.md, akira findings, plus the
+learn-ai-engineering knowledge base (interviewing/, ai-engineering/, generative-ai/,
+and the data-*/programming subject domains). See EXTRACT_GLOBS.
+
+.claude/skills, .claude/docs, docs/ and .agents/ (CLAUDE_DOCS_GLOBS) are taken only
+from repos that core/scrape_claude_docs.py does not already cover — the librarian
+itself and repos nested below ~/workspace/<dir>/. Scraping them from both put the
+same file in data/raw/ twice under two paths.
 
 Idempotent: skips files whose content hasn't changed since last scrape.
 
@@ -25,6 +29,7 @@ import structlog
 from dotenv import load_dotenv
 
 from core.base import REPO_ROOT, ScraperBase
+from core.scrape_claude_docs import SKIP_PROJECTS, WORKSPACE_DIR
 
 load_dotenv()
 log = structlog.get_logger()
@@ -37,10 +42,6 @@ EXTRACT_GLOBS = [
     "CLAUDE.md",
     "README.md",
     "SANYI.md",
-    ".claude/skills/**/*.md",
-    ".claude/docs/**/*.md",
-    "docs/**/*.md",
-    ".agents/**/*.md",
     "src/agents/akira/findings/*.md",
     # learn-ai-engineering knowledge base. Depth-limited on purpose: the pillar
     # dirs also hold vendored third-party repos (Prompt-Engineering-Guide-main,
@@ -60,6 +61,15 @@ EXTRACT_GLOBS = [
     "programming/*.md",
 ]
 
+# Already scraped into data/raw/claude-docs/ for top-level workspace projects; only
+# taken here for repos that scraper skips (see _covered_by_claude_docs).
+CLAUDE_DOCS_GLOBS = [
+    ".claude/skills/**/*.md",
+    ".claude/docs/**/*.md",
+    "docs/**/*.md",
+    ".agents/**/*.md",
+]
+
 # Never extract these (build artifacts, lock files, etc.)
 EXCLUDE_STEMS = {"package-lock", "yarn.lock", "uv.lock", "poetry.lock"}
 EXCLUDE_DIRS = {".venv", "node_modules", "__pycache__", ".git", "dist", "build"}
@@ -74,6 +84,14 @@ def _should_skip(path: Path) -> bool:
         if part in EXCLUDE_DIRS:
             return True
     return path.stem in EXCLUDE_STEMS
+
+
+def _covered_by_claude_docs(repo_path: Path) -> bool:
+    """True when core/scrape_claude_docs.py already scrapes this repo's .claude/ and docs/."""
+    return (
+        repo_path.resolve().parent == WORKSPACE_DIR.resolve()
+        and repo_path.name not in SKIP_PROJECTS
+    )
 
 
 def scrape_repo(
@@ -94,7 +112,11 @@ def scrape_repo(
 
     written = skipped = 0
 
-    for pattern in EXTRACT_GLOBS:
+    patterns = EXTRACT_GLOBS
+    if not _covered_by_claude_docs(repo_path):
+        patterns = EXTRACT_GLOBS + CLAUDE_DOCS_GLOBS
+
+    for pattern in patterns:
         for src in repo_path.glob(pattern):
             if not src.is_file() or _should_skip(src):
                 continue

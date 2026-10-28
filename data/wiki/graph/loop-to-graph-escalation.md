@@ -2,10 +2,14 @@
 title: Loop-to-Graph Escalation
 tags: [llm, agents, infra, pattern]
 summary: "A loop is a graph with one node and an edge back to itself — so graph is not a maturity level you graduate to but a cost you justify, and the five signals name what a single loop structurally cannot do."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--README.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-14-orchestrator-design.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-orchestrator-design.md
+  - data/raw/claude-docs/galactus/docs/plans/2026-08-14-pipeline-orchestration.md
+  - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-pipeline-orchestration.md
 ---
 
 # Loop-to-Graph Escalation
@@ -98,6 +102,23 @@ fan-out cost for work that will be redone anyway.
 - [ ] Is the per-cycle pass rate plausibly above ~50%?
 - [ ] Are you starting at 3–5 nodes rather than the full topology?
 
+## Applied: graph the band whose nodes you can name (galactus)
+
+The galactus control-plane design applied the "can you name every node before the run?"
+test band by band and got opposite answers: the BUILD sequence (research → plan → refine →
+execute → review) is nameable and is where the loop-backs live — **graph**; the FRAME band
+is entered by intent and its nodes cannot be named in advance — **loop** (a graph there
+"would be a fiction with a DESIGN.md at the end of it"). Review was already orchestrated,
+and capability skills have no position at all.
+
+On cost: the ~3× is **per cycle, not per run** — a graph paused at a human seat is not
+cycling, so the multiplier lands on loop-backs specifically, and with zero observed
+loop-back traversals the measured multiplier would be near 1×. Further levers: graph only
+the qualifying band, run mechanical nodes on a cheap model tier, bound loop-backs tightly.
+The deciding number is the per-cycle pass rate, which nobody had measured — so the design
+shipped the documented contract first and let its hook-recorded transitions produce that
+rate (see [[Decision-Seat Inventory for a Control Plane]]).
+
 ## See Also
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Knowledge Graph as Shared Agent Memory]] <!-- auto-linked -->
@@ -106,3 +127,7 @@ fan-out cost for work that will be redone anyway.
 - [[Verification Loops]] — complements (the overloaded verifier is the most common false signal)
 - [[Loop Termination Design]] — complements
 - [[Graph Topology Primitives]] — extends
+- [[Design Dry-Run Simulation]] — extends (the design stage that tests the 'overloaded verifier' question)
+- [[Right-Sizing a Document-to-LLM Pipeline]] — instance-of (a 7-step pipeline with one repair loop that does not earn a graph framework)
+- [[Decision-Seat Inventory for a Control Plane]] — instance-of (graph BUILD, loop FRAME)
+- [[Artifact-Canonical Stateless Driver]] — extends

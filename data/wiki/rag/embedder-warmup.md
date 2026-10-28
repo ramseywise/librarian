@@ -4,7 +4,7 @@ tags: [rag, infra, concept]
 summary: Force-loading the embedding model during application startup (before the first request) to prevent a 3–8s cold-start spike on the first query in production.
 updated: 2026-04-24
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
 ---
 
 # Embedder Warmup

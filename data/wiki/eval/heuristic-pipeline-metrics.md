@@ -2,9 +2,10 @@
 title: Heuristic Pipeline Metrics
 tags: [eval, infra, observability]
 summary: Automated measurement of operational health — latency, error rate, token usage, retrieval recall — that runs alongside every eval rung and is explicitly never sufficient alone, since a fast cheap wrong answer still fails.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
+  - data/raw/repos/nonprofit-success-ai/.claude--docs--plans--2026-10-07-r10-eval-metrics.md
 ---
 
 # Heuristic Pipeline Metrics
@@ -36,6 +37,22 @@ spikes points at infrastructure.
   pipeline.
 - `optional_features: [promptfoo]` adds HTTP-level performance testing.
 
+## Production signals as one security-invoker view (nonprofit-success-ai)
+
+The "drift, errors, latency, cost, staff override rate" monitoring question was answered
+with one per-agent, per-day view over the run log and approvals table, with no new table:
+- **Override rate = rejected ÷ (approved + rejected)**, bucketed on the day the human
+  decided (`reviewed_at::date`), not the day the agent proposed. `expired` and `pending`
+  are excluded from both sides. **"Edited" is not observable** while an edit is a new
+  draft row rather than an approval state, so the spec says so instead of counting it.
+- Error and fallback rates are counts ÷ runs. Latency is `percentile_cont` p50/p95. Cost
+  is a sum over a nullable column, so the view also exposes `runs_costed` and a sum over
+  a few costed rows is not mistaken for the total.
+- **Drift stays out of the DB.** Judge pass rate per run already lives in the eval
+  experiment log, and the view's comment points there.
+- The view is `security_invoker`, so the existing RLS on the base tables decides who sees
+  which org's metrics, and no new policies are needed.
+
 ## See Also
 - [[Online Eval Sampling]] <!-- auto-linked -->
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
@@ -44,3 +61,4 @@ spikes points at infrastructure.
 - [[User Feedback Loops]] — complements (separates engagement shift from regression)
 - [[RAG Eval Metrics Suite]] — extends (retrieval-specific metrics)
 - [[Observability & Evaluation Glossary]] — related
+- [[Demote Judge Findings to Keyless Gates]] — extends (judge findings that a regex can catch move into this tier)

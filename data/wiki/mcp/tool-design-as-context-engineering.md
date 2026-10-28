@@ -2,9 +2,10 @@
 title: Tool Design as Context Engineering
 tags: [mcp, llm, agents, concept]
 summary: Tools consume context twice — definitions sit in the window permanently, results enter per call — so token-efficient results, unambiguous boundaries, and terse routing descriptions are context decisions, not API aesthetics.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
+  - data/raw/repos/datathon_mcp/CLAUDE.md
 ---
 
 # Tool Design as Context Engineering
@@ -49,6 +50,10 @@ return **structured errors the agent can act on**.
 That is actionable. A stack trace is 500 tokens of noise the agent cannot use — and those
 tokens sit in the window for the rest of the session.
 
+For enumerated arguments, make the error **list the valid values** (a read-only data-pool
+MCP does this for every bad region, code or filter), so the model can correct itself in one
+retry without a separate lookup tool.
+
 ## Descriptive Parameters
 
 Parameter names and descriptions should be unambiguous and play to model strengths.
@@ -89,3 +94,4 @@ Negative examples reduce misfires: *"Don't call this when…"* plus what to do i
 - [[MCP Protocol]] — implements
 - [[Context Retrieval Strategies]] — depends-on
 - [[Tool Design as Harness Surface]] — complements (same tools seen as a harness contract rather than a context cost)
+- [[Curl-Bridge Context Injection]] — alternative-to (instructions to curl instead of tool definitions)

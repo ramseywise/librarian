@@ -2,7 +2,7 @@
 title: Harness Anatomy
 tags: [llm, agents, infra, concept]
 summary: "The nine harness components, why the filesystem is the foundational primitive the others lean on, the layered mental model, and the causal build order that answers what to build first."
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--02-harness-anatomy.md
 ---
@@ -167,3 +167,4 @@ Six items. Everything else here is elaboration on those.
 - [[Tool Design as Harness Surface]] — extends
 - [[Execution Boundaries and Guardrails]] — extends
 - [[Long-Horizon Execution]] — depends-on
+- [[Realtime Is UI Sync, Not the Event Bus]] — related (a realtime channel is not the event bus)

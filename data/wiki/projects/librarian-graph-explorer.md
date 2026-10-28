@@ -2,9 +2,9 @@
 title: Librarian Graph Explorer
 tags: [rag, langgraph, infra, project]
 summary: Local React Flow wiki graph explorer — multi-dimensional edge types (wikilink/semantic/tag-shared), UMAP semantic layout, and agent chat with graph highlighting and wikilink write-back. Addresses the gap where Obsidian cannot do multi-edge toggling or embedding-based spatial layout.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/react-flow-ui.md
+  - data/raw/claude-docs/playground/react-flow-ui.md
 ---
 
 # Librarian Graph Explorer

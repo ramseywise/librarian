@@ -2,9 +2,11 @@
 title: AIE Code-Test Flaw Taxonomy
 tags: [interview, llm, reference]
 summary: The eleven recurring defects in LLM take-home submissions — context overflow, naive chunking, missing retry/timeout, ungrounded generation, JSON drift, swallowed exceptions — each with its detection cue and the minimal fix that fits inside a one-hour timebox.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_format-and-flaws.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-08-02-LAE-115-code-test-formats.md
+  - data/raw/repos/learn-ai-engineering/.claude--docs--plans--2026-08-02-LAE-115-code-test-formats.md
 ---
 
 # AIE Code-Test Flaw Taxonomy
@@ -74,6 +76,13 @@ candidate never budgeted a hardening phase at all.
 
 The top two are both *judgment* failures rather than implementation failures — nothing in
 either requires skill the candidate lacks.
+
+Treat the percentages as a ranking, not as measurements. They come from prep guides and a
+candidate-repo dataset, not from a hiring team's rubric. When this taxonomy was compiled into
+the learning repo's case-study guide, the figures were deliberately dropped and only the
+ordering kept, to avoid false precision. The guide also titles the list "flaws that show up
+in submissions", never "traps": nothing suggests interviewers plant these defects. They are
+what candidates produce under time pressure.
 
 ## Pragmatism is a proxy for finishing
 

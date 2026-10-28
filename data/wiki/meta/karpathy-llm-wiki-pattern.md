@@ -2,9 +2,19 @@
 title: Karpathy LLM Wiki Pattern
 tags: [llm, concept]
 summary: The compiler analogy for personal knowledge bases — raw sources in, LLM compiles them into structured interlinked wiki pages, no vector infra needed.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/obsidian-kb-research.md
+  - data/raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
+  - data/raw/repos/librarian/.claude--docs--plans--2026-07-17-knowledge-compaction.md
+  - data/raw/repos/librarian/.claude--docs--plans--wiki-taxonomy-refactor.md
+  - data/raw/repos/librarian/.claude--docs--research--learning-repos-into-kb.md
+  - data/raw/repos/librarian/.claude--docs--research--two-knowledge-eras-audit.md
+  - data/raw/repos/librarian/.claude--skills--wiki-sync--SKILL.md
+  - data/raw/repos/librarian/.claude--skills--ingest--SKILL.md
+  - data/raw/repos/librarian/.claude--skills--lint--SKILL.md
+  - data/raw/repos/librarian/.claude--skills--query--SKILL.md
+  - data/raw/repos/librarian/CLAUDE.md
+  - data/raw/repos/librarian/README.md
 ---
 
 # Karpathy LLM Wiki Pattern
@@ -89,6 +99,39 @@ Company-specific, client-identifying, or proprietary content goes in `wiki/priva
 
 Every wiki page should list the `sources:` frontmatter field pointing back to the `raw/` files it was compiled from. This makes it possible to re-derive a page if the wiki is corrupted and to trace provenance of claims.
 
+### Audit the raw sources before locking the structure
+
+The taxonomy refactor (2026-04) deliberately deferred migration until a raw-source
+coverage audit finished. The reasoning: "raw source coverage may reveal missing domains;
+wrong to lock structure before audit." The audit confirmed that the old concepts/agents
+split was broken. It also showed that a 97-file coverage gap was mostly archived plans,
+so migration did not have to wait for ingest. The rule that came out of it was
+**directory = domain (the primary retrieval axis), type = tag (frontmatter only)**. One
+call was reversed during the refactor: "decisions stay flat" (2026-04-26) gave way to
+ADRs living in their domain directory, for the domain-scoped retrieval reason above.
+
+### Curate new eras of content; do not bulk-ingest
+
+Two later audits asked whether older material (classical ML/DS notebooks, course repos,
+textbook exercises) should enter the wiki. Both answered "curate". Bulk ingest of
+operational or tutorial material had already failed once: 38 SKILL.md sources produced 4
+pages. The classical-era audit found about seven page-worthy items across several repos,
+all comparison or decision shaped (for example, which A/B significance test to use).
+Most of what it reviewed was "how a for-loop works"-tier material. It recommended a
+single, narrowly scoped fundamentals domain, kept **out of flagship agents' runtime
+wiring** so that textbook content cannot dilute design recommendations. The immediate
+decision was to wait. `foundations/` and `interview/` now exist, and the
+source-character rule in CLAUDE.md (patterns vs subject knowledge vs interview
+technique) is the outcome of that thinking.
+
+### Hardcoded domain lists drift from disk
+
+The frontend and backend each carried hardcoded domain lists that silently went stale
+as directories were added. A read-only `/wiki-sync` audit compares them against
+`data/wiki/` and reports missing domains and "ghost" entries (in code, not on disk). It
+only applies mechanical fixes with `--fix`. The schema now treats disk as canonical: the
+domain-tag table in CLAUDE.md is "illustrative, not normative".
+
 ## See Also
 - [[Librarian Project]]
 - [[MCP Protocol]]
@@ -97,3 +140,7 @@ Every wiki page should list the `sources:` frontmatter field pointing back to th
 - [[Durable vs Performative Knowledge Split]] — complements (durable/performative axis alongside raw/compiled)
 - [[AI Engineering Curriculum Structure]] — instance-of (a source corpus that pre-organises itself before compilation, and splits its own material by decay rate)
 - [[Wiki Graph Engineering — Edge Quality Over Edge Count]] — extends (what the compiled graph's edges are actually worth at retrieval time)
+- [[Automated Paper Discovery Pipeline]] — extends (an automated, gated feed of research papers into raw)
+- [[Knowledge Base Recompile Stage]] — extends (the consolidation stage the compile/query/lint trio lacks)
+- [[Evidence-Driven Wiki Compaction]] — extends (the recompile stage)
+- [[Compiled-Prose KB vs Graph-Native Store]] — extends (the compiled-prose bet against graph-native stores)

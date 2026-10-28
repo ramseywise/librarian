@@ -60,7 +60,7 @@ count. No one is sitting next to the machine, so no one can start it.
 
 - **Pro:** Always available; professional-grade reliability; the team doesn't need to "start" anything
 - **Con:** Monthly cost even when idle; needs monitoring (*"what if it crashes at 2am?"*); environment management
-- **DSSG consideration:** *"Railway's free tier ($5/mo credit) handles most DSSG workloads. Don't over-engineer hosting for a system that serves 5-20 users."*
+- **Volunteer-team consideration:** *"Railway's free tier ($5/mo credit) handles most volunteer-team workloads. Don't over-engineer hosting for a system that serves 5-20 users."*
 
 The 2am question is the real cost of this rung. Adopting it means adopting an on-call
 expectation, however informal — which is a volunteer-team liability that the dollar cost

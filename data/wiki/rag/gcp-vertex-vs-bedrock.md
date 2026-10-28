@@ -2,9 +2,12 @@
 title: GCP Vertex AI Search vs AWS Bedrock KB
 tags: [rag, infra, comparison]
 summary: Head-to-head comparison of GCP Discovery Engine and AWS Bedrock Knowledge Bases as managed RAG backends — covering search semantics, session state, answer ownership, and when to consider switching.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/project-g/docs/rag/gcp-vertex-vs-bedrock.md
+  - data/raw/claude-docs/playground/docs/rag/bedrock-kb.md
+  - data/raw/claude-docs/playground/docs/rag/gcp-vertex-vs-bedrock.md
+  - data/raw/claude-docs/project-g/docs/rag/gcp-vertex-vs-bedrock.md
+  - data/raw/claude-docs/project-g/docs/rag/bedrock-kb.md
 ---
 
 # GCP Vertex AI Search vs AWS Bedrock KB
@@ -105,6 +108,21 @@ Mode C — GCP Built-in Answer (:answer endpoint)
 Keep backends strictly separated in retrieval evals — never compare scores across modes.
 
 ---
+
+## Operating a Bedrock KB in practice (playground notes)
+
+- **Two retrieval modes, two score scales.** A fast mode (top-5, cosine floor ~0.4) for the
+  agent tool and a reranking mode (top-15, reranker floor ~0.05) for eval and complex
+  queries. The thresholds are not interchangeable, so never compare a score from one mode
+  against a threshold tuned for the other.
+- **KB scope is a precision decision.** Restricting the index to one language helped,
+  because the same article indexed in two languages competes with itself for the top
+  slots. Table-based pricing pages chunk into fragments too small to carry their context.
+  A low-quality glossary was removed outright rather than down-weighted.
+- **Parallel multi-query** runs each reformulation via `asyncio.to_thread` and dedups on a
+  fingerprint of `url|content[:200]`, since the same chunk comes back from several queries.
+- **Strip parser artifacts.** The foundation-model document parser leaves XML fragments in
+  chunk text. Strip them before passages reach the prompt or a grader.
 
 ## See Also
 - [[Vector Database Comparison]]

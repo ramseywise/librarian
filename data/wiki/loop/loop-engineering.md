@@ -2,10 +2,11 @@
 title: Loop Engineering
 tags: [llm, agents, infra, concept]
 summary: "The fourth layer of the stack — designing the cycle that re-prompts, checks, and stops an agent when nobody is watching, replacing yourself as the person who prompts it."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--loop-engineering.md
 ---
 
 # Loop Engineering

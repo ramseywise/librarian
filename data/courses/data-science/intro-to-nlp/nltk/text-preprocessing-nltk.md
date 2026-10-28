@@ -1,0 +1,98 @@
+---
+imported_hash: b196fd2c751a4dcc
+title: Text Preprocessing
+summary: 'for sentence in senttokenize(sentences): lowtokens = wordtokenize(sentence.lower()) processedsentences.append([word for word in lowtokens if word not in stpwrds])'
+order: 2
+kind: notebook
+section: Nltk
+source: learn-ai-engineering/data-science/intro-to-nlp/nltk/text_preprocessing_nltk.ipynb
+---
+
+# Text Preprocessing
+
+```python
+# importing packages
+import nltk
+import string
+from nltk import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
+from nltk.stem.porter import *
+nltk.download('stopwords')
+```
+
+### Text Data
+
+```python
+# defining a sentence
+sentences = "Apple today unveiled completely redesigned Everyone Can Code curriculum to help introduce more elementary and middle school students to the world of coding. Now available, the new curriculum includes even more resources for teachers, a brand new guide for students and updated Swift Coding Club materials. Today millions of students worldwide already use Everyone Can Code curriculum to bring their ideas to life and develop important skills including creativity, collaboration and problem solving. "
+sentences
+```
+
+```python
+# tokenizing the corpus into a list of sentences
+sentence_tokens = sent_tokenize(sentences)
+sentence_tokens
+```
+
+### Converting to Lowercase
+
+```python
+# using "".lower() from string library to convert string to lowercase
+lower_sentence = sentence_tokens[0].lower()
+lower_sentence
+```
+
+### Tokenization
+
+```python
+# tokenizing the sentence down to the word level
+tokenized_words = word_tokenize(lower_sentence)
+tokenized_words
+```
+
+### Removing stop words and punctuation
+
+```python
+# concatenating together nltk’s list of English stop words with a list of the string library’s punctuation
+stpwrds = stopwords.words('english') + list(string.punctuation)
+stpwrds
+```
+
+```python
+# list comprehension
+stpwrds_removed = [word for word in tokenized_words if word not in stpwrds]
+stpwrds_removed
+```
+
+### Stemming
+
+```python
+# to stem words, create an instance of the PorterStemmer() object
+stemmer = PorterStemmer()
+```
+
+```python
+# list comprehension
+[stemmer.stem(word) for word in stpwrds_removed]
+```
+
+## Processing the full corpus
+
+```python
+# making lowercase, tokenize/remove puctuation and removing stop words from corpus
+processed_sentences = []
+
+for sentence in sent_tokenize(sentences):
+    low_tokens = word_tokenize(sentence.lower())
+    processed_sentences.append([word for word in low_tokens if word not in stpwrds])
+```
+
+```python
+# getting result
+processed_sentences[0]
+```
+
+```python
+# getting the number of tokens in the sentence
+len(processed_sentences[0])
+```

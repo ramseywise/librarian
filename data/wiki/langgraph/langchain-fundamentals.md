@@ -1,10 +1,10 @@
 ---
 title: LangChain Fundamentals — create_agent, Tools, Structured Output
-tags: [langgraph, llm, concept]
+tags: [langgraph, llm, concept, conflict]
 summary: LangChain 1.0's core agent-building primitives — the create_agent() loop, the @tool decorator, checkpointer-based persistence, and structured output — the foundation layer beneath LangGraph and Deep Agents.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/agent-skills/langchain-fundamentals/SKILL.md
+  - data/raw/agent-skills/langchain-fundamentals/SKILL.md
 ---
 
 # LangChain Fundamentals — create_agent, Tools, Structured Output

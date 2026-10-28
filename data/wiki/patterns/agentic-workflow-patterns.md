@@ -4,7 +4,7 @@ tags: [llm, pattern]
 summary: Anthropic's five composable workflow patterns for LLM agents — when to use each, and the ACI principle for tool design.
 updated: 2026-04-24
 sources:
-  - raw/web/2026-04-24-www-anthropic-com-engineering-building-effective-agents-7d24e5fa.md
+  - data/raw/web/2026-04-24-www-anthropic-com-engineering-building-effective-agents-7d24e5fa.md
 ---
 
 # Agentic Workflow Patterns

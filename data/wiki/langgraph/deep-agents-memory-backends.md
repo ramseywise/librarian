@@ -4,8 +4,8 @@ tags: [deep-agents, memory, pattern]
 summary: Pluggable backend system for Deep Agents file operations and memory — StateBackend (ephemeral), StoreBackend (cross-thread), FilesystemBackend (local disk), and CompositeBackend (routing).
 updated: 2026-07-14
 sources:
-  - raw/agent-skills/deep-agents-memory/SKILL.md
-  - raw/agent-skills/deep-agents-memory/references/backend-guide.md
+  - data/raw/agent-skills/deep-agents-memory/SKILL.md
+  - data/raw/agent-skills/deep-agents-memory/references/backend-guide.md
 ---
 
 # Deep Agents Memory Backends

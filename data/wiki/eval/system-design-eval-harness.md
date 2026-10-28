@@ -4,8 +4,8 @@ tags: [eval, reference]
 summary: Interview-format system design writeup of playground's eval harness — golden set → heuristic graders → LLM judges → gate, shared across three agent implementations, with HTML reporting and threshold governance.
 updated: 2026-07-17
 sources:
-  - raw/repos/playground/CLAUDE.md
-  - raw/repos/playground/SANYI.md
+  - data/raw/repos/playground/CLAUDE.md
+  - data/raw/repos/playground/SANYI.md
 ---
 
 # System Design — Unified Eval Harness

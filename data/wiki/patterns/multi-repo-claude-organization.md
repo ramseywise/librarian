@@ -2,11 +2,11 @@
 title: Multi-Repo Claude Organization
 tags: [context-management, pattern]
 summary: How to organize .claude/, .agents/, and docs/ across related repos — avoiding skill sprawl, maintaining canonical sources, and sharing context between parallel workspaces.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
-  - raw/sessions/2026-04-20T1645.md
-  - raw/sessions/2026-04-26T0915.md
-  - raw/sessions/claude-2026-04-20-how-well-doe-playground-claude-overlap-w-64095580.md
+  - data/raw/sessions/2026-04-20T1645.md
+  - data/raw/sessions/2026-04-26T0915.md
+  - data/raw/sessions/claude-2026-04-20-how-well-doe-playground-claude-overlap-w-64095580.md
 ---
 
 # Multi-Repo Claude Organization
@@ -88,3 +88,4 @@ When two repos serve the same domain (e.g. `playground/src/librarian` and a stan
 - [[Copier Re-Entry as Capability Path]] — extends (never hand-copy template files between repos)
 - [[Sync as Render, Not Copy]] — extends (what hand-copied files become: unmanaged forks)
 - [[Asked vs Derived Scaffold Variables]] — instance-of (the scaffold interview for a shared template repo)
+- [[Three-Doc Spec Split]] — related (a per-repo spec convention worth standardizing)

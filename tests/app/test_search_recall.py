@@ -85,7 +85,7 @@ def test_irrelevant_pages_stay_out(wiki: Path) -> None:
 
 
 def test_search_rows_scores_are_descending(wiki: Path) -> None:
-    rows = server._search_rows("compacting context documents")
+    rows, _ = server._search_rows("compacting context documents")
     scores = [r[6] for r in rows]
     assert scores == sorted(scores, reverse=True)
     assert all(isinstance(s, float) for s in scores)

@@ -2,9 +2,11 @@
 title: Six-Pillar Agent Engineering Assessment
 tags: [llm, reference]
 summary: A rubric scoring agent codebases across six engineering pillars — prompt, context, harness, loop, graph, evaluation — with each pillar's requirements tiered Must/Should/Nice so a coverage percentage separates "missing the foundation" from "not yet mature."
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/template-pillar-gaps.md
+  - data/raw/claude-docs/guacamayo/docs/research/ai-eng-portfolio-assessment.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/research/ai-eng-assessment-framework.md
 ---
 
 # Six-Pillar Agent Engineering Assessment
@@ -67,6 +69,40 @@ maker/checker separation, durable state by default, event triggers, stall detect
 hill-climbing trace analysis. The durable-state item is the one with an existing home —
 see [[Runtime Topology and Checkpointer Alignment]].
 
+## Level scoring and the weakest-pillar rule
+
+The rubric this audit grew out of uses a second scale alongside the Must/Should/Nice tiers.
+That scale scores *maturity* per pillar, not scaffold coverage. It rests on a **nesting
+rule**: `prompt ⊂ context ⊂ harness ⊃ loop → graph ← eval (measures all)`. Each layer
+inherits the weaknesses of the layer beneath it. Well-assembled context cannot rescue a bad
+prompt, and a strong harness cannot rescue poor context composition.
+
+| Score | Level | Meaning |
+|---|---|---|
+| 0 | Absent | No evidence of the pillar |
+| 1 | Basic | Foundational elements present, applied ad hoc |
+| 2 | Intermediate | Applied systematically; most intermediate checklist items present |
+| 3 | Advanced | Production-grade; framework-specific best practices applied |
+
+- **Composite** = the sum across the six pillars (0–18), banded as 0–6 foundational, 7–12
+  developing, 13–15 mature, and 16–18 production-grade.
+- **Weakest-pillar rule:** overall maturity cannot sit more than one level above the
+  weakest pillar. This applies the nesting rule to the score. Without the cap, a broken
+  inner layer would be averaged away by strong outer ones.
+- Each checklist row pairs a criterion with the *evidence to look for*. For example, "the
+  ratchet" (failures engineered out permanently) is evidenced by git history that shows a
+  fix followed by a new rule or hook. "Layered termination" means several independent exit
+  conditions (success verifier, iteration cap, token budget, stall detection, escalation),
+  not one.
+- Each pillar also lists **framework-specific markers**, meaning what Anthropic, Vercel AI
+  SDK, Google ADK and LangGraph/Deep Agents each recommend. A gap can then be stated as
+  "recommended by the framework you use, but not implemented" instead of measured against
+  an abstract ideal.
+
+The output per repo is a scorecard with one row per pillar (score, key evidence, top gap),
+plus the framework-specific gaps and the three highest-impact improvements. The rubric
+stays fixed and re-scoring after improvements tracks progress.
+
 ## Evidence must cite file:line
 
 Every `have` row in the scaffolded tables names a file and line — `agent.ts.jinja:24`,
@@ -94,3 +130,4 @@ as absent, because a scaffold's job is to produce the wiring.
 - [[Anthropic Three-Tier Eval Taxonomy]] — related (tiering applied within the eval pillar)
 - [[HistoryCondenser]] — part-of (the context pillar's compaction requirement)
 - [[Prefix Caching]] — part-of (the context pillar's cache-prefix requirement)
+- [[Gated Weighted Composite Score]] — alternative-to (names one non-averageable gating dimension instead of a weakest-pillar cap)

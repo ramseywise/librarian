@@ -2,11 +2,13 @@
 title: ADK vs LangGraph Decision
 tags: [adk, langgraph, decision]
 summary: Decision to keep Librarian on LangGraph — ADK's strengths don't address Librarian's core requirements; vocabulary alignment (Level 1) is the right refactor scope.
-updated: 2026-04-24
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/adk-orchestration-research.md
-  - raw/playground-docs/orchestration-rollout-plan.md
-  - raw/playground-docs/orchestration-rollout-review.md
+  - data/raw/claude-docs/playground/docs/archived/adk-orchestration-research.md
+  - data/raw/claude-docs/playground/docs/archived/orchestration-rollout-plan.md
+  - data/raw/claude-docs/playground/docs/archived/orchestration-rollout-review.md
+  - data/raw/repos/atlas/.agents--skills--framework-selection--SKILL.md
+
 ---
 
 # ADK vs LangGraph Decision
@@ -71,8 +73,19 @@ Three blocking issues found in the review of the orchestration rollout implement
 
 3. **`_extract_latest_query` duplicated 3 times** — should be one shared utility in `orchestration/adk/utils.py`.
 
+## Per-agent selection table (atlas framework-selection skill)
+
+Where both frameworks are supported, atlas picks one **per agent**, answering in order and
+stopping at the first yes. Choose ADK for GCP/Vertex deployment that wants a managed session
+service and a maintained scaffolder CLI. Choose LangGraph for fine-grained control flow
+(branching, loops, fan-out/fan-in, HITL at arbitrary nodes), for reusing existing LangChain
+tools, or for non-Gemini providers. Choose ADK for a straightforward Gemini-first
+single-agent or sub-agent assistant. Otherwise the default is ADK on GCP, and LangGraph
+anywhere else or wherever non-Gemini calls already exist.
+
 ## See Also
 - [[ADK vs LangGraph Comparison]]
 - [[LangGraph CRAG Pipeline]]
 - [[Librarian RAG Architecture]]
 - [[Bedrock KB vs LangGraph Decision]]
+- [[Context Graph Is Not an Execution Graph]] — related (when neither framework is warranted yet)
