@@ -4,8 +4,8 @@ tags: [infra, pattern]
 summary: Single-container Cloud Run service (FastAPI + SPA) connected to Cloud SQL via the built-in Auth Proxy unix socket — no public IP, no SSL config, private GCP-internal networking by default.
 updated: 2026-07-06
 sources:
-  - raw/claude-docs/chat-agent/docs/architecture/cloud_deployment.md
-  - raw/claude-docs/chat-agent/docs/TODO_production.md
+  - data/raw/claude-docs/chat-agent/docs/architecture/cloud_deployment.md
+  - data/raw/claude-docs/chat-agent/docs/TODO_production.md
 ---
 
 # Cloud Run + Cloud SQL Pattern

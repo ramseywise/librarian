@@ -4,7 +4,7 @@ tags: [langgraph, adk, memory, eval, concept]
 summary: Four-level improvement stack for production agents — inference-time (ReAct, CoT, self-critique), session-time (reflection, procedural memory), operational (learning loop, HITL), and training-time (DPO). Most agents need the first three; DPO is a late-stage investment.
 updated: 2026-04-26
 sources:
-  - raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
+  - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
 
 # Self-Learning Agents

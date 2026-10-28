@@ -4,8 +4,8 @@ tags: [rag, langgraph, context-management, concept]
 summary: LangGraph node that rewrites the latest user query into a self-contained form given prior turns — prevents retrieval degradation on coreference-heavy multi-turn conversations.
 updated: 2026-04-24
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/librarian-architecture-decisions.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-architecture-decisions.md
 ---
 
 # HistoryCondenser

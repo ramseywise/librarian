@@ -2,9 +2,10 @@
 title: Context Anatomy
 tags: [llm, agents, concept]
 summary: What goes in the window and in what order — system-prompt altitude, the five layers organized by stability rather than topic, and stable-before-dynamic ordering for cache prefix matching.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--02-context-anatomy.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--context-management.md
 ---
 
 # Context Anatomy
@@ -117,3 +118,4 @@ and attention placement point the same direction. See [[Long-Context Prompting]]
 - [[Context Engineering]] — part-of
 - [[Why Context Is Finite]] — depends-on
 - [[Memory as Context]] — extends
+- [[Measuring Fixed Context Overhead]] — extends (how to measure what the stable layers actually cost)

@@ -2,17 +2,18 @@
 title: RAG Retrieval Strategies
 tags: [rag, concept]
 summary: Comprehensive reference for chunking, embedding, vector store, and hybrid search strategies — component choices, tradeoffs, and swap paths used in the Librarian pipeline.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/rag-tradeoffs.md
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/rag-agent-template-research.md
-  - raw/playground-docs/librarian-ts-parity-research.md
-  - raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md
-  - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
-  - raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
-  - raw/sessions/claude-2026-04-19-should-ingestion-or-embedding-be-part-of-9e66674c.md
-  - raw/agent-skills/langchain-rag/references/rag-strategies.md
+  - data/raw/articles/2026-07-19-rag-deeplearning.md
+  - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-ts-parity-research.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-rag-upgrade/plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
+  - data/raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
+  - data/raw/sessions/claude-2026-04-19-should-ingestion-or-embedding-be-part-of-9e66674c.md
+  - data/raw/agent-skills/langchain-rag/references/rag-strategies.md
 ---
 
 # RAG Retrieval Strategies
@@ -311,3 +312,8 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[Knowledge Graph Retrieval]] — alternative-to (connection retrieval against similarity retrieval)
 - [[Memory-Augmented Conversational RAG]] — extends (the multi-turn case, where the query is not self-contained)
 - [[Text-to-SQL as a Retrieval Strategy]] — alternative-to (the structured branch of a hybrid retriever)
+- [[Offline Annotation over Online Inference]] — alternative-to (metadata filter plus rubric scoring when the query is already structured)
+- [[Specificity-Adaptive Ranking and Slate Composition]] — related (hard filters as the retrieval stage, specificity-weighted scoring as the rerank)
+- [[Code Retrieval: Structural Index and Agentic Search]] — extends (code wants AST chunks and grep-first search)
+- [[Retrieval Service Returns Documents, Not Answers]] — related (where retrieval stops and synthesis begins across services)
+- [[Hedging Belongs in the Gate, Not the Answer]] — related (generation-side finding from the same template research)

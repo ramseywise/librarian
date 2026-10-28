@@ -2,9 +2,10 @@
 title: Preference Optimization Algorithms
 tags: [foundations, llm, comparison]
 summary: "The PPO → DPO → GRPO → KTO/IPO/ORPO family — what each removes from the stage before it, the five-algorithm decision table, and why the field shifted from choosing an algorithm to designing a reward structure."
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
+  - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
 ---
 
 # Preference Optimization Algorithms
@@ -87,6 +88,31 @@ hacked in the [[Reward Hacking and Overoptimization]] sense** — a test either 
 it does not — which is exactly why GRPO does not extend to open-ended generation, where
 no such checker exists.
 
+## The 2025 split: alignment vs reasoning
+
+A 2026 landscape review notes that through early 2024, PPO-based RLHF was *the* RL technique
+and it was used for alignment. From late 2024, RL became the main tool for **reasoning**
+as well. The family above then splits into three groups that answer different questions:
+
+| Group | Methods | Question it answers |
+|---|---|---|
+| **Alignment** | RLHF (PPO), DPO, KTO, CPO | Does the output match human preference? |
+| **Reasoning** | GRPO, DAPO, REINFORCE++ | Does the chain of thought reach a checkable right answer? |
+| **Training backbones** | verl, OpenRLHF, TRL | What runs the rollouts and updates at scale? See [[RL Training Frameworks for LLMs]] |
+
+Two additions to the methods covered above:
+
+- **DAPO** applies the group-baseline idea to verified rewards and is the reported
+  state-of-the-art recipe for math (50 points on AIME 2024 with a Qwen2.5-32B base).
+- **REINFORCE++** uses a plain baseline plus KL regularization with an optional critic. The
+  source associates it with agentic, long-horizon RL.
+
+The memory framing differs by source but is consistent. PPO keeps a critic on top of the
+policy, reference, and reward models, which puts it at roughly 3–4× the memory of the
+policy alone. Dropping the critic is the ~25% reduction quoted above. The reasoning group's
+other design choice is *what the reward scores*, a whole answer or each step. That choice
+is covered in [[Outcome vs Process Reward Models]].
+
 ## KTO, IPO, ORPO
 
 Three relaxations of DPO's requirements:
@@ -139,3 +165,5 @@ aligned with what you actually want is the hard half.
 - [[Direct Preference Optimization]] — extends (applied guidance on when DPO fits an agent project)
 - [[Reward Hacking and Overoptimization]] — complements (the length problem DPO inherits; what verifiable rewards avoid)
 - [[Constitutional AI and RLAIF]] — complements (supplies preference data, independent of which optimizer consumes it)
+- [[Outcome vs Process Reward Models]] — extends (what the reward scores in the reasoning group)
+- [[RL Training Frameworks for LLMs]] — extends (the backbones these algorithms run on)

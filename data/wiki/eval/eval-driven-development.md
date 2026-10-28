@@ -2,9 +2,11 @@
 title: Eval-Driven Development (EDD)
 tags: [eval, llm, pattern]
 summary: Writing the eval suite before the agent exists — ATDD reconstructed for non-deterministic systems, where first-ness buys honesty rather than design pressure.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
+  - data/raw/claude-docs/ai-project-template/docs/plans/AIT-89-plan.md
+  - data/raw/repos/ai-project-template/.claude--docs--plans--AIT-89-plan.md
 ---
 
 # Eval-Driven Development (EDD)
@@ -97,6 +99,33 @@ likely way to get an EDD adoption wrong.
 
 ---
 
+## Templating EDD — design choices from a scaffold implementation
+
+Building EDD into a project template (a golden-set authoring phase plus a lifecycle gate)
+forced several concrete choices:
+
+- **The canonical golden set must be runnable offline before the agent exists.** A
+  promptfoo config that asserts against a live chat endpoint cannot be canonical — by
+  definition there is no endpoint yet. `data/evals/*.jsonl` with an intent/grader schema
+  can be graded with no agent running; promptfoo stays as a live-endpoint smoke layer.
+- **Every case traces to a scope bullet.** Each row carries a `source_risk` that must match
+  an MVP Scope bullet verbatim. That makes padding visible: a project with six scope
+  bullets cannot inflate its case count without obvious duplication.
+- **A two-tier floor, not a hard one.** Fewer than 10 cases FAILs; 10–19 WARNs with the
+  count and the 20–50 target; 20+ passes. A hard FAIL at 20 creates a padding incentive —
+  a well-traced 14 gains nothing by padding when 14 only warns. Accepted residual: the gate
+  measures presence, not quality; transcript review is the human backstop.
+- **Author inside the existing planning skill, not a new skill.** The phase went into the
+  planning workflow (already vendored, guarded to skip silently when the repo has no
+  `data/evals/`), avoiding a new skill to vendor, register, and keep in sync.
+- **Verify against the tree you changed.** A `make` target that rendered with
+  `--vcs-ref HEAD` renders the *committed* tree; with the change uncommitted it would have
+  reported a false failure. Uncommitted verification renders from the working tree.
+
+The same implementation tripped over the template's skill sync (a hard fail on a clean
+tree, and wholesale vendoring that swept ten unrelated drifted skills into the diff) — see
+[[Name-Only Sync Guards Miss Content Drift]].
+
 ## See Also
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
 - [[Eval Ladder]] <!-- auto-linked -->
@@ -106,3 +135,4 @@ likely way to get an EDD adoption wrong.
 - [[Anthropic Three-Tier Eval Taxonomy]]
 - [[TDD as Coding-Agent Harness]] — alternative-to
 - [[Skill Pipeline Dryrun Testing]] — instance-of (a regression harness over a conversational pipeline)
+- [[Name-Only Sync Guards Miss Content Drift]] — related (the sync failure hit while templating EDD)

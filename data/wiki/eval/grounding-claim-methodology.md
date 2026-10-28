@@ -2,10 +2,12 @@
 title: Grounding Claim Methodology
 tags: [eval, rag, pattern]
 summary: Claims-based grounding — the "yellow highlighter" approach to RAG verification, where the agent extracts verbatim supporting quotes from retrieved documents before writing the final answer, creating a verifiable paper trail.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/project-g/docs/support-agents/grounding-methodology.md
+  - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
+  - data/raw/claude-docs/project-g/docs/support-agents/grounding-methodology.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--grounding-methodology.md
+  - data/raw/claude-docs/project-g/docs/support-agents/invocation-flow.md
 ---
 
 # Grounding Claim Methodology
@@ -90,6 +92,15 @@ But claims make the system much easier to evaluate because they expose the evide
 
 ---
 
+## Escalation must not short-circuit the grounding tiers
+
+A production guard skipped rewriting whenever the response already set
+`contactSupport: true`. The check ran before the verbatim-quote tier, so a response that
+escalated correctly but contained fabricated quotes with valid citation IDs passed through
+unexamined. The user saw no defect, since they were being escalated anyway, but the
+violation never reached grounding telemetry, so monitoring under-counted fabrication. The
+fix is ordering: **run every tier, then check the escalation flag**.
+
 ## See Also
 - [[RAG Evaluation]]
 - [[project-g Eval Architecture]]
@@ -98,3 +109,5 @@ But claims make the system much easier to evaluate because they expose the evide
 - [[Input Guardrails Pipeline]]
 - [[Observability & Evaluation Glossary]] — grounding vs citation_hallucination vs grounding.hallucination_rate distinction
 - [[Experiment Tracking Schemas]] — extends (the log-only-then-promote policy governing when a tier becomes a hard fail)
+- [[Evidence-Labelled Generation with Deterministic QC]] — extends (evidence labels checked by code, not a judge)
+- [[Assembled, Not Generated Replies]] — related (sidestepping grounding by not generating prose at all)

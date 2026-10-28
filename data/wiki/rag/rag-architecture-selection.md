@@ -2,9 +2,12 @@
 title: RAG Architecture Selection
 tags: [rag, comparison]
 summary: "The nine named RAG architectures as one selection space — what each buys, what it costs, and the decision cheat-sheet — plus Fusion RAG over heterogeneous sources, which is distinct from multi-query RAG-Fusion over one retriever."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/claude-docs/playground/docs/rag/hc-rag-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--02-rag-retrieval--rag.md
+  - data/raw/claude-docs/project-g/docs/rag/hc-rag-pipeline.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--rag.md
 ---
 
 # RAG Architecture Selection
@@ -133,6 +136,22 @@ retrieval and a bad answer with bad retrieval need opposite fixes**, and a singl
 end-to-end quality score cannot tell them apart. See [[RAG Evaluation]] and
 [[RAG Eval Gate Contract]].
 
+## One corpus, three control-flow shapes (playground support agents)
+
+The same help-center corpus was served three ways side by side: a deterministic LangChain
+pipeline, a LangGraph CRAG graph, and an ADK ReAct agent. Holding the corpus fixed made the
+control flow the only variable. Lessons from keeping the shared pipeline clean:
+
+- **Orchestrator config leaked into the pipeline** and had to be removed. A retrieval
+  library that knows which agent is calling it can no longer be compared across agents.
+- **A whitespace normaliser broke the chunker.** `clean_text` collapsed `\s+`, which also
+  ate newlines, and the HTML-aware chunker splits on them. The fix was to collapse
+  `[^\S\n]+`, i.e. whitespace except newlines.
+- **`enrich=False` protects the source map.** Enrichment rewrote passages in ways that
+  broke the passage-to-URL mapping that grounding depends on.
+- A top-1/top-2 score-margin constant was defined but never wired in. A threshold that
+  exists only in a constants file reads as a safeguard and is not one.
+
 ## See Also
 - [[Agentic RAG — Advanced Patterns]] — extends (mechanics for Self-RAG, Adaptive, GraphRAG, HyDE, multi-query fusion)
 - [[Reciprocal Rank Fusion (RRF)]] — depends-on (the scale-invariant merge Fusion RAG requires)
@@ -140,3 +159,4 @@ end-to-end quality score cannot tell them apart. See [[RAG Evaluation]] and
 - [[CRAG Retry Logic]] — instance-of (the corrective variant, in depth)
 - [[RAG Retrieval Strategies]] — complements (retrieval-layer choices within any of these architectures)
 - [[Memory-Augmented Conversational RAG]] — instance-of (the conversational variant, in depth)
+- [[Delete an Unfinished RAG Retrofit, Don't Archive It]] — instance-of (the null option: a lookup domain that never justified a vector store)

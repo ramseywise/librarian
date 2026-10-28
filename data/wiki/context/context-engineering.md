@@ -2,8 +2,9 @@
 title: Context Engineering
 tags: [llm, agents, concept]
 summary: "The discipline of assembling the context window — a minimization problem, not a filling problem: find the smallest set of high-signal tokens that maximizes the likelihood of the desired outcome."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
+  - data/raw/articles/2026-07-19-context-engineering-karpathy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--context-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--README.md
 ---

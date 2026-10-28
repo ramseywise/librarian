@@ -2,9 +2,10 @@
 title: Memory-Augmented Conversational RAG
 tags: [rag, memory, llm, pattern]
 summary: "Multi-turn retrieval breaks because the query is under-specified — the fixes are query rewriting against history, a when-to-retrieve policy, and asking a clarifying question instead of retrieving on an ambiguous turn."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
 ---
 
 # Memory-Augmented Conversational RAG

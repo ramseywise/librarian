@@ -55,7 +55,7 @@ cross-references program requirements, and returns a ranked list. One agent, thr
 **Con:** the LLM decides tool order and sometimes gets it wrong; needs good tool
 descriptions; framework lock-in.
 
-**Key insight:** *"Most DSSG projects need this level and no more. Resist the urge to build
+**Key insight:** *"Most volunteer-team projects need this level and no more. Resist the urge to build
 multi-agent systems when one agent with good tools would work."*
 
 Because tool-selection quality is the dominant failure mode here, tool description quality

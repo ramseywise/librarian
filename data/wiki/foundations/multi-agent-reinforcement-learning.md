@@ -2,9 +2,10 @@
 title: Multi-Agent Reinforcement Learning
 tags: [foundations, agents, concept]
 summary: "MARL, the non-stationarity problem it exists to solve, CTDE as the dominant answer, the value-decomposition and central-critic algorithm families, and the five challenges — including the ~10–20 agent scalability wall."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--rl.md
 ---
 
 # Multi-Agent Reinforcement Learning

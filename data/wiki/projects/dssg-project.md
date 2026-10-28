@@ -2,12 +2,12 @@
 title: NYC-DSSG Project
 tags: [project]
 summary: NYC Data Science for Social Good — platform engineering for a nonprofit serving 600+ nonprofits via 300 volunteers; building knowledge base, project templates, and PM agent.
-updated: 2026-07-19
+updated: 2026-10-16
 sources:
-  - raw/gdrive/2026-07-15-dssg-ramsey-jian-chat.md
-  - raw/sessions/puffin-chat-2026-07-15-19-11.md
-  - raw/sessions/claude-2026-07-16-dssg-root-we-have-our-exec-summary-port-fc67b3f0.md
-  - raw/sessions/claude-2026-07-19-none-of-my-cicd-pipelines-run-we-need-to-d7cdbb90.md
+  - data/raw/gdrive/2026-07-15-dssg-ramsey-jian-chat.md
+  - data/raw/sessions/puffin-chat-2026-07-15-19-11.md
+  - data/raw/sessions/claude-2026-07-16-dssg-root-we-have-our-exec-summary-port-fc67b3f0.md
+  - data/raw/sessions/claude-2026-07-19-none-of-my-cicd-pipelines-run-we-need-to-d7cdbb90.md
 ---
 
 # NYC-DSSG Project

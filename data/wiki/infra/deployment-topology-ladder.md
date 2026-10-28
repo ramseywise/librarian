@@ -2,7 +2,7 @@
 title: Deployment Topology Ladder
 tags: [infra, pattern]
 summary: Five deployment topologies (local → single service → cloud service → split service → serverless) ordered by who can access the system, with cost and ops-complexity as the selection axes rather than technical capability.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
 ---
@@ -60,7 +60,7 @@ none.
 
 The source repeats a cost-restraint theme at three separate rungs:
 
-> *"Railway's free tier ($5/mo credit) handles most DSSG workloads. Don't over-engineer
+> *"Railway's free tier ($5/mo credit) handles most volunteer-team workloads. Don't over-engineer
 > hosting for a system that serves 5-20 users."*
 
 > *"This is the 'real product' topology. Only choose it if the nonprofit's
@@ -98,6 +98,7 @@ Topology choice writes to five scaffold parameters — see
 | `data_sensitivity` | `internal` / `restricted` |
 
 ## See Also
+- [[Paid Tiers Start at the Beta, Not the Alpha]] — related (host choice for a closed beta)
 - [[Local-Only Deployment]] — instance-of
 - [[Single Service Deployment]] — instance-of
 - [[Cloud Service Deployment]] — instance-of
@@ -109,3 +110,6 @@ Topology choice writes to five scaffold parameters — see
 - [[AI Project Archetypes]] — related (archetype and topology are chosen together)
 - [[ADK Deployment Patterns]] — extends (GCP-specific target selection)
 - [[Runtime Topology and Checkpointer Alignment]] — constrains (topology dictates checkpointer backend)
+- [[Context Graph Is Not an Execution Graph]] — related (separate deployment before separate repository)
+- [[Scaling Axes and Customer-Triggered Cost Cliffs]] — complements (which axis forces the next rung)
+- [[Right-Sizing a Document-to-LLM Pipeline]] — instance-of (serverless rung chosen for a stateless generation workload, with an explicit omit list)

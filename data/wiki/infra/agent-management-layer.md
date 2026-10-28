@@ -2,9 +2,11 @@
 title: Agent Management Layer
 tags: [infra, eval, agents, reference]
 summary: "The six systems a production agent needs beyond the agent itself — evals, fallback/escalation, drift monitoring, HITL checkpoints, audit logging, handoff protocol — argued as 60% of the deployment, not 10%."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--agent-harness.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
 ---
 
 # Agent Management Layer

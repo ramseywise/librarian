@@ -2,12 +2,15 @@
 title: ADK Scaffold Patterns
 tags: [adk, infra, pattern]
 summary: Agent Starter Pack CLI patterns for scaffolding ADK agent projects — templates, deployment options, prototype-first workflow, DESIGN_SPEC.md contract, and development phase guidelines.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/project-g/.agents/skills/adk-scaffold/SKILL.md
-  - raw/claude-docs/project-g/.agents/skills/adk-dev-guide/SKILL.md
-  - raw/agent-skills/adk-scaffold/SKILL.md
-  - raw/agent-skills/adk-dev-guide/SKILL.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-scaffold/SKILL.md
+  - data/raw/claude-docs/project-g/.agents/skills/adk-dev-guide/SKILL.md
+  - data/raw/agent-skills/adk-scaffold/SKILL.md
+  - data/raw/agent-skills/adk-dev-guide/SKILL.md
+  - data/raw/repos/atlas/.agents--skills--adk-scaffold--SKILL.md
+  - data/raw/repos/atlas/.agents--skills--adk-dev-guide--SKILL.md
+
 ---
 
 # ADK Scaffold Patterns

@@ -2,11 +2,12 @@
 title: Change-Contracts Rollout
 tags: [llm, decision]
 summary: 2026-07-17 decision record — SANYI promoted to the global skills reservoir, SANYI.md contracts drafted for playground/librarian/atlas, contract checks wired into review skills, template seeds contracts at scaffold time; akira rollout blocked on hardcoded scan paths.
-updated: 2026-07-17
+updated: 2026-10-17
 sources:
-  - raw/repos/playground/SANYI.md
-  - raw/repos/librarian/SANYI.md
-  - raw/repos/atlas/SANYI.md
+  - data/raw/repos/playground/SANYI.md
+  - data/raw/repos/librarian/SANYI.md
+  - data/raw/repos/atlas/SANYI.md
+  - data/raw/repos/diskoe/SANYI.md
 ---
 
 # Change-Contracts Rollout

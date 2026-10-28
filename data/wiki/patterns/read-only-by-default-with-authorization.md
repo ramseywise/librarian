@@ -2,9 +2,16 @@
 title: Read-Only by Default with Explicit Authorization
 tags: [llm, pattern]
 summary: A review agent's safety model built from an enumerated safe-command allowlist plus a single authorization gate placed at the write boundary — so subagents get real shell access for verification while every mutating action, including writing a draft the system itself produced, stops at proposing.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/Parallax/docs/documents/Evidence_Driven_PR_Review_System_Spec.md
+  - data/raw/claude-docs/akira/docs/reviews/2026-09-10-dis222-b93-kulturdaten-backfill.md
+  - data/raw/claude-docs/diskoe/docs/reviews/2026-09-10-dis222-b93-kulturdaten-backfill.md
+  - data/raw/claude-docs/kiez-archive/docs/reviews/2026-09-10-dis222-b93-kulturdaten-backfill.md
+  - data/raw/claude-docs/playground/docs/reviews/2026-09-10-dis222-b93-kulturdaten-backfill.md
+  - data/raw/repos/akira/.claude--docs--reviews--2026-09-10-dis222-b93-kulturdaten-backfill.md
+  - data/raw/repos/diskoe/.claude--docs--reviews--2026-09-10-dis222-b93-kulturdaten-backfill.md
+  - data/raw/repos/playground/.claude--docs--reviews--2026-09-10-dis222-b93-kulturdaten-backfill.md
 ---
 
 # Read-Only by Default with Explicit Authorization
@@ -75,6 +82,15 @@ approval" rather than at producing a verdict, and why a review that could mechan
 a merge instead produces a merge *impact* classification for a human to act on
 ([[Merge Impact and Evidence State]]).
 
+## Test the default, not the flag parser (akira backfill, 2026-09)
+
+A backfill script's tests covered the `--write` flag parser and nothing else. Review asked
+for tests of the behaviour behind the flag. One test calls `main()` with write disabled and
+asserts that no `.update` call happens. Another asserts that a write touches only the
+columns it is scoped to. The reviewer mutation-tested both by inverting the dry-run guard
+and widening the update, and each test went red. A parser test passes even when the guard
+it feeds is deleted.
+
 ## See Also
 - [[Parallax]] — instance-of
 - [[Evidence Classification Model]] — prerequisite-for (why `Bash` had to stay)
@@ -82,3 +98,4 @@ a merge instead produces a merge *impact* classification for a human to act on
 - [[SANYI Change-Contract System]] — extends (the drafted candidate entry)
 - [[Verified Runtime Capability Constraint]] — alternative-to (an enforceable control vs. an abandoned one)
 - [[Agent Quality Review Checklist]] — extends (human-approval and permission checks)
+- [[Production Write Guard: Explicit Override, Never Ambient]] — instance-of (operator CLIs refuse non-local writes without a deliberate flag)

@@ -2,9 +2,20 @@
 title: LLM-as-Judge Evaluation
 tags: [eval, llm, pattern]
 summary: A separate LLM scoring outputs against a rubric — the approach for subjective quality where exact matching fails, requiring calibration against human grades and recommended as a complement to golden-set grading rather than a replacement.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
+  - data/raw/claude-docs/akira/docs/research/2026-09-03-divergence-since-waslosheute-mvp.md
+  - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-divergence-since-waslosheute-mvp.md
+  - data/raw/claude-docs/diskoe/docs/research/2026-09-03-divergence-since-diskoe-mvp.md
+  - data/raw/claude-docs/playground/docs/research/2026-09-03-divergence-since-diskoe-mvp.md
+  - data/raw/claude-docs/akira/docs/technical-feasibility.md
+  - data/raw/claude-docs/diskoe/docs/technical-feasibility.md
+  - data/raw/claude-docs/playground/docs/technical-feasibility.md
+  - data/raw/claude-docs/kiez-archive/docs/technical-feasibility.md
+  - data/raw/claude-docs/akira/docs/research/2026-09-26-venue-dataset-review-findings.md
+  - data/raw/claude-docs/diskoe/docs/research/2026-09-26-venue-dataset-review-findings.md
+  - data/raw/claude-docs/kiez-archive/docs/research/2026-09-26-venue-dataset-review-findings.md
 ---
 
 # LLM-as-Judge Evaluation
@@ -59,6 +70,33 @@ requires calibration; **the judge can simply be wrong**.
 grading (free, fast) in CI; run LLM-judge on demand for quality audits."* The cost and
 non-determinism make it a poor fit for a per-PR gate.
 
+## The trust ceiling is human–human agreement
+
+A decision log from an LLM-ranked consumer product (akira) states the limit precisely: a
+judge's agreement with human raters cannot be trusted above the agreement measured *between*
+those raters on the same instrument. If humans agree at kappa 0.6, a judge reporting 0.8
+against one rater is measuring that rater, not the truth. Consequences adopted there:
+
+- the judge is a **regression detector, never a launch gate** — it flags movement between
+  prompt versions; humans decide whether the movement is real;
+- items the judge cannot classify fail safe to `needs_human_review` rather than to a score;
+- a fixed fraction (~25%) of judge critiques is sampled for human review on an ongoing basis,
+  so the ceiling itself is re-measured rather than assumed.
+
+The storage side of that measurement — keeping every human rating so agreement stays
+computable — is [[Append-Only Human Labels]].
+
+## Judge Choice Can Dominate the Number
+
+In a venue-enrichment dataset review (repo akira, 2026-09-26), **the same 200 probe
+outputs passed at 0.96 under one judge model and 0.25 under another**. The judge choice
+moved the pass rate about four times more than swapping the probe model did. A third
+judge run failed outright (1 of 200 rows ok), and cheaper probe models invented
+attributes on 60–75% of rows under any judge. Consequence: **no judge threshold may be
+written until one judge is calibrated against a human-anchored set** (see
+[[Human Agreement Ceiling Protocol]]). Before then, judge pass rates across models are
+not comparable, and quoting one as quality is meaningless.
+
 ## See Also
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
 - [[Eval Ladder]] — part-of (rung 3)
@@ -70,3 +108,13 @@ non-determinism make it a poor fit for a per-PR gate.
 - [[Eval Harness Anatomy]] — part-of (one of the three grader types under the simplest-reliable rule)
 - [[Constitutional AI and RLAIF]] — instance-of (the same judge primitive used to generate training labels)
 - [[Bradley-Terry Preference Model]] — complements (pairwise comparison formalized as a scalar)
+- [[Append-Only Human Labels]] — prerequisite-for (human labels set the judge trust ceiling)
+- [[Human Agreement Ceiling Protocol]] — prerequisite-for (κ_judge ≥ 0.8 × κ_HH, not an absolute target)
+- [[Synthesize the Cheap Half]] — related (gold-set calibration, closed-loop and stratum-bias rules for synthesized labels)
+- [[Confidence That Is Not a Probability]] — related (another score that needs independent labels before it can gate)
+- [[Specialist Verdict Panel]] — extends (one judge split into single-dimension specialists with structured verdicts)
+- [[Answer Criteria with Named Wrong Answers]] — extends (per-topic fail-if lists as the rubric)
+- [[Positive-Only Judge Fixtures Measure Recall]] — extends (recall vs precision of a judge fixture set; one calibration pass)
+- [[Closed Judge Vocabulary, Tolerant Parse]] — related (closing a judge's free-text issue list without brittle enum parsing)
+- [[Demote Judge Findings to Keyless Gates]] — extends (regex-catchable findings leave the judge for a keyless 1.0 gate; missing-verdict re-ask; calibration floor)
+- [[Judge Sees the Drafter's Facts]] — extends (reference facts so restating a given score is not scored ungrounded)

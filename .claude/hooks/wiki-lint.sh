@@ -29,6 +29,25 @@ for field in "title:" "tags:" "summary:" "updated:" "sources:"; do
   fi
 done
 
+# Frontmatter must parse as YAML: "summary: Gate: run evals" passes the grep above but
+# breaks python-frontmatter, which silently drops the page from graph, index and relinker.
+# Uses the repo venv (has PyYAML); skipped when it isn't there.
+if [[ -x .venv/bin/python ]]; then
+  if ! YAML_ERR=$(.venv/bin/python -c '
+import re, sys, yaml
+m = re.match(r"---\n(.*?)\n---", open(sys.argv[1]).read(), re.S)
+try:
+    ok = not m or isinstance(yaml.safe_load(m.group(1)), dict)
+except yaml.YAMLError as e:
+    sys.exit(" ".join(str(e).split()[:12]))
+if not ok:
+    sys.exit("not a key: value mapping")
+' "$FILE_PATH" 2>&1); then
+    echo "⚠ wiki-lint: invalid YAML frontmatter in ${FILE_PATH} (quote values containing ': ') — ${YAML_ERR}" >&2
+    ISSUES=$((ISSUES + 1))
+  fi
+fi
+
 # Provenance: every sources: entry must resolve to a real data/raw/ file or a URL.
 # Buyi "Wiki provenance is traceable" — a page citing an unresolvable source is
 # a trust failure of the KB. Entries are the "  - <path-or-url>" lines that

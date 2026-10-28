@@ -2,9 +2,10 @@
 title: Situation-Indexed Decision Tree
 tags: [interview, llm, pattern]
 summary: Replacing a flat component table (answers indexed by noun) with a branching tree indexed by situation — one memorized trunk fork into four system spines, each node carrying a discriminator question and a rehearsable sentence.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-30-LAE-112-interview-notes-reorg.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--04-decision-tree.md
 ---
 
 # Situation-Indexed Decision Tree
@@ -84,6 +85,33 @@ growing back into the guides it was meant to index.
 **Breaks first** is a standing prompt for the failure mode nobody volunteers, matching
 step 4 of the round method (name your design's weaknesses before the interviewer does).
 
+## What the built tree defaults to
+
+The shipped tree (four spines, 18 nodes) settles into a consistent stance worth knowing as a
+pattern in its own right: **the simplest branch is the default, and the sentence defends the
+simplicity** rather than apologising for it. Representative nodes:
+
+| Spine | Node | Discriminator | Default and why |
+|---|---|---|---|
+| RAG | retrieval | "Paraphrases, or exact entities and codes?" | hybrid + reranker; measure whether the reranker earns its latency |
+| RAG | freshness | "How stale before it's wrong?" | for "never stale" data, read through to the live record and use RAG for navigation only |
+| Agent | single vs multi | "Can one context hold the tools?" | single agent; split by domain boundary, not tool count |
+| Agent | loop vs pipeline | "Are the steps known in advance?" | pipeline; loops cost superlinearly and need max-step limits from day one |
+| Agent | humans | "Which actions are irreversible?" | model proposes → code validates → human approves |
+| ML | is it ML? | "What decision changes, with what labelled signal?" | heuristic baseline first |
+| Pipeline | delivery | "What if it runs twice?" | at-least-once + idempotent handlers; exactly-once is "mostly a marketing term" |
+| Pipeline | failure | "Transient or structural?" | retry N times, then dead-letter queue — or one poison message eats the worker pool |
+| Pipeline | state | "Can two workers touch one record?" | sole writer per record with explicit lifecycle states; saga, not distributed transaction |
+
+The **Breaks first** cells cluster on silent failures — stale indexes noticed only when
+faithfulness drops, deleted documents still answerable, `MemorySaver` losing state in a
+multi-worker deploy, queue backlogs with no depth alarm. The cross-cutting block (golden set
+on every change, traces plus 10–20% online scoring, cost per successful task, untrusted input
+never reaching a dangerous sink, name the 10× bottleneck before being asked) is repeated
+inside the file rather than factored out, as the duplication rule requires. The self-test is
+one spine per classic prompt, eight minutes per step: if you cannot name a node's
+discriminator from memory, that node is not learned.
+
 ## Rewiring, not adding
 
 The tree does not sit alongside the old component table. The plan **rewires §3 to point
@@ -97,3 +125,5 @@ gap in the first place.
 - [[Agents Interview Study Guide]] — extends (the guide the agent spine links down into)
 - [[RAG Interview Study Guide]] — extends (the guide the RAG spine links down into)
 - [[Timebox-Scaled Deliverable Bar]] — instance-of (advice that mis-fires when not indexed by format)
+- [[Data Engineering and MLOps Interview Study Guide]] — extends (the guide the pipeline spine links down into)
+- [[ML Foundations Interview Study Guide]] — extends (the guide the ML spine links down into)

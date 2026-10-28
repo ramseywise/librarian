@@ -1,28 +1,29 @@
 ---
 title: Session Insights
 tags: [context-management, llm, pattern, project]
-summary: Compiled insights from 42 facet-analyzed Claude Code sessions — friction patterns, recurring themes, skill candidates, and learning outcomes.
-updated: 2026-07-14
+summary: Compiled insights from Claude Code sessions — 42 facet-analyzed sessions (friction, themes, skill candidates) plus aggregate telemetry over 1,856 migrated session notes (cost tail, tool-error mix, skill usage).
+updated: 2026-10-17
 sources:
-  - raw/sessions/
-  - raw/sessions/claude-2026-04-10-what-is-this-analyzer-folder-aren-t-thes-1900854e.md
-  - raw/sessions/claude-2026-04-11-can-we-transfer-the-code-from-cs-agent-a-deb81c96.md
-  - raw/sessions/claude-2026-04-11-librarian-chat-is-the-front-end-right-so-356746ec.md
-  - raw/sessions/claude-2026-04-11-resolving-deltas-100-72-72-completed-wit-fe1c0bd1.md
-  - raw/sessions/claude-2026-04-11-shhould-src-agents-infra-live-under-src-f5cfe1b3.md
-  - raw/sessions/claude-2026-04-14-i-want-librarian-to-remain-as-solely-a-h-48cd8a0e.md
-  - raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md
-  - raw/sessions/claude-2026-04-14-one-thing-that-i-m-realizing-is-that-my-ec44fece.md
-  - raw/sessions/claude-2026-04-14-what-is-the-difference-between-playgroun-3def7093.md
-  - raw/sessions/claude-2026-04-15-i-ve-added-app-agent-nodes-retriever-tha-b669eebb.md
-  - raw/sessions/claude-2026-04-16-help-support-rag-agent-rag-poc-git-retr-314ac54a.md
-  - raw/sessions/claude-2026-04-17-cade-we-code-review-changes-to-graph-is-c44fa991.md
-  - raw/sessions/claude-2026-04-19-looks-like-linting-has-some-errors-still-1bafe007.md
+  - data/raw/sessions/
+  - data/raw/claude-docs/guacamayo/docs/insights-summary.md
+  - data/raw/sessions/claude-2026-04-10-what-is-this-analyzer-folder-aren-t-thes-1900854e.md
+  - data/raw/sessions/claude-2026-04-11-can-we-transfer-the-code-from-cs-agent-a-deb81c96.md
+  - data/raw/sessions/claude-2026-04-11-librarian-chat-is-the-front-end-right-so-356746ec.md
+  - data/raw/sessions/claude-2026-04-11-resolving-deltas-100-72-72-completed-wit-fe1c0bd1.md
+  - data/raw/sessions/claude-2026-04-11-shhould-src-agents-infra-live-under-src-f5cfe1b3.md
+  - data/raw/sessions/claude-2026-04-14-i-want-librarian-to-remain-as-solely-a-h-48cd8a0e.md
+  - data/raw/sessions/claude-2026-04-14-key-insights-re-claude-docs-restructurin-a6a9bcf4.md
+  - data/raw/sessions/claude-2026-04-14-one-thing-that-i-m-realizing-is-that-my-ec44fece.md
+  - data/raw/sessions/claude-2026-04-14-what-is-the-difference-between-playgroun-3def7093.md
+  - data/raw/sessions/claude-2026-04-15-i-ve-added-app-agent-nodes-retriever-tha-b669eebb.md
+  - data/raw/sessions/claude-2026-04-16-help-support-rag-agent-rag-poc-git-retr-314ac54a.md
+  - data/raw/sessions/claude-2026-04-17-cade-we-code-review-changes-to-graph-is-c44fa991.md
+  - data/raw/sessions/claude-2026-04-19-looks-like-linting-has-some-errors-still-1bafe007.md
 ---
 
 # Session Insights
 
-Compiled from `~/.claude/usage-data/facets/` (42 sessions with LLM-analyzed outcomes). See [[Session Log]] for the full chronological index.
+Compiled from `~/.claude/usage-data/facets/` (42 sessions with LLM-analyzed outcomes). See the session log for the full chronological index.
 
 ---
 
@@ -261,9 +262,46 @@ Architecture/planning sessions generate more output tokens per prompt than execu
 
 ---
 
+## Insights — 2026-07-19 Run (guacamayo insights pipeline)
+
+A 98-session run of the guacamayo insights pipeline gave the first quantified picture of context health: **52% of cost sat in sessions over 150k tokens**; bash antipatterns (shell substituted for native Read/Grep/Edit tools) averaged **25.8 per session**; the read:edit ratio was **below 1.0 in 55 of 98 sessions** — files edited that had not been read. Recommendations R1–R4 were written with typed metrics (`count-drop:`, `ratio:`) so they could become ledger rows; a later audit of that ledger found most such rows unmeasurable and produced the [[Signal Registry with Resolution States]]. The dashboard built on these numbers was audited in [[Friction Is Rework, Not Error Rate]], which found three of five "friction" metrics mislabelled.
+
+## Aggregate Session Telemetry — 1,856 Notes, 2025-09 to 2026-10 (ingested 2026-10-17)
+
+These notes were migrated from session JSONL. Only their quantitative fields are filled; every qualitative section reads "No qualitative data available". So this batch adds measurements, not narrative. Projects not already public in this wiki are bucketed as *other*.
+
+**Volume.** July and August 2026 account for 1,301 of the 1,856 sessions (640 and 661). That is the period when the workflow-skill pipeline ran across several repos at once. Activity fell to 174 sessions in September and 59 in October. Of the sessions with a public project, guacamayo had the most (309), then diskoe (261), project-g (184), librarian (116), galactus (111) and ai-project-template (102). 652 are *other*.
+
+**Cost is heavy-tailed.** 959 sessions carry token data. Their median estimated cost is $2.94, and the total is about $6.6k. The most expensive 10% of sessions account for **69%** of spend, and p90 is $8.84. Median duration is 15 min, but p90 is 170 min. Long autonomous runs, not everyday sessions, drive the bill. Budget controls belong on long runs, which ties to [[Budget Without a Meter Is a Preference]].
+
+**Workflow skills cost more per session.** Sessions that invoked a `workflow-*` skill had a median cost of $3.89 (n=254), against $2.39 (n=705) for those that didn't. That is about 60% more. The extra cost is the price of plan/refine/execute/review stages running in one session. It is worth paying only when the stage gates catch real defects, as argued in [[Claude Workflow System]].
+
+**Cache reuse is near-total.** Across all token-bearing sessions, 98.6% of input tokens were cache reads. Prefix stability matters more for cost than trimming prompts; see [[Prefix Caching]].
+
+**Most-invoked skills** (counted once per session): workflow-execute 137, workflow-plan 124, wake 113, workflow-refine 106, workflow-review 74, workflow-research 59, grow 48, dream 42, retro 39.
+
+**Tool-error mix.** Of the 949 sessions that have evidence lines, 62% hit at least one tool error. Totals:
+
+| Error class | Count | Reading |
+|---|---|---|
+| command_failed | 761 | Normal iteration noise. Most are test or lint runs that were expected to fail |
+| file_not_found | 341 | Guessed paths. A repo map or glob before reading avoids most of these |
+| read_before_write | 219 | Edit or Write was attempted on a file not yet read. This is a harness guard, and agents keep tripping it |
+| blocked_by_hook | 198 | Hooks fired in 115 sessions, evidence that guardrail hooks catch things in practice |
+| permission_denied | 111 | Auto-mode classifier or settings denials |
+| file_too_large | 82 | Whole-file reads of large files. Use offset/limit |
+| skill_not_invocable | 54 | Skill-name drift. See [[Skill Discovery Failure Modes]] |
+
+819 sessions (44%) logged at least one bash antipattern, such as using `cat`, `grep` or `find` where a dedicated tool existed. Only 77 were interrupted by the user.
+
+**Takeaway.** The cheapest lever is preventing guessed-path and unread-edit errors, which together make about 560 avoidable tool failures. The most expensive lever is capping long autonomous runs, which make up most of the spend.
+
 ## See Also
 
-- [[Session Log]]
 - [[Claude Workflow System]]
 - [[Production Hardening Patterns]]
 - [[SKILL.md Pattern]]
+- [[Friction Is Rework, Not Error Rate]] — extends (reclassifies the dashboard's friction metrics)
+- [[Signal Registry with Resolution States]] — extends (what became of the typed recommendation metrics)
+- [[Harness Events Are Not Task Failures]] — extends (attributing the insights pipeline's error counts by remediation owner)
+- [[Dispatch-Shaped Agents Hide Cost]] — extends (why most subagent cost was unattributable)

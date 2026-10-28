@@ -2,10 +2,13 @@
 title: RAG Knowledge Preparation
 tags: [rag, infra, concept]
 summary: The process of transforming human-readable documentation into machine-retrievable knowledge units — chunking, metadata tagging, rewriting for self-containment, and enforcing consistency.
-updated: 2026-07-06
+updated: 2026-10-17
 sources:
-  - raw/notion/2026-04-07-support-knowledge-agent.md
-  - raw/notion/2026-04-13-rag-pipeline-requirements.md
+  - data/raw/meetings/2026-06-26-final-checkin.md
+  - data/raw/meetings/2026-06-23-onboarding-bedrock-data-sources.md
+  - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
+  - data/raw/notion/2026-04-07-support-knowledge-agent.md
+  - data/raw/notion/2026-04-13-rag-pipeline-requirements.md
 ---
 
 # RAG Knowledge Preparation
@@ -95,6 +98,31 @@ Knowledge preparation is a prerequisite before loading content into a vector sto
 
 ---
 
+## Corpus Hygiene Lessons from a Managed-KB Web Crawl
+
+Defects found in the first EDA of a web-crawled managed KB for a support assistant:
+
+- **Tables break hierarchical chunking.** A pricing page's table structure produced child
+  chunks too small to hold a full price row, so pricing answers came back truncated — a
+  known failure mode, fixed in parsing, not in retrieval.
+- **Crawlers ingest what the regex does not exclude.** Spreadsheet templates linked from
+  articles were crawled as documents; URL-regex filters belong in the crawler config.
+- **Partial translations are duplicates in the wrong market.** Second-language copies of
+  the same articles were dropped, along with encyclopedic marketing pages that produced
+  false-positive retrievals for support questions.
+- **Boilerplate duplication is a storage cost, not a retrieval cost.** Repeated
+  image/copyright chunks were deprioritised after duplication analysis showed they did not
+  surface in retrieval.
+- **Add a sentence-fragmentation check** to the corpus quality checklist — chunks that
+  start or end mid-sentence are a cheap-to-detect chunker defect.
+- **Parsing beats chunk tuning for simple dense retrieval.** With a single dense retriever,
+  changing chunking strategy moved results little; cleaning and parsing the source was the
+  higher-leverage work.
+- **Ground-truth coverage limits citation checks.** When only ~10% of historical answers
+  cite a source URL, URL-level grounding covers a small slice, and instructing the model to
+  cite in the prompt is not enough — a delivery-time gate (retrieval score threshold or a
+  citation-presence check) is the safeguard.
+
 ## See Also
 - [[Librarian RAG Architecture]] <!-- auto-linked -->
 - [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
@@ -104,3 +132,5 @@ Knowledge preparation is a prerequisite before loading content into a vector sto
 - [[LangGraph CRAG Pipeline]]
 - [[PII Masking Approaches]]
 - [[Data Pipeline Pattern Selection]] — extends (batch ingest as one of four data-arrival patterns)
+- [[Canonical Document IR for Ingest]] — extends (source-blind typed Document schema with provenance threaded from ingest)
+- [[Consequence-Flagged KB Audit]] — extends (per-article four-field audit with financial-consequence flag and corpus defect taxonomy)

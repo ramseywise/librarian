@@ -2,20 +2,34 @@
 title: project-g Eval Architecture
 tags: [eval, rag, concept]
 summary: Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the project-g HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
-updated: 2026-07-14
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/playground/docs/evals/eval-architecture.md
-  - raw/claude-docs/playground/docs/evals/grader_interface.md
-  - raw/claude-docs/playground/docs/evals/grader_methodology.md
-  - raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
-  - raw/claude-docs/project-g/docs/evals/eval-architecture.md
-  - raw/claude-docs/project-g/docs/evals/eval-harness-patterns.md
-  - raw/claude-docs/project-g/docs/evals/grader_interface.md
-  - raw/claude-docs/project-g/docs/evals/grader_methodology.md
-  - raw/claude-docs/project-g/docs/evals/llm-calibration-insights.md
-  - raw/claude-docs/project-g/docs/frameworks/langgraph.md
-  - raw/claude-docs/project-g/docs/rag/retrieval-improvements.md
-  - raw/claude-docs/project-g/skills/eval-creation/eval-report/SKILL.md
+  - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
+  - data/raw/claude-docs/playground/skills/eval-creation/va-eval/SKILL.md
+  - data/raw/claude-docs/playground/skills/eval-creation/nbk-to-eval/SKILL.md
+  - data/raw/claude-docs/playground/skills/eval-creation/eval-build/SKILL.md
+  - data/raw/claude-docs/playground/skills/eval-creation/eval-report/SKILL.md
+  - data/raw/claude-docs/playground/docs/rag/retrieval-improvements.md
+  - data/raw/claude-docs/playground/docs/evals/eval-harness-patterns.md
+  - data/raw/claude-docs/playground/docs/evals/eval-architecture.md
+  - data/raw/claude-docs/playground/docs/evals/grader_interface.md
+  - data/raw/claude-docs/playground/docs/evals/grader_methodology.md
+  - data/raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
+  - data/raw/claude-docs/project-g/docs/evals/eval-architecture.md
+  - data/raw/claude-docs/project-g/docs/evals/eval-harness-patterns.md
+  - data/raw/claude-docs/project-g/docs/evals/grader_interface.md
+  - data/raw/claude-docs/project-g/docs/evals/grader_methodology.md
+  - data/raw/claude-docs/project-g/docs/evals/llm-calibration-insights.md
+  - data/raw/claude-docs/project-g/docs/frameworks/langgraph.md
+  - data/raw/claude-docs/project-g/docs/rag/retrieval-improvements.md
+  - data/raw/claude-docs/project-g/skills/eval-creation/eval-report/SKILL.md
+  - data/raw/claude-docs/project-g/docs/support-agents/invocation-flow.md
+  - data/raw/claude-docs/project-g/docs/research/VIR-179-ablation.md
+  - data/raw/claude-docs/project-g/docs/plans/VIR-212-gt-pipeline.md
+  - data/raw/repos/playground/.claude--docs--evals--eval-architecture.md
+  - data/raw/claude-docs/project-g/skills/eval-creation/eval-build/SKILL.md
+  - data/raw/claude-docs/project-g/skills/eval-creation/nbk-to-eval/SKILL.md
+  - data/raw/claude-docs/project-g/skills/eval-creation/va-eval/SKILL.md
 ---
 
 # project-g Eval Architecture
@@ -224,6 +238,23 @@ These are **different concerns** — do not conflate:
 | **When** | Offline / batch | Live request |
 | **Framework** | Framework-agnostic | LangGraph-specific |
 
+## Arm isolation in side-by-side agent evals
+
+When two compared agents share a guardrails package, routing one agent's retrieval through
+the other contaminates the comparison. Guardrails run twice, passages are consumed before
+the second agent's grounding check sees them, and the step counter is wrong. Each eval arm
+must own its retrieval and LLM path end to end. In practice that meant forcing the
+ADK agent onto its direct KB retrieval mode for clean runs.
+
+## Promoting a notebook grader into the pipeline
+
+A notebook grader is ready to promote when its prompt has stopped changing, its JSON
+output parses on 20+ samples, and its reasoning holds up on spot checks. Two common breaks:
+the grader's own `is_correct` cutoff drifts from the gate threshold (0.75 vs 0.70 means the
+grader and the gate disagree), and the grader is registered in the runner but not in the
+eval config the test harness gates on, so nothing ever gates on it. A task with no
+reference URLs gets **no** grounding score, not a zero.
+
 ## See Also
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] <!-- auto-linked -->
@@ -231,12 +262,12 @@ These are **different concerns** — do not conflate:
 - [[VA Eval Harness]]
 - [[LLM Grader Calibration Insights]]
 - [[RAG Evaluation]]
-- [[Evaluation & Improvement Project (VIR)]]
 - [[Input Guardrails Pipeline]]
 - [[RAG Eval Gate Contract]]
 - [[Grounding Claim Methodology]]
 - [[HITL and Interrupt Patterns]]
 - [[Agentic RAG — Advanced Patterns]]
 - [[Direct Preference Optimization]]
-- [[VA Bedrock KB Reference]]
-- [[project-g Eval Framework]]
+- [[Warranted vs Executed Escalation]] — extends (the escalation grader rebuild)
+- [[Measurement Fix Mistaken for Model Gain]] — extends (the URL-alias calibration story behind v1/v2)
+- [[Prompted Reflection vs Graph-Gated CRAG]] — extends (what the CRAG loop bought in the ablation)

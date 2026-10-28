@@ -2,9 +2,9 @@
 title: Voice Agent Patterns
 tags: [voice, adk, langgraph, context-management, pattern]
 summary: Patterns for real-time voice agents — hard latency constraints, BIDI streaming session management, ADK Strategy C preloading, LangGraph flat tool node, and mandatory history pruning.
-updated: 2026-04-25
+updated: 2026-10-16
 sources:
-  - raw/agent-skills/voice-agents/SKILL.md
+  - data/raw/agent-skills/voice-agents/SKILL.md
 ---
 
 # Voice Agent Patterns
@@ -70,3 +70,5 @@ Voice sessions accumulate state faster than text. Key patterns:
 - [[Embedder Warmup]]
 - [[LangGraph Advanced Patterns]]
 - [[WaveNet — Autoregressive Audio Generation]] — prerequisite-for
+- [[Duplex Voice Breaks Discrete-Turn Assumptions]] — extends (why request-response tooling does not transfer)
+- [[Realtime Voice Architecture Reference]] — extends (latency budget, cascaded vs S2S, regulated-domain constraints)

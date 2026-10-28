@@ -4,13 +4,13 @@ tags: [langgraph, rag, pattern, conflict]
 summary: The Corrective RAG pattern implemented as a LangGraph StateGraph — deterministic graph with conditional retry loop, confidence gating, and typed state schema.
 updated: 2026-07-14
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/playground-docs/rag-tradeoffs.md
-  - raw/playground-docs/adk-orchestration-research.md
-  - raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
-  - raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
-  - raw/meetings/2026-04-15-langgraph-huddle.md
-  - raw/claude-skills/langgraph/langgraph.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
+  - data/raw/claude-docs/playground/docs/archived/adk-orchestration-research.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-hardening/plan.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
+  - data/raw/meetings/2026-04-15-langgraph-huddle.md
+  - data/raw/claude-skills/langgraph/langgraph.md
 ---
 
 # LangGraph CRAG Pipeline

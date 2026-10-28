@@ -4,7 +4,7 @@ tags: [llm, concept]
 summary: Training-time technique that fine-tunes a model on human preference pairs (preferred vs rejected responses) without a reward model — replaces PPO/RLHF for preference alignment. Not applicable to API-only models.
 updated: 2026-04-26
 sources:
-  - raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
+  - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
 
 # Direct Preference Optimization (DPO)

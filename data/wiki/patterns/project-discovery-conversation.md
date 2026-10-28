@@ -2,10 +2,11 @@
 title: Project Discovery Conversation
 tags: [llm, pattern]
 summary: A guided pre-design conversation that turns a volunteer's pain point into a Project Profile — deliberately withholding all technology vocabulary so the artifact commits to outcomes and constraints, not framework choices.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/SKILL.md
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/archetype-selection.md
+  - data/raw/claude-docs/galactus/skills/proto-scope/SKILL.md
 ---
 
 # Project Discovery Conversation
@@ -92,6 +93,13 @@ expected to be corrected if the design conversation reveals the initial archetyp
 - **Honest complexity** — *"If the team has 2 people and 4 hours/week, don't suggest a
   semester-scope system. Match ambition to capacity."*
 
+## Folded into /proto-scope (galactus)
+
+In galactus this conversation became the `discovery` mode of `/proto-scope` (2026-08-14),
+keeping its tone contract. Violating that contract is named as the mode's failure. The
+profile it emits carries no build-state claims, so the brownfield verification step reports
+`N/A — discovery mode` instead of silently skipping.
+
 ## See Also
 - [[DESIGN.md Artifact]] <!-- auto-linked -->
 - [[AI Project Archetypes]] — extends
@@ -104,3 +112,4 @@ expected to be corrected if the design conversation reveals the initial archetyp
 - [[Data Pipeline Pattern Selection]] — extends ("where does the data come from" as a discovery question)
 - [[Design-Before-Infrastructure Sequencing]] — extends (why discovery, design, and scaffold are three skills)
 - [[Human-Participant Skill Test Protocol]] — extends (usability-testing this skill with first-time volunteers)
+- [[Prototype Genesis Interview]] — extends (the ML/AI routing interview with the same stance)

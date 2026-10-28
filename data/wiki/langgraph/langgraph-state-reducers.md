@@ -4,10 +4,10 @@ tags: [langgraph, concept]
 summary: Functions that define how parallel node outputs merge into shared state — preventing collisions when multiple nodes write to the same field simultaneously.
 updated: 2026-07-14
 sources:
-  - raw/gdrive/2026-04-24-langgraph-yan.md
-  - raw/agent-skills/langgraph-fundamentals/SKILL.md
-  - raw/agent-skills/langgraph-persistence/SKILL.md
-  - raw/claude-skills/langgraph/langgraph.md
+  - data/raw/gdrive/2026-04-24-langgraph-yan.md
+  - data/raw/agent-skills/langgraph-fundamentals/SKILL.md
+  - data/raw/agent-skills/langgraph-persistence/SKILL.md
+  - data/raw/claude-skills/langgraph/langgraph.md
 ---
 
 # LangGraph State Reducers

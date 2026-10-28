@@ -2,13 +2,14 @@
 title: SKILL.md Pattern
 tags: [adk, context-management, concept]
 summary: ADK skill declaration format — YAML frontmatter listing tools + natural language instruction body, enabling dynamic skill loading without hardcoding capabilities into the system prompt.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
-  - raw/playground-docs/librarian-stack-audit.md
-  - raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
-  - raw/sessions/claude-2026-07-19-what-is-this-mcp-buider-we-added-to-clau-6b9614e3.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/sessions/claude-2026-07-17-there-is-an-emerging-pattern-where-we-co-57fbf4b8.md
+  - data/raw/sessions/claude-2026-07-19-what-is-this-mcp-buider-we-added-to-clau-6b9614e3.md
   - data/raw/claude-docs/Parallax/docs/documents/Parallax_Subagent_Architecture.md
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agents-google-adk.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-google-adk.md
 ---
 
 # SKILL.md Pattern
@@ -124,3 +125,4 @@ This does not overturn the escalation ladder in [[Harness Orchestration]] — co
 - [[Agentic Engineering and the New SDLC]] — part-of (skills as the dynamic-context mechanism in the new SDLC)
 - [[Harness Orchestration]] — complements (why skill loading removes role specialization as a reason to go multi-agent)
 - [[Skill Authoring Discipline]] — extends (how to write the description and body, given this format)
+- [[Skill Discovery Failure Modes]] — extends (why a skill's description silently fails to load)

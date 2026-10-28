@@ -3,4 +3,6 @@
 # from the directory name). Use # for comments.
 # Run: uv run codemap  (or: make codemap-reindex)
 
-/Users/wiseer/workspace/librarian librarian
+/Users/ramsey-wise/workspace/librarian librarian
+/Users/ramsey-wise/workspace/diskoe diskoe
+/Users/ramsey-wise/workspace/dssg/nonprofit-success-ai nsai

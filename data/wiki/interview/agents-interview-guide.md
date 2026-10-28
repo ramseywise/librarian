@@ -2,11 +2,13 @@
 title: Agents Interview Study Guide
 tags: [interview, reference]
 summary: Exam-prep reference for agent architecture questions — workflow vs agent distinction, composable patterns, ACI tool design, harness engineering, long-horizon reliability, and memory taxonomy.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
-  - raw/repos/learn-ai-engineering/interviewing--guides--4-agents--interview-guide.md
-  - raw/repos/learn-ai-engineering/interviewing--notes--agents-design.md
-  - raw/repos/learn-ai-engineering/interviewing--notes--agent-harness.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--4-agents--interview-guide.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--agents.md
+  - data/raw/repos/learn-ai-engineering/interviewing--guides--4-agents--00-overview.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-design.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--agent-harness.md
 ---
 
 # Agents Interview Study Guide

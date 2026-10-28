@@ -2,9 +2,12 @@
 title: Context Retrieval Strategies
 tags: [llm, agents, rag, concept]
 summary: The shift from pre-computed retrieval (decide relevance before inference) to just-in-time context (agent loads what it needs during inference) — with the hybrid default and the pre-retrieval pipeline ordering.
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--03-retrieval-strategies.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--context-engineering.md
 ---
 
 # Context Retrieval Strategies

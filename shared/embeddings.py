@@ -11,8 +11,8 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
-WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
-CACHE_DB = Path(__file__).parent.parent.parent / ".embeddings_cache.duckdb"
+WIKI_DIR = Path(__file__).parent.parent / "data" / "wiki"
+CACHE_DB = Path(__file__).parent.parent / ".embeddings_cache.duckdb"
 MODEL_NAME = os.environ.get("LIBRARIAN_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 
 _model: SentenceTransformer | None = None

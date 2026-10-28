@@ -29,11 +29,11 @@ network, or via a simple cloud host (Railway, Render, a VPS)."*
 ## Complexity Rating
 
 **Multi-sprint** — needs a Dockerfile, environment variables managed, and a host.
-*"Railway is the easiest for DSSG — free tier, auto-deploy from GitHub."*
+*"Railway is the easiest for volunteer teams — free tier, auto-deploy from GitHub."*
 
 ## Example Scenario
 
-> *"A DSSG volunteer team builds a meeting-transcript-to-action-items pipeline. The 4 team
+> *"A volunteer team builds a meeting-transcript-to-action-items pipeline. The 4 team
 > members and 2 nonprofit staff need to upload transcripts and see results. One Docker
 > container on Railway, accessed via a shared URL, protected by a simple API key in a
 > header."*

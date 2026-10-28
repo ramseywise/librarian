@@ -4,7 +4,7 @@ tags: [foundations, concept]
 summary: Dual Intent and Entity Transformer (Rasa, 2020) — a multi-task NLU architecture for joint intent classification and entity recognition that outperforms fine-tuned BERT while being 6x faster to train, using plug-and-play pre-trained embeddings with sparse features.
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2020-04-01-rasa-dual-intent-entity-transformer.md
+  - data/raw/pdfs/2020-04-01-rasa-dual-intent-entity-transformer.md
 ---
 
 # DIET Architecture

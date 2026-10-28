@@ -2,7 +2,7 @@
 title: Manual Review as Eval Bootstrap
 tags: [eval, planning]
 summary: Human eyeballs on 10–20 real queries as the deliberate first eval rung — zero setup, doesn't scale, and valuable precisely because its failure patterns become the criteria every automated approach above it needs.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
 ---
@@ -52,3 +52,4 @@ deployment if required for every change.
 - [[Golden Set Mechanics]] — upgrade-path (failure patterns become golden cases)
 - [[LLM-as-Judge Evaluation]] — prerequisite-for (human grades are the calibration target)
 - [[HITL Annotation Pipeline]] — related (systematized human judgment)
+- [[Publish Automatically, Sample for Review]] — extends (post-hoc sampling that feeds the labelled set)

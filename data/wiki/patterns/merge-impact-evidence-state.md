@@ -2,7 +2,7 @@
 title: Merge Impact and Evidence State
 tags: [llm, pattern]
 summary: A two-axis finding schema that separates how much a problem matters (merge_impact) from how sure the reviewer is (evidence_state) — so an uncertain critical finding and a certain trivial one stay distinguishable.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/guacamayo/agents/correctness.md
   - data/raw/claude-docs/guacamayo/agents/safety.md
@@ -12,6 +12,9 @@ sources:
   - data/raw/claude-docs/guacamayo/agents/wander.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/severity-and-decision.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/evidence-model.md
+  - data/raw/claude-docs/galactus/skills/review-shared/references/finding-schema.md
+  - data/raw/claude-docs/guacamayo/skills/review-shared/SKILL.md
+  - data/raw/claude-docs/guacamayo/skills/shared/SKILL.md
 ---
 
 # Merge Impact and Evidence State
@@ -93,6 +96,18 @@ is further split, keeping an external tool's own severity unrewritten alongside 
 merge-impact judgment — see [[Source Severity vs Merge Impact]]. Both are validated by
 tooling rather than prompt instruction; see [[Deterministic Review Substrate]].
 
+## Attribution — what the branch actually introduced
+
+Scanners read whole files and emit a file-level census, so a third field is set by the
+driver, once, after dedup, via a git join — **scanners never set it**:
+
+| attribution | meaning | verdict effect |
+|---|---|---|
+| introduced | cited line is in a touched hunk and blames to a branch commit | blocks |
+| adjacent | file touched, cited line not in a touched hunk | **blocks** — the branch may have added context around a real problem |
+| pre_existing | file not touched by the branch | reported separately, never blocks |
+| unknown | git call failed | blocks — tri-state, never silently clean |
+
 ## See Also
 - [[Parallel Dimension Scanner Architecture]] — prerequisite-for
 - [[Wander — Question-Generating Review Agent]] — extends
@@ -101,3 +116,9 @@ tooling rather than prompt instruction; see [[Deterministic Review Substrate]].
 - [[Source Severity vs Merge Impact]] — extends
 - [[Deterministic Review Substrate]] — extends
 - [[Scope-Gated Reporter Dispatch]] — extends (scope decides which reporters produce evidence at all)
+- [[Two-Axis Claim Schema]] — alternative-to (the decide-family sibling: confidence × decision_impact)
+- [[An Unrun Scan Is Not a Clean Scan]] — extends (`question` evidence state used for absence)
+- [[Quoted Span as Proof of Reading]] — extends (the field that proves a finding's citation was read)
+- [[Contract-Anchored Findings Get Fixed]] — related (contract_ref as a further finding field)
+- [[Taste vs Defect Verdict Split]] — extends
+- [[Single Typed Verdict, Consumers Never Re-Derive]] — extends (the verdict computed once and exposed as a CLI)

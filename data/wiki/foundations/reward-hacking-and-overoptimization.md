@@ -2,7 +2,7 @@
 title: Reward Hacking and Overoptimization
 tags: [foundations, llm, eval, concept]
 summary: "The three failure modes of optimizing against a learned reward proxy — reward hacking, the inverse-U overoptimization curve against KL distance, and the ~15% alignment tax on academic NLP benchmarks."
-updated: 2026-08-04
+updated: 2026-10-16
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
 ---
@@ -87,3 +87,4 @@ and the most commonly missed).
 - [[Preference Optimization Algorithms]] — complements (DPO inherits the length problem; verifiable rewards sidestep it)
 - [[Eval Maturity Ladder]] — complements (optimizing a proxy metric, at training time rather than eval time)
 - [[Constitutional AI and RLAIF]] — extends (an explicit constitution makes the alignment target auditable)
+- [[Outcome vs Process Reward Models]] — extends (the same proxy problem at step level, and why verifiable outcomes reduce it)

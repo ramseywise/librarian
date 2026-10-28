@@ -2,13 +2,22 @@
 title: Evidence Classification Model
 tags: [llm, pattern]
 summary: A four-state classification (verified / supported / hypothesis / question) every review finding must carry before it is returned, with self-verification assigned to the producing subagent rather than the orchestrator.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/evidence-model.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/SKILL.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/communication-and-handoff.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/templates/github-comment.md
   - data/raw/claude-docs/Parallax/docs/documents/Evidence_Driven_PR_Review_System_Spec.md
+  - data/raw/claude-docs/akira/skills/review-shared/references/evidence-model.md
+  - data/raw/claude-docs/diskoe/skills/review-shared/references/evidence-model.md
+  - data/raw/claude-docs/kiez-archive/skills/review-shared/references/evidence-model.md
+  - data/raw/claude-docs/playground/skills/review-shared/references/evidence-model.md
+  - data/raw/claude-docs/akira/skills/review-shared/references/finding-schema.md
+  - data/raw/claude-docs/diskoe/skills/review-shared/references/finding-schema.md
+  - data/raw/claude-docs/kiez-archive/skills/review-shared/references/finding-schema.md
+  - data/raw/claude-docs/playground/skills/review-shared/references/finding-schema.md
+  - data/raw/claude-docs/galactus/skills/review-shared/references/evidence-model.md
 ---
 
 # Evidence Classification Model
@@ -123,3 +132,7 @@ system's severity and Parallax's own merge impact; see
 - [[Shared Context Brief]] — prerequisite-for (same discipline applied to inputs)
 - [[Parallax]] — instance-of (the system this model governs)
 - [[Read-Only by Default with Explicit Authorization]] — extends (the boundary around self-verification)
+- [[Validated Concept vs Unmeasured System]] — related (the same labels applied to product metrics)
+- [[REUSE/ADAPT/SKIP Asset Verdicts]] — extends (confidence and evidence on each asset verdict)
+- [[Quoted Span as Proof of Reading]] — prerequisite-for
+- [[Four-Source Provenance Contract]] — alternative-to

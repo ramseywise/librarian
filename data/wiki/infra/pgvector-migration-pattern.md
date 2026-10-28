@@ -2,13 +2,23 @@
 title: PGVector Migration Pattern
 tags: [infra, rag, pattern]
 summary: Migrating a vector store from in-memory NumPy arrays to PostgreSQL + pgvector — preserving the public API, using cosine distance operator, adding an IVFFlat index, and moving embeddings to Cloud SQL without re-embedding.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
-  - raw/claude-docs/chat-agent/docs/architecture/PGVector_migration.md
-  - raw/claude-docs/chat-agent/docs/TODO_production.md
-  - raw/claude-docs/chat-agent/docs/architecture/queries.md
-  - raw/claude-docs/chat-agent/docs/architecture/VertexAI.md
-  - raw/claude-docs/chat-agent/docs/plans/aif32_code_review_fixes.md
+  - data/raw/claude-docs/chat-agent/docs/architecture/PGVector_migration.md
+  - data/raw/claude-docs/chat-agent/docs/TODO_production.md
+  - data/raw/claude-docs/chat-agent/docs/architecture/queries.md
+  - data/raw/claude-docs/chat-agent/docs/architecture/VertexAI.md
+  - data/raw/claude-docs/chat-agent/docs/plans/aif32_code_review_fixes.md
+  - data/raw/claude-docs/akira/docs/plans/2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/claude-docs/diskoe/docs/plans/2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/repos/akira/.claude--docs--plans--2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/repos/diskoe/.claude--docs--plans--2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/claude-docs/akira/docs/reviews/2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/claude-docs/kiez-archive/docs/reviews/2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/claude-docs/diskoe/docs/reviews/2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/repos/akira/.claude--docs--reviews--2026-09-24-dis386-retrieval-foundation.md
+  - data/raw/repos/diskoe/.claude--docs--reviews--2026-09-24-dis386-retrieval-foundation.md
 ---
 
 # PGVector Migration Pattern
@@ -167,6 +177,25 @@ Consider Vertex AI embeddings when: already on GCP with ADC auth, processing at 
 
 ---
 
+## Supabase notes from a second rollout (akira, 2026-09)
+
+- **Install the extension into `extensions`, not `public`.** `create extension vector` with
+  no schema put about 90 pgvector functions (`cosine_distance`, `hnswhandler`, `avg`,
+  `sum`, ...) into `public`. There they are exposed as PostgREST RPCs, and a function-grants
+  gate flagged them. The first fix allowlisted them by **bare name**, which would also have
+  exempted any future `public.sum` that touches a table. The real fix was
+  `alter extension vector set schema extensions;` (pgvector is relocatable), with the
+  allowlist reverted to empty.
+- **Parse the generated column type; don't cast past it.** The Supabase type generator has
+  no pgvector mapping, so a `vector(n)` column comes back as a number array or a bracketed
+  string depending on version. A zod parser accepts both, transforms to `number[]`, and
+  pins the length (1536). It has a test for each branch and for a wrong length.
+- **A side table, not a column.** Embeddings live in a `content_embeddings` table keyed by
+  content kind, content id, model and input-recipe version, so several models or recipes
+  can coexist. HNSW parameters stay at defaults until a measured latency requirement
+  exists.
+- The backfill that fills it is [[Persist Paid Work Per Chunk]].
+
 ## See Also
 - [[Cloud Run + Cloud SQL Pattern]]
 - [[RAG Retrieval Strategies]]
@@ -175,3 +204,5 @@ Consider Vertex AI embeddings when: already on GCP with ADC auth, processing at 
 - [[Langfuse ADK Tracing Patterns]]
 - [[Synthetic Dataset Generation for RAG Eval]]
 - [[Split Service Deployment]] — related (Supabase Postgres as shared vector + app store)
+- [[Upgrade-Invariant Retrieval Contract]] — related (FTS → pgvector behind a frozen response shape)
+- [[Persist Paid Work Per Chunk]] — extends (the chunked, idempotent backfill)

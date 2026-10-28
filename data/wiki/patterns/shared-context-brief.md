@@ -2,13 +2,15 @@
 title: Shared Context Brief
 tags: [llm, context-management, pattern]
 summary: A structured brief the orchestrator fills in exactly once and passes to every dispatched subagent, so N parallel reviewers share one grounding pass instead of each re-deriving repository context from the same diff.
-updated: 2026-08-03
+updated: 2026-10-16
 sources:
+  - data/raw/claude-docs/playground/skills/review-shared/references/context-brief.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/templates/context-brief.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/templates/review-report.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/templates/interview-walkthrough.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/templates/github-comment.md
   - data/raw/claude-docs/Parallax/agents/parallax.md
+  - data/raw/claude-docs/galactus/skills/review-shared/references/context-brief.md
 ---
 
 # Shared Context Brief
@@ -95,3 +97,5 @@ literal string "no static analysis tool detected" — see [[Deterministic Review
 - [[Merge Impact and Evidence State]] — extends
 - [[ADK Context Engineering]] — instance-of (context assembled once, reused across calls)
 - [[Skill Preloading via Agent Definition]] — alternative-to (startup-preloaded vs. per-run context)
+- [[REUSE/ADAPT/SKIP Asset Verdicts]] — extends (the scout output contract the brief grounds)
+- [[Review Reporter Ground Rules]] — extends (the 'repo rules in force for this diff' block)

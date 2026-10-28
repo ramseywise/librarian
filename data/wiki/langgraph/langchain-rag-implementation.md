@@ -4,7 +4,7 @@ tags: [langgraph, llm, rag, reference]
 summary: LangChain-specific RAG implementation surface — document loaders, RecursiveCharacterTextSplitter, vector store classes (Chroma/FAISS/Pinecone), similarity/MMR search, metadata filtering, and wrapping a retriever as an agent tool; the API layer beneath the conceptual choices in RAG Retrieval Strategies.
 updated: 2026-07-14
 sources:
-  - raw/agent-skills/langchain-rag/SKILL.md
+  - data/raw/agent-skills/langchain-rag/SKILL.md
 ---
 
 # LangChain RAG Implementation Patterns

@@ -4,7 +4,7 @@ tags: [foundations, concept]
 summary: Transformer Embedding Dialogue (TED) policy (Rasa, 2020) applies self-attention at the discourse level — over dialogue turns rather than tokens — outperforming LSTM-based policies on sub-dialogue handling while being simpler and faster than REDP.
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2020-10-01-rasa-dialogue-transformers.md
+  - data/raw/pdfs/2020-10-01-rasa-dialogue-transformers.md
 ---
 
 # Dialogue Transformers — TED Policy

@@ -2,12 +2,21 @@
 title: Atlas Project
 tags: [foundations, project]
 summary: Time-series forecasting and customer-segmentation agent system — Planner/Forecaster/Evaluator/Learner loop over ARIMA and Chronos models, an HDBSCAN-with-KMeans-fallback segmentation pipeline, and a Neo4j knowledge graph linking customers to segments and merchants.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/atlas/skills/ml-experiment/SKILL.md
   - data/raw/claude-docs/atlas/skills/segment-analysis/SKILL.md
   - data/raw/claude-docs/atlas/skills/eval-report/SKILL.md
   - data/raw/claude-docs/atlas/docs/plans/2026-07-28-ATL-37-neo4j-leaks-division-by-zero.md
+  - data/raw/repos/atlas/.agents--skills--README.md
+  - data/raw/repos/atlas/.claude--skills--README.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--SKILL.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-forecast.md
+  - data/raw/repos/atlas/.claude--skills--new-agent--specs--cap-cluster.md
+  - data/raw/repos/atlas/.claude--skills--akira--SKILL.md
+  - data/raw/repos/atlas/CLAUDE.md
+  - data/raw/repos/atlas/README.md
+  - data/raw/repos/atlas/SANYI.md
 ---
 
 # Atlas Project
@@ -59,6 +68,10 @@ RETURN c.id
 Local dev runs Neo4j in Docker; connection config via `NEO4J_URI`/`NEO4J_USER`/`NEO4J_PASSWORD`
 with a `bolt://localhost:7687` fallback retained deliberately as a local-dev default.
 
+Its change contract (`SANYI.md`) pins one invariant on served forecasts: every step must satisfy
+`lower_80 ≤ point_forecast ≤ upper_80`, enforced by a model validator rather than by callers
+(see [[SANYI Change-Contract System]]).
+
 ## Evaluation
 
 Atlas uses [[Forecast Grader Thresholds]] as its pass/fail contract — a fixed grader suite
@@ -87,8 +100,26 @@ defensive: RSI with `loss == 0` should be 100 (maximally overbought), not `NaN`;
 the mathematically correct value *is*, and documenting that choice rather than leaving it
 silent.
 
+## Skill layout: tool-agnostic framework knowledge vs. workflow skills
+
+Atlas splits its skills in two. `.agents/skills/` is a **tool-agnostic framework
+reference library**: framework selection, ADK scaffold/dev guide, and LangGraph
+scaffold/fundamentals/persistence/HITL. It is readable by Claude Code, by ADK tooling, or
+by any other harness. `.claude/skills/` holds only atlas-specific workflow commands.
+Generic phase skills are global and never copied in. `/new-agent` is a thin orchestrator:
+it picks a framework via `framework-selection` and then hands off to the matching scaffold
+skill. It deliberately has **no fixed capability-token list**. Capability needs are met by
+pointing at the relevant reference skill, and missing references are ported "if a gap comes
+up repeatedly, rather than duplicating the knowledge inline in a workflow skill." The
+per-capability template specs (`cap-forecast`, `cap-cluster`, …) carry design notes that
+are mostly code. Two are durable: clamp prediction intervals so `lower ≤ point ≤ upper`
+holds before a validating model is built (statsforecast models emit asymmetric intervals
+on short or skewed series), and handle the all-noise HDBSCAN case (see
+[[HDBSCAN with KMeans Fallback]]).
+
 ## See Also
 - [[Forecast Grader Thresholds]] — instance-of
 - [[HDBSCAN with KMeans Fallback]] — instance-of
 - [[Self-Learning Agents]] — extends
 - [[Production Hardening Patterns]] — alternative-to
+- [[Agent Scaffolding Skill Layers]] — related

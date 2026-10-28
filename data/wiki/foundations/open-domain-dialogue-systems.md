@@ -4,7 +4,7 @@ tags: [foundations, concept]
 summary: Survey of frameworks for open-domain conversation — retrieval-based (score candidates), generation-based (seq2seq/PLM), and hybrid methods — with two key goals (informative via knowledge grounding, controllable via persona/strategy/safety).
 updated: 2026-07-19
 sources:
-  - raw/pdfs/2020-01-01-conversational-ai.md
+  - data/raw/pdfs/2020-01-01-conversational-ai.md
 ---
 
 # Open-Domain Dialogue Systems

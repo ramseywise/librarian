@@ -2,10 +2,11 @@
 title: HITL Annotation Pipeline
 tags: [eval, concept]
 summary: Human-in-the-loop annotation workflow for conversation data — two-queue structure (random + edge case), inter-annotator agreement as quality gate, and feedback routing to eval dataset vs failure taxonomy.
-updated: 2026-04-24
+updated: 2026-10-17
 sources:
-  - raw/linear/2026-04-24-evaluation-and-improvement.md
-  - raw/playground-docs/librarian-stack-audit.md
+  - data/raw/linear/2026-04-24-evaluation-and-improvement.md
+  - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
+  - data/raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md
 ---
 
 # HITL Annotation Pipeline
@@ -86,6 +87,11 @@ See [[RAG Evaluation]] for the full judge suite architecture.
 - [[Conversational Test Fixture Design]] <!-- auto-linked -->
 - [[Skill Pipeline Dryrun Testing]] <!-- auto-linked -->
 - [[RAG Evaluation]]
-- [[Evaluation & Improvement Project (VIR)]]
 - [[PII Masking Approaches]]
 - [[Manual Review as Eval Bootstrap]] — related (ad-hoc precursor to systematized annotation)
+- [[Append-Only Human Labels]] — extends (how rater judgments are persisted so agreement stays measurable)
+- [[Human Agreement Ceiling Protocol]] — extends (κ_HH as the ceiling the judge is scored against, with statistics per scale type)
+- [[Taste vs Defect Verdict Split]] — extends (what the annotation row should carry)
+- [[Graded-Uncertainty Enrichment Contract]] — related (the three uncertainty levels that decide what reaches the annotators)
+- [[Recency-Seeded Label Queue Samples the Thin End]] — extends (seed only judgeable rows, stratify kind × field, rank by rater basis)
+- [[Snapshot the Judged Value on the Verdict Row]] — extends (verdict rows for pre-canonical or mutable subjects)

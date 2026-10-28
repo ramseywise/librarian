@@ -2,11 +2,12 @@
 title: Source Severity vs Merge Impact
 tags: [llm, pattern]
 summary: When a review aggregates findings from external tools, each tool's native severity is preserved unrewritten and a separate merge-impact field answers the different question of whether this particular PR should merge.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/Parallax/skills/parallax-shared/references/severity-and-decision.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/SKILL.md
   - data/raw/claude-docs/Parallax/agents/parallax.md
+  - data/raw/repos/nonprofit-success-ai/.claude--skills--workflow-review--SKILL.md
 ---
 
 # Source Severity vs Merge Impact

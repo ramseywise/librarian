@@ -2,11 +2,15 @@
 title: Scope-POC Design Interview
 tags: [llm, pattern]
 summary: A five-tier system-design interview that produces a DESIGN.md answering *what* to build — idempotent over its own output, ratifying rather than adopting inherited decisions, and treating "I don't know" as a recordable answer instead of a blocker.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/ai-project-template/skills/scope-poc/SKILL.md
   - data/raw/claude-docs/ai-project-template/docs/research/poc-system-design-interview.md
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-30-system-design-rigor-gap.md
+  - data/raw/claude-docs/galactus/skills/proto-scope/SKILL.md
+  - data/raw/repos/ai-project-template/.claude--docs--in-progress--genesis-dryrun--friction-log.md
+  - data/raw/repos/ai-project-template/.claude--docs--in-progress--genesis-dryrun--render-review.md
+
 ---
 
 # Scope-POC Design Interview
@@ -172,6 +176,15 @@ MVP scope do not become parameters.** They constrain which parameters are sensib
 setting any — which is why they cannot be recovered from `.copier-answers.yml` later.
 The eval-loop row maps directly onto the [[Eval Ladder]] rungs.
 
+## Galactus fork: /proto-scope
+
+galactus carries this interview as `/proto-scope`, with two changes. Project discovery is
+folded in as a `discovery` mode (2026-08-14) that writes a project profile the design pass
+then consumes ("your discovery session determined X — confirm, or reopen?"). A brownfield
+step 5b verifies every claimed capability against the working tree before design (see
+[[Path-Verified Build State Markers]]). The design output then feeds the dry-run
+simulation in `/proto-design` (see [[Design Dry-Run Simulation]]).
+
 ## See Also
 - [[Specification by Example]] <!-- auto-linked -->
 - [[Project Discovery Conversation]] — prerequisite-for
@@ -188,3 +201,6 @@ The eval-loop row maps directly onto the [[Eval Ladder]] rungs.
 - [[Design-Before-Infrastructure Sequencing]] — prerequisite-for (why this is a separate skill)
 - [[Block Attribute Inversion]] — extends (per-block metadata instead of more Tier 4 questions)
 - [[Derived-and-Hidden Design Decisions]] — extends (the toggles this interview never surfaced)
+- [[Path-Verified Build State Markers]] — extends (step 5b)
+- [[Design Dry-Run Simulation]] — prerequisite-for
+- [[Prototype Genesis Interview]] — extends (the routing interview upstream of this one)

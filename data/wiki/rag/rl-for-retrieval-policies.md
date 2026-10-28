@@ -2,9 +2,10 @@
 title: RL for Retrieval Policies
 tags: [rag, foundations, llm, concept]
 summary: "Modelling RAG as a sequential decision process — the five decision points and their reward signals, the three optimization patterns (online RL, per-subtask modules, Self-RAG), and why reward sparsity makes end-to-end RAG RL hard."
-updated: 2026-08-04
+updated: 2026-10-17
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
+  - data/raw/repos/learn-ai-engineering/interviewing--notes--rl.md
 ---
 
 # RL for Retrieval Policies

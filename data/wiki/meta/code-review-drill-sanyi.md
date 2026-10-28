@@ -2,9 +2,9 @@
 title: Code Review Drill — SANYI
 tags: [llm, reference]
 summary: Code-review interview drill using a real SANYI review as the worked example — a two-line diff that lints clean but violates the change contract, and the reviewing method that catches it.
-updated: 2026-07-17
+updated: 2026-10-17
 sources:
-  - raw/repos/playground/SANYI.md
+  - data/raw/repos/playground/SANYI.md
 ---
 
 # Code Review Drill — SANYI
@@ -44,3 +44,4 @@ Asked to review a PR in an interview: state the invariants you'd check first (au
 - [[SANYI Change-Contract System]] — instance-of
 - [[Change-Contracts Rollout]]
 - [[Merge Impact and Evidence State]] — extends (severity from layer, not reviewer mood)
+- [[Code Review Interview Study Guide]] — extends (the full round method this drill instantiates)

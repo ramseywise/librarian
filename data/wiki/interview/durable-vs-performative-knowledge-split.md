@@ -2,9 +2,10 @@
 title: Durable vs Performative Knowledge Split
 tags: [interview, llm, pattern]
 summary: One test — "is this true regardless of whether I'm being interviewed?" — sorts study material into durable technical knowledge and interview-performance technique, which decay at different rates and need different revision cadences.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-30-LAE-112-interview-notes-reorg.md
+  - data/raw/repos/learn-ai-engineering/interviewing--README.md
 ---
 
 # Durable vs Performative Knowledge Split

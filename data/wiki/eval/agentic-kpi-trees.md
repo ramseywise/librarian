@@ -4,7 +4,7 @@ tags: [eval, pattern]
 summary: KPI tree pattern for agentic products — goal completion rate, no-touch rate, and transaction match accuracy as the primary success metrics for VA, document processing, and reconciliation agents.
 updated: 2026-06-05
 sources:
-  - raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
+  - data/raw/gdrive/2026-05-28-ai-chapter-meeting-2.md
 ---
 
 # Agentic KPI Trees
@@ -71,5 +71,4 @@ This pattern emerged from the [client] AI Engineering Chapter's cross-team KPI a
 - [[RAG Evaluation]]
 - [[HITL Annotation Pipeline]]
 - [[VA Eval Harness]]
-- [[AI Engineering Chapter @[client]]]
 - [[Copilot Learning Loop]]

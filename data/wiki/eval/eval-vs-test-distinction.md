@@ -2,7 +2,7 @@
 title: Eval vs Test Distinction
 tags: [eval, llm, concept]
 summary: A test tells you your code is broken; an eval tells you your product got worse — two different instruments with different targets, graders, cadences, and failure semantics.
-updated: 2026-08-03
+updated: 2026-10-17
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
 ---
@@ -63,3 +63,6 @@ Without them you have no readout at all — not a weaker readout: none.
 - [[RAG Eval Gate Contract]]
 - [[Forecast Grader Thresholds]] — instance-of
 - [[Agentic Engineering and the New SDLC]] — extends (output vs trajectory evaluation, and tests as the intent-communication channel)
+- [[Differential Parity Testing Against the Original]] — extends (an executed original implementation as the test oracle)
+- [[Eval Falsifiability]] — extends
+- [[Generation-Under-Contract Eval Harness]] — extends (a third eval kind: producer-driving, not row-grading)
