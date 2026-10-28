@@ -1,11 +1,11 @@
 ---
-imported_hash: 5be849806d28d8af
+imported_hash: 7f1a426abf0639c4
 title: 'Worked Example: Deterministic Workflow Orchestration (40 min, offline)'
 summary: The MCQ pairing here is workflow vs ReAct — and the whole exercise is a test of whether you reach for the right one.
 order: 40
 kind: reading
 section: Coding challenge / Examples
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/examples/workflow-orchestration.md
+source: sisyphus/interviewing/rounds/coding-challenge/examples/workflow-orchestration.md
 ---
 
 # Worked Example: Deterministic Workflow Orchestration (40 min, offline)

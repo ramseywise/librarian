@@ -1,11 +1,11 @@
 ---
-imported_hash: a0bf9ebbf9df0736
+imported_hash: d444e68f06bb8b01
 title: Customer Simulation — Scenario Question Bank
 summary: 'Twelve scenario prompts. For each: the setup, what''s being scored, the habit sequence that works, and the failure modes.'
 order: 42
 kind: reading
 section: Customer simulation
-source: learn-ai-engineering/interviewing/rounds/customer-simulation/questions.md
+source: sisyphus/interviewing/rounds/customer-simulation/questions.md
 ---
 
 # Customer Simulation — Scenario Question Bank

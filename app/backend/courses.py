@@ -31,6 +31,7 @@ WIKI_DIR = ROOT / "data" / "wiki"
 
 ASSET_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
 MAX_CONCEPTS = 12
+DRILL_KEYS = ("track", "topic", "difficulty", "timebox_min")  # sisyphus drill schema
 _FENCE_RE = re.compile(r"^\s*(```|~~~)")
 
 router = APIRouter(prefix="/api/courses")
@@ -57,6 +58,7 @@ class LessonRec:
     source: str
     body: str
     concepts: list[str] = field(default_factory=list)  # wiki page ids, ranked
+    drill: dict[str, Any] = field(default_factory=dict)  # DRILL_KEYS, kind == "drill" only
 
 
 @dataclass
@@ -176,6 +178,9 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                         source=str(post.get("source") or ""),
                         body=post.content,
                         concepts=_rank_concepts(post, wiki, slugs, matcher, by_title),
+                        drill={k: post[k] for k in DRILL_KEYS if post.get(k) is not None}
+                        if post.get("kind") == "drill"
+                        else {},
                     )
                 )
             recs.sort(key=lambda r: (r.order, r.id))
@@ -258,6 +263,7 @@ def _outline(r: LessonRec) -> dict[str, Any]:
         "section": r.section,
         "kind": r.kind,
         "summary": r.summary,
+        **({"drill": r.drill} if r.drill else {}),
     }
 
 
@@ -357,6 +363,27 @@ def lessons_for_concept(page_id: str) -> list[dict[str, Any]]:
         {**_outline(cat.lessons[i]), "course": cat.lessons[i].course}
         for i in cat.by_concept.get(page_id, [])
     ]
+
+
+@router.get("/practice")
+def practice(
+    track: str | None = None, difficulty: str | None = None, concept: str | None = None
+) -> list[dict[str, Any]]:
+    """Drills (lessons of kind "drill"), filtered — the Practice mode list."""
+    cat = catalog()
+    out = []
+    for r in cat.lessons.values():
+        if r.kind != "drill":
+            continue
+        if track and r.drill.get("track") != track:
+            continue
+        if difficulty and r.drill.get("difficulty") != difficulty:
+            continue
+        if concept and concept not in r.concepts:
+            continue
+        concepts = [_wiki_json(cat.wiki[c]) for c in r.concepts if c in cat.wiki]
+        out.append({**_outline(r), "course": r.course, "concepts": concepts})
+    return out
 
 
 @router.get("/files/{file_path:path}")

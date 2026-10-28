@@ -1,11 +1,11 @@
 ---
-imported_hash: 23ad5f10e4b8baf8
+imported_hash: 784a994cfb35ee49
 title: AI System Design Cheat Sheet (2026)
 summary: 'Pillar 9, detailed note 6. Component-by-component reference for the LLM request path: gateway, rate limiting, caching, orchestrator, RAG pipeline, memory, tools, async work, reliability, observability, security, cost.'
 order: 27
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/06-component-cheatsheet.md
+source: sisyphus/interviewing/guides/9-system-design/06-component-cheatsheet.md
 ---
 
 # AI System Design Cheat Sheet (2026)

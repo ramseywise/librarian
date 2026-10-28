@@ -1,11 +1,11 @@
 ---
-imported_hash: 0364b7134999eeb5
+imported_hash: 682a3f1bc6a93894
 title: 'Example: Automated Code Review Agent'
 summary: ''
 order: 77
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/agent-system.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/agent-system.md
 ---
 
 # Example: Automated Code Review Agent

@@ -1,11 +1,11 @@
 ---
-imported_hash: 9ed85b615fac9393
+imported_hash: dcc81677aa83e457
 title: System Design (ML/LLM/Agent) — Study Guide
 summary: The highest-weight technical round in 2026 AIE/MLE loops.
 order: 28
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/interview-guide.md
+source: sisyphus/interviewing/guides/9-system-design/interview-guide.md
 ---
 
 # System Design (ML/LLM/Agent) — Study Guide

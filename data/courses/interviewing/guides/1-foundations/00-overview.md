@@ -1,11 +1,11 @@
 ---
-imported_hash: 3e354ba0c6211486
+imported_hash: f0ee7a5159f071d9
 title: Pillar 1 — Foundations (classical ML, stats, SQL)
 summary: 'Everything else in AI is built on this: how models learn from data, how you know they work, and how you query the data in the first place.'
 order: 4
 kind: reading
 section: Foundations
-source: learn-ai-engineering/interviewing/guides/1-foundations/00-overview.md
+source: sisyphus/interviewing/guides/1-foundations/00-overview.md
 ---
 
 # Pillar 1 — Foundations (classical ML, stats, SQL)

@@ -1,11 +1,11 @@
 ---
-imported_hash: d9eff2ee15311f67
+imported_hash: 2a3a9b41a60d3bb3
 title: 'Example: Architecture Walkthrough — RAG Pipeline'
 summary: ''
 order: 62
 kind: reading
 section: Project deep dive / Examples
-source: learn-ai-engineering/interviewing/rounds/project-deep-dive/examples/architecture-walkthrough.md
+source: sisyphus/interviewing/rounds/project-deep-dive/examples/architecture-walkthrough.md
 ---
 
 # Example: Architecture Walkthrough — RAG Pipeline

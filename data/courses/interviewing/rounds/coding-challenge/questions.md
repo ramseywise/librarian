@@ -1,11 +1,11 @@
 ---
-imported_hash: ae9b2c403746cc16
+imported_hash: 7d472b3bcf8a5d16
 title: Coding Challenge — Question Bank
 summary: These assume a browser editor with no network and no AI assistant — stdlib only.
 order: 29
 kind: reading
 section: Coding challenge
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
+source: sisyphus/interviewing/rounds/coding-challenge/questions.md
 ---
 
 # Coding Challenge — Question Bank

@@ -1,11 +1,11 @@
 ---
-imported_hash: 2cfefee2968cbda0
+imported_hash: e6784ac941052acf
 title: AI Product & System Design Interview Framework (2026)
 summary: 'Pillar 9, detailed note 5. The product-flavored design round: mission/goals alignment, user segmentation, prioritization, and AI-specific risk framing — the layer above the architecture.'
 order: 26
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/05-ai-product-design.md
+source: sisyphus/interviewing/guides/9-system-design/05-ai-product-design.md
 ---
 
 # AI Product & System Design Interview Framework (2026)

@@ -1,11 +1,11 @@
 ---
-imported_hash: a25f178530773dfb
+imported_hash: 7a2576ef6760ad14
 title: 'Example: Eval Pipeline for an LLM Product'
 summary: 'Tier 2: LLM-as-judge (every deploy, < 10 min, ~$2) → Golden set: 100 curated query-answer-context triples → Graders: - Faithfulness: "Does the answer make claims not supported by the retrieved context?" - Relevance: "Does the answer address…'
 order: 78
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/eval-harness.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/eval-harness.md
 ---
 
 # Example: Eval Pipeline for an LLM Product

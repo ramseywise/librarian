@@ -1,11 +1,11 @@
 ---
-imported_hash: 1b406b3e339a2a5f
+imported_hash: 44031a5f1dd8e8b4
 title: Sources — Case Study Round
 summary: 'Note the two-source tension on tests: the first lists a test suite under what not to build in a 60-minute window; the second calls a missing suite the top Work Trial rejection reason.'
 order: 11
 kind: reading
 section: Case study
-source: learn-ai-engineering/interviewing/rounds/case-study/sources.md
+source: sisyphus/interviewing/rounds/case-study/sources.md
 ---
 
 # Sources — Case Study Round

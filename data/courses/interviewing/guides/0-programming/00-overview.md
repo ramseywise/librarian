@@ -1,11 +1,11 @@
 ---
-imported_hash: 2e5c51dfa19b2004
+imported_hash: b833e6067ec9bd5f
 title: Pillar 0 — Programming Foundations (DSA, Python, SQL)
 summary: 'The bedrock under everything else: write clean, efficient code, solve algorithmic problems under pressure, and translate data questions into working queries.'
 order: 2
 kind: reading
 section: Programming
-source: learn-ai-engineering/interviewing/guides/0-programming/00-overview.md
+source: sisyphus/interviewing/guides/0-programming/00-overview.md
 ---
 
 # Pillar 0 — Programming Foundations (DSA, Python, SQL)

@@ -1,11 +1,11 @@
 ---
-imported_hash: da5cb2a55eef5730
+imported_hash: e8e996843180e7d7
 title: API Design for System Design Interviews
 summary: 'Pillar 9, detailed note 2. The API section of a design round should take ~5 minutes: identify operations, expose them cleanly, move on to architecture.'
 order: 23
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/02-api-design.md
+source: sisyphus/interviewing/guides/9-system-design/02-api-design.md
 ---
 
 # API Design for System Design Interviews

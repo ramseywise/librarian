@@ -1,11 +1,11 @@
 ---
-imported_hash: e42485a2170adfda
+imported_hash: 6ca71a1ad3d662e5
 title: 'Example: Scaling a RAG System 100x'
 summary: '"At 100K queries/day, naive scaling costs $3,400/day (~$100K/month).'
 order: 82
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/scaling.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/scaling.md
 ---
 
 # Example: Scaling a RAG System 100x

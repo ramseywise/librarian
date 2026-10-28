@@ -1,11 +1,11 @@
 ---
-imported_hash: d9cdaee8ee9d554e
+imported_hash: ec0f19b235ab5cae
 title: Prompt injection
 summary: Skip to content logo OWASP Cheat Sheet Series LLM Prompt Injection Prevention
 order: 18
 kind: reading
 section: Security safety
-source: learn-ai-engineering/interviewing/guides/7-security-safety/prompt-injection.md
+source: sisyphus/interviewing/guides/7-security-safety/prompt-injection.md
 ---
 
 Skip to content

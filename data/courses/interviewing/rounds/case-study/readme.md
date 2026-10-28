@@ -1,11 +1,11 @@
 ---
-imported_hash: edf4d3d496fbeda4
+imported_hash: 7a7597c53aa13672
 title: Case Study Round (live · code test · take-home · Work Trial · presentation/defense)
 summary: The 1h timed code test is emerging, not canonical — evidenced in CoderPad/CodeSignal pilots, not confirmed as a standard round at major AIE employers.
 order: 9
 kind: reading
 section: Case study
-source: learn-ai-engineering/interviewing/rounds/case-study/README.md
+source: sisyphus/interviewing/rounds/case-study/README.md
 ---
 
 # Case Study Round (live · code test · take-home · Work Trial · presentation/defense)

@@ -1,10 +1,10 @@
 ---
-imported_hash: d22ba2a2b2608679
+imported_hash: c139913126697c78
 title: This is a special placeholder. During training, the VERL algorithm will serve the Llama-3 model
 summary: 'The core research behind it is described in the paper “Agent Lightning: Train ANY AI Agents with Reinforcement Learning” by Microsoft Research, which frames the problem as a hierarchical RL optimization of complex agent behavior.'
 order: 1
 kind: reading
-source: learn-ai-engineering/interviewing/notes/agents-self-training.md
+source: sisyphus/interviewing/notes/agents-self-training.md
 ---
 
 ## Tools:
@@ -167,7 +167,7 @@ senior_researcher_llm = ChatOpenAI(
     model="senior_researcher_llm", # A logical name, not a real model endpoint initially.
     temperature=0.1,
     openai_api_base="http://placeholder-will-be-replaced:8000/v1",
-    openai_api_key="dummy_key"
+    openai_api_key="<redacted>"
 )
 ```
 

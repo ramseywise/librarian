@@ -1,11 +1,11 @@
 ---
-imported_hash: 8b9e004fcc7af74b
+imported_hash: 312ae95e81fe80df
 title: 'Worked Example: Churn Prediction Take-Home'
 summary: This is a simulated take-home submission — both the analytical notebook and the memo writeup.
 order: 17
 kind: reading
 section: Case study / Examples / Ml track
-source: learn-ai-engineering/interviewing/rounds/case-study/examples/ml-track/churn-prediction-takehome.md
+source: sisyphus/interviewing/rounds/case-study/examples/ml-track/churn-prediction-takehome.md
 ---
 
 # Worked Example: Churn Prediction Take-Home

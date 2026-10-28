@@ -1,11 +1,11 @@
 ---
-imported_hash: 676736166c191162
+imported_hash: 05e6f3462d05ddb7
 title: Coding Challenge
 summary: Live coding is increasingly project-style ("implement a rate limiter") over pure LeetCode.
 order: 27
 kind: reading
 section: Coding challenge
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/README.md
+source: sisyphus/interviewing/rounds/coding-challenge/README.md
 ---
 
 # Coding Challenge

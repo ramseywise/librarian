@@ -1,10 +1,10 @@
 ---
-imported_hash: c0eaa93181597431
+imported_hash: 864c4c895665d466
 title: Tips for Success
 summary: test how you think in real-world situations.
 order: 2
 kind: reading
-source: learn-ai-engineering/interviewing/notes/case-interview.md
+source: sisyphus/interviewing/notes/case-interview.md
 ---
 
 test how you think in real-world situations.

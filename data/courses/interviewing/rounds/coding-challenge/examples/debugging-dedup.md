@@ -1,11 +1,11 @@
 ---
-imported_hash: 50c439edb77077df
+imported_hash: 5e6ac40fc0bc4de8
 title: Debugging a Broken Deduplication Script
 summary: 'def dedup(records, seen=set()): result = [] for r in records: if r["id"] not in seen: seen.add(r["id"]) result.append(r) return result'
 order: 34
 kind: reading
 section: Coding challenge / Examples
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/examples/debugging-dedup.md
+source: sisyphus/interviewing/rounds/coding-challenge/examples/debugging-dedup.md
 ---
 
 # Debugging a Broken Deduplication Script

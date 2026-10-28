@@ -1,11 +1,11 @@
 ---
-imported_hash: 5df0806a8727f504
+imported_hash: 51d13469dbdf0eaa
 title: Coding Challenge — Sources
 summary: Load these before any coding challenge prep session.
 order: 30
 kind: reading
 section: Coding challenge
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/sources.md
+source: sisyphus/interviewing/rounds/coding-challenge/sources.md
 ---
 
 # Coding Challenge — Sources

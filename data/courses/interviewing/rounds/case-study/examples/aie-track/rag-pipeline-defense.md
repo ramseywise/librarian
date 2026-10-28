@@ -1,11 +1,11 @@
 ---
-imported_hash: 0e096017b6246431
+imported_hash: 5ee5b3b60826d576
 title: 'Worked Example: RAG Pipeline Defense Round'
 summary: 'This example shows: (1) the original design briefly, (2) each challenge with a model response, and (3) how to adapt visibly when a challenge is valid.'
 order: 15
 kind: reading
 section: Case study / Examples / Aie track
-source: learn-ai-engineering/interviewing/rounds/case-study/examples/aie-track/rag-pipeline-defense.md
+source: sisyphus/interviewing/rounds/case-study/examples/aie-track/rag-pipeline-defense.md
 ---
 
 # Worked Example: RAG Pipeline Defense Round

@@ -1,11 +1,11 @@
 ---
-imported_hash: d7255309f91a1300
+imported_hash: b3d71bbede446a66
 title: Code Review Round
 summary: Mostly senior/staff loops; AIE variants increasingly use AI-generated code as the artifact.
 order: 18
 kind: reading
 section: Code review round
-source: learn-ai-engineering/interviewing/rounds/code-review-round/README.md
+source: sisyphus/interviewing/rounds/code-review-round/README.md
 ---
 
 # Code Review Round

@@ -1,7 +1,7 @@
 ---
-imported_hash: ebad487efe198bd0
+imported_hash: 25987fba799e5f66
 title: Programming
-summary: Practice problems plus cloud and infrastructure reference for working engineers.
+summary: Language drills (Python, SQL, TypeScript, Terraform) and interview-format coding rounds.
 order: 1
-source: learn-ai-engineering/programming
+source: sisyphus/drills
 ---

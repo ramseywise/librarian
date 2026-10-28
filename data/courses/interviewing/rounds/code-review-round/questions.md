@@ -1,11 +1,11 @@
 ---
-imported_hash: b7780fe202969f89
+imported_hash: e575fae3ada77511
 title: Code Review Round — Questions & Model Answers
 summary: Automation handles syntax and formatting.
 order: 19
 kind: reading
 section: Code review round
-source: learn-ai-engineering/interviewing/rounds/code-review-round/questions.md
+source: sisyphus/interviewing/rounds/code-review-round/questions.md
 ---
 
 # Code Review Round — Questions & Model Answers

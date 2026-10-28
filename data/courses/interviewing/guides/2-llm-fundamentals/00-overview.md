@@ -1,11 +1,11 @@
 ---
-imported_hash: 3e3c06e4292cbb16
+imported_hash: d990747c9cc3472b
 title: Pillar 2 — LLM Fundamentals (transformers → training → prompting)
 summary: 'How large language models actually work: tokens, attention, the training pipeline (pretraining → SFT → preference alignment), and how to talk to them.'
 order: 6
 kind: reading
 section: Llm fundamentals
-source: learn-ai-engineering/interviewing/guides/2-llm-fundamentals/00-overview.md
+source: sisyphus/interviewing/guides/2-llm-fundamentals/00-overview.md
 ---
 
 # Pillar 2 — LLM Fundamentals (transformers → training → prompting)

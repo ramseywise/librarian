@@ -1,11 +1,11 @@
 ---
-imported_hash: 18b1b6c47edea20c
+imported_hash: efb6245b49be8b01
 title: System Design Round — Sources
 summary: ''
 order: 73
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/sources.md
+source: sisyphus/interviewing/rounds/system-design-round/sources.md
 ---
 
 # System Design Round — Sources
@@ -22,10 +22,10 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/sources.md
 | Security & safety study guide | Threat model, defense stack, source-sink analysis, compliance | [guides/7-security-safety](../../guides/7-security-safety/interview-guide.md) |
 | Data eng & MLOps study guide | Pipeline design, feature stores, model serving, CI/CD for ML | [guides/8-data-eng-mlops](../../guides/8-data-eng-mlops/interview-guide.md) |
 | Case interview notes | Process framework, trade-off types, bottleneck/failure tables, vantage-point framing | [notes/case-interview.md](../../notes/case-interview.md) |
-| Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [notes/agent-harness.md](../../../ai-engineering/03-harness/agent-harness.md) |
-| Reliable agents notes | PRINCE case study: agentic RAG, error recovery, context engineering, eval | [notes/reliable-agents.md](../../../ai-engineering/03-harness/reliable-agents.md) |
-| RAG notes | 9 architecture patterns, production checklist, component trade-offs | [notes/rag.md](../../../generative-ai/02-rag-retrieval/rag.md) |
-| Eval harness notes | Golden set design, grader calibration, regression vs capability | [notes/eval-harness.md](../../../ai-engineering/06-eval/eval-harness.md) |
+| Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [notes/agent-harness.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md) |
+| Reliable agents notes | PRINCE case study: agentic RAG, error recovery, context engineering, eval | [notes/reliable-agents.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/reliable-agents.md) |
+| RAG notes | 9 architecture patterns, production checklist, component trade-offs | [notes/rag.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/generative-ai/02-rag-retrieval/rag.md) |
+| Eval harness notes | Golden set design, grader calibration, regression vs capability | [06-eval/eval-engineering.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/06-eval/eval-engineering.md) |
 
 ### Librarian wiki (query via `search_wiki`)
 

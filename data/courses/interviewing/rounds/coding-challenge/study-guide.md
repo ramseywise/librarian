@@ -1,11 +1,11 @@
 ---
-imported_hash: a02242bfa3185b56
+imported_hash: 3fab5685f9580f33
 title: Coding Challenge — Study Guide
 summary: 'The #1 differentiator in live coding is not correctness — it''s narration.'
 order: 31
 kind: reading
 section: Coding challenge
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/study-guide.md
+source: sisyphus/interviewing/rounds/coding-challenge/study-guide.md
 ---
 
 # Coding Challenge — Study Guide

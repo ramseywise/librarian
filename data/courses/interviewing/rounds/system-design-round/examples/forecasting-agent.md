@@ -1,11 +1,11 @@
 ---
-imported_hash: 33f4d48b5d8b593c
+imported_hash: 23f5010cdde2afd4
 title: 'Example: Agentic Financial Forecasting System'
 summary: 'ForecastAgent (LangGraph, self-learning loop): Planner → Forecaster → Evaluator → Learner │ │ └──── feedback loop: errors → context ──┘'
 order: 79
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/forecasting-agent.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/forecasting-agent.md
 ---
 
 # Example: Agentic Financial Forecasting System

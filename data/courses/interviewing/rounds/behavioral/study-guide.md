@@ -1,11 +1,11 @@
 ---
-imported_hash: fdd3bb02783c149e
+imported_hash: a3da40c6c5b524b6
 title: Behavioral Round — Study Guide
 summary: Build 8–10 stories before you interview. Each story should have a 2-minute spoken version with a number in the Result.
 order: 4
 kind: reading
 section: Behavioral
-source: learn-ai-engineering/interviewing/rounds/behavioral/study-guide.md
+source: sisyphus/interviewing/rounds/behavioral/study-guide.md
 ---
 
 # Behavioral Round — Study Guide

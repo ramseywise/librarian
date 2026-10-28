@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from core import import_courses as ic
 
@@ -161,3 +162,65 @@ def test_unchanged_generated_file_updates_with_source(tree: tuple[Path, Path]) -
     stats = _sync(source)
     assert stats["updated"] >= 1
     assert "Revised." in next(dest.rglob("*next*.md")).read_text()
+
+
+def test_commit_hook_whitespace_fix_is_not_a_local_edit(tree: tuple[Path, Path]) -> None:
+    source, dest = tree
+    (source / "generative-ai" / "01-llm-fundamentals" / "02-next.md").write_text(
+        "# Next\n\nMore.   \n\n\n"
+    )
+    _sync(source)
+    nxt = next(dest.rglob("*next*.md"))
+    assert "More.\n" in nxt.read_text() and "   " not in nxt.read_text()
+
+    # A file written before render() normalized whitespace, then fixed by the hook.
+    legacy = nxt.read_text().replace("More.\n", "More.  \n")
+    legacy = ic._HASH_LINE_RE.sub("", legacy)
+    nxt.write_text(legacy.replace("---\n", f"---\nimported_hash: {ic._hash(legacy)}\n", 1))
+    nxt.write_text(ic._normalize_ws(nxt.read_text()))  # what trailing-whitespace leaves
+    stats = _sync(source)
+    assert stats["kept_local_edit"] == 0
+    assert ic._recorded_hash(nxt.read_text()) == ic._hash(nxt.read_text())
+
+
+def test_programming_course_reads_sisyphus_drills(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    sisyphus = tmp_path / "sisyphus"
+    sql = sisyphus / "drills" / "sql"
+    sql.mkdir(parents=True)
+    (sql / "README.md").write_text("# SQL drills\n")
+    (sisyphus / "drills" / "coding").mkdir()
+    (sisyphus / "drills" / "coding" / "drill-log.md").write_text("# Log\n")
+    dest = tmp_path / "courses"
+    monkeypatch.setattr(ic, "COURSES_DIR", dest)
+
+    plan = ic.build_plan(tmp_path / "lae", ["programming"], sisyphus)
+    ic.apply(plan, ["programming"], dry_run=False)
+
+    lessons = [p.relative_to(dest).as_posix() for p in dest.rglob("*.md")]
+    assert not any("drill-log" in p for p in lessons)  # progress history, not a lesson
+    readme = next(dest.rglob("programming/sql/*.md")).read_text()
+    assert "source: sisyphus/drills/sql/README.md" in readme
+    assert "source: sisyphus/drills" in (dest / "programming" / "_course.md").read_text()
+
+
+def test_drill_frontmatter_becomes_drill_lesson(tree: tuple[Path, Path]) -> None:
+    source, dest = tree
+    (source / "generative-ai" / "01-llm-fundamentals" / "03-drill.md").write_text(
+        "---\ntitle: Rank orders\ntrack: sql\ndifficulty: medium\ntimebox_min: 20\n"
+        "concepts: [window-functions]\nsource: original\n---\n\n# Ignored H1\n\nDo it.\n"
+    )
+    _sync(source)
+    text = next(dest.rglob("*drill*.md")).read_text()
+    meta = yaml.safe_load(text.split("---\n")[1])
+    assert meta["title"] == "Rank orders" and meta["kind"] == "drill"
+    assert meta["track"] == "sql" and meta["timebox_min"] == 20
+    assert meta["wiki"] == ["window-functions"]
+    assert meta["source"].startswith("learn-ai-engineering/")  # the drill's own `source` is dropped
+    assert "Do it." in text and "concepts:" not in text
+    # Frontmatter without a track stays a plain reading with its frontmatter dropped.
+    assert (
+        yaml.safe_load(next(dest.rglob("*intro*.md")).read_text().split("---\n")[1])["kind"]
+        == "reading"
+    )

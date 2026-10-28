@@ -1,11 +1,11 @@
 ---
-imported_hash: 7ec2b406f02ca596
+imported_hash: dbcafa87cad539f1
 title: Recruiter Screen — Question Bank
 summary: 10–12 questions across the categories a recruiter will hit.
 order: 66
 kind: reading
 section: Recruiter screen
-source: learn-ai-engineering/interviewing/rounds/recruiter-screen/questions.md
+source: sisyphus/interviewing/rounds/recruiter-screen/questions.md
 ---
 
 # Recruiter Screen — Question Bank

@@ -1,11 +1,11 @@
 ---
-imported_hash: e618e6e2f1291c61
+imported_hash: 6b1939b41e4c4247
 title: Study Guide — Leadership Rounds
 summary: 'The CTO is asking: "Would I hire this person to make technical decisions I''d stand behind without supervising them?"'
 order: 52
 kind: reading
 section: Leadership rounds
-source: learn-ai-engineering/interviewing/rounds/leadership-rounds/study-guide.md
+source: sisyphus/interviewing/rounds/leadership-rounds/study-guide.md
 ---
 
 # Study Guide — Leadership Rounds

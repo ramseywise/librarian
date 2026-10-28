@@ -1,11 +1,11 @@
 ---
-imported_hash: de8c315b140c86c1
+imported_hash: f40b23e2b21907fb
 title: Customer / Stakeholder Simulation
 summary: ~60% of candidates who pass coding fail this round.
 order: 41
 kind: reading
 section: Customer simulation
-source: learn-ai-engineering/interviewing/rounds/customer-simulation/README.md
+source: sisyphus/interviewing/rounds/customer-simulation/README.md
 ---
 
 # Customer / Stakeholder Simulation

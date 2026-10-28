@@ -1,11 +1,11 @@
 ---
-imported_hash: 4610358eb7061011
+imported_hash: 4f40cb319f01d6b4
 title: Pillar 9 — System Design (putting the pieces together)
 summary: 'The integration pillar: given a vague problem, design the whole system — components, data flow, trade-offs, failure modes, measurement.'
 order: 21
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/00-overview.md
+source: sisyphus/interviewing/guides/9-system-design/00-overview.md
 ---
 
 # Pillar 9 — System Design (putting the pieces together)

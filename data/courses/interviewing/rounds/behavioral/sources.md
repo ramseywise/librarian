@@ -1,11 +1,11 @@
 ---
-imported_hash: 0e67d41d950a2192
+imported_hash: f00f0a372d66de3d
 title: Behavioral Round — Sources
 summary: ''
 order: 3
 kind: reading
 section: Behavioral
-source: learn-ai-engineering/interviewing/rounds/behavioral/sources.md
+source: sisyphus/interviewing/rounds/behavioral/sources.md
 ---
 
 # Behavioral Round — Sources

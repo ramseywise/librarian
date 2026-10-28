@@ -1,11 +1,11 @@
 ---
-imported_hash: 742eb277835f6f94
+imported_hash: 2e6ecd97282e8b21
 title: 'Example: Accounting Support Agent'
 summary: '→ Route to knowledge layer: Procedural → RAG over help articles (vector + BM25) Regulatory → Knowledge graph traversal + rule lookup Entity → Knowledge graph query (structured) Out-of-scope → polite decline + suggest help center'
 order: 76
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/accounting-assistant.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/accounting-assistant.md
 ---
 
 # Example: Accounting Support Agent

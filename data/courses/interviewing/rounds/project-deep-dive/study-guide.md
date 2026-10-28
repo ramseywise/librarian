@@ -1,11 +1,11 @@
 ---
-imported_hash: 7fde7b0433eae8ae
+imported_hash: 4f9420b2df8e0330
 title: Study Guide — Project Deep-Dive
 summary: Every project answer must exist at three altitudes.
 order: 60
 kind: reading
 section: Project deep dive
-source: learn-ai-engineering/interviewing/rounds/project-deep-dive/study-guide.md
+source: sisyphus/interviewing/rounds/project-deep-dive/study-guide.md
 ---
 
 # Study Guide — Project Deep-Dive

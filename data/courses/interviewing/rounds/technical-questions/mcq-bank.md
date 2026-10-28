@@ -1,11 +1,11 @@
 ---
-imported_hash: 9e02d8b0cc02fd44
+imported_hash: da90b67160e67f1f
 title: MCQ Bank — Full Topic Parity
 summary: Multiple-choice drill bank covering all 11 guide topics.
 order: 85
 kind: reading
 section: Technical questions
-source: learn-ai-engineering/interviewing/rounds/technical-questions/mcq-bank.md
+source: sisyphus/interviewing/rounds/technical-questions/mcq-bank.md
 ---
 
 # MCQ Bank — Full Topic Parity

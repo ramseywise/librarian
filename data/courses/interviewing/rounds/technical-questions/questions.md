@@ -1,11 +1,11 @@
 ---
-imported_hash: 30211f26bfde5985
+imported_hash: 3ded51008a3bd78e
 title: Question Bank — Technical / ML/LLM Breadth Round
 summary: 'Each question has three parts: - 60-second answer — what to say in the rapid-fire moment - One level deeper — the follow-up that separates memorization from understanding - Study ref — which guide carries the full treatment'
 order: 86
 kind: reading
 section: Technical questions
-source: learn-ai-engineering/interviewing/rounds/technical-questions/questions.md
+source: sisyphus/interviewing/rounds/technical-questions/questions.md
 ---
 
 # Question Bank — Technical / ML/LLM Breadth Round

@@ -1,11 +1,11 @@
 ---
-imported_hash: 9f88b48995dede66
+imported_hash: 60907ce1f2c8cfb9
 title: AI-Generated & LLM Integration Code
 summary: 'async def handlemessage(self, userid: str, message: str) -> str: # Load user context context = await self.memory.get(userid)'
 order: 23
 kind: reading
 section: Code review round / Examples
-source: learn-ai-engineering/interviewing/rounds/code-review-round/examples/ai-generated.md
+source: sisyphus/interviewing/rounds/code-review-round/examples/ai-generated.md
 ---
 
 # AI-Generated & LLM Integration Code

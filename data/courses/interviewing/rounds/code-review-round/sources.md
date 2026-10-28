@@ -1,11 +1,11 @@
 ---
-imported_hash: b4652a82109bd3b5
+imported_hash: 4fbc96775badd31f
 title: Code Review Round — Sources
 summary: ''
 order: 20
 kind: reading
 section: Code review round
-source: learn-ai-engineering/interviewing/rounds/code-review-round/sources.md
+source: sisyphus/interviewing/rounds/code-review-round/sources.md
 ---
 
 # Code Review Round — Sources
@@ -20,7 +20,7 @@ source: learn-ai-engineering/interviewing/rounds/code-review-round/sources.md
 | Context & Cost study guide | Convention drift, hardcoded tunables, progressive disclosure | [guides/5-context-cost](../../guides/5-context-cost/interview-guide.md) |
 | Security notes | OWASP agent cheat sheet, source-sink analysis, defense stack with code examples | [notes/security.md](../../notes/security.md) |
 | Prompt injection notes | Injection techniques, mitigation patterns | [notes/prompt-injection.md](../../guides/7-security-safety/prompt-injection.md) |
-| Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [notes/agent-harness.md](../../../ai-engineering/03-harness/agent-harness.md) |
+| Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [notes/agent-harness.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md) |
 
 ### Librarian wiki (query via `search_wiki`)
 

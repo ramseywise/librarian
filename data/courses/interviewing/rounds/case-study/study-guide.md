@@ -1,11 +1,11 @@
 ---
-imported_hash: 3f1fa09714b73d66
+imported_hash: 0909949ddbb22f13
 title: Study Guide — Case Study Round
 summary: You should be able to write this in 2 minutes from memory.
 order: 12
 kind: reading
 section: Case study
-source: learn-ai-engineering/interviewing/rounds/case-study/study-guide.md
+source: sisyphus/interviewing/rounds/case-study/study-guide.md
 ---
 
 # Study Guide — Case Study Round

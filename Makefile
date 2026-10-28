@@ -16,8 +16,8 @@ obsidian:
 api:
 	cd app && uv run --extra api uvicorn backend.main:app --reload --port 8000
 
-# Sync coursework from ../learn-ai-engineering into data/courses/ (idempotent; local
-# edits are kept). Pass ARGS="--dry-run" or ARGS="--subject generative-ai".
+# Sync coursework from ../learn-ai-engineering and ../sisyphus (programming, interviewing)
+# into data/courses/ (idempotent; local edits are kept). Pass ARGS="--dry-run" or ARGS="--subject generative-ai".
 import-courses:
 	uv run python core/import_courses.py $(ARGS)
 
@@ -108,7 +108,7 @@ help:
 	@echo "index-rebuild    — force full rebuild of the wiki search index"
 	@echo "api              — start FastAPI backend directly (port 8000)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
-	@echo "import-courses   — sync ../learn-ai-engineering coursework into data/courses/"
+	@echo "import-courses   — sync ../learn-ai-engineering + ../sisyphus coursework into data/courses/"
 	@echo "install-ui       — npm install for app/frontend/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"

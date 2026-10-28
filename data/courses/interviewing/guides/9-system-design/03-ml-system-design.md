@@ -1,11 +1,11 @@
 ---
-imported_hash: e5f2d4096ba157a1
+imported_hash: c4913776bf37c101
 title: ML System Design Interview Notes
 summary: 'Pillar 9, detailed note 3. The ML-flavored variant of the design round: business problem → ML problem → data → approach, with the model as one component rather than the answer.'
 order: 24
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/03-ml-system-design.md
+source: sisyphus/interviewing/guides/9-system-design/03-ml-system-design.md
 ---
 
 # ML System Design Interview Notes

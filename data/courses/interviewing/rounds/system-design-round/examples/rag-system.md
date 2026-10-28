@@ -1,11 +1,11 @@
 ---
-imported_hash: 08a1fbda8c668e69
+imported_hash: e7db68d579771126
 title: 'Example: Document-QA for a Legal Firm'
 summary: ''
 order: 81
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/rag-system.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/rag-system.md
 ---
 
 # Example: Document-QA for a Legal Firm

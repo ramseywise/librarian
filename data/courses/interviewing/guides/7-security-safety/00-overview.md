@@ -1,11 +1,11 @@
 ---
-imported_hash: 0e45af5bcbd7fb32
+imported_hash: b058cd05d9853ddc
 title: Pillar 7 — Security & Safety (prompt injection, guardrails, PII)
 summary: 'The adversarial pillar: what happens when inputs are hostile, outputs are harmful, or data is sensitive.'
 order: 16
 kind: reading
 section: Security safety
-source: learn-ai-engineering/interviewing/guides/7-security-safety/00-overview.md
+source: sisyphus/interviewing/guides/7-security-safety/00-overview.md
 ---
 
 # Pillar 7 — Security & Safety (prompt injection, guardrails, PII)
@@ -23,7 +23,7 @@ actually hold.
 2. **The threat landscape** — [security.md](../../notes/security.md): OWASP AI Agent
    Security taxonomy; OWASP cheat-sheet links in
    [reading-list.md](../../notes/reading-list.md).
-3. **Defenses in layers** — [agents-guardrails.md](../../../ai-engineering/03-harness/agents-guardrails.md) +
+3. **Defenses in layers** — [agents-guardrails.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agents-guardrails.md) +
    librarian *Input Guardrails Pipeline*: templating, content boundaries, sanitizers,
    moderation, output validation — and what each layer misses.
 4. **Agentic protection** — *Protecting Agentic Systems* (agent-applications book ch 12)
@@ -38,7 +38,7 @@ actually hold.
 
 | Resource | Type | Where | What it teaches |
 |---|---|---|---|
-| prompt-injection.md · agents-guardrails.md | note | [ai-engineering/01-prompt/](../../../ai-engineering/01-prompt/) · [ai-engineering/03-harness/](../../../ai-engineering/03-harness/) | the pillar's primary depth (wiki gap) |
+| prompt-injection.md · agents-guardrails.md | note | [ai-engineering/01-prompt-engineering/](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/01-prompt-engineering/README.md) ([10 — adversarial prompting](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/01-prompt-engineering/notes/10-adversarial-prompting.md)) · [ai-engineering/03-harness-engineering/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/03-harness-engineering) | the pillar's primary depth (wiki gap) |
 | security.md | note | [../../notes/security.md](../../notes/security.md) | OWASP AI Agent taxonomy |
 | *Building Applications with AI Agents* ch 12 | pdf | `ai-engineering/readings/ai_engineering/ai_agent_applications/` | protecting agentic systems |
 | *Generative AI Design Patterns* ch 9 | pdf | `ai-engineering/readings/ai_engineering/ai design/` | safeguard patterns |

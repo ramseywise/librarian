@@ -1,11 +1,11 @@
 ---
-imported_hash: a5f01492448b294b
+imported_hash: d42dba170d046e3b
 title: System Design Round — Questions & Model Answers
 summary: 'What doesn''t change: the eval pipeline (just runs on a sample), the safety layer, the HITL path, the fundamental data flow."'
 order: 72
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/questions.md
+source: sisyphus/interviewing/rounds/system-design-round/questions.md
 ---
 
 # System Design Round — Questions & Model Answers

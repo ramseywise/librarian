@@ -153,3 +153,33 @@ def test_catalog_cache_refreshes_on_new_file(client: TestClient) -> None:
         courses.COURSES_DIR / "basics" / "01-python" / "loops.md", "---\ntitle: Loops\n---\n\nfor\n"
     )
     assert client.get("/api/courses").json()[0]["lessonCount"] == before + 1
+
+
+def test_practice_lists_drills_with_filters_and_concepts(client: TestClient) -> None:
+    _write(
+        courses.COURSES_DIR / "basics" / "02-sql" / "top-orders.md",
+        "---\ntitle: Top orders\nkind: drill\ntrack: sql\ntopic: window-functions\n"
+        "difficulty: medium\ntimebox_min: 20\nwiki: [hybrid-search, client-secret]\n---\n\nRank.\n",
+    )
+    _write(
+        courses.COURSES_DIR / "basics" / "02-sql" / "group-by.md",
+        "---\ntitle: Group by\nkind: drill\ntrack: typescript\ndifficulty: easy\n---\n\nGroup.\n",
+    )
+    drills = client.get("/api/courses/practice").json()
+    assert [d["title"] for d in drills] == ["Group by", "Top orders"]
+    top = client.get("/api/courses/practice", params={"track": "sql"}).json()
+    assert len(top) == 1
+    assert top[0]["drill"] == {
+        "track": "sql",
+        "topic": "window-functions",
+        "difficulty": "medium",
+        "timebox_min": 20,
+    }
+    assert [c["id"] for c in top[0]["concepts"]] == ["hybrid-search"]  # private page dropped
+    assert client.get("/api/courses/practice", params={"difficulty": "hard"}).json() == []
+    assert (
+        client.get("/api/courses/practice", params={"concept": "hybrid-search"}).json()[0]["title"]
+        == "Top orders"
+    )
+    # Ordinary lessons carry no drill block.
+    assert "drill" not in client.get("/api/courses/lessons/basics/01-python/vars").json()

@@ -1,11 +1,11 @@
 ---
-imported_hash: cf1df1e187a60947
+imported_hash: 265b5ee25c5d2cac
 title: Pillar 8 — Data Engineering & MLOps
 summary: 'How data and models get to production and stay healthy: pipelines, orchestration, warehouses, deployment, monitoring.'
 order: 19
 kind: reading
 section: Data eng mlops
-source: learn-ai-engineering/interviewing/guides/8-data-eng-mlops/00-overview.md
+source: sisyphus/interviewing/guides/8-data-eng-mlops/00-overview.md
 ---
 
 # Pillar 8 — Data Engineering & MLOps

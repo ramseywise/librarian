@@ -1,11 +1,11 @@
 ---
-imported_hash: 62c5d4f6f3ec9c8b
+imported_hash: 70d0161c18e9688c
 title: Product & Business Sense — Study Guide
 summary: 'The differentiator round for FDE/DS roles and the hidden rubric everywhere else: FDE loops weight business judgment + customer empathy at roughly half the evaluation.'
 order: 30
 kind: reading
 section: Product delivery
-source: learn-ai-engineering/interviewing/guides/10-product-delivery/interview-guide.md
+source: sisyphus/interviewing/guides/10-product-delivery/interview-guide.md
 ---
 
 # Product & Business Sense — Study Guide

@@ -1,11 +1,11 @@
 ---
-imported_hash: 846006ec2793f850
+imported_hash: 2e25bcca9464701d
 title: System Design Interview Patterns
 summary: Thirteen more round patterns, staff-level.
 order: 71
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/interview-patterns.md
+source: sisyphus/interviewing/rounds/system-design-round/interview-patterns.md
 ---
 
 # System Design Interview Patterns

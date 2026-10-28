@@ -1,11 +1,11 @@
 ---
-imported_hash: 1c9556cfe91e4029
+imported_hash: 2972749f23ba8b94
 title: System Design Round (ML/LLM/Agent)
 summary: 'In 2026, the LLM is maybe 20% of a production agent system — interviewers want to see the full harness: orchestration, tool design, state management, observability, safety, eval.'
 order: 69
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/README.md
+source: sisyphus/interviewing/rounds/system-design-round/README.md
 ---
 
 # System Design Round (ML/LLM/Agent)

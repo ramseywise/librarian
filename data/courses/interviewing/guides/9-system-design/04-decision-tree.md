@@ -1,11 +1,11 @@
 ---
-imported_hash: 7d891d7fd6b17037
+imported_hash: b9214cb990e0c065
 title: System Design — Decision Tree
 summary: Pillar 9, detailed note 4. The middle layer between the 5-step process (too abstract under pressure — "design the components") and the pillar guides (too deep — 127 lines on RAG when you have 40 seconds).
 order: 25
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/04-decision-tree.md
+source: sisyphus/interviewing/guides/9-system-design/04-decision-tree.md
 ---
 
 # System Design — Decision Tree

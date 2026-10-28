@@ -1,11 +1,11 @@
 ---
-imported_hash: 0660348950d7a67f
+imported_hash: 66dca61da45f0d9a
 title: Pillar 10 — Product & Delivery (business sense, end-to-end, nonprofit lens)
 summary: 'The last mile: connecting technical work to outcomes — framing problems, ROI arithmetic, stakeholder translation, and bringing projects end to end, especially in mission-driven organizations.'
 order: 29
 kind: reading
 section: Product delivery
-source: learn-ai-engineering/interviewing/guides/10-product-delivery/00-overview.md
+source: sisyphus/interviewing/guides/10-product-delivery/00-overview.md
 ---
 
 # Pillar 10 — Product & Delivery (business sense, end-to-end, nonprofit lens)
@@ -25,7 +25,7 @@ the nonprofit sector) and the differentiator for FDE/DS roles.
    classic).
 3. **Product thinking for AI** — *Building Applications with AI Agents* chs 3, 13 (UX
    design for agentic systems; human–agent collaboration) + *Human-AI Interaction
-   Guidelines* (Microsoft, `ai-engineering/05-graph/3-rag-knowledge-graphs/Guidelines-for-Human-AI-Interaction-camera-ready.pdf`).
+   Guidelines* (Microsoft, `ai-engineering/readings/general/Guidelines-for-Human-AI-Interaction-camera-ready.pdf`).
 4. **Communicating results** — *Storytelling with Data* (Knaflic,
    `data-analytics/readings/`): the deck/memo skills that carry take-home presentations
    and funder reports alike.

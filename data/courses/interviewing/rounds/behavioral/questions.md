@@ -1,11 +1,11 @@
 ---
-imported_hash: d3ebaf0c274b9b56
+imported_hash: f99b800443628a4c
 title: Behavioral Round — Questions & Model Answers
 summary: ''
 order: 2
 kind: reading
 section: Behavioral
-source: learn-ai-engineering/interviewing/rounds/behavioral/questions.md
+source: sisyphus/interviewing/rounds/behavioral/questions.md
 ---
 
 # Behavioral Round — Questions & Model Answers

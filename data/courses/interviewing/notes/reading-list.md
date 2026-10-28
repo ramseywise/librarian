@@ -1,10 +1,10 @@
 ---
-imported_hash: 3ae1d520a78426dd
+imported_hash: b7836269ed28d13e
 title: Reading List & Prep Materials
 summary: 'Salvaged from the Notion tableofcontents.md dump: topic checklist, curated links, and book list.'
 order: 5
 kind: reading
-source: learn-ai-engineering/interviewing/notes/reading-list.md
+source: sisyphus/interviewing/notes/reading-list.md
 ---
 
 # Reading List & Prep Materials

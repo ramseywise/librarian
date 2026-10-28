@@ -1,11 +1,11 @@
 ---
-imported_hash: 7f65c6be9a37733f
+imported_hash: 27670467e80dae1f
 title: 'Example: Customer Support Help Center Agent'
 summary: 'Clean message → Retrieval: → Query rewrite (coreference for multi-turn) → Hybrid search: vector (embedding) + BM25 → Cross-encoder rerank top-20 → top-5 → CRAG confidence gate: score ≥ 0.7 → generate with context score 0.4–0.7 → expand quer…'
 order: 83
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/support-agent.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/support-agent.md
 ---
 
 # Example: Customer Support Help Center Agent

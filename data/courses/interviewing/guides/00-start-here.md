@@ -1,10 +1,10 @@
 ---
-imported_hash: 116098d56af3d2fb
+imported_hash: ee9cb1c90307347b
 title: Start Here — the AI Engineering Journey
 summary: 'A step-by-step route through this repo''s knowledge: ten pillars, ordered so each builds on the last.'
 order: 1
 kind: reading
-source: learn-ai-engineering/interviewing/guides/00-start-here.md
+source: sisyphus/interviewing/guides/00-start-here.md
 ---
 
 # Start Here — the AI Engineering Journey

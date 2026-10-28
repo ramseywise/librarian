@@ -1,11 +1,11 @@
 ---
-imported_hash: a4663ab27bc0a33a
+imported_hash: 390431c29a9fd682
 title: Behavioral Round
 summary: Universal. For FDE the bar is higher and partially re-tested in customer-simulation; for leadership conversations see leadership-rounds.
 order: 1
 kind: reading
 section: Behavioral
-source: learn-ai-engineering/interviewing/rounds/behavioral/README.md
+source: sisyphus/interviewing/rounds/behavioral/README.md
 ---
 
 # Behavioral Round

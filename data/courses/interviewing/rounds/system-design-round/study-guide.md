@@ -1,11 +1,11 @@
 ---
-imported_hash: 3dbefecb0a79b7fd
+imported_hash: f448b413a42ca928
 title: System Design Round — Study Guide
 summary: The method for the highest-weight technical round.
 order: 74
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/study-guide.md
+source: sisyphus/interviewing/rounds/system-design-round/study-guide.md
 ---
 
 # System Design Round — Study Guide

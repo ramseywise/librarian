@@ -1,11 +1,11 @@
 ---
-imported_hash: 4d3652ba0ac14d80
+imported_hash: ebffe45ef06df90b
 title: Leadership Rounds (CTO · Head of Product · Founder) + Reverse Interview
 summary: 30–60 min conversation, usually at the final stage.
 order: 49
 kind: reading
 section: Leadership rounds
-source: learn-ai-engineering/interviewing/rounds/leadership-rounds/README.md
+source: sisyphus/interviewing/rounds/leadership-rounds/README.md
 ---
 
 # Leadership Rounds (CTO · Head of Product · Founder) + Reverse Interview

@@ -1,9 +1,18 @@
+/** Sisyphus drill schema fields (drills/README.md), on lessons of kind "drill". */
+export interface DrillMeta {
+  track: string;
+  topic?: string;
+  difficulty?: "easy" | "medium" | "hard" | string;
+  timebox_min?: number;
+}
+
 export interface LessonOutline {
   id: string;
   title: string;
   section: string;
-  kind: "reading" | "notebook" | string;
+  kind: "reading" | "notebook" | "drill" | string;
   summary: string;
+  drill?: DrillMeta;
 }
 
 export interface SourceRef {
@@ -46,6 +55,12 @@ export interface Lesson extends LessonOutline {
   concepts: ConceptRef[];
   prev: LessonOutline | null;
   next: LessonOutline | null;
+}
+
+export interface PracticeDrill extends LessonOutline {
+  course: string;
+  drill: DrillMeta;
+  concepts: ConceptRef[];
 }
 
 export interface SearchHit extends LessonOutline {

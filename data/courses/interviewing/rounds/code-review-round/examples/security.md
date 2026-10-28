@@ -1,11 +1,11 @@
 ---
-imported_hash: 284a4b5a0f004954
+imported_hash: 5e20768e478b7309
 title: Security & Trust Boundaries
 summary: '+ @router.get("/admin/users/{userid}/export") + async def exportuserdata(userid: int, db: Database = Depends(getdb)): + user = await db.fetchone("SELECT  FROM users WHERE id = :id", {"id": userid}) + return {"data": user, "exportedat": date…'
 order: 26
 kind: reading
 section: Code review round / Examples
-source: learn-ai-engineering/interviewing/rounds/code-review-round/examples/security.md
+source: sisyphus/interviewing/rounds/code-review-round/examples/security.md
 ---
 
 # Security & Trust Boundaries

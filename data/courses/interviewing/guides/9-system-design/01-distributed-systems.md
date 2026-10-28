@@ -1,11 +1,11 @@
 ---
-imported_hash: 5b6c49195de39ddf
+imported_hash: b7f037e7bab1f361
 title: System Design Fundamentals
 summary: 'Pillar 9, detailed note 1. The generic backend substrate the LLM-flavored design round assumes you already have: scaling, load balancing, data modeling, replication, sharding, caching.'
 order: 22
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/01-distributed-systems.md
+source: sisyphus/interviewing/guides/9-system-design/01-distributed-systems.md
 ---
 
 # System Design Fundamentals

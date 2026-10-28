@@ -1,11 +1,11 @@
 ---
-imported_hash: db70a6748165b6bb
+imported_hash: 78b7876ecdbcfb63
 title: Project Deep-Dive / Experience Review
 summary: Expect drilling until the interviewer hits the boundary of your ownership.
 order: 57
 kind: reading
 section: Project deep dive
-source: learn-ai-engineering/interviewing/rounds/project-deep-dive/README.md
+source: sisyphus/interviewing/rounds/project-deep-dive/README.md
 ---
 
 # Project Deep-Dive / Experience Review

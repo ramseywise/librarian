@@ -1,10 +1,10 @@
 ---
-imported_hash: 824228467aa7891d
+imported_hash: 0c41176b7fd2d7b7
 title: Safety
 summary: from https://martinfowler.com/articles/reliable-llm-bayer.html?ref=dailydev
 order: 6
 kind: reading
-source: learn-ai-engineering/interviewing/notes/security.md
+source: sisyphus/interviewing/notes/security.md
 ---
 
 from https://martinfowler.com/articles/reliable-llm-bayer.html?ref=dailydev

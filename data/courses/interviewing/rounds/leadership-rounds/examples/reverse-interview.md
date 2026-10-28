@@ -1,11 +1,11 @@
 ---
-imported_hash: aafead0d54af6f76
+imported_hash: fcf25052f3ae23bd
 title: 'Worked Example: Evaluating a Startup Through the Reverse Interview'
 summary: 'Company: Series A AI startup, 18 months old, building AI-native contract review for mid-market legal teams.'
 order: 56
 kind: reading
 section: Leadership rounds / Examples
-source: learn-ai-engineering/interviewing/rounds/leadership-rounds/examples/reverse-interview.md
+source: sisyphus/interviewing/rounds/leadership-rounds/examples/reverse-interview.md
 ---
 
 # Worked Example: Evaluating a Startup Through the Reverse Interview

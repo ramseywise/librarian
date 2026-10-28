@@ -1,11 +1,11 @@
 ---
-imported_hash: 880ff33cc911939b
+imported_hash: e3ef4b7955332540
 title: 'Example: Meeting Intelligence & Lifecycle Agent'
 summary: 'MeetingProcessor (LangGraph pipeline): transcriptchunks → Extract facts → Score confidence → Write extractedfacts → If stage-relevant facts detected → Evaluate stage transition → If transition valid → Write Engagement.stage (sole writer, ow…'
 order: 80
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/meeting-processor.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/meeting-processor.md
 ---
 
 # Example: Meeting Intelligence & Lifecycle Agent

@@ -1,11 +1,11 @@
 ---
-imported_hash: caf70354d49a3104
+imported_hash: f79a60ecf682718a
 title: Programming Foundations — Study Guide
 summary: 'The coding screen: every interview loop has one.'
 order: 3
 kind: reading
 section: Programming
-source: learn-ai-engineering/interviewing/guides/0-programming/interview-guide.md
+source: sisyphus/interviewing/guides/0-programming/interview-guide.md
 ---
 
 # Programming Foundations — Study Guide

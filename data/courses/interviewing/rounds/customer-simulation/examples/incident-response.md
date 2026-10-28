@@ -1,11 +1,11 @@
 ---
-imported_hash: 543a933331d243fb
+imported_hash: 9ecbfce72ffd5b89
 title: 'Worked Example: Incident Response'
 summary: ''
 order: 47
 kind: reading
 section: Customer simulation / Examples
-source: learn-ai-engineering/interviewing/rounds/customer-simulation/examples/incident-response.md
+source: sisyphus/interviewing/rounds/customer-simulation/examples/incident-response.md
 ---
 
 # Worked Example: Incident Response
