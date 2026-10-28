@@ -449,6 +449,13 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
             [new_count, path_str, new_count],
         )
 
+    # Re-derive typed edges over the full corpus — an edited page's outbound links
+    # change, and a new page can make other pages' links resolvable. Regex-only, cheap.
+    con.execute("DELETE FROM edges")
+    typed_edges = build_typed_edges([(row[0], row[1], row[5]) for row in all_raw])
+    if typed_edges:
+        con.executemany("INSERT INTO edges VALUES (?, ?, ?)", typed_edges)
+
     # Rebuild FTS index — DuckDB FTS has no row-level update API; overwrite=1 re-reads
     # indexed columns from the table (fast) but cannot be avoided.
     global HAS_FTS
@@ -478,9 +485,12 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
     log.info("incremental_index_update", stale_count=len(pages))
 
 
-def build_index(con: duckdb.DuckDBPyConnection) -> None:
-    """Build or incrementally update the DuckDB index over data/wiki/ pages."""
-    if _index_needs_rebuild(con):
+def build_index(con: duckdb.DuckDBPyConnection, force: bool = False) -> None:
+    """Build or incrementally update the DuckDB index over data/wiki/ pages.
+
+    force=True drops and re-embeds the whole corpus (admin path: `make index-rebuild`).
+    """
+    if force or _index_needs_rebuild(con):
         _full_rebuild(con)
         return
 
@@ -1186,5 +1196,12 @@ register_codemap_tools(mcp)
 
 
 if __name__ == "__main__":
+    import sys
+
+    if "--rebuild" in sys.argv:
+        with duckdb.connect(str(DB_PATH)) as con:
+            build_index(con, force=True)
+        sys.exit(0)
+
     log.info("starting_mcp_server", wiki_dir=str(WIKI_DIR), hybrid_search=HAS_EMBEDDINGS)
     mcp.run()

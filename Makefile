@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: app app-build obsidian api ui import-courses mcp install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
+.PHONY: app app-build obsidian api ui import-courses mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
 
 app:
 	docker compose up
@@ -23,6 +23,10 @@ import-courses:
 
 mcp:
 	uv run python app/mcp_server/server.py
+
+# Force a full drop + re-embed of the wiki index (normal edits re-index incrementally).
+index-rebuild:
+	uv run python app/mcp_server/server.py --rebuild
 
 ui:
 	cd app/frontend && npm run dev
@@ -101,6 +105,7 @@ help:
 	@echo "app-build        — rebuild Docker images and start"
 	@echo "obsidian         — open wiki in Obsidian"
 	@echo "mcp              — start MCP server (local, used by Claude Code)"
+	@echo "index-rebuild    — force full rebuild of the wiki search index"
 	@echo "api              — start FastAPI backend directly (port 8000)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
 	@echo "import-courses   — sync ../learn-ai-engineering coursework into data/courses/"
