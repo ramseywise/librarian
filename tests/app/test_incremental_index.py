@@ -285,3 +285,56 @@ def test_content_hash_populated_for_all_pages(wiki: Path) -> None:
     null_hashes = con.execute("SELECT path FROM pages WHERE content_hash IS NULL").fetchall()
     assert null_hashes == [], f"some pages have NULL content_hash: {null_hashes}"
     con.close()
+
+
+# ---------------------------------------------------------------------------
+# 8. Edited page → typed edges re-derived; force=True → full rebuild
+# ---------------------------------------------------------------------------
+
+
+def _edges(con: duckdb.DuckDBPyConnection) -> set[tuple[str, str, str]]:
+    return set(con.execute("SELECT * FROM edges").fetchall())
+
+
+def test_edited_page_typed_edges_refreshed(wiki: Path) -> None:
+    """Adding then removing a typed link on an edit is reflected in the edges table."""
+    con = _fresh_con()
+    server.build_index(con)
+    alpha = wiki / "notes" / "alpha.md"
+    beta_path = str(wiki / "notes" / "beta.md")
+    assert _edges(con) == set()
+
+    _make_page(wiki, "notes", "alpha.md", "Alpha", "## See Also\n- [[Beta]] — extends")
+    server.build_index(con)
+    assert _edges(con) == {(str(alpha), beta_path, "extends")}
+
+    _make_page(wiki, "notes", "alpha.md", "Alpha", "No links any more.")
+    server.build_index(con)
+    assert _edges(con) == set(), "edge from removed link should be dropped"
+    con.close()
+
+
+def test_new_page_resolves_existing_dangling_link(wiki: Path) -> None:
+    """A link to a not-yet-existing page becomes an edge once that page is added."""
+    _make_page(wiki, "notes", "alpha.md", "Alpha", "## See Also\n- [[Delta]] — extends")
+    con = _fresh_con()
+    server.build_index(con)
+    assert _edges(con) == set()
+
+    delta = _make_page(wiki, "notes", "delta.md", "Delta", "Delta body.")
+    server.build_index(con)
+    assert _edges(con) == {(str(wiki / "notes" / "alpha.md"), str(delta), "extends")}
+    con.close()
+
+
+def test_force_triggers_full_rebuild(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    con = _fresh_con()
+    server.build_index(con)
+
+    calls: list[bool] = []
+    monkeypatch.setattr(server, "_full_rebuild", lambda c: calls.append(True))
+    server.build_index(con)
+    assert calls == [], "fresh index should not rebuild without force"
+    server.build_index(con, force=True)
+    assert calls == [True]
+    con.close()
