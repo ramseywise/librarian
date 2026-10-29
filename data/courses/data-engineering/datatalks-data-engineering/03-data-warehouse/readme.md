@@ -1,5 +1,5 @@
 ---
-imported_hash: 0ac2432f5e6b43b0
+imported_hash: 5deb205f24a7adb4
 title: Data Warehouse and BigQuery
 summary: Did you take notes? You can share them here.
 order: 13
@@ -64,7 +64,7 @@ source: learn-ai-engineering/data-engineering/DataTalks Data Engineering/03-data
 
 # Homework
 
-* [2024 Homework](../cohorts/2024/03-data-warehouse/homework.md)
+* [2024 Homework](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2024/03-data-warehouse/homework.md)
 
 
 # Community notes

@@ -1,8 +1,8 @@
 ---
-imported_hash: 94f7921d54f63f7f
+imported_hash: 98712409edd8a261
 title: Readings
 summary: ''
-order: 107
+order: 106
 source: learn-ai-engineering/ai-engineering/readings
 readings:
 - title: 11881v1
@@ -275,6 +275,8 @@ readings:
   source: ai-engineering/readings/general/bengio_neural-probabilistic-language-model.pdf
 - title: Constitutional ai
   source: ai-engineering/readings/general/constitutional_ai.pdf
+- title: Conversational ai longer version
+  source: ai-engineering/readings/general/conversational-ai-longer-version.pdf
 - title: Conversational ai
   source: ai-engineering/readings/general/conversational-ai.pdf
 - title: Gpt1 improving language understanding
@@ -297,7 +299,4 @@ readings:
   source: ai-engineering/readings/general/truthfulQA_how_models_mimic_human_falsehoods.pdf
 - title: Wavenet
   source: ai-engineering/readings/general/wavenet.pdf
-references:
-- title: AI-Papers-of-the-Week
-  source: ai-engineering/readings/AI-Papers-of-the-Week
 ---

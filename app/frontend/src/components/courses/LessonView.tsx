@@ -22,12 +22,41 @@ function stripDuplicateH1(body: string, title: string): string {
   return norm(m[1]) === norm(title) ? body.slice(m[0].length) : body;
 }
 
+/** A drill's `<details>` solution block, split out so it stays hidden until asked for. */
+const SOLUTION_RE = /<details>\s*(?:<summary>[\s\S]*?<\/summary>)?([\s\S]*?)<\/details>/;
+
+function splitSolution(body: string): [string, string, string] | null {
+  const m = body.match(SOLUTION_RE);
+  if (!m || m.index === undefined) return null;
+  return [body.slice(0, m.index), m[1], body.slice(m.index + m[0].length)];
+}
+
+export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) {
+  const tone = { easy: "#4CAF50", medium: "#FFB74D", hard: "#EF5350" }[drill.difficulty ?? ""] ?? "#888";
+  return (
+    <span style={{ display: "inline-flex", gap: 8, fontSize: 12, color: "#888" }}>
+      <span style={{ color: "#90caf9" }}>{drill.track}</span>
+      {drill.difficulty && <span style={{ color: tone }}>{drill.difficulty}</span>}
+      {drill.timebox_min && <span>{drill.timebox_min} min</span>}
+      {drill.tags?.map((t) => (
+        <span key={t} title="Concept with no wiki page yet" style={{ color: "#666" }}>#{t}</span>
+      ))}
+    </span>
+  );
+}
+
 export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, onOpenConcept, onAsk }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const proseRef = useRef<HTMLDivElement>(null);
   const [toc, setToc] = useState<TocEntry[]>([]);
   const [activeHeading, setActiveHeading] = useState<string | null>(null);
   const body = stripDuplicateH1(lesson.body, lesson.title);
+  const parts = lesson.kind === "drill" ? splitSolution(body) : null;
+  const [showSolution, setShowSolution] = useState(false);
+  useEffect(() => setShowSolution(false), [lesson.id]);
+  const md = (text: string) => (
+    <Markdown body={text} lessonId={lesson.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} />
+  );
 
   // Build the on-page TOC from rendered headings, and track the one in view.
   useEffect(() => {
@@ -58,10 +87,22 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
             {lesson.section && <> · {lesson.section}</>}
           </div>
           <h1 style={{ color: "#f4f4f4", fontSize: 30, lineHeight: 1.25, margin: "0 0 10px" }}>{lesson.title}</h1>
+          {lesson.drill && <div style={{ margin: "-2px 0 12px" }}><DrillBadges drill={lesson.drill} /></div>}
           {lesson.summary && <p style={{ color: "#999", fontSize: 15, margin: "0 0 24px", lineHeight: 1.6 }}>{lesson.summary}</p>}
 
           <div ref={proseRef} className="lesson-prose">
-            <Markdown body={body} lessonId={lesson.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} />
+            {parts ? (
+              <>
+                {md(parts[0])}
+                <button onClick={() => setShowSolution((s) => !s)} style={{ ...doneBtnStyle, margin: "0 0 1em" }}>
+                  {showSolution ? "Hide solution" : "Show solution"}
+                </button>
+                {showSolution && md(parts[1])}
+                {md(parts[2])}
+              </>
+            ) : (
+              md(body)
+            )}
           </div>
 
           <div style={{ display: "flex", justifyContent: "center", margin: "36px 0 24px" }}>

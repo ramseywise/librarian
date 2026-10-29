@@ -1,11 +1,11 @@
 ---
-imported_hash: 55a486a5d12617d3
+imported_hash: f6f16d8e75c1eb6e
 title: 1 — Why Context Is a Finite Resource
 summary: That single sentence is Anthropic's framing of the whole discipline.
 order: 5
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/02-context/notes/01-why-context-is-finite.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/01-why-context-is-finite.md
 ---
 
 # 1 — Why Context Is a Finite Resource

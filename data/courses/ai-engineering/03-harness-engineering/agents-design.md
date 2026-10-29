@@ -1,10 +1,10 @@
 ---
-imported_hash: c7138df9a4764062
+imported_hash: 2947e39fad3e2185
 title: Agents design
 summary: This is rare in production because it’s hard to predict and control.
 order: 3
 kind: reading
-source: learn-ai-engineering/ai-engineering/03-harness/agents-design.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/agents-design.md
 ---
 
 ## https://medium.com/data-science-collective/ai-agents-complete-course-f226aa4550a1

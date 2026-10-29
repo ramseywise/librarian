@@ -1,11 +1,11 @@
 ---
-imported_hash: c73cdd9a39a3efed
+imported_hash: 6caa5839b89886c6
 title: Quality Document
 summary: A quality snapshot for each product domain and architectural layer.
 order: 27
 kind: reading
 section: Templates
-source: learn-ai-engineering/ai-engineering/03-harness/templates/quality-document.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/quality-document.md
 ---
 
 # Quality Document

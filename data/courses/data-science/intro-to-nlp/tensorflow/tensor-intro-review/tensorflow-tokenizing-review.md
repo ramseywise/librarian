@@ -1,7 +1,7 @@
 ---
-imported_hash: 8f514f7c268ad05b
+imported_hash: 82c90acd38c14da0
 title: TensorFlow - Tokenizing Review
-summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences
+summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences
 order: 18
 kind: notebook
 section: tensorFlow / Tensor intro review

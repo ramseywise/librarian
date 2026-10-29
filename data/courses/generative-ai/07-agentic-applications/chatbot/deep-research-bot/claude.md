@@ -1,8 +1,8 @@
 ---
-imported_hash: f801164bbd7bffb2
+imported_hash: 4c391e5c6b2d289d
 title: CLAUDE
 summary: ''
-order: 4
+order: 5
 kind: reading
 section: Chatbot / Deep research bot
 source: learn-ai-engineering/generative-ai/07-agentic-applications/chatbot/deep-research-bot/CLAUDE.md

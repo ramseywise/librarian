@@ -1,7 +1,7 @@
 ---
-imported_hash: 01ac900d4845b9b8
+imported_hash: 18ff0d1a3941cd27
 title: Neural Network
-summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences
+summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences
 order: 9
 kind: notebook
 section: tensorFlow / Neural network

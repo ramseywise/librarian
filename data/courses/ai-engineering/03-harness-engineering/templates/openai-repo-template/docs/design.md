@@ -1,11 +1,11 @@
 ---
-imported_hash: cf5bbf7f5c184ec4
+imported_hash: c87f84d4a99ba4ff
 title: DESIGN.md
 summary: This file is the design entrypoint. Keep it brief and use it to route into the more detailed files under docs/design-docs/.
 order: 32
 kind: reading
 section: Templates / Openai repo template / Docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/DESIGN.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/DESIGN.md
 ---
 
 # DESIGN.md

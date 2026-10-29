@@ -1,10 +1,10 @@
 ---
-imported_hash: 116098d56af3d2fb
+imported_hash: bbdb71cbce63d9c3
 title: Start Here — the AI Engineering Journey
 summary: 'A step-by-step route through this repo''s knowledge: ten pillars, ordered so each builds on the last.'
 order: 1
 kind: reading
-source: learn-ai-engineering/interviewing/guides/00-start-here.md
+source: sisyphus/interviewing/guides/00-start-here.md
 ---
 
 # Start Here — the AI Engineering Journey
@@ -16,6 +16,7 @@ pillar, skim its overview's resource map and move on.
 ## How each pillar works
 
 Every pillar folder has three layers:
+
 1. **`00-overview.md`** — start here: why the pillar matters, the learning path through
    it, and a resource map pointing at every book/PDF (`readings/`), runnable course
    (repo folders), librarian wiki page, and cleaned note.

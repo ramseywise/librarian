@@ -1,7 +1,7 @@
 ---
-imported_hash: e8be627d8069eb92
+imported_hash: 559748092c44e3fe
 title: Text Classification Using Neural Network
-summary: from tensorflow.keras import layers from tensorflow.keras import losses from tensorflow.keras import preprocessing from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences
+summary: from tensorflow.keras import layers from tensorflow.keras import losses from tensorflow.keras import preprocessing from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences
 order: 14
 kind: notebook
 section: tensorFlow / Neural network

@@ -1,7 +1,7 @@
 ---
-imported_hash: bc2023eb3484b676
+imported_hash: 5b7edb080bb777f7
 title: Text Generation
-summary: from tensorflow.keras.preprocessing.sequence import padsequences from tensorflow.keras.layers import Embedding, LSTM, Dense, Bidirectional from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.models import Sequent…
+summary: from tensorflow.keras.preprocessing.sequence import pad_sequences from tensorflow.keras.layers import Embedding, LSTM, Dense, Bidirectional from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.models import Sequen…
 order: 10
 kind: notebook
 section: tensorFlow / Neural network

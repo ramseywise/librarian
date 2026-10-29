@@ -1,7 +1,7 @@
 ---
-imported_hash: d285fdd76e61ede1
+imported_hash: 48b1d4cfa4a3c427
 title: let's instead sample manually
-summary: 'for k, v in sdhf.items(): print(k, v.shape)'
+summary: 'for k, v in sd_hf.items(): print(k, v.shape)'
 order: 11
 kind: notebook
 section: Nanogpt / Build nanogpt

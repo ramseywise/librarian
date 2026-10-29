@@ -1,8 +1,8 @@
 ---
-imported_hash: b9d8efb1c13f3e4f
+imported_hash: 36f91e2ed283cc19
 title: ✨ News
 summary: '+ [17 Nov 2025] 🚀 New Achievements & Dataset Release: - We are thrilled to announce that Thinkdepth.ai has achieved 1st place on the RACE evaluation, showcasing exceptional performance in research report generation quality!'
-order: 9
+order: 10
 kind: reading
 section: Chatbot / Deep research bench
 source: learn-ai-engineering/generative-ai/07-agentic-applications/chatbot/deep_research_bench/README.md
@@ -133,10 +133,10 @@ Set the required API keys as environment variables:
 
 ```bash
 # Set Gemini API key for LLM evaluation
-export GEMINI_API_KEY="your_gemini_api_key_here"
+export GEMINI_API_KEY="<redacted>"
 
 # Set Jina API key for web scraping
-export JINA_API_KEY="your_jina_api_key_here"
+export JINA_API_KEY="<redacted>"
 ```
 
 

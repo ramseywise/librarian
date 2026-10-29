@@ -1,5 +1,5 @@
 ---
-imported_hash: 51943acebc49b9f3
+imported_hash: e2277c140e1edf05
 title: ypred = model.predict(df)
 summary: spark = SparkSession.builder \ .master("local[]") \ .appName('test') \ .getOrCreate()
 order: 26

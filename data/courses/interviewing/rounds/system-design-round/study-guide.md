@@ -1,11 +1,11 @@
 ---
-imported_hash: 3dbefecb0a79b7fd
+imported_hash: 5f357e233b141578
 title: System Design Round — Study Guide
 summary: The method for the highest-weight technical round.
 order: 74
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/study-guide.md
+source: sisyphus/interviewing/rounds/system-design-round/study-guide.md
 ---
 
 # System Design Round — Study Guide
@@ -55,7 +55,7 @@ Trade-offs mostly live between non-functionals:
 The single fork that determines everything downstream. Ask it during clarification, and
 say the answer out loud so the interviewer knows which system you're designing:
 
-```
+```text
 "Design X for Y" → clarify → WHAT KIND OF SYSTEM IS THIS?
   ├─ looks things up in documents ──→ RAG spine
   ├─ takes multi-step actions ──────→ AGENT spine
@@ -73,7 +73,7 @@ file is the process wrapper around it.
 
 ## 3. The LLM-system reference architecture (draw in under 3 min)
 
-```
+```text
 Client → API Gateway (authn, rate limits, quotas)
   → Orchestration (workflow/agent graph)
     → Retrieval: query rewrite → hybrid search → rerank
@@ -149,6 +149,7 @@ Never stop at the design. State success metrics with numbers:
 > "p95 under 2s while holding faithfulness above 0.9"
 
 Future improvements list (show you think beyond MVP):
+
 - Distilled model for the easy 80% of traffic
 - Personalization via summarized user memory
 - Token-cost dashboards + hallucination scoring
@@ -168,12 +169,14 @@ Three interview-format writeups in the librarian wiki — rehearse as full 45-mi
 3. **Serverless agent backends** — stateless invocations, session state in Postgres, streaming within platform timeouts, phase-2 stateful handoff
 
 Portfolio case studies (your own systems — strongest in interviews):
+
 - [Customer support agent](examples/support-agent.md) — 5-layer guardrails, 3-framework comparison, CRAG gate
 - [Financial forecasting](examples/forecasting-agent.md) — self-learning agentic loop, classical ML + LLM hybrid, knowledge graph
 - [Meeting intelligence](examples/meeting-processor.md) — event-driven pipeline, sole-writer state machine, multi-tenant
 - [Accounting assistant](examples/accounting-assistant.md) — three knowledge layers, graph vs RAG, regulatory accuracy
 
 Classic prompts to dry-run:
+
 - Support chatbot for a bank ([security guide](../../guides/7-security-safety/interview-guide.md) has the governance layer)
 - Document-QA at 10K→1M docs
 - Code-assistant for private enterprise code (residency → self-hosted vs vendor)

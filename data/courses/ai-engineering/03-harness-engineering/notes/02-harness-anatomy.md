@@ -1,11 +1,11 @@
 ---
-imported_hash: bdf0c0197b60cfb3
+imported_hash: e93478cafdc7e84f
 title: 2 — Harness Anatomy
 summary: 'Supporting: git versioning, planning files, test runners, self-verification hooks.'
 order: 12
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/03-harness/notes/02-harness-anatomy.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md
 ---
 
 # 2 — Harness Anatomy
@@ -32,7 +32,7 @@ LangChain's anatomy, grouped by the job each does:
 
 **5. Sandboxes** — safe execution environments with pre-configured tooling (runtimes, CLIs, browsers). See [note 04](04-execution-boundaries.md).
 
-**6. Memory systems** — file-based standards (`AGENTS.md`, `MEMORY.md`) for continual learning across sessions. See [02-context/notes/05](../../02-context/notes/06-memory.md).
+**6. Memory systems** — file-based standards (`AGENTS.md`, `MEMORY.md`) for continual learning across sessions. See [02-context-engineering/notes/05](../../02-context-engineering/notes/06-memory.md).
 
 ### Orchestration & control
 
@@ -79,6 +79,15 @@ This is the mechanism behind **state externalization** ([note 06](06-long-horizo
 
 Git deserves separate mention: it is the only rollback mechanism most harnesses have. Branch-per-agent turns parallel experimentation into a safe operation with a free undo.
 
+**State across messages.** An always-on ("sessionless") agent, like OpenClaw reached over a chat app, may get its next message minutes or days later. Li splits the state in two:
+
+- **File state is persistent by construction.** Mount the workspace on storage outside the sandbox.
+- **Process state is kept warm, then rebuilt.** Keep the sandbox and terminal alive while the agent is active. On idle timeout, write the serializable parts (working directory, environment variables, background tasks) to a workspace file before destroying it, and rebuild from that file on the next wake-up.
+
+Persist *auditable descriptions* of state (files, scripts, manifests), never opaque long-lived processes. Within a single task the same idea is the **persistent terminal session**: `cd`, an activated venv and env vars survive between commands, rather than each command starting from a fresh shell.
+
+**Environment status bar.** Before every inference, append the working directory, Git branch, recent commits and a staged/unstaged summary **at the end of the context**, never in the system prompt, where changing values would break the KV cache.
+
 ---
 
 ## Bash as a general-purpose tool
@@ -88,6 +97,15 @@ The design bet: **you cannot pre-design every tool an agent will need.**
 Harnesses ship a bash tool so the model can compose solutions by writing and executing code, rather than being limited to the API surface someone anticipated. A curated tool set handles known operations well; bash handles the long tail.
 
 The tension is real — bash is maximally capable and maximally dangerous, which is exactly why it must be paired with a sandbox and hooks ([note 04](04-execution-boundaries.md)). The promote-from-bash heuristic resolves it: **start with shell, promote to a typed tool when you need a gate, a rendered result, an audit record, parallelism, or a retry policy.**
+
+Li's minimal coding kit is seven tools: code interpreter, bash, read, write, edit, glob and grep. With them, code becomes a **meta-capability**, a way of making the capabilities you didn't build. In ch. 5 he applies it in six directions:
+
+1. **Thinking:** formalize math or logic for SymPy or a constraint solver.
+2. **Rules:** encode policy as executable checks.
+3. **Content:** slides, video and charts as code, for example Slidev, FFmpeg or the Blender API instead of a GUI.
+4. **Adapters:** generate glue for undocumented APIs or drifting log formats.
+5. **UI:** forms and views generated on demand.
+6. **Agents:** create or repair agents. Start from a known-good agent implementation and modify it; generating from scratch reproduces outdated APIs and ad hoc context handling.
 
 ---
 

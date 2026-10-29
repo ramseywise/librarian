@@ -1,11 +1,11 @@
 ---
-imported_hash: 90beae0dc60e5c0d
+imported_hash: cac79d970e6cd893
 title: Session Handoff
 summary: ''
 order: 28
 kind: reading
 section: Templates
-source: learn-ai-engineering/ai-engineering/03-harness/templates/session-handoff.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/session-handoff.md
 ---
 
 # Session Handoff

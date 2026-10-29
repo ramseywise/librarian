@@ -1,7 +1,7 @@
 ---
-imported_hash: 9c4642cbf5abbe31
+imported_hash: 2f421076a28410cf
 title: Text Preprocessing Review
-summary: from nltk import wordtokenize, senttokenize from nltk.corpus import stopwords from nltk.stem.porter import  from nltk.stem import WordNetLemmatizer
+summary: from nltk import word_tokenize, sent_tokenize from nltk.corpus import stopwords from nltk.stem.porter import  from nltk.stem import WordNetLemmatizer
 order: 22
 kind: notebook
 section: tensorFlow / Text processing

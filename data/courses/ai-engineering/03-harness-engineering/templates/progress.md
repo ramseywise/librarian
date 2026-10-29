@@ -1,11 +1,11 @@
 ---
-imported_hash: 95c8cf30fbfcc6ef
+imported_hash: 3485913e117de6f6
 title: Progress Log
 summary: ''
 order: 26
 kind: reading
 section: Templates
-source: learn-ai-engineering/ai-engineering/03-harness/templates/progress.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/progress.md
 ---
 
 # Progress Log

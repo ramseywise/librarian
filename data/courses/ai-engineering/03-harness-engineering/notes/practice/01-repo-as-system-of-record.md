@@ -1,11 +1,11 @@
 ---
-imported_hash: ea0ff5789b692874
+imported_hash: a512bca3568371d5
 title: P1 — The Repo as System of Record
 summary: The theory notes describe the harness as components.
 order: 19
 kind: reading
 section: Notes / Practice
-source: learn-ai-engineering/ai-engineering/03-harness/notes/practice/01-repo-as-system-of-record.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/practice/01-repo-as-system-of-record.md
 ---
 
 # P1 — The Repo as System of Record
@@ -121,7 +121,7 @@ Topic docs run 50–150 lines each and are read only when the task needs them.
 
 Anti-patterns to check for: the same rule in several places; obsolete rules nobody audits; conditional rules so specific they almost never fire; long tool manuals in startup context.
 
-Same idea from the context side: [02-context](../../../02-context/readme.md), especially progressive disclosure and stable-before-dynamic ordering.
+Same idea from the context side: [02-context](../../../02-context-engineering/readme.md), especially progressive disclosure and stable-before-dynamic ordering.
 
 ---
 

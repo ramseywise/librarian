@@ -1,5 +1,5 @@
 ---
-imported_hash: 075e1537f7ab592b
+imported_hash: acc6a838f5701349
 title: 01 — LLM Fundamentals
 summary: LLM fundamentals covers the architecture, training, and prompting of large language models.
 order: 1
@@ -117,6 +117,8 @@ readings:
   source: generative-ai/01-llm-fundamentals/readings/8. Standard Practices for Image Generation with Midjourney _ Prompt Engineering for Generative AI.pdf
 - title: Advanced Techniques for Image Generation with Stable Diffusion   Prompt Engineering for Generative AI
   source: generative-ai/01-llm-fundamentals/readings/9. Advanced Techniques for Image Generation with Stable Diffusion _ Prompt Engineering for Generative AI.pdf
+- title: Generative AI and LLMs for Dummies
+  source: generative-ai/01-llm-fundamentals/readings/Generative-AI-and-LLMs-for-Dummies.pdf
 - title: Constitutional ai
   source: generative-ai/01-llm-fundamentals/readings/constitutional_ai.pdf
 - title: Llms zero shot reasoners

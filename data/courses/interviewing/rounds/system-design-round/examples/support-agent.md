@@ -1,21 +1,23 @@
 ---
-imported_hash: 7f65c6be9a37733f
+imported_hash: 66df21a2993755d9
 title: 'Example: Customer Support Help Center Agent'
-summary: 'Clean message → Retrieval: → Query rewrite (coreference for multi-turn) → Hybrid search: vector (embedding) + BM25 → Cross-encoder rerank top-20 → top-5 → CRAG confidence gate: score ≥ 0.7 → generate with context score 0.4–0.7 → expand quer…'
+summary: '"Design a customer support agent for a SaaS product.'
 order: 83
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/support-agent.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/support-agent.md
 ---
 
 # Example: Customer Support Help Center Agent
 
 ## Prompt
+
 "Design a customer support agent for a SaaS product. It answers user questions from a help center knowledge base, with citation enforcement and human escalation."
 
 ## Step 1: Clarify & scope (3 min)
 
 **Questions I'd ask**:
+
 - Help center size? (50 articles or 5,000?)
 - Channels: web chat widget, email, Slack, all of the above?
 - Languages: English only, or multilingual? (Affects retrieval + generation)
@@ -24,6 +26,7 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/su
 - Can the agent take actions (create tickets, update accounts) or is it information-only?
 
 **Assumptions after clarify**:
+
 - ~200 help articles (accounting/financial SaaS), web chat widget
 - Information-only (no write actions in v1)
 - Must cite sources — wrong financial advice is high-consequence
@@ -40,7 +43,7 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/su
 
 ### Architecture
 
-```
+```text
 User message → Input guardrail pipeline:
     1. Unicode sanitize (homoglyphs, zero-width chars)
     2. PII detect + redact (CPR, email, phone, IBAN → [REDACTED])
@@ -88,6 +91,7 @@ Layers 1-4 are deterministic, zero-cost, real-time. Layer 5 is expensive but run
 **Citation enforcement over hallucination detection**: Don't try to detect hallucinations after the fact — enforce citations structurally. If the model can't cite a source for a claim, the output guardrail catches it and escalates. This is cheaper and more reliable than LLM-as-judge on every response.
 
 **Escalation as a first-class output**: The `AssistantResponse` schema has an explicit `escalate: bool` field. Three triggers:
+
 1. Retrieval confidence below threshold (CRAG gate)
 2. Output guardrail hard fail (citation check)
 3. User explicitly requests a human
@@ -96,7 +100,7 @@ The frontend receives the escalation signal and shows a handoff UI. The agent ne
 
 ### Observability
 
-```
+```text
 Every request traced (Langfuse):
   - Retrieval: query, top-k results with scores, reranker scores
   - Generation: model, tokens, latency
@@ -118,7 +122,7 @@ Dashboards:
 
 ### Data pipeline
 
-```
+```text
 Help center articles (CMS) → Incremental sync:
   - New/updated articles: parse → chunk (heading-based) → embed → index
   - Deleted articles: remove from index + invalidate cached responses

@@ -1,5 +1,5 @@
 ---
-imported_hash: 6233e7aef51deae4
+imported_hash: b1e43e8647d7893b
 title: Data Retrieval
 summary: This may not work on windows so just use the extracted NIPS papers data from the nipstxt/ folder present in the same directory as this notebook which already has the data pre-downloaded and extracted
 order: 14

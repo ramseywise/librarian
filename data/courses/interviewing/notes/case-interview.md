@@ -1,10 +1,10 @@
 ---
-imported_hash: c0eaa93181597431
+imported_hash: b5eba6f1b392161f
 title: Tips for Success
 summary: test how you think in real-world situations.
 order: 2
 kind: reading
-source: learn-ai-engineering/interviewing/notes/case-interview.md
+source: sisyphus/interviewing/notes/case-interview.md
 ---
 
 test how you think in real-world situations.
@@ -95,6 +95,7 @@ hey also look for your awareness of latency constraints, cost trade-offs, and mo
 **Tip:** Use a structured approach like IDEAL (Inputs, Data flow, Execution, Architecture, Limitations). Start from the problem, walk through data pipelines, and conclude with how you’d measure success (e.g., accuracy, latency, reliability).
 
 | **Day 7–9: System Design & Applied AI** | Learn to design scalable AI pipelines and deployment systems | - AI system design principles- Data pipelines & ETL
+
 - Model deployment (APIs, Docker, CI/CD)
 - Inference optimization, monitoring
 - Edge AI, latency, and cost trade-offs | - Study system design examples on *Interview Query*/*GitHub AI system repos*
@@ -121,7 +122,7 @@ You can also mention redundancy and fallback systems, for instance, reverting to
 
 *(missing diagram — not exported from Notion)*
 
-## Qs:
+## Qs
 
 ### **How would you design a secure, context-aware customer support chatbot for a banking platform?**
 
@@ -129,13 +130,13 @@ This tests your ability to blend NLP with data security. Describe integrating an
 
 **Tip:** Stress the importance of governance layers, since every financial AI system must prioritize user data privacy.
 
-### what would you do if your agent system performance is not as good as you expect?
+#### what would you do if your agent system performance is not as good as you expect?
 
 ###
 
-## The System DesignInterview Handbook
+### The System DesignInterview Handbook
 
-### Process:
+#### Process
 
 **Problem statement**
 
@@ -169,21 +170,20 @@ With a System Design Interview, you begin with a vague problem statement that as
 From here, you identify the essential functions of the system you’ve been asked to design. These functions are known as **requirements** and are categorized into two types:
 
 - **Functional requirements—**Specific functionalities that bring the user to the service. These specific functions are directly adjacent to providing the key service.
-    - “Does this assistant support multi-turn conversations?”
-    - “Can the user ask follow-up questions based on previous answers?”
-    - “Are we targeting backend code only, or should it support UI logic as well?”
-    - “Should the assistant support autocomplete or full document summarization?”
-- **Non-functional requirements—**Functionalities that affect the overall operation of the system but are broader system functions that aren’t adjacent to specific functions of a service. Examples include scalability, reliability, usability, security, and performance.
-    -
+  - “Does this assistant support multi-turn conversations?”
+  - “Can the user ask follow-up questions based on previous answers?”
+  - “Are we targeting backend code only, or should it support UI logic as well?”
+  - “Should the assistant support autocomplete or full document summarization?”
 
+- **Non-functional requirements—**Functionalities that affect the overall operation of the system but are broader system functions that aren’t adjacent to specific functions of a service. Examples include scalability, reliability, usability, security, and performance
 
-        | **Requirement Type** | **Key Questions** |
-        | --- | --- |
-        | **Latency** | “Should answers return under 1 second?” |
-        | **Context** | “How large are the average inputs? Do we need long-context support?” |
-        | **Consistency** | “How reliable must responses be? Is some hallucination acceptable?” |
-        | **Scale** | “Are we expecting 1K users, 10K, or 1M? Global or regional?” |
-        | **Security** | “Can code be sent off-premises, or must we host models internally?” |
+| **Requirement Type** | **Key Questions** |
+| --- | --- |
+| **Latency** | “Should answers return under 1 second?” |
+| **Context** | “How large are the average inputs? Do we need long-context support?” |
+| **Consistency** | “How reliable must responses be? Is some hallucination acceptable?” |
+| **Scale** | “Are we expecting 1K users, 10K, or 1M? Global or regional?” |
+| **Security** | “Can code be sent off-premises, or must we host models internally?” |
 
 “If users are submitting private enterprise code, I’d assume we can’t send it to a public OpenAI endpoint. That might push us toward a fine-tuned local LLaMA-3 model or a vendor like Anthropic with strong privacy guarantees.”
 
@@ -209,9 +209,9 @@ If time allows, you can also do a second iteration of your design based on your 
 
 Knowing System Design gives you immense perspective. We can picture the difference between knowing and not knowing System Design through the comparison of being a line cook or head chef of a restaurant. The head chef has a broader perspective on the kitchen (system) as a whole. They know each staff member’s role and operations and how they depend on each other. They’re prepared to have backups take over if one person can’t complete their duties. Because it’s not required of them, a line cook usually lacks this vision of the big picture to which they contribute.
 
-## Tips:
+### Tips
 
-### **Understanding & navigate trade-offs**
+#### **Understanding & navigate trade-offs**
 
 A **trade-off** is a compromise that is made between two desired but incompatible features, like latency & accuracy  / fullu-automated & safety. Trade-offs are performed mostly between the non-functional requirements in the System Design world, as we will see below.
 
@@ -267,7 +267,6 @@ When you land on a solution, you should justify why it’s the solution with the
 
     </aside>
 
-
 b. explain: why it’s the solution with the most acceptable trade-offs
 
 <aside>
@@ -279,7 +278,7 @@ b. explain: why it’s the solution with the most acceptable trade-offs
 
 c……
 
-In the end, you may receive feedback and learn that you*’*ve chosen one of the less ideal trade-offs—and that*’*s ok! The important thing is that you did your best with the information and understanding that you had and that you addressed your solution*’*s shortcomings appropriately. 
+In the end, you may receive feedback and learn that you*’*ve chosen one of the less ideal trade-offs—and that*’*s ok! The important thing is that you did your best with the information and understanding that you had and that you addressed your solution*’*s shortcomings appropriately.
 
 **Mastering the game of trade-offs**
 
@@ -289,7 +288,7 @@ Here are some key points to remember about trade-offs:
 - Always justify trade-offs and narrate your thought process for your interviewers.
 - By considering several potential solutions in the beginning of your design process, you can give yourself the opportunity to demonstrate more knowledge about trade-offs.
 
-### **Communicating for Impact**
+#### **Communicating for Impact**
 
 **Communication pointers**
 
@@ -337,7 +336,7 @@ Consider these tips for when your interviewer challenges you:
 - Don’t stubbornly defend your original solution. There are no points for doubling down.
 - If you missed a better solution because you didn’t fully understand the requirements, admit it. Acknowledge that your design falls short and a better path exists.
 
-### **Showing Your Vantage Point**
+#### **Showing Your Vantage Point**
 
 **each level’s vantage point differs**
 
@@ -355,7 +354,7 @@ Being honest will result in a far better use of your interviewing time. If you�
 
 Remember: There’s nothing wrong with allowing you and the interviewer to move on to another topic by saying, “I’m sorry. I don’t understand [x] at this level. My understanding is quite superficial and I honestly don’t know more about it at this time.”
 
-# **Common Bottlenecks**
+## **Common Bottlenecks**
 
 | **Bottleneck** | **Cause** | **Mitigation** |
 | --- | --- | --- |
@@ -365,7 +364,7 @@ Remember: There’s nothing wrong with allowing you and the interviewer to move 
 | **Model cold start** | On-prem models spin up slowly | Use GPU warm pools, pre-warming |
 | **Rate-limited API calls** | 3rd-party LLM vendor throttling | Implement retries with backoff, caching |
 
-# **Failure Modes**
+## **Failure Modes**
 
 - **Prompt crashes model**: Detect known failure patterns (e.g., markdown parsing bugs)
 - **RAG returns irrelevant context**: Adjust similarity thresholds, add metadata filters
@@ -422,7 +421,7 @@ To prevent prompt injection, I’d prefix every request with a locked system rol
 
 This shows you’re deploying a production-safe, abuse-resistant AI feature.
 
-# **Handle Edge Cases**
+## **Handle Edge Cases**
 
 **Mention:**
 
@@ -430,7 +429,7 @@ This shows you’re deploying a production-safe, abuse-resistant AI feature.
 - Rate-limiting by tenant/user class
 - Graceful degradation under GPU shortage
 
-# **Future Improvements**
+## **Future Improvements**
 
 This is where you show maturity:
 

@@ -1,8 +1,8 @@
 ---
-imported_hash: 46a5ce794e99592a
+imported_hash: 5c521a2775a517df
 title: update or install the necessary libraries
 summary: This notebook provides a quick introduction to ChatGPT and related features supported in LangChain.
-order: 6
+order: 5
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-chatgpt-langchain.ipynb

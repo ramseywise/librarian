@@ -1,5 +1,5 @@
 ---
-imported_hash: ff1e44234a2c2571
+imported_hash: 51064ba28be56981
 title: 2 — Prompt Anatomy
 summary: Chat models give you 1, 3 and 4 almost for free through fine-tuning.
 order: 15
@@ -23,7 +23,7 @@ Every prompt has to satisfy all four at once (book, Ch 4):
 3. **Lead to a solution** — point at an answer, not more elaboration of the problem.
 4. **Have a natural stopping point** — the end of the assistant turn, a closing tag, or a stop sequence.
 
-Chat models give you 1, 3 and 4 almost for free through fine-tuning. **Criterion 2 is never automatic** — gathering and shaping context is where most of the work goes ([02-context](../../02-context/readme.md)).
+Chat models give you 1, 3 and 4 almost for free through fine-tuning. **Criterion 2 is never automatic** — gathering and shaping context is where most of the work goes ([02-context](../../02-context-engineering/readme.md)).
 
 ---
 
@@ -118,7 +118,27 @@ How a piece of data (say, a weather API result) enters the prompt should match t
 
 Snippet checklist: **modular** (insert or drop like list items), **natural** (reads as part of the document), **brief**, and **inert** (its token count doesn't change with its neighbors — tokenization isn't additive, so separate snippets with whitespace and avoid leading newlines).
 
-When the context budget varies, keep **elastic** versions of a snippet (full → trimmed → minimal) and pick the largest one that fits. Retrieval, scoring and packing are covered in depth in [02-context](../../02-context/notes/02-context-anatomy.md).
+When the context budget varies, keep **elastic** versions of a snippet (full → trimmed → minimal) and pick the largest one that fits. Retrieval, scoring and packing are covered in depth in [02-context](../../02-context-engineering/notes/02-context-anatomy.md).
+
+---
+
+## Agent system prompts: procedures, not rule piles
+
+A long agent system prompt is an operating manual for a capable new hire. Li's Tau-Bench ablation (Experiment 2-4: airline and retail support) shows which properties of that manual matter:
+
+| Change (all else fixed) | Effect |
+|---|---|
+| Tone swapped (neutral → bombastic → emoji-casual) | Little change in completion |
+| **Same rules, flattened from an ordered procedure into an unordered list** | **Success fell more than 30%**; "verify identity before refund" was skipped |
+| Tool descriptions removed (signatures kept) | Tool-call errors up 45% |
+
+**Write an SOP, not a rule pile.** Numbered stages (validate → classify → preprocess → execute → verify), each with its exception branches. The model can then tell which stage it is in and what applies there, instead of searching hundreds of rules for one that fits. When an agent underperforms, **ablate before rewriting**: switch off one component at a time and see what moves.
+
+**Make business rules executable.** "Choose the billing type that fits the task" behaves differently on every run. Is a clothing return "savings"? Is a cancellation? Product owners have to settle each edge as a decision rule: commission only when an existing bill is negotiated down; *never* on refunds or cancellations; success-probability bands map to billing models; "savings" are computed only from the current bill, never from an avoided future increase. In mature teams, **product managers own these rules**. Engineers encode them faithfully and don't invent business logic. Give the model a clear framework and let it spend its reasoning on the parts that need judgment.
+
+**Few-shot placement.** Use 2–3 boundary-covering examples when rules can't capture the target (style, report format, tone). Skip them when the task is easy to state. Put them either in the system prompt or as synthetic first-turn messages, and keep them **byte-stable**. Per-request "most relevant" examples break the cache ([02-context](../../02-context-engineering/notes/02-context-anatomy.md#patterns-that-break-the-cache-or-the-model)).
+
+Lab: [2-4 prompt-engineering](https://github.com/bojieli/ai-agent-book/tree/main/chapter2/prompt-engineering) (Tau-Bench ablations; needs an API key).
 
 ---
 

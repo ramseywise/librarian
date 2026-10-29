@@ -1,16 +1,17 @@
 ---
-imported_hash: d3ebaf0c274b9b56
+imported_hash: e7ac81197edfde4e
 title: Behavioral Round — Questions & Model Answers
-summary: ''
+summary: Each question is a probe for a specific failure mode.
 order: 2
 kind: reading
 section: Behavioral
-source: learn-ai-engineering/interviewing/rounds/behavioral/questions.md
+source: sisyphus/interviewing/rounds/behavioral/questions.md
 ---
 
 # Behavioral Round — Questions & Model Answers
 
 ## Format note
+
 Each question is a probe for a specific failure mode. The answer is never a script — it's a
 STAR structure angled at what the interviewer is actually screening for. Use the model answer
 structures below to frame your own stories from your story bank.
@@ -24,6 +25,7 @@ the other side? Do you leave relationships intact after disagreement? The failur
 immediately (no backbone), or winning the argument but burning the relationship.
 
 **Model answer structure**:
+
 1. **S**: Brief context — what the conflict was about, not just that it happened. Technical disagreement, priority disagreement, approach disagreement.
 2. **T**: Your specific stake — why this mattered to you, what decision you owned.
 3. **A**: (Most of the answer) How you engaged — did you steelman their position explicitly? Did you try to find shared ground before pushing back? Did you bring data or a prototype rather than opinion? How did you escalate or resolve when stuck?
@@ -46,6 +48,7 @@ they screen against: no real stakes in the story, hedging your causal role ("the
 failed"), no visible behavior change since, or the classic "I work too hard" non-failure.
 
 **Model answer structure**:
+
 1. **S**: A failure with real stakes — a feature that shipped with a bug that affected users, an estimate that caused a missed deadline, a recommendation that turned out wrong.
 2. **T**: Your specific causal role. Use "I" and be direct — not "we were under pressure" but "I underestimated the migration complexity."
 3. **A**: What you did to fix it, and what you did immediately after to understand how it happened.
@@ -66,6 +69,7 @@ information? Failure modes: paralysis waiting for clarity, shipping the wrong th
 flagging the assumptions, or retrospectively rewriting history as if you'd been certain.
 
 **Model answer structure**:
+
 1. **S**: The ambiguous situation — unclear scope, contradictory stakeholders, shifting requirements mid-build.
 2. **T**: What you were responsible for delivering and by when.
 3. **A**: (The core) What you clarified vs. what you assumed. How you stated assumptions explicitly — in writing, ideally. How you built the reversible version first. How you set up a feedback loop.
@@ -87,6 +91,7 @@ objection and then fully commit to the decision? Failure modes: caving without v
 backbone), losing and sabotaging (can't commit), or winning and being smug about it.
 
 **Model answer structure**:
+
 1. **S**: The decision you disagreed with — technical direction, product priority, hiring decision.
 2. **T**: Your stake and your role in the decision process.
 3. **A**: How you voiced the objection — specific, evidence-based, not just frustration. How you listened to the counterargument. The moment you chose to commit. How you committed *fully*, not just nominally.
@@ -108,6 +113,7 @@ from prescription. Failure modes: defensive dismissal, or sycophantic "you're ri
 change immediately" without actually processing it.
 
 **Model answer structure**:
+
 1. **S/T**: Frame the type of feedback scenario — peer review, manager, user research finding that contradicted your design.
 2. **A**: The process — separate the *observation* (what they saw) from the *prescription* (what they think you should do). Test the observation against evidence first. If the observation is right and the prescription is wrong, close the loop. If both are right, adopt. If both feel off, ask for specific examples before responding.
 3. **R**: A concrete case where you disagreed with feedback and explain what you actually did — either you changed based on it, or you respectfully didn't and why.
@@ -127,6 +133,7 @@ haven't), or a story where you just "trusted it more carefully next time" with n
 change.
 
 **Model answer structure**:
+
 1. **S**: The task and the tool — what you were using it for and what it produced that was wrong. Be specific: hallucinated API, plausible but wrong reasoning, code that looked right but silently failed, a confident but incorrect answer.
 2. **T**: What you were building or deciding and what was at stake.
 3. **A**: How you caught it — what your verification step was, or what made you suspicious. Then what you did: manual check, docs lookup, test coverage, human expert review.
@@ -148,6 +155,7 @@ potential. Failure modes: "I helped them with their code" (output, not growth), 
 where you did all the work for them.
 
 **Model answer structure**:
+
 1. **S**: Who the person was (relative level, situation), and what growth gap or challenge they were facing — not just "they were new" but what specifically was hard for them.
 2. **T**: Your relationship to them — peer, tech lead, mentor — and what you took on.
 3. **A**: The specific approach — how you gave feedback, what you taught vs. delegated, how you created space for them to struggle productively vs. rescuing them, what you adjusted when your first approach didn't land.
@@ -166,6 +174,7 @@ vocabularies, and definitions of success. Failure modes: a story where everyone 
 was easy, or a story where you steamrolled the other function.
 
 **Model answer structure**:
+
 1. **S**: The functions involved (product/eng, ML/ops, data/legal, etc.) and the genuine tension — not just "we had different ideas" but the structural misalignment of incentives or timelines.
 2. **T**: Your role and what you owned in the collaboration.
 3. **A**: How you built shared vocabulary first. How you translated priorities across the divide — what you gave up, what you asked for. How you handled the moment when timelines or priorities genuinely conflicted.
@@ -184,6 +193,7 @@ or do you work 80-hour weeks and call it execution? Failure modes: "I worked har
 prioritization), or "I asked my manager" (no judgment).
 
 **Model answer structure**:
+
 1. **S**: The competing demands — how many things, what the stakes were on each, what the deadline pressure was.
 2. **T**: What you were responsible for deciding (not just doing).
 3. **A**: The triage framework — how you assessed consequence vs. urgency vs. reversibility. What you cut, what you delegated, what you explicitly de-prioritized and told the stakeholder. How you communicated the trade-offs.
@@ -202,6 +212,7 @@ you had 6 months to learn it (not "quickly"), or a story where you learned it bu
 articulate how.
 
 **Model answer structure**:
+
 1. **S**: What you had to learn and the timeline constraint — be specific about how fast "quickly" was.
 2. **T**: Why it was your responsibility and what was at stake if you got it wrong.
 3. **A**: The learning method — what you prioritized learning first (fundamentals vs. patterns vs. specific APIs), what you built to verify you'd learned correctly, who you leaned on. Not just "I read the docs."
@@ -220,6 +231,7 @@ the fast-learn.
 never pushed back (afraid), or pushed back in a way that damaged the relationship.
 
 **Model answer structure**:
+
 1. **S**: The decision and who was making it — level of seniority, your level relative to them.
 2. **T**: Why you had standing to push back — what you knew that they didn't, or what risk you were responsible for.
 3. **A**: How you structured the pushback — data first, not frustration first. How you chose the moment and the channel. How you stated the concern without making it personal. What you did when you were overruled.
@@ -239,6 +251,7 @@ unclear success metrics, outputs that can't be deterministically correct, changi
 behavior, evaluation that requires judgment rather than measurement.
 
 **Model answer structure**:
+
 1. **S**: The project and the specific AI-related ambiguity — unclear eval criteria, output quality that's hard to measure, stakeholder expectations misaligned with what ML can deliver.
 2. **T**: What you owned in resolving or navigating the ambiguity.
 3. **A**: How you defined "good enough" — what proxy metrics you chose and why. How you communicated uncertainty to stakeholders without losing their confidence. How you built feedback loops when ground truth was unavailable.
@@ -260,6 +273,7 @@ without either caving or lecturing. Failure modes: "I convinced them I was right
 adapt), or "I just did what they said" (no value-add).
 
 **Model answer structure**:
+
 1. **S**: The recommendation, the client/stakeholder, and how they rejected it — what they said and what you suspected was the real objection.
 2. **T**: Your role and what was at stake for the engagement.
 3. **A**: How you tried to understand the real objection (it's rarely the stated one). What you explored — was it technical distrust, political constraints, budget, timing? How you adapted your recommendation or your delivery based on what you learned. What you accepted without changing.

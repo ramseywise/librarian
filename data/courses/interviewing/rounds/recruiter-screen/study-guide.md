@@ -1,11 +1,11 @@
 ---
-imported_hash: 1f7f98e2a63a7696
+imported_hash: cd8efc9301c0aa0d
 title: Study Guide — Recruiter Screen
 summary: This round is not studied — it's rehearsed.
 order: 68
 kind: reading
 section: Recruiter screen
-source: learn-ai-engineering/interviewing/rounds/recruiter-screen/study-guide.md
+source: sisyphus/interviewing/rounds/recruiter-screen/study-guide.md
 ---
 
 # Study Guide — Recruiter Screen
@@ -20,7 +20,7 @@ The core deliverable of every recruiter screen. You need one version of this tha
 
 **Framework: past → present → this role**
 
-```
+```text
 [Past]: "I started in [field/function], focused on [the problem type or domain]."
 [Pivot]: "Over time, I moved toward [the through-line — what connects your arc]."
 [Present]: "Right now I'm [role] at [company], working on [one concrete thing]."
@@ -28,6 +28,7 @@ The core deliverable of every recruiter screen. You need one version of this tha
 ```
 
 Rules:
+
 - Under 90 seconds at a normal speaking pace (test by timing yourself)
 - End at the bridge — do not keep going. The recruiter will ask follow-ups.
 - The through-line is the most important piece: what's the consistent thread across your background? Name it explicitly.
@@ -42,11 +43,13 @@ Rules:
 You'll name 2–3 projects in the recruiter call. One-liners prevent rambling and give the recruiter something to write down.
 
 **Formula**:
-```
+
+```text
 "[Project name]: [what it did] + [the scale or outcome], using [tech if relevant]."
 ```
 
 Examples of the compression:
+
 - Bad: "We built a recommendation system that was pretty successful..."
 - Better: "An LLM-based content recommendation engine that cut editorial time by 40% across a newsroom of 200 journalists."
 
@@ -57,12 +60,15 @@ Examples of the compression:
 ## 3. Comp Negotiation Basics
 
 ### Research first
+
 Before the screen: look up market rates for this specific role, level, and location on levels.fyi and Glassdoor. Know:
+
 - The median base
 - The P75 base (this is your floor for negotiation)
 - Whether this company typically anchors high or low
 
 ### Range framing
+
 Give a range, not a number. The range signals you've done research and leaves room for the full picture.
 
 Template: "I'm targeting [X]–[Y] based on market data for this role and location — is that in the range you're working with?"
@@ -70,14 +76,18 @@ Template: "I'm targeting [X]–[Y] based on market data for this role and locati
 The "is that in range?" close serves two purposes: it invites them to confirm alignment early, and it gives them an opening to tell you if you're off.
 
 ### Deflection techniques
+
 If they push for a single number before you know the scope:
+
 - "I want to make sure I'm anchoring to the right level — can you share the band for this role?"
 - "I'd rather nail down the scope first, but [X] is where I'm anchored."
 
 If they ask for your current comp (may not be legal in your jurisdiction):
+
 - "I'd rather focus on what makes sense for this role — I'm targeting [range] based on the market."
 
 ### Never anchor low
+
 The first number you say becomes a ceiling in the recruiter's notes. If you're nervous and understate, you've made the rest of the negotiation harder. Know your floor before the call and don't go below it.
 
 ---
@@ -103,11 +113,13 @@ If you have competing processes, naming them (without naming companies) signals 
 In 2026, many recruiters are explicitly briefed to probe AI-tool usage. Have a concrete, honest answer.
 
 **What "concrete" means**:
+
 - Name the specific tools (Claude, Copilot, Cursor, Gemini, etc.)
 - Give a specific use case ("I use Claude for code review on PRs — I paste the diff and ask it to flag edge cases I might have missed")
 - Note where you've found limits or where you still prefer not to use AI ("I don't use it for initial architecture decisions — I find the scaffolding it suggests tends to be too generic")
 
 **What "honest" means**:
+
 - Don't claim fluency you don't have — the technical screen will reveal it
 - Don't undersell — "I use it sometimes" when you use it daily is a missed signal for AI/ML roles
 
@@ -120,13 +132,15 @@ In 2026, many recruiters are explicitly briefed to probe AI-tool usage. Have a c
 The "why us" answer is the most differentiated thing you can prepare — and the most commonly botched.
 
 **Research checklist before each screen**:
+
 - [ ] What does the company actually build? (Not the website pitch — what's the real product?)
 - [ ] What's one recent thing they've shipped, announced, or written about that genuinely interests you?
 - [ ] What's the specific problem this role works on? (Read the JD carefully.)
 - [ ] What's one thing about this company's approach that's meaningfully different from their competitors?
 
 **Template**:
-```
+
+```text
 "What drew me specifically to [company] was [one concrete thing — product direction, mission, recent work].
 And this role in particular because [what the role actually does + why that matches where I want to go]."
 ```
@@ -140,12 +154,14 @@ Generic answers ("I love the culture," "you're a leader in the space") are not a
 These are real questions, not courtesy questions. You're gathering signal.
 
 **What to ask**:
+
 - Loop structure: "What does the interview process look like from here?" — you need to know what's coming.
 - Timeline: "What's the expected timeline from here to an offer?" — if you have competing processes, this is essential.
 - Team context: "Who would I be working most closely with on this team?" — headcount and reporting structure signal a lot about the role.
 - Open concern: "Is there anything in my background you'd want me to address before the next stage?" — this is the highest-value question; it surfaces early doubts you can address.
 
 **What not to ask**:
+
 - Comp at this stage (you've already addressed it)
 - Anything easily answerable from the JD or company website
 - Anything that signals you haven't thought about what you actually want

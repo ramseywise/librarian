@@ -1,15 +1,15 @@
 ---
-imported_hash: d22ba2a2b2608679
+imported_hash: 593806df88c4985b
 title: This is a special placeholder. During training, the VERL algorithm will serve the Llama-3 model
 summary: 'The core research behind it is described in the paper “Agent Lightning: Train ANY AI Agents with Reinforcement Learning” by Microsoft Research, which frames the problem as a hierarchical RL optimization of complex agent behavior.'
 order: 1
 kind: reading
-source: learn-ai-engineering/interviewing/notes/agents-self-training.md
+source: sisyphus/interviewing/notes/agents-self-training.md
 ---
 
-## Tools:
+## Tools
 
-### **`Agent-Lightning`**:
+### **`Agent-Lightning`**
 
 ## 📌 **What *Agent-Lightning* Is
 
@@ -118,9 +118,9 @@ In the article you read:
 - **Scientific agents** run actions in a structured graph and produce outputs.
 - A **reward function** evaluates the final results (protocol quality, decisions).
 - **Agent-Lightning’s LitAgent** encapsulates the workflow and exposes it to a reinforcement learning trainer. That trainer:
-    - Receives traces of agent actions,
-    - Computes rewards based on output vs. ground truth/context,
-    - Performs RL or optimization only on the *trainable agent nodes* (e.g., senior researchers). (Microsoft GitHub)
+  - Receives traces of agent actions,
+  - Computes rewards based on output vs. ground truth/context,
+  - Performs RL or optimization only on the *trainable agent nodes* (e.g., senior researchers). (Microsoft GitHub)
 
 This matches the framework’s goal: *decouple your existing agent logic from the training loop* while enabling continuous improvement.
 
@@ -167,7 +167,7 @@ senior_researcher_llm = ChatOpenAI(
     model="senior_researcher_llm", # A logical name, not a real model endpoint initially.
     temperature=0.1,
     openai_api_base="http://placeholder-will-be-replaced:8000/v1",
-    openai_api_key="dummy_key"
+    openai_api_key="<redacted>"
 )
 ```
 
@@ -186,16 +186,16 @@ then:
 - Every agent call goes directly to that model
 - PPO **cannot intercept**
 - You cannot:
-    - collect action log-probs
-    - apply gradients
-    - update policy
-    - swap checkpoints mid-training
+  - collect action log-probs
+  - apply gradients
+  - update policy
+  - swap checkpoints mid-training
 
 The model is **hard-wired**.
 
 That kills RL.
 
-## tips:
+## tips
 
 1. a **hierarchical training strategy**, where different agents within our system are trained using specialized algorithms. This is a crucial concept in production-grade agentic systems, as a one-size-fits-all training approach is rarely optimal.
 2. Using a single, massive model for every job is inefficient and costly. This **“right model for the right job”** approach is a cornerstone of building production-grade, cost-effective agentic systems.
@@ -210,7 +210,7 @@ A typical training architecture for an agentic system involves several interconn
 
 Agentic Training Architecture (Created by Fareed Khan)
 
-### a **hierarchical training strategy**, where different agents within our system are trained using specialized algorithms:
+### a **hierarchical training strategy**, where different agents within our system are trained using specialized algorithms
 
 1. **Level 1 (SFT):** We'll fine-tune our creative 'Junior Researcher' agents using Supervised Fine-Tuning on successful conversational traces.
 2. **Level 2 (PPO):** We'll use online Reinforcement Learning (Proximal Policy Optimization) to train our methodical 'Senior Researcher' agents to design better experimental protocols.

@@ -1,5 +1,5 @@
 ---
-imported_hash: fffef6d54ed26932
+imported_hash: 784c9667d53fd10d
 title: Regularization
 summary: Welcome to the second assignment of this week.
 order: 10

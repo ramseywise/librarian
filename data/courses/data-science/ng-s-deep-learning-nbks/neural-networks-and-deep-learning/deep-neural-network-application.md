@@ -1,5 +1,5 @@
 ---
-imported_hash: c964bc513b01032e
+imported_hash: 059881eeecf7ee2a
 title: 'Deep Neural Network for Image Classification: Application'
 summary: When you finish this, you will have finished the last programming assignment of Week 4, and also the last programming assignment of this course!
 order: 13

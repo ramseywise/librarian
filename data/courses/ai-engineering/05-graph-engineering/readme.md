@@ -1,17 +1,17 @@
 ---
-imported_hash: 318465e429196818
+imported_hash: a147e654e454895b
 title: 05 — Graph Engineering
 summary: 'Graph engineering is the discipline of designing the topology of a multi-agent system: which nodes exist (agents, deterministic functions, routers, human checkpoints), which transitions between them are permitted, and how the runtime work g…'
 order: 1
 kind: reading
-source: learn-ai-engineering/ai-engineering/05-graph/README.md
+source: learn-ai-engineering/ai-engineering/05-graph-engineering/README.md
 ---
 
 # 05 — Graph Engineering
 
-> Depth layer. Summary: [interviewing/guides/4-agents](../../interviewing/guides/4-agents/00-overview.md)
-> Position in the stack: fifth foundation — builds on [04-loop](../04-loop/readme.md); *graphs make agent organizations programmable*.
-> Deep note: [graph-engineering.md](graph-engineering.md)
+> Depth layer. Summary: [interviewing/guides/4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md)
+> Position in the stack: fifth foundation — builds on [04-loop](../04-loop-engineering/readme.md); *graphs make agent organizations programmable*.
+> Overview: [graph-engineering.md](graph-engineering.md)
 
 ---
 
@@ -31,26 +31,54 @@ Graph is a **peer fifth foundation**, ordered after loop because it presumes loo
 
 ---
 
+## Syllabus
+
+Read the notes in order; each one is earned by the one before. Notes 01–08 are Track A (agent graphs). Notes 09–13 are Track B (knowledge graphs); note 12 joins the two tracks, and note 13 adds learning on graphs.
+
+| # | Note | Covers | Lab |
+|---|---|---|---|
+| 1 | [Graph vs. loop](notes/01-graph-vs-loop.md) | Definition, containment, production agents aren't DAGs, the five signals, the decision tree, two senses of "graph", the map | [Lab 1](practice/01-agent-graph-labs.md#lab-1--generate-then-verify) |
+| 2 | [Graph primitives](notes/02-graph-primitives.md) | Node kinds, spending agency per node, edges, the minimal program, generate-then-verify | [Lab 1](practice/01-agent-graph-labs.md#lab-1--generate-then-verify) |
+| 3 | [State and reducers](notes/03-state-and-reducers.md) | Typed state, reducers, parallel-write races, Send fan-out, handoffs, the true-dependency test | [Lab 2](practice/01-agent-graph-labs.md#lab-2--fan-out-and-merge) |
+| 4 | [Durable execution and interrupts](notes/04-durable-execution-and-interrupts.md) | Checkpointers, threads, `interrupt()`, editing state, time travel, where gates go | [Lab 3](practice/01-agent-graph-labs.md#lab-3--checkpoint-and-interrupt) |
+| 5 | [Topology patterns](notes/05-topology-patterns.md) | Generate-then-verify, supervisor, fan-out, subgraphs, handoff; the Claude Code mapping | [Lab 4](practice/01-agent-graph-labs.md#lab-4--subgraphs-and-the-parallel-review-graph) |
+| 6 | [When not to build a graph](notes/06-when-not-to-build-a-graph.md) | Unnameable work, fan-out cost, premature graphs, split the verifier, incremental adoption | [Lab 5](practice/01-agent-graph-labs.md#lab-5--break-even-measurement) |
+| 7 | [Failure modes at scale](notes/07-failure-modes-at-scale.md) | Mechanical and control failures, correlated errors, verifier isolation, anchors, pre-flight check | [Lab 6](practice/01-agent-graph-labs.md#lab-6--fault-injection) |
+| 8 | [Governance and production](notes/08-governance-and-production.md) | IDs and tracing, budgets, approvals, the checklist, n8n case study | [Lab 7](practice/01-agent-graph-labs.md#lab-7--trace-and-attribute) |
+| 9 | [KG fundamentals and Cypher](notes/09-kg-fundamentals-and-cypher.md) | What a KG is, why it pairs with LLMs, LPG vs. RDF, typed edges, Cypher cheat sheet | [KG Labs 1–2](practice/02-knowledge-graph-labs.md#lab-1--cypher-on-the-movies-graph) |
+| 10 | [Building KGs with LLMs](notes/10-building-kgs-with-llms.md) | Per-hop compounding, the extraction pipeline, model tiers, metagraph, ER and NED, extraction evals | [KG Labs 3–4](practice/02-knowledge-graph-labs.md#lab-3--build-the-10-k-graph) |
+| 11 | [KG-RAG and text-to-Cypher](notes/11-kg-rag-and-text-to-cypher.md) | Vector RAG limits, GraphRAG evidence, retrieval modes, schema-first text-to-Cypher, the LangGraph QA agent | [KG Labs 5–6](practice/02-knowledge-graph-labs.md#lab-5--chat-with-the-10-k-graph) |
+| 12 | [KG as shared agent memory](notes/12-kg-as-shared-agent-memory.md) | State vs. memory, loop → swarm → graph, `GraphUpdate`, reversible ER and provenance, five planes, swarm cost | [KG Labs 7–8](practice/02-knowledge-graph-labs.md#lab-7--swarm-with-and-without-shared-memory) |
+| 13 | [Learning on graphs](notes/13-graph-ml-and-gnns.md) | Why nodes aren't i.i.d., the task map, manual vs. learned features, DWPC, embeddings and message passing, GNN + LLM patterns, predictions as claims | [KG Lab 9](practice/02-knowledge-graph-labs.md#lab-9--predict-missing-links) |
+
+### Practice and templates
+
+- [P1 — Agent graph labs](practice/01-agent-graph-labs.md): seven labs that grow one graph through notes 01–08.
+- [P2 — Knowledge graph labs](practice/02-knowledge-graph-labs.md): nine labs: the Neo4j course, your own domain, measured extraction, text-to-Cypher, a shared-memory swarm, and link prediction.
+- [templates/generate-then-verify.py](templates/generate-then-verify.py) and [templates/fan-out-merge.py](templates/fan-out-merge.py): runnable LangGraph skeletons. [templates/graph-update.schema.json](templates/graph-update.schema.json): the `GraphUpdate` write contract from note 12.
+
+---
+
 ## Resource map
 
 ### Deep notes
-- [graph-engineering.md](graph-engineering.md) — the full discipline: primitives (nodes, edges, state, reducers, checkpointers, interrupts, Send API), why production agents aren't DAGs, topology patterns, when *not* to build a graph, scale failure modes and anchors, enterprise governance checklist, Claude Code mapping, the KG facet (including the KG as
-  shared memory for swarms, and swarm cost anchors), adoption methodology, and the n8n
-  supervisor-graph case study.
-- [memory.md](memory.md) — memory and state across graph nodes.
+- [graph-engineering.md](graph-engineering.md): pillar overview with the thesis, the two senses of "graph", the topic notes and rules of thumb.
+- [sources/graph-engineering-deep-note.md](sources/graph-engineering-deep-note.md): the original single deep note, archived. The `§N` references in OUTLINE.md point here.
+- Memory-augmented RAG notes moved to [02-context-engineering/sources/memory-augmented-rag-notion-export.md](../02-context-engineering/sources/memory-augmented-rag-notion-export.md); what was new is merged into 02-context [notes/06-memory.md](../02-context-engineering/notes/06-memory.md).
 
 ### Book notes — *Knowledge Graphs and LLMs in Action* (Manning)
-- [kg-and-llms-in-action/](kg-and-llms-in-action/) — chapter-by-chapter notes: KG+LLM hybrid systems, ontology-driven construction, multisource integration, LLM-driven extraction, named entity disambiguation, graph feature engineering, GNNs (representation learning, node classification, link prediction), KG-powered RAG, text-to-Cypher, and a LangGraph QA agent — plus graph-theory and Neo4j/Cypher appendices.
+- [sources/kg-and-llms-in-action/](sources/kg-and-llms-in-action/) — the depth layer under notes 09–13 (ch1–3 → 09, ch4–8 → 10, ch13–15 → 11, ch9–12 → 13; chapter PDFs in `pdf/`). Chapter-by-chapter notes: KG+LLM hybrid systems, ontology-driven construction, multisource integration, LLM-driven extraction, named entity disambiguation, graph feature engineering, GNNs (representation learning, node classification, link prediction), KG-powered RAG, text-to-Cypher, and a LangGraph QA agent — plus graph-theory and Neo4j/Cypher appendices.
 
 ### Interviewing guide
-- [4-agents](../../interviewing/guides/4-agents/00-overview.md) — compressed summary for interview prep.
+- [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) — compressed summary for interview prep.
 
-### Coursera code
-- [AI-Agents-in-LangGraph-main](../../generative-ai/04-agentic-frameworks/AI-Agents-in-LangGraph-main/) — LangGraph agent graphs: nodes, edges, state, conditional routing.
-- [Knowledge_Graphs_for_RAG-main](./Knowledge_Graphs_for_RAG-main/) — knowledge-graph facet: entity graphs as retrieval structure.
+### Notebooks and course code
+- [notebooks/knowledge-graphs-for-rag/](notebooks/knowledge-graphs-for-rag/) — DeepLearning.AI *Knowledge Graphs for RAG* (Neo4j): notebooks L2–L7, data dumps and lesson notes. Run as KG Labs 1, 3 and 5; L0–L2 feed note 09, L3–L6 note 10, L7 note 11.
+- [AI-Agents-in-LangGraph-main](../../generative-ai/04-agentic-frameworks/AI-Agents-in-LangGraph-main/) — LangGraph agent graphs (nodes, edges, state, conditional routing); used in the Track A labs.
 
 ### Readings
-- [3-rag-knowledge-graphs/](3-rag-knowledge-graphs/) — KG-for-RAG source PDFs (book chapters + reference papers).
+- [sources/](sources/) — the book (notes and PDFs, above), the archived deep note, and the community-compiled *Graph Engineering: The Karpathy Loop, Improved 1000x by Itself* (2026) PDF.
+- Li, *AI Agents in Depth*, [ch. 10 Multi-Agent Collaboration](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter10.md): when multi-agent actually beats single-agent, shared vs isolated context, failure modes. Synthesised into [05](notes/05-topology-patterns.md) (two design dimensions, the new-information test, the runtime as an OS, handoff packages, A2A; [labs table](notes/05-topology-patterns.md#labs)) and [07](notes/07-failure-modes-at-scale.md) (Byzantine faults, semantic conflicts, cascading amplification, MAST). Ch. 3's RAPTOR vs GraphRAG comparison is in [11](notes/11-kg-rag-and-text-to-cypher.md).
 
 ### External references
 - LangGraph docs: https://docs.langchain.com/langgraph
@@ -67,7 +95,7 @@ Graph is a **peer fifth foundation**, ordered after loop because it presumes loo
 - [Hosting n8n](https://docs.n8n.io/deploy/host-n8n) — deployment surface for a self-hosted graph runtime.
 
 ### Previous and next layer
-← Builds on [04-loop/](../04-loop/readme.md)
+← Builds on [04-loop-engineering/](../04-loop-engineering/readme.md)
 → [06-eval/](../06-eval/readme.md) — eval measures graph correctness and multi-agent coordination quality.
 
 ---

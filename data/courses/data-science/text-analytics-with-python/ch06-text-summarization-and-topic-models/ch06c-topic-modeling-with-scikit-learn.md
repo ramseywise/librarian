@@ -1,7 +1,7 @@
 ---
-imported_hash: d5f6a1e35706043a
+imported_hash: ee60342360803f4b
 title: Load and Pre-process Data
-summary: DATAPATH = 'nipstxt/' print(os.listdir(DATAPATH))
+summary: DATA_PATH = 'nipstxt/' print(os.listdir(DATA_PATH))
 order: 15
 kind: notebook
 section: Ch06   Text Summarization and Topic Models

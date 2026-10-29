@@ -1,5 +1,5 @@
 ---
-imported_hash: 1a07ddac13665469
+imported_hash: a9accdb44ef957ea
 title: Optimization Methods
 summary: Until now, you've always used Gradient Descent to update the parameters and minimize the cost.
 order: 9

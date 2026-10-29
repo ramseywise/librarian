@@ -1,11 +1,11 @@
 ---
-imported_hash: 8e9ee8def565909c
+imported_hash: 12c4ae9de7a0768c
 title: 'Worked Example: SQLite Data Pipeline → The Scaling Trap (40 min, offline)'
 summary: 'The prompt is a trap in the useful sense: the tool you''re handed is correct for the exercise and wrong for the stated scale.'
 order: 38
 kind: reading
 section: Coding challenge / Examples
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/examples/sqlite-pipeline-scaling.md
+source: sisyphus/interviewing/rounds/coding-challenge/examples/sqlite-pipeline-scaling.md
 ---
 
 # Worked Example: SQLite Data Pipeline → The Scaling Trap (40 min, offline)

@@ -1,7 +1,7 @@
 ---
-imported_hash: eacca89f9bd55781
+imported_hash: d3e50685c21bb7d8
 title: loadfiles returns a bunch, containing training texts and training labels
-summary: 'reviewstrain = loadfiles("data/aclImdb/train/") # loadfiles returns a bunch, containing training texts and training labels texttrain, ytrain = reviewstrain.data, reviewstrain.target print("type of texttrain: {}".format(type(texttrain))) pri…'
+summary: 'reviews_train = load_files("data/aclImdb/train/") # load_files returns a bunch, containing training texts and training labels text_train, y_train = reviews_train.data, reviews_train.target print("type of text_train: {}".format(type(text_tra…'
 order: 8
 kind: notebook
 source: learn-ai-engineering/data-science/Intro to Machine Learning in Python/07-working-with-text-data.ipynb

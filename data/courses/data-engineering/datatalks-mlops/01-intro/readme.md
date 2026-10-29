@@ -1,5 +1,5 @@
 ---
-imported_hash: 3254a0130194d64e
+imported_hash: d7e8cbf2b98960fd
 title: 1. Introduction
 summary: 'Recommended development environment: Linux'
 order: 2
@@ -138,7 +138,7 @@ Links:
 
 ## 1.6 Homework
 
-More information [here](../cohorts/2024/01-intro/homework.md).
+More information [here](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/cohorts/2024/01-intro/homework.md).
 
 
 ## Notes

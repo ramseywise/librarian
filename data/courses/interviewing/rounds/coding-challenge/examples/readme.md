@@ -1,11 +1,11 @@
 ---
-imported_hash: d413d438f1ac8303
+imported_hash: e0d11cf1562b30fa
 title: Worked Examples
 summary: 'Eight full walkthroughs with narration annotations — the text in [NARRATE: ...] blocks is what you say out loud while typing.'
 order: 32
 kind: reading
 section: Coding challenge / Examples
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/examples/README.md
+source: sisyphus/interviewing/rounds/coding-challenge/examples/README.md
 ---
 
 # Worked Examples

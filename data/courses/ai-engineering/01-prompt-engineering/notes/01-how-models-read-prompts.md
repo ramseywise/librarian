@@ -1,5 +1,5 @@
 ---
-imported_hash: 86483e16f9f04f8e
+imported_hash: 6061dbdf22e105fb
 title: 1 — How Models Read Prompts
 summary: The model is a mimic, not an oracle. Don't ask "how would a reasonable person reply to this?" Ask "if I pulled a random document from the training set that started with exactly this text, how would it continue?" Every higher-level capabilit…
 order: 14
@@ -107,9 +107,9 @@ The book frames it as the whole request/response transformation layer, in four l
 | Level | Application does | Covered in |
 |---|---|---|
 | 1. Thin wrapper | Passes user text through with light formatting | [02-prompt-anatomy](02-prompt-anatomy.md) |
-| 2. Augmented input | Adds retrieved context, conversation history | [02-prompt-anatomy](02-prompt-anatomy.md), [02-context](../../02-context/readme.md) |
+| 2. Augmented input | Adds retrieved context, conversation history | [02-prompt-anatomy](02-prompt-anatomy.md), [02-context](../../02-context-engineering/readme.md) |
 | 3. Tool use | Model requests actions, app executes them | [05-tools-and-function-calling](05-tools-and-function-calling.md) |
-| 4. Agency | Model decides *how* to reach a goal | [06-chaining-and-workflows](06-chaining-and-workflows.md), [03-harness](../../03-harness/readme.md) |
+| 4. Agency | Model decides *how* to reach a goal | [06-chaining-and-workflows](06-chaining-and-workflows.md), [03-harness](../../03-harness-engineering/readme.md) |
 
 ---
 

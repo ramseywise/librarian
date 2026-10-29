@@ -1,11 +1,11 @@
 ---
-imported_hash: ae9b2c403746cc16
+imported_hash: 9f29ce0748bcd4a0
 title: Coding Challenge — Question Bank
 summary: These assume a browser editor with no network and no AI assistant — stdlib only.
 order: 29
 kind: reading
 section: Coding challenge
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
+source: sisyphus/interviewing/rounds/coding-challenge/questions.md
 ---
 
 # Coding Challenge — Question Bank
@@ -17,6 +17,7 @@ source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
 **Testing**: Data structure selection, API design, edge case handling.
 
 **Approach**:
+
 1. Clarify: capacity, eviction behavior, thread safety needed?
 2. Choose `OrderedDict` (Python stdlib) — state why over a raw dict + linked list
 3. Define `get(key)` and `put(key, val)` with O(1) contract
@@ -26,7 +27,7 @@ source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
 
 **Common pitfalls**: Implementing a linked list from scratch when `collections.OrderedDict` exists. Not handling the `key not found` path in `get`. Forgetting to evict on `put` when at capacity.
 
-**Study refs**: `programming/Leet-Code/` (LRU Cache #146)
+**Study refs**: `drills/python/leetcode/` (LRU Cache #146)
 
 ---
 
@@ -35,6 +36,7 @@ source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
 **Testing**: System-level thinking, state management, time handling.
 
 **Approach**:
+
 1. Clarify: per-user or global? burst allowed? Redis or in-process?
 2. Token bucket: store `(tokens, last_refill_time)` per key; refill on each check
 3. Sliding window log: store timestamps in a deque, evict entries older than window
@@ -53,6 +55,7 @@ source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
 **Testing**: Decorator mechanics, error handling design, production-readiness instinct.
 
 **Approach**:
+
 1. Clarify: which exceptions to retry? max attempts? jitter? reraise on exhaustion?
 2. Implement with `functools.wraps` to preserve metadata
 3. Add `base_delay * (2**attempt) + random.uniform(0, jitter)` — name jitter's purpose
@@ -72,6 +75,7 @@ source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
 **Testing**: Data pipeline instincts, schema validation, error handling at record level.
 
 **Approach**:
+
 1. Clarify: input format (JSON/CSV/parquet)? what constitutes a bad record? write failures or skip?
 2. Read → validate schema → transform each record → write output
 3. Track good/bad counts; emit a summary at the end
@@ -90,6 +94,7 @@ source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
 **Testing**: Iterator/generator design, HTTP retry integration, state handling.
 
 **Approach**:
+
 1. Clarify: cursor-based or page-number pagination? rate limits? auth?
 2. Implement as a generator that yields items, handles `next_cursor` internally
 3. Integrate exponential backoff on 429/5xx
@@ -106,6 +111,7 @@ source: learn-ai-engineering/interviewing/rounds/coding-challenge/questions.md
 **Testing**: Memory-efficiency thinking, backpressure, stateful aggregation.
 
 **Approach**:
+
 1. Clarify: ordered stream? what's the aggregation window? what happens on late arrivals?
 2. Use a generator pipeline: `source → filter → transform → aggregate → sink`
 3. Each stage yields; nothing accumulates the full stream
@@ -126,6 +132,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Whether you can build the core AIE loop — retrieve, prompt, validate — from memory, and whether you know where it breaks.
 
 **Approach**:
+
 1. Clarify: libraries available? corpus size? can the stubbed LLM return malformed output?
 2. Write the four signatures before implementing — `retrieve`, `build_prompt`, `parse_answer`, `retrieve_and_answer`
 3. Lexical overlap scoring with length normalization; name it as a stand-in for embeddings
@@ -146,6 +153,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Whether you reach for a workflow or an agent — and whether you can justify the choice.
 
 **Approach**:
+
 1. Say it out loud: fixed step sequence means workflow, not agent; a model should not control flow that doesn't branch on reasoning
 2. One `Context` dataclass threaded through uniform `Step` callables
 3. Separate DECLINED (correct refusal) from FAILED (something broke)
@@ -166,6 +174,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Conventional Python data work, plus whether you know this is a SQL problem.
 
 **Approach**:
+
 1. Clarify: anomaly rule given or chosen? skip or fail on malformed records? in-memory or stream?
 2. State that structured aggregation belongs in a `GROUP BY`, not a vector store
 3. `Decimal` for money; normalize naive timestamps to UTC explicitly
@@ -186,6 +195,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Whether you can build a correct SQL pipeline *and* diagnose the tool's limits. The follow-up — *"this needs to serve millions of requests a day"* — is the actual question; the pipeline is setup.
 
 **Approach**:
+
 1. Build it in `sqlite3` without hesitating — it's stdlib and correct for the exercise
 2. Flag the seam in minute three: all DB access behind one class, so the swap is one file
 3. Integer cents (no float currency); natural primary key so re-ingest is idempotent; WAL mode
@@ -206,6 +216,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Security instincts. This round is graded on specific known mistakes, not on whether the code runs.
 
 **Approach**:
+
 1. Clarify the threat model first: stateless tokens vs session ids — revocation is the tradeoff
 2. Say "in production this is PyJWT" unprompted; hand-rolling crypto should visibly make you uncomfortable
 3. Passwords: slow hash (PBKDF2/bcrypt/scrypt/Argon2) + per-user random salt, never plain SHA-256
@@ -232,6 +243,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Systematic isolation method, willingness to read error output honestly.
 
 **Approach**:
+
 1. Reproduce with a minimal input you control (2 records, same ID)
 2. Read the actual output, not what you expect
 3. Bisect: is dedup logic wrong, or is the write step wrong?
@@ -242,7 +254,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 
 **Common pitfalls**: Changing code before reproducing. Fixing the symptom (force-sorting output) without finding why dedup failed. Not writing a test that would catch the original bug.
 
-**Study refs**: `programming/Leet-Code/` debugging section
+**Study refs**: `drills/python/leetcode/` debugging section
 
 ---
 
@@ -253,6 +265,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Understanding of concurrency primitives, comfort with non-determinism.
 
 **Approach**:
+
 1. Reproduce: write a tight loop that hammers the shared state from two threads
 2. Identify the read-modify-write gap that creates the race
 3. Fix with a `threading.Lock` or switch to an atomic operation (`queue.Queue`, `multiprocessing.Value`)
@@ -271,6 +284,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Boundary condition reasoning, ability to trace logic without running it.
 
 **Approach**:
+
 1. Trace with a 3-record dataset that fits in 2 pages of size 2
 2. Check: is `offset` updated before or after the fetch? is the slice `[offset:offset+limit]` or `[offset+1:...]`?
 3. Common root cause: `offset += limit` before appending, or `>` vs `>=` in the loop condition
@@ -289,6 +303,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Instrumentation instinct, distrust of silence, validation discipline.
 
 **Approach**:
+
 1. Add assertions or invariant checks at each stage boundary
 2. Bisect: does stage 1 output look right? stage 2?
 3. Common root causes: integer division when float expected, timezone-naive datetime math, string → float coercion that rounds silently
@@ -309,6 +324,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Decomposition instinct, keeping tests green, communication with the interviewer.
 
 **Approach**:
+
 1. Read the tests first — they define "correct behavior"
 2. Identify seams: name the 4 things the function does
 3. Extract one at a time; run tests after each extraction
@@ -327,6 +343,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: How you navigate unfamiliar code, whether you ask or guess, how you integrate.
 
 **Approach**:
+
 1. Read the tests before the implementation — understand the contract
 2. Identify where the new feature hooks in; ask the interviewer if unclear
 3. Write the new test first, make it fail, then implement
@@ -345,6 +362,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Review quality, constructive communication, collaborative editing.
 
 **Approach**:
+
 1. Scan for correctness issues first (not style)
 2. Name two or three concrete issues with line references
 3. For the collaborative fix: propose your approach, hear their input, adapt if they have a better angle
@@ -365,6 +383,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Whether you break the problem into verifiable chunks before prompting.
 
 **Approach**:
+
 1. Before prompting: decompose the problem into 3–5 concrete subtasks
 2. Prompt one subtask at a time; verify each output before proceeding
 3. State your verification method (run it, check types, trace a known input)
@@ -383,6 +402,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Testing**: Critical evaluation of generated output, ability to test without bias.
 
 **Approach**:
+
 1. Do not assume it's mostly right — read it as if it came from an untrusted source
 2. Check: types, edge cases (empty input, max values), error paths
 3. Write a test for each suspicious path before deciding it's a bug

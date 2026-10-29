@@ -1,11 +1,11 @@
 ---
-imported_hash: 5b67468c654f953b
+imported_hash: 32fa8e61021c6211
 title: Database Schema
 summary: Use this folder for generated or derived artifacts that agents should be able to inspect without reverse-engineering them from code.
 order: 44
 kind: reading
 section: Templates / Openai repo template / Docs / Generated
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/generated/db-schema.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/generated/db-schema.md
 ---
 
 # Database Schema

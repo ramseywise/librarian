@@ -1,7 +1,7 @@
 ---
-imported_hash: a6f07f1421dd6e5c
+imported_hash: 156604d7dfd45361
 title: Overview
-summary: SHARDITERATOR=$(aws kinesis \ get-shard-iterator \ --shard-id ${SHARD} \ --shard-iterator-type TRIMHORIZON \ --stream-name ${KINESISSTREAMOUTPUT} \ --query 'ShardIterator' \ )
+summary: SHARD_ITERATOR=$(aws kinesis \ get-shard-iterator \ --shard-id ${SHARD} \ --shard-iterator-type TRIM_HORIZON \ --stream-name ${KINESIS_STREAM_OUTPUT} \ --query 'ShardIterator' \ )
 order: 22
 kind: reading
 section: Deployment / Streaming
@@ -156,7 +156,7 @@ docker run -it --rm \
     -e RUN_ID="e1efc53e9bd149078b0c12aeaa6365df" \
     -e TEST_RUN="True" \
     -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
-    -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+    -e AWS_SECRET_ACCESS_KEY="<redacted>" \
     -e AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}" \
     stream-model-duration:v1
 ```

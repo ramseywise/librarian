@@ -1,5 +1,5 @@
 ---
-imported_hash: 21ad714a34a73170
+imported_hash: 1e37cac2a392dba7
 title: default for startingOffsets is "latest"
 summary: spark = SparkSession \ .builder \ .appName("Spark-Notebook") \ .getOrCreate()
 order: 41

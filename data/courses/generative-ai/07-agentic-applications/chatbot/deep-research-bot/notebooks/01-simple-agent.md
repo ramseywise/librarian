@@ -1,8 +1,8 @@
 ---
-imported_hash: 0409298e725ad5af
+imported_hash: 26004fb5aa6410b2
 title: Introduction to Building LLM Agents with Tools and Tracing
 summary: This script walks through the process of building a simple LLM-powered agent that can use tools (functions) to answer questions.
-order: 5
+order: 6
 kind: notebook
 section: Chatbot / Deep research bot / Notebooks
 source: learn-ai-engineering/generative-ai/07-agentic-applications/chatbot/deep-research-bot/notebooks/01_simple_agent.ipynb

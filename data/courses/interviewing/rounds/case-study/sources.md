@@ -1,11 +1,11 @@
 ---
-imported_hash: 1b406b3e339a2a5f
+imported_hash: fa56899c369fea89
 title: Sources — Case Study Round
 summary: 'Note the two-source tension on tests: the first lists a test suite under what not to build in a 60-minute window; the second calls a missing suite the top Work Trial rejection reason.'
 order: 11
 kind: reading
 section: Case study
-source: learn-ai-engineering/interviewing/rounds/case-study/sources.md
+source: sisyphus/interviewing/rounds/case-study/sources.md
 ---
 
 # Sources — Case Study Round
@@ -39,20 +39,24 @@ Note the two-source tension on tests: the first lists a test suite under what *n
 ## External references
 
 ### Case interview frameworks
+
 - **Case in Point** (Cosentino) — consulting-style problem decomposition framework; the structure transfers well to technical AI cases even though the domain differs
 - **CaseStudyPrep.AI** — AI/ML-specific case interview practice with structured feedback
 - **Interview Query** — ML and AI system design case practice problems; realistic scenarios with model solutions
 
 ### LLM system design
+
 - Anthropic and OpenAI engineering blogs — production case studies on RAG, cost optimization, and failure modes
 - LangChain documentation — patterns for chains, agents, and retrieval; useful for citing concrete implementation choices in LLM cases
 
 ### ML fundamentals
+
 - Kaggle datasets — practice take-home material; pick a classification or forecasting problem and timebox yourself to 3 hours
 - Andrew Ng's ML Specialization case-study quizzes (Coursera) — brief structured exercises on problem framing and metric selection
 - "Why not deep learning?" reference: tabular data SOTA benchmarks (XGBoost / LightGBM vs. neural nets on structured data)
 
 ### ROI frameworks
+
 - Token math baseline: OpenAI/Anthropic pricing pages — cost/1K tokens by model tier; used to build the "does this pencil out?" calculation
 - Hours-saved arithmetic: $X/hour × hours_saved/week × 52 = annual value
 - Error-cost math: error_rate × volume × cost_per_error = risk exposure that justifies the build

@@ -1,5 +1,5 @@
 ---
-imported_hash: 9fba366a86d902f7
+imported_hash: f701920269410a4b
 title: 5. Model Monitoring
 summary: More information here
 order: 26
@@ -84,7 +84,7 @@ is not officially supported in the 2024 edition of the course.
 ## Homework
 
 
-More information [here](../cohorts/2024/05-monitoring/homework.md)
+More information [here](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/cohorts/2024/05-monitoring/homework.md)
 
 
 ## Notes

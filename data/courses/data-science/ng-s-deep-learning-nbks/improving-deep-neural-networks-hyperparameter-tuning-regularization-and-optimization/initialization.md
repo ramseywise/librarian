@@ -1,5 +1,5 @@
 ---
-imported_hash: 9fa67b8eb972c36c
+imported_hash: f38c1b87971f7327
 title: Initialization
 summary: Welcome to the first assignment of "Improving Deep Neural Networks".
 order: 8

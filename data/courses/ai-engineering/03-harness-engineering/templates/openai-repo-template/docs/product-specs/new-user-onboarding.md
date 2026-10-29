@@ -1,11 +1,11 @@
 ---
-imported_hash: 2d992fadc9647fd0
+imported_hash: 508860604142c761
 title: New User Onboarding
 summary: Describe the first-run experience a new user should have.
 order: 46
 kind: reading
 section: Templates / Openai repo template / Docs / Product specs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/product-specs/new-user-onboarding.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/product-specs/new-user-onboarding.md
 ---
 
 # New User Onboarding

@@ -1,5 +1,5 @@
 ---
-imported_hash: 94e003884a1f85c0
+imported_hash: ae190deb33c9f8d6
 title: using default model and tokenizer for the task
 summary: Using Transformers (v2.3.0) APIs - State-of-the-art Natural Language Processing for Pytorch and TensorFlow 2.0.
 order: 23

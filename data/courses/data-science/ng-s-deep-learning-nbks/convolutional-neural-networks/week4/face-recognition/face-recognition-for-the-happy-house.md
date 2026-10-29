@@ -1,5 +1,5 @@
 ---
-imported_hash: f4f2c1fb4858d0e6
+imported_hash: 6f972c3fc5db8078
 title: Face Recognition for the Happy House
 summary: Updated for TF 2.x compatibility using tf.compat.v1 (Phase 1).
 order: 5

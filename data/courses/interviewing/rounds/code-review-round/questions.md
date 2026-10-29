@@ -1,16 +1,17 @@
 ---
-imported_hash: b7780fe202969f89
+imported_hash: 1c25973f0c72c12c
 title: Code Review Round — Questions & Model Answers
-summary: Automation handles syntax and formatting.
+summary: In a code review interview, the "question" is usually the code itself — you're handed a diff/PR and asked to review it.
 order: 19
 kind: reading
 section: Code review round
-source: learn-ai-engineering/interviewing/rounds/code-review-round/questions.md
+source: sisyphus/interviewing/rounds/code-review-round/questions.md
 ---
 
 # Code Review Round — Questions & Model Answers
 
 ## Format note
+
 In a code review interview, the "question" is usually the code itself — you're handed a diff/PR and asked to review it. The questions below are either prompts the interviewer gives alongside the code, or follow-up questions after your review. Answers are grounded in the [study guide](study-guide.md) and [sources](sources.md).
 
 ---
@@ -20,6 +21,7 @@ In a code review interview, the "question" is usually the code itself — you're
 **What they're testing**: Do you have a method, or do you just read top-to-bottom?
 
 **Model answer structure**:
+
 1. Read the PR description first — state what the change is supposed to do
 2. Scan for the contracts/invariants the touched code declares (types, schemas, auth boundaries)
 3. Review in consequence order: security/data → correctness/interfaces → maintainability → style
@@ -37,6 +39,7 @@ In a code review interview, the "question" is usually the code itself — you're
 **What they're testing**: Do you understand the gap between automated checks and human review?
 
 **Model answer**: "Passing checks verify what's *encoded*, not what's *intended*. I'd still look for:
+
 - Contract/convention violations that no test covers — a hardcoded value where there should be a config (the [BN-1 pattern](examples/conventions.md)), a safety check wrapped in a flag
 - Missing test cases for edge conditions the author may not have considered
 - Interface drift — does this change match what callers expect? (see [correctness examples](examples/correctness.md))
@@ -53,6 +56,7 @@ Automation handles syntax and formatting. Human review handles intent, conventio
 **What they're testing**: Pragmatism, communication skills, risk management.
 
 **Model answer**: "First, I'd push back — ask if it can be split into smaller, reviewable units. If it can't (migration, large refactor), I'd:
+
 1. Read the PR description and any linked design doc
 2. Identify the high-risk files: entry points, data writes, auth/security boundaries, interface changes
 3. Review those thoroughly, in consequence order
@@ -83,6 +87,7 @@ Worth separating two things that are easy to conflate here: how severe the under
 **What they're testing**: Communication maturity, empathy.
 
 **Model answer**: A good review comment is:
+
 - **Specific**: points to the exact line and the exact concern
 - **Actionable**: includes or suggests the fix, not just the problem
 - **Severity-labeled**: blocker, warning, nit — so the author knows what must change vs. what's optional
@@ -100,6 +105,7 @@ Worth separating two things that are easy to conflate here: how severe the under
 **Model answer**: "I separate severity from confidence. Severity describes the consequence if the issue is real — blocker, warning, or nit. Confidence describes how strongly the available evidence supports the claim, independent of severity: a suspected data leak can be high-severity but low-confidence until I've actually traced the path; a misspelled variable is high-confidence but low-severity. Collapsing the two is how reviewers either cry wolf on hunches or bury a serious-but-unconfirmed risk under a nit label.
 
 For confidence specifically, I use three levels:
+
 - **Verified** — I reproduced it, or traced the failure conclusively through the full code path. I state it directly: 'This retries after the external write, so a timeout after success duplicates the side effect.'
 - **Supported** — the code path or documented behavior strongly indicates it, but I haven't reproduced it directly (e.g., I'm assuming the downstream API isn't idempotent, based on its docs). I say what's still assumed.
 - **Hypothesis** — a plausible failure mechanism, but key context is still missing. For a hypothesis, especially a high-severity one, I explain the mechanism and ask a targeted question or suggest a test instead of presenting it as a confirmed bug: 'This could double-charge if the provider retries — worth checking?' beats asserting 'this double-charges.'
@@ -115,6 +121,7 @@ Note that a question isn't a fourth confidence tier — it's how I *communicate*
 **What they're testing**: Whether you've thought about the 2026 review landscape.
 
 **Model answer**: "AI-generated code has specific failure modes:
+
 - **Hallucinated APIs** — functions/parameters that look right but don't exist (see [ai-generated examples](examples/ai-generated.md))
 - **Plausible but wrong logic** — the code reads well but doesn't match the actual intent
 - **Missing edge cases** — LLMs optimize for the happy path
@@ -132,6 +139,7 @@ My approach: verify behavior against *intent* (not just 'does it read well?'), c
 **What they're testing**: Real experience, storytelling, consequence-awareness.
 
 **Prep**: Have one story ready. Best format:
+
 1. What the change was (one sentence)
 2. What looked fine on the surface
 3. What you caught and *how* (the method that surfaced it)
@@ -149,6 +157,7 @@ The ideal story: a small diff that linted clean and tests passed, but violated a
 **What they're testing**: Whether you know agent-specific security and reliability risks.
 
 **Model answer**: "Agent code has unique review priorities:
+
 1. **Tool permissions** — does this agent/MCP server have minimum necessary access? Over-permissioned tools are the #1 agent security risk (OWASP). Check for wildcard permissions, missing allowlists.
 2. **Trust boundaries** — is untrusted content (user input, retrieved docs, tool outputs) separated from system instructions? Look for user content in developer messages.
 3. **Irreversible actions** — anything that sends data, modifies external state, or costs money needs HITL or at minimum explicit confirmation.

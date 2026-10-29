@@ -1,11 +1,11 @@
 ---
-imported_hash: 5cca7a801614bfda
+imported_hash: 3b351beec15c80fa
 title: 'Context Engineering: Zero to Hero Guides'
-summary: 'Upstream: davidkimai/Context-Engineering 10guideszerotohero/ (snapshot 2026-08-14).'
+summary: 'Upstream: davidkimai/Context-Engineering 10_guides_zero_to_hero/ (snapshot 2026-08-14).'
 order: 4
 kind: reading
 section: Notebooks
-source: learn-ai-engineering/ai-engineering/02-context/notebooks/README.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/notebooks/README.md
 ---
 
 # Context Engineering: Zero to Hero Guides

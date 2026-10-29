@@ -1,5 +1,5 @@
 ---
-imported_hash: beffd1ae61f52885
+imported_hash: a0593169d33aea31
 title: 01 — LLM Fundamentals
 summary: LLM fundamentals covers the architecture, training, and prompting of large language models.
 order: 1
@@ -9,7 +9,7 @@ source: learn-ai-engineering/generative-ai/01-llm-fundamentals/README.md
 
 # 01 — LLM Fundamentals
 
-> Depth layer. Summary: [interviewing/guides/2-llm-fundamentals](../../interviewing/guides/2-llm-fundamentals/00-overview.md)
+> Depth layer. Summary: [interviewing/guides/2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md)
 > Position: first pillar — what LLMs are, how they're trained, how to prompt them.
 > Everything in generative AI builds on this foundation.
 
@@ -41,11 +41,14 @@ what the model is doing, why it behaves as it does, and how to instruct it relia
 
 - **[`readings/`](readings/)** — prompting, RLHF, and generative-AI foundations reference
   papers and book chapters (PDFs). Includes constitutional AI, chain-of-thought, and
-  prompt engineering for generative AI.
+  prompt engineering for generative AI. Also includes *Generative AI and LLMs for Dummies*
+  ([`readings/Generative-AI-and-LLMs-for-Dummies.pdf`](readings/Generative-AI-and-LLMs-for-Dummies.pdf)),
+  a gentle first pass before the papers.
+- External courses, books and the foundational-paper canon: [`../resources.md`](../00-start-here/resources.md#01--llm-fundamentals--pillar).
 
 ### Interviewing guides
 
-- [2-llm-fundamentals](../../interviewing/guides/2-llm-fundamentals/00-overview.md) —
+- [2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md) —
   compressed summary for interview prep: attention, RLHF, prompting, model behavior.
 
 ### Cleaned notes
@@ -56,7 +59,7 @@ what the model is doing, why it behaves as it does, and how to instruct it relia
   and preference optimization algorithms (DPO, GRPO) are extracted to the 05-RL pillar
   — see pointers in rl.md. For the full RL curriculum (topic map, gap analysis, notes),
   see [05-RL/README.md](../05-rl/readme.md).
-- [prompt-engineering.md](../../ai-engineering/01-prompt/prompt-engineering.md) — core techniques:
+- [01-prompt-engineering](../../ai-engineering/01-prompt-engineering/README.md#rules-of-thumb) — core techniques:
   system prompts, zero-shot/few-shot, chain-of-thought, structured output, XML structuring,
   prompt templates, prompt chaining, long-context patterns, and the prompt/context boundary.
 

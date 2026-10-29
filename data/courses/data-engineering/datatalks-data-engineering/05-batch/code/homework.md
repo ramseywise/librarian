@@ -1,5 +1,5 @@
 ---
-imported_hash: 352744a7e7ab29ec
+imported_hash: 084de42bf2cbbde2
 title: Homework
 summary: df.write.parquet('data/pq/fhvhv/2021/02/', compression=)
 order: 29

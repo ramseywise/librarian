@@ -1,11 +1,11 @@
 ---
-imported_hash: 564a4af6b26c2896
+imported_hash: 75ca3ceec6a39147
 title: 'Worked STAR Example: Failure Owned'
 summary: The recovery detail ("CTO later used the post-mortem as a template") is not included to soften the failure — it's included because it's true and it completes the picture.
 order: 8
 kind: reading
 section: Behavioral / Examples
-source: learn-ai-engineering/interviewing/rounds/behavioral/examples/failure-owned.md
+source: sisyphus/interviewing/rounds/behavioral/examples/failure-owned.md
 ---
 
 # Worked STAR Example: Failure Owned
@@ -19,6 +19,7 @@ source: learn-ai-engineering/interviewing/rounds/behavioral/examples/failure-own
 ## The story
 
 ### Situation
+>
 > I was the technical lead on a data pipeline migration — moving a legacy ETL system to a new
 > streaming architecture that would reduce processing latency from 6 hours to under 15 minutes.
 > The migration was a high-priority initiative with a fixed deadline tied to a product launch.
@@ -30,6 +31,7 @@ hedging, no foreshadowing of success. The setup doesn't telegraph the outcome.
 ---
 
 ### Task
+>
 > I was responsible for the migration plan, the cutover schedule, and the go/no-go call.
 > Engineering leadership trusted me to run this autonomously.
 
@@ -40,6 +42,7 @@ point except at yourself.
 ---
 
 ### Action
+>
 > I underestimated the schema complexity of the legacy system. I had audited the documented
 > schemas, but there were 14 undocumented field variants that only appeared in edge-case
 > producer configurations — configurations that hadn't been exercised in our test data.
@@ -77,6 +80,7 @@ point except at yourself.
    performance of ownership.
 
 **Common mistakes at Action**:
+
 - "Due to circumstances outside our control..." — hedging.
 - "The team and I..." — diffusion.
 - Spending too much time on the fix and not enough on the failure mechanism.
@@ -84,6 +88,7 @@ point except at yourself.
 ---
 
 ### Result
+>
 > The product launch was delayed 2 days. The cutover eventually succeeded with zero data loss
 > on the second attempt. We recovered all 8% of dropped records through the reconciliation.
 >
@@ -103,6 +108,7 @@ accountable, and useful to the org.
 ---
 
 ### Reflection
+>
 > Since then, I always audit actual data producers and not just documented schemas before any
 > migration. I also added a mandatory schema validation step to our migration checklist — new
 > pipelines now validate incoming records against an explicit schema with hard failures, not

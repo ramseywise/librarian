@@ -1,8 +1,8 @@
 ---
-imported_hash: bfbc0af9dc60b632
+imported_hash: e56892606db84227
 title: Prompt Engineering with Mixtral 8x7B
 summary: This guide provides some prompt examples demonstrating how to use Mixtral 8x7B and it's wide range of capabilities.
-order: 11
+order: 10
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-mixtral-introduction.ipynb

@@ -1,7 +1,7 @@
 ---
-imported_hash: 8e3e08f061a9f28d
+imported_hash: 5730695deb933a00
 title: 'for newer versions of spark use that:'
-summary: See the notebook with configuration in 09sparkgcs.ipynb
+summary: See the notebook with configuration in 09_spark_gcs.ipynb
 order: 28
 kind: reading
 section: Batch / Code

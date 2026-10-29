@@ -1,11 +1,11 @@
 ---
-imported_hash: 8c5b7c17bc677386
+imported_hash: 36116ac9f1963d75
 title: 1 — What a Harness Is
 summary: A raw model is a text transformer. It becomes an agent only when something gives it durable state, tool execution, feedback loops, and enforceable constraints.
 order: 11
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/03-harness/notes/01-what-a-harness-is.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/01-what-a-harness-is.md
 ---
 
 # 1 — What a Harness Is
@@ -23,6 +23,34 @@ A raw model is a text transformer. It becomes an *agent* only when something giv
 The formal version (harness-engineering.ai): harness engineering is *"the discipline of designing, building, and operating the infrastructure that constrains, informs, verifies, and corrects AI agents in production."*
 
 Four verbs worth keeping — a harness **constrains** (boundaries), **informs** (context), **verifies** (checks), and **corrects** (recovery). Most incomplete harnesses have the first two and are missing the last two.
+
+### The expanded equation
+
+Li's version takes the component formula from [gen-AI 03](../../../generative-ai/03-agentic-foundations/agent-fundamentals.md), *Agent = LLM + Context + Tools*, and wraps three safeguard layers around the two non-model terms:
+
+> **Agent = LLM + [Context + Tools + Constrain + Verify + Correct] = Model + Harness**
+
+LLM + Context + Tools is the demo view. The bracket is the production view, which contains the demo view and adds the safety net. The boundary between the five functions is easiest to see on one refund:
+
+| Function | In the refund example | Core design principle |
+|---|---|---|
+| Context | The 7-day refund policy is in the system prompt | *Information sufficiency* at every decision point |
+| Tools | `query_order`, `process_refund` | *Clear interface*: intuitive names, examples in params, stated boundaries |
+| Constrain | Refund ≤ order total, checked by the framework | *Fail-safe defaults*: every capability off until explicitly enabled |
+| Verify | Confirm in the DB that the refund landed | *Input isolation*: check structured tool fields, never model prose, which injection can steer |
+| Correct | Retry automatically on API timeout | *Don't expose intermediate state* until failure is confirmed unrecoverable |
+
+Without the harness, the same model gets no policy, picks no tool, invents a success message, and the user finds out later. The five functions form a closed loop. Context and tools drive decisions, constrain prevents errors, verify detects deviations and correct closes the loop. Leave any one out and there is a reliability gap.
+
+The centre of gravity shifts as products mature. Early frameworks were mostly context and tools. In Claude Code, most of the harness code goes on constrain/verify/correct: process-state tracking, multi-layer compaction, permission tiers, circuit breakers, rollback-and-retry. The tools themselves are a small fraction.
+
+---
+
+## Observation and action spaces
+
+The observation space (context) and the action space (tools) are the model's whole interface to the world. With the model fixed, **redefining or expanding them is the main systems lever**. A task that looks like it needs a smarter model often needs the right data in context or the right operation exposed as a tool. Manus generalized by uniting the spaces of research, coding and computer-use agents. OpenClaw widened them again to messaging channels and local files.
+
+Expansion must be **on-demand, relevant and controlled**. Retrieval brings in what matters, tool discovery exposes only what is needed now ([note 03](03-tool-design.md)), and permissions plus result verification bound what the new actions can do ([note 04](04-execution-boundaries.md)).
 
 ---
 
@@ -62,7 +90,22 @@ Two data points:
 - **LangChain DeepAgents**: 52.8% → 66.5% on Terminal Bench 2.0 (~rank 30 → top five), harness-only changes, fixed model.
 - **Osmani's observation**: Claude Opus 4.6 performs far below its ceiling in a loose harness and far above it in one with tighter tool design and prompts.
 
+The same pattern shows up in Li's nesting of engineering scopes: **prompt ⊂ context ⊂ harness ⊂ loop**. Each scope widens what the engineer controls: the instruction, then the working set, then the system the model runs in, then sustained operation across runs. *Graph engineering* (a mid-2026 label) is an orchestration view across these scopes, not a sixth one: a loop is a graph with a back edge, and a graph node can run its own loop ([05-graph](../../05-graph-engineering/readme.md)).
+
 Hence the slogan: *a decent model with a great harness beats a great model with a bad harness.* And the diagnostic order that falls out of it — when an agent fails, **audit the orchestration layer first** (tool descriptions, retry budgets, handoff schemas), **then the context layer** (data quality, coverage, recency). In a mature setup the model is rarely the bottleneck.
+
+### Why coding agents matured first
+
+Li's explanation (ch. 5) is a two-by-two of goal clarity against verification automation:
+
+| | Verified automatically | Verified by a human |
+|---|---|---|
+| **Clear goal** | Sweet spot: fix a bug that has a failing test | Throughput-limited: a refactor that needs review |
+| **Vague goal** | Efficiently off track: "improve code quality" scored by a linter | Hard to start: "make the UI look better" |
+
+Coding agents are mature not because code models are unusually strong, but because decades of tests, type checkers, linters, CI and Git already form a harness that puts most coding tasks in the top-left cell. The harness's job in any other domain is to push tasks into that cell.
+
+**Harness thickness depends on the model.** On a weak model, offloading logic puzzles to a constraint solver lifts accuracy dramatically; on a strong reasoning model, the gain converges to near zero. The same harness can support opposite conclusions depending on which model it's paired with, so state the model whenever you report a harness result.
 
 ---
 
@@ -122,7 +165,7 @@ Osmani's rules for that file:
 - Every rule traces to an actual failure or an external constraint.
 - Bias toward the load-bearing basics: package manager, test framework, formatting conventions.
 
-Lines that can't name their originating failure are speculative, and speculative rules are what turn a checklist into an ignored wall of text. See [02-context/notes/02](../../02-context/notes/02-context-anatomy.md) on system-prompt altitude — the same drift, one layer down.
+Lines that can't name their originating failure are speculative, and speculative rules are what turn a checklist into an ignored wall of text. See [02-context-engineering/notes/02](../../02-context-engineering/notes/02-context-anatomy.md) on system-prompt altitude — the same drift, one layer down.
 
 ---
 
@@ -139,6 +182,8 @@ Independent teams, different models, different companies — converging on files
 Harness complexity doesn't shrink as models improve — it **shifts**. Better models eliminate the scaffolding built to mitigate old weaknesses (context anxiety, myopic planning) and unlock new capabilities that expose new failure modes needing different constraints.
 
 Meanwhile the useful primitives get standardized into products, then embedded into the next generation's training data, which makes models better at exactly those primitives. Harness design and model development co-train.
+
+This is the harness's answer to Sutton's *Bitter Lesson*: general methods that scale with compute beat hand-encoded priors. Li's stance is to **endorse the direction but stay pragmatic about the pace**. Models do absorb harness layers; tool calling and long-horizon planning both used to be external orchestration. But training cycles take months, and no model internalizes every business's constraints at once. The harness covers what the model can't yet do reliably, drops each layer the model absorbs, and moves to the next frontier. Updates also have more than one home: in-context adaptation, external artifacts (docs, prompts, code) and weights each persist on a different timescale ([gen-AI 03](../../../generative-ai/03-agentic-foundations/agent-fundamentals.md#how-agents-learn)).
 
 Practical consequence: **a harness needs periodic subtraction, not just addition.** See [note 08](08-maturity-and-failure-modes.md#iterative-simplification).
 

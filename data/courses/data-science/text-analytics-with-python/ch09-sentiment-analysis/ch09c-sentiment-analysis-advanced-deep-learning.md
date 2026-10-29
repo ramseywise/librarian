@@ -1,7 +1,7 @@
 ---
-imported_hash: 082622bdf4b904ed
+imported_hash: dd0e3d6a19619a51
 title: Import necessary depencencies
-summary: np.setprintoptions(precision=2, linewidth=80)
+summary: np.set_printoptions(precision=2, linewidth=80)
 order: 27
 kind: notebook
 section: Ch09   Sentiment Analysis

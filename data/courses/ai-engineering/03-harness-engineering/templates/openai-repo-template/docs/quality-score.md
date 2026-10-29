@@ -1,11 +1,11 @@
 ---
-imported_hash: c2e977d0f00276c2
+imported_hash: 89793969ada1f2f0
 title: QUALITYSCORE.md
 summary: This document tracks whether the repository is getting stronger or weaker over time.
 order: 36
 kind: reading
 section: Templates / Openai repo template / Docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/QUALITY_SCORE.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/QUALITY_SCORE.md
 ---
 
 # QUALITY_SCORE.md

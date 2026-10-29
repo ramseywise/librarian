@@ -1,11 +1,11 @@
 ---
-imported_hash: 846006ec2793f850
+imported_hash: 637f37e07ccfa993
 title: System Design Interview Patterns
 summary: Thirteen more round patterns, staff-level.
 order: 71
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/interview-patterns.md
+source: sisyphus/interviewing/rounds/system-design-round/interview-patterns.md
 ---
 
 # System Design Interview Patterns
@@ -21,7 +21,7 @@ The interviewer repeatedly praised the **decision-making process**, not just the
 
 Use this pattern every time you introduce a design decision:
 
-```
+```text
 Problem
     ↓
 Possible solutions
@@ -47,13 +47,13 @@ This style consistently scores highly because it demonstrates engineering judgme
 
 ---
 
-# 2. Build the Simplest Working System First
+## 2. Build the Simplest Working System First
 
 Don't begin with Kafka, Redis, CQRS, sharding, etc.
 
 Start with:
 
-```
+```text
 API
 ↓
 
@@ -76,11 +76,11 @@ over
 
 ---
 
-# 3. Think in Evolutions
+## 3. Think in Evolutions
 
 A common progression:
 
-```
+```text
 Simple implementation
 
 ↓
@@ -98,7 +98,7 @@ Repeat
 
 Example from the auction interview:
 
-```
+```text
 Cron Job
 
 ↓
@@ -122,14 +122,14 @@ Every optimization should solve a specific problem.
 
 ---
 
-# 4. Non-functional Requirements Drive Design
+## 4. Non-functional Requirements Drive Design
 
 Rather than listing:
 
-* scalability
-* latency
-* consistency
-* durability
+- scalability
+- latency
+- consistency
+- durability
 
 Tie each architectural component to one.
 
@@ -144,13 +144,13 @@ This creates a coherent narrative.
 
 ---
 
-# 5. High-Level Components Before Details
+## 5. High-Level Components Before Details
 
 The interviewer liked introducing abstractions first.
 
 Instead of:
 
-```
+```text
 APNS
 Firebase
 SNS
@@ -158,7 +158,7 @@ SNS
 
 say
 
-```
+```text
 Notification Service
 ```
 
@@ -166,19 +166,19 @@ Only drill down if asked.
 
 Similarly:
 
-```
+```text
 Blob Storage
 ```
 
 before
 
-```
+```text
 Amazon S3
 ```
 
 ---
 
-# 6. Separate Read and Write Paths
+## 6. Separate Read and Write Paths
 
 Even if you don't implement CQRS, think this way.
 
@@ -186,7 +186,7 @@ Auction example:
 
 Write path
 
-```
+```text
 Create Bid
 
 ↓
@@ -204,7 +204,7 @@ Publish Event
 
 Read path
 
-```
+```text
 Client
 
 ↓
@@ -224,7 +224,7 @@ Interviewers like seeing these modeled independently.
 
 ---
 
-# 7. Introduce Services Only for Independent Scaling
+## 7. Introduce Services Only for Independent Scaling
 
 Don't split services because "microservices."
 
@@ -232,7 +232,7 @@ Split them because scaling characteristics differ.
 
 Example:
 
-```
+```text
 Auction Service
 
 - creates auctions
@@ -247,13 +247,13 @@ Different workloads justify independent scaling.
 
 ---
 
-# 8. Think in Events
+## 8. Think in Events
 
 Modern interview designs often revolve around events.
 
 Examples:
 
-```
+```text
 Order Created
 
 Bid Submitted
@@ -267,7 +267,7 @@ Ride Requested
 
 Pattern:
 
-```
+```text
 Write DB
 
 ↓
@@ -281,19 +281,19 @@ Subscribers react
 
 Subscribers may include:
 
-* notifications
-* analytics
-* search indexing
-* recommendations
-* cache invalidation
+- notifications
+- analytics
+- search indexing
+- recommendations
+- cache invalidation
 
 ---
 
-# 9. Consistency Questions Are Common
+## 9. Consistency Questions Are Common
 
 If maintaining duplicate state:
 
-```
+```text
 Auction.highestBid
 
 AND
@@ -307,15 +307,15 @@ expect:
 
 Typical answers:
 
-* ACID transaction
-* optimistic locking
-* compare-and-swap
-* serializable isolation
-* single-writer pattern
+- ACID transaction
+- optimistic locking
+- compare-and-swap
+- serializable isolation
+- single-writer pattern
 
 ---
 
-# 10. Know When Caching Doesn't Help
+## 10. Know When Caching Doesn't Help
 
 A strong answer from the interview:
 
@@ -325,42 +325,42 @@ Don't force Redis into every design.
 
 Cache only when:
 
-* many reads
-* few writes
-* repeated access
+- many reads
+- few writes
+- repeated access
 
 Avoid caching:
 
-* constantly changing leaderboards
-* live bidding
-* rapidly mutating state
+- constantly changing leaderboards
+- live bidding
+- rapidly mutating state
 
 ---
 
-# 11. Scheduled Work Is a Common Pattern
+## 11. Scheduled Work Is a Common Pattern
 
 Many interviews include delayed execution:
 
 Examples:
 
-* send reminder tomorrow
-* auction ends in one hour
-* retry payment later
-* expire session
-* delete inactive account
+- send reminder tomorrow
+- auction ends in one hour
+- retry payment later
+- expire session
+- delete inactive account
 
 Useful solutions:
 
-* delayed queues
-* scheduled jobs
-* workflow engines (e.g., Temporal)
-* scheduler services
+- delayed queues
+- scheduled jobs
+- workflow engines (e.g., Temporal)
+- scheduler services
 
 Recognize these quickly.
 
 ---
 
-# 12. Durability Is Often Forgotten
+## 12. Durability Is Often Forgotten
 
 The interviewer highlighted this as the missing non-functional requirement.
 
@@ -370,7 +370,7 @@ Question:
 
 Without durable messaging:
 
-```
+```text
 Client
 
 ↓
@@ -388,7 +388,7 @@ Bid lost
 
 With a durable stream:
 
-```
+```text
 API
 
 ↓
@@ -408,7 +408,7 @@ Even if workers fail, events remain.
 
 ---
 
-# 13. Deep Knowledge > More Boxes
+## 13. Deep Knowledge > More Boxes
 
 The interviewer emphasized that staff-level interviews don't require dramatically different diagrams.
 
@@ -422,36 +422,36 @@ Instead of:
 
 Explain:
 
-* single-threaded execution
-* Lua scripts
-* atomic operations
-* pub/sub limitations
-* persistence options
-* eviction policies
+- single-threaded execution
+- Lua scripts
+- atomic operations
+- pub/sub limitations
+- persistence options
+- eviction policies
 
 Similarly:
 
 Kafka:
 
-* partitions
-* ordering guarantees
-* consumer groups
-* retention
-* replication
+- partitions
+- ordering guarantees
+- consumer groups
+- retention
+- replication
 
 Postgres:
 
-* MVCC
-* isolation levels
-* row locking
-* indexes
-* transactions
+- MVCC
+- isolation levels
+- row locking
+- indexes
+- transactions
 
 Depth demonstrates seniority more than architecture complexity.
 
 ---
 
-# 14. Interviewers Want Reasonable Confidence, Not Perfect Recall
+## 14. Interviewers Want Reasonable Confidence, Not Perfect Recall
 
 You don't need encyclopedic knowledge.
 
@@ -467,11 +467,11 @@ Demonstrate awareness of the capability rather than perfect product knowledge.
 
 ---
 
-# 15. Typical Staff-Level Progression
+## 15. Typical Staff-Level Progression
 
 Aim to move through problems in this order:
 
-```
+```text
 Clarify requirements
 
 ↓
@@ -509,7 +509,7 @@ Dive deep into technologies
 
 The interviewer noted that your **diagram likely wouldn't change much** between senior and staff. The difference is that a staff candidate explains *why* each component behaves the way it does and can discuss implementation details (e.g., Kafka partitioning, Postgres isolation levels, Redis internals, Temporal workflows) when prompted.
 
-## Overall Takeaway
+### Overall Takeaway
 
 Combining these notes with your earlier Spotify and Agentic AI summaries, a consistent interview philosophy emerges:
 

@@ -1,11 +1,11 @@
 ---
-imported_hash: 8cc51d1512fa7a97
+imported_hash: cc72adff216a4fe0
 title: FRONTEND.md
 summary: This file defines stable frontend expectations so agents do not invent UI patterns unpredictably.
 order: 33
 kind: reading
 section: Templates / Openai repo template / Docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/FRONTEND.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/FRONTEND.md
 ---
 
 # FRONTEND.md

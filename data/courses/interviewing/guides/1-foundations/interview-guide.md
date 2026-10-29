@@ -1,11 +1,11 @@
 ---
-imported_hash: fecf2241fa64a7fc
+imported_hash: e566d15ca378d39f
 title: ML Foundations (+ SQL/Analytics) — Study Guide
 summary: 'The classical round: still opens most MLE/DS loops, and AIE loops sanity-check it.'
 order: 5
 kind: reading
 section: Foundations
-source: learn-ai-engineering/interviewing/guides/1-foundations/interview-guide.md
+source: sisyphus/interviewing/guides/1-foundations/interview-guide.md
 ---
 
 # ML Foundations (+ SQL/Analytics) — Study Guide

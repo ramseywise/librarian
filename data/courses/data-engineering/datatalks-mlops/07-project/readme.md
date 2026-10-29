@@ -1,5 +1,5 @@
 ---
-imported_hash: 9b414a6217f3607d
+imported_hash: c4ddda4afc644bee
 title: Overview
 summary: 'Video: https://www.loom.com/share/8f99d25893de4fb8aaa95c0395c740b6'
 order: 33
@@ -110,8 +110,8 @@ Explore a collection of projects completed by members of our community. The proj
 
 ### MLOps Zoomcamp 2023
 
-* [2023 Projects](../cohorts/2023/07-project)
+* [2023 Projects](https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/cohorts/2023/07-project)
 
 ### MLOps Zoomcamp 2022
 
-* [2022 Projects](../cohorts/2022/07-project)
+* [2022 Projects](https://github.com/DataTalksClub/mlops-zoomcamp/tree/main/cohorts/2022/07-project)

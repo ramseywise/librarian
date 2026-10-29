@@ -1,7 +1,7 @@
 ---
-imported_hash: b196fd2c751a4dcc
+imported_hash: 4fbeb6bfed372fa8
 title: Text Preprocessing
-summary: 'for sentence in senttokenize(sentences): lowtokens = wordtokenize(sentence.lower()) processedsentences.append([word for word in lowtokens if word not in stpwrds])'
+summary: 'for sentence in sent_tokenize(sentences): low_tokens = word_tokenize(sentence.lower()) processed_sentences.append([word for word in low_tokens if word not in stpwrds])'
 order: 2
 kind: notebook
 section: Nltk

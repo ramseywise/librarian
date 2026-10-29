@@ -1,5 +1,5 @@
 ---
-imported_hash: c72c91b5acb95fa3
+imported_hash: f26146a1f1683ac1
 title: Emojify!
 summary: Welcome to the second assignment of Week 2.
 order: 19

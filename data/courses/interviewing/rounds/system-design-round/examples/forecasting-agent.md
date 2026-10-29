@@ -1,21 +1,23 @@
 ---
-imported_hash: 33f4d48b5d8b593c
+imported_hash: b31b79eb9e658778
 title: 'Example: Agentic Financial Forecasting System'
-summary: 'ForecastAgent (LangGraph, self-learning loop): Planner → Forecaster → Evaluator → Learner │ │ └──── feedback loop: errors → context ──┘'
+summary: '"Design an AI system that forecasts cash flows per customer segment for a B2B company.'
 order: 79
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/forecasting-agent.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/forecasting-agent.md
 ---
 
 # Example: Agentic Financial Forecasting System
 
 ## Prompt
+
 "Design an AI system that forecasts cash flows per customer segment for a B2B company. It should learn from its own prediction errors and explain its outputs."
 
 ## Step 1: Clarify & scope (3 min)
 
 **Questions I'd ask**:
+
 - Data sources: invoices, payments, CRM data, external signals?
 - Forecast horizon: next month, next quarter, next year?
 - Users: finance team (dashboards), executives (summaries), or automated downstream systems?
@@ -24,6 +26,7 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/fo
 - How often do segments change? (Static customer tiers vs dynamic clustering)
 
 **Assumptions after clarify**:
+
 - Invoice/payment history per customer, CRM metadata (industry, size, contract terms)
 - Quarterly horizon, updated monthly
 - Finance team via a dashboard, with natural-language explanations
@@ -41,7 +44,7 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/fo
 
 ### Architecture
 
-```
+```text
 User query → AtlasAgent (Haiku router):
   ├── forecast_tool  → ForecastAgent loop
   ├── segment_tool   → SegmentationAgent
@@ -76,6 +79,7 @@ FastAPI backend → Next.js + Tremor dashboard
 The Learner writes structured lessons into the agent's context: "Segment X is seasonal — ARIMA outperformed LightGBM by 12% last quarter." The Planner reads these on the next cycle. This is context engineering applied to ML: the model selection strategy improves without human intervention.
 
 **Classical ML + LLM hybrid**: The forecasting itself uses classical ML (LightGBM for tabular, ARIMA for time series). The LLM layer:
+
 1. Routes user queries to the right tool (forecast/segment/knowledge)
 2. Generates natural-language explanations of forecast outputs
 3. Manages the self-learning loop (Planner/Learner are LLM-driven)
@@ -85,6 +89,7 @@ Trade-off: LLMs are terrible at numerical prediction but excellent at reasoning 
 **Dynamic segmentation**: HDBSCAN + UMAP over customer features (payment patterns, invoice frequency, contract value, industry). No pre-set number of clusters — HDBSCAN discovers them. The LLM (Haiku) reads cluster centroids and generates human-readable segment names ("Late-paying Enterprise" vs "Cluster 7"). Segments re-compute monthly — customer behavior shifts.
 
 **Knowledge graph for explainability**: Neo4j stores the relationships: Customer → Segment → Metrics → Forecasts. When a user asks "Why is Customer X's forecast declining?", the system:
+
 1. Traverses the graph: Customer X → Segment "Late-paying Enterprise" → Metric "days_to_pay" trending up
 2. LLM synthesizes: "Customer X's forecast is declining because their payment delays have increased from 30 to 55 days over the last 3 months, consistent with the Late-paying Enterprise segment trend."
 
@@ -92,7 +97,7 @@ This is more reliable than asking the LLM to explain a number — the graph prov
 
 ### Eval harness
 
-```
+```text
 Forecast evaluation (monthly):
   - Segment-level MAPE against actuals (target: < 15%)
   - Per-customer accuracy distribution (flag outliers)
@@ -112,7 +117,7 @@ Segmentation evaluation:
 
 ### Data pipeline
 
-```
+```text
 Sources:
   Invoice/payment data (ERP sync, daily batch)
   CRM data (API pull, daily)

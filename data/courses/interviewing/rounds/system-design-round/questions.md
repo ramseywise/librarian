@@ -1,16 +1,17 @@
 ---
-imported_hash: a5f01492448b294b
+imported_hash: 6ba8586956f1f53d
 title: System Design Round — Questions & Model Answers
-summary: 'What doesn''t change: the eval pipeline (just runs on a sample), the safety layer, the HITL path, the fundamental data flow."'
+summary: System design questions are deliberately vague — the first thing you do is clarify, not design.
 order: 72
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/questions.md
+source: sisyphus/interviewing/rounds/system-design-round/questions.md
 ---
 
 # System Design Round — Questions & Model Answers
 
 ## Format note
+
 System design questions are deliberately vague — the first thing you do is clarify, not design. Model answers below show the *structure* of a strong response, not a script to memorize. The five-step process from the [study guide](study-guide.md) is the backbone.
 
 ---
@@ -121,6 +122,7 @@ What *doesn't* change: the eval pipeline (just runs on a sample), the safety lay
 **What they're testing**: Deliberate degradation, not panic.
 
 **Model answer**: "I'd degrade deliberately and state what quality I'm trading:
+
 - **Model tier**: Route easy queries (FAQ, factual lookup) to a smaller/cheaper model; reserve the expensive model for complex reasoning. This alone can cut 50-70% of model costs.
 - **Caching**: Aggressive semantic cache — many support queries are near-duplicates
 - **Batch vs realtime**: Move non-interactive work (embedding refresh, eval runs, summarization) to off-peak batch
@@ -136,6 +138,7 @@ What *doesn't* change: the eval pipeline (just runs on a sample), the safety lay
 **What they're testing**: Compliance awareness, cost reasoning, pragmatism.
 
 **Model answer**: "Decision axes:
+
 - **Data residency/compliance**: If regulated data (PII, PHI, financial) can't leave the network → on-prem or private endpoints with BAAs
 - **Volume economics**: At low volume, API is cheaper (no GPU ops burden). Crossover point depends on usage — typically 1M+ calls/month for dedicated inference to break even
 - **Capability gap**: Frontier models (Claude, GPT-4) still outperform open models on complex reasoning. If quality matters, API unless compliance forbids it.
@@ -152,6 +155,7 @@ What *doesn't* change: the eval pipeline (just runs on a sample), the safety lay
 **What they're testing**: Whether you think about eval unprompted — the strongest candidates state metrics before being asked.
 
 **Model answer**: "Three layers:
+
 1. **Offline eval**: Golden set with human-labeled examples. Two-tier grading: deterministic checks first (format, required fields, no PII), then LLM-as-judge for semantic quality (faithfulness, relevance). Calibrate the judge against human labels. Run on every deploy.
 2. **Online eval**: Trace graders scoring live traffic — continuous, not just pre-launch. Alert on quality regression, latency spikes, cost anomalies.
 3. **Human feedback**: Thumbs up/down from users → enrich the golden set → close the loop.
@@ -167,6 +171,7 @@ Success metrics with numbers: 'p95 under 2s, faithfulness above 0.9 on golden se
 **What they're testing**: Do you understand LLM-specific monitoring beyond standard APM? Can you reason about cost/quality trade-offs in tracing?
 
 **Model answer**: "Two separate tools, different audiences:
+
 - **Infrastructure APM** (Datadog/CloudWatch): uptime, endpoint health, container metrics — same as any service
 - **LLM-specific observability** (Langfuse): per-request traces with spans for retrieval/generation/tools, token counts, quality scores, prompt versioning
 
@@ -207,6 +212,7 @@ Success metrics with numbers: 'p95 under 2s, faithfulness above 0.9 on golden se
 **What they're testing**: MLOps maturity, production readiness thinking.
 
 **Model answer**: "Deployment topology depends on who uses it and what it costs:
+
 - **Cloud Run / serverless** for most AI services — auto-scales, pay-per-use, handles the bursty pattern of LLM workloads well. Key constraint: request timeout (manage with async jobs for long tasks).
 - **Split service** when scaling needs diverge (API server vs GPU embedding worker vs batch jobs).
 
@@ -225,6 +231,7 @@ Success metrics with numbers: 'p95 under 2s, faithfulness above 0.9 on golden se
 **What they're testing**: Pipeline thinking — idempotency, incremental processing, quality gates, failure handling.
 
 **Model answer**: "Four pipeline patterns, choice depends on freshness needs:
+
 - **Batch**: stable corpus, daily/weekly refresh. Simplest, cheapest.
 - **Event-driven**: webhook/upload triggers processing. Minutes latency.
 - **Streaming**: real-time (WebSocket/SSE). Only when genuinely needed — most 'real-time' needs are actually 'within minutes.'

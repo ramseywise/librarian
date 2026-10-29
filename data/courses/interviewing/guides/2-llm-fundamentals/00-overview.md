@@ -1,11 +1,11 @@
 ---
-imported_hash: 3e3c06e4292cbb16
+imported_hash: 0f16a65c16c8744a
 title: Pillar 2 — LLM Fundamentals (transformers → training → prompting)
 summary: 'How large language models actually work: tokens, attention, the training pipeline (pretraining → SFT → preference alignment), and how to talk to them.'
 order: 6
 kind: reading
 section: Llm fundamentals
-source: learn-ai-engineering/interviewing/guides/2-llm-fundamentals/00-overview.md
+source: sisyphus/interviewing/guides/2-llm-fundamentals/00-overview.md
 ---
 
 # Pillar 2 — LLM Fundamentals (transformers → training → prompting)
@@ -51,5 +51,6 @@ where you build a tiny GPT with your own hands — after that, nothing about LLM
 | rl.md · agents-self-training.md | note | [../../notes/](../../notes/) | RL/MARL + Agent-Lightning (confidence: low/medium) |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [technical-questions](../../rounds/technical-questions/readme.md) (this pillar is its core).

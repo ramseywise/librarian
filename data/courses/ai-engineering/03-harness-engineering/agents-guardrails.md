@@ -1,10 +1,10 @@
 ---
-imported_hash: 63ff621c821f588c
+imported_hash: ab982922e2b183bb
 title: Agents guardrails
 summary: Guardrails are basically a quality gate between what the agent says is done and the task actually being finalized.
 order: 4
 kind: reading
-source: learn-ai-engineering/ai-engineering/03-harness/agents-guardrails.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/agents-guardrails.md
 ---
 
 ### Agents:

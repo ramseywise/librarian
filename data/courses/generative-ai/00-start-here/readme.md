@@ -1,7 +1,7 @@
 ---
-imported_hash: 28fa8fefd8142ddc
+imported_hash: bdbcc1dc2de97ac5
 title: Generative AI
-summary: 'Temporal order: learn the gen-AI pillars first; the ai-engineering foundations (prompt → context → harness → loop → graph → eval) layer engineering discipline on top.'
+summary: External courses, books, papers and tools are in resources.md, organized by pillar.
 order: 1
 kind: reading
 source: learn-ai-engineering/generative-ai/README.md
@@ -10,7 +10,7 @@ source: learn-ai-engineering/generative-ai/README.md
 # Generative AI
 
 > **Depth domain.** This folder goes deep on the seven pillars of generative AI.
-> The [interviewing guides](../interviewing/guides/00-start-here.md) are the compressed
+> The [interviewing guides](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/00-start-here.md) are the compressed
 > summary layer — read those for exam prep. Read here for synthesis and depth.
 
 ---
@@ -43,19 +43,24 @@ The order encodes dependency and temporal emergence:
 - **Agentic applications** — specific projects built with the frameworks: an
   internet-search agent and a deep-research bot.
 
+External courses, books, papers and tools are in **[resources.md](resources.md)**, organized by
+pillar. Bojie Li's *AI Agents in Depth* is synthesised into pillars
+[03](../03-agentic-foundations/agent-fundamentals.md), [05](../05-rl/post-training-for-agents.md) and
+[07](../07-agentic-applications/real-time-multimodal-agents.md); each note links its labs upstream.
+
 ---
 
 ## Pillar → interviewing-guide crosswalk
 
 | Pillar | Depth (here) | Summary (guide) |
 |---|---|---|
-| LLM fundamentals | [01-llm-fundamentals/](../01-llm-fundamentals/readme.md) | [2-llm-fundamentals](../interviewing/guides/2-llm-fundamentals/00-overview.md) |
-| RAG & retrieval | [02-rag-retrieval/](../02-rag-retrieval/readme.md) | [3-rag](../interviewing/guides/3-rag/00-overview.md) |
-| Agentic foundations | [03-agentic-foundations/](../03-agentic-foundations/readme.md) | [4-agents](../interviewing/guides/4-agents/00-overview.md) |
-| Agentic frameworks | [04-agentic-frameworks/](../04-agentic-frameworks/readme.md) | [4-agents](../interviewing/guides/4-agents/00-overview.md) |
-| RL & alignment | [05-RL/](../05-rl/readme.md) | [2-llm-fundamentals](../interviewing/guides/2-llm-fundamentals/00-overview.md) |
-| Observability | [06-observability/](../06-observability/readme.md) | [4-agents](../interviewing/guides/4-agents/00-overview.md) |
-| Agentic applications | [07-agentic-applications/](../07-agentic-applications/readme.md) | [4-agents](../interviewing/guides/4-agents/00-overview.md) |
+| LLM fundamentals | [01-llm-fundamentals/](../01-llm-fundamentals/readme.md) | [2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md) |
+| RAG & retrieval | [02-rag-retrieval/](../02-rag-retrieval/readme.md) | [3-rag](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/3-rag/00-overview.md) |
+| Agentic foundations | [03-agentic-foundations/](../03-agentic-foundations/readme.md) | [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) |
+| Agentic frameworks | [04-agentic-frameworks/](../04-agentic-frameworks/readme.md) | [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) |
+| RL & alignment | [05-RL/](../05-rl/readme.md) | [2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md) |
+| Observability | [06-observability/](../06-observability/readme.md) | [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) |
+| Agentic applications | [07-agentic-applications/](../07-agentic-applications/readme.md) | [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) |
 
 ---
 
@@ -76,7 +81,7 @@ Temporal order: learn the gen-AI pillars first; the ai-engineering foundations
 their operational notes directly inside each pillar directory (e.g.
 `02-rag-retrieval/rag.md`, `06-observability/support-agent-observability.md`). There is no
 separate `interviewing/notes/` pointer layer for gen-AI content — notes were absorbed into
-the pillar dirs during the curriculum buildout. `interviewing/guides/` remains the
+the pillar dirs during the curriculum buildout. `interviewing/guides/` (now in sisyphus) remains the
 pointer-only summary layer for exam prep; it links into both `ai-engineering/` and
 `generative-ai/` pillar dirs for depth.
 
@@ -84,9 +89,9 @@ Cross-links from gen-AI pillars into ai-engineering:
 
 | gen-AI pillar | ai-engineering depth |
 |---|---|
-| 01 LLM fundamentals | [01-prompt/](../ai-engineering/01-prompt/README.md) — prompt engineering |
-| 02 RAG & retrieval | [02-context/](../ai-engineering/02-context/README.md) + [05-graph/](../ai-engineering/05-graph/README.md) |
-| 03-04 Agentic foundations + frameworks | [03-harness/](../ai-engineering/03-harness/README.md) + [04-loop/](../ai-engineering/04-loop/README.md) |
+| 01 LLM fundamentals | [01-prompt-engineering/](../ai-engineering/01-prompt-engineering/README.md) — prompt engineering |
+| 02 RAG & retrieval | [02-context-engineering/](../ai-engineering/02-context-engineering/README.md) + [05-graph-engineering/](../ai-engineering/05-graph-engineering/README.md) |
+| 03-04 Agentic foundations + frameworks | [03-harness-engineering/](../ai-engineering/03-harness-engineering/README.md) + [04-loop-engineering/](../ai-engineering/04-loop-engineering/README.md) |
 | 06 Observability | [06-eval/](../ai-engineering/06-eval/README.md) — evaluation and measurement |
 
 ---

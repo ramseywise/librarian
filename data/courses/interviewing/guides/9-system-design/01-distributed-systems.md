@@ -1,11 +1,11 @@
 ---
-imported_hash: 5b6c49195de39ddf
+imported_hash: d8112f5f314002c0
 title: System Design Fundamentals
 summary: 'Pillar 9, detailed note 1. The generic backend substrate the LLM-flavored design round assumes you already have: scaling, load balancing, data modeling, replication, sharding, caching.'
 order: 22
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/01-distributed-systems.md
+source: sisyphus/interviewing/guides/9-system-design/01-distributed-systems.md
 ---
 
 # System Design Fundamentals
@@ -21,11 +21,11 @@ caching. The [interview guide](interview-guide.md) is the *method*; this is the
 
 It is less about writing code and more about answering:
 
-* How should requests flow?
-* Where should data live?
-* What happens when traffic grows?
-* What breaks first?
-* How do we fix it?
+- How should requests flow?
+- Where should data live?
+- What happens when traffic grows?
+- What breaks first?
+- How do we fix it?
 
 The core mindset:
 
@@ -35,13 +35,13 @@ System design is understanding those tradeoffs.
 
 ---
 
-# Engineering Levels
+## Engineering Levels
 
 ### Junior
 
 Focuses on implementing features.
 
-```
+```text
 Input
  ↓
 Code
@@ -51,7 +51,7 @@ Output
 
 ---
 
-### Mid-level
+#### Mid-level
 
 Given a problem.
 
@@ -59,26 +59,26 @@ Responsible for deciding **how to implement** a solution inside an existing syst
 
 ---
 
-### Senior
+#### Senior
 
 Designs the entire architecture.
 
 Decides
 
-* databases
-* caching
-* APIs
-* scaling
-* tradeoffs
-* reliability
+- databases
+- caching
+- APIs
+- scaling
+- tradeoffs
+- reliability
 
 ---
 
-# Build One Server First
+## Build One Server First
 
 Initial architecture:
 
-```
+```text
 Users
    ↓
 Server
@@ -93,9 +93,9 @@ Most startups should begin here.
 
 ---
 
-# Common Failures and Their Solutions
+## Common Failures and Their Solutions
 
-## 1. CPU/RAM exhausted
+### 1. CPU/RAM exhausted
 
 Problem
 
@@ -113,7 +113,7 @@ Solution
 
 **Load Balancer**
 
-```
+```text
 Users
     ↓
 Load Balancer
@@ -123,7 +123,7 @@ Server1  Server2
 
 ---
 
-## 2. Database overloaded
+### 2. Database overloaded
 
 Problem
 
@@ -131,14 +131,14 @@ Thousands of users repeatedly request the same content.
 
 Example
 
-* trending photos
-* popular profiles
+- trending photos
+- popular profiles
 
 Solution
 
 **Cache**
 
-```
+```text
 Request
 
 ↓
@@ -152,12 +152,12 @@ Database
 
 Benefits
 
-* faster reads
-* reduced DB load
+- faster reads
+- reduced DB load
 
 ---
 
-## 3. Server dies
+### 3. Server dies
 
 Problem
 
@@ -167,12 +167,12 @@ Single Point of Failure.
 
 Solution
 
-* database replication
-* external object storage (e.g. S3)
+- database replication
+- external object storage (e.g. S3)
 
 ---
 
-# System Design Principle
+## System Design Principle
 
 Notice:
 
@@ -184,19 +184,19 @@ That is the essence of system design.
 
 ---
 
-# High-Level Design vs Low-Level Design
+## High-Level Design vs Low-Level Design
 
-## High-Level Design (HLD)
+### High-Level Design (HLD)
 
 Architecture.
 
 Focus:
 
-* services
-* databases
-* cache
-* queues
-* networking
+- services
+- databases
+- cache
+- queues
+- networking
 
 Interview examples
 
@@ -204,16 +204,16 @@ Interview examples
 
 ---
 
-## Low-Level Design (LLD)
+### Low-Level Design (LLD)
 
 Implementation.
 
 Focus:
 
-* classes
-* objects
-* algorithms
-* data structures
+- classes
+- objects
+- algorithms
+- data structures
 
 Interview examples
 
@@ -229,39 +229,39 @@ Always clarify:
 
 ---
 
-# Functional vs Non-Functional Requirements
+## Functional vs Non-Functional Requirements
 
-## Functional
+### Functional
 
 Features.
 
 Examples
 
-* upload photo
-* follow user
-* like photo
-* comment
-* feed
+- upload photo
+- follow user
+- like photo
+- comment
+- feed
 
 ---
 
-## Non-functional
+### Non-functional
 
 Quality attributes.
 
 Examples
 
-* latency
-* availability
-* scalability
-* durability
-* cost
+- latency
+- availability
+- scalability
+- durability
+- cost
 
 Interviewers care about these more.
 
 ---
 
-# Five Questions Before Designing
+## Five Questions Before Designing
 
 Always ask:
 
@@ -271,11 +271,11 @@ Current and future scale.
 
 ---
 
-### 2. Read-heavy or write-heavy?
+#### 2. Read-heavy or write-heavy?
 
 Instagram
 
-```
+```text
 Reads >>> Writes
 ```
 
@@ -283,21 +283,21 @@ Optimize reads.
 
 ---
 
-### 3. What data can never be lost?
+#### 3. What data can never be lost?
 
 Examples
 
 Never lose
 
-* uploaded photos
+- uploaded photos
 
 Can tolerate
 
-* slightly stale like counts
+- slightly stale like counts
 
 ---
 
-### 4. Latency requirements?
+#### 4. Latency requirements?
 
 Example
 
@@ -311,15 +311,15 @@ Uploads
 
 ---
 
-### 5. Budget?
+#### 5. Budget?
 
 Architecture is always constrained by cost.
 
 ---
 
-# Monolith vs Microservices
+## Monolith vs Microservices
 
-## Monolith
+### Monolith
 
 One codebase
 
@@ -329,32 +329,32 @@ Simpler
 
 Good for:
 
-* startups
-* small teams
+- startups
+- small teams
 
 ---
 
-## Microservices
+### Microservices
 
 Split by functionality
 
 Example
 
-* Feed Service
-* Upload Service
-* Likes Service
-* Notification Service
+- Feed Service
+- Upload Service
+- Likes Service
+- Notification Service
 
 Advantages
 
-* independent scaling
-* independent deployments
+- independent scaling
+- independent deployments
 
 Disadvantages
 
-* network failures
-* debugging complexity
-* operational overhead
+- network failures
+- debugging complexity
+- operational overhead
 
 Rule:
 
@@ -364,39 +364,39 @@ Rule:
 
 ---
 
-# Vertical vs Horizontal Scaling
+## Vertical vs Horizontal Scaling
 
-## Vertical
+### Vertical
 
 Bigger server.
 
 Pros
 
-* simple
-* no code changes
+- simple
+- no code changes
 
 Cons
 
-* expensive
-* hard limit
-* still one point of failure
+- expensive
+- hard limit
+- still one point of failure
 
 ---
 
-## Horizontal
+### Horizontal
 
 More servers.
 
 Pros
 
-* nearly unlimited scaling
-* fault tolerant
+- nearly unlimited scaling
+- fault tolerant
 
 Requires
 
-* load balancer
-* shared state
-* distributed data
+- load balancer
+- shared state
+- distributed data
 
 Interview answer
 
@@ -406,11 +406,11 @@ Move horizontally when necessary.
 
 ---
 
-# How Requests Reach Your Server
+## How Requests Reach Your Server
 
 Flow
 
-```
+```text
 Browser
 
 ↓
@@ -460,13 +460,13 @@ Amount of data transferred.
 
 ---
 
-# Load Balancer
+## Load Balancer
 
 Responsibilities
 
-* distribute traffic
-* remove dead servers
-* health checks
+- distribute traffic
+- remove dead servers
+- health checks
 
 Algorithms
 
@@ -476,13 +476,13 @@ Equal rotation.
 
 ---
 
-### Least Connections
+#### Least Connections
 
 Send to least busy server.
 
 ---
 
-### Weighted
+#### Weighted
 
 Larger servers receive more requests.
 
@@ -492,19 +492,19 @@ Load balancers are reverse proxies.
 
 Popular implementations
 
-* NGINX
-* HAProxy
-* AWS ELB
+- NGINX
+- HAProxy
+- AWS ELB
 
 ---
 
-# Stateless vs Stateful
+## Stateless vs Stateful
 
 Bad approach
 
 Store login session inside application memory.
 
-```
+```text
 User
 
 ↓
@@ -536,7 +536,7 @@ Move session into shared storage.
 
 Usually Redis.
 
-```
+```text
 Server A
 
 ↓
@@ -558,8 +558,8 @@ Possible.
 
 Usually discouraged because
 
-* poor load balancing
-* server failures lose sessions
+- poor load balancing
+- server failures lose sessions
 
 Golden rule
 
@@ -567,7 +567,7 @@ Keep application servers stateless.
 
 ---
 
-# Data Modeling
+## Data Modeling
 
 Don't start with
 
@@ -581,11 +581,11 @@ Access patterns define schema.
 
 Example queries
 
-* show profile
-* show feed
-* upload photo
-* like photo
-* follow user
+- show profile
+- show feed
+- upload photo
+- like photo
+- follow user
 
 ---
 
@@ -605,7 +605,7 @@ IDs connect everything.
 
 ---
 
-# SQL vs NoSQL
+## SQL vs NoSQL
 
 Choose based on data shape.
 
@@ -615,15 +615,15 @@ SQL
 
 Use when
 
-* structured data
-* relationships
-* joins
-* transactions
+- structured data
+- relationships
+- joins
+- transactions
 
 Examples
 
-* PostgreSQL
-* MySQL
+- PostgreSQL
+- MySQL
 
 ---
 
@@ -631,15 +631,15 @@ NoSQL
 
 Use when
 
-* flexible schema
-* huge scale
-* document/event data
+- flexible schema
+- huge scale
+- document/event data
 
 Examples
 
-* MongoDB
-* DynamoDB
-* Elasticsearch
+- MongoDB
+- DynamoDB
+- Elasticsearch
 
 ---
 
@@ -647,22 +647,22 @@ Instagram example
 
 SQL
 
-* users
-* photos
-* follows
-* comments
+- users
+- photos
+- follows
+- comments
 
 NoSQL
 
-* preferences
-* analytics
-* behavior events
+- preferences
+- analytics
+- behavior events
 
 Real systems often use both.
 
 ---
 
-# Database Indexes
+## Database Indexes
 
 Without index
 
@@ -678,7 +678,7 @@ Index columns that are queried frequently.
 
 Example
 
-```
+```text
 posted_by
 
 upload_time
@@ -698,7 +698,7 @@ Index later.
 
 ---
 
-# Caching
+## Caching
 
 Purpose
 
@@ -706,7 +706,7 @@ Avoid repeated database work.
 
 Architecture
 
-```
+```text
 App
 
 ↓
@@ -730,13 +730,13 @@ Query DB then populate cache.
 
 Good cache candidates
 
-* trending posts
-* popular profiles
-* feed metadata
+- trending posts
+- popular profiles
+- feed metadata
 
 Also commonly stores
 
-* sessions
+- sessions
 
 ---
 
@@ -762,7 +762,7 @@ Eventually consistent.
 
 ---
 
-### Active Invalidation
+#### Active Invalidation
 
 Delete cache immediately after write.
 
@@ -778,17 +778,17 @@ Many cache entries expire simultaneously.
 
 Mitigations
 
-* randomized TTL
-* request coalescing
-* background refresh
+- randomized TTL
+- request coalescing
+- background refresh
 
 ---
 
-# Replication
+## Replication
 
 Architecture
 
-```
+```text
 Primary
 
 ↓
@@ -808,8 +808,8 @@ Primary + replicas.
 
 Benefits
 
-* availability
-* read scaling
+- availability
+- read scaling
 
 ---
 
@@ -847,7 +847,7 @@ Need backups for recovery.
 
 ---
 
-# Sharding
+## Sharding
 
 Replication solves read scaling.
 
@@ -855,7 +855,7 @@ Sharding solves storage scaling.
 
 Split data across multiple databases.
 
-```
+```text
 Shard 0
 
 Shard 1
@@ -869,7 +869,7 @@ Choose a shard key.
 
 Usually
 
-```
+```text
 user_id
 ```
 
@@ -885,7 +885,7 @@ Need better key.
 
 ---
 
-### Resharding
+#### Resharding
 
 Modulo-based partitioning moves almost all data when adding shards.
 
@@ -897,11 +897,11 @@ Moves only small portions of data.
 
 ---
 
-# Overall Architecture
+## Overall Architecture
 
 Final architecture from the course:
 
-```
+```text
                 DNS
                  │
           Load Balancer
@@ -927,18 +927,18 @@ Replicas
 Sharding
 ```
 
-# Interview Takeaways
+## Interview Takeaways
 
 The course repeatedly emphasizes these habits:
 
-* Clarify **functional** and **non-functional** requirements before designing.
-* Ask about **users, scale, traffic patterns, latency, durability, and cost**.
-* Justify every architectural component with a requirement ("We're adding Redis because reads dominate.").
-* Start with the simplest architecture (single server → monolith → vertical scaling) and introduce complexity only when required.
-* Explain **trade-offs**, not just technologies. Every solution (cache, replicas, microservices, sharding) solves one problem while introducing another.
-* Think in terms of **failure modes** ("What happens if this component dies?" or "What happens when this becomes a bottleneck?").
+- Clarify **functional** and **non-functional** requirements before designing.
+- Ask about **users, scale, traffic patterns, latency, durability, and cost**.
+- Justify every architectural component with a requirement ("We're adding Redis because reads dominate.").
+- Start with the simplest architecture (single server → monolith → vertical scaling) and introduce complexity only when required.
+- Explain **trade-offs**, not just technologies. Every solution (cache, replicas, microservices, sharding) solves one problem while introducing another.
+- Think in terms of **failure modes** ("What happens if this component dies?" or "What happens when this becomes a bottleneck?").
 
-## Key Mental Model
+### Key Mental Model
 
 A useful progression for system design interviews is:
 

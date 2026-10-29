@@ -1,11 +1,11 @@
 ---
-imported_hash: 643f594123d35120
+imported_hash: 135dd500dcaeb5a6
 title: ARCHITECTURE.md
 summary: This file is the top-level map of the system.
 order: 31
 kind: reading
 section: Templates / Openai repo template
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/ARCHITECTURE.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/ARCHITECTURE.md
 ---
 
 # ARCHITECTURE.md

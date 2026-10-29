@@ -1,11 +1,11 @@
 ---
-imported_hash: edf4d3d496fbeda4
+imported_hash: 925989ce664c6cea
 title: Case Study Round (live · code test · take-home · Work Trial · presentation/defense)
 summary: The 1h timed code test is emerging, not canonical — evidenced in CoderPad/CodeSignal pilots, not confirmed as a standard round at major AIE employers.
 order: 9
 kind: reading
 section: Case study
-source: learn-ai-engineering/interviewing/rounds/case-study/README.md
+source: sisyphus/interviewing/rounds/case-study/README.md
 ---
 
 # Case Study Round (live · code test · take-home · Work Trial · presentation/defense)
@@ -34,20 +34,24 @@ Bridging theory to a business problem: problem decomposition, metric selection, 
 The 1h timed code test is **emerging, not canonical** — evidenced in CoderPad/CodeSignal pilots, not confirmed as a standard round at major AIE employers. Prepare for it as a compression of the take-home, not as a round you should expect.
 
 ### Live case (45–75 min)
+
 "Client wants to automate support / detect churn / process documents — design the solution." The FDE version is the loop's highest-weight round (~30%) with the lowest pass rate (~40%) — deliberately ambiguous, and the ambiguity is the test. Starts with clarifying questions; ends with a milestone plan and measurement story.
 
 ### Technical test (offline, 1–3h)
+
 A dataset or scenario; deliverable is a notebook, memo, or deck. Graded on scoping discipline (a shipped MVP with a risk register beats an unfinished tour de force), stated assumptions, and clean writeup. Budget 20% of time for the writeup.
 
 ### Work Trial (3–6h)
+
 The long end of the offline spectrum. The deliverable is a production-shaped repo, and production-readiness weighs roughly as heavily as feature completeness — tests, error handling, and a README that explains operational limits are graded, not optional polish. See [study-guide.md](study-guide.md) for how test expectation scales with the timebox.
 
 ### Presentation/defense
+
 The take-home's second half — present to a panel, then defend: "why this model?", "what breaks at 10× scale?", "what would you do with two more weeks?" Prepare for challenge; adapting visibly scores higher than defending.
 
 ## The working template (one page — memorize it)
 
-```
+```text
 Objective & users
 → Constraints (latency, cost/1K tokens, privacy, budget)
 → Data sources

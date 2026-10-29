@@ -1,5 +1,5 @@
 ---
-imported_hash: ac1e5b49dbe91a92
+imported_hash: f0e2459abd9ae9e3
 title: 'Convolutional Neural Networks: Step by Step'
 summary: Welcome to Course 4's first assignment! In this assignment, you will implement convolutional (CONV) and pooling (POOL) layers in numpy, including both forward propagation and (optionally) backward propagation.
 order: 2

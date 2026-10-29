@@ -1,5 +1,5 @@
 ---
-imported_hash: 7c8bac1a54bdf02d
+imported_hash: b11e06db91de0484
 title: Text Wrangling
 summary: 'The Elder Scrolls V: Skyrim is an action role-playing game, playable from either a first or third-person perspective.'
 order: 17

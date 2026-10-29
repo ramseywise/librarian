@@ -1,5 +1,5 @@
 ---
-imported_hash: 4156de548ce1f33b
+imported_hash: 34bcbaad95b5c9c4
 title: 3. Orchestration and ML Pipelines
 summary: See the Unit 3.0 for a Quick Start guide
 order: 11
@@ -22,7 +22,7 @@ source: learn-ai-engineering/data-engineering/DataTalks MLOps/03-orchestration/R
 
 ## [3.5 Deploying: Running operations in production](3/readme-6.md)
 
-## [3.6 Homework](../cohorts/2024/03-orchestration/homework.md).
+## [3.6 Homework](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/cohorts/2024/03-orchestration/homework.md).
 
 ## Quickstart
 
@@ -44,5 +44,5 @@ Did you take notes? Add them here:
 
 ### Notes previous editions
 
-- [2022 Prefect notes](../cohorts/2022/03-orchestration/README.md)
-- [2023 Prefect notes](../cohorts/2023/03-orchestration/prefect/README.md)
+- [2022 Prefect notes](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/cohorts/2022/03-orchestration/README.md)
+- [2023 Prefect notes](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/cohorts/2023/03-orchestration/prefect/README.md)

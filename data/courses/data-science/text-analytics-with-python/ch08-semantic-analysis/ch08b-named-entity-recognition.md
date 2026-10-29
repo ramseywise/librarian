@@ -1,5 +1,5 @@
 ---
-imported_hash: f238d950428add5a
+imported_hash: 4c33bfdbcef1052c
 title: Named Entity Recognition
 summary: In any text document, there are particular terms that represent specific entities that are more informative and have a unique context.
 order: 22

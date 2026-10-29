@@ -1,11 +1,11 @@
 ---
-imported_hash: 3d8c489fca435789
+imported_hash: 17e81e0d22e4d37f
 title: 'Worked Example: Retail Support Automation (Live Case)'
 summary: ''
 order: 16
 kind: reading
 section: Case study / Examples / Aie track
-source: learn-ai-engineering/interviewing/rounds/case-study/examples/aie-track/retail-support-automation.md
+source: sisyphus/interviewing/rounds/case-study/examples/aie-track/retail-support-automation.md
 ---
 
 # Worked Example: Retail Support Automation (Live Case)
@@ -40,6 +40,7 @@ source: learn-ai-engineering/interviewing/rounds/case-study/examples/aie-track/r
 Deflect 40% of tier-1 tickets (order status + FAQ — 60% of 8K = 4,800/month → target 1,920 deflections/month) to an AI channel, reducing average support cost from $10/ticket to $6.40/ticket blended.
 
 **Value math:**
+
 - Current: 8,000 tickets/month × $10 = $80K/month
 - Target: 8,000 × (40% deflected at ~$0.50 variable cost + 60% at $10) = $800 + $48,000 = $48,800/month
 - Monthly savings: ~$31K. Annual: ~$372K.
@@ -91,7 +92,7 @@ Deflect 40% of tier-1 tickets (order status + FAQ — 60% of 8K = 4,800/month �
 
 **Architecture decision:** RAG over FAQ + KB, with an order status tool call for real-time data. No fine-tuning in MVP — too slow to iterate, and the knowledge is in documents, not model weights.
 
-```
+```text
 Customer message
     → Intent router (LLM classifier: FAQ / order-status / complaint / other)
 
@@ -111,6 +112,7 @@ Customer message
 ```
 
 **Components:**
+
 - Embedding model: text-embedding-3-small (fast, cheap, sufficient for FAQ retrieval)
 - Vector store: pgvector on existing Postgres (avoids adding a new service for MVP)
 - LLM: GPT-4o mini for intent routing and FAQ answers (lower cost); GPT-4o for complex synthesis if needed
@@ -173,6 +175,7 @@ Customer message
 *Always close the live case with this.*
 
 > "We declare success when:
+>
 > - Deflection rate reaches 40% sustained over 30 days
 > - CSAT holds at ≥4.1/5 (baseline: 4.3/5, we're allowing a 0.2-point degradation during ramp)
 > - Monthly support cost drops from $80K to under $52K

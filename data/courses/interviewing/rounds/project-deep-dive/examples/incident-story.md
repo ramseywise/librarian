@@ -1,11 +1,11 @@
 ---
-imported_hash: 09d3fc536f8fa896
+imported_hash: d962fc06df0b5601
 title: 'Example: Incident Story — Retrieval Quality Degradation'
 summary: This example demonstrates the detection → isolation → root cause → fix → prevention structure.
 order: 64
 kind: reading
 section: Project deep dive / Examples
-source: learn-ai-engineering/interviewing/rounds/project-deep-dive/examples/incident-story.md
+source: sisyphus/interviewing/rounds/project-deep-dive/examples/incident-story.md
 ---
 
 # Example: Incident Story — Retrieval Quality Degradation

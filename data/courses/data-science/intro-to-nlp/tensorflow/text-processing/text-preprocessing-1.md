@@ -1,7 +1,7 @@
 ---
-imported_hash: 9cf563ff0ba979f9
+imported_hash: 560fbdc51078c74e
 title: Text Preprocessing
-summary: from nltk import wordtokenize, senttokenize from nltk.corpus import stopwords from nltk.stem.porter import
+summary: from nltk import word_tokenize, sent_tokenize from nltk.corpus import stopwords from nltk.stem.porter import
 order: 19
 kind: notebook
 section: tensorFlow / Text processing

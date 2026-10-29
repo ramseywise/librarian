@@ -1,11 +1,11 @@
 ---
-imported_hash: d71b386a479436a9
+imported_hash: 55456f115c8fd66c
 title: RELIABILITY.md
 summary: This file defines how the system proves it is healthy and restartable.
 order: 37
 kind: reading
 section: Templates / Openai repo template / Docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/RELIABILITY.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/RELIABILITY.md
 ---
 
 # RELIABILITY.md

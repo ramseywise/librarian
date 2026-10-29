@@ -1,7 +1,7 @@
 ---
-imported_hash: 8204882770aa8eb0
+imported_hash: a4ec02bf024a2c7c
 title: Propositional Logic
-summary: propositionP = 'He is hungry' propositonQ = 'He will eat a sandwich'
+summary: proposition_P = 'He is hungry' propositon_Q = 'He will eat a sandwich'
 order: 24
 kind: notebook
 section: Ch08   Semantic Analysis

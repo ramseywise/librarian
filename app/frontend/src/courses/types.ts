@@ -1,9 +1,20 @@
+/** Sisyphus drill schema fields (drills/README.md), on lessons of kind "drill". */
+export interface DrillMeta {
+  track: string;
+  topic?: string;
+  difficulty?: "easy" | "medium" | "hard" | string;
+  timebox_min?: number;
+  /** Declared concepts with no wiki page yet — plain labels, not graph links. */
+  tags?: string[];
+}
+
 export interface LessonOutline {
   id: string;
   title: string;
   section: string;
-  kind: "reading" | "notebook" | string;
+  kind: "reading" | "notebook" | "drill" | string;
   summary: string;
+  drill?: DrillMeta;
 }
 
 export interface SourceRef {
@@ -46,6 +57,14 @@ export interface Lesson extends LessonOutline {
   concepts: ConceptRef[];
   prev: LessonOutline | null;
   next: LessonOutline | null;
+}
+
+export interface PracticeDrill extends LessonOutline {
+  course: string;
+  drill: DrillMeta;
+  concepts: ConceptRef[];
+  /** From sisyphus drills/coding/drill-log.md, read live; absent if never logged. */
+  attempts?: { count: number; last: string; score: string };
 }
 
 export interface SearchHit extends LessonOutline {

@@ -1,5 +1,5 @@
 ---
-imported_hash: adba34abe08b37c0
+imported_hash: d6748bfb3d6ea6d1
 title: Overview
 summary: 'Notes I used for preparing the videos: link'
 order: 8
@@ -34,7 +34,7 @@ Running Postgres on Windows (note the full path)
 ```bash
 docker run -it \
   -e POSTGRES_USER="root" \
-  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_PASSWORD="<redacted>" \
   -e POSTGRES_DB="ny_taxi" \
   -v c:/Users/alexe/git/data-engineering-zoomcamp/week_1_basics_n_setup/2_docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data \
   -p 5432:5432 \
@@ -46,7 +46,7 @@ If you have the following error:
 ```
 docker run -it \
   -e POSTGRES_USER="root" \
-  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_PASSWORD="<redacted>" \
   -e POSTGRES_DB="ny_taxi" \
   -v e:/zoomcamp/data_engineer/week_1_fundamentals/2_docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data  \
   -p 5432:5432 \
@@ -68,7 +68,7 @@ Change the mounting path. Replace it with the following:
 ```bash
 docker run -it \
   -e POSTGRES_USER="root" \
-  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_PASSWORD="<redacted>" \
   -e POSTGRES_DB="ny_taxi" \
   -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
   -p 5432:5432 \
@@ -133,8 +133,8 @@ Running pgAdmin
 
 ```bash
 docker run -it \
-  -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
-  -e PGADMIN_DEFAULT_PASSWORD="root" \
+  -e PGADMIN_DEFAULT_EMAIL="<redacted>" \
+  -e PGADMIN_DEFAULT_PASSWORD="<redacted>" \
   -p 8080:80 \
   dpage/pgadmin4
 ```
@@ -152,7 +152,7 @@ Run Postgres (change the path)
 ```bash
 docker run -it \
   -e POSTGRES_USER="root" \
-  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_PASSWORD="<redacted>" \
   -e POSTGRES_DB="ny_taxi" \
   -v c:/Users/alexe/git/data-engineering-zoomcamp/week_1_basics_n_setup/2_docker_sql/ny_taxi_postgres_data:/var/lib/postgresql/data \
   -p 5432:5432 \
@@ -165,8 +165,8 @@ Run pgAdmin
 
 ```bash
 docker run -it \
-  -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
-  -e PGADMIN_DEFAULT_PASSWORD="root" \
+  -e PGADMIN_DEFAULT_EMAIL="<redacted>" \
+  -e PGADMIN_DEFAULT_PASSWORD="<redacted>" \
   -p 8080:80 \
   --network=pg-network \
   --name pgadmin-2 \

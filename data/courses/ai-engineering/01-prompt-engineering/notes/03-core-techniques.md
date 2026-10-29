@@ -1,5 +1,5 @@
 ---
-imported_hash: 16c4ab70eb948aab
+imported_hash: 20c1d67bcf2f6457
 title: 3 — Core Techniques
 summary: 'Instruction only, no examples. Instruction tuning (FLAN) and RLHF are what make this work: the model has seen enough instruction→response pairs to generalize.'
 order: 16
@@ -22,7 +22,7 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/03-core-
 | Format, style, or labels are non-obvious | Few-shot | Longer prompt, anchoring |
 | Multi-step arithmetic, logic, planning | Chain-of-thought | More output tokens |
 | Answers vary run to run on reasoning tasks | Self-consistency | N× calls |
-| Model lacks the background facts | Generated knowledge, or retrieval ([02-context](../../02-context/readme.md)) | Extra call |
+| Model lacks the background facts | Generated knowledge, or retrieval ([02-context](../../02-context-engineering/readme.md)) | Extra call |
 | Search problem with dead ends (puzzles, planning) | Tree of Thoughts | Many calls + a controller |
 | Exact computation | PAL (generate code, run it) | Needs a sandbox |
 | Needs fresh or private information | ReAct / tool use ([05](05-tools-and-function-calling.md)) | Loop + tools |
@@ -123,7 +123,7 @@ With knowledge, the answer flips from a confident wrong "Yes" to "No." It works 
 
 Generalizes CoT into **search**: generate several candidate "thoughts" (intermediate steps), have the model **evaluate** each one (sure / maybe / impossible), and explore with BFS or DFS, backtracking from dead ends (Yao et al., 2023; Long, 2023). On Game of 24, GPT-4 with CoT solved 4% and with ToT 74%.
 
-Real ToT needs a controller loop in code, so it's an orchestration pattern ([04-loop](../../04-loop/readme.md)) more than a prompt. A cheap single-prompt approximation (Hulbert, 2023):
+Real ToT needs a controller loop in code, so it's an orchestration pattern ([04-loop](../../04-loop-engineering/readme.md)) more than a prompt. A cheap single-prompt approximation (Hulbert, 2023):
 
 ```
 Imagine three different experts are answering this question.
@@ -170,7 +170,7 @@ What the results show:
 - **With few-shot prompting alone, ReAct underperformed** standard and CoT prompting on HotpotQA. Fine-tuning on ~3,000 traces flipped that: a fine-tuned 8B ReAct beat a prompted 62B model.
 - **Decision tasks (ALFWorld, WebShop):** reasoning is what makes acting work — 71% vs. 45% for Act-only on ALFWorld.
 
-ReAct is the ancestor of today's tool-calling agent loop. Modern APIs do the Thought/Action/Observation bookkeeping natively — see [05-tools-and-function-calling](05-tools-and-function-calling.md) and [03-harness](../../03-harness/readme.md). Runnable LangChain version: [notebooks/react.ipynb](../notebooks/react.md).
+ReAct is the ancestor of today's tool-calling agent loop. Modern APIs do the Thought/Action/Observation bookkeeping natively — see [05-tools-and-function-calling](05-tools-and-function-calling.md) and [03-harness](../../03-harness-engineering/readme.md). Runnable LangChain version: [notebooks/react.ipynb](../notebooks/react.md).
 
 ---
 
@@ -204,7 +204,7 @@ Verbal reinforcement learning (Shinn et al., 2023). Three parts:
 
 Loop: attempt → evaluate → reflect → retry with the reflection in context. HumanEval pass@1 reached 91% vs. GPT-4's 80% at the time.
 
-**It works only when you get a do-over**, ideally with an objective evaluator (tests, compilers, checkers). It's useless for irreversible actions, and with a weak evaluator it reinforces confident mistakes. Memory is a sliding window, so long retry histories get truncated. Reflexion is a loop pattern; implementation lives in [04-loop](../../04-loop/readme.md), and evaluator design in [09-evaluating-prompts](09-evaluating-prompts.md).
+**It works only when you get a do-over**, ideally with an objective evaluator (tests, compilers, checkers). It's useless for irreversible actions, and with a weak evaluator it reinforces confident mistakes. Memory is a sliding window, so long retry histories get truncated. Reflexion is a loop pattern; implementation lives in [04-loop](../../04-loop-engineering/readme.md), and evaluator design in [09-evaluating-prompts](09-evaluating-prompts.md).
 
 ---
 
@@ -212,7 +212,7 @@ Loop: attempt → evaluate → reflect → retry with the reflection in context.
 
 - **Prompt chaining** → [06-chaining-and-workflows](06-chaining-and-workflows.md)
 - **APE, meta-prompting, DSPy** → [08-prompt-optimization](08-prompt-optimization.md)
-- **RAG** → [02-context](../../02-context/readme.md)
+- **RAG** → [02-context](../../02-context-engineering/readme.md)
 
 ---
 

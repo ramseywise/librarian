@@ -1,11 +1,14 @@
 ---
-imported_hash: 824228467aa7891d
+imported_hash: fce6605915b31371
 title: Safety
 summary: from https://martinfowler.com/articles/reliable-llm-bayer.html?ref=dailydev
 order: 6
 kind: reading
-source: learn-ai-engineering/interviewing/notes/security.md
+source: sisyphus/interviewing/notes/security.md
 ---
+
+<!-- Raw web paste with unfenced code: lint-exempt until condensed. -->
+<!-- markdownlint-disable-file -->
 
 from https://martinfowler.com/articles/reliable-llm-bayer.html?ref=dailydev
 

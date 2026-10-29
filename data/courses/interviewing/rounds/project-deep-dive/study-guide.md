@@ -1,11 +1,11 @@
 ---
-imported_hash: 7fde7b0433eae8ae
+imported_hash: 7fa7dd79b6cbd932
 title: Study Guide — Project Deep-Dive
 summary: Every project answer must exist at three altitudes.
 order: 60
 kind: reading
 section: Project deep dive
-source: learn-ai-engineering/interviewing/rounds/project-deep-dive/study-guide.md
+source: sisyphus/interviewing/rounds/project-deep-dive/study-guide.md
 ---
 
 # Study Guide — Project Deep-Dive
@@ -15,6 +15,7 @@ source: learn-ai-engineering/interviewing/rounds/project-deep-dive/study-guide.m
 Every project answer must exist at three altitudes. You shift between them on the interviewer's signal.
 
 ### Altitude 1: Executive pitch (60 seconds)
+
 **Target**: Anyone — no assumed technical context.
 
 Template:
@@ -23,9 +24,11 @@ Template:
 Practice constraint: time yourself. If you go over 90 seconds you're not at altitude 1 — you've slipped into altitude 2.
 
 ### Altitude 2: Architecture walk (5 minutes)
+
 **Target**: Technical peer — assumes engineering vocabulary, not domain-specific knowledge.
 
 Structure:
+
 1. Data flow narrative: "A request enters here, gets [transformed] by [component], stored in [store], served by [component]"
 2. Three key technology choices with one-sentence rationales
 3. One constraint that shaped the design
@@ -34,9 +37,11 @@ Structure:
 Draw while you talk. Offer before they ask.
 
 ### Altitude 3: Deep dive (unlimited)
+
 **Target**: Domain expert — peer-level interrogation of any component.
 
 You don't prepare this wholesale — you prepare it per-component. For each major component:
+
 - Alternatives considered and why they lost
 - One thing that surprised you in implementation
 - The operational failure mode you'd guard against
@@ -50,7 +55,7 @@ You don't prepare this wholesale — you prepare it per-component. For each majo
 
 Before each interview, fill this out for every significant decision in the project:
 
-```
+```text
 Decision: [What you chose]
 Date context: [When, and what the state of the art was at that time]
 Constraints at the time: [Team size, timeline, budget, existing infrastructure, data availability]
@@ -71,12 +76,14 @@ Interviewers are checking that your "why" is grounded in constraints, not just t
 Drawing from memory is a threshold skill. If you can't draw it, you don't own it.
 
 **Practice method**:
+
 1. Draw the architecture cold, no notes. Set a 3-minute timer.
 2. Compare to any existing diagrams.
 3. Note what you forgot or placed wrong.
 4. Repeat until you can draw it in 3 minutes with no hesitation.
 
 **Drawing conventions that signal competence**:
+
 - Boxes for services/components, cylinders for databases, arrows for data flow (label the arrows with data format or protocol)
 - Separate the read path from the write path visually
 - Mark async vs. sync interactions
@@ -118,6 +125,7 @@ Prepare numbers for every project before the interview. You will not remember th
 | Team | Time saved per week, number of users/teams enabled |
 
 **How to present them**:
+
 - Lead with the most impressive number: "We reduced cost by 60%..."
 - Immediately anchor it: "...from $28K/month to $11K/month"
 - Contextualize if needed: "...on a workload processing 4M documents/day"
@@ -132,6 +140,7 @@ Not having numbers for a feature you shipped is acceptable. Not having numbers f
 Interviewers are calibrating the scope of your contribution. Vague answers ("we built...") read as low ownership. Precise answers signal confidence.
 
 **The framing**:
+
 - "I designed and built X" — you owned it from spec to production
 - "I led the design of X, which three engineers implemented" — you owned the architecture
 - "I contributed to X, specifically [component]" — honest scope credit
@@ -191,19 +200,23 @@ Practice once before each interview if the project has sensitive client details.
 ## Practice Plan
 
 **Week before**:
+
 - Fill out the decision documentation template for each project
 - Write down all numbers — don't rely on memory in the interview
 - Draw each architecture cold; repeat until 3 minutes clean
 
 **3 days before**:
+
 - Run one altitude-1 pitch per project out loud (not just in your head)
 - Do one full rehearsal with a peer on your strongest project — have them drill
 
 **Day before**:
+
 - Prepare the incident story — write it out with all five parts
 - Prep the "differently today" answer for each project
 
 **No-prep moves** (if you have 30 minutes):
+
 - Draw the architectures
 - Write the numbers
 - Rehearse the three-altitude transitions on your best project

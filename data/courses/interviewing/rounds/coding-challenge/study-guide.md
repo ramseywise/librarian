@@ -1,11 +1,11 @@
 ---
-imported_hash: a02242bfa3185b56
+imported_hash: dcf2e9d78ff27107
 title: Coding Challenge — Study Guide
 summary: 'The #1 differentiator in live coding is not correctness — it''s narration.'
 order: 31
 kind: reading
 section: Coding challenge
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/study-guide.md
+source: sisyphus/interviewing/rounds/coding-challenge/study-guide.md
 ---
 
 # Coding Challenge — Study Guide
@@ -44,6 +44,7 @@ The systematic method — not intuition:
 Have these cold — interviewers notice when you fumble basics:
 
 **Collections**:
+
 - `collections.OrderedDict` — move_to_end(), popitem(last=True)
 - `collections.defaultdict(list)` — skip the key existence check
 - `collections.deque(maxlen=N)` — O(1) appendleft/popleft
@@ -51,27 +52,32 @@ Have these cold — interviewers notice when you fumble basics:
 - `heapq.nlargest()` / `heapq.nsmallest()` — when to use vs sorted()
 
 **Comprehensions and generators**:
+
 - Dict/set comprehensions — `{k: v for k, v in items if condition}`
 - Generator expressions — `(x for x in range(N))` — know when they save memory
 - Nested list comprehension vs nested loop — when each is clearer
 
 **Functions**:
+
 - `functools.wraps` — required on every decorator
 - `functools.lru_cache` / `functools.cache` — know the difference
 - `*args, **kwargs` — forwarding patterns
 - Default argument mutation gotcha: `def f(x, seen=set())` — the set is shared across calls
 
 **Error handling**:
+
 - `except SpecificException as e` — never bare `except:`
 - `finally` for cleanup vs `contextlib.contextmanager`
 - Custom exceptions: subclass `Exception`, not `BaseException`
 
 **Dataclasses**:
+
 - `@dataclass(frozen=True)` for hashable records
 - `field(default_factory=list)` — not a mutable default
 - `__post_init__` for validation
 
 **Time**:
+
 - `time.monotonic()` for durations (not `time.time()` — wall clock drifts)
 - `datetime.timezone.utc` — always timezone-aware; never naive datetimes in production code
 
@@ -84,6 +90,7 @@ Have these cold — interviewers notice when you fumble basics:
 **How to narrate optimization**: "The naive approach is O(n²) because we're doing a linear scan inside the loop. We can get to O(n log n) by sorting first, or O(n) with a hash set." State the tradeoff in words before switching approaches.
 
 **Common patterns to know cold**:
+
 - Sliding window → O(n) for subarray problems
 - Two pointers → O(n) for sorted array problems
 - Binary search → O(log n) when input is sorted or answer is monotonic
@@ -100,6 +107,7 @@ Have these cold — interviewers notice when you fumble basics:
 When the prompt is "implement X" (not "solve this algorithm"), tests-first is expected at the AIE/MLE level.
 
 **The sequence**:
+
 1. Define the interface (function signature or class API) — don't implement yet
 2. Write the happy-path test
 3. Write the edge case tests (empty, single, max, error path)
@@ -109,6 +117,7 @@ When the prompt is "implement X" (not "solve this algorithm"), tests-first is ex
 **Why this signals seniority**: it shows you think about contracts, not just logic. It also gives you a way to check your implementation as you go, which is faster than running it and hoping.
 
 **Minimum test coverage for interview problems**:
+
 - Happy path (nominal inputs)
 - Empty/zero/null input
 - Single-element input
@@ -124,12 +133,14 @@ For loops that allow or require an AI assistant:
 **Prompt decomposition**: break the problem into 3–5 subtasks before prompting. Each prompt should ask for exactly one thing. "Write a retry decorator that catches ConnectionError and retries up to 3 times with exponential backoff and jitter" is one subtask.
 
 **Output verification workflow**:
+
 1. Read the output before running it — check types and control flow
 2. Trace it mentally with a known input
 3. Run it with a minimal test case you wrote before seeing the output
 4. Only then integrate it into the larger solution
 
 **When not to trust it**:
+
 - Off-by-one boundary conditions (especially in pagination, sliding windows)
 - Concurrency — generated code almost never handles thread safety
 - Error handling paths — the happy path is usually correct, error paths often aren't
@@ -154,14 +165,17 @@ For loops that allow or require an AI assistant:
 ## Practice plan
 
 **Daily (2 weeks pre-loop)**:
+
 - One debugging kata: write a function with a deliberate bug, fix it using the systematic method
 - One Python fluency drill: pick one item from the checklist above and use it in a small program
 
 **Weekly**:
+
 - One project-style problem (rate limiter, retry decorator, ETL transform) — timed, narrated out loud, tests-first
 - One pair-programming simulation: code with someone watching and giving hints
 
 **Week before the loop**:
+
 - Reread the per-role variant section — know which format you're likely to see
 - One full mock session with a timer: 45 minutes, narrated, with tests
 

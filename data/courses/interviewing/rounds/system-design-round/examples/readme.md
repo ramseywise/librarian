@@ -1,11 +1,11 @@
 ---
-imported_hash: 2c16db6881ae7d93
+imported_hash: 570cc1bcdc7564fb
 title: System Design Round — Worked Examples
 summary: Each file walks through a full system design using the five-step process from the study guide.
 order: 75
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/README.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/README.md
 ---
 
 # System Design Round — Worked Examples

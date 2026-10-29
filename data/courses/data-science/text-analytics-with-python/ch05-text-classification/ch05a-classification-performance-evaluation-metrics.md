@@ -1,7 +1,7 @@
 ---
-imported_hash: ac543a47e2db4fc4
+imported_hash: 7996c6c3716b7692
 title: Load Wisconsin Breast Cancer Dataset
-summary: Xtrain, Xtest, ytrain, ytest = traintestsplit(X, y, testsize=0.3, randomstate=42) print(Xtrain.shape, Xtest.shape)
+summary: X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42) print(X_train.shape, X_test.shape)
 order: 10
 kind: notebook
 section: Ch05   Text Classification

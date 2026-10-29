@@ -1,11 +1,11 @@
 ---
-imported_hash: 29b6f1938227e1e8
+imported_hash: 44b94a09f58183e4
 title: Completed Plans
 summary: Move finished plans here instead of deleting them.
 order: 43
 kind: reading
 section: Templates / Openai repo template / Docs / Exec plans / Completed
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/exec-plans/completed/index.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/exec-plans/completed/index.md
 ---
 
 # Completed Plans

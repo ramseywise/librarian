@@ -1,5 +1,5 @@
 ---
-imported_hash: 9337d9a1d693d2a4
+imported_hash: c9ac38e9e8871592
 title: 6 — Chaining and Workflows
 summary: Splitting into steps buys back strength. Each prompt has one job, a short context, and an output you can check.
 order: 19
@@ -10,7 +10,7 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/06-chain
 
 # 6 — Chaining and Workflows
 
-> When one prompt can't do the job, split it. This note covers the patterns at the prompt level. Running them as long-lived loops is [04-loop](../../04-loop/readme.md), and orchestrating agents is [03-harness/07-orchestration](../../03-harness/notes/07-orchestration.md).
+> When one prompt can't do the job, split it. This note covers the patterns at the prompt level. Running them as long-lived loops is [04-loop](../../04-loop-engineering/readme.md), and orchestrating agents is [03-harness-engineering/07-orchestration](../../03-harness-engineering/notes/07-orchestration.md).
 
 ---
 
@@ -114,7 +114,7 @@ Run **batch** for a known set of items (simpler) and **streaming** for open-ende
 | Predictability | High | Lower |
 | Good for | Well-defined, repeatable tasks; production reliability; cost control | Open-ended tasks where the steps can't be known up front |
 
-**Start with a workflow.** Move to agentic routing only when fixed topologies can't express the problem. Most production systems are hybrids: a workflow routes requests to agents that handle the open-ended subtasks. The advanced end of this spectrum — LLM-driven routing, stateful task agents, role-based multi-agent setups (AutoGen, CrewAI) — trades stability for flexibility. It's covered in [03-harness](../../03-harness/notes/07-orchestration.md) and [04-loop](../../04-loop/readme.md).
+**Start with a workflow.** Move to agentic routing only when fixed topologies can't express the problem. Most production systems are hybrids: a workflow routes requests to agents that handle the open-ended subtasks. The advanced end of this spectrum — LLM-driven routing, stateful task agents, role-based multi-agent setups (AutoGen, CrewAI) — trades stability for flexibility. It's covered in [03-harness](../../03-harness-engineering/notes/07-orchestration.md) and [04-loop](../../04-loop-engineering/readme.md).
 
 ---
 

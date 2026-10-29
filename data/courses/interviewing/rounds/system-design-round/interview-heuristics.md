@@ -1,11 +1,11 @@
 ---
-imported_hash: c8f6c49a4dccc20f
+imported_hash: 522f04e9bb558313
 title: System Design Interview Heuristics
 summary: Fourteen round techniques, extracted from a design walkthrough.
 order: 70
 kind: reading
 section: System design round
-source: learn-ai-engineering/interviewing/rounds/system-design-round/interview-heuristics.md
+source: sisyphus/interviewing/rounds/system-design-round/interview-heuristics.md
 ---
 
 # System Design Interview Heuristics
@@ -16,20 +16,20 @@ in the room*, not architecture knowledge — the design content they came from l
 [interview-patterns.md](interview-patterns.md) (thirteen more) and the
 [study guide](study-guide.md) (the 5-step process they hang on).
 
-# 1. Scope Aggressively
+## 1. Scope Aggressively
 
 One of the strongest interview habits throughout this interview:
 
 Instead of trying to design "Telegram", reduce it to:
 
-* one-to-one messaging
-* text only
-* backend only
-* ignore groups
-* ignore media
-* ignore encryption
-* ignore presence
-* ignore voice/video
+- one-to-one messaging
+- text only
+- backend only
+- ignore groups
+- ignore media
+- ignore encryption
+- ignore presence
+- ignore voice/video
 
 Interviewer actually rewards this.
 
@@ -39,7 +39,7 @@ A good phrase:
 
 ---
 
-# 2. Clarify Functional Requirements First
+## 2. Clarify Functional Requirements First
 
 Notice the order:
 
@@ -59,7 +59,7 @@ This is much cleaner than brainstorming features.
 
 ---
 
-# 3. Treat APIs as Functional Requirements
+## 3. Treat APIs as Functional Requirements
 
 This is surprisingly useful.
 
@@ -71,7 +71,7 @@ translate immediately into APIs.
 
 Example
 
-```
+```text
 POST /messages
 
 GET /messages
@@ -83,7 +83,7 @@ POST /messages/read
 
 For AI systems you can do the same.
 
-```
+```text
 POST /chat
 
 POST /memory
@@ -97,7 +97,7 @@ Interviewers like seeing APIs because they're concrete.
 
 ---
 
-# 4. Capacity Planning Doesn't Need Precision
+## 4. Capacity Planning Doesn't Need Precision
 
 A very useful pattern.
 
@@ -115,7 +115,7 @@ Done.
 
 Example:
 
-```
+```text
 10B/day
 
 ↓
@@ -137,7 +137,7 @@ They want reasoning.
 
 ---
 
-# 5. Convert Product Metrics Into Infrastructure Metrics
+## 5. Convert Product Metrics Into Infrastructure Metrics
 
 The interview naturally moves:
 
@@ -149,7 +149,7 @@ System metric
 
 Example
 
-```
+```text
 10B messages/day
 
 ↓
@@ -169,13 +169,13 @@ That's exactly what interviewers want.
 
 ---
 
-# 6. Always State Non-functional Requirements Explicitly
+## 6. Always State Non-functional Requirements Explicitly
 
 Rather than sprinkling them throughout.
 
 Good checklist:
 
-```
+```text
 Availability
 
 Latency
@@ -195,7 +195,7 @@ Then tie every architecture decision back.
 
 ---
 
-# 7. Explain Why Every Component Exists
+## 7. Explain Why Every Component Exists
 
 Notice he never says
 
@@ -203,7 +203,7 @@ Notice he never says
 
 He says
 
-```
+```text
 Traffic grows
 
 ↓
@@ -223,7 +223,7 @@ Always explain causality.
 
 ---
 
-# 8. Every Architecture Decision Should Include Trade-offs
+## 8. Every Architecture Decision Should Include Trade-offs
 
 Excellent example:
 
@@ -231,22 +231,22 @@ SQL
 
 Pros
 
-* joins
-* relationships
+- joins
+- relationships
 
 Cons
 
-* harder to shard
+- harder to shard
 
 NoSQL
 
 Pros
 
-* horizontal scaling
+- horizontal scaling
 
 Cons
 
-* fewer relational queries
+- fewer relational queries
 
 Then choose.
 
@@ -254,7 +254,7 @@ Interviewers care much more about reasoning than the "correct" database.
 
 ---
 
-# 9. Managed Services Are Good Interview Answers
+## 9. Managed Services Are Good Interview Answers
 
 Interesting point:
 
@@ -270,7 +270,7 @@ That's a product/business answer.
 
 General principle:
 
-```
+```text
 Managed service
 
 ↓
@@ -290,11 +290,11 @@ Shows engineering maturity.
 
 ---
 
-# 10. Data Model Before Algorithms
+## 10. Data Model Before Algorithms
 
 Before architecture he defines entities.
 
-```
+```text
 Messages
 
 Users
@@ -302,7 +302,7 @@ Users
 
 Then fields.
 
-```
+```text
 Message
 
 sender_id
@@ -320,7 +320,7 @@ Simple but very interview-friendly.
 
 ---
 
-# 11. Design Around Access Patterns
+## 11. Design Around Access Patterns
 
 Probably the biggest architecture lesson.
 
@@ -332,7 +332,7 @@ Start with
 
 Example
 
-```
+```text
 Unread messages
 
 ↓
@@ -350,11 +350,11 @@ This is one of the biggest differences between junior and senior candidates.
 
 ---
 
-# 12. Think in Terms of State Machines
+## 12. Think in Terms of State Machines
 
 Notice every message has a status.
 
-```
+```text
 Undelivered
 
 ↓
@@ -370,19 +370,19 @@ Many systems become easier when modeled as state transitions.
 
 Useful for:
 
-* orders
-* AI jobs
-* agent workflows
-* notifications
-* payments
+- orders
+- AI jobs
+- agent workflows
+- notifications
+- payments
 
 ---
 
-# 13. Background Workers
+## 13. Background Workers
 
 A recurring system design component.
 
-```
+```text
 API
 
 ↓
@@ -406,7 +406,7 @@ Rather than doing everything synchronously.
 
 For AI this becomes
 
-```
+```text
 Request
 
 ↓
@@ -432,7 +432,7 @@ Notify
 
 ---
 
-# 14. Find Your Own Bottlenecks
+## 14. Find Your Own Bottlenecks
 
 One of the strongest interview habits.
 
@@ -446,7 +446,7 @@ Interviewers love this.
 
 Pattern:
 
-```
+```text
 Current design
 
 ↓
@@ -464,7 +464,7 @@ Possible mitigation
 
 ---
 
-# 15. Admit Uncertainty
+## 15. Admit Uncertainty
 
 Another excellent senior behavior.
 
@@ -478,7 +478,7 @@ Much better than bluffing.
 
 ---
 
-# 16. Simplicity Wins
+## 16. Simplicity Wins
 
 Great closing principle.
 
@@ -488,7 +488,7 @@ Interviewers generally prefer
 
 Simple architecture
 
-*
+-
 
 Clear trade-offs
 
@@ -498,7 +498,7 @@ Distributed systems everywhere.
 
 ---
 
-# 17. Finish With Improvements
+## 17. Finish With Improvements
 
 Don't stop after drawing.
 
@@ -524,27 +524,27 @@ This often separates good from excellent interviews.
 
 ---
 
-# 18. Mention Operational Metrics
+## 18. Mention Operational Metrics
 
 Beyond business metrics.
 
 Infrastructure metrics worth mentioning include:
 
-* P95/P99 latency
-* Error rate
-* Throughput (RPS)
-* Availability (e.g. 99.99%)
-* Queue depth
-* CPU/memory utilization
-* Database read/write latency
-* Replication lag
-* Storage growth
+- P95/P99 latency
+- Error rate
+- Throughput (RPS)
+- Availability (e.g. 99.99%)
+- Queue depth
+- CPU/memory utilization
+- Database read/write latency
+- Replication lag
+- Storage growth
 
 This demonstrates production thinking.
 
 ---
 
-# General Interview Heuristics
+## General Interview Heuristics
 
 I think these are worth adding as a dedicated section because they apply to nearly every OpenAI, Anthropic, Meta, or Google interview:
 

@@ -1,11 +1,11 @@
 ---
-imported_hash: 780e1f62b7995ed7
+imported_hash: 10bb68335dc1fc36
 title: LRU Cache — Live Coding Walkthrough
 summary: 'class LRUCache: def init(self, capacity: int) -> None: self.capacity = capacity self.cache: OrderedDict[int, int] = OrderedDict()'
 order: 35
 kind: reading
 section: Coding challenge / Examples
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/examples/lru-cache.md
+source: sisyphus/interviewing/rounds/coding-challenge/examples/lru-cache.md
 ---
 
 # LRU Cache — Live Coding Walkthrough
@@ -90,7 +90,7 @@ class LRUCache:
 
 [NARRATE: "Let me trace through the LeetCode example before I declare this done."]
 
-```
+```text
 LRUCache(2)
 put(1, 1)   → cache: {1:1}
 put(2, 2)   → cache: {1:1, 2:2}

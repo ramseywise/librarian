@@ -1,10 +1,10 @@
 ---
-imported_hash: 2152be1b7023a506
+imported_hash: bf5259d57ea508ae
 title: Interviewing KB
 summary: 'Roles: AIE (AI/agent engineer), MLE (ML engineer), DS (data scientist), FDE (forward-deployed / applied AI engineer).'
 order: 1
 kind: reading
-source: learn-ai-engineering/interviewing/README.md
+source: sisyphus/interviewing/README.md
 ---
 
 # Interviewing KB
@@ -47,7 +47,7 @@ Roles: **AIE** (AI/agent engineer), **MLE** (ML engineer), **DS** (data scientis
 | Coding patterns / DS&A — *deferred (see below)* | ◐ | ◐ | ◐ | ◐ |
 
 **Deferred topics** (separate milestone): stats/experimentation (seed material:
-`data-analytics/readings/`) and coding patterns (seed: `programming/Leet-Code/`).
+`data-analytics/readings/`) and coding patterns (seed: `drills/python/leetcode/`).
 
 ## Study guides
 

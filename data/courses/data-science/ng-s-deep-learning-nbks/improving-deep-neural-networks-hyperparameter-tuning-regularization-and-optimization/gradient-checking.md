@@ -1,5 +1,5 @@
 ---
-imported_hash: a7d66ddbd426ce33
+imported_hash: 3250628f1f7dcbe5
 title: Gradient Checking
 summary: Welcome to the final assignment for this week!
 order: 7

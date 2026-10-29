@@ -1,11 +1,11 @@
 ---
-imported_hash: 4c44f7802522f80e
+imported_hash: d0644b8be6af7d3c
 title: Code Review Round — Study Guide
-summary: ''
+summary: 'What to know: a systematic, repeatable approach to reviewing code — not "read it and see if it looks right."'
 order: 21
 kind: reading
 section: Code review round
-source: learn-ai-engineering/interviewing/rounds/code-review-round/study-guide.md
+source: sisyphus/interviewing/rounds/code-review-round/study-guide.md
 ---
 
 # Code Review Round — Study Guide
@@ -13,6 +13,7 @@ source: learn-ai-engineering/interviewing/rounds/code-review-round/study-guide.m
 ## Knowledge areas
 
 ### 1. Review methodology
+
 What to know: a systematic, repeatable approach to reviewing code — not "read it and see if it looks right."
 
 | Concept | Key point | Where to study |
@@ -24,6 +25,7 @@ What to know: a systematic, repeatable approach to reviewing code — not "read 
 | Scope management | When to push back on PR size, how to review large PRs | [questions.md](questions.md) Q3; Google eng-practices on [small CLs](https://google.github.io/eng-practices/review/developer/small-cls.html) |
 
 ### 2. Security & data boundaries (review first)
+
 The highest-consequence review area. Interviewers watch whether you check these before anything else.
 
 | Concept | What to look for | Example / source |
@@ -37,6 +39,7 @@ The highest-consequence review area. Interviewers watch whether you check these 
 | Source-sink analysis | Untrusted content → dangerous sink with authority = harm | [security guide §2](../../guides/7-security-safety/interview-guide.md) — the mental model interviewers reward |
 
 ### 3. Correctness & interfaces
+
 The second review pass — does the code do what it claims?
 
 | Concept | What to look for | Example / source |
@@ -50,6 +53,7 @@ The second review pass — does the code do what it claims?
 | Edge cases | Boundary values, off-by-one, unicode, timezone, large inputs | — |
 
 ### 4. Maintainability & conventions
+
 Third pass — will the next person understand and safely modify this code?
 
 | Concept | What to look for | Example / source |
@@ -59,9 +63,10 @@ Third pass — will the next person understand and safely modify this code?
 | Eval threshold changes | Quality bar lowered without calibration evidence or version bump | [conventions ex.3](examples/conventions.md) — pass threshold halved |
 | Convention drift | Breaking established patterns without justification | SANYI Bianyi layer; [conventions ex.1](examples/conventions.md) |
 | Test/eval quality | Tests exist, test the right things, break when the code breaks | [evals guide §2](../../guides/6-evals-observability/interview-guide.md) — grader types and calibration |
-| Enforcement > documentation | Constraints in linters/types/CI, not prose docs agents ignore | [agent-harness notes](../../../ai-engineering/03-harness/agent-harness.md) — "encode invariants, don't micromanage implementations" |
+| Enforcement > documentation | Constraints in linters/types/CI, not prose docs agents ignore | [agent-harness notes](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md) — "encode invariants, don't micromanage implementations" |
 
 ### 5. Communication & feedback
+
 Often weighted as heavily as technical skill in senior/staff rounds.
 
 | Skill | How to demonstrate | Where to study |
@@ -74,6 +79,7 @@ Often weighted as heavily as technical skill in senior/staff rounds.
 | Knowing when to stop | Don't flag pre-existing debt; don't nit style the linter handles | SANYI Debt baseline: "report news, not history" |
 
 ### 6. AI-generated code review (AIE-specific)
+
 Increasingly tested — the volume of code to review has exploded.
 
 | Concept | What to look for | Example / source |

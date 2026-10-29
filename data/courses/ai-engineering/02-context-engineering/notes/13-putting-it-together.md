@@ -1,11 +1,11 @@
 ---
-imported_hash: d6986bf5ddff80d3
+imported_hash: 3255e3fc5189fb0b
 title: 13 — Putting It Together
 summary: The upstream architecture of the same name stores fragments (facts, episodes, procedures) and reassembles a context-specific memory at retrieval time, rather than replaying stored transcripts.
 order: 17
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/02-context/notes/13-putting-it-together.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/13-putting-it-together.md
 ---
 
 # 13 — Putting It Together
@@ -119,4 +119,4 @@ Take an agent you've built, or the research-assistant shape above, and produce:
 - [ ] One failure mode from [11](11-failure-modes.md) reproduced, fixed and added to the eval set
 - [ ] A one-page design doc stating which lever each component serves
 
-When the loop that assembles this context becomes stateful and conditional, you've crossed into the harness layer → [03-harness](../../03-harness/readme.md).
+When the loop that assembles this context becomes stateful and conditional, you've crossed into the harness layer → [03-harness](../../03-harness-engineering/readme.md).

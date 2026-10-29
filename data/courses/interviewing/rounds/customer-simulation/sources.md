@@ -1,11 +1,11 @@
 ---
-imported_hash: 5cdabaa15db74c80
+imported_hash: 61ac3669f69b2871
 title: Customer Simulation — Sources
 summary: ''
 order: 43
 kind: reading
 section: Customer simulation
-source: learn-ai-engineering/interviewing/rounds/customer-simulation/sources.md
+source: sisyphus/interviewing/rounds/customer-simulation/sources.md
 ---
 
 # Customer Simulation — Sources

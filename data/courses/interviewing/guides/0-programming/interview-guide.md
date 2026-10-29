@@ -1,11 +1,11 @@
 ---
-imported_hash: caf70354d49a3104
+imported_hash: ef5df8da06488139
 title: Programming Foundations — Study Guide
 summary: 'The coding screen: every interview loop has one.'
 order: 3
 kind: reading
 section: Programming
-source: learn-ai-engineering/interviewing/guides/0-programming/interview-guide.md
+source: sisyphus/interviewing/guides/0-programming/interview-guide.md
 ---
 
 # Programming Foundations — Study Guide
@@ -282,6 +282,7 @@ Or: `SELECT salary FROM employees ORDER BY salary DESC LIMIT 1 OFFSET 1`. Discus
 `DENSE_RANK() OVER (ORDER BY salary DESC) = 2`.
 
 **SQL: "Users active in Jan and Feb but not March"**
+
 ```sql
 SELECT user_id
 FROM events
@@ -295,6 +296,6 @@ HAVING COUNT(DISTINCT DATE_TRUNC('month', event_date)) = 2
 
 ## Sources
 
-- code: `programming/HackerRank/python/` (language topics), `programming/HackerRank/sql/` (SQL tracks), `programming/Leet-Code/` (DSA patterns + NeetCode exercises)
-- reference: `programming/Leet-Code/Competitive Programmer's Handbook - 296p.pdf`
+- code: `drills/python/hackerrank/` (language topics), `drills/sql/hackerrank/` (SQL tracks), `drills/python/leetcode/` (DSA patterns + NeetCode exercises)
+- reference: `drills/python/leetcode/Competitive Programmer's Handbook - 296p.pdf`
 - overview: [00-overview.md](00-overview.md) (learning path + resource map)

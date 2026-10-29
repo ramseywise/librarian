@@ -1,7 +1,7 @@
 ---
-imported_hash: 40766144f2c5dac8
+imported_hash: 869ed7e1a71ac3d9
 title: '{moduleinfo[''number'']}. {moduleinfo[''title'']}'
-summary: from pathlib import Path from urllib.parse import urlparse, parseqs
+summary: from pathlib import Path from urllib.parse import urlparse, parse_qs
 order: 34
 kind: notebook
 section: Generate

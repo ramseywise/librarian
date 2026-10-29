@@ -1,7 +1,8 @@
-"""Import learn-ai-engineering coursework → data/courses/
+"""Import learn-ai-engineering + sisyphus coursework → data/courses/
 
-One course per subject directory (ai-engineering, generative-ai, data-*, programming,
-interviewing). Inside a subject, each top-level directory becomes a module and every
+One course per subject directory (ai-engineering, generative-ai, data-* from
+learn-ai-engineering; programming and interviewing from sisyphus — see SUBJECT_SOURCES).
+Inside a subject, each top-level directory becomes a module and every
 authored .md / .mdx / .ipynb file under it becomes a lesson. Files at the subject root
 land in a synthetic `00-start-here` module. Subdirectories inside a module become
 sidebar sections, so the source layout survives as-is.
@@ -31,6 +32,7 @@ Usage:
     uv run python core/import_courses.py --dry-run
     uv run python core/import_courses.py --subject ai-engineering
     uv run python core/import_courses.py --source ~/workspace/learn-ai-engineering
+    uv run python core/import_courses.py --sisyphus ~/workspace/sisyphus
 """
 
 from __future__ import annotations
@@ -55,8 +57,19 @@ from core.wiki_common import slugify
 
 log = structlog.get_logger()
 
-DEFAULT_SOURCE = WORKSPACE_DIR / "learn-ai-engineering"
+LAE = "learn-ai-engineering"
+SISYPHUS = "sisyphus"
+DEFAULT_SOURCE = WORKSPACE_DIR / LAE
+DEFAULT_SISYPHUS = WORKSPACE_DIR / SISYPHUS
 COURSES_DIR = REPO_ROOT / "data" / "courses"
+
+# Subjects that don't live at learn-ai-engineering/<slug>: slug → (repo, dir in that repo).
+# Interview prep and the language drills moved to sisyphus on 2026-10-28; the course slugs
+# stay the same so existing data/courses/ paths and local edits carry over.
+SUBJECT_SOURCES: dict[str, tuple[str, str]] = {
+    "programming": (SISYPHUS, "drills"),
+    "interviewing": (SISYPHUS, "interviewing"),
+}
 
 # slug → (title, order, summary). Order follows CURRICULUM.md Path C (broad → deep), with
 # interviewing last because it is the summary layer, not the depth layer. Summaries are
@@ -65,7 +78,7 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
     "programming": (
         "Programming",
         1,
-        "Practice problems plus cloud and infrastructure reference for working engineers.",
+        "Language drills (Python, SQL, TypeScript, Terraform) and interview-format coding rounds.",
     ),
     "data-analytics": (
         "Data Analytics",
@@ -109,15 +122,19 @@ MAX_ASSET_BYTES = 2 * 1024 * 1024
 MAX_LESSON_CHARS = 400_000
 
 _VENDORED_RE = re.compile(r"(-main|-master|-[0-9a-f]{7})$")
-# Suffix rule exceptions. BayesianML-master is personal coursework that only looks
-# vendored (VENDORED.md § "misfiled"); the Prompt Engineering Guide is imported on
-# purpose so the Nextra copy can be deleted from learn-ai-engineering.
-VENDORED_ALLOW = {"BayesianML-master", "Prompt-Engineering-Guide-main"}
+# Suffix rule exceptions. The Prompt Engineering Guide is imported on purpose so the
+# Nextra copy can be deleted from learn-ai-engineering. (BayesianML-master was renamed
+# to BayesianML on 2026-10-28 and no longer needs one.)
+VENDORED_ALLOW = {"Prompt-Engineering-Guide-main"}
 # Nested git repos are skipped unless they are your own work.
-NESTED_GIT_ALLOW = {"Leet-Code"}
+NESTED_GIT_ALLOW = {"Leet-Code", "leetcode"}
 SKIP_DIRS = {"node_modules", ".next", ".ipynb_checkpoints", "__pycache__", "site-packages"}
+# sisyphus drill progress history — not lesson content.
+SKIP_FILES = {"drill-log.md"}
+DRILL_FIELDS = ("title", "track", "topic", "difficulty", "timebox_min")
 
 _HASH_LINE_RE = re.compile(r"^imported_hash: [0-9a-f]+\n", re.MULTILINE)
+_TRAILING_WS_RE = re.compile(r"[ \t]+$", re.MULTILINE)
 _FENCE_RE = re.compile(r"^\s*(```|~~~)")
 _H1_RE = re.compile(r"^#\s+(.+?)\s*#*\s*$", re.MULTILINE)
 _NUM_PREFIX_RE = re.compile(r"^(\d+)[-_. ]+")
@@ -125,8 +142,11 @@ _MD_IMAGE_RE = re.compile(r"(!\[[^\]]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 _MD_LINK_RE = re.compile(r"((?<!!)\[[^\]]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 _HTML_IMG_RE = re.compile(r"(<img\b[^>]*?\bsrc=[\"'])([^\"']+)([\"'])", re.IGNORECASE)
 # `STUDENT_TOKEN = 'abc123'` — coursework notebooks carry grader tokens and emails.
+# `KEY` needs a prefix (api_key, SECRET_KEY): a bare `key='sentence'` is an ordinary kwarg.
+# Values opening with `<` or `[` are special tokens (oov_token="<oov>", "[CLS]"), not secrets.
 _CREDENTIAL_RE = re.compile(
-    r"""(\b\w*(?:TOKEN|KEY|SECRET|PASSWORD|EMAIL)\s*=\s*)(['"])[^'"\n]+\2""", re.IGNORECASE
+    r"""(\b(?:\w*(?:TOKEN|SECRET|PASSWORD|EMAIL)|\w+KEY)\s*=\s*)(['"])[^'"\n<\[][^'"\n]*\2""",
+    re.IGNORECASE,
 )
 
 
@@ -235,7 +255,11 @@ def _walk(
     except OSError:
         return
     meta = _meta_order(directory)
-    files = [p for p in entries if p.is_file() and p.suffix.lower() in LESSON_EXTS]
+    files = [
+        p
+        for p in entries
+        if p.is_file() and p.suffix.lower() in LESSON_EXTS and p.name not in SKIP_FILES
+    ]
     for f in sorted(files, key=lambda p: _file_rank(p, meta)):
         yield f, rel, meta
     dirs = [
@@ -277,8 +301,10 @@ def _collect_extras(directory: Path, source: Path, urls: dict[str, str], module:
                 )
 
 
-def discover(source: Path, subject: str) -> list[Module]:
-    subject_dir = source / subject
+def discover(source: Path, subject: str, subject_dir: Path | None = None) -> list[Module]:
+    """`source` is the repo root (paths in metadata are relative to it); `subject_dir`
+    defaults to `source / subject` and differs only for SUBJECT_SOURCES entries."""
+    subject_dir = subject_dir or source / subject
     urls = _vendored_urls(source)
     modules: dict[str, Module] = {}
 
@@ -286,7 +312,11 @@ def discover(source: Path, subject: str) -> list[Module]:
     modules[ROOT_MODULE] = root
     root_meta = _meta_order(subject_dir)
     for f in sorted(
-        (p for p in subject_dir.iterdir() if p.is_file() and p.suffix.lower() in LESSON_EXTS),
+        (
+            p
+            for p in subject_dir.iterdir()
+            if p.is_file() and p.suffix.lower() in LESSON_EXTS and p.name not in SKIP_FILES
+        ),
         key=lambda p: _file_rank(p, root_meta),
     ):
         root.lessons.append(Lesson(f, ROOT_MODULE, (), Path()))
@@ -523,7 +553,13 @@ def _summary_from(body: str) -> str:
             continue
         p = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", p)
         p = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", p)
-        p = re.sub(r"[*_`]", "", " ".join(p.split()))
+        # Code spans keep their text verbatim (`order_id` stays order_id); only
+        # emphasis markers outside them are dropped.
+        spans = re.split(r"(`[^`]*`)", " ".join(p.split()))
+        p = "".join(
+            s.strip("`") if s.startswith("`") else re.sub(r"\*+|(?<!\w)_+|_+(?!\w)", "", s)
+            for s in spans
+        )
         m = re.match(r"(.{40,240}?[.!?])(\s|$)", p)
         return m.group(1) if m else p[:240].rstrip() + ("…" if len(p) > 240 else "")
     return ""
@@ -646,10 +682,16 @@ def _hash(text: str) -> str:
     return hashlib.sha256(_HASH_LINE_RE.sub("", text).encode()).hexdigest()[:16]
 
 
+def _normalize_ws(text: str) -> str:
+    """What the trailing-whitespace and end-of-file-fixer pre-commit hooks leave behind."""
+    return _TRAILING_WS_RE.sub("", text).rstrip("\n") + "\n"
+
+
 def render(meta: dict, body: str = "") -> str:
     """Frontmatter + body, with `imported_hash` covering everything else in the file."""
     head = yaml.safe_dump(meta, sort_keys=False, allow_unicode=True, width=1000)
-    text = f"---\n{head}---\n\n{body}" if body else f"---\n{head}---\n"
+    # Pre-normalized so the commit hooks leave the file (and its hash) untouched.
+    text = _normalize_ws(f"---\n{head}---\n\n{body}" if body else f"---\n{head}---\n")
     digest = _hash(text)
     return text.replace("---\n", f"---\nimported_hash: {digest}\n", 1)
 
@@ -659,13 +701,17 @@ def _recorded_hash(text: str) -> str | None:
     return m.group(1) if m else None
 
 
-def build_plan(source: Path, subjects: list[str]) -> Plan:
+def build_plan(source: Path, subjects: list[str], sisyphus: Path = DEFAULT_SISYPHUS) -> Plan:
     plan = Plan()
+    roots = {LAE: source, SISYPHUS: sisyphus}
     for subject in subjects:
-        if not (source / subject).is_dir():
-            log.warning("subject_missing", subject=subject)
+        repo, rel = SUBJECT_SOURCES.get(subject, (LAE, subject))
+        root = roots[repo]
+        subject_dir = root / rel
+        if not subject_dir.is_dir():
+            log.warning("subject_missing", subject=subject, path=str(subject_dir))
             continue
-        modules = discover(source, subject)
+        modules = discover(root, subject, subject_dir)
         src_to_dest = {
             lesson.src.resolve(): lesson.dest for mod in modules for lesson in mod.lessons
         }
@@ -675,7 +721,7 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
                 "title": title,
                 "summary": summary,
                 "order": order,
-                "source": f"learn-ai-engineering/{subject}",
+                "source": f"{repo}/{rel}",
             }
         )
         for mod in modules:
@@ -690,18 +736,25 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
                 )
             meta: dict = {"title": mod.title, "summary": mod_summary, "order": mod.order}
             if mod.src_dir:
-                meta["source"] = f"learn-ai-engineering/{mod.src_dir.relative_to(source)}"
+                meta["source"] = f"{repo}/{mod.src_dir.relative_to(root)}"
             if mod.readings:
                 meta["readings"] = mod.readings
             if mod.references:
                 meta["references"] = mod.references
             plan.files[COURSES_DIR / subject / mod.name / "_module.md"] = render(meta)
             for lesson in mod.lessons:
-                _plan_lesson(plan, lesson, mod, source, src_to_dest)
+                _plan_lesson(plan, lesson, mod, root, src_to_dest, repo)
     return plan
 
 
-def _plan_lesson(plan: Plan, lesson: Lesson, mod: Module, source: Path, src_to_dest: dict) -> None:
+def _plan_lesson(
+    plan: Plan,
+    lesson: Lesson,
+    mod: Module,
+    source: Path,
+    src_to_dest: dict,
+    repo: str = LAE,
+) -> None:
     try:
         raw = lesson.src.read_text(errors="replace")
     except OSError as e:
@@ -710,6 +763,7 @@ def _plan_lesson(plan: Plan, lesson: Lesson, mod: Module, source: Path, src_to_d
     ext = lesson.src.suffix.lower()
     imports: dict[str, str] = {}
     kind = "reading"
+    drill: dict = {}
     if ext == ".mdx":
         body, imports = mdx_to_markdown(raw)
     elif ext == ".ipynb":
@@ -721,9 +775,13 @@ def _plan_lesson(plan: Plan, lesson: Lesson, mod: Module, source: Path, src_to_d
         kind = "notebook"
     else:
         body = raw
-        if body.startswith("---\n"):  # source frontmatter is not ours to keep
+        if body.startswith("---\n"):  # source frontmatter is not ours to keep…
             end = body.find("\n---", 4)
-            body = body[end + 4 :].lstrip() if end != -1 else body
+            if end != -1:
+                drill = _drill_meta(body[4:end])  # …except the sisyphus drill schema
+                body = body[end + 4 :].lstrip()
+        if drill:
+            kind = "drill"
     if len(body) > MAX_LESSON_CHARS:
         log.warning("lesson_too_large", path=str(lesson.src), chars=len(body))
         return
@@ -734,7 +792,7 @@ def _plan_lesson(plan: Plan, lesson: Lesson, mod: Module, source: Path, src_to_d
     fallback = prettify(lesson.src.name)
     if lesson.src.name.lower() == "readme.md":
         fallback = "Overview"
-    title = meta_title or _title_from(body, fallback)
+    title = drill.pop("title", "") or meta_title or _title_from(body, fallback)
     body = _rewrite_body(body, lesson, imports, src_to_dest, mod.src_dir or lesson.src.parent, plan)
 
     meta: dict = {
@@ -745,8 +803,27 @@ def _plan_lesson(plan: Plan, lesson: Lesson, mod: Module, source: Path, src_to_d
     }
     if lesson.rel_dir:
         meta["section"] = " / ".join(prettify(s) for s in lesson.rel_dir)
-    meta["source"] = f"learn-ai-engineering/{lesson.src.relative_to(source)}"
+    meta.update(drill)
+    meta["source"] = f"{repo}/{lesson.src.relative_to(source)}"
     plan.files[COURSES_DIR / lesson.dest] = render(meta, body)
+
+
+def _drill_meta(head: str) -> dict:
+    """Fields of a sisyphus drill's frontmatter (drills/README.md) worth keeping.
+
+    A drill is any file whose frontmatter names a `track`. Its `concepts` become `wiki`,
+    the explicit concept links the courses API ranks first.
+    """
+    try:
+        fm = yaml.safe_load(head)
+    except yaml.YAMLError:
+        return {}
+    if not isinstance(fm, dict) or not fm.get("track"):
+        return {}
+    out: dict = {k: fm[k] for k in DRILL_FIELDS if fm.get(k) not in (None, "")}
+    if isinstance(fm.get("concepts"), list):
+        out["wiki"] = [str(c) for c in fm["concepts"]]
+    return out
 
 
 def apply(plan: Plan, subjects: list[str], dry_run: bool) -> dict[str, int]:
@@ -759,7 +836,10 @@ def apply(plan: Plan, subjects: list[str], dry_run: bool) -> dict[str, int]:
         else:
             current = dest.read_text()
             recorded = _recorded_hash(current)
-            if recorded is None or _hash(current) != recorded:
+            hook_rewritten = _normalize_ws(_HASH_LINE_RE.sub("", current)) == _HASH_LINE_RE.sub(
+                "", text
+            )
+            if (recorded is None or _hash(current) != recorded) and not hook_rewritten:
                 stats["kept_local_edit"] += 1
                 log.info("kept_local_edit", path=str(dest.relative_to(COURSES_DIR)))
                 continue
@@ -805,15 +885,20 @@ def apply(plan: Plan, subjects: list[str], dry_run: bool) -> dict[str, int]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--sisyphus", type=Path, default=DEFAULT_SISYPHUS)
     parser.add_argument("--subject", action="append", choices=sorted(SUBJECTS))
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     source = args.source.expanduser().resolve()
-    if not source.is_dir():
-        parser.error(f"source not found: {source}")
+    sisyphus = args.sisyphus.expanduser().resolve()
     subjects = args.subject or list(SUBJECTS)
-    plan = build_plan(source, subjects)
+    # Only require the repos the selected subjects actually read from.
+    needed = {SUBJECT_SOURCES.get(s, (LAE, s))[0] for s in subjects}
+    for repo, path in ((LAE, source), (SISYPHUS, sisyphus)):
+        if repo in needed and not path.is_dir():
+            parser.error(f"source not found: {path}")
+    plan = build_plan(source, subjects, sisyphus)
     stats = apply(plan, subjects, args.dry_run)
     log.info("import_courses_done", dry_run=args.dry_run, subjects=len(subjects), **stats)
 

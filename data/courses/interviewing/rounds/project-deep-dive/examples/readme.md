@@ -1,11 +1,11 @@
 ---
-imported_hash: 100d909db2131716
+imported_hash: 901eb5194679913f
 title: Examples — Project Deep-Dive
 summary: Worked answers demonstrating the frameworks from the study guide.
 order: 61
 kind: reading
 section: Project deep dive / Examples
-source: learn-ai-engineering/interviewing/rounds/project-deep-dive/examples/README.md
+source: sisyphus/interviewing/rounds/project-deep-dive/examples/README.md
 ---
 
 # Examples — Project Deep-Dive

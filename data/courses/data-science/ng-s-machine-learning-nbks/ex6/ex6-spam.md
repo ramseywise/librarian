@@ -1,7 +1,7 @@
 ---
-imported_hash: 114256378746ba50
+imported_hash: 801fb1ecc494fa9c
 title: This is one possible porter stemmer
-summary: vocabdict = getVocabDict() emailcontents = open( 'data/emailSample1.txt', 'r' ).read() testfv = email2FeatureVector( emailcontents, vocabdict )
+summary: vocab_dict = getVocabDict() email_contents = open( 'data/emailSample1.txt', 'r' ).read() test_fv = email2FeatureVector( email_contents, vocab_dict )
 order: 7
 kind: notebook
 section: Ex6

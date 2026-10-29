@@ -1,8 +1,8 @@
 ---
-imported_hash: 0772263fb8ee3bfb
+imported_hash: 825f8b2d1410d59f
 title: update the OpenAI Python library to make sure you are using the latest version
 summary: Install or update the OpenAI Python library first
-order: 4
+order: 3
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-chatgpt-adversarial.ipynb

@@ -1,11 +1,11 @@
 ---
-imported_hash: 4777ab4fdeb4c54f
+imported_hash: bcf2322c2fe0503d
 title: P4 — Exercises
 summary: Six labs that build a harness step by step, plus short drills per topic.
 order: 22
 kind: reading
 section: Notes / Practice
-source: learn-ai-engineering/ai-engineering/03-harness/notes/practice/04-exercises.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/practice/04-exercises.md
 ---
 
 # P4 — Exercises
@@ -107,7 +107,7 @@ A run log, one per run:
 
 ## Lab 7 — From harness to loop
 
-This lab belongs to the loop layer: turn the harness you built here into a goal loop, then a timer loop, then a maker/checker loop. See [04-loop/](../../../04-loop/readme.md).
+This lab belongs to the loop layer: turn the harness you built here into a goal loop, then a timer loop, then a maker/checker loop. See [04-loop-engineering practice](../../../04-loop-engineering/practice/01-exercises.md).
 
 ---
 
@@ -150,4 +150,4 @@ Short exercises, each tied to one note.
 
 ---
 
-→ Next layer: [04-loop/](../../../04-loop/readme.md) — the loops this harness implements.
+→ Next layer: [04-loop-engineering/](../../../04-loop-engineering/readme.md) — the loops this harness implements.

@@ -1,11 +1,11 @@
 ---
-imported_hash: eb8a27f6ed79a2ad
+imported_hash: 7dcd0795de26f3ca
 title: 7 — Structured Context and Schemas
 summary: 'A model reading unstructured context has to infer the role of each span: whether it''s an instruction or data, a fact or an example, current or stale.'
 order: 11
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/02-context/notes/07-structured-context.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/07-structured-context.md
 ---
 
 # 7 — Structured Context and Schemas
@@ -99,7 +99,7 @@ When the evidence is relational (who reports to whom, which service calls which)
 (billing-svc) -[deployed_in]-> (eu-west-1)
 ```
 
-Triples or adjacency lists are compact and make multi-hop questions ("who owns what billing calls?") a lookup rather than an inference. Retrieving from a knowledge graph is covered in [04](04-retrieval.md) and in depth in [05-graph](../../05-graph/readme.md).
+Triples or adjacency lists are compact and make multi-hop questions ("who owns what billing calls?") a lookup rather than an inference. Retrieving from a knowledge graph is covered in [04](04-retrieval.md) and in depth in [05-graph](../../05-graph-engineering/readme.md).
 
 ---
 

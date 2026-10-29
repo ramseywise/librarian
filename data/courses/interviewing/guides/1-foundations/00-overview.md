@@ -1,11 +1,11 @@
 ---
-imported_hash: 3e354ba0c6211486
+imported_hash: 3550c2e66663822a
 title: Pillar 1 — Foundations (classical ML, stats, SQL)
 summary: 'Everything else in AI is built on this: how models learn from data, how you know they work, and how you query the data in the first place.'
 order: 4
 kind: reading
 section: Foundations
-source: learn-ai-engineering/interviewing/guides/1-foundations/00-overview.md
+source: sisyphus/interviewing/guides/1-foundations/00-overview.md
 ---
 
 # Pillar 1 — Foundations (classical ML, stats, SQL)
@@ -17,7 +17,7 @@ being jargon and become tools you reach for.
 
 ## Learning path
 
-1. **Python + data handling first** — work through `programming/Python Basics/` and
+1. **Python + data handling first** — work through [`data-analytics/python-basics/`](https://github.com/ramseywise/learn-ai-engineering/tree/main/data-analytics/python-basics) and
    *Python for Data Analysis* (readings) until pandas feels boring.
 2. **Core ML by doing** — `data-science/Intro to Machine Learning in Python/` notebooks:
    fit your first models, break them, plot learning curves.
@@ -51,6 +51,7 @@ being jargon and become tools you reach for.
 | LightGBM vs CatBoost · Track2Vec | wiki | librarian | applied tabular + embedding case studies |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) (the exam-prep summary) · rounds:
 [technical-questions](../../rounds/technical-questions/readme.md),
 [coding-challenge](../../rounds/coding-challenge/readme.md) (SQL screens),

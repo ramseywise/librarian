@@ -1,11 +1,11 @@
 ---
-imported_hash: d3dcfd757c658ae8
+imported_hash: 875dd8a904261958
 title: 11 — Context Failure Modes
 summary: These are distinct causes with distinct fixes, and they're routinely misdiagnosed as each other — or as "the model isn't smart enough."
 order: 15
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/02-context/notes/11-failure-modes.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/11-failure-modes.md
 ---
 
 # 11 — Context Failure Modes
@@ -101,7 +101,7 @@ The root cause is that context has no type system. Instructions and data are the
 
 Defense 5 is the load-bearing one. Every context-level defense is probabilistic. Only code-level controls are guarantees.
 
-Full treatment: [prompt-injection.md](../../../interviewing/guides/7-security-safety/prompt-injection.md) and pillar [7-security-safety](../../../interviewing/guides/7-security-safety/00-overview.md).
+Full treatment: [prompt-injection.md](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/7-security-safety/prompt-injection.md) and pillar [7-security-safety](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/7-security-safety/00-overview.md).
 
 ---
 

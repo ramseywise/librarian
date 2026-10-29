@@ -1,7 +1,7 @@
 ---
-imported_hash: 7350d131d0121088
+imported_hash: 350014baf2c0f622
 title: Text Preprocessing and Word Embeddings
-summary: from nltk import wordtokenize, senttokenize from nltk.corpus import stopwords from gensim.models.word2vec import Word2Vec
+summary: from nltk import word_tokenize, sent_tokenize from nltk.corpus import stopwords from gensim.models.word2vec import Word2Vec
 order: 21
 kind: notebook
 section: tensorFlow / Text processing

@@ -1,21 +1,23 @@
 ---
-imported_hash: 08a1fbda8c668e69
+imported_hash: 560c264fb1e61fbf
 title: 'Example: Document-QA for a Legal Firm'
-summary: ''
+summary: '"Design a document-QA system for a legal firm.'
 order: 81
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/rag-system.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/rag-system.md
 ---
 
 # Example: Document-QA for a Legal Firm
 
 ## Prompt
+
 "Design a document-QA system for a legal firm. They have 50K contracts and legal documents. Lawyers need to ask questions like 'What are the termination clauses in our agreements with Company X?' and get answers with citations."
 
 ## Step 1: Clarify & scope (3 min)
 
 **Questions I'd ask**:
+
 - Document types? (PDFs, Word, scanned images → OCR needed?)
 - Query patterns: factual lookup ("what's the termination clause?") vs synthesis ("summarize all IP provisions across our portfolio")?
 - Latency: is this interactive (< 3s) or batch ("run overnight, email results")?
@@ -24,6 +26,7 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/ra
 - Accuracy priority: legal context means wrong answers are high-consequence
 
 **Assumptions after clarify**:
+
 - Mostly PDFs with some scans (need OCR/layout parser for tables)
 - Interactive use, p95 < 3s
 - Data stays on-prem (client privilege) → self-hosted models or private cloud
@@ -38,7 +41,8 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/ra
 ## Step 3: Design (15 min)
 
 ### Ingestion pipeline
-```
+
+```text
 Documents → Layout parser (extract text, tables, headings)
   → Structure-aware chunking (heading-based, ~512 tokens, 64 overlap)
   → Tables extracted separately (serialized text + caption)
@@ -50,7 +54,8 @@ Documents → Layout parser (extract text, tables, headings)
 **Why pgvector over dedicated vector DB**: On-prem constraint, already running Postgres for app state, multi-tenant access control maps to RLS (row-level security). Tradeoff: slower than HNSW-optimized stores, but at 50K docs (~500K chunks) brute-force is still viable.
 
 ### Query pipeline
-```
+
+```text
 Query → Access control check (user can see which clients?)
   → Query rewrite (coreference resolution for multi-turn)
   → Hybrid search: vector (E5) + BM25 over exact terms
@@ -75,6 +80,7 @@ Query → Access control check (user can see which clients?)
 **Self-hosted vs API**: Self-hosted given data residency. Use an open model (Llama 3 or Mistral) for generation. Trade-off: lower capability than frontier models, mitigated by strong retrieval (the model mostly needs to synthesize well-retrieved chunks, not reason from scratch).
 
 ### Sidecars
+
 - **Trace/observability**: Langfuse (self-hosted), every query traced with retrieval scores, generation, and citation verification results
 - **Eval**: Golden set of 100 query-answer pairs with expected citations, run on deploy
 - **Semantic cache**: Repeat queries common in legal ("what's the NDA standard?") → cache with invalidation on document updates
@@ -92,6 +98,7 @@ Query → Access control check (user can see which clients?)
 **Metrics**: Hit rate@5 > 0.85, faithfulness > 0.95, citation accuracy > 0.90 (every cited passage actually supports the claim), p95 < 3s, cost per query (compute, not API).
 
 **Future improvements**:
+
 - GraphRAG for relationship queries ("which agreements reference this clause?")
 - User feedback loop: thumbs-down → flag for human review → enrich golden set
 - Distilled model for simple FAQ-type queries (reduce GPU load)

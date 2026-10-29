@@ -1,0 +1,196 @@
+---
+imported_hash: 7dd7679f5cbf5dba
+title: 9 — Reading Results
+summary: On 50 tasks, 80% and 72% are not distinguishable.
+order: 18
+kind: reading
+section: Notes
+source: learn-ai-engineering/ai-engineering/06-eval/notes/09-reading-results.md
+---
+
+# 9 — Reading Results
+
+> An eval score is an estimate from a sample, not a fact. Put an error bar on it, compare versions on the same tasks, and break it down by slice before deciding anything. Most "improvements" on small suites are noise.
+
+---
+
+## The error bar on a pass rate
+
+A pass rate *p* measured on *n* independent tasks has a standard error of:
+
+```
+SE = √( p(1 − p) / n )          95% CI ≈ p ± 1.96 · SE
+```
+
+| n | p = 0.80 | 95% CI |
+|---|---|---|
+| 20 | SE 0.089 | 62% – 98% |
+| 50 | SE 0.057 | 69% – 91% |
+| 100 | SE 0.040 | 72% – 88% |
+| 300 | SE 0.023 | 75% – 85% |
+| 1,000 | SE 0.013 | 77% – 83% |
+
+On 50 tasks, 80% and 72% are not distinguishable. That's the most important table in this chapter. Report the interval with every headline number.
+
+For small *n* or *p* near 0 or 1, use the **Wilson interval** instead of the normal approximation. It doesn't produce bounds outside [0, 1].
+
+---
+
+## How many tasks
+
+The question isn't "how big should the suite be?" It's "**what's the smallest change I need to detect?**"
+
+Rough sizes for detecting a difference between two versions run on the *same* tasks (paired, 80% power, α = 0.05, pass rates around 70–85%):
+
+| Smallest difference that matters | Tasks needed (roughly) |
+|---|---|
+| 15 points | 50–100 |
+| 10 points | 100–200 |
+| 5 points | 400–800 |
+| 2 points | 2,500+ |
+
+The paired range depends on how often the two versions disagree on the same task: fewer disagreements, fewer tasks needed. Unpaired comparisons need noticeably more.
+
+Practical consequence: a 50-task golden set is a **smoke detector** for big regressions. It cannot tell you that a prompt tweak gained 3 points. Either grow the suite, or stop making decisions on 3-point differences.
+
+---
+
+## Compare on the same tasks: paired differences
+
+When comparing version A and B, run both on the same tasks and analyze **per-task differences**, not two independent pass rates.
+
+```
+task   A    B    B − A
+t1     1    1     0
+t2     0    1    +1
+t3     1    0    −1
+t4     1    1     0
+…
+mean difference = Δ;  SE(Δ) = sd(differences) / √n
+```
+
+Most tasks pass or fail on both versions, so the differences are mostly zero, and the SE of the difference is much smaller than the SE of either rate. Miller (Anthropic, "Adding Error Bars to Evals", 2024) shows pairing can cut the variance of a comparison substantially for free.
+
+For binary outcomes, the same idea is **McNemar's test**: only the tasks where A and B disagree carry information. If B wins 14 and loses 6 of the 20 discordant tasks, that's evidence. If it wins 11 and loses 9, it isn't.
+
+---
+
+## Repeats and clustering
+
+### Repeated trials
+
+With *k* trials per task ([06](06-evaluating-agents.md#non-determinism-run-every-task-k-times)), first average the trials **within** each task, then compute the SE across tasks. Treating 100 tasks × 5 trials as 500 independent samples understates the error bar, because trials of the same task are correlated.
+
+Repeats reduce the noise from sampling randomness within each task. They don't reduce noise from *which tasks you picked*. For that you need more tasks. Beyond a few repeats, more tasks beat more repeats.
+
+### Clustered tasks
+
+If tasks come in groups (10 questions about the same document, 5 turns of one conversation), they're not independent either. Use **clustered standard errors** (cluster by document or conversation). Miller reports clustered SEs can be several times larger than naive ones on popular benchmarks. Ignoring clustering makes results look more certain than they are.
+
+---
+
+## Slice before you conclude
+
+A flat headline can hide a win and a loss that cancel out:
+
+| Slice | n | A | B | Δ |
+|---|---|---|---|---|
+| Billing | 120 | 82% | 90% | +8 |
+| How-to | 150 | 88% | 89% | +1 |
+| Non-English | 40 | 75% | 58% | **−17** |
+| **Overall** | 310 | 84% | 85% | +1 |
+
+"+1 overall" would ship a change that breaks non-English users. Always break results down by the slices you labeled ([03](03-eval-datasets.md#coverage-and-balance)), and show *n* per slice so nobody over-reads a 12-task slice.
+
+Watch for **Simpson's paradox**: B can beat A in every slice and lose overall (or the reverse) if the slice mix differs between runs. Compare on identical task sets.
+
+### Too many slices
+
+Slice 20 ways and one will show a "significant" change by chance at α = 0.05. Treat surprising slice results as hypotheses to confirm on fresh data, not conclusions. Pre-register the slices that gate releases.
+
+The same arithmetic applies to testing several fixes at once. At 95% confidence each, the chance that at least one of 6 parallel hypotheses is a false positive is 1 − 0.95⁶ ≈ **26%**. Either tighten the per-test threshold (Bonferroni: α / number of tests) or re-run every positive result as an independent confirmation and believe it only if it replicates.
+
+**When the difference is smaller than the noise, don't switch.** 100 tasks at 70% gives a standard error of about 4.6 points, so the 95% interval is ±9. "73% vs 70%" is inside the noise. Run the paired test first ([above](#compare-on-the-same-tasks-paired-differences)). Grow the sample only if that's still inconclusive.
+
+---
+
+## Read the transcripts
+
+Numbers say how much. Transcripts say why. Before accepting any change in a score:
+
+1. Pull 10–20 tasks that **flipped** (pass → fail and fail → pass).
+2. Read them. Is the flip real, or a grader quirk, an infra error, a flaky task?
+3. If fails are mostly one failure label, that's your story. If they're scattered, it may be noise.
+
+Anthropic's guidance puts it plainly: you won't know whether your graders work unless you read transcripts and grades together.
+
+---
+
+## From a benchmark report to hypotheses
+
+A report's value is the hypotheses it suggests, not the headline number. Li's AndroidWorld walkthrough (*AI Agents in Depth*, ch. 6; the data is illustrative) shows the method:
+
+1. **Check the eval first.** Before blaming the agent on a 0% cluster, confirm the tasks, environment and grader work ([12](12-failure-modes.md#eval-bugs-look-like-agent-bugs)).
+2. **Cross per-task results with capability tags** (settings navigation, transcription, complex UI, …). Failures concentrated in one tag point to one cause.
+3. **Tier the hypotheses by cost:**
+
+| Tier | Example | Run when |
+|---|---|---|
+| **Surface** (prompt hints, tool descriptions) | "Add a hint for finding Wi-Fi settings" | First. They're cheap and independent, so test them in parallel (and correct for multiple comparisons, above) |
+| **Mid** (new tools, workflow changes) | "Add a transcription tool" | Surface fixes leave the tag below target |
+| **Deep** (swap model, add UI-tree input, post-train) | "Use a stronger vision model" | Only if the tag is still below, say, 40% after the cheaper tiers |
+
+4. **Weigh each fix's gain against its cost.** "+75 points on settings tasks for +8% input tokens" is a different decision from a gain at 3× cost. Don't deploy a fix whose gain is inside the noise.
+5. **Re-run the full benchmark.** Fixing one cluster reveals the next failure pattern, so the loop starts again.
+
+A **model swap** is one deep hypothesis among others. Run it the same way, on your own eval set, with paired comparison, and compare on success, tool-call accuracy, latency and cost. It is not a shortcut.
+
+Lab: AndroidWorld report → improvement ([upstream `chapter6/android-world`](https://github.com/bojieli/ai-agent-book/tree/main/chapter6)).
+
+---
+
+## Metric pitfalls
+
+From the KDD 2017 "Dirty Dozen" paper on online experiments, the ones that bite LLM evals most:
+
+| Pitfall | In LLM evals |
+|---|---|
+| **Metric sample ratio mismatch** | Version B errored on 8% of tasks, which were dropped. B's pass rate is over its easier 92% |
+| **Ratio metrics with changing denominators** | "Grounding rate" rose because B answers fewer questions (refuses more) |
+| **Novelty effects** | Online, users engage more with any change for the first week |
+| **Overall vs. segment confusion** | The slicing problem above |
+| **Ignoring the error bar** | Shipping on +2 points over 50 tasks |
+
+Rule: **count errors and refusals as failures**, or report them as their own rate. Never let them silently leave the denominator.
+
+---
+
+## Report template
+
+```
+Suite: support-golden v4 (n=310, 3 trials/task)     Judge: grounding-v2 (calibrated, TNR 0.88)
+                    A (prod)        B (candidate)   Δ (paired)
+Pass rate           84.2% ±3.9      85.1% ±3.8      +0.9  [−1.6, +3.4]
+  Non-English (40)  75.0% ±13       57.5% ±15       −17.5 [−29, −6]    ⚠
+Errors / refusals   1.3%            4.2%                                ⚠
+Steps (median)      4               4
+Cost per success    $0.014          $0.016          +14%
+Flipped tasks read: 18 / 18 — 9 of 11 regressions are `refusal` on non-English
+Decision: do not ship. Investigate refusal behavior for non-English.
+```
+
+---
+
+## Checklist
+
+- [ ] Every headline number has a 95% CI
+- [ ] Suite size chosen from the smallest difference that matters
+- [ ] Comparisons paired on identical tasks; SE of the difference reported
+- [ ] Trials averaged within task; clustered SEs where tasks group
+- [ ] Results broken down by labeled slices with n
+- [ ] Errors and refusals counted, not dropped
+- [ ] Flipped transcripts read before any decision
+
+---
+
+→ Next: [10-evals-in-ci.md](10-evals-in-ci.md) — turning a result into a gate.

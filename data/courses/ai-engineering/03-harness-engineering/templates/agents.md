@@ -1,11 +1,11 @@
 ---
-imported_hash: 357d3344e65a1f24
+imported_hash: 4aa8c20ae31f551a
 title: AGENTS.md
 summary: This repository is designed for long-running coding-agent work.
 order: 23
 kind: reading
 section: Templates
-source: learn-ai-engineering/ai-engineering/03-harness/templates/AGENTS.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/AGENTS.md
 ---
 
 # AGENTS.md

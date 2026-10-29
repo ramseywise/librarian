@@ -1,7 +1,7 @@
 ---
-imported_hash: f3fe5141d8655729
+imported_hash: 4c304213c02e6964
 title: load corpus
-summary: corpus = flattencorpus(corpus) tokens = nltk.wordtokenize(corpus)
+summary: corpus = flatten_corpus(corpus) tokens = nltk.word_tokenize(corpus)
 order: 13
 kind: notebook
 section: Ch06   Text Summarization and Topic Models

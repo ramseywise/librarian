@@ -1,5 +1,5 @@
 ---
-imported_hash: e9b651ce9218bf91
+imported_hash: 4e6ed1a46c28d495
 title: Tokenization
 summary: data = requests.get('http://www.gutenberg.org/cache/epub/8001/pg8001.html') content = data.content print(content[1163:2200])
 order: 5

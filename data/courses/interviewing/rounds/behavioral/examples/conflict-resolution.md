@@ -1,11 +1,11 @@
 ---
-imported_hash: 54505641429956bc
+imported_hash: ec43c987a0b672d6
 title: 'Worked STAR Example: Conflict Resolution'
 summary: The second sentence shows you've extended the lesson beyond the exact situation — you've generalized it, which signals genuine learning rather than lesson-learned theater.
 order: 7
 kind: reading
 section: Behavioral / Examples
-source: learn-ai-engineering/interviewing/rounds/behavioral/examples/conflict-resolution.md
+source: sisyphus/interviewing/rounds/behavioral/examples/conflict-resolution.md
 ---
 
 # Worked STAR Example: Conflict Resolution
@@ -19,6 +19,7 @@ source: learn-ai-engineering/interviewing/rounds/behavioral/examples/conflict-re
 ## The story
 
 ### Situation
+>
 > On a production ML pipeline, my colleague — a senior engineer I respected — wanted to switch our
 > embedding model from a fine-tuned in-house model to a third-party API for the next release.
 > I thought that was the wrong call. We disagreed, and it was blocking a planning decision.
@@ -30,6 +31,7 @@ disagreement without editorializing about who was right. The interviewer doesn't
 ---
 
 ### Task
+>
 > I owned the evaluation framework and quality benchmarks for that pipeline — so the technical
 > merit of the migration was squarely my call to defend or concede.
 
@@ -40,6 +42,7 @@ Without this, the conflict story is just opinion vs. opinion.
 ---
 
 ### Action
+>
 > My first move was to understand his argument before defending mine. He was right that the
 > third-party API had higher raw benchmark scores and would eliminate our fine-tuning maintenance
 > overhead — real advantages. Where I disagreed was on the distributional shift risk: our use case
@@ -81,6 +84,7 @@ relational intelligence.
 ---
 
 ### Result
+>
 > We shipped with the hybrid approach. The domain-specific precision held at 85% on the fine-tuned
 > subset. We planned to migrate the remaining subsets as eval coverage expanded, which happened
 > over the next two quarters.
@@ -100,6 +104,7 @@ relational intelligence.
 ---
 
 ### Reflection
+>
 > Since then, I default to "what would resolve this empirically?" as my first question in any
 > technical disagreement. If there's no feasible experiment, I separate the components I'm
 > confident about from the ones I'm uncertain about, and I present both sides in my argument,

@@ -1,11 +1,11 @@
 ---
-imported_hash: f817e5c23b63d5b0
+imported_hash: 1f9e80d356a7cb19
 title: Verification Loop Template
 summary: 'This template is ideal for: - Tasks with high stakes where errors could be costly - Complex calculations or logical reasoning chains - Situations prone to common reasoning fallacies - Cases where thoroughness is more important than speed -…'
-order: 23
+order: 25
 kind: reading
 section: Templates / Prompts
-source: learn-ai-engineering/ai-engineering/02-context/templates/prompts/verification_loop.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/templates/prompts/verification_loop.md
 ---
 
 # Verification Loop Template

@@ -1,11 +1,11 @@
 ---
-imported_hash: 0e096017b6246431
+imported_hash: 147b6cb6609a8547
 title: 'Worked Example: RAG Pipeline Defense Round'
 summary: 'This example shows: (1) the original design briefly, (2) each challenge with a model response, and (3) how to adapt visibly when a challenge is valid.'
 order: 15
 kind: reading
 section: Case study / Examples / Aie track
-source: learn-ai-engineering/interviewing/rounds/case-study/examples/aie-track/rag-pipeline-defense.md
+source: sisyphus/interviewing/rounds/case-study/examples/aie-track/rag-pipeline-defense.md
 ---
 
 # Worked Example: RAG Pipeline Defense Round
@@ -20,6 +20,7 @@ This example shows: (1) the original design briefly, (2) each challenge with a m
 ## The original design (what you presented)
 
 > "I built a RAG pipeline to help support engineers find answers in our internal knowledge base. The pipeline:
+>
 > 1. Ingests 500 docs (PDFs, Markdown) → parses text → chunks at 512 tokens with 64-token overlap
 > 2. Embeds chunks with text-embedding-3-small → stores in pgvector
 > 3. At query time: embed query → retrieve top-8 chunks → rerank with a cross-encoder → assemble context → GPT-4o mini prompt → response with source citations
@@ -54,6 +55,7 @@ This example shows: (1) the original design briefly, (2) each challenge with a m
 > "73% is not where I'd want it in production — I'd target 85%+ before full rollout. Let me break down why it's at 73% and what I'd do about it.
 >
 > I labeled 100 QA pairs and looked at the failures:
+>
 > - 18% of failures: truncated chunks missing the relevant detail (chunking issue, see above)
 > - 31% of failures: the correct chunk ranked 9th or 10th — just outside the top-8 retrieval window (retrieval depth issue)
 > - 28% of failures: the LLM synthesized across multiple chunks in a way that combined correct facts into an incorrect composite (generation issue)
@@ -76,11 +78,13 @@ This example shows: (1) the original design briefly, (2) each challenge with a m
 > "For this specific case, RAG is the right architecture — but I want to walk through why, because fine-tuning wins in some scenarios.
 >
 > The case for RAG here:
+>
 > - The knowledge is in specific documents, not in general domain patterns. The model already 'knows' how to answer questions — it needs access to the right facts, not a different behavior.
 > - Our docs are updated monthly when processes change. Fine-tuning requires retraining on every update. RAG lets us re-index in minutes.
 > - Support engineers need to see the source — 'RAG said so' isn't trustworthy enough. They need a citation they can click. Fine-tuned models don't produce grounded citations naturally.
 >
 > The case for fine-tuning would be:
+>
 > - The gap is in format or style, not knowledge. If we needed the model to write in our specific support-ticket format consistently, fine-tuning on examples would be more reliable than prompt engineering.
 > - The knowledge is stable and large enough that re-indexing is expensive (hundreds of millions of tokens at a time).
 > - Latency constraints ruled out retrieval latency. Fine-tuned smaller models can be faster than RAG + GPT-4o.
@@ -118,12 +122,14 @@ This example shows: (1) the original design briefly, (2) each challenge with a m
 > "One week to launch — I'd ruthlessly cut to: can the system answer questions correctly, and does it fail safely?
 >
 > **Keep:**
+>
 > - Core pipeline (query → retrieve → generate → respond with citation). Non-negotiable.
 > - Confidence threshold + 'I don't know' fallback. If retrieval score is low, the system should say 'I don't have reliable information on this' rather than hallucinate. This is a trust feature, not a nice-to-have.
 > - Basic monitoring: error rate, latency p95, and a daily sample of 10 responses reviewed by a human. Without monitoring, I can't know when things break.
 > - PII scrubber (if customer data could enter the pipeline). Compliance is non-negotiable.
 >
 > **Cut:**
+>
 > - The second-pass generation check (faithfulness verifier). Would help quality but adds 1–2 seconds of latency and complexity. Sprint 2.
 > - Multi-document conflict detection. Genuinely hard, would take weeks to do well. Flag as known limitation.
 > - Full A/B framework. Manual logging and weekly review is sufficient for a pilot with 20 users.
@@ -152,6 +158,7 @@ This example shows: (1) the original design briefly, (2) each challenge with a m
 ## Defense round meta-notes
 
 **The pattern across all good responses:**
+
 1. Acknowledge the challenge specifically, not generically.
 2. Explain the original reasoning briefly.
 3. State the conditions under which you'd change your answer.
@@ -159,6 +166,7 @@ This example shows: (1) the original design briefly, (2) each challenge with a m
 5. Name what's genuinely hard rather than pretending everything has a clean solution.
 
 **The pattern across all failing responses:**
+
 - "That's a great question." (filler, wastes time, reads as stalling)
 - Defending the original choice without engaging the challenge.
 - "It depends." without specifying what it depends on.

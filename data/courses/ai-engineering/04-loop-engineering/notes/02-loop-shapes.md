@@ -1,11 +1,11 @@
 ---
-imported_hash: deadf861c9634772
+imported_hash: 8719da7db22561ac
 title: 2 — Loop Shapes
 summary: 'Anthropic built Claude Code around one loop (gather → act → verify → repeat), then extracted the Claude Agent SDK so teams could "build their own agents on the same machinery instead of maintaining a homegrown loop." The message: the loop i…'
-order: 5
+order: 4
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/04-loop/notes/02-loop-shapes.md
+source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/02-loop-shapes.md
 ---
 
 # 2 — Loop Shapes
@@ -84,7 +84,7 @@ Two lines come from the KodeKloud course and are worth making explicit: **save**
 | **Plan-then-Act** | Write the full plan up front, then execute | Predictable; brittle when step 3 invalidates step 5 |
 | **Plan-and-Revise** | Plan up front, re-plan when an observation breaks it | The usual production compromise |
 
-For long work the plan should live in a file, not in the context window, so a fresh pass can read and revise it. See [harness note 06](../../03-harness/notes/06-long-horizon-execution.md#plans-as-first-class-artifacts).
+For long work the plan should live in a file, not in the context window, so a fresh pass can read and revise it. See [harness note 06](../../03-harness-engineering/notes/06-long-horizon-execution.md#plans-as-first-class-artifacts).
 
 ### Vercel's sequencing advice
 
@@ -104,7 +104,7 @@ That is the green-first rule from [note 01](01-what-a-loop-is.md#green-first) ap
 |---|---|---|---|
 | Control flow | Fixed by your code | Decided by feedback each pass | Explicit nodes and edges, may contain loops |
 | Use when | Steps are known in advance | Steps depend on what the last one found | Several loops or agents must hand off |
-| Layer | prompt / harness | **this pillar** | [05-graph](../../05-graph/readme.md) |
+| Layer | prompt / harness | **this pillar** | [05-graph](../../05-graph-engineering/readme.md) |
 
 Start at the left column and move right only when the task forces you to.
 

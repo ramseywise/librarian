@@ -1,21 +1,23 @@
 ---
-imported_hash: 0364b7134999eeb5
+imported_hash: 5854127f5eca842a
 title: 'Example: Automated Code Review Agent'
-summary: ''
+summary: '"Design an agent that reviews pull requests and posts review comments.'
 order: 77
 kind: reading
 section: System design round / Examples
-source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/agent-system.md
+source: sisyphus/interviewing/rounds/system-design-round/examples/agent-system.md
 ---
 
 # Example: Automated Code Review Agent
 
 ## Prompt
+
 "Design an agent that reviews pull requests and posts review comments. It should catch bugs, security issues, and convention violations."
 
 ## Step 1: Clarify & scope (3 min)
 
 **Questions I'd ask**:
+
 - Scope: all PRs, or opt-in? Blocking (required approval) or advisory (comments only)?
 - Codebase size/languages? Monorepo or multi-repo?
 - Existing tooling: CI/CD pipeline? Linters/formatters already in place?
@@ -24,6 +26,7 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/ag
 - Latency: must comment before the human reviewer looks, or async is fine?
 
 **Assumptions after clarify**:
+
 - Advisory mode — agent posts comments, human makes approve/reject decision
 - Multi-repo, Python + TypeScript
 - CI/CD exists (linters, tests already run)
@@ -39,7 +42,8 @@ source: learn-ai-engineering/interviewing/rounds/system-design-round/examples/ag
 ## Step 3: Design (15 min)
 
 ### Architecture
-```
+
+```text
 GitHub webhook (PR created/updated)
   → Queue (async processing)
   → PR Analyzer Agent:
@@ -60,6 +64,7 @@ GitHub webhook (PR created/updated)
 **Single agent vs multi-agent**: Single agent with structured passes, not multiple specialized agents. At this scale (one PR at a time), the overhead of multi-agent coordination isn't justified. Each pass is a different prompt template, not a different agent.
 
 **Context strategy**: Don't dump the entire PR into one prompt. For large PRs:
+
 1. Classify files by risk (security-sensitive, interface changes, config changes, tests)
 2. Review high-risk files with full surrounding context
 3. Skim low-risk files (test fixtures, generated code) with minimal context
@@ -76,6 +81,7 @@ GitHub webhook (PR created/updated)
 **Full context vs token budget**: Including the entire file for every changed line would blow the context window. Solution: include changed lines + 50 lines of surrounding context + file-level imports/declarations. Accept that some cross-file issues will be missed — flag them as a known limitation rather than trying to load the entire repo.
 
 ### Sidecars
+
 - **Eval**: Golden set of 50 PRs with known issues (manually labeled). Run weekly: precision, recall, severity calibration.
 - **Feedback loop**: "Was this comment helpful?" reaction on each comment → feeds into eval set and false-positive weighting.
 - **Cost tracking**: Token usage per PR, model selection impact on spend.

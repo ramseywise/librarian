@@ -1,11 +1,11 @@
 ---
-imported_hash: aecde6c4948c58d2
+imported_hash: 131d88a790778239
 title: 10 — Multi-Agent Context and Tool Design
 summary: 'The pattern: specialized agents handle focused tasks with clean context windows, returning condensed summaries to a lead coordinator.'
 order: 14
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/02-context/notes/10-tools-and-multi-agent.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/10-tools-and-multi-agent.md
 ---
 
 # 10 — Multi-Agent Context and Tool Design
@@ -142,7 +142,7 @@ The upstream tool-reasoning module gives four levels of tool use. Each is a diff
 | **Conditional** | The model picks the tool from the situation | Tool descriptions must be distinct enough to choose between |
 | **Recursive** | A tool call spawns its own tool loop (a sub-agent) | This is isolation; see above |
 
-Most production agents are conditional loops with occasional parallel batches. Pipeline and DAG architectures are worth it only when the order is known in advance. Then they belong in code, not in the model's decisions ([03-harness](../../03-harness/readme.md)).
+Most production agents are conditional loops with occasional parallel batches. Pipeline and DAG architectures are worth it only when the order is known in advance. Then they belong in code, not in the model's decisions ([03-harness](../../03-harness-engineering/readme.md)).
 
 ---
 

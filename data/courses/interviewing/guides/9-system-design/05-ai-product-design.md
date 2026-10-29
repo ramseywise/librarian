@@ -1,11 +1,11 @@
 ---
-imported_hash: 2cfefee2968cbda0
+imported_hash: 274833d00a897398
 title: AI Product & System Design Interview Framework (2026)
 summary: 'Pillar 9, detailed note 5. The product-flavored design round: mission/goals alignment, user segmentation, prioritization, and AI-specific risk framing — the layer above the architecture.'
 order: 26
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/05-ai-product-design.md
+source: sisyphus/interviewing/guides/9-system-design/05-ai-product-design.md
 ---
 
 # AI Product & System Design Interview Framework (2026)
@@ -21,13 +21,13 @@ Don't jump into solutions.
 
 Clarify:
 
-* Product goal
-* Success criteria
-* User population
-* Platform (mobile/web/API)
-* Geographic scope
-* MVP vs long-term vision
-* Constraints (privacy, regulations, safety)
+- Product goal
+- Success criteria
+- User population
+- Platform (mobile/web/API)
+- Geographic scope
+- MVP vs long-term vision
+- Constraints (privacy, regulations, safety)
 
 Example:
 
@@ -35,25 +35,25 @@ Example:
 
 ---
 
-## 2. AI Product Design ≠ Traditional PM
+### 2. AI Product Design ≠ Traditional PM
 
 Traditional PM
 
-* deterministic software
-* predictable user flows
-* optimize engagement
-* features are the product
+- deterministic software
+- predictable user flows
+- optimize engagement
+- features are the product
 
 AI PM
 
-* probabilistic outputs
-* design guardrails instead of deterministic flows
-* optimize trust, usefulness, safety
-* model behavior is part of the product
+- probabilistic outputs
+- design guardrails instead of deterministic flows
+- optimize trust, usefulness, safety
+- model behavior is part of the product
 
 Think:
 
-```
+```text
 Product
 +
 Model
@@ -65,11 +65,11 @@ Evaluation
 
 ---
 
-## 3. Recommended Interview Structure
+### 3. Recommended Interview Structure
 
 A good answer is usually:
 
-```
+```text
 Clarify
 
 ↓
@@ -113,7 +113,7 @@ This structure works for OpenAI, Anthropic, Meta, Character, Perplexity, Cursor,
 
 ---
 
-# Mission vs Goals
+## Mission vs Goals
 
 Separate these.
 
@@ -127,14 +127,14 @@ Goals = WHAT
 
 Examples
 
-* improve daily well-being
-* increase trust
-* improve task completion
-* reduce loneliness
+- improve daily well-being
+- increase trust
+- improve task completion
+- reduce loneliness
 
 ---
 
-# AI Company Alignment
+## AI Company Alignment
 
 Always tie back to company values.
 
@@ -142,33 +142,33 @@ Examples
 
 OpenAI
 
-* useful
-* aligned
-* broadly beneficial
-* safe deployment
+- useful
+- aligned
+- broadly beneficial
+- safe deployment
 
 Anthropic
 
-* Helpful
-* Honest
-* Harmless
+- Helpful
+- Honest
+- Harmless
 
 Google
 
-* responsible AI
-* reliability
+- responsible AI
+- reliability
 
 Meta
 
-* connection
-* expression
-* discovery
+- connection
+- expression
+- discovery
 
 Interviewers love hearing this.
 
 ---
 
-# User Segmentation
+## User Segmentation
 
 Instead of immediately picking one user, explicitly segment first.
 
@@ -176,27 +176,27 @@ Useful dimensions:
 
 Capability
 
-* novice
-* expert
+- novice
+- expert
 
 Need
 
-* casual
-* professional
+- casual
+- professional
 
 Risk
 
-* low-risk
-* high-risk
+- low-risk
+- high-risk
 
 Frequency
 
-* daily
-* occasional
+- daily
+- occasional
 
 Example matrix
 
-```
+```text
                  High capability
 
 Social needs
@@ -216,23 +216,23 @@ Then prioritize.
 
 Discuss
 
-* Reach
-* Impact
-* Feasibility
-* Safety
+- Reach
+- Impact
+- Feasibility
+- Safety
 
 ---
 
-# Prioritization Frameworks
+## Prioritization Frameworks
 
 Can use:
 
 RICE
 
-* Reach
-* Impact
-* Confidence
-* Effort
+- Reach
+- Impact
+- Confidence
+- Effort
 
 or
 
@@ -250,7 +250,7 @@ State why.
 
 ---
 
-# Pain Points First
+## Pain Points First
 
 One repeated lesson:
 
@@ -262,7 +262,7 @@ Then cluster them.
 
 Example
 
-```
+```text
 Loneliness
 
 Purpose
@@ -274,13 +274,13 @@ Life transitions
 
 Prioritize by
 
-* frequency
-* severity
-* addressability
+- frequency
+- severity
+- addressability
 
 ---
 
-# AI Solutions
+## AI Solutions
 
 Every solution should map directly to a pain point.
 
@@ -309,7 +309,7 @@ UI
 
 Example
 
-```
+```text
 Pain
 
 ↓
@@ -331,27 +331,27 @@ User always controls interaction
 
 ---
 
-# AI Guardrails
+## AI Guardrails
 
 A major interview theme.
 
 Discuss:
 
-* human oversight
-* escalation
-* confidence thresholds
-* refusal behavior
-* hallucination prevention
-* transparency
-* user control
-* privacy
-* abuse prevention
+- human oversight
+- escalation
+- confidence thresholds
+- refusal behavior
+- hallucination prevention
+- transparency
+- user control
+- privacy
+- abuse prevention
 
 Interviewers expect this.
 
 ---
 
-# AI-specific Risks
+## AI-specific Risks
 
 Common ones
 
@@ -381,7 +381,7 @@ For every risk discuss mitigation.
 
 ---
 
-# Metrics
+## Metrics
 
 Don't optimize AI for engagement alone.
 
@@ -389,25 +389,25 @@ Separate:
 
 Business metrics
 
-* retention
-* DAU
-* conversion
+- retention
+- DAU
+- conversion
 
 Quality metrics
 
-* CSAT
-* trust
-* task success
-* hallucination rate
-* safety violations
-* latency
+- CSAT
+- trust
+- task success
+- hallucination rate
+- safety violations
+- latency
 
 Behavior metrics
 
-* healthy usage
-* abandonment
-* escalation rate
-* successful completion
+- healthy usage
+- abandonment
+- escalation rate
+- successful completion
 
 Interview advice:
 
@@ -415,11 +415,11 @@ Use **1–3 metrics** tied directly to product goals rather than listing many un
 
 ---
 
-# AI Evaluation Thinking
+## AI Evaluation Thinking
 
 Every AI feature should answer:
 
-```
+```text
 Did it help?
 
 Was it safe?
@@ -433,24 +433,24 @@ Think in terms of
 
 Offline
 
-* benchmark datasets
-* golden evaluations
+- benchmark datasets
+- golden evaluations
 
 Online
 
-* A/B tests
-* user feedback
-* human review
+- A/B tests
+- user feedback
+- human review
 
 Production
 
-* monitoring
-* safety alerts
-* regression detection
+- monitoring
+- safety alerts
+- regression detection
 
 ---
 
-# Follow-up Questions
+## Follow-up Questions
 
 Expect interviewers to ask:
 
@@ -474,20 +474,20 @@ Prepare one strong answer for each.
 
 ---
 
-# System Design Interview Framework
+## System Design Interview Framework
 
 The second transcript reinforces a standard backend interview flow.
 
-## Functional Requirements
+### Functional Requirements
 
 Always define:
 
 Core
 
-* Create X
-* Read X
-* Update X
-* Delete X
+- Create X
+- Read X
+- Update X
+- Delete X
 
 Interactions
 
@@ -509,7 +509,7 @@ unless required.
 
 ---
 
-## Non-functional Requirements
+### Non-functional Requirements
 
 Discuss explicitly.
 
@@ -531,7 +531,7 @@ Cost
 
 Example
 
-```
+```text
 Strong consistency
 
 ↓
@@ -557,7 +557,7 @@ Interviewers like hearing trade-offs.
 
 ---
 
-# Think About Reads vs Writes
+## Think About Reads vs Writes
 
 Always estimate:
 
@@ -573,7 +573,7 @@ Example
 
 Auction
 
-```
+```text
 Few writes
 
 Many reads
@@ -587,13 +587,13 @@ This influences architecture.
 
 ---
 
-# Core Data Model
+## Core Data Model
 
 Before architecture, identify entities.
 
 Example
 
-```
+```text
 User
 
 Auction
@@ -605,7 +605,7 @@ Notification
 
 For AI systems:
 
-```
+```text
 User
 
 Conversation
@@ -623,13 +623,13 @@ Evaluation
 
 ---
 
-# API-first Thinking
+## API-first Thinking
 
 Define key endpoints.
 
 Examples
 
-```
+```text
 POST /auction
 
 POST /bid
@@ -641,7 +641,7 @@ GET /stream
 
 For AI:
 
-```
+```text
 POST /chat
 
 POST /memory
@@ -655,7 +655,7 @@ GET /conversation
 
 ---
 
-# Real-time Systems
+## Real-time Systems
 
 Recognize when polling is insufficient.
 
@@ -673,41 +673,41 @@ Event buses
 
 Examples:
 
-* live bids
-* collaborative editing
-* chat
-* agent status
-* token streaming
+- live bids
+- collaborative editing
+- chat
+- agent status
+- token streaming
 
 ---
 
-# Strong vs Eventual Consistency
+## Strong vs Eventual Consistency
 
 Interviewers often probe this.
 
 Strong consistency:
 
-* money
-* auctions
-* inventory
-* bookings
+- money
+- auctions
+- inventory
+- bookings
 
 Eventual consistency:
 
-* search
-* recommendations
-* feeds
-* analytics
+- search
+- recommendations
+- feeds
+- analytics
 
 Be ready to justify the trade-off.
 
 ---
 
-# A Useful Mental Model for AI System Design Interviews
+## A Useful Mental Model for AI System Design Interviews
 
 A pattern that works well across OpenAI, Anthropic, Meta, and startups is:
 
-```
+```text
 Clarify
 
 ↓

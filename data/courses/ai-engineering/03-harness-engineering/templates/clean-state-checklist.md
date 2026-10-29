@@ -1,11 +1,11 @@
 ---
-imported_hash: bd71d09570441def
+imported_hash: 1cb60cb7c1668da1
 title: Clean State Checklist
 summary: ''
 order: 24
 kind: reading
 section: Templates
-source: learn-ai-engineering/ai-engineering/03-harness/templates/clean-state-checklist.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/clean-state-checklist.md
 ---
 
 # Clean State Checklist

@@ -1,11 +1,11 @@
 ---
-imported_hash: 4d3652ba0ac14d80
+imported_hash: fd0ac617cf317050
 title: Leadership Rounds (CTO · Head of Product · Founder) + Reverse Interview
-summary: 30–60 min conversation, usually at the final stage.
+summary: 'The signal they''re reading: do you have considered views, do you update on new information, do you ask good questions?'
 order: 49
 kind: reading
 section: Leadership rounds
-source: learn-ai-engineering/interviewing/rounds/leadership-rounds/README.md
+source: sisyphus/interviewing/rounds/leadership-rounds/README.md
 ---
 
 # Leadership Rounds (CTO · Head of Product · Founder) + Reverse Interview
@@ -22,6 +22,7 @@ These rounds test **alignment**, not a fixed syllabus. Each interviewer is check
 ## Format
 
 30–60 min conversation, usually at the final stage. Low structure, high variance. Expect:
+
 - One deep technical-judgment thread (CTO)
 - One product-thinking thread (HoP)
 - Genuine back-and-forth (not structured Q&A)
@@ -31,19 +32,24 @@ The signal they're reading: do you have considered views, do you update on new i
 ## Per-interviewer angles
 
 ### CTO
+
 Prepare opinions with reasons about their likely stack tensions:
+
 - Build-vs-buy decisions (especially for model serving, evals, observability)
 - Model vendor strategy and switching costs
 - Eval discipline and when AI systems go to production
 - Tech-debt honesty — what you'd push back on, not just what you'd fix
 
 ### Head of Product
+
 Think in user problems and metrics trees, not feature lists:
+
 - "Should we build feature X?" → interrogate the problem behind it first
 - "How do you prioritize?" → outcomes over output, ruthless about what not to build
 - Know their recent product bets and have a considered view on them
 
 ### Founder/CEO
+
 - Why this mission, specifically — not "AI is interesting" but what about *their* version of it
 - 90-day plan that shows learn-then-ship instinct, not hero mode
 - Comfort operating at multiple layers (code + process + strategy) simultaneously

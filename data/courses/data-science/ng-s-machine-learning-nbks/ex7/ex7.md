@@ -1,5 +1,5 @@
 ---
-imported_hash: fd24458b3fd02a03
+imported_hash: d9ee305e3bbb8edc
 title: This creates a three-dimensional matrix A whose first two indices
 summary: '""" Fucntion to plot the data and color it accordingly.'
 order: 8

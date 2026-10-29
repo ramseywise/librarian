@@ -1,7 +1,7 @@
 ---
-imported_hash: 7e5608dc3b827112
+imported_hash: a6c00e274db5384a
 title: Load model
-summary: TRACKINGURL = "http://127.0.0.1:5000" mlflow.settrackinguri(TRACKINGURL)
+summary: TRACKING_URL = "http://127.0.0.1:5000" mlflow.set_tracking_uri(TRACKING_URL)
 order: 19
 kind: notebook
 section: Deployment

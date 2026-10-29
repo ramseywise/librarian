@@ -1,7 +1,7 @@
 ---
-imported_hash: a9f5c222353352bb
+imported_hash: 974751a449218a5c
 title: TensorFlow Encoding Sentences
-summary: from tensorflow import keras from nltk import wordtokenize, senttokenize from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences
+summary: from tensorflow import keras from nltk import word_tokenize, sent_tokenize from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences
 order: 6
 kind: notebook
 section: tensorFlow / Encoding embeddings

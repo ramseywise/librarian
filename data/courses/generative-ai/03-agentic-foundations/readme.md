@@ -1,5 +1,5 @@
 ---
-imported_hash: 9d14b85c036ffbf2
+imported_hash: c8e2928b06e8403e
 title: 03 — Agentic Foundations
 summary: Agentic foundations is where LLM systems graduate from single-call patterns to planning, tool use, multi-turn state, and multi-agent coordination.
 order: 1
@@ -9,7 +9,7 @@ source: learn-ai-engineering/generative-ai/03-agentic-foundations/README.md
 
 # 03 — Agentic Foundations
 
-> Depth layer. Summary: [interviewing/guides/4-agents](../../interviewing/guides/4-agents/00-overview.md)
+> Depth layer. Summary: [interviewing/guides/4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md)
 > Position: third pillar — framework learning for agentic AI.
 > Presumes: [01-llm-fundamentals](../01-llm-fundamentals/readme.md), [02-rag-retrieval](../02-rag-retrieval/readme.md).
 
@@ -42,8 +42,9 @@ with these frameworks, see [07-agentic-applications/](../07-agentic-applications
 
 **Context and memory:**
 
-- **[`../../ai-engineering/02-context/Context-Engineering-main/`](../../ai-engineering/02-context/Context-Engineering-main/)** —
-  context engineering for agents: what goes in the context window and why it matters.
+- **[`../../ai-engineering/02-context-engineering/`](../../ai-engineering/02-context-engineering/README.md)** —
+  context engineering for agents: what goes in the context window and why it matters
+  (13-chapter course in `notes/`, with labs, templates and paper PDFs).
 - **[`LLMs-as-Operating-Systems--Agent-Memory-main/`](LLMs-as-Operating-Systems--Agent-Memory-main/)** —
   agent memory architectures: in-context, external (vector/KG), procedural memory.
 - **[`Long-Term-Agentic-Memory-With-LangGraph-main/`](../04-agentic-frameworks/Long-Term-Agentic-Memory-With-LangGraph-main/)** —
@@ -62,32 +63,41 @@ with these frameworks, see [07-agentic-applications/](../07-agentic-applications
   evaluation pipelines in LangFuse: golden sets, LLM-as-judge, regression tracking.
 - **[`../06-observability/langfuse-mcp-python-main/`](../06-observability/langfuse-mcp-python-main/)** —
   LangFuse + MCP integration: observability for MCP-enabled agents.
-- **[`../../ai-engineering/06-eval/Evaluating-AI-Agents-master/`](../../ai-engineering/06-eval/Evaluating-AI-Agents-master/)** —
+- **[`../../ai-engineering/06-eval/notebooks/evaluating-ai-agents/`](../../ai-engineering/06-eval/notebooks/evaluating-ai-agents/)** —
   end-to-end agent evaluation: task decomposition, trajectory evaluation, benchmark design.
 
 ### Interviewing guides
 
-- [4-agents](../../interviewing/guides/4-agents/00-overview.md) — compressed summary for
+- [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) — compressed summary for
   interview prep: agent harness, tool use, loop design, memory, multi-agent orchestration.
+
+### Book
+
+- Bojie Li, *AI Agents in Depth* (2026, [upstream](https://github.com/bojieli/ai-agent-book), Apache-2.0).
+  Ch. 1 is synthesized in [agent-fundamentals.md](agent-fundamentals.md): Agent = LLM + Context + Tools,
+  the context ablation, ReAct, workflow vs. autonomous, and guardrails. Later chapters are folded
+  into the ai-engineering pillars; each note's `sources:` cites the chapter it draws on.
 
 ### Cleaned notes
 
+- [agent-fundamentals.md](agent-fundamentals.md) — start here: the agent formula, the five context
+  parts and their ablation, the ReAct trajectory, model-as-agent, model choice, and workflow vs. autonomous.
 - [agents-google-adk.md](agents-google-adk.md) — Google ADK: agent framework, tool use, deployment.
-- [agent-harness.md](../../ai-engineering/03-harness/agent-harness.md) — harness architecture: tool
+- [agent-harness.md](../../ai-engineering/03-harness-engineering/agent-harness.md) — harness architecture: tool
   registration, the agent loop, structured output parsing, error handling.
-- [agents-design.md](../../ai-engineering/03-harness/agents-design.md) — agent design patterns:
+- [agents-design.md](../../ai-engineering/03-harness-engineering/agents-design.md) — agent design patterns:
   ReAct, plan-and-execute, reflection, multi-agent orchestration.
-- [agents-guardrails.md](../../ai-engineering/03-harness/agents-guardrails.md) — safety and
+- [agents-guardrails.md](../../ai-engineering/03-harness-engineering/agents-guardrails.md) — safety and
   guardrails: input/output filtering, scope limiting, human-in-the-loop gates.
-- [reliable-agents.md](../../ai-engineering/03-harness/reliable-agents.md) — reliability patterns:
+- [reliable-agents.md](../../ai-engineering/03-harness-engineering/reliable-agents.md) — reliability patterns:
   retries, fallbacks, circuit breakers, determinism vs. stochasticity tradeoffs.
-- [loop-engineering.md](../../ai-engineering/04-loop/loop-engineering.md) — loop reliability:
+- [loop-engineering.md](../../ai-engineering/04-loop-engineering/loop-engineering.md) — loop reliability:
   termination conditions, loop invariants, stuck-agent detection.
-- [deep-agents.md](../../ai-engineering/04-loop/deep-agents.md) — advanced agent patterns:
+- [deep-agents.md](../../ai-engineering/03-harness-engineering/deep-agents.md) — advanced agent patterns:
   long-horizon planning, self-correction, agentic evals.
-- [memory.md](../../ai-engineering/05-graph/memory.md) — memory architectures: in-context,
+- [memory.md](../../ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md) — memory architectures: in-context,
   episodic, semantic, procedural.
-- [context-engineering.md](../../ai-engineering/02-context/context-engineering.md) — context
+- [context-engineering.md](../../ai-engineering/02-context-engineering/context-engineering.md) — context
   assembly for agents: what to include, what to compress, what to externalize.
 
 ---
@@ -99,9 +109,9 @@ For each agentic concern, there is a corresponding ai-engineering pillar:
 
 | Agentic concern | ai-engineering depth |
 |---|---|
-| Building the agent container | [03-harness/](../../ai-engineering/03-harness/README.md) |
-| Designing the agent loop | [04-loop/](../../ai-engineering/04-loop/README.md) |
-| Multi-agent graphs and KG retrieval | [05-graph/](../../ai-engineering/05-graph/README.md) |
+| Building the agent container | [03-harness-engineering/](../../ai-engineering/03-harness-engineering/README.md) |
+| Designing the agent loop | [04-loop-engineering/](../../ai-engineering/04-loop-engineering/README.md) |
+| Multi-agent graphs and KG retrieval | [05-graph-engineering/](../../ai-engineering/05-graph-engineering/README.md) |
 | Measuring and observing agent behavior | [06-eval/](../../ai-engineering/06-eval/README.md) |
 
 ---

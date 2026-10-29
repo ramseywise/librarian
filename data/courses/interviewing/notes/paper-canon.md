@@ -1,10 +1,10 @@
 ---
-imported_hash: 36faab8b15df0b6b
+imported_hash: 5d980510df85ada5
 title: Paper Canon — the 10 interview-standard papers
 summary: The architecture papers an AI-engineering interviewer can reasonably expect you to name, date, and explain in two sentences.
 order: 4
 kind: reading
-source: learn-ai-engineering/interviewing/notes/paper-canon.md
+source: sisyphus/interviewing/notes/paper-canon.md
 ---
 
 # Paper Canon — the 10 interview-standard papers

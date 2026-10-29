@@ -1,8 +1,8 @@
 ---
-imported_hash: 4b1b1275b834c1a5
+imported_hash: 310905d4a78b9ec7
 title: Test eval
-summary: results = await runevaluation( evalconfig=evalconfig, agentcallable=myagent, ) results
-order: 8
+summary: results = await run_evaluation( eval_config=eval_config, agent_callable=my_agent, ) results
+order: 9
 kind: notebook
 section: Chatbot / Deep research bot / Tests
 source: learn-ai-engineering/generative-ai/07-agentic-applications/chatbot/deep-research-bot/tests/test_eval.ipynb

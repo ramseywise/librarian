@@ -1,11 +1,11 @@
 ---
-imported_hash: aaddf1e76d2491ab
+imported_hash: 2f4478c61ef4da66
 title: '9 — Protocols: Context Engineering Without Code'
 summary: This maps directly onto the input schema in 07.
 order: 13
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/02-context/notes/09-protocols.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/09-protocols.md
 ---
 
 # 9 — Protocols: Context Engineering Without Code

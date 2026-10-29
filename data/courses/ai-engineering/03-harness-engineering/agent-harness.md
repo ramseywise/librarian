@@ -1,10 +1,10 @@
 ---
-imported_hash: 55ee25331def31ad
+imported_hash: 36bb2011bd0fb225
 title: Agent harness
 summary: 'Harness comprises at least four parts: acceptance baseline, execution boundary, feedback signals, and rollback mechanisms.'
 order: 2
 kind: reading
-source: learn-ai-engineering/ai-engineering/03-harness/agent-harness.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/agent-harness.md
 ---
 
 Harness comprises at least four parts: acceptance baseline, execution boundary, feedback signals, and rollback mechanisms.

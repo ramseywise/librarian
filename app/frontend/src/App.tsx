@@ -3,6 +3,7 @@ import { WikiGraph } from "./components/WikiGraph";
 import { ChatPanel } from "./components/ChatPanel";
 import { NodeDetailPanel } from "./components/NodeDetailPanel";
 import { CoursesView } from "./components/courses/CoursesView";
+import { PracticeView } from "./components/courses/PracticeView";
 import { useChatStream } from "./hooks/useChatStream";
 import { useHashRoute } from "./hooks/useHashRoute";
 import type { SelectedNode } from "./types";
@@ -15,7 +16,8 @@ export default function App() {
   const [focusPage, setFocusPage] = useState<string | null>(null);
   const lastQueryRef = useRef("");
   const [route, navigate] = useHashRoute();
-  const inCourses = route === "/courses" || route.startsWith("/courses/");
+  const inPractice = route === "/practice";
+  const inCourses = route === "/courses" || route.startsWith("/courses/") || inPractice;
   const courseRoute = route.replace(/^\/courses\/?/, "");
 
   const handleTagClick = useCallback((tag: string) => {
@@ -78,7 +80,8 @@ export default function App() {
         <span style={{ color: "#e0e0e0", fontWeight: 600, marginRight: 8 }}>Librarian</span>
         <nav style={{ display: "flex", gap: 4 }}>
           <button onClick={() => navigate("/")} style={tabStyle(!inCourses)}>Graph</button>
-          <button onClick={() => navigate("/courses")} style={tabStyle(inCourses)}>Courses</button>
+          <button onClick={() => navigate("/courses")} style={tabStyle(inCourses && !inPractice)}>Courses</button>
+          <button onClick={() => navigate("/practice")} style={tabStyle(inPractice)}>Practice</button>
         </nav>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
           {!inCourses && highlightedPages.size > 0 && (
@@ -96,7 +99,11 @@ export default function App() {
         <div style={{ flex: 1, overflow: "hidden", position: "relative", minWidth: 0 }}>
           {inCourses && (
             <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "#0f0f0f" }}>
-              <CoursesView route={courseRoute} navigate={navigate} onOpenConcept={openConcept} onAsk={askAbout} />
+              {inPractice ? (
+                <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />
+              ) : (
+                <CoursesView route={courseRoute} navigate={navigate} onOpenConcept={openConcept} onAsk={askAbout} />
+              )}
             </div>
           )}
 

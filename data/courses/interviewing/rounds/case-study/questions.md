@@ -1,11 +1,11 @@
 ---
-imported_hash: 601a56c47bc49940
+imported_hash: 73e5fac6911ebaa1
 title: Questions — Case Study Round
 summary: 12 questions spanning live cases, take-homes, LLM cases, ML cases, defense rounds, and FDE customer-problem formats.
 order: 10
 kind: reading
 section: Case study
-source: learn-ai-engineering/interviewing/rounds/case-study/questions.md
+source: sisyphus/interviewing/rounds/case-study/questions.md
 ---
 
 # Questions — Case Study Round
@@ -130,15 +130,18 @@ source: learn-ai-engineering/interviewing/rounds/case-study/questions.md
 **Model answer structure:**
 
 **If retrieval quality is poor:**
+
 - Diagnose first: is it embedding quality, index staleness, or a relevance problem?
 - Check retrieval precision: how many of the top-k chunks are actually relevant to the query?
 - Mitigations: (1) add a reranker (cross-encoder) on top of dense retrieval; (2) add metadata filters (date, document type); (3) try hybrid BM25 + dense retrieval; (4) lower the similarity threshold with a "no results" fallback.
 
 **If chunks truncate answers:**
+
 - The problem is usually fixed-size chunking that breaks mid-concept.
 - Mitigations: (1) switch to semantic chunking (split on sentence/paragraph boundaries); (2) overlap chunks by 20%; (3) increase chunk size and accept the context overhead; (4) implement parent-child retrieval (retrieve small chunks, but assemble parent-document context around them).
 
 **If docs grow 10×:**
+
 - 10× doc volume is a retrieval + cost problem, not a model problem.
 - Mitigations: (1) tiered indexing — recent/high-priority docs get more thorough chunking; (2) scheduled index rebuilds rather than continuous; (3) document freshness signals in the retrieval scoring; (4) consider a smaller embedding model if latency grows.
 

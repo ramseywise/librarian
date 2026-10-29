@@ -1,11 +1,11 @@
 ---
-imported_hash: a4193a0c1e5fc865
+imported_hash: e790f8a6d3206a5d
 title: Data Engineering & MLOps — Study Guide
 summary: Tested directly in MLE loops and as the substrate of every system-design answer.
 order: 20
 kind: reading
 section: Data eng mlops
-source: learn-ai-engineering/interviewing/guides/8-data-eng-mlops/interview-guide.md
+source: sisyphus/interviewing/guides/8-data-eng-mlops/interview-guide.md
 ---
 
 # Data Engineering & MLOps — Study Guide

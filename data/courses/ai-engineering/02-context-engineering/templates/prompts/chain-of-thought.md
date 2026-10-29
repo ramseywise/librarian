@@ -1,11 +1,11 @@
 ---
-imported_hash: 36243ad349c5aa37
+imported_hash: eb655707e95f6959
 title: Chain of Thought Template
 summary: 'This template is ideal for: - Complex problem-solving tasks - Situations requiring logical reasoning - Multi-step calculations or analyses - Tasks where explaining the "why" is important - Reducing errors on challenging problems'
-order: 19
+order: 21
 kind: reading
 section: Templates / Prompts
-source: learn-ai-engineering/ai-engineering/02-context/templates/prompts/chain_of_thought.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/templates/prompts/chain_of_thought.md
 ---
 
 # Chain of Thought Template

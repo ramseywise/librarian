@@ -1,11 +1,11 @@
 ---
-imported_hash: da5cb2a55eef5730
+imported_hash: 22d2c2fa89d75fc1
 title: API Design for System Design Interviews
 summary: 'Pillar 9, detailed note 2. The API section of a design round should take ~5 minutes: identify operations, expose them cleanly, move on to architecture.'
 order: 23
 kind: reading
 section: System design
-source: learn-ai-engineering/interviewing/guides/9-system-design/02-api-design.md
+source: sisyphus/interviewing/guides/9-system-design/02-api-design.md
 ---
 
 # API Design for System Design Interviews
@@ -22,18 +22,18 @@ The objective is **not** to design a perfect REST API.
 
 The interviewer wants to see that you can:
 
-* identify system operations
-* expose them through clean interfaces
-* understand how clients interact with the backend
-* move on to architecture
+- identify system operations
+- expose them through clean interfaces
+- understand how clients interact with the backend
+- move on to architecture
 
 ---
 
-# 1. Design APIs from your Core Entities
+## 1. Design APIs from your Core Entities
 
 After identifying entities:
 
-```
+```text
 User
 Post
 Comment
@@ -45,7 +45,7 @@ Ride
 
 These become your REST resources.
 
-```
+```text
 /users
 /posts
 /comments
@@ -61,11 +61,11 @@ Think:
 
 ---
 
-# 2. REST is the Default
+## 2. REST is the Default
 
 For almost every interview:
 
-```
+```text
 REST
 ```
 
@@ -75,17 +75,17 @@ Mention GraphQL only if the problem specifically benefits from flexible data ret
 
 ---
 
-# 3. REST Naming Rules
+## 3. REST Naming Rules
 
 Resources are:
 
-* nouns
-* plural
-* no verbs
+- nouns
+- plural
+- no verbs
 
 Good
 
-```
+```text
 GET /users
 
 POST /users
@@ -97,7 +97,7 @@ DELETE /orders/123
 
 Bad
 
-```
+```text
 POST /createUser
 
 GET /fetchOrders
@@ -109,7 +109,7 @@ HTTP method already represents the action.
 
 ---
 
-# 4. HTTP Methods
+## 4. HTTP Methods
 
 Know these five.
 
@@ -125,7 +125,7 @@ Interview reality:
 
 You'll mostly use:
 
-```
+```text
 GET
 
 POST
@@ -133,13 +133,13 @@ POST
 
 Occasionally:
 
-```
+```text
 PATCH
 ```
 
 Rarely:
 
-```
+```text
 PUT
 ```
 
@@ -147,15 +147,15 @@ Don't spend interview time debating PUT vs PATCH.
 
 ---
 
-# 5. Parameters
+## 5. Parameters
 
 There are three places inputs go.
 
-## Path Parameters
+### Path Parameters
 
 Identify a resource.
 
-```
+```text
 GET /users/123
 
 GET /videos/abc
@@ -165,11 +165,11 @@ Required.
 
 ---
 
-## Query Parameters
+### Query Parameters
 
 Filtering, sorting, pagination.
 
-```
+```text
 GET /videos?category=music
 
 GET /posts?author=alice
@@ -181,11 +181,11 @@ Optional.
 
 ---
 
-## Request Body
+### Request Body
 
 Data being created or updated.
 
-```
+```text
 POST /posts
 
 {
@@ -215,11 +215,11 @@ Object?
 
 ---
 
-# 6. Responses
+## 6. Responses
 
 Response consists of
 
-```
+```text
 Status code
 
 +
@@ -229,7 +229,7 @@ JSON body
 
 Important status codes:
 
-```
+```text
 200 OK
 
 201 Created
@@ -247,7 +247,7 @@ Important status codes:
 
 In interviews it's fine to simply say
 
-```
+```text
 2xx
 
 4xx
@@ -257,11 +257,11 @@ In interviews it's fine to simply say
 
 ---
 
-# 7. Keep Response Bodies Simple
+## 7. Keep Response Bodies Simple
 
 Don't waste time writing:
 
-```
+```text
 {
  id,
  name,
@@ -272,7 +272,7 @@ Don't waste time writing:
 
 Just say:
 
-```
+```text
 Returns List<Event>
 
 Returns User
@@ -284,7 +284,7 @@ The architecture matters much more.
 
 ---
 
-# 8. GraphQL
+## 8. GraphQL
 
 GraphQL solves:
 
@@ -292,7 +292,7 @@ Different clients need different fields.
 
 Instead of
 
-```
+```text
 GET /user
 
 GET /posts
@@ -304,7 +304,7 @@ Client requests exactly what it needs.
 
 Example:
 
-```
+```text
 query {
 
   user(id:123){
@@ -326,14 +326,14 @@ query {
 
 Advantages
 
-* single request
-* no over-fetching
-* no under-fetching
-* ideal for complex UI
+- single request
+- no over-fetching
+- no under-fetching
+- ideal for complex UI
 
 ---
 
-## When to Mention GraphQL
+### When to Mention GraphQL
 
 Good examples
 
@@ -369,13 +369,13 @@ REST is usually easier.
 
 ---
 
-# 9. GraphQL Interview Gotcha
+## 9. GraphQL Interview Gotcha
 
 Know the N+1 query problem.
 
 Example
 
-```
+```text
 100 users
 
 ↓
@@ -389,7 +389,7 @@ fetch posts
 
 Produces
 
-```
+```text
 1
 
 +
@@ -413,13 +413,13 @@ Simply mentioning this is usually enough.
 
 ---
 
-# 10. RPC / gRPC
+## 10. RPC / gRPC
 
 This is for **service-to-service communication**.
 
 External
 
-```
+```text
 Browser
 
 ↓
@@ -429,7 +429,7 @@ REST
 
 Internal
 
-```
+```text
 API Gateway
 
 ↓
@@ -447,18 +447,18 @@ Search Service
 
 Use
 
-```
+```text
 gRPC
 ```
 
 Why?
 
-* binary protocol
-* Protocol Buffers
-* smaller payloads
-* faster serialization
-* strongly typed APIs
-* code generation
+- binary protocol
+- Protocol Buffers
+- smaller payloads
+- faster serialization
+- strongly typed APIs
+- code generation
 
 Interview rule:
 
@@ -472,7 +472,7 @@ Internal microservices
 
 ---
 
-# 11. REST vs GraphQL vs gRPC
+## 11. REST vs GraphQL vs gRPC
 
 | REST                     | GraphQL                                | gRPC                 |
 | ------------------------ | -------------------------------------- | -------------------- |
@@ -484,13 +484,13 @@ Internal microservices
 
 ---
 
-# 12. Pagination
+## 12. Pagination
 
 Large lists should never return everything.
 
 Bad
 
-```
+```text
 GET /posts
 
 → 2 million posts
@@ -500,9 +500,9 @@ Use pagination.
 
 ---
 
-## Offset Pagination
+### Offset Pagination
 
-```
+```text
 GET /posts?page=2&limit=20
 ```
 
@@ -514,14 +514,14 @@ Problem:
 
 If new records arrive while paging:
 
-* duplicates
-* skipped rows
+- duplicates
+- skipped rows
 
 ---
 
-## Cursor Pagination
+### Cursor Pagination
 
-```
+```text
 GET /posts?cursor=abc123
 ```
 
@@ -529,10 +529,10 @@ Uses last seen item.
 
 Advantages
 
-* stable
-* scalable
-* ideal for feeds
-* works with continuous inserts
+- stable
+- scalable
+- ideal for feeds
+- works with continuous inserts
 
 Examples
 
@@ -558,7 +558,7 @@ Dynamic feeds
 
 ---
 
-# 13. Authentication
+## 13. Authentication
 
 Don't put user identity in the request body.
 
@@ -577,7 +577,7 @@ Anyone could spoof another user.
 
 Instead:
 
-```
+```text
 Authorization: Bearer <JWT>
 
 POST /tweets
@@ -591,20 +591,20 @@ The server extracts the user ID from the authenticated token.
 
 ---
 
-# 14. JWT vs Session
+## 14. JWT vs Session
 
 JWT
 
-* self-contained token
-* contains user info + signature
-* stateless
-* common for APIs
+- self-contained token
+- contains user info + signature
+- stateless
+- common for APIs
 
 Session
 
-* token references server-side session
-* requires lookup in cache/database
-* easier to revoke
+- token references server-side session
+- requires lookup in cache/database
+- easier to revoke
 
 For interviews:
 
@@ -616,11 +616,11 @@ That's sufficient.
 
 ---
 
-# 15. A Good Interview API Section
+## 15. A Good Interview API Section
 
 For a ride-sharing app, you might say:
 
-```
+```text
 POST /rides
     Create ride request
 
@@ -641,16 +641,16 @@ That's enough.
 
 Then move on to:
 
-* request flow
-* services
-* storage
-* scaling
-* caching
-* queues
+- request flow
+- services
+- storage
+- scaling
+- caching
+- queues
 
 ---
 
-# Interview Cheat Sheet
+## Interview Cheat Sheet
 
 | Topic          | Recommendation                               |
 | -------------- | -------------------------------------------- |
@@ -668,13 +668,13 @@ Then move on to:
 | GraphQL        | Only when clients need different data shapes |
 | Time spent     | ~5 minutes                                   |
 
-## Additional Interview Tips (worth knowing)
+### Additional Interview Tips (worth knowing)
 
 A few production-oriented details weren't emphasized in the video but can earn bonus points if they naturally fit the discussion:
 
-* **Idempotency keys:** For operations like payment creation (`POST /payments`), clients may retry requests due to timeouts. Mentioning an idempotency key to prevent duplicate charges shows strong backend knowledge.
-* **API versioning:** If your API is public, briefly mention versioning (e.g. `/v1/users`) to support backward compatibility.
-* **Rate limiting:** Public APIs often use rate limiting to prevent abuse (e.g. token bucket or leaky bucket algorithms).
-* **Consistent error responses:** Rather than returning only status codes, production APIs typically return structured error objects with an error code and message.
+- **Idempotency keys:** For operations like payment creation (`POST /payments`), clients may retry requests due to timeouts. Mentioning an idempotency key to prevent duplicate charges shows strong backend knowledge.
+- **API versioning:** If your API is public, briefly mention versioning (e.g. `/v1/users`) to support backward compatibility.
+- **Rate limiting:** Public APIs often use rate limiting to prevent abuse (e.g. token bucket or leaky bucket algorithms).
+- **Consistent error responses:** Rather than returning only status codes, production APIs typically return structured error objects with an error code and message.
 
 For the vast majority of system design interviews (Meta, Amazon, Google, Spotify, etc.), though, the framework from this video is exactly the level of API design expected before moving on to the architecture.

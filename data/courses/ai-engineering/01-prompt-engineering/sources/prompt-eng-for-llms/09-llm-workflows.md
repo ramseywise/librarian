@@ -1,5 +1,5 @@
 ---
-imported_hash: 3cd3ddfe5ea4ac10
+imported_hash: f9ba270165047b91
 title: Ch 9 — LLM Workflows
 summary: 'Current LLMs are far from AGI: they''re bad at reasoning and math, rarely produce genuinely novel knowledge, and can''t learn outside training.'
 order: 35
@@ -10,7 +10,7 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/sources/prompt
 
 # Ch 9 — LLM Workflows
 
-> Cross-pillar: this chapter's content maps to [04-loop](../../../04-loop/readme.md) (agentic loops and workflow orchestration); topic synthesis: [notes/](../../notes/).
+> Cross-pillar: this chapter's content maps to [04-loop](../../../04-loop-engineering/readme.md) (agentic loops and workflow orchestration); topic synthesis: [notes/](../../notes/).
 
 ## The generality/strength trade-off
 

@@ -1,11 +1,11 @@
 ---
-imported_hash: fdd3bb02783c149e
+imported_hash: fd87e8274bcb1d94
 title: Behavioral Round — Study Guide
 summary: Build 8–10 stories before you interview. Each story should have a 2-minute spoken version with a number in the Result.
 order: 4
 kind: reading
 section: Behavioral
-source: learn-ai-engineering/interviewing/rounds/behavioral/study-guide.md
+source: sisyphus/interviewing/rounds/behavioral/study-guide.md
 ---
 
 # Behavioral Round — Study Guide
@@ -30,6 +30,7 @@ failure-mode probes.
 | **Cross-functional collaboration** | Translation across incentive gaps | A story where everyone agreed the whole time |
 
 ### Optional: add if you have them
+
 - A time you changed your mind based on evidence
 - A time you had to deliver bad news
 - A time you advocated for a user or stakeholder who wasn't in the room
@@ -41,7 +42,7 @@ failure-mode probes.
 
 ### The structure
 
-```
+```text
 Situation (2 sentences max)
   → What was the context? One crisp setup sentence.
   → What made this moment non-trivial?
@@ -120,6 +121,7 @@ one most candidates get wrong.
 ### The "I work too hard" failure — why it fails
 
 "My biggest weakness is that I'm a perfectionist" or "I sometimes work too hard" signals:
+
 - You don't have self-awareness
 - You can't name a real failure
 - You're gaming the question
@@ -130,6 +132,7 @@ probe harder. Prepare a real failure story before you walk in.
 ### The team-diffusion failure — why it fails
 
 "We failed to communicate well as a team" fails because:
+
 - Your causal role is invisible
 - The interviewer can't assess your judgment
 - It sounds like blame-diffusion
@@ -141,18 +144,21 @@ Every failure story should have an "I" in the Action and a "I" in the causal rol
 ## Per-audience adaptation
 
 ### Startup / fast-growth
+
 The behavioral screen often runs light — 20–30 min, often informal. The failure modes they
 screen for: over-process (can't move without approval), analysis paralysis, needs clarity
 before starting. Best stories: ambiguity rescued, tight deadline triage, learning fast.
 Emphasize speed and assumption-making over consultation and refinement.
 
 ### Enterprise / large company
+
 The screen is structured and runs the full behavioral loop. Failure modes: can't navigate
 org complexity, burns stakeholder trust, can't commit after disagreement. Best stories:
 cross-functional collaboration, disagree-and-commit, mentoring. Emphasize patience and
 trust-building over speed.
 
 ### FDE / consulting
+
 Behavioral is heavier than typical engineering loops and may include a customer simulation.
 Failure modes: can't adapt when a client rejects a recommendation, loses their cool under
 client pushback, can't translate technical to business. Best stories: client rejection
@@ -160,12 +166,14 @@ adaptation, stakeholder communication, ambiguity under political pressure. Have 
 one story about adapting under client constraint.
 
 ### Nonprofit / mission org
+
 They screen for genuine connection to the mission. Generic "I want to make an impact"
 answers land flat — they've heard it. Best stories: a specific reason you care about this
 domain, a time you worked within severe resource constraints, a time you served a
 stakeholder who wasn't the paying client. Prepare a "why this mission" story with specifics.
 
 ### Bar-raiser / senior loop
+
 The failure story is heavily weighted. They want to see real stakes and real ownership.
 Failure modes: can't point to failures, hedges causal role, behavior change is vague. The
 bar-raiser is also looking for judgment — not just what you did, but the quality of your
@@ -184,6 +192,7 @@ reasoning about it. Prepare to be probed after your answer: "What would you do d
 6. **Debrief after each interview** — note which stories you used, what questions you didn't have a good story for, and what the interviewer probed on. Build missing stories before the next round.
 
 ### Weekly drill (during active job search)
+
 - 2× / week: tell one STAR story aloud to yourself or a friend. Time it.
 - 1× / week: add or strengthen one story in the bank.
 - Before each interview: values mapping + failure story cold run.

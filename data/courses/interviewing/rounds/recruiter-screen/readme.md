@@ -1,11 +1,11 @@
 ---
-imported_hash: 979b770d1970acbc
+imported_hash: 63052ec22f2725d9
 title: Recruiter / HR Screen
 summary: Communication and enthusiasm are scored. Your story is pattern-matched against the req.
 order: 65
 kind: reading
 section: Recruiter screen
-source: learn-ai-engineering/interviewing/rounds/recruiter-screen/README.md
+source: sisyphus/interviewing/rounds/recruiter-screen/README.md
 ---
 
 # Recruiter / HR Screen

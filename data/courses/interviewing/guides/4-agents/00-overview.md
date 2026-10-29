@@ -1,11 +1,11 @@
 ---
-imported_hash: 942a496c45caee4a
+imported_hash: e2c9bbcbcaa67a31
 title: Pillar 4 — Agents (orchestration, tools, memory, harness)
 summary: 'Systems where the LLM decides what to do next: call tools, keep state, plan multi-step work, recover from failures.'
 order: 10
 kind: reading
 section: Agents
-source: learn-ai-engineering/interviewing/guides/4-agents/00-overview.md
+source: sisyphus/interviewing/guides/4-agents/00-overview.md
 ---
 
 # Pillar 4 — Agents (orchestration, tools, memory, harness)
@@ -25,16 +25,16 @@ the librarian wiki and most of the cleaned notes are about — and the center of
    `wiki/adk/` pages are the compiled experience layer on top.
 3. **Tools & MCP** — *Model Context Protocol* chapters (`ai-engineering/readings/ai_engineering/mcp/`);
    tool-design-as-UX (ACI/poka-yoke) from the wiki patterns pages.
-4. **Memory & state** — notes ([memory.md](../../../ai-engineering/05-graph/memory.md),
-   [deep-agents.md](../../../ai-engineering/04-loop/deep-agents.md)) + `wiki/memory/` + the Memoria/
+4. **Memory & state** — notes ([memory.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md),
+   [deep-agents.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/deep-agents.md)) + `wiki/memory/` + the Memoria/
    memory-augmented-RAG flow; chatbot-memory pilot paper (Yan et al. 2025, see librarian wiki).
 5. **Harness engineering** — the notes cluster unique to this repo:
-   [agent-harness](../../../ai-engineering/03-harness/agent-harness.md), [loop-engineering](../../../ai-engineering/04-loop/loop-engineering.md),
-   [reliable-agents](../../../ai-engineering/03-harness/reliable-agents.md) — acceptance baselines, execution
+   [agent-harness](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md), [loop-engineering](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/04-loop-engineering/loop-engineering.md),
+   [reliable-agents](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/reliable-agents.md) — acceptance baselines, execution
    boundaries, feedback signals, rollback.
 6. **Multi-agent, skeptically** — *From One Agent to Many* (agent applications ch 8),
    `ai-engineering/readings/ai_engineering/multiagent context/`, notes
-   [agents-design.md](../../../ai-engineering/03-harness/agents-design.md); protocol/task-graph/isolation triad.
+   [agents-design.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agents-design.md); protocol/task-graph/isolation triad.
 
 ## Resource map
 
@@ -48,12 +48,13 @@ the librarian wiki and most of the cleaned notes are about — and the center of
 | LangGraph/ADK course repos | code | `generative-ai/03-agentic-foundations/` | guided framework builds |
 | deep-research bot | code | `generative-ai/chatbot/deep_research_bench/` | a real multi-step agent |
 | wiki/adk (19pp) · wiki/langgraph · wiki/deep-agents · wiki/patterns · wiki/memory · wiki/mcp | wiki | librarian | ~50 compiled pages of design experience |
-| agent-harness · agents-design · agents-guardrails · reliable-agents | note | [ai-engineering/03-harness/](../../../ai-engineering/03-harness/) | harness engineering |
-| loop-engineering · deep-agents | note | [ai-engineering/04-loop/](../../../ai-engineering/04-loop/) | loop design |
-| memory | note | [ai-engineering/05-graph/memory.md](../../../ai-engineering/05-graph/memory.md) | memory architectures |
-| agents-google-adk | note | [generative-ai/03-agentic-foundations/](../../../generative-ai/03-agentic-foundations/) | ADK framework |
+| agent-harness · agents-design · agents-guardrails · reliable-agents · deep-agents | note | [ai-engineering/03-harness-engineering/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/03-harness-engineering) | harness engineering |
+| loop-engineering · notes/01–10 | note | [ai-engineering/04-loop-engineering/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/04-loop-engineering) | loop design |
+| memory | note | [ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md) | memory architectures |
+| agents-google-adk | note | [generative-ai/03-agentic-foundations/](https://github.com/ramseywise/learn-ai-engineering/tree/main/generative-ai/03-agentic-foundations) | ADK framework |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [system-design-round](../../rounds/system-design-round/readme.md),
 [project-deep-dive](../../rounds/project-deep-dive/readme.md).

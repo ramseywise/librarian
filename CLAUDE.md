@@ -146,6 +146,14 @@ published: YYYY-MM-DD
   to link concepts explicitly. Inline `[[Wiki Page]]` links work too. Images go in the
   module's `assets/` and are referenced relatively.
 - Seeded from `../learn-ai-engineering` by `make import-courses` (`core/import_courses.py`).
+  The `programming` and `interviewing` courses come from `../sisyphus` (`drills/` and
+  `interviewing/`) — see `SUBJECT_SOURCES`. Never import from sisyphus `jobs/` (personal PII).
+  Drill files (frontmatter with a `track`, schema in sisyphus `drills/README.md`) import as
+  `kind: drill` with `track`/`topic`/`difficulty`/`timebox_min`, and their `concepts` become
+  `wiki` links. They feed Practice mode: `GET /api/courses/practice` and the `#/practice` tab.
+  Concepts with no wiki page show as plain `drill.tags`. Attempt counts come from sisyphus
+  `drills/coding/drill-log.md`, read live at request time (`SISYPHUS_DIR`) and never written
+  into `data/` — this repo is public and the log is personal history.
   Files with an `imported_hash:` line are importer-generated; editing one turns it into a
   local file the importer will never overwrite or delete. Files without the line are
   hand-authored and are never touched. Do not hand-edit the `imported_hash` value.

@@ -1,11 +1,11 @@
 ---
-imported_hash: 8687e15759419970
+imported_hash: 62d0bd7271dee8f9
 title: 'Worked Example: Auth & API Endpoint (40 min, offline)'
 summary: 'Auth is the topic where a confident wrong answer is a security incident, so interviewers grade it differently: they are watching for the specific mistakes, and one of them — comparing signatures with == — is the single most common failure i…'
 order: 33
 kind: reading
 section: Coding challenge / Examples
-source: learn-ai-engineering/interviewing/rounds/coding-challenge/examples/auth-api-endpoint.md
+source: sisyphus/interviewing/rounds/coding-challenge/examples/auth-api-endpoint.md
 ---
 
 # Worked Example: Auth & API Endpoint (40 min, offline)

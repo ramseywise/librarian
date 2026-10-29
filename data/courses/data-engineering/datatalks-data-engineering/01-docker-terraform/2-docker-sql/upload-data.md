@@ -1,7 +1,7 @@
 ---
-imported_hash: 9597efec999b66ea
+imported_hash: f5a34956b84692b1
 title: Upload data
-summary: df.tpeppickupdatetime = pd.todatetime(df.tpeppickupdatetime) df.tpepdropoffdatetime = pd.todatetime(df.tpepdropoffdatetime)
+summary: df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime) df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
 order: 11
 kind: notebook
 section: Docker terraform / Docker sql

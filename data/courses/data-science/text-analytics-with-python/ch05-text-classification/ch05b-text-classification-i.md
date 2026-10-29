@@ -1,7 +1,7 @@
 ---
-imported_hash: 6a514a97a49de914
+imported_hash: b41ea1f136683fe7
 title: just to keep negation if any in bi-grams
-summary: traincorpus, testcorpus, trainlabelnums, testlabelnums, trainlabelnames, testlabelnames =\ traintestsplit(np.array(datadf['Clean Article']), np.array(datadf['Target Label']), np.array(datadf['Target Name']), testsize=0.33, randomstate=42)
+summary: train_corpus, test_corpus, train_label_nums, test_label_nums, train_label_names, test_label_names =\ train_test_split(np.array(data_df['Clean Article']), np.array(data_df['Target Label']), np.array(data_df['Target Name']), test_size=0.33, r…
 order: 11
 kind: notebook
 section: Ch05   Text Classification

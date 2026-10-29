@@ -1,16 +1,17 @@
 ---
-imported_hash: 30211f26bfde5985
+imported_hash: e2c80242dc4d72a9
 title: Question Bank — Technical / ML/LLM Breadth Round
-summary: 'Each question has three parts: - 60-second answer — what to say in the rapid-fire moment - One level deeper — the follow-up that separates memorization from understanding - Study ref — which guide carries the full treatment'
+summary: Not questions — a coverage checklist. Say each aloud in 60 seconds; anything you stall on is a gap to take back to the guides.
 order: 86
 kind: reading
 section: Technical questions
-source: learn-ai-engineering/interviewing/rounds/technical-questions/questions.md
+source: sisyphus/interviewing/rounds/technical-questions/questions.md
 ---
 
 # Question Bank — Technical / ML/LLM Breadth Round
 
 Each question has three parts:
+
 - **60-second answer** — what to say in the rapid-fire moment
 - **One level deeper** — the follow-up that separates memorization from understanding
 - **Study ref** — which guide carries the full treatment
@@ -19,7 +20,7 @@ Each question has three parts:
 
 ## LLM Fundamentals (7 questions)
 
-### 1. Explain attention to a PM.
+### 1. Explain attention to a PM
 
 **60-second answer**: Attention lets each token in a sequence "look at" every other token and decide how much to weight it when building its own representation. Instead of processing tokens left-to-right and losing early context, the model computes relevance scores between all token pairs simultaneously — that's the "self-attention" in transformers. The result: the word "bank" in "river bank" pulls heavily from "river," not "money."
 
@@ -91,7 +92,7 @@ Each question has three parts:
 
 ## RAG (5 questions)
 
-### 8. Walk me through a RAG pipeline.
+### 8. Walk me through a RAG pipeline
 
 **60-second answer**: Offline: chunk documents, embed each chunk, store in a vector index. Online: embed the query, retrieve top-k similar chunks by cosine/dot-product similarity, inject them into the prompt as context, generate. The core idea: keep knowledge external and updatable instead of baked into weights.
 
@@ -291,7 +292,7 @@ Each question has three parts:
 
 ## Classical ML (4 questions)
 
-### 27. Explain the bias-variance tradeoff.
+### 27. Explain the bias-variance tradeoff
 
 **60-second answer**: Bias is error from wrong assumptions in the model (underfitting — too simple). Variance is error from sensitivity to small fluctuations in training data (overfitting — too complex). The tradeoff: decreasing bias often increases variance and vice versa. Goal: find the sweet spot — low enough complexity to generalize, high enough to capture the true pattern.
 
@@ -394,8 +395,8 @@ numbered questions — these are recall prompts, not full answers.
 
 ### How do LLMs work?
 
-* Predict the **next token** based on previous tokens.
-* Process:
+- Predict the **next token** based on previous tokens.
+- Process:
 
   1. Text → Tokens
   2. Tokens → Embeddings (numbers)
@@ -404,19 +405,19 @@ numbered questions — these are recall prompts, not full answers.
 
 Know these terms:
 
-* Tokenization
-* Embeddings
-* Transformer
-* Next-token prediction
-* Self-attention
+- Tokenization
+- Embeddings
+- Transformer
+- Next-token prediction
+- Self-attention
 
 ---
 
 ### How do Transformers work? (Nice to know)
 
-* Process all tokens simultaneously.
-* Self-attention determines which words are important.
-* Understands context (e.g., "bank" = river or financial institution).
+- Process all tokens simultaneously.
+- Self-attention determines which words are important.
+- Understands context (e.g., "bank" = river or financial institution).
 
 ---
 
@@ -446,9 +447,9 @@ Occurs when multiple threads modify shared data simultaneously.
 
 Solutions:
 
-* Locks / Mutexes (`threading.Lock`)
-* Immutable data structures (tuples)
-* Avoid shared mutable state
+- Locks / Mutexes (`threading.Lock`)
+- Immutable data structures (tuples)
+- Avoid shared mutable state
 
 ---
 
@@ -456,14 +457,14 @@ Solutions:
 
 Know the **Global Interpreter Lock (GIL)**
 
-* Only one Python thread executes Python bytecode at a time.
-* True parallelism requires:
+- Only one Python thread executes Python bytecode at a time.
+- True parallelism requires:
 
-  * Multiprocessing
-* Async programming provides:
+  - Multiprocessing
+- Async programming provides:
 
-  * Concurrency
-  * Not parallel execution
+  - Concurrency
+  - Not parallel execution
 
 ---
 
@@ -471,16 +472,16 @@ Know the **Global Interpreter Lock (GIL)**
 
 Watch for:
 
-* CPU-heavy tasks blocking the event loop
-* Using synchronous libraries (`requests`, `time.sleep`)
-* Forgotten `await`
-* Harder debugging
+- CPU-heavy tasks blocking the event loop
+- Using synchronous libraries (`requests`, `time.sleep`)
+- Forgotten `await`
+- Harder debugging
 
 Use:
 
-* `httpx`
-* Async libraries
-* Proper task management
+- `httpx`
+- Async libraries
+- Proper task management
 
 ---
 
@@ -492,19 +493,19 @@ Use:
 
 Use when:
 
-* Immediate decisions matter
-* Fraud detection
-* Live recommendations
+- Immediate decisions matter
+- Fraud detection
+- Live recommendations
 
 Pros
 
-* Fresh data
+- Fresh data
 
 Cons
 
-* Expensive
-* Complex
-* Harder recovery
+- Expensive
+- Complex
+- Harder recovery
 
 ---
 
@@ -512,16 +513,16 @@ Cons
 
 Use when:
 
-* Delay is acceptable
-* Embedding generation
-* Nightly jobs
+- Delay is acceptable
+- Embedding generation
+- Nightly jobs
 
 Pros
 
-* Cheaper
-* Easier
-* Easier to debug
-* Easy retries
+- Cheaper
+- Easier
+- Easier to debug
+- Easy retries
 
 Rule:
 
@@ -535,13 +536,13 @@ Rule:
 
 Examples:
 
-* Product IDs
-* Inventory
+- Product IDs
+- Inventory
 
 Use:
 
-* PostgreSQL
-* SQL databases
+- PostgreSQL
+- SQL databases
 
 ---
 
@@ -549,13 +550,13 @@ Use:
 
 Examples:
 
-* Reviews
-* Documents
+- Reviews
+- Documents
 
 Use:
 
-* Vector databases
-* MongoDB
+- Vector databases
+- MongoDB
 
 ---
 
@@ -565,8 +566,8 @@ High-volume writes.
 
 Use:
 
-* Kafka
-* ClickHouse
+- Kafka
+- ClickHouse
 
 ---
 
@@ -574,17 +575,17 @@ Use:
 
 Important preprocessing:
 
-* Remove duplicates
-* Normalize formats
-* Clean HTML
-* Remove noise
+- Remove duplicates
+- Normalize formats
+- Clean HTML
+- Remove noise
 
 Duplicate detection:
 
-* Hashing
-* MinHash
-* Jaccard similarity
-* Embedding similarity
+- Hashing
+- MinHash
+- Jaccard similarity
+- Embedding similarity
 
 ---
 
@@ -594,15 +595,15 @@ Only embed meaningful text.
 
 Good:
 
-* Title
-* Description
-* Features
+- Title
+- Description
+- Features
 
 Don't embed:
 
-* SKU
-* Price
-* Inventory count
+- SKU
+- Price
+- Inventory count
 
 ---
 
@@ -630,9 +631,9 @@ Improves retrieval quality.
 
 Instead of embedding the question:
 
-* Generate a hypothetical answer.
-* Embed the answer.
-* Search using that embedding.
+- Generate a hypothetical answer.
+- Embed the answer.
+- Search using that embedding.
 
 Often improves retrieval.
 
@@ -642,11 +643,11 @@ Often improves retrieval.
 
 Prevent hallucinations by:
 
-* Similarity thresholds
-* Rejecting poor retrievals
-* Strong system prompts
-* Citation checking
-* Returning:
+- Similarity thresholds
+- Rejecting poor retrievals
+- Strong system prompts
+- Citation checking
+- Returning:
 
   > "I don't know"
 
@@ -658,12 +659,12 @@ instead of guessing.
 
 Best practices:
 
-* Timeouts
-* Retries
-* Exponential backoff
-* Fallback models
-* Fallback providers
-* User-friendly error messages
+- Timeouts
+- Retries
+- Exponential backoff
+- Fallback models
+- Fallback providers
+- User-friendly error messages
 
 ---
 
@@ -681,28 +682,28 @@ Improving one often hurts another.
 
 #### Reduce Latency
 
-* Cache responses
-* Semantic caching
-* Smaller models
-* Lower embedding dimensions
+- Cache responses
+- Semantic caching
+- Smaller models
+- Lower embedding dimensions
 
 ---
 
 #### Reduce Cost
 
-* Shorter prompts
-* Smaller models
-* Split complex workflows
-* Parallelize tasks
+- Shorter prompts
+- Smaller models
+- Split complex workflows
+- Parallelize tasks
 
 ---
 
 #### Improve Retrieval Quality
 
-* Re-rankers
-* AI-as-a-Judge
-* Better retrieval
-* Higher reasoning effort (when needed)
+- Re-rankers
+- AI-as-a-Judge
+- Better retrieval
+- Higher reasoning effort (when needed)
 
 ---
 
@@ -710,33 +711,33 @@ Improving one often hurts another.
 
 Python
 
-* asyncio
-* threading
-* multiprocessing
-* HTTPX
+- asyncio
+- threading
+- multiprocessing
+- HTTPX
 
 Databases
 
-* PostgreSQL
-* MongoDB
-* ClickHouse
-* Pinecone
+- PostgreSQL
+- MongoDB
+- ClickHouse
+- Pinecone
 
 Infrastructure
 
-* Kafka
-* Cloudflare AI Gateway
+- Kafka
+- Cloudflare AI Gateway
 
 LLM Concepts
 
-* RAG
-* Embeddings
-* Re-ranking
-* HyDE
-* AI as Judge
-* Prompt engineering
-* System prompts
-* Semantic search
+- RAG
+- Embeddings
+- Re-ranking
+- HyDE
+- AI as Judge
+- Prompt engineering
+- System prompts
+- Semantic search
 
 ---
 
@@ -744,17 +745,17 @@ LLM Concepts
 
 Be comfortable explaining:
 
-* ✅ How LLMs work
-* ✅ Transformers & self-attention
-* ✅ Race conditions
-* ✅ Python GIL
-* ✅ Async programming
-* ✅ Real-time vs batch processing
-* ✅ Data ingestion pipelines
-* ✅ Embeddings
-* ✅ RAG architecture
-* ✅ Hallucination prevention
-* ✅ Exception handling
-* ✅ Latency vs Cost vs Accuracy tradeoffs
+- ✅ How LLMs work
+- ✅ Transformers & self-attention
+- ✅ Race conditions
+- ✅ Python GIL
+- ✅ Async programming
+- ✅ Real-time vs batch processing
+- ✅ Data ingestion pipelines
+- ✅ Embeddings
+- ✅ RAG architecture
+- ✅ Hallucination prevention
+- ✅ Exception handling
+- ✅ Latency vs Cost vs Accuracy tradeoffs
 
 These are the concepts the interviewer identifies as the most important for AI engineering interviews.
