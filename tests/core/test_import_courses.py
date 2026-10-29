@@ -217,7 +217,7 @@ def test_programming_course_reads_sisyphus_drills(
 
     lessons = [p.relative_to(dest).as_posix() for p in dest.rglob("*.md")]
     assert not any("drill-log" in p for p in lessons)  # progress history, not a lesson
-    readme = next(dest.rglob("programming/sql/*.md")).read_text()
+    readme = (dest / "programming" / "sql" / "readme.md").read_text()  # not _module.md
     assert "source: sisyphus/drills/sql/README.md" in readme
     assert "source: sisyphus/drills" in (dest / "programming" / "_course.md").read_text()
 

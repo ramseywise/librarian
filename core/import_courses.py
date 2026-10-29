@@ -892,10 +892,12 @@ def main() -> None:
 
     source = args.source.expanduser().resolve()
     sisyphus = args.sisyphus.expanduser().resolve()
-    for path in (source, sisyphus):
-        if not path.is_dir():
-            parser.error(f"source not found: {path}")
     subjects = args.subject or list(SUBJECTS)
+    # Only require the repos the selected subjects actually read from.
+    needed = {SUBJECT_SOURCES.get(s, (LAE, s))[0] for s in subjects}
+    for repo, path in ((LAE, source), (SISYPHUS, sisyphus)):
+        if repo in needed and not path.is_dir():
+            parser.error(f"source not found: {path}")
     plan = build_plan(source, subjects, sisyphus)
     stats = apply(plan, subjects, args.dry_run)
     log.info("import_courses_done", dry_run=args.dry_run, subjects=len(subjects), **stats)
