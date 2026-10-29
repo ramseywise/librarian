@@ -1,10 +1,10 @@
 ---
-imported_hash: 76b6044aaef5a275
+imported_hash: 8f2c06edd88114a1
 title: Harness Engineering
 summary: 'Harness engineering is the third layer: the harness assembles context, and context contains prompts.'
 order: 6
 kind: reading
-source: learn-ai-engineering/ai-engineering/03-harness/harness-engineering.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/harness-engineering.md
 ---
 
 # Harness Engineering
@@ -93,7 +93,7 @@ The moment assembly becomes **stateful and conditional** — a loop deciding whe
 
 The tightest available decomposition (harness-engineering.ai), useful as a checklist:
 
-1. **Context engineering** — assembling calibrated information per step → [02-context](../02-context/readme.md)
+1. **Context engineering** — assembling calibrated information per step → [02-context](../02-context-engineering/readme.md)
 2. **Tool orchestration** — external system interaction, input validation, output parsing, error handling → [note 03](notes/03-tool-design.md)
 3. **Verification loops** — schema-based or semantic checks before proceeding → [note 05](notes/05-verification-loops.md)
 4. **Cost envelope management** — per-task budget ceilings preventing runaway spend → [note 08](notes/08-maturity-and-failure-modes.md)
@@ -113,7 +113,7 @@ The feedback loop closes on itself: primitives discovered in harnesses get stand
 
 ## Resources
 
-- Pillar guide: [4-agents](../../interviewing/guides/4-agents/00-overview.md)
+- Pillar guide: [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md)
 - Anthropic, harness design for long-running apps: https://www.anthropic.com/engineering/harness-design-long-running-apps
 - LangChain, anatomy of an agent harness: https://www.langchain.com/blog/the-anatomy-of-an-agent-harness
 - LangChain, improving deep agents: https://www.langchain.com/blog/improving-deep-agents-with-harness-engineering

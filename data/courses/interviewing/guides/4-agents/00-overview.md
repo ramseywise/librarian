@@ -1,5 +1,5 @@
 ---
-imported_hash: dae2312c1eb0397e
+imported_hash: e2c9bbcbcaa67a31
 title: Pillar 4 — Agents (orchestration, tools, memory, harness)
 summary: 'Systems where the LLM decides what to do next: call tools, keep state, plan multi-step work, recover from failures.'
 order: 10
@@ -54,6 +54,7 @@ the librarian wiki and most of the cleaned notes are about — and the center of
 | agents-google-adk | note | [generative-ai/03-agentic-foundations/](https://github.com/ramseywise/learn-ai-engineering/tree/main/generative-ai/03-agentic-foundations) | ADK framework |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [system-design-round](../../rounds/system-design-round/readme.md),
 [project-deep-dive](../../rounds/project-deep-dive/readme.md).

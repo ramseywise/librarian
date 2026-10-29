@@ -1,7 +1,7 @@
 ---
-imported_hash: 8da464dd5e1d985b
+imported_hash: 5925134cc6fd25af
 title: TensorFlow - Pipeline Review
-summary: from tensorflow import keras from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences from nltk import wordtokenize, senttokenize from nltk.corpus import stopwords
+summary: from tensorflow import keras from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences from nltk import word_tokenize, sent_tokenize from nltk.corpus import stopwords
 order: 17
 kind: notebook
 section: tensorFlow / Tensor intro review

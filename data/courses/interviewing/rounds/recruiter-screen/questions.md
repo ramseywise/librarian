@@ -1,5 +1,5 @@
 ---
-imported_hash: dbcafa87cad539f1
+imported_hash: a6e0f812701c2da2
 title: Recruiter Screen — Question Bank
 summary: 10–12 questions across the categories a recruiter will hit.
 order: 66
@@ -21,6 +21,7 @@ source: sisyphus/interviewing/rounds/recruiter-screen/questions.md
 **What they're testing**: Can you give a coherent, time-bounded arc? Do you know what's relevant to this role? Are you energized by your own story, or reciting a resume?
 
 **Strong response structure**:
+
 1. One sentence anchoring where you started (field/function, not the whole resume)
 2. One pivot or through-line that connects past to present ("the thread across all of it has been X")
 3. Current position + the specific thing you're working on now (one concrete project)
@@ -37,6 +38,7 @@ Keep it under 90 seconds. End at the bridge — let them ask follow-ups.
 **What they're testing**: Self-awareness and communication clarity. They're checking whether you'll be able to represent yourself in the hiring conversation — and whether your answer matches the req.
 
 **Strong response structure**:
+
 1. Name the area directly (don't hedge into "I'm pretty good at a few things")
 2. One concrete example that demonstrates it
 3. Optional: briefly tie it to what you'd bring to this role
@@ -52,6 +54,7 @@ Keep it under 90 seconds. End at the bridge — let them ask follow-ups.
 **What they're testing**: Genuine motivation vs. desperation or conflict. They're screening for flight risks and problem employees.
 
 **Strong response structure**:
+
 - Frame as "moving toward" not "running from"
 - If leaving: acknowledge what was good, name the specific gap (scale, scope, learning, mission)
 - Never criticize current employer, team, or manager — even if warranted
@@ -65,6 +68,7 @@ Keep it under 90 seconds. End at the bridge — let them ask follow-ups.
 **What they're testing**: Did you do basic research, or is this a spray-and-pray application? Enthusiasm is a signal — a generic answer is a yellow flag.
 
 **Strong response structure**:
+
 1. One specific thing about the company (product direction, mission, a recent announcement, the problem space)
 2. One thing about the role itself (the scope, the team structure, the technical challenge)
 3. How it connects to your "why now" — what makes this the right move at this point in your arc
@@ -80,6 +84,7 @@ Keep it under 90 seconds. End at the bridge — let them ask follow-ups.
 **What they're testing**: Whether your range is in band (saves everyone time), and how you handle negotiation pressure early. They want a number to work with.
 
 **Strong response structure**:
+
 1. "I'm targeting [X]–[Y] based on my research into market rates for this level and location — is that in the range you're working with?"
 2. If they push for a single number: "I'd rather leave room for the full picture once I understand the scope and benefits — but [X] is roughly where I'm anchored."
 3. Never ask for their range first (makes you seem underprepared)
@@ -93,6 +98,7 @@ Keep it under 90 seconds. End at the bridge — let them ask follow-ups.
 **What they're testing**: Whether they can anchor you to your current number. In many jurisdictions, employers can no longer legally require this. You don't have to answer.
 
 **Strong response structure**:
+
 - "I'd rather focus on what makes sense for this role and level — I've done my research and I'm targeting [range]."
 - If they press: "I'm not comfortable sharing that, but [range] is where I'm targeting based on the market."
 
@@ -107,6 +113,7 @@ Keep it under 90 seconds. End at the bridge — let them ask follow-ups.
 **What they're testing**: Timeline alignment. Practical fit. Whether you're going to ghost them after accepting an offer somewhere else.
 
 **Strong response structure**:
+
 - Know your actual notice period before this call
 - Give a realistic range ("standard is two weeks, though I'd want to ensure a clean handoff — could be three")
 - If you have offers in flight: "I'm moving quickly — I have other processes in flight, so I'd be targeting a decision within [X] weeks"
@@ -120,6 +127,7 @@ Keep it under 90 seconds. End at the bridge — let them ask follow-ups.
 **What they're testing**: Hard logistics. This one has a yes/no answer — just give it.
 
 **Strong response structure**:
+
 - State your authorization status clearly and directly
 - If you need sponsorship: say so honestly and briefly note if you have experience with the process ("I'm on OPT, STEM extension eligible — I've been through this process before")
 
@@ -134,6 +142,7 @@ Keep it under 90 seconds. End at the bridge — let them ask follow-ups.
 **What they're testing**: Can you compress a complex project into a clear narrative? What you choose to highlight signals what you value. Energy and ownership matter here.
 
 **Strong response structure**:
+
 1. Context: what was the problem, what was the stake
 2. Your specific role (not "we" — what *you* did)
 3. The outcome, with a concrete metric or qualitative result if possible
@@ -150,6 +159,7 @@ Keep it under 90 seconds. Let them drill in with follow-ups.
 **What they're testing**: Technical depth signal at the recruiter stage (they're assessing fit for a senior/staff role, or screening for a technical screen). Also tests whether you can explain complexity to a non-technical listener.
 
 **Strong response structure**:
+
 1. Name the project and the hard part in plain language
 2. Why it was hard (not just "it was big") — what made it genuinely difficult
 3. How you approached it
@@ -168,6 +178,7 @@ Calibrate jargon to the recruiter — they may not know your stack. Aim for clar
 **What they're testing**: In 2026, many roles explicitly expect AI-fluency. The recruiter is screening for whether you're engaged with the tools, not whether you're an expert. They want concrete and honest — not "I use ChatGPT sometimes."
 
 **Strong response structure**:
+
 1. Name the tools you actually use (Claude, Copilot, Cursor, etc.)
 2. Give one or two specific use cases (code review, drafting, debugging loops, agent scaffolding)
 3. Note where you've found limits or where you still prefer not to use them
@@ -184,6 +195,7 @@ Calibrate jargon to the recruiter — they may not know your stack. Aim for clar
 **What they're testing**: Self-awareness, realistic expectations, and alignment with what this role can actually offer. They're also triangulating your "why us" answer.
 
 **Strong response structure**:
+
 1. The type of problem you want to work on (domain, scale, technical depth)
 2. The team environment you thrive in (structure, autonomy, collaboration style)
 3. One or two growth vectors this role can plausibly provide

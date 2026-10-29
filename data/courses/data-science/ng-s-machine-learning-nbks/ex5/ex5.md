@@ -1,5 +1,5 @@
 ---
-imported_hash: c2e6f88d41582739
+imported_hash: c50df946dd880142
 title: Using theta initialized at [1; 1], and lambda = 1, you should expect to
 summary: import warnings warnings.filterwarnings('ignore')
 order: 5

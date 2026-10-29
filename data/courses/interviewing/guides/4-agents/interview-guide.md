@@ -1,5 +1,5 @@
 ---
-imported_hash: 53a140f093cf3102
+imported_hash: 8dc8c16bcaf61f77
 title: Agents — Study Guide
 summary: The centerpiece topic for AIE/FDE loops in 2026.
 order: 11
@@ -54,6 +54,7 @@ deterministic control, and a recovery path. Four load-bearing parts to name in i
 **acceptance baseline, execution boundary, feedback signals, rollback mechanism**.
 
 Key moves:
+
 - **Filesystem as durable state** — offload what doesn't fit in context; persist work across
   sessions; plan files as first-class artifacts.
 - **Bash/code as the universal tool** — agents solve unforeseen problems by writing code, not

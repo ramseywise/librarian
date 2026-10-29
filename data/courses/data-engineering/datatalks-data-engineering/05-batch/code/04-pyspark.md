@@ -1,7 +1,7 @@
 ---
-imported_hash: f3a0037d267fe4a5
+imported_hash: 3d470b46161701e6
 title: Pyspark
-summary: SELECT  FROM df WHERE hvfhslicensenum = HV0003
+summary: SELECT  FROM df WHERE hvfhs_license_num = HV0003
 order: 22
 kind: notebook
 section: Batch / Code

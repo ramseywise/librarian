@@ -1,8 +1,8 @@
 ---
-imported_hash: b52fe4e416354820
+imported_hash: 7dc9181403a691bf
 title: SlidingWindows
 summary: TBD.. - 424. longest repeating character replacement (medium) - 567.
-order: 11
+order: 4
 kind: notebook
 section: Leetcode
 source: sisyphus/drills/python/leetcode/3_SlidingWindows.ipynb

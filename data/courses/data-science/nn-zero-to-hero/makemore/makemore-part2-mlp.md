@@ -1,5 +1,5 @@
 ---
-imported_hash: 1870a58a10c077d6
+imported_hash: 3ffa992c575f145e
 title: read in all the words
 summary: X = torch.tensor(X) Y = torch.tensor(Y)
 order: 3

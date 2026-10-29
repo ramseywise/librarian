@@ -1,5 +1,5 @@
 ---
-imported_hash: 2b56cbcfc7d78d2f
+imported_hash: 200b03fd6831a6d7
 title: 6. Best Practices
 summary: More information here.
 order: 29
@@ -58,7 +58,7 @@ source: learn-ai-engineering/data-engineering/DataTalks MLOps/06-best-practices/
 
 ### 6.7 Homework
 
-More information [here](../cohorts/2024/06-best-practices/homework.md).
+More information [here](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/cohorts/2024/06-best-practices/homework.md).
 
 
 ### Notes

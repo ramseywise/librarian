@@ -1,7 +1,7 @@
 ---
-imported_hash: 958f3ec1f54d7ff0
+imported_hash: 7c4a87f92be9043a
 title: transform data
-summary: Xtrain, Xtest, ytrain, ytest = traintestsplit(cancer.data, cancer.target, randomstate=1) print(Xtrain.shape) print(Xtest.shape)
+summary: X_train, X_test, y_train, y_test = train_test_split(cancer.data, cancer.target, random_state=1) print(X_train.shape) print(X_test.shape)
 order: 4
 kind: notebook
 source: learn-ai-engineering/data-science/Intro to Machine Learning in Python/03-unsupervised-learning.ipynb

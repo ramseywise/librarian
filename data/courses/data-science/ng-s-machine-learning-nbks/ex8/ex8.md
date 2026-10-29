@@ -1,5 +1,5 @@
 ---
-imported_hash: 7e86f5e1119cf417
+imported_hash: 2de6ac90bb2b92e0
 title: Visualize the data
 summary: 'norm = 1./(np.power((2np.pi), n/2)np.sqrt(np.linalg.det(mysig2))) myinv = np.linalg.inv(mysig2) myexp = np.zeros((m,1)) for irow in xrange(m): xrow = myX[irow] myexp[irow] = np.exp(-0.5((xrow-mymu).T).dot(myinv).dot(xrow-mymu)) return normm…'
 order: 9

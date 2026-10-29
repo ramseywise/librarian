@@ -1,5 +1,5 @@
 ---
-imported_hash: 99d0d6c6bdbb88b4
+imported_hash: 355df480af89cf45
 title: 04 — Agentic Frameworks
 summary: 'This pillar holds framework reference material: comparison documents, feature-parity analyses, and selection guides for the major agentic frameworks.'
 order: 1
@@ -9,7 +9,7 @@ source: learn-ai-engineering/generative-ai/04-agentic-frameworks/README.md
 
 # 04 — Agentic Frameworks
 
-> Depth layer. Summary: [interviewing/guides/4-agents](../../interviewing/guides/4-agents/00-overview.md)
+> Depth layer. Summary: [interviewing/guides/4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md)
 > Position: fourth pillar — framework reference material and selection guides.
 > Presumes: [03-agentic-foundations](../03-agentic-foundations/readme.md).
 
@@ -46,9 +46,9 @@ given problem.
 
 ## Cross-links to ai-engineering
 
-- [ai-engineering/03-harness/](../../ai-engineering/03-harness/README.md) — harness
+- [ai-engineering/03-harness-engineering/](../../ai-engineering/03-harness-engineering/README.md) — harness
   architecture: the engineering discipline layer that sits on top of any framework choice.
-- [ai-engineering/04-loop/](../../ai-engineering/04-loop/README.md) — loop engineering:
+- [ai-engineering/04-loop-engineering/](../../ai-engineering/04-loop-engineering/README.md) — loop engineering:
   termination, reliability, and determinism patterns applicable across frameworks.
 
 ---

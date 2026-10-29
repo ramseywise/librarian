@@ -1,10 +1,10 @@
 ---
-imported_hash: 855dbb2663e0befd
+imported_hash: 818ac6218a6587ca
 title: Harness Engineering — Primary Sources and Upstream Course
 summary: To read the originals, use the upstream repo.
 order: 8
 kind: reading
-source: learn-ai-engineering/ai-engineering/03-harness/references.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/references.md
 ---
 
 # Harness Engineering — Primary Sources and Upstream Course
@@ -22,6 +22,7 @@ source: learn-ai-engineering/ai-engineering/03-harness/references.md
 | Anthropic, [*Harness design for long-running apps*](https://www.anthropic.com/engineering/harness-design-long-running-apps) | Planner/generator/evaluator, sprint contracts, evaluator calibration, cost breakdown of a full build | [05](notes/05-verification-loops.md) · [08](notes/08-maturity-and-failure-modes.md#iterative-simplification) |
 | Liu et al., [*Lost in the Middle: How Language Models Use Long Contexts*](https://arxiv.org/abs/2307.03172) (2023) | Recall drops for information in the middle of long inputs, which is why the entry file stays short and puts critical rules at the edges | [P1](notes/practice/01-repo-as-system-of-record.md) |
 | HumanLayer, [*Skill issue: harness engineering for coding agents*](https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents) | Failures are configuration, not model limits | [01](notes/01-what-a-harness-is.md#the-skill-issue-reframe) |
+| Bojie Li, *AI Agents in Depth*, [ch. 1](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter1.md), [ch. 4 Tools](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter4.md), [ch. 5 Coding Agent](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter5.md) | Harness as "reins on the horse"; tool design principles; proposer–reviewer; moving policy from prompt to code. Labs: MCP tool servers (4-1–4-3), codified rules for small models (5-3), a pure-Python coding agent (5-12). Synthesised into the notes at right; each links its labs upstream. | [01](notes/01-what-a-harness-is.md) · [03](notes/03-tool-design.md) · [05](notes/05-verification-loops.md) · [07](notes/07-orchestration.md) |
 
 ## About the upstream course
 
@@ -45,7 +46,7 @@ source: learn-ai-engineering/ai-engineering/03-harness/references.md
 - **The Electron app projects and TypeScript demos.** The starter and solution code taught the app more than the harness. The labs now run on your own repo.
 - **Translations** (zh, ja, ko, es, fr, vi, pt, de) and the VitePress website tooling.
 - **The rest of the harness-creator skill.** The gotchas and patterns were folded into the notes. The skill's own instructions duplicated the course.
-- **L13 and project 07 (loop engineering).** These belong to [04-loop/](../04-loop/readme.md).
+- **L13 and project 07 (loop engineering).** These became [04-loop-engineering/notes/](../04-loop-engineering/notes/) and the [loop labs](../04-loop-engineering/practice/01-exercises.md).
 - **Unsourced statistics and "a team found…" anecdotes.** Only numbers traceable to a cited source were kept.
 - **The duplicate `CLAUDE.md` template.** [templates/AGENTS.md](templates/agents.md) notes that `CLAUDE.md` can be a pointer or symlink to it.
 

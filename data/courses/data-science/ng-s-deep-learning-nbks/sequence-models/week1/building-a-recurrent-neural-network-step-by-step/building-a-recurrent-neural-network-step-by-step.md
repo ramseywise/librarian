@@ -1,5 +1,5 @@
 ---
-imported_hash: e0c27ff20c5a91d2
+imported_hash: 6f820052c589d910
 title: Building your Recurrent Neural Network - Step by Step
 summary: Welcome to Course 5's first assignment! In this assignment, you will implement your first Recurrent Neural Network in numpy.
 order: 16

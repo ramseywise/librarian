@@ -1,8 +1,8 @@
 ---
-imported_hash: 7db4bac086a70cd0
+imported_hash: b10a1c992a9901d1
 title: LeetCode Problems
 summary: '7 data structures: 1. arrays: - Longest consecutive subsequence (medium) - topKFreuquent (medium)'
-order: 14
+order: 7
 kind: notebook
 section: Leetcode
 source: sisyphus/drills/python/leetcode/Probability-Problems.ipynb

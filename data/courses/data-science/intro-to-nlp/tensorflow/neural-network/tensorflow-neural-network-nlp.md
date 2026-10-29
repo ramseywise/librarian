@@ -1,7 +1,7 @@
 ---
-imported_hash: 530493e58e3e48fb
+imported_hash: 9bbfaeba26f257e5
 title: TensorFlow - Neural Network (NLP)
-summary: from tensorflow import keras from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences from sklearn.linearmodel import LogisticRegression from sklearn.svm import SVC
+summary: from tensorflow import keras from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences from sklearn.linear_model import LogisticRegression from sklearn.svm import SVC
 order: 12
 kind: notebook
 section: tensorFlow / Neural network

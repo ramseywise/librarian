@@ -1,5 +1,5 @@
 ---
-imported_hash: 9f073907cccb301b
+imported_hash: 11ddc51ebbdd5674
 title: 4. Model Deployment
 summary: 'Note: Since some of the steps in this video requires the use of AWS services which incur some cost on the user, it is optional to code along to this video.'
 order: 18
@@ -70,7 +70,7 @@ No video - you already know how to do it:
 
 ## Homework
 
-More information [here](../cohorts/2024/04-deployment/homework.md).
+More information [here](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/cohorts/2024/04-deployment/homework.md).
 
 
 ## Notes

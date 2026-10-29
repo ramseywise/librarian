@@ -1,5 +1,5 @@
 ---
-imported_hash: 3165e9aec656d103
+imported_hash: e72c51e0b1bae2d6
 title: les get more complex
 summary: print('d1', d1) print('d2', d2) print('slope', (d2 - d1)/h)
 order: 8

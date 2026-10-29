@@ -1,7 +1,7 @@
 ---
-imported_hash: ab32dbc442dce4d6
+imported_hash: eec9ce8964231c66
 title: WordNet Synsets
-summary: print('Synonym:', adjlargesynonym.name()) print('Definition:', adjlargesynonym.definition()) print('Antonym:', adjlargeantonym.name()) print('Definition:', adjlargeantonym.definition()) print()
+summary: print('Synonym:', adj_large_synonym.name()) print('Definition:', adj_large_synonym.definition()) print('Antonym:', adj_large_antonym.name()) print('Definition:', adj_large_antonym.definition()) print()
 order: 21
 kind: notebook
 section: Ch08   Semantic Analysis

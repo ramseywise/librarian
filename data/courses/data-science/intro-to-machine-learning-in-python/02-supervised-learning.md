@@ -1,7 +1,7 @@
 ---
-imported_hash: bb43c669be6961e8
+imported_hash: a1ec9c276b8b66bc
 title: generate dataset
-summary: Xtrain, Xtest, ytrain, ytest = traintestsplit(X, y, randomstate=0)
+summary: X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 order: 3
 kind: notebook
 source: learn-ai-engineering/data-science/Intro to Machine Learning in Python/02-supervised-learning.ipynb

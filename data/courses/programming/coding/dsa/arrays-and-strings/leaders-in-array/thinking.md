@@ -1,7 +1,7 @@
 ---
-imported_hash: ce2c2d8379c9279e
+imported_hash: 8c5bad9e7b73bce8
 title: Leaders in an Array — First-Principles Thinking Guide
-summary: 'For i from n-2 down to 0: If arr[i] > maxfromright: leaders.append(arr[i]) maxfromright = arr[i]'
+summary: 'For i from n-2 down to 0: If arr[i] > max_from_right: leaders.append(arr[i]) max_from_right = arr[i]'
 order: 20
 kind: reading
 section: Dsa / Arrays and strings / Leaders in array

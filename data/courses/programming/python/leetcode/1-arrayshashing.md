@@ -1,8 +1,8 @@
 ---
-imported_hash: 7d8b9acffba320c9
+imported_hash: c177c462dbde0996
 title: ex 1
 summary: 'return [] # if no solution found, return emptyt list'
-order: 9
+order: 2
 kind: notebook
 section: Leetcode
 source: sisyphus/drills/python/leetcode/1_ArraysHashing.ipynb

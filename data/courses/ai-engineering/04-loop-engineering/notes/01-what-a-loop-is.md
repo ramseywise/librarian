@@ -1,11 +1,11 @@
 ---
-imported_hash: 1f346fd0a6449cdc
+imported_hash: 595de9f7d86e2554
 title: 1 — What a Loop Is
 summary: The question changes from "how do I phrase this?" to "what cycle re-prompts the agent, checks it, and decides when it quits?"
-order: 4
+order: 3
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/04-loop/notes/01-what-a-loop-is.md
+source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/01-what-a-loop-is.md
 ---
 
 # 1 — What a Loop Is
@@ -87,9 +87,13 @@ For one-off work a good prompt is cheaper. For work whose success is only "looks
 
 Geoffrey Huntley's **Ralph Wiggum** technique (mid-2025) was the crude ancestor: a bash loop that re-runs the agent with the same prompt forever. It splits work into small context windows and keeps progress on the filesystem, so the agent can amend its own plan between runs. It showed that a dumb, steady loop plus passing tests can build real software.
 
-The name "loop engineering" took hold in mid-2026, when Osmani, LangChain and others converged on the same idea. By May 2026 the harnesses had absorbed the pattern: `/loop` (cadence-based) and `/goal` (condition-based, run until done) ship in Codex, Hermes and Claude Code, so nobody hand-rolls the bash wrapper any more. Two things made it practical then: models that reason and code well enough to recover from their own errors, and tooling (file access, test runners, CI, connectors) that lets an agent see the consequences of what it did.
+The name took hold in the first week of June 2026, when three people said the same thing without comparing notes. Peter Steinberger: *"You shouldn't be prompting coding agents anymore. You should be designing loops that prompt your agents."* Boris Cherny (Claude Code): *"I don't prompt Claude anymore. I have loops running that prompt Claude… My job is to write loops."* He reported 259 merged PRs in 30 days, with over 80% of production code written by Claude. Addy Osmani named the concept on June 7, and LangChain followed with its four levels. By May 2026 the harnesses had absorbed the pattern: `/loop` (cadence-based) and `/goal` (condition-based, run until done) ship in Codex, Hermes and Claude Code, so nobody hand-rolls the bash wrapper any more. Two things made it practical then: models that reason and code well enough to recover from their own errors, and tooling (file access, test runners, CI, connectors) that lets an agent see the consequences of what it did.
 
 Loop engineering doesn't replace TDD or CI. It **runs them under an agent**: small commits, quick tests and incremental fixes, with the agent doing the repetitions.
+
+### Inside the loop vs outside it
+
+With a full harness (`AGENTS.md`, feature list, `init.sh`, progress file) you are still **inside the loop**: you read the progress file, decide what's next, type the instruction. You are the engine. **Outside the loop**, a system you designed does that: trigger → discover work → dispatch → verify → save state → repeat, and you get only the decisions it can't make, in an inbox. The leverage moves from writing the right prompt to designing the right loop. Generation becomes nearly free; judgment becomes the scarce resource.
 
 ---
 
@@ -130,7 +134,7 @@ Anthropic never uses the phrase "loop engineering," but their engineering essays
 
 ## Where it sits
 
-prompt → context → harness → **loop** → graph. The harness ([03-harness](../../03-harness/readme.md)) supplies tools, state and guardrails; the loop decides how many times to use them and when to stop. *The loop decides what happens; the harness decides where it can safely happen.* The graph layer ([05-graph](../../05-graph/readme.md)) composes loops into multi-agent topologies.
+prompt → context → harness → **loop** → graph. The harness ([03-harness](../../03-harness-engineering/readme.md)) supplies tools, state and guardrails; the loop decides how many times to use them and when to stop. *The loop decides what happens; the harness decides where it can safely happen.* The graph layer ([05-graph](../../05-graph-engineering/readme.md)) composes loops into multi-agent topologies.
 
 ---
 

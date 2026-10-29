@@ -1,7 +1,7 @@
 ---
-imported_hash: f02c8b88f04048c1
+imported_hash: 40be8e701f674370
 title: Import necessary dependencies and settings
-summary: pd.options.display.maxcolwidth = 200 %matplotlib inline
+summary: pd.options.display.max_colwidth = 200 %matplotlib inline
 order: 8
 kind: notebook
 section: Ch04   Feature Engineering for Text Representation

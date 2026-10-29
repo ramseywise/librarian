@@ -1,11 +1,11 @@
 ---
-imported_hash: 9df09a503e898d86
+imported_hash: 34c5bde073dc784e
 title: SECURITY.md
 summary: This file defines the security and safety rules that agents must not guess at.
 order: 38
 kind: reading
 section: Templates / Openai repo template / Docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/SECURITY.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/SECURITY.md
 ---
 
 # SECURITY.md

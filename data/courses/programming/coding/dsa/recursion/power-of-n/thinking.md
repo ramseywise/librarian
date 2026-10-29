@@ -1,7 +1,7 @@
 ---
-imported_hash: 156e0d388dcd93e7
+imported_hash: 161f29b7c35bf9c6
 title: Pow(x, n) — First-Principles Thinking Guide
-summary: 'fastpow(base, exp): If exp == 0: return 1 half = fastpow(base, exp // 2) If exp is even: return half  half If exp is odd: return half  half  base'
+summary: 'fast_pow(base, exp): If exp == 0: return 1 half = fast_pow(base, exp // 2) If exp is even: return half  half If exp is odd: return half  half  base'
 order: 108
 kind: reading
 section: Dsa / Recursion / Power of n

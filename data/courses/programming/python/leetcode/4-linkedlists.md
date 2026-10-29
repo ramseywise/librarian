@@ -1,8 +1,8 @@
 ---
-imported_hash: f93577b258662004
+imported_hash: 8c85583418058af0
 title: Definition for singly-linked list. Run to use for LL problems
 summary: TBD.. - 19. remove nth node (medium) - 143.
-order: 12
+order: 5
 kind: notebook
 section: Leetcode
 source: sisyphus/drills/python/leetcode/4_LinkedLists.ipynb

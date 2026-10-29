@@ -1,5 +1,5 @@
 ---
-imported_hash: 399c1d3c3bd5ebfa
+imported_hash: 27bb7ea466b19ba6
 title: Context Engineering & Cost/Latency — Study Guide
 summary: '"Context engineering" has replaced "prompt engineering" as the interview keyword: managing what the model sees across a whole system, plus the cost/latency consequences.'
 order: 13
@@ -53,6 +53,7 @@ Mechanism: inference = **prefill** (process prompt) + **decode** (generate). Cac
 the prefill KV state and reuses it when a future prompt shares a **byte-identical prefix**.
 
 Consequences you should recite:
+
 - **Ordering matters enormously: static content first, dynamic last.** System prompt + tool
   schemas up top; user query + retrieved chunks at the end.
 - Anything injected per-turn into the "static" region (timestamps, callables) silently

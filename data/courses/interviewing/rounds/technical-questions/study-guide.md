@@ -1,5 +1,5 @@
 ---
-imported_hash: 3158936961f19a1c
+imported_hash: db8edf244a5d474b
 title: Study Guide — Technical / ML/LLM Breadth Round
 summary: Every answer has two modes. Know both before any interview.
 order: 89
@@ -15,12 +15,14 @@ source: sisyphus/interviewing/rounds/technical-questions/study-guide.md
 Every answer has two modes. Know both before any interview.
 
 **Mode 1: The 60-second answer**
+
 - One crisp definition sentence.
 - The mechanism in plain terms (analogy to a PM if needed).
 - One concrete example or implication.
 - Stop there. Do not pre-load the deeper content — let them ask.
 
 **Mode 2: One level deeper**
+
 - The underlying math or mechanism (just enough, not a lecture).
 - The failure mode or edge case the basic answer ignores.
 - The trade-off or design decision it creates.
@@ -31,6 +33,7 @@ Every answer has two modes. Know both before any interview.
 ### Practice drill
 
 For each question in `questions.md`:
+
 1. Cover the "one level deeper" column.
 2. Answer cold from the 60-second column header only.
 3. Uncover and compare. Where did you stop short? Where did you add noise?
@@ -45,6 +48,7 @@ When you don't know something well, say so — then redirect.
 **Formula**: "My understanding there is fairly surface-level — I know [the basic shape of the thing], but I haven't gone deep on [the specific mechanism]. I'd approach it by [how you'd figure it out]. What I do have solid experience with is [related thing you can speak to]."
 
 **Why it works**:
+
 - Interviewers can tell when you're bluffing. An honest gap with clear meta-awareness reads better than a confident wrong answer.
 - The redirect shows intellectual honesty and gives the interviewer something to work with.
 - It's memorable — most candidates bluff, so the honest move stands out.
@@ -94,7 +98,9 @@ These are the most common "compare X and Y" questions. For each: know the key ax
 Know your role's depth requirements. AIE and FDE share most topics; MLE adds classical depth; DS folds this into the stats screen.
 
 ### AIE (AI Engineer)
+
 Priority order: LLM fundamentals → RAG → Agents → Context & cost → Evals → Security → Classical ML (sanity check only)
+
 - Own the full transformer/LLM stack: attention, tokenization, RLHF/DPO, context windows
 - RAG pipeline end-to-end: chunking, retrieval, reranking, eval
 - Agent architecture: loop engineering, tool design, multi-agent patterns
@@ -102,7 +108,9 @@ Priority order: LLM fundamentals → RAG → Agents → Context & cost → Evals
 - Classical ML: just enough to not get stumped on bias-variance or precision-recall
 
 ### MLE (ML Engineer)
+
 Priority order: Classical ML (deep) → LLM fundamentals → Evals → RAG → Agents → Context & cost → Security
+
 - Classical ML is first-class: regularization, cross-validation, bias-variance, optimization
 - LLM fundamentals at depth: training dynamics, fine-tuning, RLHF
 - Evals: rigorous quantitative eval frameworks, not just "LLM-as-judge"
@@ -110,14 +118,18 @@ Priority order: Classical ML (deep) → LLM fundamentals → Evals → RAG → A
 - Security: awareness level
 
 ### DS (Data Scientist)
+
 This round often folds into the stats/SQL screen. Weight:
 Priority order: Classical ML → Evals → LLM fundamentals (awareness) → RAG (awareness)
+
 - Deep on statistical inference, A/B testing, bias-variance
 - Evals: the eval framework is close to statistical methodology
 - LLM/RAG: demonstrate awareness of the paradigm, not deep building experience
 
 ### FDE (Full-stack/Deployment Engineer)
+
 Priority order: Context & cost → Security → Agents → RAG → LLM fundamentals → Evals → Classical ML
+
 - Cost and latency are first-class concerns: token economics, caching, batching
 - Security: prompt injection, trust boundaries, PII handling
 - Agent and RAG system architecture: operational concerns (failure modes, monitoring)
@@ -146,10 +158,12 @@ Lower number = higher priority for prep time.
 **What goes on cards**: trade-off pairs (above) + domain definitions (one per concept)
 
 **Card format**:
+
 - Front: the question the interviewer would ask ("RAG or fine-tuning?")
 - Back: the key axis + 60-second call. Not the full answer — the decision logic.
 
 **Drill schedule**:
+
 - Day 1-3: Build cards for your top-priority domains (role-dependent).
 - Day 4-7: Daily 15-minute drill, all cards. Flag anything you hesitate on.
 - Week 2+: Drill flagged cards 2x/day; unflagged cards every other day.
@@ -178,6 +192,7 @@ Everything on your resume is in scope. For each item on your resume that touches
 ## Practice plan
 
 ### Week 1 (breadth pass)
+
 - Day 1: Read all domain sections of `questions.md`. Don't drill — just read.
 - Day 2: Build flashcards for your top 2 domains (role-priority order above).
 - Day 3-4: First drill pass — all 30 questions, self-timed. Flag what you hesitated on.
@@ -185,6 +200,7 @@ Everything on your resume is in scope. For each item on your resume that touches
 - Day 6-7: Fill gaps from the drill — read the study guide sections for flagged questions.
 
 ### Week 2 (depth pass)
+
 - Day 1-2: Drill flagged questions. Add the "one level deeper" layer to your card backs.
 - Day 3: Trade-off pairs only — 20-minute focused drill.
 - Day 4: Full practice interview (mock, 30 min, timed). Ask someone to follow up on 3-5 answers.
@@ -192,6 +208,7 @@ Everything on your resume is in scope. For each item on your resume that touches
 - Day 7: Rest. Light card review only.
 
 ### Interview week
+
 - Daily: 10-minute flashcard warm-up, trade-off pairs.
 - Day before: Full deck, one pass. No new material.
 - Day of: Trade-off pairs only (5 min). Trust the preparation.

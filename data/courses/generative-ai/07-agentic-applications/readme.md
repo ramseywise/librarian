@@ -1,5 +1,5 @@
 ---
-imported_hash: baabace3e1485a5e
+imported_hash: 9a555d6b52f3354a
 title: 07 — Agentic Applications
 summary: 'Agentic applications are the payoff: end-to-end projects that apply the frameworks and patterns from the earlier pillars to real tasks.'
 order: 1
@@ -9,7 +9,7 @@ source: learn-ai-engineering/generative-ai/07-agentic-applications/README.md
 
 # 07 — Agentic Applications
 
-> Depth layer. Summary: [interviewing/guides/4-agents](../../interviewing/guides/4-agents/00-overview.md)
+> Depth layer. Summary: [interviewing/guides/4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md)
 > Position: seventh pillar — specific projects built with agentic frameworks.
 > Presumes: [03-agentic-foundations](../03-agentic-foundations/readme.md).
 
@@ -39,6 +39,19 @@ it holds only genuinely built things, not course material.
 - **[`chatbot/deep_research_bench/`](chatbot/deep_research_bench/)** —
   deep research benchmark dataset. Untouched reference data.
 
+### Notes
+
+- **[`real-time-multimodal-agents.md`](real-time-multimodal-agents.md)** —
+  voice (cascaded / Omni / full-duplex, streaming perception, fast/slow thinking,
+  control-token TTS), Computer Use (action space, visual grounding, efficiency) and
+  robotics (planning + VLA, action chunking, Sim2Real). From *AI Agents in Depth* ch. 9,
+  with upstream lab links.
+
+Other application-shaped labs from the book live upstream: web-search and search+codegen
+agents ([ch. 1](https://github.com/bojieli/ai-agent-book/tree/main/chapter1)) and
+paper→slides→video, log diagnosis and text-to-SQL
+([ch. 5](https://github.com/bojieli/ai-agent-book/tree/main/chapter5)).
+
 ---
 
 ## Cross-links
@@ -49,5 +62,5 @@ it holds only genuinely built things, not course material.
   material: LangGraph and ADK docs used during implementation.
 - [06-observability/](../06-observability/readme.md) — LangFuse integration for tracing
   and evaluation of deployed agents.
-- [ai-engineering/03-harness/](../../ai-engineering/03-harness/README.md) — harness
+- [ai-engineering/03-harness-engineering/](../../ai-engineering/03-harness-engineering/README.md) — harness
   architecture notes applicable to both projects here.

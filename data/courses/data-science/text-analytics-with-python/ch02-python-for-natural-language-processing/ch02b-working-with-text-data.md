@@ -1,7 +1,7 @@
 ---
-imported_hash: c5228a21c3b37ed4
+imported_hash: 8382e6795049a7c4
 title: zen of python
-summary: 'print(''ID:'', id(newstring)) # shows the object identifier (address) print(''Type:'', type(newstring)) # shows the object type print(''Value:'', newstring) # shows the object value'
+summary: 'print(''ID:'', id(new_string)) # shows the object identifier (address) print(''Type:'', type(new_string)) # shows the object type print(''Value:'', new_string) # shows the object value'
 order: 4
 kind: notebook
 section: Ch02   Python for Natural Language Processing

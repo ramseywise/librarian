@@ -1,8 +1,8 @@
 ---
-imported_hash: 3d69987e5c5212ae
+imported_hash: b179f1fb1939606c
 title: Sample data for 10 students
 summary: Code Llama is a family of large language models (LLM), released by Meta, with the capabilities to accept text prompts and generate and discuss code.
-order: 7
+order: 6
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-code-llama.ipynb

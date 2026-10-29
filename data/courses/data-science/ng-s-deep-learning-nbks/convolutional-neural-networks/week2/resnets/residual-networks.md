@@ -1,5 +1,5 @@
 ---
-imported_hash: 945b5a0da458c719
+imported_hash: dbeb30cb44054e56
 title: Residual Networks
 summary: Welcome to the second assignment of this week!
 order: 3

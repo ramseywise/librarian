@@ -1,10 +1,10 @@
 ---
-imported_hash: 1413031f33e0d477
+imported_hash: 24e5fec8356981b3
 title: Reliable agents
 summary: RefactoringAgileArchitectureAboutThoughtworks
 order: 9
 kind: reading
-source: learn-ai-engineering/ai-engineering/03-harness/reliable-agents.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/reliable-agents.md
 ---
 
 > **Source note.** Kept for provenance, as with [agent-harness.md](agent-harness.md).
@@ -12,7 +12,7 @@ source: learn-ai-engineering/ai-engineering/03-harness/reliable-agents.md
 > built with Thoughtworks. Harness-relevant claims are compressed into
 > [notes/05](notes/05-verification-loops.md) and [notes/08](notes/08-maturity-and-failure-modes.md);
 > the retrieval-pipeline and Text-to-SQL detail into
-> [02-context/notes/03](../02-context/notes/04-retrieval.md).
+> [02-context-engineering/notes/03](../02-context-engineering/notes/04-retrieval.md).
 > Ingestion, NER enrichment, and the domain sub-agent hierarchy remain unextracted —
 > see the `unextracted` list in the frontmatter.
 > Raw Notion export below — formatting artifacts (stripped diagrams, run-together

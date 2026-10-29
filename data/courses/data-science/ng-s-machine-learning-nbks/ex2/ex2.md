@@ -1,7 +1,7 @@
 ---
-imported_hash: 0fe9e1cc98e616a6
+imported_hash: 65ee736c6c8a0c18
 title: Ex2
-summary: 'def optimizeTheta(mytheta,myX,myy,mylambda=0.): result = optimize.fmin(computeCost, x0=mytheta, args=(myX, myy, mylambda), maxiter=400, fulloutput=True) return result[0], result[1]'
+summary: 'def optimizeTheta(mytheta,myX,myy,mylambda=0.): result = optimize.fmin(computeCost, x0=mytheta, args=(myX, myy, mylambda), maxiter=400, full_output=True) return result[0], result[1]'
 order: 2
 kind: notebook
 section: Ex2

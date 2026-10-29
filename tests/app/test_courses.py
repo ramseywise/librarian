@@ -74,6 +74,7 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
 
     monkeypatch.setattr(courses, "COURSES_DIR", root)
     monkeypatch.setattr(courses, "WIKI_DIR", wiki)
+    monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "no-drill-log.md")  # never the real one
     courses._load.cache_clear()
     app = FastAPI()
     app.include_router(courses.router)
@@ -159,7 +160,8 @@ def test_practice_lists_drills_with_filters_and_concepts(client: TestClient) -> 
     _write(
         courses.COURSES_DIR / "basics" / "02-sql" / "top-orders.md",
         "---\ntitle: Top orders\nkind: drill\ntrack: sql\ntopic: window-functions\n"
-        "difficulty: medium\ntimebox_min: 20\nwiki: [hybrid-search, client-secret]\n---\n\nRank.\n",
+        "difficulty: medium\ntimebox_min: 20\nwiki: [hybrid-search, client-secret, window-functions]\n"
+        "---\n\nRank.\n",
     )
     _write(
         courses.COURSES_DIR / "basics" / "02-sql" / "group-by.md",
@@ -174,6 +176,7 @@ def test_practice_lists_drills_with_filters_and_concepts(client: TestClient) -> 
         "topic": "window-functions",
         "difficulty": "medium",
         "timebox_min": 20,
+        "tags": ["window-functions"],  # no wiki page yet; the private page is not echoed
     }
     assert [c["id"] for c in top[0]["concepts"]] == ["hybrid-search"]  # private page dropped
     assert client.get("/api/courses/practice", params={"difficulty": "hard"}).json() == []
@@ -181,5 +184,31 @@ def test_practice_lists_drills_with_filters_and_concepts(client: TestClient) -> 
         client.get("/api/courses/practice", params={"concept": "hybrid-search"}).json()[0]["title"]
         == "Top orders"
     )
+    assert (
+        len(client.get("/api/courses/practice", params={"concept": "window-functions"}).json()) == 1
+    )
     # Ordinary lessons carry no drill block.
     assert "drill" not in client.get("/api/courses/lessons/basics/01-python/vars").json()
+
+
+def test_practice_attaches_attempts_from_drill_log_without_notes(
+    client: TestClient, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write(
+        courses.COURSES_DIR / "basics" / "02-sql" / "top-orders.md",
+        "---\ntitle: Top orders\nkind: drill\ntrack: sql\n---\n\nRank.\n",
+    )
+    log = tmp_path / "drill-log.md"
+    log.write_text(
+        "# Log\n\n| Date | QID | Score | Note |\n|---|---|---|---|\n"
+        "| 2026-10-01 | top-orders | C✓ P✗ | private reflection |\n"
+        "| 2026-10-20 | top-orders | C✓ P✓ | private reflection |\n"
+        "| 2026-10-05 | top-orders | C✗ P✗ | private reflection |\n"
+    )
+    monkeypatch.setattr(courses, "DRILL_LOG", log)
+    [drill] = client.get("/api/courses/practice").json()
+    assert drill["attempts"] == {"count": 3, "last": "2026-10-20", "score": "C✓ P✓"}
+    assert "private reflection" not in str(drill)
+
+    monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "missing.md")
+    assert "attempts" not in client.get("/api/courses/practice").json()[0]

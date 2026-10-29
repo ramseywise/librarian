@@ -1,7 +1,7 @@
 ---
-imported_hash: 3cbebda75a332447
+imported_hash: dc01334d1d1bae2c
 title: Comp 1
-summary: Walk through what happens when you call placeship(Ship('Cruiser', 3), row=0, col=0, horizontal=True).
+summary: Walk through what happens when you call place_ship(Ship('Cruiser', 3), row=0, col=0, horizontal=True).
 order: 3
 kind: reading
 section: Battleship / Solutions

@@ -1,11 +1,11 @@
 ---
-imported_hash: 43ccf89bef377694
+imported_hash: 3d3e9dbf41d131de
 title: PRODUCTSENSE.md
 summary: This file captures durable product judgment that agents cannot infer reliably from code alone.
 order: 35
 kind: reading
 section: Templates / Openai repo template / Docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/PRODUCT_SENSE.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/PRODUCT_SENSE.md
 ---
 
 # PRODUCT_SENSE.md

@@ -1,7 +1,7 @@
 ---
-imported_hash: 4ff98a0a270bbb7f
+imported_hash: cedb70989ff421dc
 title: build word2vec model
-summary: traincorpus, testcorpus, trainlabelnums, testlabelnums, trainlabelnames, testlabelnames =\ traintestsplit(np.array(datadf['Clean Article']), np.array(datadf['Target Label']), np.array(datadf['Target Name']), testsize=0.33, randomstate=42)
+summary: train_corpus, test_corpus, train_label_nums, test_label_nums, train_label_names, test_label_names =\ train_test_split(np.array(data_df['Clean Article']), np.array(data_df['Target Label']), np.array(data_df['Target Name']), test_size=0.33, r…
 order: 12
 kind: notebook
 section: Ch05   Text Classification

@@ -1,7 +1,7 @@
 ---
-imported_hash: 9f94d026563c0db0
+imported_hash: 3863d74207c96e15
 title: Recurrent Neural Network
-summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences
+summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences
 order: 8
 kind: notebook
 section: tensorFlow / Neural network

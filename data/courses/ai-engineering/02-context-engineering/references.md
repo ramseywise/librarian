@@ -1,10 +1,10 @@
 ---
-imported_hash: bb8dd1e987367b6f
+imported_hash: cbedc4889b905aed
 title: Context Engineering — Papers and Further Reading
 summary: The upstream "neural field / attractor / quantum semantics" framework cites these.
 order: 3
 kind: reading
-source: learn-ai-engineering/ai-engineering/02-context/references.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/references.md
 ---
 
 # Context Engineering — Papers and Further Reading
@@ -33,10 +33,19 @@ The upstream "neural field / attractor / quantum semantics" framework cites thes
 | Wang et al., [*Unveiling Attractor Cycles in LLMs: A Dynamical Systems View of Successive Paraphrasing*](https://arxiv.org/abs/2502.15208) (2025) | [2502.15208](sources/wang-2025-attractor-cycles.pdf) |
 | Agostino et al., [*A Quantum Semantic Framework for Natural Language Processing*](https://arxiv.org/abs/2506.10077) (2025) | [2506.10077](sources/agostino-2025-quantum-semantic-framework.pdf) |
 
+## AI Papers of the Week
+
+Recent papers picked up by the weekly [DAIR](https://github.com/dair-ai/AI-Papers-of-the-Week) sync (`make papers`, then `/papers`).
+
+| Paper | Why read it | PDF | Maps to |
+|---|---|---|---|
+| ★ Peng, [*MemoryTax: The Bitter Lesson of Agent Memory*](https://arxiv.org/abs/2610.29823) (Oct 2026) | Mem0 beats full context only with GPT-4o-mini; with stronger models designed memory ties or loses and its build costs more than a full-context run. A coding agent searching the raw history scores 99% at under half the cost. One conversation, one run per cell | [2610.29823](sources/peng-2026-memorytax.pdf) | [06](notes/06-memory.md#designed-memory-vs-searching-the-raw-record) |
+
 ## Talks and collections
 
 - Andrej Karpathy, [*Software Is Changing (Again)*](https://www.youtube.com/watch?v=LCEmiRjPEtQ), YC AI Startup School 2025. The origin of *"the delicate art and science of filling the context window with just the right information for the next step."*
 - [Awesome-Context-Engineering](https://github.com/Meirtz/Awesome-Context-Engineering): the maintained paper list that accompanies the survey.
+- ★ Bojie Li, *AI Agents in Depth*, [ch. 2 Context Engineering](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) and [ch. 3 User Memory](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter3.md): KV-cache-friendly layout, the agent status bar, compression, and memory from a production phone-agent team. Runnable labs for [03](notes/03-budgeting-the-window.md) (kv-cache), [05](notes/05-compression-compaction.md) (context-compression), [06](notes/06-memory.md) (user-memory, mem0, memobase) and [10](notes/10-tools-and-multi-agent.md) (active-tool-discovery). Synthesised into notes [02](notes/02-context-anatomy.md), [04](notes/04-retrieval.md), [05](notes/05-compression-compaction.md) and [06](notes/06-memory.md), which link the labs upstream; the BM25 lab runs offline in [practice/01](practice/01-bm25-from-scratch/readme.md).
 - [NotebookLM notebook and podcast deep dive](https://notebooklm.google.com/notebook/0c6e4dc6-9c30-4f53-8e1a-05cc9ff3bc7e): audio overviews of the upstream repo.
 
 ## About the upstream course
@@ -48,4 +57,4 @@ What was kept as files:
 - [templates/](templates/): schema templates, prompt programs, control loops and prompt templates.
 - [notebooks/](notebooks/): the `10_guides_zero_to_hero` Python labs.
 
-To read the originals, use the upstream repo: https://github.com/davidkimai/Context-Engineering. The deleted files are also in this repo's git history: `git show a51061f:ai-engineering/02-context/<path>`.
+To read the originals, use the upstream repo: https://github.com/davidkimai/Context-Engineering. The deleted files are also in this repo's git history: `git show a51061f:ai-engineering/02-context-engineering/<path>`.

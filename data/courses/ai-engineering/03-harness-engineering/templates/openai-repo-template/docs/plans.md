@@ -1,11 +1,11 @@
 ---
-imported_hash: 871785fb0734cb02
+imported_hash: b85014325bb1406d
 title: PLANS.md
 summary: This file defines how execution plans are created, updated, completed, and archived.
 order: 34
 kind: reading
 section: Templates / Openai repo template / Docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/PLANS.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/PLANS.md
 ---
 
 # PLANS.md

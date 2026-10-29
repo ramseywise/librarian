@@ -1,5 +1,5 @@
 ---
-imported_hash: b058cd05d9853ddc
+imported_hash: 26a00fcbd9e6882e
 title: Pillar 7 — Security & Safety (prompt injection, guardrails, PII)
 summary: 'The adversarial pillar: what happens when inputs are hostile, outputs are harmful, or data is sensitive.'
 order: 16
@@ -27,7 +27,7 @@ actually hold.
    librarian *Input Guardrails Pipeline*: templating, content boundaries, sanitizers,
    moderation, output validation — and what each layer misses.
 4. **Agentic protection** — *Protecting Agentic Systems* (agent-applications book ch 12)
-   + *Setting Safeguards* (design-patterns book ch 9,
+   - *Setting Safeguards* (design-patterns book ch 9,
    `ai-engineering/readings/ai_engineering/ai design/`); MCP-specific: librarian *MCP Server Security
    Patterns*.
 5. **Compliance reality** — PII handling, GDPR/HIPAA constraints, governance layers —
@@ -47,6 +47,7 @@ actually hold.
 | OWASP LLM Top-10 + cheat sheets | link | [../../notes/reading-list.md](../../notes/reading-list.md) | the standard taxonomy |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [system-design-round](../../rounds/system-design-round/readme.md) (governance layers in
 regulated designs), [technical-questions](../../rounds/technical-questions/readme.md).

@@ -1,7 +1,7 @@
 ---
-imported_hash: 5da2b801b55a9a81
+imported_hash: 0ac91ea13efc5a20
 title: TensorFlow - Embeddings Viz
-summary: from tensorflow import keras from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences
+summary: from tensorflow import keras from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences
 order: 5
 kind: notebook
 section: tensorFlow / Encoding embeddings

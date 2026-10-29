@@ -1,11 +1,11 @@
 ---
-imported_hash: 199b73e439731882
+imported_hash: 41b5d067a48a6fff
 title: Few-Shot Learning Template
 summary: 'This template is ideal for: - Tasks that are difficult to explain but easy to demonstrate - Pattern-based tasks where examples communicate the pattern better than rules - Situations where you want consistent formatting or style - Teaching n…'
-order: 21
+order: 23
 kind: reading
 section: Templates / Prompts
-source: learn-ai-engineering/ai-engineering/02-context/templates/prompts/few_shot_learning.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/templates/prompts/few_shot_learning.md
 ---
 
 # Few-Shot Learning Template

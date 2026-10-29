@@ -1,5 +1,5 @@
 ---
-imported_hash: b372a827d6d0de6d
+imported_hash: 1eeed7aee63e7142
 title: Constituency Parsing with Stanford NLP
 summary: 'Source: https://towardsdatascience.com/a-practitioners-guide-to-natural-language-processing-part-i-processing-understanding-text-9f4abfd13e72'
 order: 7

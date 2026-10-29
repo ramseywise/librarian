@@ -1,11 +1,11 @@
 ---
-imported_hash: c279c768d2beb7d0
+imported_hash: 43e302ab1ccd51f2
 title: Core Beliefs
 summary: ''
 order: 39
 kind: reading
 section: Templates / Openai repo template / Docs / Design docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/design-docs/core-beliefs.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/design-docs/core-beliefs.md
 ---
 
 # Core Beliefs

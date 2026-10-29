@@ -1,15 +1,15 @@
 ---
-imported_hash: b7007c91c3484737
+imported_hash: 2ae6f4d4af190857
 title: 02 — Context Engineering
 summary: 'Context engineering is the discipline of composing what goes into the model''s context window on each call: which documents to include, which memory to surface, which tool outputs to inject, how much history to keep, and how to spend the tok…'
 order: 1
 kind: reading
-source: learn-ai-engineering/ai-engineering/02-context/README.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/README.md
 ---
 
 # 02 — Context Engineering
 
-> Depth layer. Summary: [interviewing/guides/5-context-cost](../../interviewing/guides/5-context-cost/00-overview.md)
+> Depth layer. Summary: [interviewing/guides/5-context-cost](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/5-context-cost/00-overview.md)
 > Position in the stack: *each loop step assembles context*.
 > Jump to: [Rules of thumb](#rules-of-thumb) · [Topic notes](#topic-notes-notes) · [References](#references)
 
@@ -87,11 +87,12 @@ The rules from the topic notes on one page. Each group links to the chapter that
 ## Layout
 
 ```
-02-context/
+02-context-engineering/
 ├── README.md               ← you are here: summary, rules of thumb, chapter index
 ├── context-engineering.md  ← pillar overview
 ├── notes/                  ← the chapters (read in order), plus the 99 appendix
 ├── notebooks/              ← runnable Python labs
+├── practice/               ← offline labs adapted from AI Agents in Depth
 ├── templates/              ← copyable schemas, prompt programs and prompt templates
 ├── sources/                ← PDFs of the papers the chapters cite
 └── references.md           ← papers and further reading, mapped to chapters
@@ -136,23 +137,29 @@ The rules from the topic notes on one page. Each group links to the chapter that
 | [06_schema_design.py](notebooks/06_schema_design.py) | [07](notes/07-structured-context.md) |
 | [07_recursive_patterns.py](notebooks/07_recursive_patterns.py) | [08](notes/08-cognitive-tools.md), [99](notes/99-speculative-field-track.md) |
 
+### Practice
+
+| Lab | Notes |
+|---|---|
+| [01 — BM25 from scratch](practice/01-bm25-from-scratch/readme.md): inverted index, IDF and saturation, with every score traceable (Li, Exp. 3-5). Offline, no API key | [04](notes/04-retrieval.md#hybrid-retrieval) |
+
 ### Templates
 
 [templates/](templates/): `minimal_context.yaml`, schema templates ([YAML](templates/schema_template.yaml), [JSON](templates/schema_template.json)), [prompt_program_template.py](templates/prompt_program_template.py), [control_loop.py](templates/control_loop.py), [scoring_functions.py](templates/scoring_functions.py), and [prompt templates](templates/prompts/) (chain of thought, few-shot, minimal context, verification loop, expert guides).
 
 ### Related
-- [memory.md](../05-graph/memory.md) — memory depth: in-context, external, episodic, semantic.
-- [skills-design.md](../03-harness/skills-design.md) — skills as a harness primitive; relies on the progressive disclosure covered in [04](notes/04-retrieval.md).
+- [memory-augmented-rag-notion-export.md](sources/memory-augmented-rag-notion-export.md) — memory depth: in-context, external, episodic, semantic.
+- [skills-design.md](../03-harness-engineering/skills-design.md) — skills as a harness primitive; relies on the progressive disclosure covered in [04](notes/04-retrieval.md).
 
 ### Interviewing guide
-- [5-context-cost](../../interviewing/guides/5-context-cost/00-overview.md) — compressed summary for interview prep.
+- [5-context-cost](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/5-context-cost/00-overview.md) — compressed summary for interview prep.
 
 ### Course code
 - [LLMs-as-Operating-Systems--Agent-Memory-main](../../generative-ai/03-agentic-foundations/LLMs-as-Operating-Systems--Agent-Memory-main/) — memory as an OS primitive.
 - [Long-Term-Agentic-Memory-With-LangGraph-main](../../generative-ai/04-agentic-frameworks/Long-Term-Agentic-Memory-With-LangGraph-main/) — long-term memory patterns.
 
 ### Next layer
-→ [03-harness/](../03-harness/readme.md) — the harness wraps the loops that assemble context.
+→ [03-harness-engineering/](../03-harness-engineering/readme.md) — the harness wraps the loops that assemble context.
 
 ---
 

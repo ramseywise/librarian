@@ -1,7 +1,7 @@
 ---
-imported_hash: b3d71bbede446a66
+imported_hash: 7e31c03649fadae3
 title: Code Review Round
-summary: Mostly senior/staff loops; AIE variants increasingly use AI-generated code as the artifact.
+summary: 'Reviewing unfamiliar code under observation: do you have a method, or just an eye?'
 order: 18
 kind: reading
 section: Code review round
@@ -11,11 +11,13 @@ source: sisyphus/interviewing/rounds/code-review-round/README.md
 # Code Review Round
 
 ## What's tested
+
 Reviewing unfamiliar code under observation: do you have a *method*, or just an eye?
 Signals: consequence-ranked reading order, catching the innocent-looking dangerous change,
 communicating findings without condescension, and knowing what *not* to flag.
 
 ## Format & trends
+
 30-60 min: a PR/diff (sometimes a whole small service) to review live, or async with a
 written review discussed in the round. Increasingly common for senior/staff loops and
 AIE roles (reviewing AI-generated code is now a core job skill — say that out loud if
@@ -52,6 +54,7 @@ asked why review matters in 2026).
    flag something.
 
 ## Prep checklist
+
 - [ ] Practice on real PRs: pick merged PRs in OSS repos, review the diff blind, compare
   with the actual review comments.
 - [ ] Drill the ordering until automatic: invariants → interfaces → tunables → style.
@@ -63,6 +66,7 @@ asked why review matters in 2026).
   intent, check hallucinated APIs, test coverage as the safety net).
 
 ## Per-role weighting
+
 | AIE | MLE | DS | FDE |
 |---|---|---|---|
 | ◐ | ◐ | ○ | ◐ |
@@ -70,6 +74,7 @@ asked why review matters in 2026).
 Mostly senior/staff loops; AIE variants increasingly use AI-generated code as the artifact.
 
 ## Folder contents
+
 - [sources.md](sources.md) — curated references and reading list
 - [examples/](examples/) — worked code review examples
 - [questions.md](questions.md) — sample questions and model answers

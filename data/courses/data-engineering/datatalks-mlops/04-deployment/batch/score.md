@@ -1,7 +1,7 @@
 ---
-imported_hash: 1e6bc81c73988dcc
+imported_hash: 4a737040d2d45132
 title: Score
-summary: from sklearn.featureextraction import DictVectorizer from sklearn.ensemble import RandomForestRegressor from sklearn.metrics import meansquarederror from sklearn.pipeline import makepipeline
+summary: from sklearn.feature_extraction import DictVectorizer from sklearn.ensemble import RandomForestRegressor from sklearn.metrics import mean_squared_error from sklearn.pipeline import make_pipeline
 order: 21
 kind: notebook
 section: Deployment / Batch

@@ -1,7 +1,7 @@
 ---
-imported_hash: 99a38c09fd883f64
+imported_hash: d08f70fe091ed92f
 title: Import necessary dependencies
-summary: normtrainreviews = tn.normalizecorpus(trainreviews, stopwords=stopwords) normtestreviews = tn.normalizecorpus(testreviews, stopwords=stopwords)
+summary: norm_train_reviews = tn.normalize_corpus(train_reviews, stopwords=stop_words) norm_test_reviews = tn.normalize_corpus(test_reviews, stopwords=stop_words)
 order: 29
 kind: notebook
 section: Ch09   Sentiment Analysis

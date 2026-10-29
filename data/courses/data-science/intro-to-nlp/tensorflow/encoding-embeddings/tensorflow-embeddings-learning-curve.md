@@ -1,7 +1,7 @@
 ---
-imported_hash: 2823a4f6ec8466cf
+imported_hash: 82a96871007f29e5
 title: Word Embeddings - Learning Curve
-summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences
+summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences
 order: 4
 kind: notebook
 section: tensorFlow / Encoding embeddings

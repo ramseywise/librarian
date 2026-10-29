@@ -1,5 +1,5 @@
 ---
-imported_hash: d21afa2339095250
+imported_hash: de577c383e4247d1
 title: 06 — Observability
 summary: 'Observability for LLM applications means being able to see what happened inside an agent run: which tools were called, what the model received, how it responded, and whether the output was good.'
 order: 1
@@ -9,7 +9,7 @@ source: learn-ai-engineering/generative-ai/06-observability/README.md
 
 # 06 — Observability
 
-> Depth layer. Summary: [interviewing/guides/4-agents](../../interviewing/guides/4-agents/00-overview.md)
+> Depth layer. Summary: [interviewing/guides/4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md)
 > Position: sixth pillar — tracing, scoring, and evaluation pipelines for LLM applications.
 > Presumes: [03-agentic-foundations](../03-agentic-foundations/readme.md).
 
@@ -54,7 +54,7 @@ infrastructure; eval is the discipline.
   [`langsmith.md`](../04-agentic-frameworks/notes/langsmith.md).
 
 **Support-agent content note:** content for the `kb_adk`/`kb_lg`/`kb_rag` support-agent
-system is distributed across both pillars by design — `ai-engineering/06-eval/evals/`
+system is distributed across both pillars by design — `ai-engineering/06-eval/case-study/`
 (gate-contract, eval-architecture) covers evaluation methodology; `generative-ai/02-rag-retrieval/rag/`
 (hc-rag-pipeline, semantic-cache, bedrock-kb) covers the retrieval pipeline; and
 `support-agent-observability.md` (here) covers the observability schema contract. There is

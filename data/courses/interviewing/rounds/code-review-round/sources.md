@@ -1,5 +1,5 @@
 ---
-imported_hash: 4fbc96775badd31f
+imported_hash: 9524b6a92ddd3421
 title: Code Review Round — Sources
 summary: ''
 order: 20
@@ -61,7 +61,6 @@ source: sisyphus/interviewing/rounds/code-review-round/sources.md
 | OWASP Secure Code Review Guide | Security-focused review: injection, auth, crypto, error handling | [owasp.org](https://owasp.org/www-project-code-review-guide/) |
 | Dr. Michaela Greiler — Code Reviews at Google | How Google's review process actually works — speed, lightweight, culture | [michaelagreiler.com](https://www.michaelagreiler.com/code-reviews-at-google/) |
 | GetDX — Code Review Checklist | Structured checklist with security, performance, and testing sections | [getdx.com](https://getdx.com/blog/code-review-checklist/) |
-
 
 ## Practice material
 

@@ -1,7 +1,7 @@
 ---
-imported_hash: 5f2d082628462abb
+imported_hash: 28180fb3c5b23bb4
 title: Bug2
-summary: There is a second bug in board.py. Run Test Board and get testsunkrequiresallcells to pass.
+summary: There is a second bug in board.py. Run Test Board and get test_sunk_requires_all_cells to pass.
 order: 1
 kind: reading
 section: Battleship / Solutions

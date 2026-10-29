@@ -1,11 +1,11 @@
 ---
-imported_hash: 618dc591c915f079
+imported_hash: 70bed4844a50e99e
 title: 8 — Harness Maturity and Failure Modes
 summary: Stage 4 remains emerging as of 2026 — treat it as direction, not a target.
 order: 18
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/03-harness/notes/08-maturity-and-failure-modes.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes.md
 ---
 
 # 8 — Harness Maturity and Failure Modes

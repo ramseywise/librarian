@@ -1,5 +1,5 @@
 ---
-imported_hash: 0b7a721fc20f6d88
+imported_hash: b4441dbe568ad3f7
 title: 'Worked Example: 1-Hour Timed Code Test (AIE track)'
 summary: This example walks the 60-minute clock end to end.
 order: 14
@@ -144,7 +144,7 @@ No bare `except: pass` anywhere. A system that fails silently is worse than one 
 
 ## The README submitted
 
-> # Doc QA — retrieval with citations
+> ## Doc QA — retrieval with citations
 >
 > **Run:** `pip install -r requirements.txt && export OPENAI_API_KEY=... && python qa.py "how do I reset a password?"`
 > **Test:** `pytest -q` (3 tests: happy path, empty retrieval, malformed model output)
@@ -156,6 +156,7 @@ No bare `except: pass` anywhere. A system that fails silently is worse than one 
 > **Cost/latency.** 200 docs → 1,847 chunks, ~=0.4M tokens, ~$0.008 to index (cached after first run). Query path: ~1.2s, ~3K tokens, ~$0.002.
 >
 > **What breaks.**
+>
 > 1. **Multi-hop questions** — "compare the refund policy with the exchange policy" needs two retrievals and a synthesis step. Single-shot retrieval returns chunks from one policy and answers confidently from half the picture. *Fix: query decomposition, or an agent loop with a retrieval tool.*
 > 2. **Corpus growth past ~10K chunks** — the in-memory cosine scan is O(n) per query and the `.npy` stops fitting comfortably. *Fix: pgvector or FAISS with an ANN index; the retrieval interface is already isolated in `retrieve()`, so this is a one-function swap.*
 > 3. **Changing the embedding model** — the cache is keyed by path only, so a model swap silently compares vectors from two different spaces. *Fix: version the cache key on the model name.*

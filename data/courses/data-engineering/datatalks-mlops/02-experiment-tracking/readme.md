@@ -1,5 +1,5 @@
 ---
-imported_hash: 07d287e40b66ebdd
+imported_hash: 6656d6dc93f57348
 title: 2. Experiment tracking and model management
 summary: 'Note: in the videos, Cristian uses Jupyter in VS code and runs everything locally'
 order: 4
@@ -76,7 +76,7 @@ Please use model version tags and aliases instead of stages. For example, instea
 
 ## 2.7 Homework
 
-More information [here](../cohorts/2024/02-experiment-tracking/homework.md).
+More information [here](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/cohorts/2024/02-experiment-tracking/homework.md).
 
 
 ## Notes

@@ -1,5 +1,5 @@
 ---
-imported_hash: 8144812fac6121cf
+imported_hash: 4862330d77063070
 title: Typed groupBy
 summary: 'Implement groupBy(items, key): return an object mapping each key to the items that produced it, in input order.'
 order: 3
@@ -15,8 +15,6 @@ wiki:
 - record-types
 source: sisyphus/drills/typescript/types/group-by.md
 ---
-
-# Typed `groupBy`
 
 ## Prompt
 

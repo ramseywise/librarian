@@ -1,5 +1,5 @@
 ---
-imported_hash: a4877d3907c9e167
+imported_hash: 1f744558624c57e5
 title: Operations on word vectors
 summary: Welcome to your first assignment of this week!
 order: 20

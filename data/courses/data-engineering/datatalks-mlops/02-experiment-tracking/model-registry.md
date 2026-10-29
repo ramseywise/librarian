@@ -1,7 +1,7 @@
 ---
-imported_hash: 7157b59ccc6950fd
+imported_hash: 022bc38d861e34f8
 title: Model registry
-summary: MLFLOWTRACKINGURI = "sqlite:///mlflow.db"
+summary: MLFLOW_TRACKING_URI = "sqlite:///mlflow.db"
 order: 7
 kind: notebook
 section: Experiment tracking

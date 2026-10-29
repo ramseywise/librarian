@@ -1,7 +1,7 @@
 ---
-imported_hash: 5e20768e478b7309
+imported_hash: e29a645c62c1c16b
 title: Security & Trust Boundaries
-summary: '+ @router.get("/admin/users/{userid}/export") + async def exportuserdata(userid: int, db: Database = Depends(getdb)): + user = await db.fetchone("SELECT  FROM users WHERE id = :id", {"id": userid}) + return {"data": user, "exportedat": date…'
+summary: '+ @router.get("/admin/users/{user_id}/export") + async def export_user_data(user_id: int, db: Database = Depends(get_db)): + user = await db.fetch_one("SELECT  FROM users WHERE id = :id", {"id": user_id}) + return {"data": user, "exported_a…'
 order: 26
 kind: reading
 section: Code review round / Examples
@@ -13,6 +13,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/security.md
 ## Example 1: Over-permissioned MCP tool config
 
 **The diff**
+
 ```python
 # mcp_servers/data_agent.py
 + tools = [
@@ -47,6 +48,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/security.md
 ## Example 2: Trust boundary violation — untrusted content in system message
 
 **The diff**
+
 ```python
 # agents/support_agent.py
   async def handle_ticket(ticket: SupportTicket):
@@ -77,6 +79,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/security.md
 > **[Blocker]** `support_agent.py:10-12` — Both `ticket.customer_message` (untrusted user input) and `docs` (retrieved content — potentially poisoned) are now interpolated into the **system message**. System messages have highest instruction authority — an injection payload in the customer message or a poisoned doc can now override the agent's behavior at the system level.
 >
 > The previous version was safer: untrusted content was in the user message, where the model treats it as data rather than instructions. Move it back:
+>
 > ```python
 > system="You are a helpful support agent. Answer based on the docs provided.",
 > messages=[
@@ -97,6 +100,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/security.md
 ## Example 3: Missing auth check on new endpoint
 
 **The diff**
+
 ```python
 # api/routes/admin.py
 @router.get("/admin/users")

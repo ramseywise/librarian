@@ -1,7 +1,7 @@
 ---
-imported_hash: b483d0d763093550
+imported_hash: 0a3d0504a1bf3365
 title: Import necessary dependencies
-summary: stopwords = nltk.corpus.stopwords.words('english') stopwords.remove('no') stopwords.remove('but') stopwords.remove('not')
+summary: stop_words = nltk.corpus.stopwords.words('english') stop_words.remove('no') stop_words.remove('but') stop_words.remove('not')
 order: 28
 kind: notebook
 section: Ch09   Sentiment Analysis

@@ -1,5 +1,5 @@
 ---
-imported_hash: 5f0dae8768b9e65f
+imported_hash: 18874863615a5701
 title: Spark sql
 summary: spark = SparkSession.builder \ .master("local[]") \ .appName('test') \ .getOrCreate()
 order: 24

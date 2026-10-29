@@ -1,5 +1,5 @@
 ---
-imported_hash: 5b6954afb58be0db
+imported_hash: 28a60eededf1b43a
 title: Real Tech Interview Question Bank
 summary: This bank contains 23 questions organized into 9 themes.
 order: 87
@@ -11,7 +11,6 @@ source: sisyphus/interviewing/rounds/technical-questions/real-tech-question-bank
 # Real Tech Interview Question Bank
 
 This bank contains 23 questions organized into 9 themes. Each question is a collapsible entry — click to expand the researched answer and its sources. Answers were drafted by parallel research agents that searched the web (Anthropic engineering blog, LangChain/LangSmith, Langfuse, LiteLLM, Braintrust, academic RAG-eval papers, etc.) and the learn-ai-engineering notes for citable material — verify against your own experience before using them verbatim in an interview.
-
 
 ---
 
@@ -31,6 +30,7 @@ The core move is separating the *stable contract* (what my code needs: prompt in
 This mirrors the local repo's harness principle of keeping prompt-engineering artifacts (contracts) decoupled from execution logic (implementations) — the same reasoning applied to model config instead of tool schemas.
 
 **Sources:**
+
 - [LiteLLM — Compatibility & Extensibility](https://docs.litellm.ai/docs/guides/compatibility_extensibility) — unified I/O format across 100+ providers via one call interface.
 - [LangChain — init_chat_model](https://reference.langchain.com/python/langchain/chat_models/base/init_chat_model) — provider-agnostic model initializer with standard kwargs (temperature, timeout, max_tokens).
 - (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/03-tool-design.md`) — "separate the contract from the execution logic via a factory pattern," the same principle applied here to model config.
@@ -50,6 +50,7 @@ Concrete patterns, in order of preference:
 4. **Fail loud in dev, degrade gracefully in prod** — validate the outgoing payload against the target provider's schema before the call in tests/CI; in production, prefer dropping/clamping over crashing the whole agent turn, but log every drop so silent behavior drift is visible.
 
 **Sources:**
+
 - [LiteLLM — Drop Unsupported Params](https://docs.litellm.ai/docs/completion/drop_params) — raises by default on unsupported params; `drop_params=True` strips them instead.
 - [OpenAI Community — o3-mini "Unsupported parameter: temperature"](https://community.openai.com/t/o3-mini-unsupported-parameter-temperature/1140846) — concrete failure mode this design must guard against.
 - [LiteLLM — Provider-specific Params](https://docs.litellm.ai/docs/completion/provider_specific_params) — pattern for passing through non-standard kwargs per provider.
@@ -76,6 +77,7 @@ Accept that the model core stays probabilistic — even `temperature=0` doesn't 
 - **Tight tool design** (clear, non-overlapping tool descriptions) — a large share of "nondeterministic" failures are actually deterministic tool-selection ambiguity that better descriptions fix.
 
 **Sources:**
+
 - [Anthropic — Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — ground truth from the environment at each step, simple composable patterns over complex frameworks.
 - [Charles Sieg — Achieving Determinism with LLM Agents: An Architecture Guide](https://charlessieg.com/articles/achieving-determinism-with-llm-agents-architecture-guide.html) — "deterministic scaffolding around a non-deterministic core"; temperature=0 does not guarantee determinism.
 - (learn-ai-engineering: `ai-engineering/03-harness-engineering/reliable-agents.md`) — Bayer/PRINCE case study: retries at LLM-call and node level, cross-provider fallback, resume-from-failed-node via checkpointing, asymmetric QA, error fed back as context.
@@ -97,6 +99,7 @@ Practical layers, in order I'd stand them up:
 5. **Post-merge**, sample a slice of live traffic for a short window (first 24–48h) for manual/LLM-judge review to catch anything the offline set didn't cover, since three tools is small enough that new interaction patterns in production are the main residual risk.
 
 **Sources:**
+
 - [LangSmith — Trajectory Evals](https://docs.langchain.com/langsmith/trajectory-evals) — grading the sequence of tool calls/messages, not just final output.
 - [Langfuse — AI Agent Evaluation: trajectory, tool calls, and task completion](https://langfuse.com/resources/engineering/ai-agent-evaluation) — outcome vs. trajectory as distinct, both-necessary evaluation axes.
 - (learn-ai-engineering: `ai-engineering/06-eval/notes/01-what-an-eval-is.md`, `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — task/trial/grader structure, code vs. LLM vs. human graders, "run multiple trials because agent behavior is non-deterministic," full review within 48h after a change.
@@ -113,6 +116,7 @@ Practical layers, in order I'd stand them up:
 Yes — unit tests should run on every commit/PR, essentially continuously, because they're the cheap, fast layer of the pyramid and their entire value is fast feedback while the change is still fresh in the developer's head. The rule of thumb I use: **run tests at the same layer as the change, and run the fastest layer as often as physically possible.**
 
 Practically, that means:
+
 - **Unit tests**: on every save locally (watch mode) or at minimum every push/PR — they should run in seconds, so there's no excuse not to run them constantly.
 - **Integration tests**: on every PR/merge to main, since they're heavier but still bounded.
 - **End-to-end / expensive evals** (e.g. full agent trajectory runs against live models): on PR for the specific surface touched, or nightly/pre-release for the full suite — too slow and costly to run on every keystroke.
@@ -120,6 +124,7 @@ Practically, that means:
 For an LLM-agent codebase specifically, this maps onto the eval gate structure directly: cheap deterministic checks (schema validation, metric math, code-based graders) run on every change; LLM-judged and live-traffic evals run on a coarser cadence (per significant change to prompts/workflow/model, or daily as a batch). The general software-engineering test pyramid (roughly 70% unit / 20% integration / 10% E2E) still applies — LLM calls just add a slow, non-deterministic top layer on top of it, not a replacement for the fast bottom layers.
 
 **Sources:**
+
 - [Testsigma — What is Testing Pyramid?](https://testsigma.com/blog/testing-pyramid/) — unit tests on every commit, E2E reserved for release/nightly.
 - [DevRocks — Automated Tests in CI/CD: The Test Pyramid](https://www.devrocks.de/en/blog/automatisierte-tests-cicd-test-pyramide) — unit and integration on every commit because they're fast; E2E gated to PRs into main or nightly.
 - (learn-ai-engineering: `ai-engineering/06-eval/case-study/gate-contract.md`) — "run tests at the same layer as the change," with fast metric/schema tests distinct from slower report-rendering and grader-recalibration runs.
@@ -140,6 +145,7 @@ No — that's an N×cost, N×latency multiplier on every PR for marginal signal,
 This is the same "test at the layer of the change" principle from the previous answer, applied to the provider dimension: cheap and universal on every commit, expensive and full-matrix on a schedule or when the diff specifically touches multi-provider logic.
 
 **Sources:**
+
 - [Hadley Works (dev.to) — LLM Evaluation in CI: Stop Manual Testing Before It Costs You](https://dev.to/hadleyworks/llm-evaluation-in-ci-stop-manual-testing-before-it-costs-you-59i7) — use a cheaper/faster model for PR-time checks, reserve the full/expensive model for release or nightly runs to keep CI feedback fast and cheap.
 - [Digital Applied — LLM Model Routing 2026: Cost-Quality Optimization](https://www.digitalapplied.com/blog/llm-model-routing-2026-cost-quality-optimization-engineering-guide) — sort providers by score/cost to find the tradeoff frontier rather than treating every model as equally worth testing on every change.
 - (learn-ai-engineering: `ai-engineering/06-eval/case-study/gate-contract.md`, Gate 4 "Model And Runtime Comparison") — model/runtime comparison is its own gate, run and exported separately from the fast per-commit metric tests, precisely because it's a coarser-cadence, higher-cost evaluation.
@@ -162,6 +168,7 @@ Instrument every agent call to emit a structured trace, modeled as a **trace tre
 - **Export over OTLP** to a backend (Langfuse, LangSmith, Arize Phoenix, Datadog) for storage and querying.
 
 **Sources:**
+
 - [OpenTelemetry: Inside the LLM Call — GenAI Observability with OpenTelemetry](https://opentelemetry.io/blog/2026/genai-observability/) — span structure and semantic conventions for LLM/agent tracing.
 - [Langfuse Docs — LLM Observability & Application Tracing](https://langfuse.com/docs/observability/overview) — trace/observation/session data model and framework wiring.
 - (learn-ai-engineering: `generative-ai/06-observability/support-agent-observability.md`) — base trace metadata schema and per-framework wiring used in this repo's support-agent system.
@@ -182,6 +189,7 @@ Neither layer works alone — pure LLM-judge scoring drifts without human calibr
 When reading individual traces, don't stop at the aggregate score — walk the **trajectory** to see where it broke: which tool was called, with what arguments, what came back, and where the reasoning diverged from the plan. Aggregate metrics tell you *that* something regressed; traces tell you *why*. Trace-level querying also pays off here — e.g. "show me every trace where two specific tools were both called" or "show me traces where `finish_reason` was `tool_calls` but no final answer followed" — turning debugging into targeted investigation instead of reading transcripts one by one.
 
 **Sources:**
+
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — trajectory vs. outcome grading, reading traces not just scores.
 - [Langfuse — What does a good trace look like?](https://langfuse.com/docs/observability/best-practices) — practical trace-reading and debugging guidance.
 - (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — two-layer manual/LLM-judge evaluation strategy and online sampling rules (negative-feedback triggers, high-cost dialogues, time-window sampling, 48h post-change review).
@@ -206,6 +214,7 @@ Treat the prompt exactly like production code:
 This repo's own support-agent system does this concretely — `prompt_version` and `git_commit` are logged on every trace so any output can be tied back to the exact prompt text and code state that produced it, and prompts are fetched from a managed store (Langfuse) rather than hardcoded.
 
 **Sources:**
+
 - [Langfuse — Prompt CI/CD: version, gate, and roll out prompts like code](https://langfuse.com/resources/engineering/prompt-cicd) — versioning, gating, and rollout workflow for prompts.
 - [Braintrust — Best Prompt Versioning Tools for Production Teams (2026)](https://www.braintrust.dev/articles/best-prompt-versioning-tools-2025) — prompt file/metadata/changelog pattern, PR-based review of prompt diffs.
 - (learn-ai-engineering: `generative-ai/06-observability/support-agent-observability.md`) — `prompt_version` + `git_commit` fields logged on every trace; remote prompt fetch pattern.
@@ -224,6 +233,7 @@ Run the change through the existing eval harness before it ever reaches producti
 Compare old vs. new prompt on the **same fixed dataset** — an A/B or experiment run — rather than eyeballing a handful of examples, and include adversarial/negative cases (injection attempts, out-of-scope requests) so the new prompt isn't just optimizing for the happy path. Gate the merge/deploy on this: block if the pass rate on the regression suite drops beyond a set threshold, and treat any new failing category as a signal to inspect traces before shipping, not after. In this repo's own eval pipeline, model/prompt comparisons are exported with full run metadata (`prompt_version`, retrieval config, sample size) specifically so a prompt change can be diffed against its baseline rather than judged in isolation.
 
 **Sources:**
+
 - [LangSmith CI/CD Integration: Automated Regression Testing](https://markaicode.com/langsmith-cicd-automated-regression-testing/) — PR-triggered eval run, pass/fail gate against a dataset threshold.
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — grading trajectory + outcome, capability vs. regression suite distinction.
 - (learn-ai-engineering: `ai-engineering/06-eval/case-study/harness-patterns.md`, `ai-engineering/06-eval/notes/10-evals-in-ci.md`) — "prompt change confidence," tool-trajectory scoring, two-phase run/assert CI pattern, regression gate example.
@@ -242,6 +252,7 @@ Two mechanisms, run continuously rather than once at ship time:
 Full review of traces for the first 24–48 hours after any prompt or model change is the cheap early-warning layer before drift-alert thresholds would even fire. When a metric drops, **debug the eval system before blaming the prompt** — check for infra errors/timeouts, grader bugs, and whether the drop concentrates in one task category — only then treat it as a real regression.
 
 **Sources:**
+
 - [Galileo — 9 Best LLM Drift Monitoring Platforms](https://galileo.ai/blog/best-llm-output-drift-monitoring-platforms) — production drift monitoring approach and tooling landscape (Arize, Evidently, Phoenix).
 - [Markaicode — LangSmith CI/CD Integration: Automated Regression Testing](https://markaicode.com/langsmith-cicd-automated-regression-testing/) — CI regression gate blocking on pass-rate drop.
 - (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`, `ai-engineering/06-eval/notes/12-failure-modes.md`) — capability→regression eval graduation, "fix the eval system before the agent" debugging order, 48h full-review-after-change rule.
@@ -259,6 +270,7 @@ Accept non-determinism as structural rather than a bug to eliminate — even tem
 - **Run the grader multiple times too** if it's LLM-based, since judge variance stacks on top of generator variance.
 
 **Sources:**
+
 - [QAnswer — Why LLMs Are Not Deterministic Even at Temperature 0](https://www.qanswer.ai/blog/llm-non-determinism-temperature-zero) — sources of residual non-determinism at temp=0.
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — pass@k vs. pass^k definitions and when each applies.
 - (learn-ai-engineering: `ai-engineering/06-eval/notes/06-evaluating-agents.md`) — "run an eval set multiple times instead of once," pass@k / pass^k worked example.
@@ -282,6 +294,7 @@ Design for the **Agent-Computer Interface**, not an API: the model sees only a n
 Anthropic's own guidance converges on the same point from the opposite direction: the dominant failure mode is too many overlapping tools, and cutting tools is often a bigger win than adding better descriptions to bad ones — **tool quality beats tool quantity**.
 
 **Sources:**
+
 - [Anthropic — Writing effective tools for AI agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — namespacing, meaningful context in returns, tool-description as the highest-leverage lever.
 - [Vercel — Build an AI Agent Harness](https://vercel.com/academy/build-ai-agent-harness) — five-section tool contract (what/when/when-not/do-not-use-for/examples).
 - (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/03-tool-design.md`) — ACI framing, the clarity test, four gating questions, schema rules, write-operation safety.
@@ -300,6 +313,7 @@ Introduce skills when a capability needs to be **reused across many invocations 
 Skills work best layered on top of a small, sharp tool set — they make the *reasoning about how to combine tools* procedural, without bloating the tools themselves.
 
 **Sources:**
+
 - [Anthropic — Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — progressive disclosure, avoiding prompt sprawl, skills as reusable/auditable capability modules.
 - (learn-ai-engineering: `ai-engineering/03-harness-engineering/skills-design.md`) — description-as-routing-logic, token cost vs. routing precision, templates-inside-skill pattern.
 - (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/03-tool-design.md`) — "loading every tool/MCP server at startup degrades performance before the agent starts working," motivating progressive disclosure via skills.
@@ -318,6 +332,7 @@ No — skills are **additive to tools**, not a replacement for the agent/tool la
 So the right mental model isn't "skills vs. tools" but "skills sit above tools, and are worth the token/complexity cost only once combining tools well becomes the hard problem."
 
 **Sources:**
+
 - [Anthropic — Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — skills as composable capabilities layered on existing agent/tool infrastructure, not a replacement for it.
 - (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/07-orchestration.md`) — "what matters is tool quality, not tool quantity"; skills close the gap between single tool invocation and multi-tool orchestration without bloating system prompts.
 
@@ -334,6 +349,7 @@ Start from Anthropic's core guidance: find the simplest structure that solves th
 - **Separate agent** when the task genuinely needs open-ended, model-driven control over its own process — the number of steps can't be predicted in advance, the agent must adapt its plan based on environment feedback, or a distinct trust/tool boundary (least-privilege scoping, isolated context) is required. This is the most expensive option in latency, cost, and predictability, so it should be the last one reached for, and Anthropic explicitly frames "not building agentic systems at all" as a legitimate outcome of this evaluation.
 
 **Sources:**
+
 - [Anthropic — Building Effective AI Agents](https://www.anthropic.com/engineering/building-effective-agents) — workflows-vs-agents distinction, "find the simplest solution possible," cost/latency trade-off of agentic autonomy.
 - [Anthropic — Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — skills as the reusable-procedure layer distinct from both tools and agents.
 - (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/03-tool-design.md`) — MCP vs. in-process decision table, applicable to the tool/skill boundary question by analogy (promote complexity only when a specific condition holds, not in anticipation).
@@ -358,6 +374,7 @@ Never let a tool dump its full payload into the window — treat the boundary be
 The unifying principle: return what the agent needs to *decide*, not everything the operation *could* produce. A tool that returns 50k tokens of raw output defeats the point of selective retrieval and just re-introduces the bulk-loading problem one layer down.
 
 **Sources:**
+
 - [Anthropic — Writing effective tools for AI agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — pagination/truncation/filtering guidance, 25k-token default, MCP `maxResultSizeChars` annotation.
 - [Arize AI — Context management in agent harnesses](https://arize.com/blog/context-management-in-agent-harnesses/) — memory, files, and subagent patterns for bounding context.
 - (learn-ai-engineering: `ai-engineering/02-context-engineering/notes/04-retrieval.md`) — just-in-time context and identifier-vs-payload cost tradeoff.
@@ -380,6 +397,7 @@ For **industry variation**: build per-customer or per-vertical eval sets seeded 
 For **language variation**: don't assume an English-tuned pipeline or English-only judge generalizes — retrieval quality, chunking, and embedding models can degrade non-uniformly across languages, and off-the-shelf frameworks like RAGAS have historically had thin non-English support (question generation in RAGAS v2 dropped the multilingual adapter that existed in v1). Practical approach: evaluate faithfulness/relevance with native-language judges or human review per language, watch for language-mismatch as its own failure mode (answer language ≠ query language), and consider starting new checks as **log-only diagnostics** before they become hard gates — exactly what one production system in this repo did for a Danish/English support agent, where over-aggressive grounding checks in a multilingual, paraphrase-heavy context caused excessive false escalations.
 
 **Sources:**
+
 - [MEMERAG: Multilingual End-to-End Meta-Evaluation Benchmark for RAG](https://arxiv.org/html/2502.17163v2) — native-language QA and expert annotation approach for multilingual RAG eval.
 - [Multi-lingual support for question generation in Ragas v2 — GitHub issue](https://github.com/vibrantlabsai/ragas/issues/1732) — documents the gap in current multilingual tooling.
 - (learn-ai-engineering: `generative-ai/06-observability/support-agent-observability.md`) — grounding tier promotion policy and log-only phase for a multilingual (Danish/English) support agent.
@@ -400,6 +418,7 @@ First, resist the urge to touch the model or prompt — go get the trace. "Bad" 
 Every confirmed failure becomes a new row in the eval set so it can't silently regress again.
 
 **Sources:**
+
 - [The RAG Debugging Playbook — DEV Community](https://dev.to/kuldeep_paul/the-rag-debugging-playbook-a-step-by-step-guide-to-trace-level-failures-and-fixes-56pa) — trace-level failure localization across data/retrieval/generation/pipeline layers.
 - [RAG Fails Silently: Debugging Retrieval, Citations, and Unsupported Claims — Towards AI](https://pub.towardsai.net/rag-fails-silently-debugging-retrieval-citations-and-unsupported-claims-aa6f730b730a) — evidence that generation-side grounding failure, not retrieval, is often the primary cause.
 - (learn-ai-engineering: `ai-engineering/06-eval/notes/12-failure-modes.md`) — "fix the evaluation system before changing the agent" practical debugging order (infra → traces → category concentration → agent).
@@ -421,6 +440,7 @@ Trustworthiness comes from where the rows originate and how disagreement is hand
 7. **Keep expanding the frontier** — once pass rate saturates, it usually means the suite stopped exposing new failure modes, not that the system is solved; keep adding newly discovered production failures.
 
 **Sources:**
+
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — start small with real failures, positive/negative case design, environment reset, saturation signal.
 - [LangChain — Agent evaluation readiness checklist](https://www.langchain.com/blog/agent-evaluation-readiness-checklist) — ruling out infra/data issues, trace inspection for grader fairness.
 - (learn-ai-engineering: `ai-engineering/06-eval/eval-engineering.md`) — the full "collect real failures → clear criteria → isolated tasks → repeated trials → code/model/human grading → inspect traces → expand" pipeline.
@@ -438,12 +458,14 @@ Trustworthiness comes from where the rows originate and how disagreement is hand
 Collect both, because they cover different populations and biases. **Explicit** signals — thumbs up/down, star ratings, free-text corrections, "was this helpful" — are cheap to read and directly labeled, but only 1–3% of users ever leave one, and those who do skew toward extreme (very happy / very angry) experiences, so they're a biased sample. **Implicit** signals cover effectively 100% of traffic: query rephrasing/reformulation within a session (a strong proxy for "the last answer didn't work"), conversation abandonment, follow-up "that's wrong" turns, copy actions, session return rate, escalation to a human, and — where available — dwell time or click-through on cited sources.
 
 Practically, this means instrumenting the product itself, not just the model call:
+
 - A feedback UI (thumbs, correction box) wired to the trace ID of the turn it applies to, so a rating is always attachable to the exact query/retrieval/answer that produced it.
 - Full tracing on every turn (prompt, retrieved passages, tool calls, final output, tokens/latency) — signals are worthless without the trace they refer to.
 - Rule-based online sampling rather than pure random sampling: prioritize traces with negative feedback, unusually long/high-token dialogues (often circling/failure), and a fixed time-window random sample for baseline coverage; do a full review pass in the 48 hours after any prompt or model change.
 - Escalation and "contact support" flags as a structured implicit signal, since they mark exactly where the system judged itself unable to help.
 
 **Sources:**
+
 - [Eugene Yan — Patterns for Building LLM-based Systems & Products](https://eugeneyan.com/writing/llm-patterns/) — explicit vs. implicit feedback UX and their role in building eval/fine-tuning datasets.
 - [Nebuly — User intent and implicit feedback in conversational AI](https://www.nebuly.com/blog/explicit-implicit-llm-user-feedback-quick-guide) — explicit feedback capturing only 1–3% of users vs. 100% implicit coverage; rephrasing as a failure signal.
 - (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — online sampling rules (negative-feedback triggering, high-cost dialogues, time-window sampling, post-change full review).
@@ -464,6 +486,7 @@ The signals are raw material; turning them into trustworthy eval rows takes a de
 6. **Version and re-run periodically** — as the underlying corpus and model change, previously-negative rows may need re-validation, and the dataset should keep absorbing newly observed failures rather than freezing at v1.
 
 **Sources:**
+
 - [Microsoft Data Science + AI — Beyond thumbs up and thumbs down: A human-centered approach to evaluation design](https://medium.com/data-science-at-microsoft/beyond-thumbs-up-and-thumbs-down-a-human-centered-approach-to-evaluation-design-for-llm-products-d2df5c821da5) — limits of raw explicit ratings and need for human-centered labeling.
 - [Eugene Yan — Patterns for Building LLM-based Systems & Products](https://eugeneyan.com/writing/llm-patterns/) — feedback → eval/fine-tuning dataset pipeline, organizational discipline of sample→annotate→improve.
 - (learn-ai-engineering: `ai-engineering/06-eval/notes/03-eval-datasets.md`) — positive/negative case design, "include both to test capability and restraint," failure-seeded eval rows.
@@ -490,6 +513,7 @@ Signals to cross-check against each other, rather than trusting any single one:
 The right way to actually answer this for a specific scenario is the same triage used for "results are bad": pull traces, segment by failure category, and let the concentration of a specific signal (e.g. escalation spikes on one intent, or rephrasing spikes on one document type) point to the root cause rather than assuming from the aggregate metric alone.
 
 **Sources:**
+
 - [Nick Talwar — 6 things your AI agents need that most teams skip](https://nicktalwar.substack.com/p/6-things-your-ai-agents-need-that) — drift monitoring via baseline-vs-production scoring gap as a concrete regression signal.
 - [Nebuly — User intent and implicit feedback in conversational AI](https://www.nebuly.com/blog/explicit-implicit-llm-user-feedback-quick-guide) — rephrasing/abandonment as implicit failure signals.
 - (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — rule-based sampling on negative feedback and high-cost/long dialogues as failure-concentration signals.

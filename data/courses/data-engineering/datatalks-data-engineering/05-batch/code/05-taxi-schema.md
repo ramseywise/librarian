@@ -1,7 +1,7 @@
 ---
-imported_hash: 0c30c3acf8ccb5f8
+imported_hash: 90f79fe98f87b40a
 title: Taxi schema
-summary: yellowschema = types.StructType([ types.StructField("VendorID", types.IntegerType(), True), types.StructField("tpeppickupdatetime", types.TimestampType(), True), types.StructField("tpepdropoffdatetime", types.TimestampType(), True), types.S…
+summary: yellow_schema = types.StructType([ types.StructField("VendorID", types.IntegerType(), True), types.StructField("tpep_pickup_datetime", types.TimestampType(), True), types.StructField("tpep_dropoff_datetime", types.TimestampType(), True), ty…
 order: 23
 kind: notebook
 section: Batch / Code

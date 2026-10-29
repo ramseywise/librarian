@@ -1,5 +1,5 @@
 ---
-imported_hash: d3e93e3023032960
+imported_hash: c9a6998788b5dc1d
 title: Pillar 6 — Evals & Observability
 summary: How you know an AI system works — and keeps working.
 order: 14
@@ -50,6 +50,7 @@ real answer.
 | two-layer eval calibration · agentic lifecycle evals | image | [../../images/](../../images/) | human/LLM grading loop diagrams |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [system-design-round](../../rounds/system-design-round/readme.md) ("how do you know it works?"),
 [project-deep-dive](../../rounds/project-deep-dive/readme.md) (the measurement story).

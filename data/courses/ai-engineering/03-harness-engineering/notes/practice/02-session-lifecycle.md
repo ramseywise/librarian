@@ -1,11 +1,11 @@
 ---
-imported_hash: 8ed5d55c8710af8b
+imported_hash: b37231b897fd3055
 title: P2 — The Session Lifecycle
 summary: Initialization and implementation optimize different things.
 order: 20
 kind: reading
 section: Notes / Practice
-source: learn-ai-engineering/ai-engineering/03-harness/notes/practice/02-session-lifecycle.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/practice/02-session-lifecycle.md
 ---
 
 # P2 — The Session Lifecycle

@@ -1,11 +1,11 @@
 ---
-imported_hash: 5c1965732e37e95a
+imported_hash: 615df3a8e6cc6632
 title: 8 — Cognitive Tools and Prompt Programs
 summary: The key design choice is that each tool runs in its own context.
 order: 12
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/02-context/notes/08-cognitive-tools.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/08-cognitive-tools.md
 ---
 
 # 8 — Cognitive Tools and Prompt Programs
@@ -102,7 +102,7 @@ def self_correct(problem, max_iter=3):
     return solution
 ```
 
-Bound the loop. Verification by the same model shares its blind spots, so loops beyond 2–3 iterations rarely help, and the model can "fix" a correct answer into a wrong one. Where a ground-truth check exists (tests, a calculator, a schema validator), use it instead of a model verifier. See [loop engineering](../../04-loop/loop-engineering.md).
+Bound the loop. Verification by the same model shares its blind spots, so loops beyond 2–3 iterations rarely help, and the model can "fix" a correct answer into a wrong one. Where a ground-truth check exists (tests, a calculator, a schema validator), use it instead of a model verifier. See [loop engineering](../../04-loop-engineering/loop-engineering.md).
 
 ---
 

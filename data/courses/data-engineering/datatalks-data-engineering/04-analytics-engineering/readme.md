@@ -1,7 +1,7 @@
 ---
-imported_hash: fa0b378cbd04bf5e
+imported_hash: fd49f4d2737729a1
 title: 'Week 4: Analytics Engineering'
-summary: ':moviecamera: Google data studio Video (Now renamed to Looker studio)'
+summary: ':movie_camera: Google data studio Video (Now renamed to Looker studio)'
 order: 16
 kind: reading
 section: Analytics engineering
@@ -35,7 +35,7 @@ By this stage of the course you should have already:
 ---|---|
 | Setting up dbt for using BigQuery (cloud) | Setting up dbt for using Postgres locally  |
 |- Open a free developer dbt cloud account following [this link](https://www.getdbt.com/signup/)|- Open a free developer dbt cloud account following [this link](https://www.getdbt.com/signup/)<br><br> |
-| - [Following these instructions to connect to your BigQuery instance]([https://docs.getdbt.com/docs/dbt-cloud/cloud-configuring-dbt-cloud/cloud-setting-up-bigquery-oauth](https://docs.getdbt.com/guides/bigquery?step=4)) | - follow the [official dbt documentation]([https://docs.getdbt.com/dbt-cli/installation](https://docs.getdbt.com/docs/core/installation-overview)) or <br>- follow the [dbt core with BigQuery on Docker](docker-setup/readme.md) guide to setup dbt locally on docker or <br>- use a docker image from oficial [Install with Docker](https://docs.getdbt.com/docs/core/docker-install). |
+| - [Following these instructions to connect to your BigQuery instance](https://docs.getdbt.com/guides/bigquery?step=4) | - follow the [official dbt documentation](https://docs.getdbt.com/docs/core/installation-overview) or <br>- follow the [dbt core with BigQuery on Docker](docker-setup/readme.md) guide to setup dbt locally on docker or <br>- use a docker image from oficial [Install with Docker](https://docs.getdbt.com/docs/core/docker-install). |
 |- More detailed instructions in [dbt_cloud_setup.md](dbt-cloud-setup.md)  | - You will need to install the latest version with the BigQuery adapter (dbt-bigquery).|
 | | - You will need to install the latest version with the postgres adapter (dbt-postgres).|
 | | After local installation you will have to set up the connection to PG in the `profiles.yml`, you can find the templates [here](https://docs.getdbt.com/docs/core/connect-data-platform/postgres-setup) |

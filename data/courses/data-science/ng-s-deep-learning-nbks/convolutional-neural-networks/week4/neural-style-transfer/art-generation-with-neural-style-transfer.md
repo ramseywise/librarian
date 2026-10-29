@@ -1,5 +1,5 @@
 ---
-imported_hash: 06251db6bb00db15
+imported_hash: 7364a5b5001430bd
 title: 'Deep Learning & Art: Neural Style Transfer'
 summary: Updated for TF 2.x compatibility using tf.compat.v1 (Phase 1).
 order: 6

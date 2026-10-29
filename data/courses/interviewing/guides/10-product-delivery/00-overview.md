@@ -1,5 +1,5 @@
 ---
-imported_hash: 66dca61da45f0d9a
+imported_hash: 05dd3ff41532d91a
 title: Pillar 10 — Product & Delivery (business sense, end-to-end, nonprofit lens)
 summary: 'The last mile: connecting technical work to outcomes — framing problems, ROI arithmetic, stakeholder translation, and bringing projects end to end, especially in mission-driven organizations.'
 order: 29
@@ -46,6 +46,7 @@ the nonprofit sector) and the differentiator for FDE/DS roles.
 | FDE loop research (F4) | doc | `.claude/docs/plans/2026-07-17-interview-kb-consolidation.md` | what customer-facing loops actually weigh |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [case-study](../../rounds/case-study/readme.md),
 [customer-simulation](../../rounds/customer-simulation/readme.md),

@@ -1,5 +1,5 @@
 ---
-imported_hash: b9214cb990e0c065
+imported_hash: 4e663847c27b2a72
 title: System Design — Decision Tree
 summary: Pillar 9, detailed note 4. The middle layer between the 5-step process (too abstract under pressure — "design the components") and the pillar guides (too deep — 127 lines on RAG when you have 40 seconds).
 order: 25
@@ -23,7 +23,7 @@ different retrieval operations, and only the second one is what a design round a
 **The trunk lives in the round's [study guide](../../rounds/system-design-round/study-guide.md)** —
 one fork, memorized, that picks your spine. You walk exactly one spine per interview.
 
-```
+```text
 "Design X for Y" → clarify → WHAT KIND OF SYSTEM IS THIS?
   ├─ looks things up in documents ──→ RAG spine
   ├─ takes multi-step actions ──────→ AGENT spine
@@ -45,7 +45,7 @@ Nodes deliberately repeat across spines (eval and guardrails appear in all four)
 
 ---
 
-# RAG spine
+## RAG spine
 
 Knowledge lookup: document QA, support search, internal-knowledge assistants.
 
@@ -54,6 +54,7 @@ Knowledge lookup: document QA, support search, internal-knowledge assistants.
 **Fork:** vector-only · hybrid (BM25 + vector) · graph
 
 **Ask:** "Are queries semantic paraphrases, or do they name exact entities, IDs, error codes?"
+
 - paraphrases only → vector-only (simplest; *defend* the simplicity)
 - mixed / jargon / product codes → **hybrid + reranker** (the safe default)
 - relationships, multi-hop → graph or graph+RAG
@@ -68,11 +69,12 @@ misses paraphrase. Reranker on top, and I'd measure whether it earns its latency
 
 **Deeper:** [RAG guide §1–3](../3-rag/interview-guide.md) · [rag-system](../../rounds/system-design-round/examples/rag-system.md)
 
-### R2. Chunking
+#### R2. Chunking
 
 **Fork:** fixed-size · semantic/recursive · parent-document
 
 **Ask:** "Are the documents structured — headings, sections — or flat prose?"
+
 - flat prose → fixed-size with overlap
 - structured → recursive on the structure
 - answers need surrounding context → parent-document (retrieve small, return large)
@@ -88,11 +90,12 @@ split the fact.
 
 **Deeper:** [RAG guide §2](../3-rag/interview-guide.md)
 
-### R3. Freshness
+#### R3. Freshness
 
 **Fork:** batch re-index · incremental upsert · read-through
 
 **Ask:** "How stale can an answer be before it's wrong — a day, a minute, never?"
+
 - day → nightly batch (cheapest)
 - minute → incremental upsert on write
 - never → read-through to source of truth, RAG for navigation only
@@ -104,11 +107,12 @@ then read the live record."
 
 **Deeper:** [RAG guide §4](../3-rag/interview-guide.md)
 
-### R4. Grounding
+#### R4. Grounding
 
 **Fork:** citation enforcement · grounding score · CRAG retry gate
 
 **Ask:** "What's the cost of a confident wrong answer here?"
+
 - low → citations, let the user judge
 - high → grounding score + refuse below threshold
 - regulated → CRAG (grade retrieval, retry or escalate before generating)
@@ -120,7 +124,7 @@ escalation path beats a fluent wrong answer."
 
 ---
 
-# AGENT spine
+## AGENT spine
 
 Multi-step action: support agents that *do* things, coding agents, workflow automation.
 
@@ -129,6 +133,7 @@ Multi-step action: support agents that *do* things, coding agents, workflow auto
 **Fork:** single agent · multi-agent
 
 **Ask:** "Can one context hold all the tools and instructions this needs?"
+
 - yes → **single agent** (default — defend the simplicity)
 - no, and the domains are genuinely separate → multi-agent
 
@@ -142,11 +147,12 @@ failure cascading silently.
 
 **Deeper:** [Agents §7](../4-agents/interview-guide.md) · [agent-system](../../rounds/system-design-round/examples/agent-system.md)
 
-### A2. Agent loop or pipeline?
+#### A2. Agent loop or pipeline?
 
 **Fork:** deterministic pipeline · state machine · autonomous agent loop
 
 **Ask:** "Are the steps known in advance?"
+
 - yes → **pipeline** (cheaper, testable, predictable)
 - mostly, with branches → state machine
 - genuinely unknown → agent loop, and pay for it deliberately
@@ -161,11 +167,12 @@ from day one.
 
 **Deeper:** [Agents §1–2](../4-agents/interview-guide.md)
 
-### A3. Tool design
+#### A3. Tool design
 
 **Fork:** read tools · write tools
 
 **Ask:** "Can this tool mutate anything the user would care about?"
+
 - read → freely available
 - write → separate tool, explicit schema, approval gate for high-risk
 
@@ -177,11 +184,12 @@ model — poka-yoke the arguments so misuse is impossible.
 
 **Deeper:** [Agents §3](../4-agents/interview-guide.md)
 
-### A4. State or memory?
+#### A4. State or memory?
 
 **Fork:** workflow state · long-term memory
 
 **Ask:** "Does this need to survive the session?"
+
 - no → workflow state (checkpointer: Redis/Postgres)
 - yes → memory store, with retrieval precision over recall
 
@@ -193,11 +201,12 @@ by default."
 
 **Deeper:** [Agents §6](../4-agents/interview-guide.md) · [meeting-processor](../../rounds/system-design-round/examples/meeting-processor.md)
 
-### A5. Where do humans gate it?
+#### A5. Where do humans gate it?
 
 **Fork:** full auto · propose-then-approve · human-in-the-loop throughout
 
 **Ask:** "Which actions are irreversible, financial, or externally visible?"
+
 - none → full auto with logging
 - some → propose → code validates → human approves → execute
 - most → HITL queue with batch review
@@ -209,7 +218,7 @@ deterministic code validates, and the human approves anything irreversible."
 
 ---
 
-# ML spine
+## ML spine
 
 Prediction, ranking, scoring: churn, recommendations, forecasting, fraud, feed ranking.
 
@@ -218,6 +227,7 @@ Prediction, ranking, scoring: churn, recommendations, forecasting, fraud, feed r
 **Fork:** rules/heuristic · classical ML · deep learning · LLM
 
 **Ask:** "What's the business decision this changes, and is there a labeled signal for it?"
+
 - clear rules, no labels → heuristic baseline first
 - tabular + labels → classical ML (gradient boosting is the honest default)
 - unstructured input → DL or LLM
@@ -229,11 +239,12 @@ beat, and sometimes it doesn't need beating."
 
 **Deeper:** [03-ml-system-design.md](03-ml-system-design.md) · [Foundations](../1-foundations/interview-guide.md)
 
-### M2. Framing the ML problem
+#### M2. Framing the ML problem
 
 **Fork:** classification · regression · ranking · anomaly detection
 
 **Ask:** "What does the system *output*, and what does someone *do* with it?"
+
 - a decision → classification (pick the threshold with them, out loud)
 - a number → regression
 - an ordering → ranking (and the metric is not accuracy)
@@ -244,11 +255,12 @@ optimize NDCG or recall@k depending on how many slots the surface has."
 
 **Deeper:** [03-ml-system-design.md](03-ml-system-design.md) §2 · [Foundations](../1-foundations/interview-guide.md)
 
-### M3. Metric choice
+#### M3. Metric choice
 
 **Fork:** precision-weighted · recall-weighted · calibrated probability
 
 **Ask:** "Which is worse — a false positive or a false negative?"
+
 - FP worse (spam, moderation) → precision, high threshold
 - FN worse (fraud, disease) → recall, accept the review load
 - the score feeds a downstream decision → calibration matters more than either
@@ -260,11 +272,12 @@ threshold, and it's a product question as much as a modeling one."
 
 **Deeper:** [Foundations](../1-foundations/interview-guide.md)
 
-### M4. Training & serving
+#### M4. Training & serving
 
 **Fork:** batch scoring · online inference · streaming features
 
 **Ask:** "How fresh do the features need to be at prediction time?"
+
 - daily is fine → batch, write to a table
 - request-time → online inference + feature store
 - sub-minute signals → streaming features (and accept the complexity)
@@ -276,11 +289,12 @@ online serving and a feature store if the freshness requirement demands it."
 
 **Deeper:** [Data eng §1–2](../8-data-eng-mlops/interview-guide.md) · [forecasting-agent](../../rounds/system-design-round/examples/forecasting-agent.md)
 
-### M5. Drift & retraining
+#### M5. Drift & retraining
 
 **Fork:** scheduled retrain · triggered retrain · monitor-only
 
 **Ask:** "How fast does the world this model describes change?"
+
 - seasonal → scheduled
 - shock-prone (fraud, abuse) → triggered on drift alarm
 - stable → monitor, retrain when it degrades
@@ -292,7 +306,7 @@ production traffic — drift alerts on divergence, not on a calendar."
 
 ---
 
-# PIPELINE spine
+## PIPELINE spine
 
 Event transformation: ingestion, ETL, meeting/document processing, enrichment.
 
@@ -301,6 +315,7 @@ Event transformation: ingestion, ETL, meeting/document processing, enrichment.
 **Fork:** scheduled batch · event-driven · streaming
 
 **Ask:** "What starts the work — a clock, a message, or a continuous feed?"
+
 - clock → batch (simplest, most debuggable)
 - discrete events → event-driven (queue + workers)
 - continuous → streaming
@@ -314,11 +329,12 @@ batch failures are far easier to reason about and replay."
 
 **Deeper:** [Data eng §1](../8-data-eng-mlops/interview-guide.md) · [meeting-processor](../../rounds/system-design-round/examples/meeting-processor.md)
 
-### P2. Delivery guarantees
+#### P2. Delivery guarantees
 
 **Fork:** at-most-once · at-least-once · effectively-once
 
 **Ask:** "What happens if this runs twice on the same input?"
+
 - harmless → at-least-once with retries (usually right)
 - duplicates visible to users → idempotent handlers keyed on a request ID
 - financial → effectively-once with a dedup table
@@ -330,11 +346,12 @@ mostly a marketing term, so I'd make the handler safe to re-run instead."
 
 **Deeper:** [Data eng §1](../8-data-eng-mlops/interview-guide.md) · [01-distributed-systems.md](01-distributed-systems.md)
 
-### P3. Failure handling
+#### P3. Failure handling
 
 **Fork:** fail-fast · retry with backoff · dead-letter queue
 
 **Ask:** "Is failure here transient or structural?"
+
 - transient (rate limit, timeout) → backoff retry
 - structural (bad payload) → dead-letter queue + alert, don't retry forever
 - both → retry N times, then DLQ
@@ -346,11 +363,12 @@ the DLQ a single bad payload blocks the pipeline."
 
 **Deeper:** [01-distributed-systems.md](01-distributed-systems.md)
 
-### P4. State ownership
+#### P4. State ownership
 
 **Fork:** stateless workers · sole-writer state machine · distributed transaction
 
 **Ask:** "Can two workers touch the same record at once?"
+
 - no → stateless workers (scale freely)
 - yes → sole-writer state machine, one owner per record
 - across services → saga/compensation, not a distributed transaction
@@ -364,7 +382,7 @@ concurrent partial writes are the bug you can't reproduce."
 
 ---
 
-# Cross-cutting (every spine)
+## Cross-cutting (every spine)
 
 Repeated here on purpose — these come up in all four, and jumping to a shared section
 mid-interview is how you forget them.
@@ -377,7 +395,7 @@ mid-interview is how you forget them.
 | What's the blast radius? | Least privilege, untrusted input never reaches a dangerous sink | [Security §2–3](../7-security-safety/interview-guide.md) |
 | What happens at 10×? | Name the bottleneck *before* they ask | [Round study guide §4](../../rounds/system-design-round/study-guide.md) |
 
-## Test yourself
+### Test yourself
 
 Walk one spine end to end, out loud, against a classic prompt — 8 minutes per step:
 

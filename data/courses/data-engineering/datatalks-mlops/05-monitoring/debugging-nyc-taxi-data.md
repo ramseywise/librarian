@@ -1,7 +1,7 @@
 ---
-imported_hash: 7dbe97c877d0240a
+imported_hash: 877b64b41c2a44f4
 title: Debugging with Evidently Test Suites and Reports
-summary: from evidently import ColumnMapping from evidently.report import Report from evidently.metricpreset import DataDriftPreset
+summary: from evidently import ColumnMapping from evidently.report import Report from evidently.metric_preset import DataDriftPreset
 order: 28
 kind: notebook
 section: Monitoring

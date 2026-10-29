@@ -1,5 +1,5 @@
 ---
-imported_hash: 981fed97ea8dbab3
+imported_hash: 9bbf344655fc511b
 title: 'Week 5: Batch Processing'
 summary: And follow this to run PySpark in Jupyter
 order: 20
@@ -113,7 +113,7 @@ Script to prepare the Dataset [download_data.sh](code/download_data.sh)
 
 # Homework
 
-* [2024 Homework](../cohorts/2024/05-batch/homework.md)
+* [2024 Homework](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2024/05-batch/homework.md)
 
 
 # Community notes

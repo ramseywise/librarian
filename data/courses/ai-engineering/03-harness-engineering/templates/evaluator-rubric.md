@@ -1,11 +1,11 @@
 ---
-imported_hash: 756d78dfcd88c2ba
+imported_hash: 11ab6cb03957adb5
 title: Evaluator Rubric
 summary: Use this rubric after implementation and before final acceptance.
 order: 25
 kind: reading
 section: Templates
-source: learn-ai-engineering/ai-engineering/03-harness/templates/evaluator-rubric.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/evaluator-rubric.md
 ---
 
 # Evaluator Rubric

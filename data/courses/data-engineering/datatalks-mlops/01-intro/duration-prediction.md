@@ -1,7 +1,7 @@
 ---
-imported_hash: 4aad65b6dad4fc4e
+imported_hash: 367a5ff1ccd91772
 title: Duration prediction
-summary: from sklearn.metrics import rootmeansquarederror
+summary: from sklearn.metrics import root_mean_squared_error
 order: 3
 kind: notebook
 section: Intro

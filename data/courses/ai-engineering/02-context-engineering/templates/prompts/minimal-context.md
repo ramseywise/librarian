@@ -1,11 +1,11 @@
 ---
-imported_hash: 05d082c865d281ef
+imported_hash: 0d76b26e74eea49b
 title: Minimal Context Template
 summary: 'This template is ideal for: - First-time interactions with AI systems - Well-defined tasks with clear deliverables - Situations where minimizing prompt length is important - Establishing a baseline for more complex prompts'
-order: 22
+order: 24
 kind: reading
 section: Templates / Prompts
-source: learn-ai-engineering/ai-engineering/02-context/templates/prompts/minimal_context.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/templates/prompts/minimal_context.md
 ---
 
 # Minimal Context Template

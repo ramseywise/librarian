@@ -1,7 +1,7 @@
 ---
-imported_hash: ad9d09568f63070f
+imported_hash: 31d8276d570493d4
 title: Correctness & Interfaces
-summary: 'try: result = await self.executetool(toolcall) - state.messages.append({"role": "tool", "content": result}) except Exception as e: - state.messages.append({"role": "tool", "content": f"Error: {e}"}) - state.errorcount += 1 - if state.errorc…'
+summary: 'try: result = await self.execute_tool(tool_call) - state.messages.append({"role": "tool", "content": result}) except Exception as e: - state.messages.append({"role": "tool", "content": f"Error: {e}"}) - state.error_count += 1 - if state.err…'
 order: 25
 kind: reading
 section: Code review round / Examples
@@ -13,6 +13,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/correctness.md
 ## Example 1: Tool schema drift — agent can't call updated tool
 
 **The diff**
+
 ```python
 # tools/search_tool.py
 - def search_documents(query: str) -> list[Document]:
@@ -48,9 +49,11 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/correctness.md
 > **[Blocker]** `tool_registry.py` — The tool schema wasn't updated to include the new `filters` parameter, but `search_documents()` now requires it (no default value). When the agent calls this tool with just `{"query": "..."}`, it will get a `TypeError: missing required argument 'filters'`.
 >
 > Either add `filters` to the schema:
+>
 > ```python
 > "filters": {"type": "object", "description": "Metadata filters (e.g. {'department': 'engineering'})", "default": {}}
 > ```
+>
 > Or make `filters` optional in the function: `filters: dict | None = None`
 >
 > **[Warning]** — The `top_k` parameter exists in the function but not in the schema. The agent can't use it. If it's intentionally hidden, document why; if it should be exposed, add it to the schema with a sensible description.
@@ -64,6 +67,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/correctness.md
 ## Example 2: Swallowed error in agent loop — silent failure on tool call
 
 **The diff**
+
 ```python
 # agents/research_agent.py
   async def run_step(self, state: AgentState) -> AgentState:
@@ -92,6 +96,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/correctness.md
 > **[Blocker]** `research_agent.py:10-12` — The error counter and circuit breaker were removed. Without them, a persistently failing tool (API down, bad credentials, rate-limited) causes an infinite loop — the agent keeps calling, keeps getting the fake success, keeps building on nothing. This is a denial-of-wallet risk.
 >
 > The error message to the model should be honest. The agent can recover from knowing a tool failed; it can't recover from false data:
+>
 > ```python
 > except Exception as e:
 >     result = f"Tool '{tool_call.name}' failed: {e}. Try a different approach."
@@ -107,6 +112,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/correctness.md
 ## Example 3: Schema drift — callers not updated
 
 **The diff**
+
 ```typescript
 // api/users.ts
 export interface UserResponse {

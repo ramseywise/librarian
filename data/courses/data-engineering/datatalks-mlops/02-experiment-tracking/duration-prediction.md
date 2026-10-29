@@ -1,7 +1,7 @@
 ---
-imported_hash: 3e620d604b33b3c6
+imported_hash: f0d8d49249c0d0ab
 title: Duration prediction
-summary: from sklearn.metrics import meansquarederror
+summary: from sklearn.metrics import mean_squared_error
 order: 5
 kind: notebook
 section: Experiment tracking

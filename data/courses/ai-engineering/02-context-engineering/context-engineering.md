@@ -1,10 +1,10 @@
 ---
-imported_hash: fadcbaf6b9ae85ac
+imported_hash: f44bd6befd4ed26d
 title: Context Engineering
 summary: 'Context engineering is the second layer: context contains prompts, and the harness assembles context.'
 order: 2
 kind: reading
-source: learn-ai-engineering/ai-engineering/02-context/context-engineering.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/context-engineering.md
 ---
 
 # Context Engineering
@@ -67,7 +67,7 @@ The full chapter index, with what each covers, is in the [README](readme.md#topi
 
 Once you are deciding *what* is in the window rather than *how* to phrase what's already there, you are in context engineering.
 
-Reciprocally, the context ↔ harness boundary: once the assembly becomes stateful and conditional — a loop that decides *when* to retrieve, compact, or spawn — you have crossed into [03-harness](../03-harness/readme.md).
+Reciprocally, the context ↔ harness boundary: once the assembly becomes stateful and conditional — a loop that decides *when* to retrieve, compact, or spawn — you have crossed into [03-harness](../03-harness-engineering/readme.md).
 
 ---
 
@@ -86,13 +86,13 @@ Historical is the only type without a natural bound. Compaction exists to bound 
 
 ## Security facet
 
-Context has no type system — instructions and data are the same tokens. Prompt injection is therefore a context-layer problem as much as a prompt-layer one, and every added context source is added attack surface. See [notes/07](notes/11-failure-modes.md#prompt-injection) and [prompt-injection.md](../../interviewing/guides/7-security-safety/prompt-injection.md).
+Context has no type system — instructions and data are the same tokens. Prompt injection is therefore a context-layer problem as much as a prompt-layer one, and every added context source is added attack surface. See [notes/07](notes/11-failure-modes.md#prompt-injection) and [prompt-injection.md](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/7-security-safety/prompt-injection.md).
 
 ---
 
 ## Resources
 
-- Pillar guide: [5-context-cost](../../interviewing/guides/5-context-cost/00-overview.md)
+- Pillar guide: [5-context-cost](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/5-context-cost/00-overview.md)
 - Anthropic: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
 - promptingguide.ai: https://www.promptingguide.ai/guides/context-engineering-guide
 - OpenAI compaction: https://developers.openai.com/api/docs/guides/compaction

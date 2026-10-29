@@ -1,7 +1,7 @@
 ---
-imported_hash: 59edeff0df70a9cc
+imported_hash: af4e25523b48c708
 title: read in all the words
-summary: 'def builddataset(words): X, Y = [], []'
+summary: 'def build_dataset(words): X, Y = [], []'
 order: 6
 kind: notebook
 section: Makemore

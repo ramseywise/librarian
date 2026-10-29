@@ -1,7 +1,7 @@
 ---
-imported_hash: e3ef4b7955332540
+imported_hash: a3b55dcf6f8d5e5d
 title: 'Example: Meeting Intelligence & Lifecycle Agent'
-summary: 'MeetingProcessor (LangGraph pipeline): transcriptchunks → Extract facts → Score confidence → Write extractedfacts → If stage-relevant facts detected → Evaluate stage transition → If transition valid → Write Engagement.stage (sole writer, ow…'
+summary: '"Design an AI system that captures meeting transcripts, extracts structured decisions and action items, and drives an engagement lifecycle state machine."'
 order: 80
 kind: reading
 section: System design round / Examples
@@ -11,11 +11,13 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/meeting-proces
 # Example: Meeting Intelligence & Lifecycle Agent
 
 ## Prompt
+
 "Design an AI system that captures meeting transcripts, extracts structured decisions and action items, and drives an engagement lifecycle state machine."
 
 ## Step 1: Clarify & scope (3 min)
 
 **Questions I'd ask**:
+
 - Meeting types: internal standups, client discovery calls, all-hands? (Different extraction needs)
 - Capture method: live transcription, recording upload, or notetaker integration?
 - What "structured output" means: just action items, or decisions, blockers, sentiment, topics?
@@ -24,6 +26,7 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/meeting-proces
 - Accuracy bar: what's acceptable for action-item extraction? (70%? 95%?)
 
 **Assumptions after clarify**:
+
 - Nonprofit client engagement meetings (discovery, check-ins, retrospectives)
 - Notetaker vendor captures transcript via calendar integration, delivers via webhook
 - Extract: action items, decisions, blockers, follow-ups — each with confidence score
@@ -41,7 +44,7 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/meeting-proces
 
 ### Architecture
 
-```
+```text
 Calendar event (tagged "engagement") → Notetaker vendor auto-joins
   → Meeting ends → Vendor webhook delivers transcript
   → Webhook receiver (HMAC-verified, idempotent)
@@ -61,6 +64,7 @@ Query interface:
 ### Key design decisions
 
 **Sole writer for lifecycle state**: The agent owns `Engagement.stage`. No human, no other system writes this field directly. Why?
+
 1. Single source of truth — no conflicting stage updates
 2. Audit trail — every transition is attributable to the agent's own service credential
 3. Trigger chain — stage write is the single event that fires downstream actions (emails, dashboard updates, task creation)
@@ -85,6 +89,7 @@ The `fact_type` enum is intentionally small (7 types, not 20). Each type must be
 **Multi-tenant from migration one**: Learned from a predecessor system that retrofitted tenancy after 3 migrations — it was painful. Every table has `nonprofit_id` as a FK, RLS policies from the first migration, and the API filters by tenant automatically. The agent's service credential is scoped to the tenant context of the meeting.
 
 **Template-rendered, not greenfield**: The system is rendered from a project template with toggles: `vector_backend=postgres`, `include_calendar_integration`, `include_meeting_intelligence`, `primary_chat_agent=lg_agent`. This gives:
+
 - Postgres + pgvector (shared Supabase instance)
 - Calendar integration scaffold
 - Meeting capture webhook receiver
@@ -94,7 +99,7 @@ What the template covers vs. what's custom is documented in a diff doc — this 
 
 ### Integration patterns
 
-```
+```text
 Inbound:
   - Notetaker vendor webhook → HMAC-verified receiver → idempotent handler
     (event may be delivered more than once → deduplicate by meeting_id + timestamp)
@@ -113,7 +118,7 @@ Service credentials:
 
 ### Eval harness
 
-```
+```text
 Accuracy harness (graded sample):
   1. Collect ≥ 3 real meeting transcripts
   2. Human labels: what are the actual action items, decisions, blockers?

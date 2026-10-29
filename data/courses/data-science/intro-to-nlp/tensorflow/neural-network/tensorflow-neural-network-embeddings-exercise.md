@@ -1,7 +1,7 @@
 ---
-imported_hash: f9efd088578ce2f6
+imported_hash: 23c0bb58fddf934f
 title: Neural Network Embeddings - Exercise
-summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import padsequences
+summary: from tensorflow.keras.preprocessing.text import Tokenizer from tensorflow.keras.preprocessing.sequence import pad_sequences
 order: 11
 kind: notebook
 section: tensorFlow / Neural network

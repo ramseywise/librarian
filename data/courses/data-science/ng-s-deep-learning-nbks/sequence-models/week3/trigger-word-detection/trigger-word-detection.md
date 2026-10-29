@@ -1,5 +1,5 @@
 ---
-imported_hash: 7df46512734b53d7
+imported_hash: 9b8402958bf65cda
 title: '1 - Data synthesis: Creating a speech dataset'
 summary: Welcome to the final programming assignment of this specialization!
 order: 22

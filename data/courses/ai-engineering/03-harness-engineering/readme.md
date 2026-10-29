@@ -1,15 +1,15 @@
 ---
-imported_hash: f88abdb565294885
+imported_hash: a45091a46a61c160
 title: 03 — Harness Engineering
 summary: 'Harness engineering is the scaffolding discipline: building the infrastructure that makes agent loops deployable, reliable, observable, and safe.'
 order: 1
 kind: reading
-source: learn-ai-engineering/ai-engineering/03-harness/README.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/README.md
 ---
 
 # 03 — Harness Engineering
 
-> Depth layer. Summary: [interviewing/guides/4-agents](../../interviewing/guides/4-agents/00-overview.md)
+> Depth layer. Summary: [interviewing/guides/4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md)
 > Position in the stack: *harness implements loops*.
 > Overview note: [harness-engineering.md](harness-engineering.md) · Topic depth: [notes/](notes/)
 
@@ -57,14 +57,14 @@ Copy-ready harness files: `AGENTS.md`, `init.sh`, `feature_list.json` + schema, 
 #### Related
 - [karpathy-method.md](karpathy-method.md) — Karpathy's AISN 2026 framing (via secondary video source): spec / verifier / environment layering, animals-vs-ghosts, rules-vs-requests.
 - [agent-harness.md](agent-harness.md) — raw source note (Notion export) behind the overview; kept for provenance.
-- [reliable-agents.md](reliable-agents.md) — raw source note (Notion export): the Bayer/Thoughtworks **PRINCE** case study, the pillar's only production system. Harness content extracted into [notes/05](notes/05-verification-loops.md) and [notes/08](notes/08-maturity-and-failure-modes.md); its RAG/Text-to-SQL pipeline detail is still unextracted and belongs to [02-context](../02-context/notes/04-retrieval.md).
+- [reliable-agents.md](reliable-agents.md) — raw source note (Notion export): the Bayer/Thoughtworks **PRINCE** case study, the pillar's only production system. Harness content extracted into [notes/05](notes/05-verification-loops.md) and [notes/08](notes/08-maturity-and-failure-modes.md); its RAG/Text-to-SQL pipeline detail is still unextracted and belongs to [02-context](../02-context-engineering/notes/04-retrieval.md).
 - [agents-design.md](agents-design.md) — agent architecture patterns: single-agent, multi-agent, tool routing.
 - [deep-agents.md](deep-agents.md) — depth on agentic architectures: planning, reflection, self-critique.
 - [agents-guardrails.md](agents-guardrails.md) — guardrails and safety constraints in harness design.
 - [skills-design.md](skills-design.md) — skills as a harness primitive: descriptions as routing logic, negative examples, bundled templates, explicit invocation, and the skills+networking risk posture.
 
 ### Interviewing guide
-- [4-agents](../../interviewing/guides/4-agents/00-overview.md) — compressed summary for interview prep.
+- [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) — compressed summary for interview prep.
 
 ### Coursera code
 - [AI-Agentic-Design-Patterns-with-AutoGen-main](../../generative-ai/03-agentic-foundations/AI-Agentic-Design-Patterns-with-AutoGen-main/) — agentic design patterns.
@@ -101,7 +101,7 @@ Queue (not yet read in):
 - `awesome-harness-engineering`: https://github.com/ai-boost/awesome-harness-engineering — evals, memory, MCP, orchestration.
 
 ### Next layer
-→ [04-loop/](../04-loop/readme.md) — the loops the harness implements.
+→ [04-loop-engineering/](../04-loop-engineering/readme.md) — the loops the harness implements.
 
 ---
 

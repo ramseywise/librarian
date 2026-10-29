@@ -74,6 +74,23 @@ def test_notebook_keeps_cells_drops_outputs() -> None:
     assert "OUTPUT" not in md
 
 
+def test_summary_keeps_underscores_in_code_and_identifiers() -> None:
+    body = "Given `orders(order_id, user_id)`, rank each _user's_ **largest** orders by snake_case amount."
+    assert ic._summary_from(body) == (
+        "Given orders(order_id, user_id), rank each user's largest orders by snake_case amount."
+    )
+
+
+def test_credential_redaction_spares_plain_key_kwargs() -> None:
+    src = (
+        "API_KEY = 'sk-live-123'\nhub.Module(key='sentence')\npassword=\"hunter22\"\n"
+        "Tokenizer(oov_token = \"<oov>\", pad_token='[PAD]')\n"
+    )
+    out = ic._CREDENTIAL_RE.sub(r'\1"<redacted>"', src)
+    assert "sk-live-123" not in out and "hunter22" not in out
+    assert "key='sentence'" in out and '"<oov>"' in out and "'[PAD]'" in out
+
+
 def test_render_hash_ignores_its_own_line() -> None:
     text = ic.render({"title": "T"}, "body")
     assert ic._recorded_hash(text) == ic._hash(text)

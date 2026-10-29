@@ -1,5 +1,5 @@
 ---
-imported_hash: 51d13469dbdf0eaa
+imported_hash: 9a95365a6af3363c
 title: Coding Challenge — Sources
 summary: Load these before any coding challenge prep session.
 order: 30
@@ -16,7 +16,7 @@ source: sisyphus/interviewing/rounds/coding-challenge/sources.md
 |-------|-----------|
 | `ml-foundations` | SQL screens (DS variant), pandas idioms for data manipulation questions |
 | `data-engineering-mlops` | Pipeline idioms — ETL transforms, retry/backoff patterns, rate limiting, streaming |
-| `programming/Leet-Code/` | Seed material for live coding classics (LRU cache, graph traversal, interval problems) |
+| `drills/python/leetcode/` | Seed material for live coding classics (LRU cache, graph traversal, interval problems) |
 
 Load these before any coding challenge prep session. The `data-engineering-mlops` guide is especially dense with the project-style patterns (rate limiter, retry decorator, ETL) that appear in AIE/MLE loops.
 
@@ -51,4 +51,4 @@ For a coding challenge loop in the next 2 weeks:
 1. `data-engineering-mlops` guide for pipeline patterns (day 1)
 2. Neetcode blind 75 — one pattern per day, narrated out loud (ongoing)
 3. One debugging kata per day from HackerRank or a broken script you write yourself
-4. `programming/Leet-Code/` for the LRU cache and interval problems specifically
+4. `drills/python/leetcode/` for the LRU cache and interval problems specifically

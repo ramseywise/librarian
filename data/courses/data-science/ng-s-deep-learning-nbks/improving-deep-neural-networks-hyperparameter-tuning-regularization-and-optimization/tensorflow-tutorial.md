@@ -1,5 +1,5 @@
 ---
-imported_hash: 60b169d169e11a19
+imported_hash: 18a11128e47912fd
 title: TensorFlow Tutorial
 summary: Updated for TF 2.x compatibility using tf.compat.v1 (Phase 1).
 order: 11

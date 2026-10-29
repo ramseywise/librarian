@@ -1,7 +1,7 @@
 ---
-imported_hash: f354ef44af874750
+imported_hash: 19e4cb7e2ed6932e
 title: Automatic Text Summarization
-summary: from nltk.corpus import stopwords from nltk.tokenize import senttokenize from sklearn.metrics.pairwise import cosinesimilarity
+summary: from nltk.corpus import stopwords from nltk.tokenize import sent_tokenize from sklearn.metrics.pairwise import cosine_similarity
 order: 3
 kind: notebook
 section: Nltk

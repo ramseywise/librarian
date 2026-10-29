@@ -1,5 +1,5 @@
 ---
-imported_hash: 3006ec53d8c495fb
+imported_hash: 78fb8d1c060916f0
 title: Improvise a Jazz Solo with an LSTM Network
 summary: Welcome to your final programming assignment of this week!
 order: 18

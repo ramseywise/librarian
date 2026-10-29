@@ -1,7 +1,7 @@
 ---
-imported_hash: b7836269ed28d13e
+imported_hash: 6cae888a2193f86c
 title: Reading List & Prep Materials
-summary: 'Salvaged from the Notion tableofcontents.md dump: topic checklist, curated links, and book list.'
+summary: 'Salvaged from the Notion table_of_contents.md dump: topic checklist, curated links, and book list.'
 order: 5
 kind: reading
 source: sisyphus/interviewing/notes/reading-list.md
@@ -88,13 +88,9 @@ https://www.revarta.com/compare/chatgpt
 
 K/V caching, the under-the-hood mechanism behind prompt caching, and semantic caching
 
-
-
 ## Link dump (original tail)
 
--
-
-    https://github.com/Shubhamsaboo/awesome-llm-apps/
+- https://github.com/Shubhamsaboo/awesome-llm-apps/
 
 - Introduction to Agents whitepaper
 - https://medium.com/data-science-collective/ai-agents-complete-course-f226aa4550a1
@@ -107,7 +103,6 @@ K/V caching, the under-the-hood mechanism behind prompt caching, and semantic ca
 - https://www.amazon.co.uk/dp/0674729013?crid=1H3T009KROHH4&keywords=make+it+stick+the+science+of+successful+learning&sprefix=Make+It+Stick:+The+Science+of+Successful+Learning,aps,191&language=en_US&nsdOptOutParam=true&dib_tag=se&ref_=as_li_ss_tl&dib=eyJ2IjoiMSJ9.8vb44HdBfTn_568ldh4jMkQyTGMCPzQy4v1h9fQdGsQ2dh7mc1k1frUxzJFKWW5V4HaKmFDB3AGV6QjItWqbsaDIZ9Fv0HcK-ovVeEL57sDxEFLCMFS6BFxCsUZOFdT2PzH4G-iduvQsAII9YzIipunxstq7jK23o-DlMw4kfmB-cYf1PFtecMpRhvT-EgF-o_5dVCu9U6n5oGg-x9l7yfximM_veLwR4yXVcgbo4sw.Rl-tYpyFcQfznfByygQQsXNarPvfryaLNYd6nJS-a0E&sr=8-1&linkCode=gg2&linkId=a56e353ab86285c9941e50472feca41c&tag=gratitudedriv-20
 - ETL pipeline: https://rivery.io/data-learning-center/etl-pipeline-python/
 -
-
 
 ## Unplaced diagrams (images/ has them, original position unknown)
 

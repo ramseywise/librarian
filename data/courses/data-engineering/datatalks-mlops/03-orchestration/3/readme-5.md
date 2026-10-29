@@ -1,5 +1,5 @@
 ---
-imported_hash: c8c5c4f2c9315529
+imported_hash: 4bbda6ffb6918788
 title: '3.4 Triggering: Inference and retraining'
 summary: ''
 order: 16
@@ -62,4 +62,4 @@ source: learn-ai-engineering/data-engineering/DataTalks MLOps/03-orchestration/3
 
 1. [Run pipelines on a recurring schedule](https://docs.mage.ai/orchestration/triggers/schedule-pipelines)
 
-1. [Improving model performance through retraining](<https://www.mage.ai/blog/how-to-improve-the-performance-of-a-machine-learning-(ML)-model>)
+1. [Improving model performance through retraining](https://www.mage.ai/blog/how-to-improve-the-performance-of-a-machine-learning-%28ML%29-model)

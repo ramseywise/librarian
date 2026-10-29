@@ -1,7 +1,7 @@
 ---
-imported_hash: 642781985bb60331
+imported_hash: 255e91aba7525030
 title: there no change change in the first several cells from last lecture
-summary: 'def builddataset(words): X, Y = [], []'
+summary: 'def build_dataset(words): X, Y = [], []'
 order: 5
 kind: notebook
 section: Makemore

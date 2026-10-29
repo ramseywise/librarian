@@ -1,5 +1,5 @@
 ---
-imported_hash: 84f3000a05fd395c
+imported_hash: f84b9168506173f7
 title: Build your own NER Tagger
 summary: Named Entity Recognition (NER) , also known as entity chunking/extraction , is a popular technique used in information extraction to identify and segment the named entities and classify or categorize them under various predefined classes.
 order: 23

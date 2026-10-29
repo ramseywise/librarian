@@ -1,5 +1,5 @@
 ---
-imported_hash: dcc81677aa83e457
+imported_hash: dc8ad09cb7dc5297
 title: System Design (ML/LLM/Agent) — Study Guide
 summary: The highest-weight technical round in 2026 AIE/MLE loops.
 order: 28
@@ -82,6 +82,7 @@ autocomplete — roughly $30K/month off the API bill."
 ## 6. Drills (systems you can already speak to)
 
 Three interview-format writeups exist in the librarian wiki — rehearse them as full answers:
+
 - **Shared code-index service** — centralized indexer + query API, MCP as thin read-only
   client, single-writer risk, pgvector escape hatch.
 - **Unified eval harness** — golden set, two-tier grading (heuristic → LLM judge),

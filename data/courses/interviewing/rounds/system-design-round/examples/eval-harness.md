@@ -1,7 +1,7 @@
 ---
-imported_hash: 7a2576ef6760ad14
+imported_hash: 91dc70dce754f0fb
 title: 'Example: Eval Pipeline for an LLM Product'
-summary: 'Tier 2: LLM-as-judge (every deploy, < 10 min, ~$2) → Golden set: 100 curated query-answer-context triples → Graders: - Faithfulness: "Does the answer make claims not supported by the retrieved context?" - Relevance: "Does the answer address…'
+summary: '"Design an evaluation system for an LLM-powered product.'
 order: 78
 kind: reading
 section: System design round / Examples
@@ -11,11 +11,13 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/eval-harness.m
 # Example: Eval Pipeline for an LLM Product
 
 ## Prompt
+
 "Design an evaluation system for an LLM-powered product. How do you know the system is working, and how do you catch regressions?"
 
 ## Step 1: Clarify & scope (3 min)
 
 **Questions I'd ask**:
+
 - What kind of product? (RAG QA, agent, chatbot, summarization — eval strategy differs)
 - What does "working" mean for this product? (Accuracy? Safety? User satisfaction? All?)
 - How often do changes ship? (Daily deploys need automated gates; monthly releases can include human review)
@@ -23,6 +25,7 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/eval-harness.m
 - Budget for eval compute? (LLM-as-judge costs real money at scale)
 
 **Assumptions after clarify**:
+
 - RAG-based product with agent capabilities, daily deploys
 - "Working" means: faithful answers, relevant retrieval, no safety violations, acceptable latency
 - Starting from ad hoc scripts — need to build a real pipeline
@@ -38,7 +41,7 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/eval-harness.m
 
 ### Three-tier eval architecture
 
-```
+```text
 Tier 1: Deterministic checks (every deploy, < 2 min, $0)
   → Format validation (JSON schema, required fields)
   → Safety pattern matching (PII in output, blocked phrases)
@@ -73,7 +76,7 @@ The golden set is the foundation — if it's wrong, everything downstream is wro
 
 ### Online monitoring (continuous, not just at deploy)
 
-```
+```text
 Live traffic → Sample 5% of queries
   → Run Tier 1 checks on every sampled query
   → Run Tier 2 graders on 1% (cost control)
@@ -86,7 +89,7 @@ Live traffic → Sample 5% of queries
 
 ### Feedback loop
 
-```
+```text
 User thumbs-down → Human reviews the query+response
   → If real issue: add to golden set, tag the failure type
   → If false alarm: note as "user disagreed, quality acceptable"

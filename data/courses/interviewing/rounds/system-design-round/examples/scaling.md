@@ -1,7 +1,7 @@
 ---
-imported_hash: 6ca71a1ad3d662e5
+imported_hash: b41ad50e97b3e054
 title: 'Example: Scaling a RAG System 100x'
-summary: '"At 100K queries/day, naive scaling costs $3,400/day (~$100K/month).'
+summary: '"Your RAG-based customer support system handles 1K queries/day.'
 order: 82
 kind: reading
 section: System design round / Examples
@@ -11,11 +11,13 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/scaling.md
 # Example: Scaling a RAG System 100x
 
 ## Prompt
+
 "Your RAG-based customer support system handles 1K queries/day. Product wants to roll it out company-wide: 100K queries/day. What changes?"
 
 ## Step 1: Clarify & scope (3 min)
 
 **Questions I'd ask**:
+
 - Same corpus or expanding? (More teams = more knowledge bases?)
 - Same query types or new use cases? (Support → sales → internal ops?)
 - Latency SLA change? (Batch-OK for some use cases?)
@@ -23,6 +25,7 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/scaling.md
 - Multi-tenant now? (Different teams see different docs?)
 
 **Assumptions after clarify**:
+
 - Corpus grows 5x (new departments), traffic grows 100x
 - Mixed latency: interactive support (< 2s), batch analytics (async OK)
 - Budget grows 10x, not 100x — need 10x cost efficiency
@@ -31,16 +34,20 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/scaling.md
 ## Step 2: What changes (organized by component)
 
 ### Ingestion pipeline
+
 **Before**: Single-process embedding job, runs nightly.
 **After**:
+
 - Async ingestion queue with priority (new docs > updates > bulk re-index)
 - Incremental embedding: only re-embed changed/new docs, not full corpus
 - Parallel embedding workers (shard by department/collection)
 - Staleness tracking: docs have `last_embedded` timestamp, alert if > 24h stale
 
 ### Vector index
+
 **Before**: Single pgvector table, brute-force scan.
 **After**:
+
 - HNSW indexes (pgvector supports this, but at 100x may need dedicated vector store)
 - Partition by department (multi-tenant isolation + query scoping)
 - Pre-filter by metadata before vector search (department, doc_type, date range) — reduces the search space by 5-10x
@@ -49,15 +56,19 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/scaling.md
 **Trade-off narrated**: pgvector vs dedicated vector DB (Pinecone, Weaviate). pgvector: simpler ops, co-located with app data, RLS for access control. Dedicated: better performance at scale, managed scaling. Decision depends on whether ops complexity or query latency is the bigger risk. At 100K queries/day, I'd likely stay with pgvector + HNSW unless p95 exceeds SLA.
 
 ### Caching
+
 **Before**: No caching.
 **After**:
+
 - **Prefix cache**: System prompt + common instruction prefix cached across requests. Saves ~30-50% of input tokens (same system prompt on every query).
 - **Semantic cache**: Hash embedding of query → if similar query answered in last N hours, return cached response. Hit rate on support queries is typically 20-40% (many users ask similar questions). Cache invalidation on corpus update.
 - **Expected impact**: 30-50% reduction in LLM calls, proportional cost savings.
 
 ### Model serving
+
 **Before**: Single model, all queries.
 **After**:
+
 - **Model routing**: Classify queries by complexity:
   - Simple (FAQ-like, high cache hit) → small/fast model (Haiku-tier) or cached response
   - Medium (standard RAG) → mid-tier model (Sonnet-tier)
@@ -67,16 +78,20 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/scaling.md
 - **Expected cost impact**: 60-70% of queries route to small model → ~3-5x cost reduction vs all-large
 
 ### Retrieval quality
+
 **Before**: Works well at 50K chunks.
 **After at 500K+ chunks**:
+
 - Recall may drop as corpus grows (more noise, more near-misses)
 - Cross-encoder reranker becomes critical (was nice-to-have, now load-bearing)
 - Need to bound reranker N (top-20 not top-100 — latency constraint)
 - Eval golden set must grow with corpus — stale set gives false confidence
 
 ### Observability & eval
+
 **Before**: Basic logging.
 **After**:
+
 - Trace sampling: 100% at 1K queries is fine; at 100K, sample 5-10% for detailed traces
 - Per-tenant quality dashboards
 - Cost tracking per department (chargeback model)

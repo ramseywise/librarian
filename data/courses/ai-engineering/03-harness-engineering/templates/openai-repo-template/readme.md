@@ -1,11 +1,11 @@
 ---
-imported_hash: c7b98ab8d4855fdc
+imported_hash: e00cf55e9e6c1471
 title: Advanced Repo Template
 summary: Copy this starter into a real repository when you want an OpenAI-style agent-first documentation surface instead of only a minimal harness.
 order: 29
 kind: reading
 section: Templates / Openai repo template
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/README.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/README.md
 ---
 
 # Advanced Repo Template

@@ -1,5 +1,5 @@
 ---
-imported_hash: cce110c796d53fa0
+imported_hash: c499e97cb97a3ea5
 title: Data Talks Data Engineering Zoomcamp
 summary: Putting everything we learned to practice
 order: 1
@@ -35,7 +35,7 @@ source: learn-ai-engineering/data-engineering/DataTalks Data Engineering/README.
 [More details](02-workflow-orchestration/)
 
 
-### [Workshop 1: Data Ingestion](cohorts/2024/workshops/dlt.md)
+### [Workshop 1: Data Ingestion](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2024/workshops/dlt.md)
 
 * Reading from apis
 * Building scalable pipelines
@@ -44,7 +44,7 @@ source: learn-ai-engineering/data-engineering/DataTalks Data Engineering/README.
 * Homework
 
 
-[More details](cohorts/2024/workshops/dlt.md)
+[More details](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2024/workshops/dlt.md)
 
 
 ### [Module 3: Data Warehouse](03-data-warehouse/)
@@ -94,10 +94,10 @@ source: learn-ai-engineering/data-engineering/DataTalks Data Engineering/README.
 [More details](06-streaming/)
 
 
-### [Workshop 2: Stream Processing with SQL](cohorts/2024/workshops/rising-wave.md)
+### [Workshop 2: Stream Processing with SQL](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2024/workshops/rising-wave.md)
 
 
-[More details](cohorts/2024/workshops/rising-wave.md)
+[More details](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2024/workshops/rising-wave.md)
 
 
 ### [Project](projects)

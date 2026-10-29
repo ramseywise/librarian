@@ -1,7 +1,7 @@
 ---
-imported_hash: 5010cf55632bbdd4
+imported_hash: 61c03ba5e2eb4eef
 title: 'makemore: part 3'
-summary: 'def builddataset(words): X, Y = [], []'
+summary: 'def build_dataset(words): X, Y = [], []'
 order: 4
 kind: notebook
 section: Makemore

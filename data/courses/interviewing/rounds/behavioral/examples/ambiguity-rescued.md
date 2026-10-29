@@ -1,5 +1,5 @@
 ---
-imported_hash: 5c2ee221f75291c6
+imported_hash: 7c53a7ac825d1157
 title: 'Worked STAR Example: Ambiguity Rescued'
 summary: 'Note the precision in the second behavior: "when I can''t resolve with data." This shows you haven''t over-generalized — you still try to resolve conflicts before building workarounds.'
 order: 6
@@ -19,6 +19,7 @@ source: sisyphus/interviewing/rounds/behavioral/examples/ambiguity-rescued.md
 ## The story
 
 ### Situation
+>
 > I was building an internal RAG-based Q&A tool for a nonprofit client with a volunteer
 > cohort of 40+ researchers. Mid-project, the product owner left and wasn't replaced for
 > 6 weeks. Requirements we'd been iterating on verbally were now undocumented, and two
@@ -34,6 +35,7 @@ challenge.
 ---
 
 ### Task
+>
 > I was the sole engineer on the project and responsible for the delivery. The client
 > deadline was fixed — the tool needed to be in pilot with 10 researchers in 5 weeks.
 
@@ -44,6 +46,7 @@ stakes.
 ---
 
 ### Action
+>
 > My first move was to write down all the things I didn't know, organized by how much
 > they would cost to change after delivery: things I'd need to get right the first time
 > (underlying retrieval architecture, data ingestion pipeline), and things I could change
@@ -83,6 +86,7 @@ stakes.
    it as a feature, not a gap.
 
 **Common mistakes at Action**:
+
 - "I asked stakeholders to clarify." That's not a decision, it's a handoff.
 - "I picked one direction and went with it." Valid if you explain *why that direction* and
   what you would have done if you were wrong.
@@ -92,6 +96,7 @@ stakes.
 ---
 
 ### Result
+>
 > We hit the pilot deadline. The pilot ran with 11 researchers over 3 weeks. 8 of 11 defaulted
 > to "concise" mode after the first week. The two stakeholders agreed to default the tool
 > to concise with detailed available on demand. That decision took 20 minutes in the pilot
@@ -114,6 +119,7 @@ stakes.
 ---
 
 ### Reflection
+>
 > Since then, I start every project with an explicit "settled vs. open" doc and send it
 > before any build work starts. And when I hit a genuine stakeholder conflict I can't
 > resolve with data, my default is to ask: "Can I build something that lets the pilot

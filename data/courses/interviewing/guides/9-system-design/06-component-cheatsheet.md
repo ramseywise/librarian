@@ -1,5 +1,5 @@
 ---
-imported_hash: 784a994cfb35ee49
+imported_hash: 822ff5390e1698f9
 title: AI System Design Cheat Sheet (2026)
 summary: 'Pillar 9, detailed note 6. Component-by-component reference for the LLM request path: gateway, rate limiting, caching, orchestrator, RAG pipeline, memory, tools, async work, reliability, observability, security, cost.'
 order: 27
@@ -26,19 +26,19 @@ They're testing whether you think like an engineer building a production AI prod
 
 Always think in terms of:
 
-* Reliability
-* Scale
-* Cost
-* Latency
-* Security
-* Observability
-* Tradeoffs
+- Reliability
+- Scale
+- Cost
+- Latency
+- Security
+- Observability
+- Tradeoffs
 
 The LLM is only one service in the architecture. ([jamwithai.substack.com][1])
 
 ---
 
-# A Standard AI Request Flow
+## A Standard AI Request Flow
 
 This is the architecture I'd draw for almost every GenAI interview.
 
@@ -98,19 +98,19 @@ Then explain each component.
 
 ---
 
-# 1. API Gateway
+## 1. API Gateway
 
 Every request enters through the gateway.
 
 Responsibilities
 
-* Authentication
-* Authorization
-* Routing
-* Request validation
-* Rate limiting
-* Logging
-* Multi-model routing
+- Authentication
+- Authorization
+- Routing
+- Request validation
+- Rate limiting
+- Logging
+- Multi-model routing
 
 Never start your architecture at the LLM.
 
@@ -118,43 +118,43 @@ The API Gateway protects expensive GPU resources. ([jamwithai.substack.com][1])
 
 ---
 
-# 2. Rate Limiting
+## 2. Rate Limiting
 
 AI systems are expensive.
 
 Protect against
 
-* Abuse
-* Cost explosions
-* Denial-of-wallet attacks
+- Abuse
+- Cost explosions
+- Denial-of-wallet attacks
 
 Common limits
 
-* Requests/minute
-* Tokens/minute
-* Cost/day
-* Concurrent sessions
+- Requests/minute
+- Tokens/minute
+- Cost/day
+- Concurrent sessions
 
 Different users may have different quotas.
 
 ---
 
-# 3. Load Balancing
+## 3. Load Balancing
 
 Distribute traffic across inference servers.
 
 Strategies
 
-* Round robin
-* Least loaded
-* GPU-aware routing
-* Model-specific routing
+- Round robin
+- Least loaded
+- GPU-aware routing
+- Model-specific routing
 
 Health checks are especially important because models can fail independently. ([jamwithai.substack.com][1])
 
 ---
 
-# 4. Caching
+## 4. Caching
 
 One of the biggest cost savers.
 
@@ -170,13 +170,13 @@ Return previous answer
 
 ---
 
-### Embedding Cache
+#### Embedding Cache
 
 Don't regenerate embeddings.
 
 ---
 
-### Semantic Cache
+#### Semantic Cache
 
 If a new question is very similar to a previous one
 
@@ -188,28 +188,28 @@ Useful because many users ask nearly identical questions. ([jamwithai.substack.c
 
 ---
 
-# 5. Orchestrator
+## 5. Orchestrator
 
 The "brain" of the system.
 
 Responsibilities
 
-* Planning
-* State management
-* Tool selection
-* Retry logic
-* Error handling
-* Memory retrieval
+- Planning
+- State management
+- Tool selection
+- Retry logic
+- Error handling
+- Memory retrieval
 
 Frameworks
 
-* LangGraph
-* Temporal
-* Custom state machine
+- LangGraph
+- Temporal
+- Custom state machine
 
 ---
 
-# RAG Architecture
+## RAG Architecture
 
 A production RAG system is much more than:
 
@@ -231,7 +231,7 @@ Real systems have multiple stages. ([jamwithai.substack.com][2])
 
 ---
 
-# Document Ingestion Pipeline
+## Document Ingestion Pipeline
 
 ```text
 Documents
@@ -265,7 +265,7 @@ This runs offline.
 
 ---
 
-# Query Pipeline
+## Query Pipeline
 
 ```text
 User Question
@@ -303,68 +303,68 @@ Runs online for every request.
 
 ---
 
-# Better Retrieval
+## Better Retrieval
 
 Vector search isn't enough.
 
 Production systems combine:
 
-* Semantic search
-* Keyword search (BM25)
-* Metadata filtering
-* Hybrid retrieval
-* Rerankers
+- Semantic search
+- Keyword search (BM25)
+- Metadata filtering
+- Hybrid retrieval
+- Rerankers
 
 Reranking often improves answer quality more than changing the embedding model. ([arXiv][3])
 
 ---
 
-# Chunking
+## Chunking
 
 Poor chunking ruins retrieval.
 
 Strategies
 
-* Fixed-size chunks
-* Sentence chunks
-* Semantic chunks
-* Proposition chunks
-* Hierarchical chunks
+- Fixed-size chunks
+- Sentence chunks
+- Semantic chunks
+- Proposition chunks
+- Hierarchical chunks
 
 Tradeoffs
 
 Small chunks
 
-* Better precision
+- Better precision
 
 - Lose context
 
 Large chunks
 
-* Better context
+- Better context
 
 - Lower retrieval quality
 
 ---
 
-# Metadata Matters
+## Metadata Matters
 
 Every chunk should include metadata.
 
 Examples
 
-* Source
-* Author
-* Timestamp
-* Document type
-* Access permissions
-* Version
+- Source
+- Author
+- Timestamp
+- Document type
+- Access permissions
+- Version
 
 Metadata filtering often improves retrieval more than changing embeddings.
 
 ---
 
-# Memory ≠ RAG
+## Memory ≠ RAG
 
 One of the biggest interview topics.
 
@@ -380,7 +380,7 @@ Different problems. ([Oracle Blogs][4])
 
 ---
 
-# Seven Memory Types
+## Seven Memory Types
 
 A useful mental model is:
 
@@ -398,7 +398,7 @@ Each has different retention and retrieval policies. ([Oracle Blogs][4])
 
 ---
 
-# Memory Storage
+## Memory Storage
 
 Don't store everything in one database.
 
@@ -428,7 +428,7 @@ Choose storage based on access patterns, not convenience. ([Oracle Blogs][4])
 
 ---
 
-# Tool Calling
+## Tool Calling
 
 The LLM shouldn't perform actions directly.
 
@@ -460,17 +460,17 @@ Never trust raw model outputs to invoke external systems.
 
 ---
 
-# Asynchronous Work
+## Asynchronous Work
 
 Some tasks shouldn't block the user.
 
 Examples
 
-* Document ingestion
-* Embedding generation
-* Batch evaluation
-* Large summarization jobs
-* Retraining
+- Document ingestion
+- Embedding generation
+- Batch evaluation
+- Large summarization jobs
+- Retraining
 
 Pattern
 
@@ -494,7 +494,7 @@ Use queues to improve resilience and throughput. ([jamwithai.substack.com][1])
 
 ---
 
-# Reliability Patterns
+## Reliability Patterns
 
 Every production AI system should include:
 
@@ -534,117 +534,117 @@ Answer with partial context
 
 ---
 
-# Observability
+## Observability
 
 You need traces—not just logs.
 
 Track
 
-* Model version
-* Prompt version
-* Retrieved chunks
-* Tool calls
-* Token usage
-* Latency
-* Cost
-* Failures
-* User feedback
+- Model version
+- Prompt version
+- Retrieved chunks
+- Tool calls
+- Token usage
+- Latency
+- Cost
+- Failures
+- User feedback
 
 You should be able to replay any request end-to-end.
 
 ---
 
-# Evaluation
+## Evaluation
 
 Evaluate every stage.
 
 Retrieval
 
-* Recall@k
-* MRR
-* nDCG
+- Recall@k
+- MRR
+- nDCG
 
 Generation
 
-* Faithfulness
-* Groundedness
-* Hallucination rate
+- Faithfulness
+- Groundedness
+- Hallucination rate
 
 Agents
 
-* Task completion
-* Tool accuracy
-* Planning success
+- Task completion
+- Tool accuracy
+- Planning success
 
 System
 
-* Latency
-* Cost
-* User satisfaction
+- Latency
+- Cost
+- User satisfaction
 
 Evaluation should be continuous, not a one-time benchmark. ([arXiv][5])
 
 ---
 
-# Security
+## Security
 
 Treat everything as untrusted.
 
 Includes
 
-* User prompts
-* Retrieved documents
-* Tool outputs
-* LLM responses
+- User prompts
+- Retrieved documents
+- Tool outputs
+- LLM responses
 
 Defend against
 
-* Prompt injection
-* Data leakage
-* Unauthorized tool use
-* Jailbreaks
-* Memory poisoning
+- Prompt injection
+- Data leakage
+- Unauthorized tool use
+- Jailbreaks
+- Memory poisoning
 
 Always validate tool arguments before execution. ([arXiv][5])
 
 ---
 
-# Cost Optimization
+## Cost Optimization
 
 Large production systems optimize aggressively.
 
 Strategies
 
-* Route simple tasks to smaller models
-* Cache embeddings and responses
-* Retrieve fewer but higher-quality chunks
-* Compress context before prompting
-* Batch embedding jobs
-* Stream responses
-* Auto-scale GPU workers
+- Route simple tasks to smaller models
+- Cache embeddings and responses
+- Retrieve fewer but higher-quality chunks
+- Compress context before prompting
+- Batch embedding jobs
+- Stream responses
+- Auto-scale GPU workers
 
 Track **cost per successful task**, not just cost per request. ([jamwithai.substack.com][1])
 
 ---
 
-# Interview Questions to Expect
+## Interview Questions to Expect
 
 Be ready to discuss:
 
-* Design a production RAG system.
-* Design an AI coding assistant.
-* Design an enterprise knowledge assistant.
-* Design a customer support agent.
-* How would you scale an LLM API to 100k users?
-* How would you reduce latency and token costs?
-* When would you choose RAG vs. fine-tuning?
-* How would you monitor hallucinations?
-* How would you prevent prompt injection?
-* How would you evaluate an AI agent?
+- Design a production RAG system.
+- Design an AI coding assistant.
+- Design an enterprise knowledge assistant.
+- Design a customer support agent.
+- How would you scale an LLM API to 100k users?
+- How would you reduce latency and token costs?
+- When would you choose RAG vs. fine-tuning?
+- How would you monitor hallucinations?
+- How would you prevent prompt injection?
+- How would you evaluate an AI agent?
 
 ---
 
-# The Mental Model
+## The Mental Model
 
 Think of an AI system as **three interacting layers**:
 

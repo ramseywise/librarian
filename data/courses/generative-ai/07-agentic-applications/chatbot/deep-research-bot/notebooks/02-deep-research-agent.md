@@ -1,8 +1,8 @@
 ---
-imported_hash: ed25b6bcd85d1392
+imported_hash: 4dac16ccfb85d843
 title: Building a Deep Research Agent
 summary: This script will walk you through building on top of our simple tool calling agent to evolve it to a full Deep Research Agent.
-order: 6
+order: 7
 kind: notebook
 section: Chatbot / Deep research bot / Notebooks
 source: learn-ai-engineering/generative-ai/07-agentic-applications/chatbot/deep-research-bot/notebooks/02_deep_research_agent.ipynb

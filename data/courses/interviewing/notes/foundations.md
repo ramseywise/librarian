@@ -1,5 +1,5 @@
 ---
-imported_hash: fc8a65f09ade1790
+imported_hash: 9f980bece4eb914a
 title: Foundations — Classical ML & Model Evaluation
 summary: 'Pillar 1. Everything else is built on this: how models learn from data, how you know they work, and how you choose what to measure.'
 order: 3
@@ -75,6 +75,7 @@ classification.
 the training folds. `sklearn.model_selection.TimeSeriesSplit`.
 
 **Data leakage — the #1 practical sin:**
+
 - Fit scalers, encoders, imputers **on the training fold only** — then transform val/test.
 - Never do target-aware transforms (target encoding, SMOTE) before the split.
 - Wrap all preprocessing in a pipeline so it can't leak:
@@ -146,6 +147,7 @@ ch5 (resampling) → `Intro to ML in Python/05-model-evaluation-and-improvement.
 
 **The gap ISLR doesn't fill:** ISLR teaches what models are and why they work; it doesn't
 teach production hygiene (pipelines, leakage, train/serve skew, drift). Fill that gap with:
+
 - *Hidden Technical Debt in ML Systems* (NIPS 2015) — `ai-engineering/readings/general/` — the "why ML
   systems rot" paper. Read before pillar 8 (data eng/MLOps).
 - Ng's *Structuring ML Projects* (in `Ng's Deep Learning Nbks/`) — orthogonalization,

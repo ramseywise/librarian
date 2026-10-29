@@ -1,5 +1,5 @@
 ---
-imported_hash: f6fb225e7ebaf421
+imported_hash: d72436e1847fa65a
 title: 'Week 6: Stream Processing'
 summary: Did you take notes? You can share them here.
 order: 35
@@ -126,7 +126,7 @@ Please follow the steps described under [pyspark-streaming](python/streams-examp
 
 ## Homework
 
-* [2024 Homework](../cohorts/2024/)
+* [2024 Homework](https://github.com/DataTalksClub/data-engineering-zoomcamp/tree/main/cohorts/2024)
 
 ## Community notes
 

@@ -1,7 +1,7 @@
 ---
-imported_hash: 6f72ce173e9dffa4
+imported_hash: 35e80b3d8b99e7c3
 title: Wait for the file to finish processing
-summary: genai.configure(apikey=os.environ["GEMINIAPIKEY"])
+summary: genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 order: 2
 kind: notebook
 section: Notebooks

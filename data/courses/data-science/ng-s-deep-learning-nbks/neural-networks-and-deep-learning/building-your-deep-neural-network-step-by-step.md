@@ -1,5 +1,5 @@
 ---
-imported_hash: 1573ec1c773f8ad8
+imported_hash: a1ce4012aa103506
 title: 'Building your Deep Neural Network: Step by Step'
 summary: Welcome to your week 4 assignment (part 1 of 2)!
 order: 12

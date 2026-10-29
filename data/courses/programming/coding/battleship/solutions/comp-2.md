@@ -1,7 +1,7 @@
 ---
-imported_hash: e3e9fcfd9e088118
+imported_hash: 0a190ee1e6dccb4a
 title: Comp 2
-summary: Look at checkshot(). What are the three possible return values, and under what conditions does each one occur?
+summary: Look at check_shot(). What are the three possible return values, and under what conditions does each one occur?
 order: 4
 kind: reading
 section: Battleship / Solutions

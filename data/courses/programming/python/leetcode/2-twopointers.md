@@ -1,8 +1,8 @@
 ---
-imported_hash: dd2e79e2ea4108de
+imported_hash: 639141af13c95619
 title: ex 1
 summary: tbd.. - 42. trapping rain water (hard)
-order: 10
+order: 3
 kind: notebook
 section: Leetcode
 source: sisyphus/drills/python/leetcode/2_TwoPointers.ipynb

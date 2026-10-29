@@ -1,11 +1,11 @@
 ---
-imported_hash: 7250701fd66b1cd8
+imported_hash: e4184a2841000eb3
 title: Design Docs Index
 summary: Use this index as the discoverable map of design history.
 order: 40
 kind: reading
 section: Templates / Openai repo template / Docs / Design docs
-source: learn-ai-engineering/ai-engineering/03-harness/templates/openai-repo-template/docs/design-docs/index.md
+source: learn-ai-engineering/ai-engineering/03-harness-engineering/templates/openai-repo-template/docs/design-docs/index.md
 ---
 
 # Design Docs Index

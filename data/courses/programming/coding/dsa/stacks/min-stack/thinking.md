@@ -1,7 +1,7 @@
 ---
-imported_hash: c7d626dec877b9ec
+imported_hash: fd6f96c81595e5b1
 title: Min Stack — First-Principles Thinking Guide
-summary: 'pop(): stack.pop() minstack.pop()'
+summary: 'pop(): stack.pop() min_stack.pop()'
 order: 118
 kind: reading
 section: Dsa / Stacks / Min stack

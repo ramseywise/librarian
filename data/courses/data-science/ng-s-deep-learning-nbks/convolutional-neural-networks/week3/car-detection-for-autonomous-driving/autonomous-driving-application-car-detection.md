@@ -1,5 +1,5 @@
 ---
-imported_hash: 37d68be79803e3dd
+imported_hash: a134b9edac3975cd
 title: Autonomous driving - Car detection
 summary: Updated for TF 2.x compatibility using tf.compat.v1 (Phase 1).
 order: 4

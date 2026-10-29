@@ -1,5 +1,5 @@
 ---
-imported_hash: f6be720da404f23e
+imported_hash: 185037ad36861167
 title: Text Classification Using RNN
 summary: A recurrent neural network (RNN) is a class of artificial neural networks where connections between nodes form a directed graph along a temporal sequence.
 order: 15

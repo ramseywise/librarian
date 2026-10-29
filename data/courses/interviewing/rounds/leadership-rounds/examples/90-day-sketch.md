@@ -1,5 +1,5 @@
 ---
-imported_hash: 9b02fa20ca1243ea
+imported_hash: 7473e76467d9c086
 title: 'Worked Example: 90-Day Sketch — Joining an AI Startup as Staff AI Engineer'
 summary: 'Company: Series B AI startup building an AI-native CRM for sales teams.'
 order: 54
@@ -31,6 +31,7 @@ Week 3-4: Cross-functional interviews. I'll talk to product, sales, and at least
 **What I'll deliver by day 30:**
 
 A one-pager: "What I Observed — First 30 Days." Sections:
+
 - Where quality debt is concentrated (specific, not general)
 - Current eval coverage vs what we'd need
 - One hypothesis about the most important thing to fix
@@ -45,6 +46,7 @@ A one-pager: "What I Observed — First 30 Days." Sections:
 Based on what I learned in the first 30 days, I'll pick one thing that directly addresses a pain point for the team. In the scenario here — two production regressions with limited eval coverage — my guess is the highest-value move is adding automated eval for the riskiest prompt path. Not a full eval infrastructure overhaul; one critical path, automated, with a CI check.
 
 This is deliberately small:
+
 - It fits inside their current PR process — no new tooling required
 - It's reviewable by the team with their existing expertise
 - It produces visible signal (did the eval catch anything?) quickly

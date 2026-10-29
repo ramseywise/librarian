@@ -1,5 +1,5 @@
 ---
-imported_hash: f40b23e2b21907fb
+imported_hash: 940fc7295aba4662
 title: Customer / Stakeholder Simulation
 summary: ~60% of candidates who pass coding fail this round.
 order: 41
@@ -26,6 +26,7 @@ The FDE signature round — live role-play where the interviewer plays a custome
 30–60 min. The interviewer improvises off your responses — written scripts break immediately. *Habits* pass.
 
 Common scenarios:
+
 - Kickoff discovery call (blank-slate customer)
 - Delivering bad news (model underperforms, timeline slips)
 - Scope-creep pushback (competitor feature demand)
@@ -64,7 +65,7 @@ Decisive for FDE. Partial signal for DS (stakeholder communication in project si
 
 ## Folder contents
 
-```
+```text
 customer-simulation/
 ├── README.md          — this file
 ├── questions.md       — 12 scenario prompts with testing signal, response structure, red flags

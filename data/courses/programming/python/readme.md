@@ -1,5 +1,5 @@
 ---
-imported_hash: 45ca41bdeffaa8dc
+imported_hash: b2034c2cc59f1226
 title: Python
 summary: 'HackerRank categories: Introduction, Basic Data Types, Strings, Sets, Math, Itertools, Collections, Date and Time, Errors and Exceptions, Classes, Built-ins, Python Functionals, Closures and Decorators, Numpy, Regex and Parsing, XML, Debugg…'
 order: 1
@@ -11,7 +11,6 @@ source: sisyphus/drills/python/README.md
 
 | Folder | What | Count |
 |---|---|---|
-| [`basics/`](basics/) | Data-work fundamentals notebooks: overview, texts, arrays, DataFrames, plotting, aggregation, time series | 7 notebooks + `data/` |
 | [`hackerrank/`](hackerrank/) | HackerRank Python track solutions by category | ~120 files, 18 categories |
 | `leetcode/` | Arrays/hashing, two pointers, sliding windows, linked lists, NeetCode, probability problems; *Competitive Programmer's Handbook* PDF; `LeetCodeCheat/` | Nested git repo ([ramseywise/Leet-Code](https://github.com/ramseywise/Leet-Code)), gitignored |
 

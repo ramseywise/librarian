@@ -1,7 +1,7 @@
 ---
-imported_hash: 8cba09b23727b3a3
+imported_hash: 3130e5798759462d
 title: following line is optional for custom vocabulary installation
-summary: postaggedsent = nltk.postag(sentence.split()) rp = nltk.RegexpParser(grammar) shallowparsedsent = rp.parse(postaggedsent) print(shallowparsedsent)
+summary: pos_tagged_sent = nltk.pos_tag(sentence.split()) rp = nltk.RegexpParser(grammar) shallow_parsed_sent = rp.parse(pos_tagged_sent) print(shallow_parsed_sent)
 order: 2
 kind: notebook
 section: Ch01   Natural Language Processing Basics

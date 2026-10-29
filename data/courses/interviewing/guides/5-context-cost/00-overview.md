@@ -1,5 +1,5 @@
 ---
-imported_hash: 73747f12103ba006
+imported_hash: a13c129a39f61e0f
 title: Pillar 5 — Context Engineering & Cost/Latency
 summary: What actually goes into the model's context window, in what order, and what it costs.
 order: 12
@@ -17,7 +17,7 @@ context rot, token economics, and latency budgets.
 ## Learning path
 
 1. **The mental model** — notes: [context-engineering.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/context-engineering.md)
-   + [notes/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/02-context-engineering/notes) (the 5 context layers,
+   - [notes/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/02-context-engineering/notes) (the 5 context layers,
    static-first ordering); librarian's *Prefix Caching* page for the caching mechanism.
 2. **Why it matters mechanically** — KV cache + prefill/decode economics from the
    [pillar-2 interview guide](../2-llm-fundamentals/interview-guide.md) §§1,4; ALiBi
@@ -45,6 +45,7 @@ context rot, token economics, and latency budgets.
 | ADK context diagrams | image | [../../images/](../../images/) | static-vs-dynamic context, vibe-coding stakes spectrum |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [system-design-round](../../rounds/system-design-round/readme.md) (cost/latency trade-offs are
 its bread and butter).

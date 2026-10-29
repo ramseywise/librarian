@@ -1,8 +1,8 @@
 ---
-imported_hash: fb71f1abfb7baa57
+imported_hash: 7e4741ffa5444fa8
 title: London Fully Connected 2025 Workshop
 summary: This repo contains the material for the "Building Agents from Scratch" workshop.
-order: 2
+order: 3
 kind: reading
 section: Chatbot / Deep research bot
 source: learn-ai-engineering/generative-ai/07-agentic-applications/chatbot/deep-research-bot/README.md

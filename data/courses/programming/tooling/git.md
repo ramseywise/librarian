@@ -1,5 +1,5 @@
 ---
-imported_hash: f720f24bd7025064
+imported_hash: a0e9640ad5a46be6
 title: Git — Workflow Reference
 summary: Branch management, PR review, and stash patterns.
 order: 2
@@ -33,6 +33,7 @@ Prefer a named branch over stash when the working tree is large — stashes are 
 and two large stashes with overlapping files cause messy conflicts on pop.
 
 **Option A — Create a WIP branch (recommended for large working trees):**
+
 ```bash
 git checkout -b my-wip-branch
 git add -A && git commit -m "wip: <description>"
@@ -47,6 +48,7 @@ git rebase main             # pick up the merged changes
 ```
 
 **Option B — Stash (fine for small/focused changes):**
+
 ```bash
 git stash list              # check for existing stashes first
 git stash drop stash@{0}    # drop stale stashes before adding a new one

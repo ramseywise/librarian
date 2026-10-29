@@ -1,5 +1,5 @@
 ---
-imported_hash: f54d4761b30094fa
+imported_hash: 752ac63badf97381
 title: Conventions & Tunables
 summary: Based on the real SANYI drill from the librarian wiki.
 order: 24
@@ -15,6 +15,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/conventions.md
 Based on the real SANYI drill from the librarian wiki.
 
 **The diff**
+
 ```python
 # src/agents/rag_agent/confidence.py
          if self.crag_delta is None:
@@ -31,6 +32,7 @@ Based on the real SANYI drill from the librarian wiki.
 > **[Info / BN-1]** `confidence.py:3` — `0.42` is a policy threshold living in business logic. The file's own convention ten lines up is env-driven module constants (`_SCORE_DELTA_MIN = float(os.getenv(...))`). This threshold now requires a code change to adjust.
 >
 > Fix is mechanical — hoist to a named, env-overridable constant:
+>
 > ```python
 > _HOPELESS_SCORE_THRESHOLD = float(os.getenv("CRAG_HOPELESS_THRESHOLD", "0.42"))
 > ```
@@ -44,6 +46,7 @@ Based on the real SANYI drill from the librarian wiki.
 ## Example 2: Prompt hardcoded in agent code instead of config
 
 **The diff**
+
 ```python
 # agents/summarizer.py
   class SummarizerAgent:
@@ -71,6 +74,7 @@ Based on the real SANYI drill from the librarian wiki.
 **Model review**
 
 > **[Warning]** `summarizer.py:5-8` — The system prompt was moved from `load_prompt("summarizer_system")` (configurable, swappable, versionable) into a hardcoded class attribute. This means:
+>
 > - Changing the prompt requires a code change, review, and deploy
 > - A/B testing prompt variants now requires code branches, not config changes
 > - The prompt can't be overridden per-environment (staging might need different behavior)
@@ -87,6 +91,7 @@ Based on the real SANYI drill from the librarian wiki.
 ## Example 3: Eval threshold changed without updating documentation or alerts
 
 **The diff**
+
 ```python
 # evals/graders.py
   class QualityGrader:
@@ -107,6 +112,7 @@ Based on the real SANYI drill from the librarian wiki.
 **Model review**
 
 > **[Warning]** `graders.py:2` — Pass threshold dropped from 0.7 to 0.4 — nearly halved. This changes what the eval system considers "good enough." Questions:
+>
 > - Was this calibrated against human-labeled examples, or is it vibes-based?
 > - Does the alerting/monitoring system reference this threshold? A 0.4 pass rate will look healthy under old 0.7-based dashboards.
 > - Is this meant to be temporary (relaxed during development) or permanent?

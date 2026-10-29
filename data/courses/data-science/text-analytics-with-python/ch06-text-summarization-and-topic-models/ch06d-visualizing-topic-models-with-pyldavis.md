@@ -1,7 +1,7 @@
 ---
-imported_hash: c6fe88857170161c
+imported_hash: a55a570803da4a61
 title: Ch06d   Visualizing Topic Models with pyLDAvis
-summary: warnings.filterwarnings('ignore') pyLDAvis.enablenotebook()
+summary: warnings.filterwarnings('ignore') pyLDAvis.enable_notebook()
 order: 16
 kind: notebook
 section: Ch06   Text Summarization and Topic Models

@@ -1,19 +1,17 @@
 ---
-imported_hash: 2b2111747d7fdc0d
-title: The Autonomy Ladder — four types of agentic loop
+imported_hash: c4b5f3899170b79d
+title: 7 — The Autonomy Ladder
 summary: 'Every loop starts with a human doing four things: approving each tool call, judging when the work is done, deciding when to start a run, and holding a session open while it runs.'
-order: 7
+order: 9
 kind: reading
 section: Notes
-source: learn-ai-engineering/ai-engineering/04-loop/notes/07-autonomy-ladder.md
+source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/07-autonomy-ladder.md
 ---
 
-# The Autonomy Ladder — four types of agentic loop
+# 7 — The Autonomy Ladder
 
-> Topic note. Overview: [loop-engineering.md](loop-engineering.md).
-> This is the **autonomy** axis. It is orthogonal to LangChain's four *capability* levels
-> in [loop-engineering.md §2](loop-engineering.md) — that taxonomy asks *what the loop
-> automates*; this one asks *how much of the operator's job has been handed off*.
+> The second axis. LangChain's four capability levels ([note 01](01-what-a-loop-is.md#the-map-of-this-pillar))
+> ask *what the loop automates*; this ladder asks *how much of the operator's job has been handed off*.
 
 ---
 
@@ -35,6 +33,8 @@ deciding when to stop.
 | 2 — Goal-based | The **stop condition** | A measurable end state |
 | 3 — Time-based | The **trigger** (to a clock) | Rung 2's verifier |
 | 4 — Proactive | The trigger *and* the session | A verifier you trust unattended |
+
+In Claude Code: rung 2 is `/goal`, rung 3 is `/loop`, rung 4 is `/schedule` ([note 06](06-triggers-and-schedules.md#claude-code)).
 
 ---
 
@@ -80,7 +80,7 @@ on hosted infrastructure. Overnight work and event-driven automation live here.
 The prerequisite is not technical, it is evidential: **prove the loop works at rung 2 or 3
 with a verifier you trust** before removing the session. A proactive loop with an
 unproven verifier is an unattended, credentialed process with no stop condition — see
-[03-harness/notes/04-execution-boundaries.md](../03-harness/notes/04-execution-boundaries.md)
+[03-harness-engineering/notes/04-execution-boundaries.md](../../03-harness-engineering/notes/04-execution-boundaries.md)
 for the credential and cost-ceiling consequences.
 
 ---
@@ -89,7 +89,7 @@ for the credential and cost-ceiling consequences.
 
 The two taxonomies are independent — a loop has a position on each axis:
 
-| | Autonomy rung | Capability level ([§2](loop-engineering.md)) |
+| | Autonomy rung | Capability level ([note 01](01-what-a-loop-is.md#the-map-of-this-pillar)) |
 |---|---|---|
 | Asks | How much has the human handed off? | What does the loop automate? |
 | Rung/level 1 | Turn-based (approve tools) | Agent loop (automates work) |
@@ -101,7 +101,21 @@ The rungs and levels look parallel at 3 and 4 but are not the same claim: capabi
 is about *what triggers a run*, autonomy rung 3 is about *who holds the session*. A
 hill-climbing loop (level 4) can perfectly well run at autonomy rung 1 — a human sitting
 there approving each rewrite of the config. That combination is in fact the recommended
-starting point for the [evolve loop](evolve-loop.md).
+starting point for the [evolve loop](08-self-improving-loops.md#the-evolve-loop).
+
+### A third view: the adoption ladder
+
+*learn-harness-engineering* (lecture 13) gives a practical adoption order that cuts across both axes:
+
+| Level | Name | What it adds | Rung / capability |
+|---|---|---|---|
+| 1 | Goal runner | `/goal` with a stop condition | rung 2 |
+| 2 | Scheduled single task | One automation on a timer (e.g. morning CI check) | rung 3–4 |
+| 3 | Multi-agent loop | Maker/checker split, a worktree per finding | capability 2 |
+| 4 | Self-feeding loop | Finds its own next task in external state (issues, feature list) | capability 3 |
+| 5 | Fleet orchestration | Several loops in parallel, sharing a memory layer | — |
+
+Most teams sit between 2 and 3. Level 1 pays off fastest. The [practice labs](../practice/01-exercises.md) follow roughly this order.
 
 ---
 
@@ -122,4 +136,4 @@ starting point for the [evolve loop](evolve-loop.md).
 
 ---
 
-→ Related: [evolve-loop.md](evolve-loop.md) — the slow loop that edits the fast one.
+→ Next: [08-self-improving-loops.md](08-self-improving-loops.md) — loops that rewrite themselves.

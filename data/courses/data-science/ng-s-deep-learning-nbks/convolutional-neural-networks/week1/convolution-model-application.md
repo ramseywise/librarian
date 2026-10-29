@@ -1,5 +1,5 @@
 ---
-imported_hash: 2b2ec4aba47b8b21
+imported_hash: 0a35e721917487c8
 title: 'Convolutional Neural Networks: Application'
 summary: Updated for TF 2.x compatibility using tf.compat.v1 (Phase 1).
 order: 1

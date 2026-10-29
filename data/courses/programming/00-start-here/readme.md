@@ -1,5 +1,5 @@
 ---
-imported_hash: 64eda636d5de8c0e
+imported_hash: 3fe8f19bcce5560f
 title: Drills — the gym
 summary: Practice by language and topic, not a sequence.
 order: 1
@@ -22,7 +22,7 @@ files stay here and are linked, not imported.
 
 | Track | Folder | What's there | Status |
 |---|---|---|---|
-| Python | [`python/`](../python/readme.md) | Basics notebooks, ~120 HackerRank solutions, LeetCode pattern notebooks | Solid |
+| Python | [`python/`](../python/readme.md) | ~120 HackerRank solutions, LeetCode pattern notebooks | Solid |
 | SQL | [`sql/`](../sql/readme.md) | 52 HackerRank solutions (select, join, aggregation); 1 window-functions drill | Solid on basics; CTEs and analytics patterns to add |
 | TypeScript (+ HTML/CSS) | [`typescript/`](../typescript/readme.md) | HackerRank scaffold, ESLint reference, 1 types drill | Thin — biggest gap |
 | Terraform | [`terraform/`](../terraform/readme.md) | Track plan, 1 review drill | Started |
@@ -50,6 +50,7 @@ source: original            # original | hackerrank | leetcode | <upstream URL>
 ---
 ```
 
+The title lives in frontmatter only — no `# H1` in the body (markdownlint MD025 counts both).
 Body sections, in order:
 
 1. **Prompt** — the task, inputs, constraints. Safe to read before attempting.
@@ -70,11 +71,14 @@ upstream layout and are listed in each track README instead of being rewritten.
 
 `coding/drill-log.md` is the one append-only log (date, drill, stance, time, grade). The
 `coding-drill` skill writes to it; log language-track drills there too so progress stays in
-one place.
+one place. Use the drill's file slug as the QID (`top-orders-per-user`) — librarian's Practice
+mode reads the Date/QID/Score columns live (never the Note column, never copied into librarian)
+to show attempt counts per drill.
 
 ## History
 
 Moved from learn-ai-engineering `programming/` on 2026-10-28: `HackerRank/{python,sql,typescript}`
-→ `{python,sql,typescript}/hackerrank/`, `Python Basics/` → `python/basics/`, `Leet-Code/` →
+→ `{python,sql,typescript}/hackerrank/`, `Python Basics/` → `python/basics/` (moved back the same day to learn-ai-engineering
+`data-analytics/python-basics/` — it is a tutorial, not drills, and the public curriculum starts there), `Leet-Code/` →
 `python/leetcode/` (a nested git repo, gitignored), `git.md` → `tooling/`, `eslint.md` →
 `typescript/`.

@@ -1,5 +1,5 @@
 ---
-imported_hash: 4e5bf638137d508e
+imported_hash: 33c74f9cc9205526
 title: Customer Simulation — Study Guide
 summary: 'The most common failure in this round: arriving with a solution and defending it.'
 order: 44
@@ -31,6 +31,7 @@ Mirroring is not parroting. It's restating the emotional content of what they sa
 **Formula**: "[Restate the core problem in their language]. [Brief acknowledgment of what that means for them]. [Then your question or response]."
 
 Example:
+
 - They say: "The pilot numbers look bad and renewal is next month."
 - Wrong: "I understand. Here's our plan…"
 - Right: "The renewal is next month and the numbers aren't there yet. That's a hard position. Before I share what I'm thinking — what does your VP need to see to feel confident continuing?"
@@ -44,12 +45,14 @@ Example:
 Dumbing down is condescending and loses technical credibility. Translation is altitude-matching: you choose the level of abstraction that maps to how your audience makes decisions, not how you build systems.
 
 **Altitude guide**:
+
 - C-suite / board: outcomes and risk. Business impact, dollars, time, competitive position.
 - VP / Director: trade-offs and timelines. What decisions does this force, what does each option cost.
 - Manager / champion: implementation and adoption. What does this change about how their team works.
 - Technical team: architecture and constraints. What actually connects to what, what breaks under load.
 
 **Analogy construction**:
+
 1. Find the familiar concept (something they already understand and trust).
 2. Map the key relationship (not all the details — just the structural parallel).
 3. Name the limit ("this analogy breaks down when…") to show you're not hiding complexity.
@@ -87,11 +90,13 @@ Saying "no" to scope is a social failure in a customer relationship. The goal is
 This reframes the conversation from your limitation to their priority. You're not blocking them; you're asking them to choose.
 
 **Variants**:
+
 - Feature creep: "We can add that. It would push [X] out by [N] weeks or cost [Y]. Which milestone matters most to you right now?"
 - Competitor comparison: "Tell me which parts of that demo were most relevant — I want to make sure we're solving the right problem, not just matching a feature list."
 - "Just one more thing": "Happy to scope that. Let me make sure I understand what's driving it so we can figure out the fastest path."
 
 **What you never say**:
+
 - "That's out of scope." (Hard boundary, no discovery, no path)
 - "That's not what you asked for." (Technically correct, relationship-damaging)
 - "We can try to fit it in." (False commitment)
@@ -103,6 +108,7 @@ This reframes the conversation from your limitation to their priority. You're no
 ### 6. Next step always
 
 Every conversation without a concrete next step is a relationship in decay. The next step must be:
+
 - **Specific** — not "we'll follow up" but "I'll send the revised metrics framework"
 - **Dated** — not "soon" but "by Thursday"
 - **Owned** — one person's name on it
@@ -159,6 +165,7 @@ Discovery questions by industry. These aren't scripts — they're prompts to sur
 ### Altitude matching checklist
 
 Before explaining anything technical, ask yourself:
+
 1. What decision is this person making?
 2. What do they need to understand to make it well?
 3. What can I leave out without misleading them?
@@ -219,6 +226,7 @@ Example: 10,000 requests/day × 1,500 tokens avg = 15M tokens/day × 30 = 450M t
 - Monthly savings = current_monthly_cost × Y%
 
 **Drill**: Practice with these numbers:
+
 - A 200-person customer service team spends 30% of their time on FAQ responses. Average salary $55K fully-loaded. What's the annual cost of that 30%?
 - A lending company processes 5,000 applications/month. Manual review takes 20 min each. An AI system could handle 80% in 2 min each. What's the time savings?
 
@@ -235,6 +243,7 @@ Reflect the emotional content before the factual content.
 The formula: "I can see why that's frustrating." + silence. Don't immediately follow with "but." The silence is doing work — it lets them feel heard before you move.
 
 What not to say:
+
 - "I understand how you feel." (Claimed empathy, not demonstrated)
 - "Let me explain why that happened." (Immediately defensive)
 - "Actually, the metrics show…" (Factually correct, emotionally deaf)
@@ -242,6 +251,7 @@ What not to say:
 ### Reading the room in real-time
 
 Signals the interviewer might give that you should respond to, not override:
+
 - Repeating the same concern in different words → they don't feel heard yet; mirror harder before moving on
 - Short yes/no answers → they've disengaged; ask what's on their mind
 - Escalating emotional tone → stop solving, start listening
@@ -277,6 +287,7 @@ You don't have to fill silence. Pausing 2–3 seconds after they speak before re
 ### Recording yourself
 
 The habits you rely on under pressure are visible only in playback, not in the moment. Record at least three sessions. Listen for:
+
 - First word out of your mouth (solution vs. question)
 - Jargon density under time pressure
 - Tone shift when challenged

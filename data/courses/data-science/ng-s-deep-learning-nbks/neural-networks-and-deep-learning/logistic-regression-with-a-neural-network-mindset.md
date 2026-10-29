@@ -1,5 +1,5 @@
 ---
-imported_hash: 6262af73a6c4be51
+imported_hash: 23928bba8d321450
 title: Logistic Regression with a Neural Network mindset
 summary: Welcome to your first (required) programming assignment!
 order: 14

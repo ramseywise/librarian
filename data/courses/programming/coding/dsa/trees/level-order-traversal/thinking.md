@@ -1,7 +1,7 @@
 ---
-imported_hash: c70113b2e45bdb9d
+imported_hash: bf32f3004abca32c
 title: Level Order Traversal — First-Principles Thinking Guide
-summary: 'While queue is not empty: levelsize = len(queue) levelvalues = [] For each of levelsize nodes: node = queue.popleft() levelvalues.append(node.val) Enqueue left and right children result.append(levelvalues)'
+summary: 'While queue is not empty: level_size = len(queue) level_values = [] For each of level_size nodes: node = queue.popleft() level_values.append(node.val) Enqueue left and right children result.append(level_values)'
 order: 133
 kind: reading
 section: Dsa / Trees / Level order traversal

@@ -13,6 +13,7 @@ Private and tombstoned wiki pages are never surfaced here.
 
 from __future__ import annotations
 
+import os
 import re
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -28,6 +29,14 @@ from core.wiki_common import WIKILINK_RE, slugify
 ROOT = Path(__file__).parent.parent.parent
 COURSES_DIR = ROOT / "data" / "courses"
 WIKI_DIR = ROOT / "data" / "wiki"
+# Read live from the private sisyphus checkout and never copied into data/ — this repo is
+# public and the log is personal history. Absent → drills just show no attempts.
+DRILL_LOG = (
+    Path(os.environ.get("SISYPHUS_DIR", ROOT.parent / "sisyphus"))
+    / "drills"
+    / "coding"
+    / "drill-log.md"
+)
 
 ASSET_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
 MAX_CONCEPTS = 12
@@ -148,6 +157,8 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
     wiki = _load_wiki(wiki_dir)
     slugs = {slugify(r.title): r.id for r in wiki.values()} | {slugify(i): i for i in wiki}
     matcher, by_title = _concept_matcher(wiki)
+    # Private/tombstoned page ids: never echoed back, not even as a drill tag.
+    hidden = {md.stem for md in wiki_dir.rglob("*.md")} - set(wiki) if wiki_dir.is_dir() else set()
 
     courses: list[dict[str, Any]] = []
     lessons: dict[str, LessonRec] = {}
@@ -178,7 +189,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                         source=str(post.get("source") or ""),
                         body=post.content,
                         concepts=_rank_concepts(post, wiki, slugs, matcher, by_title),
-                        drill={k: post[k] for k in DRILL_KEYS if post.get(k) is not None}
+                        drill=_drill_meta(post, wiki, slugs, hidden)
                         if post.get("kind") == "drill"
                         else {},
                     )
@@ -228,6 +239,19 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
 
 def _meta(path: Path) -> dict[str, Any]:
     return frontmatter.load(path).metadata if path.exists() else {}
+
+
+def _drill_meta(
+    post: frontmatter.Post, wiki: dict[str, WikiRef], slugs: dict[str, str], hidden: set[str]
+) -> dict[str, Any]:
+    """DRILL_KEYS, plus `tags`: declared concepts with no wiki page yet (shown as plain labels)."""
+    meta = {k: post[k] for k in DRILL_KEYS if post.get(k) is not None}
+    tags = [
+        str(x)
+        for x in (post.get("wiki") or [])
+        if not _resolve_wikilink(str(x), wiki, slugs) and slugify(str(x)) not in hidden
+    ]
+    return meta | ({"tags": tags} if tags else {})
 
 
 def _rank_concepts(
@@ -371,6 +395,7 @@ def practice(
 ) -> list[dict[str, Any]]:
     """Drills (lessons of kind "drill"), filtered — the Practice mode list."""
     cat = catalog()
+    attempts = _drill_attempts(DRILL_LOG)
     out = []
     for r in cat.lessons.values():
         if r.kind != "drill":
@@ -379,10 +404,47 @@ def practice(
             continue
         if difficulty and r.drill.get("difficulty") != difficulty:
             continue
-        if concept and concept not in r.concepts:
+        if concept and concept not in r.concepts and concept not in r.drill.get("tags", []):
             continue
         concepts = [_wiki_json(cat.wiki[c]) for c in r.concepts if c in cat.wiki]
-        out.append({**_outline(r), "course": r.course, "concepts": concepts})
+        row = {**_outline(r), "course": r.course, "concepts": concepts}
+        if (hit := attempts.get(Path(r.id).name)) is not None:
+            row["attempts"] = hit
+        out.append(row)
+    return out
+
+
+def _drill_attempts(log: Path) -> dict[str, dict[str, Any]]:
+    """drill slug (log QID) → {count, last, score} from the log's Markdown table.
+
+    Only those three columns are read; the free-text Note column never leaves the file.
+    """
+    try:
+        text = log.read_text()
+    except OSError:
+        return {}
+    cols: list[str] = []
+    out: dict[str, dict[str, Any]] = {}
+    for line in text.splitlines():
+        if not line.startswith("|"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if not cols:
+            cols = [c.lower() for c in cells]
+            continue
+        row = dict(zip(cols, cells, strict=False))
+        qid, date = row.get("qid", ""), row.get("date", "")
+        if not qid or not re.match(r"\d{4}-\d{2}-\d{2}$", date):
+            continue  # the |---| separator, or a malformed row
+        prev = out.get(qid)
+        if prev is None or date >= prev["last"]:
+            out[qid] = {
+                "count": (prev or {"count": 0})["count"] + 1,
+                "last": date,
+                "score": row.get("score", ""),
+            }
+        else:
+            prev["count"] += 1
     return out
 
 

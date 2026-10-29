@@ -1,11 +1,11 @@
 ---
-imported_hash: 573a8ddbcce76697
+imported_hash: 66512febb60fb83d
 title: Expert Guides Templates
 summary: Please provide your expert guidance, including relevant examples, best practices, and any frameworks or approaches that would be helpful.
-order: 20
+order: 22
 kind: reading
 section: Templates / Prompts
-source: learn-ai-engineering/ai-engineering/02-context/templates/prompts/expert_guides.md
+source: learn-ai-engineering/ai-engineering/02-context-engineering/templates/prompts/expert_guides.md
 ---
 
 # Expert Guides Templates

@@ -1,7 +1,7 @@
 ---
-imported_hash: 4acc7dc78c2ba5eb
+imported_hash: f61799f5b08e04cf
 title: Parts of Speech (POS) Tagging
-summary: 'import pandas as pd import spacy nlp = spacy.load(''encore'', parse=True, tag=True, entity=True) sentencenlp = nlp(sentence) # POS tagging with Spacy spacypostagged = [(word, word.tag, word.pos) for word in sentencenlp] pd.DataFrame(spacypost…'
+summary: 'import pandas as pd import spacy nlp = spacy.load(''en_core'', parse=True, tag=True, entity=True) sentence_nlp = nlp(sentence) # POS tagging with Spacy spacy_pos_tagged = [(word, word.tag, word.pos) for word in sentence_nlp] pd.DataFrame(spac…'
 order: 6
 kind: notebook
 section: Ch03   Processing and Understanding Text

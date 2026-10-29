@@ -1,8 +1,8 @@
 ---
-imported_hash: ec3f598772d3bbee
+imported_hash: 0b7d242cf37d829f
 title: Getting Started with Prompt Engineering
 summary: This notebook contains examples and exercises to learning about prompt engineering.
-order: 9
+order: 8
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-lecture.ipynb

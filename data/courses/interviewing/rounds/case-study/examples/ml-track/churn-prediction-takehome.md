@@ -1,5 +1,5 @@
 ---
-imported_hash: 312ae95e81fe80df
+imported_hash: 2def55d92783907a
 title: 'Worked Example: Churn Prediction Take-Home'
 summary: This is a simulated take-home submission — both the analytical notebook and the memo writeup.
 order: 17
@@ -88,6 +88,7 @@ This is our anchor. Any model we build must beat 0.71 to justify the complexity.
 **Model: LightGBM**
 
 **Why LightGBM over alternatives:**
+
 - 100K rows with ~25 features — this is the tabular sweet spot for gradient boosting. Neural nets typically need millions of rows to justify their parameter overhead on this kind of structured data.
 - Handles mixed feature types (categorical + numeric) natively.
 - `scale_pos_weight` built-in for class imbalance.
@@ -95,6 +96,7 @@ This is our anchor. Any model we build must beat 0.71 to justify the complexity.
 - SHAP integration for feature importance.
 
 **Pipeline:**
+
 ```python
 # 1. Train/val/test split: 70/15/15, stratified on churn label
 # 2. Feature preprocessing:
@@ -108,6 +110,7 @@ This is our anchor. Any model we build must beat 0.71 to justify the complexity.
 ```
 
 **Results:**
+
 | Metric | Baseline (LR) | LightGBM |
 |--------|--------------|----------|
 | AUROC | 0.71 | 0.83 |
@@ -124,6 +127,7 @@ AUROC 0.83 clears our target of 0.82. Top-decile precision of 68% means that if 
 The model must not just discriminate but also be calibrated — a predicted probability of 0.7 should match actual churn rates in that risk band. I computed a reliability diagram (calibration curve). The model is slightly overconfident at high probabilities — I'd apply isotonic regression calibration before production.
 
 **Threshold analysis:**
+
 | Threshold | Precision | Recall | F1 | Customers targeted |
 |-----------|-----------|--------|----|--------------------|
 | 0.3 | 52% | 79% | 0.63 | 22,000 |
@@ -131,12 +135,14 @@ The model must not just discriminate but also be calibrated — a predicted prob
 | 0.7 | 74% | 38% | 0.50 | 6,200 |
 
 The right threshold depends on the campaign budget. At $5/intervention:
+
 - 0.3 threshold: 22K contacts × $5 = $110K campaign cost. 0.79 × 8,000 churners saved × $200 LTV = $1.26M. ROI: 11.5×.
 - 0.7 threshold: 6.2K contacts × $5 = $31K cost. 0.38 × 8,000 = 3,040 churners saved × $200 = $608K. ROI: 19.6×. Better ROI but fewer churners saved.
 
 *I would present both scenarios and ask the business which they prefer: maximize total churners saved or maximize ROI on the campaign budget.*
 
 **Top-5 SHAP feature importances:**
+
 1. `logins_last_30d` (negative: fewer logins → higher churn risk)
 2. `tenure_days` (negative: newer customers churn more)
 3. `support_contacts_last_90d` (positive: more support contacts → higher churn risk)
@@ -164,16 +170,19 @@ These are actionable for the retention team: a new customer (low tenure) who has
 *This section is mandatory in every take-home. It signals judgment about what matters most.*
 
 **With two more hours:**
+
 1. Threshold calibration using a business cost matrix (false positive cost = $5 wasted campaign spend; false negative cost = $200 LTV lost). Compute the optimal threshold from first principles rather than eyeballing.
 2. Segment-level eval: is AUROC consistent across plan tiers and tenure cohorts? A model with AUROC 0.83 overall but 0.61 on new customers would need a separate model or segment-specific calibration.
 3. Test a simple neural net (2-layer MLP) on the same holdout set to validate that LightGBM is the right choice and the gap is not material.
 
 **Not done — and why I deprioritized it:**
+
 - Ensemble stacking (LightGBM + LR + neural net) — would likely add 1–2 AUROC points. Deprioritized because the single model already clears the target, and explainability is harder with ensembles.
 - Temporal validation — ideally I'd train on months 1–12 and test on month 13, rather than a random split. This would validate that the model generalizes forward in time. Deprioritized due to timebox; I'd do this before production.
 - Hyperparameter search beyond manual tuning — Optuna run would likely improve by another 1–2 points. Not worth the timebox investment.
 
 **What I'd want from the business before production:**
+
 - Confirmed cost matrix for threshold setting
 - Decision on A/B holdout design
 - Approval of model refresh cadence (quarterly recommended)

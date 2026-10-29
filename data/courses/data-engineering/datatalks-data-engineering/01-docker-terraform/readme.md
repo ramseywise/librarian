@@ -1,5 +1,5 @@
 ---
-imported_hash: a3ffa0454d058798
+imported_hash: 895e922f27c42b5f
 title: Introduction
 summary: We suggest watching videos in the same order as in this document.
 order: 2
@@ -186,7 +186,7 @@ For the course you'll need:
 
 # Homework
 
-* [Homework](../cohorts/2024/01-docker-terraform/homework.md)
+* [Homework](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/cohorts/2024/01-docker-terraform/homework.md)
 
 
 # Community notes

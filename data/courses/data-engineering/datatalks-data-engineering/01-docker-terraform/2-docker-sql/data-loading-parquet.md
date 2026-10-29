@@ -1,5 +1,5 @@
 ---
-imported_hash: bf7c99065a51aff6
+imported_hash: fe0bb19f8ad6bd3f
 title: Data loading
 summary: 'Here we will be using the .paraquet file we downloaded and do the following: - Check metadata and table datatypes of the paraquet file/table - Convert the paraquet file to pandas dataframe and check the datatypes.'
 order: 9

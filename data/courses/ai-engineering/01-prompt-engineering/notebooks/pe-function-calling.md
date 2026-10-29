@@ -1,8 +1,8 @@
 ---
-imported_hash: aad0504be9d250cd
+imported_hash: e6c89056b6b664fc
 title: Function Calling with OpenAI APIs
 summary: As demonstrated in the OpenAI documentation, here is a simple example of how to define the functions that are going to be part of the request.
-order: 8
+order: 7
 kind: notebook
 section: Notebooks
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notebooks/pe-function-calling.ipynb

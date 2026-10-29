@@ -1,7 +1,7 @@
 ---
-imported_hash: 75671a631b5ef1d4
+imported_hash: 1e9345fcd1fb79a6
 title: '"You should see that the training set accuracy is about 94.9%"'
-summary: 'def displayData(indicestodisplay = None): """ Function that picks 100 random rows from X, creates a 20x20 image from each, then stitches them together into a 10x10 grid of images, and shows it.'
+summary: 'def displayData(indices_to_display = None): """ Function that picks 100 random rows from X, creates a 20x20 image from each, then stitches them together into a 10x10 grid of images, and shows it.'
 order: 3
 kind: notebook
 section: Ex3

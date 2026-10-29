@@ -1,5 +1,5 @@
 ---
-imported_hash: 5e6ac40fc0bc4de8
+imported_hash: c044ea81147476de
 title: Debugging a Broken Deduplication Script
 summary: 'def dedup(records, seen=set()): result = [] for r in records: if r["id"] not in seen: seen.add(r["id"]) result.append(r) return result'
 order: 34
@@ -65,7 +65,8 @@ print("Run 2:", dedup(records_batch2))
 [NARRATE: "I'm predicting: run 1 should return records with id=1 and id=2. Run 2 should return the record with id=3. Let me see what actually happens."]
 
 **Actual output**:
-```
+
+```text
 Run 1: [{'id': 1, 'val': 'a'}, {'id': 2, 'val': 'b'}]
 Run 2: []
 ```

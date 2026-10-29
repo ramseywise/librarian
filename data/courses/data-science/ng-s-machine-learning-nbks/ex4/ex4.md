@@ -1,7 +1,7 @@
 ---
-imported_hash: 664f7f2bcdc81544
+imported_hash: 3824938b0326c1fa
 title: The matrices Theta1 and Theta2 will now be in your workspace
-summary: 'def displayData(indicestodisplay = None): """ Function that picks 100 random rows from X, creates a 20x20 image from each, then stitches them together into a 10x10 grid of images, and shows it.'
+summary: 'def displayData(indices_to_display = None): """ Function that picks 100 random rows from X, creates a 20x20 image from each, then stitches them together into a 10x10 grid of images, and shows it.'
 order: 4
 kind: notebook
 section: Ex4

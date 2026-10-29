@@ -1,7 +1,7 @@
 ---
-imported_hash: 88804f525ea89c61
+imported_hash: 303c0ce1805ce2ea
 title: Comp 3
-summary: placeship(Ship('Cruiser', 3), row=0, col=0, horizontal=False), which cells should the ship occupy?
+summary: place_ship(Ship('Cruiser', 3), row=0, col=0, horizontal=False), which cells should the ship occupy?
 order: 5
 kind: reading
 section: Battleship / Solutions

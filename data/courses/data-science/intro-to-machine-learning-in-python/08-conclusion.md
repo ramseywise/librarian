@@ -1,7 +1,7 @@
 ---
-imported_hash: d18a816785e2a672
+imported_hash: cec760a174b78114
 title: Conclusion
-summary: 'class MyTransformer(BaseEstimator, TransformerMixin): def init(self, firstparamter=1, secondparameter=2): # all parameters must be specified in the init function self.firstparamter = 1 self.secondparameter = 2'
+summary: 'class MyTransformer(BaseEstimator, TransformerMixin): def init(self, first_paramter=1, second_parameter=2): # all parameters must be specified in the init function self.first_paramter = 1 self.second_parameter = 2'
 order: 9
 kind: notebook
 source: learn-ai-engineering/data-science/Intro to Machine Learning in Python/08-conclusion.ipynb

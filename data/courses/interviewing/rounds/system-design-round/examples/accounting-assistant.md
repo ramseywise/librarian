@@ -1,7 +1,7 @@
 ---
-imported_hash: 2e6ecd97282e8b21
+imported_hash: 57db65087da592cd
 title: 'Example: Accounting Support Agent'
-summary: '→ Route to knowledge layer: Procedural → RAG over help articles (vector + BM25) Regulatory → Knowledge graph traversal + rule lookup Entity → Knowledge graph query (structured) Out-of-scope → polite decline + suggest help center'
+summary: '"Design a support agent for an accounting SaaS product.'
 order: 76
 kind: reading
 section: System design round / Examples
@@ -11,11 +11,13 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/accounting-ass
 # Example: Accounting Support Agent
 
 ## Prompt
+
 "Design a support agent for an accounting SaaS product. It helps users with bookkeeping questions, VAT rules, and navigating the product — drawing from a knowledge graph of regulatory rules, help articles, and entity relationships."
 
 ## Step 1: Clarify & scope (3 min)
 
 **Questions I'd ask**:
+
 - Knowledge domains: product help (how-to), regulatory rules (VAT, tax), or both?
 - Jurisdiction: single country or multi-country tax rules?
 - Users: accountants (expert) or small business owners (novice)? Language?
@@ -24,6 +26,7 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/accounting-ass
 - Liability: if the assistant gives wrong tax advice, what's the consequence?
 
 **Assumptions after clarify**:
+
 - Three knowledge layers: procedural (help articles), regulatory (Danish VAT/SKAT rules), entity relationships (VAT codes → expense types → accounts)
 - Danish + English, small business owners (novice users)
 - Information-only in v1 (no write actions)
@@ -40,7 +43,7 @@ source: sisyphus/interviewing/rounds/system-design-round/examples/accounting-ass
 
 ### Architecture
 
-```
+```text
 User question → Input guardrails (PII, injection)
   → Intent classification:
       procedural ("How do I create a credit note?")
@@ -77,7 +80,7 @@ A flat RAG index would embed the VAT rate table and hope the vector search retur
 
 **Knowledge graph schema**:
 
-```
+```text
 (Service/Expense) -[HAS_VAT_CODE]→ (VATCode) -[HAS_RATE]→ (Rate)
 (VATCode) -[POSTS_TO]→ (Account)
 (FilingPeriod) -[APPLIES_TO]→ (TurnoverBracket)
@@ -89,6 +92,7 @@ The graph captures the relationships that users actually ask about: "If I buy co
 **Intent classification as router**: A lightweight classifier (Haiku-tier model or fine-tuned small model) routes to the right knowledge layer. Misrouting is the biggest risk — a regulatory question sent to the article RAG pipeline might return a help article that mentions the rule casually instead of the authoritative rule table. The classifier is the critical component: test it as rigorously as the retrieval.
 
 **Uncertainty as a first-class signal**: For regulatory questions, the system must distinguish between:
+
 1. **Confident answer**: rule found in graph, exact match → state the rule with citation
 2. **Partial answer**: related rule found, but user's specific case may differ → answer + caveat ("this is the general rule — your case may differ, consult an accountant")
 3. **No answer**: no matching rule → explicit "I don't have information about this specific case" + escalation
@@ -97,7 +101,7 @@ Never guess at a tax rule. The cost of a wrong VAT rate (financial penalty for t
 
 ### Data pipeline
 
-```
+```text
 Help articles (CMS):
   - Webhook on publish → re-chunk + re-embed → update vector index
   - Monthly: full re-index to catch orphaned chunks
@@ -115,7 +119,7 @@ Entity relationships (product data):
 
 ### Observability
 
-```
+```text
 Per-request:
   - Intent classification: predicted layer + confidence
   - Retrieval: which layer queried, results, scores

@@ -1,7 +1,7 @@
 ---
-imported_hash: 30ad17408db97146
+imported_hash: eba9e7a65e6faba8
 title: Ex1
-summary: 'def computeCost(mytheta,X,y): #Cost function """ thetastart is an n- dimensional vector of initial theta guess X is matrix with n- columns and m- rows y is a matrix with m- rows and 1 column """ #note to self: .shape is (rows, columns) retu…'
+summary: 'def computeCost(mytheta,X,y): #Cost function """ theta_start is an n- dimensional vector of initial theta guess X is matrix with n- columns and m- rows y is a matrix with m- rows and 1 column """ #note to self: .shape is (rows, columns) ret…'
 order: 1
 kind: notebook
 section: Ex1

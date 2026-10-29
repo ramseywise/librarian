@@ -1,7 +1,7 @@
 ---
-imported_hash: d4cd3965025a265d
+imported_hash: c32fb297d62528a4
 title: Retry Decorator — Live Coding Walkthrough
-summary: 'def testsucceedsonfirsttry(): """No retries needed — function returns immediately.""" callcount = 0'
+summary: 'def test_succeeds_on_first_try(): """No retries needed — function returns immediately.""" call_count = 0'
 order: 37
 kind: reading
 section: Coding challenge / Examples
@@ -171,7 +171,7 @@ def retry(
 
 [NARRATE: "Let me trace the retry sequence for `max_attempts=3, base_delay=1.0, jitter=0.0` (removing jitter for clarity):"]
 
-```
+```text
 attempt=0: call fn() → raises → delay = 1.0 * 2^0 = 1.0s → sleep
 attempt=1: call fn() → raises → delay = 1.0 * 2^1 = 2.0s → sleep
 attempt=2: call fn() → raises → attempt == max_attempts-1 → break → raise last_exc
@@ -198,7 +198,8 @@ pytest test_retry.py -v
 ```
 
 Expected:
-```
+
+```text
 test_succeeds_on_first_try PASSED
 test_retries_on_specified_exception PASSED
 test_reraises_on_exhaustion PASSED

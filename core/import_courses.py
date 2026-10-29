@@ -122,10 +122,10 @@ MAX_ASSET_BYTES = 2 * 1024 * 1024
 MAX_LESSON_CHARS = 400_000
 
 _VENDORED_RE = re.compile(r"(-main|-master|-[0-9a-f]{7})$")
-# Suffix rule exceptions. BayesianML-master is personal coursework that only looks
-# vendored (VENDORED.md § "misfiled"); the Prompt Engineering Guide is imported on
-# purpose so the Nextra copy can be deleted from learn-ai-engineering.
-VENDORED_ALLOW = {"BayesianML-master", "Prompt-Engineering-Guide-main"}
+# Suffix rule exceptions. The Prompt Engineering Guide is imported on purpose so the
+# Nextra copy can be deleted from learn-ai-engineering. (BayesianML-master was renamed
+# to BayesianML on 2026-10-28 and no longer needs one.)
+VENDORED_ALLOW = {"Prompt-Engineering-Guide-main"}
 # Nested git repos are skipped unless they are your own work.
 NESTED_GIT_ALLOW = {"Leet-Code", "leetcode"}
 SKIP_DIRS = {"node_modules", ".next", ".ipynb_checkpoints", "__pycache__", "site-packages"}
@@ -142,8 +142,11 @@ _MD_IMAGE_RE = re.compile(r"(!\[[^\]]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 _MD_LINK_RE = re.compile(r"((?<!!)\[[^\]]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 _HTML_IMG_RE = re.compile(r"(<img\b[^>]*?\bsrc=[\"'])([^\"']+)([\"'])", re.IGNORECASE)
 # `STUDENT_TOKEN = 'abc123'` — coursework notebooks carry grader tokens and emails.
+# `KEY` needs a prefix (api_key, SECRET_KEY): a bare `key='sentence'` is an ordinary kwarg.
+# Values opening with `<` or `[` are special tokens (oov_token="<oov>", "[CLS]"), not secrets.
 _CREDENTIAL_RE = re.compile(
-    r"""(\b\w*(?:TOKEN|KEY|SECRET|PASSWORD|EMAIL)\s*=\s*)(['"])[^'"\n]+\2""", re.IGNORECASE
+    r"""(\b(?:\w*(?:TOKEN|SECRET|PASSWORD|EMAIL)|\w+KEY)\s*=\s*)(['"])[^'"\n<\[][^'"\n]*\2""",
+    re.IGNORECASE,
 )
 
 
@@ -550,7 +553,13 @@ def _summary_from(body: str) -> str:
             continue
         p = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", p)
         p = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", p)
-        p = re.sub(r"[*_`]", "", " ".join(p.split()))
+        # Code spans keep their text verbatim (`order_id` stays order_id); only
+        # emphasis markers outside them are dropped.
+        spans = re.split(r"(`[^`]*`)", " ".join(p.split()))
+        p = "".join(
+            s.strip("`") if s.startswith("`") else re.sub(r"\*+|(?<!\w)_+|_+(?!\w)", "", s)
+            for s in spans
+        )
         m = re.match(r"(.{40,240}?[.!?])(\s|$)", p)
         return m.group(1) if m else p[:240].rstrip() + ("…" if len(p) > 240 else "")
     return ""

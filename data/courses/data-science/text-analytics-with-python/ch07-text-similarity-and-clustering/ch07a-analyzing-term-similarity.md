@@ -1,5 +1,5 @@
 ---
-imported_hash: 8f4941a2eef1a29d
+imported_hash: a081aaa4aa40e9fa
 title: Character vectorization
 summary: terms = [root, term1, term2, term3] terms
 order: 18

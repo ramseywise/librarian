@@ -1,7 +1,7 @@
 ---
-imported_hash: 6e1b53a80bd2eeb6
+imported_hash: 2aa289baa828ea9f
 title: Bug 1
-summary: First bug is changing placeship to pass testverticalplacement to pass.
+summary: First bug is changing place_ship to pass test_vertical_placement to pass.
 order: 2
 kind: reading
 section: Battleship / Solutions

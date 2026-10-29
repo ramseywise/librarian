@@ -65,6 +65,11 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
                 </button>
                 <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginTop: 4 }}>
                   <DrillBadges drill={d.drill} />
+                  {d.attempts && (
+                    <span title={`Last score: ${d.attempts.score}`} style={{ fontSize: 12, color: "#4CAF50" }}>
+                      {d.attempts.count}× · last {d.attempts.last}
+                    </span>
+                  )}
                   {d.concepts.map((c) => (
                     <button key={c.id} onClick={() => onOpenConcept(c.id)} title={c.summary} style={conceptStyle}>
                       ◆ {c.title}

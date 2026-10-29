@@ -1,5 +1,5 @@
 ---
-imported_hash: 265b5ee25c5d2cac
+imported_hash: 36e78efb83f450fe
 title: Pillar 8 — Data Engineering & MLOps
 summary: 'How data and models get to production and stay healthy: pipelines, orchestration, warehouses, deployment, monitoring.'
 order: 19
@@ -47,6 +47,7 @@ guided path — this pillar is the most "just do the course" of the ten.
 | ML practice rules | note | `~/.claude/rules/ml.md`, `logging.md` | personal engineering checklist |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [technical-questions](../../rounds/technical-questions/readme.md),
 [system-design-round](../../rounds/system-design-round/readme.md) (pipelines are the substrate),

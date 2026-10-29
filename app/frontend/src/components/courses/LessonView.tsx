@@ -38,6 +38,9 @@ export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) 
       <span style={{ color: "#90caf9" }}>{drill.track}</span>
       {drill.difficulty && <span style={{ color: tone }}>{drill.difficulty}</span>}
       {drill.timebox_min && <span>{drill.timebox_min} min</span>}
+      {drill.tags?.map((t) => (
+        <span key={t} title="Concept with no wiki page yet" style={{ color: "#666" }}>#{t}</span>
+      ))}
     </span>
   );
 }

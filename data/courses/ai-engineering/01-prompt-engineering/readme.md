@@ -1,5 +1,5 @@
 ---
-imported_hash: ca0ab0ab53d3492e
+imported_hash: 1d4fe6abfc912e52
 title: 01 — Prompt Engineering
 summary: Prompt engineering is the craft of writing instructions and examples that consistently elicit desired outputs from language models.
 order: 1
@@ -9,7 +9,7 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/README.md
 
 # 01 — Prompt Engineering
 
-> Depth layer. Summary: [interviewing/guides/2-llm-fundamentals](../../interviewing/guides/2-llm-fundamentals/00-overview.md)
+> Depth layer. Summary: [interviewing/guides/2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md)
 > Position in the stack: innermost — *context contains prompts*.
 > Jump to: [Rules of thumb](#rules-of-thumb) · [Topic notes](#topic-notes-notes) · [References](#references)
 
@@ -17,7 +17,7 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/README.md
 
 ## What it is
 
-Prompt engineering is the craft of writing instructions and examples that consistently elicit desired outputs from language models. It governs what you *ask* and how you *structure* the ask — not what you put in the context window alongside it. Once you're deciding *which documents, memory or tool outputs to include*, you're doing context engineering ([02-context](../02-context/readme.md)).
+Prompt engineering is the craft of writing instructions and examples that consistently elicit desired outputs from language models. It governs what you *ask* and how you *structure* the ask — not what you put in the context window alongside it. Once you're deciding *which documents, memory or tool outputs to include*, you're doing context engineering ([02-context](../02-context-engineering/readme.md)).
 
 | Prompt engineering | Context engineering |
 |---|---|
@@ -78,7 +78,7 @@ The rules from the topic notes on one page. Each group links to the note that ex
 - **New to this:** watch the [DAIR lecture](https://youtu.be/dOxUroR57xs) (1 h), read notes 01–06 alongside book Ch 1–9 and run the matching [notebooks](#primary-sources-in-this-pillar), then read notes 07–11.
 - **Building something now:** the [vendor guides](#vendor-guides) for your model, then [09 — evaluating prompts](notes/09-evaluating-prompts.md).
 - **Need an example prompt:** the [prompt library](notes/prompt-library.md).
-- **Security:** [10](notes/10-adversarial-prompting.md) and [prompt-injection.md](../../interviewing/guides/7-security-safety/prompt-injection.md).
+- **Security:** [10](notes/10-adversarial-prompting.md) and [prompt-injection.md](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/7-security-safety/prompt-injection.md).
 
 ---
 
@@ -124,12 +124,12 @@ The rules from the topic notes on one page. Each group links to the note that ex
   Chapters 9 and 10 cross-link to the `04-loop` and `06-eval` pillars.
 
 ### Interviewing guides
-- [2-llm-fundamentals](../../interviewing/guides/2-llm-fundamentals/00-overview.md) — compressed summary for interview prep.
-- [7-security-safety](../../interviewing/guides/7-security-safety/00-overview.md) — security angle on prompt injection.
-    - [prompt-injection.md](../../interviewing/guides/7-security-safety/prompt-injection.md) — the security facet: adversarial input manipulation.
+- [2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md) — compressed summary for interview prep.
+- [7-security-safety](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/7-security-safety/00-overview.md) — security angle on prompt injection.
+    - [prompt-injection.md](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/7-security-safety/prompt-injection.md) — the security facet: adversarial input manipulation.
 
 ### Next layer
-→ [02-context/](../02-context/readme.md) — context engineering assembles the window that delivers your prompts.
+→ [02-context-engineering/](../02-context-engineering/readme.md) — context engineering assembles the window that delivers your prompts.
 
 ---
 
@@ -154,7 +154,7 @@ Every source behind the notes, in one place. Local files come first, followed by
 | [pe-chatgpt-langchain.ipynb](notebooks/pe-chatgpt-langchain.md), [pe-rag.ipynb](notebooks/pe-rag.md) | [06 — chaining](notes/06-chaining-and-workflows.md) |
 | [pe-chatgpt-adversarial.ipynb](notebooks/pe-chatgpt-adversarial.md) | [10 — adversarial](notes/10-adversarial-prompting.md) |
 | [pe-code-llama.ipynb](notebooks/pe-code-llama.md), [pe-mixtral-introduction.ipynb](notebooks/pe-mixtral-introduction.md) | [11 — code](notes/11-applications.md#code), open-weight models |
-| [gemini-context-caching.ipynb](notebooks/gemini-context-caching.md) | [02-context](../02-context/readme.md) |
+| [gemini-context-caching.ipynb](notebooks/gemini-context-caching.md) | [02-context](../02-context-engineering/readme.md) |
 
 ### Elsewhere in this repo
 
@@ -255,7 +255,7 @@ For [09](notes/09-evaluating-prompts.md). Deeper material is in [06-eval](../06-
 
 ### Safety and adversarial
 
-For [10](notes/10-adversarial-prompting.md). For interview depth, see [interviewing/7-security-safety/prompt-injection.md](../../interviewing/guides/7-security-safety/prompt-injection.md).
+For [10](notes/10-adversarial-prompting.md). For interview depth, see [interviewing/7-security-safety/prompt-injection.md](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/7-security-safety/prompt-injection.md).
 
 - ★ Willison, [*Prompt injection attacks against GPT-3*](https://simonwillison.net/2022/Sep/12/prompt-injection/) (2022) — where the name comes from
 - Willison, [*The Dual LLM pattern*](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/) — the quarantined-model defense
@@ -289,7 +289,8 @@ These are broader or more opinionated pieces, good once the notes feel familiar.
 - Weng, [*Prompt Engineering*](https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/) (2023) — a dense, research-oriented survey
 - Yan, [*Prompting Fundamentals and How to Apply Them Effectively*](https://eugeneyan.com/writing/prompting/) — a practitioner's view with production examples
 - [Learn Prompting](https://learnprompting.org) — a beginner-friendly open course, an alternative to DAIR
-- Context engineering — the successor framing (Karpathy, LangChain, Schmid, Lance Martin). Collected in [02-context](../02-context/readme.md)
+- Li, *AI Agents in Depth*, [ch. 2 §Prompt Engineering](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) — system-prompt design for agents. Labs: τ-bench prompt ablation (2-4), injection attacks (2-5), attention visualization (2-2), prompt patches from failures (8-3). Synthesised into [02](notes/02-prompt-anatomy.md) and [10](notes/10-adversarial-prompting.md), which link the labs upstream.
+- Context engineering — the successor framing (Karpathy, LangChain, Schmid, Lance Martin). Collected in [02-context](../02-context-engineering/readme.md)
 
 ---
 

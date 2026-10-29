@@ -1,7 +1,7 @@
 ---
-imported_hash: 8e41642499e85c31
+imported_hash: 1998e9a3a106d8d7
 title: create a synthetic dataset
-summary: iris = loadiris() logreg = LogisticRegression(maxiter=1000)
+summary: iris = load_iris() logreg = LogisticRegression(max_iter=1000)
 order: 6
 kind: notebook
 source: learn-ai-engineering/data-science/Intro to Machine Learning in Python/05-model-evaluation-and-improvement.ipynb

@@ -1,8 +1,8 @@
 ---
-imported_hash: 345bdc99f8abedd0
+imported_hash: fb3bc65354286829
 title: AGENTS
 summary: ''
-order: 3
+order: 4
 kind: reading
 section: Chatbot / Deep research bot
 source: learn-ai-engineering/generative-ai/07-agentic-applications/chatbot/deep-research-bot/AGENTS.md

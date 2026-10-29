@@ -1,5 +1,5 @@
 ---
-imported_hash: d279dd989669cfea
+imported_hash: 937887bc13637589
 title: The situations where Agentic RAG shines
 summary: 'Pros: Reduces factual errors and produces evidence-backed answers.'
 order: 2
@@ -13,7 +13,7 @@ https://martinfowler.com/articles/reliable-llm-bayer.html?ref=dailydev
 
 https://pub.towardsai.net/9-rag-architectures-that-save-you-months-of-dev-work-0e219eb637cb
 
-![9 RAG architectures overview](assets/9-rag-architectures.png)
+![9 RAG architectures overview](https://github.com/ramseywise/sisyphus/blob/main/interviewing/images/9-rag-architectures.png)
 
 - Implement **Standard RAG** as your baseline, then prototype **one additional pattern** (CRAG for accuracy, Conversational for chat, Fusion for enterprise).
 - Run the **A/B test plan** at the end to validate impact.

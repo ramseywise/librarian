@@ -1,5 +1,5 @@
 ---
-imported_hash: b315d4dab6fbbdb2
+imported_hash: 31c075efee96b163
 title: Character level language model - Dinosaurus land
 summary: Welcome to Dinosaurus Island! 65 million years ago, dinosaurs existed, and in this assignment they are back.
 order: 17

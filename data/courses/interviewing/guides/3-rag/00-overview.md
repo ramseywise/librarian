@@ -1,5 +1,5 @@
 ---
-imported_hash: ab5054b450a2d00e
+imported_hash: 05135b78fc383b3d
 title: Pillar 3 — RAG (retrieval-augmented generation)
 summary: 'The default pattern for giving an LLM knowledge it wasn''t trained on: chunk documents, embed them, retrieve the relevant pieces, ground the answer in them.'
 order: 8
@@ -45,6 +45,7 @@ systems are RAG systems — and most interview design questions have a RAG core.
 | 9 RAG architectures diagram | image | [../../images/9-rag-architectures.png](../../images/9-rag-architectures.png) | visual taxonomy |
 
 ## Test yourself
+
 [interview-guide.md](interview-guide.md) · rounds:
 [system-design-round](../../rounds/system-design-round/readme.md),
 [technical-questions](../../rounds/technical-questions/readme.md).

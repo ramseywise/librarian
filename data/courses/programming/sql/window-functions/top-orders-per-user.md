@@ -1,7 +1,7 @@
 ---
-imported_hash: 1938059488feec7a
+imported_hash: 0c0f615d717ef521
 title: Top orders per user, with a running total
-summary: orders(orderid, userid, orderedat, amount).
+summary: orders(order_id, user_id, ordered_at, amount).
 order: 2
 kind: drill
 section: Window functions
@@ -15,8 +15,6 @@ wiki:
 - ranking
 source: sisyphus/drills/sql/window-functions/top-orders-per-user.md
 ---
-
-# Top orders per user, with a running total
 
 ## Prompt
 

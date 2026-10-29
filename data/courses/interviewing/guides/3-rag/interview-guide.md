@@ -1,5 +1,5 @@
 ---
-imported_hash: 575f8f30d7d806ab
+imported_hash: 460d082ee8ad7304
 title: RAG — Study Guide
 summary: The default enterprise GenAI pattern and the most likely deep-dive topic in AIE/FDE loops.
 order: 9
@@ -120,7 +120,7 @@ control · HITL review for flagged outputs · claim-level provenance if CRAG/age
   parent/child for long sections; state the eval you'd run to pick parameters.
 - *"Retrieval quality is poor — debug it."* — decompose: measure recall@k on a golden set
   first; check embedding/corpus language match, prefix rules, chunk truncation, then hybrid
-  + reranker before touching the LLM.
+  - reranker before touching the LLM.
 - *"RAG vs fine-tuning?"* — RAG for knowledge freshness, provenance, per-tenant corpora;
   fine-tuning for format/style/task behavior; they compose. Cost/update-cadence trade-off.
 - *"Corpus grows 10× — what breaks?"* — index build time, brute-force scans (→ ANN/HNSW),

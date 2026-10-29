@@ -1,7 +1,7 @@
 ---
-imported_hash: 836be665d79f7393
+imported_hash: c0a7090f9ffdc9a5
 title: Overview
-summary: mlflow artifacts download \ --run-id ${MODELRUNID} \ --artifact-path model \ --dst-path .
+summary: mlflow artifacts download \ --run-id ${MODEL_RUN_ID} \ --artifact-path model \ --dst-path .
 order: 24
 kind: reading
 section: Deployment / Web service mlflow

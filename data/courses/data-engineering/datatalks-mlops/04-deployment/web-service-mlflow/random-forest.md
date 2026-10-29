@@ -1,7 +1,7 @@
 ---
-imported_hash: 53c4da38da59f30d
+imported_hash: 4150f12cb86e10c9
 title: Random forest
-summary: from sklearn.featureextraction import DictVectorizer from sklearn.ensemble import RandomForestRegressor from sklearn.metrics import meansquarederror
+summary: from sklearn.feature_extraction import DictVectorizer from sklearn.ensemble import RandomForestRegressor from sklearn.metrics import mean_squared_error
 order: 25
 kind: notebook
 section: Deployment / Web service mlflow

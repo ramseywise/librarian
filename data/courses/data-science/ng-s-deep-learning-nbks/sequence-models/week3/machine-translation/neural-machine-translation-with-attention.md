@@ -1,5 +1,5 @@
 ---
-imported_hash: c207322c25a40f64
+imported_hash: c44a3e30bfc20ecf
 title: Neural Machine Translation
 summary: Welcome to your first programming assignment for this week!
 order: 21

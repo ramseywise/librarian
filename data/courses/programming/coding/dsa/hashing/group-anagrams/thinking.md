@@ -1,5 +1,5 @@
 ---
-imported_hash: 8e6be2602f4ac6c8
+imported_hash: f5460c3b459aef2f
 title: Group Anagrams — First-Principles Thinking Guide
 summary: Both work. Sorting is simpler to implement; frequency count is slightly faster for long strings.
 order: 75
@@ -64,12 +64,12 @@ return list(groups.values())
 **Dry-run**: `["eat", "tea", "tan", "ate", "nat", "bat"]`
 
 ```text
-"eat" → key="<redacted>" → groups={"aet": ["eat"]}
-"tea" → key="<redacted>" → groups={"aet": ["eat","tea"]}
-"tan" → key="<redacted>" → groups={"aet": ["eat","tea"], "ant": ["tan"]}
-"ate" → key="<redacted>" → groups={"aet": ["eat","tea","ate"], "ant": ["tan"]}
-"nat" → key="<redacted>" → groups={"aet": ["eat","tea","ate"], "ant": ["tan","nat"]}
-"bat" → key="<redacted>" → groups={"aet": [..], "ant": [..], "abt": ["bat"]}
+"eat" → key="aet" → groups={"aet": ["eat"]}
+"tea" → key="aet" → groups={"aet": ["eat","tea"]}
+"tan" → key="ant" → groups={"aet": ["eat","tea"], "ant": ["tan"]}
+"ate" → key="aet" → groups={"aet": ["eat","tea","ate"], "ant": ["tan"]}
+"nat" → key="ant" → groups={"aet": ["eat","tea","ate"], "ant": ["tan","nat"]}
+"bat" → key="abt" → groups={"aet": [..], "ant": [..], "abt": ["bat"]}
 ```
 
 **Edge cases**:

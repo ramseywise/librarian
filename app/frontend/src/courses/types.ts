@@ -4,6 +4,8 @@ export interface DrillMeta {
   topic?: string;
   difficulty?: "easy" | "medium" | "hard" | string;
   timebox_min?: number;
+  /** Declared concepts with no wiki page yet — plain labels, not graph links. */
+  tags?: string[];
 }
 
 export interface LessonOutline {
@@ -61,6 +63,8 @@ export interface PracticeDrill extends LessonOutline {
   course: string;
   drill: DrillMeta;
   concepts: ConceptRef[];
+  /** From sisyphus drills/coding/drill-log.md, read live; absent if never logged. */
+  attempts?: { count: number; last: string; score: string };
 }
 
 export interface SearchHit extends LessonOutline {
