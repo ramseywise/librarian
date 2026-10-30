@@ -2,10 +2,11 @@
 title: Task Decomposition Patterns
 tags: [agents, llm, pattern]
 summary: "Four axes for splitting work across agents — functional, spatial, temporal, and data-driven — distinguished by what each one assumes about independence, and the dependency structure that decides which axis a given task actually admits."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/workflow-build/SKILL.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-design.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agents-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-design.md
 ---
 

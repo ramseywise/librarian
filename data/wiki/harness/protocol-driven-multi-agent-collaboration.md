@@ -2,9 +2,10 @@
 title: Protocol-Driven Multi-Agent Collaboration
 tags: [agents, infra, pattern]
 summary: "Why multi-agent coordination has to be a protocol rather than a conversation — the nine failure modes conversational handoff produces, the six things a protocol must define, and the three foundations: communication protocol, task graph, and isolation boundary."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-design.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agents-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-design.md
 ---
 

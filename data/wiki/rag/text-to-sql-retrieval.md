@@ -18,7 +18,7 @@ example studies done on rat"*, or retrieving numeric assay results by dosage gro
 The framing that matters: Text-to-SQL is not an alternative to RAG, it is **the other
 branch of one retriever**. A researcher agent holding both decides per query which
 substrate can answer it, because the deciding factor is the shape of the question rather
-than the domain. Documented from Bayer's PRINCE platform (built with Thoughtworks), where
+than the domain. Documented from a pharma R&D research platform, where
 the pairing is RAG over decades of preclinical PDF reports plus Text-to-SQL over study
 metadata in Amazon Athena.
 
@@ -114,7 +114,7 @@ it is past the model's capability. See [[Agent Retry Taxonomy]] and
 ## Routing between RAG and SQL
 
 The researcher agent decides which branch a query takes. As the surface expands across
-domains, PRINCE evolved this into a **hierarchy of domain sub-agents** — each owning its
+domains, the platform evolved this into a **hierarchy of domain sub-agents** — each owning its
 own toolset (toxicology RAG + tox metadata SQL; pharmacology RAG + assay-level SQL) and
 prompt instructions encoding that domain's data model, authoritative tables, and concept
 interpretations.
@@ -137,3 +137,4 @@ resolves it once. This is the tool-count anti-pattern in
 - [[Agent Retry Taxonomy]] — implements (bounded error-as-context retry)
 - [[Few-Shot Prompting]] — depends-on (the semantic layer's mechanism)
 - [[Agent Deployment Anti-Patterns]] — complements (tool-count pressure driving the domain split)
+- [[Text-to-Cypher]] — alternative-to (the same generate-validate-execute shape over a graph schema)

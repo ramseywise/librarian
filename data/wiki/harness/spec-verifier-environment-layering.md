@@ -2,9 +2,10 @@
 title: Spec, Verifier, Environment Layering
 tags: [harness, llm, concept]
 summary: "A practitioner framing of working with coding agents as three layers that all transmit your understanding — a spec (the goal, not the task, in small agile slices), a verifier (criteria before work, a second model as critic, an external ground-truth signal), and an environment (operating contract, knowledge base, skills, and hooks for what must never happen)."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--karpathy-method.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--karpathy-method.md
 ---
 
 # Spec, Verifier, Environment Layering

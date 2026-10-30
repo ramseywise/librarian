@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--interview-guide.md
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--paper-canon.md
+  - data/raw/repos/sisyphus/interviewing--notes--paper-canon.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--llm-fundamentals.md
   - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--interview-guide.md
   - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--00-overview.md

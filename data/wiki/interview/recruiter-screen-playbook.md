@@ -8,6 +8,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen--study-guide.md
   - data/raw/repos/sisyphus/interviewing--rounds--recruiter-screen--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--recruiter-screen--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen--README.md
   - data/raw/repos/sisyphus/interviewing--rounds--recruiter-screen--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen--questions.md

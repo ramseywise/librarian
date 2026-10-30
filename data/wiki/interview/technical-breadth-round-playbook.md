@@ -14,6 +14,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions--mcq-bank.md
   - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--mcq-bank.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--sources.md
   - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--real-tech-question-bank.md
   - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--theory-bank.md
 ---

@@ -74,7 +74,7 @@ Personal + work sources in scope. All claude.ai MCP integrations available witho
 
 **Pending:**
 - Google Drive (ongoing): search for additional shared AI/agent decks → `raw/gdrive/`
-- Notion (personal): `ramsey.wise@gmail.com` account — researcher PDF notes, personal agent design notes
+- Notion (personal account) — researcher PDF notes, personal agent design notes
 - Guru (work KB): company knowledge base articles relevant to agent stack
 - PDFs: `scripts/ingest_pdf.py` reads from `DROPBOX_PDF_PATH`
 

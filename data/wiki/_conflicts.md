@@ -351,3 +351,14 @@ The two likely measure different configurations (streamed vs fully serial; endpo
 
 **Status:** Unresolved — needs human review
 **Impact:** Where to spend latency effort in a voice agent (model tier vs endpointing); [[Voice Agent Paradigms]], [[Realtime Voice Architecture Reference]], [[Voice Agent Patterns]].
+
+## Conflict: Graph vs vector multi-hop accuracy — 2026-10-30
+
+**Claim A** (from `[[Knowledge Graph Retrieval]]`, sourced from `data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md`):
+> Reported multi-hop accuracy: 53.4% for graph retrieval vs 42.9% for vector-only.
+
+**Claim B** (from new source `data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--11-kg-rag-and-text-to-cypher.md`):
+> The 53.4% vs 42.9% figures come from a vendor blog with no stated method and are dropped. The primary evidence (GraphRAG, arXiv 2404.16130) shows LLM-judged comprehensiveness/diversity wins on global sensemaking questions, with vector RAG winning on directness — not that graphs are more accurate in general.
+
+**Status:** Unresolved — needs human review
+**Impact:** Whether the wiki should quote any graph-vs-vector accuracy number; [[Knowledge Graph Retrieval]], [[Graph Engineering]], [[Text-to-Cypher]].

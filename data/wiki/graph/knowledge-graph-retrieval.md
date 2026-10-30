@@ -1,14 +1,16 @@
 ---
 title: Knowledge Graph Retrieval
-tags: [rag, llm, concept]
+tags: [rag, llm, concept, conflict]
 summary: "Vector search finds things that sound like your question; graphs find things that are connected to your answer — but traversal depth compounds error, which makes entity resolution the load-bearing sub-problem."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/articles/2026-07-19-knowledge-graphs-for-rag.md
   - data/raw/claude-docs/playground/docs/support-agents/accounting-knowledge.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--README.md
   - data/raw/claude-docs/project-g/docs/support-agents/accounting-knowledge.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--11-kg-rag-and-text-to-cypher.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--graph-engineering.md
 ---
 
 # Knowledge Graph Retrieval
@@ -34,10 +36,40 @@ Keeping the two senses distinct matters, because they share a word and almost no
 
 That is the whole case, and it is a case about **multi-hop** questions specifically.
 Reported multi-hop accuracy: **53.4% for graph retrieval vs 42.9% for vector-only.**
+**⚠ Conflict (2026-10-30):** the course's updated note traces these figures to a vendor blog
+with no stated method and drops them in favour of the GraphRAG paper's evidence below — see
+`_conflicts.md`.
 
 Single-hop lookups do not need a graph — semantic similarity already answers them. The
 graph earns its cost where the answer requires following relationships the question does
 not name.
+
+### Where vector RAG breaks, and what a graph adds
+
+Chunk-and-embed retrieval fails by **context fragmentation** (a fact split across chunks needs
+every piece retrieved near the top), **embedding compression** (one vector per chunk loses
+entity-level detail; rare terms embed poorly), **noise** and **misses** (similarity optimises
+closeness, not coverage, so aggregate questions get partial answers). Near-identical cosine
+scores do not guarantee that the named entity is even present in a chunk, and removing one
+key passage can make the model **reverse its conclusion with the same confidence** — it can't
+tell something is missing.
+
+A graph adds multi-hop traversal, **entity-exact retrieval** ("documents mentioning *all* of
+these entities"), **aggregation** over the whole graph instead of a top-k sample, metadata
+routing (latest version, by source), **traceable answers** (return the path) and composed
+retrieval (resolve an entity in the KG, then search documents for it). Make the graph
+**text-attributed** (nodes and edges carry descriptive text) and **text-paired** (every node
+and edge links back to its source documents).
+
+### The evidence
+
+The primary source is the GraphRAG paper (*From Local to Global*, arXiv 2404.16130): build an
+entity graph, detect and pre-summarise communities, then answer **global sensemaking**
+questions over ~1M-token corpora. Against vector RAG it reports comprehensiveness win rates of
+72–83% (podcasts) and 72–80% (news), diversity win rates of 75–82% and 62–71% — while **vector
+RAG wins on directness**. The judge was an LLM in head-to-head comparisons, not a ground-truth
+accuracy measure: the result is "community summaries help whole-corpus questions", **not**
+"graphs are more accurate than vectors".
 
 ## The compounding-error caveat
 
@@ -53,6 +85,25 @@ not a feature you turn on — it is a budget you spend. Two consequences:
 2. **Entity resolution is the load-bearing sub-problem, not an implementation detail.**
    Per-hop accuracy *is* entity-resolution accuracy for most of the pipeline. Improving the
    retrieval model while entity resolution stays at 85% moves nothing.
+
+## Retrieval modes
+
+| Mode | How it retrieves | Use when | Fails when |
+|---|---|---|---|
+| Vector | Top-k chunks | Local lookups | Multi-hop, aggregates, exact entity constraints |
+| Canned traversal | Fixed Cypher templates keyed by entities (k-hop, shortest path) | Known question shapes; production paths | A shape you didn't template |
+| [[Text-to-Cypher]] | LLM writes Cypher from the schema | Open-ended structured questions over a well-named schema | Large or badly named schema; no validator |
+| Hybrid | Vector finds entry chunks/entities, graph expands | Text-heavy corpora | Wrong entry points make expansion worse |
+| Global (GraphRAG) | Pre-summarised communities, map-reduce | "Themes across everything?" | Specific lookups; high indexing cost |
+
+**Default order:** start with vector; add canned traversals for the multi-hop shapes you can
+name; add text-to-Cypher only for the long tail, and only with a validator.
+
+**Triples lose meaning.** "If it rains next week I'll cancel the beach trip and go to the
+museum" becomes `(user, plans, beach trip)` and `(user, backup, museum)` — the condition is
+gone. *AI Agents in Depth* recommends keeping the core record in natural language and using
+the graph as an **index** for domains that need multi-hop and disambiguation (medical, legal,
+family relationships).
 
 ## Typed edges carry the knowledge
 
@@ -115,9 +166,12 @@ From a knowledge-graphs-for-RAG short course:
   case flat vector search cannot serve.
 
 ## See Also
-- [[Graph Engineering]] — part-of
-- [[Knowledge Graph as Shared Agent Memory]] — extends (the same structure used as write-path memory)
-- [[Graph Topology Primitives]] — complements (typed edges)
+- [[Graph Engineering]] — extends
+- [[Knowledge Graph as Shared Agent Memory]] — prerequisite-for (the same structure used as write-path memory)
+- [[Graph Topology Primitives]] — extends (typed edges)
 - [[RAG Retrieval Strategies]] — alternative-to (similarity retrieval vs connection retrieval)
-- [[Reciprocal Rank Fusion (RRF)]] — complements (fusing graph and vector result lists)
+- [[Reciprocal Rank Fusion (RRF)]] — prerequisite-for (fusing graph and vector result lists)
+- [[Text-to-Cypher]] — prerequisite-for
+- [[Knowledge Graph Entity Resolution]] — extends (the load-bearing sub-problem)
+- [[Knowledge Graph Fundamentals and Cypher]] — extends
 - [[Compiled-Prose KB vs Graph-Native Store]] — alternative-to

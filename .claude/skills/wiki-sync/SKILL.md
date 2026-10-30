@@ -49,7 +49,7 @@ Extract the keys of `const KNOWN: Record<string, string> = {...}` and the `PALET
 - If either has been replaced by a literal set/list, that is **DRIFT**.
 
 ### Remaining hardcoded lists
-- `core/relinker.py` — `DOMAIN_TAG_SET = {...}` is still a literal set (used to discount domain tags when scoring shared tags). Extract its values; it is the one backend list that can go stale.
+- `core/relinker.py` — `_domain_tag_set()` (discounts domain tags when scoring shared tags) must read `WIKI_DIR` at call time and exclude `private`, like the two above. A literal set here is **DRIFT**.
 - Regression sweep — no other domain list should exist in the frontend:
   ```bash
   P='"(rag|langgraph|adk|infra|memory)"|^\s*(rag|langgraph|adk|infra|memory)\s*:'
@@ -63,11 +63,9 @@ Extract the keys of `const KNOWN: Record<string, string> = {...}` and the `PALET
 
 For each actual wiki domain:
 - **No fixed colour** — not a key in `KNOWN`. This is a **NOTE, not drift**: `domainColor()` already gives it a stable palette colour. Suggest adding a KNOWN entry only if the palette colour clashes with a neighbour or the domain is large.
-- **Missing from relinker** — not in `core/relinker.py` `DOMAIN_TAG_SET` (WARN: relinker treats the domain tag as a topical shared tag and over-scores links).
 
 For each name in code but with no `data/wiki/<name>/` directory:
 - **Ghost KNOWN colour** — harmless (unused), NOTE; list for cleanup.
-- **Ghost relinker entry** — WARN, verify before removing.
 
 Structural:
 - **DRIFT** — a derivation replaced by a literal, or a hardcoded domain list found by the regression sweep.
@@ -95,15 +93,12 @@ PAGE COUNT HEALTH
 
 DRIFT
   [DRIFT] TagFilterPanel.tsx:3 — hardcoded domain array reintroduced
-  [WARN]  core/relinker.py DOMAIN_TAG_SET — missing: context, prompting
-  [WARN]  core/relinker.py DOMAIN_TAG_SET — ghost: llm
 
 NOTES
   [NOTE] harness — no fixed colour in theme/domains.ts KNOWN (fallback palette colours it)
   [NOTE] voice   — ghost KNOWN colour (no data/wiki/voice/)
 
 EXACT CHANGES NEEDED
-  core/relinker.py DOMAIN_TAG_SET: add "context", "prompting"
   (optional) theme/domains.ts KNOWN: add  harness: "#8D6E63",
 
 VERDICT
@@ -119,7 +114,6 @@ All clear — domains derive from disk everywhere; no drift.
 ### If --fix was passed
 
 After the report, apply the mechanical fixes:
-- Add missing domains to `core/relinker.py` `DOMAIN_TAG_SET`.
 - Add `KNOWN` colours for missing domains in `app/frontend/src/theme/domains.ts` (optional; only where the report suggested it).
 
 Do NOT auto-remove ghost entries or rewrite a reintroduced hardcoded list — list them and ask the user. Re-run Step 2 and confirm. Report what was fixed.

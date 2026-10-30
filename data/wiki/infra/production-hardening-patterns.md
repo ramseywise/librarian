@@ -2,7 +2,7 @@
 title: Production Hardening Patterns
 tags: [infra, rag, langgraph, pattern]
 summary: Checklist of production hardening fixes for the Librarian service — P0/P1/P2 issues, async I/O safety, SQL injection prevention, CORS, and Docker packaging.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
   - data/raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
@@ -12,6 +12,7 @@ sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-08-01-49-llm-starter-kit.md
   - data/raw/repos/ai-project-template/.claude--docs--plans--2026-08-01-49-llm-starter-kit.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--incident-story.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--examples--incident-story.md
 ---
 
 # Production Hardening Patterns

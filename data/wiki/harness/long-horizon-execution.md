@@ -143,3 +143,4 @@ See [[Harness Orchestration]] for when decomposition is worth its cost, and
 - [[Verification Loops]] — complements
 - [[Harness Orchestration]] — complements
 - [[Context Engineering]] — depends-on
+- [[Loop State File]] — extends (the loop-side durable progress record)

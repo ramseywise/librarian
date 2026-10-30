@@ -14,9 +14,11 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--sources.md
   - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--examples--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--examples--90-day-sketch.md
   - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--examples--90-day-sketch.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--examples--cto-judgment-thread.md
+  - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--examples--cto-judgment-thread.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--examples--reverse-interview.md
   - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--examples--reverse-interview.md
 ---

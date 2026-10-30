@@ -13,10 +13,15 @@ sources:
   - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--questions.md
   - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--probe-bank.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--architecture-walkthrough.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--examples--architecture-walkthrough.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--decision-defense.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--examples--decision-defense.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--incident-story.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--examples--incident-story.md
 ---
 
 # Project Deep-Dive Interview Study Guide

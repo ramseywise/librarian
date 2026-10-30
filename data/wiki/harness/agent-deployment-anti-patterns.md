@@ -2,9 +2,10 @@
 title: Agent Deployment Anti-Patterns
 tags: [agents, infra, reference]
 summary: "Eight recurring agent-deployment failures that present as model limitations but are engineering-constraint failures — with the reframe that a rule written in documentation is a hope, while a rule enforced by a hook is a constraint."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-guardrails.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agents-guardrails.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-guardrails.md
 ---
 

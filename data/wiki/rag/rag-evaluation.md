@@ -226,7 +226,7 @@ make eval-e2e         # Tier 3 — RAGAS + DeepEval, CONFIRM_EXPENSIVE_OPS requi
 
 ## Business Metric Targets ([client] Knowledge Agent)
 
-For product-embedded RAG, the retrieval-level metrics (hit_rate, MRR) need to map up to business outcomes. From [[[client] Knowledge Agent]] requirements:
+For product-embedded RAG, the retrieval-level metrics (hit_rate, MRR) need to map up to business outcomes. From a client knowledge-agent's requirements:
 
 - **≥60% self-service resolution rate** — share of queries resolved without escalation (top-line target)
 - **↓15% support contacts from Help Center** — demand reduction signal

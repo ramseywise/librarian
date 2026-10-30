@@ -312,3 +312,4 @@ afterward.
 - [[Proposer-Reviewer and Sidecar Gating]] — complements (review before the action rather than after)
 - [[Runtime vs Process Observability]] — complements
 - [[Reflexion]] — instance-of (verbal self-reflection over a failed attempt, retried with the critique)
+- [[Loop Scorekeeper]] — extends (the verifier as a loop's scorekeeper: traits, write boundary, ratchet)

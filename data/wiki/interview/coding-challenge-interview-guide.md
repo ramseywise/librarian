@@ -7,9 +7,11 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--README.md
   - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--code-from-heart.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--code-from-heart.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--README.md
   - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--auth-api-endpoint.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--auth-api-endpoint.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--study-guide.md
   - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--study-guide.md
@@ -24,9 +26,13 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--retry-decorator.md
   - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--retry-decorator.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--rag-pipeline-offline.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--rag-pipeline-offline.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--sqlite-pipeline-scaling.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--sqlite-pipeline-scaling.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--transaction-aggregation.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--transaction-aggregation.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--workflow-orchestration.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--workflow-orchestration.md
   - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--property-search.md
 ---
 

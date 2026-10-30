@@ -5,6 +5,7 @@ summary: Exam-prep reference for pipeline and model-to-production questions — 
 updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--8-data-eng-mlops--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--8-data-eng-mlops--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--8-data-eng-mlops--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--data-engineering-mlops.md
   - data/raw/repos/sisyphus/interviewing--guides--8-data-eng-mlops--00-overview.md

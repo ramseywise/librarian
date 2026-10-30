@@ -12,10 +12,15 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--questions.md
   - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--examples--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--examples--bad-news-delivery.md
+  - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--examples--bad-news-delivery.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--examples--incident-response.md
+  - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--examples--incident-response.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--examples--scope-negotiation.md
+  - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--examples--scope-negotiation.md
 ---
 
 # Customer Simulation Interview Study Guide

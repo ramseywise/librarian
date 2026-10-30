@@ -2,7 +2,7 @@
 title: Memory Lifecycle
 tags: [memory, llm, agents, concept]
 summary: "Five stages — represent, store, retrieve, use, update/forget — with the fifth being the one production systems skip, and consolidation designed so a failed merge can roll back instead of losing history."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
@@ -101,3 +101,4 @@ split this repo uses.
 - [[Identity Memory: Revision vs Accretion]] — extends (the update/forget stage for a self-model)
 - [[Compression Strips the Epistemic Frame]] — extends (what consolidation loses first)
 - [[Computed-Correctness Lesson Loop]] — instance-of (explicit human promotion from episodic to semantic memory)
+- [[Knowledge Graph Entity Resolution]] — extends (reversible merges as the consolidate stage of a graph memory)

@@ -5,6 +5,7 @@ summary: Exam-prep reference for business-sense rounds — the user → problem 
 updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--10-product-delivery--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--10-product-delivery--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--10-product-delivery--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--product-business.md
   - data/raw/repos/sisyphus/interviewing--guides--10-product-delivery--00-overview.md

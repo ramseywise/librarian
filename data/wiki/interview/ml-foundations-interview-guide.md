@@ -5,6 +5,7 @@ summary: Exam-prep reference for the classical ML round — bias/variance and le
 updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--1-foundations--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--1-foundations--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--1-foundations--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--foundations.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--ml-foundations.md

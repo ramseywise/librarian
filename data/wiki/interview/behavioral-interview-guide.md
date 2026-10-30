@@ -13,6 +13,7 @@ sources:
   - data/raw/repos/sisyphus/interviewing--rounds--behavioral--questions.md
   - data/raw/repos/sisyphus/interviewing--rounds--behavioral--probe-bank.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--examples--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--examples--ambiguity-rescued.md
   - data/raw/repos/sisyphus/interviewing--rounds--behavioral--examples--ambiguity-rescued.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--examples--conflict-resolution.md
@@ -20,6 +21,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--examples--failure-owned.md
   - data/raw/repos/sisyphus/interviewing--rounds--behavioral--examples--failure-owned.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--sources.md
 ---
 
 # Behavioral Interview Study Guide

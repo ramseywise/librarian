@@ -27,6 +27,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--sources.md
   - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--support-agent.md
   - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--support-agent.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--forecasting-agent.md

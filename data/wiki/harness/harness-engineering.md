@@ -9,6 +9,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--01-what-a-harness-is.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--01-what-a-harness-is.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agent-harness.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agent-harness.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--harness-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--harness-engineering.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agent-harness.md

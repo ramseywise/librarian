@@ -14,6 +14,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--sources.md
   - data/raw/repos/sisyphus/interviewing--rounds--case-study--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--aie-track--one-hour-code-test.md
   - data/raw/repos/sisyphus/interviewing--rounds--case-study--examples--aie-track--one-hour-code-test.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--aie-track--rag-pipeline-defense.md
