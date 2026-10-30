@@ -2,29 +2,53 @@
 title: System Design Interview Study Guide
 tags: [interview, reference]
 summary: Method guide for the ML/LLM/agent system design round — 5-step process, trade-off narration formula, LLM reference architecture, bottleneck table, and failure mode reflexes.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--03-ml-system-design.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--03-ml-system-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--05-ai-product-design.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--05-ai-product-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--06-component-cheatsheet.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--06-component-cheatsheet.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--case-interview.md
+  - data/raw/repos/sisyphus/interviewing--notes--case-interview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--system-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--support-agent.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--support-agent.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--forecasting-agent.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--forecasting-agent.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--meeting-processor.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--meeting-processor.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--accounting-assistant.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--accounting-assistant.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--rag-system.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--rag-system.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--agent-system.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--agent-system.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--eval-harness.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--scaling.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--scaling.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--interviewer-personas.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--template.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--rag-10m.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--agentic-workflow.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--cost-optimization-1m.md
 ---
 
 # System Design Interview Study Guide
@@ -134,6 +158,8 @@ before executing it. The generic substrate under the infrastructure layer is
 
 ## Failure Mode Reflexes
 
+In the closing phase, give each failure mode as a triple: the failure, the **signal that detects it** (index-update lag, truncation rate, reviewer override rate, queue depth), and the **degradation path** (abstain, smaller model, shorter context, defer to async review). Naming a failure without its detection signal is the common miss ([[AI System Design Walkthroughs]]).
+
 - Prompt crashes model → detect known patterns
 - Irrelevant retrieval → thresholds, metadata filters
 - Mid-stream failure → graceful fallback to full response
@@ -141,7 +167,7 @@ before executing it. The generic substrate under the infrastructure layer is
 
 ## Worked Examples: the Lesson Each Teaches
 
-Rehearse systems you have actually built, because they beat memorized generic designs.
+Rehearse systems you have actually built, because they beat memorized generic designs. For the canonical public prompts (RAG at 10M documents, chat at scale, coding copilot, moderation, fraud), see [[AI System Design Walkthroughs]]. To run any of them as a scored mock round, see [[AI System Design Interviewer Rubric]].
 Each walkthrough follows the five steps against a 40-minute timer. What each one is meant
 to teach:
 
@@ -180,3 +206,5 @@ to teach:
 - [[ML Foundations Interview Study Guide]] — extends (ML spine metrics and framing)
 - [[System Design Scored Behaviors]] — extends (the in-room behaviours graded inside the five steps)
 - [[Technical Breadth Round Playbook]] — alternative-to (the verbal breadth round)
+- [[AI System Design Interviewer Rubric]] — extends (the grader-side rubric and personas for mock rounds)
+- [[AI System Design Walkthroughs]] — extends (nine public prompts on the same board layout)

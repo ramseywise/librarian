@@ -2,11 +2,12 @@
 title: Product and Delivery Interview Study Guide
 tags: [interview, eval, reference]
 summary: Exam-prep reference for business-sense rounds — the user → problem → metric → constraint opener, ROI arithmetic on both sides, where AI belongs in a workflow, metric trees, mission-driven-sector constraints, and pitching one system to three audiences.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--10-product-delivery--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--10-product-delivery--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--product-business.md
+  - data/raw/repos/sisyphus/interviewing--guides--10-product-delivery--00-overview.md
 ---
 
 # Product and Delivery Interview Study Guide

@@ -1,11 +1,13 @@
 ---
 title: Context Retrieval Strategies
-tags: [llm, agents, rag, concept]
+tags: [context, rag, llm, agents, concept]
 summary: The shift from pre-computed retrieval (decide relevance before inference) to just-in-time context (agent loads what it needs during inference) — with the hybrid default and the pre-retrieval pipeline ordering.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
+  - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--04-retrieval.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--03-retrieval-strategies.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--context-engineering.md
 ---
@@ -111,6 +113,33 @@ LLM
   so injected content stays distinguishable from instructions. See
   [[XML Prompt Structuring]].
 
+### A Tuned Production Pipeline
+
+A production search platform over decades of scientific study reports shows the same
+pipeline after quality plateaued, with numbers filled in:
+
+1. Keyword extraction and **metadata-filter generation** (few-shot) run concurrently.
+2. A small fast model **expands the query to 5 variants**.
+3. The filter is applied **inside** the vector query — millions of vectors to hundreds.
+4. Each variant runs **hybrid search weighted 0.7 dense / 0.3 keyword** — an empirical,
+   corpus-specific split; for a new corpus, measure rather than copy.
+5. Union across variants, scoring each chunk by its **max** weighted score; keep ~20.
+6. **Cross-encoder rerank 20 → 7**, scored against the *original* question.
+
+What generalises: **expansion multiplies retrieval, so the filter must come first**;
+**max-score aggregation is a dedup policy** (multi-retrieval rewarded without letting a
+chunk win by weak ubiquity); **rerank against the original query**, because expansion is a
+recall device and reranking a rewrite compounds its drift.
+
+### Text-to-SQL Is a Retrieval Strategy
+
+Embedding similarity does not count, sum or compare, so filtering and aggregation questions
+route to a Text-to-SQL tool, with the same context moves: **schema subsetting** (inject only
+the relevant tables), **dynamic few-shot** retrieved from a growable collection of
+(question → SQL) pairs, and **deterministic validation** (SELECT-only) — an LLM review step
+was removed because it flagged valid queries too often. A retrieval layer spanning
+structured and unstructured data needs a **router**, not one index.
+
 ## Dynamic Context Windows
 
 Scale retrieval depth to task complexity rather than using a fixed k:
@@ -129,6 +158,64 @@ complex ones (missing evidence).
 For large corpora, retrieve in tiers: search summaries or section headers first, fetch full
 content only for matched sections. This is **just-in-time applied inside a pre-retrieval
 pipeline** — the tier-1 index is the lightweight identifier.
+
+## RAG Architectures
+
+| Architecture | Shape | Use when |
+|---|---|---|
+| Naive | embed → top-k → stuff | One-hop facts over a clean corpus |
+| Modular | Swappable rewrite → retrieve → rerank → compress → generate | Tune or replace one stage alone |
+| Agentic | Model decides whether/what/when to retrieve, loops until enough | Multi-step questions — just-in-time retrieval |
+| Graph-enhanced | Retrieval walks extracted entities/relations | Multi-hop, "how is X related to Y" ([[Knowledge Graph Retrieval]]) |
+
+Agentic RAG is ReAct applied to retrieval and the hardest to evaluate, since the path
+differs per run. In a side-by-side on legal Q&A, a simple question scored the same either
+way (single-pass was faster); a compound one (sentencing given intoxication *and* an
+unrelated prior conviction) separated them — the agent searched the sub-questions in
+parallel, noticed the missing join (recidivism) and ran a targeted second round. **Use
+agentic RAG when questions decompose.** See [[Agentic RAG — Advanced Patterns]].
+
+## Chunking
+
+| Strategy | Splits on | Trade-off |
+|---|---|---|
+| Fixed + overlap | Token count (e.g. 512, 10–20% overlap) | Simple; cuts across meaning |
+| Structural | Headings, functions, table rows | Respects document units; needs format-aware parsing |
+| Semantic | Embedding-similarity breakpoints | Coherent; slower ingest, variable size |
+| Hierarchical | Small chunks to match, parent sections returned | Precision *and* context; more plumbing |
+
+Chunk size is a recall/precision dial; "retrieve small, return big" sidesteps most of it.
+Every chunk loses its surrounding context — [[Contextual Retrieval]] restores it at index
+time. When questions need aggregation or rule induction rather than passage lookup, no
+chunking fixes it: see [[Index-Time Distillation]].
+
+## Hybrid Retrieval, Stage by Stage
+
+- **Sparse** — BM25's `k1` saturates term frequency, `b` normalises document length, IDF
+  makes rare terms dominate. Learned sparse models (SPLADE, BGE-M3's sparse head) learn
+  term weights and can add related terms while staying inspectable.
+- **Dense** — cosine compares direction, not magnitude; contextual encoders give "bank" a
+  per-sentence vector. ANN index: **HNSW** (incremental inserts, more memory, very high
+  recall) for live corpora; **ANNOY** (fast build, low memory, full rebuild on change) for
+  static ones.
+- **Fusion** — dense (~0–1) and BM25 (0 to tens) scores don't share a scale.
+  [[Reciprocal Rank Fusion (RRF)]] (`Σ 1/(60 + rank)`) fuses ranks — robust but discards
+  signal; normalise-and-weight keeps scores but is hard to tune.
+- **Rerank** — a cross-encoder reads query and candidate together; too slow for the
+  corpus, so it reranks the fused top ~50. It refines fusion, not replaces it
+  ([[RAG Reranking]]).
+
+**Measure each stage, and check metric definitions.** recall@k is closest to what RAG
+needs, but many reports mean **hit rate** (≥1 relevant in top k); "retrieval failure rate"
+is usually 1 − hit rate@20. MRR measures the first hit's rank; nDCG grades the whole list.
+See [[Evaluating Context]].
+
+## Multimodal Ingestion
+
+Native multimodal keeps layout and charts at the highest cost; extract-to-text (OCR,
+transcription) is cheap and cacheable but loses anything visual; **extract plus an analysis
+tool** (`analyze_image`, `analyze_pdf`) answers most questions from text and returns to the
+original only when needed.
 
 ## Ingestion Determines the Ceiling
 
@@ -149,6 +236,11 @@ See [[RAG Knowledge Preparation]].
   keyed by query similarity. A near-duplicate query reuses the prior result set instead of
   re-running search. See [[Semantic Cache for RAG Agents]].
 
+Prompt caching comes in two vendor shapes: **implicit** (automatic prefix reuse or a
+breakpoint marker) and **explicit** (a named cache object with a TTL, referenced by name).
+Explicit caches suit "upload a corpus once, ask many questions" — a cheap alternative to
+RAG when the whole corpus fits in the window. See [[Cache-Stable Context Layout]].
+
 ## Context Validation
 
 Retrieved content is **not trustworthy by default**:
@@ -163,9 +255,31 @@ Conflict detection matters most: two retrieved documents contradicting each othe
 injected silently, is a reliable path to a confidently wrong answer. This is **context
 clash** — see [[Context Failure Modes]].
 
+**Governance pushes these checks into the index:**
+- **Expiry** — tag chunks with version and effective/expiry dates and filter at query
+  time; a superseded policy left in the index is retrieved alongside its replacement.
+- **Permissions at the retrieval layer, not after** — once an unauthorised document is in
+  context, nothing guarantees it stays out of the answer. Multi-tenant systems isolate
+  indexes and metadata per tenant.
+- **Retrieved text is the main indirect-injection channel** — tag its source, and never
+  let retrieved content alone trigger a side-effecting action; those need their own
+  authorisation ([[Prompt Injection]]). Knowledge poisoning is the same attack made before
+  indexing.
+
+## Framing Retrieved Content
+
+Wrap retrieved documents in tags carrying `id`, `source` and `updated`, instruct "answer
+using only the documents above, cite ids", and add **"if the documents don't contain the
+answer, say so"** — the cheapest hallucination guard there is. Source and date metadata
+let the model resolve conflicts.
+
 ## See Also
 - [[Agentic Workflow Patterns]] <!-- auto-linked -->
 - [[Context Engineering]] — part-of
 - [[RAG Retrieval Strategies]] — implements
 - [[RAG Reranking]] — depends-on
 - [[Context Compaction]] — extends
+- [[Contextual Retrieval]] — extends
+- [[Index-Time Distillation]] — extends
+- [[Knowledge Graph Retrieval]] — extends
+- [[Evaluating Context]] — prerequisite-for

@@ -2,7 +2,7 @@
 title: Red-Then-Green Proof for Fix-Stage Tests
 tags: [llm, eval, pattern]
 summary: When a fix's job is to make a test guard something, the agent must show the test failing against the old code before showing it passing against the new — because a weak assertion (`expect(status).not.toBe(429)`) is satisfied by a 500 and would have passed before the fix too.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/agents/build-scout.md
   - data/raw/claude-docs/akira/agents/build-scout.md
@@ -148,3 +148,4 @@ Three later review rounds applied the rule beyond unit tests:
 - [[Expected-Failure Tests Pass for Any Throw]] — related (an inverted trip-wire test that went green on a setup error)
 - [[Behaviour-Preserving Test Suite Split]] — instance-of (a stateful property model shipped with a mutant expectation that must fail)
 - [[Green Lint Proves Absence, Not That the Rule Fires]] — instance-of (red-then-green applied to lint rules)
+- [[Render-Scoped Component Types Remount Their Subtree]] (a fix planned repro-test-first)

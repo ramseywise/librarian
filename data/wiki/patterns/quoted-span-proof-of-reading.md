@@ -2,7 +2,7 @@
 title: Quoted Span as Proof of Reading
 tags: [llm, pattern]
 summary: Every review finding must carry a quoted_span — the literal source text at the cited line, whitespace-normalised, within ±1 line — so a validator can mechanically reject findings from a reporter that never read the code it cites; convention claims add a spec_citation or must not invoke the spec at all.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/skills/review-shared/SKILL.md
   - data/raw/claude-docs/galactus/skills/review-shared/references/finding-schema.md
@@ -69,3 +69,4 @@ blocks "violates our conventions" findings that point at rules nobody wrote down
 - [[Evidence Classification Model]] — prerequisite-for
 - [[Derive the Gate, Don't Copy It]] — extends (a check computed from source, not asserted)
 - [[Verbatim Evidence Quote Verification]] — alternative-to (the same span check applied to model tags)
+- [[Cited-Minus-Read Grounding Check]] — alternative-to (proof by a successful read call rather than a quoted span)

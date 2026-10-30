@@ -2,7 +2,7 @@
 title: Graded Rehearsal Drill Harness
 tags: [interview, meta, pattern]
 summary: Three sibling Claude Code skills (spoken answers, coding questions, assessment environments) that share one harness design — explicit coach/mock stance, a spoiler gate on worked solutions, the learner types every character, a process rubric graded strictly, and an append-only content-free history log keyed by stable question ids that the question generator must preserve.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/sisyphus/skills/coding-drill/SKILL.md
   - data/raw/claude-docs/sisyphus/skills/env-drill/SKILL.md
@@ -10,6 +10,8 @@ sources:
   - data/raw/claude-docs/sisyphus/skills/interview-prep/SKILL.md
   - data/raw/claude-docs/sisyphus/docs/plans/2026-08-06-interview-companion.md
   - data/raw/repos/sisyphus/.claude--docs--plans--2026-08-06-interview-companion.md
+  - data/raw/repos/sisyphus/CLAUDE.md
+  - data/raw/repos/sisyphus/drills--README.md
 ---
 
 # Graded Rehearsal Drill Harness
@@ -121,3 +123,5 @@ actually stores (a Stop-hook writer was proposed to timestamp rows).
 - [[Append-Only Log Writer Invariants]] — prerequisite-for (the writer contract the drill logs rely on)
 - [[Durable vs Performative Knowledge Split]] — extends (rehearsal targets performative knowledge)
 - [[Code Review Drill — SANYI]] — alternative-to (a single worked drill rather than a harness)
+- [[Drill Gym Tracks and Schema]] — complements (the drill content format the harness grades)
+- [[AI Engineering Field Question Bank]] — complements (questions-only bank for cold recall)

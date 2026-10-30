@@ -2,12 +2,15 @@
 title: Customer Simulation Interview Study Guide
 tags: [interview, reference]
 summary: "Method guide for the FDE customer/stakeholder role-play round — six habits that survive improvisation (discover first, mirror, translate by altitude, bad news straight with a path, yes-and-here's-what-it-displaces, dated next step), the Problem → Ownership → Options → Recommendation → Next-step frame, and why discovery often reveals the stated target is a proxy for a different constraint."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--customer-simulation--questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--customer-simulation--examples--bad-news-delivery.md

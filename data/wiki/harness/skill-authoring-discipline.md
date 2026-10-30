@@ -2,9 +2,10 @@
 title: Skill Authoring Discipline
 tags: [agents, llm, pattern]
 summary: "How to write a skill rather than what a skill is — the description as routing logic under a token/precision tension, negative examples as the higher-leverage half, explicit invocation where routing must be deterministic, and why skills plus network access is an exfiltration path."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--skills-design.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--skills-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--context-engineering.md
 ---
 

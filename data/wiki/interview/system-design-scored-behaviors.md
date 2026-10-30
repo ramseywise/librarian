@@ -2,12 +2,16 @@
 title: System Design Scored Behaviors
 tags: [interview, reference]
 summary: "The in-room behaviours a system design round actually scores, beyond the diagram: scope aggressively, turn requirements into APIs and numbers, justify every box causally, design from access patterns, evolve from the simplest working system, split services only for different scaling, name your own bottlenecks and forgotten durability, and show depth on one technology rather than adding boxes."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--interview-heuristics.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--interview-heuristics.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--interview-patterns.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--interview-patterns.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--interviewer-personas.md
 ---
 
 # System Design Scored Behaviors
@@ -94,3 +98,4 @@ bottlenecks → optimize each → non-functionals → follow-ups → technology 
 - [[LLM System Bottleneck Table]] — prerequisite-for (the "find your own bottleneck" inventory)
 - [[Durable vs Performative Knowledge Split]] — instance-of
 - [[Technical Breadth Round Playbook]] — alternative-to (the verbal breadth round vs the design round)
+- [[AI System Design Interviewer Rubric]] — extends (the same behaviours as rubric dimensions, plus the five phrases that always draw a probe)

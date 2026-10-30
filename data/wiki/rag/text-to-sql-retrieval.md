@@ -2,9 +2,10 @@
 title: Text-to-SQL as a Retrieval Strategy
 tags: [rag, llm, pattern]
 summary: "Querying structured data as the second half of a hybrid retriever — dynamic schema subsetting, a semantic layer of retrieved few-shot SQL examples, mechanical validation that replaced a deleted LLM reviewer, and bounded error-as-context retry."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
 ---
 

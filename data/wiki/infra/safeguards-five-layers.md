@@ -2,7 +2,7 @@
 title: Safeguards Architecture — Five Protection Layers
 tags: [infra, llm, pattern]
 summary: Five-layer runtime safety pipeline for production agents — input guardrails, routing confidence, retrieval quality (CRAG), post-generation grounding check, and escalation routing — each with distinct latency cost and failure mode.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/docs/support-agents/safeguards-architecture.md
@@ -10,6 +10,7 @@ sources:
   - data/raw/repos/playground/.claude--docs--support-agents--safeguards-architecture.md
   - data/raw/claude-docs/project-g/docs/support-agents/safeguards-architecture.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--support-agent.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--support-agent.md
 ---
 
 # Safeguards Architecture — Five Protection Layers

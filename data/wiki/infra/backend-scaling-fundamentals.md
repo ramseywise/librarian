@@ -2,9 +2,10 @@
 title: Backend Scaling Fundamentals
 tags: [infra, reference]
 summary: The generic backend substrate every LLM system design assumes — single server first, then load balancing, stateless app servers, caching with TTL vs invalidation and stampede mitigation, replication (≠ backup), sharding with consistent hashing — reasoned as an iterative loop where every scaling fix introduces the next problem.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--01-distributed-systems.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--01-distributed-systems.md
 ---
 
 # Backend Scaling Fundamentals

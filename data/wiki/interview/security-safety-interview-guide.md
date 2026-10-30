@@ -2,12 +2,15 @@
 title: Security and Safety Interview Study Guide
 tags: [interview, infra, reference]
 summary: Exam-prep reference for the "and how do you make it safe?" question — the agent threat model by name, source-to-sink containment instead of detection, the nine-layer defence stack in walk order, operational boundaries before shipping, compliance quick answers, and the recovery ladder as safety's twin.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--7-security-safety--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--7-security-safety--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--security-safety.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--security.md
+  - data/raw/repos/sisyphus/interviewing--guides--7-security-safety--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--7-security-safety--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--notes--security.md
 ---
 
 # Security and Safety Interview Study Guide
@@ -83,9 +86,37 @@ On a streaming failure, close with an error event — never hang.
 - *"RAG poisoning?"* — corpus admission control, source confidence tiers, grounding checks, anomaly monitoring on retrieval distributions.
 - *"What's different about multi-agent security?"* — every handoff is an injection surface; authenticate inter-agent messages, verify provenance, isolate so one compromised agent cannot cascade.
 
+## Follow-ups on action risk (answer sketches)
+
+*Provisional:* condensed from the reference answers to the chapter questions in *AI Agents in Depth* (Li), which the book itself flags as AI-drafted with light human review. Treat these as answer shapes to check, not settled claims.
+
+- *`delete_file` is safe until the path is `/etc`.* Rate the tool **plus its arguments**, not the
+  tool: compute risk at call time from reversibility, permissions and blast radius with deterministic
+  rules over structured arguments — never model judgement.
+- *When is a constrained action space better?* High-compliance, irreversible work (refunds, payments):
+  choosing among fixed options makes whole classes of mistake impossible.
+- *Sandboxing vs capability.* Tier isolation (container or microVM) by risk; no network by default with
+  an allow-list proxy; read-only source mounts; keys never inside the sandbox; resource limits.
+- *Lethal trifecta ([[Lethal Triad]]) plus persistent memory.* Four boundaries — data (no mounted credentials, minimal
+  visibility), input (provenance labels; external content is data, never instruction), output
+  (default-deny egress, review outside the context, HITL), and cross-session (memory writes get the same
+  trust review as external content).
+- *Agent-generated SQL and HTML.* SQL on a least-privilege read-only account with resource limits; UI
+  through a declarative protocol rendering trusted components, sandboxed if arbitrary HTML is
+  unavoidable.
+- *An agent may change its tools but not the system that approves the change.* Evolvable code lives in
+  a low-privilege sandbox that can only emit patches and tests; permissions, keys, release config and
+  validators are out of reach; changes are reproduced and regression-tested before release.
+- *Fast-path actions (speak first, click first).* Grade actions by reversibility: the fast path may only
+  take reversible ones; irreversible actions wait for the slow path.
+- *Agent identity or the user's for external actions?* Default to a separate, auditable agent identity;
+  use the user's only when the counterparty requires the account holder, with the user authenticating
+  in person.
+
 ## See Also
 - [[Prompt Injection]] — prerequisite-for (the core attack in depth)
 - [[Agent Security Risk Taxonomy]] — prerequisite-for
 - [[Input Guardrails Pipeline]] — instance-of (layer 1 of the stack)
 - [[Production Hardening Patterns]] — extends
 - [[Agents Interview Study Guide]] — complements (HITL and harness boundaries)
+- [[Bounding Agents Rather Than Trusting Them]] — extends (argument-level risk is a bound, not a trust decision)

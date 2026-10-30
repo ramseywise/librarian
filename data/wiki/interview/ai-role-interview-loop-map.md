@@ -2,7 +2,7 @@
 title: AI Role Interview Loop Map
 tags: [interview, reference]
 summary: "Which rounds an AI engineer, ML engineer, data scientist, or forward-deployed engineer loop actually runs, the six round types a self-made list usually misses (recruiter screen, project deep-dive, customer simulation, debugging, take-home defense, reverse interview), and a role × topic weighting that shows where prep effort pays."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-17-interview-kb-consolidation.md
   - data/raw/repos/learn-ai-engineering/.claude--docs--plans--2026-07-17-interview-kb-consolidation.md
@@ -111,6 +111,8 @@ rejected because nobody can study from a list of links.
 - [[Case Study Interview Study Guide]] — extends (method for the FDE/DS signature round)
 - [[Code Review Interview Study Guide]] — extends (method for the senior/staff review round)
 - [[Coding Challenge Interview Study Guide]] — extends (method for the live coding round)
+- [[Multi-Level Implementation Round]] — extends (staged-build coding format reported at frontier labs)
+- [[Agent Engineering Question Chains]] — extends (scenario half of the AIE technical round)
 - [[Customer Simulation Interview Study Guide]] — extends (method for the FDE role-play round)
 - [[Project Deep-Dive Interview Study Guide]] — extends (method for the senior experience-review round)
 - [[Leadership Rounds Interview Study Guide]] — extends (method for CTO/HoP/founder rounds and the reverse interview)

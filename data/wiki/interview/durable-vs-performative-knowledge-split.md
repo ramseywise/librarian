@@ -2,10 +2,11 @@
 title: Durable vs Performative Knowledge Split
 tags: [interview, llm, pattern]
 summary: One test — "is this true regardless of whether I'm being interviewed?" — sorts study material into durable technical knowledge and interview-performance technique, which decay at different rates and need different revision cadences.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-30-LAE-112-interview-notes-reorg.md
   - data/raw/repos/learn-ai-engineering/interviewing--README.md
+  - data/raw/repos/sisyphus/interviewing--README.md
 ---
 
 # Durable vs Performative Knowledge Split
@@ -87,3 +88,4 @@ boundary held explicitly.
 - [[Karpathy LLM Wiki Pattern]] — complements (raw vs compiled, the other filing axis)
 - [[Agents Interview Study Guide]] — complements (durable-side content this rule files)
 - [[Timebox-Scaled Deliverable Bar]] — instance-of (round-technique material, format-specific and therefore performative)
+- [[AI Engineering Field Question Bank]] — complements (cold-recall material spanning both sides)

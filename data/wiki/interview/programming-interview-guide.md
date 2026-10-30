@@ -2,10 +2,15 @@
 title: Programming Interview Study Guide
 tags: [interview, reference]
 summary: Exam-prep reference for the coding screen — the DSA pattern checklist (hashing, two pointers, linked lists, trees, graphs, DP), the Python stdlib moves worth reaching for first, the SQL idioms that recur (window functions, dedup-latest, funnel/retention), and a question bank of answer sketches.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--0-programming--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--0-programming--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--0-programming--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--0-programming--00-overview.md
+  - data/raw/repos/sisyphus/drills--README.md
+  - data/raw/repos/sisyphus/drills--python--README.md
+  - data/raw/repos/sisyphus/drills--sql--README.md
 ---
 
 # Programming Interview Study Guide
@@ -70,3 +75,4 @@ gets O(n).
 - [[AIE Code-Test Flaw Taxonomy]] — alternative-to (the LLM take-home variant of the coding round)
 - [[Graded Rehearsal Drill Harness]] — complements (the drill harness for coding questions)
 - [[Coding Challenge Interview Study Guide]] — extends (round format, stdlib practicals, trap-shaped prompts)
+- [[Drill Gym Tracks and Schema]] — complements (where the reps live and how a drill file is shaped)

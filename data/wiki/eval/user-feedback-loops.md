@@ -2,7 +2,7 @@
 title: User Feedback Loops
 tags: [eval, llm, infra]
 summary: Explicit ratings or implicit usage signals from deployed users — the only eval source that catches "technically correct but unhelpful", slow and sparse and biased, whose real payoff is converting thumbs-down cases into permanent golden-set entries.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/claude-docs/akira/docs/research/2026-09-20-dis345-favourite-holdout-judgments.md
@@ -17,6 +17,7 @@ sources:
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-20-dis345-favourite-holdout-judgments.md
   - data/raw/repos/akira/.claude--docs--plans--2026-09-20-dis345-favourite-holdout-judgments.md
   - data/raw/repos/diskoe/.claude--docs--plans--2026-09-20-dis345-favourite-holdout-judgments.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--11-production-and-the-maturity-ladder.md
 ---
 
 # User Feedback Loops
@@ -103,6 +104,17 @@ inserting them into that corpus as ground truth would be. Two practical conseque
   need the serving log to retain the full scored candidate and the version columns it
   never wrote. That gap was recorded as a named follow-up in the decision row, so it is
   not rediscovered as a surprise.
+
+## Three kinds of feedback signal (course synthesis)
+
+| Signal | Strength | Weakness |
+|---|---|---|
+| **Explicit** (👍/👎, ratings) | Direct | Sparse (often < 1–2% of turns), biased toward extremes |
+| **Implicit** (rephrasing, abandonment, escalation, copy) | Plentiful | Ambiguous — a short session may be success or giving up |
+| **Downstream outcomes** (ticket reopened, refund reversed) | Closest to value | Delayed, hard to attribute |
+
+Feedback is a **sampling rule and a calibration label**, not a metric to optimize directly:
+optimizing the 👍 rate rewards flattery.
 
 ## See Also
 - [[Eval Ladder]] — part-of (rung 4)

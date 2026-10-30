@@ -1,13 +1,17 @@
 ---
 title: Project Deep-Dive Interview Study Guide
 tags: [interview, reference]
-summary: "Method guide for the project deep-dive / experience review — seniority reads as decisions defended, not technologies listed: a three-altitude answer per project, a constraints-at-the-time decision template, a five-part incident story where the isolation step is the hardest part to fake, calibrated ownership language, and confidentiality-safe constraint shapes."
-updated: 2026-10-17
+summary: "Method guide for the project deep-dive / experience review — seniority reads as decisions defended, not technologies listed: a three-altitude answer per project, a constraints-at-the-time decision template, a five-part incident story where the isolation step is the hardest part to fake, calibrated ownership language, confidentiality-safe constraint shapes, and the eight probe chains that pull a project apart."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--probe-bank.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--architecture-walkthrough.md
@@ -87,6 +91,26 @@ impact. No numbers for a project you *led* is a yellow flag; if uninstrumented, 
 give the qualitative signal. Prepare one architectural and one process "differently today"
 answer per project, each tied to the failure that revealed it. "Nothing" is disqualifying;
 "more time" is a complaint, not a decision.
+
+## The eight probe chains
+
+Deep-dive questions cluster into eight openers, each followed by a predictable probe chain.
+Prepare one project against all eight; the probes are where unrehearsed ownership shows.
+
+| Opener | Probes to expect | Strong answer does |
+|---|---|---|
+| End-to-end walkthrough | Trace one request from input to output; where does the core logic sit and what feeds it context; riskiest component and why | Business problem first, not a tool list; own role explicit; one level deeper on any component; one concrete metric |
+| Nasty bug / incident | How you first noticed; how you formed and tested hypotheses; which signals (logs, metrics, traces, repro); how you verified the fix | symptom → hypothesis → isolation → root cause → fix, named tools, verified with evidence, a systemic prevention |
+| Why this design / stack | Alternatives seriously rejected; the deciding constraint; what would have flipped it; where you followed vs broke convention; the choice you're least sure of | "X over Y because Z" tied to a real constraint; admits uncertainty |
+| Evaluation — real framework or vibes? | How the golden set was built; why those metrics; how you trusted an LLM judge; how a regression was caught before users; post-deploy drift monitoring | Offline set and/or online signal with real numbers; regression detection and monitoring, not a one-time check; names the eval's own limits |
+| Hardest trade-off | What it cost (latency, complexity, cost, flexibility); data, prototype or judgment call; still comfortable today? | A specific trade-off, never "speed vs quality"; quantified; honest current view |
+| 10× scale and cost | First bottleneck to break and how you know; dominant cost drivers and how measured; levers in order (cache, batch, tier, redesign); detecting degradation before users | Concrete bottleneck, real cost drivers with numbers, ordered levers, scale tied to monitoring |
+| Start over / next | Which decision you'd reverse; new information vs a mistake you own; what changes if scale or requirements differ | A specific reversal tied to a lesson; distinguishes new information from error; credible next step |
+| What you personally owned | One thing that wouldn't have happened without you; where you disagreed with the team | Clear "I" vs "we" line, at least one owned decision, team credited, a concrete artifact |
+
+The eval opener is the one AI-role loops lean on hardest — have the golden-set provenance
+and one caught-regression story ready (see
+[[Evals and Observability Interview Study Guide]]).
 
 ## AI-tools probe and confidentiality
 

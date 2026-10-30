@@ -2,7 +2,7 @@
 title: Timebox-Scaled Deliverable Bar
 tags: [interview, llm, pattern]
 summary: Test coverage, file organisation, and observability expectations are a dial set by the assignment window rather than a constant — the one-hour "don't write tests" advice inverts at three hours, and the async ambiguity protocol inverts the live-round clarify-first reflex.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_openai-work-trial.md
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_tooling-audit.md
@@ -12,7 +12,7 @@ sources:
 
 # Timebox-Scaled Deliverable Bar
 
-A vendor writeup of OpenAI's code-test and Work Trial formats corrects a specific error in
+A vendor writeup of one AI lab's code-test and Work Trial formats corrects a specific error in
 earlier take-home research: advice derived from a one-hour window was being carried into
 longer assignments where it is wrong. The correction generalises into a dial.
 
@@ -86,7 +86,7 @@ for the general fix of indexing advice by situation rather than by topic.
 - **Frameworks are neutral.** No credit for or against a particular stack.
 - **AI-tool policy varies by track** and is not inferable from the company; confirm with
   the recruiter rather than assuming.
-- Two distinct OpenAI formats exist — a shorter technical test and a longer Work Trial —
+- Two distinct formats exist at that lab — a shorter technical test and a longer Work Trial —
   and advice for one does not transfer to the other. That non-transfer is the dial again.
 
 ## What actually eats a 60-minute window
@@ -127,3 +127,4 @@ test, 3–6h Work Trial, and presentation/defense.
 - [[Situation-Indexed Decision Tree]] — extends (advice indexed by situation, not by topic)
 - [[Durable vs Performative Knowledge Split]] — prerequisite-for (round-technique material, not durable knowledge)
 - [[AI-Assisted Take-Home Playbook]] — extends (time budget, scaffold choice and presentation for AI-assisted take-homes)
+- [[AI Engineering Take-Home Landscape]] — extends (the 2–4h band most real take-homes fall into)

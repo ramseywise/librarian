@@ -2,11 +2,12 @@
 title: Online Eval Sampling
 tags: [eval, infra, llm, pattern]
 summary: "Score 10–20% of production traces by rule rather than at random — negative feedback, high-cost dialogues, time windows, and a full 48-hour review after any model or prompt change."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--observability.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--11-production-and-the-maturity-ladder.md
 ---
 
 # Online Eval Sampling
@@ -66,6 +67,28 @@ Causes worth expecting: model updates, shifts in input data, upstream API change
 variation in user behavior. **None of these involve a change to your code**, which is why
 drift is invisible to CI and only online evaluation catches it.
 
+## Drift sources, input-mix monitoring, and online A/B (course synthesis)
+
+| Drift source | Example |
+|---|---|
+| Model updates | Provider ships a new snapshot behind the same alias |
+| Input shift | New product launch, new user segment, seasonal questions |
+| Upstream changes | A tool API changes its response shape; docs rewritten |
+| Corpus staleness | The index lags the source of truth |
+
+Alert on divergence using **rolling windows** (daily rates on small samples are noisy), and **watch
+the inputs too**: cluster query embeddings and compare the topic/intent mix to the launch baseline —
+mix shifts warn before quality metrics move. Pin model versions so "drift" is something you chose.
+Online graders must be **reference-free**. Human–judge agreement on the overlap of the two layers is
+its own tracked metric.
+
+When offline evals can't settle a question, **A/B test**: a primary metric tied to outcome;
+**guardrail metrics** that must not regress (grounding, policy violations, latency, cost per success);
+**pre-declare** metric, sample size and duration (peeking inflates false positives); watch the
+**novelty effect**; **ramp** 1% → 10% → 50% with guardrail checks at each step; optimize the target,
+not the mechanism; test several doses, not just on/off. Kill switches for such experiments are on
+[[Ablation Switches and Feature Debt]].
+
 ## See Also
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
 - [[Eval Suite Maintenance]] — part-of (the source of rolling discovery rows)
@@ -76,3 +99,4 @@ drift is invisible to CI and only online evaluation catches it.
 - [[Loop Termination Design]] — complements (cost as a thrashing proxy)
 - [[Experiment Tracking Schemas]] — depends-on (prompt_version + git_commit + model as the attribution key for a drift signal)
 - [[Publish Automatically, Sample for Review]] — instance-of (a publish-time random sample graded by an operator)
+- [[Agent Trace Anatomy]] — prerequisite-for

@@ -2,7 +2,7 @@
 title: Vendored Hooks Resolve to the Global Copy
 tags: [patterns, infra, pattern]
 summary: Hooks registered as $CLAUDE_PROJECT_DIR/.claude/hooks/<name> run whatever that path resolves to; when the session root's .claude is a symlink to ~/.claude, the repo's vendored hook copies never execute, so edits to them change nothing. Fix in global canon first, re-vendor byte-identical, and check parity every session.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/galactus/CLAUDE.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-15-gal-27-band-contract-hitl-gates.md
@@ -57,3 +57,4 @@ not gone. See [[Dispatcher Carries the Skill Body]].
 - [[The Untested Copy Wins]] — related (the edited copy is not the executed one)
 - [[Claude Workflow System]] — related (config layering: ~/workspace/.claude is a symlink to ~/.claude)
 - [[Dispatcher Carries the Skill Body]] — extends (dispatcher asserts the hook that will run)
+- [[Canon Repo, Symlinked Consumers]] — prerequisite-for (the symlink layout this failure happens in)

@@ -2,9 +2,10 @@
 title: Observability & Evaluation Glossary
 tags: [eval, infra, reference]
 summary: Canonical vocabulary for agent observability and evaluation — the observability/tracking/tracing/monitoring/alerting hierarchy, offline vs online evaluation modes, heuristic vs LLM-judge metric types, dataset terminology, and rank-based retrieval metrics (MRR/precision@k/recall@k/ndcg@k/hit@k).
-updated: 2026-07-14
+updated: 2026-10-30
 sources:
   - data/raw/notion/2026-07-14-evaluation-glossary.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--08-tracing-and-observability.md
 ---
 
 # Observability & Evaluation Glossary
@@ -106,3 +107,4 @@ A recurring split across teams adopting both a classical APM stack and an LLM-sp
 - [[Synthetic Dataset Generation for RAG Eval]]
 - [[Langfuse Platform]]
 - [[LLM Grader Calibration Insights]]
+- [[Agent Trace Anatomy]] — extends

@@ -2,7 +2,7 @@
 title: Human Agreement Ceiling Protocol
 tags: [eval, pattern, conflict]
 summary: Before trusting any LLM-judge score on a subjective dimension, measure how well humans agree with each other on the same items (κ_HH) — the judge target is κ_judge ≥ 0.8 × κ_HH, not an absolute number — using quadratic-weighted κ for ordinal scales, Krippendorff's α with MASI distance for multi-select tags, per-tag binary κ, bootstrap 95% CIs, ~100 items (±0.1 CI), and 3–5 scene-literate raters recruited by name before the rating sheet is designed.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/open-questions.md
   - data/raw/claude-docs/akira/docs/research/2026-08-27-b15-kappa-protocol.md
@@ -268,3 +268,5 @@ must reach.
 - [[Blind Labels Judge No Prompt]] — extends (schema-enforced blinding for the absolute instrument that measures κ_HH)
 - [[Closed Judge Vocabulary, Tolerant Parse]] — related (judge-output design in the same lane)
 - [[Demote Judge Findings to Keyless Gates]] — extends (the 10-label calibration floor that precedes a κ run)
+- [[Error Analysis (Open and Axial Coding)]] — extends
+- [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]] — extends

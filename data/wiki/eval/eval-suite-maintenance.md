@@ -2,12 +2,13 @@
 title: Eval Suite Maintenance
 tags: [eval, llm, agents, pattern]
 summary: "Fix the evaluation system before changing the agent — a dropped score is a claim about the eval as much as about the agent, and a suite everyone passes is saturated rather than solved."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/product-feasibility.md
   - data/raw/claude-docs/kiez-archive/docs/product-feasibility.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
 ---
 
 # Eval Suite Maintenance
@@ -114,6 +115,33 @@ Inspect traces
 Add new failures and harder cases
 ```
 
+## Debug order, Goodhart, and eval debt (course synthesis)
+
+**Debug order when a score drops:** (1) infrastructure — errors, timeouts, rate limits; (2) **versions**
+— did the dataset, grader, judge model or config change between runs?; (3) traces and grader decisions
+— read 10–20 failed transcripts *with* their grades; (4) slices — is the drop concentrated?; (5) only
+then change the model, prompt, tools or agent logic.
+
+**Goodhart gaps** an optimizer will find:
+
+| Gap exploited | Example |
+|---|---|
+| Grader leniency | Answers padded until a verbosity-biased judge passes them |
+| Narrow checks | Code agent edits the tests; schema-valid output with empty content |
+| Proxy metric | 👍 rate optimized → flattery; escalation rate cut → refuses to escalate |
+| Visible tests | Agent overfits to tests it can see |
+
+Defenses: multiple dimensions with guardrails, held-out tests the optimizer can't see, reading the
+transcripts of the biggest *gains*, and refreshing from production. It bites hardest in automated loops.
+
+**Judge drift:** pin the judge model version and re-calibrate on change; version the criteria and
+re-label a sample when they move.
+
+**Eval debt** (Sculley et al., *Hidden Technical Debt in ML Systems*, 2015): graders nobody remembers
+the reason for, thresholds never revisited, stale references, CI and production copies of a grader
+that drifted apart, dashboards nobody reads. Schedule maintenance: review failure labels quarterly,
+prune dead rows, re-calibrate judges, retire metrics nobody acts on.
+
 ## See Also
 - [[Context Failure Modes]] <!-- auto-linked -->
 - [[Manual Review as Eval Bootstrap]] <!-- auto-linked -->
@@ -128,3 +156,7 @@ Add new failures and harder cases
 - [[Ship Logging Before Features]] — related (the regression/capability split applied to a recommender)
 - [[One Check Shape for Quality Verdicts]] — extends (fixtures exported from human overturns as the regression path)
 - [[Eval Falsifiability]] — prerequisite-for
+- [[Parameterised Benchmark Instances]] — extends (leakage-proof suites by construction)
+- [[Paired Eval Comparison]] — extends
+- [[Eval Contamination Defenses]] — extends
+- [[Eval Metric Interpretation Pitfalls]] — extends

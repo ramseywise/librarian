@@ -1,17 +1,24 @@
 ---
 title: Behavioral Interview Study Guide
 tags: [interview, reference]
-summary: "Method guide for the behavioral round — STAR plus two upgrades (a behavior-change Reflection close, and re-angling one story bank to the failure mode each audience screens for), a ten-category story bank with the trap per category, failure-story rules, and the anti-patterns that score zero."
-updated: 2026-10-17
+summary: "Method guide for the behavioral round — STAR plus two upgrades (a behavior-change Reflection close, and re-angling one story bank to the failure mode each audience screens for), a ten-category story bank with the trap per category, failure-story rules, the probe ladders interviewers use to dig past a rehearsed story, and the anti-patterns that score zero."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--probe-bank.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--examples--ambiguity-rescued.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--examples--ambiguity-rescued.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--examples--conflict-resolution.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--examples--conflict-resolution.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--examples--failure-owned.md
+  - data/raw/repos/sisyphus/interviewing--rounds--behavioral--examples--failure-owned.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--behavioral--sources.md
 ---
 
@@ -87,6 +94,33 @@ version with the actual number looked up.
   rather than declaring victory at launch (see [[Eval-Driven Development (EDD)]]).
 - **Rejected recommendation (FDE):** dig under the stated objection — it is rarely the real
   one — adapt something real, keep integrity on what you believe.
+
+## Probe ladders — what comes after the first answer
+
+Interviewers dig with five to seven follow-ups per question, and the probes follow a stable
+order: **what made it hard → how *you* decided → how you brought others along → what you'd
+do if wrong → measured outcome → what changed in you.** A story rehearsed only as a
+two-minute monologue breaks on the second probe. Probes worth rehearsing by competency:
+
+| Competency | Probes that separate real stories from rehearsed ones |
+|---|---|
+| Ambiguity / uncertainty | How did you decide you had enough information to act? What was your plan if the bet was wrong? How did you keep the team moving without false certainty? |
+| Killing or pivoting a project | How did you conclude it was unfeasible rather than just hard? What evidence did you gather first? How did you avoid sunk-cost thinking? What was salvaged? |
+| Learning fast | How did you get productive before you were an expert? Would experts agree with your choices? |
+| Conflict / persuasion | How did you decide to raise it vs let it go? Whom did you talk to first? Did you involve your manager, and why or why not? What if *you* had been wrong? Did the relationship stay intact? |
+| Difficult stakeholder | How did you find out what they actually cared about? Did you push back, and how did you frame it? |
+| AI solution failed | How did you define success? Where did the failure surface — offline metric, production, or users? Root cause: data, eval gap, distribution shift, or wrong framing? What changed in how you build and evaluate afterward? |
+| Mistake / misjudgment | Why did you make that call *at the time*? Has the change you made actually prevented a repeat since? |
+| Cross-team architecture | How did you build alignment with no direct authority? Which assumptions proved wrong? |
+| Short-term sacrifice | Who felt the short-term cost? Did the long-term gain land, and how did you measure it? |
+| Tight deadline | How did you decide what to cut? Did you make it, what did it cost, and was it worth it? |
+| Explaining to non-technical audiences | How did you check they understood? What did you deliberately leave out? How did it change their decision? |
+
+The pattern behind the strong-answer criteria: name the *specific* unknowns or constraints
+(a vague "it was uncertain" undersells the story), show a method that transfers (cheap
+experiments, reversible bets, checkpoints), and include a course-correction. Coaching banks
+like this one carry questions and probes only — sample answers are someone else's career;
+every rehearsed answer must trace to your own evidence.
 
 ## Anti-patterns
 

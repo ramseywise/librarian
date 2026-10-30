@@ -2,7 +2,7 @@
 title: Native Library Load-Order Collision
 tags: [patterns, infra, pattern]
 summary: "Two Python packages that each vendor a different build of the same native library (LightGBM and torch both ship libomp.dylib) collide: the first one loaded wins, and if torch's build wins, LightGBM training segfaults with no Python traceback. Pin the import order where it can't be refactored away."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/listen-wiseer/CLAUDE.md
 ---
@@ -45,3 +45,4 @@ not mean "not loaded" when a package registers entry points.
 ## See Also
 - [[Listen-Wiseer Project]] — instance-of (where both traps live)
 - [[Silent Failure Catalogue]] — extends (a crash with no diagnostic signal)
+- [[Index Pin Applies Only to Direct Dependencies]] (another packaging trap from the same repo)

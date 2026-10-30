@@ -2,10 +2,11 @@
 title: Trajectory Over Outcome
 tags: [eval, agents, concept]
 summary: "Why an agent has to be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are the two decisions an outcome score cannot see."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
   - own-prose
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
 ---
 
 # Trajectory Over Outcome
@@ -123,6 +124,29 @@ right answer reached by a wrong path — e.g. an unauthorised API call on the wa
 quality is then scored per dimension rather than as one number (see
 [[Specialist Verdict Panel]]).
 
+## Tool-call match modes and the invariant rule
+
+Trajectory checks come in strictness levels:
+
+| Mode | Passes when | Use for |
+|---|---|---|
+| **Exact** | Same tools, same order, same arguments | Strict protocols (auth before action) |
+| **In order** | Expected calls appear in order, extras allowed | Required sequence with some freedom |
+| **Any order** | Expected calls all appear | Independent lookups |
+| **Subset / superset** | Calls ⊆ (or ⊇) an allowed set | "Never call outside this set" / "must at least call these" |
+
+Outcome should be checked by **end state** (the record in the database), not by what the agent says it did.
+
+The reverse failure exists too: a strict trajectory check can fail a run that did *better* than the
+script. Anthropic's example is a flight-booking agent that found a loophole in the fare policy and
+got the user a cheaper ticket — failed against the preset path, succeeded by outcome. So **trajectory
+checks should enforce invariants** ("never book before confirming"), not one golden path.
+
+In supervisor/sub-agent systems, split **routing evals** (does the supervisor pick the right sub-agent?
+seed with boundary queries) from **domain evals** (given correct routing, does the sub-agent act
+correctly?). And **treat a 0% task as suspect**: a task failing every trial across versions is usually
+broken (unreachable state, wrong reference, missing permission) before the agent is.
+
 ## See Also
 - [[Eval Non-Determinism]] <!-- auto-linked -->
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
@@ -136,3 +160,5 @@ quality is then scored per dimension rather than as one number (see
 - [[The Augmentation Gate]] — complements (the same cheap-gates-before-expensive-judge argument, for RAG)
 - [[Loop Detection and the Two-Retry Rule]] — implements (the stopping-point decision, mechanically)
 - [[Specialist Verdict Panel]] — complements (final-answer dimensions scored independently)
+- [[Simulated User Evaluation]] — extends
+- [[Agent Trace Anatomy]] — prerequisite-for

@@ -1,14 +1,18 @@
 ---
 title: Recruiter Screen Playbook
 tags: [interview, reference]
-summary: "The recruiter screen tests narrative coherence and logistics fit, not technical depth. It is rehearsed, not studied: a 90-second past-pivot-present-bridge narrative, three project one-liners, a researched comp range closed with 'is that in band?', logistics decided before the call, a concrete AI-tool-fluency answer, and one question that brings early doubts to the surface."
-updated: 2026-10-17
+summary: "The recruiter screen tests narrative coherence and logistics fit, not technical depth. It is rehearsed, not studied: a 90-second past-pivot-present-bridge narrative, three project one-liners, a researched comp range given only after trying for their band and closed with 'is that in band?', logistics decided before the call, a concrete AI-tool-fluency answer, and one question that brings early doubts to the surface."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--recruiter-screen--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--recruiter-screen--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--recruiter-screen--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--recruiter-screen--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--recruiter-screen--probe-bank.md
 ---
 
 # Recruiter Screen Playbook
@@ -35,6 +39,10 @@ Bridge:  "This role caught my attention because [specific reason]."
 - The **through-line** is the load-bearing piece. Name the thread that connects the arc.
 - End at the bridge and stop. The recruiter will ask follow-ups.
 - Say "I", not "we". Time it, record it, and do three rounds before any real screen.
+- An alternative four-beat order for "tell me about yourself": background → scale → what
+  you build now → why now. Close on "exploring, being selective" — confident, not anxious.
+- If your current title under-describes the work, reframe it in the first words, before
+  the recruiter files you under the wrong role.
 
 ## Project one-liners
 
@@ -46,6 +54,10 @@ work carries over.
 
 - Research the median and P75 for this role, level and location beforehand. Treat P75 as
   your negotiation floor.
+- Try for their band first: answer the salary question with a question, framed as "scope,
+  team and impact first" so not anchoring reads as senior rather than evasive. Give your
+  range only when pressed. If a form forces a single number, use a reasonable figure for
+  the level — not extreme, and not one you'd refuse.
 - Give a range and close with a question: *"I'm targeting X–Y based on market data for this
   role — is that in the range you're working with?"* The close asks them to confirm the band
   early.
@@ -75,6 +87,11 @@ a different approach from competitors), plus what the role does and why that mat
 you're heading. Answers like "great culture" and "leader in the space" are filler, and a
 recruiter who has screened 50 candidates this week hears them immediately. Frame leaving
 your current job as moving *toward* something. Negative framing reads as a risk signal.
+For "why are you looking?" the first sentence sets the frame — "not because something is
+broken" — and the answer ends on your bar (product, team, depth, values) so being selective
+reads as standards, not indecision. For "what are you looking for?" anchor one primary
+target and name adjacent roles as adjacent, not as a scattershot list; tilt the emphasis to
+the role in front of you.
 
 ## Questions to ask
 

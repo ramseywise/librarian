@@ -1,9 +1,10 @@
 ---
 title: Context Compaction
-tags: [llm, agents, concept]
+tags: [context, context-management, llm, agents, concept]
 summary: Transforming a large interaction history into a smaller continuation state — the technique that separates an agent that dies at the window limit from one that runs for hours.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
+  - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--05-compression-compaction.md
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--04-compression-compaction.md
   - data/raw/claude-docs/project-g/docs/support-agents/invocation-flow.md
@@ -17,6 +18,22 @@ has happened, reinitialize the window with the summary, and continue.
 
 > It is the difference between an agent that dies at the window limit and one that runs for
 > hours.
+
+## Compress for Quality, Not Only for Length
+
+Compression pays before the window is full. **In-context learning behaves more like
+retrieval than reasoning**: ten searches scattered across 50k tokens make the model hunt
+for fragments at every decision, while one structured summary ("known: A, B; still
+missing: C") turns a conclusion that had to be reasoned into one that can be looked up. The
+usual failure is **information density that is too low**, not a window that is too small —
+that is context rot ([[Context Failure Modes]]). The [[Agent Status Bar]] *adds* distilled
+conclusions; compression *replaces* raw records with them.
+
+**Identifiers survive verbatim** — UUIDs, hashes, IPs, ports, URLs, filenames, PR numbers;
+one changed digit fails the next tool call. Summarisers also drop what *looks*
+re-acquirable (early decisions, reasons behind constraints, failed paths), which is
+exactly what the retention priority below protects. A controlled comparison of six
+compression strategies is in [[Context-Aware Compression]].
 
 ## Compression vs Compaction
 
@@ -88,6 +105,54 @@ record rather than implicitly in the prose of the conversation, summarizing the 
 little. **Agents that write their state down survive compaction; agents that keep it in the
 transcript do not.**
 
+## The Production Ladder
+
+A production coding agent (Claude Code) layers five mechanisms, cheapest and most
+cache-controllable first:
+
+1. **Tool-result budget** — large outputs go to disk and the model sees a preview; the
+   replacement is frozen so the cache stays consistent.
+2. **Delete noise outright** — summarising junk wastes tokens.
+3. **API-level micro-compaction** (server-side context editing) — free to implement but
+   still breaks the cache after the edit point; save it for near-overflow.
+4. **Archival per-turn summaries** — "`git log`, not `git squash`": keeps the thread.
+5. **Full LLM compaction** as the last resort, with session memory tried first and a
+   **circuit breaker** for sessions stuck in compaction-failure loops.
+
+## Isolation Beats Compression
+
+Compression removes bulk after it lands; **sub-agent isolation keeps it out**. "Find the
+payment-callback handler" in the main loop drags in dozens of files; delegated, it costs
+two messages (the task, and the handler location plus call sites), needs no summariser
+call, and leaves the parent's cache prefix untouched. The price is a self-contained brief.
+See [[Multi-Agent Context]].
+
+## Memory Hierarchy: Promotion and Demotion
+
+| Level | Holds | Access |
+|---|---|---|
+| **L1: window** | Current task, recent turns, active evidence | Free, always attended |
+| **L2: session store** | Compacted summaries, tool results, scratch files | One tool call |
+| **L3: long-term** | Memory store, indexed corpus | Retrieval |
+
+Compaction **demotes** L1 → L2; retrieval **promotes** back. Make both moves cheap and
+explicit rather than letting the window be the only tier ([[Memory as Context]],
+[[MemGPT / Letta Virtual Context Memory]]).
+
+## Compression Techniques Beyond Summarisation
+
+| Technique | How | Notes |
+|---|---|---|
+| Extractive | Keep important sentences verbatim | Faithful, cites cleanly, less compression |
+| Abstractive | Rewrite shorter | Higher ratio; can introduce errors |
+| Hierarchical | Summarise chunks, then summaries | Scales; detail lost per level |
+| Token pruning (LLMLingua-style) | Small model drops low-information tokens | 2–5× with modest loss; unreadable to humans |
+| Query-conditioned | Compress relative to the current question | Highest relevance per token; redo per query |
+
+**Self-refinement as a compaction pass:** have the model rewrite its working notes into
+the state schema ([[Structured Context and Schemas]]), then verify the required facts
+survived ([[Evaluating Context]]).
+
 ## Trigger Points
 
 - Approaching the window limit (~80% is a common threshold)
@@ -142,3 +207,6 @@ gone. The same pruning was implemented in both the Python and the TypeScript age
 - [[Memory as Context]] — extends
 - [[Context Retrieval Strategies]] — complements
 - [[Compression Strips the Epistemic Frame]] — extends (hedging and provenance are the first casualties)
+- [[Context-Aware Compression]] — extends
+- [[Agent Status Bar]] — alternative-to (adds distilled state instead of replacing history)
+- [[Context Window Budgeting]] — prerequisite-for

@@ -2,9 +2,10 @@
 title: Long-Horizon Execution
 tags: [llm, agents, infra, concept]
 summary: "Agents lose coherence and finish early over long tasks — the fix is externalizing progress to files so the loop is re-entrant, not stretching the context window."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--06-long-horizon-execution.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--06-long-horizon-execution.md
 ---
 
 # Long-Horizon Execution

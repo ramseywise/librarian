@@ -2,18 +2,26 @@
 title: Code Review Interview Study Guide
 tags: [interview, reference]
 summary: "Method guide for the live code-review round — orient on intent and contracts first, read in consequence order (security → correctness → maintainability → style), severity and confidence as independent axes, questions over verdicts, and the agent-PR checklist whose sharpest item is a safeguard that exists only in prose."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--code-review-round--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--code-review-round--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--code-review-round--questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--code-review-round--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--examples--ai-generated.md
+  - data/raw/repos/sisyphus/interviewing--rounds--code-review-round--examples--ai-generated.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--examples--conventions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--code-review-round--examples--conventions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--examples--correctness.md
+  - data/raw/repos/sisyphus/interviewing--rounds--code-review-round--examples--correctness.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--code-review-round--examples--security.md
+  - data/raw/repos/sisyphus/interviewing--rounds--code-review-round--examples--security.md
 ---
 
 # Code Review Interview Study Guide

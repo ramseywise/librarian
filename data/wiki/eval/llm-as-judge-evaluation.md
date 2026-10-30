@@ -1,8 +1,8 @@
 ---
 title: LLM-as-Judge Evaluation
-tags: [eval, llm, pattern]
+tags: [eval, llm, pattern, conflict]
 summary: A separate LLM scoring outputs against a rubric — the approach for subjective quality where exact matching fails, requiring calibration against human grades and recommended as a complement to golden-set grading rather than a replacement.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/claude-docs/akira/docs/research/2026-09-03-divergence-since-waslosheute-mvp.md
@@ -16,6 +16,7 @@ sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-26-venue-dataset-review-findings.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-26-venue-dataset-review-findings.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-26-venue-dataset-review-findings.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
 ---
 
 # LLM-as-Judge Evaluation
@@ -97,6 +98,15 @@ written until one judge is calibrated against a human-anchored set** (see
 [[Human Agreement Ceiling Protocol]]). Before then, judge pass rates across models are
 not comparable, and quoting one as quality is meaningless.
 
+## Calibration and bias (course synthesis, 2026-10)
+
+The 06-eval course treats a judge as a classifier to be measured: 100–200 human labels split
+train/dev/test, TPR and TNR on the held-out split, and a bias-corrected pass rate — see
+[[Judge Calibration (TPR, TNR and Corrected Pass Rate)]]. Known judge biases (position, verbosity,
+self-preference) and their mitigations are on [[LLM Judge Biases]]. Under that procedure a judge in the
+`calibrated` state may gate a release at its calibrated threshold, which disagrees with the
+5–10-sample calibration and "never a launch gate" guidance above — flagged in `_conflicts.md`.
+
 ## See Also
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
 - [[Eval Ladder]] — part-of (rung 3)
@@ -118,3 +128,5 @@ not comparable, and quoting one as quality is meaningless.
 - [[Closed Judge Vocabulary, Tolerant Parse]] — related (closing a judge's free-text issue list without brittle enum parsing)
 - [[Demote Judge Findings to Keyless Gates]] — extends (regex-catchable findings leave the judge for a keyless 1.0 gate; missing-verdict re-ask; calibration floor)
 - [[Judge Sees the Drafter's Facts]] — extends (reference facts so restating a given score is not scored ungrounded)
+- [[Grader States (Heuristic, Calibrated, Experimental)]] — extends
+- [[SOMA Judge Rubric]] — extends (specific, ordinal, multi-aspect rubric; never reveal self-grading)

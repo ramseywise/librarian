@@ -1,15 +1,21 @@
 ---
 title: Technical Breadth Round Playbook
 tags: [interview, reference]
-summary: "The ML/LLM breadth round grades the follow-up, not the definition. Rehearse every concept as a 60-second answer plus a different layer one level deeper. Use the honest-gap move instead of bluffing. Drill trade-off pairs by their deciding axis rather than their verdict. Audit every resume claim two levels deep."
-updated: 2026-10-17
+summary: "The ML/LLM breadth round grades the follow-up, not the definition. Rehearse every concept as a 60-second answer plus a different layer one level deeper. Use the honest-gap move instead of bluffing. Drill trade-off pairs by their deciding axis rather than their verdict. Audit every resume claim two levels deep. Real loops add scenario chains (main question on a concrete system, then a follow-up that multiplies a dimension) and theory questions graded on their follow-ups."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions--mcq-bank.md
+  - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--mcq-bank.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--real-tech-question-bank.md
+  - data/raw/repos/sisyphus/interviewing--rounds--technical-questions--theory-bank.md
 ---
 
 # Technical Breadth Round Playbook
@@ -66,6 +72,36 @@ Flashcard front: the pair. Back: the axis plus a one-line default.
 | Injection defence: structural vs filter | Completeness vs ease | Structural first, filter as a supplement |
 | F1 vs PR-AUC | Class balance | PR-AUC when imbalanced |
 
+## The scenario half: main question, then a follow-up
+
+Real loops pair definitional breadth with scenario questions about a concrete system —
+"redesign this model config for any provider", "how would you check this three-tool agent
+after the PR merges?" — each followed by one question that multiplies a dimension. The
+chains, their answer kernels, and the carry-over move (cheapest check at the layer of the
+change, expensive checks on a trigger) are in [[Agent Engineering Question Chains]].
+
+## Theory questions reported in real loops
+
+A 38-question theory bank (agents, evaluation, LLM practice, ML fundamentals, RAG), each
+with hints, a reference answer, the follow-ups interviewers push next, and check-yourself
+MCQs. Its answers are textbook content that lives in the domain guides; what the bank adds
+for this round is **the follow-up list per question** — rehearse the 60-second answer, then
+answer each follow-up cold. Kernels that recur across its answers and are easy to miss:
+
+- **Isolation test for a confidently wrong RAG answer** — inject known-good context and
+  re-run: now correct means retrieval failed, still wrong means generation/prompt failed.
+- **Loop guards are external and deterministic** — step/token/cost/time caps, repetition
+  detection by hashing each (tool, arguments) call, no-progress detection on unchanged
+  state; on trip, stop or escalate and log it (see [[Loop Detection and the Two-Retry Rule]]).
+- **Citation-shaped hallucination** — a well-formed citation whose span doesn't entail the
+  claim; verify the cited span, not just its presence.
+- **When an agent is the wrong solution** — known fixed path, low error tolerance (errors
+  compound per step), or cost/latency-sensitive work; reserve agents for open-ended tasks
+  whose progress you can still verify.
+- **Agent eval at three levels** — final outcome, single step (right tool, right
+  arguments, executed without error), whole trajectory (in-order/any-order match or a judge
+  over the trace, since several paths can be valid).
+
 ## Claim audit
 
 Everything on the resume is in scope. For each ML/LLM line, answer cold: what exactly you
@@ -95,3 +131,4 @@ stats/SQL screen. FDE: context/cost and security first.
 - [[Graded Rehearsal Drill Harness]] — extends (how the banks get rehearsed)
 - [[Durable vs Performative Knowledge Split]] — instance-of (method here, content in domain guides)
 - [[Recruiter Screen Playbook]] — extends (one-liners named there get audited here)
+- [[Agent Engineering Question Chains]] — extends (the scenario half of the round)

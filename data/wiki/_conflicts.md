@@ -299,3 +299,42 @@ The as-built key uses `start_line` (line churn changes the fingerprint) and adds
 
 **Status:** Unresolved — needs human review (likely Claim B: the repo's own CLAUDE.md describes the built code; Claim A records a planned design)
 **Impact:** The Listen-Wiseer Project page's eval stack description and any recommendation citing DeepEval's ToolCorrectnessMetric as used in practice.
+
+## Conflict: Judge calibration sample size and whether a calibrated judge may gate a release — 2026-10-30
+
+**Claim A** (from `[[LLM-as-Judge Evaluation]]`, sourced from `data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md` and `data/raw/claude-docs/akira/docs/research/2026-09-03-divergence-since-waslosheute-mvp.md`):
+> Calibrate the judge with 5–10 sample inputs with human-graded "good" outputs. The judge is a regression detector, never a launch gate; humans decide whether movement is real.
+
+**Claim B** (from new source `data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md`, with `notes--04-graders.md`):
+> Calibrate with 100–200 human PASS/FAIL labels split train/dev/test, measuring TPR and TNR on the held-out split. A judge is experimental (cannot gate) until calibrated; a calibrated judge may block a release at its calibrated threshold.
+
+The two may partly reflect different contexts (a discovery-stage rubric smoke test and a product whose human inter-rater ceiling was low, vs a general production procedure), but they disagree on both the calibration bar and the gating rule.
+
+**Status:** Unresolved — needs human review
+**Impact:** Whether release gates in new builds may rest on an LLM judge; how much human labeling to budget before a judge is trusted. Related: [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]], [[Grader States (Heuristic, Calibrated, Experimental)]], [[Human Agreement Ceiling Protocol]].
+
+## Conflict: Graph UI rendering library (React Flow vs Cytoscape.js) — 2026-10-30
+
+**Claim A** (from `[[Librarian Graph Explorer]]` and `[[Librarian KB — Build Plan]]`, sourced from `data/raw/claude-docs/playground/react-flow-ui.md`, `data/raw/repos/librarian/.claude--docs--plans--2026-10-30-frontend-audit-fixes.md`):
+> The graph is rendered with React Flow (`@xyflow/react`); the 2026-10-30 audit plan lists "Replacing React Flow or the layout algorithms" as out of scope. The KB plan's decision table records "React Flow (not Cytoscape, not sigma.js)".
+
+**Claim B** (from new source `data/raw/repos/librarian/README.md`):
+> `app/frontend/` — "React + Vite graph UI — Cytoscape.js force-directed graph, chat panel, live wiki watch"; the architecture diagram also labels the UI "React + Cytoscape + chat agent".
+
+Likely a stale README line (the frontend's package manifest lists `@xyflow/react`), but the wiki does not resolve it silently.
+
+**Status:** Unresolved — needs human review
+**Impact:** README accuracy for the graph UI; any page describing the frontend stack.
+
+## Conflict: Does few-shot CoT outperform zero-shot CoT? — 2026-10-30
+
+**Claim A** (from `[[Few-Shot Prompting]]`, sourced from `data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md`):
+> Few-shot CoT — examples that show the reasoning chain — "outperforms either technique alone on multi-step tasks".
+
+**Claim B** (from new source `data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--09-evaluating-prompts.md`, citing Clavié et al. 2023):
+> On a job-posting classification task, zero-shot CoT (F1 81.4) beat few-shot CoT (F1 78.4); the examples anchored the model. The task needed no expert knowledge.
+
+The two may refer to different task types (genuinely multi-step reasoning vs single-label classification), but Claim A is stated without that qualifier.
+
+**Status:** Unresolved — needs human review
+**Impact:** Default technique choice when adding reasoning to a prompt; [[Prompting Technique Selection]], [[Evaluating Prompts]], [[Chain of Thought]].

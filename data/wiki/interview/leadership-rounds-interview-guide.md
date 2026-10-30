@@ -2,17 +2,23 @@
 title: Leadership Rounds Interview Study Guide
 tags: [interview, reference]
 summary: "Method guide for the CTO / Head of Product / founder rounds and the reverse interview — interviewer-centric rounds graded on alignment and trust, where 'it depends' without the branches fails, agreeing under pressure is a negative signal, the 90-day answer must avoid hero and passive mode, and your questions back are evaluated signal plus your own due diligence."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--examples--90-day-sketch.md
+  - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--examples--90-day-sketch.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--examples--cto-judgment-thread.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--leadership-rounds--examples--reverse-interview.md
+  - data/raw/repos/sisyphus/interviewing--rounds--leadership-rounds--examples--reverse-interview.md
 ---
 
 # Leadership Rounds Interview Study Guide

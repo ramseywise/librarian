@@ -1,11 +1,13 @@
 ---
 title: Verification Loops
 tags: [llm, agents, eval, concept]
-summary: "Models stop at the first plausible solution and rate their own work generously — two distinct failures needing two distinct fixes: a forced verification pass, and an external evaluator that never generates."
-updated: 2026-10-17
+summary: "Models stop at the first plausible solution and rate their own work generously — two distinct failures needing two distinct fixes: a forced verification pass, and an external evaluator that never generates — calibrated, thresholded per dimension, and bound by a written sprint contract."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
 ---
 
@@ -46,6 +48,19 @@ agent's attempt to exit and forces a verification pass before completion is allo
 
 This is also why sandbox tooling matters — test runners, logs, and screenshots are what
 "verify" reads. See [[Execution Boundaries and Guardrails]].
+
+What "verify passes" has to mean is layered — the change compiles and passes static checks,
+the tests pass, *and* the behaviour works end to end — in [[Three-Layer Termination Check]].
+Every failing check should speak to the agent, not a human: what broke, why the rule exists,
+how to fix it ([[Agent-Oriented Error Messages]]).
+
+### Vision review for rendered output
+
+For artifacts that are judged by looking — slides, charts, video, UI — the verifier is a
+**vision model reviewing the render**, not a reader of the source. Two details keep the loop
+honest: the reviewer sees **only the latest render** (not the history, so it doesn't anchor
+on earlier versions), and the loop **stops at about five rounds** — beyond that, rounds
+mostly trade one cosmetic issue for another.
 
 ## Three Kinds of Reflection
 
@@ -139,6 +154,26 @@ Measured result: a solo run (20 min, $9) produced broken core gameplay; the full
 difference between broken and working** — the harness ROI question is rarely *"is it
 cheaper,"* it is *"does it produce a result at all."*
 
+A second published breakdown, for a browser-based audio workstation:
+
+| Stage | Cost |
+|---|---|
+| Planner | $0.46 |
+| Build rounds | ~$114 |
+| QA rounds | ~$10 |
+| **Total** | **$124.70 over 3 h 50 min** |
+
+**QA was under 10% of the spend** and caught what the generator could not see in itself:
+features that were *presentational only* — the control rendered, but nothing was wired
+behind it.
+
+### Calibrating the evaluator
+
+An evaluator out of the box is too lenient — it talks itself into approving. Calibrate it
+the way you would a judge: read its logs, find where its verdict diverged from yours, and
+edit its prompt; repeat until they agree. Then give each grading dimension a **hard
+threshold** — any one dimension below its bar fails the sprint, regardless of the average.
+
 ## Grading Criteria Beat Vibes
 
 Subjective judgment does not transfer to an evaluator agent. Replace it with **weighted,
@@ -161,6 +196,14 @@ both parties, so **the evaluator can't invent criteria afterward and the generat
 redefine done**.
 
 It is the **acceptance baseline** from [[Harness Engineering]], made concrete and per-task.
+
+A workable contract has three parts:
+
+| Section | Contents |
+|---|---|
+| **Scope** | The features this sprint delivers, each with its acceptance behaviour |
+| **Verification** | How each will be checked — which commands, which user flows the evaluator drives |
+| **Exclusions** | What is explicitly *not* in this sprint, so neither side scores against it |
 
 Related: verification contracts with **scoped claims** — the agent states precisely what it
 verified, which prevents *"tests pass"* from covering an untested path.
@@ -220,6 +263,9 @@ parallel analysis agents — just the ability to go from *"this metric dropped"*
 the run"* without a join across systems. **That adjacency is most of the value; the
 automation on top is the frontier.**
 
+Traces watch the *product*; the improvement loop also needs to watch the *agent's process* —
+the two are distinguished in [[Runtime vs Process Observability]].
+
 ## Verification the User Performs
 
 The last verification layer is not in the harness at all — it is **the affordance that lets
@@ -261,3 +307,8 @@ afterward.
 - [[Artifact Is Not Evidence: Push and Probe]] — extends (verify the behaviour, not the artifact)
 - [[Build the Checker Before the Generator]] — prerequisite-for
 - [[Spec, Verifier, Environment Layering]] — extends (criteria before work, second-model critic, external signal)
+- [[Three-Layer Termination Check]] — extends (what "verify passes" means)
+- [[Agent-Oriented Error Messages]] — complements
+- [[Proposer-Reviewer and Sidecar Gating]] — complements (review before the action rather than after)
+- [[Runtime vs Process Observability]] — complements
+- [[Reflexion]] — instance-of (verbal self-reflection over a failed attempt, retried with the critique)

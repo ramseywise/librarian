@@ -2,7 +2,7 @@
 title: Karpathy LLM Wiki Pattern
 tags: [llm, concept]
 summary: The compiler analogy for personal knowledge bases — raw sources in, LLM compiles them into structured interlinked wiki pages, no vector infra needed.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
   - data/raw/repos/librarian/.claude--docs--plans--2026-07-17-knowledge-compaction.md
@@ -131,6 +131,17 @@ as directories were added. A read-only `/wiki-sync` audit compares them against
 `data/wiki/` and reports missing domains and "ghost" entries (in code, not on disk). It
 only applies mechanical fixes with `--fix`. The schema now treats disk as canonical: the
 domain-tag table in CLAUDE.md is "illustrative, not normative".
+
+As of 2026-10-30 no hand-maintained domain list remains in the graph pipeline. The
+backend parser and the MCP server each derive the domain set from the directories at call
+time (excluding `private/`), and the graph payload carries a sorted `domains` field.
+The frontend maps a name to a colour only: fixed colours for established domains, a
+deterministic palette hash for any other. Tag-shared edges are derived client-side with
+the same rule as the server. A new wiki directory therefore needs no code change to be
+filterable and coloured. `/wiki-sync` now audits that the derivations still derive, and
+sweeps the frontend for a reintroduced literal list. That grep runs a **positive control**
+first, against the one file that legitimately names domains; the control must match, so a
+broken pattern cannot report "no drift".
 
 ## See Also
 - [[Librarian Project]]

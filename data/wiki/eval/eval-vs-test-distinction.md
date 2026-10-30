@@ -2,9 +2,10 @@
 title: Eval vs Test Distinction
 tags: [eval, llm, concept]
 summary: A test tells you your code is broken; an eval tells you your product got worse — two different instruments with different targets, graders, cadences, and failure semantics.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--01-what-an-eval-is.md
 ---
 
 # Eval vs Test Distinction
@@ -55,6 +56,19 @@ Without them you have no readout at all — not a weaker readout: none.
 
 ---
 
+## The seam by determinism (course framing)
+
+| Behavior | Deterministic? | Check with |
+|---|---|---|
+| Prompt rendering, schema validation, retry logic, routing tables | Yes | **Unit tests** — assert exact values |
+| Tool-call arguments parse, output matches a JSON schema | Yes, given an output | **Deterministic graders inside an eval** |
+| Answer quality, grounding, helpfulness, task success | No | **Evals** — many tasks, many trials, rates not assertions |
+
+Rules that follow:
+- **Never assert a specific model response string in a unit test.** It flakes, and the fix is to loosen it until it checks nothing.
+- **Unit tests gate merges; evals measure rates** — an eval result is a proportion with an error bar ([[Eval Error Bars and Sample Size]]).
+- **Mock the model in unit tests, never in evals.** An eval with a mocked model measures the mock.
+
 ## See Also
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] — prerequisite-for
@@ -66,3 +80,4 @@ Without them you have no readout at all — not a weaker readout: none.
 - [[Differential Parity Testing Against the Original]] — extends (an executed original implementation as the test oracle)
 - [[Eval Falsifiability]] — extends
 - [[Generation-Under-Contract Eval Harness]] — extends (a third eval kind: producer-driving, not row-grading)
+- [[Run-Then-Assert Eval CI]] — extends

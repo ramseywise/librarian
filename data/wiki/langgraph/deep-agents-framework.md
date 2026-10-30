@@ -2,7 +2,7 @@
 title: Deep Agents Framework
 tags: [deep-agents, langgraph, pattern]
 summary: Opinionated agent harness built on LangChain/LangGraph — create_deep_agent() wraps planning, file management, subagent delegation, and HITL into configurable middleware with no boilerplate.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/agent-skills/deep-agents-core/SKILL.md
   - data/raw/agent-skills/deep-agents-orchestration/SKILL.md
@@ -10,6 +10,7 @@ sources:
   - data/raw/agent-skills/README.md
   - data/raw/agent-skills/deep-agents-core/references/middleware-patterns.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--deep-agents.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--deep-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--deep-agents.md
 ---
 
@@ -189,3 +190,4 @@ Reference files marked with `*` in the catalog are stubs pending wiki ingest —
 - [[Harness Anatomy]] — instance-of (middleware, sandbox, and state backends as harness components)
 - [[Harness Maturity and Failure Modes]] — instance-of (cited as a Stage 2→3 reference implementation)
 - [[Loop Detection and the Two-Retry Rule]] — implements (loop-detection middleware)
+- [[Deep Agent Pillars]] — instance-of (the framework implements the four pillars)

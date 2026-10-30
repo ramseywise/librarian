@@ -1,9 +1,10 @@
 ---
 title: Multi-Agent Context
-tags: [llm, agents, context-management, concept]
+tags: [context, context-management, llm, agents, concept]
 summary: Sub-agent isolation is the highest-cost context lever — a sub-agent burns 100k tokens and returns 2k, and the discarding of its window is the feature, not a side effect.
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
+  - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--10-tools-and-multi-agent.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
 ---
 
@@ -99,6 +100,39 @@ A defensible default posture:
 
 **Assume tool output is untrusted regardless of source.**
 
+## Tool Integration Patterns
+
+| Level | Pattern | Context implication |
+|---|---|---|
+| Sequential | A → B → C, each output feeds the next | Intermediate results pile up; clear after use ([[Context Compaction]]) |
+| Parallel | Independent calls, results merged | Fast; summarise at the merge |
+| Conditional | Model picks the tool from the situation | Tool descriptions must be distinct enough to choose between |
+| Recursive | A tool call spawns its own loop (a sub-agent) | This is isolation |
+
+Most production agents are conditional loops with occasional parallel batches. Pipelines
+and DAGs are worth it only when the order is known in advance — and then they belong in
+code, not in the model's decisions ([[Harness Orchestration]]).
+
+## Orchestration and Coordination
+
+| Pattern | Good for | Watch out for |
+|---|---|---|
+| Orchestrator–workers | Research, broad search | The default |
+| Pipeline (fixed specialist stages) | Repeatable draft → review → edit | Errors propagate forward |
+| Debate / critique with a judge | Reducing single-model blind spots on judgement calls | Cost; agents converge on confident wrong answers |
+| Shared blackboard | Long-running collaborative tasks | Write conflicts — needs schema and ownership ([[Structured Context and Schemas]]) |
+
+**Emergence is a failure mode to monitor, not a feature to design for:** in LLM systems it
+mostly shows up as agents duplicating work, echoing each other or drifting off-task
+([[Context Field Theory (Speculative)]] covers the claims to the contrary).
+
+### Inter-Agent Messages Are Context
+
+Every hand-off is a prompt someone else will read. Give messages a schema (task,
+constraints, evidence, return shape), keep them self-contained, and log them. Agents that
+share no context make conflicting decisions — **pass the decisions, not just the task**
+([[Shared Context Brief]]).
+
 ## See Also
 - [[Memory as Context]] <!-- auto-linked -->
 - [[Shared Context Brief]] <!-- auto-linked -->
@@ -107,3 +141,5 @@ A defensible default posture:
 - [[Tool Design as Context Engineering]] — complements
 - [[Context Compaction]] — alternative-to
 - [[Prompt Injection]] — mitigates
+- [[Cognitive Tools]] — extends (verifier sub-calls as bounded isolation)
+- [[Harness Orchestration]] — extends

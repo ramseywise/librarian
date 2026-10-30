@@ -2,7 +2,7 @@
 title: Bradley-Terry Preference Model
 tags: [foundations, llm, eval, concept]
 summary: "The pairwise-comparison model that converts human choices between two responses into a scalar reward — the shared formal core underneath RLHF reward models, DPO, and RLAIF preference models."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
@@ -63,3 +63,4 @@ the preferences it was actually shown.
 - [[Reward Hacking and Overoptimization]] — extends (what goes wrong when the fitted proxy is over-optimized)
 - [[Constitutional AI and RLAIF]] — instance-of (same objective, AI-generated labels)
 - [[LLM-as-Judge Evaluation]] — complements (pairwise comparison as an eval-time rather than training-time primitive)
+- [[LLM Judge Biases]] — complements (position and self-preference biases that contaminate pairwise judge comparisons)

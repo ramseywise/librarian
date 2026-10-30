@@ -2,10 +2,11 @@
 title: RAG Eval Metrics Suite
 tags: [eval, rag, pattern]
 summary: Eight-metric RAG evaluation framework covering stakeholder quality (faithfulness, naturalness, completeness, relevance), retrieval quality (contextual relevance, recall, document precision), and system calibration — split between runtime-compatible and offline-only metrics.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/chat-agent/docs/eval/eval_metrics.md
   - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--07-evaluating-rag-and-grounding.md
 ---
 
 # RAG Eval Metrics Suite
@@ -206,6 +207,24 @@ Having the first says nothing about the second.
 | **Offline** (requires ground truth) | Answer Completeness, Contextual Recall, Document Precision, Confidence Calibration | Labelled test set with ground truth answers + source URLs |
 
 ---
+
+## Per-stage scoring and citation checks (course synthesis)
+
+Score each stage separately (rewrite → retrieval recall@k → ranking MRR/nDCG → context → faithfulness →
+citations), and **score generation only on rows where retrieval succeeded** (the
+`generation_eligible` pool). If the source wasn't retrieved, a bad answer is a retrieval failure;
+counting it against generation sends you to fix the prompt when the index is the problem. Report
+ineligible rows as their own slice.
+
+**Citation checks in code first** — every cited ID is in the retrieved set (else a `citation_hallucination`), quoted text appears (fuzzy-matched) in the cited passage, every strict-tier claim is cited, markers parse — then, with a judge,
+**citation precision** (does the cited passage support the sentence?) and **citation recall** (is
+every claim needing a citation cited?), as defined by ALCE (Gao et al. 2023).
+
+Frameworks: **RAGAS** (faithfulness, answer relevance, context precision/recall; generic definitions,
+uncalibrated for your domain), **ARES** (fine-tuned small judges plus a small human set with
+prediction-powered inference for confidence intervals; setup cost, worth it at volume), **DeepEval /
+TruLens / Phoenix** (ready-made RAG judges with tracing). All need calibration before gating —
+[[Judge Calibration (TPR, TNR and Corrected Pass Rate)]].
 
 ## See Also
 - [[Trajectory Over Outcome]] <!-- auto-linked -->

@@ -2,7 +2,7 @@
 title: Capability vs Phase Skills
 tags: [meta, pattern]
 summary: "Phase skills are positional (research → plan → execute → review), write to the plan doc and advance Status:; capability skills are situational, write their own artifact under decisions/, and never advance Status: — enforced structurally because the status hook only watches the plans tree."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/skills/decide-shared/SKILL.md
   - data/raw/claude-docs/galactus/skills/assumption-audit/SKILL.md
@@ -12,6 +12,7 @@ sources:
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-context-engineering-space.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-14-orchestrator-design.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-orchestrator-design.md
+  - data/raw/repos/galactus/CLAUDE.md
 ---
 
 # Capability vs Phase Skills
@@ -82,6 +83,37 @@ added three rules about capabilities:
 A capability has no node in a graph, by construction — giving it a slot in a sequence would
 remove the property that makes it useful (see [[Decision-Seat Inventory for a Control Plane]]).
 
+## Doors before the bands (galactus, 2026-10)
+
+Two entry points sit outside the four bands:
+
+- **`/new` is the front door.** It runs before any band, routes AI vs ML, and picks where
+  the work lands. It is either a run (a subdirectory under `runs/ai/` or `runs/ml/`, which
+  then enters FRAME) or a standalone repo rendered from the copier template.
+- **`/spike` is the side door.** One question, a `spike/*` branch, no plan doc, no bands,
+  then one light review. The plan-doc hooks stand down on `spike/*`, but the guards and the
+  Stop hook do not. A spike graduates by entering FRAME with its result as evidence.
+
+The spec refs have a reading order:
+
+- `agent-architecture` comes first and indexes the rest against the five-layer stack.
+- `agent-uncertainty` is read *alongside* the layer ref, not instead of it. It owns
+  abstention, asymmetric cost and reversibility, which no single layer does.
+- `agent-voice` replaces the loop guidance for duplex designs, because a duplex loop has
+  no turn boundary. For request → response designs it is ignored entirely.
+- Stack bindings (`langgraph`, `python`, `typescript`) are read after the `agent-*` refs,
+  never instead of them.
+
+`runs/_index/` is reserved for run records, one per training execution. That is a
+different grain from the run directory, hence the prefix that cannot collide with a run
+name. Runs do not define the record shape: a shared `experiments/` module does, with a
+`NotApplicable` sentinel so a missing metric never reads as `0.0`. Nothing writes there yet.
+A result still lives as a summary file in its run, which is why one baseline could be
+overturned but not reproduced.
+
+Where these skills physically live, and how every repo reaches them, is
+[[Canon Repo, Symlinked Consumers]].
+
 ## See Also
 - [[Plan-Doc Status Enum]] — extends (the enum these skills may or may not advance)
 - [[Job Verb Taxonomy for Skills]] — extends
@@ -92,3 +124,4 @@ remove the property that makes it useful (see [[Decision-Seat Inventory for a Co
 - [[Skill Preloading via Agent Definition]] — extends (preloading vs calling)
 - [[Skill Admission Test: Workflow With a Gate]] — prerequisite-for (decides whether something is a skill at all)
 - [[Decision-Seat Inventory for a Control Plane]] — extends (capabilities have no seat in the sequence)
+- [[Canon Repo, Symlinked Consumers]]

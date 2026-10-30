@@ -1,10 +1,12 @@
 ---
 title: XML Prompt Structuring
-tags: [llm, concept]
+tags: [prompting, llm, concept]
 summary: Wrapping distinct prompt sections in descriptive XML tags so the model cannot confuse instructions with data, examples, or constraints.
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--02-prompt-anatomy.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--11-applications.md
 ---
 
 # XML Prompt Structuring
@@ -36,6 +38,21 @@ Wrap each distinct section in a descriptive tag:
 - **Use tags as format indicators too** — `"Write your analysis in <analysis> tags"`
   makes the response parseable without asking for full JSON.
 
+## XML vs YAML vs JSON
+
+| Format | Strength | Weakness |
+|---|---|---|
+| XML | Tolerates free text inside tags; the closing tag is a natural stop | More tokens |
+| YAML | Light on tokens | Whitespace-sensitive |
+| JSON | Easiest to parse | Expensive to escape long text; one missing brace breaks it |
+
+Plain delimiters (`###`, `"""`) suffice for simple prompts. Structured output also lets
+the app **route parts of a completion** — hide a `<thinking>` block, render an
+`<artifact>` block in a side panel. A widely used artifact feature works exactly this way:
+a structured system prompt explains in prose when to create an artifact, wraps each worked
+example in XML, and the app parses the emitted artifact tags out of the completion
+([[Stateful Objects of Discourse]]).
+
 ## Relation to Structured Output
 
 XML structuring governs the *input* side; [[Structured Output]] governs the *output* side.
@@ -46,3 +63,4 @@ They are frequently used together: XML-tagged input sections, JSON-schema'd resp
 - [[Structured Output]] — alternative-to
 - [[Few-Shot Prompting]] — used-by
 - [[Long-Context Prompting]] — used-by
+- [[Stateful Objects of Discourse]] — extends

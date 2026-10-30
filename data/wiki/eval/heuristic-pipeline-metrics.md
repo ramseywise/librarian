@@ -2,10 +2,11 @@
 title: Heuristic Pipeline Metrics
 tags: [eval, infra, observability]
 summary: Automated measurement of operational health — latency, error rate, token usage, retrieval recall — that runs alongside every eval rung and is explicitly never sufficient alone, since a fast cheap wrong answer still fails.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/repos/nonprofit-success-ai/.claude--docs--plans--2026-10-07-r10-eval-metrics.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
 ---
 
 # Heuristic Pipeline Metrics
@@ -53,6 +54,17 @@ with one per-agent, per-day view over the run log and approvals table, with no n
 - The view is `security_invoker`, so the existing RLS on the base tables decides who sees
   which org's metrics, and no new policies are needed.
 
+## Agent efficiency metrics (course synthesis)
+
+Log on every trial — they catch regressions pass rates miss: steps/turns to completion (rising steps at
+a flat pass rate = thrashing), tool calls (total, per tool, failed), tokens (input/output/cached),
+latency (p50/p95, TTFT), **cost per success** (at 50% success the real cost is 2× the per-run cost),
+and convergence (optimal ÷ actual steps).
+
+Report a **budget–capability curve, not one point**: on RE-Bench (Wijk et al. 2025) the best agent
+scored ~4× human experts at a 2-hour budget, while humans pulled ahead at 8 and 32 hours. Compare at
+budgets close to the real workload.
+
 ## See Also
 - [[Online Eval Sampling]] <!-- auto-linked -->
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
@@ -62,3 +74,4 @@ with one per-agent, per-day view over the run log and approvals table, with no n
 - [[RAG Eval Metrics Suite]] — extends (retrieval-specific metrics)
 - [[Observability & Evaluation Glossary]] — related
 - [[Demote Judge Findings to Keyless Gates]] — extends (judge findings that a regex can catch move into this tier)
+- [[Agent Trace Anatomy]] — extends

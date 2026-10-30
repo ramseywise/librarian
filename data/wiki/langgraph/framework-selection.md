@@ -2,7 +2,7 @@
 title: Framework Selection — LangChain vs LangGraph vs Deep Agents
 tags: [langgraph, deep-agents, concept, comparison, conflict]
 summary: Decision guide for choosing between LangChain, LangGraph, and Deep Agents — layered frameworks where higher layers add planning, memory, and middleware on top of lower ones.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/articles/2026-07-19-autogen-agentic-design-patterns.md
   - data/raw/articles/2026-07-19-agentic-ai-frameworks-exploration.md
@@ -12,6 +12,7 @@ sources:
   - data/raw/claude-docs/guacamayo/skills/new-agent/SKILL.md
   - data/raw/claude-docs/guacamayo/skills/new-agent/references/framework-selection.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--deep-agents.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--deep-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--deep-agents.md
 ---
 

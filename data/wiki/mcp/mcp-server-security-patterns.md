@@ -2,12 +2,13 @@
 title: MCP Server Security Patterns
 tags: [mcp, infra, pattern]
 summary: Security patterns for MCP servers — read-only invariant, sandbox isolation, secrets handling, and what to never expose over MCP.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/sessions/2026-04-24T1048.md
   - data/raw/sessions/claude-2026-04-24-qq-do-i-need-to-push-playground-infrastr-108c3f61.md
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-20_tencentdb-memory_parity.md
   - data/raw/repos/librarian/SANYI.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
 ---
 
 # MCP Server Security Patterns
@@ -99,3 +100,4 @@ exclusion rule fails open, and it fails silently.
 - [[Agent Quality Review Checklist]] — alternative-to (review-time vs runtime enforcement)
 - [[Webhook Handler Idempotency]] — alternative-to (inbound HTTP surface with the same authenticate-the-caller obligation)
 - [[Curl-Bridge Context Injection]] — alternative-to (proxy-side allowlist + identity overwrite instead of tools)
+- [[Lethal Triad]] — complements (MCP supply-chain risks and the structural defence)

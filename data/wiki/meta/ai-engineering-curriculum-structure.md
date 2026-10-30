@@ -2,7 +2,7 @@
 title: AI Engineering Curriculum Structure
 tags: [meta, foundations, concept, conflict]
 summary: "The two-wave model of the learn-ai-engineering corpus — generative-ai as the application wave (seven pillars) and ai-engineering as the discipline wave (six foundations) — plus the dependency ordering that makes the pillar sequence more than a filing scheme."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--README.md
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--README.md
@@ -29,18 +29,31 @@ sources:
   - data/raw/repos/learn-ai-engineering/README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--README.md
+  - data/raw/repos/sisyphus/interviewing--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--00-start-here.md
+  - data/raw/repos/sisyphus/interviewing--guides--00-start-here.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--0-programming--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--0-programming--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--1-foundations--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--1-foundations--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--3-rag--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--3-rag--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--4-agents--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--4-agents--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--5-context-cost--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--5-context-cost--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--6-evals-observability--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--6-evals-observability--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--7-security-safety--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--7-security-safety--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--8-data-eng-mlops--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--8-data-eng-mlops--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--10-product-delivery--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--10-product-delivery--00-overview.md
 ---
 
 # AI Engineering Curriculum Structure

@@ -2,11 +2,12 @@
 title: Golden Set Mechanics
 tags: [eval, llm, reference]
 summary: The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/claude-docs/guacamayo/skills/workflow-plan/references/golden-set-authoring.md
   - data/raw/claude-docs/guacamayo/skills/workflow-plan/SKILL.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
 ---
 
 # Golden Set Mechanics
@@ -107,6 +108,22 @@ chosen per case, cheapest that can decide (`code` for substring/regex/enum/boole
 Gate thresholds: **<10 cases FAIL, 10–19 WARN, ≥20 PASS**, with positive and `must_not`
 cases balanced. As of 2026-08 no gate skill enforced this — the thresholds were an
 authoring target applied by hand.
+
+## Two pools and per-row metadata (course synthesis)
+
+Keep two pools: a **regression suite** of known, fixed failures that must keep passing, and a rolling
+**discovery set** of new production failures that shows where the system currently breaks. The flow:
+production failure → triage (real failure or eval bug?) → label with the [[Eval Failure Taxonomy]] →
+discovery set → once fixed, move to the regression set.
+
+Every row should carry:
+- **Labels** for slicing (intent, language, difficulty, source type, segment) — so results can be reported per slice.
+- **Eligibility** per gate (e.g. `retrieval`, `generation`) — a downstream gate never silently scores rows an upstream gate marked ineligible.
+- **Provenance** (source, date added, who added it) — for trust and staleness review.
+- Optionally **per-row graders** — the cheapest grader that can decide that row.
+
+Sizing and its uncertainty are on [[Eval Error Bars and Sample Size]]; leak defenses on
+[[Eval Contamination Defenses]].
 
 ## See Also
 - [[System Design — Unified Eval Harness]] <!-- auto-linked -->

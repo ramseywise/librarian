@@ -2,10 +2,11 @@
 title: Situation-Indexed Decision Tree
 tags: [interview, llm, pattern]
 summary: Replacing a flat component table (answers indexed by noun) with a branching tree indexed by situation — one memorized trunk fork into four system spines, each node carrying a discriminator question and a rehearsable sentence.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-30-LAE-112-interview-notes-reorg.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--04-decision-tree.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--04-decision-tree.md
 ---
 
 # Situation-Indexed Decision Tree
@@ -127,3 +128,4 @@ gap in the first place.
 - [[Timebox-Scaled Deliverable Bar]] — instance-of (advice that mis-fires when not indexed by format)
 - [[Data Engineering and MLOps Interview Study Guide]] — extends (the guide the pipeline spine links down into)
 - [[ML Foundations Interview Study Guide]] — extends (the guide the ML spine links down into)
+- [[AI System Design Walkthroughs]] — instance-of (nine prompts, each one spine with a cameo)

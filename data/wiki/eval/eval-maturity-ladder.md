@@ -2,10 +2,11 @@
 title: Eval Maturity Ladder
 tags: [eval, llm, agents, reference]
 summary: "Five levels of what eval infrastructure exists — vibes, deterministic gates, separated evaluator, eval sets plus tracing, continuous sampling — with most builders at 0 and production demanding 3+."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-maturity-ladder.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--README.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--11-production-and-the-maturity-ladder.md
 ---
 
 # Eval Maturity Ladder
@@ -116,6 +117,18 @@ gate**.
 - [ ] Is the judge calibrated against a human sample, and how recently?
 - [ ] Is cost tracked per *success* rather than per run?
 
+## What each transition needs (course synthesis)
+
+Most systems sit at level 0; production needs level 3 or above.
+
+- **0 → 1:** highest return per effort. No LLM in the loop; code checks catch the structural failures that would otherwise eat judge budget.
+- **1 → 2:** a reviewer that didn't write the output and has no stake in it — ideally one that *runs* it rather than reads it.
+- **2 → 3:** two things together, neither enough alone: rows harvested from observed failures, and traces of every step ([[Agent Trace Anatomy]]).
+- **3 → 4:** the same graders running on sampled live traffic, with a baseline and alerts ([[Online Eval Sampling]]).
+
+The ladder orders the *building* of an eval practice; the gate ladder in [[Run-Then-Assert Eval CI]]
+orders checks *within* a run.
+
 ## See Also
 - [[Eval-Driven Development (EDD)]] <!-- auto-linked -->
 - [[Anthropic Three-Tier Eval Taxonomy]] <!-- auto-linked -->
@@ -128,3 +141,4 @@ gate**.
 - [[Observability and Runtime Patterns]] — prerequisite-for (level 3 needs tracing to exist)
 - [[UNGATED Metric Convention]] — extends (how a metric is carried before it earns a threshold)
 - [[Q0–Q5 Quality Ladder]] — alternative-to (per-feature ladder with named owners)
+- [[Ablation Switches and Feature Debt]] — extends
