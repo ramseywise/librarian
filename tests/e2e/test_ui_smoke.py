@@ -10,6 +10,7 @@ import json
 import re
 import urllib.request
 from collections.abc import Iterator
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -17,6 +18,7 @@ from playwright.sync_api import Page, expect, sync_playwright
 
 UI_URL = "http://localhost:5173"
 API = "http://localhost:8000"
+AXE_JS = Path(__file__).parents[2] / "app/frontend/node_modules/axe-core/axe.min.js"
 
 pytestmark = pytest.mark.e2e
 
@@ -123,3 +125,31 @@ def test_escape_closes_one_overlay_at_a_time() -> None:
         pg.keyboard.press("Escape")
         expect(pg.locator("#chat-panel")).to_have_count(0)
         browser.close()
+
+
+@pytest.mark.parametrize(
+    ("route", "ready"),
+    [
+        ("/", ".react-flow__node"),
+        ("/#/courses", ".course-card"),
+        ("lesson", ".lesson-main-body p"),
+        ("/#/practice", "[aria-label='Drill timer']"),
+    ],
+)
+def test_no_serious_axe_violations(page: Page, route: str, ready: str) -> None:
+    """axe-core per view: no serious/critical WCAG violations (contrast, landmarks,
+    nested interactive controls, links told apart by colour alone)."""
+    if not AXE_JS.exists():
+        pytest.skip("axe-core not installed (npm install in app/frontend)")
+    if route == "lesson":
+        route = f"/#/courses/{_get('/api/courses')[0]['modules'][0]['lessons'][0]['id']}"
+    page.goto(UI_URL + route, timeout=15_000)
+    page.wait_for_selector(ready, timeout=20_000)
+    page.add_script_tag(path=str(AXE_JS))
+    result = page.evaluate("axe.run(document, {resultTypes: ['violations']})")
+    bad = [
+        (v["id"], v["impact"], [n["target"] for n in v["nodes"][:3]])
+        for v in result["violations"]
+        if v["impact"] in ("serious", "critical")
+    ]
+    assert not bad, bad

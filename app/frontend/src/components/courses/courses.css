@@ -13,8 +13,13 @@
 .lesson-prose .lp-code, .lesson-prose .lp-table { margin: 0 0 1em; }
 .lesson-prose ul, .lesson-prose ol { padding-left: 1.5em; }
 .lesson-prose li { margin: 0.25em 0; }
-.lesson-prose a { color: #64b5f6; text-decoration: none; }
-.lesson-prose a:hover { text-decoration: underline; }
+/* Underlined at rest: colour alone doesn't set a link apart from body text (WCAG 1.4.1). */
+.lesson-prose a {
+  color: #64b5f6; text-decoration: underline; text-decoration-color: #64b5f666;
+  text-underline-offset: 2px;
+}
+.lesson-prose a:hover { text-decoration-color: currentColor; }
+.lesson-prose a.lp-wikilink { text-decoration: none; }
 .lesson-prose a.lp-wikilink {
   color: #ce93d8; border-bottom: 1px dashed #ce93d866;
 }

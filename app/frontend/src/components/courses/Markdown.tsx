@@ -64,7 +64,13 @@ function buildComponents(
   return {
     pre: Pre,
     table: Table,
-    a: ({ href = "", children }) => {
+    a: ({ href = "", children, id, ...rest }) => {
+      // `<a id="x">` / `<a name="x">` target anchors (no href). The sanitiser already
+      // prefixed them (user-content-x), which scrollToAnchor looks for.
+      if (!href) {
+        const name = (rest as { name?: string }).name;
+        return <a id={id ?? name}>{children}</a>;
+      }
       if (href.startsWith("#wiki:")) {
         const pageId = href.slice("#wiki:".length);
         return (

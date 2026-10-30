@@ -511,3 +511,9 @@ button.citation-chip { cursor: pointer; }
   .graph-controls.is-open .graph-filter-panel { width: 100%; }
   .detail-panel { width: calc(100% - var(--space-9)); max-height: 60vh; }
 }
+
+/* Visually hidden, still announced by screen readers. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

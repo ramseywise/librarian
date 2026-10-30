@@ -33,10 +33,12 @@
   --text-soft: #bbb;
   --text-dim: #999;
   --text-secondary: #888;
-  --text-muted: #777;
-  --text-faint: #666;
-  --text-ghost: #555;
-  --text-void: #444;
+  /* The four below all sit on #0f0f0f–#1c1c1c surfaces; each clears WCAG AA (4.5:1)
+     on the lightest of them (--surface-raised). Keep them above #858585. */
+  --text-muted: #949494;
+  --text-faint: #8f8f8f;
+  --text-ghost: #8a8a8a;
+  --text-void: #878787;
 
   /* Accents */
   --accent: #2196f3;

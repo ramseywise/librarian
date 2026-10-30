@@ -213,6 +213,7 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const drawerBtnRef = useRef<HTMLButtonElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
 
   // Picking a lesson from the drawer closes it.
   useEffect(() => setDrawerOpen(false), [lessonId]);
@@ -220,14 +221,27 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
   useEffect(() => {
     if (!drawerOpen) return;
     drawerRef.current?.querySelector<HTMLElement>("button, input, a[href]")?.focus();
+    // The drawer is modal (backdrop): keep Tab and screen readers out of the lesson
+    // behind it. Widening past the drawer breakpoint turns it back into a sidebar, so
+    // close it then rather than leave the lesson inert.
+    const main = mainRef.current;
+    if (main) main.inert = true;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       e.preventDefault();
       setDrawerOpen(false);
+      if (main) main.inert = false; // before focusing the toggle inside it
       drawerBtnRef.current?.focus();
     };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    const wide = window.matchMedia?.("(min-width: 1100px)");
+    const onWide = () => wide?.matches && setDrawerOpen(false);
+    wide?.addEventListener("change", onWide);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      if (main) main.inert = false;
+      wide?.removeEventListener("change", onWide);
+    };
   }, [drawerOpen]);
   useDocumentTitle(pageTitle(loaded?.title ?? "Loading…", course.title));
 
@@ -258,7 +272,7 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
         />
       </div>
       {drawerOpen && <div className="course-drawer-backdrop" onClick={() => setDrawerOpen(false)} />}
-      <div className="lesson-main">
+      <div className="lesson-main" ref={mainRef}>
         <div className="course-drawer-bar">
           <button
             ref={drawerBtnRef}
@@ -332,7 +346,7 @@ function Sidebar({ course, activeId, done, onOpen, toc, activeHeading }: {
   });
 
   return (
-    <nav className="course-sidebar">
+    <nav className="course-sidebar" aria-label="Lessons">
       <div className="course-sidebar-head">
         <button onClick={() => onOpen("")} className="link-btn">← All courses</button>
         <button onClick={() => onOpen(course.id)} className="link-btn course-sidebar-title">

@@ -68,6 +68,13 @@ describe("Markdown raw HTML sanitising", () => {
     expect(c.querySelector(".lp-table > table")).not.toBeNull();
   });
 
+  it("keeps raw-HTML target anchors (id or name) so in-page links resolve", () => {
+    const c = renderMd('<a id="top"></a><a name="old-style"></a>\n\n[up](#top) [old](#old-style)');
+    expect(c.querySelector("#user-content-top")?.tagName).toBe("A");
+    expect(c.querySelector("#user-content-old-style")?.tagName).toBe("A");
+    expect(c.querySelector(".lp-deadlink")).toBeNull();
+  });
+
   it("ids headings from nested text and suffixes repeats like GitHub", () => {
     const c = renderMd("## Step `2`: run it\n\n## Notes\n\n### Notes\n\n## Notes-1\n");
     expect([...c.querySelectorAll("h2, h3")].map((h) => h.id)).toEqual([

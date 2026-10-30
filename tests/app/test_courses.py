@@ -369,3 +369,23 @@ def test_semantic_skips_ambiguous_page_stems(monkeypatch: pytest.MonkeyPatch) ->
     out = _REAL_NEIGHBOURS(["a lesson"], ["foo", "bar"])
     assert out is not None
     assert [pid for pid, _ in out[0]] == ["bar"]
+
+
+def test_requests_get_last_catalog_while_a_rebuild_runs(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A wiki edit triggers a multi-second rebuild; requests must not queue behind it."""
+    built = courses.catalog()
+    assert courses._current is built
+    assert courses._LOAD_LOCK.acquire(timeout=5)  # stand-in for a rebuild in progress
+    try:
+        assert courses.catalog() is built  # returned immediately, without the lock
+    finally:
+        courses._LOAD_LOCK.release()
+
+
+def test_cold_start_waits_for_the_first_build(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(courses, "_current", None)
+    sentinel = object()
+    monkeypatch.setattr(courses, "_load", lambda *_: sentinel)
+    assert courses.catalog() is sentinel

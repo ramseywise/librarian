@@ -124,19 +124,32 @@ _semantic_failed_at: float | None = None
 SEMANTIC_RETRY_S = 60.0
 
 
+# The last catalog built. While another thread rebuilds (a wiki edit or ingest changed
+# the signature), requests get this one instead of queueing behind a multi-second build.
+_current: Catalog | None = None
+
+
 def catalog() -> Catalog:
-    global _semantic_failed_at
+    global _semantic_failed_at, _current
     # Stat the trees before taking the lock: it walks every .md, and holding the lock for
     # it would serialise every request, not just the rebuilds.
     sig = _signature(COURSES_DIR, WIKI_DIR)
-    with _LOAD_LOCK:
+    prev = _current
+    if prev is None:
+        _LOAD_LOCK.acquire()  # cold start: nothing to serve, so wait for the build
+    elif not _LOAD_LOCK.acquire(blocking=False):
+        return prev  # a rebuild is running: stale by at most that build, never a wait
+    try:
         if (
             _semantic_failed_at is not None
             and time.monotonic() - _semantic_failed_at > SEMANTIC_RETRY_S
         ):
             _semantic_failed_at = None
             _load.cache_clear()
-        return _load(COURSES_DIR, WIKI_DIR, sig)
+        _current = _load(COURSES_DIR, WIKI_DIR, sig)
+        return _current
+    finally:
+        _LOAD_LOCK.release()
 
 
 def warm_catalog() -> None:

@@ -97,27 +97,47 @@ export default function App() {
     [handleSend]
   );
 
-  // Escape closes the chat while it is an overlay (narrow screens); beside the graph it
-  // is a persistent column and Escape leaves it alone. Listens on window, not document:
-  // the window bubble phase runs after every document listener whatever their mount
-  // order, so an inner popup (lessons drawer, graph menu) that handled the key with
-  // preventDefault() is always seen here and one Escape closes one thing.
+  // On narrow screens the chat is a non-modal sheet over the right of the page (no
+  // backdrop; the page beside it stays usable), so it takes focus but does not trap it.
+  // Escape acts on whatever holds focus, so one press closes one thing:
+  // - capture phase: focus inside the chat → close the chat and stop the event, so a
+  //   popup elsewhere (graph menu) that happens to be open is left alone;
+  // - bubble phase on window (after every document listener, whatever their mount
+  //   order): close the chat unless an inner popup (lessons drawer, graph menu) already
+  //   handled the key with preventDefault().
+  // Beside the graph (wide screens) the chat is a persistent column; Escape leaves it.
+  const chatPanelRef = useRef<HTMLElement>(null);
   useEffect(() => {
     if (!chatOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape" || e.defaultPrevented || !isNarrow()) return;
+    if (isNarrow()) chatPanelRef.current?.querySelector<HTMLElement>("textarea, input")?.focus();
+    const close = () => {
       setChatOpen(false);
       chatToggleRef.current?.focus();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    const onCapture = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || !isNarrow()) return;
+      if (!chatPanelRef.current?.contains(document.activeElement)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      close();
+    };
+    const onBubble = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || e.defaultPrevented || !isNarrow()) return;
+      close();
+    };
+    window.addEventListener("keydown", onCapture, true);
+    window.addEventListener("keydown", onBubble);
+    return () => {
+      window.removeEventListener("keydown", onCapture, true);
+      window.removeEventListener("keydown", onBubble);
+    };
   }, [chatOpen]);
 
   return (
     <div className="app">
       <header className="app-header">
         <span className="app-brand">Librarian</span>
-        <nav className="app-nav">
+        <nav className="app-nav" aria-label="Sections">
           <button onClick={() => navigate("/")} className="tab" aria-current={!inCourses ? "page" : undefined}>
             Graph
           </button>
@@ -151,7 +171,7 @@ export default function App() {
       </header>
 
       <div className="app-body">
-        <div className="app-main">
+        <main className="app-main">
           {inCourses && (
             <div className="app-course-layer">
               <Suspense fallback={<div className="app-loading">Loading…</div>}>
@@ -166,6 +186,7 @@ export default function App() {
 
           {/* Graph panel — stays mounted (and sized, so React Flow can measure) under courses. */}
           <div className="app-graph-layer" style={{ visibility: inCourses ? "hidden" : "visible" }}>
+            <h1 className="sr-only">Wiki graph</h1>
             <WikiGraph
               highlightedPages={highlightedPages}
               onNodeSelect={setSelectedNode}
@@ -188,11 +209,11 @@ export default function App() {
               />
             )}
           </div>
-        </div>
+        </main>
 
         {/* Chat panel: a column beside the main area, or an overlay on narrow screens. */}
         {chatOpen && (
-          <div id="chat-panel" className="app-chat">
+          <aside id="chat-panel" ref={chatPanelRef} className="app-chat" aria-label="Agent chat">
             <ChatPanel
               messages={messages}
               streaming={streaming}
@@ -202,7 +223,7 @@ export default function App() {
               onStop={stop}
               onClear={clear}
             />
-          </div>
+          </aside>
         )}
       </div>
     </div>
