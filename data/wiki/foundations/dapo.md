@@ -11,8 +11,8 @@ sources:
 
 # DAPO
 
-DAPO (Yu et al. 2025) keeps GRPO's group-relative advantage (see [[Preference
-Optimization Algorithms]]) and changes four things. All four target the same failure:
+DAPO (Yu et al. 2025) keeps GRPO's group-relative advantage (see
+[[Preference Optimization Algorithms]]) and changes four things. All four target the same failure:
 **premature collapse onto one strategy** before the policy has explored.
 
 | Change | Mechanism | Problem it addresses |

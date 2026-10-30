@@ -2,7 +2,7 @@
 title: RLHF Pipeline
 tags: [foundations, llm, concept]
 summary: "The three-stage InstructGPT pipeline — SFT, then a Bradley-Terry reward model on ~33k comparisons, then PPO with a KL penalty against the SFT policy — and why all three stages are load-bearing."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--README.md
@@ -79,6 +79,19 @@ valid only near the distribution it was trained on. Unconstrained optimization w
 policy off that distribution and into the reward model's errors. β sets how far you are
 willing to walk.
 
+**Why the KL is reverse, `KL(π_θ ‖ π_ref)`.** Reverse KL penalizes probability mass the
+policy puts where the reference has almost none, which keeps the policy inside the region
+where the reward model's scores can be trusted. It is also **mode-seeking**: the policy
+settles on one or two high-reward response styles rather than covering every style the
+SFT model produced, which is why RL-tuned models sound more decisive and less varied.
+Forward KL would force coverage of every SFT mode, which is not the goal.
+
+In practice the penalty is computed **per token and folded into the reward**, not added as
+a separate loss term, so it flows through the PPO or GRPO advantage. Most RL-with-verifiable-
+rewards runs keep it for stability; [[DAPO]] and Open-Reasoner-Zero drop it, while
+DeepSeek-R1-Zero's GRPO keeps it. The SFT-memorizes / RL-generalizes framing behind this is
+in [[Post-Training for Agents]].
+
 ## Practical cost
 
 Stage 3 holds **four models simultaneously** — policy, reference, reward model, and
@@ -97,3 +110,5 @@ policy will faithfully optimize toward whatever the labels actually encoded.
 - [[Preference Optimization Algorithms]] — alternative-to (offline methods that collapse or skip stages)
 - [[Constitutional AI and RLAIF]] — extends (replaces the human labels in Stage 2 with AI feedback)
 - [[Direct Preference Optimization]] — alternative-to (removes the reward model entirely)
+- [[Post-Training for Agents]] — extends (SFT vs RL, and RL for tool-using agents)
+- [[DAPO]] — extends (a GRPO variant that drops the KL term)

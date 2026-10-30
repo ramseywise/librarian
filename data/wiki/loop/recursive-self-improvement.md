@@ -2,9 +2,11 @@
 title: Recursive Self-Improvement
 tags: [llm, agents, eval, concept]
 summary: "Level 4 at the frontier — the write boundary is the load-bearing design decision, a 3% hit rate is fine when attempts are cheap, and automating generation shifts the bottleneck onto verification."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--08-self-improving-loops.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--03-the-scorekeeper.md
 ---
 
 # Recursive Self-Improvement
@@ -56,7 +58,7 @@ easy to conceal, and **no credible system exists today**.
 
 ## The Worked Example: `autoresearch`
 
-Karpathy's `autoresearch` (released **2026-03-06**, MIT, **~630 lines of Python**) is the
+The open-source `autoresearch` (released **2026-03-06**, MIT, **~630 lines of Python**) is the
 smallest concrete artifact exhibiting the level-4 shape — worth reading precisely because it is
 small enough to hold in your head.
 
@@ -82,10 +84,22 @@ structurally rather than by instruction**. Compare [[Verification Loops]], where
 generator/evaluator split is enforced by separate agents; here it is enforced by filesystem
 permissions, which is stronger.
 
+### The Ratchet Step and the English-Language Loop
+
+Each experiment is one ratchet step ([[Loop Scorekeeper]]): commit the change, train for a
+**fixed 5 minutes of wall clock**, compare validation; if better, keep the commit and append a
+row to `results.tsv`; if not, `git reset HEAD~1` and log the failure. **The fixed budget makes
+results comparable** — no change wins by running longer — and `results.tsv` is the loop's memory
+of every attempt, kept or not.
+
+**The loop is written in English.** `program.md` is a methodology, not code: what to change,
+what to leave alone, how to judge, what to do on failure, and one iron rule — *never ask for
+help, keep going*. Give the agent a method, not a task, and the method becomes the loop.
+
 ### Results and the Hit-Rate Reframe
 
 700 experiments over two days → **20 genuine stackable improvements**, cutting GPT-2 training
-from **2.02 → 1.80 hours (11%)**. Shopify's Tobi Lütke reported 19% on the same setup after 37
+from **2.02 → 1.80 hours (11%)**. A practitioner reported 19% on the same setup after 37
 experiments.
 
 Note the hit rate: **20 of 700 is under 3%.** The loop's value is not that it is clever — it is
@@ -101,16 +115,32 @@ the work.** Model training, refactoring, content rewrites, and pipeline tuning q
 **Anything whose success is only expressible as "looks right" does not** — the same gate as
 rung 2 of the [[Loop Autonomy Ladder]].
 
+## When "Done" Is Not Progress
+
+The verifiable loop works where tests, environment state or deterministic rules give fast
+feedback. Open-ended research is different: feedback is late, there may be no single right
+answer, and the goals that matter (research taste, long-term value) don't reduce to a score. In
+one study of four end-to-end autonomous-research attempts, **only one completed**; failures fell
+into **implementation drift** (falling back to a familiar method that no longer tests the
+hypothesis), **epistemic over-optimism** (noise explained, patched and announced as a finding)
+and **missing tacit judgement** (not knowing which baseline matters or when to drop a
+hypothesis). The fixes are structural: separate claims from evidence with provenance for every
+number; log negative results with equal standing; keep diverse lower-scoring branches alive;
+move humans *up* — problem definition, evaluation criteria, reading anomalies, deciding when to
+stop. **A self-improving loop's ceiling is set by whether it can evaluate what you actually care
+about, not the easiest proxy for it.** Release mechanics for self-edits:
+[[Self-Modification as a Release Process]].
+
 ## Bilevel Autoresearch
 
-[arXiv:2603.23420](https://arxiv.org/abs/2603.23420) (Qu & Lu, 2026-03-24) closes the level-4
+[arXiv:2603.23420](https://arxiv.org/abs/2603.23420) (2026-03-24) closes the level-4
 circle: an outer loop reads the inner loop's traces and **generates new search mechanisms as
 Python code, injected at runtime.** The inner loop optimizes the task; the outer loop optimizes
 *how the inner loop searches*.
 
 Three findings worth carrying:
 
-- **5× improvement** over the inner loop alone (−0.045 vs −0.009 val_bpb) on Karpathy's GPT
+- **5× improvement** over the inner loop alone (−0.045 vs −0.009 val_bpb) on the `autoresearch` GPT
   pretraining benchmark.
 - **Parameter-level tuning without mechanism change yielded no reliable gain.** The outer loop
   had to write new *code*, not new hyperparameters — the structural analogue of the evolve
@@ -124,9 +154,12 @@ design of experiments **without being told those domains existed** — succeedin
 authors, by *breaking the inner loop's deterministic search patterns*.
 
 ## See Also
-- [[Loop Engineering]] — part-of
+- [[Loop Engineering]] — extends
 - [[Evolve Loop]] — extends
-- [[Verification Loops]] — depends-on
-- [[Loop Autonomy Ladder]] — depends-on
-- [[Eval Ladder]] — complements
+- [[Verification Loops]] — extends
+- [[Loop Autonomy Ladder]] — extends
+- [[Eval Ladder]] — extends
+- [[Loop Scorekeeper]] — extends
+- [[Self-Modification as a Release Process]] — extends
+- [[Four Media for Agent Lessons]] — extends
 - [[Training-Agent Disaggregation]] — alternative-to (improve the weights from traces instead of rewriting the harness)

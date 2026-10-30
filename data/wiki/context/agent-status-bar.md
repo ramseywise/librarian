@@ -105,3 +105,4 @@ reasoning or more samples.
 - [[Context-Aware Compression]] — alternative-to (adds distilled conclusions vs replacing raw records)
 - [[Index-Time Distillation]] — extends (the same idea applied to a corpus)
 - [[Context Failure Modes]] — prerequisite-for (a writable status bar is an injection channel)
+- [[Fast-Slow Thinking Architecture]] — extends (a rolling state line as the text channel between a fast and a slow model)

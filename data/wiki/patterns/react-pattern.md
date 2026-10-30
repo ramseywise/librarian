@@ -78,3 +78,4 @@ Only graduate beyond ReAct when you have evidence that it's breaking down.
 - [[Multi-Agent Orchestration Patterns]]
 - [[LangGraph Advanced Patterns]]
 - [[Tool Definitions as Prompts]] — extends (function-calling APIs do the ReAct bookkeeping; definitions are prompt text)
+- [[Agent Fundamentals]] — extends (agent = LLM + context + tools, and the loop around it)

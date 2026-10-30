@@ -338,3 +338,16 @@ The two may refer to different task types (genuinely multi-step reasoning vs sin
 
 **Status:** Unresolved — needs human review
 **Impact:** Default technique choice when adding reasoning to a prompt; [[Prompting Technique Selection]], [[Evaluating Prompts]], [[Chain of Thought]].
+
+## Conflict: Cascaded voice latency budget — 2026-10-30
+
+**Claim A** (from `[[Realtime Voice Architecture Reference]]`, sourced from `data/raw/claude-docs/galactus/docs/research/2026-08-10_voice-tooling_regulated-domain.md`):
+> Within the cascade, LLM time-to-first-token (400–800 ms) dominates; ASR and TTS streaming are each ~100–200 ms; a cascaded pipeline runs ~400–600 ms end to end.
+
+**Claim B** (from new source `data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md`, recorded in `[[Voice Agent Paradigms]]`):
+> The VAD silence wait (500–800 ms) is the largest stage of a serial cascade, with LLM TTFT at 100–500 ms; the serial cascade totals roughly 0.95–2.3 s before queueing multiplies it.
+
+The two likely measure different configurations (streamed vs fully serial; endpointing outside vs inside the budget), but neither page states that scope.
+
+**Status:** Unresolved — needs human review
+**Impact:** Where to spend latency effort in a voice agent (model tier vs endpointing); [[Voice Agent Paradigms]], [[Realtime Voice Architecture Reference]], [[Voice Agent Patterns]].

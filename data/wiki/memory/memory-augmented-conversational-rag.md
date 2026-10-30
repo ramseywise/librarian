@@ -2,8 +2,9 @@
 title: Memory-Augmented Conversational RAG
 tags: [rag, memory, llm, pattern]
 summary: "Multi-turn retrieval breaks because the query is under-specified — the fixes are query rewriting against history, a when-to-retrieve policy, and asking a clarifying question instead of retrieving on an ambiguous turn."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
+  - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--06-memory.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
 ---
@@ -92,3 +93,4 @@ you build fix #3, that is the benchmark shape to evaluate it against.
 - [[Agent Memory Types]] — complements (history is the rewriting input)
 - [[Knowledge Graph Retrieval]] — complements (multi-hop questions need decomposition)
 - [[Execution Boundaries and Guardrails]] — complements (retrieval as a gated tool call)
+- [[Memory as Context]] — extends (conversational memory as one tier of the context-engineering memory design)

@@ -2,7 +2,7 @@
 title: Data Science Curriculum Layers
 tags: [foundations, concept]
 summary: "The tree-shaped ML curriculum — statistical foundations, then supervised learning branching to model evaluation and independently to unsupervised/ensembles/Bayesian — plus the six-layer analytics progression that precedes it and the branching decision that ends it."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-science--README.md
@@ -31,6 +31,10 @@ Python-first, dataset-level work that precedes any specialisation.
 | 4 | Feature engineering | Text representation, NLP preprocessing, TF-IDF, embeddings |
 | 5 | Statistical analysis | Hypothesis testing, distributions, A/B testing, correlation vs. causation |
 | 6 | Modeling + BI | Semantic analysis, topic modelling, similarity, clustering |
+
+Since 2026-10-29, layers 1–3 are taught in the curriculum's separate programming subject
+(Python fundamentals and a Python-for-data track); the analytics subject itself starts at
+layer 4.
 
 The curriculum **ends with a branching decision** rather than a capstone:
 
@@ -137,3 +141,4 @@ them identically loses the distinction permanently.
 - [[Eval vs Test Distinction]] — extends (Layer 3 discipline, carried into LLM evaluation)
 - [[LightGBM vs CatBoost Comparison]] — instance-of (the Layer 5 gradient-boosting gap, filled)
 - [[Karpathy LLM Wiki Pattern]] — complements (provenance-preserving filing, same instinct)
+- [[learn-ai-engineering Project]] — extends (the curriculum repo these layers come from)

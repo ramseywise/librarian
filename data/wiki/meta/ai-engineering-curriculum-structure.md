@@ -263,3 +263,4 @@ same one-way-pointer rule applied at the index level.
 - [[Data Science Curriculum Layers]] — part-of (the analytics and ML pillars that precede the application wave)
 - [[Execution-Made Decisions Leave Stale Invariants]] — extends (how the absorbed-into-pillars layout replaced the planned pointer layer)
 - [[AI Role Interview Loop Map]] — extends (role weighting over the ten-pillar interview taxonomy)
+- [[learn-ai-engineering Project]] — extends (repo-level map: six subjects, paths, layers, definition of done)

@@ -2,7 +2,7 @@
 title: Duplex Voice Breaks Discrete-Turn Assumptions
 tags: [voice, llm, pattern]
 summary: Every request-response design artifact — framework-selection trees, agent specs, review layers, eval harnesses, PII pre-filters — silently assumes a discrete turn with a stop_reason; realtime duplex voice has no such boundary, so the right move is to scaffold only the graph behind the audio loop, say plainly which half is missing, and generate under constraints rather than generate-and-repair.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/docs/research/2026-08-10_voice-tooling_spec-gap.md
   - data/raw/claude-docs/galactus/docs/research/2026-08-10_voice-tooling_skill-audit.md
@@ -123,3 +123,4 @@ and logged as a risk with likelihood **High, accepted** rather than left implici
 - [[REUSE/ADAPT/SKIP Asset Verdicts]] — instance-of
 - [[Capability Runtime-Coupling Tiers]] — extends (duplex is the missing first row of the framework-selection tree)
 - [[Streaming Output Scrubbing]] — extends (redaction on a stream rather than before input)
+- [[Voice Agent Paradigms]] — extends (full-duplex as the fourth voice architecture)

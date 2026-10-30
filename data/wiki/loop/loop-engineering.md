@@ -2,11 +2,18 @@
 title: Loop Engineering
 tags: [llm, agents, infra, concept]
 summary: "The fourth layer of the stack — designing the cycle that re-prompts, checks, and stops an agent when nobody is watching, replacing yourself as the person who prompts it."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--loop-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--README.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--loop-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--01-what-a-loop-is.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--02-loop-shapes.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--04-building-blocks.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--09-failure-modes-and-guardrails.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--10-framework-bindings.md
 ---
 
 # Loop Engineering
@@ -23,12 +30,12 @@ harness produces unreliable behavior that is hard to debug even when the loop lo
 Two framings worth holding together:
 
 > **Loop engineering is replacing yourself as the person who prompts the agent. You design
-> the system that does it instead.** — Addy Osmani
+> the system that does it instead.** — a practitioner framing
 
 > A loop is *"the trigger, the topology, the verifier, and the stop rules that decide what an
-> agent does next and when it quits."* — Adnan Masood
+> agent does next and when it quits."* — a practitioner definition
 
-Boris Cherny's version of the shift: agents now "prompt Claude and figure out what to do. My
+A coding-agent lead's version of the shift: agents now "prompt Claude and figure out what to do. My
 job is to write loops."
 
 ### Loop vs Chain
@@ -40,7 +47,7 @@ A chain executes a predetermined sequence regardless of intermediate results. A 
 
 ### Lineage
 
-Geoffrey Huntley's "Ralph Wiggum" technique (mid-2025) was the crude ancestor: a bash loop
+The "Ralph Wiggum" technique (mid-2025) was the crude ancestor: a bash loop
 re-invoking the agent forever, breaking work into small context windows and persisting
 progress to the filesystem so the agent could amend its own plan between runs. By May 2026 the
 harnesses absorbed it — `/loop` (cadence-based) and `/goal` (condition-based) ship in Codex,
@@ -127,7 +134,7 @@ and introduce planning/multi-agent only after eval infrastructure exists.**
 
 ## Production Building Blocks
 
-Osmani's concrete inventory behind "design the system that prompts the agent" — five
+A practitioner's concrete inventory behind "design the system that prompts the agent" — five
 primitives plus a spine:
 
 - **Automations — the heartbeat.** Scheduled discovery and triage running independently;
@@ -145,7 +152,7 @@ primitives plus a spine:
 - **Memory — the spine.** Durable files holding state *outside* the conversation, because the
   model forgets between runs.
 
-**Worked example (Osmani's morning loop):** automation fires the triage skill → reads CI
+**Worked example (a morning triage loop):** automation fires the triage skill → reads CI
 failures, issues, commits → writes findings to markdown → opens isolated worktrees → spawns a
 sub-agent to draft each fix → a second sub-agent verifies → connectors open the PR and update
 the ticket → anything unhandled lands in the triage inbox for human review.
@@ -158,7 +165,7 @@ include automated incident response that investigates alerts and opens PRs, flak
 that reproduce and propose fixes, nightly test-babysitting that separates real regressions from
 false negatives, and a React → React Native migration running in 30-minute cycles.
 
-Keep the skeptical note in view — engineer Oded Messer observes that a repeatable workflow
+Keep the skeptical note in view — one engineer observes that a repeatable workflow
 *"becomes tactical if the AI is capable enough or it's just a high level old-school automation
 I can set up like a cron or a trigger."* **Much of loop engineering is automation rediscovered;
 the new part is that the thing on the cron is nondeterministic**, which is exactly why
@@ -188,8 +195,30 @@ vague goal specification; insufficient tool access.
 - **Cognitive surrender.** *"The comfortable posture is the dangerous one."* The same loop
   structure produces opposite outcomes depending on the operator's intention.
 
+### Traps and fixes
+
+| Trap | Symptom | Fix |
+|---|---|---|
+| No scorekeeper | Runs, but results are inconsistent or meaningless | Write the check first, objective and hard to game — [[Loop Scorekeeper]] |
+| Goal too big | Never finishes; scope drifts | Cut it to one small, testable piece |
+| Cheating the tests | Score goes green, output is wrong | Protect the scorekeeper; held-out checks; audit outputs |
+| Thrashing | Lots of change, no improvement | Smaller goal, smaller changes, clearer score |
+| Unsafe autonomy | Risky commands or sweeping edits | Narrow the write scope; human approval for dangerous steps — [[Execution Boundaries and Guardrails]] |
+| Comprehension debt | Scores green, nobody understands the output | Review output regularly — the score is not understanding |
+
+### Four silent costs
+
+None show up in a trace, and all sharpen the longer a loop runs: **verification debt** ("looks
+fine" standing in for "confirmed" — keep stop conditions machine-checkable), **comprehension
+rot** (code ships faster than your model of it — fast loops require fast reading), **cognitive
+surrender** (accepting output without an opinion) and **token blowout** (context grows roughly
+quadratically per pass without management — compact or reset from the first loop, see
+[[Loop State File]]). **Audit after an hour of any run:** how much was machine-confirmed? Can
+you explain the last change? How many "I'll look later"s went unread? Is context size trending
+up?
+
 > *"Build the loop. But build it like someone who intends to stay the engineer, not just the
-> person who presses go."* — Osmani
+> person who presses go."*
 
 ## Best Practices
 
@@ -220,7 +249,7 @@ criteria) → `RefinerAgent` (apply improvements, or call `exit_loop` when the c
 completion phrase). Sub-agents share state through the context dict.
 
 > Note the shape: ADK's critic/refiner split is the same **maker/checker separation** as
-> Osmani's sub-agents and LangChain's Level-2 grader. **Three vocabularies, one pattern.**
+> the building-block sub-agents and LangChain's Level-2 grader. **Three vocabularies, one pattern.**
 
 ### Vercel AI SDK — `ToolLoopAgent` / `WorkflowAgent`
 
@@ -271,6 +300,12 @@ loop length. **Anything longer must checkpoint and resume rather than hold the p
 2. [[Loop Termination Design]] — layered independent exits, stall detection, escalation
 3. [[Evolve Loop]] — the slow loop that rewrites the fast one, at practitioner scale
 4. [[Recursive Self-Improvement]] — level 4 at the frontier, and the `autoresearch` worked example
+5. [[Loop Scorekeeper]] — the check that decides "better": traits, write boundary, ratchet rules
+6. [[Loop State File]] — durable progress outside the context window for long runs
+7. [[Three-Layer Trajectory Verification]] — checking the run, not just the final answer
+8. [[Four Media for Agent Lessons]] — where a learned lesson should live
+9. [[Self-Modification as a Release Process]] — shipping harness changes like releases
+10. [[Sleep Learning]] — offline consolidation of lessons between runs
 
 ## See Also
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
@@ -279,10 +314,12 @@ loop length. **Anything longer must checkpoint and resume rather than hold the p
 - [[Harness Anatomy]] <!-- auto-linked -->
 - [[Prompt Chaining]] <!-- auto-linked -->
 - [[Iterative Harness Simplification]] <!-- auto-linked -->
-- [[Harness Engineering]] — depends-on
-- [[Verification Loops]] — part-of
-- [[Loop Detection and the Two-Retry Rule]] — complements
-- [[Long-Horizon Execution]] — complements
-- [[Context Engineering]] — depends-on
+- [[Harness Engineering]] — extends
+- [[Verification Loops]] — extends
+- [[Loop Detection and the Two-Retry Rule]] — extends
+- [[Long-Horizon Execution]] — extends
+- [[Context Engineering]] — extends
+- [[Loop Scorekeeper]] — prerequisite-for
+- [[Loop State File]] — prerequisite-for
 - [[Graph Engineering]] — extends (the layer above: when one loop is no longer the right shape)
 - [[Loop-to-Graph Escalation]] — extends (the decision procedure for crossing that boundary)

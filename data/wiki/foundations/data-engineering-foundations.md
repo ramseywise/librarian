@@ -2,7 +2,7 @@
 title: Data Engineering Foundations
 tags: [foundations, concept]
 summary: "The six stages of data engineering as a pipeline discipline — ingest, transform, orchestrate, warehouse, monitor, feature-serve — where each stage's job is to prepare data for the next, plus the modern-stack tools (DuckDB, Polars, Iceberg, Dagster) missing from Zoomcamp-era material."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-engineering--README.md
@@ -95,7 +95,8 @@ means — you rebuild an asset, not re-run a job.
 
 ## Prerequisites and what follows
 
-Python fundamentals and SQL are assumed; Docker is taught from scratch in the source
+Python fundamentals and SQL are assumed — concretely, Python modules 01–03 and SQL modules
+01–09 of the curriculum's programming subject; Docker is taught from scratch in the source
 material. The typical progressions after these foundations are MLOps depth (stages 5–6),
 data science, or AI engineering — where **DE pipelines become the data layer** underneath
 the application. That last progression is why this page sits in a wiki about agents: an
@@ -111,3 +112,4 @@ See [[RAG Eval Gate Contract]].
 - [[Agent Retry Taxonomy]] — complements (retry semantics as a cross-layer design problem)
 - [[Data Clusters by Writer and Trust]] — extends (cluster tables by who writes them and how much you trust it)
 - [[Change the Channel, Not the Count]] — extends (source portfolio and rights as pipeline inputs)
+- [[learn-ai-engineering Project]] — extends (the curriculum repo this subject belongs to)

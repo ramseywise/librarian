@@ -2,7 +2,7 @@
 title: Memory Store Operations
 tags: [memory, infra, reference]
 summary: "Running a memory store in production — caching and async indexing for latency, memory hit rate as the metric that says whether memory is earning its cost, and the deletion requirement that makes memory a compliance surface rather than a cache."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
@@ -126,3 +126,4 @@ arrived at again from the operations side.
 - [[Memory Decay Weighting]] — implements (TTL and decay as the staleness policy)
 - [[Agent Security Risk Taxonomy]] — complements (memory poisoning, R4, at the write path)
 - [[Observability and Runtime Patterns]] — implements (tracing the memory lookup span)
+- [[Designed Memory vs Raw-Record Search]] — alternative-to (evidence that a searchable verbatim record can beat an extracted store)

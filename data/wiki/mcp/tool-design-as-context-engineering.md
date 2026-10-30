@@ -2,8 +2,9 @@
 title: Tool Design as Context Engineering
 tags: [mcp, llm, agents, concept]
 summary: Tools consume context twice — definitions sit in the window permanently, results enter per call — so token-efficient results, unambiguous boundaries, and terse routing descriptions are context decisions, not API aesthetics.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
+  - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--10-tools-and-multi-agent.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
   - data/raw/repos/datathon_mcp/CLAUDE.md
 ---

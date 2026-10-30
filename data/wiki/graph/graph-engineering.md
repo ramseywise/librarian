@@ -2,10 +2,16 @@
 title: Graph Engineering
 tags: [llm, agents, infra, langgraph, concept]
 summary: "The fifth layer of the stack — designing which nodes exist, which transitions are permitted, and how the runtime work graph mutates, so multi-agent work has an organizational structure rather than just more agents."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--README.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--graph-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--OUTLINE.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--01-graph-vs-loop.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--05-topology-patterns.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--06-when-not-to-build-a-graph.md
 ---
 
 # Graph Engineering
@@ -125,19 +131,32 @@ Cost is the other gate:
 | Metric | Loop | Graph |
 |---|---|---|
 | Wall-clock time | High | Low |
-| Token cost per cycle | Lower | ~3× higher |
-| Break-even pass rate | — | ~50% |
+| Token cost per cycle | Lower | ~3× higher (vendor estimate) |
+| Break-even pass rate | — | ~50% (vendor estimate) |
 
-Graphs win on cost when per-cycle success rates are 50%+; they lose on simple,
-low-pass-rate tasks where you pay fan-out cost for work that will be redone anyway.
-Anthropic's own multi-agent research system runs at *"roughly 15× the tokens of a chat
-turn"* — **graph engineering requires genuine job separation to justify the overhead.**
+The ~3× and ~50% figures come from a vendor blog — **a shape to test, not constants**. The
+logic holds even if the numbers don't: when most cycles fail and are redone, you pay fan-out
+cost for thrown-away work. The first-party anchor is Anthropic's multi-agent research system:
+agents use about 4× the tokens of a chat interaction and multi-agent systems about 15×, with
+token usage explaining most of the performance variance — it pays for high-value tasks that
+parallelise well, and is a poor fit when every agent needs the same context. **A graph needs
+genuine job separation to justify the overhead** — if branches share most of their context,
+you pay N times for the same reading.
+
+### Split the verifier, not the system
+
+The most common "we need a graph" is an **overloaded verifier** — one check judging
+correctness, style, safety and completeness at once. Before adding nodes, split it into
+per-criterion checks inside the existing loop, make the code-able ones code (see
+[[Loop Scorekeeper]]), and measure again. Only a criterion that still fails because it needs a
+different model, tools or context has earned its own node.
 
 See [[Loop-to-Graph Escalation]] for the decision procedure.
 
 ## Failure Modes at Scale
 
-A control-theory reading of why independent loops degrade once there are many of them —
+The full catalogue — mechanical, swarm and control failures plus the MAST taxonomy — is in
+[[Multi-Agent Failure Modes at Scale]]. A control-theory reading of why independent loops degrade once there are many of them —
 four structural failures:
 
 1. **Goodhart's Law** — metrics detach from their original meaning under aggressive optimization.
@@ -265,13 +284,22 @@ human-in-the-loop interrupts **from the same mechanism**.
 - [[Knowledge Graph Retrieval]] — the KG facet as retrieval structure
 - [[Knowledge Graph as Shared Agent Memory]] — loop → swarm → graph, and the cost of the swarm tier
 - [[n8n AI Workflow Builder]] — a shipped supervisor-pattern graph with published constants
+- [[Multi-Agent Topology Patterns]] — supervisor, fan-out, hierarchical, handoff, parallel review, and when each fits
+- [[Multi-Agent Failure Modes at Scale]] — mechanical, swarm and control failures; MAST; anchors
+- [[Knowledge Graph Fundamentals and Cypher]] — LPG vs RDF, modelling, Cypher habits
+- [[Knowledge Graph Entity Resolution]] — merging duplicate entities, the load-bearing KG sub-problem
+- [[Text-to-Cypher]] — natural-language questions to graph queries, and how to guard them
+- [[Graph Machine Learning and GNNs]] — when to learn over the graph rather than query it
 
 ## See Also
 - [[LangChain Agent Middleware]] <!-- auto-linked -->
 - [[Single Agent With Tools]] <!-- auto-linked -->
-- [[Loop Engineering]] — depends-on (the layer below: the graph decides which loop runs next)
-- [[Harness Engineering]] — depends-on
+- [[Loop Engineering]] — extends (the layer below: the graph decides which loop runs next)
+- [[Harness Engineering]] — extends
 - [[Send API Fan-out]] — instance-of (dynamic edges in LangGraph)
 - [[LangGraph State Reducers]] — instance-of (the concurrency primitive for fan-in)
-- [[Verification Loops]] — complements (generate-then-verify, lifted to topology)
-- [[LangGraph Advanced Patterns]] — complements
+- [[Verification Loops]] — extends (generate-then-verify, lifted to topology)
+- [[LangGraph Advanced Patterns]] — instance-of
+- [[Multi-Agent Topology Patterns]] — prerequisite-for
+- [[Multi-Agent Failure Modes at Scale]] — prerequisite-for
+- [[Knowledge Graph Fundamentals and Cypher]] — prerequisite-for

@@ -2,10 +2,11 @@
 title: Loop Termination Design
 tags: [llm, agents, infra, pattern]
 summary: "Stop rules are layered and independent — success verifier, iteration cap, budget cap, stall detector, escalation path — and the cap is the backstop, never the primary exit."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--README.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--09-failure-modes-and-guardrails.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-14-orchestrator-design.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-orchestrator-design.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-14-pipeline-orchestration.md
@@ -32,6 +33,13 @@ Any single one can be wrong; the set is what bounds the run.
 | **Budget cap** | Token/dollar ceiling hit | Doesn't distinguish productive from thrashing spend |
 | **Stall detector** | No progress for N steps | Requires a definition of "progress" |
 | **Escalation path** | Any of the above without success | Nowhere to escalate to |
+
+Outcomes per exit, as the course frames them: success → save, report, stop; iteration cap →
+**escalate** (the cap isn't success); budget cap → escalate **with state saved**; stall (score
+unchanged for K passes, or the same action repeated) → **change strategy once, then escalate**;
+human escalation (blocker, irreversible action, judgement call) → pause and hand over full
+context. Decide the human handoff points **before** the first run. A lower score should also
+**roll back automatically** — the ratchet rules in [[Loop Scorekeeper]].
 
 **The cap is the safety backstop, not the primary exit.** A loop whose normal completion mode
 is hitting `max_iterations` is a loop with no working verifier — it just has an expensive
@@ -100,10 +108,13 @@ producing "needs human re-scope."
 
 ## See Also
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
-- [[Loop Engineering]] — part-of
-- [[Loop Autonomy Ladder]] — depends-on
-- [[Loop Detection and the Two-Retry Rule]] — complements
-- [[Agent Retry Taxonomy]] — complements
-- [[Verification Loops]] — depends-on
+- [[Loop Engineering]] — extends
+- [[Loop Autonomy Ladder]] — extends
+- [[Loop Detection and the Two-Retry Rule]] — extends
+- [[Agent Retry Taxonomy]] — extends
+- [[Verification Loops]] — extends
+- [[Loop Scorekeeper]] — extends
+- [[Loop State File]] — extends
+- [[Multi-Agent Failure Modes at Scale]] — prerequisite-for
 - [[Map Every State to Its Writer]] — extends (the orphan state that became the exhaustion terminal)
 - [[Reproduce to Tell a Break From a Stuck Agent]] — extends (harness exhaustion masquerading as a break)

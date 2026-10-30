@@ -248,3 +248,4 @@ discipline — see [[Canary Testing for Permission Boundaries]].
 - [[Proposer-Reviewer and Sidecar Gating]] — extends (who approves when a human shouldn't)
 - [[Lethal Triad]] — complements (which capability combinations need the boundary)
 - [[Belief Parameters with a Ground-Truth Gate]] — instance-of (trust boundary inside the tool)
+- [[Constitutional Classifiers]] — extends (two-stage classifier guardrails)

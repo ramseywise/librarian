@@ -2,10 +2,11 @@
 title: Preference Optimization Algorithms
 tags: [foundations, llm, comparison]
 summary: "The PPO → DPO → GRPO → KTO/IPO/ORPO family — what each removes from the stage before it, the five-algorithm decision table, and why the field shifted from choosing an algorithm to designing a reward structure."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
+  - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
 ---
 
 # Preference Optimization Algorithms
@@ -83,10 +84,21 @@ there are three practical kinds:
 | Code | Running the tests |
 | Format | Matching the required structure |
 
-This is the constraint that decides its applicability: verifiable rewards **cannot be
-hacked in the [[Reward Hacking and Overoptimization]] sense** — a test either passes or
-it does not — which is exactly why GRPO does not extend to open-ended generation, where
-no such checker exists.
+This is the constraint that decides its applicability: verifiable rewards remove the
+**learned-reward-model loophole** of [[Reward Hacking and Overoptimization]] — there is no
+proxy model to drift away from — which is exactly why GRPO does not extend to open-ended
+generation, where no such checker exists. They do not remove gaming altogether: an agent
+can still game the verifier itself, for example by editing the tests it must pass
+([[RLVP — Verifiable Path Penalties]] penalizes this).
+
+Two weaknesses of the group baseline matter for agents:
+
+- **Zero-variance groups.** If every sample in a group is correct, or every one is wrong,
+  the advantage is zero and the group contributes no gradient. [[DAPO]] drops those groups
+  (dynamic sampling); RLVP gives them variance back through path penalties.
+- **Coarse credit.** One trajectory-level advantage is spread evenly over every token,
+  which dilutes the signal over long multi-turn episodes. That is where PPO with a value
+  network still earns its cost (see [[Post-Training for Agents]]).
 
 ## The 2025 split: alignment vs reasoning
 
@@ -167,3 +179,6 @@ aligned with what you actually want is the hard half.
 - [[Constitutional AI and RLAIF]] — complements (supplies preference data, independent of which optimizer consumes it)
 - [[Outcome vs Process Reward Models]] — extends (what the reward scores in the reasoning group)
 - [[RL Training Frameworks for LLMs]] — extends (the backbones these algorithms run on)
+- [[DAPO]] — extends (four fixes to GRPO for long reasoning)
+- [[RLVP — Verifiable Path Penalties]] — extends (restores variance to uniform groups)
+- [[Post-Training for Agents]] — extends (how these algorithms apply to tool-using agents)
