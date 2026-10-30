@@ -1,7 +1,8 @@
 """Import learn-ai-engineering + sisyphus coursework → data/courses/
 
 One course per subject directory (ai-engineering, generative-ai, data-* from
-learn-ai-engineering; programming and interviewing from sisyphus — see SUBJECT_SOURCES).
+learn-ai-engineering, including programming; drills and interviewing from sisyphus — see
+SUBJECT_SOURCES).
 Inside a subject, each top-level directory becomes a module and every
 authored .md / .mdx / .ipynb file under it becomes a lesson. Files at the subject root
 land in a synthetic `00-start-here` module. Subdirectories inside a module become
@@ -17,7 +18,7 @@ Conversions:
   files are rewritten to the lesson they became.
 
 Vendored upstream snapshots (`*-main`, `*-master`, hash-suffixed, nested git repos — see
-learn-ai-engineering/VENDORED.md) are NOT imported. They are listed on their module as
+learn-ai-engineering/CURRICULUM.md, Sources) are NOT imported. They are listed on their module as
 references. PDFs are listed as readings.
 
 Re-runnable while learn-ai-engineering is mid-consolidation. Every generated file
@@ -64,10 +65,10 @@ DEFAULT_SISYPHUS = WORKSPACE_DIR / SISYPHUS
 COURSES_DIR = REPO_ROOT / "data" / "courses"
 
 # Subjects that don't live at learn-ai-engineering/<slug>: slug → (repo, dir in that repo).
-# Interview prep and the language drills moved to sisyphus on 2026-10-28; the course slugs
-# stay the same so existing data/courses/ paths and local edits carry over.
+# Interview prep and the language drills moved to sisyphus on 2026-10-28. On 2026-10-29
+# `programming` became the learn-ai-engineering course and the drills got their own slug.
 SUBJECT_SOURCES: dict[str, tuple[str, str]] = {
-    "programming": (SISYPHUS, "drills"),
+    "drills": (SISYPHUS, "drills"),
     "interviewing": (SISYPHUS, "interviewing"),
 }
 
@@ -78,12 +79,12 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
     "programming": (
         "Programming",
         1,
-        "Language drills (Python, SQL, TypeScript, Terraform) and interview-format coding rounds.",
+        "A course in Python, SQL and TypeScript: notes, offline exercises and solutions.",
     ),
     "data-analytics": (
         "Data Analytics",
         2,
-        "Python fundamentals for working with data: core language features, then text analytics.",
+        "Analysing data with Python: pandas, statistics, visualisation and course projects.",
     ),
     "data-science": (
         "Data Science",
@@ -108,9 +109,14 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
         "The engineering disciplines on top of models: prompt, context, harness, loop, graph "
         "and eval.",
     ),
+    "drills": (
+        "Drills",
+        7,
+        "Timed language drills (Python, SQL, TypeScript, Terraform) and interview-format coding rounds.",
+    ),
     "interviewing": (
         "Interviewing",
-        7,
+        8,
         "Interview prep for AI, ML, data science and forward-deployed engineering roles.",
     ),
 }
@@ -208,8 +214,8 @@ def _is_vendored(path: Path) -> bool:
 
 
 def _vendored_urls(source: Path) -> dict[str, str]:
-    """Map `subject/.../dir` → upstream URL from VENDORED.md's table."""
-    vendored_md = source / "VENDORED.md"
+    """Map `subject/.../dir` → upstream URL from CURRICULUM.md's Sources tables."""
+    vendored_md = source / "CURRICULUM.md"
     if not vendored_md.exists():
         return {}
     urls: dict[str, str] = {}

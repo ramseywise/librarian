@@ -10,9 +10,11 @@ interface Props {
   onOpen: (path: string) => void;
   onOpenConcept: (pageId: string) => void;
   onAsk: (question: string) => void;
+  onToc: (toc: TocEntry[]) => void;
+  onActiveHeading: (id: string | null) => void;
 }
 
-interface TocEntry { id: string; text: string; level: number }
+export interface TocEntry { id: string; text: string; level: number }
 
 /** Drop a leading `# Title` when it just repeats the lesson title shown in the header. */
 function stripDuplicateH1(body: string, title: string): string {
@@ -45,11 +47,9 @@ export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) 
   );
 }
 
-export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, onOpenConcept, onAsk }: Props) {
+export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, onOpenConcept, onAsk, onToc, onActiveHeading }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const proseRef = useRef<HTMLDivElement>(null);
-  const [toc, setToc] = useState<TocEntry[]>([]);
-  const [activeHeading, setActiveHeading] = useState<string | null>(null);
   const body = stripDuplicateH1(lesson.body, lesson.title);
   const parts = lesson.kind === "drill" ? splitSolution(body) : null;
   const [showSolution, setShowSolution] = useState(false);
@@ -64,23 +64,23 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
     const root = proseRef.current;
     if (!root) return;
     const hs = Array.from(root.querySelectorAll<HTMLElement>("h2, h3"));
-    setToc(hs.filter((h) => h.id).map((h) => ({ id: h.id, text: h.innerText, level: Number(h.tagName[1]) })));
+    onToc(hs.filter((h) => h.id).map((h) => ({ id: h.id, text: h.innerText, level: Number(h.tagName[1]) })));
+    onActiveHeading(null);
     const obs = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting);
-        if (visible.length) setActiveHeading(visible[0].target.id);
+        if (visible.length) onActiveHeading(visible[0].target.id);
       },
       { root: scrollRef.current, rootMargin: "0px 0px -70% 0px" }
     );
     hs.forEach((h) => obs.observe(h));
     return () => obs.disconnect();
-  }, [lesson.id]);
+  }, [lesson.id, onToc, onActiveHeading]);
 
   const ask = () => onAsk(`I'm studying the lesson "${lesson.title}" (${courseTitle}). Explain its key ideas and how they connect to the rest of the wiki.`);
 
   return (
-    <div style={{ display: "flex", height: "100%" }}>
-      <div ref={scrollRef} className="course-scroll" style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
+    <div ref={scrollRef} className="course-scroll" style={{ height: "100%", overflowY: "auto" }}>
         <article style={{ maxWidth: 780, margin: "0 auto", padding: "28px 32px 60px" }}>
           <div style={{ fontSize: 12, color: "#666", marginBottom: 6 }}>
             <button onClick={() => onOpen(lesson.course)} style={crumbStyle}>{courseTitle}</button>
@@ -105,10 +105,24 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
             )}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "center", margin: "36px 0 24px" }}>
+          {lesson.concepts.length > 0 && (
+            <div style={{ marginTop: 36 }}>
+              <div style={headStyle}>Concepts in the graph</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {lesson.concepts.map((c) => (
+                  <button key={c.id} onClick={() => onOpenConcept(c.id)} title={`${c.domain} · ${c.summary}`} style={conceptStyle}>
+                    <span style={{ color: "#ce93d8" }}>◆</span> {c.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: "flex", justifyContent: "center", gap: 10, margin: "36px 0 24px" }}>
             <button onClick={onToggleDone} style={{ ...doneBtnStyle, ...(done ? doneOnStyle : {}) }}>
               {done ? "✓ Completed" : "Mark as complete"}
             </button>
+            <button onClick={ask} style={doneBtnStyle}>Ask the librarian ↗</button>
           </div>
 
           <div style={{ display: "flex", gap: 12, borderTop: "1px solid #222", paddingTop: 20 }}>
@@ -120,41 +134,6 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
             data/courses/{lesson.id}.md{lesson.source && <> · from {lesson.source}</>}
           </div>
         </article>
-      </div>
-
-      <aside className="course-scroll" style={asideStyle}>
-        {toc.length > 1 && (
-          <>
-            <div style={asideHeadStyle}>On this page</div>
-            {toc.map((t) => (
-              <a key={t.id} href={`#${t.id}`}
-                onClick={(e) => { e.preventDefault(); document.getElementById(t.id)?.scrollIntoView({ behavior: "smooth" }); }}
-                style={{
-                  display: "block", fontSize: 12, lineHeight: 1.45, padding: "3px 0", paddingLeft: t.level === 3 ? 12 : 0,
-                  color: activeHeading === t.id ? "#90caf9" : "#777", textDecoration: "none",
-                }}>
-                {t.text}
-              </a>
-            ))}
-          </>
-        )}
-
-        {lesson.concepts.length > 0 && (
-          <>
-            <div style={{ ...asideHeadStyle, marginTop: toc.length > 1 ? 22 : 0 }}>Concepts in the graph</div>
-            {lesson.concepts.map((c) => (
-              <button key={c.id} onClick={() => onOpenConcept(c.id)} title={c.summary} style={conceptStyle}>
-                <span style={{ color: "#ce93d8" }}>◆</span> {c.title}
-                <span style={{ display: "block", color: "#555", fontSize: 10, marginLeft: 14 }}>{c.domain}</span>
-              </button>
-            ))}
-          </>
-        )}
-
-        <div style={{ ...asideHeadStyle, marginTop: 22 }}>Study</div>
-        <button onClick={onToggleDone} style={asideBtnStyle}>{done ? "✓ Completed" : "Mark complete"}</button>
-        <button onClick={ask} style={asideBtnStyle}>Ask the librarian ↗</button>
-      </aside>
     </div>
   );
 }
@@ -180,17 +159,10 @@ const pagerStyle: React.CSSProperties = {
   flex: 1, background: "#151515", border: "1px solid #242424", borderRadius: 8, padding: "12px 14px",
   cursor: "pointer", fontFamily: "inherit",
 };
-const asideStyle: React.CSSProperties = {
-  width: 230, flexShrink: 0, borderLeft: "1px solid #1c1c1c", padding: "28px 18px", overflowY: "auto",
-};
-const asideHeadStyle: React.CSSProperties = {
+const headStyle: React.CSSProperties = {
   fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8, fontWeight: 600,
 };
 const conceptStyle: React.CSSProperties = {
-  display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: "4px 0",
-  color: "#ccc", fontSize: 12, cursor: "pointer", fontFamily: "inherit", lineHeight: 1.4,
-};
-const asideBtnStyle: React.CSSProperties = {
-  display: "block", width: "100%", textAlign: "left", background: "#161616", border: "1px solid #262626",
-  borderRadius: 6, color: "#bbb", fontSize: 12, padding: "7px 10px", marginBottom: 6, cursor: "pointer", fontFamily: "inherit",
+  background: "#161616", border: "1px solid #262626", borderRadius: 14, padding: "4px 10px",
+  color: "#ccc", fontSize: 12, cursor: "pointer", fontFamily: "inherit",
 };

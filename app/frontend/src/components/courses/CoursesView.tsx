@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Course, Lesson, LessonOutline, SearchHit } from "../../courses/types";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
-import { LessonView } from "./LessonView";
+import { LessonView, type TocEntry } from "./LessonView";
 
 interface Props {
   /** Route path after `/courses` — "" (catalog), "<course>", or "<lesson id>". */
@@ -198,6 +198,8 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
 }) {
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [toc, setToc] = useState<TocEntry[]>([]);
+  const [activeHeading, setActiveHeading] = useState<string | null>(null);
   const { markVisited } = progress;
 
   useEffect(() => {
@@ -216,7 +218,14 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
 
   return (
     <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
-      <Sidebar course={course} activeId={lessonId} done={progress.done} onOpen={onOpen} />
+      <Sidebar
+        course={course}
+        activeId={lessonId}
+        done={progress.done}
+        onOpen={onOpen}
+        toc={lesson?.id === lessonId ? toc : []}
+        activeHeading={activeHeading}
+      />
       <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
         {error ? <Centered>{error}</Centered>
           : !lesson || lesson.id !== lessonId ? <Centered>Loading…</Centered>
@@ -229,6 +238,8 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
               onOpen={onOpen}
               onOpenConcept={onOpenConcept}
               onAsk={onAsk}
+              onToc={setToc}
+              onActiveHeading={setActiveHeading}
             />
           )}
       </div>
@@ -236,9 +247,11 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
   );
 }
 
-function Sidebar({ course, activeId, done, onOpen }: {
+function Sidebar({ course, activeId, done, onOpen, toc, activeHeading }: {
   course: Course; activeId: string; done: Set<string>; onOpen: (p: string) => void;
+  toc: TocEntry[]; activeHeading: string | null;
 }) {
+  const [tocOpen, setTocOpen] = useState(true);
   const [filter, setFilter] = useState("");
   const activeModule = course.modules.find((m) => m.lessons.some((l) => l.id === activeId))?.id;
   const [collapsed, setCollapsed] = useState<Set<string>>(
@@ -291,7 +304,12 @@ function Sidebar({ course, activeId, done, onOpen }: {
                 <span style={{ flex: 1 }}>{m.title}</span>
                 <span style={{ color: "#555", fontSize: 10 }}>{n}/{m.lessons.length}</span>
               </button>
-              {open && <ModuleLessons lessons={m.lessons} activeId={activeId} done={done} onOpen={onOpen} />}
+              {open && (
+                <ModuleLessons
+                  lessons={m.lessons} activeId={activeId} done={done} onOpen={onOpen}
+                  toc={toc} activeHeading={activeHeading} tocOpen={tocOpen} onToggleToc={() => setTocOpen((o) => !o)}
+                />
+              )}
             </div>
           );
         })}
@@ -300,8 +318,9 @@ function Sidebar({ course, activeId, done, onOpen }: {
   );
 }
 
-function ModuleLessons({ lessons, activeId, done, onOpen }: {
+function ModuleLessons({ lessons, activeId, done, onOpen, toc, activeHeading, tocOpen, onToggleToc }: {
   lessons: LessonOutline[]; activeId: string; done: Set<string>; onOpen: (p: string) => void;
+  toc: TocEntry[]; activeHeading: string | null; tocOpen: boolean; onToggleToc: () => void;
 }) {
   let prevSection = "";
   return (
@@ -310,6 +329,7 @@ function ModuleLessons({ lessons, activeId, done, onOpen }: {
         const header = l.section && l.section !== prevSection ? l.section : null;
         prevSection = l.section;
         const active = l.id === activeId;
+        const hasToc = active && toc.length > 1;
         return (
           <div key={l.id}>
             {header && <div style={sectionHeadStyle}>{header}</div>}
@@ -326,7 +346,33 @@ function ModuleLessons({ lessons, activeId, done, onOpen }: {
             >
               <Check on={done.has(l.id)} small />
               <span style={{ flex: 1 }}>{l.title}</span>
+              {hasToc && (
+                <span
+                  role="button"
+                  title={tocOpen ? "Hide page contents" : "Show page contents"}
+                  onClick={(e) => { e.stopPropagation(); onToggleToc(); }}
+                  style={{ color: "#777", padding: "0 2px" }}
+                >
+                  {tocOpen ? "▾" : "▸"}
+                </span>
+              )}
             </button>
+            {hasToc && tocOpen && (
+              <div style={{ padding: "2px 0 6px" }}>
+                {toc.map((t) => (
+                  <a key={t.id} href={`#${t.id}`}
+                    onClick={(e) => { e.preventDefault(); document.getElementById(t.id)?.scrollIntoView({ behavior: "smooth" }); }}
+                    className="course-nav-item"
+                    style={{
+                      display: "block", fontSize: 11.5, lineHeight: 1.4, padding: "3px 14px 3px",
+                      paddingLeft: t.level === 3 ? 60 : 48, textDecoration: "none",
+                      color: activeHeading === t.id ? "#90caf9" : "#777",
+                    }}>
+                    {t.text}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         );
       })}
