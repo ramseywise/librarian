@@ -82,4 +82,4 @@ around the wait. The blocked slices shipped later, once the move landed.
 - [[HITL Annotation Pipeline]] — instance-of
 - [[Snapshot the Judged Value on the Verdict Row]] — extends (the verdict table these fixtures are exported from)
 - [[Own-Oracle Fixtures and the Blind Relabel Path]] — alternative-to (the same loop for deterministic functions)
-- [[LLM Judge Biases]] — extends
+- [[LLM Judge Biases]] — related

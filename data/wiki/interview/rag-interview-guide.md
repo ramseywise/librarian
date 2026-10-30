@@ -91,4 +91,4 @@ Ingest: chunk → embed → index. Query: (rewrite) → retrieve → (rerank) �
 - [[Agents Interview Study Guide]] — extends
 - [[Situation-Indexed Decision Tree]] — extends (the RAG spine links down into this guide)
 - [[AIE Code-Test Flaw Taxonomy]] — instance-of (where this knowledge is graded as shipped code)
-- [[AI Engineering Field Question Bank]] — complements (cold-recall questions for this pillar)
+- [[AI Engineering Field Question Bank]] — related (cold-recall questions for this pillar)

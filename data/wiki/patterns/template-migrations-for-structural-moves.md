@@ -2,7 +2,7 @@
 title: Template Migrations for Structural Moves
 tags: [infra, pattern]
 summary: A file-level merge cannot express "this module moved" — template `_migrations` supply the missing structural edit, and degrade to a loud WARN rather than a silent overwrite when the file being moved was hand-edited.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/template-update/SKILL.md
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-19-genesis-lifecycle-architecture.md
@@ -71,5 +71,5 @@ freely. Pin and tag template versions so `--vcs-ref` targets a known migration s
 - [[Copier Upstream Update Workflow]] — prerequisite-for (migrations run during the update)
 - [[Silent Fallthrough in String-Keyed Discovery]] — extends (the same rename-doesn't-crash failure shape)
 - [[AI Project Template Scaffold]] — extends (structural changes shipped downstream)
-- [[Sync as Render, Not Copy]] — complements (transforming content on the way into the template)
+- [[Sync as Render, Not Copy]] — related (transforming content on the way into the template)
 - [[Read-Every-Consumer Migration]] — related (enumerating every reader before a structural move)

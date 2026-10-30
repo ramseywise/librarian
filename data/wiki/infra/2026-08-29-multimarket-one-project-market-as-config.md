@@ -2,7 +2,7 @@
 title: Multimarket — One Project, Market as Config
 tags: [infra, decision]
 summary: For a single-city product that may expand, the decision was one database with market as a config value (and a `market_id` column only when a second market exists) over one project per market — because N migration chains multiply the exact failure the repo had already shipped twice (unapplied migrations), and A is the code shape that B's deployment topology still permits later.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/research/2026-08-29-multimarket-platform.md
   - data/raw/claude-docs/akira/docs/research/2026-08-29-multimarket-platform.md
@@ -77,7 +77,7 @@ The plan that turned the decision into code added rules of its own:
 
 ## See Also
 - [[Split Service Deployment]] — alternative-to (the topology this decision defers)
-- [[Migration Done Means Pushed and Probed]] — depends-on (the failure B would multiply)
+- [[Migration Done Means Pushed and Probed]] — prerequisite-for (the failure B would multiply)
 - [[Every Column Names Its Reader]] — related
 - [[Production Hardening Patterns]] — related
 - [[Named-Trigger Deferral]] — instance-of (execution gated on a real second market)

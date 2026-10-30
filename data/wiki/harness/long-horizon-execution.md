@@ -138,9 +138,12 @@ See [[Harness Orchestration]] for when decomposition is worth its cost, and
 
 ## See Also
 - [[Loop Detection and the Two-Retry Rule]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
-- [[Harness Anatomy]] — depends-on
-- [[Verification Loops]] — complements
-- [[Harness Orchestration]] — complements
-- [[Context Engineering]] — depends-on
+- [[Harness Engineering]] — related (part of)
+- [[Harness Anatomy]] — prerequisite-for
+- [[Verification Loops]] — related
+- [[Harness Orchestration]] — related
+- [[Context Engineering]] — prerequisite-for
 - [[Loop State File]] — extends (the loop-side durable progress record)
+- [[Asynchronous Agent Event Loop]] — prerequisite-for
+- [[Three-Layer Termination Check]] — prerequisite-for
+- [[Skill Authoring Discipline]] — instance-of (checkpointing for skills that run long)

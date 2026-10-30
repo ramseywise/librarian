@@ -59,8 +59,8 @@ XML structuring governs the *input* side; [[Structured Output]] governs the *out
 They are frequently used together: XML-tagged input sections, JSON-schema'd response.
 
 ## See Also
-- [[Prompt Engineering]] — part-of
+- [[Prompt Engineering]] — related (part of)
 - [[Structured Output]] — alternative-to
-- [[Few-Shot Prompting]] — used-by
-- [[Long-Context Prompting]] — used-by
+- [[Few-Shot Prompting]] — related (used by)
+- [[Long-Context Prompting]] — related (used by)
 - [[Stateful Objects of Discourse]] — extends

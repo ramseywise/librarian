@@ -105,10 +105,11 @@ policy will faithfully optimize toward whatever the labels actually encoded.
 
 ## See Also
 - [[Data Engineering Foundations]] <!-- auto-linked -->
-- [[Bradley-Terry Preference Model]] — part-of (the Stage 2 objective)
+- [[Bradley-Terry Preference Model]] — related (part of; the Stage 2 objective)
 - [[Reward Hacking and Overoptimization]] — extends (the three failure modes of Stage 3)
 - [[Preference Optimization Algorithms]] — alternative-to (offline methods that collapse or skip stages)
 - [[Constitutional AI and RLAIF]] — extends (replaces the human labels in Stage 2 with AI feedback)
 - [[Direct Preference Optimization]] — alternative-to (removes the reward model entirely)
 - [[Post-Training for Agents]] — extends (SFT vs RL, and RL for tool-using agents)
 - [[DAPO]] — extends (a GRPO variant that drops the KL term)
+- [[RLVP — Verifiable Path Penalties]] — extends

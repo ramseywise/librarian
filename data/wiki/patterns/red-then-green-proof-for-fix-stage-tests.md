@@ -137,7 +137,7 @@ Three later review rounds applied the rule beyond unit tests:
 
 ## See Also
 - [[TDD as Coding-Agent Harness]] — instance-of (the same guardrail applied to the review-fix round)
-- [[Scoped Phase Dispatch with Pre-Resolved Files]] — complements (same agent definition)
+- [[Scoped Phase Dispatch with Pre-Resolved Files]] — related (same agent definition)
 - [[Verification Loops]] — extends (a verification step the agent cannot satisfy by weakening the check)
 - [[Always-Red Check Carries No Signal]] — related (the mirror failure: a check that cannot go green)
 - [[Review Reporter Ground Rules]] — extends

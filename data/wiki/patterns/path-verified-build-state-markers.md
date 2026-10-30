@@ -2,7 +2,7 @@
 title: Path-Verified Build State Markers
 tags: [meta, pattern]
 summary: When scoping on top of an existing codebase, every capability a source doc claims exists must be backed by a file path — BUILT (exists and tested), ABSENT, or UNVERIFIED, never an optimistic partial — because a wrong done-marker silently removes work from the plan; on greenfield the honest state is SPECIFIED.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/playground/skills/design-product/SKILL.md
@@ -164,7 +164,7 @@ verified.
 ## See Also
 - [[Rollback Restores Code Only]] — related (a READY plan never executed; premises re-verified at triage)
 - [[Workflow Pipeline Telemetry Audit]] — instance-of (a BUILT row that outran its evidence)
-- [[Scope-POC Design Interview]] — part-of (the scoping skill this step belongs to)
+- [[Scope-POC Design Interview]] — related (part of; the scoping skill this step belongs to)
 - [[Plan-Doc Status Enum]] — extends (status words need a checkable referent)
 - [[Verified Runtime Capability Constraint]] — extends (the same "only claim what you can demonstrate" rule for controls)
 - [[Re-Derive, Never Re-Read]] — extends (the same rule for ledger rows and dashboards)

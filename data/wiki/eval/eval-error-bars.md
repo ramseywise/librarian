@@ -75,7 +75,7 @@ independent confirmation. Pre-register the slices that gate releases.
 
 ## See Also
 - [[Paired Eval Comparison]] — extends (variance reduction for A vs B)
-- [[Eval Metric Interpretation Pitfalls]] — complements (what the number means, not just how wide it is)
+- [[Eval Metric Interpretation Pitfalls]] — related (what the number means, not just how wide it is)
 - [[Small-N Reporting Floor]] — instance-of (Wilson bounds enforced in a report)
 - [[Binary Gate Sample Power]] — related (power for never-event gates)
 - [[Eval Non-Determinism]] — related (k trials per task)

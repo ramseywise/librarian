@@ -2,7 +2,7 @@
 title: Conversational Test Fixture Design
 tags: [eval, pattern]
 summary: How to author a fixture for a pipeline whose input is dialogue — the volunteer's verbatim words as the input unit, the full expected artifact as the oracle, and a short "key validation points" list naming the specific wrong answers the scenario exists to catch.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/reference/scenarios.md
 ---
@@ -111,11 +111,11 @@ volunteer mentioned only in passing, and getting it right is what makes the obse
 question non-optional downstream ([[Scope-POC Design Interview]]).
 
 ## See Also
-- [[Skill Pipeline Dryrun Testing]] — part-of (the harness these fixtures feed)
+- [[Skill Pipeline Dryrun Testing]] — related (part of; the harness these fixtures feed)
 - [[AI Project Archetypes]] — extends (the discrimination the fixture set is designed around)
 - [[Specification by Example]] — instance-of (the artifact is the spec)
 - [[Golden Set Mechanics]] — alternative-to (curated cases for a model rather than a pipeline)
 - [[Project Discovery Conversation]] — prerequisite-for (the stage being fixtured)
-- [[Complexity Floor]] — constrains (capacity implies infrastructure restraint, asserted)
+- [[Complexity Floor]] — related (constrains; capacity implies infrastructure restraint, asserted)
 - [[Asked vs Derived Scaffold Variables]] — extends (the hints table under test)
-- [[Human-Participant Skill Test Protocol]] — complements (live participants rather than authored fixtures)
+- [[Human-Participant Skill Test Protocol]] — related (live participants rather than authored fixtures)

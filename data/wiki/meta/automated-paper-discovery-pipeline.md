@@ -1,8 +1,8 @@
 ---
 title: Automated Paper Discovery Pipeline
-tags: [meta, rag, pattern, conflict]
+tags: [meta, rag, pattern]
 summary: "A design for feeding new research papers into a curriculum and wiki automatically: fetch arXiv by category, enrich with Semantic Scholar without blocking, score relevance into three bands (auto-include, human queue, archive), dedup on the arXiv ID, and hard-cap daily volume so ~100+ papers/day become ~5 worth reading."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_paper_discovery.md
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-25-LAE-30-34-learning-depth.md
@@ -22,7 +22,7 @@ papers a day, and the estimate is that only about 7–10 a day map to a curricul
 
 | Source | Gives you | Limits |
 |---|---|---|
-| **arXiv API** | Category feeds, abstracts, a stable ID; free, no auth | Abstract only; ~30 req/s soft limit with backoff (disputed — the build plan cites 1 request per 3 s for automated access; see `_conflicts.md`) |
+| **arXiv API** | Category feeds, abstracts, a stable ID; free, no auth | Abstract only; pace automated access at **1 request per 3 s** (`time.sleep(3)` between category requests), and use bulk export pagination for large pulls. An earlier research note's "~30 req/s" figure was wrong |
 | **Semantic Scholar** | One-sentence TLDRs, citation graph, related papers | ~100 req/min on the free tier; ingestion lags arXiv by hours |
 | **Papers with Code** | Links from paper to implementation repo | Coverage only for papers with code |
 | **arXiv RSS** | Simplest daily feed | Dedup is harder: you parse XML entries instead of keying on IDs |
@@ -127,4 +127,4 @@ Extending the paper fetcher to RSS was the stated route to automating these swee
 ## See Also
 - [[Karpathy LLM Wiki Pattern]] — extends (an automated source feed into the raw layer)
 - [[Skill-Knowledge Information Flow]] — instance-of (one more inbound channel to the knowledge base)
-- [[AI Engineering Curriculum Structure]] — complements (the pillars papers are routed to)
+- [[AI Engineering Curriculum Structure]] — related (the pillars papers are routed to)

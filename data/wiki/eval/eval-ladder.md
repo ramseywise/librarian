@@ -2,7 +2,7 @@
 title: Eval Ladder
 tags: [eval, llm, planning]
 summary: A four-rung progression — manual review, golden-set grading, LLM-judge, user feedback — sequenced so each rung's failures supply the next rung's test cases, with an explicit "most POCs reach rung 2–3 and that's sufficient" stopping point.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
 ---
@@ -64,18 +64,19 @@ replace any rung.
 - [[Skill Pipeline Dryrun Testing]] <!-- auto-linked -->
 - [[ADK Eval Guide]] <!-- auto-linked -->
 - [[Golden Set Mechanics]] — extends (rung 2, with full case-shape mechanics)
-- [[Manual Review as Eval Bootstrap]] — part-of
-- [[LLM-as-Judge Evaluation]] — part-of
-- [[User Feedback Loops]] — part-of
-- [[Heuristic Pipeline Metrics]] — complements
+- [[Manual Review as Eval Bootstrap]] — related (part of)
+- [[LLM-as-Judge Evaluation]] — related (part of)
+- [[User Feedback Loops]] — related (part of)
+- [[Heuristic Pipeline Metrics]] — related
 - [[Complexity Floor]] — related (eval maturity tracks project tier)
 - [[Six-Pillar Agent Engineering Assessment]] — extends (the eval pillar is one of six scored the same way)
-- [[Verification Loops]] — complements (evals as the harness gate the agent cannot skip)
-- [[Harness Maturity and Failure Modes]] — depends-on (no binary eval is failure mode 5)
-- [[Iterative Harness Simplification]] — depends-on (subtraction is unmeasurable without a binary eval)
-- [[Recursive Self-Improvement]] — complements (an automatic gate that can fail the work is the prerequisite for a level-4 loop)
-- [[Eval Maturity Ladder]] — complements (the same staging read as infrastructure rather than grading approach)
-- [[Eval Harness Anatomy]] — depends-on (task/trial/grader vocabulary underneath every rung)
+- [[Verification Loops]] — related (evals as the harness gate the agent cannot skip)
+- [[Harness Maturity and Failure Modes]] — prerequisite-for (no binary eval is failure mode 5)
+- [[Iterative Harness Simplification]] — prerequisite-for (subtraction is unmeasurable without a binary eval)
+- [[Recursive Self-Improvement]] — related (an automatic gate that can fail the work is the prerequisite for a level-4 loop)
+- [[Eval Maturity Ladder]] — related (the same staging read as infrastructure rather than grading approach)
+- [[Eval Harness Anatomy]] — prerequisite-for (task/trial/grader vocabulary underneath every rung)
 - [[Online Eval Sampling]] — extends (rung 4 run continuously against production traffic)
 - [[Traffic-Gated Evaluation Ladder]] — extends (rungs gated on available traffic, with what each can and cannot decide)
 - [[Q0–Q5 Quality Ladder]] — alternative-to
+- [[Simulated User Evaluation]] — instance-of

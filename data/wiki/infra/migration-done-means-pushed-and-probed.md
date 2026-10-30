@@ -2,7 +2,7 @@
 title: Migration Done Means Pushed and Probed
 tags: [infra, pattern]
 summary: A migration file existing is not evidence it ran — twice a migration was marked done while its column did not exist, and one unique index took three migrations to actually exist because `create unique index if not exists` guards on the name, not the definition — so "done" means pushed, then probed with a query that cannot be intercepted by triggers or policies, and a derived drift check runs in the gate.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/playground/docs/research/2026-08-28-data-stack-map.md
@@ -261,7 +261,7 @@ touches, and state in the handoff that the migration must be pushed before merge
 
 ## See Also
 - [[Rollback Restores Code Only]] — extends (why migrations must land before promote: rollback cannot undo them)
-- [[Every Column Names Its Reader]] — complements
+- [[Every Column Names Its Reader]] — related
 - [[Always-Red Check Carries No Signal]] — extends (the drift check itself was red and unread for a week)
 - [[Written-but-Inert RLS Policies]] — related (the policy-layer version of "file exists ≠ it is in force")
 - [[Production Hardening Patterns]] — extends

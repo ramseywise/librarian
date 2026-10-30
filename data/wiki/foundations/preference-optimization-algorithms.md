@@ -173,10 +173,10 @@ aligned with what you actually want is the hard half.
 
 ## See Also
 - [[RLHF Pipeline]] — prerequisite-for (PPO is its Stage 3; every method here is a removal from it)
-- [[Bradley-Terry Preference Model]] — depends-on (the objective DPO fits directly)
+- [[Bradley-Terry Preference Model]] — prerequisite-for (the objective DPO fits directly)
 - [[Direct Preference Optimization]] — extends (applied guidance on when DPO fits an agent project)
-- [[Reward Hacking and Overoptimization]] — complements (the length problem DPO inherits; what verifiable rewards avoid)
-- [[Constitutional AI and RLAIF]] — complements (supplies preference data, independent of which optimizer consumes it)
+- [[Reward Hacking and Overoptimization]] — related (the length problem DPO inherits; what verifiable rewards avoid)
+- [[Constitutional AI and RLAIF]] — related (supplies preference data, independent of which optimizer consumes it)
 - [[Outcome vs Process Reward Models]] — extends (what the reward scores in the reasoning group)
 - [[RL Training Frameworks for LLMs]] — extends (the backbones these algorithms run on)
 - [[DAPO]] — extends (four fixes to GRPO for long reasoning)

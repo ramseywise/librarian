@@ -66,7 +66,7 @@ format in a separate step.
   [[XML Prompt Structuring]].
 
 ## See Also
-- [[Prompt Engineering]] — part-of
+- [[Prompt Engineering]] — related (part of)
 - [[Stop Sequences and Completion Anatomy]] — extends
 - [[Tool Definitions as Prompts]] — extends
 - [[XML Prompt Structuring]] — alternative-to

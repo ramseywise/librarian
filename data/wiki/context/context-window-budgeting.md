@@ -95,3 +95,5 @@ overhead a harness adds is in [[Measuring Fixed Context Overhead]].
 - [[Cache-Stable Context Layout]] — extends (the cost side of the budget)
 - [[Context Compaction]] — prerequisite-for (ceilings are what trigger compaction)
 - [[Measuring Fixed Context Overhead]] — extends
+- [[Context-Aware Compression]] — extends
+- [[Multi-Agent Context]] — extends

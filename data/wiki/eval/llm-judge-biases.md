@@ -75,7 +75,10 @@ UI agents from screenshots, video from sampled frames — each with its own cali
 
 ## See Also
 - [[LLM-as-Judge Evaluation]] — extends (the failure modes of the judge primitive)
-- [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]] — complements (measuring the residual error after mitigation)
+- [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]] — related (measuring the residual error after mitigation)
 - [[Specialist Verdict Panel]] — instance-of (one judge per criterion)
 - [[Bradley-Terry Preference Model]] — prerequisite-for (the model behind Elo leaderboards)
 - [[Reward Hacking and Overoptimization]] — related (optimizing against one judge)
+- [[Positive-Only Judge Fixtures Measure Recall]] — extends
+- [[Human Verdicts as Judge Fixtures]] — extends
+- [[Human Agreement Ceiling Protocol]] — extends

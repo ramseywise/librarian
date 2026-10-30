@@ -2,7 +2,7 @@
 title: Local-Only Deployment
 tags: [infra, pattern]
 summary: The zero-infrastructure rung — the AI runs on a developer's machine with no hosting and no external access, chosen when the only user is the developer and iteration speed matters more than availability.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
 ---
@@ -63,7 +63,7 @@ no CORS, no secret rotation. Every rung above pays for its audience in security 
 
 ## See Also
 - [[Serverless Deployment]] <!-- auto-linked -->
-- [[Deployment Topology Ladder]] — part-of
-- [[Single Service Deployment]] — upgrade-path
+- [[Deployment Topology Ladder]] — related (part of)
+- [[Single Service Deployment]] — extends
 - [[Complexity Floor]] — related (the weekend tier's only viable topology)
-- [[Single Prompt Baseline]] — complements (the orchestration analogue of local-only)
+- [[Single Prompt Baseline]] — related (the orchestration analogue of local-only)

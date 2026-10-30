@@ -1,6 +1,6 @@
 ---
 title: Human Agreement Ceiling Protocol
-tags: [eval, pattern, conflict]
+tags: [eval, pattern]
 summary: Before trusting any LLM-judge score on a subjective dimension, measure how well humans agree with each other on the same items (κ_HH) — the judge target is κ_judge ≥ 0.8 × κ_HH, not an absolute number — using quadratic-weighted κ for ordinal scales, Krippendorff's α with MASI distance for multi-select tags, per-tag binary κ, bootstrap 95% CIs, ~100 items (±0.1 CI), and 3–5 scene-literate raters recruited by name before the rating sheet is designed.
 updated: 2026-10-30
 sources:
@@ -63,8 +63,10 @@ vibe, energy, audience fit — with an LLM judge, and reported "98.8% agreement"
 humans. The protocol asks the prior question: **how much do humans agree with each
 other?** Without that number every subjective metric for the next year is
 uninterpretable, and a team can spend months optimising toward a target that does not
-exist. The planning doc ranked this the highest information-per-euro item available:
-~33 rater-hours, no pipeline, no traffic.
+exist. The planning doc ranked this the highest information-per-euro item available: no
+pipeline, no traffic. Its "~33 rater-hours" was a legacy 2-rater partial-overlap figure. At
+full overlap the burden is 48 h (3 raters), 64 h (4) or **80 h (5, the target)**; see
+"Running the study" below.
 
 ## The ceiling rule
 
@@ -260,7 +262,7 @@ must reach.
 - [[HITL Annotation Pipeline]] — extends (adds the ceiling to its inter-annotator-agreement gate)
 - [[LLM-as-Judge Evaluation]] — prerequisite-for (the judge is calibrated against κ_HH)
 - [[Golden Set Mechanics]] — related (the rated items become the golden set)
-- [[Validated Concept vs Unmeasured System]] — complements
+- [[Validated Concept vs Unmeasured System]] — related
 - [[One Check Shape for Quality Verdicts]] — related (where UNGATED-until-κ lives in the check registry)
 - [[Graded-Uncertainty Enrichment Contract]] — related (the enrichment vocabulary the rater instrument must import, not copy)
 - [[Decompose Low-Ceiling Dimensions into Checkable Sub-Signals]] — prerequisite-for (what to do with a low ceiling)
@@ -270,4 +272,4 @@ must reach.
 - [[Demote Judge Findings to Keyless Gates]] — extends (the 10-label calibration floor that precedes a κ run)
 - [[Error Analysis (Open and Axial Coding)]] — extends
 - [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]] — extends
-- [[LLM Judge Biases]] — extends
+- [[LLM Judge Biases]] — related

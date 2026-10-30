@@ -2,7 +2,7 @@
 title: Scoped Phase Dispatch with Pre-Resolved Files
 tags: [llm, pattern]
 summary: Dispatch one build agent per plan phase with a pre-resolved `Files:` list that is a floor, not a fence — the agent may read beyond it but must write only inside it — and apply the repo's documentation definition-of-done at execute time, because telemetry showed stale docs were 28% of all review findings when the DoD lived only in the reviewer's head.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/agents/build-scout.md
   - data/raw/claude-docs/akira/agents/build-scout.md
@@ -81,7 +81,8 @@ the report is a pointer plus the verdict.
 - [[Claude Workflow System]] — instance-of (the build stage of the triage → build → review pipeline)
 - [[No-Placeholder Plan Discipline]] — extends (a path that does not resolve is a plan defect)
 - [[Shared Context Brief]] — extends (the brief is the agent's only context; pre-resolution is what makes it sufficient)
-- [[Workflow Pipeline Telemetry Audit]] — derived-from (the 28%-doc-drift finding that moved the DoD)
-- [[Red-Then-Green Proof for Fix-Stage Tests]] — complements (the other build-agent rule from the same definition)
+- [[Workflow Pipeline Telemetry Audit]] — related (derived from; the 28%-doc-drift finding that moved the DoD)
+- [[Red-Then-Green Proof for Fix-Stage Tests]] — related (the other build-agent rule from the same definition)
 - [[Multi-Agent Role Specialization]] — instance-of
 - [[Stage-Scoped Scout Agents]] — extends
+- [[File-Disjoint Agent Waves in One Working Tree]] — extends

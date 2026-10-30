@@ -123,5 +123,5 @@ actually stores (a Stop-hook writer was proposed to timestamp rows).
 - [[Append-Only Log Writer Invariants]] — prerequisite-for (the writer contract the drill logs rely on)
 - [[Durable vs Performative Knowledge Split]] — extends (rehearsal targets performative knowledge)
 - [[Code Review Drill — SANYI]] — alternative-to (a single worked drill rather than a harness)
-- [[Drill Gym Tracks and Schema]] — complements (the drill content format the harness grades)
-- [[AI Engineering Field Question Bank]] — complements (questions-only bank for cold recall)
+- [[Drill Gym Tracks and Schema]] — related (the drill content format the harness grades)
+- [[AI Engineering Field Question Bank]] — related (questions-only bank for cold recall)

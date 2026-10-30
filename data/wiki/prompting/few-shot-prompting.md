@@ -103,9 +103,9 @@ Default to zero-shot CoT, and add worked reasoning examples only when the task h
 intermediate steps and an eval shows they help.
 
 ## See Also
-- [[Prompt Engineering]] — part-of
-- [[XML Prompt Structuring]] — depends-on
-- [[Chain of Thought]] — composes-with
+- [[Prompt Engineering]] — related (part of)
+- [[XML Prompt Structuring]] — prerequisite-for
+- [[Chain of Thought]] — related (composes with)
 - [[DSPy]] — extends (automated example selection and ordering)
 - [[Prompting Technique Selection]] — extends
 - [[Evaluating Prompts]] — contradicts (zero-shot CoT beat few-shot CoT)

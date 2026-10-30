@@ -2,7 +2,7 @@
 title: Integration Pattern Selection
 tags: [infra, comparison]
 summary: Five ways an AI system connects to external services — MCP tools, Composio connectors, direct httpx clients, webhook receivers, n8n glue — and the single discriminating question that picks each one.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/integration-patterns.md
 ---
@@ -116,6 +116,6 @@ becomes render-time configuration — see [[Asked vs Derived Scaffold Variables]
 - [[AI Project Archetypes]] — extends (archetype constrains the plausible integrations)
 - [[NYC-DSSG Project]] — instance-of (the n8n turnover argument)
 - [[Data Pipeline Pattern Selection]] — alternative-to (the sibling card: how data arrives, not how services connect)
-- [[Callable-By Integration Contract]] — complements (the inbound half: being reachable from a hosted tool)
+- [[Callable-By Integration Contract]] — related (the inbound half: being reachable from a hosted tool)
 - [[Capability Parity Audit]] — extends (how a long tail of named tools collapses into these five)
 - [[Right-Sizing a Document-to-LLM Pipeline]] — instance-of (HTTP 202-and-poll over MCP for a deterministic backend)

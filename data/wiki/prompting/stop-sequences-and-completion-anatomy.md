@@ -56,4 +56,4 @@ that allow prefilling the assistant turn support the same move ([[Structured Out
 - [[Structured Output]] — extends
 - [[Sampling Parameters]] — extends
 - [[Four Prompt Criteria]] — instance-of (criterion 4: a natural stopping point)
-- [[Prompt Chaining]] — prerequisite-for
+- [[Prompt Chaining]] — related

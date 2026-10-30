@@ -2,7 +2,7 @@
 title: Six-Pillar Agent Engineering Assessment
 tags: [llm, reference]
 summary: A rubric scoring agent codebases across six engineering pillars — prompt, context, harness, loop, graph, evaluation — with each pillar's requirements tiered Must/Should/Nice so a coverage percentage separates "missing the foundation" from "not yet mature."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/template-pillar-gaps.md
   - data/raw/claude-docs/guacamayo/docs/research/ai-eng-portfolio-assessment.md
@@ -124,10 +124,10 @@ as absent, because a scaffold's job is to produce the wiring.
 - [[Capability Parity Audit]] — alternative-to (per-consumer request matrix rather than a fixed rubric)
 - [[Template Floor Raising]] — extends (what to do with the gap list once produced)
 - [[AI Project Template Scaffold]] — instance-of (the artifact under assessment)
-- [[Runtime Topology and Checkpointer Alignment]] — part-of (the loop pillar's durable-state requirement)
-- [[Send API Fan-out]] — part-of (the graph pillar's headline gap)
+- [[Runtime Topology and Checkpointer Alignment]] — related (part of; the loop pillar's durable-state requirement)
+- [[Send API Fan-out]] — related (part of; the graph pillar's headline gap)
 - [[Eval Ladder]] — alternative-to (maturity progression scoped to evaluation only)
 - [[Anthropic Three-Tier Eval Taxonomy]] — related (tiering applied within the eval pillar)
-- [[HistoryCondenser]] — part-of (the context pillar's compaction requirement)
-- [[Prefix Caching]] — part-of (the context pillar's cache-prefix requirement)
+- [[HistoryCondenser]] — related (part of; the context pillar's compaction requirement)
+- [[Prefix Caching]] — related (part of; the context pillar's cache-prefix requirement)
 - [[Gated Weighted Composite Score]] — alternative-to (names one non-averageable gating dimension instead of a weakest-pillar cap)

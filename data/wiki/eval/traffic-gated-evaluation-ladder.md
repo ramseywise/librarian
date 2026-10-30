@@ -2,7 +2,7 @@
 title: Traffic-Gated Evaluation Ladder
 tags: [eval, rag, pattern]
 summary: For a pre-launch recommender, each evaluation method unlocks at a minimum data volume and can decide only certain questions — human blind rating now, LLM judge, offline replay (ranking only, never retrieval), interleaving, then A/B — so you climb the ladder instead of waiting for the top rung.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/technical-feasibility.md
   - data/raw/claude-docs/diskoe/docs/technical-feasibility.md
@@ -46,7 +46,7 @@ requirement** and a list of questions it **can and cannot decide**. "Do not wait
 
 ## See Also
 - [[Eval Ladder]] — extends (the same climb, gated on traffic instead of maturity)
-- [[Ship Logging Before Features]] — depends-on (replay and IPW need the logged result set and randomized slice)
+- [[Ship Logging Before Features]] — prerequisite-for (replay and IPW need the logged result set and randomized slice)
 - [[Synthesize the Cheap Half]] — related (what may be synthesized to fill the lower rungs)
 - [[Human Agreement Ceiling Protocol]] — related (the rater-side statistics for the first rung)
 - [[Q0–Q5 Quality Ladder]] — alternative-to (a per-feature quality ladder rather than a traffic-gated one)

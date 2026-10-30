@@ -133,7 +133,8 @@ only applies mechanical fixes with `--fix`. The schema now treats disk as canoni
 domain-tag table in CLAUDE.md is "illustrative, not normative".
 
 As of 2026-10-30 no hand-maintained domain list remains in the graph pipeline. The
-backend parser and the MCP server each derive the domain set from the directories at call
+backend parser, the MCP server and the relinker (`_domain_tag_set()`, which discounts
+domain tags when scoring shared tags) each derive the domain set from the directories at call
 time (excluding `private/`), and the graph payload carries a sorted `domains` field.
 The frontend maps a name to a colour only: fixed colours for established domains, a
 deterministic palette hash for any other. Tag-shared edges are derived client-side with
@@ -148,7 +149,7 @@ broken pattern cannot report "no drift".
 - [[MCP Protocol]]
 - [[RAG Retrieval Strategies]]
 - [[Session Knowledge Capture Patterns]]
-- [[Durable vs Performative Knowledge Split]] — complements (durable/performative axis alongside raw/compiled)
+- [[Durable vs Performative Knowledge Split]] — related (durable/performative axis alongside raw/compiled)
 - [[AI Engineering Curriculum Structure]] — instance-of (a source corpus that pre-organises itself before compilation, and splits its own material by decay rate)
 - [[Wiki Graph Engineering — Edge Quality Over Edge Count]] — extends (what the compiled graph's edges are actually worth at retrieval time)
 - [[Automated Paper Discovery Pipeline]] — extends (an automated, gated feed of research papers into raw)

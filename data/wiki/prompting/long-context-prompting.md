@@ -63,8 +63,8 @@ documents belong there at all — retrieval, ranking, token budgeting — is
 [[Context Engineering]], not prompt engineering.
 
 ## See Also
-- [[Prompt Engineering]] — part-of
-- [[XML Prompt Structuring]] — depends-on
+- [[Prompt Engineering]] — related (part of)
+- [[XML Prompt Structuring]] — prerequisite-for
 - [[Context Engineering]] — extends
 - [[Prompt Assembly as Snippet Packing]] — extends
 - [[Prompts as Document Completion]] — prerequisite-for

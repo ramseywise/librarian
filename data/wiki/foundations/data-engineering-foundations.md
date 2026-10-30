@@ -104,12 +104,12 @@ agent's retrieval corpus is a pipeline output, and corpus quality is the first e
 See [[RAG Eval Gate Contract]].
 
 ## See Also
-- [[AI Engineering Curriculum Structure]] — part-of (where this pillar sits in the two-wave corpus)
-- [[Data Pipeline Pattern Selection]] — complements (how data *arrives* — batch, event-driven, streaming — orthogonal to these six stages)
+- [[AI Engineering Curriculum Structure]] — related (part of; where this pillar sits in the two-wave corpus)
+- [[Data Pipeline Pattern Selection]] — related (how data *arrives* — batch, event-driven, streaming — orthogonal to these six stages)
 - [[Data Science Curriculum Layers]] — alternative-to (the sibling branch after shared analytics foundations)
 - [[Observability and Runtime Patterns]] — instance-of (stage 5 monitoring, applied to agent runtimes)
 - [[RAG Eval Gate Contract]] — prerequisite-for (corpus quality as the first gate, fed by these pipelines)
-- [[Agent Retry Taxonomy]] — complements (retry semantics as a cross-layer design problem)
+- [[Agent Retry Taxonomy]] — related (retry semantics as a cross-layer design problem)
 - [[Data Clusters by Writer and Trust]] — extends (cluster tables by who writes them and how much you trust it)
 - [[Change the Channel, Not the Count]] — extends (source portfolio and rights as pipeline inputs)
 - [[learn-ai-engineering Project]] — extends (the curriculum repo this subject belongs to)

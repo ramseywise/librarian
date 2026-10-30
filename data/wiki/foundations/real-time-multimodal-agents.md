@@ -62,4 +62,4 @@ outside the model ([[Execution Boundaries and Guardrails]]).
 - [[Action Chunking]] — extends (the robotics setting)
 - [[Post-Training for Agents]] — extends (voice SFT, robot-policy RL)
 - [[Realtime Voice Architecture Reference]] — extends (build-time numbers for a voice agent)
-- [[Voice Agent Patterns]] — extends
+- [[Voice Agent Patterns]] — related

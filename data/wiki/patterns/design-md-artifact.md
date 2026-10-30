@@ -2,7 +2,7 @@
 title: DESIGN.md Artifact
 tags: [llm, reference]
 summary: The six-section design record every scaffolded project ships — problem, actors, C4 system context, MVP scope, key decisions, and non-functional constraints — shipped as a placeholder stub when unfilled so the skipped conversation stays visible.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/poc-system-design-interview.md
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-18-template-full-mirror-redesign.md
@@ -84,10 +84,10 @@ carry**. See [[Asked vs Derived Scaffold Variables]] for what the answers file d
   something a project has to beat.
 
 ## See Also
-- [[Scope-POC Design Interview]] — part-of (the interview that populates it)
+- [[Scope-POC Design Interview]] — related (part of; the interview that populates it)
 - [[Design-Before-Infrastructure Sequencing]] — prerequisite-for
 - [[Deferred Decision Status]] — extends (status semantics for section 5)
-- [[Asked vs Derived Scaffold Variables]] — complements (what copier answers carry instead)
+- [[Asked vs Derived Scaffold Variables]] — related (what copier answers carry instead)
 - [[Documentation Boundary — Machine vs Human Docs]] — related (which docs are machine- vs human-consumed)
 - [[Derived-and-Hidden Design Decisions]] — instance-of (the artifact that passes its gate while Scale: is empty)
 - [[Block Attribute Inversion]] — extends (per-block metadata as generated DESIGN.md content)

@@ -118,3 +118,4 @@ producing "needs human re-scope."
 - [[Multi-Agent Failure Modes at Scale]] — prerequisite-for
 - [[Map Every State to Its Writer]] — extends (the orphan state that became the exhaustion terminal)
 - [[Reproduce to Tell a Break From a Stuck Agent]] — extends (harness exhaustion masquerading as a break)
+- [[Bounding Agents Rather Than Trusting Them]] — instance-of (the fourth bound)

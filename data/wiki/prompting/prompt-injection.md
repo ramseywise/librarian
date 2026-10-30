@@ -1,6 +1,6 @@
 ---
 title: Prompt Injection
-tags: [prompting, llm, agents, concept, conflict]
+tags: [prompting, llm, agents, concept]
 summary: Manipulating model behaviour via adversarial input, exploiting the fact that LLMs process instructions and data in the same channel — mitigated by separation, least privilege, and HITL, never fully solved.
 updated: 2026-10-30
 sources:
@@ -115,8 +115,8 @@ Practical rules: **assume the system prompt will leak**; **treat model output as
 untrusted** before rendering (markdown/HTML exfiltration links) or executing it; red-team
 with an injection suite run as a regression test.
 
-The detection row is a prompt-level instance of an LLM-based guardrail, i.e. Claim B of the
-conflict below; the source concedes the same weakness.
+The detection row is a prompt-level instance of an LLM-based guardrail; the source concedes
+it is injectable too. See the layering rule below.
 
 ## Defences
 
@@ -162,7 +162,7 @@ attacker likely requires structural innovation (separation of instruction and da
 channels, capability confinement), not incremental hardening of post-training safety.
 Design as though injection will eventually land, and bound what it can do.
 
-## ⚠️ Conflict: Should Guardrails Themselves Use an LLM?
+## Should Guardrails Themselves Use an LLM? (resolved)
 
 [[Input Guardrails Pipeline]] holds that guardrails must be **deterministic and LLM-free by
 design**, since an LLM guardrail is bypassable by the same injection it defends against.
@@ -172,15 +172,20 @@ layer *alongside* deterministic controls — while conceding the same weakness, 
 that a guardrail should have a **different attack surface** than the primary model (a
 purpose-trained classifier, not a chat model from the same family).
 
-Unresolved. See `_conflicts.md`.
+Resolved (2026-10-30): both hold, in layers. The **deterministic pre-LLM pipeline is the
+baseline** and stays LLM-free: it runs on every request and cannot be talked out of its
+rules. A **purpose-trained classifier** (not a chat model from the primary model's family)
+is an *optional additional layer* on high-risk paths: tool invocation, and ingestion of
+external or retrieved content, where regex provably misses indirect injection. It never
+replaces a deterministic stage. Cost and latency decide where it runs.
 
 ## See Also
 - [[Prompt Chaining]] <!-- auto-linked -->
-- [[Input Guardrails Pipeline]] — mitigated-by
-- [[Prompt Engineering]] — part-of
-- [[XML Prompt Structuring]] — mitigated-by
-- [[Prompt Templates and Variables]] — mitigated-by
-- [[Agentic RAG — Advanced Patterns]] — attack-surface
+- [[Input Guardrails Pipeline]] — related (mitigated by)
+- [[Prompt Engineering]] — related (part of)
+- [[XML Prompt Structuring]] — related (mitigated by)
+- [[Prompt Templates and Variables]] — related (mitigated by)
+- [[Agentic RAG — Advanced Patterns]] — related (attack surface)
 - [[Security and Safety Interview Study Guide]] — prerequisite-for (the interview-shaped containment answer)
 - [[Prompt Leaking]] — extends
 - [[Prompts as Document Completion]] — prerequisite-for

@@ -90,7 +90,8 @@ you build fix #3, that is the benchmark shape to evaluate it against.
 ## See Also
 - [[Memory Lifecycle]] — extends (stage C in the multi-turn case)
 - [[RAG Retrieval Strategies]] — extends (adds the conversational-query problem)
-- [[Agent Memory Types]] — complements (history is the rewriting input)
-- [[Knowledge Graph Retrieval]] — complements (multi-hop questions need decomposition)
-- [[Execution Boundaries and Guardrails]] — complements (retrieval as a gated tool call)
+- [[Agent Memory Types]] — related (history is the rewriting input)
+- [[Knowledge Graph Retrieval]] — related (multi-hop questions need decomposition)
+- [[Execution Boundaries and Guardrails]] — related (retrieval as a gated tool call)
 - [[Memory as Context]] — extends (conversational memory as one tier of the context-engineering memory design)
+- [[Memory Forms Taxonomy]] — instance-of (the retrieval-timing decision)

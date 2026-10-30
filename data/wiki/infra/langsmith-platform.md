@@ -2,7 +2,7 @@
 title: LangSmith Platform
 tags: [infra, eval, concept]
 summary: "LangSmith mechanics — auto-instrumentation for LangGraph vs manual @traceable wiring for ADK, datasets, evaluator functions, annotation queues, and experiment comparison; the counterpart to Langfuse Platform."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/frameworks/langsmith.md
   - data/raw/repos/learn-ai-engineering/generative-ai--04-agentic-frameworks--notes--langsmith.md
@@ -168,7 +168,7 @@ replicating in either platform:
 - [[Langfuse ADK Tracing Patterns]] <!-- auto-linked -->
 - [[Langfuse Platform]] — alternative-to (the same capabilities, self-hostable; the default choice here)
 - [[Observability — LangFuse vs LangSmith Decision]] — supersedes (the adoption decision this page's mechanics sit under)
-- [[Experiment Tracking Schemas]] — complements (what to record so runs are comparable across platforms)
-- [[HITL Annotation Pipeline]] — implements (annotation queues as the review surface)
-- [[Eval Suite Maintenance]] — depends-on (trace-seeded datasets as the fixture source)
+- [[Experiment Tracking Schemas]] — related (what to record so runs are comparable across platforms)
+- [[HITL Annotation Pipeline]] — related (annotation queues as the review surface)
+- [[Eval Suite Maintenance]] — prerequisite-for (trace-seeded datasets as the fixture source)
 - [[ADK vs LangGraph Comparison]] — instance-of (the cross-framework comparison experiments enable)

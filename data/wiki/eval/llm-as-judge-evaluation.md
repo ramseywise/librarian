@@ -116,15 +116,15 @@ calibration says.
 
 ## See Also
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
-- [[Eval Ladder]] — part-of (rung 3)
-- [[Golden Set Mechanics]] — complements (heuristic in CI, judge on demand)
+- [[Eval Ladder]] — related (part of; rung 3)
+- [[Golden Set Mechanics]] — related (heuristic in CI, judge on demand)
 - [[LLM Grader Calibration Insights]] — extends (calibration failure modes)
 - [[Manual Review as Eval Bootstrap]] — prerequisite-for (human grades calibrate the judge)
-- [[Eval Maturity Ladder]] — part-of (one of four layered grader types; source of the three judge biases)
+- [[Eval Maturity Ladder]] — related (part of; one of four layered grader types; source of the three judge biases)
 - [[Online Eval Sampling]] — extends (the judge as layer 2 over production traces)
-- [[Eval Harness Anatomy]] — part-of (one of the three grader types under the simplest-reliable rule)
+- [[Eval Harness Anatomy]] — related (part of; one of the three grader types under the simplest-reliable rule)
 - [[Constitutional AI and RLAIF]] — instance-of (the same judge primitive used to generate training labels)
-- [[Bradley-Terry Preference Model]] — complements (pairwise comparison formalized as a scalar)
+- [[Bradley-Terry Preference Model]] — related (pairwise comparison formalized as a scalar)
 - [[Append-Only Human Labels]] — prerequisite-for (human labels set the judge trust ceiling)
 - [[Human Agreement Ceiling Protocol]] — prerequisite-for (κ_judge ≥ 0.8 × κ_HH, not an absolute target)
 - [[Synthesize the Cheap Half]] — related (gold-set calibration, closed-loop and stratum-bias rules for synthesized labels)
@@ -137,3 +137,4 @@ calibration says.
 - [[Judge Sees the Drafter's Facts]] — extends (reference facts so restating a given score is not scored ungrounded)
 - [[Grader States (Heuristic, Calibrated, Experimental)]] — extends
 - [[SOMA Judge Rubric]] — extends (specific, ordinal, multi-aspect rubric; never reveal self-grading)
+- [[Verification Loops]] — instance-of

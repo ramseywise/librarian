@@ -2,7 +2,7 @@
 title: Agentic Engineering and the New SDLC
 tags: [llm, agents, infra, concept]
 summary: "The vibe-coding-to-agentic-engineering stakes spectrum, how each SDLC phase shifts when agents do the implementation, the conductor/orchestrator role split, the 80% problem, and the TCO argument for investing in the harness."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agents-google-adk.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-google-adk.md
@@ -143,11 +143,11 @@ a methodology preference, is the right frame for the decision.
 ## See Also
 - [[Task Decomposition Patterns]] <!-- auto-linked -->
 - [[Multi-Agent Role Specialization]] <!-- auto-linked -->
-- [[Harness Engineering]] — depends-on (the machinery this SDLC presumes)
-- [[Context Engineering]] — depends-on (the six context types, as a discipline)
+- [[Harness Engineering]] — prerequisite-for (the machinery this SDLC presumes)
+- [[Context Engineering]] — prerequisite-for (the six context types, as a discipline)
 - [[Eval vs Test Distinction]] — prerequisite-for (tests vs evals, stated precisely)
-- [[Specification by Example]] — complements (specs as the contract, for humans and agents alike)
+- [[Specification by Example]] — related (specs as the contract, for humans and agents alike)
 - [[Harness Orchestration]] — extends (the orchestrator mode, mechanically)
 - [[SKILL.md Pattern]] — instance-of (dynamic context loaded on demand)
-- [[Git Branch Triage]] — complements (branch hygiene when agents leave in-flight work behind)
-- [[TypeScript any Escapes]] — complements (lint rules that are correctness gates, not style)
+- [[Git Branch Triage]] — related (branch hygiene when agents leave in-flight work behind)
+- [[TypeScript any Escapes]] — related (lint rules that are correctness gates, not style)

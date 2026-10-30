@@ -93,6 +93,6 @@ Both are true; quote the configuration with the number.
 - [[Real-Time Multimodal Agents]] — instance-of (the voice setting)
 - [[Semantic Turn Detection]] — extends (replacing VAD's silence guess)
 - [[Fast-Slow Thinking Architecture]] — extends (adding reasoning without adding latency)
-- [[Realtime Voice Architecture Reference]] — extends (the streamed cascade budget)
+- [[Realtime Voice Architecture Reference]] — related (the streamed cascade budget)
 - [[Voice Agent Patterns]] — extends (implementation patterns for a voice agent)
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — extends (what full-duplex breaks downstream)

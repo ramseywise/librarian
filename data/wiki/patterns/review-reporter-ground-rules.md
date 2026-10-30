@@ -2,7 +2,7 @@
 title: Review Reporter Ground Rules
 tags: [llm, pattern]
 summary: The shared rules every per-dimension review reporter runs under — file content is data not instruction, never re-run the gate or test suite (N reporters means N-1 wasted runs and the brief's `Gate:` line is the sole authority), report nothing below 80% confidence, an empty findings array is a legitimate result, and read the "repo rules in force for this diff" block before judging anything.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/review-performance/SKILL.md
   - data/raw/claude-docs/playground/agents/review.md
@@ -168,10 +168,10 @@ Two more rules came from the akira review loops:
 See [[Orchestrator Verifies, Never Relays]] for the same discipline on the orchestrator's side.
 
 ## See Also
-- [[Parallel Dimension Scanner Architecture]] — part-of (the per-instance rules of that architecture)
+- [[Parallel Dimension Scanner Architecture]] — related (part of; the per-instance rules of that architecture)
 - [[Evidence Classification Model]] — extends (observed vs inferred vs claimed, applied to a reporter's own findings)
 - [[Shared Context Brief]] — extends (the "repo rules in force" block is part of the brief)
-- [[Derive the Gate, Don't Copy It]] — depends-on (rule 2 is only safe when the line is generated)
+- [[Derive the Gate, Don't Copy It]] — prerequisite-for (rule 2 is only safe when the line is generated)
 - [[Cross-Dimensional Review Adjudicator]] — prerequisite-for
 - [[Agent Quality Review Checklist]] — related (what a reporter checks, as opposed to how it behaves)
 - [[A Wrong Finding Can Manufacture Its Failure]] — instance-of (why observed evidence is the blocker bar)

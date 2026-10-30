@@ -87,10 +87,10 @@ running in the direction of less human work.**
 ## See Also
 - [[Iterative Harness Simplification]] <!-- auto-linked -->
 - [[Runtime Topology and Checkpointer Alignment]] <!-- auto-linked -->
-- [[Harness Maturity and Failure Modes]] — part-of
-- [[Long-Horizon Execution]] — complements
+- [[Harness Maturity and Failure Modes]] — related (part of)
+- [[Long-Horizon Execution]] — related
 - [[Agent Retry Taxonomy]] — extends
-- [[Execution Boundaries and Guardrails]] — complements
+- [[Execution Boundaries and Guardrails]] — related
 - [[Harness Engineering]] — instance-of
 - [[Pull-Only Event Transport]] — instance-of (idempotent re-read as the replay primitive for a local poller)
 - [[Provider-Agnostic Model Adapter]] — extends (the uniform interface cross-provider fallback assumes)

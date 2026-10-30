@@ -2,7 +2,7 @@
 title: Append-Only Human Labels
 tags: [eval, pattern]
 summary: Persist rater judgments as append-only rows keyed to the exact enrichment row they judged, with an instrument column and a fixed rater picklist — never update, never collapse to consensus, because agreement statistics need every rating that was ever made.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-15-dis275-human-label-persistence.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-15-dis275-human-label-persistence.md
@@ -78,7 +78,7 @@ review on an ongoing basis. See [[LLM-as-Judge Evaluation]].
 - [[HITL Annotation Pipeline]] — extends (the storage layer under the annotation queue)
 - [[LLM-as-Judge Evaluation]] — prerequisite-for (human labels set the judge's ceiling)
 - [[Data Clusters by Writer and Trust]] — instance-of
-- [[Frozen Version Stamps on Logged Results]] — complements (which versions a label must be joined to)
+- [[Frozen Version Stamps on Logged Results]] — related (which versions a label must be joined to)
 - [[Frozen Ranking Baseline from a Pure Ranker]] — prerequisite-for (the judgment rows feed the baseline; agree the field contract first)
 - [[One-Sided Label Control]] — extends (a labelling UI that can only write one verdict makes precision unmeasurable)
 - [[Blind Labels Judge No Prompt]] — extends (the instrument split enforced in the schema)

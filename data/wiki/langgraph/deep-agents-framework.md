@@ -189,5 +189,5 @@ Reference files marked with `*` in the catalog are stubs pending wiki ingest —
 - [[LangGraph Advanced Patterns]]
 - [[Harness Anatomy]] — instance-of (middleware, sandbox, and state backends as harness components)
 - [[Harness Maturity and Failure Modes]] — instance-of (cited as a Stage 2→3 reference implementation)
-- [[Loop Detection and the Two-Retry Rule]] — implements (loop-detection middleware)
+- [[Loop Detection and the Two-Retry Rule]] — related (loop-detection middleware)
 - [[Deep Agent Pillars]] — instance-of (the framework implements the four pillars)

@@ -86,7 +86,7 @@ sub-agent isolation — all exist to keep the window on the left side of that cu
    [[Memory as Context]].
 
 ## See Also
-- [[Context Engineering]] — part-of
-- [[Context Failure Modes]] — causes
-- [[Context Anatomy]] — mitigated-by
+- [[Context Engineering]] — related (part of)
+- [[Context Failure Modes]] — related (causes)
+- [[Context Anatomy]] — related (mitigated by)
 - [[Context Window Budgeting]] — prerequisite-for

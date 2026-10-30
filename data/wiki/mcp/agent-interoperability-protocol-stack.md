@@ -2,7 +2,7 @@
 title: Agent Interoperability Protocol Stack
 tags: [mcp, infra, concept]
 summary: "The five open protocols standardizing agent integration — MCP for data, A2A for agent-to-agent, A2UI for generative UI, AP2 and UCP for machine-to-machine commerce — and why the layer exists at all."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agents-google-adk.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-google-adk.md
@@ -72,9 +72,9 @@ exactly why agent cards advertise capabilities and authentication schemes rather
 assuming them.
 
 ## See Also
-- [[MCP Protocol]] — part-of (the data-access protocol, in depth)
-- [[A2A Agent Protocol]] — part-of (the agent-to-agent protocol, in depth)
+- [[MCP Protocol]] — related (part of; the data-access protocol, in depth)
+- [[A2A Agent Protocol]] — related (part of; the agent-to-agent protocol, in depth)
 - [[MCP Server Security Patterns]] — extends (scoping and credential handling at the boundary)
-- [[Harness Engineering]] — complements (single-agent control versus cross-boundary standards)
+- [[Harness Engineering]] — related (single-agent control versus cross-boundary standards)
 - [[Multi-Agent Orchestration Patterns]] — instance-of (A2UI applied in a working system)
 - [[A2UI Protocol]] — extends (A2UI message model, versions and failure modes in depth)

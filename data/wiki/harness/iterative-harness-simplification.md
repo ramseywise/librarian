@@ -73,8 +73,9 @@ The harness doesn't get smaller. **It gets re-aimed.**
 - [[Agent Deployment Anti-Patterns]] <!-- auto-linked -->
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Harness Maturity and Failure Modes]] — extends
-- [[Harness Engineering]] — part-of
-- [[Long-Horizon Execution]] — complements
-- [[Verification Loops]] — complements
-- [[Harness Anatomy]] — complements
-- [[Evolve Loop]] — complements (both optimize within a frame and neither can interrogate the frame)
+- [[Harness Engineering]] — related (part of)
+- [[Long-Horizon Execution]] — related
+- [[Verification Loops]] — related
+- [[Harness Anatomy]] — related
+- [[Evolve Loop]] — related (both optimize within a frame and neither can interrogate the frame)
+- [[Runtime vs Process Observability]] — prerequisite-for

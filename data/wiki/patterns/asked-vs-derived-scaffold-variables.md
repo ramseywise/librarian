@@ -2,7 +2,7 @@
 title: Asked vs Derived Scaffold Variables
 tags: [infra, pattern]
 summary: A scaffold interview that splits ~20 template variables into six asked out loud, eight derived-then-confirmed, and the rest left silently defaulted — with the split decided by blast radius of a wrong guess, not by how many variables exist.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-genesis/SKILL.md
   - data/raw/claude-docs/guacamayo/skills/design-prototype/SKILL.md
@@ -133,7 +133,7 @@ confirmed versus overridden, and **an override rate of zero is itself the warnin
 - [[Integration Pattern Selection]] — extends (integration answers become render-time toggles)
 - [[Deployment Topology Ladder]] — extends (topology choice writes five coupled parameters)
 - [[Derived-and-Hidden Design Decisions]] — extends (when derivation crosses into hiding a design decision)
-- [[Block Attribute Inversion]] — complements (the derive-then-confirm asymmetry applied to design metadata)
+- [[Block Attribute Inversion]] — related (the derive-then-confirm asymmetry applied to design metadata)
 - [[Test Derived Defaults Without Overrides]] — extends (the test obligation derived variables create)
 - [[Build the Checker Before the Generator]] — extends (the same prototype skill's build-order rule)
 - [[Changing a Derived Default Is a Migration]] — extends (derived defaults are re-derived on every update)

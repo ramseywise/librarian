@@ -2,7 +2,7 @@
 title: Decision-ID Reservation Across Concurrent Plans
 tags: [llm, meta, pattern]
 summary: When several plans running at once each add rows to a shared decision registry (`D-NN`), a plan must re-grep the highest existing ID immediately before editing — not at planning time — and never reuse a retired number; the companion rule is that the specs are the registry and the human-readable decisions doc is a rendering, so edits flow spec → doc, never the reverse.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/akira/docs/plans/2026-09-04-dis62-desktop-decision.md
@@ -257,7 +257,7 @@ as `missingFromLedger`. A named skip env var gated that, and the handoff said so
 - [[Derive the Gate, Don't Copy It]] — related (same registry → rendering direction)
 - [[Deferred Decision Status]] — extends (the registry rows these rules protect)
 - [[Derived-and-Hidden Design Decisions]] — related (a decision that never got a row at all)
-- [[Claude Workflow System]] — part-of (a plan-stage rule when plans run concurrently)
+- [[Claude Workflow System]] — related (part of; a plan-stage rule when plans run concurrently)
 - [[Documentation Boundary — Machine vs Human Docs]] — related (the rendering is the human-consumed doc)
 - [[Issues Live in the Repo They Change]] — related (bare issue refs rebind on transfer: same silent-rebind class)
 - [[Open POI Data Sources]] — instance-of (the parallel plans that used candidate IDs)

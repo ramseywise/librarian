@@ -58,9 +58,9 @@ This is the mechanism behind the verbosity and sycophancy failures in
 the preferences it was actually shown.
 
 ## See Also
-- [[RLHF Pipeline]] — part-of (the Stage 2 reward-model objective)
-- [[Direct Preference Optimization]] — implements (fits the same objective directly on the policy)
+- [[RLHF Pipeline]] — related (part of; the Stage 2 reward-model objective)
+- [[Direct Preference Optimization]] — related (fits the same objective directly on the policy)
 - [[Reward Hacking and Overoptimization]] — extends (what goes wrong when the fitted proxy is over-optimized)
 - [[Constitutional AI and RLAIF]] — instance-of (same objective, AI-generated labels)
-- [[LLM-as-Judge Evaluation]] — complements (pairwise comparison as an eval-time rather than training-time primitive)
-- [[LLM Judge Biases]] — complements (position and self-preference biases that contaminate pairwise judge comparisons)
+- [[LLM-as-Judge Evaluation]] — related (pairwise comparison as an eval-time rather than training-time primitive)
+- [[LLM Judge Biases]] — related (position and self-preference biases that contaminate pairwise judge comparisons)

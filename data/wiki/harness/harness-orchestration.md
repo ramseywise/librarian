@@ -200,11 +200,13 @@ two-agent supervisor → multi-agent with a shared harness layer.**
 - [[Loop Detection and the Two-Retry Rule]] <!-- auto-linked -->
 - [[Multi-Agent Context]] <!-- auto-linked -->
 - [[Multi-Agent Role Specialization]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
-- [[Harness Anatomy]] — part-of
-- [[Long-Horizon Execution]] — complements
-- [[Verification Loops]] — complements
-- [[Context Engineering]] — depends-on
-- [[Execution Boundaries and Guardrails]] — depends-on
+- [[Harness Engineering]] — related (part of)
+- [[Harness Anatomy]] — related (part of)
+- [[Long-Horizon Execution]] — related
+- [[Verification Loops]] — related
+- [[Context Engineering]] — prerequisite-for
+- [[Execution Boundaries and Guardrails]] — prerequisite-for
 - [[Asynchronous Agent Event Loop]] — extends (async workers and interrupts)
 - [[Deep Agent Pillars]] — instance-of (subagent delegation as one pillar)
+- [[Harness Subsystem Attribution]] — extends
+- [[File-Disjoint Agent Waves in One Working Tree]] — instance-of

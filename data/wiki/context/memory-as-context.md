@@ -236,10 +236,10 @@ production also track **memory hit rate** and log which entries fed each answer,
 answer traces to the memory that caused it. See [[Evaluating Context]].
 
 ## See Also
-- [[Context Engineering]] — part-of
-- [[Agent Memory Types]] — implements
-- [[Context Compaction]] — complements
-- [[Context Failure Modes]] — mitigates
+- [[Context Engineering]] — related (part of)
+- [[Agent Memory Types]] — related
+- [[Context Compaction]] — related
+- [[Context Failure Modes]] — related (mitigates)
 - [[Designed Memory vs Raw-Record Search]] — extends
 - [[Memory Store Operations]] — extends
 - [[Memory Lifecycle]] — extends

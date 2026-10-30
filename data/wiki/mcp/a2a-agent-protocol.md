@@ -2,7 +2,7 @@
 title: A2A Agent Protocol
 tags: [mcp, infra, concept]
 summary: Google's Agent-to-Agent open specification for inter-agent communication — task lifecycle, agent cards, and how it maps to LangGraph primitives.
-updated: 2026-04-24
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
 ---
@@ -92,4 +92,4 @@ Playground has three agents: researcher, presenter, cartographer. Currently they
 - [[MCP Protocol]]
 - [[LangGraph Advanced Patterns]]
 - [[Librarian RAG Architecture]]
-- [[Agent Interoperability Protocol Stack]] — part-of (A2A's place alongside MCP, A2UI, AP2, and UCP)
+- [[Agent Interoperability Protocol Stack]] — related (part of; A2A's place alongside MCP, A2UI, AP2, and UCP)

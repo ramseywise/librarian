@@ -118,10 +118,11 @@ human.
 
 ## See Also
 - [[Agent Deployment Anti-Patterns]] <!-- auto-linked -->
-- [[Verification Loops]] — complements
+- [[Verification Loops]] — related
 - [[Loop Detection and the Two-Retry Rule]] — extends
-- [[Execution Boundaries and Guardrails]] — complements
-- [[Harness Engineering]] — part-of
-- [[Loop Termination Design]] — complements (error type decides strategy change; the cap decides the ceiling)
-- [[Agent-Oriented Error Messages]] — complements
-- [[Three-Layer Termination Check]] — complements (success-side termination)
+- [[Execution Boundaries and Guardrails]] — related
+- [[Harness Engineering]] — related (part of)
+- [[Loop Termination Design]] — related (error type decides strategy change; the cap decides the ceiling)
+- [[Agent-Oriented Error Messages]] — related
+- [[Three-Layer Termination Check]] — related (success-side termination)
+- [[Text-to-SQL as a Retrieval Strategy]] — instance-of (bounded error-as-context retry)

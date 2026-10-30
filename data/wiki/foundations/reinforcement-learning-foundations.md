@@ -94,7 +94,7 @@ task complete?) and the difficulty is credit assignment across a long trajectory
 - [[Preference Optimization Algorithms]] — extends (actor-critic and what each method removes)
 - [[Multi-Agent Reinforcement Learning]] — extends (the same MDP with multiple interacting policies)
 - [[RL for Retrieval Policies]] — instance-of (RAG as a sequential decision process)
-- [[Reward Hacking and Overoptimization]] — complements (what goes wrong when the reward is a learned proxy)
+- [[Reward Hacking and Overoptimization]] — related (what goes wrong when the reward is a learned proxy)
 - [[RL Training Frameworks for LLMs]] — extends (the distributed systems that run these algorithms on LLMs)
 - [[Training-Agent Disaggregation]] — extends (traces of an existing agent as MDP rollouts for an external trainer)
 - [[Post-Training for Agents]] — extends (RL applied to tool-using LLM agents)

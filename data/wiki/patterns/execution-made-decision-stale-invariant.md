@@ -2,7 +2,7 @@
 title: Execution-Made Decisions Leave Stale Invariants
 tags: [patterns, pattern]
 summary: "When execution quietly reverses a plan's resolved decision, the structure changes but the sentence stating the old invariant survives. The fix is reconciling docs, not migrating content again. The plan's own test-plan invariant is the cheapest detector, and a same-named file in two places is a different document until its content proves it is a copy."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/LAE-28-research.md
   - data/raw/repos/learn-ai-engineering/.claude--docs--plans--LAE-28-research.md
@@ -74,4 +74,4 @@ the system's own names.**
 - [[Stated Seams Drift, Enforced Seams Hold]] — extends (a stated invariant with no enforcing check goes false; here the check existed in a plan but was never re-run)
 - [[Design Decisions Migrate Into Plans]] — alternative-to (decisions leaking downward into plans, versus decisions leaking out of plans into execution)
 - [[AI Engineering Curriculum Structure]] — instance-of (the absorbed-into-pillars layout this reconciled)
-- [[No-Placeholder Plan Discipline]] — complements (verification steps that check structure when the deliverable is markdown)
+- [[No-Placeholder Plan Discipline]] — related (verification steps that check structure when the deliverable is markdown)

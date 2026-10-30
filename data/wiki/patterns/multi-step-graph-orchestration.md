@@ -2,7 +2,7 @@
 title: Multi-Step Graph Orchestration
 tags: [llm, pattern, langgraph]
 summary: A directed graph of processing nodes with explicit transitions, where the LLM executes within nodes but you control flow between them — the pattern for branching, human gates, and retry loops, with a concrete refactor trigger for when to adopt it.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/agent-orchestration.md
 ---
@@ -63,7 +63,7 @@ once built; overkill for simple tasks.
 ## See Also
 - [[Graph Engineering]] <!-- auto-linked -->
 - [[Chain of Thought]] <!-- auto-linked -->
-- [[Agent Orchestration Patterns]] — part-of
-- [[Single Agent With Tools]] — upgrade-from
-- [[Multi-Agent Role Specialization]] — upgrade-path
+- [[Agent Orchestration Patterns]] — related (part of)
+- [[Single Agent With Tools]] — prerequisite-for
+- [[Multi-Agent Role Specialization]] — extends
 - [[Agentic Workflow Patterns]] — related (evaluator-optimizer, parallelization)

@@ -165,8 +165,8 @@ behavioural consistency and error rate as it changes. Over-constraint vs
 under-specification is a calibration problem that evals settle ([[Evaluating Context]]).
 
 ## See Also
-- [[Context Engineering]] — part-of
-- [[Why Context Is Finite]] — depends-on
+- [[Context Engineering]] — related (part of)
+- [[Why Context Is Finite]] — prerequisite-for
 - [[Memory as Context]] — extends
 - [[Measuring Fixed Context Overhead]] — extends (how to measure what the stable layers actually cost)
 - [[Cache-Stable Context Layout]] — extends
@@ -174,3 +174,4 @@ under-specification is a calibration problem that evals settle ([[Evaluating Con
 - [[Agent Status Bar]] — extends
 - [[Context Window Budgeting]] — prerequisite-for
 - [[Few-Shot Prompting]] — extends
+- [[Context System Maturity Ladder]] — extends

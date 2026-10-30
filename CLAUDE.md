@@ -335,14 +335,24 @@ In `## See Also` sections, annotate links with a relationship type using `— ty
 - [[LangGraph vs ADK]] — alternative-to
 ```
 
-| Type | Meaning |
+**Direction:** the type describes the *linked* page relative to the page it is written
+on. `- [[X]] — prerequisite-for` on page P reads "X is a prerequisite for P". Retrieval
+expansion (`app/mcp_server/graph_expansion.py`) depends on this reading, so write the link
+on the page that X relates *to*.
+
+| Type | `- [[X]] — type` on page P means |
 |------|---------|
-| `extends` | Builds on or refines the target |
-| `prerequisite-for` | Must understand this before the target |
-| `alternative-to` | Competing approach to the same problem |
-| `instance-of` | Concrete example of a general pattern |
-| `contradicts` | Disagrees with (links to conflict entry) |
-| `supersedes` | Replaces an older approach/decision |
+| `extends` | X builds on or refines P |
+| `prerequisite-for` | Understand X before P |
+| `alternative-to` | X is a competing approach to the same problem (symmetric) |
+| `instance-of` | X is a concrete example of the general pattern P |
+| `contradicts` | X disagrees with P (links to conflict entry) |
+| `supersedes` | X replaces P (tombstones point at their successor this way) |
+| `related` | Weak, undirected association; not walked by retrieval expansion |
+
+Use `related` rather than inventing a type (`part-of`, `depends-on`, `complements`, …);
+put the nuance in a parenthetical note: `- [[X]] — related (part of; the eval stage)`.
+Canonical types are defined once in `core/wiki_common.py` (`CANONICAL_LINK_TYPES`).
 
 Untyped links (`- [[Page]]`) are still valid — type gradually during future ingests.
 The parser extracts relationship types into edge metadata for graph visualization.

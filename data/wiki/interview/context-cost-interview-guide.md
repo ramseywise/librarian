@@ -121,5 +121,5 @@ as spend.
 - [[Context Anatomy]] — prerequisite-for (the layer model in depth)
 - [[Prefix Caching]] — prerequisite-for (the mechanism behind lever 1)
 - [[Context Compaction]] — extends
-- [[Agents Interview Study Guide]] — complements (harness and long-horizon side)
-- [[System Design Interview Study Guide]] — complements (cost trade-offs in the design round)
+- [[Agents Interview Study Guide]] — related (harness and long-horizon side)
+- [[System Design Interview Study Guide]] — related (cost trade-offs in the design round)

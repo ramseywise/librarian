@@ -2,7 +2,7 @@
 title: Direct Preference Optimization
 tags: [llm, concept]
 summary: Training-time technique that fine-tunes a model on human preference pairs (preferred vs rejected responses) without a reward model — replaces PPO/RLHF for preference alignment. Not applicable to API-only models.
-updated: 2026-04-26
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
@@ -69,9 +69,9 @@ DPO belongs at the "Scaled" stage — after the operational learning loop has ac
 - [[Chain of Thought]]
 - [[Agent Memory Types]]
 - [[Copilot Learning Loop]]
-- [[Preference Optimization Algorithms]] — part-of (DPO's place in the PPO→DPO→GRPO family)
+- [[Preference Optimization Algorithms]] — related (part of; DPO's place in the PPO→DPO→GRPO family)
 - [[RLHF Pipeline]] — alternative-to (the three-stage pipeline DPO collapses)
-- [[Bradley-Terry Preference Model]] — depends-on (the preference objective DPO fits directly)
-- [[Reward Hacking and Overoptimization]] — complements (the length problem DPO inherits from preference data)
-- [[Constitutional AI and RLAIF]] — complements (where the preference pairs can come from without human labelers)
+- [[Bradley-Terry Preference Model]] — prerequisite-for (the preference objective DPO fits directly)
+- [[Reward Hacking and Overoptimization]] — related (the length problem DPO inherits from preference data)
+- [[Constitutional AI and RLAIF]] — related (where the preference pairs can come from without human labelers)
 - [[Reinforcement Learning Foundations]] — prerequisite-for (MDP, policy, and the actor-critic split DPO discards)

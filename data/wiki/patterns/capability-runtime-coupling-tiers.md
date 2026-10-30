@@ -2,7 +2,7 @@
 title: Capability Runtime-Coupling Tiers
 tags: [llm, patterns, pattern]
 summary: Sorting agent capabilities into runtime-coupled (T1), runtime-adjacent (T2), and runtime-independent (T3) — because cross-runtime parity is a meaningful goal for T1/T2 and a category error for T3.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-20-consolidate-capability-reference.md
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-19-agents-skills-sync.md
@@ -218,7 +218,7 @@ framework × capability grid cannot express:
 - [[Capability Parity Audit]] — alternative-to (have/partial/gap axis vs runtime-coupling axis)
 - [[Sync as Render, Not Copy]] — prerequisite-for (how the tiered canon reaches the template)
 - [[AI Project Template Scaffold]] — instance-of
-- [[Complexity Floor]] — constrains (a flagged asymmetry is not automatically work)
+- [[Complexity Floor]] — related (constrains; a flagged asymmetry is not automatically work)
 - [[Framework Selection — LangChain vs LangGraph vs Deep Agents]] — extends (the framework-vs-capability distinction)
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — extends (the missing first row of the selection tree)
 - [[Multi-Modal Agent Response]] — related (the response schema as cross-capability contract)

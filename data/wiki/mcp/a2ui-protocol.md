@@ -2,7 +2,7 @@
 title: A2UI Protocol
 tags: [mcp, concept]
 summary: A2UI is the agent-to-user interface protocol in which agents emit declarative JSON messages (a flat adjacency list of components plus a JSON-Pointer data model) that native clients render with their own widgets; it is data only, never code, and the classic bug is a blank screen from a missing beginRendering.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/a2ui/SKILL.md
   - data/raw/claude-docs/playground/skills/a2ui-workspace/iteration-2/eval-debug-blank-screen/with_skill/outputs/response.md
@@ -77,7 +77,7 @@ Without a skill the model **hallucinates a fake schema**: nested `children` tree
 three iterations.
 
 ## See Also
-- [[Agent Interoperability Protocol Stack]] — part-of (A2UI is the agent-to-human layer)
+- [[Agent Interoperability Protocol Stack]] — related (part of; A2UI is the agent-to-human layer)
 - [[A2A Agent Protocol]] — related (the agent-to-agent transport A2UI samples ride over)
 - [[Multi-Agent Orchestration Patterns]] — instance-of (an A2UI MCP layer in a working system)
 - [[ADK Context Engineering]] — extends (the skill benchmark showing what the protocol knowledge is worth)

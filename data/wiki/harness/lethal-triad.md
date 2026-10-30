@@ -58,7 +58,7 @@ Skills combined with network access are a specific instance — see
 
 ## See Also
 - [[Prompt Injection]] — extends (when injection becomes exfiltration)
-- [[Execution Boundaries and Guardrails]] — extends
-- [[Proposer-Reviewer and Sidecar Gating]] — complements
-- [[MCP Server Security Patterns]] — complements (the server-author side of the same boundary)
-- [[Agent Credential Ceiling]] — complements
+- [[Execution Boundaries and Guardrails]] — related (part of)
+- [[Proposer-Reviewer and Sidecar Gating]] — related
+- [[MCP Server Security Patterns]] — related (the server-author side of the same boundary)
+- [[Agent Credential Ceiling]] — related

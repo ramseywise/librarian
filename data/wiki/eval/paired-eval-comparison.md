@@ -74,7 +74,8 @@ dominant label, and an explicit decision line.
 
 ## See Also
 - [[Eval Error Bars and Sample Size]] — prerequisite-for (the SE this reduces)
-- [[Eval Metric Interpretation Pitfalls]] — complements (slicing and denominators)
+- [[Eval Metric Interpretation Pitfalls]] — related (slicing and denominators)
 - [[Run-Then-Assert Eval CI]] — instance-of (paired regression gate in CI)
 - [[Offline Prompt Experiment Runner]] — related (prompt variants on a frozen sample)
 - [[Frozen Ranking Baseline from a Pure Ranker]] — related (a stored baseline to pair against)
+- [[Eval Non-Determinism]] — prerequisite-for

@@ -81,6 +81,6 @@ in one of four modes — **sync, async (task ID + later event), streaming, multi
 ## See Also
 - [[Harness Orchestration]] — extends (orchestration for resident, event-driven agents)
 - [[Tool Design as Harness Surface]] — extends (asynchronous tool interfaces)
-- [[Duplex Voice Breaks Discrete-Turn Assumptions]] — complements (the same broken turn assumption in voice)
-- [[Prompt Injection]] — complements (structured events separate commands from data)
-- [[Long-Horizon Execution]] — prerequisite-for
+- [[Duplex Voice Breaks Discrete-Turn Assumptions]] — related (the same broken turn assumption in voice)
+- [[Prompt Injection]] — related (structured events separate commands from data)
+- [[Long-Horizon Execution]] — related

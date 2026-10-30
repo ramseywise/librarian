@@ -292,24 +292,26 @@ afterward.
 
 ## See Also
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
-- [[Agent Retry Taxonomy]] — complements
-- [[Loop Detection and the Two-Retry Rule]] — complements
-- [[Eval Ladder]] — depends-on
-- [[LLM-as-Judge Evaluation]] — implements
+- [[Harness Engineering]] — related (part of)
+- [[Agent Retry Taxonomy]] — related
+- [[Loop Detection and the Two-Retry Rule]] — related
+- [[Eval Ladder]] — prerequisite-for
+- [[LLM-as-Judge Evaluation]] — related
 - [[TDD as Coding-Agent Harness]] — instance-of
-- [[Loop Engineering]] — part-of (capability level 2 is this loop)
+- [[Loop Engineering]] — related (part of; capability level 2 is this loop)
 - [[Loop Autonomy Ladder]] — prerequisite-for (rung 2 is where the verifier stops being optional)
 - [[Recursive Self-Improvement]] — extends (the write boundary enforces generator/evaluator separation structurally)
 - [[Knowledge Graph as Shared Agent Memory]] — extends (isolated verifier context as the structural fix for self-agreement bias)
-- [[Graph Engineering]] — complements (generate-then-verify is the highest-yield first graph)
+- [[Graph Engineering]] — related (generate-then-verify is the highest-yield first graph)
 - [[Scan-Floor Guard Against Silent No-Op Checks]] — extends (a verifier must prove it exercised something)
 - [[Artifact Is Not Evidence: Push and Probe]] — extends (verify the behaviour, not the artifact)
 - [[Build the Checker Before the Generator]] — prerequisite-for
 - [[Spec, Verifier, Environment Layering]] — extends (criteria before work, second-model critic, external signal)
 - [[Three-Layer Termination Check]] — extends (what "verify passes" means)
-- [[Agent-Oriented Error Messages]] — complements
-- [[Proposer-Reviewer and Sidecar Gating]] — complements (review before the action rather than after)
-- [[Runtime vs Process Observability]] — complements
+- [[Agent-Oriented Error Messages]] — related
+- [[Proposer-Reviewer and Sidecar Gating]] — related (review before the action rather than after)
+- [[Runtime vs Process Observability]] — related
 - [[Reflexion]] — instance-of (verbal self-reflection over a failed attempt, retried with the critique)
 - [[Loop Scorekeeper]] — extends (the verifier as a loop's scorekeeper: traits, write boundary, ratchet)
+- [[Text-to-SQL as a Retrieval Strategy]] — instance-of (mechanical validation replacing an LLM reviewer)
+- [[Agent Deployment Anti-Patterns]] — instance-of (acceptance criteria for #3)

@@ -133,10 +133,10 @@ from a prompt problem.
 ## See Also
 - [[Protocol-Driven Multi-Agent Collaboration]] <!-- auto-linked -->
 - [[Context Anatomy]] <!-- auto-linked -->
-- [[Context Engineering]] — part-of
-- [[Why Context Is Finite]] — depends-on
+- [[Context Engineering]] — related (part of)
+- [[Why Context Is Finite]] — prerequisite-for
 - [[Prompt Injection]] — extends
-- [[Context Compaction]] — mitigated-by
+- [[Context Compaction]] — related (mitigated by)
 - [[Turn-Bounded Citation Walk]] — instance-of (prior-turn citations contaminating the current answer)
 - [[Evaluating Context]] — extends (instrumenting each stage to localise the failure)
 - [[Agent Status Bar]] — extends (the fix for rot as low information density)

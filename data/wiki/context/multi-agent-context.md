@@ -137,10 +137,12 @@ share no context make conflicting decisions — **pass the decisions, not just t
 - [[Memory as Context]] <!-- auto-linked -->
 - [[Shared Context Brief]] <!-- auto-linked -->
 - [[Why Context Is Finite]] <!-- auto-linked -->
-- [[Context Engineering]] — part-of
-- [[Tool Design as Context Engineering]] — complements
+- [[Context Engineering]] — related (part of)
+- [[Tool Design as Context Engineering]] — related
 - [[Context Compaction]] — alternative-to
-- [[Prompt Injection]] — mitigates
+- [[Prompt Injection]] — related (mitigates)
 - [[Cognitive Tools]] — extends (verifier sub-calls as bounded isolation)
 - [[Harness Orchestration]] — extends
-- [[Context Window Budgeting]] — extends
+- [[Context Window Budgeting]] — related
+- [[Task Decomposition Patterns]] — instance-of (spatial isolation via worktrees)
+- [[Protocol-Driven Multi-Agent Collaboration]] — instance-of (externalized plan state and isolation)

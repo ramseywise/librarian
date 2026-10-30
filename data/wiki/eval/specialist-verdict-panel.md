@@ -2,7 +2,7 @@
 title: Specialist Verdict Panel
 tags: [eval, pattern]
 summary: "Agent-output eval as a panel of single-dimension specialist judges — relevance, hallucination, completeness, escalation — each returning a structured verdict, so dimensions aggregate without a halo effect and each failure is attributable."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/articles/2026-07-19-langfuse-multi-agent-eval.md
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
@@ -61,7 +61,7 @@ final-answer panel cannot see.
 
 ## See Also
 - [[LLM-as-Judge Evaluation]] — extends (one judge split into single-dimension specialists)
-- [[Trajectory Over Outcome]] — complements (path and routing evals the panel does not cover)
-- [[Grounding Claim Methodology]] — implements (claim-level citation checking)
+- [[Trajectory Over Outcome]] — related (path and routing evals the panel does not cover)
+- [[Grounding Claim Methodology]] — related (claim-level citation checking)
 - [[Decompose Low-Ceiling Dimensions into Checkable Sub-Signals]] — instance-of
-- [[Langfuse Platform]] — complements (where the verdicts are attached as scores)
+- [[Langfuse Platform]] — related (where the verdicts are attached as scores)

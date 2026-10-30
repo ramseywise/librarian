@@ -88,4 +88,4 @@ not a bar to clear — see [[Timebox-Scaled Deliverable Bar]] and the fuller fie
 - [[AI Role Interview Loop Map]] — extends (which rounds a loop runs; this bank supplies their questions)
 - [[Graded Rehearsal Drill Harness]] — prerequisite-for (the recall loop these questions feed)
 - [[Durable vs Performative Knowledge Split]] — extends (questions span both sides of the split)
-- [[System Design Interview Study Guide]] — complements
+- [[System Design Interview Study Guide]] — related

@@ -202,10 +202,10 @@ gone. The same pruning was implemented in both the Python and the TypeScript age
 ## See Also
 - [[Long-Horizon Execution]] <!-- auto-linked -->
 - [[Context Anatomy]] <!-- auto-linked -->
-- [[Context Engineering]] — part-of
-- [[Context Failure Modes]] — mitigates
+- [[Context Engineering]] — related (part of)
+- [[Context Failure Modes]] — related (mitigates)
 - [[Memory as Context]] — extends
-- [[Context Retrieval Strategies]] — complements
+- [[Context Retrieval Strategies]] — related
 - [[Compression Strips the Epistemic Frame]] — extends (hedging and provenance are the first casualties)
 - [[Context-Aware Compression]] — extends
 - [[Agent Status Bar]] — alternative-to (adds distilled state instead of replacing history)

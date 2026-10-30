@@ -148,8 +148,9 @@ this is R3 and R8 with an egress path attached.
 
 ## See Also
 - [[SKILL.md Pattern]] — extends (the format and loading strategies this builds on)
-- [[Context Anatomy]] — depends-on (progressive disclosure, the mechanism skills rely on)
-- [[Tool Design as Harness Surface]] — complements (tools face the same description-as-routing problem)
-- [[Agent Deployment Anti-Patterns]] — complements (knowledge belongs in skills, not system prompts)
-- [[Agent Security Risk Taxonomy]] — complements (the exfiltration path, as a risk class)
-- [[Long-Horizon Execution]] — implements (checkpointing for skills that run long)
+- [[Context Anatomy]] — prerequisite-for (progressive disclosure, the mechanism skills rely on)
+- [[Tool Design as Harness Surface]] — related (tools face the same description-as-routing problem)
+- [[Agent Deployment Anti-Patterns]] — related (knowledge belongs in skills, not system prompts)
+- [[Agent Security Risk Taxonomy]] — related (the exfiltration path, as a risk class)
+- [[Long-Horizon Execution]] — related (checkpointing for skills that run long)
+- [[Harness Engineering]] — instance-of (authoring the skill layer of the harness)

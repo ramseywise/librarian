@@ -128,10 +128,10 @@ inherits every risk in this taxonomy, which is why deterministic checks are pref
 wherever the property being checked is mechanically decidable.
 
 ## See Also
-- [[Agent Deployment Anti-Patterns]] — complements (the engineering failures that create these risks)
-- [[Execution Boundaries and Guardrails]] — implements (the sandbox and permission mechanics for R6/R8)
-- [[Safeguards Architecture — Five Protection Layers]] — implements (a concrete distributed mitigation architecture)
-- [[Production Reliability Primitives]] — complements (the seven resilience properties, in production terms)
+- [[Agent Deployment Anti-Patterns]] — related (the engineering failures that create these risks)
+- [[Execution Boundaries and Guardrails]] — related (the sandbox and permission mechanics for R6/R8)
+- [[Safeguards Architecture — Five Protection Layers]] — related (a concrete distributed mitigation architecture)
+- [[Production Reliability Primitives]] — related (the seven resilience properties, in production terms)
 - [[Prompt Injection]] — prerequisite-for (the injection vector behind R2, R4, R12)
 - [[MCP Server Security Patterns]] — instance-of (this taxonomy applied to a tool protocol)
 - [[Principal Write-Surface Matrix]] — alternative-to (enumerate principals, not attacks)

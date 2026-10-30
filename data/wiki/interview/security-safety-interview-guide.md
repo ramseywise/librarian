@@ -118,5 +118,5 @@ On a streaming failure, close with an error event — never hang.
 - [[Agent Security Risk Taxonomy]] — prerequisite-for
 - [[Input Guardrails Pipeline]] — instance-of (layer 1 of the stack)
 - [[Production Hardening Patterns]] — extends
-- [[Agents Interview Study Guide]] — complements (HITL and harness boundaries)
+- [[Agents Interview Study Guide]] — related (HITL and harness boundaries)
 - [[Bounding Agents Rather Than Trusting Them]] — extends (argument-level risk is a bound, not a trust decision)

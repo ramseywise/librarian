@@ -69,8 +69,8 @@ budgets close to the real workload.
 - [[Online Eval Sampling]] <!-- auto-linked -->
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
 - [[Manual Review as Eval Bootstrap]] <!-- auto-linked -->
-- [[Eval Ladder]] — complements (orthogonal health axis)
-- [[User Feedback Loops]] — complements (separates engagement shift from regression)
+- [[Eval Ladder]] — related (orthogonal health axis)
+- [[User Feedback Loops]] — related (separates engagement shift from regression)
 - [[RAG Eval Metrics Suite]] — extends (retrieval-specific metrics)
 - [[Observability & Evaluation Glossary]] — related
 - [[Demote Judge Findings to Keyless Gates]] — extends (judge findings that a regex can catch move into this tier)

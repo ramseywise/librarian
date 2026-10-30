@@ -100,9 +100,10 @@ agent architecture.
 - [[Prompt Templates and Variables]] <!-- auto-linked -->
 - [[Structured Output]] <!-- auto-linked -->
 - [[XML Prompt Structuring]] <!-- auto-linked -->
-- [[Prompt Engineering]] — part-of
+- [[Prompt Engineering]] — related (part of)
 - [[Context Engineering]] — extends
 - [[Agentic Workflow Patterns]] — extends
 - [[DSPy]] — prerequisite-for
 - [[Stateful Objects of Discourse]] — extends
 - [[Prompting Reasoning Models]] — alternative-to
+- [[Stop Sequences and Completion Anatomy]] — prerequisite-for

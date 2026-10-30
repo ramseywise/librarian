@@ -2,7 +2,7 @@
 title: AI Project Archetypes
 tags: [llm, reference]
 summary: Four archetypes — Information Retrieval, Document Generation, Workflow Automation, Conversational Interface — that cover most nonprofit AI projects, each with a complexity floor, disambiguating questions, and a mapping to concrete scaffold parameters.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/archetype-selection.md
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/SKILL.md
@@ -133,7 +133,7 @@ they must reframe toward Document Generation.
 - [[Golden Set Mechanics]] — extends (retrieval hit_rate gate)
 - [[Integration Pattern Selection]] — extends (archetype constrains the plausible integrations)
 - [[Agent Orchestration Patterns]] — extends (archetype constrains the plausible orchestration)
-- [[Complexity Floor]] — constrains (each archetype's floor makes capacity a selection criterion)
+- [[Complexity Floor]] — related (constrains; each archetype's floor makes capacity a selection criterion)
 - [[Deployment Topology Ladder]] — related (archetype and topology are chosen in the same conversation)
 - [[Conversational Test Fixture Design]] — extends (three mutually-confusable fixtures pin the archetype boundaries)
 - [[Human-Participant Skill Test Protocol]] — extends (facilitator pre-registers the expected archetype)

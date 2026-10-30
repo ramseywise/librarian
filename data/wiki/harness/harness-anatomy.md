@@ -213,10 +213,10 @@ Six items. Everything else here is elaboration on those.
 ## See Also
 - [[Skill Authoring Discipline]] <!-- auto-linked -->
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
+- [[Harness Engineering]] — related (part of)
 - [[Tool Design as Harness Surface]] — extends
 - [[Execution Boundaries and Guardrails]] — extends
-- [[Long-Horizon Execution]] — depends-on
+- [[Long-Horizon Execution]] — prerequisite-for
 - [[Harness Subsystem Attribution]] — extends (the five-subsystem diagnostic cut)
 - [[Coding-Agent Search and Edit Schemes]] — extends (the minimal coding kit's search and edit tools)
 - [[Realtime Is UI Sync, Not the Event Bus]] — related (a realtime channel is not the event bus)

@@ -72,5 +72,5 @@ in new clothes.** Stating this mapping is the advantage of an AI engineer with M
 - [[Data Engineering Foundations]] — prerequisite-for
 - [[ML Foundations Interview Study Guide]] — prerequisite-for (hygiene before production)
 - [[Experiment Tracking Schemas]] — instance-of (tracking applied to an LLM system)
-- [[Evals and Observability Interview Study Guide]] — complements (eval-as-merge-gate)
-- [[System Design Interview Study Guide]] — complements (pipelines are the substrate)
+- [[Evals and Observability Interview Study Guide]] — related (eval-as-merge-gate)
+- [[System Design Interview Study Guide]] — related (pipelines are the substrate)

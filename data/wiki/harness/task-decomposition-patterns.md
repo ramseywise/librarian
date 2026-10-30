@@ -107,9 +107,9 @@ for the measurements and rationale.
 - [[Graph Engineering]] <!-- auto-linked -->
 - [[Harness Engineering]] <!-- auto-linked -->
 - [[Harness Orchestration]] <!-- auto-linked -->
-- [[Protocol-Driven Multi-Agent Collaboration]] — depends-on (what coordinates the pieces once split)
-- [[Multi-Agent Orchestration Patterns]] — complements (the topology, orthogonal to the cut)
-- [[Multi-Agent Context]] — implements (spatial isolation via worktrees)
+- [[Protocol-Driven Multi-Agent Collaboration]] — prerequisite-for (what coordinates the pieces once split)
+- [[Multi-Agent Orchestration Patterns]] — related (the topology, orthogonal to the cut)
+- [[Multi-Agent Context]] — related (spatial isolation via worktrees)
 - [[Agent Deployment Anti-Patterns]] — prerequisite-for (verify the single-agent limit first)
 - [[Send API Fan-out]] — instance-of (data-driven decomposition, mechanically)
 - [[Plan and Execute Pattern]] — instance-of (temporal decomposition, mechanically)

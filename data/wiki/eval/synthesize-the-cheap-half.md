@@ -2,7 +2,7 @@
 title: Synthesize the Cheap Half
 tags: [eval, rag, pattern]
 summary: Synthetic data is safe for queries and (calibrated) judge labels, wrong for events, and forbidden for interactions — synthesize the side of the evaluation that is cheap to verify against reality, never the side that becomes the target.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/technical-feasibility.md
   - data/raw/claude-docs/diskoe/docs/technical-feasibility.md
@@ -47,6 +47,6 @@ for behavioural evidence.
 
 ## See Also
 - [[Synthetic Dataset Generation for RAG Eval]] — extends (which half of the evaluation it is safe to generate)
-- [[LLM-as-Judge Evaluation]] — depends-on (the calibration rules for synthesized labels)
-- [[Human Agreement Ceiling Protocol]] — depends-on (κ ceiling the judge is calibrated against)
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (the calibration rules for synthesized labels)
+- [[Human Agreement Ceiling Protocol]] — prerequisite-for (κ ceiling the judge is calibrated against)
 - [[Traffic-Gated Evaluation Ladder]] — related (synthetic data fills the rungs before traffic exists)

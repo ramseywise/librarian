@@ -195,7 +195,7 @@ to teach:
 - [[Situation-Indexed Decision Tree]] — extends (situation index over the §3 component table)
 - [[Durable vs Performative Knowledge Split]] — prerequisite-for (why method and domain live apart)
 - [[AIE Code-Test Flaw Taxonomy]] — alternative-to (the shipping round vs. the design round)
-- [[Timebox-Scaled Deliverable Bar]] — complements (async ambiguity protocol inverts step 1)
+- [[Timebox-Scaled Deliverable Bar]] — related (async ambiguity protocol inverts step 1)
 - [[AI-Assisted Take-Home Playbook]] — alternative-to (the take-home build-and-present counterpart to the live round)
 - [[AI Role Interview Loop Map]] — prerequisite-for (where this round sits in each role's loop, and when it is not the top round)
 - [[Backend Scaling Fundamentals]] — prerequisite-for (the generic substrate the round assumes)
@@ -209,3 +209,4 @@ to teach:
 - [[Technical Breadth Round Playbook]] — alternative-to (the verbal breadth round)
 - [[AI System Design Interviewer Rubric]] — extends (the grader-side rubric and personas for mock rounds)
 - [[AI System Design Walkthroughs]] — extends (nine public prompts on the same board layout)
+- [[Agent Engineering Question Chains]] — extends

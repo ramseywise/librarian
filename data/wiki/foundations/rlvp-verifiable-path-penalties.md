@@ -75,4 +75,4 @@ a hard gate in the harness — see [[Execution Boundaries and Guardrails]].
 - [[Outcome vs Process Reward Models]] — extends (a deterministic, penalty-only process signal)
 - [[Reward Hacking and Overoptimization]] — extends (verifier gaming, and why the checks must be deterministic)
 - [[Execution Boundaries and Guardrails]] — alternative-to (enforcing the same constraints at inference time)
-- [[RLHF Pipeline]] — extends
+- [[RLHF Pipeline]] — related

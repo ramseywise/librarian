@@ -2,7 +2,7 @@
 title: Anthropic Three-Tier Eval Taxonomy
 tags: [eval, pattern, concept]
 summary: Practical agent evaluation framework from Anthropic — three tiers (unit/trajectory/e2e) mapped to cost, determinism, and failure coverage. Unit covers ~70% of regressions cheaply; trajectory checks routing paths; e2e is sparingly used for quality gates.
-updated: 2026-07-14
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/listen-wiseer/docs/research/evaluation/eval-harness.md
   - data/raw/claude-docs/listen-wiseer/docs/plans/phase5c_eval.md
@@ -147,6 +147,6 @@ CONFIRM_EXPENSIVE_OPS=1 make eval-trajectory  # unlock gated runs
 - [[project-g Eval Architecture]]
 - [[HITL Annotation Pipeline]]
 - [[Observability — LangFuse vs LangSmith Decision]]
-- [[Eval Harness Anatomy]] — complements (the anatomy within a tier: task, trial, grader, trajectory, outcome)
+- [[Eval Harness Anatomy]] — related (the anatomy within a tier: task, trial, grader, trajectory, outcome)
 - [[Eval Non-Determinism]] — extends (why a tier-2 trajectory eval needs k trials, not one)
 - [[Eval Suite Maintenance]] — extends (capability→regression promotion and saturation)

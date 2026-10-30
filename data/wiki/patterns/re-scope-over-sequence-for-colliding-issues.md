@@ -2,7 +2,7 @@
 title: Re-Scope Over Sequence for Colliding Issues
 tags: [patterns, llm, pattern]
 summary: When two "parallel-safe" issues turn out to touch the same files, split them by file ownership instead of serialising them — and supersede a dated audit with a new document rather than editing it.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-frontend-quality-wave1-reverify.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-03-frontend-quality-wave1-reverify.md
@@ -68,7 +68,7 @@ plus the one-line manual resolution if the order is broken, written down for who
 B.
 
 ## See Also
-- [[Deadline-Scope Isolation]] — complements (scope tokens by deadline; this page scopes by file)
+- [[Deadline-Scope Isolation]] — related (scope tokens by deadline; this page scopes by file)
 - [[Claude Workflow System]] — extends (issue cutting as part of the plan stage)
 - [[Deterministic Review Substrate]] — related (verification method of the pass)
 - [[Parallel Across Lanes, Migrations Alone]] — related (the wave policy for concurrent builds)

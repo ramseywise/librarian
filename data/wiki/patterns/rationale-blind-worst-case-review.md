@@ -2,7 +2,7 @@
 title: Rationale-Blind Worst-Case Review
 tags: [patterns, llm, pattern]
 summary: A read-only advisor that deliberately ignores a plan's stated rationale and asks only "what is the worst plausible outcome, how reversible is it, and does nothing-happening look like success?" — ranking by consequence rather than probability so the one failure worth fixing first surfaces instead of a padded list.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/guacamayo/agents/fog-advisor.md
   - data/raw/claude-docs/galactus/agents/fog-advisor.md
@@ -123,7 +123,7 @@ three is the real context-engineering decision for any dispatch.
 - [[Silence Reads as Clean]] — extends (pass 1 is a systematic hunt for this defect)
 - [[Reversibility Cliff]] — prerequisite-for (pass 3 is where the cliff is first located)
 - [[Scope-Gated Reporter Dispatch]] — instance-of (one reporter among several, run or skipped by scope)
-- [[Collapse Site Detection]] — part-of (stage 4 of the fog pass)
+- [[Collapse Site Detection]] — related (part of; stage 4 of the fog pass)
 - [[When a Lens Earns Agenthood]] — instance-of (the Isolation case)
 - [[Two-Axis Claim Schema]] — extends (the FA- claim format)
 - [[Adversarial Plan War Game]] — alternative-to (multi-angle isolated attackers on the same plan)

@@ -78,4 +78,4 @@ crossed into [[Harness Engineering]].
 - [[Cognitive Tools]] — extends (rung 5)
 - [[Multi-Agent Context]] — extends (rung 4)
 - [[Harness Engineering]] — prerequisite-for
-- [[Context Anatomy]] — extends
+- [[Context Anatomy]] — related

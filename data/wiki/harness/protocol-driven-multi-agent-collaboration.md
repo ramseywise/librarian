@@ -128,9 +128,9 @@ available.
 - [[Graph Engineering]] <!-- auto-linked -->
 - [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
 - [[Task Decomposition Patterns]] — prerequisite-for (the cut this protocol coordinates)
-- [[Multi-Agent Orchestration Patterns]] — complements (topologies and typed I/O contracts)
-- [[Multi-Agent Context]] — implements (externalized plan state and isolation)
-- [[Agent Security Risk Taxonomy]] — complements (R11–R13, the same boundary from the threat side)
-- [[Execution Boundaries and Guardrails]] — implements (the isolation boundary, mechanically)
+- [[Multi-Agent Orchestration Patterns]] — related (topologies and typed I/O contracts)
+- [[Multi-Agent Context]] — related (externalized plan state and isolation)
+- [[Agent Security Risk Taxonomy]] — related (R11–R13, the same boundary from the threat side)
+- [[Execution Boundaries and Guardrails]] — related (the isolation boundary, mechanically)
 - [[Production Reliability Primitives]] — extends (durable messaging, idempotency, explicit state in production)
 - [[Provenance-Tracked Agent Beliefs]] — extends (belief provenance and peer models in the message layer)

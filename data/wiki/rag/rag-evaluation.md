@@ -266,7 +266,7 @@ This is especially important for edge cases — judge prompts optimized on avera
 ## See Also
 - [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
 - [[Trajectory Over Outcome]] — extends (why the trajectory tier exists, not just what it measures)
-- [[The Augmentation Gate]] — complements (the component gate between retrieval and generation)
+- [[The Augmentation Gate]] — related (the component gate between retrieval and generation)
 - [[RAG Eval Metrics Suite]]
 - [[Synthetic Dataset Generation for RAG Eval]]
 - [[Conversation Repository Pattern]]
@@ -278,3 +278,4 @@ This is especially important for edge cases — judge prompts optimized on avera
 - [[HITL Annotation Pipeline]]
 - [[RAG Architecture Selection]] — prerequisite-for (component gates diagnose which failure an architecture change should target)
 - [[Evaluating Context]] — extends (metrics per context lever, ablation and length/position sweeps beyond retrieval)
+- [[Experiment Tracking Schemas]] — instance-of (per-stage config capture is what makes component gates diffable)

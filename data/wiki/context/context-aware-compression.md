@@ -70,4 +70,4 @@ index time and *adds* context to chunks; compression runs at query time and *rem
 - [[Agent Status Bar]] — alternative-to
 - [[Compression Strips the Epistemic Frame]] — prerequisite-for (what any summariser tends to lose)
 - [[Contextual Retrieval]] — alternative-to (index-time addition vs query-time removal)
-- [[Context Window Budgeting]] — extends
+- [[Context Window Budgeting]] — related

@@ -296,13 +296,13 @@ Atomic pages: [[Harness Subsystem Attribution]] · [[Dynamic Tool Discovery]] ·
 - [[Spec, Verifier, Environment Layering]] — extends (a practitioner framing of the same harness as spec + verifier + workshop)
 - [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Prompt Engineering]] <!-- auto-linked -->
-- [[Context Engineering]] — depends-on
-- [[Harness Anatomy]] — part-of
+- [[Context Engineering]] — prerequisite-for
+- [[Harness Anatomy]] — related (part of)
 - [[ACI (Agent-Computer Interface)]] — instance-of
 - [[Loop Engineering]] — extends (the layer above: the harness supplies tools, the loop decides when to stop using them)
-- [[Agentic Engineering and the New SDLC]] — complements (the same "skill issue" reframe reached from the process side, plus the TCO argument)
-- [[Agent Interoperability Protocol Stack]] — complements (what governs the boundary when the other side is not under your control)
+- [[Agentic Engineering and the New SDLC]] — related (the same "skill issue" reframe reached from the process side, plus the TCO argument)
+- [[Agent Interoperability Protocol Stack]] — related (what governs the boundary when the other side is not under your control)
 - [[Agent Deployment Anti-Patterns]] — instance-of (the eight deployment failures the reframe predicts)
-- [[Skill Authoring Discipline]] — implements (authoring the skill layer of the harness)
+- [[Skill Authoring Discipline]] — related (authoring the skill layer of the harness)
 - [[Harness Subsystem Attribution]] — extends (the skill-issue reframe as a diagnostic procedure)
-- [[Deep Agent Pillars]] — complements (the architecture-level view of the same system)
+- [[Deep Agent Pillars]] — related (the architecture-level view of the same system)

@@ -134,10 +134,10 @@ Sizing and its uncertainty are on [[Eval Error Bars and Sample Size]]; leak defe
 - [[HITL Annotation Pipeline]]
 - [[Scope-POC Design Interview]] — prerequisite-for (design-time metric targets become evals/targets.yaml)
 - [[Skill Pipeline Dryrun Testing]] — alternative-to (fixed unambiguous cases for a skill chain rather than a model)
-- [[Eval Ladder]] — part-of (rung 2 of the maturity progression)
+- [[Eval Ladder]] — related (part of; rung 2 of the maturity progression)
 - [[Manual Review as Eval Bootstrap]] — prerequisite-for (failure patterns become the first golden cases)
-- [[User Feedback Loops]] — feeds (thumbs-down cases expand the set post-deploy)
+- [[User Feedback Loops]] — related (feeds; thumbs-down cases expand the set post-deploy)
 - [[Conversational Test Fixture Design]] — alternative-to (fixture authoring when the input is dialogue)
 - [[Eval Suite Maintenance]] — extends (the eight authoring rules, incl. negative cases and the two-expert test)
-- [[Eval Non-Determinism]] — complements (a golden row is scored over k trials, not one)
+- [[Eval Non-Determinism]] — related (a golden row is scored over k trials, not one)
 - [[Answer Criteria with Named Wrong Answers]] — extends (named wrong answers as adversarial case seeds)

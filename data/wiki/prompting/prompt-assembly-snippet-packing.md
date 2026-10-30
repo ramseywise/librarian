@@ -67,3 +67,4 @@ are [[Context Anatomy]].
 - [[Context Anatomy]] — extends (the context-engineering view of the same assembly)
 - [[Long-Context Prompting]] — prerequisite-for
 - [[Prompt Engineering]] — instance-of
+- [[Prompts as Document Completion]] — prerequisite-for

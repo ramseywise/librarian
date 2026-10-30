@@ -148,11 +148,11 @@ prune dead rows, re-calibrate judges, retire metrics nobody acts on.
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
 - [[Eval Ladder]] <!-- auto-linked -->
 - [[Eval Harness Anatomy]] — extends (maintaining what that page defines)
-- [[Eval Non-Determinism]] — depends-on (environment reset is what makes k trials comparable)
-- [[Eval Maturity Ladder]] — complements (eval rows seeded from observed failures is the level-3 property)
-- [[Golden Set Mechanics]] — complements (curation rules for the rows themselves)
+- [[Eval Non-Determinism]] — prerequisite-for (environment reset is what makes k trials comparable)
+- [[Eval Maturity Ladder]] — related (eval rows seeded from observed failures is the level-3 property)
+- [[Golden Set Mechanics]] — related (curation rules for the rows themselves)
 - [[Online Eval Sampling]] — extends (where new discovery rows come from in production)
-- [[Eval-Driven Development (EDD)]] — complements
+- [[Eval-Driven Development (EDD)]] — related
 - [[Ship Logging Before Features]] — related (the regression/capability split applied to a recommender)
 - [[One Check Shape for Quality Verdicts]] — extends (fixtures exported from human overturns as the regression path)
 - [[Eval Falsifiability]] — prerequisite-for
@@ -160,3 +160,4 @@ prune dead rows, re-calibrate judges, retire metrics nobody acts on.
 - [[Paired Eval Comparison]] — extends
 - [[Eval Contamination Defenses]] — extends
 - [[Eval Metric Interpretation Pitfalls]] — extends
+- [[Langfuse Platform]] — instance-of (add-from-trace as the regression-fixture path)

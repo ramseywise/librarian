@@ -2,7 +2,7 @@
 title: One Check Shape for Quality Verdicts
 tags: [eval, infra, pattern]
 summary: Nine quality flag vocabularies across a pipeline, none of which joined, were replaced by one Check shape — component, kind, rule, rubric, runner, grader — writing to one `quality_verdicts` store keyed by `trace_id`; evals never score production rows (fixtures are exported from human overturns), each component's judged dimensions stay UNGATED until a human-agreement ceiling exists, and the trace tool is where you debug a call while the verdict store is where you read the rate.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-29-quality-verdicts-refactor.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-29-quality-verdicts-refactor.md
@@ -87,7 +87,7 @@ Human time goes where the models disagree.
 
 ## See Also
 - [[Taste vs Defect Verdict Split]] — extends (the human-verdict row this generalises)
-- [[Human Agreement Ceiling Protocol]] — depends-on (what un-UNGATEs a judged component)
+- [[Human Agreement Ceiling Protocol]] — prerequisite-for (what un-UNGATEs a judged component)
 - [[Eval Suite Maintenance]] — extends (add-from-overturn as the regression-fixture path)
 - [[Langfuse Platform]] — related (trace is evidence; the verdict row is the record)
 - [[Eval Maturity Ladder]] — related (one store with sampling is the level-4 property)

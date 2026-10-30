@@ -53,7 +53,7 @@ comment is one category of mistake that never needs a human again — "capture t
 enforce it continuously."
 
 ## See Also
-- [[Three-Layer Termination Check]] — complements (where the messages are emitted)
+- [[Three-Layer Termination Check]] — related (where the messages are emitted)
 - [[Verification Loops]] — extends
 - [[Agent Retry Taxonomy]] — prerequisite-for (an actionable error is what makes a retry a re-plan)
 - [[Harness Engineering]] — instance-of (the ratchet applied to review)

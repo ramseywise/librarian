@@ -2,7 +2,7 @@
 title: TypeScript any Escapes
 tags: [foundations, reference]
 summary: "The three ways out of an `any` — a real type, `unknown` with narrowing, or a generic — plus why types files are the highest-leverage place to fix them and how exhaustive-deps catches stale closures rather than style violations."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/programming--eslint.md
 ---
@@ -69,7 +69,7 @@ resolves the lint error while leaving the stale closure in place**, which is the
 available outcomes: the code now asserts that the dependency list is correct.
 
 ## See Also
-- [[Git Branch Triage]] — complements (the other half of the day-to-day tooling reference)
-- [[Data Science Curriculum Layers]] — complements (the programming-tooling layer beneath the curriculum)
+- [[Git Branch Triage]] — related (the other half of the day-to-day tooling reference)
+- [[Data Science Curriculum Layers]] — related (the programming-tooling layer beneath the curriculum)
 - [[Brand the Funnel's Output]] — prerequisite-for (a nominal brand: a fourth tool beside real types, `unknown` and generics)
 - [[Triage Casts by Mechanical Probe]] — prerequisite-for (triaging a large population of `as unknown as` casts)

@@ -2,7 +2,7 @@
 title: Derive the Gate, Don't Copy It
 tags: [llm, infra, pattern]
 summary: "Any list of what checks ran — the `Gate:` line in a review brief, the gate targets in a doc — must be generated from the build system (`make -pn`, `sed -n 's/^gate: *//p' Makefile`), never typed, because a typed list is the same trust-the-narrative failure the review rules forbid and it drifted to 3 of 8 targets within a week."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/workflow-review/SKILL.md
   - data/raw/claude-docs/playground/agents/build-scout.md
@@ -127,7 +127,7 @@ which had the same problem.
 - [[Review Reporter Ground Rules]] — prerequisite-for (rule 5 depends on this line being trustworthy)
 - [[Decision-ID Reservation Across Concurrent Plans]] — related (same registry-vs-rendering direction for decisions)
 - [[Always-Red Check Carries No Signal]] — related (the other way a gate stops being evidence)
-- [[Workflow Pipeline Telemetry Audit]] — derived-from
+- [[Workflow Pipeline Telemetry Audit]] — related (derived from)
 - [[The Untested Copy Wins]] — related (a hand-copied list is a second copy of the truth, and the untested one)
 - [[Hashed Fingerprint Contamination Gate]] — related (a gate that proves absence instead of presence)
 - [[Comparable Tables, Not One Source]] — alternative-to (when lists must be comparable rather than identical, keep them apart and test agreement)

@@ -4,17 +4,10 @@ from pathlib import Path
 
 import frontmatter
 
-from core.wiki_common import TYPED_LINK_RE, WIKILINK_RE, slugify
+from core.wiki_common import CANONICAL_LINK_TYPES, TYPED_LINK_RE, WIKILINK_RE, slugify
 
 WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
-RELATIONSHIP_TYPES = {
-    "extends",
-    "prerequisite-for",
-    "alternative-to",
-    "instance-of",
-    "contradicts",
-    "supersedes",
-}
+RELATIONSHIP_TYPES = CANONICAL_LINK_TYPES
 
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
 

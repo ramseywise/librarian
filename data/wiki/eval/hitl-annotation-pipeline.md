@@ -2,7 +2,7 @@
 title: HITL Annotation Pipeline
 tags: [eval, concept]
 summary: Human-in-the-loop annotation workflow for conversation data — two-queue structure (random + edge case), inter-annotator agreement as quality gate, and feedback routing to eval dataset vs failure taxonomy.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/linear/2026-04-24-evaluation-and-improvement.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
@@ -95,3 +95,4 @@ See [[RAG Evaluation]] for the full judge suite architecture.
 - [[Graded-Uncertainty Enrichment Contract]] — related (the three uncertainty levels that decide what reaches the annotators)
 - [[Recency-Seeded Label Queue Samples the Thin End]] — extends (seed only judgeable rows, stratify kind × field, rank by rater basis)
 - [[Snapshot the Judged Value on the Verdict Row]] — extends (verdict rows for pre-canonical or mutable subjects)
+- [[LangSmith Platform]] — instance-of (annotation queues as the review surface)

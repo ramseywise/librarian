@@ -2,7 +2,7 @@
 title: Single Prompt Baseline
 tags: [llm, pattern]
 summary: One LLM call with no tools, state, or framework — the simplest orchestration, correct for classification/extraction/summarization, and the baseline any agent must beat to justify its complexity.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/agent-orchestration.md
 ---
@@ -49,6 +49,6 @@ examples are often enough"* — see [[Agentic Workflow Patterns]].
 ## See Also
 - [[Multi-Step Graph Orchestration]] <!-- auto-linked -->
 - [[Chain of Thought]] <!-- auto-linked -->
-- [[Agent Orchestration Patterns]] — part-of
-- [[Single Agent With Tools]] — upgrade-path
+- [[Agent Orchestration Patterns]] — related (part of)
+- [[Single Agent With Tools]] — extends
 - [[Agentic Workflow Patterns]] — related

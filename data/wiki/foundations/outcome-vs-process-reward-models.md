@@ -66,6 +66,6 @@ and adds deterministic penalties for path violations, without a learned step sco
 - [[Reward Hacking and Overoptimization]] — extends (the proxy problem, at step level rather than response level)
 - [[RLHF Pipeline]] — extends (Stage 2's reward model, specialised for reasoning)
 - [[Verification Loops]] — alternative-to (step checking moved to inference time instead of training)
-- [[RL Training Frameworks for LLMs]] — complements (where these reward models are wired into training)
+- [[RL Training Frameworks for LLMs]] — related (where these reward models are wired into training)
 - [[RLVP — Verifiable Path Penalties]] — alternative-to (outcome reward plus deterministic path penalties)
 - [[Post-Training for Agents]] — extends (reward forms for agent RL)

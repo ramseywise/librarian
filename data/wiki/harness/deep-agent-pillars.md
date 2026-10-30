@@ -45,6 +45,6 @@ and HITL interrupts.
 
 ## See Also
 - [[Deep Agents Framework]] — instance-of
-- [[Harness Engineering]] — extends
+- [[Harness Engineering]] — related (part of)
 - [[Harness Orchestration]] — extends
-- [[Long-Horizon Execution]] — extends
+- [[Long-Horizon Execution]] — prerequisite-for

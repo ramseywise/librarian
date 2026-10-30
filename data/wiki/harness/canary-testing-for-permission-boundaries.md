@@ -65,6 +65,6 @@ the pattern never mentions.
   regressed deny rule looks exactly like a working one.*
 
 ## See Also
-- [[Execution Boundaries and Guardrails]] — part-of
-- [[Read-Only by Default with Explicit Authorization]] — complements
+- [[Execution Boundaries and Guardrails]] — related (part of)
+- [[Read-Only by Default with Explicit Authorization]] — related
 - [[Harness Engineering]] — instance-of

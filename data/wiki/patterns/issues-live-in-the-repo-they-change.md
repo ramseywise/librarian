@@ -2,7 +2,7 @@
 title: Issues Live in the Repo They Change
 tags: [llm, pattern]
 summary: File each issue in the repo whose code it changes, not in a central "board" repo where the idea came up. When moving a misfiled issue, fully qualify its cross-repo references first, because bare #N refs silently rebind to the destination repo.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/_user/CLAUDE.md
 ---
@@ -38,4 +38,4 @@ reference that was valid in one namespace binds silently to a different object i
 ## See Also
 - [[Decision-ID Reservation Across Concurrent Plans]] — related (references that silently rebind when their namespace changes)
 - [[Branch Naming Convention Pattern]] — related (prefix conventions in branch and PR names)
-- [[Claude Workflow System]] — part-of
+- [[Claude Workflow System]] — related (part of)

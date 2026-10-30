@@ -122,8 +122,8 @@ arrived at again from the operations side.
 
 ## See Also
 - [[Memory Lifecycle]] — extends (running the lifecycle in production)
-- [[Memory Forms Taxonomy]] — complements (why deletability favors token-level memory)
-- [[Memory Decay Weighting]] — implements (TTL and decay as the staleness policy)
-- [[Agent Security Risk Taxonomy]] — complements (memory poisoning, R4, at the write path)
-- [[Observability and Runtime Patterns]] — implements (tracing the memory lookup span)
+- [[Memory Forms Taxonomy]] — related (why deletability favors token-level memory)
+- [[Memory Decay Weighting]] — related (TTL and decay as the staleness policy)
+- [[Agent Security Risk Taxonomy]] — related (memory poisoning, R4, at the write path)
+- [[Observability and Runtime Patterns]] — related (tracing the memory lookup span)
 - [[Designed Memory vs Raw-Record Search]] — alternative-to (evidence that a searchable verbatim record can beat an extracted store)

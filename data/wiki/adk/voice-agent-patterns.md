@@ -73,3 +73,5 @@ Voice sessions accumulate state faster than text. Key patterns:
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — extends (why request-response tooling does not transfer)
 - [[Realtime Voice Architecture Reference]] — extends (latency budget, cascaded vs S2S, regulated-domain constraints)
 - [[Voice Agent Paradigms]] — extends (cascaded vs self-cascade vs end-to-end vs full-duplex, with latency math)
+- [[Real-Time Multimodal Agents]] — extends
+- [[Semantic Turn Detection]] — instance-of

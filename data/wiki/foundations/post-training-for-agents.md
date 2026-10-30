@@ -215,3 +215,4 @@ on a sample? Reuse benchmark *environments* for training, never benchmark *items
 - [[Agent Fundamentals]] — prerequisite-for (trajectories are the raw material for training)
 - [[Self-Learning Agents]] — alternative-to (improvement without touching weights)
 - [[Real-Time Multimodal Agents]] — extends (voice SFT and robot-policy RL in practice)
+- [[Training-Agent Disaggregation]] — extends

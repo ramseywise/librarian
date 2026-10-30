@@ -98,4 +98,4 @@ The existing specs covered PII masking but not compliance *architecture*. Findin
 - [[PII Masking Approaches]] — extends (text masking vs mandatory audio redaction)
 - [[Data Clusters by Writer and Trust]] — extends (erasure must reach every representation)
 - [[Safeguards Architecture — Five Protection Layers]] — extends
-- [[Voice Agent Paradigms]] — extends (the fully serial cascade budget, where the VAD wait dominates)
+- [[Voice Agent Paradigms]] — related (the fully serial cascade budget, where the VAD wait dominates)

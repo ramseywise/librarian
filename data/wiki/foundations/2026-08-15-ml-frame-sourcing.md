@@ -1,8 +1,8 @@
 ---
 title: ML Frame Sourcing — License, Horizon, Prevalence
-tags: [foundations, decision, conflict]
+tags: [foundations, decision]
 summary: Choosing public datasets for ML prototype frames on three constraints — a license that permits redistribution of derived artifacts, a time column that supports a temporal split, and a positive rate low enough to exercise the sufficiency guard — with the explicit note that class imbalance is not data insufficiency and that pre-registered hypotheses stay unedited after results.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/docs/DESIGN-ml-frame-sourcing.md
   - data/raw/claude-docs/galactus/docs/decisions/ml-frame-sourcing-decisions.md
@@ -63,9 +63,11 @@ stayed a finding *because* the pre-registered claim it refuted was still there t
 ## Verification pass (2026-08-18)
 
 A research pass checked both frames against the three constraints by downloading the files
-and reading the licences. **Conflict flagged.** It reads "horizon" as the *label* horizon,
-not as a time column, and on that reading it reverses this page's constraint-2 verdicts. See
-`_conflicts.md` and [[Label Horizon vs Sampling Window]].
+and reading the licences. It reads "horizon" as the *label* horizon,
+not as a time column. That reading is the correct one (resolved 2026-10-30), and it reverses
+this page's constraint-2 verdicts. Credit passes, because "default payment next month" is a
+stated horizon. Fraud fails, because its `Time` column fixes only a ~2-day sampling window.
+See [[Label Horizon vs Sampling Window]].
 
 - **Credit frame: confirmed on every claim.** CC BY 4.0. Prevalence counted at 22.12%
   (6,636/30,000). The thinnest 5-fold test fold has about 1,327 positives against a floor of

@@ -74,7 +74,7 @@ extra resolution changes a decision.
 
 ## See Also
 - [[Eval Harness Anatomy]] — extends (the grader noun, given a trust state)
-- [[UNGATED Metric Convention]] — complements (metric-level counterpart)
+- [[UNGATED Metric Convention]] — related (metric-level counterpart)
 - [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]] — prerequisite-for (how a judge becomes calibrated)
 - [[Veto Rubric Items]] — related (how graders combine into a task score)
 - [[Demote Judge Findings to Keyless Gates]] — related (moving checks from judge to code)

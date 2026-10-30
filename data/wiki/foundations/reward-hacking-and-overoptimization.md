@@ -93,10 +93,10 @@ tracking, and response-length distributions (verbosity hacking is the cheapest t
 and the most commonly missed).
 
 ## See Also
-- [[RLHF Pipeline]] — part-of (the Stage 3 failure modes)
-- [[Bradley-Terry Preference Model]] — depends-on (why weak label bias becomes strong artifact)
-- [[Preference Optimization Algorithms]] — complements (DPO inherits the length problem; verifiable rewards sidestep it)
-- [[Eval Maturity Ladder]] — complements (optimizing a proxy metric, at training time rather than eval time)
+- [[RLHF Pipeline]] — related (part of; the Stage 3 failure modes)
+- [[Bradley-Terry Preference Model]] — prerequisite-for (why weak label bias becomes strong artifact)
+- [[Preference Optimization Algorithms]] — related (DPO inherits the length problem; verifiable rewards sidestep it)
+- [[Eval Maturity Ladder]] — related (optimizing a proxy metric, at training time rather than eval time)
 - [[Constitutional AI and RLAIF]] — extends (an explicit constitution makes the alignment target auditable)
 - [[Outcome vs Process Reward Models]] — extends (the same proxy problem at step level, and why verifiable outcomes reduce it)
 - [[RLVP — Verifiable Path Penalties]] — extends (penalizing verifier gaming in agent RL)

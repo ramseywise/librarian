@@ -126,3 +126,4 @@ text**, can't verify anything, and scores near zero — or worse, scores from it
 - [[Experiment Tracking Schemas]] — extends (the log-only-then-promote policy governing when a tier becomes a hard fail)
 - [[Evidence-Labelled Generation with Deterministic QC]] — extends (evidence labels checked by code, not a judge)
 - [[Assembled, Not Generated Replies]] — related (sidestepping grounding by not generating prose at all)
+- [[Specialist Verdict Panel]] — instance-of (claim-level citation checking)

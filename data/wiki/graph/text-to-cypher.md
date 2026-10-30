@@ -111,3 +111,4 @@ point out what the visualisation does not make obvious rather than restate it.
 - [[Knowledge Graph Fundamentals and Cypher]] — prerequisite-for
 - [[Graph Topology Primitives]] — instance-of
 - [[Multi-Agent Failure Modes at Scale]] — extends
+- [[Knowledge Graph Entity Resolution]] — prerequisite-for

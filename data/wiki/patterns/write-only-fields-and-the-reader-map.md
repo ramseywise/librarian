@@ -2,7 +2,7 @@
 title: Write-Only Fields and the Reader Map
 tags: [patterns, eval, pattern]
 summary: Audit every produced field by building its reader map — written by what, selected by what, read by what — because the expensive failure is a value the prompt spends lines teaching the model to produce and the pipeline then throws away at a seam.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/listen-wiseer/docs/plans/phase8-rag-rightsize-agentic-search.md
   - data/raw/repos/listen-wiseer/.claude--docs--plans--phase8-rag-rightsize-agentic-search.md
@@ -280,8 +280,8 @@ reader" is not the same as "no reader":
   field that was in use.
 
 ## See Also
-- [[Cached Derivation Without a Recompute Path]] — complements (the writer-side twin: stored, never recomputed)
-- [[Scan-Floor Guard Against Silent No-Op Checks]] — complements (a check with a blind spot is the same audit applied to guards)
+- [[Cached Derivation Without a Recompute Path]] — related (the writer-side twin: stored, never recomputed)
+- [[Scan-Floor Guard Against Silent No-Op Checks]] — related (a check with a blind spot is the same audit applied to guards)
 - [[Frozen Version Stamps on Logged Results]] — extends (what the exposure code must log once it keeps the breakdown)
 - [[RAG Eval Gate Contract]] — related (row pools and failure labels as the eval-side reader map)
 - [[Fallback Mistaken for the Design]] — related (the review that found alternatives built but dropped at the serving seam)

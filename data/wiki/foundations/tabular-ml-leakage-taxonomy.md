@@ -2,7 +2,7 @@
 title: Tabular ML Leakage Taxonomy
 tags: [foundations, eval, reference]
 summary: Six leakage classes for tabular ML — target, temporal, group, fit-before-split, resampling outside the fold, train/serve skew — all answering one question ("at the moment this line runs, what does it know that it would not know at prediction time?"), plus why a leakage verdict needs the person who knows how the data was collected, not a correlation ranking.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/skills/review-leakage/SKILL.md
   - data/raw/claude-docs/galactus/skills/prototype-genesis/SKILL.md
@@ -108,7 +108,7 @@ unscored, although its presence alone is the label. Fix: also score
 - [[An Unrun Scan Is Not a Clean Scan]] — extends (the missing scan as a finding)
 - [[Profile Then Select]] — extends ("did not exist yet at prediction time" as a leakage candidate)
 - [[ML Frame Sourcing — License, Horizon, Prevalence]] — prerequisite-for (a time column for a temporal split)
-- [[Prototype Genesis Interview]] — part-of
+- [[Prototype Genesis Interview]] — related (part of)
 - [[Calibrated Score, Deterministic Decision Rule]] — prerequisite-for (leakage check before the training library)
 - [[ML Stage Layering with Typed Contracts]] — prerequisite-for ("nothing fitted outside a fold" as a tree rule)
 - [[ML Run Reproducibility Bar]] — prerequisite-for (the planted-leak twin plants these shapes)

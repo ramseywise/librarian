@@ -32,9 +32,9 @@ from core.wiki_common import TYPED_LINK_RE, slugify
 # The two relationship types that express "you need this to understand that".
 EXPANSION_RELATIONSHIPS = frozenset({"prerequisite-for", "extends"})
 
-# How to describe an edge walked against its written direction. CLAUDE.md defines
-# `prerequisite-for` as "must understand this before the target", so arriving at
-# the *source* from the target means the source is what builds on the seed.
+# How to describe an edge walked against its written direction. The annotation
+# describes the *linked* page ("[[X]] — prerequisite-for" on P: X is a prerequisite
+# for P), so arriving at P from X means P is what builds on the seed.
 INVERSE_LABEL = {
     "prerequisite-for": "builds-on",
     "extends": "extended-by",

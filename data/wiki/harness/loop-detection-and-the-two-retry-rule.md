@@ -72,8 +72,10 @@ See [[Gate Pass Rate Measures Effort, Not Readiness]].
 ## See Also
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Agent Retry Taxonomy]] — extends
-- [[Verification Loops]] — complements
-- [[Execution Boundaries and Guardrails]] — complements
-- [[Harness Engineering]] — part-of
-- [[Loop Termination Design]] — complements (identical-action detection vs varied-but-stalled detection)
+- [[Verification Loops]] — related
+- [[Execution Boundaries and Guardrails]] — related
+- [[Harness Engineering]] — related (part of)
+- [[Loop Termination Design]] — related (identical-action detection vs varied-but-stalled detection)
 - [[Gate Pass Rate Measures Effort, Not Readiness]] — related (the retry counter as a non-signal)
+- [[Deep Agents Framework]] — instance-of (loop-detection middleware)
+- [[Trajectory Over Outcome]] — instance-of (the stopping-point decision, mechanically)

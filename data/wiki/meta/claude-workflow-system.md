@@ -2,7 +2,7 @@
 title: Claude Workflow System
 tags: [context-management, llm, pattern]
 summary: Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints, and session notes — that automates context management across multi-phase engineering workflows.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/workflow-review/SKILL.md
   - data/raw/claude-docs/playground/skills/planning/linear-spike/SKILL.md
@@ -396,10 +396,10 @@ A project-local instantiation of this skill (`code_debug` in [[Listen-Wiseer Pro
 - [[Evidence-Gated Skill Pipeline]] — instance-of (a project-local skill family built on this system)
 - [[REUSE/ADAPT/SKIP Asset Verdicts]] — extends (research-scout output contract)
 - [[Stage-Scoped Scout Agents]] — extends (one stage per sub-agent invocation in the build and scope pipelines)
-- [[Scoped Phase Dispatch with Pre-Resolved Files]] — part-of (the build stage's dispatch contract)
-- [[REUSE/ADAPT/SKIP Asset Verdicts]] — part-of (the research and refine stages' reporting contract)
+- [[Scoped Phase Dispatch with Pre-Resolved Files]] — related (part of; the build stage's dispatch contract)
+- [[REUSE/ADAPT/SKIP Asset Verdicts]] — related (part of; the research and refine stages' reporting contract)
 - [[Workflow Pipeline Telemetry Audit]] — extends (what a week of telemetry said about the pipeline)
-- [[Decision-ID Reservation Across Concurrent Plans]] — part-of (a plan-stage rule for concurrent plans)
+- [[Decision-ID Reservation Across Concurrent Plans]] — related (part of; a plan-stage rule for concurrent plans)
 - [[Capability vs Phase Skills]] — extends (positional vs situational skills)
 - [[Job Verb Taxonomy for Skills]] — extends (one job verb per skill)
 - [[Archived Skills Convention]] — extends (how skills are retired)

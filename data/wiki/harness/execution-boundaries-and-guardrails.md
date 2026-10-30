@@ -238,14 +238,18 @@ most commonly violated instance of it**. Testing that the boundary actually hold
 discipline — see [[Canary Testing for Permission Boundaries]].
 
 ## See Also
-- [[Harness Engineering]] — part-of
-- [[Harness Anatomy]] — part-of
+- [[Harness Engineering]] — related (part of)
+- [[Harness Anatomy]] — related (part of)
 - [[Canary Testing for Permission Boundaries]] — extends
-- [[Tool Design as Harness Surface]] — depends-on
-- [[Safeguards Architecture — Five Protection Layers]] — implements
-- [[Read-Only by Default with Explicit Authorization]] — complements
+- [[Tool Design as Harness Surface]] — prerequisite-for
+- [[Safeguards Architecture — Five Protection Layers]] — related
+- [[Read-Only by Default with Explicit Authorization]] — related
 - [[Reversibility Cliff]] — extends (locating the unattended-action boundary at notification, with evidence)
 - [[Proposer-Reviewer and Sidecar Gating]] — extends (who approves when a human shouldn't)
-- [[Lethal Triad]] — complements (which capability combinations need the boundary)
+- [[Lethal Triad]] — related (which capability combinations need the boundary)
 - [[Belief Parameters with a Ground-Truth Gate]] — instance-of (trust boundary inside the tool)
 - [[Constitutional Classifiers]] — extends (two-stage classifier guardrails)
+- [[Three-Layer Termination Check]] — instance-of
+- [[Agent Security Risk Taxonomy]] — instance-of (the sandbox and permission mechanics for R6/R8)
+- [[Agent Deployment Anti-Patterns]] — instance-of (mechanism-based enforcement for #8)
+- [[Protocol-Driven Multi-Agent Collaboration]] — instance-of (the isolation boundary, mechanically)

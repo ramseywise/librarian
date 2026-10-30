@@ -113,11 +113,11 @@ added context source is added attack surface*. See [[Prompt Injection]] and
 
 ## See Also
 - [[Tool Design as Harness Surface]] <!-- auto-linked -->
-- [[Prompt Engineering]] — depends-on
-- [[Context Failure Modes]] — part-of
-- [[Prompt Injection]] — attack-surface
+- [[Prompt Engineering]] — prerequisite-for
+- [[Context Failure Modes]] — related (part of)
+- [[Prompt Injection]] — related (attack surface)
 - [[Harness Engineering]] — extends (the layer above: context is what the harness assembles)
-- [[Harness Orchestration]] — implements (subagents as the isolate lever)
+- [[Harness Orchestration]] — related (subagents as the isolate lever)
 - [[Long-Horizon Execution]] — extends (what to do when context runs out)
 - [[Agentic Engineering and the New SDLC]] — instance-of (the six context types and the static/dynamic split, in an SDLC frame)
 - [[Context Window Budgeting]] — extends

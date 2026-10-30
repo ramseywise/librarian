@@ -135,10 +135,11 @@ personal notebook are not interchangeable evidence of anything, and a corpus tha
 them identically loses the distinction permanently.
 
 ## See Also
-- [[AI Engineering Curriculum Structure]] — part-of (the corpus these curricula sit inside)
+- [[AI Engineering Curriculum Structure]] — related (part of; the corpus these curricula sit inside)
 - [[Data Engineering Foundations]] — alternative-to (the sibling branch off shared analytics layers 1–3)
-- [[Notebook Dependency Staleness]] — complements (what happens to this material as its libraries move)
+- [[Notebook Dependency Staleness]] — related (what happens to this material as its libraries move)
 - [[Eval vs Test Distinction]] — extends (Layer 3 discipline, carried into LLM evaluation)
 - [[LightGBM vs CatBoost Comparison]] — instance-of (the Layer 5 gradient-boosting gap, filled)
-- [[Karpathy LLM Wiki Pattern]] — complements (provenance-preserving filing, same instinct)
+- [[Karpathy LLM Wiki Pattern]] — related (provenance-preserving filing, same instinct)
 - [[learn-ai-engineering Project]] — extends (the curriculum repo these layers come from)
+- [[Programming Curriculum]] — prerequisite-for (Python 04 hands off to these layers)

@@ -50,7 +50,7 @@ bar in [[Harness Anatomy]].
 
 ## See Also
 - [[Tool Design as Harness Surface]] — extends (tool discovery at scale)
-- [[MCP Protocol]] — complements (runtime discovery at the protocol level)
-- [[Prefix Caching]] — extends
-- [[Skill Authoring Discipline]] — complements
-- [[Tool Design as Context Engineering]] — extends
+- [[MCP Protocol]] — related (runtime discovery at the protocol level)
+- [[Prefix Caching]] — prerequisite-for
+- [[Skill Authoring Discipline]] — related
+- [[Tool Design as Context Engineering]] — related

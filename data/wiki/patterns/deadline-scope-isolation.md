@@ -2,7 +2,7 @@
 title: Deadline-Scope Isolation
 tags: [patterns, llm, pattern]
 summary: Keep work whose trigger has not fired out of a PR that has a date — fold-ins look efficient and instead couple an unmeasured decision to a deadline; extract a shared harness only after the second real job exists.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-dis37-replay-corpus.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-dis37-replay-corpus.md
@@ -55,7 +55,7 @@ needs application code and secrets belongs on the CI scheduler or the hosting pl
 cron. Deciding this per job is cheaper than a harness that abstracts over all three.
 
 ## See Also
-- [[Named-Trigger Deferral]] — complements (what happens to the triggered half)
+- [[Named-Trigger Deferral]] — related (what happens to the triggered half)
 - [[Re-Scope Over Sequence for Colliding Issues]] — extends (the splitting move when scopes overlap by file)
 - [[Data Clusters by Writer and Trust]] — related (the two jobs touched different clusters, which is why they were different jobs)
 - [[Deferred Decision Status]] — related (parking an unknown without blocking the gate)

@@ -2,7 +2,7 @@
 title: Principal Write-Surface Matrix
 tags: [infra, mcp, pattern]
 summary: List every principal (users, tenants, operators, services, and the model provider) as a row with submit/read/mutate/cause columns, then ask whether any principal's write surface exceeds its authority — the test that found a tenant able to approve its own lifecycle transition.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/akira/skills/design-system/SKILL.md
@@ -77,7 +77,7 @@ choices from the same pair of plans:
 - [[Written-but-Inert RLS Policies]] — extends (policy existence vs policy authority)
 - [[Four-Source Provenance Contract]] — related (who caused a state change)
 - [[Realtime Is UI Sync, Not the Event Bus]] — related (same plate)
-- [[Four-Stage Design Pipeline with Backflow]] — part-of (system stage)
+- [[Four-Stage Design Pipeline with Backflow]] — related (part of; system stage)
 - [[Agent Credential Ceiling]] — related (an agent principal's read column capped at its human's)
 - [[Paired Allow Test for Deny Rules]] — related (executing the matrix's denials, each paired with an allowed operation)
 - [[State Writer Never Owns Its Side Effects]] — related (sole-writer ownership of a lifecycle field)

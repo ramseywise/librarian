@@ -85,7 +85,7 @@ boundary held explicitly.
 ## See Also
 - [[Situation-Indexed Decision Tree]] — extends (the layer between process and guides)
 - [[System Design Interview Study Guide]] — instance-of (the round-side method file)
-- [[Karpathy LLM Wiki Pattern]] — complements (raw vs compiled, the other filing axis)
-- [[Agents Interview Study Guide]] — complements (durable-side content this rule files)
+- [[Karpathy LLM Wiki Pattern]] — related (raw vs compiled, the other filing axis)
+- [[Agents Interview Study Guide]] — related (durable-side content this rule files)
 - [[Timebox-Scaled Deliverable Bar]] — instance-of (round-technique material, format-specific and therefore performative)
-- [[AI Engineering Field Question Bank]] — complements (cold-recall material spanning both sides)
+- [[AI Engineering Field Question Bank]] — related (cold-recall material spanning both sides)

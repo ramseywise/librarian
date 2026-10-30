@@ -61,7 +61,7 @@ input-level prompts, keeping personality consistent in multi-turn conversations.
 
 ## See Also
 - [[XML Prompt Structuring]] <!-- auto-linked -->
-- [[Prompt Engineering]] — part-of
-- [[Prompt Injection]] — mitigates
+- [[Prompt Engineering]] — related (part of)
+- [[Prompt Injection]] — related (mitigates)
 - [[Prompt Optimization]] — prerequisite-for
 - [[Prompt Assembly as Snippet Packing]] — extends

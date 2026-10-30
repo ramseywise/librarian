@@ -2,7 +2,7 @@
 title: Degrade the Render, Surface the Failure
 tags: [patterns, infra, decision]
 summary: "When a secondary fetch fails on a page whose core data already loaded, keep rendering the degraded shape and fix the logging instead of throwing into an error boundary — the defect was never that failure and legitimate absence look alike on screen, but that they look alike to whoever is on call — and throw only when continuing could record a wrong outcome."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-02-dis59-server-error-handling.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-02-dis59-server-error-handling.md
@@ -125,6 +125,6 @@ The architecture comparison that first noted this: [[Compiled-Prose KB vs Graph-
 ## See Also
 - [[Silence Reads as Clean]] — instance-of (a failed query rendered as "nothing here")
 - [[Layered Ingestion Failure Posture]] — related (different failure response per grain; this is the render-side analogue)
-- [[Unfinished Work Must Fail Closed]] — contrasts (where fail-closed is the right answer)
+- [[Unfinished Work Must Fail Closed]] — alternative-to (where fail-closed is the right answer)
 - [[Written-but-Inert RLS Policies]] — related (permission-denied rendered as no data, the same confusion one layer down)
 - [[Foreign Rows in a Shared Log Table]] — prerequisite-for (per-section unavailable notices; unknown is not zero)

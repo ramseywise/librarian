@@ -62,3 +62,4 @@ verbatim; scores drop on paraphrased versions.
 - [[Eval Suite Maintenance]] — related (overfitting and saturation)
 - [[Simulated User Evaluation]] — related (τ²-bench fresh parameters)
 - [[Eval Non-Determinism]] — alternative-to
+- [[Parameterised Benchmark Instances]] — instance-of

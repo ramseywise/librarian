@@ -2,7 +2,7 @@
 title: The Augmentation Gate
 tags: [eval, rag, concept]
 summary: "The A in RAG is the gate nobody evaluates — retrieval can be perfect and generation can be sound while the failure lives entirely in how much retrieved context got handed to the model."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - own-prose
 ---
@@ -103,8 +103,8 @@ will both correctly conclude the problem is not theirs.**
 ## See Also
 - [[RAG Eval Metrics Suite]] <!-- auto-linked -->
 - [[RAG Eval Gate Contract]] — extends (the gate ladder this argues has a missing rung)
-- [[RAG Evaluation]] — complements (component metrics for the other gates)
-- [[Why Context Is Finite]] — depends-on (why added context degrades rather than dilutes)
+- [[RAG Evaluation]] — related (component metrics for the other gates)
+- [[Why Context Is Finite]] — prerequisite-for (why added context degrades rather than dilutes)
 - [[Context Engineering]] — instance-of (augmentation is context assembly with one source)
-- [[Safeguards Architecture — Five Protection Layers]] — implements (Layer 3, the retrieval quality gate)
+- [[Safeguards Architecture — Five Protection Layers]] — related (Layer 3, the retrieval quality gate)
 - [[RAG Retrieval Strategies]] — prerequisite-for (the retrieval decisions this gate audits)

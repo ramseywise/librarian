@@ -143,4 +143,4 @@ energy, sociality). It applied the lessons above.
 - [[Silent Failure Catalogue]] — instance-of (null-on-error hiding a schema rejection)
 - [[Blind Labels Judge No Prompt]] — related (the human labels these judges will be calibrated against)
 - [[Human Verdicts as Judge Fixtures]] — prerequisite-for (human wrong verdicts add the negatives)
-- [[LLM Judge Biases]] — extends
+- [[LLM Judge Biases]] — related

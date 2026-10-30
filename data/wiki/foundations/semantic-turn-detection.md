@@ -56,4 +56,4 @@ models do.
 - [[Realtime Voice Architecture Reference]] — alternative-to (hybrid acoustic + semantic endpointing numbers)
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — prerequisite-for (why turns are an assumption at all)
 - [[Tabular ML Leakage Taxonomy]] — instance-of (temporal leakage: labels built from information the online model cannot see)
-- [[Voice Agent Patterns]] — instance-of
+- [[Voice Agent Patterns]] — related

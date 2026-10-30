@@ -2,7 +2,7 @@
 title: Parallel Dimension Scanner Architecture
 tags: [llm, pattern]
 summary: Code review decomposed into independent single-concern scanner agents dispatched in parallel — each owns one dimension, one ID prefix, and one severity mapping — so review breadth scales by adding agents rather than lengthening one prompt.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/agents/review.md
   - data/raw/claude-docs/guacamayo/agents/correctness.md
@@ -287,7 +287,7 @@ choice per scanner is covered in [[Review Model Tiering by Breadth and Severity 
 - [[Cross-Sweep Finding Fingerprint]] — extends (tracking findings across sweeps and repos)
 - [[Deterministic Signal Detection for Dispatch]] — prerequisite-for (regex signals decide which dimensions run)
 - [[Cross-Dimensional Review Adjudicator]] — extends (the merge step after reporters return)
-- [[Review Reporter Ground Rules]] — part-of (the shared trust rules every scanner instance runs under)
+- [[Review Reporter Ground Rules]] — related (part of; the shared trust rules every scanner instance runs under)
 - [[When a Lens Earns Agenthood]] — prerequisite-for (why a dimension is an agent dispatch and not a section)
 - [[An Unrun Scan Is Not a Clean Scan]] — extends (what a dimension emits when it has nothing to run on)
 - [[Quoted Span as Proof of Reading]] — extends (why a validation failure is never hand-repaired)

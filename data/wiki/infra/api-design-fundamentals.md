@@ -56,6 +56,6 @@ stateless and self-contained; a session token needs a lookup but is easier to re
 - **Structured error objects** (code + message), not bare status codes.
 
 ## See Also
-- [[Backend Scaling Fundamentals]] — complements (the substrate behind the endpoints)
+- [[Backend Scaling Fundamentals]] — related (the substrate behind the endpoints)
 - [[System Design Interview Study Guide]] — prerequisite-for (step 3 of the round)
 - [[RAG API Design Patterns]] — extends (the same layer for a retrieval service)

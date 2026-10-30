@@ -2,7 +2,7 @@
 title: Memory Decay Weighting
 tags: [memory, llm, agents, pattern]
 summary: "Exponential recency decay as a retrieval scorer — Memoria weights memories by e^(-alpha*age), which resolves stale-vs-current facts by ranking rather than by an explicit conflict-resolution step."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
@@ -74,8 +74,8 @@ conflict resolution when memories are **assertions about durable facts**, where 
 recent" and "most correct" are not the same thing.
 
 ## See Also
-- [[Memory Lifecycle]] — part-of (a stage-E mechanism)
-- [[Agent Memory Types]] — complements (episodic store scoring)
-- [[RAG Retrieval Strategies]] — complements (recency as a re-ranking signal)
+- [[Memory Lifecycle]] — related (part of; a stage-E mechanism)
+- [[Agent Memory Types]] — related (episodic store scoring)
+- [[RAG Retrieval Strategies]] — related (recency as a re-ranking signal)
 - [[Reciprocal Rank Fusion (RRF)]] — alternative-to (fusing ranked lists vs re-weighting one)
-- [[Memory Store Operations]] — complements (decay and TTL as the staleness policy, operationally)
+- [[Memory Store Operations]] — related (decay and TTL as the staleness policy, operationally)

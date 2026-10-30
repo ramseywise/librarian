@@ -91,12 +91,12 @@ not the mechanism; test several doses, not just on/off. Kill switches for such e
 
 ## See Also
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
-- [[Eval Suite Maintenance]] — part-of (the source of rolling discovery rows)
+- [[Eval Suite Maintenance]] — related (part of; the source of rolling discovery rows)
 - [[Eval Maturity Ladder]] — instance-of (level 4: continuous sampling with drift alerts)
-- [[LLM-as-Judge Evaluation]] — depends-on (layer 2, and its calibration requirement)
-- [[Observability and Runtime Patterns]] — depends-on (traces are the sampling substrate)
-- [[User Feedback Loops]] — complements (negative feedback as a sampling trigger)
-- [[Loop Termination Design]] — complements (cost as a thrashing proxy)
-- [[Experiment Tracking Schemas]] — depends-on (prompt_version + git_commit + model as the attribution key for a drift signal)
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (layer 2, and its calibration requirement)
+- [[Observability and Runtime Patterns]] — prerequisite-for (traces are the sampling substrate)
+- [[User Feedback Loops]] — related (negative feedback as a sampling trigger)
+- [[Loop Termination Design]] — related (cost as a thrashing proxy)
+- [[Experiment Tracking Schemas]] — prerequisite-for (prompt_version + git_commit + model as the attribution key for a drift signal)
 - [[Publish Automatically, Sample for Review]] — instance-of (a publish-time random sample graded by an operator)
 - [[Agent Trace Anatomy]] — prerequisite-for

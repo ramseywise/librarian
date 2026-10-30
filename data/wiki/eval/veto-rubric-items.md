@@ -61,6 +61,6 @@ same reason the [[Specialist Verdict Panel]] keeps judges separate.
 ## See Also
 - [[Grader States (Heuristic, Calibrated, Experimental)]] — related (which graders may hold a veto in a release gate)
 - [[Answer Criteria with Named Wrong Answers]] — instance-of (pitfall items written per topic)
-- [[Specialist Verdict Panel]] — complements (dimensions reported separately)
+- [[Specialist Verdict Panel]] — related (dimensions reported separately)
 - [[Reward Hacking and Overoptimization]] — related (the veto as an anti-hacking device)
 - [[Eval Harness Anatomy]] — extends (scoring design)

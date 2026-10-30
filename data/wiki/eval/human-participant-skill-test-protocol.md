@@ -2,7 +2,7 @@
 title: Human-Participant Skill Test Protocol
 tags: [eval, llm, pattern]
 summary: Usability-testing a conversational skill with real first-time users — pre-registered facilitator expectations, scripted plus real scenarios, non-intervention rules, and a severity-sorted friction log that feeds fixes back before the next session.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/test-protocols/discovery-pipeline-test.md
 ---
@@ -130,6 +130,6 @@ the comprehension failures the dryrun's known-correct scenarios are blind to.
 ## See Also
 - [[Skill Pipeline Dryrun Testing]] — alternative-to (simulated user vs. real first-time user)
 - [[Project Discovery Conversation]] — instance-of (the skill under test)
-- [[Conversational Test Fixture Design]] — complements (authored scenarios vs. live participants)
+- [[Conversational Test Fixture Design]] — related (authored scenarios vs. live participants)
 - [[AI Project Archetypes]] — extends (the pre-registered assertion target)
 - [[NYC-DSSG Project]] — instance-of (the volunteer population tested)

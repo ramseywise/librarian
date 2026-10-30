@@ -120,4 +120,5 @@ never sees. Synthetic `assistant` turns are treated as things the model said.
 - [[Prompt Injection]] — prerequisite-for (roles are structure, not a boundary)
 - [[RLHF Pipeline]] — extends
 - [[Why Context Is Finite]] — extends
-- [[Prompt Assembly as Snippet Packing]] — prerequisite-for
+- [[Prompt Assembly as Snippet Packing]] — related
+- [[Code Generation Prompting]] — extends

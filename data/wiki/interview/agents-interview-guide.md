@@ -147,5 +147,6 @@ See [[Agent Memory Types]].
 - [[System Design Interview Study Guide]] — extends
 - [[Situation-Indexed Decision Tree]] — extends (the agent spine links down into this guide)
 - [[Durable vs Performative Knowledge Split]] — prerequisite-for (this guide is the durable side)
-- [[AI Engineering Field Question Bank]] — complements (cold-recall questions for this pillar)
+- [[AI Engineering Field Question Bank]] — related (cold-recall questions for this pillar)
 - [[Bounding Agents Rather Than Trusting Them]] — extends (the termination and escalation answers)
+- [[AI System Design Interviewer Rubric]] — extends

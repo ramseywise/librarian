@@ -2,7 +2,7 @@
 title: Four-Source Provenance Contract
 tags: [infra, memory, pattern]
 summary: Every stored claim in an AI system is tagged with one of four provenance sources — verified fact, deterministic inference, AI interpretation, human decision — in named columns, and consequential changes keep the chain agent_run → proposal → human edit → approval → state transition → external effect.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/akira/skills/design-system/SKILL.md
@@ -76,7 +76,7 @@ who approved it.
 - [[Every Column Names Its Reader]] — related (provenance columns are columns that must name their reader)
 - [[Principal Write-Surface Matrix]] — related (who is allowed to cause each step of the chain)
 - [[Graded-Uncertainty Enrichment Contract]] — related (confidence on AI-interpreted fields)
-- [[Four-Stage Design Pipeline with Backflow]] — part-of (system stage)
+- [[Four-Stage Design Pipeline with Backflow]] — related (part of; system stage)
 - [[Evidence Classification Model]] — alternative-to
 - [[Computed-Correctness Lesson Loop]] — extends (provenance retained through memory promotion)
 - [[Single-Writer Transition Command]] — extends (the transition event that links approval to audit)

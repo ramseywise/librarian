@@ -235,12 +235,12 @@ calcifying** — see [[Iterative Harness Simplification]].
 
 ## See Also
 - [[Eval Maturity Ladder]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
+- [[Harness Engineering]] — related (part of)
 - [[Iterative Harness Simplification]] — extends
-- [[Production Reliability Primitives]] — complements
-- [[Verification Loops]] — depends-on
-- [[Harness Anatomy]] — depends-on
-- [[Eval Ladder]] — depends-on
+- [[Production Reliability Primitives]] — related
+- [[Verification Loops]] — prerequisite-for
+- [[Harness Anatomy]] — prerequisite-for
+- [[Eval Ladder]] — prerequisite-for
 - [[Runtime vs Process Observability]] — extends
 - [[Quality Document]] — extends
-- [[Harness Subsystem Attribution]] — complements (diagnosing which subsystem a failure belongs to)
+- [[Harness Subsystem Attribution]] — related (diagnosing which subsystem a failure belongs to)

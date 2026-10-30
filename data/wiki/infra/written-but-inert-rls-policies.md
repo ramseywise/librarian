@@ -2,7 +2,7 @@
 title: Written-but-Inert RLS Policies
 tags: [infra, pattern]
 summary: A row-level-security policy in the migration chain does nothing until `enable row level security` runs on its table — five policies were written and inert, four tables had RLS enabled out-of-band with no migration saying so, an admin review queue read 95 rows through the anon client and silently showed zero, and two policies gated on a status value their tables had never written; the diagnostic is one probe, anon vs service-role row counts on the same filter.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/playground/docs/research/2026-08-28-data-stack-map.md
@@ -170,8 +170,8 @@ one session. The reasoning worth reusing:
   partner integration, a drop is unrecoverable for those, and the flag closes the same
   exposure reversibly. The view then inherits the base table's RLS, so both the view and
   its table must be probed — an invoker-rights view over an RLS table looks fixed while a
-  mistake in either half leaves it open. (Contradicts an earlier recommendation; see
-  `_conflicts.md`.)
+  mistake in either half leaves it open. (This revised the general rule: drop an unread surface
+  only when its consumers are enumerable; see [[Artifact Is Not Evidence: Push and Probe]].)
 - **`SECURITY DEFINER` + public `EXECUTE` + mutable `search_path` is the escalation path.**
   All flagged functions were pinned to `search_path = ''`; `EXECUTE` was revoked from anon
   and authenticated only on the one directly callable definer function (the others were

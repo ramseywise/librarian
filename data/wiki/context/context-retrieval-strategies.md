@@ -275,9 +275,9 @@ let the model resolve conflicts.
 
 ## See Also
 - [[Agentic Workflow Patterns]] <!-- auto-linked -->
-- [[Context Engineering]] — part-of
-- [[RAG Retrieval Strategies]] — implements
-- [[RAG Reranking]] — depends-on
+- [[Context Engineering]] — related (part of)
+- [[RAG Retrieval Strategies]] — related
+- [[RAG Reranking]] — prerequisite-for
 - [[Context Compaction]] — extends
 - [[Contextual Retrieval]] — extends
 - [[Index-Time Distillation]] — extends

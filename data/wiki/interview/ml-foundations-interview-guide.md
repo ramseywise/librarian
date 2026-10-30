@@ -94,5 +94,5 @@ judgment: **define the metric before writing the query.** Detail in
 - [[Tabular ML Leakage Taxonomy]] — extends (the leakage failure classes in depth)
 - [[Data Science Curriculum Layers]] — prerequisite-for (the curriculum this guide compresses)
 - [[Data Engineering and MLOps Interview Study Guide]] — extends (hygiene → production)
-- [[Programming Interview Study Guide]] — complements (the SQL screen)
+- [[Programming Interview Study Guide]] — related (the SQL screen)
 - [[LLM Fundamentals Interview Study Guide]] — extends (sequence models → transformers)

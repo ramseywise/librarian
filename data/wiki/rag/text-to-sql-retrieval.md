@@ -131,10 +131,10 @@ resolves it once. This is the tool-count anti-pattern in
 ## See Also
 - [[RAG Knowledge Preparation]] <!-- auto-linked -->
 - [[RL for Retrieval Policies]] <!-- auto-linked -->
-- [[RAG Retrieval Strategies]] — complements (the unstructured branch of the same retriever)
-- [[Context Retrieval Strategies]] — complements (schema subsetting as context assembly)
-- [[Verification Loops]] — implements (mechanical validation replacing an LLM reviewer)
-- [[Agent Retry Taxonomy]] — implements (bounded error-as-context retry)
-- [[Few-Shot Prompting]] — depends-on (the semantic layer's mechanism)
-- [[Agent Deployment Anti-Patterns]] — complements (tool-count pressure driving the domain split)
+- [[RAG Retrieval Strategies]] — related (the unstructured branch of the same retriever)
+- [[Context Retrieval Strategies]] — related (schema subsetting as context assembly)
+- [[Verification Loops]] — related (mechanical validation replacing an LLM reviewer)
+- [[Agent Retry Taxonomy]] — related (bounded error-as-context retry)
+- [[Few-Shot Prompting]] — prerequisite-for (the semantic layer's mechanism)
+- [[Agent Deployment Anti-Patterns]] — related (tool-count pressure driving the domain split)
 - [[Text-to-Cypher]] — alternative-to (the same generate-validate-execute shape over a graph schema)

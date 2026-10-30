@@ -77,10 +77,10 @@ sampling ([[Eval Error Bars and Sample Size]]).
 - [[Loop Autonomy Ladder]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] <!-- auto-linked -->
 - [[Online Eval Sampling]] <!-- auto-linked -->
-- [[Eval Harness Anatomy]] — part-of (the trial is the unit this page measures over)
-- [[Eval Suite Maintenance]] — complements (environment reset between trials)
-- [[Loop Termination Design]] — complements (per-trial reliability is what a retry cap is compensating for)
-- [[Knowledge Graph Retrieval]] — complements (the same multiplicative compounding, applied to traversal depth)
+- [[Eval Harness Anatomy]] — related (part of; the trial is the unit this page measures over)
+- [[Eval Suite Maintenance]] — related (environment reset between trials)
+- [[Loop Termination Design]] — related (per-trial reliability is what a retry cap is compensating for)
+- [[Knowledge Graph Retrieval]] — related (the same multiplicative compounding, applied to traversal depth)
 - [[UNGATED Metric Convention]] — prerequisite-for
 - [[Simulated User Evaluation]] — extends
-- [[Paired Eval Comparison]] — prerequisite-for
+- [[Paired Eval Comparison]] — related

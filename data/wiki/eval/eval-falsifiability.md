@@ -2,7 +2,7 @@
 title: Eval Falsifiability
 tags: [eval, pattern]
 summary: An eval that cannot fail measures nothing and fails green — test both directions (the negative case is load-bearing), make scripted providers derive output from their actual inputs, run eval at production config, validate fixture tables at load, and keep eval fakes conformant to the port.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/skills/review-safeguards/SKILL.md
   - data/raw/claude-docs/galactus/skills/proto-harden/SKILL.md
@@ -63,7 +63,7 @@ in place (see [[SANYI Change-Contract System]]).
 - [[Falsifiable Hypothesis Gate]] — extends (falsifiability applied to the measurement, not the claim)
 - [[Eval vs Test Distinction]] — prerequisite-for
 - [[A Fake That Conforms to a Broken Seam]] — extends
-- [[Prototype Hardening Pass]] — part-of
+- [[Prototype Hardening Pass]] — related (part of)
 - [[Eval Suite Maintenance]] — extends
 - [[Eval Ladder]] — extends
 - [[Tested Decision, Untested Expression]] — extends (negative control on the unguarded run)

@@ -184,6 +184,6 @@ See VA Hypernova MCP for the full production deployment of this pattern.
 - [[Agentic Workflow Patterns]]
 - [[Integration Pattern Selection]] — alternative-to (MCP against Composio, direct clients, webhooks, and n8n)
 - [[Tool Design as Context Engineering]] — extends (tool definitions and results as context surfaces)
-- [[Agent Interoperability Protocol Stack]] — part-of (MCP's place alongside A2A, A2UI, AP2, and UCP)
+- [[Agent Interoperability Protocol Stack]] — related (part of; MCP's place alongside A2A, A2UI, AP2, and UCP)
 - [[REST-First, MCP as Adapter]] — extends (MCP servers as thin adapters over versioned REST)
 - [[Dynamic Tool Discovery]] — extends (loading tool schemas on demand once servers multiply)

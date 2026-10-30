@@ -117,10 +117,10 @@ Feedback is a **sampling rule and a calibration label**, not a metric to optimiz
 optimizing the 👍 rate rewards flattery.
 
 ## See Also
-- [[Eval Ladder]] — part-of (rung 4)
-- [[Golden Set Mechanics]] — feeds (thumbs-down cases become golden entries)
+- [[Eval Ladder]] — related (part of; rung 4)
+- [[Golden Set Mechanics]] — related (feeds; thumbs-down cases become golden entries)
 - [[Copilot Learning Loop]] — related (usage signal as training feedback)
-- [[Heuristic Pipeline Metrics]] — complements
+- [[Heuristic Pipeline Metrics]] — related
 - [[Online Eval Sampling]] — extends (negative feedback as one of four production sampling rules)
 - [[Explore Slice for Position Bias]] — extends (a feedback loop that cannot learn from its own ranking)
 - [[Outcome Signal Ladder]] — extends (which proxy counts as the outcome before attendance is loggable)

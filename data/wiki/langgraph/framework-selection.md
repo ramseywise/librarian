@@ -1,6 +1,6 @@
 ---
 title: Framework Selection — LangChain vs LangGraph vs Deep Agents
-tags: [langgraph, deep-agents, concept, comparison, conflict]
+tags: [langgraph, deep-agents, concept, comparison]
 summary: Decision guide for choosing between LangChain, LangGraph, and Deep Agents — layered frameworks where higher layers add planning, memory, and middleware on top of lower ones.
 updated: 2026-10-30
 sources:
@@ -49,10 +49,11 @@ generalizes beyond the LangChain ecosystem:
 | Examples | LangChain, Vercel AI SDK, CrewAI, OpenAI Agents SDK, Google ADK, LlamaIndex | LangGraph, Temporal, Inngest | Deep Agents SDK, Claude Agent SDK, Manus, coding CLIs |
 
 In this framing **frameworks run on runtimes**: LangChain 1.0's agent loop is built on top of
-LangGraph, and Deep Agents builds on LangGraph too. That conflicts with the layer diagram above,
-which puts LangChain at the bottom (see `_conflicts.md`). Both can hold if "LangChain" means two
-things — the model/tool integration packages (a dependency of everything) versus the
-`create_agent` loop (which executes on the LangGraph runtime). Same capability, three integration
+LangGraph, and Deep Agents builds on LangGraph too. Read the layer diagram above with that in
+mind. "LangChain" names two things. The bottom box is the model/tool integration packages
+(`langchain-core` and the provider packages), a dependency of everything. The `create_agent`
+loop is a higher-level framework that *executes on* the LangGraph runtime, so you can use it
+without knowing LangGraph. Same capability, three integration
 levels: short-term memory is LangChain short-term memory / LangGraph checkpointer / Deep Agents
 `StateBackend`; subagents are LangChain multi-agent subagents / LangGraph subgraphs / Deep Agents
 `task`; HITL is HITL middleware / `interrupt()` / the `interrupt_on` parameter.
@@ -182,4 +183,4 @@ AutoGen equivalent, with no difference in end-user experience versus vanilla RAG
 - [[LangChain Dependency Management]]
 - [[LangChain RAG Implementation Patterns]]
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — extends (the duplex row asked first)
-- [[HITL and Interrupt Patterns]] — complements (graph-level interrupt vs AutoGen's agent-level human flag)
+- [[HITL and Interrupt Patterns]] — related (graph-level interrupt vs AutoGen's agent-level human flag)

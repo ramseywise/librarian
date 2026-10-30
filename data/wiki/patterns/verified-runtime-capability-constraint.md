@@ -2,7 +2,7 @@
 title: Verified Runtime Capability Constraint
 tags: [llm, pattern]
 summary: A design rule that a control may only be specified if the runtime demonstrably enforces it — three separate Parallax mechanisms (a timeout budget, a cost cap, a submodule-vendored skill) were dropped on discovering the harness had no way to make them real.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/Parallax/docs/documents/Evidence_Driven_PR_Review_System_Spec.md
 ---
@@ -91,6 +91,6 @@ is a defect in the plan, not license to fill it in. See
 - [[Parallel Dimension Scanner Architecture]] — prerequisite-for (the parallelism this constrained)
 - [[Read-Only by Default with Explicit Authorization]] — extends (a control that *is* enforceable)
 - [[No-Placeholder Plan Discipline]] — extends (the same rule at the plan layer)
-- [[Capability Parity Audit]] — complements (the same read-don't-recall rule applied to inventory)
+- [[Capability Parity Audit]] — related (the same read-don't-recall rule applied to inventory)
 - [[Streaming Output Scrubbing]] — instance-of (shipped-but-unwired guards in a scaffold)
 - [[Payload Security Defects at Canon]] — instance-of (reading all 30 files surfaced what recall had not)

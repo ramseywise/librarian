@@ -2,7 +2,7 @@
 title: Deferred Decision Status
 tags: [llm, pattern]
 summary: A three-value status for design decisions — Resolved / Open / Deferred(trigger) — where a deferral must name the concrete event that reopens it, and a triggerless deferral silently degrades to Open so it still blocks the gate.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/scope-poc/SKILL.md
 ---
@@ -72,7 +72,7 @@ either blocks the gate spuriously or hides a real gap.
 - [[Merge Impact and Evidence State]] — alternative-to (also separates confidence from consequence)
 - [[SANYI Change-Contract System]] — extends
 - [[Claude Workflow System]] — extends
-- [[DESIGN.md Artifact]] — part-of (section 5 records resolved and open together)
+- [[DESIGN.md Artifact]] — related (part of; section 5 records resolved and open together)
 - [[Derived-and-Hidden Design Decisions]] — related (a decision never surfaced at all, vs. one recorded as deferred)
 - [[Named-Trigger Deferral]] — extends (a deferral must name the measurable trigger that reopens it)
 - [[Shadow Signal Before Gate Change]] — extends (a step conditional on an undecided question is BLOCKED, not deferred)

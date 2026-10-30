@@ -2,7 +2,7 @@
 title: Scaling Axes and Customer-Triggered Cost Cliffs
 tags: [infra, concept]
 summary: A small product's bill scales on three independent axes — users, catalogue, team velocity — and the first lines to break are team-velocity ones (CI minutes); the four-figure jumps are cliffs triggered by a single customer's compliance demand, not by traffic.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-operating-cost-model.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-operating-cost-model.md
@@ -91,7 +91,7 @@ proxy: anyone can point it at arbitrary remote URLs and burn the bandwidth budge
 
 ## See Also
 - [[Paid Tiers Start at the Beta, Not the Alpha]] — instance-of (CI minutes broke first; the database upgrade bought posture, not capacity)
-- [[Two AI Cost Economies: Durable Once, Contextual On Demand]] — complements
+- [[Two AI Cost Economies: Durable Once, Contextual On Demand]] — related
 - [[Deployment Topology Ladder]] — extends (cost axes as the reason to stay on a low rung)
 - [[Complexity Floor]] — related (team-hours bound the reachable rung; CI minutes bound the commit rate)
 - [[Rate-Limit Keying: Identity Over IP]] — related (the other open-endpoint exposure found in the same pass)

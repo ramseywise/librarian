@@ -1,8 +1,8 @@
 ---
 title: Notebook Dependency Staleness
-tags: [foundations, reference, conflict]
+tags: [foundations, reference]
 summary: "Migration maps for the three library breaks that strand old ML notebooks — sklearn 0.20→1.4, TensorFlow 1.x→2.x, PyMC3→PyMC 5 — plus the two-phase triage that distinguishes a mechanical import swap from a genuine rewrite."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--CURRICULUM.md
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_sklearn_migration.md
@@ -109,7 +109,7 @@ PyMC3 broke at v4. Some removals have no successor in the library at all.
 | `pm.traceplot(trace)` | `az.plot_trace(trace)` (arviz) |
 | `pm.summary(trace)` | `az.summary(trace)` — same DataFrame interface |
 | `pm.plot_posterior(trace)` | `az.plot_posterior(trace)` |
-| `pm.sample(draws, init='MAP')` | `pm.sample(draws)`, or `initvals=pm.find_MAP()` (disputed; see `_conflicts.md`) |
+| `pm.sample(draws, init='MAP')` | `pm.sample(draws)`, or `initvals=pm.find_MAP()`. `find_MAP` still exists (verified in PyMC 6.3.2); a migration note listing it as removed was wrong |
 | `pm.glm.GLM.from_formula(...)` | Removed — use the `bambi` library |
 | `pm.iter_sample(...)` | Removed — `pm.sample` with progressive callbacks |
 | `traces.varnames` | `list(idata.posterior.data_vars)` — InferenceData format |
@@ -148,6 +148,6 @@ tidiness. A corpus where everything must run on current libraries is one where o
 deleted rather than pinned.
 
 ## See Also
-- [[Data Science Curriculum Layers]] — part-of (the notebooks this audit covers)
-- [[AI Engineering Curriculum Structure]] — complements (the corpus containing this material)
-- [[Data Engineering Foundations]] — complements (the same version-drift problem in pipeline code rather than notebooks)
+- [[Data Science Curriculum Layers]] — related (part of; the notebooks this audit covers)
+- [[AI Engineering Curriculum Structure]] — related (the corpus containing this material)
+- [[Data Engineering Foundations]] — related (the same version-drift problem in pipeline code rather than notebooks)

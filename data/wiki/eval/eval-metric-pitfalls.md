@@ -63,7 +63,7 @@ When the change is "shorter plan files", plan length is the *mechanism*, not the
 Optimize the target; test several doses, not just on/off, to see the dose–response curve.
 
 ## See Also
-- [[Eval Error Bars and Sample Size]] — complements (width vs meaning of a number)
-- [[Paired Eval Comparison]] — complements (identical task sets)
+- [[Eval Error Bars and Sample Size]] — related (width vs meaning of a number)
+- [[Paired Eval Comparison]] — related (identical task sets)
 - [[Outcome Signal Ladder]] — related (proxy vs outcome signals)
 - [[Validated Concept vs Unmeasured System]] — related (a number quoted beyond what it measured)

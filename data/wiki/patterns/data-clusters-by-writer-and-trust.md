@@ -140,7 +140,7 @@ it against the generated database types:
   ([[Count the Violation, Not the Token]]).
 
 ## See Also
-- [[Artifact Is Not Evidence: Push and Probe]] — complements (how the cascade loss was found)
+- [[Artifact Is Not Evidence: Push and Probe]] — related (how the cascade loss was found)
 - [[Cached Derivation Without a Recompute Path]] — extends (a lifecycle column that is a stale cache of another column)
 - [[Append-Only Human Labels]] — instance-of (the interaction-cluster conventions applied to rater data)
 - [[Data Engineering Foundations]] — extends (append-only logs and lifecycle as schema design, not afterthought)

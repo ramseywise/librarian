@@ -132,12 +132,12 @@ orders checks *within* a run.
 ## See Also
 - [[Eval-Driven Development (EDD)]] <!-- auto-linked -->
 - [[Anthropic Three-Tier Eval Taxonomy]] <!-- auto-linked -->
-- [[Eval Ladder]] — complements (grading approach by project phase; this page is infrastructure by stage)
-- [[Eval Harness Anatomy]] — depends-on (the vocabulary this ladder builds on)
+- [[Eval Ladder]] — related (grading approach by project phase; this page is infrastructure by stage)
+- [[Eval Harness Anatomy]] — prerequisite-for (the vocabulary this ladder builds on)
 - [[Online Eval Sampling]] — instance-of (level 4)
 - [[Eval Suite Maintenance]] — extends (keeping a level-3 suite honest)
-- [[Verification Loops]] — depends-on (level 2 is generator/evaluator separation, made behavioral)
-- [[LLM-as-Judge Evaluation]] — depends-on (the three biases and the calibration requirement)
+- [[Verification Loops]] — prerequisite-for (level 2 is generator/evaluator separation, made behavioral)
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (the three biases and the calibration requirement)
 - [[Observability and Runtime Patterns]] — prerequisite-for (level 3 needs tracing to exist)
 - [[UNGATED Metric Convention]] — extends (how a metric is carried before it earns a threshold)
 - [[Q0–Q5 Quality Ladder]] — alternative-to (per-feature ladder with named owners)

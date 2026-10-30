@@ -53,5 +53,5 @@ All tools in the Librarian pipeline subclass `BaseTool Protocol` with explicit i
 - [[Librarian RAG Architecture]]
 - [[Agent Quality Review Checklist]] — extends (tool-safety review checks)
 - [[Tool Design as Harness Surface]] — extends (ACI as a harness contract, with the five-section tool spec)
-- [[Harness Anatomy]] — part-of (tools as one of the nine harness components)
+- [[Harness Anatomy]] — related (part of; tools as one of the nine harness components)
 - [[Computer Use Visual Grounding]] — extends (the observation interface when the tool is a screen)

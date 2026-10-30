@@ -2,7 +2,7 @@
 title: Capability Parity Audit
 tags: [llm, pattern]
 summary: A method for deciding what a shared template should absorb next — classify every requested capability as have / partial / gap against the template's *verified* current state, then prioritize by how many consumers share the gap rather than by how loudly any one asked.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/multi-agent-tooling-parity.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-10-ml-capability-parity.md
@@ -135,14 +135,14 @@ repo and added two moves:
 ## See Also
 - [[Integration Pattern Selection]] — extends (what the long tail collapses into)
 - [[Callable-By Integration Contract]] — extends (the shape a shared gap resolved to)
-- [[Verified Runtime Capability Constraint]] — complements (read the state, don't recall it)
-- [[Complexity Floor]] — constrains (a gap is not automatically work)
+- [[Verified Runtime Capability Constraint]] — related (read the state, don't recall it)
+- [[Complexity Floor]] — related (constrains; a gap is not automatically work)
 - [[AI Project Template Scaffold]] — instance-of (the template audited)
-- [[Copier Re-Entry as Capability Path]] — complements (how a closed gap reaches rendered projects)
+- [[Copier Re-Entry as Capability Path]] — related (how a closed gap reaches rendered projects)
 - [[NYC-DSSG Project]] — instance-of (the two consuming projects)
 - [[Asked vs Derived Scaffold Variables]] — extends (a new capability usually becomes a toggle)
 - [[Six-Pillar Agent Engineering Assessment]] — alternative-to (a fixed rubric rather than a per-consumer request matrix)
-- [[Template Floor Raising]] — complements (prioritize by portfolio weakness rather than consumer count)
+- [[Template Floor Raising]] — related (prioritize by portfolio weakness rather than consumer count)
 - [[Capability Runtime-Coupling Tiers]] — alternative-to (runtime-coupling axis rather than have/partial/gap)
 - [[Role-Scoped Parity]] — extends (parity judged per role, not as one scalar)
 - [[REUSE/ADAPT/SKIP Asset Verdicts]] — alternative-to (per-asset verdicts with a mandatory salvage column)

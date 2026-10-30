@@ -242,14 +242,15 @@ task ID `get_status` / `cancel` verbs, and give event-trigger tools precise filt
 - [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
 - [[Harness Maturity and Failure Modes]] <!-- auto-linked -->
 - [[Iterative Harness Simplification]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
-- [[Harness Anatomy]] — part-of
+- [[Harness Engineering]] — related (part of)
+- [[Harness Anatomy]] — related (part of)
 - [[ACI (Agent-Computer Interface)]] — extends
-- [[Tool Design as Context Engineering]] — complements
-- [[Execution Boundaries and Guardrails]] — depends-on
+- [[Tool Design as Context Engineering]] — related
+- [[Execution Boundaries and Guardrails]] — prerequisite-for
 - [[Dynamic Tool Discovery]] — extends (tool loading at scale)
 - [[Belief Parameters with a Ground-Truth Gate]] — extends (policy checks inside the tool)
 - [[Coding-Agent Search and Edit Schemes]] — extends
 - [[Asynchronous Agent Event Loop]] — extends (async tool interfaces)
-- [[Lethal Triad]] — complements (MCP supply-chain risk)
+- [[Lethal Triad]] — related (MCP supply-chain risk)
 - [[Tool Definitions as Prompts]] — prerequisite-for (how a single definition is rendered into and read from the prompt)
+- [[Agent Deployment Anti-Patterns]] — instance-of (namespacing and tool consolidation for #2)

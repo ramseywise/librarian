@@ -2,7 +2,7 @@
 title: Hotlink-Not-Copy Image Posture
 tags: [infra, decision]
 summary: A conservative MVP policy for showing third-party images in a discovery product — the browser loads the image from its original host and nothing is copied, proxied or cached; images come only from first-party sources with stored provenance and attribution, technical blocks are never circumvented, image hosts are vetted as a privacy risk, and a no-deploy kill switch backs a hide-first takedown route.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-10-09-notion-image-hotlinking-policy.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-10-09-notion-image-hotlinking-policy.md
@@ -193,7 +193,7 @@ See [[Vacuous Check Turns Backwards on Policy Change]].
 ## See Also
 - [[Change the Channel, Not the Count]] — extends (`image_posture` as one of three default-deny rights axes)
 - [[PII Masking Approaches]] — related (image hosts as a request-metadata privacy leak)
-- [[Hide-Unknown Display Contract]] — complements (a missing or blocked image never blocks publishing)
+- [[Hide-Unknown Display Contract]] — related (a missing or blocked image never blocks publishing)
 - [[Kiez Project]] — instance-of
 - [[A Sourcing Gap Is Not an Effect Problem]] — related (what the licence rules left available, measured)
 - [[Degrade the Render, Surface the Failure]] — related (the issue that narrowed `remotePatterns` from a wildcard)

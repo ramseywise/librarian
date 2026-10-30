@@ -75,4 +75,4 @@ Practise each at 60 seconds.
 - [[Copilot Learning Loop]] — instance-of (feedback loops as product)
 - [[User Feedback Loops]] — extends
 - [[AI Role Interview Loop Map]] — prerequisite-for (which roles weight this round)
-- [[System Design Interview Study Guide]] — complements (the AI-product variant of the design round)
+- [[System Design Interview Study Guide]] — related (the AI-product variant of the design round)

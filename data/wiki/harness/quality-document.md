@@ -39,7 +39,7 @@ Update it after significant sessions and before a new phase of work — not on a
 cleanup day, which never comes.
 
 ## See Also
-- [[Harness Maturity and Failure Modes]] — extends
-- [[Runtime vs Process Observability]] — complements (a process-layer artifact)
-- [[Long-Horizon Execution]] — complements (another file-backed state artifact a fresh session reads)
+- [[Harness Maturity and Failure Modes]] — related (part of)
+- [[Runtime vs Process Observability]] — related (a process-layer artifact)
+- [[Long-Horizon Execution]] — related (another file-backed state artifact a fresh session reads)
 - [[Iterative Harness Simplification]] — prerequisite-for

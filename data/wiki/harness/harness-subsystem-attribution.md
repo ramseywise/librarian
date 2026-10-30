@@ -76,4 +76,5 @@ strips anything.
 - [[Harness Engineering]] — instance-of (the skill-issue reframe turned into a procedure)
 - [[Iterative Harness Simplification]] — prerequisite-for (ablation shows what is load-bearing)
 - [[Verification Loops]] — extends (the gulf of evaluation is the common failure)
-- [[Harness Orchestration]] — extends
+- [[Harness Orchestration]] — related
+- [[Runtime vs Process Observability]] — prerequisite-for

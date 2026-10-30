@@ -72,3 +72,4 @@ zero-shot fails in a way you can name.
 - [[Program-Aided Language Models (PAL)]] — extends
 - [[Reflexion]] — extends
 - [[ReAct Pattern]] — extends
+- [[Four Prompt Criteria]] — prerequisite-for

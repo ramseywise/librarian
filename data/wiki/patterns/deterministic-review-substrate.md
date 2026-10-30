@@ -2,7 +2,7 @@
 title: Deterministic Review Substrate
 tags: [llm, pattern]
 summary: Review steps that are mechanical (diff scoping, dedup clustering, schema validation, report rendering) are pushed into a CLI the agent shells out to, so the only work left to LLM judgment is the part that actually needs judgment.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/Parallax/agents/parallax.md
   - data/raw/claude-docs/Parallax/skills/parallax-shared/SKILL.md
@@ -165,7 +165,7 @@ See [[Paired Bugs That Cancel]].
 - [[Corrective Follow-Up Dispatch]] — extends (reviewer signal as fallback when `detect-signals` misses)
 - [[Shared Context Brief]] — extends (tool output recorded verbatim in the brief and report)
 - [[Parallax]] — instance-of (the system this substrate belongs to)
-- [[Artifact Is Not Evidence: Push and Probe]] — complements (tool output over prose, applied to deploy verification)
+- [[Artifact Is Not Evidence: Push and Probe]] — related (tool output over prose, applied to deploy verification)
 - [[Re-Scope Over Sequence for Colliding Issues]] — related (a review pass that re-cut issues by file ownership)
 - [[Rationale-Blind Worst-Case Review]] — extends (a read-only consequence reporter feeding the same verdict)
 - [[Cross-Sweep Finding Fingerprint]] — extends (deterministic identity and trend rules over the findings)

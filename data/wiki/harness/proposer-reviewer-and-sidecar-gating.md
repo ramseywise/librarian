@@ -51,6 +51,6 @@ can write down; a reviewer covers the judgement calls you cannot.
 
 ## See Also
 - [[Execution Boundaries and Guardrails]] — extends (model-based gating when HITL is not available)
-- [[Lethal Triad]] — complements
+- [[Lethal Triad]] — related
 - [[Verification Loops]] — alternative-to (output review vs action review)
-- [[Canary Testing for Permission Boundaries]] — complements (test that the gate fires)
+- [[Canary Testing for Permission Boundaries]] — related (test that the gate fires)

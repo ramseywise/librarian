@@ -69,7 +69,7 @@ Non-functional requirements matter more to interviewers than features.
   **consistent hashing** moves only a small slice.
 
 ## See Also
-- [[API Design Fundamentals]] — complements (the interface layer on the same substrate)
+- [[API Design Fundamentals]] — related (the interface layer on the same substrate)
 - [[System Design Interview Study Guide]] — prerequisite-for (the method that operates on this vocabulary)
 - [[LLM System Bottleneck Table]] — extends (the LLM-specific bottlenecks on top)
 - [[Scaling Axes and Customer-Triggered Cost Cliffs]] — extends

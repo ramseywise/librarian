@@ -63,4 +63,4 @@ evaluation while smaller models serve the trained roles.
 - [[Recursive Self-Improvement]] — alternative-to (improving the harness rather than the weights)
 - [[Multi-Agent Reinforcement Learning]] — extends (training several interacting roles)
 - [[Reward Hacking and Overoptimization]] — prerequisite-for (what a weak reward does to the trained role)
-- [[Post-Training for Agents]] — extends
+- [[Post-Training for Agents]] — related

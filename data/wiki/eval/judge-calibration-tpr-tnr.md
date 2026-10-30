@@ -82,7 +82,7 @@ TPR + TNR is well above 1.
 
 ## See Also
 - [[LLM-as-Judge Evaluation]] — extends (the calibration step, specified)
-- [[LLM Judge Biases]] — complements (bias mitigations applied before calibrating)
+- [[LLM Judge Biases]] — related (bias mitigations applied before calibrating)
 - [[Human Agreement Ceiling Protocol]] — prerequisite-for (the ceiling the judge is compared to)
 - [[Positive-Only Judge Fixtures Measure Recall]] — related (a fixture set that can only measure TPR)
 - [[Human Verdicts as Judge Fixtures]] — related (human labels exported as fixtures)

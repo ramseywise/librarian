@@ -2,7 +2,7 @@
 title: Taste vs Defect Verdict Split
 tags: [llm, eval, pattern]
 summary: "A reviewer's verdict on a generated item conflates two facts — \"is this good enough to serve\" (taste, one value) and \"what is wrong with it\" (defects, a list mapped to the pipeline stage that owns each field) — and splitting them into a verdict plus `defect_fields text[]` is what makes the review log usable for attribution; alongside it, log the counterfactual (`shelves_eligible`: what the item would have qualified for) so the serving rule can be evaluated without re-running it."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-21-dis353-verdict-split-shelf-log.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-21-dis353-verdict-split-shelf-log.md
@@ -70,7 +70,7 @@ single rater, and no query that joins them. Findings:
 
 ## See Also
 - [[HITL Annotation Pipeline]] — extends (what the annotation row should carry)
-- [[Every Column Names Its Reader]] — depends-on
+- [[Every Column Names Its Reader]] — prerequisite-for
 - [[One Check Shape for Quality Verdicts]] — prerequisite-for (the split is what the unified verdict store generalises)
 - [[Ship Logging Before Features]] — related (the counterfactual log is non-backfillable)
 - [[Trajectory Over Outcome]] — related (defect-by-stage is trajectory attribution for a pipeline)

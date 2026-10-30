@@ -2,7 +2,7 @@
 title: Realtime Is UI Sync, Not the Event Bus
 tags: [infra, pattern]
 summary: A database's realtime channel informs clients after a committed transaction; it is not the domain event bus — the order is command → transaction → state + event row → realtime notifies — so no business workflow may depend on a client being connected.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/akira/skills/design-system/SKILL.md
@@ -37,5 +37,5 @@ operational capability; a deterministic fallback exists independently of the mod
 ## See Also
 - [[Principal Write-Surface Matrix]] — related (same semantics plate)
 - [[Harness Anatomy]] — related (event bus as a separate harness component)
-- [[Four-Stage Design Pipeline with Backflow]] — part-of (system stage)
+- [[Four-Stage Design Pipeline with Backflow]] — related (part of; system stage)
 - [[State Writer Never Owns Its Side Effects]] — related (DB-webhook fan-out from a sole writer; Postgres as the event bus)

@@ -90,9 +90,10 @@ description: Use when deploying to production or rolling back.
 Negative examples reduce misfires: *"Don't call this when…"* plus what to do instead.
 
 ## See Also
-- [[Context Engineering]] — part-of
-- [[Multi-Agent Context]] — complements
-- [[MCP Protocol]] — implements
-- [[Context Retrieval Strategies]] — depends-on
-- [[Tool Design as Harness Surface]] — complements (same tools seen as a harness contract rather than a context cost)
+- [[Context Engineering]] — related (part of)
+- [[Multi-Agent Context]] — related
+- [[MCP Protocol]] — related
+- [[Context Retrieval Strategies]] — prerequisite-for
+- [[Tool Design as Harness Surface]] — related (same tools seen as a harness contract rather than a context cost)
 - [[Curl-Bridge Context Injection]] — alternative-to (instructions to curl instead of tool definitions)
+- [[Dynamic Tool Discovery]] — extends

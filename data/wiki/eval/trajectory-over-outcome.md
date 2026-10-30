@@ -154,11 +154,11 @@ broken (unreachable state, wrong reference, missing permission) before the agent
 - [[VA Eval Harness]] <!-- auto-linked -->
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]] <!-- auto-linked -->
 - [[RAG Evaluation]] — extends (the agent eval taxonomy this supplies the rationale for)
-- [[Bounding Agents Rather Than Trusting Them]] — complements (guardrails need trajectory eval to be measurable)
-- [[RAG Eval Gate Contract]] — implements (wrong_escalation and the row-pool discipline)
+- [[Bounding Agents Rather Than Trusting Them]] — related (guardrails need trajectory eval to be measurable)
+- [[RAG Eval Gate Contract]] — related (wrong_escalation and the row-pool discipline)
 - [[Agent Retry Taxonomy]] — instance-of (the retry that discarded correct sources)
-- [[The Augmentation Gate]] — complements (the same cheap-gates-before-expensive-judge argument, for RAG)
-- [[Loop Detection and the Two-Retry Rule]] — implements (the stopping-point decision, mechanically)
-- [[Specialist Verdict Panel]] — complements (final-answer dimensions scored independently)
+- [[The Augmentation Gate]] — related (the same cheap-gates-before-expensive-judge argument, for RAG)
+- [[Loop Detection and the Two-Retry Rule]] — related (the stopping-point decision, mechanically)
+- [[Specialist Verdict Panel]] — related (final-answer dimensions scored independently)
 - [[Simulated User Evaluation]] — extends
 - [[Agent Trace Anatomy]] — prerequisite-for

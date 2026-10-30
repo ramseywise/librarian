@@ -1,8 +1,8 @@
 ---
 title: Frozen Version Stamps on Logged Results
-tags: [eval, infra, pattern, conflict]
+tags: [eval, infra, pattern]
 summary: Every served result row carries a named version constant for each component that shaped it — prompt hash, enrichment, weights, ranker, composer, schema — and a classifier whose output is logged but whose rule-table is unversioned is a hole; instrumentation ships in the same commit as the feature because logs cannot be backfilled.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
@@ -170,18 +170,18 @@ The prompt stamp was built as three nullable columns on every enrichment table: 
 bumped by hand when the production prompt changes on purpose, kept separate from the
 output-contract version. The hash is SHA-256 of the template rendered with empty
 placeholders, so it moves only when the instruction text moves, never with row content. A
-golden-hash test pins the per-vertical hashes, so an edit without a bump fails CI. (Contested: the build review found the test pins the version literal too, so re-pinning hashes alone passes; see `_conflicts.md`.) Rows
+golden-hash test pins the per-vertical hashes and the version literal. That makes an edit without a bump a visible review obligation, not a CI failure: re-pinning the hashes alone passes. `prompt_hash` is the stamp that stays truthful. Rows
 written before the migration stay NULL, with no fabricated backfill. The identity is
 computed once, at the entry point both the sync and batch paths call. Details are in
 [[Offline Prompt Experiment Runner]].
 
 ## See Also
-- [[Append-Only Human Labels]] — complements (the judgments that join to these stamps)
+- [[Append-Only Human Labels]] — related (the judgments that join to these stamps)
 - [[Landed Is Not Complete]] — related (a stamped row can still be incomplete or unjoinable)
 - [[Write-Only Fields and the Reader Map]] — extends (keeping the breakdown is what makes stamping it possible)
 - [[RAG Eval Gate Contract]] — related (config snapshot and run id as the gate input contract)
 - [[Data Clusters by Writer and Trust]] — related (replay corpus as an interaction-cluster table)
-- [[Frozen Ranking Baseline from a Pure Ranker]] — complements (the snapshot that carries these stamps so judgments can be joined)
+- [[Frozen Ranking Baseline from a Pure Ranker]] — related (the snapshot that carries these stamps so judgments can be joined)
 - [[Ship Logging Before Features]] — extends
 - [[Intake Option Separability via Reach Vectors]] — related (measuring whether intake options are distinct requests at all)
 - [[Offline Prompt Experiment Runner]] — related (where the prompt-identity stamp was built and is consumed)

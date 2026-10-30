@@ -1,8 +1,8 @@
 ---
 title: LangGraph CRAG Pipeline
-tags: [langgraph, rag, pattern, conflict]
+tags: [langgraph, rag, pattern]
 summary: The Corrective RAG pattern implemented as a LangGraph StateGraph — deterministic graph with conditional retry loop, confidence gating, and typed state schema.
-updated: 2026-07-14
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
@@ -93,6 +93,8 @@ See [[CRAG Retry Logic]] for full detail. The CRAG gate compares `confidence_sco
 The retry re-enters at `retrieve`, not at the top of the pipeline — more surgical than `LoopAgent`.
 
 Max retries: 1 (default). One retry adds ~400ms; set `confidence_threshold=0.0` to disable loop entirely.
+
+**Three thresholds, three different scores.** Other sources quote 0.5 and 0.7 as "the CRAG threshold". They are not competing values for this knob. 0.3 is this pipeline's gate on the *reranker's* confidence score. 0.5 is a per-chunk relevance grade (an LLM grades each retrieved chunk; ≥ 0.5 keeps it). 0.7 is a generic skill's grade-then-generate cut-off on a whole-retrieval grade. Each scale is calibrated to its own scorer, so a value carries over only with that scorer. Tune the threshold against an eval set for the score you actually gate on.
 
 ## Intent Routing
 

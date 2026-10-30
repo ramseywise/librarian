@@ -155,11 +155,11 @@ hard-fail items ([[Veto Rubric Items]]).
 ## See Also
 - [[Evals and Observability Interview Study Guide]] <!-- auto-linked -->
 - [[Harness Engineering]] <!-- auto-linked -->
-- [[Anthropic Three-Tier Eval Taxonomy]] — complements (tiers of eval scope; this page is the anatomy within a tier)
+- [[Anthropic Three-Tier Eval Taxonomy]] — related (tiers of eval scope; this page is the anatomy within a tier)
 - [[Eval Non-Determinism]] — extends (why one trial is not a measurement)
 - [[Eval Suite Maintenance]] — extends (keeping the suite honest over time)
-- [[Eval Maturity Ladder]] — complements (what infrastructure exists, stage by stage)
-- [[Verification Loops]] — complements (harness-under-test as generator/evaluator separation)
+- [[Eval Maturity Ladder]] — related (what infrastructure exists, stage by stage)
+- [[Verification Loops]] — related (harness-under-test as generator/evaluator separation)
 - [[Eval vs Test Distinction]] — prerequisite-for (which behaviors are eval-testable at all)
 - [[LLM-as-Judge Evaluation]] — instance-of (one of the three grader types)
 - [[Simulated User Evaluation]] — extends

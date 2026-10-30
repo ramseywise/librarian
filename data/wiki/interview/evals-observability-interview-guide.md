@@ -84,5 +84,5 @@ You cannot evaluate what you cannot observe. Build the trace before the metric. 
 - [[System Design — Unified Eval Harness]] — instance-of
 - [[Agents Interview Study Guide]] — extends
 - [[Parameterised Benchmark Instances]] — instance-of (the answer to benchmark leakage)
-- [[AI Engineering Field Question Bank]] — complements (cold-recall questions for this pillar)
+- [[AI Engineering Field Question Bank]] — related (cold-recall questions for this pillar)
 - [[Agent Engineering Question Chains]] — extends (scenario main/follow-up chains on evals, tracing and prompt changes)

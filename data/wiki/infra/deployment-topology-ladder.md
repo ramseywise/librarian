@@ -2,7 +2,7 @@
 title: Deployment Topology Ladder
 tags: [infra, pattern]
 summary: Five deployment topologies (local → single service → cloud service → split service → serverless) ordered by who can access the system, with cost and ops-complexity as the selection axes rather than technical capability.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
 ---
@@ -104,12 +104,12 @@ Topology choice writes to five scaffold parameters — see
 - [[Cloud Service Deployment]] — instance-of
 - [[Split Service Deployment]] — instance-of
 - [[Serverless Deployment]] — instance-of
-- [[Complexity Floor]] — constrains (team-hours bound the reachable rung)
-- [[Agent Orchestration Patterns]] — complements (orchestration ladder on the same start-low bias)
+- [[Complexity Floor]] — related (constrains; team-hours bound the reachable rung)
+- [[Agent Orchestration Patterns]] — related (orchestration ladder on the same start-low bias)
 - [[Asked vs Derived Scaffold Variables]] — related (how topology answers reach copier)
 - [[AI Project Archetypes]] — related (archetype and topology are chosen together)
 - [[ADK Deployment Patterns]] — extends (GCP-specific target selection)
-- [[Runtime Topology and Checkpointer Alignment]] — constrains (topology dictates checkpointer backend)
+- [[Runtime Topology and Checkpointer Alignment]] — related (constrains; topology dictates checkpointer backend)
 - [[Context Graph Is Not an Execution Graph]] — related (separate deployment before separate repository)
-- [[Scaling Axes and Customer-Triggered Cost Cliffs]] — complements (which axis forces the next rung)
+- [[Scaling Axes and Customer-Triggered Cost Cliffs]] — related (which axis forces the next rung)
 - [[Right-Sizing a Document-to-LLM Pipeline]] — instance-of (serverless rung chosen for a stateless generation workload, with an explicit omit list)

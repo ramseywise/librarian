@@ -100,4 +100,4 @@ exclusion rule fails open, and it fails silently.
 - [[Agent Quality Review Checklist]] — alternative-to (review-time vs runtime enforcement)
 - [[Webhook Handler Idempotency]] — alternative-to (inbound HTTP surface with the same authenticate-the-caller obligation)
 - [[Curl-Bridge Context Injection]] — alternative-to (proxy-side allowlist + identity overwrite instead of tools)
-- [[Lethal Triad]] — complements (MCP supply-chain risks and the structural defence)
+- [[Lethal Triad]] — related (MCP supply-chain risks and the structural defence)

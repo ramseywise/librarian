@@ -2,7 +2,7 @@
 title: "Starved Tag Triage: Edge, Prompt, or Supply"
 tags: [patterns, prompting, eval, pattern]
 summary: When an enrichment tag is (nearly) never assigned, separate four causes before fixing anything — a missing scoring edge, a prompt that suppresses it (verbatim-quote grounding starves subjective atmosphere tags), a vocabulary gap, or a supply gap where the corpus simply doesn't carry it — and measure reach with the scorer's own tier function, not direct counts.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-25-dis392-s2-vibe-supply.md
   - data/raw/claude-docs/akira/docs/research/2026-09-25-dis392-s2-vibe-supply.md
@@ -120,7 +120,7 @@ other's ground truth. Labels are needed (see [[One-Sided Label Control]]).
 
 ## See Also
 - [[Evidence-Labelled Generation with Deterministic QC]] — extends (the quote-grounding rule whose side effect this diagnoses)
-- [[One Facet Per Fact]] — complements (structural fix when a tag carries the wrong kind of fact)
+- [[One Facet Per Fact]] — related (structural fix when a tag carries the wrong kind of fact)
 - [[Graded-Uncertainty Enrichment Contract]] — related (abstention vs suppression)
 - [[UNGATED Metric Convention]] — instance-of (the hand-authored lexicon counts)
 - [[Kiez Project]] — instance-of
