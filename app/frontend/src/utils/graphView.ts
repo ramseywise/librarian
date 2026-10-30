@@ -124,8 +124,10 @@ export interface EdgeSources {
  * - Chat highlight: only edges touching a highlighted page. Focus: only edges touching
  *   the focused node. Filter: only edges with both ends in the subgraph.
  * - Tag-shared edges are additionally pruned to those with at least one *emphasised*
- *   endpoint (highlighted, or not dimmed when nothing is highlighted). Tag-shared is
- *   near-clique dense (median degree ~120), so this is what keeps the overview usable.
+ *   endpoint: a highlighted node, or else a non-dimmed node when some are dimmed. With
+ *   nothing highlighted or dimmed ("All", no filter/focus/chat) none are emphasised, so
+ *   no tag-shared edges render. Tag-shared is near-clique dense (median degree ~120):
+ *   rendering all ~42k froze the tab for ~50 s; the overview's subset is ~3k.
  */
 export function visibleEdges(
   src: EdgeSources,
@@ -146,11 +148,12 @@ export function visibleEdges(
   ];
 
   const anyHighlighted = viewNodes.some((n) => n.data.highlighted);
+  const anyDimmed = viewNodes.some((n) => n.data.dimmed);
   const emphasised = new Set<string>();
   const hidden = new Set<string>();
   for (const n of viewNodes) {
     if (n.hidden) hidden.add(n.id);
-    else if (anyHighlighted ? n.data.highlighted : !n.data.dimmed) emphasised.add(n.id);
+    else if (anyHighlighted ? n.data.highlighted : anyDimmed && !n.data.dimmed) emphasised.add(n.id);
   }
 
   const out: GraphEdge[] = [];

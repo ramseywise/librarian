@@ -27,59 +27,59 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
   );
 
   return (
-    <div className="course-scroll" style={{ height: "100%", overflowY: "auto" }}>
-      <div style={{ maxWidth: 880, margin: "0 auto", padding: "40px 24px 60px" }}>
-        <h1 style={{ color: "#f0f0f0", fontSize: 28, margin: "0 0 6px" }}>Practice</h1>
-        <p style={{ color: "#888", margin: "0 0 20px", fontSize: 14 }}>
+    <div className="course-scroll course-page">
+      <div className="course-page-inner course-page-inner--practice">
+        <h1 className="course-page-title">Practice</h1>
+        <p className="course-page-lede">
           Timed drills from sisyphus, by language. Attempt cold, then open the solution.
         </p>
         {error && (
-          <div style={{ color: "#EF5350", fontSize: 13 }}>
+          <div className="practice-error">
             Could not load drills: {error}{" "}
-            <button onClick={retry} style={{ ...conceptStyle, color: "#64b5f6" }}>Retry</button>
+            <button onClick={retry} className="practice-link practice-link--retry">Retry</button>
           </div>
         )}
-        {!drills && !error && <div style={{ color: "#666", fontSize: 13 }}>Loading drills…</div>}
+        {!drills && !error && <div className="practice-status">Loading drills…</div>}
         {drills && !drills.length && (
-          <div style={{ color: "#666", fontSize: 13 }}>
+          <div className="practice-status">
             No drills yet. Add files following the schema in sisyphus <code>drills/README.md</code>, then run{" "}
             <code>make import-courses</code>.
           </div>
         )}
         {drills && drills.length > 0 && (
           <>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
+            <div className="practice-filters">
               <Chip label="All tracks" active={!track} onClick={() => setTrack("")} />
               {tracks.map((t) => <Chip key={t} label={t} active={track === t} onClick={() => setTrack(t)} />)}
-              <span style={{ width: 16 }} />
+              <span className="practice-filters-gap" />
               <Chip label="Any level" active={!difficulty} onClick={() => setDifficulty("")} />
               {DIFFICULTIES.map((d) => (
                 <Chip key={d} label={d} active={difficulty === d} onClick={() => setDifficulty(d)} />
               ))}
             </div>
             {shown.map((d) => (
-              <div key={d.id} className="course-nav-item" style={rowStyle}>
-                <button onClick={() => onOpenLesson(d.id)} style={titleBtnStyle}>
-                  {done.has(d.id) && <span style={{ color: "#4CAF50" }}>✓ </span>}
+              <div key={d.id} className="course-nav-item practice-row">
+                <button onClick={() => onOpenLesson(d.id)} className="practice-title">
+                  {done.has(d.id) && <span className="text-success">✓ </span>}
                   {d.title}
                 </button>
-                <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginTop: 4 }}>
+                <div className="practice-meta">
                   <DrillBadges drill={d.drill} />
                   {d.drill.timebox_min ? <DrillTimer lessonId={d.id} timeboxMin={d.drill.timebox_min} compact /> : null}
                   {d.attempts && (
-                    <span title={`Last score: ${d.attempts.score}`} style={{ fontSize: 12, color: "#4CAF50" }}>
+                    <span title={`Last score: ${d.attempts.score}`} className="practice-attempts">
                       {d.attempts.count}× · last {d.attempts.last}
                     </span>
                   )}
                   {d.concepts.map((c) => (
-                    <button key={c.id} onClick={() => onOpenConcept(c.id)} title={c.summary} style={conceptStyle}>
+                    <button key={c.id} onClick={() => onOpenConcept(c.id)} title={c.summary} className="practice-link">
                       ◆ {c.title}
                     </button>
                   ))}
                 </div>
               </div>
             ))}
-            {!shown.length && <div style={{ color: "#666", fontSize: 13 }}>No drills match.</div>}
+            {!shown.length && <div className="practice-status">No drills match.</div>}
           </>
         )}
       </div>
@@ -89,23 +89,8 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
 
 function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <button onClick={onClick} style={{
-      background: active ? "#1f2a36" : "#151515", border: "1px solid", borderColor: active ? "#2f4b66" : "#262626",
-      color: active ? "#90caf9" : "#999", borderRadius: 14, fontSize: 12, padding: "4px 12px", cursor: "pointer",
-      fontFamily: "inherit",
-    }}>
+    <button onClick={onClick} className={`filter-chip${active ? " is-active" : ""}`}>
       {label}
     </button>
   );
 }
-
-const rowStyle: React.CSSProperties = {
-  border: "1px solid #222", borderRadius: 8, padding: "12px 14px", marginBottom: 8,
-};
-const titleBtnStyle: React.CSSProperties = {
-  background: "none", border: "none", padding: 0, color: "#e0e0e0", fontSize: 15, fontWeight: 500,
-  cursor: "pointer", fontFamily: "inherit", textAlign: "left",
-};
-const conceptStyle: React.CSSProperties = {
-  background: "none", border: "none", padding: 0, color: "#ce93d8", fontSize: 12, cursor: "pointer", fontFamily: "inherit",
-};

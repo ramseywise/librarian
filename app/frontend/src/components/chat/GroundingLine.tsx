@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import type { Grounding } from "../../hooks/useChatStream";
 import { CitationChip } from "./CitationChip";
 
@@ -11,11 +10,11 @@ interface Props {
 // backend's grounding check). Same chips as the inline citations.
 export function GroundingLine({ grounding, onOpenPage }: Props) {
   if (grounding.cited.length === 0) {
-    return <div style={groundingStyle}>no citations</div>;
+    return <div className="grounding">no citations</div>;
   }
   const grounded = grounding.cited.filter((c) => !grounding.ungrounded.includes(c));
   return (
-    <div style={groundingStyle}>
+    <div className="grounding">
       {grounded.length > 0 && (
         <div>
           sources:{" "}
@@ -25,7 +24,7 @@ export function GroundingLine({ grounding, onOpenPage }: Props) {
         </div>
       )}
       {grounding.ungrounded.length > 0 && (
-        <div style={{ color: "#c9a227", marginTop: 2 }}>
+        <div className="grounding-warn">
           cited but not read:{" "}
           {grounding.ungrounded.map((id) => (
             <CitationChip key={id} id={id} ungrounded onOpenPage={onOpenPage} />
@@ -35,5 +34,3 @@ export function GroundingLine({ grounding, onOpenPage }: Props) {
     </div>
   );
 }
-
-const groundingStyle: CSSProperties = { marginTop: 6, fontSize: 10, color: "#666" };

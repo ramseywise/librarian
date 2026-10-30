@@ -112,6 +112,13 @@ describe("visibleEdges", () => {
     expect(out.some((e) => e.id === "wikilink:a->b")).toBe(true);
   });
 
+  it("renders no tag-shared edges when nothing is emphasised (All mode, no selection)", () => {
+    const v = NONE;
+    const out = visibleEdges(src, ALL_ON, applyView(nodes, v), v);
+    expect(out.some((e) => e.data?.edgeType === "tag-shared")).toBe(false);
+    expect(out.some((e) => e.data?.edgeType === "wikilink")).toBe(true);
+  });
+
   it("filter mode shows all types inside the subgraph, ignoring toggles", () => {
     const v = { ...NONE, activeTags: new Set(["rag"]), filterIds: new Set(["a", "b"]) };
     const off = { wikilink: false, semantic: false, "tag-shared": false };

@@ -65,6 +65,7 @@ function WikiGraphInner({
     semanticEdges,
     fetchSemanticEdges,
     umapPositions,
+    umapFailed,
     loadUmapPositions,
     connected,
   } = useWikiData();
@@ -78,10 +79,13 @@ function WikiGraphInner({
   const [overviewMode, setOverviewMode] = useState(true);
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
   const [loadingSemantic, setLoadingSemantic] = useState(false);
+  // Narrow screens only: the control panels collapse behind one menu button.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
   const { fitView } = useReactFlow();
 
   const hasNodes = baseNodes.length > 0;
-  const loadingUmap = layout === "umap-semantic" && hasNodes && !umapPositions;
+  const loadingUmap = layout === "umap-semantic" && hasNodes && !umapPositions && !umapFailed;
 
   // UMAP positions are fetched once, on first use; the hook caches them.
   useEffect(() => {
@@ -97,10 +101,12 @@ function WikiGraphInner({
   const baseLayout = useMemo<Record<string, XY> | null>(() => {
     if (!hasNodes) return null;
     if (layout === "umap-semantic") {
-      return umapPositions ? placeMissingNodes(baseNodes, umapPositions, wikilinkEdges) : null;
+      if (umapPositions) return placeMissingNodes(baseNodes, umapPositions, wikilinkEdges);
+      if (!umapFailed) return null; // still loading: render nothing rather than a pile at (0,0)
+      // UMAP unavailable on the server: fall back to the hierarchy layout.
     }
     return positionsOf(applyDagreLayout(baseNodes, wikilinkEdges));
-  }, [hasNodes, layout, umapPositions, baseNodes, wikilinkEdges]);
+  }, [hasNodes, layout, umapPositions, umapFailed, baseNodes, wikilinkEdges]);
 
   const filterIds = useMemo(() => {
     const primary = filterPrimaryIds(baseNodes, activeTags);
@@ -237,52 +243,72 @@ function WikiGraphInner({
     onNodeSelect?.(null);
   }, [onNodeSelect]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      setMenuOpen(false);
+      menuBtnRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   const miniMapColor = useCallback((n: WikiFlowNode) => domainColor(n.data.domain[0]), []);
 
   return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+    <div className="graph-root">
       {/* Connection status */}
-      <div style={{
-        position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)",
-        zIndex: 10, fontSize: 11, color: connected ? "#4CAF50" : "#F44336",
-        background: "#1c1c1c", padding: "3px 10px", borderRadius: 12, border: "1px solid #333",
-      }}>
+      <div className={`graph-status ${connected ? "graph-status--live" : "graph-status--offline"}`}>
         {connected ? "● live" : "○ connecting…"}
       </div>
 
-      <EdgeTogglePanel
-        visibility={edgeVis}
-        onChange={setEdgeVis}
-        onLoadSemantic={handleLoadSemantic}
-        loadingSemanticEdges={loadingSemantic}
-      />
+      {/* Narrow screens: one button in place of the four control panels. */}
+      <button
+        ref={menuBtnRef}
+        type="button"
+        className="graph-menu-btn"
+        aria-label="Graph controls"
+        aria-expanded={menuOpen}
+        aria-controls="graph-controls"
+        onClick={() => setMenuOpen((o) => !o)}
+      >
+        ☰ Controls
+      </button>
 
-      <LayoutSwitcher current={layout} onChange={setLayout} loadingUmap={loadingUmap} />
+      <div id="graph-controls" className={`graph-controls${menuOpen ? " is-open" : ""}`}>
+        <EdgeTogglePanel
+          visibility={edgeVis}
+          onChange={setEdgeVis}
+          onLoadSemantic={handleLoadSemantic}
+          loadingSemanticEdges={loadingSemantic}
+        />
 
-      {/* Depth toggle — top-right */}
-      <div style={depthToggleStyle}>
-        <button
-          onClick={() => setOverviewMode(true)}
-          aria-pressed={overviewMode}
-          style={{ ...depthBtnStyle, ...(overviewMode ? depthBtnActiveStyle : {}) }}
-        >
-          Projects
-        </button>
-        <button
-          onClick={() => setOverviewMode(false)}
-          aria-pressed={!overviewMode}
-          style={{ ...depthBtnStyle, ...(!overviewMode ? depthBtnActiveStyle : {}) }}
-        >
-          All
-        </button>
+        <LayoutSwitcher
+          current={layout}
+          onChange={setLayout}
+          loadingUmap={loadingUmap}
+          umapUnavailable={layout === "umap-semantic" && umapFailed}
+        />
+
+        {/* Depth toggle — top-right */}
+        <div className="graph-depth seg">
+          <button onClick={() => setOverviewMode(true)} aria-pressed={overviewMode} className="seg-btn">
+            Projects
+          </button>
+          <button onClick={() => setOverviewMode(false)} aria-pressed={!overviewMode} className="seg-btn">
+            All
+          </button>
+        </div>
+
+        <TagFilterPanel
+          domains={domains}
+          activeTags={activeTags}
+          onChange={onActiveTagsChange}
+          onBrief={onBrief}
+        />
       </div>
-
-      <TagFilterPanel
-        domains={domains}
-        activeTags={activeTags}
-        onChange={onActiveTagsChange}
-        onBrief={onBrief}
-      />
 
       <ReactFlow
         nodes={nodes}
@@ -298,11 +324,8 @@ function WikiGraphInner({
         proOptions={{ hideAttribution: true }}
       >
         <Background variant={BackgroundVariant.Dots} color="#222" gap={20} />
-        <Controls style={{ background: "#1c1c1c", border: "1px solid #333" }} />
-        <MiniMap
-          nodeColor={miniMapColor}
-          style={{ background: "#111", border: "1px solid #333" }}
-        />
+        <Controls className="graph-flow-controls" />
+        <MiniMap nodeColor={miniMapColor} className="graph-minimap" />
       </ReactFlow>
     </div>
   );
@@ -315,29 +338,3 @@ export function WikiGraph(props: WikiGraphProps) {
     </ReactFlowProvider>
   );
 }
-
-const depthToggleStyle: React.CSSProperties = {
-  position: "absolute",
-  top: 90,
-  right: 12,
-  zIndex: 10,
-  display: "flex",
-  background: "#1c1c1c",
-  border: "1px solid #333",
-  borderRadius: 8,
-  overflow: "hidden",
-};
-
-const depthBtnStyle: React.CSSProperties = {
-  padding: "5px 14px",
-  fontSize: 11,
-  cursor: "pointer",
-  background: "transparent",
-  border: "none",
-  color: "#555",
-};
-
-const depthBtnActiveStyle: React.CSSProperties = {
-  background: "#2a2a2a",
-  color: "#e0e0e0",
-};

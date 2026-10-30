@@ -4,6 +4,8 @@ interface Props {
   current: LayoutMode;
   onChange: (mode: LayoutMode) => void;
   loadingUmap: boolean;
+  /** The server could not compute UMAP; the graph is showing the hierarchy layout instead. */
+  umapUnavailable?: boolean;
 }
 
 const MODES: { key: LayoutMode; label: string; hint: string }[] = [
@@ -11,55 +13,26 @@ const MODES: { key: LayoutMode; label: string; hint: string }[] = [
   { key: "umap-semantic", label: "Semantic", hint: "Spatial position encodes meaning (UMAP)" },
 ];
 
-export function LayoutSwitcher({ current, onChange, loadingUmap }: Props) {
+export function LayoutSwitcher({ current, onChange, loadingUmap, umapUnavailable }: Props) {
   return (
-    <div style={panelStyle}>
-      <div style={labelStyle}>Layout</div>
-      <div style={{ display: "flex", gap: 6 }}>
+    <div className="float-panel graph-layout-panel">
+      <div className="panel-label panel-label--spaced">Layout</div>
+      <div className="btn-row">
         {MODES.map(({ key, label, hint }) => (
           <button
             key={key}
-            title={hint}
+            type="button"
+            title={key === "umap-semantic" && umapUnavailable ? "UMAP unavailable on the server — showing Hierarchy" : hint}
+            aria-pressed={current === key}
             onClick={() => onChange(key)}
-            style={{
-              ...btnStyle,
-              background: current === key ? "#2a2a2a" : "transparent",
-              border: `1px solid ${current === key ? "#555" : "#333"}`,
-              color: current === key ? "#e0e0e0" : "#666",
-            }}
+            className="toggle-btn"
           >
             {label}
             {key === "umap-semantic" && loadingUmap && " …"}
+            {key === "umap-semantic" && umapUnavailable && " (unavailable)"}
           </button>
         ))}
       </div>
     </div>
   );
 }
-
-const panelStyle: React.CSSProperties = {
-  position: "absolute",
-  top: 12,
-  right: 12,
-  zIndex: 10,
-  background: "#1c1c1c",
-  border: "1px solid #333",
-  borderRadius: 8,
-  padding: "10px 14px",
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: 10,
-  color: "#666",
-  fontWeight: 700,
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  marginBottom: 8,
-};
-
-const btnStyle: React.CSSProperties = {
-  padding: "4px 10px",
-  borderRadius: 5,
-  fontSize: 12,
-  cursor: "pointer",
-};

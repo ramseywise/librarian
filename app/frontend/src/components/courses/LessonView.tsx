@@ -35,14 +35,14 @@ function splitSolution(body: string): [string, string, string] | null {
 }
 
 export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) {
-  const tone = { easy: "#4CAF50", medium: "#FFB74D", hard: "#EF5350" }[drill.difficulty ?? ""] ?? "#888";
+  const tone = ["easy", "medium", "hard"].includes(drill.difficulty ?? "") ? drill.difficulty : "other";
   return (
-    <span style={{ display: "inline-flex", gap: 8, fontSize: 12, color: "#888" }}>
-      <span style={{ color: "#90caf9" }}>{drill.track}</span>
-      {drill.difficulty && <span style={{ color: tone }}>{drill.difficulty}</span>}
+    <span className="drill-badges">
+      <span className="drill-track">{drill.track}</span>
+      {drill.difficulty && <span className={`drill-difficulty drill-difficulty--${tone}`}>{drill.difficulty}</span>}
       {drill.timebox_min && <span>{drill.timebox_min} min</span>}
       {drill.tags?.map((t) => (
-        <span key={t} title="Concept with no wiki page yet" style={{ color: "#666" }}>#{t}</span>
+        <span key={t} title="Concept with no wiki page yet" className="drill-tag">#{t}</span>
       ))}
     </span>
   );
@@ -86,26 +86,26 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
   const ask = () => onAsk(`I'm studying the lesson "${lesson.title}" (${courseTitle}). Explain its key ideas and how they connect to the rest of the wiki.`);
 
   return (
-    <div ref={scrollRef} className="course-scroll" style={{ height: "100%", overflowY: "auto" }}>
-        <article style={{ maxWidth: 780, margin: "0 auto", padding: "28px 32px 60px" }}>
-          <div style={{ fontSize: 12, color: "#666", marginBottom: 6 }}>
-            <button onClick={() => onOpen(lesson.course)} style={crumbStyle}>{courseTitle}</button>
+    <div ref={scrollRef} className="course-scroll course-page">
+        <article className="lesson">
+          <div className="lesson-crumbs">
+            <button onClick={() => onOpen(lesson.course)} className="link-btn lesson-crumb">{courseTitle}</button>
             {lesson.section && <> · {lesson.section}</>}
           </div>
-          <h1 style={{ color: "#f4f4f4", fontSize: 30, lineHeight: 1.25, margin: "0 0 10px" }}>{lesson.title}</h1>
+          <h1 className="lesson-title">{lesson.title}</h1>
           {lesson.drill && (
-            <div style={{ margin: "-2px 0 12px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
+            <div className="lesson-drill">
               <DrillBadges drill={lesson.drill} />
               {lesson.drill.timebox_min ? <DrillTimer lessonId={lesson.id} timeboxMin={lesson.drill.timebox_min} /> : null}
             </div>
           )}
-          {lesson.summary && <p style={{ color: "#999", fontSize: 15, margin: "0 0 24px", lineHeight: 1.6 }}>{lesson.summary}</p>}
+          {lesson.summary && <p className="lesson-summary">{lesson.summary}</p>}
 
           <div ref={proseRef} className="lesson-prose">
             {parts ? (
               <>
                 {md(parts[0])}
-                <button onClick={() => setShowSolution((s) => !s)} aria-expanded={showSolution} style={{ ...doneBtnStyle, margin: "0 0 1em" }}>
+                <button onClick={() => setShowSolution((s) => !s)} aria-expanded={showSolution} className="round-btn lesson-solution-btn">
                   {showSolution ? "Hide solution" : "Show solution"}
                 </button>
                 {showSolution && md(parts[1])}
@@ -117,31 +117,31 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
           </div>
 
           {lesson.concepts.length > 0 && (
-            <div style={{ marginTop: 36 }}>
-              <div style={headStyle}>Concepts in the graph</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            <div className="lesson-concepts">
+              <div className="section-label">Concepts in the graph</div>
+              <div className="chip-row">
                 {lesson.concepts.map((c) => (
-                  <button key={c.id} onClick={() => onOpenConcept(c.id)} title={`${c.domain} · ${c.summary}`} style={conceptStyle}>
-                    <span style={{ color: "#ce93d8" }}>◆</span> {c.title}
+                  <button key={c.id} onClick={() => onOpenConcept(c.id)} title={`${c.domain} · ${c.summary}`} className="concept-chip">
+                    <span className="text-concept">◆</span> {c.title}
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          <div style={{ display: "flex", justifyContent: "center", gap: 10, margin: "36px 0 24px" }}>
-            <button onClick={onToggleDone} style={{ ...doneBtnStyle, ...(done ? doneOnStyle : {}) }}>
+          <div className="lesson-actions">
+            <button onClick={onToggleDone} className={`round-btn${done ? " round-btn--done" : ""}`}>
               {done ? "✓ Completed" : "Mark as complete"}
             </button>
-            <button onClick={ask} style={doneBtnStyle}>Ask the librarian ↗</button>
+            <button onClick={ask} className="round-btn">Ask the librarian ↗</button>
           </div>
 
-          <div style={{ display: "flex", gap: 12, borderTop: "1px solid #222", paddingTop: 20 }}>
-            {lesson.prev ? <PagerLink dir="prev" title={lesson.prev.title} onClick={() => onOpen(lesson.prev!.id)} /> : <span style={{ flex: 1 }} />}
-            {lesson.next ? <PagerLink dir="next" title={lesson.next.title} onClick={() => onOpen(lesson.next!.id)} /> : <span style={{ flex: 1 }} />}
+          <div className="lesson-pager">
+            {lesson.prev ? <PagerLink dir="prev" title={lesson.prev.title} onClick={() => onOpen(lesson.prev!.id)} /> : <span className="grow" />}
+            {lesson.next ? <PagerLink dir="next" title={lesson.next.title} onClick={() => onOpen(lesson.next!.id)} /> : <span className="grow" />}
           </div>
 
-          <div style={{ fontSize: 11, color: "#444", marginTop: 24, fontFamily: "monospace" }}>
+          <div className="lesson-source">
             data/courses/{lesson.id}.md{lesson.source && <> · from {lesson.source}</>}
           </div>
         </article>
@@ -151,29 +151,9 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
 
 function PagerLink({ dir, title, onClick }: { dir: "prev" | "next"; title: string; onClick: () => void }) {
   return (
-    <button onClick={onClick} style={{ ...pagerStyle, textAlign: dir === "next" ? "right" : "left" }}>
-      <div style={{ fontSize: 11, color: "#666" }}>{dir === "next" ? "Next →" : "← Previous"}</div>
-      <div style={{ fontSize: 14, color: "#90caf9", marginTop: 2 }}>{title}</div>
+    <button onClick={onClick} className={`pager-link pager-link--${dir}`}>
+      <div className="pager-link-dir">{dir === "next" ? "Next →" : "← Previous"}</div>
+      <div className="pager-link-title">{title}</div>
     </button>
   );
 }
-
-const crumbStyle: React.CSSProperties = {
-  background: "none", border: "none", padding: 0, color: "#888", cursor: "pointer", fontSize: 12, fontFamily: "inherit",
-};
-const doneBtnStyle: React.CSSProperties = {
-  background: "transparent", border: "1px solid #333", borderRadius: 18, color: "#bbb", fontSize: 13,
-  padding: "8px 20px", cursor: "pointer", fontFamily: "inherit",
-};
-const doneOnStyle: React.CSSProperties = { borderColor: "#4CAF50", color: "#4CAF50", background: "#4CAF5018" };
-const pagerStyle: React.CSSProperties = {
-  flex: 1, background: "#151515", border: "1px solid #242424", borderRadius: 8, padding: "12px 14px",
-  cursor: "pointer", fontFamily: "inherit",
-};
-const headStyle: React.CSSProperties = {
-  fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8, fontWeight: 600,
-};
-const conceptStyle: React.CSSProperties = {
-  background: "#161616", border: "1px solid #262626", borderRadius: 14, padding: "4px 10px",
-  color: "#ccc", fontSize: 12, cursor: "pointer", fontFamily: "inherit",
-};

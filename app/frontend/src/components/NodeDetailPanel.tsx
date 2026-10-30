@@ -27,35 +27,35 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
   const fileName = data.path ? String(data.path).split("/").pop() : null;
 
   return (
-    <div style={panelStyle}>
+    <div className="detail-panel">
       {/* Colour accent bar */}
-      <div style={{ height: 3, background: color, borderRadius: "8px 8px 0 0" }} />
+      <div className="detail-accent" style={{ background: color }} />
 
       {/* Header */}
-      <div style={headerStyle}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 10, color, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
+      <div className="detail-header">
+        <div className="detail-heading">
+          <div className="detail-domain" style={{ color }}>
             {(data.domain as string[]).join(" · ")}
-            <span style={{ marginLeft: 8, color: "#555", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
+            <span className="detail-type">
               {TYPE_LABELS[data.typeTag] ?? data.typeTag}
             </span>
             {data.private && (
-              <span style={privateBadgeStyle} title="Lives in data/wiki/private/ — local only, never committed">
+              <span className="private-badge private-badge--detail" title="Lives in data/wiki/private/ — local only, never committed">
                 private
               </span>
             )}
           </div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: "#f0f0f0", lineHeight: 1.2 }}>
+          <div className="detail-title">
             {data.title}
           </div>
         </div>
-        <button onClick={onClose} style={closeBtnStyle} aria-label="Close">✕</button>
+        <button onClick={onClose} className="detail-close" aria-label="Close">✕</button>
       </div>
 
       {/* Highlighted badge */}
       {highlighted && lastQuery && (
-        <div style={{ padding: "0 20px 12px" }}>
-          <span style={{ ...badgeStyle, borderColor: color, color, background: color + "18" }}>
+        <div className="detail-section detail-section--tight">
+          <span className="detail-badge" style={{ borderColor: color, color, background: color + "18" }}>
             Referenced while answering: "{lastQuery}"
           </span>
         </div>
@@ -63,13 +63,13 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
 
       {/* Summary */}
       {data.summary && (
-        <div style={summaryStyle}>
+        <div className="detail-summary">
           {data.summary}
         </div>
       )}
 
       {/* Tags — all clickable to filter graph */}
-      <div style={{ padding: "0 20px 16px", display: "flex", flexWrap: "wrap", gap: 6 }}>
+      <div className="detail-section detail-tags">
         {(data.tags as string[]).map((tag) => {
           const chipColor = tagColor(tag);
           const isActive = activeTags?.has(tag);
@@ -77,17 +77,13 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
             <button
               key={tag}
               onClick={onTagClick ? () => onTagClick(tag) : undefined}
+              className="tag-chip"
               style={{
                 background: isActive ? chipColor + "33" : chipColor + "18",
                 border: `1px solid ${isActive ? chipColor : chipColor + "44"}`,
                 color: isActive ? chipColor : chipColor + "bb",
-                borderRadius: 12,
-                padding: "3px 10px",
-                fontSize: 11,
                 cursor: onTagClick ? "pointer" : "default",
-                fontFamily: "inherit",
                 boxShadow: isActive ? `0 0 6px ${chipColor}55` : "none",
-                transition: "all 0.15s",
               }}
             >
               {tag}
@@ -98,29 +94,29 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
 
       {/* Course lessons that cover this concept */}
       {lessons.length > 0 && onOpenLesson && (
-        <div style={{ padding: "0 20px 14px" }}>
-          <div style={{ fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 6 }}>
+        <div className="detail-section detail-section--lessons">
+          <div className="detail-subhead">
             Lessons
           </div>
           {lessons.slice(0, 6).map((l) => (
-            <button key={l.id} onClick={() => onOpenLesson(l.id)} style={lessonBtnStyle}>
-              <span style={{ color: "#64b5f6" }}>{l.title}</span>
-              <span style={{ color: "#555", marginLeft: 6 }}>{l.course}</span>
+            <button key={l.id} onClick={() => onOpenLesson(l.id)} className="detail-lesson">
+              <span className="detail-lesson-title">{l.title}</span>
+              <span className="detail-lesson-course">{l.course}</span>
             </button>
           ))}
-          {lessons.length > 6 && <div style={{ fontSize: 11, color: "#555" }}>+{lessons.length - 6} more</div>}
+          {lessons.length > 6 && <div className="detail-more">+{lessons.length - 6} more</div>}
         </div>
       )}
 
       {/* Footer meta */}
-      <div style={footerStyle}>
+      <div className="detail-footer">
         {fileName && (
-          <span style={{ color: "#444", fontFamily: "monospace", fontSize: 11 }}>
+          <span className="detail-meta detail-meta--file">
             {fileName}
           </span>
         )}
         {data.updated && (
-          <span style={{ color: "#444", fontSize: 11 }}>
+          <span className="detail-meta">
             updated {data.updated}
           </span>
         )}
@@ -142,87 +138,3 @@ function useConceptLessons(pageId: string): ConceptLesson[] {
   }, [pageId]);
   return lessons;
 }
-
-const lessonBtnStyle: React.CSSProperties = {
-  display: "block",
-  background: "none",
-  border: "none",
-  padding: "3px 0",
-  fontSize: 12,
-  textAlign: "left",
-  cursor: "pointer",
-  fontFamily: "inherit",
-};
-
-const panelStyle: React.CSSProperties = {
-  position: "absolute",
-  bottom: 20,
-  left: "50%",
-  transform: "translateX(-50%)",
-  zIndex: 20,
-  background: "#161616",
-  border: "1px solid #2a2a2a",
-  borderRadius: 8,
-  width: "min(560px, 48vw)",
-  maxHeight: "42vh",
-  boxShadow: "0 8px 40px rgba(0,0,0,0.7)",
-  display: "flex",
-  flexDirection: "column",
-  overflow: "hidden",
-};
-
-const headerStyle: React.CSSProperties = {
-  padding: "18px 20px 14px",
-  display: "flex",
-  alignItems: "flex-start",
-  gap: 12,
-};
-
-const summaryStyle: React.CSSProperties = {
-  padding: "0 20px 16px",
-  fontSize: 14,
-  color: "#bbb",
-  lineHeight: 1.65,
-  flex: 1,
-  overflowY: "auto",
-};
-
-const footerStyle: React.CSSProperties = {
-  padding: "10px 20px",
-  borderTop: "1px solid #222",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  flexShrink: 0,
-};
-
-const closeBtnStyle: React.CSSProperties = {
-  background: "none",
-  border: "none",
-  color: "#555",
-  cursor: "pointer",
-  fontSize: 16,
-  padding: 4,
-  flexShrink: 0,
-  lineHeight: 1,
-};
-
-const badgeStyle: React.CSSProperties = {
-  display: "inline-block",
-  border: "1px solid",
-  borderRadius: 4,
-  padding: "4px 10px",
-  fontSize: 11,
-  lineHeight: 1.4,
-};
-
-const privateBadgeStyle: React.CSSProperties = {
-  marginLeft: 8,
-  padding: "1px 6px",
-  border: "1px solid #9E9E9E",
-  borderRadius: 4,
-  color: "#bbb",
-  fontWeight: 600,
-  textTransform: "none",
-  letterSpacing: 0,
-};

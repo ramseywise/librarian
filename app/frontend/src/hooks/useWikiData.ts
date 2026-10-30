@@ -53,6 +53,8 @@ export function useWikiData() {
   const [graph, setGraph] = useState<GraphPayload>(EMPTY);
   const [semanticEdges, setSemanticEdges] = useState<Edge<WikiEdgeData>[]>([]);
   const [umapPositions, setUmapPositions] = useState<Record<string, XY> | null>(null);
+  /** Last UMAP request failed (e.g. the server answers 503 when umap-learn is missing). */
+  const [umapFailed, setUmapFailed] = useState(false);
   const [connected, setConnected] = useState(false);
   const umapRequest = useRef<Promise<Record<string, XY> | null> | null>(null);
 
@@ -103,12 +105,17 @@ export function useWikiData() {
   /** Fetch the UMAP projection once; concurrent and later calls share the result. */
   const loadUmapPositions = useCallback(() => {
     if (!umapRequest.current) {
+      setUmapFailed(false);
       umapRequest.current = fetch("/api/layout/umap", { method: "POST" })
         .then((res) => (res.ok ? (res.json() as Promise<Record<string, XY>>) : null))
         .catch(() => null)
         .then((pos) => {
-          if (pos) setUmapPositions(pos);
-          else umapRequest.current = null; // allow a retry
+          if (pos) {
+            setUmapPositions(pos);
+          } else {
+            setUmapFailed(true);
+            umapRequest.current = null; // a later layout switch retries
+          }
           return pos;
         });
     }
@@ -123,6 +130,7 @@ export function useWikiData() {
     semanticEdges,
     fetchSemanticEdges,
     umapPositions,
+    umapFailed,
     loadUmapPositions,
     connected,
   };
