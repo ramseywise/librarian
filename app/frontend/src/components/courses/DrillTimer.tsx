@@ -13,7 +13,13 @@ export function DrillTimer({ lessonId, timeboxMin, compact }: Props) {
   const over = remainingMs <= 0;
   const clock = formatCountdown(remainingMs);
   const state = over ? "over" : running ? "running" : started ? "paused" : "idle";
-  const label = over ? `Over the ${timeboxMin}-minute timebox by ${clock.slice(1)}` : `${clock} remaining`;
+  // formatCountdown only prefixes "+" once overtime is a whole second; at exactly the
+  // limit the clock reads 00:00 with nothing to strip.
+  const label = !over
+    ? `${clock} remaining`
+    : clock.startsWith("+")
+      ? `Over the ${timeboxMin}-minute timebox by ${clock.slice(1)}`
+      : `${timeboxMin}-minute timebox reached`;
 
   return (
     <span role="group" aria-label="Drill timer" className={`drill-timer${compact ? " drill-timer--compact" : ""}`}>

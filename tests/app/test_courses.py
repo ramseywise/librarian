@@ -319,3 +319,53 @@ def test_warm_catalog_builds_and_never_raises(
 
     monkeypatch.setattr(courses, "catalog", broken)
     courses.warm_catalog()  # logged, not raised: startup must survive
+
+
+def test_semantic_failure_retries_after_backoff(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A transient embedding failure must not pin a link-less catalog until a .md changes."""
+    pytest.importorskip("numpy")
+    import time
+
+    import shared.embeddings
+
+    def boom() -> None:
+        raise OSError("cache locked")
+
+    monkeypatch.setattr(shared.embeddings, "compute_embeddings", boom)
+    monkeypatch.setattr(courses, "_semantic_failed_at", None)
+    assert _REAL_NEIGHBOURS(["some lesson"], ["hybrid-search"]) is None
+    assert courses._semantic_failed_at is not None
+
+    courses._load.cache_clear()
+    courses.catalog()
+    assert courses._load.cache_info().currsize == 1
+    courses.catalog()  # inside the back-off window: served from cache
+    assert courses._load.cache_info().hits >= 1
+
+    monkeypatch.setattr(
+        courses, "_semantic_failed_at", time.monotonic() - courses.SEMANTIC_RETRY_S - 1
+    )
+    courses.catalog()  # window passed: the cache is dropped and the catalog rebuilt
+    info = courses._load.cache_info()  # cache_clear() also resets the counters
+    assert (info.hits, info.misses) == (0, 1)
+    assert courses._semantic_failed_at is None
+
+
+def test_semantic_skips_ambiguous_page_stems(monkeypatch: pytest.MonkeyPatch) -> None:
+    """compute_embeddings keys by stem over all of data/wiki/ (private/ included); a stem
+    present twice can't be attributed to the visible page, so it is never a candidate."""
+    np = pytest.importorskip("numpy")
+    import shared.embeddings
+
+    vecs = np.array([[1.0, 0.0], [1.0, 0.0], [0.0, 1.0]])
+    monkeypatch.setattr(
+        shared.embeddings, "compute_embeddings", lambda: (["foo", "foo", "bar"], vecs)
+    )
+    monkeypatch.setattr(
+        shared.embeddings, "encode_texts_cached", lambda texts, _p: np.array([[0.8, 0.6]])
+    )
+    out = _REAL_NEIGHBOURS(["a lesson"], ["foo", "bar"])
+    assert out is not None
+    assert [pid for pid, _ in out[0]] == ["bar"]

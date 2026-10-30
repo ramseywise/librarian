@@ -79,7 +79,9 @@ export interface ViewState {
  */
 export function applyView(nodes: GraphNode[], v: ViewState): GraphNode[] {
   const hp = v.chatHighlight;
-  const hasChat = hp != null && hp.size > 0;
+  // Only ids that exist count: a citation of an unknown or private page must not dim
+  // the whole graph with nothing highlighted.
+  const hasChat = hp != null && nodes.some((n) => hp.has(n.id));
   const fn = v.focusIds;
   const fm = v.filterIds;
   const at = v.activeTags;
@@ -136,7 +138,7 @@ export function visibleEdges(
   v: ViewState,
 ): GraphEdge[] {
   const hp = v.chatHighlight;
-  const hasChat = hp != null && hp.size > 0;
+  const hasChat = hp != null && viewNodes.some((n) => hp.has(n.id)); // as in applyView
   const focusId = v.focusId;
   const fm = v.filterIds;
   const filtering = v.activeTags.size > 0;

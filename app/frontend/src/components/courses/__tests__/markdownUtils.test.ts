@@ -1,6 +1,5 @@
-import { createElement } from "react";
 import { describe, expect, it } from "vitest";
-import { assetUrl, headingId, resolveRelative } from "../markdownUtils";
+import { assetUrl, resolveRelative, slugify, splitSolution } from "../markdownUtils";
 
 describe("resolveRelative", () => {
   it("resolves against the lesson's directory", () => {
@@ -21,12 +20,30 @@ describe("assetUrl", () => {
     expect(assetUrl("c/m/l", "/static/a.png")).toBe("/static/a.png");
     expect(assetUrl("c/m/l", "data:image/png;base64,AA")).toBe("data:image/png;base64,AA");
   });
+  it("drops protocol-relative (off-site) URLs", () => {
+    expect(assetUrl("c/m/l", "//evil.example/x.png")).toBe("");
+  });
 });
 
-describe("headingId", () => {
-  it("builds GitHub-style anchors from nested children", () => {
-    expect(headingId("Hello, World!")).toBe("hello-world");
-    expect(headingId(["Step ", createElement("code", null, "2"), ": run it"])).toBe("step-2-run-it");
-    expect(headingId("  Multiple   spaces  ")).toBe("multiple-spaces");
+describe("slugify", () => {
+  it("builds GitHub-style anchors", () => {
+    expect(slugify("Hello, World!")).toBe("hello-world");
+    expect(slugify("Step 2: run it")).toBe("step-2-run-it");
+    expect(slugify("  Multiple   spaces  ")).toBe("multiple-spaces");
+  });
+});
+
+describe("splitSolution", () => {
+  it("splits the first <details> block, with or without attributes", () => {
+    expect(splitSolution("Q\n<details><summary>Hint</summary>\nA\n</details>\nZ")).toEqual(["Q\n", "\nA\n", "\nZ"]);
+    expect(splitSolution("Q\n<details open>\n<summary>S</summary>A</details>")).toEqual(["Q\n", "A", ""]);
+  });
+
+  it("ignores <details> shown inside a code fence", () => {
+    const body = "```html\n<details>example</details>\n```\n\n<details>real</details>";
+    const out = splitSolution(body);
+    expect(out?.[1]).toBe("real");
+    expect(out?.[0]).toContain("example");
+    expect(splitSolution("~~~\n<details>x</details>\n~~~\n")).toBeNull();
   });
 });

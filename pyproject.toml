@@ -49,6 +49,11 @@ api = [
     "numpy>=2.4,<2.5",
     "scikit-learn>=1.9.1",
     "ollama>=0.6.3",
+    # /api/layout/umap (app/backend/umap_layout.py). Was only in `viz`, so an
+    # `--extra api` install served 503 and the graph fell back to the dagre layout.
+    "umap-learn>=0.5.6",
+    "numba>=0.65.1",
+    "llvmlite>=0.50.0",
 ]
 codemap = [
     "tree-sitter>=0.24.0",

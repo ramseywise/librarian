@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Lesson } from "../../courses/types";
 import { DrillTimer } from "./DrillTimer";
 import { Markdown } from "./Markdown";
+import { splitSolution } from "./markdownUtils";
 
 interface Props {
   lesson: Lesson;
@@ -25,14 +26,6 @@ function stripDuplicateH1(body: string, title: string): string {
   return norm(m[1]) === norm(title) ? body.slice(m[0].length) : body;
 }
 
-/** A drill's `<details>` solution block, split out so it stays hidden until asked for. */
-const SOLUTION_RE = /<details>\s*(?:<summary>[\s\S]*?<\/summary>)?([\s\S]*?)<\/details>/;
-
-function splitSolution(body: string): [string, string, string] | null {
-  const m = body.match(SOLUTION_RE);
-  if (!m || m.index === undefined) return null;
-  return [body.slice(0, m.index), m[1], body.slice(m.index + m[0].length)];
-}
 
 export function DrillBadges({ drill }: { drill: NonNullable<Lesson["drill"]> }) {
   const tone = ["easy", "medium", "hard"].includes(drill.difficulty ?? "") ? drill.difficulty : "other";

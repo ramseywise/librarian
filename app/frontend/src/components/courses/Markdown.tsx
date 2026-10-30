@@ -7,7 +7,7 @@ import rehypeSanitize from "rehype-sanitize";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import "./courses.css";
-import { CLOBBER_PREFIX, assetUrl, headingId, isExternal, resolveRelative, sanitizeSchema } from "./markdownUtils";
+import { CLOBBER_PREFIX, assetUrl, isExternal, rehypeHeadingIds, resolveRelative, sanitizeSchema } from "./markdownUtils";
 
 interface Props {
   body: string;
@@ -16,22 +16,21 @@ interface Props {
   onOpenConcept: (pageId: string) => void;
 }
 
-// Module-scope component types: a new function per render would remount every heading,
-// detaching the nodes LessonView's TOC IntersectionObserver is watching.
-type HeadingProps = { children?: ReactNode };
-const H1 = ({ children }: HeadingProps) => <h1 id={headingId(children)}>{children}</h1>;
-const H2 = ({ children }: HeadingProps) => <h2 id={headingId(children)}>{children}</h2>;
-const H3 = ({ children }: HeadingProps) => <h3 id={headingId(children)}>{children}</h3>;
-const H4 = ({ children }: HeadingProps) => <h4 id={headingId(children)}>{children}</h4>;
-
 const Pre = ({ children }: { children?: ReactNode }) => <CodeBlock>{children}</CodeBlock>;
 const Table = ({ children }: { children?: ReactNode }) => (
   <div className="lp-table"><table>{children}</table></div>
 );
 
 const remarkPlugins: Options["remarkPlugins"] = [remarkGfm, remarkMath];
-// Order matters: parse raw HTML, sanitise it, then render math (KaTeX output is trusted).
-const rehypePlugins: Options["rehypePlugins"] = [rehypeRaw, [rehypeSanitize, sanitizeSchema], rehypeKatex];
+// Order matters: parse raw HTML, sanitise it, id the headings (unprefixed, de-duplicated),
+// then render math (KaTeX output is trusted). Headings render as plain intrinsic elements,
+// so they are never remounted under LessonView's TOC IntersectionObserver.
+const rehypePlugins: Options["rehypePlugins"] = [
+  rehypeRaw,
+  [rehypeSanitize, sanitizeSchema],
+  rehypeHeadingIds,
+  rehypeKatex,
+];
 
 /** In-page anchor; raw-HTML ids are prefixed by the sanitiser, so try that form too. */
 function scrollToAnchor(id: string) {
@@ -63,10 +62,6 @@ function buildComponents(
   onOpenConcept: (pageId: string) => void,
 ): Components {
   return {
-    h1: H1,
-    h2: H2,
-    h3: H3,
-    h4: H4,
     pre: Pre,
     table: Table,
     a: ({ href = "", children }) => {

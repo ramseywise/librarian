@@ -98,7 +98,10 @@ export default function App() {
   );
 
   // Escape closes the chat while it is an overlay (narrow screens); beside the graph it
-  // is a persistent column and Escape leaves it alone.
+  // is a persistent column and Escape leaves it alone. Listens on window, not document:
+  // the window bubble phase runs after every document listener whatever their mount
+  // order, so an inner popup (lessons drawer, graph menu) that handled the key with
+  // preventDefault() is always seen here and one Escape closes one thing.
   useEffect(() => {
     if (!chatOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -106,8 +109,8 @@ export default function App() {
       setChatOpen(false);
       chatToggleRef.current?.focus();
     };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [chatOpen]);
 
   return (

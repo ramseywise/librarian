@@ -67,4 +67,11 @@ describe("Markdown raw HTML sanitising", () => {
     expect(c.querySelector("h2")?.id).toBe("hello-world");
     expect(c.querySelector(".lp-table > table")).not.toBeNull();
   });
+
+  it("ids headings from nested text and suffixes repeats like GitHub", () => {
+    const c = renderMd("## Step `2`: run it\n\n## Notes\n\n### Notes\n\n## Notes-1\n");
+    expect([...c.querySelectorAll("h2, h3")].map((h) => h.id)).toEqual([
+      "step-2-run-it", "notes", "notes-1", "notes-1-1",
+    ]);
+  });
 });

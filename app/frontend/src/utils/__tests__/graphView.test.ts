@@ -87,6 +87,16 @@ describe("applyView", () => {
     expect(f.c).toEqual({ hidden: false, dimmed: false, hl: true });
     expect(f.a).toEqual({ hidden: false, dimmed: true, hl: false });
   });
+
+  it("ignores a chat highlight that names no existing node", () => {
+    const v = { ...NONE, chatHighlight: new Set(["no-such-page"]), focusId: "a", focusIds: new Set(["a"]) };
+    const f = flags(applyView(nodes, v));
+    expect(f.a).toEqual({ hidden: false, dimmed: false, hl: true }); // focus applies as if no chat
+    expect(f.b.dimmed).toBe(true);
+    const ids = visibleEdges({ wikilink: [edge("a", "b", "wikilink")], semantic: [], tagShared: [] },
+      ALL_ON, applyView(nodes, v), v).map((e) => e.id);
+    expect(ids).toEqual(["wikilink:a->b"]);
+  });
 });
 
 describe("visibleEdges", () => {

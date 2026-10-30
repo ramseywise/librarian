@@ -49,7 +49,12 @@ function onStorage(e: StorageEvent) {
 }
 
 function subscribe(listener: () => void) {
-  if (listeners.size === 0) window.addEventListener("storage", onStorage);
+  if (listeners.size === 0) {
+    // Nobody was listening, so storage events from other tabs were missed while the
+    // course views were unmounted. Re-read now, or the next write would clobber them.
+    snapshot = load();
+    window.addEventListener("storage", onStorage);
+  }
   listeners.add(listener);
   return () => {
     listeners.delete(listener);

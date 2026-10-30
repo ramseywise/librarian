@@ -209,8 +209,13 @@ function WikiGraphInner({
     }
     if (appliedFocus.current === focusPage || !hasRenderedNodes) return;
     const node = baseNodes.find((n) => n.id === focusPage);
-    if (!node) return;
     appliedFocus.current = focusPage;
+    if (!node) {
+      // Unknown or private page (graph loaded, id absent): drop the request rather than
+      // leave it pending, so it can't fire later on an unrelated graph update.
+      onFocusApplied?.();
+      return;
+    }
     requestAnimationFrame(() => {
       void fitView({ nodes: [{ id: focusPage }], padding: 2, maxZoom: 1.2, duration: 400 });
     });

@@ -43,4 +43,15 @@ describe("useCourseProgress", () => {
     act(() => { window.dispatchEvent(new StorageEvent("storage", { key: PROGRESS_KEY })); });
     expect(result.current.done.has("other/tab/lesson")).toBe(true);
   });
+
+  it("re-reads storage when the course views remount, so another tab's progress survives", () => {
+    const first = renderHook(() => useCourseProgress());
+    act(() => first.result.current.toggleDone("mine"));
+    first.unmount(); // switched to the Graph tab: nobody listens for storage events
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({ done: ["mine", "other-tab"], last: {} }));
+    const again = renderHook(() => useCourseProgress());
+    expect([...again.result.current.done]).toEqual(["mine", "other-tab"]);
+    act(() => again.result.current.toggleDone("third"));
+    expect(JSON.parse(localStorage.getItem(PROGRESS_KEY)!).done).toEqual(["mine", "other-tab", "third"]);
+  });
 });

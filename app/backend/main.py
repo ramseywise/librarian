@@ -36,6 +36,12 @@ _ws_clients: list[WebSocket] = []
 _background_tasks: set[asyncio.Future[Any]] = set()
 
 
+# Seconds of wiki quiet before the course catalog is rebuilt. An ingest writes many pages
+# in bursts; each rebuild takes seconds under the catalog lock, so coalesce them.
+CATALOG_REWARM_DELAY_S = 10.0
+_rewarm_handle: asyncio.TimerHandle | None = None
+
+
 def _in_background(fn: Callable[[], None]) -> None:
     """Run a blocking startup job in the default thread executor, holding a reference."""
     fut = asyncio.get_running_loop().run_in_executor(None, fn)
@@ -56,8 +62,17 @@ async def _watch_and_broadcast(awatch: Callable[[str], AsyncIterator[object]]) -
             with contextlib.suppress(ValueError):
                 _ws_clients.remove(ws)
         # A wiki change invalidates the course catalog (lesson ↔ concept links); rebuild
-        # it now rather than on the next /api/courses request.
-        _in_background(warm_catalog)
+        # it once the burst of changes settles rather than on the next request.
+        _schedule_catalog_rewarm()
+
+
+def _schedule_catalog_rewarm() -> None:
+    global _rewarm_handle
+    if _rewarm_handle is not None:
+        _rewarm_handle.cancel()
+    _rewarm_handle = asyncio.get_running_loop().call_later(
+        CATALOG_REWARM_DELAY_S, _in_background, warm_catalog
+    )
 
 
 @contextlib.asynccontextmanager
@@ -126,15 +141,17 @@ async def get_graph(edges: Literal["wikilink", "all"] = "wikilink") -> dict[str,
     return graph
 
 
+# Sync routes (threadpool): both block on embeddings, and compute_embeddings serialises
+# on a lock the course-catalog build may hold — never wait on it from the event loop.
 @app.get("/api/edges/semantic")
-async def get_semantic_edges(threshold: float = 0.65) -> list[dict]:
+def get_semantic_edges(threshold: float = 0.65) -> list[dict]:
     from shared.embeddings import semantic_edges
 
     return semantic_edges(threshold)
 
 
 @app.post("/api/layout/umap")
-async def umap_layout() -> dict[str, dict]:
+def umap_layout() -> dict[str, dict]:
     # Imported lazily: umap-learn pulls in numba, which requires numpy<2.5. When
     # pyproject.toml still pinned numpy>=2.5.1 a module-level import took the entire
     # API down (including /api/graph) over one optional layout endpoint. The pin now

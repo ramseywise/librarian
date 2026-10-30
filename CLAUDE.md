@@ -146,7 +146,7 @@ published: YYYY-MM-DD
   to link concepts explicitly. Inline `[[Wiki Page]]` links work too. Images go in the
   module's `assets/` and are referenced relatively.
 - Seeded from `../learn-ai-engineering` by `make import-courses` (`core/import_courses.py`).
-  The `programming` and `interviewing` courses come from `../sisyphus` (`drills/` and
+  The `drills` and `interviewing` courses come from `../sisyphus` (`drills/` and
   `interviewing/`) — see `SUBJECT_SOURCES`. Never import from sisyphus `jobs/` (personal PII).
   Drill files (frontmatter with a `track`, schema in sisyphus `drills/README.md`) import as
   `kind: drill` with `track`/`topic`/`difficulty`/`timebox_min`, and their `concepts` become

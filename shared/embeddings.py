@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import os
 import struct
+import threading
 from pathlib import Path
 
 import duckdb
@@ -16,12 +17,21 @@ CACHE_DB = Path(__file__).parent.parent / ".embeddings_cache.duckdb"
 MODEL_NAME = os.environ.get("LIBRARIAN_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 
 _model: SentenceTransformer | None = None
+# The API runs warmup() and the course-catalog build on separate executor threads at
+# startup; without the lock both can see None and load the model twice.
+_model_lock = threading.Lock()
+# compute_embeddings is reached from the event loop (/api/edges/semantic, /api/layout/umap)
+# and from executor threads (course-catalog build); concurrent INSERT OR REPLACE on the
+# same DuckDB file fails with a primary-key violation, so callers take turns.
+_cache_lock = threading.Lock()
 
 
 def _get_model() -> SentenceTransformer:
     global _model
     if _model is None:
-        _model = SentenceTransformer(MODEL_NAME)
+        with _model_lock:
+            if _model is None:
+                _model = SentenceTransformer(MODEL_NAME)
     return _model
 
 
@@ -80,6 +90,11 @@ def compute_embeddings() -> tuple[list[str], np.ndarray]:
     Pages whose content hasn't changed since last run are served from DuckDB
     without calling the model — only new/changed pages are re-encoded.
     """
+    with _cache_lock:
+        return _compute_embeddings()
+
+
+def _compute_embeddings() -> tuple[list[str], np.ndarray]:
     md_files = sorted(f for f in WIKI_DIR.rglob("*.md") if not f.name.startswith("_"))
     if not md_files:
         return [], np.array([])

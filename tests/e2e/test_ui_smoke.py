@@ -101,3 +101,25 @@ def test_chat_panel_idle(page: Page) -> None:
     expect(page.get_by_role("textbox", name="Ask the wiki agent")).to_be_visible()
     expect(page.get_by_role("button", name="Clear conversation")).to_be_disabled()
     expect(page.get_by_role("log", name="Conversation")).to_be_visible()
+
+
+def test_escape_closes_one_overlay_at_a_time() -> None:
+    """Narrow layout: chat overlay + lessons drawer open; one Escape closes only the drawer."""
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        pg = browser.new_page(viewport={"width": 1000, "height": 800})
+        outline = _get("/api/courses")[0]["modules"][0]["lessons"][0]
+        pg.goto(f"{UI_URL}/#/courses/{outline['id']}", timeout=15_000)
+        drawer_btn = pg.get_by_role("button", name="Lessons", exact=True)
+        expect(drawer_btn).to_be_visible(timeout=15_000)
+        pg.get_by_role("button", name="Agent Chat ↗").click()
+        drawer_btn.click()
+        expect(pg.locator(".course-drawer.is-open")).to_have_count(1)
+
+        pg.keyboard.press("Escape")
+        expect(pg.locator(".course-drawer.is-open")).to_have_count(0)
+        expect(pg.locator("#chat-panel")).to_have_count(1)
+        expect(drawer_btn).to_be_focused()
+        pg.keyboard.press("Escape")
+        expect(pg.locator("#chat-panel")).to_have_count(0)
+        browser.close()

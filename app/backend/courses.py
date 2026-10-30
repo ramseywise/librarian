@@ -20,6 +20,7 @@ import os
 import re
 import threading
 import time
+from collections import Counter
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -116,9 +117,26 @@ def _signature(*dirs: Path) -> tuple[int, int]:
 _LOAD_LOCK = threading.Lock()
 
 
+# Monotonic time of the last transient embedding failure. _load is cached on the markdown
+# signature alone, so without this a one-off failure (DuckDB lock held by an ingest, model
+# download hiccup) would pin a catalog without semantic links until some .md file changed.
+_semantic_failed_at: float | None = None
+SEMANTIC_RETRY_S = 60.0
+
+
 def catalog() -> Catalog:
+    global _semantic_failed_at
+    # Stat the trees before taking the lock: it walks every .md, and holding the lock for
+    # it would serialise every request, not just the rebuilds.
+    sig = _signature(COURSES_DIR, WIKI_DIR)
     with _LOAD_LOCK:
-        return _load(COURSES_DIR, WIKI_DIR, _signature(COURSES_DIR, WIKI_DIR))
+        if (
+            _semantic_failed_at is not None
+            and time.monotonic() - _semantic_failed_at > SEMANTIC_RETRY_S
+        ):
+            _semantic_failed_at = None
+            _load.cache_clear()
+        return _load(COURSES_DIR, WIKI_DIR, sig)
 
 
 def warm_catalog() -> None:
@@ -358,9 +376,14 @@ def _semantic_neighbours(texts: list[str], wiki_ids: list[str]) -> Neighbours | 
         return None
     if not texts or not wiki_ids:
         return None
+    global _semantic_failed_at
     try:
         page_ids, page_vecs = compute_embeddings()
-        eligible = set(wiki_ids)
+        # compute_embeddings keys by file stem across all of data/wiki/, private/ included.
+        # A stem that occurs twice (private/foo.md + rag/foo.md) can't be attributed to the
+        # visible page, so it is left out rather than risk scoring private content.
+        counts = Counter(page_ids)
+        eligible = {pid for pid in wiki_ids if counts[pid] == 1}
         rows = [i for i, pid in enumerate(page_ids) if pid in eligible]
         if not rows:
             return None
@@ -368,7 +391,8 @@ def _semantic_neighbours(texts: list[str], wiki_ids: list[str]) -> Neighbours | 
         wiki_mat = page_vecs[rows]
         lesson_mat = encode_texts_cached(texts, LESSON_VEC_CACHE)
     except Exception as e:  # model download, cache lock: degrade, never fail
-        log.warning("courses.semantic.failed", error=str(e))
+        log.warning("courses.semantic.failed", error=str(e), retry_after_s=SEMANTIC_RETRY_S)
+        _semantic_failed_at = time.monotonic()
         return None
     sims = lesson_mat @ wiki_mat.T  # both L2-normalised → cosine
     keep = SEMANTIC_TOP_K + MAX_CONCEPTS  # headroom for candidates already ranked
