@@ -4,10 +4,13 @@ hand-authored) to the React course view, and ties lessons to wiki graph nodes.
 Layout: data/courses/<course>/_course.md, <course>/<module>/_module.md, and lesson
 .md files anywhere below a module. Ordering and titles come from frontmatter.
 
-Lesson ↔ concept links come from two places:
+Lesson ↔ concept links come from three places, ranked in this order:
 - explicit: `wiki: [page-id, ...]` in lesson frontmatter, or inline [[Wiki Title]]
 - mentioned: wiki page titles that appear verbatim in the lesson text (multi-word
   titles only — single words like "Memory" match everything)
+- semantic: nearest wiki pages by embedding cosine (local MiniLM via shared.embeddings,
+  at most SEMANTIC_TOP_K above SEMANTIC_THRESHOLD). Needs the `api` extra; without it
+  (CI) linking falls back to the first two sources.
 Private and tombstoned wiki pages are never surfaced here.
 """
 
@@ -15,6 +18,8 @@ from __future__ import annotations
 
 import os
 import re
+import threading
+import time
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -25,6 +30,9 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
 from core.wiki_common import WIKILINK_RE, slugify
+from shared.log_config import get_logger
+
+log = get_logger(__name__)
 
 ROOT = Path(__file__).parent.parent.parent
 COURSES_DIR = ROOT / "data" / "courses"
@@ -40,6 +48,16 @@ DRILL_LOG = (
 
 ASSET_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
 MAX_CONCEPTS = 12
+# Semantic linking (D5). 0.55 kept after a spot check on the real courses (2026-10-30):
+# pairs >= ~0.62 are reliably on-topic, 0.55-0.62 are mostly same-area neighbours, and
+# below 0.5 MiniLM pairs lessons with pages that only share vocabulary. Raising to 0.58
+# or 0.60 cut lesson coverage from 324 to 284 / 267 of 762 without removing a clear
+# class of bad links.
+SEMANTIC_THRESHOLD = 0.55
+SEMANTIC_TOP_K = 6
+LESSON_PROSE_CHARS = 1500
+# Lesson vectors keyed by content hash, so a warm restart re-embeds nothing (gitignored).
+LESSON_VEC_CACHE = ROOT / ".cache" / "lesson_embeddings.npz"
 DRILL_KEYS = ("track", "topic", "difficulty", "timebox_min")  # sisyphus drill schema
 _FENCE_RE = re.compile(r"^\s*(```|~~~)")
 
@@ -93,8 +111,34 @@ def _signature(*dirs: Path) -> tuple[int, int]:
     return count, newest
 
 
+# One build at a time: the startup warmup and an early request would otherwise both
+# run the multi-second cold build (lru_cache does not dedupe concurrent misses).
+_LOAD_LOCK = threading.Lock()
+
+
 def catalog() -> Catalog:
-    return _load(COURSES_DIR, WIKI_DIR, _signature(COURSES_DIR, WIKI_DIR))
+    with _LOAD_LOCK:
+        return _load(COURSES_DIR, WIKI_DIR, _signature(COURSES_DIR, WIKI_DIR))
+
+
+def warm_catalog() -> None:
+    """Build the catalog ahead of the first request (run off the event loop at startup).
+
+    Never raises: a warmup failure must not take the server down, and the first request
+    will rebuild and surface the real error.
+    """
+    start = time.perf_counter()
+    try:
+        cat = catalog()
+    except Exception as e:  # optimisation only; the route reports real errors
+        log.warning("courses.warmup.failed", error=str(e))
+        return
+    log.info(
+        "courses.warmup.done",
+        lessons=len(cat.lessons),
+        with_concepts=sum(1 for r in cat.lessons.values() if r.concepts),
+        seconds=round(time.perf_counter() - start, 2),
+    )
 
 
 def _load_wiki(wiki_dir: Path) -> dict[str, WikiRef]:
@@ -162,6 +206,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
 
     courses: list[dict[str, Any]] = []
     lessons: dict[str, LessonRec] = {}
+    embed_texts: dict[str, str] = {}  # lesson id → text to embed
     if not courses_dir.is_dir():
         return Catalog([], {}, wiki, {})
 
@@ -176,6 +221,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                     continue
                 post = frontmatter.load(md)
                 lid = str(md.relative_to(courses_dir).with_suffix(""))
+                embed_texts[lid] = _lesson_text(post, md.stem)
                 recs.append(
                     LessonRec(
                         id=lid,
@@ -222,6 +268,8 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
             }
         )
     courses.sort(key=lambda c: (c["order"], c["id"]))
+
+    _attach_semantic(lessons, embed_texts, wiki)
 
     # Re-key lessons in reading order so prev/next follows the sidebar.
     ordered = {
@@ -278,6 +326,88 @@ def _rank_concepts(
             if pid not in ranked:
                 ranked.append(pid)
     return ranked[:MAX_CONCEPTS]
+
+
+# ── Semantic concept linking ─────────────────────────────────────────────────
+
+# (lesson texts, eligible wiki ids) → per text, (wiki id, cosine) candidates best first,
+# or None when embeddings are unavailable. Module-level so tests can swap in a fake.
+Neighbours = list[list[tuple[str, float]]]
+
+
+def _lesson_text(post: frontmatter.Post, stem: str) -> str:
+    title = str(post.get("title") or stem)
+    summary = str(post.get("summary") or "")
+    return f"{title}. {summary}\n\n{_prose(post.content)[:LESSON_PROSE_CHARS]}"
+
+
+def _semantic_neighbours(texts: list[str], wiki_ids: list[str]) -> Neighbours | None:
+    """Embedding neighbours among `wiki_ids` for each text, via shared.embeddings.
+
+    Wiki vectors come from compute_embeddings() (the same DuckDB-cached vectors the
+    semantic graph edges and UMAP use); lesson vectors from encode_texts_cached().
+    Returns None — and the catalog keeps explicit + title-mention links only — when the
+    `api` extra is missing or anything in the embedding stack fails.
+    """
+    try:
+        import numpy as np
+
+        from shared.embeddings import compute_embeddings, encode_texts_cached
+    except ImportError as e:
+        log.info("courses.semantic.skipped", reason="api extra not installed", error=str(e))
+        return None
+    if not texts or not wiki_ids:
+        return None
+    try:
+        page_ids, page_vecs = compute_embeddings()
+        eligible = set(wiki_ids)
+        rows = [i for i, pid in enumerate(page_ids) if pid in eligible]
+        if not rows:
+            return None
+        ids = [page_ids[i] for i in rows]
+        wiki_mat = page_vecs[rows]
+        lesson_mat = encode_texts_cached(texts, LESSON_VEC_CACHE)
+    except Exception as e:  # model download, cache lock: degrade, never fail
+        log.warning("courses.semantic.failed", error=str(e))
+        return None
+    sims = lesson_mat @ wiki_mat.T  # both L2-normalised → cosine
+    keep = SEMANTIC_TOP_K + MAX_CONCEPTS  # headroom for candidates already ranked
+    out: Neighbours = []
+    for row in sims:
+        best = np.argsort(-row)[:keep]
+        out.append([(ids[j], float(row[j])) for j in best])
+    return out
+
+
+def _merge_semantic(
+    ranked: list[str], candidates: list[tuple[str, float]], wiki: set[str]
+) -> list[str]:
+    """Append up to SEMANTIC_TOP_K new candidates ≥ SEMANTIC_THRESHOLD after `ranked`.
+
+    Explicit and title-mention links keep their places; `wiki` is the visible page set,
+    so a private or tombstoned id can never get in even if the embedder returns one.
+    """
+    out = list(ranked)
+    added = 0
+    for pid, score in sorted(candidates, key=lambda c: -c[1]):
+        if added >= SEMANTIC_TOP_K or len(out) >= MAX_CONCEPTS or score < SEMANTIC_THRESHOLD:
+            break
+        if pid in wiki and pid not in out:
+            out.append(pid)
+            added += 1
+    return out
+
+
+def _attach_semantic(
+    lessons: dict[str, LessonRec], texts: dict[str, str], wiki: dict[str, WikiRef]
+) -> None:
+    ids = [lid for lid in lessons if lid in texts]
+    neighbours = _semantic_neighbours([texts[lid] for lid in ids], list(wiki))
+    if neighbours is None:
+        return
+    visible = set(wiki)
+    for lid, cands in zip(ids, neighbours, strict=True):
+        lessons[lid].concepts = _merge_semantic(lessons[lid].concepts, cands, visible)
 
 
 def _outline(r: LessonRec) -> dict[str, Any]:

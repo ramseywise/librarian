@@ -75,3 +75,6 @@ data/wiki/meta/session-log.md
 logs/*.log
 logs/*.jsonl
 logs/*.err
+
+# Local caches (lesson embedding vectors for course concept linking)
+.cache/

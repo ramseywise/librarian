@@ -3,10 +3,15 @@
 Runs against a tmp courses tree and tmp wiki (module constants monkeypatched, the
 signature-keyed catalog cache cleared) on a bare FastAPI app carrying only the
 courses router, so main.py's lifespan (embedder, index build) never runs.
+
+Semantic concept linking is stubbed: the fixture disables it (so the explicit and
+title-mention tests see exactly the pre-embedding behaviour) and the semantic tests
+inject a fake neighbour function. The real MiniLM model is never loaded here.
 """
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pytest
@@ -14,6 +19,8 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.backend import courses
+
+_REAL_NEIGHBOURS = courses._semantic_neighbours
 
 WIKI_PAGE = """---
 title: {title}
@@ -75,6 +82,8 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setattr(courses, "COURSES_DIR", root)
     monkeypatch.setattr(courses, "WIKI_DIR", wiki)
     monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "no-drill-log.md")  # never the real one
+    monkeypatch.setattr(courses, "LESSON_VEC_CACHE", tmp_path / "cache" / "lessons.npz")
+    monkeypatch.setattr(courses, "_semantic_neighbours", lambda texts, ids: None)
     courses._load.cache_clear()
     app = FastAPI()
     app.include_router(courses.router)
@@ -212,3 +221,101 @@ def test_practice_attaches_attempts_from_drill_log_without_notes(
 
     monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "missing.md")
     assert "attempts" not in client.get("/api/courses/practice").json()[0]
+
+
+# ── Semantic concept linking (D5) ────────────────────────────────────────────
+
+
+def _use_neighbours(
+    monkeypatch: pytest.MonkeyPatch, by_title: dict[str, list[tuple[str, float]]]
+) -> list[list[str]]:
+    """Fake embedder: candidates keyed by lesson title (the text starts with it)."""
+    calls: list[list[str]] = []
+
+    def fake(texts: list[str], wiki_ids: list[str]) -> list[list[tuple[str, float]]]:
+        calls.append(wiki_ids)
+        return [by_title.get(t.split(".")[0], []) for t in texts]
+
+    monkeypatch.setattr(courses, "_semantic_neighbours", fake)
+    courses._load.cache_clear()
+    return calls
+
+
+def test_semantic_neighbours_rank_after_explicit_and_mentions(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = _use_neighbours(
+        monkeypatch,
+        {
+            "Intro": [
+                ("hybrid-search", 0.9),  # already a title mention: not duplicated
+                ("context-engineering", 0.8),  # already explicit
+                ("client-secret", 0.99),  # private: never surfaced, whatever the score
+                ("old-page", 0.95),  # tombstoned: same
+            ],
+            "The Loop": [("context-engineering", 0.7), ("hybrid-search", 0.54)],  # 0.54 < 0.55
+        },
+    )
+    intro = client.get("/api/courses/lessons/gen-ai/01-rag/intro").json()
+    assert [c["id"] for c in intro["concepts"]] == ["context-engineering", "hybrid-search"]
+    loop = client.get("/api/courses/lessons/gen-ai/02-agents/loop").json()
+    assert [c["id"] for c in loop["concepts"]] == ["context-engineering"]
+    # The by-concept index (graph → course direction) sees semantic links too.
+    hits = client.get("/api/courses/concept/context-engineering").json()
+    assert "gen-ai/02-agents/loop" in [h["id"] for h in hits]
+    # Only visible pages are offered to the embedder in the first place.
+    assert set(calls[0]) == {"context-engineering", "hybrid-search"}
+
+
+def test_merge_semantic_caps_top_k_and_total() -> None:
+    wiki = {f"p{i}" for i in range(30)}
+    cands = [(f"p{i}", 0.9 - i * 0.001) for i in range(30)]
+    assert len(courses._merge_semantic([], cands, wiki)) == courses.SEMANTIC_TOP_K
+    ranked = [f"x{i}" for i in range(courses.MAX_CONCEPTS - 2)]
+    merged = courses._merge_semantic(ranked, cands, wiki)
+    assert merged[: len(ranked)] == ranked  # explicit/mention order preserved
+    assert len(merged) == courses.MAX_CONCEPTS
+    # Unsorted input is handled; below-threshold candidates never get in.
+    assert courses._merge_semantic([], [("p1", 0.5), ("p2", 0.6)], wiki) == ["p2"]
+
+
+def test_semantic_falls_back_without_api_extra(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CI installs no extras: numpy / shared.embeddings are not importable. The real
+    neighbour function must return None and the catalog keep explicit + mention links."""
+    for mod in ("numpy", "shared.embeddings", "sentence_transformers"):
+        monkeypatch.setitem(sys.modules, mod, None)  # None in sys.modules → ImportError
+    assert _REAL_NEIGHBOURS(["some lesson"], ["hybrid-search"]) is None
+
+    monkeypatch.setattr(courses, "_semantic_neighbours", _REAL_NEIGHBOURS)
+    courses._load.cache_clear()
+    intro = client.get("/api/courses/lessons/gen-ai/01-rag/intro").json()
+    assert {c["id"] for c in intro["concepts"]} == {"context-engineering", "hybrid-search"}
+
+
+def test_semantic_failure_degrades_instead_of_failing(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    pytest.importorskip("numpy")  # needs the api extra to reach the embedding stack
+    import shared.embeddings
+
+    def boom() -> None:
+        raise OSError("cache locked")
+
+    monkeypatch.setattr(shared.embeddings, "compute_embeddings", boom)
+    assert _REAL_NEIGHBOURS(["some lesson"], ["hybrid-search"]) is None
+
+
+def test_warm_catalog_builds_and_never_raises(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    courses._load.cache_clear()
+    courses.warm_catalog()
+    assert courses._load.cache_info().currsize == 1  # the first request is now a cache hit
+
+    def broken(*_: object) -> None:
+        raise RuntimeError("bad frontmatter")
+
+    monkeypatch.setattr(courses, "catalog", broken)
+    courses.warm_catalog()  # logged, not raised: startup must survive

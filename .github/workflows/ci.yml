@@ -26,3 +26,23 @@ jobs:
       # tests need a live server on :5173 and live in tests/e2e/, so
       # tests stay blocking.
       test-command: "uv run pytest tests/ --ignore=tests/e2e -q"
+
+  frontend:
+    # The React graph/courses/chat UI. Separate job: the shared python-ci workflow
+    # knows nothing about Node, and the two suites have no shared setup.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/frontend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint -- --max-warnings 0
+      - run: npm test
+      - run: npm run build

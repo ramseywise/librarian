@@ -32,6 +32,18 @@ def _domain_tag_set() -> set[str]:
 
 
 def parse_wiki() -> dict:
+    """Graph payload for /ws `graph_update` and GET /api/graph: {nodes, edges, domains}.
+
+    `edges` are wikilink edges only. Tag-shared edges (~42k pairs, ~10 MB of JSON on the
+    real wiki) are derived client-side by app/frontend/src/utils/tagEdges.ts from each
+    node's `data.tags` and `domains`; tag_shared_edges() below is the same rule, used by
+    `/api/graph?edges=all`. `domains` is the disk-derived domain list, sorted, without
+    `private`.
+
+    Private pages (data/wiki/private/) ARE included, flagged `data.private = True`:
+    decision D1 (2026-10-30) keeps them visible in the local graph UI with a badge. The
+    courses API and MCP search still exclude them.
+    """
     nodes: list[dict] = []
     edges: list[dict] = []
     page_slugs: dict[str, str] = {}  # slug -> title
@@ -52,6 +64,7 @@ def parse_wiki() -> dict:
         page_slugs[slugify(title)] = title
 
         domain = [md_file.parent.name]
+        is_private = md_file.relative_to(WIKI_DIR).parts[0] == "private"
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
 
         nodes.append(
@@ -67,6 +80,7 @@ def parse_wiki() -> dict:
                     "updated": str(post.get("updated") or ""),
                     "path": str(md_file.relative_to(WIKI_DIR)),
                     "dimmed": False,
+                    "private": is_private,
                 },
                 "position": {"x": 0, "y": 0},
             }
@@ -109,30 +123,51 @@ def parse_wiki() -> dict:
                 }
             )
 
-    # Tag-shared edges: cross-domain pages sharing ≥1 frontmatter domain tag.
-    # Skip same-directory pairs — intra-domain proximity is already captured by UMAP clustering.
-    tag_map: dict[str, set[str]] = {}
-    dir_map: dict[str, str] = {}
-    domain_tags = _domain_tag_set()
-    for n in nodes:
-        tag_map[n["id"]] = {t for t in n["data"]["tags"] if t in domain_tags}
-        dir_map[n["id"]] = n["data"]["domain"][0]
+    return {"nodes": nodes, "edges": edges, "domains": sorted(_domain_tag_set())}
 
-    node_list = list(node_ids)
-    for i in range(len(node_list)):
-        for j in range(i + 1, len(node_list)):
-            a, b = node_list[i], node_list[j]
-            if dir_map.get(a) == dir_map.get(b):
-                continue
-            shared = tag_map.get(a, set()) & tag_map.get(b, set())
-            if len(shared) >= 1:
+
+def tag_shared_edges(nodes: list[dict], domains: list[str] | set[str]) -> list[dict]:
+    """Edges between pages in different directories that share >= 1 domain tag.
+
+    Mirrors app/frontend/src/utils/tagEdges.ts exactly (keep the two in agreement): the
+    directory is `data.domain[0]`, only tags in `domains` count, ids are `ts:<a>-><b>`
+    with a < b, `sharedTags` is sorted. Same-directory pairs are skipped — intra-domain
+    proximity is already captured by UMAP clustering. Grouped by tag, so the cost is the
+    sum of squared tag-group sizes rather than every node pair.
+    """
+    domain_set = set(domains)
+    dir_of: dict[str, str] = {}
+    tags_of: dict[str, set[str]] = {}
+    by_tag: dict[str, list[str]] = {}
+    for n in nodes:
+        nid = n["id"]
+        dir_of[nid] = (n["data"].get("domain") or [""])[0]
+        tags = {t for t in n["data"].get("tags") or [] if t in domain_set}
+        tags_of[nid] = tags
+        for t in tags:
+            by_tag.setdefault(t, []).append(nid)
+
+    seen: set[str] = set()
+    edges: list[dict] = []
+    for ids in by_tag.values():
+        for i in range(len(ids)):
+            for j in range(i + 1, len(ids)):
+                a, b = sorted((ids[i], ids[j]))
+                if dir_of[a] == dir_of[b]:
+                    continue
+                eid = f"ts:{a}->{b}"
+                if eid in seen:
+                    continue
+                seen.add(eid)
                 edges.append(
                     {
-                        "id": f"ts:{a}->{b}",
+                        "id": eid,
                         "source": a,
                         "target": b,
-                        "data": {"edgeType": "tag-shared", "sharedTags": list(shared)},
+                        "data": {
+                            "edgeType": "tag-shared",
+                            "sharedTags": sorted(tags_of[a] & tags_of[b]),
+                        },
                     }
                 )
-
-    return {"nodes": nodes, "edges": edges}
+    return edges

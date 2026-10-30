@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Course, Lesson, LessonOutline, SearchHit } from "../../courses/types";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
+import { useCourses } from "../../hooks/useCourses";
 import { LessonView, type TocEntry } from "./LessonView";
+import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 
 interface Props {
   /** Route path after `/courses` — "" (catalog), "<course>", or "<lesson id>". */
@@ -12,26 +14,30 @@ interface Props {
 }
 
 export function CoursesView({ route, navigate, onOpenConcept, onAsk }: Props) {
-  const [courses, setCourses] = useState<Course[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data: courses, error, retry } = useCourses();
   const progress = useCourseProgress();
+  // Stable identity: it reaches the memoised lesson Markdown, which must not re-render
+  // (and lose its TOC observers) on every progress change.
+  const open = useCallback((path: string) => navigate(`/courses/${path}`), [navigate]);
 
-  useEffect(() => {
-    fetch("/api/courses")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(setCourses)
-      .catch((e: Error) => setError(e.message));
-  }, []);
+  const courseId = route.split("/")[0];
+  const course = courses?.find((c) => c.id === courseId);
+  const isLesson = !!course && route.includes("/");
+  // Lesson routes set their own title once the lesson has loaded.
+  useDocumentTitle(isLesson ? null : course ? pageTitle(course.title) : pageTitle("Courses"));
 
-  if (error) return <Centered>Could not load courses: {error}</Centered>;
+  if (error) {
+    return (
+      <Centered>
+        Could not load courses: {error}
+        <div style={{ marginTop: 12 }}><button onClick={retry} style={primaryBtnStyle}>Retry</button></div>
+      </Centered>
+    );
+  }
   if (!courses) return <Centered>Loading courses…</Centered>;
   if (!courses.length) {
     return <Centered>No courses yet. Run <code>make import-courses</code> or add files under data/courses/.</Centered>;
   }
-
-  const courseId = route.split("/")[0];
-  const course = courses.find((c) => c.id === courseId);
-  const open = (path: string) => navigate(`/courses/${path}`);
 
   if (!route || !course) {
     return <Catalog courses={courses} done={progress.done} last={progress.last} onOpen={open} />;
@@ -200,7 +206,9 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
   const [error, setError] = useState<string | null>(null);
   const [toc, setToc] = useState<TocEntry[]>([]);
   const [activeHeading, setActiveHeading] = useState<string | null>(null);
-  const { markVisited } = progress;
+  const { markVisited, toggleDone } = progress;
+  const loaded = lesson?.id === lessonId ? lesson : null;
+  useDocumentTitle(pageTitle(loaded?.title ?? "Loading…", course.title));
 
   useEffect(() => {
     let cancelled = false;
@@ -234,7 +242,7 @@ function LessonLayout({ course, lessonId, progress, onOpen, onOpenConcept, onAsk
               lesson={lesson}
               courseTitle={course.title}
               done={progress.done.has(lesson.id)}
-              onToggleDone={() => progress.toggleDone(lesson.id)}
+              onToggleDone={() => toggleDone(lesson.id)}
               onOpen={onOpen}
               onOpenConcept={onOpenConcept}
               onAsk={onAsk}
@@ -333,32 +341,39 @@ function ModuleLessons({ lessons, activeId, done, onOpen, toc, activeHeading, to
         return (
           <div key={l.id}>
             {header && <div style={sectionHeadStyle}>{header}</div>}
-            <button
-              id={`nav-${l.id}`}
-              onClick={() => onOpen(l.id)}
-              className="course-nav-item"
+            <div
               style={{
-                ...navItemStyle,
+                display: "flex", alignItems: "stretch",
                 background: active ? "#1f2a36" : "none",
-                color: active ? "#90caf9" : "#aaa",
                 borderLeft: `2px solid ${active ? "#2196F3" : "transparent"}`,
               }}
             >
-              <Check on={done.has(l.id)} small />
-              <span style={{ flex: 1 }}>{l.title}</span>
+              <button
+                id={`nav-${l.id}`}
+                onClick={() => onOpen(l.id)}
+                aria-current={active ? "page" : undefined}
+                className="course-nav-item"
+                style={{ ...navItemStyle, flex: 1, minWidth: 0, color: active ? "#90caf9" : "#aaa" }}
+              >
+                <Check on={done.has(l.id)} small />
+                <span style={{ flex: 1 }}>{l.title}</span>
+              </button>
               {hasToc && (
-                <span
-                  role="button"
+                <button
+                  onClick={onToggleToc}
+                  aria-expanded={tocOpen}
+                  aria-controls={`toc-${l.id}`}
+                  aria-label={tocOpen ? "Hide page contents" : "Show page contents"}
                   title={tocOpen ? "Hide page contents" : "Show page contents"}
-                  onClick={(e) => { e.stopPropagation(); onToggleToc(); }}
-                  style={{ color: "#777", padding: "0 2px" }}
+                  className="course-nav-item"
+                  style={tocToggleStyle}
                 >
                   {tocOpen ? "▾" : "▸"}
-                </span>
+                </button>
               )}
-            </button>
+            </div>
             {hasToc && tocOpen && (
-              <div style={{ padding: "2px 0 6px" }}>
+              <div id={`toc-${l.id}`} style={{ padding: "2px 0 6px" }}>
                 {toc.map((t) => (
                   <a key={t.id} href={`#${t.id}`}
                     onClick={(e) => { e.preventDefault(); document.getElementById(t.id)?.scrollIntoView({ behavior: "smooth" }); }}
@@ -456,6 +471,10 @@ const sidebarStyle: React.CSSProperties = {
 const moduleHeadStyle: React.CSSProperties = {
   display: "flex", alignItems: "center", gap: 6, width: "100%", textAlign: "left", background: "none", border: "none",
   padding: "8px 14px", color: "#ddd", fontSize: 12.5, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+};
+const tocToggleStyle: React.CSSProperties = {
+  background: "none", border: "none", color: "#777", padding: "0 12px 0 6px", cursor: "pointer",
+  fontFamily: "inherit", fontSize: 12.5,
 };
 const sectionHeadStyle: React.CSSProperties = {
   fontSize: 10, color: "#555", textTransform: "uppercase", letterSpacing: "0.06em", padding: "8px 14px 2px 32px",

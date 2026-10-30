@@ -1,42 +1,42 @@
-import { isValidElement, memo, useRef, useState, type ReactNode } from "react";
-import ReactMarkdown, { type Components } from "react-markdown";
+import { memo, useMemo, useRef, useState, type ReactNode } from "react";
+import ReactMarkdown, { type Components, type Options } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import "./courses.css";
-
-/** Resolve a relative href/src against a lesson id ("course/module/dir/lesson"). */
-function resolveRelative(lessonId: string, href: string): string {
-  const parts = lessonId.split("/").slice(0, -1);
-  for (const seg of decodeURIComponent(href).split("/")) {
-    if (seg === "..") parts.pop();
-    else if (seg && seg !== ".") parts.push(seg);
-  }
-  return parts.join("/");
-}
-
-const isExternal = (url: string) => /^[a-z][a-z0-9+.-]*:/i.test(url);
-
-function textOf(node: ReactNode): string {
-  if (typeof node === "string" || typeof node === "number") return String(node);
-  if (Array.isArray(node)) return node.map(textOf).join("");
-  if (isValidElement<{ children?: ReactNode }>(node)) return textOf(node.props.children);
-  return "";
-}
-
-/** GitHub-style heading anchor, so `[x](#some-heading)` links in lessons resolve. */
-const headingId = (children: ReactNode) =>
-  textOf(children).toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
-
-const heading = (Tag: "h1" | "h2" | "h3" | "h4") =>
-  ({ children }: { children?: ReactNode }) => <Tag id={headingId(children)}>{children}</Tag>;
+import { CLOBBER_PREFIX, assetUrl, headingId, isExternal, resolveRelative, sanitizeSchema } from "./markdownUtils";
 
 interface Props {
   body: string;
   lessonId: string;
   onOpenLesson: (id: string) => void;
   onOpenConcept: (pageId: string) => void;
+}
+
+// Module-scope component types: a new function per render would remount every heading,
+// detaching the nodes LessonView's TOC IntersectionObserver is watching.
+type HeadingProps = { children?: ReactNode };
+const H1 = ({ children }: HeadingProps) => <h1 id={headingId(children)}>{children}</h1>;
+const H2 = ({ children }: HeadingProps) => <h2 id={headingId(children)}>{children}</h2>;
+const H3 = ({ children }: HeadingProps) => <h3 id={headingId(children)}>{children}</h3>;
+const H4 = ({ children }: HeadingProps) => <h4 id={headingId(children)}>{children}</h4>;
+
+const Pre = ({ children }: { children?: ReactNode }) => <CodeBlock>{children}</CodeBlock>;
+const Table = ({ children }: { children?: ReactNode }) => (
+  <div className="lp-table"><table>{children}</table></div>
+);
+
+const remarkPlugins: Options["remarkPlugins"] = [remarkGfm, remarkMath];
+// Order matters: parse raw HTML, sanitise it, then render math (KaTeX output is trusted).
+const rehypePlugins: Options["rehypePlugins"] = [rehypeRaw, [rehypeSanitize, sanitizeSchema], rehypeKatex];
+
+/** In-page anchor; raw-HTML ids are prefixed by the sanitiser, so try that form too. */
+function scrollToAnchor(id: string) {
+  const el = document.getElementById(id) ?? document.getElementById(CLOBBER_PREFIX + id);
+  el?.scrollIntoView({ behavior: "smooth" });
 }
 
 function CodeBlock({ children }: { children?: ReactNode }) {
@@ -57,13 +57,18 @@ function CodeBlock({ children }: { children?: ReactNode }) {
   );
 }
 
-function MarkdownInner({ body, lessonId, onOpenLesson, onOpenConcept }: Props) {
-  const components: Components = {
-    h1: heading("h1"),
-    h2: heading("h2"),
-    h3: heading("h3"),
-    h4: heading("h4"),
-    pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
+function buildComponents(
+  lessonId: string,
+  onOpenLesson: (id: string) => void,
+  onOpenConcept: (pageId: string) => void,
+): Components {
+  return {
+    h1: H1,
+    h2: H2,
+    h3: H3,
+    h4: H4,
+    pre: Pre,
+    table: Table,
     a: ({ href = "", children }) => {
       if (href.startsWith("#wiki:")) {
         const pageId = href.slice("#wiki:".length);
@@ -76,10 +81,7 @@ function MarkdownInner({ body, lessonId, onOpenLesson, onOpenConcept }: Props) {
       }
       if (href.startsWith("#")) {
         return (
-          <a href={href} onClick={(e) => {
-            e.preventDefault();
-            document.getElementById(href.slice(1))?.scrollIntoView({ behavior: "smooth" });
-          }}>{children}</a>
+          <a href={href} onClick={(e) => { e.preventDefault(); scrollToAnchor(href.slice(1)); }}>{children}</a>
         );
       }
       if (isExternal(href)) {
@@ -97,17 +99,21 @@ function MarkdownInner({ body, lessonId, onOpenLesson, onOpenConcept }: Props) {
       // Relative link to something not imported (PDF, vendored repo, script).
       return <span className="lp-deadlink" title={`Not imported into librarian: ${href}`}>{children}</span>;
     },
-    img: ({ src = "", alt }) => {
-      const url = typeof src === "string" && !isExternal(src) && !src.startsWith("/")
-        ? `/api/courses/files/${resolveRelative(lessonId, src)}`
-        : String(src);
-      return <img src={url} alt={alt ?? ""} loading="lazy" />;
-    },
-    table: ({ children }) => <div className="lp-table"><table>{children}</table></div>,
+    // Covers markdown images and raw-HTML <img> alike (rehype-raw runs first).
+    img: ({ src, alt, width, height, title }) => (
+      <img src={assetUrl(lessonId, typeof src === "string" ? src : "")} alt={alt ?? ""}
+        width={width} height={height} title={title} loading="lazy" />
+    ),
   };
+}
 
+function MarkdownInner({ body, lessonId, onOpenLesson, onOpenConcept }: Props) {
+  const components = useMemo(
+    () => buildComponents(lessonId, onOpenLesson, onOpenConcept),
+    [lessonId, onOpenLesson, onOpenConcept],
+  );
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]} components={components}>
+    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={components}>
       {body}
     </ReactMarkdown>
   );

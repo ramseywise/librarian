@@ -1,66 +1,129 @@
-import { useEffect, useState, useCallback, useRef } from "react";
-import type { Node, Edge } from "@xyflow/react";
-import type { WikiNodeData, WikiEdgeData } from "../types";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { Edge, Node } from "@xyflow/react";
+import type { GraphPayload, WikiEdgeData, WikiNodeData } from "../types";
+import { tagSharedEdges as computeTagSharedEdges } from "../utils/tagEdges";
+import type { XY } from "../utils/layout";
 
-const WS_URL = "ws://localhost:8000/ws";
+const RECONNECT_MS = 2000;
+
+/** WebSocket URL on the page's own origin; Vite proxies `/ws` to the API (ws: true). */
+export function wsUrl(loc: Pick<Location, "protocol" | "host">): string {
+  const proto = loc.protocol === "https:" ? "wss:" : "ws:";
+  return `${proto}//${loc.host}/ws`;
+}
+
+/** Domain list from nodes' primary directory, sorted, excluding `private`. */
+export function deriveDomains(nodes: Pick<Node<WikiNodeData>, "data">[]): string[] {
+  const set = new Set<string>();
+  for (const n of nodes) {
+    const d = n.data.domain[0];
+    if (d && d !== "private") set.add(d);
+  }
+  return [...set].sort();
+}
+
+/**
+ * Parse a `graph_update` WebSocket message into a GraphPayload. Works with both the
+ * new server shape (`{nodes, edges, domains}`, wikilink edges only) and the old one
+ * (no `domains`, tag-shared edges inline): edges are always narrowed to wikilinks and
+ * tag-shared edges are recomputed client-side. Returns null for anything else.
+ */
+export function parseGraphMessage(raw: string): GraphPayload | null {
+  let msg: unknown;
+  try {
+    msg = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (!msg || typeof msg !== "object") return null;
+  const { type, data } = msg as { type?: unknown; data?: unknown };
+  if (type !== "graph_update" || !data || typeof data !== "object") return null;
+  const { nodes, edges, domains } = data as Partial<GraphPayload>;
+  if (!Array.isArray(nodes) || !Array.isArray(edges)) return null;
+  return {
+    nodes,
+    edges: edges.filter((e) => e.data?.edgeType === "wikilink"),
+    domains: Array.isArray(domains) ? domains.filter((d) => d !== "private") : deriveDomains(nodes),
+  };
+}
+
+const EMPTY: GraphPayload = { nodes: [], edges: [], domains: [] };
 
 export function useWikiData() {
-  const [baseNodes, setBaseNodes] = useState<Node<WikiNodeData>[]>([]);
-  const [wikilinkEdges, setWikilinkEdges] = useState<Edge<WikiEdgeData>[]>([]);
-  const [tagSharedEdges, setTagSharedEdges] = useState<Edge<WikiEdgeData>[]>([]);
+  const [graph, setGraph] = useState<GraphPayload>(EMPTY);
   const [semanticEdges, setSemanticEdges] = useState<Edge<WikiEdgeData>[]>([]);
-  const [umapPositions, setUmapPositions] = useState<Record<string, { x: number; y: number }> | null>(null);
+  const [umapPositions, setUmapPositions] = useState<Record<string, XY> | null>(null);
   const [connected, setConnected] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
+  const umapRequest = useRef<Promise<Record<string, XY> | null> | null>(null);
 
   useEffect(() => {
-    function connect() {
-      const ws = new WebSocket(WS_URL);
-      wsRef.current = ws;
+    let ws: WebSocket | null = null;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let disposed = false;
 
-      ws.onopen = () => setConnected(true);
-      ws.onclose = () => {
+    function connect() {
+      const sock = new WebSocket(wsUrl(window.location));
+      ws = sock;
+      sock.onopen = () => setConnected(true);
+      sock.onclose = () => {
         setConnected(false);
-        setTimeout(connect, 2000);
+        if (!disposed) timer = setTimeout(connect, RECONNECT_MS);
       };
-      ws.onmessage = (e) => {
-        const msg = JSON.parse(e.data as string) as {
-          type: string;
-          data: { nodes: Node<WikiNodeData>[]; edges: Edge<WikiEdgeData>[] };
-        };
-        if (msg.type === "graph_update") {
-          const { nodes, edges } = msg.data;
-          setBaseNodes(nodes);
-          setWikilinkEdges(edges.filter((e) => e.data?.edgeType === "wikilink"));
-          setTagSharedEdges(edges.filter((e) => e.data?.edgeType === "tag-shared"));
-        }
+      sock.onmessage = (e) => {
+        const payload = typeof e.data === "string" ? parseGraphMessage(e.data) : null;
+        if (payload) setGraph(payload);
       };
     }
     connect();
-    return () => wsRef.current?.close();
+
+    return () => {
+      disposed = true;
+      clearTimeout(timer);
+      if (ws) {
+        ws.onclose = null;
+        ws.onmessage = null;
+        ws.onopen = null;
+        ws.close();
+      }
+    };
   }, []);
+
+  // ~42k edges on the current wiki; recomputed only when a new payload arrives.
+  const tagSharedEdges = useMemo(
+    () => computeTagSharedEdges(graph.nodes, graph.domains),
+    [graph.nodes, graph.domains],
+  );
 
   const fetchSemanticEdges = useCallback(async (threshold = 0.65) => {
     const res = await fetch(`/api/edges/semantic?threshold=${threshold}`);
-    const data = (await res.json()) as Edge<WikiEdgeData>[];
-    setSemanticEdges(data);
+    if (!res.ok) throw new Error(`semantic edges: HTTP ${res.status}`);
+    setSemanticEdges((await res.json()) as Edge<WikiEdgeData>[]);
   }, []);
 
-  const fetchUmapPositions = useCallback(async () => {
-    const res = await fetch("/api/layout/umap", { method: "POST" });
-    const data = (await res.json()) as Record<string, { x: number; y: number }>;
-    setUmapPositions(data);
-    return data;
+  /** Fetch the UMAP projection once; concurrent and later calls share the result. */
+  const loadUmapPositions = useCallback(() => {
+    if (!umapRequest.current) {
+      umapRequest.current = fetch("/api/layout/umap", { method: "POST" })
+        .then((res) => (res.ok ? (res.json() as Promise<Record<string, XY>>) : null))
+        .catch(() => null)
+        .then((pos) => {
+          if (pos) setUmapPositions(pos);
+          else umapRequest.current = null; // allow a retry
+          return pos;
+        });
+    }
+    return umapRequest.current;
   }, []);
 
   return {
-    baseNodes,
-    wikilinkEdges,
+    baseNodes: graph.nodes as Node<WikiNodeData>[],
+    wikilinkEdges: graph.edges,
+    domains: graph.domains,
     tagSharedEdges,
     semanticEdges,
     fetchSemanticEdges,
     umapPositions,
-    fetchUmapPositions,
+    loadUmapPositions,
     connected,
   };
 }

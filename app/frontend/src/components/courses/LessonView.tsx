@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Lesson } from "../../courses/types";
+import { DrillTimer } from "./DrillTimer";
 import { Markdown } from "./Markdown";
 
 interface Props {
@@ -58,14 +59,19 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
     <Markdown body={text} lessonId={lesson.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} />
   );
 
-  // Build the on-page TOC from rendered headings, and track the one in view.
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
+  }, [lesson.id]);
+
+  // Build the on-page TOC from rendered headings, and track the one in view. Re-run when
+  // the drill solution is shown or hidden, since that adds or removes headings.
+  useEffect(() => {
     const root = proseRef.current;
     if (!root) return;
     const hs = Array.from(root.querySelectorAll<HTMLElement>("h2, h3"));
-    onToc(hs.filter((h) => h.id).map((h) => ({ id: h.id, text: h.innerText, level: Number(h.tagName[1]) })));
+    onToc(hs.filter((h) => h.id).map((h) => ({ id: h.id, text: h.innerText ?? h.textContent ?? "", level: Number(h.tagName[1]) })));
     onActiveHeading(null);
+    if (typeof IntersectionObserver === "undefined") return;
     const obs = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting);
@@ -75,7 +81,7 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
     );
     hs.forEach((h) => obs.observe(h));
     return () => obs.disconnect();
-  }, [lesson.id, onToc, onActiveHeading]);
+  }, [lesson.id, showSolution, onToc, onActiveHeading]);
 
   const ask = () => onAsk(`I'm studying the lesson "${lesson.title}" (${courseTitle}). Explain its key ideas and how they connect to the rest of the wiki.`);
 
@@ -87,14 +93,19 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
             {lesson.section && <> · {lesson.section}</>}
           </div>
           <h1 style={{ color: "#f4f4f4", fontSize: 30, lineHeight: 1.25, margin: "0 0 10px" }}>{lesson.title}</h1>
-          {lesson.drill && <div style={{ margin: "-2px 0 12px" }}><DrillBadges drill={lesson.drill} /></div>}
+          {lesson.drill && (
+            <div style={{ margin: "-2px 0 12px", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
+              <DrillBadges drill={lesson.drill} />
+              {lesson.drill.timebox_min ? <DrillTimer lessonId={lesson.id} timeboxMin={lesson.drill.timebox_min} /> : null}
+            </div>
+          )}
           {lesson.summary && <p style={{ color: "#999", fontSize: 15, margin: "0 0 24px", lineHeight: 1.6 }}>{lesson.summary}</p>}
 
           <div ref={proseRef} className="lesson-prose">
             {parts ? (
               <>
                 {md(parts[0])}
-                <button onClick={() => setShowSolution((s) => !s)} style={{ ...doneBtnStyle, margin: "0 0 1em" }}>
+                <button onClick={() => setShowSolution((s) => !s)} aria-expanded={showSolution} style={{ ...doneBtnStyle, margin: "0 0 1em" }}>
                   {showSolution ? "Hide solution" : "Show solution"}
                 </button>
                 {showSolution && md(parts[1])}

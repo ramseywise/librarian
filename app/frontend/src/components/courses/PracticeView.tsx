@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import type { PracticeDrill } from "../../courses/types";
+import { useMemo, useState } from "react";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
+import { usePracticeDrills } from "../../hooks/useCourses";
+import { DrillTimer } from "./DrillTimer";
 import { DrillBadges } from "./LessonView";
+import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 
 interface Props {
@@ -13,18 +15,11 @@ const DIFFICULTIES = ["easy", "medium", "hard"];
 
 /** Practice mode — the gym: every drill (lesson kind "drill"), filterable by track and difficulty. */
 export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
-  const [drills, setDrills] = useState<PracticeDrill[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data: drills, error, retry } = usePracticeDrills();
   const [track, setTrack] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const { done } = useCourseProgress();
-
-  useEffect(() => {
-    fetch("/api/courses/practice")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(setDrills)
-      .catch((e: Error) => setError(e.message));
-  }, []);
+  useDocumentTitle(pageTitle("Practice"));
 
   const tracks = useMemo(() => [...new Set((drills ?? []).map((d) => d.drill.track))].sort(), [drills]);
   const shown = (drills ?? []).filter(
@@ -38,7 +33,12 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
         <p style={{ color: "#888", margin: "0 0 20px", fontSize: 14 }}>
           Timed drills from sisyphus, by language. Attempt cold, then open the solution.
         </p>
-        {error && <div style={{ color: "#EF5350", fontSize: 13 }}>Could not load drills: {error}</div>}
+        {error && (
+          <div style={{ color: "#EF5350", fontSize: 13 }}>
+            Could not load drills: {error}{" "}
+            <button onClick={retry} style={{ ...conceptStyle, color: "#64b5f6" }}>Retry</button>
+          </div>
+        )}
         {!drills && !error && <div style={{ color: "#666", fontSize: 13 }}>Loading drills…</div>}
         {drills && !drills.length && (
           <div style={{ color: "#666", fontSize: 13 }}>
@@ -65,6 +65,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
                 </button>
                 <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginTop: 4 }}>
                   <DrillBadges drill={d.drill} />
+                  {d.drill.timebox_min ? <DrillTimer lessonId={d.id} timeboxMin={d.drill.timebox_min} compact /> : null}
                   {d.attempts && (
                     <span title={`Last score: ${d.attempts.score}`} style={{ fontSize: 12, color: "#4CAF50" }}>
                       {d.attempts.count}× · last {d.attempts.last}

@@ -1,20 +1,9 @@
 import { useEffect, useState } from "react";
 import type { WikiNodeData } from "../types";
 import type { LessonOutline } from "../courses/types";
+import { domainColor, tagColor } from "../theme/domains";
 
 type ConceptLesson = LessonOutline & { course: string };
-
-const TAG_COLORS: Record<string, string> = {
-  // Domain tags
-  rag: "#2196F3", langgraph: "#4CAF50", adk: "#FF9800", infra: "#607D8B",
-  patterns: "#E91E63", eval: "#FFEB3B", "deep-agents": "#3F51B5",
-  memory: "#00BCD4", mcp: "#9C27B0", meta: "#795548", projects: "#009688",
-  foundations: "#7E57C2", interview: "#FF5722",
-  // Type tags
-  concept: "#9e9e9e", pattern: "#b39ddb", decision: "#ef9a9a",
-  project: "#80cbc4", comparison: "#ffe082", reference: "#a5d6a7",
-  conflict: "#ff7043",
-};
 
 const TYPE_LABELS: Record<string, string> = {
   concept: "Concept", pattern: "Pattern", decision: "Decision",
@@ -34,8 +23,7 @@ interface Props {
 
 export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose, onTagClick, activeTags, onOpenLesson }: Props) {
   const lessons = useConceptLessons(nodeId);
-  const primaryDomain = (data.domain as string[])[0] ?? "infra";
-  const color = TAG_COLORS[primaryDomain] ?? "#607D8B";
+  const color = domainColor(data.domain[0]);
   const fileName = data.path ? String(data.path).split("/").pop() : null;
 
   return (
@@ -51,6 +39,11 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
             <span style={{ marginLeft: 8, color: "#555", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>
               {TYPE_LABELS[data.typeTag] ?? data.typeTag}
             </span>
+            {data.private && (
+              <span style={privateBadgeStyle} title="Lives in data/wiki/private/ — local only, never committed">
+                private
+              </span>
+            )}
           </div>
           <div style={{ fontSize: 20, fontWeight: 700, color: "#f0f0f0", lineHeight: 1.2 }}>
             {data.title}
@@ -78,22 +71,22 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
       {/* Tags — all clickable to filter graph */}
       <div style={{ padding: "0 20px 16px", display: "flex", flexWrap: "wrap", gap: 6 }}>
         {(data.tags as string[]).map((tag) => {
-          const tagColor = TAG_COLORS[tag] ?? "#666";
+          const chipColor = tagColor(tag);
           const isActive = activeTags?.has(tag);
           return (
             <button
               key={tag}
               onClick={onTagClick ? () => onTagClick(tag) : undefined}
               style={{
-                background: isActive ? tagColor + "33" : tagColor + "18",
-                border: `1px solid ${isActive ? tagColor : tagColor + "44"}`,
-                color: isActive ? tagColor : tagColor + "bb",
+                background: isActive ? chipColor + "33" : chipColor + "18",
+                border: `1px solid ${isActive ? chipColor : chipColor + "44"}`,
+                color: isActive ? chipColor : chipColor + "bb",
                 borderRadius: 12,
                 padding: "3px 10px",
                 fontSize: 11,
                 cursor: onTagClick ? "pointer" : "default",
                 fontFamily: "inherit",
-                boxShadow: isActive ? `0 0 6px ${tagColor}55` : "none",
+                boxShadow: isActive ? `0 0 6px ${chipColor}55` : "none",
                 transition: "all 0.15s",
               }}
             >
@@ -221,4 +214,15 @@ const badgeStyle: React.CSSProperties = {
   padding: "4px 10px",
   fontSize: 11,
   lineHeight: 1.4,
+};
+
+const privateBadgeStyle: React.CSSProperties = {
+  marginLeft: 8,
+  padding: "1px 6px",
+  border: "1px solid #9E9E9E",
+  borderRadius: 4,
+  color: "#bbb",
+  fontWeight: 600,
+  textTransform: "none",
+  letterSpacing: 0,
 };

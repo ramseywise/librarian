@@ -155,9 +155,99 @@ def test_typed_relationship_extracted(mock_wiki: Path) -> None:
 
 
 @pytest.mark.unit
-def test_cross_domain_tag_shared_edges(mock_wiki: Path) -> None:
+def test_payload_has_no_tag_shared_edges_and_lists_domains(mock_wiki: Path) -> None:
+    """Contract 1 (D3): the payload carries wikilink edges only, plus a sorted domain list.
+
+    Tag-shared edges were ~42k pairs / ~10 MB per graph_update; the UI now derives them.
+    """
     from backend.wiki_parser import parse_wiki
 
     result = parse_wiki()
-    tag_shared = [e for e in result["edges"] if e["data"].get("edgeType") == "tag-shared"]
-    assert len(tag_shared) >= 1, "observability shares 'rag' tag with rag pages across domains"
+    assert {e["data"]["edgeType"] for e in result["edges"]} == {"wikilink"}
+    assert result["domains"] == ["infra", "rag"]
+
+
+@pytest.mark.unit
+def test_cross_domain_tag_shared_edges(mock_wiki: Path) -> None:
+    from backend.wiki_parser import parse_wiki, tag_shared_edges
+
+    result = parse_wiki()
+    tag_shared = tag_shared_edges(result["nodes"], result["domains"])
+    assert {e["id"] for e in tag_shared} == {
+        "ts:observability->semantic-cache",
+        "ts:observability->vector-databases",
+    }, "observability shares 'rag' with the rag pages across directories; rag↔rag is skipped"
+    assert all(e["data"]["sharedTags"] == ["rag"] for e in tag_shared)
+
+
+def _node(nid: str, directory: str, tags: list[str]) -> dict:
+    return {"id": nid, "data": {"domain": [directory], "tags": tags}}
+
+
+@pytest.mark.unit
+def test_tag_shared_rule_matches_frontend_tag_edges() -> None:
+    """Same cases as app/frontend/src/utils/__tests__/tagEdges.test.ts — the Python rule
+    (used by /api/graph?edges=all) and the client-side one must stay identical."""
+    from backend.wiki_parser import tag_shared_edges
+
+    domains = ["rag", "eval", "memory"]
+    assert tag_shared_edges(
+        [_node("a", "rag", ["rag", "pattern"]), _node("b", "eval", ["rag"])], domains
+    ) == [
+        {
+            "id": "ts:a->b",
+            "source": "a",
+            "target": "b",
+            "data": {"edgeType": "tag-shared", "sharedTags": ["rag"]},
+        }
+    ]
+    assert tag_shared_edges([_node("a", "rag", ["rag"]), _node("b", "rag", ["rag"])], domains) == []
+    assert (
+        tag_shared_edges([_node("a", "rag", ["pattern"]), _node("b", "eval", ["pattern"])], domains)
+        == []
+    )
+    edges = tag_shared_edges(
+        [_node("z", "rag", ["rag", "memory"]), _node("a", "eval", ["memory", "rag"])], domains
+    )
+    assert len(edges) == 1
+    assert edges[0]["id"] == "ts:a->z"
+    assert edges[0]["data"]["sharedTags"] == ["memory", "rag"]
+
+
+@pytest.mark.unit
+def test_private_pages_are_in_graph_flagged_and_not_a_domain(mock_wiki: Path) -> None:
+    """Deliberate decision D1 (2026-10-30), not an accident: data/wiki/private/ pages stay
+    visible in the LOCAL graph UI, flagged `private` so the UI can badge them. They are
+    not a filterable domain. (Courses API and MCP search exclude them — tested elsewhere.)
+    Change this test only together with a recorded decision."""
+    from backend.wiki_parser import parse_wiki
+
+    _write_page(mock_wiki, "private", "client-notes", "Client Notes", ["projects", "project"], "S")
+    result = parse_wiki()
+    by_id = {n["id"]: n for n in result["nodes"]}
+    assert by_id["client-notes"]["data"]["private"] is True
+    assert by_id["semantic-cache"]["data"]["private"] is False
+    assert "private" not in result["domains"]
+
+
+@pytest.mark.unit
+def test_api_graph_edges_all_adds_tag_shared(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """GET /api/graph defaults to the slim payload; ?edges=all restores tag-shared edges."""
+    from fastapi.testclient import TestClient
+
+    import app.backend.main as main_module
+    import app.backend.wiki_parser as app_wp
+
+    _write_page(tmp_path, "rag", "a-page", "A Page", ["rag", "concept"], "S", "[[B Page]]")
+    _write_page(tmp_path, "eval", "b-page", "B Page", ["eval", "rag", "concept"], "S")
+    monkeypatch.setattr(app_wp, "WIKI_DIR", tmp_path)
+    client = TestClient(main_module.app)  # no `with`: lifespan (warmups, watcher) not run
+
+    slim = client.get("/api/graph").json()
+    assert [e["id"] for e in slim["edges"]] == ["wl:a-page->b-page"]
+    assert slim["domains"] == ["eval", "rag"]
+    full = client.get("/api/graph", params={"edges": "all"}).json()
+    assert {e["id"] for e in full["edges"]} == {"wl:a-page->b-page", "ts:a-page->b-page"}
+    assert client.get("/api/graph", params={"edges": "bogus"}).status_code == 422

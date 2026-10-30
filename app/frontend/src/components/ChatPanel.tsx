@@ -1,20 +1,37 @@
 import { useRef, useEffect, useState, type KeyboardEvent } from "react";
-import type { ChatMessage, Grounding } from "../hooks/useChatStream";
+import type { ChatMessage } from "../hooks/useChatStream";
+import { ChatMarkdown } from "./chat/ChatMarkdown";
+import { GroundingLine } from "./chat/GroundingLine";
 
 interface Props {
   messages: ChatMessage[];
   streaming: boolean;
   onSend: (query: string) => void;
   onClearHighlights: () => void;
+  /** Citation chip click. Chips render inert until the host provides this. */
+  onOpenPage?: (id: string) => void;
+  /** Abort the in-flight reply. The stop button is hidden without it. */
+  onStop?: () => void;
+  /** Empty the conversation. The clear button is hidden without it. */
+  onClear?: () => void;
 }
 
-export function ChatPanel({ messages, streaming, onSend, onClearHighlights }: Props) {
+export function ChatPanel({
+  messages,
+  streaming,
+  onSend,
+  onClearHighlights,
+  onOpenPage,
+  onStop,
+  onClear,
+}: Props) {
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    // Instant while tokens arrive: smooth scrolling restarts on every token and lags.
+    bottomRef.current?.scrollIntoView({ behavior: streaming ? "auto" : "smooth", block: "end" });
+  }, [messages, streaming]);
 
   function handleSend() {
     const q = input.trim();
@@ -31,14 +48,40 @@ export function ChatPanel({ messages, streaming, onSend, onClearHighlights }: Pr
     }
   }
 
+  function handleClear() {
+    onClearHighlights();
+    onClear?.();
+  }
+
+  const showStop = streaming && !!onStop;
+  const sendDisabled = streaming || !input.trim();
+
   return (
     <div style={panelStyle}>
       <div style={headerStyle}>
         <span>Wiki Agent</span>
-        <span style={{ fontSize: 10, color: "#555" }}>ask about the KB</span>
+        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 10, color: "#555", fontWeight: 400 }}>ask about the KB</span>
+          {onClear && (
+            <button
+              type="button"
+              onClick={handleClear}
+              disabled={messages.length === 0}
+              aria-label="Clear conversation"
+              title="Clear conversation"
+              style={{
+                ...clearBtnStyle,
+                opacity: messages.length === 0 ? 0.35 : 1,
+                cursor: messages.length === 0 ? "default" : "pointer",
+              }}
+            >
+              clear
+            </button>
+          )}
+        </span>
       </div>
 
-      <div style={messagesStyle}>
+      <div style={messagesStyle} role="log" aria-live="polite" aria-label="Conversation">
         {messages.length === 0 && (
           <div style={{ color: "#444", fontSize: 12, padding: "16px 0", textAlign: "center" }}>
             Ask a question about agent design, RAG, LangGraph, ADK…
@@ -49,11 +92,31 @@ export function ChatPanel({ messages, streaming, onSend, onClearHighlights }: Pr
             <div style={{ fontSize: 10, color: "#555", marginBottom: 4 }}>
               {m.role === "user" ? "you" : "agent"}
             </div>
-            <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
-              {m.content}
-              {m.streaming && <span style={{ color: "#555" }}>▋</span>}
-            </div>
-            {m.grounding && !m.streaming && <GroundingLine grounding={m.grounding} />}
+            {m.role === "user" ? (
+              <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>{m.content}</div>
+            ) : (
+              <>
+                {m.content && (
+                  <ChatMarkdown
+                    content={m.content}
+                    ungrounded={m.grounding?.ungrounded}
+                    onOpenPage={onOpenPage}
+                  />
+                )}
+                {m.streaming && <span style={{ color: "#555" }} aria-hidden="true">▋</span>}
+              </>
+            )}
+            {m.note && (
+              <div
+                style={m.stopped ? stoppedNoteStyle : errorNoteStyle}
+                role={m.stopped ? undefined : "alert"}
+              >
+                {m.note}
+              </div>
+            )}
+            {m.grounding && !m.streaming && (
+              <GroundingLine grounding={m.grounding} onOpenPage={onOpenPage} />
+            )}
           </div>
         ))}
         <div ref={bottomRef} />
@@ -65,49 +128,59 @@ export function ChatPanel({ messages, streaming, onSend, onClearHighlights }: Pr
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKey}
           placeholder="Ask about the wiki…  (Enter to send)"
+          aria-label="Ask the wiki agent"
           disabled={streaming}
           style={textareaStyle}
           rows={2}
         />
-        <button
-          onClick={handleSend}
-          disabled={streaming || !input.trim()}
-          style={{
-            ...sendBtnStyle,
-            opacity: streaming || !input.trim() ? 0.4 : 1,
-            cursor: streaming || !input.trim() ? "default" : "pointer",
-          }}
-        >
-          {streaming ? "…" : "→"}
-        </button>
+        {showStop ? (
+          <button
+            type="button"
+            onClick={onStop}
+            aria-label="Stop generating"
+            title="Stop generating"
+            style={{ ...sendBtnStyle, ...stopBtnStyle, cursor: "pointer" }}
+          >
+            ■
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={sendDisabled}
+            aria-label={streaming ? "Waiting for reply" : "Send"}
+            title="Send"
+            style={{
+              ...sendBtnStyle,
+              opacity: sendDisabled ? 0.4 : 1,
+              cursor: sendDisabled ? "default" : "pointer",
+            }}
+          >
+            {streaming ? "…" : "→"}
+          </button>
+        )}
       </div>
     </div>
   );
 }
 
-// Sources the answer cited, plus any it cited without reading in that turn — the
-// backend's grounding check. Plain ids; the graph highlight already shows what was read.
-function GroundingLine({ grounding }: { grounding: Grounding }) {
-  const grounded = grounding.cited.filter((c) => !grounding.ungrounded.includes(c));
-  if (grounding.cited.length === 0) {
-    return <div style={groundingStyle}>no citations</div>;
-  }
-  return (
-    <div style={groundingStyle}>
-      {grounded.length > 0 && <div>sources: {grounded.join(", ")}</div>}
-      {grounding.ungrounded.length > 0 && (
-        <div style={{ color: "#c9a227" }}>
-          cited but not read: {grounding.ungrounded.join(", ")}
-        </div>
-      )}
-    </div>
-  );
-}
+const noteBase: React.CSSProperties = { marginTop: 6, fontSize: 10, fontStyle: "italic" };
+const stoppedNoteStyle: React.CSSProperties = { ...noteBase, color: "#666" };
+const errorNoteStyle: React.CSSProperties = { ...noteBase, color: "#d0756a" };
 
-const groundingStyle: React.CSSProperties = {
-  marginTop: 6,
+const clearBtnStyle: React.CSSProperties = {
+  background: "none",
+  border: "1px solid #333",
+  borderRadius: 4,
+  color: "#999",
   fontSize: 10,
-  color: "#666",
+  padding: "1px 6px",
+  fontWeight: 400,
+};
+
+const stopBtnStyle: React.CSSProperties = {
+  background: "#5a2a2a",
+  fontSize: 12,
 };
 
 const panelStyle: React.CSSProperties = {

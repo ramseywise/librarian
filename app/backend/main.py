@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import json
+import os
 from collections.abc import AsyncIterator, Callable
 from pathlib import Path
 from typing import Any, Literal, Self
@@ -19,7 +20,8 @@ from shared.log_config import configure_logging, get_logger
 
 from .agent import run_agent_stream
 from .courses import router as courses_router
-from .wiki_parser import parse_wiki
+from .courses import warm_catalog
+from .wiki_parser import parse_wiki, tag_shared_edges
 
 # At import, not in a main(): uvicorn imports this module as an ASGI app and never
 # calls an entry point of ours. Must precede the first log call from any route.
@@ -30,8 +32,15 @@ WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
 
 _ws_clients: list[WebSocket] = []
 
-# Strong references to fire-and-forget tasks so GC can't cancel them
-_background_tasks: set[asyncio.Task] = set()
+# Strong references to fire-and-forget tasks and executor futures so GC can't drop them
+_background_tasks: set[asyncio.Future[Any]] = set()
+
+
+def _in_background(fn: Callable[[], None]) -> None:
+    """Run a blocking startup job in the default thread executor, holding a reference."""
+    fut = asyncio.get_running_loop().run_in_executor(None, fn)
+    _background_tasks.add(fut)
+    fut.add_done_callback(_background_tasks.discard)
 
 
 async def _watch_and_broadcast(awatch: Callable[[str], AsyncIterator[object]]) -> None:
@@ -46,6 +55,9 @@ async def _watch_and_broadcast(awatch: Callable[[str], AsyncIterator[object]]) -
         for ws in dead:
             with contextlib.suppress(ValueError):
                 _ws_clients.remove(ws)
+        # A wiki change invalidates the course catalog (lesson ↔ concept links); rebuild
+        # it now rather than on the next /api/courses request.
+        _in_background(warm_catalog)
 
 
 @contextlib.asynccontextmanager
@@ -56,6 +68,14 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     # for the routes to answer. Degrade instead of failing startup, because CI installs
     # `--group dev` with no extras and TestClient-as-context-manager runs this lifespan —
     # a hard import here failed every test in tests/app/test_writeback_security.py.
+    # Course catalog: the cold build takes seconds (frontmatter for ~760 lessons plus
+    # concept linking). Build it off the event loop so the first /api/courses request is
+    # a cache hit. Needs no extra; warm_catalog() never raises, so startup cannot fail.
+    # LIBRARIAN_SKIP_WARMUP=1 (set by tests/conftest.py) skips both warmups so tests that
+    # enter the lifespan don't build the real catalog or load the embedding model.
+    skip_warmup = os.environ.get("LIBRARIAN_SKIP_WARMUP") == "1"
+    if not skip_warmup:
+        _in_background(warm_catalog)
     try:
         from watchfiles import awatch
 
@@ -64,7 +84,8 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         log.warning("startup_jobs_skipped", reason="api extra not installed", error=str(e))
     else:
         # Warmup in background so server accepts connections immediately
-        asyncio.get_event_loop().run_in_executor(None, warmup)
+        if not skip_warmup:
+            _in_background(warmup)
         task = asyncio.create_task(_watch_and_broadcast(awatch))
         _background_tasks.add(task)
         task.add_done_callback(_background_tasks.discard)
@@ -96,8 +117,13 @@ async def ws_endpoint(ws: WebSocket) -> None:
 
 
 @app.get("/api/graph")
-async def get_graph() -> dict[str, Any]:
-    return parse_wiki()
+async def get_graph(edges: Literal["wikilink", "all"] = "wikilink") -> dict[str, Any]:
+    """Same payload as the /ws graph_update. `?edges=all` adds the tag-shared edges the
+    UI derives client-side, for scripts that want the full edge set from the server."""
+    graph = parse_wiki()
+    if edges == "all":
+        graph["edges"] = graph["edges"] + tag_shared_edges(graph["nodes"], graph["domains"])
+    return graph
 
 
 @app.get("/api/edges/semantic")

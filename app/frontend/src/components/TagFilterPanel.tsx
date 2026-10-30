@@ -1,23 +1,14 @@
-const DOMAIN_TAGS = [
-  "rag", "langgraph", "adk", "infra", "patterns",
-  "eval", "deep-agents", "memory", "mcp", "meta", "projects",
-  "foundations", "interview",
-];
-
-const TAG_COLORS: Record<string, string> = {
-  rag: "#2196F3", langgraph: "#4CAF50", adk: "#FF9800", infra: "#607D8B",
-  patterns: "#E91E63", eval: "#FFEB3B", "deep-agents": "#3F51B5",
-  memory: "#00BCD4", mcp: "#9C27B0", meta: "#795548", projects: "#009688",
-  foundations: "#7E57C2", interview: "#FF5722",
-};
+import { domainColor } from "../theme/domains";
 
 interface Props {
+  /** Domain list from the graph payload (disk-derived on the server; no `private`). */
+  domains: string[];
   activeTags: Set<string>;
   onChange: (tags: Set<string>) => void;
   onBrief?: (domain: string) => void;
 }
 
-export function TagFilterPanel({ activeTags, onChange, onBrief }: Props) {
+export function TagFilterPanel({ domains, activeTags, onChange, onBrief }: Props) {
   function toggle(tag: string) {
     const next = new Set(activeTags);
     if (next.has(tag)) next.delete(tag);
@@ -28,49 +19,50 @@ export function TagFilterPanel({ activeTags, onChange, onBrief }: Props) {
   const allActive = activeTags.size === 0;
 
   return (
-    <div style={panelStyle}>
+    <div style={panelStyle} role="group" aria-label="Filter by domain">
       <div style={labelStyle}>Filter by Domain</div>
       <button
+        type="button"
+        aria-pressed={allActive}
         style={{ ...chipStyle, background: allActive ? "#333" : "transparent", color: allActive ? "#e0e0e0" : "#555", border: "1px solid #444" }}
         onClick={() => onChange(new Set())}
       >
         All
       </button>
-      {DOMAIN_TAGS.map((tag) => {
+      {domains.filter((d) => d !== "private").map((tag) => {
         const active = activeTags.has(tag);
-        const color = TAG_COLORS[tag] ?? "#607D8B";
+        const color = domainColor(tag);
         return (
-          <button
+          <div
             key={tag}
-            onClick={() => toggle(tag)}
+            role="group"
+            aria-label={tag}
             style={{
-              ...chipStyle,
+              ...chipGroupStyle,
               background: active ? color + "22" : "transparent",
               border: `1px solid ${active ? color : "#333"}`,
-              color: active ? color : "#555",
-              display: "flex",
-              alignItems: "center",
-              gap: 4,
-              padding: "3px 6px 3px 8px",
             }}
           >
-            {tag}
+            <button
+              type="button"
+              aria-pressed={active}
+              onClick={() => toggle(tag)}
+              style={{ ...chipPartStyle, color: active ? color : "#555", padding: onBrief ? "3px 4px 3px 8px" : "3px 8px" }}
+            >
+              {tag}
+            </button>
             {onBrief && (
-              <span
-                onClick={(e) => { e.stopPropagation(); onBrief(tag); }}
+              <button
+                type="button"
+                aria-label={`Brief me on ${tag}`}
                 title={`Brief me on ${tag}`}
-                style={{
-                  fontSize: 9,
-                  opacity: 0.5,
-                  padding: "1px 3px",
-                  borderRadius: 3,
-                  background: color + "33",
-                }}
+                onClick={() => onBrief(tag)}
+                style={{ ...chipPartStyle, ...briefStyle, color: active ? color : "#777", background: color + "33" }}
               >
                 ↗
-              </span>
+              </button>
             )}
-          </button>
+          </div>
         );
       })}
     </div>
@@ -107,4 +99,26 @@ const chipStyle: React.CSSProperties = {
   borderRadius: 12,
   fontSize: 11,
   cursor: "pointer",
+};
+
+const chipGroupStyle: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  borderRadius: 12,
+  overflow: "hidden",
+};
+
+const chipPartStyle: React.CSSProperties = {
+  background: "transparent",
+  border: "none",
+  fontSize: 11,
+  fontFamily: "inherit",
+  cursor: "pointer",
+};
+
+const briefStyle: React.CSSProperties = {
+  fontSize: 9,
+  padding: "2px 6px",
+  margin: "0 3px 0 0",
+  borderRadius: 3,
 };
