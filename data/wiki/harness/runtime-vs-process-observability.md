@@ -43,7 +43,7 @@ Process artifacts are the sprint contracts and rubrics of [[Verification Loops]]
 [[Quality Document]] is the long-lived one.
 
 ## See Also
-- [[Harness Maturity and Failure Modes]] — part-of
+- [[Harness Maturity and Failure Modes]] — extends
 - [[Observability and Runtime Patterns]] — complements (tool choice and tracing architecture)
 - [[Verification Loops]] — prerequisite-for
 - [[Quality Document]] — complements

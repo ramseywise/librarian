@@ -1,6 +1,6 @@
 ---
 title: LLM-as-Judge Evaluation
-tags: [eval, llm, pattern, conflict]
+tags: [eval, llm, pattern]
 summary: A separate LLM scoring outputs against a rubric — the approach for subjective quality where exact matching fails, requiring calibration against human grades and recommended as a complement to golden-set grading rather than a replacement.
 updated: 2026-10-30
 sources:
@@ -104,8 +104,15 @@ The 06-eval course treats a judge as a classifier to be measured: 100–200 huma
 train/dev/test, TPR and TNR on the held-out split, and a bias-corrected pass rate — see
 [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]]. Known judge biases (position, verbosity,
 self-preference) and their mitigations are on [[LLM Judge Biases]]. Under that procedure a judge in the
-`calibrated` state may gate a release at its calibrated threshold, which disagrees with the
-5–10-sample calibration and "never a launch gate" guidance above — flagged in `_conflicts.md`.
+`calibrated` state may gate a release at its calibrated threshold.
+
+The two bars apply at different stages. The 5–10-sample calibration above is a
+**discovery-stage smoke test** for a rubric, and a judge at that stage is a regression
+detector only. Before a judge may gate a release it needs the full procedure: 100–200 human
+labels, TPR/TNR on a held-out split, and a human inter-rater agreement measured high enough
+that the judge's agreement means something ([[Human Agreement Ceiling Protocol]]). Where
+that ceiling is low — as in the product above — the judge stays ungated whatever its
+calibration says.
 
 ## See Also
 - [[Eval vs Test Distinction]] <!-- auto-linked -->

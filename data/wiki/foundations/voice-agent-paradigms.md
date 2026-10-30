@@ -1,6 +1,6 @@
 ---
 title: Voice Agent Paradigms
-tags: [foundations, voice, comparison, conflict]
+tags: [foundations, voice, comparison]
 summary: "Cascaded (VAD → ASR → LLM → TTS), end-to-end omnimodal, and full-duplex voice agents differ in one thing — how far each gets from VAD's assumption that conversation happens in discrete turns — and all three coexist as trade-offs; the cascade's serial latency budget is about 1–2 s before queueing multiplies it."
 updated: 2026-10-30
 sources:
@@ -81,18 +81,18 @@ full-duplex has no turns, so barge-in handling largely disappears from the archi
 practical consequences for request-response tooling are in
 [[Duplex Voice Breaks Discrete-Turn Assumptions]].
 
-## Conflict note
+## Serial vs streamed budgets
 
-This source puts the VAD silence wait (500–800 ms) as the largest stage in a serial
-cascade and LLM TTFT at 100–500 ms; [[Realtime Voice Architecture Reference]] reports LLM
-TTFT (400–800 ms) as the dominant stage and a streamed cascade at ~400–600 ms end to end.
-The two likely measure different configurations (fully serial vs. streamed, endpointing
-inside or outside the budget). Flagged in `_conflicts.md`.
+The table above is a **fully serial** cascade with endpointing inside the budget, where the
+VAD silence wait (500–800 ms) is the largest stage. A **streamed** cascade overlaps the
+stages and counts endpointing separately; there LLM time-to-first-token (400–800 ms)
+dominates and the end-to-end figure is ~400–600 ms ([[Realtime Voice Architecture Reference]]).
+Both are true; quote the configuration with the number.
 
 ## See Also
 - [[Real-Time Multimodal Agents]] — instance-of (the voice setting)
 - [[Semantic Turn Detection]] — extends (replacing VAD's silence guess)
 - [[Fast-Slow Thinking Architecture]] — extends (adding reasoning without adding latency)
-- [[Realtime Voice Architecture Reference]] — contradicts (latency budget — see conflict note)
+- [[Realtime Voice Architecture Reference]] — extends (the streamed cascade budget)
 - [[Voice Agent Patterns]] — extends (implementation patterns for a voice agent)
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — extends (what full-duplex breaks downstream)

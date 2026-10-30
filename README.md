@@ -31,7 +31,7 @@ Meetings, PDFs, web, books, articles ──► data/raw/*/            ─┘
                           ┌───────────────────┼──────────────────┐
                           ▼                   ▼                  ▼
                     MCP server           /adk-context       graph UI
-                  (search_wiki,        (agent builder     (React + Cytoscape
+                  (search_wiki,        (agent builder     (React Flow graph
                    read_page,            briefing)         + chat agent)
                    get_domain_briefing)
                           │
@@ -182,7 +182,7 @@ The `contracts` review dimension (via `uv run --project ~/workspace/guacamayo re
 | `core/` | Scrapers: `scrape_sessions.py` (Claude/Codex), `scrape_claude_docs.py` (workspace docs), `scrape_repos.py` (repos) |
 | `app/mcp_server/` | FastMCP server: `search_wiki` (hybrid FTS + semantic + backlink rank), `read_page`, `list_domain`, `get_domain_briefing` |
 | `app/backend/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Anthropic chat agent |
-| `app/frontend/` | React + Vite graph UI — Cytoscape.js force-directed graph, chat panel, live wiki watch |
+| `app/frontend/` | React + Vite graph UI — React Flow (`@xyflow/react`) force-directed graph, chat panel, live wiki watch |
 | `.claude/skills/` | `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb` — Claude Code slash commands |
 
 ---

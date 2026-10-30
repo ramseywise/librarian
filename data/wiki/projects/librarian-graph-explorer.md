@@ -1,6 +1,6 @@
 ---
 title: Librarian Graph Explorer
-tags: [rag, langgraph, infra, project, conflict]
+tags: [rag, langgraph, infra, project]
 summary: Local React Flow wiki graph explorer — multi-dimensional edge types (wikilink/semantic/tag-shared), UMAP semantic layout, and agent chat with graph highlighting and wikilink write-back. Addresses the gap where Obsidian cannot do multi-edge toggling or embedding-based spatial layout.
 updated: 2026-10-30
 sources:
@@ -15,10 +15,6 @@ sources:
 A local React app for interactive exploration of the `wiki/` knowledge graph. Two panels: a React Flow graph (left) and an agent chat (right). The agent reads wiki pages, highlights relevant nodes in the graph, and proposes new wikilinks that can be written back to disk.
 
 **Status (original plan):** Plan complete. Ready to implement. Effort: ~3-4 days MVP (graph + multi-edge + UMAP), ~6-8 days full (agent chat + write-back). The graph and chat phases shipped; see *State as of 2026-10* below for what changed since the plan.
-
-> **Conflict (2026-10-30):** the repo README describes the graph UI as "React + Vite graph
-> UI — Cytoscape.js force-directed graph". The plans and the frontend dependency
-> (`@xyflow/react`) say React Flow. See `_conflicts.md`.
 
 **Why not Obsidian:** Juggl evaluation confirmed it cannot do multi-dimensional edge toggling, embedding-based spatial layout (UMAP), or agent-driven highlighting. This build covers that gap.
 

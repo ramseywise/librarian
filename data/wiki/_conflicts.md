@@ -310,7 +310,8 @@ The as-built key uses `start_line` (line churn changes the fingerprint) and adds
 
 The two may partly reflect different contexts (a discovery-stage rubric smoke test and a product whose human inter-rater ceiling was low, vs a general production procedure), but they disagree on both the calibration bar and the gating rule.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold at different stages: 5–10 samples is a discovery-stage rubric smoke test (regression detector only); gating a release needs the 100–200-label TPR/TNR procedure *and* a human inter-rater ceiling high enough to trust it. Updated [[LLM-as-Judge Evaluation]] to state the stages.
 **Impact:** Whether release gates in new builds may rest on an LLM judge; how much human labeling to budget before a judge is trusted. Related: [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]], [[Grader States (Heuristic, Calibrated, Experimental)]], [[Human Agreement Ceiling Protocol]].
 
 ## Conflict: Graph UI rendering library (React Flow vs Cytoscape.js) — 2026-10-30
@@ -323,7 +324,8 @@ The two may partly reflect different contexts (a discovery-stage rubric smoke te
 
 Likely a stale README line (the frontend's package manifest lists `@xyflow/react`), but the wiki does not resolve it silently.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim A is correct — the frontend depends on `@xyflow/react`; the README was stale and now says React Flow. Removed the conflict note from [[Librarian Graph Explorer]].
 **Impact:** README accuracy for the graph UI; any page describing the frontend stack.
 
 ## Conflict: Does few-shot CoT outperform zero-shot CoT? — 2026-10-30
@@ -336,7 +338,8 @@ Likely a stale README line (the frontend's package manifest lists `@xyflow/react
 
 The two may refer to different task types (genuinely multi-step reasoning vs single-label classification), but Claim A is stated without that qualifier.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold for different task types: few-shot CoT helps on genuinely multi-step reasoning, and anchors the model on single-label classification. Updated [[Few-Shot Prompting]] to scope the claim and default to zero-shot CoT until an eval shows examples help.
 **Impact:** Default technique choice when adding reasoning to a prompt; [[Prompting Technique Selection]], [[Evaluating Prompts]], [[Chain of Thought]].
 
 ## Conflict: Cascaded voice latency budget — 2026-10-30
@@ -349,7 +352,8 @@ The two may refer to different task types (genuinely multi-step reasoning vs sin
 
 The two likely measure different configurations (streamed vs fully serial; endpointing outside vs inside the budget), but neither page states that scope.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold for different configurations: a streamed cascade with endpointing counted separately is TTFT-dominated (~400–600 ms); a fully serial cascade with the VAD wait inside the budget is endpointing-dominated (~0.95–2.3 s). Both pages now state their configuration and link as `extends`.
 **Impact:** Where to spend latency effort in a voice agent (model tier vs endpointing); [[Voice Agent Paradigms]], [[Realtime Voice Architecture Reference]], [[Voice Agent Patterns]].
 
 ## Conflict: Graph vs vector multi-hop accuracy — 2026-10-30
@@ -360,5 +364,6 @@ The two likely measure different configurations (streamed vs fully serial; endpo
 **Claim B** (from new source `data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--11-kg-rag-and-text-to-cypher.md`):
 > The 53.4% vs 42.9% figures come from a vendor blog with no stated method and are dropped. The primary evidence (GraphRAG, arXiv 2404.16130) shows LLM-judged comprehensiveness/diversity wins on global sensemaking questions, with vector RAG winning on directness — not that graphs are more accurate in general.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct — the 53.4%/42.9% figures have no stated method and are removed; [[Knowledge Graph Retrieval]] now cites only the GraphRAG paper's evidence.
 **Impact:** Whether the wiki should quote any graph-vs-vector accuracy number; [[Knowledge Graph Retrieval]], [[Graph Engineering]], [[Text-to-Cypher]].

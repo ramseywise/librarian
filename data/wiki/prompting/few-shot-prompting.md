@@ -1,6 +1,6 @@
 ---
 title: Few-Shot Prompting
-tags: [prompting, llm, concept, conflict]
+tags: [prompting, llm, concept]
 summary: Providing worked examples before the task — the most reliable lever for steering output format, tone and structure without fine-tuning, but examples teach more than intended (distribution, order, range), so use them only for what is genuinely non-obvious.
 updated: 2026-10-30
 sources:
@@ -94,12 +94,13 @@ examples — avoids anchoring at lower token cost ([[Prompt Optimization]]).
 
 Few-shot composes with [[Chain of Thought]]: examples that show the *reasoning chain*, not
 just the input/output pair, teach both the format and the method. This is few-shot CoT, and
-it outperforms either technique alone on multi-step tasks.
+on genuinely multi-step reasoning tasks it outperforms either technique alone.
 
-> ⚠️ **Conflict.** In Clavié et al. (2023), zero-shot CoT (F1 81.4) beat few-shot CoT
-> (F1 78.4) on a classification task needing no expert knowledge — the examples anchored
-> the model ([[Evaluating Prompts]]). The claim above may hold only for genuinely
-> multi-step reasoning tasks. Unresolved; see `_conflicts.md`.
+The gain does not carry over to single-label classification. In Clavié et al. (2023),
+zero-shot CoT (F1 81.4) beat few-shot CoT (F1 78.4) on a job-posting classification task
+needing no expert knowledge — the examples anchored the model ([[Evaluating Prompts]]).
+Default to zero-shot CoT, and add worked reasoning examples only when the task has real
+intermediate steps and an eval shows they help.
 
 ## See Also
 - [[Prompt Engineering]] — part-of

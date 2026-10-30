@@ -1,8 +1,8 @@
 ---
 title: Complexity Floor
-tags: [pattern, planning]
+tags: [patterns, pattern, planning]
 summary: The minimum viable complexity of a project shape — a constraint that makes capacity a selection criterion rather than a schedule, forcing archetype reframing rather than scope-thinning when the team can't reach the floor.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/agent-orchestration.md
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/archetype-selection.md

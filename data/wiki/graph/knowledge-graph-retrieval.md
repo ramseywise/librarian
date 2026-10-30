@@ -1,6 +1,6 @@
 ---
 title: Knowledge Graph Retrieval
-tags: [rag, llm, concept, conflict]
+tags: [rag, llm, concept]
 summary: "Vector search finds things that sound like your question; graphs find things that are connected to your answer — but traversal depth compounds error, which makes entity resolution the load-bearing sub-problem."
 updated: 2026-10-30
 sources:
@@ -35,10 +35,10 @@ Keeping the two senses distinct matters, because they share a word and almost no
 > connected to your answer."**
 
 That is the whole case, and it is a case about **multi-hop** questions specifically.
-Reported multi-hop accuracy: **53.4% for graph retrieval vs 42.9% for vector-only.**
-**⚠ Conflict (2026-10-30):** the course's updated note traces these figures to a vendor blog
-with no stated method and drops them in favour of the GraphRAG paper's evidence below — see
-`_conflicts.md`.
+No general graph-vs-vector accuracy number is quoted here: the widely repeated
+"53.4% vs 42.9% multi-hop" figures trace to a vendor blog with no stated method. The primary
+evidence is the GraphRAG paper below — LLM-judged comprehensiveness and diversity wins on
+global sensemaking questions, with vector RAG winning on directness.
 
 Single-hop lookups do not need a graph — semantic similarity already answers them. The
 graph earns its cost where the answer requires following relationships the question does

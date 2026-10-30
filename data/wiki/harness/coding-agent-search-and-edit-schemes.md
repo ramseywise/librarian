@@ -49,4 +49,4 @@ contain them fail invisibly. See parameter fidelity in [[Tool Design as Harness 
 ## See Also
 - [[Tool Design as Harness Surface]] — instance-of
 - [[ACI (Agent-Computer Interface)]] — instance-of (edit-tool design as interface design)
-- [[Harness Anatomy]] — part-of (bash and the minimal coding kit)
+- [[Harness Anatomy]] — extends (bash and the minimal coding kit)
