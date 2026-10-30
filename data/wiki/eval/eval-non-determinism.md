@@ -83,3 +83,4 @@ sampling ([[Eval Error Bars and Sample Size]]).
 - [[Knowledge Graph Retrieval]] — complements (the same multiplicative compounding, applied to traversal depth)
 - [[UNGATED Metric Convention]] — prerequisite-for
 - [[Simulated User Evaluation]] — extends
+- [[Paired Eval Comparison]] — prerequisite-for

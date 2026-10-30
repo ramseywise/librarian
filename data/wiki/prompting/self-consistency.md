@@ -36,3 +36,4 @@ isn't affordable.
 - [[Prompting Technique Selection]] — instance-of
 - [[Tree of Thoughts]] — prerequisite-for
 - [[Agentic Workflow Patterns]] — instance-of (voting parallelization)
+- [[Prompting Reasoning Models]] — alternative-to

@@ -56,3 +56,4 @@ both lose.
 - [[Provider-Agnostic Model Adapter]] — extends
 - [[Trajectory Over Outcome]] — extends
 - [[AI Engineering Field Question Bank]] — extends (questions-only cold-recall bank; this page adds answer kernels)
+- [[System Design Interview Study Guide]] — extends

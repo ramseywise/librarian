@@ -105,3 +105,4 @@ agent architecture.
 - [[Agentic Workflow Patterns]] — extends
 - [[DSPy]] — prerequisite-for
 - [[Stateful Objects of Discourse]] — extends
+- [[Prompting Reasoning Models]] — alternative-to

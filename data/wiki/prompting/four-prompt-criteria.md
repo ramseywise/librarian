@@ -56,3 +56,4 @@ comment).
 - [[Prompt Engineering]] — prerequisite-for
 - [[Prompt Assembly as Snippet Packing]] — prerequisite-for
 - [[Context Engineering]] — prerequisite-for (criterion 2 is its whole job)
+- [[Prompting Technique Selection]] — prerequisite-for

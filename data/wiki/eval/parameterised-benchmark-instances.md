@@ -51,3 +51,4 @@ saturates ([[Eval Suite Maintenance]]).
 - [[Eval Suite Maintenance]] — extends (saturation and staleness, the other way a suite stops measuring)
 - [[Hashed Fingerprint Contamination Gate]] — alternative-to (detect contamination instead of preventing it)
 - [[Golden Set Mechanics]] — extends (fixed golden cases vs generated instances)
+- [[Eval Contamination Defenses]] — instance-of

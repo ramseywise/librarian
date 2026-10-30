@@ -59,3 +59,5 @@ style**, and refactor only after the core behaviour passes all required layers.
 - [[Harness Subsystem Attribution]] — instance-of (the feedback-subsystem fix for "claims done")
 - [[TDD as Coding-Agent Harness]] — complements
 - [[Artifact Is Not Evidence: Push and Probe]] — complements (layer 3 verifies behaviour, not the artifact)
+- [[Execution Boundaries and Guardrails]] — instance-of
+- [[Long-Horizon Execution]] — prerequisite-for

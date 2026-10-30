@@ -83,3 +83,4 @@ in one of four modes — **sync, async (task ID + later event), streaming, multi
 - [[Tool Design as Harness Surface]] — extends (asynchronous tool interfaces)
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — complements (the same broken turn assumption in voice)
 - [[Prompt Injection]] — complements (structured events separate commands from data)
+- [[Long-Horizon Execution]] — prerequisite-for

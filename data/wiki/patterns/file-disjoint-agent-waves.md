@@ -53,3 +53,6 @@ without colliding, when none of them may commit?
 - [[Parallel Across Lanes, Migrations Alone]] — alternative-to (worktree-per-build when each build commits)
 - [[Orchestrator Verifies, Never Relays]] — extends
 - [[Librarian Graph Explorer]]
+- [[Worktree Agent Dispatch Contract]] — alternative-to
+- [[Scoped Phase Dispatch with Pre-Resolved Files]] — extends
+- [[Harness Orchestration]] — instance-of

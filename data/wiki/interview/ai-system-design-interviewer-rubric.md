@@ -115,3 +115,4 @@ most useful item for the next drill.
 - [[Graded Rehearsal Drill Harness]] — instance-of (persona plus rubric is a drill configuration)
 - [[Security and Safety Interview Study Guide]] — extends (dimension 9)
 - [[Evals and Observability Interview Study Guide]] — extends (dimension 7)
+- [[Agents Interview Study Guide]] — extends

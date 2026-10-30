@@ -61,3 +61,4 @@ verbatim; scores drop on paraphrased versions.
 - [[Golden Set Mechanics]] — extends (curation and versioning of the rows themselves)
 - [[Eval Suite Maintenance]] — related (overfitting and saturation)
 - [[Simulated User Evaluation]] — related (τ²-bench fresh parameters)
+- [[Eval Non-Determinism]] — alternative-to

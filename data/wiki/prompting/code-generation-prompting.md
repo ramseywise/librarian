@@ -48,3 +48,4 @@ refusals** ([[Evaluating Prompts]]).
 - [[Reflexion]] — extends
 - [[Verification Loops]] — extends
 - [[Program-Aided Language Models (PAL)]] — alternative-to
+- [[Prompts as Document Completion]] — extends

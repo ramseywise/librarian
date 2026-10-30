@@ -143,3 +143,4 @@ share no context make conflicting decisions — **pass the decisions, not just t
 - [[Prompt Injection]] — mitigates
 - [[Cognitive Tools]] — extends (verifier sub-calls as bounded isolation)
 - [[Harness Orchestration]] — extends
+- [[Context Window Budgeting]] — extends

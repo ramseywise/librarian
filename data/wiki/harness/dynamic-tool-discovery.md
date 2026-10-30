@@ -53,3 +53,4 @@ bar in [[Harness Anatomy]].
 - [[MCP Protocol]] — complements (runtime discovery at the protocol level)
 - [[Prefix Caching]] — depends-on
 - [[Skill Authoring Discipline]] — complements
+- [[Tool Design as Context Engineering]] — extends

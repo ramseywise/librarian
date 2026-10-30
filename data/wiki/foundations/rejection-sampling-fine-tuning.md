@@ -34,3 +34,4 @@ reasoning before training matters because SFT bakes noise into the weights.
 - [[Post-Training for Agents]] — instance-of (one of the jobs SFT is good for)
 - [[On-Policy Distillation]] — alternative-to (dense per-token signal instead of pass/fail filtering)
 - [[Outcome vs Process Reward Models]] — prerequisite-for (the verifier is a rule-based outcome check)
+- [[RLHF Pipeline]] — alternative-to

@@ -57,3 +57,4 @@ and **interaction protocol** (single-shot, multi-turn, simulated user, dual cont
 - [[Conversational Test Fixture Design]] — related (fixtures whose input is dialogue)
 - [[Human-Participant Skill Test Protocol]] — alternative-to (real first-time users)
 - [[Eval Non-Determinism]] — related (pass^k)
+- [[Eval Ladder]] — instance-of

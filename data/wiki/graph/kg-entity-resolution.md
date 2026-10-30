@@ -132,3 +132,4 @@ gates a deploy ([[Run-Then-Assert Eval CI]]).
 - [[Knowledge Graph Retrieval]] — prerequisite-for
 - [[Knowledge Graph as Shared Agent Memory]] — prerequisite-for
 - [[Memory Lifecycle]] — extends
+- [[Text-to-Cypher]] — prerequisite-for

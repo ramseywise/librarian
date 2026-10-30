@@ -47,3 +47,5 @@ Process artifacts are the sprint contracts and rubrics of [[Verification Loops]]
 - [[Observability and Runtime Patterns]] — complements (tool choice and tracing architecture)
 - [[Verification Loops]] — prerequisite-for
 - [[Quality Document]] — complements
+- [[Iterative Harness Simplification]] — prerequisite-for
+- [[Harness Subsystem Attribution]] — prerequisite-for
