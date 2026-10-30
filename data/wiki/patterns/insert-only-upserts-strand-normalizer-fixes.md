@@ -2,7 +2,7 @@
 title: Insert-Only Upserts Strand Normalizer Fixes
 tags: [patterns, infra, pattern]
 summary: "Once an upsert stops rewriting existing rows, a normalizer fix reaches newly inserted rows only, so every existing row keeps the old wrong values; a fix plan must name its route to old rows: a dry-run-default backfill that overwrites only values still equal to the known-bad defaults, a scoped refresh, or an explicit exception."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-14-dis263-accepted-candidate-bridge.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-14-dis263-accepted-candidate-bridge.md
@@ -60,3 +60,4 @@ back.
 - [[Every Column Names Its Reader]] — related (the same plan's description column was deferred until its reader landed)
 - [[Re-Crawl Adds, Never Overwrites]] — extends (the rule that made the upserts insert-only)
 - [[Backfill Without the Forward Path]] — alternative-to (backfill only after the writer is fixed)
+- [[SQL Schema Design and DDL]] — prerequisite-for (ON CONFLICT … DO UPDATE and `excluded`)

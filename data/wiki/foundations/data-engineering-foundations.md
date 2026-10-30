@@ -113,3 +113,5 @@ See [[RAG Eval Gate Contract]].
 - [[Data Clusters by Writer and Trust]] — extends (cluster tables by who writes them and how much you trust it)
 - [[Change the Channel, Not the Count]] — extends (source portfolio and rights as pipeline inputs)
 - [[learn-ai-engineering Project]] — extends (the curriculum repo this subject belongs to)
+- [[SQL Query Fundamentals]] — prerequisite-for (the SQL modules it assumes)
+- [[SQL Indexes and Query Plans]] — related (B-tree vs columnar zone maps)

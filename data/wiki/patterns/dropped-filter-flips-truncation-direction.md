@@ -2,7 +2,7 @@
 title: Dropped Filter Flips the Truncation Direction
 tags: [patterns, foundations, pattern]
 summary: "Moving a filter from SQL into application code while keeping `ORDER BY x ASC LIMIT n` changes which rows a full pool drops — before, the filter removed past rows and the cap cut the far-future tail; after, past rows sort first and the cap keeps stale rows and drops the near-term ones — so a cap-hit log that used to mean 'thinning' now means 'results go empty'."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-05-dis156-candidate-pool-truncation.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-05-dis156-candidate-pool-truncation.md
@@ -86,3 +86,5 @@ hands that decision to the sort order.
 - [[Event–Occurrence Split, Added Behind the Old Column]] — extends (the read-path follow-through where this was found)
 - [[Named-Trigger Deferral]] — instance-of (an existing log line used as the revisit trigger)
 - [[A Capped Run Is Not a Clean Run]] — related (a cap that binds changes what the output means)
+- [[SQL Query Fundamentals]] — prerequisite-for (ORDER BY … LIMIT semantics and keyset paging)
+- [[SQL from Python]] — related (dividing filter work between SQL and Python)

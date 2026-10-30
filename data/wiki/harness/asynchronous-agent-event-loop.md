@@ -84,3 +84,4 @@ in one of four modes — **sync, async (task ID + later event), streaming, multi
 - [[Duplex Voice Breaks Discrete-Turn Assumptions]] — related (the same broken turn assumption in voice)
 - [[Prompt Injection]] — related (structured events separate commands from data)
 - [[Long-Horizon Execution]] — related
+- [[Python Concurrency Models]] — prerequisite-for (asyncio primitives; never block the loop)

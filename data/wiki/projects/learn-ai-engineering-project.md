@@ -118,3 +118,4 @@ upstream because they need an API key, a GPU or hardware.
 - [[Agent Fundamentals]] — extends (generative-AI pillar 03 synthesis)
 - [[Post-Training for Agents]] — extends (generative-AI pillar 05 synthesis)
 - [[Real-Time Multimodal Agents]] — extends (generative-AI pillar 07 synthesis)
+- [[Programming Curriculum]] — extends (programming course synthesis)

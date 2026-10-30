@@ -138,3 +138,5 @@ resolves it once. This is the tool-count anti-pattern in
 - [[Few-Shot Prompting]] — prerequisite-for (the semantic layer's mechanism)
 - [[Agent Deployment Anti-Patterns]] — related (tool-count pressure driving the domain split)
 - [[Text-to-Cypher]] — alternative-to (the same generate-validate-execute shape over a graph schema)
+- [[SQL Query Fundamentals]] — prerequisite-for (the SQL a generator must get right)
+- [[SQL Join Patterns]] — related (fan-out and the LEFT JOIN WHERE trap as generated-SQL failure modes)

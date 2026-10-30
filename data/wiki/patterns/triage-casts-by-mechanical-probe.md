@@ -2,7 +2,7 @@
 title: Triage Casts by Mechanical Probe
 tags: [patterns, infra, pattern]
 summary: "Before triaging a large population of `as unknown as` casts, regenerate the type oracle, then run two whole-tree probes: rewrite every double cast to a single `as`, then to `satisfies`. Sort each site into delete / named zod adapter / keep with a greppable `keeping:` reason. Distrust probe passes that come from an untyped client, where `any` satisfies everything."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-19-dis327-supabase-types-contract.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-19-dis327-supabase-types-contract.md
@@ -92,3 +92,4 @@ adding one. Any mirror of generated types is a second oracle that can be wrong.
 - [[Brand the Funnel's Output]] — extends (a cast used deliberately as the single producer of a nominal type)
 - [[Migration Done Means Pushed and Probed]] — extends ("pushed, probed, and the types regenerated")
 - [[Mocked-Away Body Hides the Defect]] — extends (fakes that lie about the contract)
+- [[Runtime Validation with Zod]] — prerequisite-for (the named zod adapter outcome)

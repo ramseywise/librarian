@@ -2,7 +2,7 @@
 title: Idempotency Lives on the Link Column, Not the Synthetic Key
 tags: [infra, pattern]
 summary: "A unique index over a sequence-defaulted key does not make a backfill re-runnable, because every run draws a fresh value and the duplicate passes the index — guard on the column that links the synthesized row to its subject (skip any subject already linked, whoever linked it), land synthesized rows in their terminal state outside review denominators, and tag them with a distinguishable creator so rollback is one delete."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-25-venue-page-and-candidate-reparenting.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-25-venue-page-and-candidate-reparenting.md
@@ -78,3 +78,4 @@ slug resolution on the existing detail route replaced the deleted catalogue page
 - [[Advance-Only Machine Writes on a Shared Lifecycle]] — related (synthesized rows enter the lifecycle in a state the machine is allowed to own)
 - [[Every Column Names Its Reader]] — related (provenance-only columns are not a second lifecycle)
 - [[Kiez Project]] — instance-of
+- [[SQL Schema Design and DDL]] — prerequisite-for (UNIQUE constraints and idempotent loads)

@@ -73,3 +73,8 @@ available outcomes: the code now asserts that the dependency list is correct.
 - [[Data Science Curriculum Layers]] — related (the programming-tooling layer beneath the curriculum)
 - [[Brand the Funnel's Output]] — prerequisite-for (a nominal brand: a fourth tool beside real types, `unknown` and generics)
 - [[Triage Casts by Mechanical Probe]] — prerequisite-for (triaging a large population of `as unknown as` casts)
+- [[Python Type Hints and Dataclasses]] — related (`object` plus `isinstance` narrowing mirrors `unknown`)
+- [[TypeScript for Python Developers]] — prerequisite-for (the runtime and everyday-types basics behind unknown vs any)
+- [[TypeScript Discriminated Unions and Narrowing]] — extends (how to narrow the `unknown` escape)
+- [[Runtime Validation with Zod]] — extends (schema parsing as the scalable way to narrow `unknown` at a boundary)
+- [[TypeScript Generics and Type Transformations]] — extends (the generic escape in depth)

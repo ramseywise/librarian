@@ -306,3 +306,4 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[Silent Failure Catalogue]] — extends
 - [[Service Surface Defect Checklist]] — extends (ten concrete surface defects)
 - [[Prototype Hardening Pass]] — extends (the pre-demo checklist)
+- [[SQL from Python]] — prerequisite-for (parameters cover values only; identifiers need an allow-list)

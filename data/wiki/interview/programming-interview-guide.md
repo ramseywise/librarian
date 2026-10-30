@@ -77,3 +77,8 @@ gets O(n).
 - [[Coding Challenge Interview Study Guide]] — extends (round format, stdlib practicals, trap-shaped prompts)
 - [[Drill Gym Tracks and Schema]] — related (where the reps live and how a drill file is shaped)
 - [[Programming Curriculum]] — prerequisite-for (the course that teaches what the screen tests)
+- [[Python Foundations Reference]] — prerequisite-for (the language basics under the stdlib moves)
+- [[Python Generators and Lazy Iteration]] — related (itertools, deque, Counter)
+- [[SQL Window Functions]] — prerequisite-for (concept page behind the ranking and dedup-latest idioms)
+- [[SQL Join Patterns]] — prerequisite-for (fan-out and predicting the row count)
+- [[SQL Subqueries and CTEs]] — related (recursive CTEs for hierarchies)

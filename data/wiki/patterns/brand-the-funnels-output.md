@@ -2,7 +2,7 @@
 title: Brand the Funnel's Output
 tags: [patterns, prompting, pattern]
 summary: "When every caller must route a value through one shaping function before a model call, a union type cannot express 'went through this function'. A nominal brand can: make the shaper the only producer with one cast at its return, and require the brand at the consumer. Prove it with a red-then-green bypass, and name the boundary the brand does not reach."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-19-dis318-enrichment-prompt-input-type.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-19-dis318-enrichment-prompt-input-type.md
@@ -67,3 +67,4 @@ coverage.
 - [[Triage Casts by Mechanical Probe]] — extends (the same repo's work on making types state real contracts)
 - [[Stated Seams Drift, Enforced Seams Hold]] — instance-of (a seam moved from convention into the compiler)
 - [[TypeScript any Escapes]] — extends (a fourth tool beside real type, `unknown`, and generic)
+- [[TypeScript Discriminated Unions and Narrowing]] — prerequisite-for (the union and narrowing basics a brand goes beyond)

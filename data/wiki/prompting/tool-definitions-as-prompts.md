@@ -85,3 +85,5 @@ regenerating from that point — a derailed conversation becomes a quick correct
 - [[Structured Output]] — extends
 - [[ReAct Pattern]] — instance-of
 - [[Prompts as Document Completion]] — prerequisite-for
+- [[TypeScript for AI Apps]] — instance-of (the tool loop and zod tool schemas in TS)
+- [[Runtime Validation with Zod]] — related (one schema gives the type, the validation and the tool definition)

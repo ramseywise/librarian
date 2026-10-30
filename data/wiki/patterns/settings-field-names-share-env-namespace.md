@@ -2,7 +2,7 @@
 title: Settings Field Names Are a Shared Env Namespace
 tags: [infra, pattern]
 summary: "pydantic-settings binds every field to an environment variable named after it, so two independent Settings classes in one process that each declare `vectordb_path` both read `VECTORDB_PATH` — silently pointing two agents with incompatible schemas at one file; prefix or rename per component, and audit sibling Settings for collisions and drift."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/ai-project-template/.claude--docs--in-progress--puffin-integration--plan.md
   - data/raw/repos/ai-project-template/.claude--docs--in-progress--template-backlog--backlog.md
@@ -55,3 +55,4 @@ maintaining near-identical config classes by hand.
 - [[Silent Failure Catalogue]] — instance-of (wrong-but-plausible configuration, no error raised)
 - [[AI Project Template Scaffold]] — instance-of
 - [[Empty-String Env Override Defeats Nullish Coalescing]] — related (an env bypass that half works because of `??`)
+- [[Python Type Hints and Dataclasses]] — prerequisite-for (Pydantic models and boundary validation)

@@ -79,3 +79,4 @@ Only graduate beyond ReAct when you have evidence that it's breaking down.
 - [[LangGraph Advanced Patterns]]
 - [[Tool Definitions as Prompts]] — extends (function-calling APIs do the ReAct bookkeeping; definitions are prompt text)
 - [[Agent Fundamentals]] — extends (agent = LLM + context + tools, and the loop around it)
+- [[TypeScript for AI Apps]] — instance-of (a ReAct loop driven by stop_reason)

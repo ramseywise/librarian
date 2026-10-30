@@ -73,3 +73,6 @@ format in a separate step.
 - [[Graded-Uncertainty Enrichment Contract]] — extends (how a schema represents what the model could not determine)
 - [[Length Limits Are a Fit Layer, Not a Prompt]] — extends (length and layout limits enforced in code after generation)
 - [[Free Text With Deterministic Repair Over SDK-Enforced Schema]] — alternative-to (a decision to keep text generation plus a deterministic repair chain)
+- [[Python Type Hints and Dataclasses]] — related (Pydantic validation at the boundary for LLM output)
+- [[Runtime Validation with Zod]] — related (the code-side parse that pairs with the constrain rung)
+- [[TypeScript for AI Apps]] — instance-of (zod output format plus parsed_output null and refusal checks)

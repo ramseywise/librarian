@@ -126,3 +126,6 @@ human.
 - [[Agent-Oriented Error Messages]] — related
 - [[Three-Layer Termination Check]] — related (success-side termination)
 - [[Text-to-SQL as a Retrieval Strategy]] — instance-of (bounded error-as-context retry)
+- [[Python Concurrency Models]] — prerequisite-for (asyncio retry with backoff and jitter, timeouts, Semaphore)
+- [[Python Closures and Decorators]] — related (the retry decorator-factory shape)
+- [[TypeScript Async Patterns]] — related (retry with backoff, timeouts and AbortSignal in TS)
