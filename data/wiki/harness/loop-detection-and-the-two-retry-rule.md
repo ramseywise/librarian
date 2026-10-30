@@ -2,10 +2,11 @@
 title: Loop Detection and the Two-Retry Rule
 tags: [llm, agents, infra, pattern]
 summary: "The doom loop produces ten mutations of a broken solution — detection tracks per-file edit counts and forces re-planning rather than repair, because past two failures the problem is the spec, not the execution."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/workflow-triage/SKILL.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
   - data/raw/repos/nonprofit-success-ai/.claude--skills--workflow-triage--SKILL.md
 ---
 
@@ -71,8 +72,10 @@ See [[Gate Pass Rate Measures Effort, Not Readiness]].
 ## See Also
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Agent Retry Taxonomy]] — extends
-- [[Verification Loops]] — complements
-- [[Execution Boundaries and Guardrails]] — complements
-- [[Harness Engineering]] — part-of
-- [[Loop Termination Design]] — complements (identical-action detection vs varied-but-stalled detection)
+- [[Verification Loops]] — related
+- [[Execution Boundaries and Guardrails]] — related
+- [[Harness Engineering]] — related (part of)
+- [[Loop Termination Design]] — related (identical-action detection vs varied-but-stalled detection)
 - [[Gate Pass Rate Measures Effort, Not Readiness]] — related (the retry counter as a non-signal)
+- [[Deep Agents Framework]] — instance-of (loop-detection middleware)
+- [[Trajectory Over Outcome]] — instance-of (the stopping-point decision, mechanically)

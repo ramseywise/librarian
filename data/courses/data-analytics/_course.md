@@ -1,7 +1,7 @@
 ---
-imported_hash: ee447ec46a5d43c0
+imported_hash: e2d5504ce5081757
 title: Data Analytics
-summary: 'Python fundamentals for working with data: core language features, then text analytics.'
+summary: 'Analysing data with Python: pandas, statistics, visualisation and course projects.'
 order: 2
 source: learn-ai-engineering/data-analytics
 ---

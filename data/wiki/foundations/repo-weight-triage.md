@@ -1,8 +1,8 @@
 ---
 title: Repo Weight Triage — GC Before LFS
-tags: [foundations, decision, conflict]
+tags: [foundations, decision]
 summary: "When a repo feels too heavy, measure before choosing a fix. Loose objects are reclaimable by git gc, duplicate blobs cost working tree rather than history, and re-fetchable files need a manifest rather than storage. Sequence: gc, dedupe, untrack media, then decide gitignore+manifest. Avoid submodules and LFS at personal-repo scale."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-29_LAE-106_vendored-repos-readings.md
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-08-14-LAE-106-consolidate-vendored-course-repos.md
@@ -72,7 +72,9 @@ was not worth it at 395M.
 
 Two weeks later a second pass measured the same repo again: 414 tracked PDFs at 1.10 GiB,
 73% of tracked bytes, with `size-pack` at **1.42 GiB** (the earlier pass recorded 395M;
-the two figures are logged in `_conflicts.md`). It split the work into two phases with a
+a 2026-10 re-measure reads 1.64 GiB, so packed history kept growing rather than a gc merely
+packing loose objects. At that size `filter-repo` is the main remaining lever, not "not
+worth it"). It split the work into two phases with a
 hard boundary between them:
 
 | Phase | Mechanism | Effect on a fresh clone | Cost |
@@ -125,7 +127,7 @@ SKIP for submodules (no fork point to track) and ADAPT for `filter-repo` (deferr
 discarded: it is the only tool that reclaims the space).
 
 ## See Also
-- [[Git Branch Triage]] — complements (the other measure-before-acting git triage)
-- [[Automated Paper Discovery Pipeline]] — complements (arXiv ID as the immutable key, used here for the re-fetch manifest)
+- [[Git Branch Triage]] — related (the other measure-before-acting git triage)
+- [[Automated Paper Discovery Pipeline]] — related (arXiv ID as the immutable key, used here for the re-fetch manifest)
 - [[REUSE/ADAPT/SKIP Asset Verdicts]] — instance-of (the follow-up pass's asset table)
 - [[Verify Ignore Rules Against a Real File]] — extends (the full set of ignore-rule checks that pass over broken rules)

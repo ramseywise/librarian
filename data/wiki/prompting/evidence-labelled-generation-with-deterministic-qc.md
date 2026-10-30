@@ -2,7 +2,7 @@
 title: Evidence-Labelled Generation with Deterministic QC
 tags: [prompting, eval, pattern]
 summary: Label every evidence item E1…En before the model sees it, require each claim to cite labels, keep the output schema as plain strings so out-of-vocabulary values reach QC instead of being coerced, then run a pure rule set whose worst outcome is the verdict — so every value shown can be traced to the record it rests on.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/kiez/docs/enrichment.md
   - data/raw/claude-docs/akira/docs/research/2026-09-23-pre-model-evidence-stage.md
@@ -122,10 +122,10 @@ an order chosen to avoid co-fitting a metric to the prompt it measures:
 - [[UNGATED Metric Convention]] — related
 - [[Kiez Project]] — instance-of
 - [[Sanitize Never Fails, Validate Never Mutates]] — extends (the sanitize/validate contract upstream of QC)
-- [[Graded-Uncertainty Enrichment Contract]] — complements (the output contract the deterministic QC reads)
+- [[Graded-Uncertainty Enrichment Contract]] — related (the output contract the deterministic QC reads)
 - [[Starved Tag Triage: Edge, Prompt, or Supply]] — extends (verbatim-quote grounding starves subjective tags; the narrow carve-out)
 - [[One Facet Per Fact]] — extends (per-value provenance split by facet)
-- [[Hide-Unknown Display Contract]] — complements (teasers only from source-backed data; unknowns hidden downstream)
+- [[Hide-Unknown Display Contract]] — related (teasers only from source-backed data; unknowns hidden downstream)
 - [[Verbatim Evidence Quote Verification]] — related (the quote-level grounding check the candidate stage reuses)
 - [[A Serialized Blob Is a Prompt Contract]] — related (the hidden QC reader the candidate storage reshape nearly broke)
 - [[Shadow Signal Before Gate Change]] — related (accumulate the agreement rate before wiring the signal in)

@@ -2,12 +2,15 @@
 title: ML Foundations Interview Study Guide
 tags: [interview, foundations, reference]
 summary: Exam-prep reference for the classical ML round — bias/variance and leakage discipline, the model menu with reasons, metric choice tied to the decision the system drives, deep-learning basics via the structuring-ML-projects habits, unsupervised/embeddings, ML system hygiene, and the SQL/analytics screen.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--1-foundations--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--1-foundations--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--1-foundations--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--foundations.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--ml-foundations.md
+  - data/raw/repos/sisyphus/interviewing--guides--1-foundations--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--notes--foundations.md
 ---
 
 # ML Foundations Interview Study Guide
@@ -91,5 +94,5 @@ judgment: **define the metric before writing the query.** Detail in
 - [[Tabular ML Leakage Taxonomy]] — extends (the leakage failure classes in depth)
 - [[Data Science Curriculum Layers]] — prerequisite-for (the curriculum this guide compresses)
 - [[Data Engineering and MLOps Interview Study Guide]] — extends (hygiene → production)
-- [[Programming Interview Study Guide]] — complements (the SQL screen)
+- [[Programming Interview Study Guide]] — related (the SQL screen)
 - [[LLM Fundamentals Interview Study Guide]] — extends (sequence models → transformers)

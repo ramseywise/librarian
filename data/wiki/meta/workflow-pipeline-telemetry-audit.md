@@ -2,7 +2,7 @@
 title: Workflow Pipeline Telemetry Audit
 tags: [llm, meta, pattern]
 summary: What a week of telemetry on a triage → build → review agent pipeline actually showed — ledgers that do not join, a retry counter at 0.017 while plans failed one stage downstream, 3 of 3 unscoped issues routed straight to plan later invalidated versus 0 of 44 scoped ones, logging that dies with the loop, and a BUILT row that outran its evidence.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/workflow-review/SKILL.md
   - data/raw/claude-docs/playground/skills/workflow-build/SKILL.md
@@ -141,13 +141,13 @@ discriminator (`finding` / `close`) and a schema lint in the gate. See
 
 ## See Also
 - [[Claude Workflow System]] — extends (what the pipeline's own numbers said about it)
-- [[Always-Red Check Carries No Signal]] — part-of (findings 1 and 7 of the audit)
-- [[Derive the Gate, Don't Copy It]] — part-of (finding 6)
-- [[Scoped Phase Dispatch with Pre-Resolved Files]] — part-of (finding 4)
+- [[Always-Red Check Carries No Signal]] — related (part of; findings 1 and 7 of the audit)
+- [[Derive the Gate, Don't Copy It]] — related (part of; finding 6)
+- [[Scoped Phase Dispatch with Pre-Resolved Files]] — related (part of; finding 4)
 - [[Plan-Doc Status Enum]] — related (BUILT vs accepted is a status-vocabulary problem)
 - [[Trajectory Over Outcome]] — related (the terminal row is the outcome; the stage rows are the trajectory)
 - [[Retro Open-Hypotheses Loop]] — related (the recurring pass that consumes these findings)
-- [[Cross-Sweep Finding Fingerprint]] — complements (stable anchors instead of line numbers)
+- [[Cross-Sweep Finding Fingerprint]] — related (stable anchors instead of line numbers)
 - [[Void, Don't Close, an Invalid Measurement]] — related (record withdrawn findings rather than deleting them)
 - [[Path-Verified Build State Markers]] — extends (the scoping rule this finding produced)
 - [[Gate Pass Rate Measures Effort, Not Readiness]] — prerequisite-for (the triage→build join)

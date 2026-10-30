@@ -2,7 +2,7 @@
 title: One Facet Per Fact
 tags: [patterns, prompting, eval, pattern]
 summary: An enrichment vocabulary where one tag carries several kinds of fact (type, time, companion, mood) cannot be measured or fixed; give each kind of fact its own facet, derive the facets a rule can compute instead of asking the model, stamp per-value provenance, and accept on per-facet precision before coverage.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-26-venue-tag-facets-proposal.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-26-venue-tag-facets-proposal.md
@@ -88,7 +88,7 @@ an individual tag is empty.
 ## See Also
 - [[Graded-Uncertainty Enrichment Contract]] — extends (the output contract each facet value obeys)
 - [[Evidence-Labelled Generation with Deterministic QC]] — extends (per-value traceability, here split by facet)
-- [[Starved Tag Triage: Edge, Prompt, or Supply]] — complements (diagnosing an empty value inside one facet)
+- [[Starved Tag Triage: Edge, Prompt, or Supply]] — related (diagnosing an empty value inside one facet)
 - [[One-Sided Label Control]] — prerequisite-for (the per-facet precision labels this acceptance needs)
 - [[Write-Only Fields and the Reader Map]] — related (`audience_fit` existed but no dimension read it)
 - [[Kiez Project]] — instance-of

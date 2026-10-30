@@ -2,7 +2,7 @@
 title: Toggle Gates the Capability, Not the Runtime Default
 tags: [infra, pattern]
 summary: "A scaffold toggle for an optional backend should only decide whether the dependency and code path exist; flipping the runtime default too is safe for lazily-consumed components but breaks every import of an eagerly-consumed one (e.g. a checkpointer built at graph-compile time), so the default stays the in-memory option and opt-in is an explicit env var."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/multi-agent-tooling-expansion.md
   - data/raw/repos/ai-project-template/.claude--docs--plans--multi-agent-tooling-expansion.md
@@ -47,4 +47,4 @@ argument of [[Execute Every Toggle Configuration]].
 - [[Execute Every Toggle Configuration]] — instance-of (a bug that renders cleanly and fails only when run)
 - [[Runtime Topology and Checkpointer Alignment]] — related (where the checkpointer must live once opted in)
 - [[Test Derived Defaults Without Overrides]] — related (defaults as the untested surface)
-- [[AI Project Template Scaffold]] — part-of
+- [[AI Project Template Scaffold]] — related (part of)

@@ -2,9 +2,10 @@
 title: Reward Hacking and Overoptimization
 tags: [foundations, llm, eval, concept]
 summary: "The three failure modes of optimizing against a learned reward proxy — reward hacking, the inverse-U overoptimization curve against KL distance, and the ~15% alignment tax on academic NLP benchmarks."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
+  - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
 ---
 
 # Reward Hacking and Overoptimization
@@ -62,6 +63,16 @@ or judge evaluation at intervals — the training-time instance of the general p
 [[Eval Maturity Ladder]], where the metric you can compute is not the metric you care
 about.
 
+The same shape has been measured as a scaling law (Gao, Schulman & Hilton, "Scaling Laws
+for Reward Model Overoptimization", 2023): proxy reward climbs monotonically while
+human-judged quality rises and then falls. In outputs it shows up as verbose, ingratiating,
+rigorous-sounding filler.
+
+**Verifiable rewards narrow the gap but do not close it.** A rule-based checker has no
+learned-model errors to exploit, but an agent can still game the checker itself — for
+example by editing the tests it is meant to pass. [[RLVP — Verifiable Path Penalties]]
+answers this by penalizing such path violations with deterministic checks.
+
 ## 3. Alignment tax
 
 RLHF-tuned models can lose roughly **15%** on some academic NLP benchmarks relative to
@@ -82,9 +93,10 @@ tracking, and response-length distributions (verbosity hacking is the cheapest t
 and the most commonly missed).
 
 ## See Also
-- [[RLHF Pipeline]] — part-of (the Stage 3 failure modes)
-- [[Bradley-Terry Preference Model]] — depends-on (why weak label bias becomes strong artifact)
-- [[Preference Optimization Algorithms]] — complements (DPO inherits the length problem; verifiable rewards sidestep it)
-- [[Eval Maturity Ladder]] — complements (optimizing a proxy metric, at training time rather than eval time)
+- [[RLHF Pipeline]] — related (part of; the Stage 3 failure modes)
+- [[Bradley-Terry Preference Model]] — prerequisite-for (why weak label bias becomes strong artifact)
+- [[Preference Optimization Algorithms]] — related (DPO inherits the length problem; verifiable rewards sidestep it)
+- [[Eval Maturity Ladder]] — related (optimizing a proxy metric, at training time rather than eval time)
 - [[Constitutional AI and RLAIF]] — extends (an explicit constitution makes the alignment target auditable)
 - [[Outcome vs Process Reward Models]] — extends (the same proxy problem at step level, and why verifiable outcomes reduce it)
+- [[RLVP — Verifiable Path Penalties]] — extends (penalizing verifier gaming in agent RL)

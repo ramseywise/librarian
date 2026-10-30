@@ -2,7 +2,7 @@
 title: Silence Reads as Clean
 tags: [patterns, infra, pattern]
 summary: The recurring defect where a job that never ran, a command that failed with swallowed stderr, or a channel that stopped firing produces output indistinguishable from "healthy, nothing to report" — and the design rule that absence must be a distinct, observable state.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-04-dis60-lighthouse-ci.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-04-dis60-lighthouse-ci.md
@@ -211,3 +211,4 @@ findings, so a broken diff command reads as approval.
 - [[Unit Tests Encode the Checker's Assumption]] — extends (a 100%-noise table trains readers to skip real rows)
 - [[Hardcoded Dashboard Cells Are Expiring Claims]] — instance-of (a literal cell for a manual gate)
 - [[Guard the Source, Not the Destination]] — instance-of (a destination-emptiness guard that went dead after the first run)
+- [[Review Cursor Advances Only Past a Clean Run]] — extends (a cursor that refuses to move on silence)

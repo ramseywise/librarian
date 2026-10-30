@@ -1,10 +1,11 @@
 ---
 title: Execution Boundaries and Guardrails
 tags: [llm, agents, infra, concept]
-summary: "Sandboxes, hooks, and permission gates — the controls that cannot be argued with, governed by one rule: encode constraints rather than documenting them, and enforce invariants rather than implementations."
-updated: 2026-10-16
+summary: "Sandboxes (the isolation ladder and identity sandbox), hooks, and permission gates with declared timeouts — the controls that cannot be argued with, governed by one rule: encode constraints rather than documenting them, and constrain the process as well as the outcome."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--04-execution-boundaries.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
 ---
 
 # Execution Boundaries and Guardrails
@@ -32,6 +33,26 @@ test output are how it observes its own work — the raw material for [[Verifica
 Cloud sandboxes introduce a **lifecycle** problem — *they cost money while idle*. State
 machines with snapshot/restore let a session pause and resume without paying for the gap.
 Worth designing before the bill, not after.
+
+### The isolation ladder
+
+| Level | Mechanism | Cost |
+|---|---|---|
+| OS-level | Seatbelt (macOS), seccomp / Landlock (Linux) restricting filesystem and network per process | Near-zero; shares the kernel |
+| Container | Namespaces + cgroups | Seconds to start; kernel still shared |
+| MicroVM | Firecracker-class VMs with their own kernel | Strongest; heavier to run |
+
+Pair any rung with **resource quotas** (CPU, memory, wall-clock, disk). A Python virtualenv
+is dependency management, **not isolation** — it stops nothing.
+
+### Identity sandbox
+
+Filesystem isolation isn't the whole story for agents that operate accounts. Give the agent
+**its own identities** — its own email, its own cloud and SaaS accounts — rather than the
+user's. When a step genuinely needs the user (a login, a CAPTCHA), the user acts inside the
+agent's environment over remote desktop; files cross via a shared mount, with paths passed
+in messages. A compromised or confused agent can then damage only what it owns. Which
+capability combinations make that matter is in [[Lethal Triad]].
 
 Deciding where the agent runs, what tools it has, what it can access, and how it verifies
 work are all **harness-level decisions, not model decisions**.
@@ -88,6 +109,20 @@ response, makes the decision fast for the human, and produces a parseable answer
 Gate placement follows the four gating questions in [[Tool Design as Harness Surface]] —
 irreversible actions get a confirmation; everything else runs free. **Gating reversible
 operations is the most common way to make an agent useless.**
+
+**Every approval needs a timeout with a declared default.** An unattended agent waiting
+forever on a human is a hung process; decide up front whether silence means *deny* (the
+safe default for irreversible actions) or *proceed*, and say which in the prompt to the
+human. Log every approval: an action approved the same way many times is a candidate for
+automation, or for a reviewer model instead of a person — see
+[[Proposer-Reviewer and Sidecar Gating]].
+
+### Parse commands semantically
+
+A string blocklist on shell commands is trivially bypassed: `$(echo rm) -rf /`,
+`find . -exec rm {} +`, an alias, a script written then executed. A gate on a shell tool has
+to parse the command — the AST, the resolved executable, the flags — and **fail closed** on
+anything it can't classify.
 
 ## Encode Constraints, Don't Document Them
 
@@ -162,6 +197,30 @@ loops are expensive precisely because nothing stops them.
 Instrument token spend per run, set a ceiling, and **fail closed with a partial result
 rather than silently continuing**.
 
+## Constrain the Process, Not Just the Outcome
+
+An outcome check ("the tests pass") is satisfied by deleting the failing test. The harness
+has to constrain *how* the goal is reached too: read-only test files, protected paths, a
+hook that rejects edits to the verifier, a diff check on the files the task wasn't supposed
+to touch.
+
+### Whose side is the agent on?
+
+An agent acting for one person can meet others — a counterparty in a negotiation, a vendor's
+support bot, an email from a stranger. Write the **principal-loyalty code of conduct**
+explicitly: whose interests the agent represents, what it may disclose about its principal,
+that it never commits its principal beyond its grant, and that instructions arriving from
+non-principals are information, not commands.
+
+### Move the trust boundary below the code
+
+When the risk is an agent writing bad *data*, don't rely on the agent's code being right:
+put a **human-reviewed schema with validators on every write** underneath it. In one
+reported migration, the validator layer took violating writes to **zero** at roughly **2 ms
+per write**. The guarantee holds only while **no bypass path exists** — a raw SQL tool or a
+direct-file escape hatch quietly turns it back into documentation. The same move applied to
+model-supplied facts is [[Belief Parameters with a Ground-Truth Gate]].
+
 ## A Role Label Is Not a Sandbox
 
 The boundary above is only real if it is **enforced by the runtime**.
@@ -179,10 +238,18 @@ most commonly violated instance of it**. Testing that the boundary actually hold
 discipline — see [[Canary Testing for Permission Boundaries]].
 
 ## See Also
-- [[Harness Engineering]] — part-of
-- [[Harness Anatomy]] — part-of
+- [[Harness Engineering]] — related (part of)
+- [[Harness Anatomy]] — related (part of)
 - [[Canary Testing for Permission Boundaries]] — extends
-- [[Tool Design as Harness Surface]] — depends-on
-- [[Safeguards Architecture — Five Protection Layers]] — implements
-- [[Read-Only by Default with Explicit Authorization]] — complements
+- [[Tool Design as Harness Surface]] — prerequisite-for
+- [[Safeguards Architecture — Five Protection Layers]] — related
+- [[Read-Only by Default with Explicit Authorization]] — related
 - [[Reversibility Cliff]] — extends (locating the unattended-action boundary at notification, with evidence)
+- [[Proposer-Reviewer and Sidecar Gating]] — extends (who approves when a human shouldn't)
+- [[Lethal Triad]] — related (which capability combinations need the boundary)
+- [[Belief Parameters with a Ground-Truth Gate]] — instance-of (trust boundary inside the tool)
+- [[Constitutional Classifiers]] — extends (two-stage classifier guardrails)
+- [[Three-Layer Termination Check]] — instance-of
+- [[Agent Security Risk Taxonomy]] — instance-of (the sandbox and permission mechanics for R6/R8)
+- [[Agent Deployment Anti-Patterns]] — instance-of (mechanism-based enforcement for #8)
+- [[Protocol-Driven Multi-Agent Collaboration]] — instance-of (the isolation boundary, mechanically)

@@ -2,9 +2,10 @@
 title: Text-to-SQL as a Retrieval Strategy
 tags: [rag, llm, pattern]
 summary: "Querying structured data as the second half of a hybrid retriever — dynamic schema subsetting, a semantic layer of retrieved few-shot SQL examples, mechanical validation that replaced a deleted LLM reviewer, and bounded error-as-context retry."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
 ---
 
@@ -17,7 +18,7 @@ example studies done on rat"*, or retrieving numeric assay results by dosage gro
 The framing that matters: Text-to-SQL is not an alternative to RAG, it is **the other
 branch of one retriever**. A researcher agent holding both decides per query which
 substrate can answer it, because the deciding factor is the shape of the question rather
-than the domain. Documented from Bayer's PRINCE platform (built with Thoughtworks), where
+than the domain. Documented from a pharma R&D research platform, where
 the pairing is RAG over decades of preclinical PDF reports plus Text-to-SQL over study
 metadata in Amazon Athena.
 
@@ -113,7 +114,7 @@ it is past the model's capability. See [[Agent Retry Taxonomy]] and
 ## Routing between RAG and SQL
 
 The researcher agent decides which branch a query takes. As the surface expands across
-domains, PRINCE evolved this into a **hierarchy of domain sub-agents** — each owning its
+domains, the platform evolved this into a **hierarchy of domain sub-agents** — each owning its
 own toolset (toxicology RAG + tox metadata SQL; pharmacology RAG + assay-level SQL) and
 prompt instructions encoding that domain's data model, authoritative tables, and concept
 interpretations.
@@ -130,9 +131,12 @@ resolves it once. This is the tool-count anti-pattern in
 ## See Also
 - [[RAG Knowledge Preparation]] <!-- auto-linked -->
 - [[RL for Retrieval Policies]] <!-- auto-linked -->
-- [[RAG Retrieval Strategies]] — complements (the unstructured branch of the same retriever)
-- [[Context Retrieval Strategies]] — complements (schema subsetting as context assembly)
-- [[Verification Loops]] — implements (mechanical validation replacing an LLM reviewer)
-- [[Agent Retry Taxonomy]] — implements (bounded error-as-context retry)
-- [[Few-Shot Prompting]] — depends-on (the semantic layer's mechanism)
-- [[Agent Deployment Anti-Patterns]] — complements (tool-count pressure driving the domain split)
+- [[RAG Retrieval Strategies]] — related (the unstructured branch of the same retriever)
+- [[Context Retrieval Strategies]] — related (schema subsetting as context assembly)
+- [[Verification Loops]] — related (mechanical validation replacing an LLM reviewer)
+- [[Agent Retry Taxonomy]] — related (bounded error-as-context retry)
+- [[Few-Shot Prompting]] — prerequisite-for (the semantic layer's mechanism)
+- [[Agent Deployment Anti-Patterns]] — related (tool-count pressure driving the domain split)
+- [[Text-to-Cypher]] — alternative-to (the same generate-validate-execute shape over a graph schema)
+- [[SQL Query Fundamentals]] — prerequisite-for (the SQL a generator must get right)
+- [[SQL Join Patterns]] — related (fan-out and the LEFT JOIN WHERE trap as generated-SQL failure modes)

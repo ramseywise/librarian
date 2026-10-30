@@ -1,10 +1,12 @@
 ---
 title: Harness Maturity and Failure Modes
 tags: [llm, agents, infra, reference]
-summary: "A five-stage maturity ladder, the six-stage per-task pipeline, and the five ways teams fool themselves — the first of which hides the other four."
-updated: 2026-08-04
+summary: "A five-stage maturity ladder, the six-stage per-task pipeline, and the five ways teams fool themselves — the first of which hides the other four — plus the two records a mature harness keeps and the silent builder gotchas of harness runtimes."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--08-maturity-and-failure-modes.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--08-maturity-and-failure-modes.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--references.md
 ---
 
 # Harness Maturity and Failure Modes
@@ -133,6 +135,61 @@ have verification?"* but:
 
 > *"Can I point to the code that runs it, on every task, without a human remembering to?"*
 
+## Two Records Every Mature Harness Keeps
+
+- **Observability in two layers.** Runtime signals (logs, traces, lifecycle events) say what
+  the system did; process artifacts (plans, sprint contracts, rubrics, scored verdicts) say
+  why a change should be accepted. The harness collects both, not the agent —
+  [[Runtime vs Process Observability]].
+- **A quality document.** A per-area health record — grade, verification status, agent
+  legibility, test stability, boundary compliance, key gaps — that sessions read first and
+  update last, so quality is tracked rather than assumed and simplification passes have a
+  baseline — [[Quality Document]].
+
+## Builder Gotchas
+
+Non-obvious failures for anyone *building* harness runtime (memory, tools, subagents, hooks)
+rather than configuring one, drawn from an analysis of a production coding-agent runtime.
+Each one fails **silently**.
+
+**Memory and instructions**
+
+- **Index caps truncate silently.** An always-loaded memory index is capped in lines and
+  bytes at read time; long entries hit the byte cap first and recent memories "disappear".
+  Keep index entries to one-line hooks and detail in topic files.
+- **Most-local wins.** Org → user → project → local override; a rule set at user level is
+  silently overridden by a project-root file. Test with the whole instruction stack present.
+- **Don't memorize what's derivable.** Architecture, code patterns and history live in the
+  repo and go stale in memory; the memory taxonomy should forbid them.
+- **Two-step saves orphan in the right direction.** Write the topic file, then the index
+  pointer: a crash between them orphans a file but keeps the index consistent. Add a sweep.
+- **Memoized context goes stale.** Context cached at startup must be invalidated at every
+  mutation point, or the model sees stale data all session.
+- **Skill descriptions are truncated** (~150 characters per listing entry). Front-load the
+  distinctive trigger words — see [[Skill Authoring Discipline]].
+
+**Tools and permissions**
+
+- **Fail closed by default.** Tools are non-concurrent and non-read-only unless marked;
+  sensitive tools default to *ask*. Keep a bypass-immune list (`.git/**`, `rm -rf*`,
+  `DROP TABLE*`) that no mode auto-approves.
+- **Concurrency safety is per call, not per tool.** `cat` is safe to parallelize, `rm` is
+  not — classify each call at runtime.
+- **Permission checks have side effects** (denial tracking, mode changes). Don't cache
+  verdicts across calls.
+
+**Subagents and lifecycle**
+
+- **Forks don't fork.** Recursive forks multiply context cost. Enforce one level, and block at
+  call time rather than removing the tool, so the prompt cache still matches
+  ([[Prefix Caching]]).
+- **Notify, then evict.** Clear a finished work unit's disk output eagerly, but its in-memory
+  record only after the parent has read the result.
+- **Don't assume a "pending" state.** Work units usually register straight as running; UI
+  built around *pending* shows nothing.
+- **Hook trust is all-or-nothing.** An untrusted workspace skips every hook; gate trust at
+  dispatch rather than judging each hook.
+
 ## Open Frontiers
 
 Three unsolved problems, named consistently across sources:
@@ -178,9 +235,12 @@ calcifying** — see [[Iterative Harness Simplification]].
 
 ## See Also
 - [[Eval Maturity Ladder]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
+- [[Harness Engineering]] — related (part of)
 - [[Iterative Harness Simplification]] — extends
-- [[Production Reliability Primitives]] — complements
-- [[Verification Loops]] — depends-on
-- [[Harness Anatomy]] — depends-on
-- [[Eval Ladder]] — depends-on
+- [[Production Reliability Primitives]] — related
+- [[Verification Loops]] — prerequisite-for
+- [[Harness Anatomy]] — prerequisite-for
+- [[Eval Ladder]] — prerequisite-for
+- [[Runtime vs Process Observability]] — extends
+- [[Quality Document]] — extends
+- [[Harness Subsystem Attribution]] — related (diagnosing which subsystem a failure belongs to)

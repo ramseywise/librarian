@@ -1,8 +1,8 @@
 ---
 title: Cross-Sweep Finding Fingerprint
-tags: [patterns, eval, pattern, conflict]
+tags: [patterns, eval, pattern]
 summary: Giving every review finding a stable fingerprint — sha256(file + symbol_scope + category + normalized_title)[:12] — so findings can be tracked across sweeps and repos into new/persistent/recurring/resolved/regressed states, with deterministic, advisory promotion rules (count, age, spread, unmoved, regression) instead of an LLM deciding what matters.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-07-27-cross-repo-intelligence.md
   - data/raw/claude-docs/guacamayo/docs/research/2026-07-29_dashboard-tabs_review.md
@@ -33,7 +33,7 @@ this to hold.)
 FindingFingerprint = sha256(file + symbol_scope + category + normalized_title)[:12]
 ```
 
-- `file` and `symbol_scope` pin it to a location that survives line-number churn.
+- `file` and `symbol_scope` pin it to a location that survives line-number churn. *(Design intent; the shipped digest keys on `start_line` instead. See "As built" below.)*
 - `category` (the scanner dimension) and a `normalized_title` (lower-cased, whitespace-
   and number-stripped) pin it to a defect class without being sensitive to wording.
 - Twelve hex characters is enough for a per-repo namespace and short enough to quote.
@@ -85,7 +85,10 @@ Until that exists, "true positive rate" cannot be computed, only "still present 
 
 A code review of the guacamayo implementation found the digest key is
 `file_path|start_line|category|reporter|title` (sha256). It has **no repo or user
-component**, and it differs from the design formula above (see `_conflicts.md`). Today this
+component**, and it differs from the design formula above. It uses `start_line` rather than
+`symbol_scope`, so a finding whose line shifts gets a new fingerprint and reads as
+resolved-plus-new rather than persistent. The trend states only survive line churn once
+the digest follows the design. Today this
 is contained one layer up, not by the digest. Sweep files are named `{repo}-{date}.json`, and
 the previous-sweep lookup globs `{repo}-*.json` before any set-difference. So two repos with
 an identical `file:line|category|reporter|title` never meet in one comparison.

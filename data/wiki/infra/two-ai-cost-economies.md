@@ -2,7 +2,7 @@
 title: "Two AI Cost Economies: Durable Once, Contextual On Demand"
 tags: [infra, llm, concept]
 summary: Separate inference into durable intelligence computed once per catalogue item and contextual intelligence computed only when a request gives a reason — then route each to the cheapest model that clears its quality gate; the biggest lever is usually re-computation churn, not model price.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-scaling-infra-strategy.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-scaling-infra-strategy.md
@@ -66,7 +66,7 @@ is code, not configuration — a contained branch in the gateway, but a branch.
 
 ## See Also
 - [[LLM Inference Economics]] — extends (prefill/decode at the token level; this page is the workload level above it)
-- [[Scaling Axes and Customer-Triggered Cost Cliffs]] — complements (the non-inference lines of the same bill)
+- [[Scaling Axes and Customer-Triggered Cost Cliffs]] — related (the non-inference lines of the same bill)
 - [[Cached Derivation Without a Recompute Path]] — instance-of (the null hash that caused the churn)
 - [[Prefix Caching]] — related
 - [[Offline Annotation over Online Inference]] — instance-of (enrichment as the durable-once economy)

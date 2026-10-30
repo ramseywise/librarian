@@ -1,8 +1,8 @@
 ---
-imported_hash: a3b55dcf6f8d5e5d
+imported_hash: 2a3573fee456fe24
 title: 'Example: Meeting Intelligence & Lifecycle Agent'
 summary: '"Design an AI system that captures meeting transcripts, extracts structured decisions and action items, and drives an engagement lifecycle state machine."'
-order: 80
+order: 86
 kind: reading
 section: System design round / Examples
 source: sisyphus/interviewing/rounds/system-design-round/examples/meeting-processor.md

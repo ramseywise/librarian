@@ -2,11 +2,13 @@
 title: Data Engineering and MLOps Interview Study Guide
 tags: [interview, foundations, reference]
 summary: Exam-prep reference for pipeline and model-to-production questions — idempotency and backfills as the words interviewers listen for, warehouse/batch/streaming trade-offs, the MLOps maturity ladder, deployment and drift monitoring, and the LLM-era mapping (embedding pipelines are ETL, prompt versioning is a model registry, eval-in-CI is monitoring).
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--8-data-eng-mlops--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--8-data-eng-mlops--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--8-data-eng-mlops--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--data-engineering-mlops.md
+  - data/raw/repos/sisyphus/interviewing--guides--8-data-eng-mlops--00-overview.md
 ---
 
 # Data Engineering and MLOps Interview Study Guide
@@ -70,5 +72,5 @@ in new clothes.** Stating this mapping is the advantage of an AI engineer with M
 - [[Data Engineering Foundations]] — prerequisite-for
 - [[ML Foundations Interview Study Guide]] — prerequisite-for (hygiene before production)
 - [[Experiment Tracking Schemas]] — instance-of (tracking applied to an LLM system)
-- [[Evals and Observability Interview Study Guide]] — complements (eval-as-merge-gate)
-- [[System Design Interview Study Guide]] — complements (pipelines are the substrate)
+- [[Evals and Observability Interview Study Guide]] — related (eval-as-merge-gate)
+- [[System Design Interview Study Guide]] — related (pipelines are the substrate)

@@ -1,8 +1,8 @@
 ---
-imported_hash: 75ca3ceec6a39147
+imported_hash: 01316b1bc4dfc699
 title: 'Worked STAR Example: Failure Owned'
 summary: The recovery detail ("CTO later used the post-mortem as a template") is not included to soften the failure — it's included because it's true and it completes the picture.
-order: 8
+order: 9
 kind: reading
 section: Behavioral / Examples
 source: sisyphus/interviewing/rounds/behavioral/examples/failure-owned.md

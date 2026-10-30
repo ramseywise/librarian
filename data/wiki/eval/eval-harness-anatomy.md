@@ -2,11 +2,13 @@
 title: Eval Harness Anatomy
 tags: [eval, llm, agents, reference]
 summary: "Task, trial, grader, trajectory, outcome — and the separation that makes the whole thing work: the evaluation harness treats the agent harness as the system under test."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--01-what-an-eval-is.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-engineering.md
 ---
 
 # Eval Harness Anatomy
@@ -131,13 +133,34 @@ Conversational agents need graders the others don't — beyond answer quality an
 and **extended adversarial conversations** as a stress test. Coding, research, and
 computer-use agents each have their own grader sets.
 
+## Dataset, solver, scorer (course synthesis)
+
+Anthropic, LangSmith, OpenAI and Inspect AI use different words for the same parts. Inspect AI has the
+cleanest split: a `Task` is a **dataset** + a **solver** (the system under test) + a **scorer** (the
+grader). Keep the three separable and any one can be swapped without touching the others.
+
+**Offline vs online.** Offline evals are the lab (curated data, references available, cheap and
+repeatable). Online evals are the field (live traffic, reference-free graders only). You need both:
+production failures feed the offline set, which keeps the lab relevant — see [[Online Eval Sampling]].
+
+**What an eval is not:**
+- *Not a benchmark score* — MMLU or SWE-bench rank predicts little about your system on your tasks.
+- *Not a vibe check* — reading ten outputs is level 0 of the [[Eval Maturity Ladder]].
+- *Not a one-off* — a suite is a living artifact owned by a team, with domain experts contributing tasks.
+- *Not only quality* — latency, cost and steps-to-completion are eval metrics too; log them on every trial.
+
+Graders are typed by trust level ([[Grader States (Heuristic, Calibrated, Experimental)]]) and can carry
+hard-fail items ([[Veto Rubric Items]]).
+
 ## See Also
 - [[Evals and Observability Interview Study Guide]] <!-- auto-linked -->
 - [[Harness Engineering]] <!-- auto-linked -->
-- [[Anthropic Three-Tier Eval Taxonomy]] — complements (tiers of eval scope; this page is the anatomy within a tier)
+- [[Anthropic Three-Tier Eval Taxonomy]] — related (tiers of eval scope; this page is the anatomy within a tier)
 - [[Eval Non-Determinism]] — extends (why one trial is not a measurement)
 - [[Eval Suite Maintenance]] — extends (keeping the suite honest over time)
-- [[Eval Maturity Ladder]] — complements (what infrastructure exists, stage by stage)
-- [[Verification Loops]] — complements (harness-under-test as generator/evaluator separation)
+- [[Eval Maturity Ladder]] — related (what infrastructure exists, stage by stage)
+- [[Verification Loops]] — related (harness-under-test as generator/evaluator separation)
 - [[Eval vs Test Distinction]] — prerequisite-for (which behaviors are eval-testable at all)
 - [[LLM-as-Judge Evaluation]] — instance-of (one of the three grader types)
+- [[Simulated User Evaluation]] — extends
+- [[Eval Contamination Defenses]] — extends

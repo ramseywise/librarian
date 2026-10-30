@@ -2,21 +2,31 @@
 title: Case Study Interview Study Guide
 tags: [interview, reference]
 summary: "Method guide for the case-study round in its live, take-home, and defense forms — the memorized eight-section template, baseline-first and number-anchored objectives, three ROI formulas to have cold, the assumptions-first take-home writeup, and the five-step response to a defense-round challenge."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--aie-track--one-hour-code-test.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--examples--aie-track--one-hour-code-test.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--aie-track--rag-pipeline-defense.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--examples--aie-track--rag-pipeline-defense.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--rag-pipeline-defense.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--aie-track--retail-support-automation.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--examples--aie-track--retail-support-automation.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--retail-support-automation.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--churn-prediction-takehome.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--case-study--examples--ml-track--churn-prediction-takehome.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--examples--ml-track--churn-prediction-takehome.md
+  - data/raw/repos/sisyphus/interviewing--rounds--case-study--take-home-field-data.md
 ---
 
 # Case Study Interview Study Guide
@@ -79,6 +89,8 @@ and FAQ, escalate to the large model only for multi-document synthesis."
 
 ## Take-home writeup
 
+What real AI-engineering take-homes ask for is covered in [[AI Engineering Take-Home Landscape]]. Mostly RAG and agents, 2–4 hours of work, followed by a defense round that often outweighs the code. The clearest signal there is that submissions without an eval harness on the AI outputs rarely get offers, so the "eval story" failure below is the costliest one.
+
 Budget ~20% of the time for it — graders spend minutes on your work, and the memo *is* the
 artifact. Order: **assumptions first** (they cannot penalize an assumption they didn't
 correct) → objective restated as a number → what you built and why → findings, honestly →
@@ -110,3 +122,4 @@ backpedaling with no reasoning (as weak as rigid defense).
 - [[AIE Code-Test Flaw Taxonomy]] — extends (the 1h code-test variant's defect list)
 - [[System Design Interview Study Guide]] — alternative-to (AIE/MLE loops run case content here)
 - [[Behavioral Interview Study Guide]] — extends (the "what went wrong" answer)
+- [[AI Engineering Take-Home Landscape]] — extends (field data: what take-homes ask for and how they are graded)

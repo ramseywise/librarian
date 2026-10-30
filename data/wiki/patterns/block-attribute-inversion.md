@@ -2,7 +2,7 @@
 title: Block Attribute Inversion
 tags: [llm, pattern]
 summary: Turning a list of unanswerable design questions into per-component metadata — when each architectural block ships with its own failure mode, scaling limit, and cost driver, the design's weak points are generated from the assembly rather than interrogated from a user who cannot answer.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-30-system-design-rigor-gap.md
 ---
@@ -104,7 +104,7 @@ giving up Z"* narration remains prose that no assembly generates.
 
 ## See Also
 - [[Scope-POC Design Interview]] — extends (the interview whose unasked questions this replaces)
-- [[Derived-and-Hidden Design Decisions]] — complements (what the topology/config split hid)
+- [[Derived-and-Hidden Design Decisions]] — related (what the topology/config split hid)
 - [[Asked vs Derived Scaffold Variables]] — related (the same derive-then-confirm asymmetry)
 - [[DESIGN.md Artifact]] — related (the artifact the blocks would render into)
 - [[System Design Interview Study Guide]] — prerequisite-for (the rubric the blocks were derived from)

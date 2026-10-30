@@ -1,22 +1,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { Node } from "@xyflow/react";
 import type { WikiNodeData } from "../types";
-
-const DOMAIN_COLORS: Record<string, string> = {
-  rag: "#2196F3",
-  langgraph: "#4CAF50",
-  adk: "#FF9800",
-  infra: "#607D8B",
-  patterns: "#E91E63",
-  eval: "#FFEB3B",
-  "deep-agents": "#3F51B5",
-  memory: "#00BCD4",
-  mcp: "#9C27B0",
-  meta: "#795548",
-  projects: "#009688",
-  foundations: "#7E57C2",
-  interview: "#FF5722",
-};
+import { domainColor } from "../theme/domains";
 
 const TYPE_BORDER: Record<string, string> = {
   concept: "solid",
@@ -30,19 +15,14 @@ const TYPE_BORDER: Record<string, string> = {
 export type WikiFlowNode = Node<WikiNodeData>;
 
 export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
-  const primaryDomain = data.domain[0] ?? "infra";
-  const color = DOMAIN_COLORS[primaryDomain] ?? "#607D8B";
+  const color = domainColor(data.domain[0]);
   const borderStyle = TYPE_BORDER[data.typeTag] ?? "solid";
 
   return (
     <div
+      className="wiki-node"
       style={{
-        background: "#1a1a1a",
         border: `2px ${borderStyle} ${color}`,
-        borderRadius: 8,
-        padding: "8px 12px",
-        minWidth: 160,
-        maxWidth: 200,
         boxShadow: data.highlighted
           ? `0 0 0 2px ${color}, 0 0 24px ${color}cc`
           : selected
@@ -50,23 +30,20 @@ export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
           : "none",
         opacity: data.dimmed && !selected ? 0.12 : 1,
         transform: data.highlighted ? "scale(1.5)" : "scale(1)",
-        transformOrigin: "center",
-        transition: "opacity 0.25s, box-shadow 0.2s, transform 0.2s",
-        cursor: "pointer",
-        position: "relative",
         zIndex: data.highlighted ? 10 : undefined,
       }}
       title={data.summary}
     >
       <Handle type="target" position={Position.Top} style={{ background: color }} />
-      <div style={{ fontSize: 10, color, fontWeight: 700, marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+      <div className="wiki-node-domain" style={{ color }}>
         {data.domain[0] ?? data.typeTag}
+        {data.private && <span className="private-badge private-badge--node" title="Local-only page (data/wiki/private/)">private</span>}
       </div>
-      <div style={{ fontSize: 13, color: "#e8e8e8", lineHeight: 1.35, fontWeight: 500 }}>
+      <div className="wiki-node-title">
         {data.title}
       </div>
       {data.summary && (
-        <div style={{ fontSize: 10, color: "#888", marginTop: 4, lineHeight: 1.3 }}>
+        <div className="wiki-node-summary">
           {data.summary.slice(0, 80)}{data.summary.length > 80 ? "…" : ""}
         </div>
       )}

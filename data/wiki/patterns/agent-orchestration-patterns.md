@@ -2,7 +2,7 @@
 title: Agent Orchestration Patterns
 tags: [llm, pattern, reference]
 summary: Four levels of agent logic structure — single prompt, single agent + tools, multi-step graph, multi-agent — ordered by control and complexity, with a decision shortcut and the governing rule to start simple and escalate only on demonstrated need.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/agent-orchestration.md
 ---
@@ -73,5 +73,5 @@ agentic complexity only when it demonstrably improves outcomes.
 - [[Agentic Workflow Patterns]] — related (composable workflow patterns from Anthropic)
 - [[AI Project Archetypes]] — extends (archetype constrains the plausible orchestration)
 - [[Project Discovery Conversation]] — prerequisite-for
-- [[Complexity Floor]] — constrains
-- [[Multi-Agent Reinforcement Learning]] — complements (the same coordination-cost wall reached from RL theory)
+- [[Complexity Floor]] — related (constrains)
+- [[Multi-Agent Reinforcement Learning]] — related (the same coordination-cost wall reached from RL theory)

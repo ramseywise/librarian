@@ -1,8 +1,8 @@
 ---
 title: "Rate-Limit Keying: Identity Over IP"
-tags: [infra, pattern, conflict]
+tags: [infra, pattern]
 summary: Rate-limit on the best per-person key each route already has (a signed visitor cookie), fall back to IP only where no key exists, and decide fail-open vs fail-closed per route — a blanket per-IP limit locks out the shared-NAT deployment it was meant to protect.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/research/2026-09-06-pii-gdpr-audit.md
   - data/raw/claude-docs/akira/docs/research/2026-09-03-dis43-anonymous-rate-limiting.md
@@ -166,7 +166,10 @@ added these build decisions:
   store's reachability (connection limits, statement timeouts) flips the limiter to
   always-allow for everyone, at peak load, which is exactly when it matters. The plan
   accepted that, because fail-closed would turn a limiter outage into an outage of every
-  gated route, and it applied fail-open to the email-link route too (see conflict entry).
+  gated route, and it applied fail-open to the email-link route too. That is the as-built
+  state. A later shared-store plan set the target. IP-keyed routes and the mail sender
+  fail **closed** on a store outage, and other routes stay fail-open. Per-route posture is
+  the rule; uniform fail-open was the first cut.
   Alerting on a sustained `degraded` rate was listed as follow-up work.
 - **Rate limits bound volume, not per-call harm.** On the email-link route, a single call
   with a third party's address created that person's auth account. Volume has nothing to do
@@ -214,6 +217,6 @@ raw headers and fails open) changed the order of the work:
 - [[Production Hardening Patterns]] — extends (the anonymous-route slice of hardening)
 - [[Named-Trigger Deferral]] — instance-of (parked with a measurable trigger once the shape was understood)
 - [[Data Clusters by Writer and Trust]] — related (why forgeable telemetry rows matter)
-- [[Input Guardrails Pipeline]] — complements
+- [[Input Guardrails Pipeline]] — related
 - [[Client-Error Reporting Seam Is an Anonymous Log Sink]] — related (the free-text sink that needs a payload cap)
 - [[Scan-Floor Guard Against Silent No-Op Checks]] — related (a shared fallback bucket is the limiter version of a check that silently keys nothing)

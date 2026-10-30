@@ -2,13 +2,14 @@
 title: Wiki Graph Engineering — Edge Quality Over Edge Count
 tags: [meta, rag, decision]
 summary: Why librarian's link graph under-connects, why the typed-relationship subgraph is the layer worth querying, and the design choices behind one-hop retrieval expansion.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/wiki/_relink_suggestions.md
   - data/wiki/_bridge_suggestions.md
   - data/raw/repos/librarian/.claude--docs--plans--2026-08-05-LIB-106-relinker-suggest-only.md
   - data/raw/repos/librarian/.claude--docs--plans--2026-08-04-LIB-110-restructure-shared-extraction.md
   - data/raw/repos/librarian/.claude--docs--plans--2026-08-05-typed-graph-retrieval.md
+  - data/raw/repos/librarian/CLAUDE.md
 ---
 
 # Wiki Graph Engineering — Edge Quality Over Edge Count
@@ -130,6 +131,33 @@ hit. Capped (default 5) to bound context cost.
 produces a weak neighbourhood — observed in testing: a spurious hit on
 `Claude Workflow System` for "prefix caching" dragged `SKILL.md Pattern` in with
 it. Expansion amplifies the ranker; it does not correct it.
+
+## Link-Type Normalization (2026-10-30)
+
+By late October the See Also sections carried a long tail of invented verbs
+(`complements`, `depends-on`, `implements`, `part-of`, `constrains`, `mitigates`, …)
+that the closed canonical regex silently dropped
+([[Closed-Vocabulary Parser Silently Drops Invented Types]]), plus ~35 links whose
+direction was written from the *source* page's point of view. One pass fixed both:
+
+- **Direction is now written down.** `- [[X]] — type` on page P describes *X relative
+  to P* ("X is a prerequisite for P", "X extends P"). CLAUDE.md states it next to the
+  type table, because the retrieval expansion and its reverse labels depend on it.
+  Source-perspective links were flipped: the source line became `related` and the
+  correctly-directed link was added on the target page.
+- **`related` joined the canonical set** as the weak, undirected type. Retrieval
+  expansion does not walk it. Verbs with no directional meaning became
+  `related (<verb>; note)`, so the nuance survives as prose without minting a type.
+- **Synonyms collapsed onto canonical types:** `depends-on`/`upgrade-from` →
+  `prerequisite-for`, `upgrade-path` → `extends`, `contrasts` → `alternative-to`,
+  `complements` → `related`. `implements` became `related` plus a reverse
+  `instance-of` on the implemented page.
+- **One definition.** `CANONICAL_LINK_TYPES` in `core/wiki_common.py` is the only list;
+  `TYPED_LINK_RE` is built from it and the backend parser imports it.
+
+After the pass: `extends` 2,025, `related` 1,631, `instance-of` 706,
+`prerequisite-for` 567, `alternative-to` 276, `contradicts` 8, `supersedes` 3. About
+20 prose bullets (descriptions after an em dash, not types) were left as they are.
 
 ## What Was Considered and Rejected
 

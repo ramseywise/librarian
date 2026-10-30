@@ -2,7 +2,7 @@
 title: Data Clusters by Writer and Trust
 tags: [patterns, infra, pattern]
 summary: Group tables by who writes them and what breaks if a row vanishes — "would deleting this row change what a user sees tomorrow?" — and never FK a measurement row to a product row that ages out.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-dis37-replay-corpus.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-dis37-replay-corpus.md
@@ -140,7 +140,7 @@ it against the generated database types:
   ([[Count the Violation, Not the Token]]).
 
 ## See Also
-- [[Artifact Is Not Evidence: Push and Probe]] — complements (how the cascade loss was found)
+- [[Artifact Is Not Evidence: Push and Probe]] — related (how the cascade loss was found)
 - [[Cached Derivation Without a Recompute Path]] — extends (a lifecycle column that is a stale cache of another column)
 - [[Append-Only Human Labels]] — instance-of (the interaction-cluster conventions applied to rater data)
 - [[Data Engineering Foundations]] — extends (append-only logs and lifecycle as schema design, not afterthought)
@@ -149,3 +149,4 @@ it against the generated database types:
 - [[Edit In Place by Diffing on the Natural Key]] — related (a cascade that makes reinsert-on-edit wipe user rows)
 - [[Count the Violation, Not the Token]] — related (per-cluster access modules follow this taxonomy)
 - [[Decision-ID Reservation Across Concurrent Plans]] — related (the same plan's ledger, also checked both ways)
+- [[Per-Column PII Verdicts: Keep, Remove, Move, Change]] — extends (classifying columns by PII level and fate)

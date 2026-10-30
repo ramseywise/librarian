@@ -2,7 +2,7 @@
 title: Scope-POC Design Interview
 tags: [llm, pattern]
 summary: A five-tier system-design interview that produces a DESIGN.md answering *what* to build — idempotent over its own output, ratifying rather than adopting inherited decisions, and treating "I don't know" as a recordable answer instead of a blocker.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/scope-poc/SKILL.md
   - data/raw/claude-docs/ai-project-template/docs/research/poc-system-design-interview.md
@@ -197,7 +197,7 @@ simulation in `/proto-design` (see [[Design Dry-Run Simulation]]).
 - [[Skill Pipeline Dryrun Testing]] — extends (asserts which questions this skill skips and which it must still ask)
 - [[Deployment Topology Ladder]] — extends (the "who uses this?" answer selects a topology)
 - [[Local-Only Deployment]] — instance-of (the topology a prototype-scoped POC records)
-- [[DESIGN.md Artifact]] — part-of (the artifact this interview produces)
+- [[DESIGN.md Artifact]] — related (part of; the artifact this interview produces)
 - [[Design-Before-Infrastructure Sequencing]] — prerequisite-for (why this is a separate skill)
 - [[Block Attribute Inversion]] — extends (per-block metadata instead of more Tier 4 questions)
 - [[Derived-and-Hidden Design Decisions]] — extends (the toggles this interview never surfaced)

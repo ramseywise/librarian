@@ -1,8 +1,8 @@
 ---
-imported_hash: 901eb5194679913f
+imported_hash: f4ecc2b88e623a93
 title: Examples — Project Deep-Dive
 summary: Worked answers demonstrating the frameworks from the study guide.
-order: 61
+order: 65
 kind: reading
 section: Project deep dive / Examples
 source: sisyphus/interviewing/rounds/project-deep-dive/examples/README.md

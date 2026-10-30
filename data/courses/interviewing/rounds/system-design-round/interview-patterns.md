@@ -1,8 +1,8 @@
 ---
-imported_hash: 637f37e07ccfa993
+imported_hash: b93ba6cc26bd897b
 title: System Design Interview Patterns
 summary: Thirteen more round patterns, staff-level.
-order: 71
+order: 76
 kind: reading
 section: System design round
 source: sisyphus/interviewing/rounds/system-design-round/interview-patterns.md

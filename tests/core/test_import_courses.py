@@ -200,7 +200,7 @@ def test_commit_hook_whitespace_fix_is_not_a_local_edit(tree: tuple[Path, Path])
     assert ic._recorded_hash(nxt.read_text()) == ic._hash(nxt.read_text())
 
 
-def test_programming_course_reads_sisyphus_drills(
+def test_drills_course_reads_sisyphus_drills(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     sisyphus = tmp_path / "sisyphus"
@@ -212,14 +212,14 @@ def test_programming_course_reads_sisyphus_drills(
     dest = tmp_path / "courses"
     monkeypatch.setattr(ic, "COURSES_DIR", dest)
 
-    plan = ic.build_plan(tmp_path / "lae", ["programming"], sisyphus)
-    ic.apply(plan, ["programming"], dry_run=False)
+    plan = ic.build_plan(tmp_path / "lae", ["drills"], sisyphus)
+    ic.apply(plan, ["drills"], dry_run=False)
 
     lessons = [p.relative_to(dest).as_posix() for p in dest.rglob("*.md")]
     assert not any("drill-log" in p for p in lessons)  # progress history, not a lesson
-    readme = (dest / "programming" / "sql" / "readme.md").read_text()  # not _module.md
+    readme = (dest / "drills" / "sql" / "readme.md").read_text()  # not _module.md
     assert "source: sisyphus/drills/sql/README.md" in readme
-    assert "source: sisyphus/drills" in (dest / "programming" / "_course.md").read_text()
+    assert "source: sisyphus/drills" in (dest / "drills" / "_course.md").read_text()
 
 
 def test_drill_frontmatter_becomes_drill_lesson(tree: tuple[Path, Path]) -> None:

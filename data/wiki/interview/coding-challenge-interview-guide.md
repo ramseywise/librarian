@@ -1,24 +1,39 @@
 ---
 title: Coding Challenge Interview Study Guide
 tags: [interview, reference]
-summary: "Method guide for the live coding round as AIE/MLE loops now run it — project-style and AI-engineering practicals in a no-network stdlib-only browser editor, the trap-shaped prompts graded on the critique rather than the code, a cold pattern set with a 25-minute self-test, and the security minimums that come up even outside an auth question."
-updated: 2026-10-17
+summary: "Method guide for the live coding round as AIE/MLE loops now run it — project-style and AI-engineering practicals in a no-network stdlib-only browser editor, the trap-shaped prompts graded on the critique rather than the code, a cold pattern set with a 25-minute self-test, the security minimums that come up even outside an auth question, plus three newer formats: multi-level implementation rounds, NumPy-from-scratch ML coding, and debug-then-design over an unfamiliar retrieval stack."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--code-from-heart.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--code-from-heart.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--README.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--auth-api-endpoint.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--auth-api-endpoint.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--study-guide.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--study-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--questions.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--sources.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--sources.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--debugging-dedup.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--debugging-dedup.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--lru-cache.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--lru-cache.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--retry-decorator.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--retry-decorator.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--rag-pipeline-offline.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--rag-pipeline-offline.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--sqlite-pipeline-scaling.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--sqlite-pipeline-scaling.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--transaction-aggregation.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--transaction-aggregation.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--coding-challenge--examples--workflow-orchestration.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--workflow-orchestration.md
+  - data/raw/repos/sisyphus/interviewing--rounds--coding-challenge--examples--property-search.md
 ---
 
 # Coding Challenge Interview Study Guide
@@ -34,6 +49,8 @@ checklist and SQL idioms see [[Programming Interview Study Guide]].
 | Debugging | 30–45 min | reproduce → bisect → root cause → fix → prevent |
 | Pair programming | 45–60 min | hint integration, communication |
 | AI-assisted | 30–45 min | prompt decomposition, output verification, knowing when not to trust |
+| Multi-level implementation | 45–90 min | whether the level-1 design absorbs later levels without a rewrite — [[Multi-Level Implementation Round]] |
+| ML coding (NumPy from scratch) | 30–45 min | implementing the maths, not the library call; shapes and numerical stability |
 
 DS versions skew SQL/pandas; FDE versions skew practical scripting under time pressure.
 
@@ -95,6 +112,48 @@ can't be revoked before expiry, session ids can — hence a short TTL plus refre
 fails silently" unprompted; one opaque error message for every failure path (returning
 "token expired" tells an attacker the signature was valid); rate-limiting login because a
 deliberately slow hash makes it a DoS target.
+
+## Debug-then-design over a retrieval stack
+
+A 60-minute format: an unfamiliar FastAPI + FAISS + sentence-transformers semantic search
+that runs, returns results and throws nothing, with two seeded ranking bugs, followed by a
+feature-design discussion. The interviewer's rubric weights the two bugs at 30% and 25%,
+design at 30%, communication at 15%.
+
+- **Count before reading code.** Run the documented query and compare the result count
+  with `max_results`; read the scores, not just the names. One bug was a `[1:]` slice on
+  the FAISS results — FAISS already returns best-first, so *any* slice of its output is
+  suspect, and this one silently dropped the best match.
+- **Work the formula by hand for a concrete input.** A "boost cheaper listings" factor
+  written as `1 − (discount × k)` goes negative for cheap items and *penalizes* exactly what
+  the docstring says it boosts. Compute it for a cheap and an expensive price, check the sign
+  against the docstring, fix the sign (not a clamp), and state the regression test.
+- **Design half: keep hard constraints out of the embedding.** Size and price are
+  structured filters (pre-filter, post-filter, or an index with metadata filtering), and
+  "at least 2000" vs "around 2000" is an intent-parsing question (`>=` vs a ±10% range).
+  For natural-language feature matching, compare NLP extraction (fast, free, deterministic,
+  debuggable; brittle to paraphrase and prone to false positives — "pool table" matching a
+  swimming pool, a verb "view" matching "city view") with LLM extraction (handles paraphrase;
+  latency, per-query cost, non-determinism, data leaving the boundary, needs a fallback).
+  The top-scored answer is a hybrid: LLM extraction into a fixed feature vocabulary, cached,
+  temperature 0 with structured output, and a deterministic fallback.
+- Pitfalls the rubric names: blaming the embedding model, stopping after one bug, "just use
+  an LLM" with no latency/cost/failure mode, putting numeric filters into the embedding text.
+
+## ML coding from scratch (NumPy)
+
+Implement the maths, not the library call; NumPy is usually allowed, sklearn and torch
+usually not — ask. Browser editors often preinstall NumPy, but check. The reported set and
+what each one actually grades:
+
+| Problem | Graded on | Pitfall |
+|---|---|---|
+| Stable softmax | subtract the row max (shift invariance makes it free); `axis=-1, keepdims=True`; mention log-softmax for cross-entropy | naive formula overflows on a logit of 1000; wrong axis on a batch |
+| Pairwise cosine | normalize rows once with an epsilon guard, then `A_n @ B_n.T`; ask about top-k (`argpartition`, ANN) instead of the full matrix | Python loop over pairs; divide-by-zero |
+| Debug an embeddings matcher | assert shapes at each boundary (`(1, d)` query vs `(N, d)` docs); normalize both sides; one matmul + `argmax` | fixing the shape bug but leaving raw dot product (magnitude bias) or the per-query loop; ask if query and index used the same model |
+| Logistic regression + SGD + L2 + early stopping | derive the BCE gradient `p − y`; shuffle per epoch; regularize weights not bias; restore best weights, not last | full-batch GD called "SGD"; early stopping on training loss; `exp` overflow |
+| K-means | vectorized (n, k) distance matrix, `argmin`, stop when assignments stop changing; reseed empty clusters; k-means++ and restarts | NaN centroid from an empty cluster; fixed-iteration stop only |
+| Self-attention forward | shapes at every step ((L, d) → (L, L) → (L, d_v)); √d_k scaling prevents softmax saturation; causal mask to −inf *before* softmax; multi-head splits d_model | column-wise softmax; masking after softmax; O(L²) unnamed |
 
 ## The debugging loop and narration
 
@@ -158,6 +217,8 @@ as inability to decompose.
 
 ## See Also
 - [[Programming Interview Study Guide]] — extends (DSA and SQL pattern half of the coding screen)
+- [[Multi-Level Implementation Round]] — extends (staged-build format)
+- [[ML Foundations Interview Study Guide]] — prerequisite-for (the maths behind the NumPy problems)
 - [[AIE Code-Test Flaw Taxonomy]] — alternative-to (the networked take-home version)
 - [[Graded Rehearsal Drill Harness]] — prerequisite-for (the coding-drill skill that rehearses these)
 - [[Code Review Interview Study Guide]] — extends

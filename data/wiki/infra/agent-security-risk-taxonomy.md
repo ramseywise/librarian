@@ -2,9 +2,10 @@
 title: Agent Security Risk Taxonomy
 tags: [infra, agents, reference]
 summary: "The sixteen agentic security risks grouped into five families — behavioral, security, operational resilience, multi-agent collusion, and human oversight — plus the architectural claim that mitigations belong in the component that owns the risk rather than in a central supervisory layer."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-guardrails.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agents-guardrails.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-guardrails.md
 ---
 
@@ -127,10 +128,10 @@ inherits every risk in this taxonomy, which is why deterministic checks are pref
 wherever the property being checked is mechanically decidable.
 
 ## See Also
-- [[Agent Deployment Anti-Patterns]] — complements (the engineering failures that create these risks)
-- [[Execution Boundaries and Guardrails]] — implements (the sandbox and permission mechanics for R6/R8)
-- [[Safeguards Architecture — Five Protection Layers]] — implements (a concrete distributed mitigation architecture)
-- [[Production Reliability Primitives]] — complements (the seven resilience properties, in production terms)
+- [[Agent Deployment Anti-Patterns]] — related (the engineering failures that create these risks)
+- [[Execution Boundaries and Guardrails]] — related (the sandbox and permission mechanics for R6/R8)
+- [[Safeguards Architecture — Five Protection Layers]] — related (a concrete distributed mitigation architecture)
+- [[Production Reliability Primitives]] — related (the seven resilience properties, in production terms)
 - [[Prompt Injection]] — prerequisite-for (the injection vector behind R2, R4, R12)
 - [[MCP Server Security Patterns]] — instance-of (this taxonomy applied to a tool protocol)
 - [[Principal Write-Surface Matrix]] — alternative-to (enumerate principals, not attacks)

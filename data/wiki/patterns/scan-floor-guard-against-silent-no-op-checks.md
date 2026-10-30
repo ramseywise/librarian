@@ -2,7 +2,7 @@
 title: Scan-Floor Guard Against Silent No-Op Checks
 tags: [patterns, infra, eval, pattern]
 summary: A check that walks files or rows and reports "clean" must refuse to pass when it scanned implausibly little — a check that cannot tell "clean" from "didn't run" is worse than no check.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-dis36-production-smoke.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-dis36-production-smoke.md
@@ -156,8 +156,8 @@ meant to find ([[Differential Parity Testing Against the Original]]).
 - [[One-Off Codemod, Permanent Gate]] — instance-of (three review rounds on a raw-hex gate)
 - [[Artifact Is Not Evidence: Push and Probe]] — extends (the probe-side version of the same blindness)
 - [[Silent Fallthrough in String-Keyed Discovery]] — extends (same defect class: no error signal, confident wrong result)
-- [[Verification Loops]] — part-of (a verifier that can vacuously pass is not a verifier)
-- [[Write-Only Fields and the Reader Map]] — complements (both are audits of what a check or a column actually reaches)
+- [[Verification Loops]] — related (part of; a verifier that can vacuously pass is not a verifier)
+- [[Write-Only Fields and the Reader Map]] — related (both are audits of what a check or a column actually reaches)
 - [[Landed Is Not Complete]] — instance-of (a conditional audit check over a population of zero, headlined VERIFIED)
 - [[An Unrun Scan Is Not a Clean Scan]] — alternative-to (absence emitted as a `question` finding rather than enforced as a floor)
 - [[Mutation Score Artifact from Zero-Test Runs]] — instance-of (mutants that ran zero tests read as Survived)

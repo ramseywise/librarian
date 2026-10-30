@@ -1,8 +1,8 @@
 ---
-imported_hash: 752ac63badf97381
+imported_hash: 79105f70c5234675
 title: Conventions & Tunables
 summary: Based on the real SANYI drill from the librarian wiki.
-order: 24
+order: 26
 kind: reading
 section: Code review round / Examples
 source: sisyphus/interviewing/rounds/code-review-round/examples/conventions.md

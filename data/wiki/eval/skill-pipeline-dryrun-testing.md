@@ -2,7 +2,7 @@
 title: Skill Pipeline Dryrun Testing
 tags: [eval, pattern]
 summary: Regression-testing a chain of conversational skills by simulating a user through fixed scenarios with unambiguous expected outcomes — asserting not only what the pipeline produces but which questions it correctly skips and which it must still ask.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/SKILL.md
   - data/raw/claude-docs/ai-project-template/skills/design-dryrun/reference/scenarios.md
@@ -121,5 +121,5 @@ that wasn't there before."*
 - [[Golden Set Mechanics]] — alternative-to (fixed cases for a deterministic pipeline rather than a model)
 - [[Eval-Driven Development (EDD)]] — instance-of (a regression harness gating skill edits)
 - [[Asked vs Derived Scaffold Variables]] — extends (stage 3 validates the hint→parameter mapping)
-- [[Conversational Test Fixture Design]] — part-of (how the three scenarios are authored)
+- [[Conversational Test Fixture Design]] — related (part of; how the three scenarios are authored)
 - [[Human-Participant Skill Test Protocol]] — alternative-to (real users rather than a simulated one)

@@ -1,8 +1,8 @@
 ---
-imported_hash: 58f9370da780b638
+imported_hash: 4cb0f18f3673d167
 title: 8 — Prompt Optimization
 summary: The proposer can be you, an LLM (APE, OPRO, meta-prompting), or a framework (DSPy, TextGrad).
-order: 21
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/08-prompt-optimization.md
@@ -44,6 +44,9 @@ Zhou et al. (2022) framed instruction-writing as black-box search:
 2. Each candidate is run on a **target model** and scored.
 3. Keep the best, optionally resample variants of it, and repeat.
 
+![APE pipeline](../assets/sources/images/APE.png)
+*Propose instructions from demonstrations, score each by the log-probability of the correct outputs, and resample near the winners. Zhou et al. (2022), via DAIR.*
+
 The famous result: APE found a better zero-shot CoT trigger than *"Let's think step by step"*. **"Let's work this out in a step by step way to be sure we have the right answer"** improved MultiArith and GSM8K.
 
 Related work, in the same spirit:
@@ -70,12 +73,18 @@ Solution structure:
   4. Final answer: \boxed{[answer]}
 ```
 
+![Structure meta-prompt for MATH](../assets/sources/images/techniques/meta-prompting.png)
+*Top: the structure meta-prompt. Bottom: example solutions that follow it. Zhang et al. (2024), via DAIR.*
+
 Compared with few-shot it's token-efficient, avoids anchoring on specific example content ([03](03-core-techniques.md#few-shot)), and behaves like zero-shot. It assumes the model already knows the domain, so it degrades on genuinely novel tasks.
 
 **2. Using a model to write prompts.** This is the common sense of the term in practice:
 - Ask a strong (often reasoning) model to draft a system prompt from a task description, or to **critique and rewrite** an existing one given failing cases.
 - Vendor tools do this: Anthropic's prompt generator and prompt improver, and OpenAI's playground optimizer.
 - The **evaluator–optimizer** pattern automates it: a judge scores outputs, writes feedback, and a meta-prompt turns that feedback into a revised prompt ([06](06-chaining-and-workflows.md#workflow-patterns-anthropics-taxonomy), [07](07-prompting-reasoning-models.md#where-reasoning-models-earn-their-cost)).
+
+![Evaluator-optimizer prompt loop](../assets/sources/images/reasoning-llms/llm_as_a_judge.JPG)
+*Each round, the judge's feedback goes to a meta-prompt that rewrites the system prompt, and the best version is logged. DAIR, Reasoning LLMs Guide.*
 
 Generated prompts are a **first draft, not a result** — they still have to win on your eval.
 
@@ -109,7 +118,7 @@ Before reaching for a framework:
 ## Go deeper
 
 - Papers (APE, OPRO, meta-prompting, DSPy, TextGrad, soft prompts): [references.md](../readme.md#prompt-optimization)
-- Book: [Ch 9](../sources/prompt-eng-for-llms/09-llm-workflows.md) (collecting task I/O for optimization)
+- Book: [Ch 9 PDF](../sources/prompt-eng-for-llms/reading/09-llm-workflows.pdf) (collecting task I/O for optimization)
 
 ---
 

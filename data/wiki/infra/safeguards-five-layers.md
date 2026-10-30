@@ -2,7 +2,7 @@
 title: Safeguards Architecture — Five Protection Layers
 tags: [infra, llm, pattern]
 summary: Five-layer runtime safety pipeline for production agents — input guardrails, routing confidence, retrieval quality (CRAG), post-generation grounding check, and escalation routing — each with distinct latency cost and failure mode.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/docs/support-agents/safeguards-architecture.md
@@ -10,6 +10,7 @@ sources:
   - data/raw/repos/playground/.claude--docs--support-agents--safeguards-architecture.md
   - data/raw/claude-docs/project-g/docs/support-agents/safeguards-architecture.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--system-design-round--examples--support-agent.md
+  - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--examples--support-agent.md
 ---
 
 # Safeguards Architecture — Five Protection Layers
@@ -139,13 +140,14 @@ Gaps: context caching (TS only), multi-language escalation (Python: 7 langs, TS:
 - [[Grounding Claim Methodology]] — extends (the eval-side semantic grounding)
 - [[HITL and Interrupt Patterns]] — alternative-to (Layer 5 escalation)
 - [[Streaming Output Scrubbing]] — extends (Layer 4 under token streaming)
-- [[Payload Security Defects at Canon]] — complements (defects in the shipped payload, not the runtime layers)
+- [[Payload Security Defects at Canon]] — related (defects in the shipped payload, not the runtime layers)
 - [[AIE Code-Test Flaw Taxonomy]] — instance-of (the hand-rolled subset of these layers, under a timebox)
 - [[Multi-Agent Context]] — extends (sub-agent isolation as a containment boundary for untrusted content)
-- [[Execution Boundaries and Guardrails]] — part-of (the five layers sit inside the harness's boundary layer)
+- [[Execution Boundaries and Guardrails]] — related (part of; the five layers sit inside the harness's boundary layer)
 - [[Canary Testing for Permission Boundaries]] — extends (testing that a deny rule actually fires)
-- [[Agent Security Risk Taxonomy]] — complements (the risk classes these layers mitigate, and why mitigation distributes)
+- [[Agent Security Risk Taxonomy]] — related (the risk classes these layers mitigate, and why mitigation distributes)
 - [[Score-Delta Retry Guard]] — prerequisite-for (the score delta guard in detail)
 - [[Prompted Reflection vs Graph-Gated CRAG]] — extends (in-flight reflection does not replace Layer 4 grounding)
 - [[Warranted vs Executed Escalation]] — extends (score-floor escalation enforcement and how escalation is graded)
 - [[System Design Interview Study Guide]] — instance-of (the support-agent worked example rehearses these layers)
+- [[The Augmentation Gate]] — instance-of (Layer 3, the retrieval quality gate)

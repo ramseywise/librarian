@@ -2,7 +2,7 @@
 title: Constitutional AI and RLAIF
 tags: [foundations, llm, eval, concept]
 summary: "Anthropic's two-phase replacement for human preference labels — critique-and-revise SL-CAI followed by RLAIF against a written constitution — plus what AI feedback provably matches and where it still underperforms humans."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--constitutional-ai.md
 ---
@@ -128,7 +128,8 @@ its own judgment has no external reference to drift *against*.
 
 ## See Also
 - [[RLHF Pipeline]] — extends (replaces the Stage 2 label source, leaves Stage 3 intact)
-- [[Bradley-Terry Preference Model]] — depends-on (the preference-model objective, unchanged)
-- [[Preference Optimization Algorithms]] — complements (generates preference data; any optimizer can consume it)
-- [[Reward Hacking and Overoptimization]] — complements (an explicit constitution makes the alignment target auditable)
+- [[Bradley-Terry Preference Model]] — prerequisite-for (the preference-model objective, unchanged)
+- [[Preference Optimization Algorithms]] — related (generates preference data; any optimizer can consume it)
+- [[Reward Hacking and Overoptimization]] — related (an explicit constitution makes the alignment target auditable)
 - [[LLM-as-Judge Evaluation]] — instance-of (a model judging model output, at training time rather than eval time)
+- [[Constitutional Classifiers]] — extends (a constitution used to train input and output classifiers rather than the policy)

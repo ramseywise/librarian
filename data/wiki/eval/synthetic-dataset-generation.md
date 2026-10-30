@@ -2,13 +2,14 @@
 title: Synthetic Dataset Generation for RAG Eval
 tags: [eval, rag, pattern]
 summary: Four-mode pipeline for generating and maintaining a versioned synthetic test dataset from a knowledge base — article fingerprinting drives incremental refresh, stable content-derived IDs make Langfuse upserts idempotent, and four query categories cover the full quality surface.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
   - data/raw/claude-docs/chat-agent/docs/eval/pipeline.md
   - data/raw/claude-docs/chat-agent/docs/plans/synthetic_dataset_generation.md
   - data/raw/claude-docs/chat-agent/docs/plans/aif32_code_review_fixes.md
   - data/raw/repos/datathon_mcp/.claude--docs--research--awo-welfare-data-harvester.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
 ---
 
 # Synthetic Dataset Generation for RAG Eval
@@ -224,6 +225,17 @@ A code review of the `eval/dataset/` pipeline surfaced one correctness bug and s
 
 ---
 
+## Generate along dimensions (course synthesis)
+
+Asking a model for "100 test questions" returns 100 variations of the same polite question. Instead:
+
+1. Pick 3–4 dimensions that matter (persona, intent, complexity, channel).
+2. Generate **tuples** of dimension values first (`frustrated × billing × ambiguous`) and check coverage.
+3. Turn each tuple into a natural-language query in a **separate** call.
+
+Guard against **self-preference**: if the generating model is also a candidate under test it finds its
+own phrasing easy — generate with a **different model family**, then read the rows.
+
 ## See Also
 - [[RAG Eval Metrics Suite]]
 - [[RAG Evaluation]]
@@ -235,3 +247,4 @@ A code review of the `eval/dataset/` pipeline surfaced one correctness bug and s
 - [[Consequence-Flagged KB Audit]] — extends (upstream audit that is the source of the financial_risk stratum and authoritative-article choices)
 - [[Answer Criteria with Named Wrong Answers]] — related (per-topic fail-if lists for the same bot)
 - [[Proxy Schema Overfits the Guess]] — extends (a synthetic source whose guessed fields hardened into required ones)
+- [[Diversity Seeding for Synthetic Data]] — extends (combinatorial, hierarchical and audience seeding; Promptagator query generation)

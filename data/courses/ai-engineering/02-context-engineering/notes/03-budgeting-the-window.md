@@ -1,8 +1,8 @@
 ---
-imported_hash: 6543a82067ae453c
+imported_hash: 9d4571b01cef9285
 title: 3 — Budgeting the Window
 summary: The upstream course calls this "the budget model".
-order: 7
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/03-budgeting-the-window.md

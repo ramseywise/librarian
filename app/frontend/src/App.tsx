@@ -1,24 +1,43 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, lazy, Suspense } from "react";
 import { WikiGraph } from "./components/WikiGraph";
 import { ChatPanel } from "./components/ChatPanel";
 import { NodeDetailPanel } from "./components/NodeDetailPanel";
-import { CoursesView } from "./components/courses/CoursesView";
-import { PracticeView } from "./components/courses/PracticeView";
+import { pageTitle, useDocumentTitle } from "./components/courses/useDocumentTitle";
 import { useChatStream } from "./hooks/useChatStream";
 import { useHashRoute } from "./hooks/useHashRoute";
 import type { SelectedNode } from "./types";
+import "./theme/tokens.css";
+import "./theme/components.css";
+
+/** Below this width the chat panel overlays the main area instead of sitting beside it.
+ *  Keep in sync with the 1099px media queries in theme/components.css. */
+const NARROW_QUERY = "(max-width: 1099px)";
+const isNarrow = () =>
+  typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(NARROW_QUERY).matches;
+
+// Courses and Practice pull in react-markdown + KaTeX; load them only when opened.
+const CoursesView = lazy(() =>
+  import("./components/courses/CoursesView").then((m) => ({ default: m.CoursesView }))
+);
+const PracticeView = lazy(() =>
+  import("./components/courses/PracticeView").then((m) => ({ default: m.PracticeView }))
+);
 
 export default function App() {
   const [highlightedPages, setHighlightedPages] = useState<Set<string>>(new Set());
   const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
-  const [chatOpen, setChatOpen] = useState(true);
+  // Open beside the graph on wide screens; on narrow ones it would cover the page on load.
+  const [chatOpen, setChatOpen] = useState(() => !isNarrow());
+  const chatToggleRef = useRef<HTMLButtonElement>(null);
   const [focusPage, setFocusPage] = useState<string | null>(null);
   const lastQueryRef = useRef("");
   const [route, navigate] = useHashRoute();
   const inPractice = route === "/practice";
   const inCourses = route === "/courses" || route.startsWith("/courses/") || inPractice;
   const courseRoute = route.replace(/^\/courses\/?/, "");
+  // Course views set their own titles; the graph's is set here.
+  useDocumentTitle(inCourses ? null : pageTitle("Graph"));
 
   const handleTagClick = useCallback((tag: string) => {
     setActiveTags((prev) => {
@@ -36,7 +55,7 @@ export default function App() {
     setHighlightedPages(new Set());
   }, []);
 
-  const { messages, streaming, sendQuery } = useChatStream(handleHighlight);
+  const { messages, streaming, sendQuery, stop, clear } = useChatStream(handleHighlight);
 
   const handleSend = useCallback(
     (query: string) => {
@@ -64,6 +83,10 @@ export default function App() {
     [navigate]
   );
 
+  // WikiGraph has fitted to the page and opened its panel; drop the request so a later
+  // visit to the graph doesn't re-centre on it.
+  const clearFocus = useCallback(() => setFocusPage(null), []);
+
   const openLesson = useCallback((lessonId: string) => navigate(`/courses/${lessonId}`), [navigate]);
 
   const askAbout = useCallback(
@@ -74,41 +97,96 @@ export default function App() {
     [handleSend]
   );
 
+  // On narrow screens the chat is a non-modal sheet over the right of the page (no
+  // backdrop; the page beside it stays usable), so it takes focus but does not trap it.
+  // Escape acts on whatever holds focus, so one press closes one thing:
+  // - capture phase: focus inside the chat → close the chat and stop the event, so a
+  //   popup elsewhere (graph menu) that happens to be open is left alone;
+  // - bubble phase on window (after every document listener, whatever their mount
+  //   order): close the chat unless an inner popup (lessons drawer, graph menu) already
+  //   handled the key with preventDefault().
+  // Beside the graph (wide screens) the chat is a persistent column; Escape leaves it.
+  const chatPanelRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!chatOpen) return;
+    if (isNarrow()) chatPanelRef.current?.querySelector<HTMLElement>("textarea, input")?.focus();
+    const close = () => {
+      setChatOpen(false);
+      chatToggleRef.current?.focus();
+    };
+    const onCapture = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || !isNarrow()) return;
+      if (!chatPanelRef.current?.contains(document.activeElement)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      close();
+    };
+    const onBubble = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || e.defaultPrevented || !isNarrow()) return;
+      close();
+    };
+    window.addEventListener("keydown", onCapture, true);
+    window.addEventListener("keydown", onBubble);
+    return () => {
+      window.removeEventListener("keydown", onCapture, true);
+      window.removeEventListener("keydown", onBubble);
+    };
+  }, [chatOpen]);
+
   return (
-    <div style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column" }}>
-      <header style={headerStyle}>
-        <span style={{ color: "#e0e0e0", fontWeight: 600, marginRight: 8 }}>Librarian</span>
-        <nav style={{ display: "flex", gap: 4 }}>
-          <button onClick={() => navigate("/")} style={tabStyle(!inCourses)}>Graph</button>
-          <button onClick={() => navigate("/courses")} style={tabStyle(inCourses && !inPractice)}>Courses</button>
-          <button onClick={() => navigate("/practice")} style={tabStyle(inPractice)}>Practice</button>
+    <div className="app">
+      <header className="app-header">
+        <span className="app-brand">Librarian</span>
+        <nav className="app-nav" aria-label="Sections">
+          <button onClick={() => navigate("/")} className="tab" aria-current={!inCourses ? "page" : undefined}>
+            Graph
+          </button>
+          <button
+            onClick={() => navigate("/courses")}
+            className="tab"
+            aria-current={inCourses && !inPractice ? "page" : undefined}
+          >
+            Courses
+          </button>
+          <button onClick={() => navigate("/practice")} className="tab" aria-current={inPractice ? "page" : undefined}>
+            Practice
+          </button>
         </nav>
-        <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+        <div className="app-header-actions">
           {!inCourses && highlightedPages.size > 0 && (
-            <button onClick={clearHighlights} style={clearBtnStyle}>
+            <button onClick={clearHighlights} className="pill-btn pill-btn--accent">
               ✕ {highlightedPages.size} highlighted
             </button>
           )}
-          <button onClick={() => setChatOpen((o) => !o)} style={toggleBtnStyle}>
+          <button
+            ref={chatToggleRef}
+            onClick={() => setChatOpen((o) => !o)}
+            className="pill-btn"
+            aria-expanded={chatOpen}
+            aria-controls="chat-panel"
+          >
             {chatOpen ? "Hide Chat" : "Agent Chat ↗"}
           </button>
         </div>
       </header>
 
-      <div style={{ flex: 1, overflow: "hidden", display: "flex" }}>
-        <div style={{ flex: 1, overflow: "hidden", position: "relative", minWidth: 0 }}>
+      <div className="app-body">
+        <main className="app-main">
           {inCourses && (
-            <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "#0f0f0f" }}>
-              {inPractice ? (
-                <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />
-              ) : (
-                <CoursesView route={courseRoute} navigate={navigate} onOpenConcept={openConcept} onAsk={askAbout} />
-              )}
+            <div className="app-course-layer">
+              <Suspense fallback={<div className="app-loading">Loading…</div>}>
+                {inPractice ? (
+                  <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />
+                ) : (
+                  <CoursesView route={courseRoute} navigate={navigate} onOpenConcept={openConcept} onAsk={askAbout} />
+                )}
+              </Suspense>
             </div>
           )}
 
           {/* Graph panel — stays mounted (and sized, so React Flow can measure) under courses. */}
-          <div style={{ position: "absolute", inset: 0, overflow: "hidden", visibility: inCourses ? "hidden" : "visible" }}>
+          <div className="app-graph-layer" style={{ visibility: inCourses ? "hidden" : "visible" }}>
+            <h1 className="sr-only">Wiki graph</h1>
             <WikiGraph
               highlightedPages={highlightedPages}
               onNodeSelect={setSelectedNode}
@@ -116,6 +194,7 @@ export default function App() {
               activeTags={activeTags}
               onActiveTagsChange={setActiveTags}
               focusPage={inCourses ? null : focusPage}
+              onFocusApplied={clearFocus}
             />
             {selectedNode && (
               <NodeDetailPanel
@@ -130,64 +209,23 @@ export default function App() {
               />
             )}
           </div>
-        </div>
+        </main>
 
-        {/* Chat panel */}
+        {/* Chat panel: a column beside the main area, or an overlay on narrow screens. */}
         {chatOpen && (
-          <div style={{ width: 360, borderLeft: "1px solid #222", flexShrink: 0, overflow: "hidden" }}>
+          <aside id="chat-panel" ref={chatPanelRef} className="app-chat" aria-label="Agent chat">
             <ChatPanel
               messages={messages}
               streaming={streaming}
               onSend={handleSend}
               onClearHighlights={clearHighlights}
+              onOpenPage={openConcept}
+              onStop={stop}
+              onClear={clear}
             />
-          </div>
+          </aside>
         )}
       </div>
     </div>
   );
 }
-
-const headerStyle: React.CSSProperties = {
-  height: 40,
-  background: "#111",
-  borderBottom: "1px solid #222",
-  display: "flex",
-  alignItems: "center",
-  padding: "0 16px",
-  fontSize: 13,
-  color: "#888",
-  flexShrink: 0,
-};
-
-const tabStyle = (active: boolean): React.CSSProperties => ({
-  background: active ? "#1f1f1f" : "transparent",
-  border: "1px solid",
-  borderColor: active ? "#333" : "transparent",
-  borderRadius: 6,
-  color: active ? "#e0e0e0" : "#777",
-  fontSize: 12,
-  padding: "3px 12px",
-  cursor: "pointer",
-  fontFamily: "inherit",
-});
-
-const clearBtnStyle: React.CSSProperties = {
-  background: "#2196F322",
-  border: "1px solid #2196F3",
-  borderRadius: 12,
-  color: "#2196F3",
-  fontSize: 11,
-  padding: "3px 10px",
-  cursor: "pointer",
-};
-
-const toggleBtnStyle: React.CSSProperties = {
-  background: "transparent",
-  border: "1px solid #333",
-  borderRadius: 12,
-  color: "#888",
-  fontSize: 11,
-  padding: "3px 10px",
-  cursor: "pointer",
-};

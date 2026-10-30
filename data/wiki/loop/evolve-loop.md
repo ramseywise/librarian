@@ -2,9 +2,10 @@
 title: Evolve Loop
 tags: [llm, agents, infra, pattern]
 summary: "A slow loop pointed at a fast one that rewrites files rather than weights — four edit targets, a 5–10 run cadence, and the anti-busywork rule that makes 'no change needed' a first-class success."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--evolve-loop.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--08-self-improving-loops.md
 ---
 
 # Evolve Loop
@@ -12,6 +13,13 @@ sources:
 The **practitioner-scale** version of capability level 4 in [[Loop Engineering]].
 [[Recursive Self-Improvement]] covers the frontier version. *Same shape, different altitude:
 here the thing being rewritten is a config file, not a model.*
+
+## Three Scales of One Shape
+
+Level 4 (trace → analysis → rewritten config) appears at three scales: **practitioner** (the
+loop's config files — this page), **research** (the training code or the search method itself —
+`autoresearch`, bilevel autoresearch) and **frontier** (the next model) — the latter two in
+[[Recursive Self-Improvement]].
 
 ## The Definition
 
@@ -47,7 +55,7 @@ The third input is why an evolve loop needs trace retention, not just metrics �
 | **SOP steps** | Mechanical procedure | Same manual correction, every run |
 
 **Worked example (a support triage loop).** An expensive trigger was waking the agent
-repeatedly to find no work. The evolve run wrote a JavaScript trigger script: fetch Intercom
+repeatedly to find no work. The evolve run wrote a small trigger script: fetch support-platform
 updates from the last 30 minutes, wake the agent only when real work exists. **No human
 designed that fix** — the slow loop read the logs, saw the empty wakeups, and rewrote its own
 trigger.
@@ -98,17 +106,36 @@ interrogate the frame.
 other loop does — start at rung 1 of the [[Loop Autonomy Ladder]] with a human approving each
 config rewrite, and climb only once **the diffs are boring**.
 
+## Verify Before You Learn
+
+The slow loop's input is only as good as its verdict on each run; a reflection on a run nobody
+verified is a guess that compounds once written into a prompt. Verify each run at outcome,
+process and quality layers with a structured verdict ([[Three-Layer Trajectory Verification]]),
+put each lesson in the smallest medium that holds it ([[Four Media for Agent Lessons]]), ship
+self-edits as candidates through a release gate ([[Self-Modification as a Release Process]]),
+and separate evidence collection from scheduled consolidation ([[Sleep Learning]]).
+
 ## Design Checklist
 
 - [ ] Is the evolve cadence tied to *runs* (5–10) rather than wall-clock time?
 - [ ] Does the evolve contract explicitly bless "no change needed" as success?
 - [ ] Is state pruned/expired as a maintained step, or does it just accumulate?
+- [ ] Is the evaluator outside the write scope of every loop being improved?
+- [ ] Is each run verified at three layers, with evidence per dimension rather than one score?
+- [ ] Is each lesson in the smallest medium that holds it (doc → Skill → code → weights)?
+- [ ] Does every self-edit land as a candidate with a change contract, failure replay and retention set before canary?
+- [ ] Are activation and adherence measured separately from update validity?
 - [ ] Are evolve diffs reviewed by a human, and **are they getting more boring over time**?
 - [ ] Who decides whether this loop should exist — and when do they revisit it?
 
 ## See Also
-- [[Loop Engineering]] — part-of
+- [[Loop Engineering]] — extends
 - [[Recursive Self-Improvement]] — extends
-- [[Loop Autonomy Ladder]] — depends-on
-- [[Iterative Harness Simplification]] — complements
-- [[Verification Loops]] — complements
+- [[Loop Autonomy Ladder]] — extends
+- [[Iterative Harness Simplification]] — extends
+- [[Verification Loops]] — extends
+- [[Three-Layer Trajectory Verification]] — extends
+- [[Four Media for Agent Lessons]] — extends
+- [[Self-Modification as a Release Process]] — extends
+- [[Sleep Learning]] — extends
+- [[Loop Scorekeeper]] — extends

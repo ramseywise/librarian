@@ -2,7 +2,7 @@
 title: Small-N Reporting Floor
 tags: [eval, pattern]
 summary: "A baseline report over human labels whose N is unknown at design time must never print a confident-looking rate from a small sample: every rate carries its N, buckets under 30 print raw counts only, totals under 100 get a fixed INSUFFICIENT-N banner (exit 0, it is a report, not a gate), and a before/after delta is computed only when both runs clear the same floor on the same population."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-21-dis357-qc-baseline-fixes.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-21-dis357-qc-baseline-fixes.md
@@ -49,6 +49,7 @@ reviewer can see why each fix was made.
 
 ## See Also
 - [[Binary Gate Sample Power]] — extends (what N can detect; this is how to print what N measured)
-- [[Single-Call LLM Gate Weakness Audit]] — part-of (the baseline step of that audit)
+- [[Single-Call LLM Gate Weakness Audit]] — related (part of; the baseline step of that audit)
 - [[Measurement Fix Mistaken for Model Gain]] — related (deltas across changed populations)
 - [[UNGATED Metric Convention]] — related
+- [[Eval Error Bars and Sample Size]] — extends

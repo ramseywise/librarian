@@ -2,7 +2,7 @@
 title: Four-Stage Design Pipeline with Backflow
 tags: [meta, llm, pattern]
 summary: A design-of-record pipeline in four stages (initiative → product → system → roadmap) that re-enters at the earliest stale stage, detects staleness from a backflow digest of decisions added downstream, starts with a tree-first build-state audit, and treats phases as hypotheses with failure branches.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-system/SKILL.md
   - data/raw/claude-docs/playground/skills/design-product/SKILL.md
@@ -94,10 +94,10 @@ risk, not a foundation; an initiative without a failure branch has assumed its t
 - [[Three-Doc Spec Split]] — related (where the stages' outputs land)
 - [[Decision-ID Reservation Across Concurrent Plans]] — related (the registry-owns-IDs rule)
 - [[Named-Trigger Deferral]] — related (DEFERRED — <trigger> disposition)
-- [[Q0–Q5 Quality Ladder]] — part-of (the product stage's quality plan)
-- [[Principal Write-Surface Matrix]] — part-of (system stage trust plate)
-- [[Four-Source Provenance Contract]] — part-of (system stage provenance plate)
-- [[Budget Without a Meter Is a Preference]] — part-of (product stage budget rule)
+- [[Q0–Q5 Quality Ladder]] — related (part of; the product stage's quality plan)
+- [[Principal Write-Surface Matrix]] — related (part of; system stage trust plate)
+- [[Four-Source Provenance Contract]] — related (part of; system stage provenance plate)
+- [[Budget Without a Meter Is a Preference]] — related (part of; product stage budget rule)
 - [[Design Decisions Migrate Into Plans]] — extends (why one-shot design output goes inert; the evidence for backflow)
 - [[Confirm vs Decide Decision Packet]] — related (the exec-facing format for open questions)
 - [[Fix the Generator, Not the Generated Record]] — extends (review findings on a generated design record are sorted by where the fix belongs)

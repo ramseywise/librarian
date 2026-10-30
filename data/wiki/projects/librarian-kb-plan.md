@@ -1,8 +1,8 @@
 ---
 title: Librarian KB — Build Plan
 tags: [llm, infra, mcp, langgraph, rag, project]
-summary: Phased build plan for the Librarian KB — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phases 9–15 future.
-updated: 2026-10-17
+summary: Phased build plan for the Librarian KB — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phase 9 MCP server shipped with hybrid and typed-edge search; as of 2026-10 the repo also carries a Courses/Practice UI, a code index and a compaction ritual.
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/obsidian-kb-plan.md
   - data/raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
@@ -11,6 +11,8 @@ sources:
   - data/raw/repos/librarian/CLAUDE.md
   - data/raw/repos/librarian/.claude--skills--seed-kb--SKILL.md
   - data/raw/repos/librarian/.claude--skills--adk-context--SKILL.md
+  - data/raw/repos/librarian/.claude--skills--ingest--SKILL.md
+  - data/raw/repos/librarian/.claude--docs--plans--2026-10-28-chat-agent-improvements.md
 ---
 
 # Librarian KB — Build Plan
@@ -72,7 +74,7 @@ Personal + work sources in scope. All claude.ai MCP integrations available witho
 
 **Pending:**
 - Google Drive (ongoing): search for additional shared AI/agent decks → `raw/gdrive/`
-- Notion (personal): `ramsey.wise@gmail.com` account — researcher PDF notes, personal agent design notes
+- Notion (personal account) — researcher PDF notes, personal agent design notes
 - Guru (work KB): company knowledge base articles relevant to agent stack
 - PDFs: `scripts/ingest_pdf.py` reads from `DROPBOX_PDF_PATH`
 
@@ -100,11 +102,34 @@ Personal + work sources in scope. All claude.ai MCP integrations available witho
 - HITL diff preview modal before write
 - `watchfiles` detects change → WebSocket refreshes graph
 
-### ⬜ Phase 9 — MCP Server
+### ✅ Phase 9 — MCP Server (status per README, 2026-10)
+Shipped as `app/mcp_server/server.py` and pre-configured in `.claude/settings.json`.
+Tools: `search_wiki(query, domain, limit, expand)`, `read_page`, `list_domain`,
+`list_pages`, `get_domain_briefing`. `search_wiki` blends FTS, sentence-transformer
+similarity and inbound backlink count, falling back to FTS-only without embeddings;
+`domain` matches a directory or a domain tag. `expand=True` walks only *typed*
+`prerequisite-for` / `extends` edges one hop out — untyped links (~24 per page) would
+flood the context window (see [[Wiki Graph Engineering — Edge Quality Over Edge Count]]). Every search and read is logged
+to `logs/retrieval.jsonl`, which feeds compaction. The original plan items below are kept
+for history.
 - `mcp_server/server.py` (FastMCP): `search_wiki`, `read_page`, `list_pages` tools
 - Add to Claude Code MCP config in `.claude/settings.json`
 - DuckDB FTS index over `wiki/` for `search_wiki`
 - Expose to playground agents — inject wiki context into ADK/LangGraph builds
+
+### Additions outside the phase plan (2026-07 → 2026-10)
+- **Code index** — `tools/codemap/`, a tree-sitter index of symbols and import edges over
+  source repos, exposed as MCP tools beside the wiki tools.
+- **Compaction** — `/compact-wiki`, run by hand about monthly: merge, retire (tombstone)
+  or compress, driven by age, size, similarity and retrieval telemetry; dry-run first.
+- **Courses and Practice tabs** — `data/courses/` (authored, not compiled) served by the
+  graph UI; drills import as `kind: drill` and attempt counts are read live from a
+  personal drill log at request time, never written into this public repo.
+- **Chat agent hardening (2026-10-28)** — multi-turn text history, computed grounding,
+  answer telemetry and an answer eval; see [[Librarian Graph Explorer]].
+- **Ingest skill** — full-pipeline `/ingest` with no args pulls Notion and Drive via MCP,
+  scrapes local sources, and compiles every changed file; `/ingest resolve` walks the
+  conflict file.
 
 ### ⬜ Phase 10 — Output Connectors
 - `scripts/export_to_linear.py` — wiki action item → Linear ticket via MCP

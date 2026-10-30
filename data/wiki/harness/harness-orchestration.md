@@ -1,10 +1,11 @@
 ---
 title: Harness Orchestration
 tags: [llm, agents, infra, concept]
-summary: "Subagents are a context management technique before they are an architecture — isolate as a firewall, define the task graph before parallelizing, and treat the four multi-agent failure modes as harness bugs."
-updated: 2026-08-04
+summary: "Subagents are a context management technique before they are an architecture — isolate as a firewall, define the task graph before parallelizing, and treat the four multi-agent failure modes as harness bugs; label sources and synthesize before delegating."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--07-orchestration.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--07-orchestration.md
 ---
 
 # Harness Orchestration
@@ -30,6 +31,10 @@ are the key to maintaining coherency across many sessions."*
 The settled default:
 
 > **Orchestrator holds the plan; subagents hold the details.**
+
+Isolation is also the **most expensive** context lever — tokens multiply and cross-agent
+context is lost — so reach for it when a genuine context or trust boundary exists, not for
+tidiness.
 
 ## Protocols Precede Collaboration
 
@@ -159,6 +164,22 @@ What crosses a boundary is the whole design:
   carries paths. See [[Long-Horizon Execution]].
 - **Declare what was *not* done.** Scoped claims prevent the orchestrator from assuming
   coverage that doesn't exist.
+- **Label every source in the subagent's prompt.** A role statement, then inputs tagged by
+  origin (`[FROM_MAIN_AGENT]`, `[FROM_USER]`, `[TOOL_RESULT]`), then explicit boundaries, then
+  a JSON output schema. A subagent that can't tell instructions from data will follow
+  injected text.
+- **Synthesize, don't delegate understanding.** "Based on your findings, fix the auth bug"
+  pushes the orchestrator's job onto the worker. The orchestrator reads the findings and
+  hands down a precise spec — file, line, change, and what done looks like.
+
+### Collaboration primitives
+
+Multi-agent tooling reduces to a few primitives — `spawn`, `cancel`, `send_message`,
+`list_agents` — each run in one of four modes: **sync** (wait for the result), **async**
+(task ID now, event later), **streaming** (partial results), or **multi-turn** (a
+conversation with the worker). Choose per task: a 30-minute research job should never be a
+sync call. Async workers need the parent to be an event loop that consumes results at safe
+points — see [[Asynchronous Agent Event Loop]].
 
 ## When *Not* to Go Multi-Agent
 
@@ -179,9 +200,13 @@ two-agent supervisor → multi-agent with a shared harness layer.**
 - [[Loop Detection and the Two-Retry Rule]] <!-- auto-linked -->
 - [[Multi-Agent Context]] <!-- auto-linked -->
 - [[Multi-Agent Role Specialization]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
-- [[Harness Anatomy]] — part-of
-- [[Long-Horizon Execution]] — complements
-- [[Verification Loops]] — complements
-- [[Context Engineering]] — depends-on
-- [[Execution Boundaries and Guardrails]] — depends-on
+- [[Harness Engineering]] — related (part of)
+- [[Harness Anatomy]] — related (part of)
+- [[Long-Horizon Execution]] — related
+- [[Verification Loops]] — related
+- [[Context Engineering]] — prerequisite-for
+- [[Execution Boundaries and Guardrails]] — prerequisite-for
+- [[Asynchronous Agent Event Loop]] — extends (async workers and interrupts)
+- [[Deep Agent Pillars]] — instance-of (subagent delegation as one pillar)
+- [[Harness Subsystem Attribution]] — extends
+- [[File-Disjoint Agent Waves in One Working Tree]] — instance-of

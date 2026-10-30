@@ -2,7 +2,7 @@
 title: Input Guardrails Pipeline
 tags: [llm, concept, pattern]
 summary: 7-stage deterministic safety pipeline (normalise → size check → domain classify → injection detect → PII redact → XML envelope → advisory) that runs before every LLM call — LLM-free by design.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md
 ---
@@ -13,7 +13,7 @@ sources:
 
 Guardrails must be **deterministic and LLM-free**. They run before any LLM call. An LLM-based guardrail can be bypassed by the same injection techniques it is defending against.
 
-> ⚠️ **Contested.** [[Prompt Injection]] cites OWASP guidance that a purpose-trained guardrail model is a legitimate *additional* layer — on the grounds that stage 4's pattern matching provably misses indirect injection in untrusted content. See `_conflicts.md`.
+That rule governs *this pipeline*, the baseline every request crosses. It does not forbid a model-based screen as an extra layer. A purpose-trained classifier (Llama Guard, Prompt Guard and similar) has a different attack surface from the primary model, and catches indirect injection in retrieved or fetched content that stage 4's pattern matching misses. Add one on high-risk paths (tool calls, external-content ingestion) *alongside* these stages, never in place of one. See [[Prompt Injection]].
 
 ## The 7-Stage Pipeline
 

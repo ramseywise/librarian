@@ -2,8 +2,9 @@
 title: Tool Design as Context Engineering
 tags: [mcp, llm, agents, concept]
 summary: Tools consume context twice — definitions sit in the window permanently, results enter per call — so token-efficient results, unambiguous boundaries, and terse routing descriptions are context decisions, not API aesthetics.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
+  - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--10-tools-and-multi-agent.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
   - data/raw/repos/datathon_mcp/CLAUDE.md
 ---
@@ -89,9 +90,10 @@ description: Use when deploying to production or rolling back.
 Negative examples reduce misfires: *"Don't call this when…"* plus what to do instead.
 
 ## See Also
-- [[Context Engineering]] — part-of
-- [[Multi-Agent Context]] — complements
-- [[MCP Protocol]] — implements
-- [[Context Retrieval Strategies]] — depends-on
-- [[Tool Design as Harness Surface]] — complements (same tools seen as a harness contract rather than a context cost)
+- [[Context Engineering]] — related (part of)
+- [[Multi-Agent Context]] — related
+- [[MCP Protocol]] — related
+- [[Context Retrieval Strategies]] — prerequisite-for
+- [[Tool Design as Harness Surface]] — related (same tools seen as a harness contract rather than a context cost)
 - [[Curl-Bridge Context Injection]] — alternative-to (instructions to curl instead of tool definitions)
+- [[Dynamic Tool Discovery]] — extends

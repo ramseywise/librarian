@@ -2,7 +2,7 @@
 title: A Fake That Conforms to a Broken Seam
 tags: [eval, pattern]
 summary: Test doubles that match a port exactly will faithfully reproduce the port's defects — a prototype threw away every rendered image because the LLM port had no images parameter and 300 green tests used fakes shaped to that port — so conformance needs one shared full-signature fake per port, a contract test on the real adapter's wire shape, and caller-side identity assertions.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/skills/review-testing/SKILL.md
   - data/raw/claude-docs/galactus/skills/proto-harden/SKILL.md
@@ -62,7 +62,7 @@ compounds: 90% per turn survives a 10-turn conversation only about a third of th
 - [[Differential Parity Testing Against the Original]] — alternative-to (pin behaviour against a reference rather than a fake)
 - [[TDD as Coding-Agent Harness]] — extends (green suites that certify the wrong thing)
 - [[Hydration Gap Silent Input Loss]] — instance-of (another input dropped silently between layers)
-- [[Prototype Hardening Pass]] — part-of
+- [[Prototype Hardening Pass]] — related (part of)
 - [[Mocked-Away Body Hides the Defect]] — related (the patch replaces the unit itself, so its broken body never runs)
 - [[Tested Decision, Untested Expression]] — extends (an invented HTML fixture would have agreed with the broken anchors)
 - [[The Eval Harness Has Its Own Adapter]] — related (a harness-side adapter drifted from production)

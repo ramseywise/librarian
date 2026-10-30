@@ -1,8 +1,8 @@
 ---
-imported_hash: 19733433f99e7324
+imported_hash: d018175159cd941b
 title: 'Worked Example: Bad News Delivery'
 summary: ''
-order: 46
+order: 49
 kind: reading
 section: Customer simulation / Examples
 source: sisyphus/interviewing/rounds/customer-simulation/examples/bad-news-delivery.md

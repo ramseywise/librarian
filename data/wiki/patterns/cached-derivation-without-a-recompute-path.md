@@ -2,7 +2,7 @@
 title: Cached Derivation Without a Recompute Path
 tags: [patterns, infra, pattern]
 summary: A column that stores a function of another column with no code path to recompute it becomes a false fact the moment its input changes — and the trap is invisible because the stored value still looks authoritative.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-09-catalogue-source-scaling-legality.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-09-catalogue-source-scaling-legality.md
@@ -104,8 +104,8 @@ to inputs, must invalidate the cache.
 
 ## See Also
 - [[Data Clusters by Writer and Trust]] — extends
-- [[Write-Only Fields and the Reader Map]] — complements (the reader-side audit that finds these)
+- [[Write-Only Fields and the Reader Map]] — related (the reader-side audit that finds these)
 - [[Silent Fallthrough in String-Keyed Discovery]] — related (a reader keyed to a value that quietly stopped being written)
-- [[Hide-Unknown Display Contract]] — complements (display labels resolver-derived at read time, never stored)
+- [[Hide-Unknown Display Contract]] — related (display labels resolver-derived at read time, never stored)
 - [[Batch Path Through the Synchronous Chain]] — related (the sentinel-hash fix for null cache keys)
 - [[Per-Row Content Hash Misses Cross-Row State]] — extends (incremental indexes must recompute derivations that depend on other rows)

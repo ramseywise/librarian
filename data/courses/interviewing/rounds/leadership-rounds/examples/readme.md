@@ -1,8 +1,8 @@
 ---
-imported_hash: b585aac1b8f5705f
+imported_hash: dfe2b9b3aa1a4bf1
 title: Leadership Round Worked Examples
 summary: Three worked examples covering the most common high-stakes moments in leadership rounds.
-order: 53
+order: 56
 kind: reading
 section: Leadership rounds / Examples
 source: sisyphus/interviewing/rounds/leadership-rounds/examples/README.md

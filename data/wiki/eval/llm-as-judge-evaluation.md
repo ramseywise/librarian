@@ -2,7 +2,7 @@
 title: LLM-as-Judge Evaluation
 tags: [eval, llm, pattern]
 summary: A separate LLM scoring outputs against a rubric — the approach for subjective quality where exact matching fails, requiring calibration against human grades and recommended as a complement to golden-set grading rather than a replacement.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/claude-docs/akira/docs/research/2026-09-03-divergence-since-waslosheute-mvp.md
@@ -16,6 +16,7 @@ sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-26-venue-dataset-review-findings.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-26-venue-dataset-review-findings.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-26-venue-dataset-review-findings.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
 ---
 
 # LLM-as-Judge Evaluation
@@ -97,17 +98,33 @@ written until one judge is calibrated against a human-anchored set** (see
 [[Human Agreement Ceiling Protocol]]). Before then, judge pass rates across models are
 not comparable, and quoting one as quality is meaningless.
 
+## Calibration and bias (course synthesis, 2026-10)
+
+The 06-eval course treats a judge as a classifier to be measured: 100–200 human labels split
+train/dev/test, TPR and TNR on the held-out split, and a bias-corrected pass rate — see
+[[Judge Calibration (TPR, TNR and Corrected Pass Rate)]]. Known judge biases (position, verbosity,
+self-preference) and their mitigations are on [[LLM Judge Biases]]. Under that procedure a judge in the
+`calibrated` state may gate a release at its calibrated threshold.
+
+The two bars apply at different stages. The 5–10-sample calibration above is a
+**discovery-stage smoke test** for a rubric, and a judge at that stage is a regression
+detector only. Before a judge may gate a release it needs the full procedure: 100–200 human
+labels, TPR/TNR on a held-out split, and a human inter-rater agreement measured high enough
+that the judge's agreement means something ([[Human Agreement Ceiling Protocol]]). Where
+that ceiling is low — as in the product above — the judge stays ungated whatever its
+calibration says.
+
 ## See Also
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
-- [[Eval Ladder]] — part-of (rung 3)
-- [[Golden Set Mechanics]] — complements (heuristic in CI, judge on demand)
+- [[Eval Ladder]] — related (part of; rung 3)
+- [[Golden Set Mechanics]] — related (heuristic in CI, judge on demand)
 - [[LLM Grader Calibration Insights]] — extends (calibration failure modes)
 - [[Manual Review as Eval Bootstrap]] — prerequisite-for (human grades calibrate the judge)
-- [[Eval Maturity Ladder]] — part-of (one of four layered grader types; source of the three judge biases)
+- [[Eval Maturity Ladder]] — related (part of; one of four layered grader types; source of the three judge biases)
 - [[Online Eval Sampling]] — extends (the judge as layer 2 over production traces)
-- [[Eval Harness Anatomy]] — part-of (one of the three grader types under the simplest-reliable rule)
+- [[Eval Harness Anatomy]] — related (part of; one of the three grader types under the simplest-reliable rule)
 - [[Constitutional AI and RLAIF]] — instance-of (the same judge primitive used to generate training labels)
-- [[Bradley-Terry Preference Model]] — complements (pairwise comparison formalized as a scalar)
+- [[Bradley-Terry Preference Model]] — related (pairwise comparison formalized as a scalar)
 - [[Append-Only Human Labels]] — prerequisite-for (human labels set the judge trust ceiling)
 - [[Human Agreement Ceiling Protocol]] — prerequisite-for (κ_judge ≥ 0.8 × κ_HH, not an absolute target)
 - [[Synthesize the Cheap Half]] — related (gold-set calibration, closed-loop and stratum-bias rules for synthesized labels)
@@ -118,3 +135,6 @@ not comparable, and quoting one as quality is meaningless.
 - [[Closed Judge Vocabulary, Tolerant Parse]] — related (closing a judge's free-text issue list without brittle enum parsing)
 - [[Demote Judge Findings to Keyless Gates]] — extends (regex-catchable findings leave the judge for a keyless 1.0 gate; missing-verdict re-ask; calibration floor)
 - [[Judge Sees the Drafter's Facts]] — extends (reference facts so restating a given score is not scored ungrounded)
+- [[Grader States (Heuristic, Calibrated, Experimental)]] — extends
+- [[SOMA Judge Rubric]] — extends (specific, ordinal, multi-aspect rubric; never reveal self-grading)
+- [[Verification Loops]] — instance-of

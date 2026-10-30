@@ -2,7 +2,7 @@
 title: Spend Gate Before the Model Call
 tags: [llm, infra, pattern]
 summary: A pure, deterministic gate that decides whether a model call is worth making before a token is spent — skip on an unchanged input hash (which includes the prompt and vocabulary versions), skip when the evidence is too thin to support an answer, write a rules-only row for what deterministic mapping can already say — with every outcome counted so the cost of a run is one number.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/kiez/docs/enrichment.md
   - data/raw/claude-docs/kiez/docs/env.md
@@ -191,3 +191,4 @@ and why not, the verdict (enrich or skip), and the **exact model request** it wo
 - [[Budget Without a Meter Is a Preference]] — related (the meter that tells you a gate saved money)
 - [[Model Gateway Is Transport, Call Site Owns Meaning]] — related (why the gate is not inside the gateway)
 - [[A Capped Run Is Not a Clean Run]] — extends (the run-level signal when the gate starts refusing)
+- [[Completion Trigger Gate]] — alternative-to (the interactive version: debounce, parser suppression and an acceptance predictor before an inline-completion call)

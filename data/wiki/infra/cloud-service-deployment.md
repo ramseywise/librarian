@@ -2,7 +2,7 @@
 title: Cloud Service Deployment
 tags: [infra, pattern]
 summary: A long-running 24/7 hosted service — the same container as single-service plus monitoring, health checks, and env management, chosen when the system must be available without anyone starting it.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
 ---
@@ -67,9 +67,9 @@ expectation, however informal — which is a volunteer-team liability that the d
 understates.
 
 ## See Also
-- [[Deployment Topology Ladder]] — part-of
+- [[Deployment Topology Ladder]] — related (part of)
 - [[Single Service Deployment]] — prerequisite-for (same container, added ops)
 - [[Serverless Deployment]] — alternative-to (chosen on traffic shape, not audience)
-- [[Split Service Deployment]] — upgrade-path (when external users need auth)
+- [[Split Service Deployment]] — extends (when external users need auth)
 - [[Production Hardening Patterns]] — extends (what 24/7 availability actually requires)
-- [[Observability and Runtime Patterns]] — complements (the monitoring this rung introduces)
+- [[Observability and Runtime Patterns]] — related (the monitoring this rung introduces)

@@ -10,12 +10,25 @@ from __future__ import annotations
 import re
 
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
+# `- [[X]] — type` describes X relative to the page it is written on: "X is a
+# prerequisite for this page", "X extends this page". `related` is the weak,
+# undirected type: a real edge, but not one retrieval expansion walks.
 CANONICAL_LINK_TYPES = frozenset(
-    {"extends", "prerequisite-for", "alternative-to", "instance-of", "contradicts", "supersedes"}
+    {
+        "extends",
+        "prerequisite-for",
+        "alternative-to",
+        "instance-of",
+        "contradicts",
+        "supersedes",
+        "related",
+    }
 )
+# Built from the set so the two cannot drift; the lookahead stops `related` from
+# matching the start of a longer token.
 TYPED_LINK_RE = re.compile(
     r"-\s*\[\[([^\]]+)\]\]\s*—\s*"
-    r"(extends|prerequisite-for|alternative-to|instance-of|contradicts|supersedes)"
+    r"(" + "|".join(sorted(CANONICAL_LINK_TYPES)) + r")(?![\w-])"
 )
 # Open type capture — matches the same anchored syntax with *any* type token, so
 # annotations whose type is not canonical can be censused instead of silently

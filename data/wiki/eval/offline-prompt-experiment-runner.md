@@ -1,8 +1,8 @@
 ---
 title: Offline Prompt Experiment Runner
-tags: [eval, prompting, pattern, conflict]
+tags: [eval, prompting, pattern]
 summary: "Try a prompt change on a frozen, stratified sample of real rows before shipping it: keep a typed variant registry of same-shaped template functions with production auto-registered as control, call the model gateway and the pure pipeline directly with the write-back half removed, prove it is read-only with a client Proxy that throws on any write, and resume from append-only JSONL that tolerates (and self-heals) a truncated final line."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-dis272-enrichment-prompt-experiments.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-15-dis272-enrichment-prompt-experiments.md
@@ -45,8 +45,8 @@ second one.
 - **A human-bumped version plus an automatic hash backstop.** `PROMPT_VERSION` is bumped by
   hand when the production prompt text changes on purpose. It is deliberately a separate
   axis from the output-contract version. The hash catches the case where someone forgets
-  to bump it. A golden-hash test pins the per-vertical hashes, so prompt drift without a
-  bump fails CI.
+  to bump it. A golden-hash test pins the per-vertical hashes, so prompt drift shows up in
+  review. It does not *enforce* the bump (see below).
 - **Computed once, at the shared entry point.** The default identity is computed in the
   single function both the sync and batch paths already call. Neither caller changed. This
   was a lesson learned on an earlier content-hash extraction, applied up front this time.
@@ -127,13 +127,14 @@ corrupt non-final line. Both defects came from the orchestrator's own reading, n
 reporter. **A recovery path that rewrites the thing it recovers has to be at least as
 crash-safe as the write it repairs.**
 
-### Does the golden-hash test enforce the version bump? (flagged)
+### The golden-hash test does not enforce the version bump
 
-The section above says prompt drift without a bump fails CI. The Phase 1 review says otherwise.
+The plan said prompt drift without a bump fails CI. The Phase 1 review of the built code showed it does not.
 The test pins both the template hashes and the `PROMPT_VERSION` literal, so a developer who
 edits the prompt can re-pin only the hash literals and pass, leaving the version stale. The
 code comment was corrected to say the test makes the bump a *visible review obligation*, not
-an enforced one, and that `prompt_hash` stays truthful either way. See `_conflicts.md`.
+an enforced one, and that `prompt_hash` stays truthful either way. Use `prompt_hash` as the
+analysis axis, or cross-check `prompt_version` against it.
 
 ## See Also
 - [[Frozen Version Stamps on Logged Results]] — extends (prompt identity is one of the stamps)

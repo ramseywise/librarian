@@ -2,7 +2,7 @@
 title: Data Engineering Foundations
 tags: [foundations, concept]
 summary: "The six stages of data engineering as a pipeline discipline — ingest, transform, orchestrate, warehouse, monitor, feature-serve — where each stage's job is to prepare data for the next, plus the modern-stack tools (DuckDB, Polars, Iceberg, Dagster) missing from Zoomcamp-era material."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-engineering--README.md
@@ -95,7 +95,8 @@ means — you rebuild an asset, not re-run a job.
 
 ## Prerequisites and what follows
 
-Python fundamentals and SQL are assumed; Docker is taught from scratch in the source
+Python fundamentals and SQL are assumed — concretely, Python modules 01–03 and SQL modules
+01–09 of the curriculum's programming subject; Docker is taught from scratch in the source
 material. The typical progressions after these foundations are MLOps depth (stages 5–6),
 data science, or AI engineering — where **DE pipelines become the data layer** underneath
 the application. That last progression is why this page sits in a wiki about agents: an
@@ -103,11 +104,14 @@ agent's retrieval corpus is a pipeline output, and corpus quality is the first e
 See [[RAG Eval Gate Contract]].
 
 ## See Also
-- [[AI Engineering Curriculum Structure]] — part-of (where this pillar sits in the two-wave corpus)
-- [[Data Pipeline Pattern Selection]] — complements (how data *arrives* — batch, event-driven, streaming — orthogonal to these six stages)
+- [[AI Engineering Curriculum Structure]] — related (part of; where this pillar sits in the two-wave corpus)
+- [[Data Pipeline Pattern Selection]] — related (how data *arrives* — batch, event-driven, streaming — orthogonal to these six stages)
 - [[Data Science Curriculum Layers]] — alternative-to (the sibling branch after shared analytics foundations)
 - [[Observability and Runtime Patterns]] — instance-of (stage 5 monitoring, applied to agent runtimes)
 - [[RAG Eval Gate Contract]] — prerequisite-for (corpus quality as the first gate, fed by these pipelines)
-- [[Agent Retry Taxonomy]] — complements (retry semantics as a cross-layer design problem)
+- [[Agent Retry Taxonomy]] — related (retry semantics as a cross-layer design problem)
 - [[Data Clusters by Writer and Trust]] — extends (cluster tables by who writes them and how much you trust it)
 - [[Change the Channel, Not the Count]] — extends (source portfolio and rights as pipeline inputs)
+- [[learn-ai-engineering Project]] — extends (the curriculum repo this subject belongs to)
+- [[SQL Query Fundamentals]] — prerequisite-for (the SQL modules it assumes)
+- [[SQL Indexes and Query Plans]] — related (B-tree vs columnar zone maps)

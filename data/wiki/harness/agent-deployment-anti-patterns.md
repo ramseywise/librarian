@@ -2,9 +2,10 @@
 title: Agent Deployment Anti-Patterns
 tags: [agents, infra, reference]
 summary: "Eight recurring agent-deployment failures that present as model limitations but are engineering-constraint failures — with the reframe that a rule written in documentation is a hope, while a rule enforced by a hook is a constraint."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-guardrails.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agents-guardrails.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-guardrails.md
 ---
 
@@ -102,9 +103,9 @@ are misattributed to the model. There is nothing else in the system to blame.
 
 ## See Also
 - [[Harness Engineering]] — extends (the "skill issue" reframe, from the deployment side)
-- [[Agent Security Risk Taxonomy]] — complements (the risks these engineering gaps expose)
-- [[Harness Maturity and Failure Modes]] — complements (failures of harness maturity, distinct from these deployment failures)
-- [[Execution Boundaries and Guardrails]] — implements (mechanism-based enforcement for #8)
-- [[SKILL.md Pattern]] — implements (the knowledge-out-of-prompt fix for #1)
-- [[Tool Design as Harness Surface]] — implements (namespacing and tool consolidation for #2)
-- [[Verification Loops]] — implements (acceptance criteria for #3)
+- [[Agent Security Risk Taxonomy]] — related (the risks these engineering gaps expose)
+- [[Harness Maturity and Failure Modes]] — related (failures of harness maturity, distinct from these deployment failures)
+- [[Execution Boundaries and Guardrails]] — related (mechanism-based enforcement for #8)
+- [[SKILL.md Pattern]] — related (the knowledge-out-of-prompt fix for #1)
+- [[Tool Design as Harness Surface]] — related (namespacing and tool consolidation for #2)
+- [[Verification Loops]] — related (acceptance criteria for #3)

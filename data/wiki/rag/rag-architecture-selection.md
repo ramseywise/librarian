@@ -2,7 +2,7 @@
 title: RAG Architecture Selection
 tags: [rag, comparison]
 summary: "The nine named RAG architectures as one selection space — what each buys, what it costs, and the decision cheat-sheet — plus Fusion RAG over heterogeneous sources, which is distinct from multi-query RAG-Fusion over one retriever."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/rag/hc-rag-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--02-rag-retrieval--rag.md
@@ -154,9 +154,9 @@ control flow the only variable. Lessons from keeping the shared pipeline clean:
 
 ## See Also
 - [[Agentic RAG — Advanced Patterns]] — extends (mechanics for Self-RAG, Adaptive, GraphRAG, HyDE, multi-query fusion)
-- [[Reciprocal Rank Fusion (RRF)]] — depends-on (the scale-invariant merge Fusion RAG requires)
+- [[Reciprocal Rank Fusion (RRF)]] — prerequisite-for (the scale-invariant merge Fusion RAG requires)
 - [[RAG Evaluation]] — prerequisite-for (component gates produce the diagnosis that selects an architecture)
 - [[CRAG Retry Logic]] — instance-of (the corrective variant, in depth)
-- [[RAG Retrieval Strategies]] — complements (retrieval-layer choices within any of these architectures)
+- [[RAG Retrieval Strategies]] — related (retrieval-layer choices within any of these architectures)
 - [[Memory-Augmented Conversational RAG]] — instance-of (the conversational variant, in depth)
 - [[Delete an Unfinished RAG Retrofit, Don't Archive It]] — instance-of (the null option: a lookup domain that never justified a vector store)

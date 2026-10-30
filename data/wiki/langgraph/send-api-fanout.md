@@ -2,7 +2,7 @@
 title: Send API Fan-out
 tags: [langgraph, concept]
 summary: LangGraph's Send API enables dynamic map-reduce parallelism — fan out to N workers at runtime without knowing N at graph compile time.
-updated: 2026-04-24
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
 ---
@@ -52,5 +52,5 @@ After all branches complete, state is merged at the join node. By default, field
 - [[Agentic Workflow Patterns]] — Parallelization / Sectioning pattern
 - [[Librarian RAG Architecture]]
 - [[Agent Scaffolding Skill Layers]] — the same parallel-fan-out discipline applied to skill/subagent orchestration instead of graph nodes
-- [[Graph Engineering]] — part-of (dynamic fan-out as a graph-topology primitive)
+- [[Graph Engineering]] — related (part of; dynamic fan-out as a graph-topology primitive)
 - [[Graph Governance and Attribution]] — extends (fan-out is why the runtime graph diverges from the declared one)

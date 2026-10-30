@@ -1,8 +1,8 @@
 ---
 title: AI Engineering Curriculum Structure
-tags: [meta, foundations, concept, conflict]
+tags: [meta, foundations, concept]
 summary: "The two-wave model of the learn-ai-engineering corpus — generative-ai as the application wave (seven pillars) and ai-engineering as the discipline wave (six foundations) — plus the dependency ordering that makes the pillar sequence more than a filing scheme."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--README.md
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--README.md
@@ -29,18 +29,31 @@ sources:
   - data/raw/repos/learn-ai-engineering/README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--README.md
+  - data/raw/repos/sisyphus/interviewing--README.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--00-start-here.md
+  - data/raw/repos/sisyphus/interviewing--guides--00-start-here.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--0-programming--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--0-programming--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--1-foundations--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--1-foundations--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--3-rag--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--3-rag--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--4-agents--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--4-agents--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--5-context-cost--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--5-context-cost--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--6-evals-observability--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--6-evals-observability--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--7-security-safety--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--7-security-safety--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--8-data-eng-mlops--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--8-data-eng-mlops--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--10-product-delivery--00-overview.md
+  - data/raw/repos/sisyphus/interviewing--guides--10-product-delivery--00-overview.md
 ---
 
 # AI Engineering Curriculum Structure
@@ -59,10 +72,13 @@ convention.
 
 The ordering claim: the discipline wave **emerged after the application wave and presumes
 it**. You cannot write a harness spec for a loop you have never built, and context
-engineering is only a discipline once you have hit a context window in anger. This is why
-the corpus tells you to learn the gen-AI pillars first and layer engineering practice on
-top — not because the discipline material is harder, but because its concepts are
-*abstractions over experience* the application wave supplies.
+engineering is only a discipline once you have hit a context window in anger. The earlier
+architecture notes concluded from this that the gen-AI pillars should be learned first. The
+later CURRICULUM.md (Path A) is the current ordering, and it differs. Learn LLM
+fundamentals (gen-AI pillar 01) first, then the six discipline pillars, then gen-AI pillars
+02–07, because "after the ai-engineering discipline, the code patterns will make sense
+structurally". The experience the discipline wave abstracts over is supplied by pillar 01
+plus hands-on building, not by the whole application wave.
 
 The practical consequence for retrieval: a question of the form "how do I do X" usually
 routes to the application wave; "why does X keep breaking" routes to the discipline wave.
@@ -240,13 +256,14 @@ therefore has one canonical location, and topic-based discovery still works. Thi
 same one-way-pointer rule applied at the index level.
 
 ## See Also
-- [[Skill-Knowledge Information Flow]] — part-of (the corpus as one of four parallel systems, and its ingest contract into this wiki)
-- [[Karpathy LLM Wiki Pattern]] — complements (how this corpus is compiled into wiki pages)
+- [[Skill-Knowledge Information Flow]] — related (part of; the corpus as one of four parallel systems, and its ingest contract into this wiki)
+- [[Karpathy LLM Wiki Pattern]] — related (how this corpus is compiled into wiki pages)
 - [[Context Engineering]] — extends (the discipline-wave generalisation of pillar 02)
 - [[ADK vs LangGraph Comparison]] — instance-of (pillar 04 selection material)
 - [[Observability and Runtime Patterns]] — instance-of (pillar 06 infrastructure)
-- [[RAG Eval Gate Contract]] — complements (the discipline-wave counterpart to pillar 06)
-- [[Data Engineering Foundations]] — part-of (the data pillar, upstream of both waves)
-- [[Data Science Curriculum Layers]] — part-of (the analytics and ML pillars that precede the application wave)
+- [[RAG Eval Gate Contract]] — related (the discipline-wave counterpart to pillar 06)
+- [[Data Engineering Foundations]] — related (part of; the data pillar, upstream of both waves)
+- [[Data Science Curriculum Layers]] — related (part of; the analytics and ML pillars that precede the application wave)
 - [[Execution-Made Decisions Leave Stale Invariants]] — extends (how the absorbed-into-pillars layout replaced the planned pointer layer)
 - [[AI Role Interview Loop Map]] — extends (role weighting over the ten-pillar interview taxonomy)
+- [[learn-ai-engineering Project]] — extends (repo-level map: six subjects, paths, layers, definition of done)

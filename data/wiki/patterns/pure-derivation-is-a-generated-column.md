@@ -2,7 +2,7 @@
 title: Pure Derivation Is a Generated Column
 tags: [patterns, infra, rag, decision]
 summary: "Whether a derived index belongs in a side table or a generated column depends on whether the derivation is pure SQL over the same row: an embedding (external model call, many recipes per row) earns a side table with hash-gated backfill, a tsvector/trigram index does not — GENERATED ALWAYS ... STORED keeps it in sync with zero application code and no backfill, provided every function in the expression is IMMUTABLE."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-25-dis386-lexical-rrf.md
   - data/raw/claude-docs/diskoe/docs/plans/2026-09-25-dis386-lexical-rrf.md
@@ -81,3 +81,4 @@ message.**
 - [[Every Column Names Its Reader]] — extends (why no shared polymorphic lexical table)
 - [[Migration Done Means Pushed and Probed]] — related (verifying the index exists as written)
 - [[Kiez Project]] — instance-of
+- [[SQL Indexes and Query Plans]] — prerequisite-for (expression indexes, and why a leading-wildcard LIKE needs trigram)

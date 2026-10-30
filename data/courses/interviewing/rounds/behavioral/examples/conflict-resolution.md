@@ -1,8 +1,8 @@
 ---
-imported_hash: ec43c987a0b672d6
+imported_hash: 9aa0e59e099b4043
 title: 'Worked STAR Example: Conflict Resolution'
 summary: The second sentence shows you've extended the lesson beyond the exact situation — you've generalized it, which signals genuine learning rather than lesson-learned theater.
-order: 7
+order: 8
 kind: reading
 section: Behavioral / Examples
 source: sisyphus/interviewing/rounds/behavioral/examples/conflict-resolution.md

@@ -2,10 +2,12 @@
 title: Production Reliability Primitives
 tags: [llm, agents, infra, pattern]
 summary: "Four unglamorous mechanisms that keep a Stage 2–3 harness running under real traffic — per-step checkpointing, cross-provider fallback, fail-fast on ambiguity, and confidence-routed quarantine."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--08-maturity-and-failure-modes.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--08-maturity-and-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--reliable-agents.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--reliable-agents.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--reliable-agents.md
 ---
 
@@ -85,9 +87,10 @@ running in the direction of less human work.**
 ## See Also
 - [[Iterative Harness Simplification]] <!-- auto-linked -->
 - [[Runtime Topology and Checkpointer Alignment]] <!-- auto-linked -->
-- [[Harness Maturity and Failure Modes]] — part-of
-- [[Long-Horizon Execution]] — complements
+- [[Harness Maturity and Failure Modes]] — related (part of)
+- [[Long-Horizon Execution]] — related
 - [[Agent Retry Taxonomy]] — extends
-- [[Execution Boundaries and Guardrails]] — complements
+- [[Execution Boundaries and Guardrails]] — related
 - [[Harness Engineering]] — instance-of
 - [[Pull-Only Event Transport]] — instance-of (idempotent re-read as the replay primitive for a local poller)
+- [[Provider-Agnostic Model Adapter]] — extends (the uniform interface cross-provider fallback assumes)

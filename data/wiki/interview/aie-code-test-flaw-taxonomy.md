@@ -2,7 +2,7 @@
 title: AIE Code-Test Flaw Taxonomy
 tags: [interview, llm, reference]
 summary: The eleven recurring defects in LLM take-home submissions — context overflow, naive chunking, missing retry/timeout, ungrounded generation, JSON drift, swallowed exceptions — each with its detection cue and the minimal fix that fits inside a one-hour timebox.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-08-01_code-test_format-and-flaws.md
   - data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-08-02-LAE-115-code-test-formats.md
@@ -147,7 +147,7 @@ debrief. Treat the one-hour framing as a drill, not a prediction of the round yo
 
 ## See Also
 - [[Timebox-Scaled Deliverable Bar]] — extends (how these expectations scale with the window)
-- [[Safeguards Architecture — Five Protection Layers]] — complements (the production form of the same four API-safety fixes)
+- [[Safeguards Architecture — Five Protection Layers]] — related (the production form of the same four API-safety fixes)
 - [[System Design Interview Study Guide]] — alternative-to (design round vs. shipping round)
 - [[RAG Interview Study Guide]] — prerequisite-for (the domain knowledge the defects assume)
 - [[CRAG Retry Logic]] — instance-of (the grounding/retry check done properly)

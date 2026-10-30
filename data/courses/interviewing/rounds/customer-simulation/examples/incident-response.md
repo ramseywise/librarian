@@ -1,8 +1,8 @@
 ---
-imported_hash: 9ecbfce72ffd5b89
+imported_hash: 31ac8d7245162660
 title: 'Worked Example: Incident Response'
 summary: ''
-order: 47
+order: 50
 kind: reading
 section: Customer simulation / Examples
 source: sisyphus/interviewing/rounds/customer-simulation/examples/incident-response.md

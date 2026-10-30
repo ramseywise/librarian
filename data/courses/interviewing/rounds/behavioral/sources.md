@@ -1,8 +1,8 @@
 ---
-imported_hash: f00f0a372d66de3d
+imported_hash: bea5778fe10c45e1
 title: Behavioral Round — Sources
 summary: ''
-order: 3
+order: 4
 kind: reading
 section: Behavioral
 source: sisyphus/interviewing/rounds/behavioral/sources.md

@@ -2,9 +2,10 @@
 title: Skill Authoring Discipline
 tags: [agents, llm, pattern]
 summary: "How to write a skill rather than what a skill is — the description as routing logic under a token/precision tension, negative examples as the higher-leverage half, explicit invocation where routing must be deterministic, and why skills plus network access is an exfiltration path."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--skills-design.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--skills-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--context-engineering.md
 ---
 
@@ -147,8 +148,9 @@ this is R3 and R8 with an egress path attached.
 
 ## See Also
 - [[SKILL.md Pattern]] — extends (the format and loading strategies this builds on)
-- [[Context Anatomy]] — depends-on (progressive disclosure, the mechanism skills rely on)
-- [[Tool Design as Harness Surface]] — complements (tools face the same description-as-routing problem)
-- [[Agent Deployment Anti-Patterns]] — complements (knowledge belongs in skills, not system prompts)
-- [[Agent Security Risk Taxonomy]] — complements (the exfiltration path, as a risk class)
-- [[Long-Horizon Execution]] — implements (checkpointing for skills that run long)
+- [[Context Anatomy]] — prerequisite-for (progressive disclosure, the mechanism skills rely on)
+- [[Tool Design as Harness Surface]] — related (tools face the same description-as-routing problem)
+- [[Agent Deployment Anti-Patterns]] — related (knowledge belongs in skills, not system prompts)
+- [[Agent Security Risk Taxonomy]] — related (the exfiltration path, as a risk class)
+- [[Long-Horizon Execution]] — related (checkpointing for skills that run long)
+- [[Harness Engineering]] — instance-of (authoring the skill layer of the harness)

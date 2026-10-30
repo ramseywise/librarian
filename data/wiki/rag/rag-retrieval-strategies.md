@@ -2,7 +2,7 @@
 title: RAG Retrieval Strategies
 tags: [rag, concept]
 summary: Comprehensive reference for chunking, embedding, vector store, and hybrid search strategies — component choices, tradeoffs, and swap paths used in the Librarian pipeline.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/articles/2026-07-19-rag-deeplearning.md
   - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
@@ -308,7 +308,7 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[RAG API Design Patterns]]
 - [[Listen-Wiseer Project]]
 - [[Context Retrieval Strategies]] — extends (pre-computed retrieval against just-in-time context)
-- [[The Augmentation Gate]] — complements (how much of the retrieved set actually enters the prompt)
+- [[The Augmentation Gate]] — related (how much of the retrieved set actually enters the prompt)
 - [[Knowledge Graph Retrieval]] — alternative-to (connection retrieval against similarity retrieval)
 - [[Memory-Augmented Conversational RAG]] — extends (the multi-turn case, where the query is not self-contained)
 - [[Text-to-SQL as a Retrieval Strategy]] — alternative-to (the structured branch of a hybrid retriever)
@@ -317,3 +317,5 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[Code Retrieval: Structural Index and Agentic Search]] — extends (code wants AST chunks and grep-first search)
 - [[Retrieval Service Returns Documents, Not Answers]] — related (where retrieval stops and synthesis begins across services)
 - [[Hedging Belongs in the Gate, Not the Answer]] — related (generation-side finding from the same template research)
+- [[Contextual Retrieval]] — extends (index-time chunk prefixes for both BM25 and dense paths)
+- [[Index-Time Distillation]] — extends (aggregation and rule-induction questions chunk retrieval cannot answer)

@@ -2,7 +2,7 @@
 title: Offline Annotation over Online Inference
 tags: [rag, infra, llm, decision]
 summary: Decision to spend all model work at ingest time — enrich each catalogue row once into a fixed taxonomy — and serve with a plain WHERE clause plus in-memory scoring over ≤1,000 rows, with no embeddings, pgvector or GPU; the serving path becomes deterministic, cheap and replayable, and the dominant cost lever moves to caching the static taxonomy prefix of the enrichment prompt rather than gating re-runs.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-08-27-schema-audit.md
   - data/raw/claude-docs/playground/docs/research/2026-08-27-schema-audit.md
@@ -83,7 +83,7 @@ relational tables hold the neighbourhood used as enrichment evidence; a graph DB
 - [[RAG Retrieval Strategies]] — alternative-to (metadata filtering plus rubric scoring instead of similarity retrieval)
 - [[Specificity-Adaptive Ranking and Slate Composition]] — prerequisite-for
 - [[Prefix Caching]] — extends (why the taxonomy prefix is the dominant cost lever)
-- [[Spend Gate Before the Model Call]] — complements (the per-row gate this decision reframes as the smaller lever)
+- [[Spend Gate Before the Model Call]] — related (the per-row gate this decision reframes as the smaller lever)
 - [[Two AI Cost Economies: Durable Once, Contextual On Demand]] — instance-of (enrichment is the durable-once economy)
 - [[Graded-Uncertainty Enrichment Contract]] — related (what the offline annotation produces)
 - [[Embedding Side Table, Not Column]] — related (catalogue embeddings computed offline, versioned in their own table)

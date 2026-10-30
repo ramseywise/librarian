@@ -1,0 +1,101 @@
+/* Design tokens: the colours, radii, spacing and type sizes the UI repeats.
+   Domain colours are data-driven and stay in theme/domains.ts. */
+:root {
+  /* Surfaces, darkest to lightest */
+  --bg: #0f0f0f;
+  --surface: #111;           /* header, chat panel, inputs */
+  --surface-sidebar: #121212;
+  --surface-raised: #1c1c1c; /* floating graph panels */
+  --surface-card: #161616;
+  --surface-pager: #151515;
+  --surface-field: #1a1a1a;  /* chat textarea, assistant bubble */
+  --surface-active: #2a2a2a; /* pressed segment */
+  --surface-tab: #1f1f1f;
+  --surface-selected: #1f2a36;
+  --surface-user-msg: #1a1a2e;
+
+  /* Borders */
+  --border: #222;
+  --border-faint: #1e1e1e;
+  --border-subtle: #2a2a2a;
+  --border-card: #242424;
+  --border-chip: #262626;
+  --border-strong: #333;
+  --border-emphasis: #444;
+  --border-pressed: #555;
+  --border-user-msg: #2a2a4a;
+  --border-selected: #2f4b66;
+
+  /* Text */
+  --text-strong: #f0f0f0;
+  --text: #e0e0e0;
+  --text-body: #d0d0d0;
+  --text-soft: #bbb;
+  --text-dim: #999;
+  --text-secondary: #888;
+  /* The four below all sit on #0f0f0f–#1c1c1c surfaces; each clears WCAG AA (4.5:1)
+     on the lightest of them (--surface-raised). Keep them above #858585. */
+  --text-muted: #949494;
+  --text-faint: #8f8f8f;
+  --text-ghost: #8a8a8a;
+  --text-void: #878787;
+
+  /* Accents */
+  --accent: #2196f3;
+  --accent-text: #90caf9;
+  --link: #64b5f6;
+  --success: #4caf50;
+  --danger: #ef5350;
+  --offline: #f44336;
+  --warn: #ff9800;
+  --concept: #ce93d8;
+  --send: #2a5298;
+  --stop: #5a2a2a;
+  --error-note: #d0756a;
+  --private-border: #9e9e9e;
+
+  /* Radii */
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-pill: 12px;
+  --radius-chip: 14px;
+  --radius-round: 18px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 6px;
+  --space-3: 8px;
+  --space-4: 10px;
+  --space-5: 12px;
+  --space-6: 14px;
+  --space-7: 16px;
+  --space-8: 20px;
+  --space-9: 24px;
+
+  /* Type */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --fs-2xs: 9px;
+  --fs-xs: 10px;
+  --fs-sm: 11px;
+  --fs-md: 12px;
+  --fs-base: 13px;
+  --fs-lg: 14px;
+  --fs-xl: 15px;
+
+  /* Layout */
+  --header-h: 40px;
+  --chat-w: 360px;
+  --sidebar-w: 290px;
+  --shadow-overlay: 0 8px 40px rgba(0, 0, 0, 0.7);
+  --z-panel: 10;
+  --z-detail: 20;
+  --z-drawer: 30;
+  --z-overlay: 40;
+}
+
+/* Breakpoints (CSS custom properties can't be used in media queries, so they're
+   repeated literally): 1099px — course sidebar drawer + chat overlay;
+   759px — graph controls collapse into one menu. Keep in sync with NARROW_QUERY in App.tsx. */

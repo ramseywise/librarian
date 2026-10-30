@@ -1,8 +1,8 @@
 ---
-imported_hash: a6e0f812701c2da2
+imported_hash: ff9e620e9a54d92b
 title: Recruiter Screen — Question Bank
 summary: 10–12 questions across the categories a recruiter will hit.
-order: 66
+order: 71
 kind: reading
 section: Recruiter screen
 source: sisyphus/interviewing/rounds/recruiter-screen/questions.md

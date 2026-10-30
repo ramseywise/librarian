@@ -1,8 +1,8 @@
 ---
-imported_hash: 2a3a9b41a60d3bb3
+imported_hash: c6f23da506858af1
 title: 'Example: Architecture Walkthrough — RAG Pipeline'
 summary: ''
-order: 62
+order: 66
 kind: reading
 section: Project deep dive / Examples
 source: sisyphus/interviewing/rounds/project-deep-dive/examples/architecture-walkthrough.md

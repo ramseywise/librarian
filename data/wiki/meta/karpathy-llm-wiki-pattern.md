@@ -2,7 +2,7 @@
 title: Karpathy LLM Wiki Pattern
 tags: [llm, concept]
 summary: The compiler analogy for personal knowledge bases — raw sources in, LLM compiles them into structured interlinked wiki pages, no vector infra needed.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
   - data/raw/repos/librarian/.claude--docs--plans--2026-07-17-knowledge-compaction.md
@@ -132,12 +132,24 @@ as directories were added. A read-only `/wiki-sync` audit compares them against
 only applies mechanical fixes with `--fix`. The schema now treats disk as canonical: the
 domain-tag table in CLAUDE.md is "illustrative, not normative".
 
+As of 2026-10-30 no hand-maintained domain list remains in the graph pipeline. The
+backend parser, the MCP server and the relinker (`_domain_tag_set()`, which discounts
+domain tags when scoring shared tags) each derive the domain set from the directories at call
+time (excluding `private/`), and the graph payload carries a sorted `domains` field.
+The frontend maps a name to a colour only: fixed colours for established domains, a
+deterministic palette hash for any other. Tag-shared edges are derived client-side with
+the same rule as the server. A new wiki directory therefore needs no code change to be
+filterable and coloured. `/wiki-sync` now audits that the derivations still derive, and
+sweeps the frontend for a reintroduced literal list. That grep runs a **positive control**
+first, against the one file that legitimately names domains; the control must match, so a
+broken pattern cannot report "no drift".
+
 ## See Also
 - [[Librarian Project]]
 - [[MCP Protocol]]
 - [[RAG Retrieval Strategies]]
 - [[Session Knowledge Capture Patterns]]
-- [[Durable vs Performative Knowledge Split]] — complements (durable/performative axis alongside raw/compiled)
+- [[Durable vs Performative Knowledge Split]] — related (durable/performative axis alongside raw/compiled)
 - [[AI Engineering Curriculum Structure]] — instance-of (a source corpus that pre-organises itself before compilation, and splits its own material by decay rate)
 - [[Wiki Graph Engineering — Edge Quality Over Edge Count]] — extends (what the compiled graph's edges are actually worth at retrieval time)
 - [[Automated Paper Discovery Pipeline]] — extends (an automated, gated feed of research papers into raw)

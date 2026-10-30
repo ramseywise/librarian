@@ -2,7 +2,7 @@
 title: Single Writer, Offline Consolidation
 tags: [memory, patterns, pattern]
 summary: "When several in-session skills each rewrite the same long-lived memory files, per-event transformation decays into append; the fix the field converged on is capture-only during the session and one offline consolidator as the sole writer, with every output wired to exactly one consumer."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/guacamayo/docs/plans/2026-07-17-puffin-next-version.md
   - data/raw/repos/guacamayo/.claude--docs--plans--2026-07-17-puffin-next-version.md
@@ -94,3 +94,4 @@ copies of it.
 - [[State Writer Never Owns Its Side Effects]] — related (one writer per lifecycle field, the database version)
 - [[Every Column Names Its Reader]] — extends (outputs without a consumer)
 - [[Conservation Gate on Accumulator Clear]] — extends (the hook that keeps the consolidator from silently dropping entries)
+- [[Sleep Learning]] — alternative-to (offline consolidation of agent lessons between runs)

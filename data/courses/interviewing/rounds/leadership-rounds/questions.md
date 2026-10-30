@@ -1,8 +1,8 @@
 ---
-imported_hash: 3e51086b467639ae
+imported_hash: 74832cabcb09b875
 title: Leadership Round Questions
 summary: The reverse interview is signal, not ceremony.
-order: 50
+order: 53
 kind: reading
 section: Leadership rounds
 source: sisyphus/interviewing/rounds/leadership-rounds/questions.md

@@ -2,7 +2,7 @@
 title: Specificity-Adaptive Ranking and Slate Composition
 tags: [rag, llm, pattern]
 summary: Score a candidate pool with weight profiles that shift by how specific the request is (vague → vibe/context carry the weight, specific → time/location/format do), rank deterministically with bounded penalties, then compose a five-slot slate by role — Best Match, Strong Fit, Safe Pick, Adjacent Fit, Discovery Pick — where exploration slots scale down with specificity instead of being a fixed 1-in-5; ranking creates trust, composition creates taste.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/diskoe/docs/notion/scoring.md
   - data/raw/claude-docs/playground/docs/notion/scoring.md
@@ -184,9 +184,9 @@ analytics.
 - [[RAG Reranking]] — alternative-to (a learned reranker over passages vs. a deterministic rubric over catalogue rows)
 - [[RAG Retrieval Strategies]] — related (hard filters as the retrieval stage of a two-stage pipeline)
 - [[Replayable Slate Ranker]] — extends (the implementation shape that keeps this ranking replayable)
-- [[Explore Slice for Position Bias]] — complements (how exploration slots get their counterfactual)
-- [[Offline Annotation over Online Inference]] — depends-on
-- [[Graded-Uncertainty Enrichment Contract]] — depends-on (where the uncertainty penalty's inputs come from)
+- [[Explore Slice for Position Bias]] — related (how exploration slots get their counterfactual)
+- [[Offline Annotation over Online Inference]] — prerequisite-for
+- [[Graded-Uncertainty Enrichment Contract]] — prerequisite-for (where the uncertainty penalty's inputs come from)
 - [[Validated Concept vs Unmeasured System]] — related (the rubric was validated by hand before any of this was implemented)
 - [[Relevance Is the Score, Enrichability Is the Gate]] — related (pre-enrichment sampling score that mirrors the reputation flag)
 - [[No Evidence Ranks Below Confident Mismatch]] — extends (sparse evidence must not be penalised twice)

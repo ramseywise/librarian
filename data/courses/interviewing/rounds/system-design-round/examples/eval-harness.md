@@ -1,8 +1,8 @@
 ---
-imported_hash: 91dc70dce754f0fb
+imported_hash: f855c69157285fe3
 title: 'Example: Eval Pipeline for an LLM Product'
 summary: '"Design an evaluation system for an LLM-powered product.'
-order: 78
+order: 84
 kind: reading
 section: System design round / Examples
 source: sisyphus/interviewing/rounds/system-design-round/examples/eval-harness.md

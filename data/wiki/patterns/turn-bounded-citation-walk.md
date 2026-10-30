@@ -2,7 +2,7 @@
 title: Turn-Bounded Citation Walk
 tags: [langgraph, rag, pattern]
 summary: A response formatter that walks message history backwards collecting tool-call citations must stop at the most recent human message — without that boundary a prior turn's web-search sources leak into an unrelated current answer, a bug that passes every single-turn test.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/listen-wiseer/docs/CHANGELOG.md
 ---
@@ -41,3 +41,4 @@ it belongs to this turn.
 - [[CRAG Retry Logic]] — related (the confidence gate the same phase wired into validation)
 - [[Context Failure Modes]] — related (stale context contaminating the current answer)
 - [[HistoryCondenser]] — related (another component that must respect turn structure when editing history)
+- [[Cited-Minus-Read Grounding Check]] — alternative-to (a per-answer set difference instead of a walk over turns)

@@ -2,7 +2,7 @@
 title: Service Surface Defect Checklist
 tags: [infra, reference]
 summary: Ten concrete defect classes found live in a prototype HTTP service — ungated client ids reaching paths, uploads checked after reading the whole body, trusting declared MIME, blocking work on the event loop, TOCTOU across two opens, id-only mutation scope, blobs in listings, unfenced ingested documents, and splatted response models.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/skills/review-safety/SKILL.md
   - data/raw/claude-docs/galactus/skills/proto-harden/SKILL.md
@@ -34,5 +34,5 @@ like a bound. In both, the check and the effect happen in different places.
 - [[Production Hardening Patterns]] — extends (the concrete surface-level instances)
 - [[Prompt Injection]] — extends (#8 is the ingestion-side sink)
 - [[Written-but-Inert RLS Policies]] — extends (tenant scoping that exists on paper only)
-- [[Prototype Hardening Pass]] — part-of
+- [[Prototype Hardening Pass]] — related (part of)
 - [[Capability Token in a Serialized Row]] — instance-of (a token in a row prop handed to a client component)

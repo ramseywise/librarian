@@ -2,7 +2,7 @@
 title: Budget Without a Meter Is a Preference
 tags: [eval, infra, pattern]
 summary: A product budget (taps, latency, cost) that nothing measures will be silently exceeded — a ≤4-tap intake shipped at ≥6 taps — so every budget ships with its meter, and when screen and requirement disagree the requirement wins.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-initiative/SKILL.md
   - data/raw/claude-docs/playground/skills/design-product/SKILL.md
@@ -150,7 +150,7 @@ standard.
 ## See Also
 - [[Always-Red Check Carries No Signal]] — related (a meter nobody reads is the same failure one step later)
 - [[Ship Logging Before Features]] — related (the UNRECOVERABLE class applied to logging)
-- [[Four-Stage Design Pipeline with Backflow]] — part-of (product stage)
+- [[Four-Stage Design Pipeline with Backflow]] — related (part of; product stage)
 - [[Spend Gate Before the Model Call]] — related (gates that a meter can prove saved money)
 - [[A Capped Run Is Not a Clean Run]] — related (a spend cap that fires but is never reported)
 - [[Branch Gated on State Only It Writes]] — related (another guard whose input is never produced on the live path)

@@ -1,8 +1,8 @@
 ---
 title: Plan-Doc Status Enum
-tags: [llm, reference, conflict]
+tags: [llm, reference]
 summary: Nine-member Status enum for plan docs (7 in-flight, 2 terminal) with a forbid-and-relocate suffix policy — the Status line carries exactly one token, everything else moves to named fields.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/guacamayo/docs/specs/plan-doc-status-enum.md
   - data/raw/claude-docs/galactus/skills/proto-plan/SKILL.md
@@ -177,13 +177,14 @@ The galactus pipeline skills (2026-10) write the enum under stricter edge discip
   `/proto-refine` on a NEEDS-SPLIT verdict (naming the split docs), and `/proto-plan` when
   the `EXECUTED → PLANNED` loop-back hits its bound of 2 on the third arrival ("the work is
   mis-scoped rather than mis-planned"). "SUPERSEDED is terminal for this doc but not for
-  the work." See the conflict note below.
+  the work."
 - The readiness gate writes a second axis beside Status (see
   [[Plan Epistemic State Axis]]), sized by [[Size the Gate to the Blast Radius]].
 
-> **Conflict (2026-10-16):** the transition table above lists `SUPERSEDED` as written
-> "manual"; the galactus proto-plan and proto-refine skills write it automatically on
-> loop-back exhaustion and NEEDS-SPLIT. See `_conflicts.md`.
+> **Who writes SUPERSEDED (resolved 2026-10-30):** the transition table's "manual" writer is
+> the original status-enum spec. The later galactus skills added two automatic writers,
+> `/proto-plan` on loop-back exhaustion and `/proto-refine` on NEEDS-SPLIT. Both are current:
+> an operator may still supersede a doc by hand, and the two skills also write it.
 
 ## `Review:` maps from the verdict, never free text
 

@@ -2,7 +2,7 @@
 title: Memory Forms Taxonomy
 tags: [memory, llm, reference]
 summary: "The Forms/Functions/Dynamics survey framing — memory as token, parametric, or latent substrate; factual, experiential, or working purpose — and why almost all agent memory work occupies one cell of a much larger space."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
@@ -102,9 +102,9 @@ processing** is the augmentation gate: having retrieved the right memories, you 
 choose how much of them to hand the model.
 
 ## See Also
-- [[Agent Memory Types]] — complements (the practitioner taxonomy this frames as one cell)
+- [[Agent Memory Types]] — related (the practitioner taxonomy this frames as one cell)
 - [[Memory Lifecycle]] — extends (Dynamics, at finer grain)
 - [[Memory Decay Weighting]] — instance-of (planar token memory with recency-scored retrieval)
-- [[Memory-Augmented Conversational RAG]] — implements (the retrieval-timing decision)
+- [[Memory-Augmented Conversational RAG]] — related (the retrieval-timing decision)
 - [[Self-Learning Agents]] — instance-of (experiential memory, approximated by reflection)
 - [[Prefix Caching]] — instance-of (latent memory reuse, in production for cost)

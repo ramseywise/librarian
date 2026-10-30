@@ -2,9 +2,10 @@
 title: Backend Scaling Fundamentals
 tags: [infra, reference]
 summary: The generic backend substrate every LLM system design assumes — single server first, then load balancing, stateless app servers, caching with TTL vs invalidation and stampede mitigation, replication (≠ backup), sharding with consistent hashing — reasoned as an iterative loop where every scaling fix introduces the next problem.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--9-system-design--01-distributed-systems.md
+  - data/raw/repos/sisyphus/interviewing--guides--9-system-design--01-distributed-systems.md
 ---
 
 # Backend Scaling Fundamentals
@@ -68,7 +69,7 @@ Non-functional requirements matter more to interviewers than features.
   **consistent hashing** moves only a small slice.
 
 ## See Also
-- [[API Design Fundamentals]] — complements (the interface layer on the same substrate)
+- [[API Design Fundamentals]] — related (the interface layer on the same substrate)
 - [[System Design Interview Study Guide]] — prerequisite-for (the method that operates on this vocabulary)
 - [[LLM System Bottleneck Table]] — extends (the LLM-specific bottlenecks on top)
 - [[Scaling Axes and Customer-Triggered Cost Cliffs]] — extends

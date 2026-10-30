@@ -1,8 +1,8 @@
 ---
-imported_hash: 5854127f5eca842a
+imported_hash: 2396c2fd778c74fd
 title: 'Example: Automated Code Review Agent'
 summary: '"Design an agent that reviews pull requests and posts review comments.'
-order: 77
+order: 83
 kind: reading
 section: System design round / Examples
 source: sisyphus/interviewing/rounds/system-design-round/examples/agent-system.md

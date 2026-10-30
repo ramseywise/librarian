@@ -1,8 +1,8 @@
 ---
 title: Complexity Floor
-tags: [pattern, planning]
+tags: [patterns, pattern, planning]
 summary: The minimum viable complexity of a project shape — a constraint that makes capacity a selection criterion rather than a schedule, forcing archetype reframing rather than scope-thinning when the team can't reach the floor.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/agent-orchestration.md
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/archetype-selection.md
@@ -48,9 +48,9 @@ refinements.
 
 ## See Also
 - [[AI Project Archetypes]] — extends (each archetype has a floor)
-- [[Agent Orchestration Patterns]] — constrains
-- [[Scope-POC Design Interview]] — applies
-- [[Deployment Topology Ladder]] — constrains (team-hours bound the reachable topology rung)
+- [[Agent Orchestration Patterns]] — related (constrains)
+- [[Scope-POC Design Interview]] — related (applies)
+- [[Deployment Topology Ladder]] — related (constrains; team-hours bound the reachable topology rung)
 - [[Split Service Deployment]] — instance-of (semester-tier only; no reduced version exists)
 - [[Capability Parity Audit]] — extends (an identified gap is not automatically work worth doing)
 - [[Capability Runtime-Coupling Tiers]] — extends (a flagged asymmetry is not automatically work)

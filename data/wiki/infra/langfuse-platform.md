@@ -2,7 +2,7 @@
 title: Langfuse Platform
 tags: [infra, eval, concept]
 summary: Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by [client]'s AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/articles/2026-07-19-langfuse-multi-agent-eval.md
   - data/raw/articles/2026-07-19-langfuse-mcp-python.md
@@ -324,10 +324,10 @@ From personal Langfuse projects:
 - [[RAG Evaluation]]
 - [[Observability and Runtime Patterns]]
 - [[Observability & Evaluation Glossary]]
-- [[Experiment Tracking Schemas]] — complements (run_id joins platform scores to the config that produced them)
-- [[Online Eval Sampling]] — depends-on (which traces get the costed LLM graders)
-- [[Eval Suite Maintenance]] — implements (add-from-trace as the regression-fixture path)
+- [[Experiment Tracking Schemas]] — related (run_id joins platform scores to the config that produced them)
+- [[Online Eval Sampling]] — prerequisite-for (which traces get the costed LLM graders)
+- [[Eval Suite Maintenance]] — related (add-from-trace as the regression-fixture path)
 - [[LangSmith Platform]] — alternative-to (same capabilities in the LangChain ecosystem; auto-instrumented for LangGraph, manual for ADK)
 - [[One Check Shape for Quality Verdicts]] — related (trace is where you debug a call; the verdict store is where you read the rate)
 - [[A Trace Is Not a Number of Record]] — extends (why spend/error numbers need a separate ledger even with tracing wired)
-- [[Specialist Verdict Panel]] — complements (structured per-dimension verdicts attached as scores)
+- [[Specialist Verdict Panel]] — related (structured per-dimension verdicts attached as scores)

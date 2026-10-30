@@ -2,7 +2,7 @@
 title: Embedding Side Table, Not Column
 tags: [rag, decision]
 summary: Store embeddings in a side table keyed by (content_kind, content_id, embedding_model, input_recipe_version) rather than as a vector column on the enrichment row — it keeps "did the content change" and "did we try a new embedding recipe" as separate version axes, lets several recipes coexist for comparison, and keeps unrelated writebacks from churning the HNSW index.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-24-dis386-semantic-retrieval.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-24-dis386-semantic-retrieval.md
@@ -86,7 +86,7 @@ grep-test proves the hybrid module is not imported by any serving path.
 
 ## See Also
 - [[Reciprocal Rank Fusion (RRF)]] — prerequisite-for (the fusion step the side table feeds)
-- [[Offline Annotation over Online Inference]] — complements (where model work belongs)
+- [[Offline Annotation over Online Inference]] — related (where model work belongs)
 - [[Frozen Version Stamps on Logged Results]] — instance-of (version axes as explicit columns)
 - [[Vector Database Comparison]] — related
 - [[Kiez Project]] — instance-of

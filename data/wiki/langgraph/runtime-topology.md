@@ -2,7 +2,7 @@
 title: Runtime Topology and Checkpointer Alignment
 tags: [infra, langgraph, concept]
 summary: Critical rule — checkpointer backend must match runtime hosting model. MemorySaver fails silently in Lambda and multi-worker deployments. Covers trigger patterns, observability tool choice (LangSmith vs Langfuse/GDPR), and key production signals.
-updated: 2026-04-26
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
 ---
@@ -123,4 +123,4 @@ log.info(
 - [[Multi-Agent Orchestration Patterns]]
 - [[Deployment Topology Ladder]] — prerequisite-for (topology choice determines the required checkpointer)
 - [[Serverless Deployment]] — instance-of (the runtime where MemorySaver fails silently)
-- [[Six-Pillar Agent Engineering Assessment]] — part-of (durable state is the loop pillar's Should-tier gap)
+- [[Six-Pillar Agent Engineering Assessment]] — related (part of; durable state is the loop pillar's Should-tier gap)

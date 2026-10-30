@@ -2,7 +2,7 @@
 title: ADK JS TypeScript Patterns
 tags: [adk, llm, pattern, reference]
 summary: Google ADK TypeScript SDK (@google/adk 0.5.0) — LlmAgent, FunctionTool, structured Zod output, streaming NDJSON, and pitfall patterns for Next.js agent integration.
-updated: 2026-07-06
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/tooling/adk-js.md
 ---
@@ -128,3 +128,5 @@ See [[ADK vs LangGraph Comparison]] for framework-level trade-offs.
 - [[ADK vs LangGraph Comparison]]
 - [[ADK Context Engineering]]
 - [[Multi-Modal Agent Response]]
+- [[Runtime Validation with Zod]] — prerequisite-for (the zod schemas used for parameters and outputSchema)
+- [[TypeScript for AI Apps]] — alternative-to (the same tool-plus-zod shape in the Anthropic TS SDK)

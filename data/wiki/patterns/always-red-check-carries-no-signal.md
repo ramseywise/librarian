@@ -2,7 +2,7 @@
 title: Always-Red Check Carries No Signal
 tags: [infra, llm, pattern]
 summary: A CI job that has failed on every run for a week is as useless as one that silently passes — nobody reads a log they expect to be red, so a falsified issue premise and eleven "present" column probes sat unread inside the failing drift job — and its mirror, a gate that passes for the wrong reason (untracked empty directories, a guard on name not definition, a credential-less check that skips), is the fourth recurrence of one defect class.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/ttd.md
   - data/raw/claude-docs/akira/docs/research/2026-09-02-agent-pipeline-audit.md
@@ -112,7 +112,7 @@ decision.
 
 ## See Also
 - [[Paid Tiers Start at the Beta, Not the Alpha]] — related (the spend-cap decision sized from per-job billing)
-- [[Workflow Pipeline Telemetry Audit]] — part-of
+- [[Workflow Pipeline Telemetry Audit]] — related (part of)
 - [[Derive the Gate, Don't Copy It]] — related (the third way a gate stops being evidence: its summary is typed)
 - [[Migration Done Means Pushed and Probed]] — extends (the schema-side instances of the same class)
 - [[Deterministic Review Substrate]] — extends (deterministic checks are only a substrate while they can change state)

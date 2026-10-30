@@ -1,7 +1,7 @@
 ---
-imported_hash: a9a7af2a256edc2e
+imported_hash: c957604e75dbed91
 title: Interviewing
 summary: Interview prep for AI, ML, data science and forward-deployed engineering roles.
-order: 7
+order: 8
 source: sisyphus/interviewing
 ---

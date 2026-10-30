@@ -2,11 +2,13 @@
 title: RAG Interview Study Guide
 tags: [rag, interview, reference]
 summary: Exam-prep reference for RAG architecture questions — component choices, architecture variants, production judgment, measured benchmarks, and terminology traps.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--3-rag--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--rag.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--rag.md
+  - data/raw/repos/sisyphus/interviewing--guides--3-rag--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--3-rag--00-overview.md
 ---
 
 # RAG Interview Study Guide
@@ -57,6 +59,29 @@ Ingest: chunk → embed → index. Query: (rewrite) → retrieve → (rerank) �
 - Stale index → retrieval returns outdated facts
 - Hallucination with citation — the model cites a real source for a wrong claim
 
+## Follow-ups on memory and retrieval design (answer sketches)
+
+*Provisional:* condensed from the reference answers to the chapter questions in *AI Agents in Depth* (Li), which the book itself flags as AI-drafted with light human review. Treat these as answer shapes to check, not settled claims.
+
+- **Two different home addresses across sessions.** Extract → compare → decide: retrieve similar
+  memories and let an LLM choose add / update / delete / no-op (the Mem0 shape). Address-type facts keep
+  the latest version with a timestamp; history-type facts keep every version.
+- **Source documents contradict each other.** Put version, effective/expiry dates and source in chunk
+  metadata; filter or flag expired content; fold authority and freshness into the reranker; flag
+  inter-chunk contradictions at index time.
+- **The model never searches because it does not know what it does not know.** Make "is this enough?"
+  an explicit step (retrieve sub-questions, find the missing link, search again) and keep a lightweight
+  overview of the store resident so the agent knows what exists.
+- **Does long context make chunking obsolete?** Partly — chunk tuning matters less. But attention is
+  soft retrieval that cannot aggregate across a corpus, and freshness, tenant isolation, audit and cost
+  do not depend on the model.
+- **RAPTOR or GraphRAG?** RAPTOR for overview-to-detail drill-down across summary levels; GraphRAG for
+  multi-hop relations, entity disambiguation and corpus themes via community summaries.
+- **When does a file-system knowledge base beat a vector store?** When humans and agents maintain it
+  together: readable, editable, versioned, agent-writable, with tiered progressive disclosure saving
+  tokens. It needs index pages and cross-links or retrieval degrades as it grows — the shape of this
+  wiki.
+
 ## See Also
 - [[Durable vs Performative Knowledge Split]] <!-- auto-linked -->
 - [[RAG Retrieval Strategies]] — prerequisite-for
@@ -66,3 +91,4 @@ Ingest: chunk → embed → index. Query: (rewrite) → retrieve → (rerank) �
 - [[Agents Interview Study Guide]] — extends
 - [[Situation-Indexed Decision Tree]] — extends (the RAG spine links down into this guide)
 - [[AIE Code-Test Flaw Taxonomy]] — instance-of (where this knowledge is graded as shipped code)
+- [[AI Engineering Field Question Bank]] — related (cold-recall questions for this pillar)

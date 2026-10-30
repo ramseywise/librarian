@@ -2,9 +2,10 @@
 title: Graph Governance and Attribution
 tags: [infra, agents, llm, reference]
 summary: "Once work fans out across nodes, \"the graph did it\" is not an acceptable audit answer — identity propagation, per-node cost attribution, and approval gates placed where consequence concentrates."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--08-governance-and-production.md
 ---
 
 # Graph Governance and Attribution
@@ -27,6 +28,17 @@ This extends the tracing architecture in [[Observability and Runtime Patterns]] 
 third identifier: a trace tells you *what happened in one run*; graph/run/node identifiers
 tell you *which node in which topology* — the attribution axis a flat trace lacks.
 
+Carry the ids as **span attributes**. OpenTelemetry's GenAI semantic conventions standardise
+the attributes for model and agent spans (model, token counts, operation) so tools agree on
+what a span means; LangSmith and LangGraph's built-in tracing record node-level spans for you.
+A model gateway is useful but optional — the identifiers matter with or without one.
+
+| ID | Identifies | Why |
+|---|---|---|
+| `graph_id` | Which topology (and version) | Compare versions; roll back |
+| `run_id` / `thread_id` | One execution | Group a run's calls; resume |
+| `node_id` | The node that made the call | Per-node cost, latency, error rate |
+
 ## Record the runtime graph, not the declared one
 
 The checklist item most often skipped:
@@ -45,6 +57,16 @@ Budget rules need to operate at **tenant/team scope** with separate limits per v
 account or metadata value.
 
 > **A per-run cap is not enough when one run can spawn fifty nodes.**
+
+Budget at three levels: **per node** (one node looping or fanning out too far), **per run**
+(a whole run going wrong) and **per tenant or team** (one customer consuming the shared
+budget). Per-node budgets are only possible with `node_id` on every call — otherwise you learn
+that a run was expensive, not why.
+
+## Model isolation
+
+Route model calls through a **named alias** ("reviewer-model"), not a hard-coded model id, so
+a model change is a config change you can roll out and roll back per node.
 
 ## Structural checkpoints
 
@@ -76,8 +98,10 @@ Note what "ownership" means here: **each of the six has a named owner**, not a m
 An unowned budget rule is a budget rule nobody raises when it starts firing.
 
 ## See Also
-- [[Graph Engineering]] — part-of
+- [[Graph Engineering]] — extends
 - [[Observability and Runtime Patterns]] — extends (adds the node attribution axis to tracing)
-- [[Execution Boundaries and Guardrails]] — complements (gating placed by consequence, not uniformly)
-- [[Graph Topology Primitives]] — depends-on
-- [[Send API Fan-out]] — complements (dynamic fan-out is why declared ≠ runtime graph)
+- [[Execution Boundaries and Guardrails]] — extends (gating placed by consequence, not uniformly)
+- [[Graph Topology Primitives]] — extends
+- [[Send API Fan-out]] — extends (dynamic fan-out is why declared ≠ runtime graph)
+- [[n8n AI Workflow Builder]] — instance-of
+- [[Multi-Agent Failure Modes at Scale]] — extends

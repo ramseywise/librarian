@@ -2,9 +2,10 @@
 title: Canary Testing for Permission Boundaries
 tags: [llm, agents, infra, pattern]
 summary: "Deny rules are untested code — run each destructive route twice (unguarded baseline, then guarded) and require a structured denial event, because a surviving file proves nothing about whether the gate fired."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--04-execution-boundaries.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
 ---
 
 # Canary Testing for Permission Boundaries
@@ -64,6 +65,6 @@ the pattern never mentions.
   regressed deny rule looks exactly like a working one.*
 
 ## See Also
-- [[Execution Boundaries and Guardrails]] — part-of
-- [[Read-Only by Default with Explicit Authorization]] — complements
+- [[Execution Boundaries and Guardrails]] — related (part of)
+- [[Read-Only by Default with Explicit Authorization]] — related
 - [[Harness Engineering]] — instance-of

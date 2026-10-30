@@ -2,7 +2,7 @@
 title: Hide-Unknown Display Contract
 tags: [patterns, prompting, pattern]
 summary: A content-display contract where uncertain or missing optional fields are hidden rather than shown as "Unknown", never block publishing, and user-facing labels (CTAs, price display) are derived at read time by resolvers from stored source fields, never stored, so they cannot drift.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-10-09-notion-content-data-contract.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-10-09-notion-content-data-contract.md
@@ -75,8 +75,8 @@ already been dropped). Mirrors were kept as history, with a header naming the
 contract of record, the code, which wins on disagreement.
 
 ## See Also
-- [[Cached Derivation Without a Recompute Path]] — complements (derive at read time instead of caching)
-- [[Graded-Uncertainty Enrichment Contract]] — complements (abstention upstream, hiding downstream)
+- [[Cached Derivation Without a Recompute Path]] — related (derive at read time instead of caching)
+- [[Graded-Uncertainty Enrichment Contract]] — related (abstention upstream, hiding downstream)
 - [[Hotlink-Not-Copy Image Posture]] — related (image fallback ladder)
 - [[Kiez Project]] — instance-of
 - [[Three-Level Duplicate Classification]] — related (duplicates hidden through the same review-status gate)

@@ -2,7 +2,7 @@
 title: RAG Evaluation
 tags: [rag, eval, concept]
 summary: Three-tier evaluation architecture for RAG pipelines — golden datasets, LLM-as-judge, failure clustering, ragas vs deepeval, and retrieval lift measurement.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
@@ -226,7 +226,7 @@ make eval-e2e         # Tier 3 — RAGAS + DeepEval, CONFIRM_EXPENSIVE_OPS requi
 
 ## Business Metric Targets ([client] Knowledge Agent)
 
-For product-embedded RAG, the retrieval-level metrics (hit_rate, MRR) need to map up to business outcomes. From [[[client] Knowledge Agent]] requirements:
+For product-embedded RAG, the retrieval-level metrics (hit_rate, MRR) need to map up to business outcomes. From a client knowledge-agent's requirements:
 
 - **≥60% self-service resolution rate** — share of queries resolved without escalation (top-line target)
 - **↓15% support contacts from Help Center** — demand reduction signal
@@ -266,7 +266,7 @@ This is especially important for edge cases — judge prompts optimized on avera
 ## See Also
 - [[Agentic RAG — Advanced Patterns]] <!-- auto-linked -->
 - [[Trajectory Over Outcome]] — extends (why the trajectory tier exists, not just what it measures)
-- [[The Augmentation Gate]] — complements (the component gate between retrieval and generation)
+- [[The Augmentation Gate]] — related (the component gate between retrieval and generation)
 - [[RAG Eval Metrics Suite]]
 - [[Synthetic Dataset Generation for RAG Eval]]
 - [[Conversation Repository Pattern]]
@@ -277,3 +277,5 @@ This is especially important for edge cases — judge prompts optimized on avera
 - [[Listen-Wiseer Project]]
 - [[HITL Annotation Pipeline]]
 - [[RAG Architecture Selection]] — prerequisite-for (component gates diagnose which failure an architecture change should target)
+- [[Evaluating Context]] — extends (metrics per context lever, ablation and length/position sweeps beyond retrieval)
+- [[Experiment Tracking Schemas]] — instance-of (per-stage config capture is what makes component gates diffable)

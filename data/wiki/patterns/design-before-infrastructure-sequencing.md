@@ -2,7 +2,7 @@
 title: Design-Before-Infrastructure Sequencing
 tags: [llm, decision]
 summary: The decision to make design scoping a standalone skill that runs before the scaffold interview rather than a wrapper around it — because design and build are separate phases that may be months apart, and merging them makes the combined skill unusable for anyone who already designed.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/poc-system-design-interview.md
 ---
@@ -71,7 +71,7 @@ skipped conversation **visible** rather than merely absent.
 
 ## See Also
 - [[Scope-POC Design Interview]] — extends (the skill this sequencing decision produced)
-- [[DESIGN.md Artifact]] — part-of (the artifact the design phase hands forward)
+- [[DESIGN.md Artifact]] — related (part of; the artifact the design phase hands forward)
 - [[Project Discovery Conversation]] — prerequisite-for
-- [[Asked vs Derived Scaffold Variables]] — complements (the HOW conversation this precedes)
+- [[Asked vs Derived Scaffold Variables]] — related (the HOW conversation this precedes)
 - [[Deployment Topology Ladder]] — related (topology chosen in design, parameterized in scaffold)

@@ -2,9 +2,10 @@
 title: n8n AI Workflow Builder
 tags: [langgraph, infra, agents, reference]
 summary: "A shipped supervisor-pattern LangGraph with published operational constants — five specialist subgraphs, prompt-only specialization, per-node iteration bounds, and an agent never allowed to fill its own context with the artifact it is editing."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--08-governance-and-production.md
 ---
 
 # n8n AI Workflow Builder
@@ -12,6 +13,10 @@ sources:
 A documented, shipped supervisor-pattern graph — valuable because **the operational
 constants are published rather than inferred**. Most multi-agent write-ups describe a
 topology; this one gives the numbers.
+
+> **Source caution.** These details come from a third-party teardown, not from the vendor.
+> The builder's code is in the n8n repository — check the constants there before relying on
+> them.
 
 The feature generates n8n workflows from a prompt. Architecture: LangGraph with a
 **supervisor routing to five specialist subgraphs**.
@@ -81,6 +86,9 @@ Two of these are the interesting ones:
   generalizes well past workflow JSON — any agent editing a large artifact needs a size
   ceiling on the artifact, not just on the history.
 
+Its **one approval gate sits after the planner**, before any build work starts — the plan is
+the cheapest artifact to correct (see [[Graph Topology Primitives]] on gate placement).
+
 ## Deployment surface
 
 Self-hosts via npm, Docker, or Docker Compose, with provider guides for AWS, Azure, GCP,
@@ -91,7 +99,9 @@ a graph system you intend to **operate** rather than demo.
 ## See Also
 - [[Graph Engineering]] — instance-of
 - [[Graph Topology Primitives]] — instance-of (nodes, bounds, and state discipline in production)
-- [[Loop Termination Design]] — complements (per-node caps)
-- [[LangGraph State Reducers]] — complements (optimistic locking as single-writer enforcement)
-- [[Context Compaction]] — complements (the 75% compact trigger)
-- [[Differential Parity Testing Against the Original]] — related (porting n8n code nodes in-process: run the originals in a vm sandbox as the reference)
+- [[Loop Termination Design]] — instance-of (per-node caps)
+- [[LangGraph State Reducers]] — instance-of (optimistic locking as single-writer enforcement)
+- [[Context Compaction]] — instance-of (the 75% compact trigger)
+- [[Multi-Agent Topology Patterns]] — instance-of (the supervisor pattern, shipped)
+- [[Graph Governance and Attribution]] — extends
+- [[Differential Parity Testing Against the Original]] — extends (porting n8n code nodes in-process: run the originals in a vm sandbox as the reference)

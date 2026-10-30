@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import os
 from collections.abc import AsyncIterator
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,6 +13,9 @@ import pytest
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "e2e: end-to-end tests requiring live servers")
     config.addinivalue_line("markers", "unit: fast unit tests, no servers needed")
+    # TestClient-as-context-manager runs the app lifespan; don't build the real course
+    # catalog or load the embedding model there.
+    os.environ.setdefault("LIBRARIAN_SKIP_WARMUP", "1")
 
 
 @pytest.fixture(autouse=True)

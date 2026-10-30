@@ -1,8 +1,8 @@
 ---
 title: "Artifact Is Not Evidence: Push and Probe"
-tags: [patterns, infra, pattern, conflict]
+tags: [patterns, infra, pattern]
 summary: A migration file, a posture table, or a workflow existing in the repo proves nothing about production — every security or retention claim must be probed against the live system with a probe that can distinguish "blocked" from "empty".
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-rls-closure.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-rls-closure.md
@@ -74,11 +74,13 @@ Two design rules fell out of writing it:
 - **Derive the enumeration from the migrations, not a hand-kept list.** The posture table
   drifted because it was maintained by hand; the probe's table list is parsed from the
   migration files so a new table is probed the moment it exists.
-- **Drop an unread surface rather than secure it.** A view no code read still had to be
-  either policy-protected or removed; removing it is the smaller, more honest change.
-  *(Conflict flagged 2026-10-17: the fix plan reversed this — the owner kept the view with
-  `security_invoker = true` because external readers cannot be ruled out from the repo and a
-  drop is irreversible. See `_conflicts.md` and [[Written-but-Inert RLS Policies]].)*
+- **Drop an unread surface only when its consumers are enumerable; otherwise harden it
+  reversibly.** A view no code read still had to be either policy-protected or removed.
+  The research pass said drop it, the smaller change. The executed plan kept the view and
+  set `security_invoker = true`. "No reader in this codebase" cannot rule out dashboards,
+  saved SQL, BI cards or partner integrations, and a DROP is unrecoverable for them, while
+  the flag closes the same exposure reversibly. Drop when the repo is provably the only
+  consumer. See [[Written-but-Inert RLS Policies]].
 
 ## Push and probe as a protocol
 
@@ -122,7 +124,7 @@ exist", the same failure shape an earlier incident had produced. Three rules:
 ## See Also
 - [[Scan-Floor Guard Against Silent No-Op Checks]] — prerequisite-for (a probe that can vacuously pass is no probe)
 - [[Deterministic Review Substrate]] — extends (tool output as the evidence class, not prose assertions)
-- [[Data Clusters by Writer and Trust]] — complements (which tables' deletion changes what a user sees)
+- [[Data Clusters by Writer and Trust]] — related (which tables' deletion changes what a user sees)
 - [[Verification Loops]] — instance-of (an independent verifier positioned after the change)
 - [[Fallback Mistaken for the Design]] — related (a rendered surface that was the empty-pool fallback, not the ranked path)
 - [[Restore Drill: Rebuild-from-Migrations Visibility Probe]] — extends (probing the rebuilt-from-artifacts database, not just production)

@@ -1,11 +1,19 @@
 ---
 title: Prompt Engineering
-tags: [llm, concept]
-summary: The innermost layer of the agent stack — governs the instructions and examples themselves, ending where decisions about what to include in the window begin.
-updated: 2026-08-04
+tags: [prompting, llm, concept]
+summary: The innermost layer of the agent stack — the instructions and examples themselves, grounded in the document-completion mental model; ends where decisions about what to include in the window begin.
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--README.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--README.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--01-how-models-read-prompts.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--02-prompt-anatomy.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--04-controlling-output.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--11-applications.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--prompt-library.md
 ---
 
 # Prompt Engineering
@@ -33,6 +41,15 @@ given problem:
 Once you are deciding *what* is in the window rather than *how* to phrase what is already
 there, you have crossed into [[Context Engineering]].
 
+## The Mental Model
+
+An LLM is a document completer: it predicts the next token of a document left to right,
+read once, and is biased toward plausible rather than true continuations. Chat is a
+transcript the model completes. Almost every prompting rule follows from this — see
+[[Prompts as Document Completion]] and the [[Four Prompt Criteria]] (resemble training
+data; include all and only relevant information; make the task obvious; end at a natural
+stopping point).
+
 ## Core Principle
 
 **Be clear and direct.** Treat the model as a capable but context-free new employee: the
@@ -59,6 +76,30 @@ use markdown", because the negative form leaves the target underspecified.
 - **[[Prompt Templates and Variables]]** — separate the fixed skeleton from variable content.
 - **[[Long-Context Prompting]]** — ordering and grounding rules past ~20k tokens.
 - **[[Prompt Chaining]]** — decompose multi-step tasks into a sequence of simpler prompts.
+- **[[Prompting Technique Selection]]** — which technique when: [[Self-Consistency]],
+  [[Tree of Thoughts]], [[Program-Aided Language Models (PAL)]], [[Reflexion]], ReAct.
+- **[[Prompt Assembly as Snippet Packing]]** — building prompts programmatically under a
+  token budget; [[SOP-Style Agent System Prompts]] for agent system prompts.
+
+## Controlling Output
+
+[[Sampling Parameters]], [[Stop Sequences and Completion Anatomy]] and
+[[Logprobs as Confidence Signal]] shape and score what comes back; tools are prompts too
+([[Tool Definitions as Prompts]]). When the static prompt is long and still not followed,
+[[Fine-Tuning as Prompt Compression]] moves it into weights. Reasoning models change the
+advice from *how to think* to *what to achieve* ([[Prompting Reasoning Models]]).
+
+## Measuring and Improving
+
+Build the eval first ([[Evaluating Prompts]], judges via a [[SOMA Judge Rubric]]), then
+search against it ([[Prompt Optimization]], [[DSPy]]).
+
+## Applications
+
+[[Diversity Seeding for Synthetic Data]], [[Code Generation Prompting]], and interface design
+around [[Stateful Objects of Discourse]]. Images are just more context tokens: include only
+relevant ones, introduce each in text, use familiar visual conventions, and keep content
+first and question last in long documents.
 
 ## Add Context and Motivation
 
@@ -85,3 +126,9 @@ is the primary security concern for any system with external inputs. See
 - [[Few-Shot Prompting]] — instance-of
 - [[Prompt Injection]] — alternative-to
 - [[Chain of Thought]] — instance-of
+- [[Prompts as Document Completion]] — prerequisite-for
+- [[Four Prompt Criteria]] — instance-of
+- [[Prompting Technique Selection]] — instance-of
+- [[Evaluating Prompts]] — prerequisite-for
+- [[Prompt Optimization]] — extends
+- [[Prompt Leaking]] — instance-of

@@ -57,3 +57,16 @@ def test_real_wiki_dirs_are_all_domains() -> None:
     )
     assert server._domains() == on_disk
     assert "interview" in on_disk  # the canonical missing-from-the-old-list example
+
+
+def test_relinker_domain_tags_follow_disk(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from core import relinker
+
+    monkeypatch.setattr(relinker, "WIKI_DIR", wiki)
+    assert relinker._domain_tag_set() == {"context", "rag"}
+    page = lambda tags: relinker.PageInfo(  # noqa: E731
+        path=wiki / "x.md", stem="x", title="x", tags=tags, domain="rag", type_tag="concept"
+    )
+    # "context" is a domain (no topical bonus); "chunking" is a shared topical tag (+0.05).
+    a, b = page(["rag", "context", "chunking"]), page(["rag", "context", "chunking"])
+    assert relinker.compute_adjusted_score(0.5, a, b) == pytest.approx(0.5 + 0.1 + 0.05)

@@ -2,7 +2,7 @@
 title: Named-Trigger Deferral
 tags: [patterns, llm, pattern]
 summary: When research shows a feature is not yet worth building, do not close or defer vaguely — rewrite the issue's trigger into a measurable condition, record the one fact that would flip the decision, and park it.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-03-dis41-expired-event-sweep.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-03-dis41-expired-event-sweep.md
@@ -64,7 +64,7 @@ desktop layout, a continuous-run classifier, an LLM extraction tier.
 
 ## See Also
 - [[Deferred Decision Status]] — extends (the plan-doc status this disposition produces)
-- [[Deadline-Scope Isolation]] — complements (why triggered work stays out of dated PRs)
+- [[Deadline-Scope Isolation]] — related (why triggered work stays out of dated PRs)
 - [[Context Graph Is Not an Execution Graph]] — instance-of (an agent-runtime adoption deferred behind a named trigger)
 - [[Rate-Limit Keying: Identity Over IP]] — instance-of (rate limiting researched, trigger rewritten, parked)
 - [[Profile Then Select]] — extends (the same rule applied to ML config questions)

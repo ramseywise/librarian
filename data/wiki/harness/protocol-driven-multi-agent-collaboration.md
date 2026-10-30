@@ -2,9 +2,10 @@
 title: Protocol-Driven Multi-Agent Collaboration
 tags: [agents, infra, pattern]
 summary: "Why multi-agent coordination has to be a protocol rather than a conversation — the nine failure modes conversational handoff produces, the six things a protocol must define, and the three foundations: communication protocol, task graph, and isolation boundary."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-design.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agents-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-design.md
 ---
 
@@ -127,9 +128,9 @@ available.
 - [[Graph Engineering]] <!-- auto-linked -->
 - [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
 - [[Task Decomposition Patterns]] — prerequisite-for (the cut this protocol coordinates)
-- [[Multi-Agent Orchestration Patterns]] — complements (topologies and typed I/O contracts)
-- [[Multi-Agent Context]] — implements (externalized plan state and isolation)
-- [[Agent Security Risk Taxonomy]] — complements (R11–R13, the same boundary from the threat side)
-- [[Execution Boundaries and Guardrails]] — implements (the isolation boundary, mechanically)
+- [[Multi-Agent Orchestration Patterns]] — related (topologies and typed I/O contracts)
+- [[Multi-Agent Context]] — related (externalized plan state and isolation)
+- [[Agent Security Risk Taxonomy]] — related (R11–R13, the same boundary from the threat side)
+- [[Execution Boundaries and Guardrails]] — related (the isolation boundary, mechanically)
 - [[Production Reliability Primitives]] — extends (durable messaging, idempotency, explicit state in production)
 - [[Provenance-Tracked Agent Beliefs]] — extends (belief provenance and peer models in the message layer)

@@ -2,12 +2,15 @@
 title: LLM Fundamentals Interview Study Guide
 tags: [llm, interview, reference, foundations]
 summary: Exam-prep reference for LLM theory questions — transformer architecture, training pipeline, adaptation menu, inference economics, and failure modes.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--interview-guide.md
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--paper-canon.md
+  - data/raw/repos/sisyphus/interviewing--notes--paper-canon.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--llm-fundamentals.md
+  - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--00-overview.md
 ---
 
 # LLM Fundamentals Interview Study Guide
@@ -77,6 +80,42 @@ alignment (InstructGPT, DPO, Constitutional AI), reasoning/agents (CoT, ReAct, R
 Tree of Thoughts), eval (RAGAS, ARES, TruthfulQA), and systems reality (Hidden Technical
 Debt in ML Systems).
 
+## Post-training follow-ups (answer sketches)
+
+*Provisional:* condensed from the reference answers to the chapter questions in *AI Agents in Depth* (Li), which the book itself flags as AI-drafted with light human review. Treat these as answer shapes to check, not settled claims.
+
+- **Fine-tuning broke general tool calling.** Mix roughly a fifth general data back in, stop SFT once the
+  format is stable, keep LoRA rank small (8–32) with a KL penalty under RL, one adapter per task, and
+  regression-test general benchmarks.
+- **Train it in or put it in context?** Facts go to retrieval, language-expressible principles to
+  prompts/Skills, hard constraints to code. Train only what symbols cannot carry (tone, implicit policy,
+  perception), and only once the approach is proven at volume. Hard rules never rest on weights alone.
+- **Why is distilling an agentic model harder than a chat model?** Chat distils an input→output style;
+  reasoning needs full traces with wrong answers filtered; agentic needs a live environment, must not
+  learn the environment-returned tokens, and offline data suffers learner–sampler mismatch, hence
+  on-policy distillation.
+- **Credit assignment over a long trajectory.** Outcome reward plus per-action signals from
+  deterministic rules (penalise invalid tool calls) and process rewards where steps are judgeable; this
+  restores variance in all-pass or all-fail groups.
+- **Lucky success vs correct-process failure.** Lucky success is the dangerous one: shortcuts such as
+  editing the tests inflate success and seed [[Reward Hacking and Overoptimization|reward hacking]].
+  Reward outcomes, penalise bad actions, keep process constraints sparse so exploration survives.
+- **Weak supervising strong.** Yes, as a *verifier* not a demonstrator: verification is easier than
+  generation, and SFT on a weak demonstrator caps you at its level.
+- **When SFT stops and RL starts.** Tool calls parse and execute reliably enough to compute rewards,
+  more demonstrations stop improving out-of-distribution performance, and validation starts to slip.
+  Over-trained SFT collapses onto its distribution and RL cannot recover it.
+- **Training on an agent benchmark.** Reuse environments, not questions, and hold out whole templates
+  or domains — see [[Parameterised Benchmark Instances]].
+- **Reward hacking against simulated users or search.** Sycophancy, over-promising, facts the simulator
+  will not check, verbose judge-pleasing answers. Anchor rewards to verifiable state, calibrate the
+  simulator against production traces, gate releases on online metrics only.
+- **Long-tail rollouts idle the cluster.** Decouple rollout from training and pipeline them
+  asynchronously ([[Training-Agent Disaggregation]]), batch continuously, shape overlong rewards to
+  shrink the tail.
+- **Per-user LoRA instead of a memory store?** Usually no: LoRA memorises facts poorly and cannot reason
+  multi-hop over them; changing or auditable facts belong in retrieval.
+
 ## See Also
 - [[LLM Inference Economics]] — prerequisite-for (the durable cost mechanism this round examines)
 - [[Prefix Caching]] — instance-of
@@ -94,3 +133,4 @@ Debt in ML Systems).
 - [[Self-Attention Mechanism]] — prerequisite-for
 - [[Neural Probabilistic Language Model]] — prerequisite-for
 - [[Batch Normalization]] — prerequisite-for
+- [[Parameterised Benchmark Instances]] — extends (train on environments, not questions)

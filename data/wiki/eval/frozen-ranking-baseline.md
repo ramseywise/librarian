@@ -2,7 +2,7 @@
 title: Frozen Ranking Baseline from a Pure Ranker
 tags: [eval, foundations, pattern]
 summary: Because the ranker and composer are pure functions, an offline "snapshot in, ranked slate out" baseline is a composition of three things the tree already has — not new infrastructure — and the genuinely missing pieces are an export that keeps excluded candidates with their reason, a slice-breakdown layer over the per-case grade file, and a version stamp for every rule table.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-09-16-dis290-frozen-ranking-baseline.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
@@ -134,7 +134,7 @@ was the same entry-point guard its sibling scripts already used.
 - [[Build the Knobs, Not the Choice]] — related (the variant registry this CLI enumerates)
 - [[Eval Falsifiability]] — related (fixtures must disagree with the ranker somewhere, or NDCG passes by construction)
 - [[Replayable Slate Ranker]] — extends (purity is what makes the offline baseline a composition rather than a build)
-- [[Frozen Version Stamps on Logged Results]] — complements (the stamps the snapshot must carry to join judgments)
+- [[Frozen Version Stamps on Logged Results]] — related (the stamps the snapshot must carry to join judgments)
 - [[UNGATED Metric Convention]] — instance-of (register everything now, threshold only from an observed rate)
 - [[Append-Only Human Labels]] — prerequisite-for (the judgment rows this baseline is scored against)
 - [[Write-Only Fields and the Reader Map]] — related (the exporter that dropped the rows a reader needed)

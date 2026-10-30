@@ -2,7 +2,7 @@
 title: Observability and Runtime Patterns
 tags: [infra, concept]
 summary: Observability tool choice (LangSmith vs Langfuse), tracing architecture, runtime topology and checkpointer alignment rules, trigger patterns, and key signals to monitor for VA agents.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
   - data/raw/agent-skills/observability/SKILL.md
@@ -156,10 +156,13 @@ LANGFUSE_HOST=https://your-langfuse.internal
 - [[Webhook Handler Idempotency]] — extends (async inbound events fail invisibly without traces)
 - [[Cloud Service Deployment]] — related (the rung where monitoring becomes mandatory)
 - [[Verification Loops]] — extends (traces are the raw material for trace-driven harness improvement)
-- [[Harness Maturity and Failure Modes]] — complements (structured tracing is the Stage 2→3 gate)
-- [[Agent Management Layer]] — part-of (audit logging is one of six required production systems)
+- [[Harness Maturity and Failure Modes]] — related (structured tracing is the Stage 2→3 gate)
+- [[Agent Management Layer]] — related (part of; audit logging is one of six required production systems)
 - [[Evolve Loop]] — prerequisite-for (raw conversation history is the slow loop's richest input, and metrics don't carry it)
 - [[Graph Governance and Attribution]] — extends (adds graph/run/node identity as the attribution axis a flat trace lacks)
-- [[Experiment Tracking Schemas]] — complements (the metadata contract that makes a traced run reproducible and diffable)
+- [[Experiment Tracking Schemas]] — related (the metadata contract that makes a traced run reproducible and diffable)
 - [[LangSmith Platform]] — instance-of (wiring, datasets, evaluators, and annotation queues for the LangSmith backend)
 - [[Ship Logging Before Features]] — extends (serve-time logs cannot be backfilled)
+- [[Agent Trace Anatomy]] — extends (span tree, GenAI semantic conventions and trace-to-eval flow for agent runs)
+- [[Runtime vs Process Observability]] — extends (process artifacts as the second observability layer)
+- [[Memory Store Operations]] — instance-of (tracing the memory lookup span)

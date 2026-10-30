@@ -1,8 +1,8 @@
 ---
 title: Kiez Project
 tags: [langgraph, infra, foundations, project]
-summary: A Berlin "what's on tonight" venue map and assistant — LangGraph open-data pipelines (discover, images, events, enrich, refresh), a Next.js app with a pure replayable ranker, an optional model-parsed assistant, Supabase Postgres, and a spend switch that keeps every model call explicit; most of its design rules are written down before the code.
-updated: 2026-10-17
+summary: A Berlin "what's on tonight" venue map and assistant — open-data pipelines (discover, images, events, enrich, score, kulturdaten, refresh, advance; LangGraph in Python until 2026-10-21, now TypeScript on Vercel Workflows), a Next.js app with a pure replayable ranker, an optional model-parsed assistant, Supabase Postgres, and a spend switch that keeps every model call explicit; most of its design rules are written down before the code.
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/kiez/docs/3d-video.md
   - data/raw/claude-docs/kiez/docs/assistant.md
@@ -28,7 +28,13 @@ facts, and answer "what's on tonight?" through a feed, a map and an assistant. S
 docs are stamped "written before the code" and are kept current by tests (`make
 graphs-doc` regenerates the graph doc and the tests check it is current).
 
-## Pipelines (LangGraph graphs)
+## Pipelines
+
+**Runtime change (2026-10-21):** the pipeline moved from Python/LangGraph to TypeScript
+on Vercel Workflows, in `web/pipeline/`. The Python version was moved out of the repo
+into an archive. The table below describes the original LangGraph graphs. The current
+shape is in *Pipeline after the TypeScript move* further down.
+
 
 | Graph | Flow | Note |
 |---|---|---|
@@ -41,6 +47,44 @@ graphs-doc` regenerates the graph doc and the tests check it is current).
 
 Status is a separate decision from existence throughout: venues and events land as
 `candidate`; showing them is a distinct, auditable step.
+
+### Pipeline after the TypeScript move
+
+- **Plain functions, graph owns order.** Each graph is a set of plain node functions that
+  can be tested separately. The graph decides order and branching, never the logic. Zod
+  schemas sit at every boundary, and a pipeline logger is used rather than `console`
+  outside CLIs. Every run is logged in `pipeline_runs`. On Vercel each node runs as a
+  Workflows step capped at **300 s**.
+- **New and changed graphs:**
+  - `images` gained a `collect_categories` node (the venue's Commons category) and an
+    opt-in `classify` node (subject plus a people flag). `classify` is not ported yet and
+    fails before writing.
+  - `events` is now select → robots → fetch → extract → upsert → artists.
+  - `enrich`'s gate branches four ways: `skip`, `rules_only`, `would_send` (dry run) or
+    `generate`. Write is versioned via `is_current` and adds an embedding.
+  - New `score` graph: open-data relevancy per venue.
+  - New `kulturdaten` graph: a CC BY city event calendar, matched to venues by postcode
+    plus name.
+  - New `advance` graph: crawl what is due, assess readiness, enrich complete venues,
+    publish what is ready.
+  - `refresh` now runs discover → images → events → kulturdaten → [enrich] → score →
+    retention SQL.
+- **Spend stays manual.** A weekly cron (Mondays 03:17 UTC) starts `refresh` *without*
+  enrichment; `enrich` starts only by hand, from the CLI or an admin route. `enrich --fake`
+  runs the whole graph against a fake model at no cost.
+- **The schema is the only contract.** `db/` owns the Postgres schema. The pipeline writes
+  it and the Next.js app reads it. They share only the DB module and the tag lists, and the
+  app's routes start the pipeline's workflows. The landing page is a separate static site
+  deployed as a Cloudflare Worker.
+- **Seed or pipeline, never both.** A fictional dev seed (25 venues) supports web work
+  without a pipeline run. Mixed with real data, the seed outranks it.
+- **Gate needs no secrets.** `make gate` runs the table-to-contract check, the evals and
+  the web check (tsc, eslint, vitest), with no database and no model key. Eval targets
+  get a threshold only from a measured pass rate on real output. A grader whose fixtures
+  came from the function it grades does not gate. Today `event_category`, `artist_names`
+  and `genre_names` are gated; the rest are UNGATED.
+- **Images:** the licence allow-list is unchanged, and the rule is now stated as "no people
+  as the subject".
 
 ## Design rules that recur
 

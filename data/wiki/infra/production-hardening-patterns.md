@@ -2,7 +2,7 @@
 title: Production Hardening Patterns
 tags: [infra, rag, langgraph, pattern]
 summary: Checklist of production hardening fixes for the Librarian service — P0/P1/P2 issues, async I/O safety, SQL injection prevention, CORS, and Docker packaging.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-prod-hardening/plan.md
   - data/raw/claude-docs/playground/docs/archived/retrieval-pipeline-prod/plan.md
@@ -12,6 +12,7 @@ sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-08-01-49-llm-starter-kit.md
   - data/raw/repos/ai-project-template/.claude--docs--plans--2026-08-01-49-llm-starter-kit.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--project-deep-dive--examples--incident-story.md
+  - data/raw/repos/sisyphus/interviewing--rounds--project-deep-dive--examples--incident-story.md
 ---
 
 # Production Hardening Patterns
@@ -292,8 +293,8 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[PGVector Migration Pattern]]
 - [[Production Reliability Primitives]] — extends (per-step checkpointing, cross-provider fallback, confidence-routed quarantine)
 - [[Agent Retry Taxonomy]] — extends (which failures are retryable, and at which level)
-- [[Agent Management Layer]] — part-of (the generic six-system frame this checklist instantiates)
-- [[Execution Boundaries and Guardrails]] — complements (sandboxes, hooks, and cost ceilings)
+- [[Agent Management Layer]] — related (part of; the generic six-system frame this checklist instantiates)
+- [[Execution Boundaries and Guardrails]] — related (sandboxes, hooks, and cost ceilings)
 - [[Atlas Project]] — instance-of
 - [[Production Readiness Backlog]] — alternative-to
 - [[Cloud Service Deployment]] — prerequisite-for (24/7 availability is what hardening pays for)
@@ -305,3 +306,4 @@ Use `checkpointer=False` when the subgraph needs neither; `None` for interrupt s
 - [[Silent Failure Catalogue]] — extends
 - [[Service Surface Defect Checklist]] — extends (ten concrete surface defects)
 - [[Prototype Hardening Pass]] — extends (the pre-demo checklist)
+- [[SQL from Python]] — prerequisite-for (parameters cover values only; identifiers need an allow-list)

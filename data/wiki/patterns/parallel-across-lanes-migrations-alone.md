@@ -2,7 +2,7 @@
 title: Parallel Across Lanes, Migrations Alone
 tags: [infra, llm, pattern]
 summary: When running several agent builds concurrently in worktrees, memory is not the constraint — declared dependencies, shared file lanes, and the single shared database are — so parallelise across lanes, serialise within a lane, run migration-adding builds alone, and cap concurrency at 3 for review attention.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/workflow-build/SKILL.md
   - data/raw/claude-docs/akira/skills/workflow-build/SKILL.md
@@ -59,3 +59,4 @@ the board, plans and telemetry, not the conversation.
 - [[Migration Done Means Pushed and Probed]] — related (the drift class concurrent migrations reproduce)
 - [[Scoped Phase Dispatch with Pre-Resolved Files]] — related (the per-phase file list overlap is computed from)
 - [[Worktree Agent Dispatch Contract]] — prerequisite-for (git-side rules for dispatching the concurrent agents)
+- [[File-Disjoint Agent Waves in One Working Tree]] — alternative-to (disjoint file ownership in one tree instead of lanes)

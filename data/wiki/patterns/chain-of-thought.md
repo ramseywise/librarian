@@ -2,7 +2,7 @@
 title: Chain of Thought
 tags: [llm, concept, pattern]
 summary: Inference-time technique where the LLM is prompted to show its reasoning before answering — improves accuracy on multi-step logic, arithmetic, and routing decisions with no training cost.
-updated: 2026-04-26
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
@@ -94,5 +94,7 @@ See [[Agent Memory Types]] for the reflection implementation.
 - [[ReAct Pattern]]
 - [[Self-Learning Agents]]
 - [[Agent Memory Types]]
-- [[Prompt Engineering]] — part-of (CoT as one technique among nine)
-- [[Few-Shot Prompting]] — composes-with (few-shot CoT: examples that show the reasoning chain)
+- [[Prompt Engineering]] — related (part of; CoT as one technique among nine)
+- [[Few-Shot Prompting]] — related (composes with; few-shot CoT: examples that show the reasoning chain)
+- [[Self-Consistency]] — extends (sample several CoT paths, majority-vote the answer)
+- [[Prompting Reasoning Models]] — extends (reasoning models do CoT natively; manual CoT can hurt instruction-following)

@@ -1,14 +1,19 @@
 ---
 title: Harness Engineering
 tags: [llm, agents, infra, concept]
-summary: "Agent = Model + Harness — the discipline of building everything between request and output except the weights, and why reliability compounding makes the harness dominate the model."
-updated: 2026-10-17
+summary: "Agent = Model + Harness — the discipline of building everything between request and output except the weights (context, tools, constrain, verify, correct), why reliability compounding makes the harness dominate the model, and why coding agents matured first."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--README.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--01-what-a-harness-is.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--01-what-a-harness-is.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agent-harness.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agent-harness.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--harness-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--harness-engineering.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agent-harness.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--references.md
 ---
 
 # Harness Engineering
@@ -19,7 +24,11 @@ The **third layer**. Prompt engineering governs the instructions; [[Context Engi
 governs what is assembled around them; harness engineering governs the machinery that does
 the assembling, executes the tools, checks the result, and recovers when it is wrong.
 
-The discipline nests: **prompt ⊂ context ⊂ harness**.
+The discipline nests: **prompt ⊂ context ⊂ harness ⊂ loop**. Each scope widens what the
+engineer controls — the instruction, the working set, the system the model runs in, then
+sustained operation across runs ([[Loop Engineering]]). *Graph engineering* is an
+orchestration view across these scopes rather than a fifth one: a loop is a graph with a
+back edge, and a graph node can run its own loop ([[Graph Engineering]]).
 
 **It inherits the weaknesses of the layer below.** A harness that supplies poorly composed
 context to its loops fails at scale no matter how well the scaffolding itself is built.
@@ -40,6 +49,31 @@ Four verbs worth keeping. A harness **constrains** (boundaries), **informs** (co
 
 > **Most incomplete harnesses have the first two and are missing the last two.**
 
+### The expanded equation
+
+A book-length treatment (Li, *AI Agents in Depth*, 2026) starts from the demo-view component
+formula *Agent = LLM + Context + Tools* and wraps three safeguard layers around the two
+non-model terms:
+
+> **Agent = LLM + [Context + Tools + Constrain + Verify + Correct] = Model + Harness**
+
+The five functions on one refund request, each with its governing design principle:
+
+| Function | In the refund example | Principle |
+|---|---|---|
+| Context | 7-day refund policy in the system prompt | *Information sufficiency* at every decision point |
+| Tools | `query_order`, `process_refund` | *Clear interface* — intuitive names, examples, stated boundaries |
+| Constrain | Refund ≤ order total, checked by the framework | *Fail-safe defaults* — every capability off until enabled |
+| Verify | Confirm in the DB that the refund landed | *Input isolation* — check structured tool fields, never model prose, which injection can steer |
+| Correct | Retry automatically on API timeout | *Don't expose intermediate state* until failure is confirmed unrecoverable |
+
+Without the bracket the same model gets no policy, picks no tool, invents a success message,
+and the user finds out later. The five form a **closed loop** — leave one out and there is a
+reliability gap. And the centre of gravity shifts as products mature: early frameworks were
+mostly context and tools, while in a mature coding agent **most harness code is
+constrain/verify/correct** (process-state tracking, multi-layer compaction, permission
+tiers, circuit breakers, rollback-and-retry); the tools are a small fraction.
+
 ### Where the metaphor comes from
 
 Horse tack — directing a powerful animal's energy toward useful work without letting it
@@ -49,6 +83,16 @@ ease.
 
 That is the economic argument for the whole discipline. *Prompting cost is linear in tasks;
 harness cost is paid once and amortized.*
+
+## Observation and Action Spaces
+
+The observation space (context) and the action space (tools) are the model's whole interface
+to the world. **With the model fixed, redefining or expanding them is the main systems
+lever** — a task that seems to need a smarter model often needs the right data in context or
+the right operation exposed as a tool. Expansion must be **on-demand, relevant, and
+controlled**: retrieval brings in what matters, tool discovery exposes only what is needed
+now ([[Dynamic Tool Discovery]]), and permissions plus result verification bound the new
+actions ([[Execution Boundaries and Guardrails]]).
 
 ## The Four Parts
 
@@ -64,6 +108,12 @@ prompt with tools attached.
 
 **The most commonly missing part is rollback. The most commonly *faked* one is the
 acceptance baseline** — a vibes-based "looks good" standing in for a binary check.
+
+Contrast the classic **agent = LLM + planning + tools + memory** decomposition. That framing
+describes what the *model* does; these four parts describe what the *system around it* must
+guarantee. Planning, tools and memory map onto harness components; **none of the four parts
+above appears in the classic framing**, which is why agents built from it alone are
+unreliable. See [[Deep Agent Pillars]] for the middle ground.
 
 ## Why the Harness Dominates the Model
 
@@ -88,6 +138,25 @@ layer first** (tool descriptions, retry budgets, handoff schemas), **then the co
 layer** (data quality, coverage, recency). In a mature setup the model is rarely the
 bottleneck.
 
+### Why coding agents matured first
+
+A two-by-two of goal clarity against verification automation:
+
+| | Verified automatically | Verified by a human |
+|---|---|---|
+| **Clear goal** | Sweet spot — fix a bug that has a failing test | Throughput-limited — a refactor that needs review |
+| **Vague goal** | Efficiently off track — "improve code quality" scored by a linter | Hard to start — "make the UI look better" |
+
+Coding agents matured first **not because code models are unusually strong**, but because
+decades of tests, type checkers, linters, CI and git already form a harness that puts most
+coding tasks in the top-left cell. **The harness's job in any other domain is to push tasks
+into that cell.**
+
+**Harness thickness depends on the model.** Offloading logic puzzles to a constraint solver
+lifts a weak model dramatically and a strong reasoning model barely at all. The same harness
+can support opposite conclusions depending on the model, so **state the model whenever you
+report a harness result.**
+
 ## The "Skill Issue" Reframe
 
 Most agent failures are **configuration problems, not model limitations**.
@@ -101,6 +170,10 @@ Most agent failures are **configuration problems, not model limitations**.
 | Rated its own work 9/10 | "It's sycophantic" | Generator and evaluator are the same agent |
 
 **Every right-hand cell is a build task. That is the whole discipline in one table.**
+
+Turned into a procedure — attribute each failure to one of five subsystems (instructions,
+tools, environment, state, feedback), fix only that one on a fixed model, re-run, and change
+the model last — it becomes [[Harness Subsystem Attribution]].
 
 ## The Ratchet
 
@@ -193,6 +266,15 @@ design and model development co-train.**
 
 Practical consequence: **a harness needs periodic subtraction, not just addition.**
 
+This is the harness's answer to Sutton's *Bitter Lesson* (general methods that scale with
+compute beat hand-encoded priors): **endorse the direction, stay pragmatic about the pace.**
+Models do absorb harness layers — tool calling and long-horizon planning both began as
+external orchestration — but training cycles take months and no model internalizes every
+business's constraints. The harness covers what the model can't yet do reliably, drops each
+layer the model absorbs, and moves to the next frontier. Learned behaviour also has more
+than one home — in-context adaptation, external artifacts (docs, prompts, code), and
+weights — each persisting on a different timescale.
+
 ## Topic Notes
 
 1. [[Harness Anatomy]] — the nine components, filesystem as foundational primitive, the causal build order
@@ -201,17 +283,26 @@ Practical consequence: **a harness needs periodic subtraction, not just addition
 4. [[Verification Loops]] — self-verification, reflection types, generator/evaluator separation
 5. [[Long-Horizon Execution]] — state externalization, compaction vs context reset, plans as artifacts
 6. [[Harness Orchestration]] — subagents as context firewall, role separation, oscillation and deadlock
-7. [[Harness Maturity and Failure Modes]] — the five-stage model, production primitives, iterative simplification
+7. [[Harness Maturity and Failure Modes]] — the five-stage model, production primitives, runtime vs process observability, the quality document, builder gotchas, iterative simplification
+
+Atomic pages: [[Harness Subsystem Attribution]] · [[Dynamic Tool Discovery]] ·
+[[Belief Parameters with a Ground-Truth Gate]] · [[Coding-Agent Search and Edit Schemes]] ·
+[[Lethal Triad]] · [[Proposer-Reviewer and Sidecar Gating]] ·
+[[Three-Layer Termination Check]] · [[Agent-Oriented Error Messages]] ·
+[[Asynchronous Agent Event Loop]] · [[Runtime vs Process Observability]] ·
+[[Quality Document]] · [[Deep Agent Pillars]]
 
 ## See Also
 - [[Spec, Verifier, Environment Layering]] — extends (a practitioner framing of the same harness as spec + verifier + workshop)
 - [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Prompt Engineering]] <!-- auto-linked -->
-- [[Context Engineering]] — depends-on
-- [[Harness Anatomy]] — part-of
+- [[Context Engineering]] — prerequisite-for
+- [[Harness Anatomy]] — related (part of)
 - [[ACI (Agent-Computer Interface)]] — instance-of
 - [[Loop Engineering]] — extends (the layer above: the harness supplies tools, the loop decides when to stop using them)
-- [[Agentic Engineering and the New SDLC]] — complements (the same "skill issue" reframe reached from the process side, plus the TCO argument)
-- [[Agent Interoperability Protocol Stack]] — complements (what governs the boundary when the other side is not under your control)
+- [[Agentic Engineering and the New SDLC]] — related (the same "skill issue" reframe reached from the process side, plus the TCO argument)
+- [[Agent Interoperability Protocol Stack]] — related (what governs the boundary when the other side is not under your control)
 - [[Agent Deployment Anti-Patterns]] — instance-of (the eight deployment failures the reframe predicts)
-- [[Skill Authoring Discipline]] — implements (authoring the skill layer of the harness)
+- [[Skill Authoring Discipline]] — related (authoring the skill layer of the harness)
+- [[Harness Subsystem Attribution]] — extends (the skill-issue reframe as a diagnostic procedure)
+- [[Deep Agent Pillars]] — related (the architecture-level view of the same system)

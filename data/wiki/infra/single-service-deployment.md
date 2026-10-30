@@ -2,7 +2,7 @@
 title: Single Service Deployment
 tags: [infra, pattern]
 summary: One container running the AI backend, reachable by a small internal team — the rung where deployment first exists but auth, frontends, and independent scaling deliberately do not.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
 ---
@@ -69,8 +69,8 @@ Vertical-only scaling is acceptable at the 5–20-user scale this rung targets; 
 the binding constraint well before cost does.
 
 ## See Also
-- [[Deployment Topology Ladder]] — part-of
+- [[Deployment Topology Ladder]] — related (part of)
 - [[Local-Only Deployment]] — prerequisite-for
-- [[Cloud Service Deployment]] — upgrade-path (same container, real hosting)
-- [[Split Service Deployment]] — upgrade-path (when external users need auth)
+- [[Cloud Service Deployment]] — extends (same container, real hosting)
+- [[Split Service Deployment]] — extends (when external users need auth)
 - [[Cloud Run + Cloud SQL Pattern]] — instance-of (GCP realization of one-container hosting)

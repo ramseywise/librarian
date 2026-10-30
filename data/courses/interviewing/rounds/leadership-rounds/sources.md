@@ -1,8 +1,8 @@
 ---
-imported_hash: 97cc6e18d4b311c8
+imported_hash: c54828cb367ab111
 title: Sources — Leadership Rounds
 summary: These rounds are deliberately open-ended — any topic may surface.
-order: 51
+order: 54
 kind: reading
 section: Leadership rounds
 source: sisyphus/interviewing/rounds/leadership-rounds/sources.md

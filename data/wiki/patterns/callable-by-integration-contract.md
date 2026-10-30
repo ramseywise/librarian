@@ -2,7 +2,7 @@
 title: Callable-By Integration Contract
 tags: [infra, pattern]
 summary: When a project needs to work with an external hosted service, the scaffoldable unit is not the service but the contract that makes your system reachable from it — a plain HTTP endpoint plus a signed-webhook receiver for the reverse direction.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/research/multi-agent-tooling-parity.md
 ---
@@ -74,8 +74,8 @@ inbound half non-optional, since the whole point is that non-engineers wire the 
 
 ## See Also
 - [[Webhook Handler Idempotency]] — prerequisite-for (the receiver's core obligation)
-- [[Integration Pattern Selection]] — complements (the outbound half of the same boundary)
-- [[Capability Parity Audit]] — part-of (the audit this contract resolved a gap for)
+- [[Integration Pattern Selection]] — related (the outbound half of the same boundary)
+- [[Capability Parity Audit]] — related (part of; the audit this contract resolved a gap for)
 - [[MCP Protocol]] — alternative-to (callable-by, for agent consumers rather than workflow tools)
 - [[AI Project Template Scaffold]] — instance-of (the template that ships the contract)
 - [[NYC-DSSG Project]] — instance-of (the volunteer-turnover argument)

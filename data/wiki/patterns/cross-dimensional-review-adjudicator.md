@@ -2,7 +2,7 @@
 title: Cross-Dimensional Review Adjudicator
 tags: [llm, pattern]
 summary: After parallel per-dimension review reporters return, one adjudicator agent merges, deduplicates, and re-ranks their findings into a proposal — every kept, dropped, or re-severitied finding carries a one-line reason, and the output is a proposal the orchestrator applies, never a direct edit of the ledger.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/agents/review-adjudicator.md
   - data/raw/claude-docs/diskoe/agents/review-adjudicator.md
@@ -175,7 +175,7 @@ make nothing worse. Historical and dated docs that mentioned the route were left
 - [[Source Severity vs Merge Impact]] — extends (re-ranking by merge impact is the adjudicator's ordering rule)
 - [[Review Reporter Ground Rules]] — prerequisite-for (the adjudicator trusts reporters only because of those rules)
 - [[Corrective Follow-Up Dispatch]] — related (what happens when the adjudicator finds a dimension missing)
-- [[Deterministic Review Substrate]] — complements (adjudication over LLM findings sits on top of the deterministic layer)
+- [[Deterministic Review Substrate]] — related (adjudication over LLM findings sits on top of the deterministic layer)
 - [[An Unrun Scan Is Not a Clean Scan]] — extends
 - [[Shared Context Brief]] — extends
 - [[Async Seam Before the Table]] — instance-of (the reviewed change)

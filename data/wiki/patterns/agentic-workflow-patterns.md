@@ -2,7 +2,7 @@
 title: Agentic Workflow Patterns
 tags: [llm, pattern]
 summary: Anthropic's five composable workflow patterns for LLM agents — when to use each, and the ACI principle for tool design.
-updated: 2026-04-24
+updated: 2026-10-30
 sources:
   - data/raw/web/2026-04-24-www-anthropic-com-engineering-building-effective-agents-7d24e5fa.md
 ---
@@ -103,3 +103,4 @@ Frameworks (Claude Agent SDK, Strands, Rivet, Vellum) help get started but add a
 - [[Agent Orchestration Patterns]] — related (project-scoping view of the same escalation ladder)
 - [[Single Prompt Baseline]] — instance-of (the "simplest solution" this page recommends starting from)
 - [[Multi-Agent Role Specialization]] — related (orchestrator-workers, with role-test caveats)
+- [[Prompt Chaining]] — extends (prompt-level view: I/O contracts, DAG as default topology, generate-then-check)

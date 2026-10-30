@@ -1,8 +1,8 @@
 ---
-imported_hash: 3caebe1d7c40b555
+imported_hash: 80d30a8712edddc9
 title: Study Guide — Case Study Round
 summary: You should be able to write this in 2 minutes from memory.
-order: 12
+order: 13
 kind: reading
 section: Case study
 source: sisyphus/interviewing/rounds/case-study/study-guide.md

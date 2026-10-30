@@ -2,7 +2,7 @@
 title: Single Agent With Tools
 tags: [llm, pattern]
 summary: One agent with a tool set, where the LLM chooses which tools to call and when to stop — the level most real projects need, and the recommended default before any graph or multi-agent escalation.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/agent-orchestration.md
 ---
@@ -69,7 +69,8 @@ is the dominant lever — see [[ACI (Agent-Computer Interface)]].
 - [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Multi-Agent Role Specialization]] <!-- auto-linked -->
 - [[Agentic Workflow Patterns]] <!-- auto-linked -->
-- [[Agent Orchestration Patterns]] — part-of
-- [[Single Prompt Baseline]] — upgrade-from
-- [[Multi-Step Graph Orchestration]] — upgrade-path
+- [[Agent Orchestration Patterns]] — related (part of)
+- [[Single Prompt Baseline]] — prerequisite-for
+- [[Multi-Step Graph Orchestration]] — extends
 - [[ACI (Agent-Computer Interface)]] — extends (tool descriptions drive selection quality)
+- [[Agent Fundamentals]] — prerequisite-for

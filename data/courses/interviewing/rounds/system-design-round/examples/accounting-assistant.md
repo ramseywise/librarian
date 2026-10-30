@@ -1,8 +1,8 @@
 ---
-imported_hash: 57db65087da592cd
+imported_hash: e13ff6bc3d1ca317
 title: 'Example: Accounting Support Agent'
 summary: '"Design a support agent for an accounting SaaS product.'
-order: 76
+order: 82
 kind: reading
 section: System design round / Examples
 source: sisyphus/interviewing/rounds/system-design-round/examples/accounting-assistant.md

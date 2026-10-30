@@ -2,12 +2,13 @@
 title: Grounding Claim Methodology
 tags: [eval, rag, pattern]
 summary: Claims-based grounding — the "yellow highlighter" approach to RAG verification, where the agent extracts verbatim supporting quotes from retrieved documents before writing the final answer, creating a verifiable paper trail.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/project-g/docs/support-agents/grounding-methodology.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--grounding-methodology.md
   - data/raw/claude-docs/project-g/docs/support-agents/invocation-flow.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--07-evaluating-rag-and-grounding.md
 ---
 
 # Grounding Claim Methodology
@@ -101,6 +102,20 @@ unexamined. The user saw no defect, since they were being escalated anyway, but 
 violation never reached grounding telemetry, so monitoring under-counted fabrication. The
 fix is ordering: **run every tier, then check the escalation flag**.
 
+## Faithful is not correct; pass the text, not the pointer (course synthesis)
+
+An answer can be perfectly faithful to a stale or wrong document. Faithfulness measures the generator;
+**correctness** against a reference measures the system. Track both — faithful-but-wrong points at
+the corpus.
+
+Grounding without retrieval: **self-consistency** (sample several answers; claims that vary are likely
+hallucinated — SelfCheckGPT, Manakul et al. 2023) and **adversarial factuality sets** (TruthfulQA,
+Lin et al. 2021, where the popular answer is false).
+
+The most common grounding-eval bug: the grader receives passage IDs or URLs instead of **passage
+text**, can't verify anything, and scores near zero — or worse, scores from its own knowledge. Assert
+`context_missing` in CI.
+
 ## See Also
 - [[RAG Evaluation]]
 - [[project-g Eval Architecture]]
@@ -111,3 +126,4 @@ fix is ordering: **run every tier, then check the escalation flag**.
 - [[Experiment Tracking Schemas]] — extends (the log-only-then-promote policy governing when a tier becomes a hard fail)
 - [[Evidence-Labelled Generation with Deterministic QC]] — extends (evidence labels checked by code, not a judge)
 - [[Assembled, Not Generated Replies]] — related (sidestepping grounding by not generating prose at all)
+- [[Specialist Verdict Panel]] — instance-of (claim-level citation checking)

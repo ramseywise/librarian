@@ -1,8 +1,8 @@
 ---
 title: Every Column Names Its Reader
-tags: [infra, pattern, conflict]
+tags: [infra, pattern]
 summary: A column nothing selects is not documentation, it is a trap — four plausible, CHECK-constrained, well-commented status columns sat on one table while only one was read, and the dead ones were wrong about the rows that were actually published — so no column (or JSON field) is added until a named query, screen, or job reads it, and "nothing reads it" in an audit is a finding about missing plumbing, not a null result.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-14-dis263-accepted-candidate-bridge.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-14-dis263-accepted-candidate-bridge.md
@@ -210,9 +210,10 @@ filter consumer, resolve to a boolean at authoring time.** The adopted shape:
 
 ## Exclusion Filters Fail Open Until the Backfill (akira, 2026-09-21)
 
-> **Conflict flagged** (see `_conflicts.md`, "Resident-leaning filter: default-deny vs
-> fail-open"). The section above, from the research doc, says unknown never passes the
-> audience filter. The executed plan reversed that.
+> **Sequencing, not contradiction (resolved 2026-10-30).** The section above, from the
+> research doc, describes the end state: default-deny, so unknown never passes. The executed
+> plan ships fail-open *until the backfill runs*. Default-deny over an unpopulated column
+> empties the pool on merge day. Flip to default-deny once the backfill has populated it.
 
 The executed plan for the same audience attribute shipped its reader (a hard-filter flag
 in the eligibility gate) and the column in the same change, unlike the previous attribute,
@@ -381,7 +382,7 @@ migration less, and the schema never held a field that nothing read.
 
 ## See Also
 - [[Event–Occurrence Split, Added Behind the Old Column]] — instance-of (a whole table whose only reader was its writer)
-- [[Migration Done Means Pushed and Probed]] — complements (the other half of the schema conventions)
+- [[Migration Done Means Pushed and Probed]] — related (the other half of the schema conventions)
 - [[Taste vs Defect Verdict Split]] — instance-of (a plan that named readers before adding columns)
 - [[Written-but-Inert RLS Policies]] — related (a policy no row can satisfy is the same trap in the security layer)
 - [[Silent Fallthrough in String-Keyed Discovery]] — related (plausible-but-dead values discovered by grep)

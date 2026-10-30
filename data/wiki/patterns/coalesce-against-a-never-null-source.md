@@ -2,7 +2,7 @@
 title: Coalesce Against a Never-Null Source
 tags: [patterns, infra, pattern]
 summary: "`coalesce(incoming, existing)` only protects a field when the incoming side can actually be null. A field whose upstream resolver always returns a value (an image with an event > venue > fallback chain) overwrites on every merge, silently downgrading good data — so give it a rank rule instead (refresh only when the incoming provenance is at least as good)."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-16-dis295-event-edition-identity.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-16-dis295-event-edition-identity.md
@@ -81,3 +81,4 @@ nulls. For that field coalesce is correct, and the parent keeps its old descript
 - [[Event–Occurrence Split, Added Behind the Old Column]] — extends (occurrences carry the dates; this decides who owns the descriptive fields)
 - [[Advance-Only Machine Writes on a Shared Lifecycle]] — related (the review-status guard keeps machine writes off human-approved rows)
 - [[Migration Done Means Pushed and Probed]] — related (the RPC change shipped as a drop-then-create migration, probed live)
+- [[SQL NULL and Three-Valued Logic]] — prerequisite-for (COALESCE semantics)

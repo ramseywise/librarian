@@ -2,7 +2,7 @@
 title: Multi-Agent Reinforcement Learning
 tags: [foundations, agents, concept]
 summary: "MARL, the non-stationarity problem it exists to solve, CTDE as the dominant answer, the value-decomposition and central-critic algorithm families, and the five challenges — including the ~10–20 agent scalability wall."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--rl.md
@@ -106,7 +106,7 @@ a deterministic envelope rather than replacing it.
 
 ## See Also
 - [[Reinforcement Learning Foundations]] — extends (the single-agent MDP this generalizes)
-- [[Agent Orchestration Patterns]] — complements (the same coordination-cost conclusion from the engineering side)
-- [[Multi-Agent Context]] — complements (where coordination information enters an LLM system)
-- [[Constitutional AI and RLAIF]] — complements (self-play as the red-teaming mechanism)
+- [[Agent Orchestration Patterns]] — related (the same coordination-cost conclusion from the engineering side)
+- [[Multi-Agent Context]] — related (where coordination information enters an LLM system)
+- [[Constitutional AI and RLAIF]] — related (self-play as the red-teaming mechanism)
 - [[RL for Retrieval Policies]] — alternative-to (multi-action single-agent, often mistaken for MARL)

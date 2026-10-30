@@ -2,7 +2,7 @@
 title: Relevance Is the Score, Enrichability Is the Gate
 tags: [patterns, eval, pattern]
 summary: A sampling or priority score that blends "can we enrich this from its website" with "does this item matter" ranks prose-rich chains above cultural staples; split the axes so relevance is the score and enrichability only gates (a gated item holds at full score), and source prominence from cross-source agreement rather than from the column you happen to have.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-28-enrichment-sampling-relevancy-phases.md
   - data/raw/claude-docs/diskoe/docs/research/2026-09-28-enrichment-sampling-relevancy-phases.md
@@ -87,7 +87,7 @@ held for operator go-ahead (see [[Spend Gate Before the Model Call]]).
 ## See Also
 - [[Specificity-Adaptive Ranking and Slate Composition]] — related (the serve-time ranker whose reputation flag the sampling lane mirrors)
 - [[UNGATED Metric Convention]] — instance-of (calibration against labels the score was built from)
-- [[Offline Annotation over Online Inference]] — complements (deciding which rows get the offline annotation)
+- [[Offline Annotation over Online Inference]] — related (deciding which rows get the offline annotation)
 - [[Validated Concept vs Unmeasured System]] — related (designed weights vs measured ones)
 - [[Kiez Project]] — instance-of
 - [[Count What the Merge Already Folded]] — prerequisite-for (how the empty corroboration column was later filled)

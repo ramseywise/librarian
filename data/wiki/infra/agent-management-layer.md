@@ -2,7 +2,7 @@
 title: Agent Management Layer
 tags: [infra, eval, agents, reference]
 summary: "The six systems a production agent needs beyond the agent itself — evals, fallback/escalation, drift monitoring, HITL checkpoints, audit logging, handoff protocol — argued as 60% of the deployment, not 10%."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agent-harness.md
@@ -94,11 +94,11 @@ edge contracts in [[Graph Engineering]] — a handoff protocol is that disciplin
 across a boundary the graph does not own.
 
 ## See Also
-- [[Eval Maturity Ladder]] — depends-on (items 1 and 3 are its levels 3 and 4)
-- [[Bounding Agents Rather Than Trusting Them]] — complements (escalation as a first-class outcome rather than error handling)
+- [[Eval Maturity Ladder]] — prerequisite-for (items 1 and 3 are its levels 3 and 4)
+- [[Bounding Agents Rather Than Trusting Them]] — related (escalation as a first-class outcome rather than error handling)
 - [[Online Eval Sampling]] — instance-of (the drift-monitoring mechanism)
 - [[Eval Suite Maintenance]] — extends (evals as living artifacts, and who owns them)
-- [[Observability and Runtime Patterns]] — implements (item 5)
-- [[Production Hardening Patterns]] — complements (system-specific checklist under this generic frame)
-- [[Graph Engineering]] — complements (handoff protocol as an edge contract across an ownership boundary)
-- [[Safeguards Architecture — Five Protection Layers]] — complements (fallback and escalation as defence layers)
+- [[Observability and Runtime Patterns]] — related (item 5)
+- [[Production Hardening Patterns]] — related (system-specific checklist under this generic frame)
+- [[Graph Engineering]] — related (handoff protocol as an edge contract across an ownership boundary)
+- [[Safeguards Architecture — Five Protection Layers]] — related (fallback and escalation as defence layers)

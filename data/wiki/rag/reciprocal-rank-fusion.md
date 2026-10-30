@@ -1,8 +1,8 @@
 ---
 title: Reciprocal Rank Fusion (RRF)
-tags: [rag, concept, conflict]
+tags: [rag, concept]
 summary: Score-free fusion algorithm that combines multiple ranked lists by position — the standard method for merging BM25 and dense vector retrieval results, and for amplifying cross-query agreement in multi-query retrieval.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/rag/rrf.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
@@ -106,8 +106,9 @@ scoring dimension itself**. The controlled-vocabulary dimensions keep deciding f
 the pool. Two properties make this safe:
 
 - A candidate absent from one list contributes 0 from that list, not a penalty, and a
-  rank-1 exact-name lexical hit (`1/(k+1)`) outweighs a mediocre semantic rank. That
-  protects name matching, where embeddings are weak.
+  rank-1 exact-name lexical hit (`1/(k+1)`) outweighs the *same id's* mediocre semantic
+  rank. It does **not** outrank a different id that both arms return (see "As built"
+  below), so exact-name matching needs its own boost or pin outside RRF.
 - An arm being down is a **designed degraded mode**: RRF runs on the remaining arms, and
   the event is logged and non-fatal.
 
@@ -122,8 +123,9 @@ which beats a single-list rank-1 hit (`1/61`) whenever `r < 62`. So with short l
 double-appearance case numerically wins. The exact-name protection only holds against the
 *same id's* weaker semantic rank, not against a different id that both arms return. The
 test was rewritten to assert the real arithmetic, with an inline comment so a future
-reader does not "fix" the assertion back to intuition. This contradicts the claim in
-"RRF Decides the Pool" and is flagged in `_conflicts.md`.
+reader does not "fix" the assertion back to intuition. The design's "protects name
+matching" claim was wrong as stated. If exact-name hits must win, pin or boost them before
+or after fusion; RRF alone will not.
 
 The fusion module shipped dark: a grep-test asserts no serving path imports the hybrid
 module, so the arm cannot reach users before its gated metric flips it on.

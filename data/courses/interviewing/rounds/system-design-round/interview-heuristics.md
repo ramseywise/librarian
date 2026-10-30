@@ -1,8 +1,8 @@
 ---
-imported_hash: 522f04e9bb558313
+imported_hash: a3b7db786fcafddf
 title: System Design Interview Heuristics
 summary: Fourteen round techniques, extracted from a design walkthrough.
-order: 70
+order: 75
 kind: reading
 section: System design round
 source: sisyphus/interviewing/rounds/system-design-round/interview-heuristics.md

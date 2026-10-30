@@ -2,9 +2,12 @@
 title: Graph Topology Primitives
 tags: [llm, agents, langgraph, infra, reference]
 summary: "The four things a graph is made of — nodes that spend agency, edges that route, state that carries the coupling, and checkpointers that make interrupts and crash-resume the same mechanism."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--02-graph-primitives.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--03-state-and-reducers.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--04-durable-execution-and-interrupts.md
 ---
 
 # Graph Topology Primitives
@@ -24,12 +27,15 @@ powerful, and efficient."*
 > The design skill is deciding, **per node, how much agency to spend.** Every node that
 > could be deterministic code and isn't is a node you pay tokens and variance for.
 
-| Node kind | Purpose | Determinism |
-|---|---|---|
-| Agent | Open-ended reasoning with its own tool loop | Low |
-| Deterministic function | Parsing, validation, formatting, API calls | Total |
-| Router | Classify and dispatch | Medium (single LLM call or rules) |
-| Human checkpoint | Approval before a consequential action | External |
+| Node kind | Purpose | Determinism | Cost |
+|---|---|---|---|
+| Deterministic function | Parsing, validation, formatting, API calls | Total | Compute only |
+| Router | Classify and dispatch | Medium (rules or one LLM call) | One call at most |
+| Single LLM call | One bounded transformation: summarise, extract, draft | Medium | One call |
+| Agent | Open-ended reasoning with its own tool loop | Low | Many calls, variable |
+| Human checkpoint | Approval before a consequential action | External | Latency |
+
+The **single LLM call** row is the one teams forget exists between "code" and "agent".
 
 **Specialization is prompt-only by default.** The [[n8n AI Workflow Builder]] runs every
 node on the same model at temperature 0 and differentiates roles entirely by system
@@ -51,6 +57,16 @@ Conditional edges are what buy you:
 - **Error paths** — route to a retry or repair node on tool failure.
 - **Approval gates** — route to a human-in-the-loop node before an irreversible action.
 - **Early exit** — route straight to `END` when a stopping condition is met.
+- **Cycles** — route back to an earlier node to revise. **Every back-edge needs a counter in
+  state or a recursion limit**; a cycle without a bound is an infinite loop.
+
+A node can also return `Command(goto="node_b", update={...})`, combining a state update and a
+routing decision. Use it when only the working node knows where to go next; prefer a separate
+router when the routing logic should be testable on its own. **Handoffs live in state:** an
+agent signals completion by writing a status key that a conditional edge reads, so agents can
+be swapped without touching their neighbours. Before drawing an edge as sequential, apply the
+true-dependency test — *does the next step actually read the previous step's output?* — the
+incidental ones belong in a fan-out.
 
 Static edges alone are insufficient in production, because **the set of nodes to run is
 often unknown until runtime** — fan out over N retrieved documents, spawn one reviewer per
@@ -88,6 +104,17 @@ argument for a graph over a loop when approval is required mid-execution.
 > Checkpointers are what make interrupts, resume-after-crash, and time-travel debugging
 > **all the same mechanism**.
 
+A checkpoint is only as useful as the state schema: it must hold the plan, completed steps,
+intermediate outputs and run metadata (attempt counts, budget used) — anything held only in a
+Python variable or open connection is lost on resume.
+
+**Where approval gates go.** Consequence concentrates at a few edges — sending, publishing,
+paying, deleting, deploying — so put the gate *there*, not on every node; a gate everywhere
+trains the human to click approve without reading. Gate before irreversible actions, before
+actions crossing a trust boundary (external API, another tenant), and on low-confidence router
+decisions. The [[n8n AI Workflow Builder]] puts its one gate after the planner, because the
+plan is the cheapest thing to correct.
+
 ## Typed edges — the knowledge-graph side
 
 On the [[Knowledge Graph Retrieval]] side of the discipline the claim is stronger:
@@ -118,9 +145,12 @@ bounds are [[Loop Termination Design]] applied at each node, and they localize t
 radius of a stuck node instead of letting it consume the whole run's budget.
 
 ## See Also
-- [[Graph Engineering]] — part-of
-- [[Send API Fan-out]] — extends (dynamic edges when N is unknown at compile time)
-- [[LangGraph State Reducers]] — extends (the fan-in concurrency primitive)
-- [[Loop Termination Design]] — complements (per-node bounds vs per-loop bounds)
-- [[Knowledge Graph Retrieval]] — complements (typed edges on the retrieval side)
-- [[n8n AI Workflow Builder]] — instance-of
+- [[Graph Engineering]] — extends
+- [[Send API Fan-out]] — prerequisite-for (dynamic edges when N is unknown at compile time)
+- [[LangGraph State Reducers]] — prerequisite-for (the fan-in concurrency primitive)
+- [[Loop Termination Design]] — extends (per-node bounds vs per-loop bounds)
+- [[Knowledge Graph Retrieval]] — prerequisite-for (typed edges on the retrieval side)
+- [[n8n AI Workflow Builder]] — prerequisite-for
+- [[Multi-Agent Topology Patterns]] — prerequisite-for
+- [[LangGraph Advanced Patterns]] — prerequisite-for
+- [[Graph Governance and Attribution]] — prerequisite-for

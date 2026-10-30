@@ -2,10 +2,12 @@
 title: Loop-to-Graph Escalation
 tags: [llm, agents, infra, pattern]
 summary: "A loop is a graph with one node and an edge back to itself — so graph is not a maturity level you graduate to but a cost you justify, and the five signals name what a single loop structurally cannot do."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--README.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--01-graph-vs-loop.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--06-when-not-to-build-a-graph.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-14-orchestrator-design.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-orchestrator-design.md
   - data/raw/claude-docs/galactus/docs/plans/2026-08-14-pipeline-orchestration.md
@@ -89,8 +91,9 @@ More prompts to maintain, cross-node state synchronization, coordination latency
 harder debugging — **all pure overhead when the problem was single-specialty to begin
 with.**
 
-This meets the cost argument from the other direction: graphs break even around a ~50%
-per-cycle pass rate and cost ~3× the tokens per cycle. Below that bar you are paying
+This meets the cost argument from the other direction: a vendor blog puts graph break-even
+around a ~50% per-cycle pass rate at ~3× the tokens per cycle — **vendor estimates, a shape to
+test rather than constants**; measure your own break-even. Below that bar you are paying
 fan-out cost for work that will be redone anyway.
 
 ## Design checklist
@@ -122,10 +125,12 @@ rate (see [[Decision-Seat Inventory for a Control Plane]]).
 ## See Also
 - [[Recursive Self-Improvement]] <!-- auto-linked -->
 - [[Knowledge Graph as Shared Agent Memory]] <!-- auto-linked -->
-- [[Graph Engineering]] — part-of
-- [[Loop Engineering]] — prerequisite-for (the default you escalate from)
-- [[Verification Loops]] — complements (the overloaded verifier is the most common false signal)
-- [[Loop Termination Design]] — complements
+- [[Graph Engineering]] — extends
+- [[Loop Engineering]] — extends (the default you escalate from)
+- [[Verification Loops]] — extends (the overloaded verifier is the most common false signal)
+- [[Loop Termination Design]] — extends
+- [[Multi-Agent Topology Patterns]] — prerequisite-for (which shape to escalate to)
+- [[Loop Scorekeeper]] — extends (splitting the verifier into per-criterion checks)
 - [[Graph Topology Primitives]] — extends
 - [[Design Dry-Run Simulation]] — extends (the design stage that tests the 'overloaded verifier' question)
 - [[Right-Sizing a Document-to-LLM Pipeline]] — instance-of (a 7-step pipeline with one repair loop that does not earn a graph framework)

@@ -2,10 +2,12 @@
 title: Loop Autonomy Ladder
 tags: [llm, agents, infra, pattern]
 summary: "Four rungs of handoff — tool approval, stop condition, trigger, session — climbed one at a time, each earned with a verifier that has been observed catching a real failure."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-autonomy-ladder.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--loop-engineering.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--07-autonomy-ladder.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--06-triggers-and-schedules.md
 ---
 
 # Loop Autonomy Ladder
@@ -98,6 +100,52 @@ hill-climbing loop (level 4) can perfectly well run at autonomy rung 1 — a hum
 rewrite of the config — and that combination is the recommended starting point for the
 [[Evolve Loop]].
 
+### A Third View: the Adoption Ladder
+
+A practical adoption order that cuts across both axes:
+
+| Level | Name | Adds | Maps to |
+|---|---|---|---|
+| 1 | Goal runner | `/goal` with a stop condition | rung 2 |
+| 2 | Scheduled single task | One automation on a timer (e.g. morning CI check) | rung 3–4 |
+| 3 | Multi-agent loop | Maker/checker split, a worktree per finding | capability 2 |
+| 4 | Self-feeding loop | Finds its own next task in external state (issues, feature list) | capability 3 |
+| 5 | Fleet orchestration | Several loops in parallel sharing a memory layer | — |
+
+Most teams sit between 2 and 3; level 1 pays off fastest.
+
+## Triggers: How a Run Starts
+
+Two ways a loop decides to run again: **run-until-done** (pass after pass until the scorekeeper
+is green or a cap trips — needs a precise "done") and **timer** (interval or cron; never stops by
+itself — each run must be **cheap when there's nothing to do**). Three ways a run starts:
+**manual**, **event** (error alert, new ticket, failing CI, chat message) and **schedule**.
+**Prefer events to polling**; when you must poll, put a **cheap deterministic pre-check** in
+front of the agent (fetch updates since the last run, wake the agent only if there is work — the
+trigger fix in [[Evolve Loop]]).
+
+### Claude Code's built-ins mapped to rungs
+
+| Command | Shape | Rung |
+|---|---|---|
+| `/goal` | Run-until-done toward a stated, verified condition | 2 |
+| `/loop 5m <prompt>` | Timer, inside your session | 3 |
+| `/loop <prompt>` | Self-paced: the model picks the delay | 3 |
+| `/schedule` | Cloud routine on cron, no session open | 4 |
+
+**Does this thing have an end?** Yes → `/goal`; ongoing watching → `/loop`. The common mistake
+is `/loop 10m "keep implementing the payment system"`: each pass runs the same instruction from
+scratch and doesn't remember where the last stopped — a timer loop that must make progress needs
+a [[Loop State File]] it reads first. `/schedule` runs without you, so it needs a trusted
+verifier and its own scoped credentials.
+
+### Cost ceilings before turning a trigger on
+
+An unattended trigger multiplies whatever one run costs: a **per-run cap** (steps, tokens,
+dollars), a **per-day cap on the trigger itself** so an event storm can't start a thousand runs,
+a **no-op path** that exits in seconds before calling the model, and **alerts on spend**, not
+just on failure.
+
 ## Design Checklist
 
 - [ ] Which rung is this loop on *today*?
@@ -111,8 +159,10 @@ rewrite of the config — and that combination is the recommended starting point
 - [[Prompt Chaining]] <!-- auto-linked -->
 - [[Harness Engineering]] <!-- auto-linked -->
 - [[Graph Engineering]] <!-- auto-linked -->
-- [[Loop Engineering]] — part-of
-- [[Loop Termination Design]] — depends-on
-- [[Evolve Loop]] — complements
-- [[Verification Loops]] — depends-on
-- [[Execution Boundaries and Guardrails]] — depends-on
+- [[Loop Engineering]] — extends
+- [[Loop Termination Design]] — extends
+- [[Evolve Loop]] — prerequisite-for
+- [[Verification Loops]] — extends
+- [[Execution Boundaries and Guardrails]] — extends
+- [[Loop Scorekeeper]] — extends
+- [[Loop State File]] — extends

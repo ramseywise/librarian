@@ -1,8 +1,8 @@
 ---
 title: Listen-Wiseer Project
-tags: [langgraph, rag, memory, eval, project, conflict]
-summary: Spotify recommendation agent with ENOA taste-map personalisation — LangGraph ReAct + Chainlit UI, LightGBM classifiers, DuckDB vss RAG, and three-tier eval harness.
-updated: 2026-10-17
+tags: [langgraph, rag, memory, eval, project]
+summary: Personal music copilot with ENOA taste-map personalisation — LangGraph agent behind a React web player (FastAPI SSE over Navidrome; Chainlit retired 2026-10-30), GMM/LightGBM reranking, agentic web search and a three-tier eval harness; Spotify-free since Phase 9 (2026), running on MusicBrainz, ListenBrainz, Last.fm and Deezer.
+updated: 2026-10-30
 sources:
   - data/raw/playground-docs/2026-07-13-puffin-agentic-protocols-general-vs-specific.md
   - data/raw/playground-docs/2026-07-13-puffin-listen-wiseer-knowledge-plan.md
@@ -76,19 +76,19 @@ sources:
 
 # Listen-Wiseer Project
 
-Personal Spotify recommendation agent personalised to the user's own ENOA taste map — not a generic Spotify wrapper. ENOA (top/left) coordinates encode a 2D emotional/sonic space derived from the user's playlist curation behaviour.
+Personal music recommendation agent (originally Spotify-based; Spotify-free since Phase 9) personalised to the user's own ENOA taste map — not a generic Spotify wrapper. ENOA (top/left) coordinates encode a 2D emotional/sonic space derived from the user's playlist curation behaviour.
 
 ## Stack
 
 | Layer | Technology |
 |---|---|
 | Orchestration | LangGraph (ReAct agent) |
-| UI | Chainlit |
+| UI | React web player (`web/`, Vite) with an assistant side panel, served by FastAPI (`/api/chat` SSE, `/api/playable`) over Navidrome; Chainlit until 2026-10-30 |
 | ML | LightGBM (32 per-playlist classifiers) + GMM (8 components) |
 | RAG | DuckDB vss (`rag_chunks` table, `all-MiniLM-L6-v2`, 384-dim) |
 | Vector cache | ChromaDB (`artist_info` collection, lazy ingestion) |
 | Memory | LangGraph `InMemoryStore` + langmem (episodic/semantic/procedural) |
-| Checkpointer | MemorySaver (dev) / AsyncRedisSaver (prod) |
+| Checkpointer | MemorySaver (dev) / AsyncRedisSaver (prod) — superseded: Postgres in Docker as of 2026-10 |
 | Data | 595k-row corpus, 2182 tracks, 291 genre mappings |
 | Tools | MCP server (8 tools) + StructuredTool wrappers (20 tools) |
 | Observability | LangFuse (tracing + scoring) |
@@ -186,9 +186,9 @@ START → trim_history → classify_intent → [route_after_classify]
 | Memory store | `AsyncPostgresStore` (prod) / `InMemoryStore` (dev, via `MEMORY_STORE_URL`) | Cross-session taste/episodic memory persistence |
 | Checkpointer | AsyncPostgresSaver (prod) / MemorySaver (dev) | Postgres via Docker Compose |
 | LLM client | `langchain-anthropic` `ChatAnthropic` over raw SDK | LangFuse span visibility |
-| Eval framework | LangFuse + RAGAS + DeepEval | LangFuse: free tier + RAGAS native integration; DeepEval: `ToolCorrectnessMetric` fills agent eval gap  **Conflict:** the repo's CLAUDE.md says deepeval was never imported and was removed 2026-07-19; ragas + langfuse carry the harness (see `_conflicts.md`) |
+| Eval framework | LangFuse + RAGAS | LangFuse: free tier + RAGAS native integration. DeepEval was planned for `ToolCorrectnessMetric` but never imported, and was removed 2026-07-19 after its autoloaded pytest plugin broke collection |
 
-**Eval harness module layout** (instantiates [[Anthropic Three-Tier Eval Taxonomy]] for this project): `evals/agent/intent_eval.py` (Tier 1 — deterministic, imports `QueryAnalyzer` directly, no DuckDB import chain), `evals/agent/trajectory_eval.py` (Tier 2), `evals/agent/graders.py` (Tier 3 — RAGAS + DeepEval, Haiku-backed), `evals/agent/cost_gate.py` (single `CONFIRM_EXPENSIVE_OPS` env-var source of truth — `evals/graders/answer_eval.py` was refactored to import from here instead of a hardcoded bool), and `evals/run_agent_eval.py --tier {1,2,3,all}` as the single CLI entry point wired to `make eval-unit`/`eval-trajectory`/`eval-e2e`. Golden dataset: `evals/datasets/golden_intent.jsonl`, 50 hand-crafted `AgentGoldenSample` rows (10 per intent × 5 intents, with adversarial/ambiguous samples spread across intents).
+**Eval harness module layout** (instantiates [[Anthropic Three-Tier Eval Taxonomy]] for this project): `evals/agent/intent_eval.py` (Tier 1 — deterministic, imports `QueryAnalyzer` directly, no DuckDB import chain), `evals/agent/trajectory_eval.py` (Tier 2), `evals/agent/graders.py` (Tier 3 — RAGAS, Haiku-backed), `evals/agent/cost_gate.py` (single `CONFIRM_EXPENSIVE_OPS` env-var source of truth — `evals/graders/answer_eval.py` was refactored to import from here instead of a hardcoded bool), and `evals/run_agent_eval.py --tier {1,2,3,all}` as the single CLI entry point wired to `make eval-unit`/`eval-trajectory`/`eval-e2e`. Golden dataset: `evals/datasets/golden_intent.jsonl`, 50 hand-crafted `AgentGoldenSample` rows (10 per intent × 5 intents, with adversarial/ambiguous samples spread across intents).
 
 ## Corpus Facts
 
@@ -280,6 +280,84 @@ duck-typing one tool pair's artifact shape), per-call client construction, a thr
 up for single queries, two duplicate URL-dedup helpers, and a call site passing an empty
 `entities` dict that silently disables one complexity signal.
 
+## Phase 9 — Free Music Stack (S0–S7, done by 2026-10)
+
+The project left Spotify entirely: Premium was cancelled and the developer API closed to
+personal apps. Spotify was removed in stage S5. What replaced it:
+
+- **Identity spine:** MusicBrainz MBIDs. `track_xref` maps each track to its MBID and to
+  Spotify, Deezer, ISRC and YouTube ids.
+- **Similarity candidates:** ListenBrainz, Last.fm and Deezer. LightGBM still decides which
+  candidates fit the taste profile. Audio Features had been restricted earlier, so the
+  model already ran on derived proxies.
+- **Playback:** a YouTube link plus an inline Deezer link and 30 s preview. Nothing is
+  downloaded from either, because their terms forbid it. `playable_cache` caches YouTube
+  lookups.
+- **Legal downloads (S6):** downloadable catalogues (Jamendo, Internet Archive) go into a
+  local `library` table and are served to Subsonic apps by navidrome.
+- **Local playlists:** stored by artist, title and MBID, exportable as JSPF.
+- **History:** the old Spotify tables (`tracks`, `playlists`, `audio_features`) are a
+  frozen archive keyed by legacy ids. Listening history comes from the Spotify privacy
+  export (`make import-history`), then `make resolve-ids` maps plays to MusicBrainz and
+  Deezer ids, resumably.
+- **S7** added evals. The S3b reranker work was carried into audit item F.
+
+## Repo Audit (2026-10-30)
+
+| Item | Scope | Status |
+|---|---|---|
+| A | Fresh-clone path plus `make doctor` | done |
+| B | Docs | done |
+| C | Dependency diet plus a pyright gate | done |
+| D | Coverage to 83% | done |
+| E | Docker and MCP over HTTP | done |
+| F | Data-gated work | partial; needs a Spotify export |
+
+Resulting conventions:
+
+- **The committed database is the bootstrap.** A fresh clone runs `git lfs pull` to get
+  the ~11 MB DuckDB file, then `uv sync`, `make train` (reads DuckDB, no CSVs),
+  `make doctor`, `make app`.
+- **`make init-db` only migrates the schema.** It imports CSVs only if an optional,
+  gitignored archive directory exists.
+- **`make doctor` checks readiness.** It reports keys set or unset (never their values),
+  DuckDB row counts and models present. `--strict` exits 1 on any warning, and
+  `make app` runs it first without blocking.
+- **Docker** runs postgres, db-init, mcp, app and navidrome (the app became the `api` service on 2026-10-30, see below) as non-root, multi-stage
+  images. The checkpointer is Postgres in Docker and MemorySaver in dev.
+- **MCP** is stdio by default, with server logs on stderr so stdout stays JSON-RPC.
+  `streamable-http` serves on `:8765`.
+- **CI** runs ruff, `pyright src` and unit tests with an 80% coverage floor. The eval CI
+  gate fails a PR if any Tier 1 metric drops more than 5% from the committed baseline
+  (golden intent set: 61 samples).
+- **Gotchas recorded:**
+  - Last.fm error 10 means the key is pending manual activation, not wrong.
+  - `[tool.uv.sources]` index pins only reach direct dependencies; see
+    [[Index Pin Applies Only to Direct Dependencies]].
+  - A committed `.python-version` (3.11) stops `uv` picking a newer interpreter where
+    `gensim` fails to build.
+
+## Web Player Replaces Chainlit (2026-10-30)
+
+The Chainlit chat UI is gone. The app is now a React web player (`web/`, Vite) with the
+assistant in a side panel, backed by a FastAPI service in `src/api/` that proxies
+Navidrome, streams chat over SSE (`/api/chat`) and resolves playback (`/api/playable`).
+
+- **Local dev:** `make navidrome` (music server on `:4533`), `make seed-library` (a few
+  CC-licensed tracks plus the first-run Navidrome admin), `make api` (FastAPI on
+  `127.0.0.1:8000`; `API_PORT` moves it) and `make web` (Vite on `:5173`, proxying `/api`).
+  `make dev` runs API and UI together; after `make web-build`, the API serves the built UI at `/`.
+- **Docker:** the stack is postgres, db-init, navidrome, api (which builds `web/` with
+  Node 22 and serves it) and mcp. `make infra-down` keeps volumes (Navidrome users and
+  playlists, Postgres). `make infra-smoke` checks API health, that `/` returns
+  `index.html`, that a Range request on a stream returns 206, and the MCP server.
+- **DuckDB is single-writer across processes.** The player API is *the* writer (`plays`,
+  `track_xref`, caches) and opens a connection per request. The MCP server opens the
+  database read-only and skips cache writes; its one real write, `download_track`, opens
+  read-write and returns a clear "database in use" message when the lock is held. New
+  tools read via `db()` and write via `db(write=True)`, handling `duckdb.IOException`.
+  This is the same one-writer discipline as [[Append-Only Log Writer Invariants]].
+
 ## LIS-77 — Runtime Bugs Behind a Green Suite (2026-07-30)
 
 A repo-wide review sweep found two runtime bugs with ~470 passing tests: a function-local
@@ -318,6 +396,7 @@ reasoning is recorded:
   graph-conflict flags) are in [[Provenance-Tracked Agent Beliefs]].
 
 ## See Also
+- [[Index Pin Applies Only to Direct Dependencies]]
 - [[Agent Memory Types]]
 - [[RAG Evaluation]]
 - [[LangGraph CRAG Pipeline]]

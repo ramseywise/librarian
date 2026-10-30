@@ -1,15 +1,15 @@
 ---
 title: LangChain Fundamentals — create_agent, Tools, Structured Output
-tags: [langgraph, llm, concept, conflict]
-summary: LangChain 1.0's core agent-building primitives — the create_agent() loop, the @tool decorator, checkpointer-based persistence, and structured output — the foundation layer beneath LangGraph and Deep Agents.
-updated: 2026-10-17
+tags: [langgraph, llm, concept]
+summary: LangChain 1.0's core agent-building primitives — the create_agent() loop, the @tool decorator, checkpointer-based persistence, and structured output — a framework that runs on the LangGraph runtime, over integration packages that sit beneath both.
+updated: 2026-10-30
 sources:
   - data/raw/agent-skills/langchain-fundamentals/SKILL.md
 ---
 
 # LangChain Fundamentals — create_agent, Tools, Structured Output
 
-LangChain is the foundation layer in the [[Framework Selection — LangChain vs LangGraph vs Deep Agents]] stack — models, tools, prompts, and (as of LangChain 1.0) a built-in agent loop via `create_agent()`. LangGraph and Deep Agents both sit on top of these primitives.
+LangChain spans two layers of the [[Framework Selection — LangChain vs LangGraph vs Deep Agents]] stack. Its integration packages (models, tools, prompts) sit beneath LangGraph and Deep Agents. Its LangChain 1.0 agent loop, `create_agent()`, is built on top of the LangGraph runtime.
 
 ## create_agent() — The Recommended Agent Loop
 

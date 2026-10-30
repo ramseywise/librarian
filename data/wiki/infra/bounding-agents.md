@@ -2,7 +2,7 @@
 title: Bounding Agents Rather Than Trusting Them
 tags: [infra, agents, concept]
 summary: "A design stance — constrain what the agent can do instead of trusting it to behave, via four bounds (type/IO schemas, explicit state, escalation as an outcome, termination conditions), plus the reason guardrails alone are not reliability: nothing tells you which one fires."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - own-prose
 ---
@@ -107,9 +107,9 @@ where tightening buys reliability and where it only buys latency.
 
 ## See Also
 - [[Trajectory Over Outcome]] — prerequisite-for (the measurement that makes bounds attributable)
-- [[Safeguards Architecture — Five Protection Layers]] — implements (the runtime pipeline these bounds compose into)
-- [[Agent Management Layer]] — complements (escalation and fallback as operational concerns)
+- [[Safeguards Architecture — Five Protection Layers]] — related (the runtime pipeline these bounds compose into)
+- [[Agent Management Layer]] — related (escalation and fallback as operational concerns)
 - [[Harness Engineering]] — extends (encoded constraints beat documented ones, applied at runtime)
-- [[Loop Termination Design]] — implements (the fourth bound)
-- [[Execution Boundaries and Guardrails]] — complements (bounding what the agent may touch, not just what it may do)
+- [[Loop Termination Design]] — related (the fourth bound)
+- [[Execution Boundaries and Guardrails]] — related (bounding what the agent may touch, not just what it may do)
 - [[Reversibility Cliff]] — instance-of (an evidence-based re-cut of a propose/mutate bound)

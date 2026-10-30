@@ -1,8 +1,8 @@
 ---
-imported_hash: 3a0f3585d2006285
+imported_hash: 93c17c03d67ff7c7
 title: MCQ Bank — Full Topic Parity
 summary: Multiple-choice drill bank covering all 11 guide topics.
-order: 85
+order: 102
 kind: reading
 section: Technical questions
 source: sisyphus/interviewing/rounds/technical-questions/mcq-bank.md

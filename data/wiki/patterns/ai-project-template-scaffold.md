@@ -1,8 +1,8 @@
 ---
 title: AI Project Template Scaffold
-tags: [infra, pattern, conflict]
+tags: [infra, pattern]
 summary: A generic, framework-agnostic starter repo pattern for standing up new AI agent projects — modeled on a mature reference project's skills/docs/infra layout plus a conventional data-science project skeleton (`.github`, `project_init.sh`, `.vscode`, `data/`, `docs/`, `infrastructure/`), kept as its own repo rather than nested under the reference project.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/sessions/claude-2026-07-06-we-have-a-template-for-github-ai-project-268f0009.md
   - data/raw/sessions/claude-2026-07-14-what-is-the-git-origin-for-ai-project-te-c90bb5d6.md
@@ -117,8 +117,8 @@ lacked them, not because any one project asked.
 **What the audit actually found** (premise corrected — application CI had never been written, not broken):
 
 - The template's own CI used `setup-uv` with a cache keyed on `uv.lock`, which cannot exist at a template root — the cache step failed before any test ran.
-- Dependabot auto-merge was ungated: it merged without waiting on required checks.
-- Fix shape: one reusable `workflow_call` workflow with `lint-paths`, `test-command` and `tests-blocking` inputs, so repos whose suites are not yet green can run tests non-blocking without skipping lint. Callers pin `@v1`, not `@main`.
+- Dependabot auto-merge was *believed* ungated: it merged without waiting on required checks. A 2026-07-28 live check (`gh api`) found branch protection already requires the CI check on all four production repos, and `gh pr merge --auto` honors it, so auto-merge was in fact gated. See [[Gate Dependabot Auto-Merge on Branch Protection]].
+- Fix shape: one reusable `workflow_call` workflow with `lint-paths`, `test-command` and `tests-blocking` inputs, so repos whose suites are not yet green can run tests non-blocking without skipping lint. Callers *should* pin `@v1`, not `@main`; as of 2026-07-28 the downstream callers still referenced `python-ci.yml@main`, so `@v1` is the convention to migrate to, not current practice.
 - A relative copier `dst` inside CI rendered into `out/out/`; use absolute paths. See [[Verify CI Steps by Extraction, Not Retyping]] and [[Execute Every Toggle Configuration]].
 
 ## Skill Porting

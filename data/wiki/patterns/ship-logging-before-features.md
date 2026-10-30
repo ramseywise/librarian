@@ -2,7 +2,7 @@
 title: Ship Logging Before Features
 tags: [llm, eval, pattern]
 summary: "Serve-time logs cannot be backfilled, so instrumentation lands in the same commit as — or strictly before — the feature it measures: log the full ordered result set with version stamps and as-displayed position (click-only logs are at zero for replay, not 80%), decide the position convention for a new slot type before the first item is served, and keep the current system as a baseline arm."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-roadmap/SKILL.md
   - data/raw/claude-docs/playground/skills/design-product/SKILL.md
@@ -232,3 +232,4 @@ need a typed-column migration on the viewport-event table.
 - [[Mislabelled Column Is Worse Than Missing]] — extends (the sharpest defect in a serve-log audit)
 - [[Adversarially Independent Baseline Arm]] — extends (how to build the baseline arm so it could actually win)
 - [[Frozen Version Stamps on Logged Results]] — related (freezing the intake instrument before the same acceptance round)
+- [[Python Exceptions and Context Managers]] — related (stdlib logging habits: per-module loggers, lazy formatting, log.exception)

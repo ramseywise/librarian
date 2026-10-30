@@ -2,11 +2,12 @@
 title: Golden Set Mechanics
 tags: [eval, llm, reference]
 summary: The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/claude-docs/guacamayo/skills/workflow-plan/references/golden-set-authoring.md
   - data/raw/claude-docs/guacamayo/skills/workflow-plan/SKILL.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
 ---
 
 # Golden Set Mechanics
@@ -108,6 +109,22 @@ Gate thresholds: **<10 cases FAIL, 10–19 WARN, ≥20 PASS**, with positive and
 cases balanced. As of 2026-08 no gate skill enforced this — the thresholds were an
 authoring target applied by hand.
 
+## Two pools and per-row metadata (course synthesis)
+
+Keep two pools: a **regression suite** of known, fixed failures that must keep passing, and a rolling
+**discovery set** of new production failures that shows where the system currently breaks. The flow:
+production failure → triage (real failure or eval bug?) → label with the [[Eval Failure Taxonomy]] →
+discovery set → once fixed, move to the regression set.
+
+Every row should carry:
+- **Labels** for slicing (intent, language, difficulty, source type, segment) — so results can be reported per slice.
+- **Eligibility** per gate (e.g. `retrieval`, `generation`) — a downstream gate never silently scores rows an upstream gate marked ineligible.
+- **Provenance** (source, date added, who added it) — for trust and staleness review.
+- Optionally **per-row graders** — the cheapest grader that can decide that row.
+
+Sizing and its uncertainty are on [[Eval Error Bars and Sample Size]]; leak defenses on
+[[Eval Contamination Defenses]].
+
 ## See Also
 - [[System Design — Unified Eval Harness]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] — prerequisite-for
@@ -117,10 +134,10 @@ authoring target applied by hand.
 - [[HITL Annotation Pipeline]]
 - [[Scope-POC Design Interview]] — prerequisite-for (design-time metric targets become evals/targets.yaml)
 - [[Skill Pipeline Dryrun Testing]] — alternative-to (fixed unambiguous cases for a skill chain rather than a model)
-- [[Eval Ladder]] — part-of (rung 2 of the maturity progression)
+- [[Eval Ladder]] — related (part of; rung 2 of the maturity progression)
 - [[Manual Review as Eval Bootstrap]] — prerequisite-for (failure patterns become the first golden cases)
-- [[User Feedback Loops]] — feeds (thumbs-down cases expand the set post-deploy)
+- [[User Feedback Loops]] — related (feeds; thumbs-down cases expand the set post-deploy)
 - [[Conversational Test Fixture Design]] — alternative-to (fixture authoring when the input is dialogue)
 - [[Eval Suite Maintenance]] — extends (the eight authoring rules, incl. negative cases and the two-expert test)
-- [[Eval Non-Determinism]] — complements (a golden row is scored over k trials, not one)
+- [[Eval Non-Determinism]] — related (a golden row is scored over k trials, not one)
 - [[Answer Criteria with Named Wrong Answers]] — extends (named wrong answers as adversarial case seeds)

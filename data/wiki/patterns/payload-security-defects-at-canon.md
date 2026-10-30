@@ -2,7 +2,7 @@
 title: Payload Security Defects at Canon
 tags: [infra, llm, pattern]
 summary: When a code-gen payload is about to be mirrored into every scaffolded project, its defects must be fixed in the canonical copy first — a mirror multiplies a single-source bug into every downstream consumer, and the fix window closes once copies exist.
-updated: 2026-08-03
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/docs/plans/2026-07-19-agents-skills-sync.md
 ---
@@ -72,4 +72,4 @@ cleanup.
 - [[Sync as Render, Not Copy]] — prerequisite-for (fix before the render lands)
 - [[Capability Runtime-Coupling Tiers]] — extends (the contract layer that surfaces flags)
 - [[AI Project Template Scaffold]] — instance-of
-- [[Safeguards Architecture — Five Protection Layers]] — complements (runtime guards vs payload defects)
+- [[Safeguards Architecture — Five Protection Layers]] — related (runtime guards vs payload defects)

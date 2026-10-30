@@ -2,7 +2,7 @@
 title: ACI (Agent-Computer Interface)
 tags: [llm, concept]
 summary: Tool design discipline for agents — the interface between agent and tools, analogous to HCI for humans. Good ACI determines whether the agent uses tools correctly or hallucinates parameters.
-updated: 2026-04-24
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
 ---
@@ -53,4 +53,5 @@ All tools in the Librarian pipeline subclass `BaseTool Protocol` with explicit i
 - [[Librarian RAG Architecture]]
 - [[Agent Quality Review Checklist]] — extends (tool-safety review checks)
 - [[Tool Design as Harness Surface]] — extends (ACI as a harness contract, with the five-section tool spec)
-- [[Harness Anatomy]] — part-of (tools as one of the nine harness components)
+- [[Harness Anatomy]] — related (part of; tools as one of the nine harness components)
+- [[Computer Use Visual Grounding]] — extends (the observation interface when the tool is a screen)

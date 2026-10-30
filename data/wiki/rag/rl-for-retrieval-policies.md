@@ -2,7 +2,7 @@
 title: RL for Retrieval Policies
 tags: [rag, foundations, llm, concept]
 summary: "Modelling RAG as a sequential decision process — the five decision points and their reward signals, the three optimization patterns (online RL, per-subtask modules, Self-RAG), and why reward sparsity makes end-to-end RAG RL hard."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--01-llm-fundamentals--rl.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--rl.md
@@ -103,9 +103,9 @@ the offline objective. See [[Preference Optimization Algorithms]].
 ## See Also
 - [[Memory-Augmented Conversational RAG]] <!-- auto-linked -->
 - [[Semantic Cache for RAG Agents]] <!-- auto-linked -->
-- [[Reinforcement Learning Foundations]] — part-of (RAG as a sequential decision process)
+- [[Reinforcement Learning Foundations]] — related (part of; RAG as a sequential decision process)
 - [[Agentic RAG — Advanced Patterns]] — extends (Self-RAG vs CRAG mechanics)
 - [[RLHF Pipeline]] — instance-of (WebGPT is structurally identical, with a browser as environment)
 - [[Preference Optimization Algorithms]] — alternative-to (DPO as the offline optimizer at RAG scale)
-- [[RAG Eval Gate Contract]] — complements (component gates as the eval-side answer to proxy divergence)
-- [[Online Eval Sampling]] — complements (distribution shift, monitored in production)
+- [[RAG Eval Gate Contract]] — related (component gates as the eval-side answer to proxy divergence)
+- [[Online Eval Sampling]] — related (distribution shift, monitored in production)

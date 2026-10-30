@@ -2,7 +2,7 @@
 title: "Orchestrator Verifies, Never Relays"
 tags: [patterns, eval, pattern]
 summary: "In a multi-agent review or build loop, the orchestrator checks agents' claims against the repository (the git index, the merge-base, the base branch, a mutation of the fix) before acting on them. Agents' reports describe intent, and in one repo's review series they were confidently wrong often enough to make verification a standing rule."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/reviews/2026-09-05-dis156-candidate-pool.md
   - data/raw/claude-docs/diskoe/docs/reviews/2026-09-05-dis156-candidate-pool.md
@@ -184,3 +184,4 @@ them along. Each rule below is a cheap check that turned a wrong report into a c
 - [[Worktree Agent Dispatch Contract]] — related (scoping what dispatched agents may touch)
 - [[Red-Then-Green Proof for Fix-Stage Tests]] — related (mutation-testing a fix)
 - [[Sanitize Never Fails, Validate Never Mutates]] — related
+- [[File-Disjoint Agent Waves in One Working Tree]] — extends (the wave plan this rule runs inside)

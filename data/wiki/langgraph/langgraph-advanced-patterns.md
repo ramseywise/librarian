@@ -2,8 +2,9 @@
 title: LangGraph Advanced Patterns
 tags: [langgraph, pattern]
 summary: Advanced LangGraph patterns beyond the basics — subgraphs, Send API fan-out, streaming modes, time-travel, breakpoints/interrupts, error handling, and Plan-and-Execute.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
+  - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--04-durable-execution-and-interrupts.md
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
@@ -335,3 +336,4 @@ for chunk in graph.stream({"data": "test"}, stream_mode="custom"):
 - [[Voice Agent Patterns]]
 - [[LangChain Fundamentals — create_agent, Tools, Structured Output]]
 - [[LangChain Agent Middleware]]
+- [[Graph Topology Primitives]] — extends (node kinds, `Command`, back-edge bounds, gate placement)

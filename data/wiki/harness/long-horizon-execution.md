@@ -2,9 +2,10 @@
 title: Long-Horizon Execution
 tags: [llm, agents, infra, concept]
 summary: "Agents lose coherence and finish early over long tasks — the fix is externalizing progress to files so the loop is re-entrant, not stretching the context window."
-updated: 2026-08-04
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--06-long-horizon-execution.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--06-long-horizon-execution.md
 ---
 
 # Long-Horizon Execution
@@ -137,8 +138,12 @@ See [[Harness Orchestration]] for when decomposition is worth its cost, and
 
 ## See Also
 - [[Loop Detection and the Two-Retry Rule]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
-- [[Harness Anatomy]] — depends-on
-- [[Verification Loops]] — complements
-- [[Harness Orchestration]] — complements
-- [[Context Engineering]] — depends-on
+- [[Harness Engineering]] — related (part of)
+- [[Harness Anatomy]] — prerequisite-for
+- [[Verification Loops]] — related
+- [[Harness Orchestration]] — related
+- [[Context Engineering]] — prerequisite-for
+- [[Loop State File]] — extends (the loop-side durable progress record)
+- [[Asynchronous Agent Event Loop]] — prerequisite-for
+- [[Three-Layer Termination Check]] — prerequisite-for
+- [[Skill Authoring Discipline]] — instance-of (checkpointing for skills that run long)

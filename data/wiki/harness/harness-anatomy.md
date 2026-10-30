@@ -1,10 +1,11 @@
 ---
 title: Harness Anatomy
 tags: [llm, agents, infra, concept]
-summary: "The nine harness components, why the filesystem is the foundational primitive the others lean on, the layered mental model, and the causal build order that answers what to build first."
-updated: 2026-10-16
+summary: "The nine harness components and the five subsystems they serve, why the filesystem is the foundational primitive (including state for sessionless agents), code as a meta-capability, the layered mental model, and the causal build order."
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--02-harness-anatomy.md
+  - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--02-harness-anatomy.md
 ---
 
 # Harness Anatomy
@@ -52,6 +53,14 @@ the training cutoff; plus compaction and tool-output offloading.
 
 Supporting: git versioning, planning files, test runners, self-verification hooks.
 
+## The Five Subsystems
+
+The nine components describe what ships; for **diagnosis**, group them into five subsystems —
+**instructions** (1, 6), **tools** (2, 4, 9), **environment** (3, 5, `init.sh`), **state**
+(plan file, progress log, feature list, git), and **feedback** (8, test runners, gates,
+traces). Every failure attributes to exactly one, and removing one at a time (ablation)
+shows which are load-bearing. See [[Harness Subsystem Attribution]].
+
 ## Why the Filesystem Is Foundational
 
 It is the primitive the others lean on, because it solves four problems at once:
@@ -74,6 +83,32 @@ model read it back only if needed. *A 2,000-line log becomes ~40 lines plus a pa
 **Git deserves separate mention: it is the only rollback mechanism most harnesses have.**
 Branch-per-agent turns parallel experimentation into a safe operation with a free undo.
 
+### State across messages
+
+An always-on ("sessionless") agent reached over a chat app may get its next message minutes
+or days later. Split the state in two (Li, *AI Agents in Depth*, ch. 5):
+
+- **File state is persistent by construction** — mount the workspace on storage outside the
+  sandbox.
+- **Process state is kept warm, then rebuilt** — keep the sandbox and terminal alive while
+  active; on idle timeout, write the serializable parts (working directory, env vars,
+  background tasks) to a workspace file before destroying the sandbox, and rebuild from it
+  on the next wake-up.
+
+> **Persist auditable descriptions of state (files, scripts, manifests), never opaque
+> long-lived processes.**
+
+Within a single task the same idea is the **persistent terminal session**: `cd`, an
+activated venv and env vars survive between commands instead of each command starting a
+fresh shell.
+
+### The environment status bar
+
+Before every inference, append the working directory, git branch, recent commits and a
+staged/unstaged summary **at the end of the context — never in the system prompt**, where
+changing values would break the KV cache ([[Prefix Caching]]). Same rule as loading tools
+mid-session in [[Dynamic Tool Discovery]].
+
 ## Bash as a General-Purpose Tool
 
 The design bet: **you cannot pre-design every tool an agent will need.**
@@ -88,6 +123,21 @@ resolves it:
 
 > Start with shell; promote to a typed tool when you need a **gate**, a **rendered result**,
 > an **audit record**, **parallelism**, or a **retry policy**.
+
+### Code as a meta-capability
+
+A minimal coding kit is seven tools — code interpreter, bash, read, write, edit, glob, grep
+(compared in [[Coding-Agent Search and Edit Schemes]]). With them, **code becomes a way of
+making the capabilities you didn't build**, applied in six directions:
+
+1. **Thinking** — formalize math or logic for a symbolic or constraint solver.
+2. **Rules** — encode policy as executable checks.
+3. **Content** — slides, video and charts as code rather than through a GUI.
+4. **Adapters** — glue for undocumented APIs or drifting log formats.
+5. **UI** — forms and views generated on demand.
+6. **Agents** — create or repair agents. Start from a known-good agent implementation and
+   modify it; generating one from scratch reproduces outdated APIs and ad hoc context
+   handling.
 
 ## The Layered Mental Model
 
@@ -163,8 +213,10 @@ Six items. Everything else here is elaboration on those.
 ## See Also
 - [[Skill Authoring Discipline]] <!-- auto-linked -->
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
-- [[Harness Engineering]] — part-of
+- [[Harness Engineering]] — related (part of)
 - [[Tool Design as Harness Surface]] — extends
 - [[Execution Boundaries and Guardrails]] — extends
-- [[Long-Horizon Execution]] — depends-on
+- [[Long-Horizon Execution]] — prerequisite-for
+- [[Harness Subsystem Attribution]] — extends (the five-subsystem diagnostic cut)
+- [[Coding-Agent Search and Edit Schemes]] — extends (the minimal coding kit's search and edit tools)
 - [[Realtime Is UI Sync, Not the Event Bus]] — related (a realtime channel is not the event bus)

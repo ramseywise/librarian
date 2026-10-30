@@ -2,7 +2,7 @@
 title: Q0–Q5 Quality Ladder
 tags: [eval, llm, pattern]
 summary: A six-level per-feature quality ladder (unit/schema → golden set → LLM judge → adversarial/safety → human acceptance → production monitoring) where every level is owned by name, judges are never the sole authority, and the golden set is written from the requirement before the function to avoid the own-oracle trap.
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/playground/skills/design-roadmap/SKILL.md
   - data/raw/claude-docs/playground/skills/design-product/SKILL.md
@@ -43,6 +43,6 @@ ladder:
 ## See Also
 - [[Eval Maturity Ladder]] — alternative-to (a system-level maturity ladder; this one is per feature)
 - [[Traffic-Gated Evaluation Ladder]] — related (which evaluation methods are available when)
-- [[LLM-as-Judge Evaluation]] — part-of (Q2)
-- [[Four-Stage Design Pipeline with Backflow]] — part-of (the product stage that assigns levels)
+- [[LLM-as-Judge Evaluation]] — related (part of; Q2)
+- [[Four-Stage Design Pipeline with Backflow]] — related (part of; the product stage that assigns levels)
 - [[Eval Ladder]] — alternative-to

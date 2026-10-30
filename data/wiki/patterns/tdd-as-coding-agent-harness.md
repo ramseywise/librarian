@@ -2,7 +2,7 @@
 title: TDD as Coding-Agent Harness
 tags: [patterns, llm, pattern]
 summary: "Using a failing test to constrain the agent that writes code — the clearest goal you can give it — plus the guardrail neither popular source addresses: an agent that writes both test and implementation can satisfy itself."
-updated: 2026-10-16
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
 ---
@@ -70,7 +70,7 @@ provisional worktree commits, applied to tests.
 - [[Eval-Driven Development (EDD)]] — alternative-to
 - [[Specification by Example]] — extends
 - [[Eval vs Test Distinction]]
-- [[Verification Loops]] — part-of (the general case: verification as a gate the agent cannot skip)
-- [[Harness Engineering]] — part-of (a failing test is one acceptance baseline among four harness parts)
+- [[Verification Loops]] — related (part of; the general case: verification as a gate the agent cannot skip)
+- [[Harness Engineering]] — related (part of; a failing test is one acceptance baseline among four harness parts)
 - [[Red-Then-Green Proof for Fix-Stage Tests]] — instance-of (the same guardrail applied to the review-fix round)
 - [[Differential Parity Testing Against the Original]] — alternative-to (when the oracle is an existing implementation rather than an author-written test)

@@ -1,8 +1,8 @@
 ---
 title: Re-Crawl Adds, Never Overwrites
-tags: [patterns, infra, pattern, conflict]
+tags: [patterns, infra, pattern]
 summary: "Once a content row exists, a re-crawl may only add occurrences and dates; a genuine title or description change is flagged for review, not written. A same-URL overwrite silently renames, hides and reverts published rows, and makes any later skip-gate compare against a baseline newer than the enrichment."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-14-dis264-enrichment-input-shaping.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-14-dis264-enrichment-input-shaping.md
@@ -67,7 +67,11 @@ The no-overwrite rule closes all of these as a side effect.
 
 1. **One existence read per record.** Its row is the single comparison baseline.
 2. **New rows insert with `ON CONFLICT DO NOTHING`.** If a concurrent insert wins, re-read and
-   treat the row as existing. Nothing in the importer can issue a content `UPDATE`.
+   treat the row as existing. Nothing in the importer can issue a content `UPDATE` to a
+   *reviewed* row. One scoped exception came later: on a natural-key match, a merge may refresh
+   descriptive fields (coalesced, rank-ruled for provenance) while `review_status` is still
+   `draft` or `needs_review`, before any human has signed off. Once reviewed, never overwrite.
+   See [[Coalesce Against a Never-Null Source]].
 3. **Existing rows** get the occurrence upsert, the earliest/latest date sync (now on both branches,
    matching the documented contract), and one pure decision:
    - identity unchanged → handoff allowed, subject to the other gates;
@@ -138,4 +142,4 @@ Two related moves in the same plan:
 - [[Event–Occurrence Split, Added Behind the Old Column]] — extends (resolves the cost named there: the hash covered dates)
 - [[Input-Starved Enrichment]] — related (the same plan's input-shaping phase)
 - [[Every Column Names Its Reader]] — related (the review-reason column needed a reader before the flag meant anything)
-- [[Coalesce Against a Never-Null Source]] — contradicts (a later decision refreshes descriptive fields on a natural-key match while the row is still in review; see _conflicts.md)
+- [[Coalesce Against a Never-Null Source]] — extends (the in-review exception: descriptive fields refresh on a natural-key match only before review)

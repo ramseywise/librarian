@@ -1,8 +1,8 @@
 ---
-imported_hash: 3df79850fa5ae8df
+imported_hash: b47cdf772dd99a24
 title: System Design Round (ML/LLM/Agent)
 summary: 'The highest-weight technical round in 2026 AIE/MLE loops: structured ambiguity handling — clarify, requirements, design, shortcomings, iterate — with trade-off narration as the actual graded skill.'
-order: 69
+order: 74
 kind: reading
 section: System design round
 source: sisyphus/interviewing/rounds/system-design-round/README.md
@@ -47,6 +47,8 @@ Highest-weight round for AIE/MLE. For FDE the case study and customer simulation
 - [interview-heuristics.md](interview-heuristics.md) — 14 behaviors that get scored (scope aggressively, state non-functionals, find your own bottlenecks)
 - [interview-patterns.md](interview-patterns.md) — 13 more, staff-level (evolutions, read/write paths, durability)
 - [sources.md](sources.md) — curated references (internal guides + librarian wiki + external)
+- [interviewer-personas.md](interviewer-personas.md) — the 11-dimension AIE rubric, 11-phase flow, seniority bar, and three interviewer personas (coach / neutral / adversarial) for mock rounds
+- [walkthroughs/](walkthroughs/) — 9 framework-driven walkthroughs (RAG at 10M docs, copilot, fraud, moderation…) plus a reusable template
 - [examples/](examples/) — worked system design walkthroughs by topic
 - [questions.md](questions.md) — sample prompts with model answer structures
 

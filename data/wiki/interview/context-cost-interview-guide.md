@@ -2,11 +2,13 @@
 title: Context Engineering and Cost Interview Study Guide
 tags: [interview, context, reference]
 summary: Exam-prep reference for context and cost questions — context rot as the root problem, the five context layers sorted by frequency/stability/enforcement, compaction retention priorities, prefix vs semantic caching, skill descriptions as routing logic, the rank-ordered cost/latency levers, and reporting cost per successful task.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--5-context-cost--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--5-context-cost--00-overview.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--context-engineering-cost.md
+  - data/raw/repos/sisyphus/interviewing--guides--5-context-cost--interview-guide.md
+  - data/raw/repos/sisyphus/interviewing--guides--5-context-cost--00-overview.md
 ---
 
 # Context Engineering and Cost Interview Study Guide
@@ -88,9 +90,36 @@ as spend.
 - *"Where does retrieved context go?"* — after the static prefix (caching), next to the
   question (recency), under a token budget with a summarisation fallback.
 
+## Follow-ups on long-running context (answer sketches)
+
+*Provisional:* condensed from the reference answers to the chapter questions in *AI Agents in Depth* (Li), which the book itself flags as AI-drafted with light human review. Treat these as answer shapes to check, not settled claims.
+
+- *Sliding window makes the agent repeat tool calls; full history explodes.* Append only; at ~80% of
+  the window compress old tool results once; persist large outputs to disk with a summary; isolate
+  intermediate work in sub-agents. This keeps the cached prefix intact.
+- *Reasoning content across hundreds of tool calls.* Keep recent reasoning in full and roll older
+  reasoning into a structured status (goal, confirmed facts, ruled-out paths, to-dos) once, at a fixed
+  point ([[Reasoning State Pass-Back]]). Stripping prior reasoning is cheap and cache-friendly but loses the long-range plan; for agents,
+  reasoning is state.
+- *148K characters compressed to 2K — irreversible loss?* Yes, so pair lossy compression with lossless
+  indexing: a source reference per fact, raw outputs on disk, verbatim retention of decisions, dates,
+  names and IDs.
+- *The status summary itself is wrong.* The model trusts it unconditionally ([[Agent Status Bar]]). Maintain it in code, never
+  by an LLM counting history; track its accuracy; feed it only from real observations.
+- *Twenty queued events (tool results, user messages, alerts).* Route urgent ones separately as
+  interrupts, truncate long tool results to head + tail + file path, end the context with per-type
+  counts and an instruction to answer each.
+- *Many authors on one system prompt.* Prompts as reviewed code, benchmark before/after, enforced
+  structure, fragments labelled cacheable vs cache-breaking, bloat split out into Skills.
+- *Where to inject a loaded Skill.* System prompt: strongest adherence, breaks the cache. Mid-context as
+  a file read: cache-safe, weaker adherence. End of context: good adherence, recomputed every call.
+- *Large, changing tool set — maximise cache hits.* A small frozen core of tools in fixed order in the
+  static prefix, a generic executor, capabilities delivered as Skills; sub-agents share the parent's
+  prefix ([[Prefix Caching]], [[Cache-Stable Context Layout]]).
+
 ## See Also
 - [[Context Anatomy]] — prerequisite-for (the layer model in depth)
 - [[Prefix Caching]] — prerequisite-for (the mechanism behind lever 1)
 - [[Context Compaction]] — extends
-- [[Agents Interview Study Guide]] — complements (harness and long-horizon side)
-- [[System Design Interview Study Guide]] — complements (cost trade-offs in the design round)
+- [[Agents Interview Study Guide]] — related (harness and long-horizon side)
+- [[System Design Interview Study Guide]] — related (cost trade-offs in the design round)

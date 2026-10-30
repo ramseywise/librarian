@@ -2,7 +2,7 @@
 title: Positive-Only Judge Fixtures Measure Recall
 tags: [eval, pattern]
 summary: "When a judge harness feeds each fixture's expected text to the model as the candidate and has no ground-truth label, a set of all-good fixtures measures only recall (does the judge accept honest output), never precision. Allow one calibration pass that edits only the prompt, never the fixtures. Watch for a null-on-error contract that hides a provider schema rejection as nJudge 0."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-03-dis71-resultrationale-judge.md
   - data/raw/claude-docs/akira/docs/plans/2026-09-15-dis274-enrichment-judges.md
@@ -143,3 +143,4 @@ energy, sociality). It applied the lessons above.
 - [[Silent Failure Catalogue]] — instance-of (null-on-error hiding a schema rejection)
 - [[Blind Labels Judge No Prompt]] — related (the human labels these judges will be calibrated against)
 - [[Human Verdicts as Judge Fixtures]] — prerequisite-for (human wrong verdicts add the negatives)
+- [[LLM Judge Biases]] — related

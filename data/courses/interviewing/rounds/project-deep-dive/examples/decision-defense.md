@@ -1,8 +1,8 @@
 ---
-imported_hash: a8a48e19adeff609
+imported_hash: f2297c90591ff264
 title: 'Example: Decision Defense — Vector Store Choice'
 summary: This example shows what sustained follow-up probing looks like and how to hold a position, acknowledge trade-offs honestly, and update when the constraint landscape has changed.
-order: 63
+order: 67
 kind: reading
 section: Project deep dive / Examples
 source: sisyphus/interviewing/rounds/project-deep-dive/examples/decision-defense.md

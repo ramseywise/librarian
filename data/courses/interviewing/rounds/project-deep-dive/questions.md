@@ -1,8 +1,8 @@
 ---
-imported_hash: 306bc057dba40547
+imported_hash: 8386914ebb173df0
 title: Project Deep-Dive — Question Bank
 summary: '15 questions across 9 categories. Each entry: what they''re testing, how to structure the answer, what they''ll drill into.'
-order: 58
+order: 62
 kind: reading
 section: Project deep dive
 source: sisyphus/interviewing/rounds/project-deep-dive/questions.md

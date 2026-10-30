@@ -1,8 +1,8 @@
 ---
-imported_hash: 679f4fd80b33a14f
+imported_hash: 80ea8485b4f6544a
 title: Memory-augmented RAG
 summary: How is memory consolidation triggered and rolled back?
-order: 20
+order: 22
 kind: reading
 section: Sources
 source: learn-ai-engineering/ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md

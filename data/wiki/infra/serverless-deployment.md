@@ -2,7 +2,7 @@
 title: Serverless Deployment
 tags: [infra, pattern]
 summary: Functions that spin up on demand and shut down after execution — an off-ladder alternative chosen on traffic shape (bursty, stateless, sub-30s) rather than audience size, paying cold starts and timeout limits for zero idle cost.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/deployment-topology.md
   - data/raw/claude-docs/playground/docs/archived/terraform-restructure-research.md
@@ -105,8 +105,8 @@ handler later. Evaluating that agent surfaced [[In-Band Stream Errors Read as Ba
 
 ## See Also
 - [[Single Service Deployment]] <!-- auto-linked -->
-- [[Deployment Topology Ladder]] — part-of
+- [[Deployment Topology Ladder]] — related (part of)
 - [[Cloud Service Deployment]] — alternative-to (same audience, opposite traffic shape)
-- [[Runtime Topology and Checkpointer Alignment]] — constrains (checkpointer must be external)
+- [[Runtime Topology and Checkpointer Alignment]] — related (constrains; checkpointer must be external)
 - [[System Design — Serverless Agent Backends]] — extends (streaming and session state within platform limits)
 - [[ADK Deployment Patterns]] — related (Cloud Run as a managed-scaling middle ground)

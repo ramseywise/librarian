@@ -2,7 +2,7 @@
 
 Reads raw/repos/repos.txt — one repo path per line (# for comments).
 For each repo, extracts: CLAUDE.md, README.md, SANYI.md, akira findings, plus the
-learn-ai-engineering knowledge base (ai-engineering/, generative-ai/, data-*) and the
+learn-ai-engineering knowledge base (ai-engineering/, generative-ai/, data-*, programming/) and the
 sisyphus interview KB and drill indexes (interviewing/, drills/). See EXTRACT_GLOBS.
 
 .claude/skills, .claude/docs, docs/ and .agents/ (CLAUDE_DOCS_GLOBS) are taken only
@@ -60,6 +60,14 @@ EXTRACT_GLOBS = [
     "data-engineering/*.md",
     "data-science/*.md",
     "data-analytics/*.md",
+    # programming/ (Python, SQL, TypeScript tracks). Same depth limit: practice/
+    # holds vendored exercise repos and a node_modules tree, so only READMEs and
+    # notes/ are taken, never a recursive **.
+    "programming/*.md",
+    "programming/*/*.md",
+    "programming/*/notes/*.md",
+    "programming/*/*/README.md",
+    "programming/*/*/notes/*.md",
     "drills/*.md",
     "drills/*/README.md",
 ]

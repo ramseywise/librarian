@@ -1,8 +1,8 @@
 ---
-imported_hash: 04188a9eb1cb6cfd
+imported_hash: ead01c52d906c8e1
 title: '99 — Appendix: The Speculative Field Track'
 summary: Treat every claim below as hypothesis or metaphor unless it's tied to a paper.
-order: 18
+order: 20
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/99-speculative-field-track.md

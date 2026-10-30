@@ -1,5 +1,5 @@
 ---
-imported_hash: 2ae6f4d4af190857
+imported_hash: 8950136360ba7443
 title: 02 — Context Engineering
 summary: 'Context engineering is the discipline of composing what goes into the model''s context window on each call: which documents to include, which memory to surface, which tool outputs to inject, how much history to keep, and how to spend the tok…'
 order: 1
@@ -125,7 +125,7 @@ The rules from the topic notes on one page. Each group links to the chapter that
 
 ### Notebooks
 
-[notebooks/](notebooks/readme.md) holds runnable Python labs from the upstream course:
+[notebooks/](notebooks/readme.md) holds runnable Python labs from the upstream course, plus two notebooks from the DAIR prompt-engineering guide:
 
 | Lab | Pairs with |
 |---|---|
@@ -136,6 +136,8 @@ The rules from the topic notes on one page. Each group links to the chapter that
 | [05_prompt_programs.py](notebooks/05_prompt_programs.py) | [08](notes/08-cognitive-tools.md#prompt-programs) |
 | [06_schema_design.py](notebooks/06_schema_design.py) | [07](notes/07-structured-context.md) |
 | [07_recursive_patterns.py](notebooks/07_recursive_patterns.py) | [08](notes/08-cognitive-tools.md), [99](notes/99-speculative-field-track.md) |
+| [pe-rag.ipynb](notebooks/pe-rag.md): retrieval-augmented title generation (DAIR) | [04](notes/04-retrieval.md) |
+| [gemini-context-caching.ipynb](notebooks/gemini-context-caching.md): explicit context caching (DAIR) | [04](notes/04-retrieval.md) |
 
 ### Practice
 

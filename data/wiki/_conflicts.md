@@ -14,6 +14,20 @@ updated: 2026-07-14
 
 ## Open Conflicts
 
+*None open.*
+
+---
+
+## Ingest Errors
+
+*Sources that failed to parse during ingest.*
+
+---
+
+## Resolved Conflicts
+
+*Conflicts that have been reviewed and resolved.*
+
 ## Conflict: CRAG Confidence Threshold — 2026-04-25
 
 **Claim A** (from [[LangGraph CRAG Pipeline]], sourced from `raw/playground-docs/librarian-stack-audit.md`):
@@ -25,7 +39,8 @@ updated: 2026-07-14
 **Claim C** (from `raw/agent-skills/advanced-rag-patterns/SKILL.md`):
 > CRAG threshold: **grade ≥ 0.7** → generate. Below → reformulate and re-retrieve (max 2 retries).
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** All three hold; they are different scores at different stages. 0.3 gates the reranker's confidence in the librarian pipeline, 0.5 is a per-chunk relevance grade, and 0.7 is a generic skill's whole-retrieval grade. Updated [[LangGraph CRAG Pipeline]] to scope each value to its scorer.
 **Impact:** Librarian CRAG gate config; the correct `confidence_threshold` value for production.
 Note: Claims B and C may refer to a different grader (chunk-level relevance score) vs. Claim A (reranker-level confidence score). These could be measuring different things at different pipeline stages.
 
@@ -71,7 +86,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from [[Prompt Injection]], sourced from `data/raw/repos/learn-ai-engineering/interviewing--notes--prompt-injection.md`, OWASP LLM Prompt Injection Prevention Cheat Sheet):
 > A separate model can act as a filter on inputs and outputs of the primary LLM ("LLM-as-judge" / "guardrail model"), at three placements: input screening, output screening, action screening. Explicitly positioned *"alongside the deterministic controls described above, not in place of them."* Concedes the guardrail is itself injectable, and adds that it should have a **different attack surface** than the primary model — a purpose-trained classifier (Llama Guard, ShieldGemma, Granite Guardian, Prompt Guard) rather than a chat model from the same family.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold, layered. The deterministic, LLM-free pre-LLM pipeline is the baseline on every request. A purpose-trained classifier (different attack surface) is an optional extra layer on high-risk paths and never replaces a deterministic stage. Updated [[Input Guardrails Pipeline]] and [[Prompt Injection]].
 **Impact:** Whether librarian's own guardrail guidance permits a model-based screening layer, and whether [[Input Guardrails Pipeline]]'s stage list should gain an optional LLM stage for indirect-injection detection on retrieved/fetched content.
 
 **Note on the likely resolution:** The two may not fully contradict. A's "LLM-free" is stated as a property of *the pipeline* — the deterministic pre-LLM path — while B positions the guardrail model as an *additional* layer that does not replace any of A's stages. The genuine disagreement is narrower: A treats LLM-based screening as actively unsafe (bypassable by the same technique), B treats it as net-positive because a purpose-trained classifier has a different attack surface and catches indirect injection in untrusted content that regex provably misses. That last point is the strongest argument against A's absolutism — A's stage 4 is pure pattern matching, which OWASP states does not reliably catch indirect injection. Cost/latency is the practical dial: reserve model-based checks for high-risk paths (tool invocation, ingestion of external content), keep deterministic checks on routine traffic.
@@ -86,7 +102,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new sources `data/raw/claude-docs/galactus/skills/proto-plan/SKILL.md` and `data/raw/claude-docs/galactus/skills/proto-refine/SKILL.md`):
 > `/proto-plan` writes `Status: SUPERSEDED` + `Superseded-by:` on the third arrival of the `EXECUTED → PLANNED` loop-back (bound 2); `/proto-refine` writes it on a NEEDS-SPLIT verdict, naming the split docs.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both are current: the later galactus skills added two automatic writers (`/proto-plan` on loop-back exhaustion, `/proto-refine` on NEEDS-SPLIT) on top of the original manual writer. Updated [[Plan-Doc Status Enum]].
 **Impact:** Plan-doc status hook and Capability vs Phase Skills (which skills may advance Status:); likely a later galactus evolution of the guacamayo spec rather than an error.
 
 ---
@@ -99,7 +116,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new source `data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_pymc_migration.md`):
 > Lists `pm.find_MAP()` under "API Removal" ("MAP inference replaced with variational inference; alternative: use `pm.sample()` or scipy") and recommends removing its calls. The source caveats its own API claims as needing verification.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim A is correct: `pm.find_MAP()` exists in PyMC 6.3.2 (verified). Claim B's "API Removal" listing was wrong, as its own caveat warned. Updated [[Notebook Dependency Staleness]].
 **Impact:** Notebook Dependency Staleness PyMC table; whether the two "Medium" Bayesian notebooks need a rewrite or only a mechanical port.
 
 ---
@@ -112,7 +130,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new source `data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-07-25-LAE-30-34-learning-depth.md`):
 > "the API allows 1 request per 3 seconds for automated access" — plan adds `time.sleep(3)` between category requests and recommends bulk export pagination.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct: automated access is paced at 1 request per 3 s, with bulk export pagination for large pulls. Updated [[Automated Paper Discovery Pipeline]].
 **Impact:** Automated Paper Discovery Pipeline fetch design; how a multi-category weekly fetch must be paced.
 
 ---
@@ -125,7 +144,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new source `data/raw/claude-docs/learn-ai-engineering/docs/plans/2026-08-14-LAE-106-consolidate-vendored-course-repos.md`):
 > `size-pack` is 1.42 GiB (baseline verified 2026-08-14); "every blob survives in history"; `filter-repo` is "the only thing that reclaims 1.42 GiB".
 
-**Status:** Unresolved — needs human review (measurements two weeks apart; the sources do not say whether a gc packed the loose objects in between or whether history grew)
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct, and history kept growing: a 2026-10 re-measure reads 1.64 GiB. `filter-repo` is the main remaining lever. Updated [[Repo Weight Triage — GC Before LFS]].
 **Impact:** Repo Weight Triage cost framing of history rewrite — whether eviction is "not worth it" or the main remaining lever.
 
 ---
@@ -138,7 +158,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new source `data/raw/repos/learn-ai-engineering/CURRICULUM.md`):
 > Path A orders LLM fundamentals (gen-AI pillar 01) → ai-engineering pillars 01–06 → gen-AI pillars 02–07, because "after the ai-engineering discipline, the code patterns will make sense structurally".
 
-**Status:** Unresolved — needs human review (both agree pillar 01 comes first; they disagree on whether gen-AI 02–07 precede or follow the discipline wave)
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct: CURRICULUM.md Path A (gen-AI 01, then ai-engineering 01–06, then gen-AI 02–07) is the current ordering and supersedes the earlier architecture note. Updated [[AI Engineering Curriculum Structure]].
 **Impact:** AI Engineering Curriculum Structure ordering claim and its "how do I do X / why does X break" retrieval heuristic.
 
 ---
@@ -151,7 +172,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new source `data/raw/claude-docs/akira/docs/plans/2026-08-27-b15-kappa-protocol.md`):
 > "~33 rater-hours" is "a legacy figure from a 2-rater partial-overlap design that this plan does not use"; at full overlap the honest totals are 48 h (3 raters), 64 h (4), 80 h (5, target) — "under-quoting the burden by 2.4×".
 
-**Status:** Unresolved — needs human review (the page's intro still quotes ~33 h; the new "Running the study" section records ~80 h)
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct: 48/64/80 h at full overlap. ~33 h was a legacy 2-rater partial-overlap figure. Updated the intro of [[Human Agreement Ceiling Protocol]].
 **Impact:** Information-per-euro ranking of the ceiling study; any budget or recruiting brief quoting the burden.
 
 ---
@@ -164,20 +186,11 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new source `data/raw/claude-docs/akira/docs/plans/2026-09-03-dis118-rls-closure.md`, Open Question 2, resolved by the project owner):
 > Keep the view and set `security_invoker = true`; do not drop it. "No reader in this codebase" cannot rule out dashboard queries, saved SQL, BI cards or partner integrations, and a DROP is unrecoverable for them while the flag closes the same exposure reversibly.
 
-**Status:** Unresolved — needs human review (Claim B is the later, executed decision for this instance; whether the general rule should change from "drop" to "harden when consumers are unknowable" is the open question)
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B for this instance, with a revised general rule: drop an unread surface only when its consumers are enumerable; otherwise harden it reversibly (e.g. `security_invoker = true`). Updated [[Artifact Is Not Evidence: Push and Probe]].
 **Impact:** RLS-closure guidance in [[Artifact Is Not Evidence: Push and Probe]] and [[Written-but-Inert RLS Policies]].
 
 ---
-
-## Ingest Errors
-
-*Sources that failed to parse during ingest.*
-
----
-
-## Resolved Conflicts
-
-*Conflicts that have been reviewed and resolved.*
 
 ## Conflict: Rate-limiter fail posture on the email-link route — 2026-10-17
 
@@ -190,7 +203,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Additional evidence** (from `data/raw/claude-docs/akira/docs/plans/2026-09-29-dis325-ratelimit-shared-store.md`, added 2026-10-17):
 > A later plan describes the shipped limiter as failing open everywhere (consistent with Claim B as built) and recommends that the IP-keyed routes and the mail sender fail closed on a store outage, which matches Claim A's per-route posture as the target.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold at different times. Claim B describes the as-built limiter (fail-open everywhere). Claim A's per-route posture (IP-keyed routes and the mail sender fail closed) is the target set by the later shared-store plan. Updated [[Rate-Limit Keying: Identity Over IP]].
 **Impact:** Email-link route abuse posture; whether the limiter's store-error path should differ per route. (Related tension: the 2026-09-03 plan's first cut rejected a DB-backed limiter, while the 2026-09-06 plan proposes a Postgres counter table — escalated there as an open question, not decided.)
 
 ## Conflict: Was Dependabot auto-merge ungated, and do CI callers pin @v1? — 2026-10-17
@@ -201,7 +215,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new source `data/raw/claude-docs/ai-project-template/docs/plans/AIT-22-research.md`, verified live via `gh api` 2026-07-28):
 > Branch protection already requires the CI check on all 4 production repos, and `gh pr merge --auto` honors it regardless of `needs:` — "auto-merge is not actually ungated for Dependabot PRs on the 3 repos that have `ci.yml`." The downstream callers reference the reusable workflow as `python-ci.yml@main`.
 
-**Status:** Unresolved — needs human review (possibly both true at different times: ungated before branch protection was set, and `@v1` as the intended convention vs `@main` as practice)
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct on both counts: auto-merge was gated by branch protection (verified live 2026-07-28), and callers used `@main`. `@v1` stays as the convention to migrate to. Updated [[AI Project Template Scaffold]].
 **Impact:** The CI/CD standardization section of [[AI Project Template Scaffold]]; [[Gate Dependabot Auto-Merge on Branch Protection]].
 
 ## Conflict: Resident-leaning filter — default-deny vs fail-open — 2026-10-17
@@ -212,7 +227,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 **Claim B** (from new source `data/raw/claude-docs/akira/docs/plans/2026-09-21-dis340-audience-attribute.md`, operator decision in refine pass 2):
 > The filter fails OPEN until the backfill runs: only an explicit `'true'` excludes; `null`/`undefined`/`'unknown'` are all served, so the unconditional B2B flag is a no-op on merge day instead of emptying the candidate pool.
 
-**Status:** Unresolved — needs human review (likely Claim B supersedes A as the later, executed decision; A may still describe the intended end state once the backfill is complete)
+**Status:** Resolved — 2026-10-30
+**Resolution:** Sequencing, not contradiction. Fail-open (Claim B) applies until the backfill runs; default-deny (Claim A) is the end state after it. Updated [[Every Column Names Its Reader]].
 **Impact:** [[Every Column Names Its Reader]] audience-attribute sections; any future exclusion-style hard filter added over an unpopulated column.
 
 ## Conflict: Natural-key merge refresh vs re-crawl never overwrites — 2026-10-17
@@ -225,7 +241,8 @@ Note: Claims B and C may refer to a different grader (chunk-level relevance scor
 
 The dis264 plan itself lists this decision against the never-overwrite rule as an open tension. The two may only overlap for rows still in review.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold with a scoped exception. Descriptive fields may refresh on a natural-key match only while `review_status` is `draft` or `needs_review`; a reviewed row is never overwritten. Updated [[Re-Crawl Adds, Never Overwrites]] and retyped its link to [[Coalesce Against a Never-Null Source]] from `contradicts` to `extends`.
 **Impact:** Importer write path for existing rows; content_hash baselines and re-enrichment skip gates.
 
 ## Conflict: Does RRF protect a rank-1 exact-name lexical hit? — 2026-10-17
@@ -236,7 +253,8 @@ The dis264 plan itself lists this decision against the never-overwrite rule as a
 **Claim B** (from new source `data/raw/claude-docs/akira/docs/plans/2026-09-25-dis386-lexical-rrf.md`, execution log):
 > At `k=60` an id appearing in both lists at rank `r < 62` scores `2/(60+r)` and beats a single-list rank-1 hit (`1/61`); with two 2-item lists the double-appearance case numerically wins. The test asserts the real arithmetic, documented inline so it is not "fixed" to match intuition.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct (the arithmetic): at k=60 a dual-list rank below 62 beats a single-list rank-1 hit, so exact-name hits need a boost or pin outside RRF. Updated [[Reciprocal Rank Fusion (RRF)]].
 **Impact:** The name-matching guarantee of hybrid (lexical + semantic) retrieval; whether exact-name hits need a separate boost or pin outside RRF before the arm is flipped on.
 
 ## Conflict: Which ML frame has a stated label horizon? — 2026-10-17
@@ -249,7 +267,8 @@ The dis264 plan itself lists this decision against the never-overwrite rule as a
 
 The two sources may be using "horizon" to mean different things (a temporal-split column vs. a label-observation window). The later plan scoped execution to credit only and left fraud to an operator decision.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct: the constraint is a source-stated label horizon. Credit passes; fraud's `Time` column fixes only the sampling window, so fraud fails. Updated [[ML Frame Sourcing — License, Horizon, Prevalence]].
 **Impact:** Fraud-run frame choice and its "3/3 frames with stated horizon" evaluation target; whether the credit run's lack of a time column still counts as a recorded limitation.
 
 ## Conflict: Is LangChain the layer beneath LangGraph, or built on top of it? — 2026-10-17
@@ -262,7 +281,8 @@ The two sources may be using "horizon" to mean different things (a temporal-spli
 
 Possibly both partly right: the integration packages (models, tools) are a dependency of everything, while the `create_agent` loop executes on the LangGraph runtime.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both partly right. LangChain's integration packages (`langchain-core`, providers) sit beneath everything, and LangChain 1.0's `create_agent` loop runs on the LangGraph runtime. Updated [[Framework Selection — LangChain vs LangGraph vs Deep Agents]] and [[LangChain Fundamentals — create_agent, Tools, Structured Output]].
 **Impact:** The layer diagram in Framework Selection and the "foundation layer" summary of LangChain Fundamentals; how the stack is explained when choosing a framework.
 
 ## Conflict: Does the golden-hash test enforce a PROMPT_VERSION bump? — 2026-10-17
@@ -273,7 +293,8 @@ Possibly both partly right: the integration packages (models, tools) are a depen
 **Claim B** (from new source `data/raw/claude-docs/akira/docs/reviews/2026-09-15-dis272-prompt-identity-phase1.md`, finding SG-001):
 > The test pins the three template hashes and the `PROMPT_VERSION` literal. A developer who edits the prompt can re-pin only the hash literals and pass, leaving `PROMPT_VERSION` stale. No test can inspect intent, so the comment was corrected: the test makes the bump a visible review obligation, not an enforced one; `prompt_hash` stays truthful either way.
 
-**Status:** Unresolved — needs human review (likely Claim B, the later review of the built code, supersedes the plan's intent)
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct (the review of the built code): the bump is a visible review obligation, not enforced. `prompt_hash` is the truthful axis. Updated [[Offline Prompt Experiment Runner]] and [[Frozen Version Stamps on Logged Results]].
 **Impact:** Whether `prompt_version` can be trusted as an experiment/analysis axis without cross-checking `prompt_hash`; the two eval pages' description of the backstop.
 
 ## Conflict: Cross-sweep finding fingerprint formula, design vs as built — 2026-10-17
@@ -286,7 +307,8 @@ Possibly both partly right: the integration packages (models, tools) are a depen
 
 The as-built key uses `start_line` (line churn changes the fingerprint) and adds `reporter`. Either the design was never implemented as written, or the implementation drifted.
 
-**Status:** Unresolved — needs human review
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is as built: the digest keys on `start_line` + `reporter`, so fingerprints do not survive line churn until the digest follows the design. Claim A stays as design intent. Updated [[Cross-Sweep Finding Fingerprint]].
 **Impact:** Whether the trend states (persistent/recurring/resolved) survive line-number shifts. The page's claim that fingerprints survive line churn may not hold for the shipped code.
 
 ## Conflict: Is DeepEval part of listen-wiseer's eval harness? — 2026-10-17
@@ -297,5 +319,74 @@ The as-built key uses `start_line` (line churn changes the fingerprint) and adds
 **Claim B** (from new source `data/raw/repos/listen-wiseer/CLAUDE.md`, high-confidence repo doc):
 > `deepeval` removed (2026-07-19). It was never imported anywhere in `src/`, `evals/` or `tests/`, but its pytest plugin autoloaded and broke collection. `ragas` + `langfuse` (both actually used) carry the eval harness.
 
-**Status:** Unresolved — needs human review (likely Claim B: the repo's own CLAUDE.md describes the built code; Claim A records a planned design)
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct: DeepEval was planned but never imported, and was removed 2026-07-19; RAGAS + LangFuse carry the harness. Updated [[Listen-Wiseer Project]].
 **Impact:** The Listen-Wiseer Project page's eval stack description and any recommendation citing DeepEval's ToolCorrectnessMetric as used in practice.
+
+## Conflict: Judge calibration sample size and whether a calibrated judge may gate a release — 2026-10-30
+
+**Claim A** (from `[[LLM-as-Judge Evaluation]]`, sourced from `data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md` and `data/raw/claude-docs/akira/docs/research/2026-09-03-divergence-since-waslosheute-mvp.md`):
+> Calibrate the judge with 5–10 sample inputs with human-graded "good" outputs. The judge is a regression detector, never a launch gate; humans decide whether movement is real.
+
+**Claim B** (from new source `data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md`, with `notes--04-graders.md`):
+> Calibrate with 100–200 human PASS/FAIL labels split train/dev/test, measuring TPR and TNR on the held-out split. A judge is experimental (cannot gate) until calibrated; a calibrated judge may block a release at its calibrated threshold.
+
+The two may partly reflect different contexts (a discovery-stage rubric smoke test and a product whose human inter-rater ceiling was low, vs a general production procedure), but they disagree on both the calibration bar and the gating rule.
+
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold at different stages: 5–10 samples is a discovery-stage rubric smoke test (regression detector only); gating a release needs the 100–200-label TPR/TNR procedure *and* a human inter-rater ceiling high enough to trust it. Updated [[LLM-as-Judge Evaluation]] to state the stages.
+**Impact:** Whether release gates in new builds may rest on an LLM judge; how much human labeling to budget before a judge is trusted. Related: [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]], [[Grader States (Heuristic, Calibrated, Experimental)]], [[Human Agreement Ceiling Protocol]].
+
+## Conflict: Graph UI rendering library (React Flow vs Cytoscape.js) — 2026-10-30
+
+**Claim A** (from `[[Librarian Graph Explorer]]` and `[[Librarian KB — Build Plan]]`, sourced from `data/raw/claude-docs/playground/react-flow-ui.md`, `data/raw/repos/librarian/.claude--docs--plans--2026-10-30-frontend-audit-fixes.md`):
+> The graph is rendered with React Flow (`@xyflow/react`); the 2026-10-30 audit plan lists "Replacing React Flow or the layout algorithms" as out of scope. The KB plan's decision table records "React Flow (not Cytoscape, not sigma.js)".
+
+**Claim B** (from new source `data/raw/repos/librarian/README.md`):
+> `app/frontend/` — "React + Vite graph UI — Cytoscape.js force-directed graph, chat panel, live wiki watch"; the architecture diagram also labels the UI "React + Cytoscape + chat agent".
+
+Likely a stale README line (the frontend's package manifest lists `@xyflow/react`), but the wiki does not resolve it silently.
+
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim A is correct — the frontend depends on `@xyflow/react`; the README was stale and now says React Flow. Removed the conflict note from [[Librarian Graph Explorer]].
+**Impact:** README accuracy for the graph UI; any page describing the frontend stack.
+
+## Conflict: Does few-shot CoT outperform zero-shot CoT? — 2026-10-30
+
+**Claim A** (from `[[Few-Shot Prompting]]`, sourced from `data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md`):
+> Few-shot CoT — examples that show the reasoning chain — "outperforms either technique alone on multi-step tasks".
+
+**Claim B** (from new source `data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--09-evaluating-prompts.md`, citing Clavié et al. 2023):
+> On a job-posting classification task, zero-shot CoT (F1 81.4) beat few-shot CoT (F1 78.4); the examples anchored the model. The task needed no expert knowledge.
+
+The two may refer to different task types (genuinely multi-step reasoning vs single-label classification), but Claim A is stated without that qualifier.
+
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold for different task types: few-shot CoT helps on genuinely multi-step reasoning, and anchors the model on single-label classification. Updated [[Few-Shot Prompting]] to scope the claim and default to zero-shot CoT until an eval shows examples help.
+**Impact:** Default technique choice when adding reasoning to a prompt; [[Prompting Technique Selection]], [[Evaluating Prompts]], [[Chain of Thought]].
+
+## Conflict: Cascaded voice latency budget — 2026-10-30
+
+**Claim A** (from `[[Realtime Voice Architecture Reference]]`, sourced from `data/raw/claude-docs/galactus/docs/research/2026-08-10_voice-tooling_regulated-domain.md`):
+> Within the cascade, LLM time-to-first-token (400–800 ms) dominates; ASR and TTS streaming are each ~100–200 ms; a cascaded pipeline runs ~400–600 ms end to end.
+
+**Claim B** (from new source `data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md`, recorded in `[[Voice Agent Paradigms]]`):
+> The VAD silence wait (500–800 ms) is the largest stage of a serial cascade, with LLM TTFT at 100–500 ms; the serial cascade totals roughly 0.95–2.3 s before queueing multiplies it.
+
+The two likely measure different configurations (streamed vs fully serial; endpointing outside vs inside the budget), but neither page states that scope.
+
+**Status:** Resolved — 2026-10-30
+**Resolution:** Both hold for different configurations: a streamed cascade with endpointing counted separately is TTFT-dominated (~400–600 ms); a fully serial cascade with the VAD wait inside the budget is endpointing-dominated (~0.95–2.3 s). Both pages now state their configuration and link as `extends`.
+**Impact:** Where to spend latency effort in a voice agent (model tier vs endpointing); [[Voice Agent Paradigms]], [[Realtime Voice Architecture Reference]], [[Voice Agent Patterns]].
+
+## Conflict: Graph vs vector multi-hop accuracy — 2026-10-30
+
+**Claim A** (from `[[Knowledge Graph Retrieval]]`, sourced from `data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md`):
+> Reported multi-hop accuracy: 53.4% for graph retrieval vs 42.9% for vector-only.
+
+**Claim B** (from new source `data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--11-kg-rag-and-text-to-cypher.md`):
+> The 53.4% vs 42.9% figures come from a vendor blog with no stated method and are dropped. The primary evidence (GraphRAG, arXiv 2404.16130) shows LLM-judged comprehensiveness/diversity wins on global sensemaking questions, with vector RAG winning on directness — not that graphs are more accurate in general.
+
+**Status:** Resolved — 2026-10-30
+**Resolution:** Claim B is correct — the 53.4%/42.9% figures have no stated method and are removed; [[Knowledge Graph Retrieval]] now cites only the GraphRAG paper's evidence.
+**Impact:** Whether the wiki should quote any graph-vs-vector accuracy number; [[Knowledge Graph Retrieval]], [[Graph Engineering]], [[Text-to-Cypher]].

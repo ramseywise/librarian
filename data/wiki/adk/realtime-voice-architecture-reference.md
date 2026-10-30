@@ -2,7 +2,7 @@
 title: Realtime Voice Architecture Reference
 tags: [voice, adk, infra, reference]
 summary: Numbers and tradeoffs for building a realtime voice agent — cascaded ASR→LLM→TTS vs speech-to-speech, the latency budget in which LLM time-to-first-token dominates, endpointing strategies, domain-specific transcription failure modes, and the regulated-domain constraints (GDPR Art. 9/17/22, health-data hosting) that shape the architecture before any code.
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/galactus/docs/research/2026-08-10_voice-tooling_realtime-sota.md
   - data/raw/claude-docs/galactus/docs/research/2026-08-10_voice-tooling_regulated-domain.md
@@ -34,8 +34,11 @@ compliance artifact, not a byproduct.
 
 - Conversational threshold: **< 500 ms** feels natural; **> 1500 ms** and the conversation
   collapses (users repeat themselves, talk over the agent).
-- Within the cascade, **LLM time-to-first-token (400–800 ms) dominates**; ASR and TTS
-  streaming are each ~100–200 ms. Consequence: model tier is the binding constraint —
+- Within a **streamed** cascade (stages overlap, endpointing tuned aggressively and
+  counted outside the figure), **LLM time-to-first-token (400–800 ms) dominates**; ASR and
+  TTS streaming are each ~100–200 ms. In a **fully serial** cascade that waits on a
+  500–800 ms VAD silence threshold, endpointing becomes the largest stage and the total
+  reaches ~0.95–2.3 s ([[Voice Agent Paradigms]]) — so tune endpointing first, then model tier. Consequence: model tier is the binding constraint —
   a fast small model is not a cost optimisation but a correctness requirement, and
   routing the hard reasoning to a bigger model happens *between* turns, not within one.
 
@@ -95,3 +98,4 @@ The existing specs covered PII masking but not compliance *architecture*. Findin
 - [[PII Masking Approaches]] — extends (text masking vs mandatory audio redaction)
 - [[Data Clusters by Writer and Trust]] — extends (erasure must reach every representation)
 - [[Safeguards Architecture — Five Protection Layers]] — extends
+- [[Voice Agent Paradigms]] — related (the fully serial cascade budget, where the VAD wait dominates)

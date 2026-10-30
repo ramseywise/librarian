@@ -2,7 +2,7 @@
 title: Worktree Agent Dispatch Contract
 tags: [llm, pattern]
 summary: "Rules for dispatching coding agents into git worktrees: the dispatcher owns the git workflow, the worktree is created in the target repo, agents branch from committed state, and their commits are provisional until a human reviews the diff."
-updated: 2026-10-17
+updated: 2026-10-30
 sources:
   - data/raw/claude-docs/_user/CLAUDE.md
 ---
@@ -51,5 +51,5 @@ gate for regular sessions.
 - [[Parallel Across Lanes, Migrations Alone]] — extends (which agents can run concurrently once dispatch is safe)
 - [[Re-Scope Over Sequence for Colliding Issues]] — related (cutting the work so concurrent agents share no files)
 - [[TDD as Coding-Agent Harness]] — related (same separation-of-powers instinct, applied to tests)
-- [[Claude Workflow System]] — part-of
+- [[Claude Workflow System]] — related (part of)
 - [[Plan Step Done Requires a Commit]] — related (the gate added after worktree cleanup destroyed uncommitted steps)

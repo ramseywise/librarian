@@ -1,8 +1,8 @@
 ---
-imported_hash: c68f3338a6ecaa7d
+imported_hash: d56498a20b79a615
 title: Behavioral Round — Worked STAR Examples
 summary: Each file is a complete STAR+Reflection story with annotations on what makes each component strong.
-order: 5
+order: 6
 kind: reading
 section: Behavioral / Examples
 source: sisyphus/interviewing/rounds/behavioral/examples/README.md

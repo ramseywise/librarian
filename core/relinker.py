@@ -30,19 +30,16 @@ from core.wiki_common import WIKILINK_RE, slugify
 REPO_ROOT = Path(__file__).parent.parent
 WIKI_DIR = REPO_ROOT / "data" / "wiki"
 
-DOMAIN_TAG_SET = {
-    "langgraph",
-    "rag",
-    "adk",
-    "mcp",
-    "memory",
-    "eval",
-    "infra",
-    "deep-agents",
-    "patterns",
-    "meta",
-    "projects",
-}
+
+def _domain_tag_set() -> set[str]:
+    """Domain tags derived from disk (directories under data/wiki/, minus private/), the
+    same rule as app/backend/wiki_parser and the MCP server. A hardcoded copy here had
+    drifted: it missed context, foundations, interview, prompting and others, so shared
+    domain tags on those pages were scored as if they were topical tags."""
+    if not WIKI_DIR.is_dir():
+        return set()
+    return {d.name for d in WIKI_DIR.iterdir() if d.is_dir() and d.name != "private"}
+
 
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
 
@@ -108,11 +105,18 @@ def build_link_graph(pages: dict[str, PageInfo]) -> None:
                 pages[target_stem].incoming_links.add(stem)
 
 
-def compute_adjusted_score(base_score: float, source: PageInfo, target: PageInfo) -> float:
+def compute_adjusted_score(
+    base_score: float,
+    source: PageInfo,
+    target: PageInfo,
+    domain_tags: set[str] | None = None,
+) -> float:
     score = base_score
+    if domain_tags is None:
+        domain_tags = _domain_tag_set()
     if source.domain == target.domain:
         score += 0.1
-    shared_tags = set(source.tags) & set(target.tags) - DOMAIN_TAG_SET - TYPE_TAGS
+    shared_tags = set(source.tags) & set(target.tags) - domain_tags - TYPE_TAGS
     score += 0.05 * len(shared_tags)
     type_set = {source.type_tag, target.type_tag}
     if "pattern" in type_set and "concept" in type_set:
@@ -142,6 +146,7 @@ def relink(
     id_to_idx = {pid: i for i, pid in enumerate(page_ids)}
 
     scope = set(changed_pages) if changed_pages else set(pages.keys())
+    domain_tags = _domain_tag_set()  # once per run, not per scored pair
 
     auto_candidates: list[tuple[str, str, float]] = []
     suggested: list[tuple[str, str, float]] = []
@@ -162,7 +167,7 @@ def relink(
             base = float(sim[idx, other_idx])
             if base < suggest_threshold - 0.15:
                 continue
-            adjusted = compute_adjusted_score(base, info, pages[other_stem])
+            adjusted = compute_adjusted_score(base, info, pages[other_stem], domain_tags)
             candidates.append((other_stem, adjusted))
 
         candidates.sort(key=lambda x: -x[1])

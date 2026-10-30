@@ -1,15 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
   useNodesState,
-  useEdgesState,
   useReactFlow,
   ReactFlowProvider,
   BackgroundVariant,
-  type Edge,
   type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -19,48 +17,58 @@ import { EdgeTogglePanel } from "./EdgeTogglePanel";
 import { LayoutSwitcher } from "./LayoutSwitcher";
 import { TagFilterPanel } from "./TagFilterPanel";
 import { useWikiData } from "../hooks/useWikiData";
-import { applyDagreLayout, applyUmapLayout } from "../utils/layout";
-import type { EdgeVisibility, LayoutMode, SelectedNode, WikiEdgeData, WikiNodeData } from "../types";
+import { applyDagreLayout, placeMissingNodes, type XY } from "../utils/layout";
+import {
+  applyView,
+  expandOneHop,
+  filterPrimaryIds,
+  focusNeighbourhood,
+  visibleEdges,
+  type ViewState,
+} from "../utils/graphView";
+import { domainColor } from "../theme/domains";
+import type { EdgeVisibility, LayoutMode, SelectedNode, WikiNodeData } from "../types";
 
 const NODE_TYPES = { wikiNode: WikiNode };
-
-const EDGE_STYLES: Record<string, React.CSSProperties> = {
-  wikilink: { stroke: "#666", strokeWidth: 1 },
-  semantic: { stroke: "#4a90d9", strokeWidth: 1, strokeDasharray: "4 3" },
-  "tag-shared": { stroke: "#e8943a", strokeWidth: 1, strokeDasharray: "2 4" },
-};
+const NO_NODES: WikiFlowNode[] = [];
 
 interface WikiGraphProps {
   highlightedPages?: Set<string>;
   /** Wiki page to pan/zoom to — set when arriving from a course lesson's concept link. */
   focusPage?: string | null;
   onNodeSelect?: (node: SelectedNode | null) => void;
+  /** Called once `focusPage` has been applied (node found, view fitted, node selected). */
+  onFocusApplied?: () => void;
   onBrief?: (domain: string) => void;
   activeTags: Set<string>;
   onActiveTagsChange: (tags: Set<string>) => void;
 }
 
-function AutoFit({ version }: { version: number }) {
-  const { fitView } = useReactFlow();
-  useEffect(() => {
-    if (version > 0) requestAnimationFrame(() => fitView({ padding: 0.15 }));
-  }, [version, fitView]);
-  return null;
+function positionsOf(nodes: Node[]): Record<string, XY> {
+  return Object.fromEntries(nodes.map((n) => [n.id, n.position]));
 }
 
-function WikiGraphInner({ highlightedPages, focusPage, onNodeSelect, onBrief, activeTags, onActiveTagsChange }: WikiGraphProps) {
+function WikiGraphInner({
+  highlightedPages,
+  focusPage,
+  onNodeSelect,
+  onFocusApplied,
+  onBrief,
+  activeTags,
+  onActiveTagsChange,
+}: WikiGraphProps) {
   const {
     baseNodes,
     wikilinkEdges,
+    domains,
     tagSharedEdges,
     semanticEdges,
     fetchSemanticEdges,
-    fetchUmapPositions,
+    umapPositions,
+    umapFailed,
+    loadUmapPositions,
     connected,
   } = useWikiData();
-
-  const [nodes, setNodes, onNodesChange] = useNodesState<WikiFlowNode>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge<WikiEdgeData>>([]);
 
   const [edgeVis, setEdgeVis] = useState<EdgeVisibility>({
     wikilink: false,
@@ -70,245 +78,169 @@ function WikiGraphInner({ highlightedPages, focusPage, onNodeSelect, onBrief, ac
   const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
   const [overviewMode, setOverviewMode] = useState(true);
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
-  const [loadingUmap, setLoadingUmap] = useState(false);
   const [loadingSemantic, setLoadingSemantic] = useState(false);
-  const [umapPositions, setUmapPositions] = useState<Record<string, { x: number; y: number }> | null>(null);
-  const [fitVersion, setFitVersion] = useState(0);
-
-  // Refs so effects can read current state without stale closures
-  const activeTagsRef = useRef(activeTags);
-  const highlightedPagesRef = useRef(highlightedPages);
-  const overviewModeRef = useRef(overviewMode);
-  const focusNodeIdRef = useRef(focusNodeId);
-  const focusNeighborIdsRef = useRef<Set<string> | null>(null);
-  const filterMatchingIdsRef = useRef<Set<string> | null>(null);
-  activeTagsRef.current = activeTags;
-  highlightedPagesRef.current = highlightedPages;
-  overviewModeRef.current = overviewMode;
-  focusNodeIdRef.current = focusNodeId;
-
+  // Narrow screens only: the control panels collapse behind one menu button.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
   const { fitView } = useReactFlow();
 
-  // Compute neighbor IDs for focused node — uses all edge types regardless of toggles,
-  // 2-hop via structural edges (wikilink + tag-shared) + 1-hop semantic for richer context
+  const hasNodes = baseNodes.length > 0;
+  const loadingUmap = layout === "umap-semantic" && hasNodes && !umapPositions && !umapFailed;
+
+  // UMAP positions are fetched once, on first use; the hook caches them.
   useEffect(() => {
-    if (!focusNodeId) {
-      focusNeighborIdsRef.current = null;
-      return;
-    }
-    const neighbors = new Set<string>([focusNodeId]);
-    const structural = [...wikilinkEdges, ...tagSharedEdges];
-    const firstHop = new Set<string>();
-    for (const e of structural) {
-      if (e.source === focusNodeId) { neighbors.add(e.target); firstHop.add(e.target); }
-      if (e.target === focusNodeId) { neighbors.add(e.source); firstHop.add(e.source); }
-    }
-    for (const e of structural) {
-      if (firstHop.has(e.source)) neighbors.add(e.target);
-      if (firstHop.has(e.target)) neighbors.add(e.source);
-    }
-    for (const e of semanticEdges) {
-      if (e.source === focusNodeId) neighbors.add(e.target);
-      if (e.target === focusNodeId) neighbors.add(e.source);
-    }
-    focusNeighborIdsRef.current = neighbors;
-  }, [focusNodeId, wikilinkEdges, tagSharedEdges, semanticEdges]);
+    if (layout === "umap-semantic" && hasNodes) void loadUmapPositions();
+  }, [layout, hasNodes, loadUmapPositions]);
 
-  const applyDimming = useCallback((newNodes: WikiFlowNode[]): WikiFlowNode[] => {
-    const hp = highlightedPagesRef.current;
-    const at = activeTagsRef.current;
-    const ov = overviewModeRef.current;
-    const fn = focusNeighborIdsRef.current;
-    const hasChatHighlights = hp != null && hp.size > 0;
-    const hasFocus = fn != null;
-    const hasTagFilter = at.size > 0;
-    return newNodes.map((n) => {
-      const inChatHighlight = hasChatHighlights && hp!.has(n.id);
-      const inFocus = hasFocus && fn!.has(n.id);
-      const inTagFilter = hasTagFilter && (n.data.domain.some((t: string) => at.has(t)) || at.has(n.data.typeTag));
-      // Use expanded filter set (primary + neighbors) for visibility; domain match for highlight
-      const fm = filterMatchingIdsRef.current;
-      const inFilterExpanded = fm ? fm.has(n.id) : false;
-      const hidden = hasChatHighlights ? false : fm ? !inFilterExpanded : false;
-      return {
-        ...n,
-        hidden,
-        data: {
-          ...n.data,
-          highlighted: hasChatHighlights ? inChatHighlight : hasFocus ? inFocus && !hidden : inTagFilter,
-          dimmed: hasChatHighlights
-            ? !inChatHighlight
-            : hasFocus && !hidden
-            ? !inFocus
-            : ov && !hasTagFilter
-            ? n.data.typeTag !== "project"
-            : false,
-        },
-      };
-    });
-  }, []);
-
-  // Recompute layout whenever base nodes or layout mode changes
-  useEffect(() => {
-    if (!baseNodes.length) return;
-
-    async function applyLayout() {
-      try {
-        const visibleEdges = wikilinkEdges;
-        if (layout === "dagre") {
-          const laid = applyDagreLayout(baseNodes as Node[], visibleEdges as Edge[]);
-          setNodes(applyDimming(laid as WikiFlowNode[]));
-          setFitVersion((v) => v + 1);
-        } else if (layout === "umap-semantic") {
-          setLoadingUmap(true);
-          const positions = umapPositions ?? await (async () => {
-            const pos = await fetchUmapPositions();
-            setUmapPositions(pos);
-            return pos;
-          })();
-          setLoadingUmap(false);
-          const laid = applyUmapLayout(baseNodes as Node[], positions);
-          setNodes(applyDimming(laid as WikiFlowNode[]));
-          setFitVersion((v) => v + 1);
-        }
-      } catch {
-        setLoadingUmap(false);
-      }
-    }
-
-    applyLayout();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baseNodes, layout]);
-
-  // Recompute visible edges + apply chip/focus filtering
-  useEffect(() => {
-    const hp = highlightedPages;
-    const fn = focusNodeId;
-    const at = activeTags;
-    const fm = filterMatchingIdsRef.current;
-
-    // In filter mode, always show all 3 edge types within the subgraph
-    const active: Edge<WikiEdgeData>[] = at.size > 0
-      ? [...wikilinkEdges, ...semanticEdges, ...tagSharedEdges]
-      : [
-          ...(edgeVis.wikilink ? wikilinkEdges : []),
-          ...(edgeVis.semantic ? semanticEdges : []),
-          ...(edgeVis["tag-shared"] ? tagSharedEdges : []),
-        ];
-
-    const filteredNodeIds = fm;
-
-    const styled = active.map((e) => ({
-      ...e,
-      style: EDGE_STYLES[e.data?.edgeType ?? "wikilink"],
-      animated: e.data?.edgeType === "semantic",
-      hidden: hp && hp.size > 0
-        ? !hp.has(e.source) && !hp.has(e.target)
-        : fn
-        ? e.source !== fn && e.target !== fn
-        : filteredNodeIds
-        ? !filteredNodeIds.has(e.source) && !filteredNodeIds.has(e.target)
-        : false,
-    }));
-    setEdges(styled);
-  }, [edgeVis, wikilinkEdges, semanticEdges, tagSharedEdges, highlightedPages, activeTags, focusNodeId, baseNodes, setEdges]);
-
-  useEffect(() => {
-    if (!focusPage || !baseNodes.length) return;
-    requestAnimationFrame(() =>
-      fitView({ nodes: [{ id: focusPage }], padding: 2, maxZoom: 1.2, duration: 400 })
-    );
-  }, [focusPage, baseNodes.length, fitView]);
-
-  // Re-apply dimming when highlight/focus/overview state changes (not activeTags — handled by filter layout)
-  useEffect(() => {
-    setNodes((prev) => (prev.length ? applyDimming(prev) : prev));
-  }, [focusNodeId, highlightedPages, overviewMode, applyDimming]);
-
-  // Filter layout: Dagre subgraph when chips active, restore full layout when cleared
-  useEffect(() => {
-    if (!baseNodes.length) return;
-    const at = activeTags;
-
-    if (at.size === 0) {
-      filterMatchingIdsRef.current = null;
-      if (layout === "umap-semantic" && umapPositions) {
-        const laid = applyUmapLayout(baseNodes as Node[], umapPositions);
-        setNodes(applyDimming(laid as WikiFlowNode[]));
-      } else if (layout === "dagre") {
-        const laid = applyDagreLayout(baseNodes as Node[], wikilinkEdges as Edge[]);
-        setNodes(applyDimming(laid as WikiFlowNode[]));
-      } else {
-        setNodes((prev) => applyDimming(prev));
-      }
-      requestAnimationFrame(() => fitView({ padding: 0.15, duration: 300 }));
-      return;
-    }
-
-    // Primary nodes: domain OR type tag match
-    const primaryIds = new Set(
-      baseNodes
-        .filter(n => {
-          const d = n.data as WikiNodeData;
-          return d.domain.some((t: string) => at.has(t)) || at.has(d.typeTag);
-        })
-        .map(n => n.id as string)
-    );
-    // Expand to 1-hop neighbors via wikilinks + tag-shared for richer context
-    const matchingIds = new Set(primaryIds);
-    for (const e of [...wikilinkEdges, ...tagSharedEdges]) {
-      if (primaryIds.has(e.source)) matchingIds.add(e.target);
-      if (primaryIds.has(e.target)) matchingIds.add(e.source);
-    }
-    filterMatchingIdsRef.current = matchingIds;
-
-    const matchingBaseNodes = baseNodes.filter(n => matchingIds.has(n.id as string)) as Node[];
-    // Always use all 3 edge types within the subgraph for full context
-    const subEdges = ([...wikilinkEdges, ...semanticEdges, ...tagSharedEdges] as Edge[])
-      .filter(e => matchingIds.has(e.source) && matchingIds.has(e.target));
-
-    const laidOut = applyDagreLayout(matchingBaseNodes, subEdges);
-    const newPositions = Object.fromEntries(laidOut.map(n => [n.id, n.position]));
-
-    setNodes((prev) =>
-      applyDimming(
-        prev.map(n => ({
-          ...n,
-          position: matchingIds.has(n.id) ? (newPositions[n.id] ?? n.position) : n.position,
-        })) as WikiFlowNode[]
-      )
-    );
-    requestAnimationFrame(() =>
-      fitView({ nodes: Array.from(matchingIds).map(id => ({ id })), padding: 0.3, duration: 400 })
-    );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTags, baseNodes, layout, umapPositions, edgeVis, wikilinkEdges, semanticEdges, tagSharedEdges]);
-
-  const handleLoadSemantic = useCallback(async () => {
-    setLoadingSemantic(true);
-    await fetchSemanticEdges(0.65);
-    setLoadingSemantic(false);
-  }, [fetchSemanticEdges]);
-
-  const handleLayoutChange = useCallback(
-    async (mode: LayoutMode) => {
-      setLayout(mode);
-      if (mode === "umap-semantic" && !umapPositions) {
-        setLoadingUmap(true);
-        const pos = await fetchUmapPositions();
-        setUmapPositions(pos);
-        setLoadingUmap(false);
-      }
-    },
-    [umapPositions, fetchUmapPositions]
+  const structuralEdges = useMemo(
+    () => [...wikilinkEdges, ...tagSharedEdges],
+    [wikilinkEdges, tagSharedEdges],
   );
 
+  // --- Layout: base positions (UMAP or dagre), then the filter subgraph on top ----------
+  const baseLayout = useMemo<Record<string, XY> | null>(() => {
+    if (!hasNodes) return null;
+    if (layout === "umap-semantic") {
+      if (umapPositions) return placeMissingNodes(baseNodes, umapPositions, wikilinkEdges);
+      if (!umapFailed) return null; // still loading: render nothing rather than a pile at (0,0)
+      // UMAP unavailable on the server: fall back to the hierarchy layout.
+    }
+    return positionsOf(applyDagreLayout(baseNodes, wikilinkEdges));
+  }, [hasNodes, layout, umapPositions, umapFailed, baseNodes, wikilinkEdges]);
+
+  const filterIds = useMemo(() => {
+    const primary = filterPrimaryIds(baseNodes, activeTags);
+    return primary ? expandOneHop(primary, structuralEdges) : null;
+  }, [baseNodes, activeTags, structuralEdges]);
+
+  const positions = useMemo(() => {
+    if (!baseLayout || !filterIds) return baseLayout;
+    const sub = baseNodes.filter((n) => filterIds.has(n.id));
+    // All three edge types shape the subgraph; wikilinks first so they win the
+    // one-parent-per-node choice in applyDagreLayout.
+    const subEdges = [...wikilinkEdges, ...semanticEdges, ...tagSharedEdges].filter(
+      (e) => filterIds.has(e.source) && filterIds.has(e.target),
+    );
+    return { ...baseLayout, ...positionsOf(applyDagreLayout(sub, subEdges)) };
+  }, [baseLayout, filterIds, baseNodes, wikilinkEdges, semanticEdges, tagSharedEdges]);
+
+  // --- View: dimming / highlight / hidden, and the rendered edges -----------------------
+  const focusIds = useMemo(
+    () => focusNeighbourhood(focusNodeId, structuralEdges, semanticEdges),
+    [focusNodeId, structuralEdges, semanticEdges],
+  );
+
+  const view = useMemo<ViewState>(
+    () => ({
+      chatHighlight: highlightedPages,
+      focusId: focusNodeId,
+      focusIds,
+      filterIds,
+      activeTags,
+      overview: overviewMode,
+    }),
+    [highlightedPages, focusNodeId, focusIds, filterIds, activeTags, overviewMode],
+  );
+
+  const viewNodes = useMemo(() => {
+    if (!positions) return NO_NODES;
+    const laidOut = baseNodes.map((n) => ({ ...n, position: positions[n.id] ?? n.position }));
+    return applyView(laidOut, view);
+  }, [positions, baseNodes, view]);
+
+  const edges = useMemo(
+    () =>
+      visibleEdges(
+        { wikilink: wikilinkEdges, semantic: semanticEdges, tagShared: tagSharedEdges },
+        edgeVis,
+        viewNodes,
+        view,
+      ),
+    [wikilinkEdges, semanticEdges, tagSharedEdges, edgeVis, viewNodes, view],
+  );
+
+  // --- Sync derived nodes into React Flow state (keeps node dragging working) -----------
+  // A new `positions` object means a relayout: take the new positions and refit.
+  // Otherwise only view flags changed: keep where the user dragged nodes to.
+  const [nodes, setNodes, onNodesChange] = useNodesState<WikiFlowNode>([]);
+  const lastPositions = useRef<Record<string, XY> | null>(null);
+  const pendingFit = useRef(false);
+
+  useEffect(() => {
+    const relayout = lastPositions.current !== positions;
+    lastPositions.current = positions;
+    if (relayout && positions) pendingFit.current = true;
+    setNodes((prev) => {
+      const prevById = new Map(prev.map((n) => [n.id, n]));
+      return viewNodes.map((n) => {
+        const p = prevById.get(n.id);
+        if (!p) return n;
+        return {
+          ...n,
+          position: relayout ? n.position : p.position,
+          measured: p.measured,
+          selected: p.selected,
+        };
+      });
+    });
+  }, [viewNodes, positions, setNodes]);
+
+  useEffect(() => {
+    if (!pendingFit.current || !nodes.length) return;
+    pendingFit.current = false;
+    const ids = filterIds;
+    requestAnimationFrame(() => {
+      if (ids) {
+        void fitView({ nodes: [...ids].map((id) => ({ id })), padding: 0.3, duration: 400 });
+      } else {
+        void fitView({ padding: 0.15, duration: 300 });
+      }
+    });
+  }, [nodes, filterIds, fitView]);
+
+  // --- focusPage (arriving from a lesson): fit to it, open its panel, report back -------
+  // Declared after the layout fit so its fitView is queued last and wins on first load.
+  const appliedFocus = useRef<string | null>(null);
+  const hasRenderedNodes = nodes.length > 0;
+  useEffect(() => {
+    if (!focusPage) {
+      appliedFocus.current = null;
+      return;
+    }
+    if (appliedFocus.current === focusPage || !hasRenderedNodes) return;
+    const node = baseNodes.find((n) => n.id === focusPage);
+    appliedFocus.current = focusPage;
+    if (!node) {
+      // Unknown or private page (graph loaded, id absent): drop the request rather than
+      // leave it pending, so it can't fire later on an unrelated graph update.
+      onFocusApplied?.();
+      return;
+    }
+    requestAnimationFrame(() => {
+      void fitView({ nodes: [{ id: focusPage }], padding: 2, maxZoom: 1.2, duration: 400 });
+    });
+    onNodeSelect?.({ id: node.id, data: node.data });
+    onFocusApplied?.();
+  }, [focusPage, hasRenderedNodes, baseNodes, fitView, onNodeSelect, onFocusApplied]);
+
+  // --- Handlers ------------------------------------------------------------------------
+  const handleLoadSemantic = useCallback(async () => {
+    setLoadingSemantic(true);
+    try {
+      await fetchSemanticEdges(0.65);
+    } catch {
+      // Toggle stays on with no edges; the next toggle retries.
+    } finally {
+      setLoadingSemantic(false);
+    }
+  }, [fetchSemanticEdges]);
+
   const handleNodeClick = useCallback(
-    (_: React.MouseEvent, node: Node) => {
+    (_: React.MouseEvent, node: WikiFlowNode) => {
       setFocusNodeId((prev) => (prev === node.id ? null : node.id));
       onNodeSelect?.({ id: node.id, data: node.data as WikiNodeData });
     },
-    [onNodeSelect]
+    [onNodeSelect],
   );
 
   const handlePaneClick = useCallback(() => {
@@ -316,60 +248,77 @@ function WikiGraphInner({ highlightedPages, focusPage, onNodeSelect, onBrief, ac
     onNodeSelect?.(null);
   }, [onNodeSelect]);
 
-  const miniMapColor = useCallback((n: Node) => {
-    const domain = (n.data as WikiFlowNode["data"]).domain[0] ?? "";
-    const colors: Record<string, string> = {
-      rag: "#2196F3", langgraph: "#4CAF50", adk: "#FF9800", infra: "#607D8B",
-      patterns: "#E91E63", eval: "#FFEB3B", "deep-agents": "#3F51B5",
-      memory: "#00BCD4", mcp: "#9C27B0", meta: "#795548", projects: "#009688",
-      foundations: "#7E57C2", interview: "#FF5722",
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      setMenuOpen(false);
+      menuBtnRef.current?.focus();
     };
-    return colors[domain] ?? "#555";
-  }, []);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
+  const miniMapColor = useCallback((n: WikiFlowNode) => domainColor(n.data.domain[0]), []);
 
   return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+    <div className="graph-root">
       {/* Connection status */}
-      <div style={{
-        position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)",
-        zIndex: 10, fontSize: 11, color: connected ? "#4CAF50" : "#F44336",
-        background: "#1c1c1c", padding: "3px 10px", borderRadius: 12, border: "1px solid #333",
-      }}>
+      <div className={`graph-status ${connected ? "graph-status--live" : "graph-status--offline"}`}>
         {connected ? "● live" : "○ connecting…"}
       </div>
 
-      <EdgeTogglePanel
-        visibility={edgeVis}
-        onChange={setEdgeVis}
-        onLoadSemantic={handleLoadSemantic}
-        loadingSemanticEdges={loadingSemantic}
-      />
+      {/* Narrow screens: one button in place of the four control panels. */}
+      <button
+        ref={menuBtnRef}
+        type="button"
+        className="graph-menu-btn"
+        aria-label="Graph controls"
+        aria-expanded={menuOpen}
+        aria-controls="graph-controls"
+        onClick={() => setMenuOpen((o) => !o)}
+      >
+        ☰ Controls
+      </button>
 
-      <LayoutSwitcher current={layout} onChange={handleLayoutChange} loadingUmap={loadingUmap} />
+      <div id="graph-controls" className={`graph-controls${menuOpen ? " is-open" : ""}`}>
+        <EdgeTogglePanel
+          visibility={edgeVis}
+          onChange={setEdgeVis}
+          onLoadSemantic={handleLoadSemantic}
+          loadingSemanticEdges={loadingSemantic}
+        />
 
-      {/* Depth toggle — top-right */}
-      <div style={depthToggleStyle}>
-        <button
-          onClick={() => setOverviewMode(true)}
-          style={{ ...depthBtnStyle, ...(overviewMode ? depthBtnActiveStyle : {}) }}
-        >
-          Projects
-        </button>
-        <button
-          onClick={() => setOverviewMode(false)}
-          style={{ ...depthBtnStyle, ...(!overviewMode ? depthBtnActiveStyle : {}) }}
-        >
-          All
-        </button>
+        <LayoutSwitcher
+          current={layout}
+          onChange={setLayout}
+          loadingUmap={loadingUmap}
+          umapUnavailable={layout === "umap-semantic" && umapFailed}
+        />
+
+        {/* Depth toggle — top-right */}
+        <div className="graph-depth seg">
+          <button onClick={() => setOverviewMode(true)} aria-pressed={overviewMode} className="seg-btn">
+            Projects
+          </button>
+          <button onClick={() => setOverviewMode(false)} aria-pressed={!overviewMode} className="seg-btn">
+            All
+          </button>
+        </div>
+
+        <TagFilterPanel
+          domains={domains}
+          activeTags={activeTags}
+          onChange={onActiveTagsChange}
+          onBrief={onBrief}
+        />
       </div>
-
-      <TagFilterPanel activeTags={activeTags} onChange={onActiveTagsChange} onBrief={onBrief} />
 
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
         nodeTypes={NODE_TYPES}
         onNodeClick={handleNodeClick}
         onPaneClick={handlePaneClick}
@@ -379,13 +328,9 @@ function WikiGraphInner({ highlightedPages, focusPage, onNodeSelect, onBrief, ac
         maxZoom={3}
         proOptions={{ hideAttribution: true }}
       >
-        <AutoFit version={fitVersion} />
         <Background variant={BackgroundVariant.Dots} color="#222" gap={20} />
-        <Controls style={{ background: "#1c1c1c", border: "1px solid #333" }} />
-        <MiniMap
-          nodeColor={miniMapColor}
-          style={{ background: "#111", border: "1px solid #333" }}
-        />
+        <Controls className="graph-flow-controls" />
+        <MiniMap nodeColor={miniMapColor} className="graph-minimap" />
       </ReactFlow>
     </div>
   );
@@ -398,29 +343,3 @@ export function WikiGraph(props: WikiGraphProps) {
     </ReactFlowProvider>
   );
 }
-
-const depthToggleStyle: React.CSSProperties = {
-  position: "absolute",
-  top: 90,
-  right: 12,
-  zIndex: 10,
-  display: "flex",
-  background: "#1c1c1c",
-  border: "1px solid #333",
-  borderRadius: 8,
-  overflow: "hidden",
-};
-
-const depthBtnStyle: React.CSSProperties = {
-  padding: "5px 14px",
-  fontSize: 11,
-  cursor: "pointer",
-  background: "transparent",
-  border: "none",
-  color: "#555",
-};
-
-const depthBtnActiveStyle: React.CSSProperties = {
-  background: "#2a2a2a",
-  color: "#e0e0e0",
-};
