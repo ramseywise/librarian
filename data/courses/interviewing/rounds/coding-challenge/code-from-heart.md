@@ -1,8 +1,8 @@
 ---
-imported_hash: 6878eaae0553dd64
+imported_hash: c3fa96226964dad4
 title: Code From Heart — the fundamentals to have cold
 summary: The browser-assessment constraint (no AI, no docs, no autocomplete, 30–45 min) changes what "prepared" means.
-order: 28
+order: 30
 kind: reading
 section: Coding challenge
 source: sisyphus/interviewing/rounds/coding-challenge/code-from-heart.md

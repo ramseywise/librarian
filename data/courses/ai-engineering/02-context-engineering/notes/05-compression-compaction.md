@@ -1,8 +1,8 @@
 ---
-imported_hash: 5758df58322b8560
+imported_hash: df79f876ae2ee644
 title: 5 — Compression and Compaction
 summary: It is the difference between an agent that dies at the window limit and one that runs for hours.
-order: 9
+order: 11
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/05-compression-compaction.md

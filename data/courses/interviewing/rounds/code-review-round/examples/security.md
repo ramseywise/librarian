@@ -1,8 +1,8 @@
 ---
-imported_hash: e29a645c62c1c16b
+imported_hash: 70eebfeb51447ccd
 title: Security & Trust Boundaries
 summary: '+ @router.get("/admin/users/{user_id}/export") + async def export_user_data(user_id: int, db: Database = Depends(get_db)): + user = await db.fetch_one("SELECT  FROM users WHERE id = :id", {"id": user_id}) + return {"data": user, "exported_a…'
-order: 26
+order: 28
 kind: reading
 section: Code review round / Examples
 source: sisyphus/interviewing/rounds/code-review-round/examples/security.md

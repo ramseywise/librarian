@@ -1,8 +1,8 @@
 ---
-imported_hash: e7ac81197edfde4e
+imported_hash: 95f6e648fcdcc8ca
 title: Behavioral Round — Questions & Model Answers
 summary: Each question is a probe for a specific failure mode.
-order: 2
+order: 3
 kind: reading
 section: Behavioral
 source: sisyphus/interviewing/rounds/behavioral/questions.md

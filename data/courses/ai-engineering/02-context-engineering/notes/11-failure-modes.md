@@ -1,8 +1,8 @@
 ---
-imported_hash: 875dd8a904261958
+imported_hash: b1e9cc7bc1392dbc
 title: 11 — Context Failure Modes
 summary: These are distinct causes with distinct fixes, and they're routinely misdiagnosed as each other — or as "the model isn't smart enough."
-order: 15
+order: 17
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/11-failure-modes.md

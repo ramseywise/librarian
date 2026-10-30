@@ -1,8 +1,8 @@
 ---
-imported_hash: 78b7876ecdbcfb63
+imported_hash: dbfd0046908337bd
 title: Project Deep-Dive / Experience Review
 summary: Expect drilling until the interviewer hits the boundary of your ownership.
-order: 57
+order: 60
 kind: reading
 section: Project deep dive
 source: sisyphus/interviewing/rounds/project-deep-dive/README.md
@@ -62,6 +62,7 @@ Core in every senior loop. For FDE it doubles as a customer-communication sample
 | File | Purpose |
 |------|---------|
 | `questions.md` | 15 questions with signals, answer structures, follow-up probes |
+| `probe-bank.md` | Questions that pull a project apart: design choices, failures, metrics, ownership (no sample answers) |
 | `study-guide.md` | Frameworks: three-altitude method, decision docs, incident storytelling, impact quantification |
 | `sources.md` | Internal study guides + external resources |
 | `examples/` | Worked answers for architecture walkthrough, decision defense, incident story |

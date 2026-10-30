@@ -1,12 +1,12 @@
 ---
-imported_hash: dfdb7960483e2b38
+imported_hash: 71d1e53e9d98f79d
 title: 01 — Prompt Engineering
 summary: Prompt engineering is the craft of writing instructions and examples that consistently elicit desired outputs from language models.
 order: 1
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering
 readings:
-- title: Dair prompt engineering lecture
-  source: ai-engineering/01-prompt-engineering/notes/dair-prompt-engineering-lecture.pdf
+- title: Prompt engineering
+  source: ai-engineering/01-prompt-engineering/slides/prompt-engineering.pdf
 - title: Introduction to prompt engineering
   source: ai-engineering/01-prompt-engineering/sources/prompt-eng-for-llms/reading/01-introduction-to-prompt-engineering.pdf
 - title: Understanding llms

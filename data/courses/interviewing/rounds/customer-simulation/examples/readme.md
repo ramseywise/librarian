@@ -1,8 +1,8 @@
 ---
-imported_hash: 49ac796679ee7d69
+imported_hash: 5e06e8ffa3419bb0
 title: Customer Simulation — Worked Examples
 summary: Three fully annotated scenario dialogues.
-order: 45
+order: 48
 kind: reading
 section: Customer simulation / Examples
 source: sisyphus/interviewing/rounds/customer-simulation/examples/README.md

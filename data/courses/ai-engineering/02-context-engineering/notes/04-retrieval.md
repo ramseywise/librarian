@@ -1,8 +1,8 @@
 ---
-imported_hash: 13d7f97edd737676
+imported_hash: f7f8631c903bc078
 title: '4 — Retrieval Strategies: Pre-Computed vs. Just-in-Time'
 summary: 'The RAG-era assumption was: retrieve before inference.'
-order: 8
+order: 10
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/04-retrieval.md
@@ -175,7 +175,7 @@ For large corpora, retrieve in tiers: search summaries or section headers first,
 
 Two distinct caches, often confused:
 
-- **Prompt caching** (inference-level) — caches the prefill computation for a token prefix. Prefix-match only, so ordering governs hit rate. See [02-context-anatomy.md](02-context-anatomy.md#ordering-stable-before-dynamic). Vendors expose it two ways: **implicit** (automatic prefix reuse, or a breakpoint marker in the request) and **explicit** (a named cache object you create with a TTL, then reference by name — e.g., [Gemini context caching](https://ai.google.dev/gemini-api/docs/caching)). Explicit caches suit "upload a corpus once, ask many questions" sessions — a cheap alternative to RAG when the whole corpus fits in the window. Runnable: [gemini-context-caching.ipynb](../../01-prompt-engineering/notebooks/gemini-context-caching.md).
+- **Prompt caching** (inference-level) — caches the prefill computation for a token prefix. Prefix-match only, so ordering governs hit rate. See [02-context-anatomy.md](02-context-anatomy.md#ordering-stable-before-dynamic). Vendors expose it two ways: **implicit** (automatic prefix reuse, or a breakpoint marker in the request) and **explicit** (a named cache object you create with a TTL, then reference by name — e.g., [Gemini context caching](https://ai.google.dev/gemini-api/docs/caching)). Explicit caches suit "upload a corpus once, ask many questions" sessions — a cheap alternative to RAG when the whole corpus fits in the window. Runnable: [gemini-context-caching.ipynb](../notebooks/gemini-context-caching.md).
 - **Retrieval caching** (application-level) — caches the *results* of expensive retrieval keyed by query similarity. A near-duplicate query reuses the prior result set instead of re-running search, planning, or sub-query generation. Cuts cost and latency on hot queries.
 
 ---

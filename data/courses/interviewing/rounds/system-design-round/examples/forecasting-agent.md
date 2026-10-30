@@ -1,8 +1,8 @@
 ---
-imported_hash: b31b79eb9e658778
+imported_hash: b31cdafe7d533d73
 title: 'Example: Agentic Financial Forecasting System'
 summary: '"Design an AI system that forecasts cash flows per customer segment for a B2B company.'
-order: 79
+order: 85
 kind: reading
 section: System design round / Examples
 source: sisyphus/interviewing/rounds/system-design-round/examples/forecasting-agent.md

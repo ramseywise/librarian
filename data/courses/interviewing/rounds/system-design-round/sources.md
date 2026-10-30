@@ -1,8 +1,8 @@
 ---
-imported_hash: efb6245b49be8b01
+imported_hash: b2e64a52969e2616
 title: System Design Round — Sources
 summary: ''
-order: 73
+order: 79
 kind: reading
 section: System design round
 source: sisyphus/interviewing/rounds/system-design-round/sources.md

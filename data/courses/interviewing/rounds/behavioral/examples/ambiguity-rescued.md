@@ -1,8 +1,8 @@
 ---
-imported_hash: 7c53a7ac825d1157
+imported_hash: c86208ff5398c1ed
 title: 'Worked STAR Example: Ambiguity Rescued'
 summary: 'Note the precision in the second behavior: "when I can''t resolve with data." This shows you haven''t over-generalized — you still try to resolve conflicts before building workarounds.'
-order: 6
+order: 7
 kind: reading
 section: Behavioral / Examples
 source: sisyphus/interviewing/rounds/behavioral/examples/ambiguity-rescued.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: d0644b8be6af7d3c
+imported_hash: 937982839e536375
 title: Code Review Round — Study Guide
 summary: 'What to know: a systematic, repeatable approach to reviewing code — not "read it and see if it looks right."'
-order: 21
+order: 23
 kind: reading
 section: Code review round
 source: sisyphus/interviewing/rounds/code-review-round/study-guide.md

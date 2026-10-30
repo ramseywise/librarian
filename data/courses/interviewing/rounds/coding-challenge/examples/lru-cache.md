@@ -1,8 +1,8 @@
 ---
-imported_hash: 10bb68335dc1fc36
+imported_hash: 494b2af5197d4b42
 title: LRU Cache — Live Coding Walkthrough
 summary: 'class LRUCache: def init(self, capacity: int) -> None: self.capacity = capacity self.cache: OrderedDict[int, int] = OrderedDict()'
-order: 35
+order: 37
 kind: reading
 section: Coding challenge / Examples
 source: sisyphus/interviewing/rounds/coding-challenge/examples/lru-cache.md

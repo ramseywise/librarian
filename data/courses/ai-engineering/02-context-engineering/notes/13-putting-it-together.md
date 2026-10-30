@@ -1,8 +1,8 @@
 ---
-imported_hash: 3255e3fc5189fb0b
+imported_hash: ee40b70939f2f66f
 title: 13 — Putting It Together
 summary: The upstream architecture of the same name stores fragments (facts, episodes, procedures) and reassembles a context-specific memory at retrieval time, rather than replaying stored transcripts.
-order: 17
+order: 19
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/13-putting-it-together.md

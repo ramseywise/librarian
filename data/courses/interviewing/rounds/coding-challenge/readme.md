@@ -1,8 +1,8 @@
 ---
-imported_hash: 05e6f3462d05ddb7
+imported_hash: c935198384318848
 title: Coding Challenge
 summary: Live coding is increasingly project-style ("implement a rate limiter") over pure LeetCode.
-order: 27
+order: 29
 kind: reading
 section: Coding challenge
 source: sisyphus/interviewing/rounds/coding-challenge/README.md
@@ -44,17 +44,20 @@ Present in every loop but rarely the differentiator round. DS versions skew SQL/
 
 | File | Purpose |
 |------|---------|
-| `questions.md` | 20 questions by format with approach, signals, pitfalls |
+| `questions.md` | 31 questions by format with approach, signals, pitfalls — live coding, AI/ML practicals, debugging, pair, AI-assisted, multi-level implementation rounds (16–19), NumPy ML coding (20–25) |
 | `code-from-heart.md` | The stdlib patterns to write without reference — aggregation, sorting, validation, HTTP/auth minimums, plus a 25-min drill |
 | `study-guide.md` | Core methods: narration, debugging methodology, Python fluency, AI-assisted skills |
 | `sources.md` | Internal study guides + external resources |
-| `examples/` | Eight worked walkthroughs with narration annotations — three general, five offline practicals |
+| `examples/` | Nine worked walkthroughs — three general, five offline practicals, one interviewer guide (property search) |
+
+Drill-format practice files (prompt → hint ladder → solution) live in [`drills/coding/`](../../../drills/coding/):
+`algorithms/` (89 LeetCode-style problems by pattern), `implementation/` (Q16–19), `ml-coding/` (Q20–25).
 
 ## The AIE practical variant
 
 For AIE/MLE loops, the live-coding round is increasingly an **AI-engineering practical** rather than an algorithm problem: build a retrieval pipeline, orchestrate a multi-step workflow, or validate structured model output. Browser-based assessments (CoderPad/CodeSignal) typically mean no network, no `pip install`, and no AI assistant — so the drill has to run on the standard library alone.
 
-Questions 6a–6e and the five offline examples cover this variant. They deliberately avoid `numpy`, `pandas`, `pydantic`, and any API call, so they are solvable in a bare browser editor within their stated timeboxes.
+Questions 6a–6e and the five offline examples cover this variant. (Q20–25 are the exception: they need NumPy, which most browser editors preinstall. Check before relying on it.) They deliberately avoid `numpy`, `pandas`, `pydantic`, and any API call, so they are solvable in a bare browser editor within their stated timeboxes.
 
 Two of them are **trap-shaped** — the prompt hands you a tool that is correct for the exercise and wrong for the stated scale, and the grade is in the critique rather than the code. A SQLite pipeline followed by *"this serves millions of requests a day"* wants you to name the single-writer lock and split OLTP from OLAP. An auth prompt wants `hmac.compare_digest` and algorithm pinning, not just a working token.
 

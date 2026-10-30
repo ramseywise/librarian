@@ -1,8 +1,8 @@
 ---
-imported_hash: 9f29ce0748bcd4a0
+imported_hash: 95a9def6d9aaae95
 title: Coding Challenge — Question Bank
 summary: These assume a browser editor with no network and no AI assistant — stdlib only.
-order: 29
+order: 31
 kind: reading
 section: Coding challenge
 source: sisyphus/interviewing/rounds/coding-challenge/questions.md
@@ -315,6 +315,28 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 
 ---
 
+### 10a. Semantic search returns the wrong ranking
+
+**Setup**: A FastAPI + FAISS + sentence-transformers property search (`drills/coding/problems/property-search/`). It runs, returns results, and nothing throws. A cheap-listing price boost is supposed to lift cheaper properties. Then a design follow-up: add size and natural-language feature filters.
+
+**Testing**: Reading an unfamiliar retrieval stack, checking numbers instead of trusting them, then trade-off reasoning (structured filter vs. embedding, NLP vs. LLM extraction).
+
+**Approach**:
+
+1. Run the documented query and *count* the results against `max_results`; read the scores, not just the names
+2. Trace one result through: embed → normalize → `index.search` → loop → boost → response
+3. Work the boost formula by hand for a cheap and an expensive listing; check the sign of the factor against the docstring
+4. Fix each bug with the smallest change, then state the regression test that pins it
+5. Design: size as a structured pre/post-filter (not embedded text); feature matching NLP vs. LLM with latency, cost, determinism and fallback named
+
+**Key signals**: Counts results before reading code. Computes the boost for a concrete price instead of eyeballing it. Notices that FAISS already returns best-first, so any slice of it is suspect. In the design half, keeps hard constraints (size, price) out of the embedding and proposes a hybrid: LLM extraction to a fixed feature vocabulary, cached, with a deterministic fallback.
+
+**Common pitfalls**: Blaming the embedding model. Finding one bug and stopping. Fixing the boost by clamping instead of correcting the sign. "Just use an LLM" without latency, cost or failure mode. Putting numeric filters into the embedding text.
+
+**Study refs**: `CC/examples/property-search.md` (after the attempt only)
+
+---
+
 ## Pair Programming
 
 ### 11. Refactoring a tangled function
@@ -411,3 +433,158 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Key signals**: Reads it skeptically, not charitably. Writes tests to confirm bugs before fixing. Notes what prompt change would have prevented the issue.
 
 **Common pitfalls**: Trusting the structure because "AI wouldn't make that mistake." Fixing only the obvious bug and missing a second one. Not testing the fixed version.
+
+---
+
+## Implementation Rounds (multi-level)
+
+One problem revealed in levels over 45–90 minutes; each level extends the last. Reported at Anthropic and OpenAI. The grade is mostly whether the level-1 design absorbs levels 2 and 3 without a rewrite. Drill files with hints and reference designs: `drills/coding/implementation/`.
+
+### 16. Key-value store (SET/GET/DELETE → TTL → persistence)
+
+**Testing**: Designing seams early, expiry strategy, durability trade-offs.
+
+**Approach**:
+
+1. Clarify: single-threaded or concurrent? What durability is required?
+2. L1: thin class over a dict, but store a record `{value, expires_at}`, not the bare value
+3. L2: lazy expiry on `get` (evict and return `None`); name an active sweep (heap keyed by expiry) as the memory-vs-work trade-off
+4. L3: write-ahead log replayed on start vs. periodic snapshot; persist expiry and drop already-expired keys on load
+
+**Key signals**: The record shape appears in L1 before TTL is asked for. Says "lazy vs. active" by name. Contrasts WAL vs. snapshot on durability and recovery time, and says real systems combine them.
+
+**Common pitfalls**: Starting with code before clarifying. Storing raw values, then rewriting every method at L2. A background timer thread as the only expiry mechanism. Forgetting that expiry timestamps must survive a restart.
+
+**Study refs**: `drills/coding/implementation/key-value-store.md`
+
+---
+
+### 17. In-memory SQL-like database (LeetCode 2408 "Design SQL")
+
+**Testing**: Data modelling, ID stability, adding an index without breaking invariants.
+
+**Approach**:
+
+1. Rows in a dict keyed by id per table; one monotonically increasing counter per table
+2. `insert` assigns `next_id`; `delete` removes the key and never decrements the counter
+3. `select_cell` is O(1) via the dict; `export` iterates ids in order to CSV
+4. Follow-up `WHERE`: full scan first, then a secondary index (value → set of ids) maintained on insert and delete
+
+**Key signals**: Picks a dict over a list because a delete must not shift ids. States that the counter is never rolled back. When adding the index, names the consistency obligation on every write path.
+
+**Common pitfalls**: A list of rows where `del` shifts every later id. Reusing freed ids. Adding an index that delete forgets to update. Hand-rolling CSV quoting instead of `csv.writer`.
+
+**Study refs**: `drills/coding/implementation/in-memory-db.md`
+
+---
+
+### 18. Credits with expiry (spend soonest-to-expire, out-of-order events)
+
+**Testing**: Greedy ordering, time as data, event-sourcing instincts.
+
+**Approach**:
+
+1. Each grant is a lot `{remaining, expires_at}`; keep the lots in a min-heap by expiry
+2. Charge at time t: drop lots with `expires_at <= t`, then drain from the heap top
+3. Expiry is driven by the event timestamp; no wall-clock timer
+4. Out of order: make state a pure function of timestamped events, either buffer, sort and replay, or re-derive from the earliest affected timestamp
+
+**Key signals**: Justifies soonest-to-expire as the greedy that wastes the least credit. Uses event time, not `time.time()`. Asks what to do with an unfunded charge (fail, defer, go negative) instead of picking silently. Mentions idempotency keys for retried events.
+
+**Common pitfalls**: A flat balance that loses per-grant expiry. A background expiry thread. Mutating state in arrival order so a late grant can never fund an earlier charge. Floats for money.
+
+**Study refs**: `drills/coding/implementation/credits-expiry-system.md`
+
+---
+
+### 19. Web crawler (single-threaded → politeness → concurrent)
+
+**Testing**: Graph traversal on real-world inputs, rate limiting, concurrency correctness.
+
+**Approach**:
+
+1. L1: a frontier queue, a visited set, and a fetch → parse → normalize → enqueue loop; normalize URLs (resolve relative links, strip fragments) *before* dedup
+2. L2: per-host last-fetch time; defer URLs whose host was hit too recently; honour `Retry-After`, back off with jitter
+3. L3: N workers over a thread-safe frontier; lock the visited set and per-host timers; count in-flight work to detect completion
+
+**Key signals**: Normalizes before checking visited. Rate limits per host, not globally. Knows the crawl is I/O-bound and argues asyncio or a thread pool on that basis. Has a termination condition for the concurrent version that doesn't rely on an empty queue alone.
+
+**Common pitfalls**: A global sleep as "rate limiting". Unbounded depth or domain scope. Ending when the queue is momentarily empty while workers are still fetching. A race between check-visited and add-visited.
+
+**Study refs**: `drills/coding/implementation/web-crawler.md`
+
+---
+
+## ML Coding (NumPy from scratch)
+
+Implement the maths, not the library call. Usually NumPy is allowed and sklearn and torch are not; ask. Drill files: `drills/coding/ml-coding/`.
+
+### 20. Numerically stable softmax
+
+**Testing**: Numerical stability, broadcasting.
+
+**Approach**: Subtract the row max (shift invariance), exponentiate, divide by the row sum; reduce along `axis=-1` with `keepdims=True`.
+
+**Key signals**: Demonstrates the overflow on a logit like 1000 before fixing it. Explains why shift invariance makes the max subtraction free. Mentions log-softmax for cross-entropy.
+
+**Common pitfalls**: The naive formula. Reducing over the wrong axis on a 2-D batch. Losing `keepdims`, so the division broadcasts wrongly.
+
+---
+
+### 21. Cosine similarity, pairwise
+
+**Testing**: Vectorization, edge cases.
+
+**Approach**: Normalize the rows of A and B once with an epsilon guard, then compute `A_n @ B_n.T` for the full (m, n) matrix.
+
+**Key signals**: No Python loop for the batch case. Guards zero vectors. Notes that for unit vectors this is a plain dot product, then asks about top-k instead of the full matrix (`argpartition`, ANN index).
+
+**Common pitfalls**: Looping over pairs. Dividing by zero. Normalizing along the wrong axis.
+
+---
+
+### 22. Debug an embeddings matcher
+
+**Testing**: Shape discipline, distinguishing a dot product from cosine.
+
+**Approach**: Print or assert shapes at each boundary; `(1, 768)` query vs. `(N, 768)` docs means `docs @ q` is wrong. Normalize both sides the same way and flatten the query, then one matmul and `argmax`.
+
+**Key signals**: Checks shapes first. Names magnitude bias in a raw dot product. Proposes batching all queries into one matmul. Asks whether the query and index used the same model.
+
+**Common pitfalls**: Fixing only the shape bug. Normalizing the docs but not the query. Leaving the per-query loop in place.
+
+---
+
+### 23. Logistic regression with SGD, L2, early stopping
+
+**Testing**: Gradient derivation, training-loop hygiene. Reported at Mistral.
+
+**Approach**: Use `p = sigmoid(Xw + b)`; the BCE gradient w.r.t. z is `p - y`; update per example on a shuffled order; add `λw` to the weight gradient only; track validation loss each epoch, keep the best weights, stop after `patience` epochs without improvement.
+
+**Key signals**: Derives `p - y` rather than reciting it. Does not regularize the bias. Restores the best weights, not the last. Clips or stably computes the sigmoid. Offers gradient checking.
+
+**Common pitfalls**: Full-batch gradient descent labelled "SGD". Regularizing the bias. Early stopping on training loss. `exp` overflow.
+
+---
+
+### 24. K-means (Lloyd's algorithm)
+
+**Testing**: Vectorized distance computation, convergence, initialization.
+
+**Approach**: Build an (n, k) squared-distance matrix, take `argmin` along axis 1, recompute the means, and stop when assignments don't change (or at max_iter).
+
+**Key signals**: A vectorized assignment step. Handles empty clusters (reseed). Names k-means++ and restarts, plus elbow or silhouette for choosing k.
+
+**Common pitfalls**: A loop over points. A centroid mean of an empty cluster → `nan`. Stopping on a fixed iteration count only.
+
+---
+
+### 25. Self-attention forward pass
+
+**Testing**: Transformer mechanics at the tensor level.
+
+**Approach**: Q, K, V = X Wq, X Wk, X Wv; scores = Q Kᵀ / √d_k; row-wise stable softmax; output = weights @ V. For causal attention, mask the upper triangle to −inf before the softmax.
+
+**Key signals**: States shapes at every step ((L, d) → (L, L) → (L, d_v)). Explains the √d_k scaling as preventing softmax saturation. Says how multi-head attention splits d_model into heads rather than enlarging d_k. Names O(L²) cost.
+
+**Common pitfalls**: Column-wise softmax. Masking after the softmax. Forgetting the scaling. Transposing the wrong operand.

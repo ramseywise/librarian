@@ -1,8 +1,8 @@
 ---
-imported_hash: 73e5fac6911ebaa1
+imported_hash: 215a596c82119e80
 title: Questions — Case Study Round
 summary: 12 questions spanning live cases, take-homes, LLM cases, ML cases, defense rounds, and FDE customer-problem formats.
-order: 10
+order: 11
 kind: reading
 section: Case study
 source: sisyphus/interviewing/rounds/case-study/questions.md

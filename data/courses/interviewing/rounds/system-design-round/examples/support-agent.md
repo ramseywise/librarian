@@ -1,8 +1,8 @@
 ---
-imported_hash: 66df21a2993755d9
+imported_hash: b86df3789a69b173
 title: 'Example: Customer Support Help Center Agent'
 summary: '"Design a customer support agent for a SaaS product.'
-order: 83
+order: 89
 kind: reading
 section: System design round / Examples
 source: sisyphus/interviewing/rounds/system-design-round/examples/support-agent.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: 560c264fb1e61fbf
+imported_hash: fbd5ddea17736833
 title: 'Example: Document-QA for a Legal Firm'
 summary: '"Design a document-QA system for a legal firm.'
-order: 81
+order: 87
 kind: reading
 section: System design round / Examples
 source: sisyphus/interviewing/rounds/system-design-round/examples/rag-system.md

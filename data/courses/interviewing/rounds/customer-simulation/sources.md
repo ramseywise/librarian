@@ -1,8 +1,8 @@
 ---
-imported_hash: 61ac3669f69b2871
+imported_hash: 49278b5b1a098a79
 title: Customer Simulation — Sources
 summary: ''
-order: 43
+order: 46
 kind: reading
 section: Customer simulation
 source: sisyphus/interviewing/rounds/customer-simulation/sources.md

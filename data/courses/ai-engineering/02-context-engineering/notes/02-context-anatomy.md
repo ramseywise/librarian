@@ -1,8 +1,8 @@
 ---
-imported_hash: df801b4425f59cd8
+imported_hash: 3fa6e8b3cdeaff4c
 title: 2 — The Anatomy of Effective Context
 summary: Context engineering is the discipline of deciding, per call, what occupies each of these and at what size.
-order: 6
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/02-context-anatomy.md

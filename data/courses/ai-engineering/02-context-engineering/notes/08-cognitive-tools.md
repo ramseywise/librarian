@@ -1,8 +1,8 @@
 ---
-imported_hash: 615df3a8e6cc6632
+imported_hash: 302bcbd70ac74aa5
 title: 8 — Cognitive Tools and Prompt Programs
 summary: The key design choice is that each tool runs in its own context.
-order: 12
+order: 14
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/08-cognitive-tools.md

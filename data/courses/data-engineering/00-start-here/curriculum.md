@@ -1,7 +1,7 @@
 ---
-imported_hash: 80329a9929c3c150
+imported_hash: 1a79f5a5b7e5e593
 title: Data Engineering — Curriculum
-summary: Python basics from data-analytics/python-basics/.
+summary: Python 01–03 and SQL 01–09 from programming/.
 order: 2
 kind: reading
 source: learn-ai-engineering/data-engineering/CURRICULUM.md
@@ -13,8 +13,8 @@ Last updated: 2026-07-21
 
 ## Prerequisites
 
-Python basics from `data-analytics/python-basics/`. Docker and SQL fundamentals help (the
-DataTalks DE Zoomcamp covers Docker from scratch; SQL is assumed).
+Python 01–03 and SQL 01–09 from [`programming/`](../programming/README.md). Docker helps (the
+DataTalks DE Zoomcamp covers Docker from scratch; SQL is assumed, and the SQL track covers it).
 
 ## The 6 Foundations
 

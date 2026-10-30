@@ -1,5 +1,5 @@
 ---
-imported_hash: 336f41b8e6334d0a
+imported_hash: 0ec5760a0096c99b
 title: Recurring Sources
 summary: Sources swept periodically for material that belongs in the six pillars.
 order: 2
@@ -86,8 +86,9 @@ Landed in the 2026-07-31 sweep:
 **Not automated.**
 - *Prompt Engineering Guide*: the snapshot was **removed on 2026-10-28**. Its English
   pages were merged into [01-prompt-engineering/notes/](01-prompt-engineering/notes/), with each
-  note listing its `promptingguide.ai` sources in its frontmatter, and its notebooks were kept in
-  [01-prompt-engineering/notebooks/](01-prompt-engineering/notebooks/). To check for new
+  note listing its `promptingguide.ai` sources in its frontmatter. Its notebooks were excerpted into
+  the same notes (removed 2026-10-30), except the RAG and context-caching ones, which moved to
+  [02-context-engineering/notebooks/](02-context-engineering/notebooks/). To check for new
   material, browse [promptingguide.ai](https://www.promptingguide.ai/) and compare it against
   [01-prompt-engineering/README.md](../01-prompt-engineering/readme.md#references).
 

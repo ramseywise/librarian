@@ -1,8 +1,8 @@
 ---
-imported_hash: 7dcd0795de26f3ca
+imported_hash: 0386145dccb3b3ed
 title: 7 — Structured Context and Schemas
 summary: 'A model reading unstructured context has to infer the role of each span: whether it''s an instruction or data, a fact or an example, current or stale.'
-order: 11
+order: 13
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/07-structured-context.md

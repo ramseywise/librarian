@@ -1,8 +1,8 @@
 ---
-imported_hash: 246009deec487eba
+imported_hash: 67a848ab2934380a
 title: Technical Questions — ML/LLM Breadth Round
 summary: 'Rapid-fire conceptual fluency: can you explain core mechanisms in 60 seconds with one level of depth in reserve?'
-order: 84
+order: 101
 kind: reading
 section: Technical questions
 source: sisyphus/interviewing/rounds/technical-questions/README.md
@@ -37,6 +37,7 @@ AIE/FDE versions skew LLM-era topics; MLE adds classical depth; DS versions fold
 | `questions.md` | 25–30 questions organized by domain, each with 60-second answer + one level deeper + study ref |
 | `mcq-bank.md` | 188 multiple-choice questions with full parity across all 11 guide topics, plus answer keys and a 40-item distinction drill |
 | `real-tech-question-bank.md` | 23 real interview questions in 9 themes (provider-agnostic config, evals, observability, …) with researched, sourced answers |
+| `theory-bank.md` | 38 theory questions from real loops by topic, with follow-ups, references, and "check yourself" MCQs (from ai-engineering-gym) |
 | `study-guide.md` | Method, trade-off pairs, flashcard approach, per-role priorities, practice plan, anti-patterns |
 | `sources.md` | Internal cross-reference (study guides, notes) + external resources |
 

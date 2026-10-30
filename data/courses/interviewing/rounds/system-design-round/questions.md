@@ -1,8 +1,8 @@
 ---
-imported_hash: 6ba8586956f1f53d
+imported_hash: 06bb23756145354b
 title: System Design Round — Questions & Model Answers
 summary: System design questions are deliberately vague — the first thing you do is clarify, not design.
-order: 72
+order: 78
 kind: reading
 section: System design round
 source: sisyphus/interviewing/rounds/system-design-round/questions.md

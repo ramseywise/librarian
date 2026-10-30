@@ -1,8 +1,8 @@
 ---
-imported_hash: 7854665f18fbdbd1
+imported_hash: c973f73c1d057d10
 title: 'Worked Example: Retrieval → Prompt → Structured Answer (45 min, offline)'
 summary: 'This is the highest-probability shape for an AIE practical: it touches retrieval, prompt construction, schema validation, and error handling in one 45-minute arc, and none of it needs a network.'
-order: 36
+order: 39
 kind: reading
 section: Coding challenge / Examples
 source: sisyphus/interviewing/rounds/coding-challenge/examples/rag-pipeline-offline.md

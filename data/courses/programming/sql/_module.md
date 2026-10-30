@@ -1,7 +1,7 @@
 ---
-imported_hash: 7dc17d3b07b2f42f
+imported_hash: 26e0da939f6bb2bd
 title: SQL
-summary: Build these as schema drills (window-functions/, ctes/, analytics/) per ../README.md, each with a small seed schema so the answer can be run in SQLite or DuckDB.
-order: 103
-source: sisyphus/drills/sql
+summary: Worked answers are in practice/solutions/.
+order: 101
+source: learn-ai-engineering/programming/sql
 ---

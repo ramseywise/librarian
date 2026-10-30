@@ -1,5 +1,5 @@
 ---
-imported_hash: bf5259d57ea508ae
+imported_hash: 8f767e731ab4a562
 title: Interviewing KB
 summary: 'Roles: AIE (AI/agent engineer), MLE (ML engineer), DS (data scientist), FDE (forward-deployed / applied AI engineer).'
 order: 1
@@ -78,6 +78,9 @@ Roles: **AIE** (AI/agent engineer), **MLE** (ML engineer), **DS** (data scientis
 | [behavioral](../rounds/behavioral/readme.md) | STAR stories, failure questions, collaboration |
 | [customer-simulation](../rounds/customer-simulation/readme.md) | FDE stakeholder role-play, ambiguous-client scenarios |
 | [leadership-rounds](../rounds/leadership-rounds/readme.md) | CTO / head-of-product conversations + reverse interview |
+
+Cross-round: [question-bank.md](question-bank.md) has ~560 reported questions (technical, system design,
+coding, behavioral, take-home), questions only, for cold recall.
 
 ## Maintenance
 

@@ -1,5 +1,5 @@
 ---
-imported_hash: 3b351beec15c80fa
+imported_hash: 791207e42312f6e4
 title: 'Context Engineering: Zero to Hero Guides'
 summary: 'Upstream: davidkimai/Context-Engineering 10_guides_zero_to_hero/ (snapshot 2026-08-14).'
 order: 4
@@ -17,6 +17,8 @@ source: learn-ai-engineering/ai-engineering/02-context-engineering/notebooks/REA
 
 
 Upstream: [davidkimai/Context-Engineering](https://github.com/davidkimai/Context-Engineering) `10_guides_zero_to_hero/` (snapshot 2026-08-14). Runnable Python labs; they are not imported into the librarian (which reads `.md`/`.ipynb` only).
+
+Also here, from the [DAIR Prompt Engineering Guide](https://github.com/dair-ai/Prompt-Engineering-Guide) notebooks: [pe-rag.ipynb](pe-rag.md) (retrieval-augmented title generation) and [gemini-context-caching.ipynb](gemini-context-caching.md) (explicit context caching). Both pair with [notes/04](../notes/04-retrieval.md).
 
 This directory contains hands-on, practical guides to help you progress from basic context engineering concepts to advanced techniques. Each guide builds on the previous one, creating a comprehensive learning path from fundamentals to cutting-edge applications.
 

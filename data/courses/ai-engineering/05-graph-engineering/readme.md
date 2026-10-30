@@ -1,5 +1,5 @@
 ---
-imported_hash: a147e654e454895b
+imported_hash: d06d1aa453e3cff3
 title: 05 — Graph Engineering
 summary: 'Graph engineering is the discipline of designing the topology of a multi-agent system: which nodes exist (agents, deterministic functions, routers, human checkpoints), which transitions between them are permitted, and how the runtime work g…'
 order: 1
@@ -75,6 +75,7 @@ Read the notes in order; each one is earned by the one before. Notes 01–08 are
 ### Notebooks and course code
 - [notebooks/knowledge-graphs-for-rag/](notebooks/knowledge-graphs-for-rag/) — DeepLearning.AI *Knowledge Graphs for RAG* (Neo4j): notebooks L2–L7, data dumps and lesson notes. Run as KG Labs 1, 3 and 5; L0–L2 feed note 09, L3–L6 note 10, L7 note 11.
 - [AI-Agents-in-LangGraph-main](../../generative-ai/04-agentic-frameworks/AI-Agents-in-LangGraph-main/) — LangGraph agent graphs (nodes, edges, state, conditional routing); used in the Track A labs.
+- [sources/langgraph_extended.pptx](sources/langgraph_extended.pptx) — *LangGraph: A Visual Guide* (26 slides): nodes, edges, state and reducers, memory, checkpointers and durable execution, interrupts and time travel, streaming, subgraphs, observability, and LangGraph vs Google ADK. Also the style reference for the course's `make slides` decks.
 
 ### Readings
 - [sources/](sources/) — the book (notes and PDFs, above), the archived deep note, and the community-compiled *Graph Engineering: The Karpathy Loop, Improved 1000x by Itself* (2026) PDF.

@@ -1,7 +1,7 @@
 ---
-imported_hash: 25987fba799e5f66
+imported_hash: f364c1df2df5395d
 title: Programming
-summary: Language drills (Python, SQL, TypeScript, Terraform) and interview-format coding rounds.
+summary: 'A course in Python, SQL and TypeScript: notes, offline exercises and solutions.'
 order: 1
-source: sisyphus/drills
+source: learn-ai-engineering/programming
 ---

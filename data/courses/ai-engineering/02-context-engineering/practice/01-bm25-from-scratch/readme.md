@@ -1,8 +1,8 @@
 ---
-imported_hash: 31c079c6136cf07e
+imported_hash: c236ec725503c8be
 title: Lab 1 — BM25 from scratch
 summary: No dependencies, no API key, no network.
-order: 19
+order: 21
 kind: reading
 section: Practice / Bm25 from scratch
 source: learn-ai-engineering/ai-engineering/02-context-engineering/practice/01-bm25-from-scratch/README.md

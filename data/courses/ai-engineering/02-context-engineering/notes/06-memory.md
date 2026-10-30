@@ -1,8 +1,8 @@
 ---
-imported_hash: ba913a01a4d8fb24
+imported_hash: 1e27a30d24945ce3
 title: 6 — Memory as a Context Sub-Component
 summary: Every source that enumerates the foundations treats memory as a context primitive, not a top-level discipline.
-order: 10
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/06-memory.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: fd0ac617cf317050
+imported_hash: d629005713abcf70
 title: Leadership Rounds (CTO · Head of Product · Founder) + Reverse Interview
 summary: 'The signal they''re reading: do you have considered views, do you update on new information, do you ask good questions?'
-order: 49
+order: 52
 kind: reading
 section: Leadership rounds
 source: sisyphus/interviewing/rounds/leadership-rounds/README.md

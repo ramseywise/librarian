@@ -1,8 +1,8 @@
 ---
-imported_hash: 6da04fbd0ba71ec2
+imported_hash: ea71a2fa4f0b3810
 title: 12 — Evaluating Context
 summary: An end-to-end score tells you that something failed, but not where.
-order: 16
+order: 18
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/12-evaluating-context.md

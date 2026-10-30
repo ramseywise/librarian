@@ -1,84 +1,66 @@
 ---
-imported_hash: 3fe8f19bcce5560f
-title: Drills — the gym
-summary: Practice by language and topic, not a sequence.
+imported_hash: 0487edc5b15bb792
+title: Programming
+summary: A self-paced course in the three languages an AI or data engineer writes every day.
 order: 1
 kind: reading
-source: sisyphus/drills/README.md
+source: learn-ai-engineering/programming/README.md
 ---
 
-# Drills — the gym
+# Programming
 
-Practice by language and topic, not a sequence. Come in, pick a track, drill, log it.
-Learning material (the curriculum) lives in the public
-[learn-ai-engineering](https://github.com/ramseywise/learn-ai-engineering) repo; interview
-format and round prep live in [`../interviewing/`](../interviewing/README.md). This folder is reps.
+> Depth layer for the languages everything else in this repo is written in: **Python**, **SQL**
+> and **TypeScript**. Practice reps (HackerRank, LeetCode, interview-format coding rounds) live in
+> [sisyphus `drills/`](https://github.com/ramseywise/sisyphus/blob/main/drills/README.md).
+> librarian shows both.
+> Jump to: [Tracks](#tracks) · [How the pieces fit](#how-the-pieces-fit) · [Running the code](#running-the-code) · [References](references.md)
 
-librarian imports `drills/` as its **programming** course (`make import-courses`): every
-`.md` here becomes a lesson, each track folder a module. Notebooks, `.sql`, `.ts` and `.py`
-files stay here and are linked, not imported.
+---
+
+## What it is
+
+A self-paced course in the three languages an AI or data engineer writes every day. Each track
+goes from first principles to the idioms you need in production code. Each module is a short set of
+notes followed by exercises you can run offline.
+
+This repo started as a Python learning repo built from *Python for Informatics* (now *Python for
+Everybody*) and McKinney's *Python for Data Analysis*. The Python track keeps that spine and adds a
+module on the language features that engineering code relies on.
+
+The ordering is in [CURRICULUM.md](curriculum.md).
+
+---
 
 ## Tracks
 
-| Track | Folder | What's there | Status |
+| Track | Modules | Built from | Start here |
 |---|---|---|---|
-| Python | [`python/`](../python/readme.md) | ~120 HackerRank solutions, LeetCode pattern notebooks | Solid |
-| SQL | [`sql/`](../sql/readme.md) | 52 HackerRank solutions (select, join, aggregation); 1 window-functions drill | Solid on basics; CTEs and analytics patterns to add |
-| TypeScript (+ HTML/CSS) | [`typescript/`](../typescript/readme.md) | HackerRank scaffold, ESLint reference, 1 types drill | Thin — biggest gap |
-| Terraform | [`terraform/`](../terraform/readme.md) | Track plan, 1 review drill | Started |
-| Tooling | [`tooling/`](../tooling/readme.md) | Git workflow reference | Bash and Docker to add |
-| Coding rounds | [`coding/`](coding/) | Interview-format drills: prompts, seeded-bug problems, battleship pages, DSA reference | Active — driven by `/coding-drill` and `/env-drill` |
-| MCQ | [`mcq/`](mcq/) | Multiple-choice quizzes (system design basics) | One quiz |
+| **Python** | 01 foundations · 02 informatics · 03 language for engineers · 04 Python for data | Severance, *Python for Everybody* (paraphrased); VanderPlas, *A Whirlwind Tour of Python* (CC0); McKinney, *Python for Data Analysis* (code MIT); Michigan *Applied Data Science* and Wesleyan coursework | [python/README.md](../python/readme.md) |
+| **SQL** | 01–09, from `SELECT` to query plans, plus a capstone | Software Carpentry *Databases and SQL* (CC-BY 4.0); PGExercises (CC BY-SA 3.0); Knight Lab *SQL Murder Mystery* (MIT) | [sql/README.md](../sql/readme.md) |
+| **TypeScript** | 01–09, from JavaScript for Python developers to TS for AI apps | TypeScript Handbook (CC-BY 4.0); *typescript-exercises* (MIT); *type-challenges* (MIT) | [typescript/README.md](../typescript/readme.md) |
 
-`coding/` keeps its existing layout: the `coding-drill` and `env-drill` skills and
-`pyproject.toml` depend on its paths.
-
-## Drill schema
-
-New drills are one Markdown file per drill, `drills/<track>/<topic>/<slug>.md`, with
-code alongside when the drill needs it (`<slug>.py`, `<slug>.sql`, `<slug>.ts`, `<slug>.tf`).
-
-```yaml
 ---
-title: Window functions — running total per user
-track: sql                  # python | sql | typescript | terraform | tooling | coding
-topic: window-functions     # folder name; free-form but reuse existing ones
-difficulty: medium          # easy | medium | hard
-timebox_min: 20
-concepts: [window-functions, partitioning]   # learn-ai-engineering / librarian concept slugs
-source: original            # original | hackerrank | leetcode | <upstream URL>
+
+## How the pieces fit
+
+| Repo | Role | Programming content |
+|---|---|---|
+| **learn-ai-engineering** (here) | Learn the skill | Notes, worked notebooks and guided exercises with solutions |
+| **sisyphus** `drills/` | Practise the skill | HackerRank and LeetCode solutions, timed drills, interview-format coding rounds |
+| **librarian** | Read both | Imports this folder as the *Programming* course and sisyphus `drills/` as *Drills* (`make import-courses`) |
+
+Notes use `concepts:` slugs in their frontmatter. Drills list the same slugs, so a drill can link
+back to the note that teaches it.
+
 ---
-```
 
-The title lives in frontmatter only — no `# H1` in the body (markdownlint MD025 counts both).
-Body sections, in order:
+## Running the code
 
-1. **Prompt** — the task, inputs, constraints. Safe to read before attempting.
-2. **Starter** — given code or schema (or a link to the sibling file).
-3. **Tests** — how to check an answer: expected output, a test file, or a query result.
-4. **Solution** — under a `<details>` block so it is not read by accident.
-5. **Notes** — the pattern, common mistakes, follow-up variants.
+| Track | Needs | Command |
+|---|---|---|
+| Python 01–03 | Python 3.12+, standard library only (03 · 06 uses `uv`) | `python3 practice/exercises/<file>.py` (each file runs its own `assert`s) |
+| Python 04 | `pandas`, `numpy`, `matplotlib`, `seaborn`, `scipy`, Jupyter | `bash fetch_data.sh` once, then open the notebooks |
+| SQL | `sqlite3` CLI (bundled with macOS) or `duckdb` | `bash practice/setup.sh`, then `sqlite3 practice/data/survey.db` |
+| TypeScript | Node 22.18+ (runs `.ts` directly) | `cd typescript/practice && npm install && npm test` |
 
-Worked examples of the schema: [`sql/window-functions/top-orders-per-user.md`](../sql/window-functions/top-orders-per-user.md),
-[`typescript/types/group-by.md`](../typescript/types/group-by.md),
-[`terraform/review/web-stack.md`](../terraform/review/web-stack.md).
-
-`concepts` is what links a drill to the curriculum: librarian's Practice mode uses it to
-draw concept → drill edges in the graph. Existing HackerRank / LeetCode solutions keep their
-upstream layout and are listed in each track README instead of being rewritten.
-
-## Logging
-
-`coding/drill-log.md` is the one append-only log (date, drill, stance, time, grade). The
-`coding-drill` skill writes to it; log language-track drills there too so progress stays in
-one place. Use the drill's file slug as the QID (`top-orders-per-user`) — librarian's Practice
-mode reads the Date/QID/Score columns live (never the Note column, never copied into librarian)
-to show attempt counts per drill.
-
-## History
-
-Moved from learn-ai-engineering `programming/` on 2026-10-28: `HackerRank/{python,sql,typescript}`
-→ `{python,sql,typescript}/hackerrank/`, `Python Basics/` → `python/basics/` (moved back the same day to learn-ai-engineering
-`data-analytics/python-basics/` — it is a tutorial, not drills, and the public curriculum starts there), `Leet-Code/` →
-`python/leetcode/` (a nested git repo, gitignored), `git.md` → `tooling/`, `eslint.md` →
-`typescript/`.
+Nothing needs an API key except the last TypeScript module, which says so at the top.

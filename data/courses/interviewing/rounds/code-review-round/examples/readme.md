@@ -1,8 +1,8 @@
 ---
-imported_hash: 15d8436880378089
+imported_hash: a3a800be55a3c637
 title: Code Review Round — Worked Examples
 summary: Each file covers a study guide topic area with 2-3 diffs and model reviews.
-order: 22
+order: 24
 kind: reading
 section: Code review round / Examples
 source: sisyphus/interviewing/rounds/code-review-round/examples/README.md

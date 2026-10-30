@@ -1,8 +1,8 @@
 ---
-imported_hash: 3a0464646f7aab0d
+imported_hash: bd00a77b81655aad
 title: Sources — Recruiter Screen
 summary: This is the one round where external prep materials matter less than internal rehearsal.
-order: 67
+order: 72
 kind: reading
 section: Recruiter screen
 source: sisyphus/interviewing/rounds/recruiter-screen/sources.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: 31d64ae91f3f93d7
+imported_hash: 17c95951f5ace06c
 title: Prompt Library
 summary: 'The lesson: define the output format and the empty case.'
-order: 25
+order: 13
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/prompt-library.md

@@ -1,8 +1,8 @@
 ---
-imported_hash: 28a60eededf1b43a
+imported_hash: 99b75df2d1f43721
 title: Real Tech Interview Question Bank
 summary: This bank contains 23 questions organized into 9 themes.
-order: 87
+order: 104
 kind: reading
 section: Technical questions
 source: sisyphus/interviewing/rounds/technical-questions/real-tech-question-bank.md

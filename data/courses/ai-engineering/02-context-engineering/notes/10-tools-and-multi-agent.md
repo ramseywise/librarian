@@ -1,8 +1,8 @@
 ---
-imported_hash: 131d88a790778239
+imported_hash: 3ac1e45abad46f8c
 title: 10 — Multi-Agent Context and Tool Design
 summary: 'The pattern: specialized agents handle focused tasks with clean context windows, returning condensed summaries to a lead coordinator.'
-order: 14
+order: 16
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/10-tools-and-multi-agent.md
