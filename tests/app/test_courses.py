@@ -11,6 +11,7 @@ inject a fake neighbour function. The real MiniLM model is never loaded here.
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -83,6 +84,9 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setattr(courses, "WIKI_DIR", wiki)
     monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "no-drill-log.md")  # never the real one
     monkeypatch.setattr(courses, "LESSON_VEC_CACHE", tmp_path / "cache" / "lessons.npz")
+    monkeypatch.setattr(
+        courses, "FLASHCARD_LOG", tmp_path / "logs" / "flashcards.jsonl"
+    )  # never the real one
     monkeypatch.setattr(courses, "_semantic_neighbours", lambda texts, ids: None)
     courses._load.cache_clear()
     app = FastAPI()
@@ -428,6 +432,49 @@ def test_flashcards_module_and_lesson_decks(client: TestClient) -> None:
     assert rag["flashcardCount"] == 3
     assert next(x for x in rag["lessons"] if x["title"] == "Intro")["flashcardCount"] == 1
     assert client.get("/api/courses/lessons/gen-ai/01-rag/intro").json()["flashcardCount"] == 1
+
+
+def test_flashcard_result_logs_catalog_text_with_its_lesson(client: TestClient) -> None:
+    _write_cards(
+        "  - {front: Why hybrid?, back: Recall, lesson: gen-ai/01-rag/intro}\n  - {front: Loose, back: B}\n"
+    )
+    courses._load.cache_clear()
+    body = {"deck": "gen-ai/01-rag", "card": "0", "result": "missed", "front": "ignored"}
+    assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
+    body = {"deck": "gen-ai/01-rag", "card": "1", "result": "knew"}
+    assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
+    first, second = [json.loads(x) for x in courses.FLASHCARD_LOG.read_text().splitlines()]
+    assert (first["front"], first["lesson"], first["result"]) == (
+        "Why hybrid?",
+        "gen-ai/01-rag/intro",
+        "missed",
+    )
+    assert (second["front"], second["lesson"], second["source"]) == ("Loose", None, "")
+
+
+def test_flashcard_result_rejects_unknown_cards_and_grades(client: TestClient) -> None:
+    _write_cards("  - {front: Q, back: A}\n")
+    courses._load.cache_clear()
+    url = "/api/courses/flashcard-results"
+    assert (
+        client.post(url, json={"deck": "gen-ai/01-rag", "card": "9", "result": "knew"}).status_code
+        == 404
+    )
+    assert client.post(url, json={"deck": "nope", "card": "0", "result": "knew"}).status_code == 404
+    assert (
+        client.post(url, json={"deck": "gen-ai/01-rag", "card": "0", "result": "maybe"}).status_code
+        == 422
+    )
+    assert not courses.FLASHCARD_LOG.exists()
+
+
+def test_flashcard_result_survives_a_failed_write(client: TestClient) -> None:
+    _write_cards("  - {front: Q, back: A}\n")
+    courses._load.cache_clear()
+    blocker = courses.FLASHCARD_LOG.parent
+    blocker.write_text("a file where the logs folder should be")
+    body = {"deck": "gen-ai/01-rag", "card": "0", "result": "knew"}
+    assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": False}
 
 
 def test_flashcards_file_is_not_a_lesson_and_missing_deck_is_404(client: TestClient) -> None:

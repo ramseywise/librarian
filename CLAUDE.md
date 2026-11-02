@@ -158,7 +158,7 @@ published: YYYY-MM-DD
   into `data/` — this repo is public and the log is personal history.
   Each `slides/deck.yaml` becomes flashcards in the module's `_flashcards.md` (frontmatter
   `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
-  lesson id>`, studied at `#/flashcards/<id>`). Gitignored files and the course folders in
+  lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). Gitignored files and the course folders in
   `PRACTICE_REFERENCE_ONLY` do not become lessons.
   Files with an `imported_hash:` line are importer-generated; editing one turns it into a
   local file the importer will never overwrite or delete. Files without the line are

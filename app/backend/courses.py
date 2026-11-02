@@ -17,19 +17,22 @@ Private and tombstoned wiki pages are never surfaced here.
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import threading
 import time
 from collections import Counter
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import frontmatter
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 
 from core.wiki_common import WIKILINK_RE, slugify
 from shared.log_config import get_logger
@@ -47,6 +50,9 @@ DRILL_LOG = (
     / "coding"
     / "drill-log.md"
 )
+# Personal study history: logs/*.jsonl is gitignored and this repo is public. Read by
+# learn-ai-engineering's scripts/review/signals.py to find cards and slides worth re-reading.
+FLASHCARD_LOG = ROOT / "logs" / "flashcards.jsonl"
 
 ASSET_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
 MAX_CONCEPTS = 12
@@ -637,6 +643,43 @@ def flashcards(deck_id: str) -> dict[str, Any]:
     if not deck:
         raise HTTPException(status_code=404, detail="no flashcards here")
     return deck
+
+
+class CardResult(BaseModel):
+    deck: str
+    card: str
+    result: Literal["knew", "missed"]
+
+
+@router.post("/flashcard-results")
+def flashcard_result(body: CardResult) -> dict[str, bool]:
+    """Log one self-graded card. The text comes from the catalog, never from the request.
+
+    A failed write returns logged=false rather than an error: it must not interrupt studying.
+    """
+    cat = catalog()
+    card = next(
+        (c for c in cat.decks.get(body.deck, {}).get("cards", []) if c["id"] == body.card), None
+    )
+    if card is None:
+        raise HTTPException(status_code=404, detail="no such card")
+    rec = cat.lessons.get(card["lesson"]) if card["lesson"] else None
+    entry = {
+        "ts": datetime.now(UTC).isoformat(),
+        "deck": body.deck,
+        "lesson": card["lesson"],
+        "source": rec.source if rec else "",
+        "front": card["front"],
+        "result": body.result,
+    }
+    try:
+        FLASHCARD_LOG.parent.mkdir(exist_ok=True)
+        with FLASHCARD_LOG.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    except OSError as e:
+        log.warning("flashcard_log_failed", error=str(e))
+        return {"logged": False}
+    return {"logged": True}
 
 
 def _drill_attempts(log: Path) -> dict[str, dict[str, Any]]:

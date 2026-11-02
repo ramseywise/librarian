@@ -65,6 +65,34 @@ describe("FlashcardsView", () => {
     expect(screen.getByText("1 of 3")).toBeTruthy();
   });
 
+  it("grading a flipped card logs it and moves on; Next logs nothing", async () => {
+    const fetchMock = stubDeck();
+    render(<FlashcardsView deckId="c1/m1" />);
+    await screen.findByText("First question");
+    expect(screen.queryByRole("button", { name: "Missed it" })).toBeNull();
+    await userEvent.click(screen.getByRole("button", { pressed: false }));
+    await userEvent.click(screen.getByRole("button", { name: "Missed it" }));
+    expect(fetchMock).toHaveBeenCalledWith("/api/courses/flashcard-results", expect.objectContaining({
+      method: "POST",
+      body: JSON.stringify({ deck: "c1/m1", card: "0", result: "missed" }),
+    }));
+    expect(screen.getByText("Second question")).toBeTruthy();
+    const posts = () => fetchMock.mock.calls.filter((c) => (c as unknown[])[1]).length;
+    expect(posts()).toBe(1);
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(posts()).toBe(1);
+  });
+
+  it("keeps going when a grade fails to save", async () => {
+    const fetchMock = stubDeck();
+    render(<FlashcardsView deckId="c1/m1" />);
+    await screen.findByText("First question");
+    fetchMock.mockRejectedValueOnce(new Error("offline"));
+    await userEvent.click(screen.getByRole("button", { pressed: false }));
+    await userEvent.click(screen.getByRole("button", { name: "Knew it" }));
+    expect(screen.getByText("Second question")).toBeTruthy();
+  });
+
   it("says so when there is no deck", async () => {
     stubDeck(404);
     render(<FlashcardsView deckId="c1/nope" />);

@@ -27,7 +27,8 @@ function shuffled(n: number): number[] {
   return order;
 }
 
-/** Flip through one deck: a module's cards or a single lesson's. No scheduling, no saved state. */
+/** Flip through one deck: a module's cards or a single lesson's. No scheduling. A grade only appends to
+ * the server's log, which coursework review reads; a failed write never interrupts studying. */
 export function FlashcardsView({ deckId }: { deckId: string }) {
   const [deck, setDeck] = useState<FlashcardDeck | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,6 +59,14 @@ export function FlashcardsView({ deckId }: { deckId: string }) {
 
   const card = deck.cards[order[pos]];
   const turn = (next: number) => { setPos(next); setFlipped(false); };
+  const grade = (result: "knew" | "missed") => {
+    void fetch("/api/courses/flashcard-results", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ deck: deck.id, card: card.id, result }),
+    }).catch(() => undefined);
+    turn((pos + 1) % order.length);
+  };
   return (
     <div className="course-scroll course-page">
       <div className="course-page-inner course-page-inner--practice">
@@ -71,7 +80,9 @@ export function FlashcardsView({ deckId }: { deckId: string }) {
           <div className="flashcard-source">From <a href={`#/courses/${card.lesson}`}>{card.lessonTitle}</a></div>
         )}
         <div className="flashcard-controls">
-          <button onClick={() => turn((pos + 1) % order.length)} className="btn-primary">Next</button>
+          {flipped && <button onClick={() => grade("knew")} className="btn-primary">Knew it</button>}
+          {flipped && <button onClick={() => grade("missed")} className="round-btn">Missed it</button>}
+          <button onClick={() => turn((pos + 1) % order.length)} className={flipped ? "round-btn" : "btn-primary"}>Next</button>
           <button onClick={() => { setOrder(shuffled(deck.cards.length)); turn(0); }} className="round-btn">Shuffle</button>
           <span className="flashcard-count">{pos + 1} of {order.length}</span>
         </div>
