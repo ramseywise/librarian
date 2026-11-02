@@ -58,7 +58,7 @@ correct one to an outcome judge — and often to a user. See
 
 ## The retry that discarded its own evidence
 
-A concrete instance from the Shine build. The agent's retry logic, on a low-confidence
+A concrete instance from the [client] build. The agent's retry logic, on a low-confidence
 result, re-ran retrieval — and in doing so **discarded the sources it had already found**.
 Some of those were correct. The retry then returned something worse than what it threw
 away.

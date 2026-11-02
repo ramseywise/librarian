@@ -5,32 +5,34 @@
  * (`domains`, derived from data/wiki/ directories on the server). This module only maps a
  * domain name to a colour. Known domains keep their historical colours; any new wiki
  * directory gets a stable colour from the palette, so adding a domain needs no code change.
+ * Every colour must reach 4.5:1 on the card background (--surface-field), since it
+ * colours the small domain label on each card; domains.test.ts enforces this.
  */
 
-const KNOWN: Record<string, string> = {
+export const KNOWN: Record<string, string> = {
   rag: "#2196F3",
   langgraph: "#4CAF50",
   adk: "#FF9800",
-  infra: "#607D8B",
-  patterns: "#E91E63",
+  infra: "#688897",
+  patterns: "#EC3F7A",
   eval: "#FFEB3B",
-  "deep-agents": "#3F51B5",
+  "deep-agents": "#717FCD",
   memory: "#00BCD4",
-  mcp: "#9C27B0",
-  meta: "#795548",
+  mcp: "#C552D9",
+  meta: "#A67A6A",
   projects: "#009688",
-  foundations: "#7E57C2",
+  foundations: "#9473CC",
   interview: "#FF5722",
   context: "#26A69A",
   prompting: "#F06292",
-  harness: "#8D6E63",
+  harness: "#9C7D72",
   loop: "#AED581",
   graph: "#4DD0E1",
   private: "#9E9E9E",
 };
 
 /** Fallback palette for domains not in KNOWN — distinct from the known hues where possible. */
-const PALETTE = [
+export const PALETTE = [
   "#FFB74D", "#BA68C8", "#81C784", "#64B5F6", "#E57373",
   "#4DB6AC", "#FFD54F", "#9575CD", "#A1887F", "#90A4AE",
 ];
@@ -46,7 +48,7 @@ function hash(s: string): number {
 }
 
 export function domainColor(domain: string | undefined | null): string {
-  if (!domain) return "#607D8B";
+  if (!domain) return "#688897";
   return KNOWN[domain] ?? PALETTE[hash(domain) % PALETTE.length];
 }
 

@@ -108,7 +108,18 @@ Stage notes:
 
 A production pipeline with the same shape — ingestion and indexing on the left, query and retrieval on the right:
 
-![AWS Bedrock knowledge base pipeline: web crawl → semantic chunking → vector database, then query transformation → hybrid search → context injection → generation](../../images/bedrock-kb-pipeline-billydk.png)
+```text
+INGESTION & INDEXING                         QUERY & RETRIEVAL
+support pages ─┐                              user query
+product wiki  ─┼─▶ web crawler ─▶ semantic       │
+pricing pages ─┘                 chunking        ▼
+                                    │       query transformation (LLM → tool params)
+                                    ▼            │
+                       vector DB / knowledge ◀── hybrid search (semantic + keyword)
+                       base (AWS Bedrock KB)     │
+                                                 ▼
+                                    context injection ─▶ generation ─▶ answer
+```
 
 Two things worth noting against the abstract pipeline above. **Hybrid search** runs semantic and keyword retrieval together rather than choosing between them — vectors catch paraphrase, keywords catch exact identifiers, and each covers the other's failure mode. And **query transformation** sits before retrieval: the user's original phrasing is rewritten into tool parameters, because the text a human types is rarely the text that retrieves best.
 

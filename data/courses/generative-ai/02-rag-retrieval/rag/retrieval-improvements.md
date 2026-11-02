@@ -160,12 +160,12 @@ This eval loop uses a different retrieval path than the citation proxy: `query �
 
 **Design decision:** `kb_url_map.json` is a stateless lookup table committed to the repo. Agents never contain version-aware URL logic — KB migrations (Product → Partner) are a data operation, not a code redeploy. This keeps agents KB-agnostic and prevents grounding false-positives when the underlying domain changes.
 
-Match on path-only (`/da/articles/622808-...`) to avoid protocol/domain drift between `help.billy.dk` and `help.shine.co`.
+Match on path-only (`/da/articles/622808-...`) to avoid protocol/domain drift between `help.[product].dk` and `help.[client].co`.
 
 **Aliasing rules:**
 1. SupportPlatform articles: extract numeric ID from `/articles?/(\d+)` — locale-agnostic.
-2. `help.billy.dk ↔ help.shine.co`: same article ID, rewrite domain + locale prefix. `help.billy.dk/en/articles/<id>-<slug>` → `help.shine.co/da/articles/<id>-<slug>`.
-3. ProductWiki (`www.billy.dk/billypedia/<slug>/`): **no canonical Partner URL**. These are excluded from grounding/citation coverage (implemented in `url_coverage.py` as `topic_proxy`). Do NOT alias; tag `content_type: "glossary_term"` if ever ingested.
+2. `help.[product].dk ↔ help.[client].co`: same article ID, rewrite domain + locale prefix. `help.[product].dk/en/articles/<id>-<slug>` → `help.[client].co/da/articles/<id>-<slug>`.
+3. ProductWiki (`www.[product].dk/productwiki/<slug>/`): **no canonical Partner URL**. These are excluded from grounding/citation coverage (implemented in `url_coverage.py` as `topic_proxy`). Do NOT alias; tag `content_type: "glossary_term"` if ever ingested.
 
 ### ProductWiki: never the primary retrieval target
 

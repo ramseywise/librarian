@@ -99,8 +99,7 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
     "data-science": (
         "Data Science",
         3,
-        "Five pillars: classical ML, deep learning, NLP, LLMs from scratch, time series and "
-        "recommenders.",
+        "Four pillars: classical ML, deep learning, NLP, time series and recommenders.",
     ),
     "data-engineering": (
         "Data Engineering",
@@ -113,7 +112,7 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
         "Generative AI",
         5,
         "LLM fundamentals, RAG, agentic foundations and frameworks, RL and alignment, "
-        "observability, applications and evaluation.",
+        "observability, applications, evaluation and LLMs from scratch.",
     ),
     "ai-engineering": (
         "AI Engineering",
@@ -167,7 +166,7 @@ _HASH_LINE_RE = re.compile(r"^imported_hash: [0-9a-f]+\n", re.MULTILINE)
 _TRAILING_WS_RE = re.compile(r"[ \t]+$", re.MULTILINE)
 _FENCE_RE = re.compile(r"^\s*(```|~~~)")
 _H1_RE = re.compile(r"^#\s+(.+?)\s*#*\s*$", re.MULTILINE)
-_NUM_PREFIX_RE = re.compile(r"^(\d+)[-_. ]+")
+_NUM_PREFIX_RE = re.compile(r"^(\d+)[a-z]?[-_. ]+")  # 10b- sorts right after 10-
 _MD_IMAGE_RE = re.compile(r"(!\[[^\]]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 _MD_LINK_RE = re.compile(r"((?<!!)\[[^\]]*\]\()([^)\s]+)((?:\s+\"[^\"]*\")?\))")
 _HTML_IMG_RE = re.compile(r"(<img\b[^>]*?\bsrc=[\"'])([^\"']+)([\"'])", re.IGNORECASE)

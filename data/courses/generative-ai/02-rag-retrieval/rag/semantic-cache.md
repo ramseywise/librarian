@@ -29,7 +29,7 @@ planner ──▶ cache_lookup ──▶ hit (sim ≥ 0.85)? ──YES──▶ 
                                         │              │              │
                                   how_to/regulatory  definition  escalation
                                         │              │              │
-                               help_center KB    billypedia     skip retrieval
+                               help_center KB    productwiki     skip retrieval
                                         │         (context       → respond
                                         ▼           enrichment)
                               retrieve (CRAG) ──▶ answer ──▶ END
@@ -283,7 +283,7 @@ from sentence_transformers import SentenceTransformer
 
 SOURCE_MAP = {
     "how_to":     ["help_center"],
-    "definition": ["help_center", "billypedia"],   # billypedia = context enrichment
+    "definition": ["help_center", "productwiki"],   # productwiki = context enrichment
     "regulatory": ["help_center", "pricing"],
     "lookup":     ["pricing"],
     "escalation": [],
@@ -295,7 +295,7 @@ def route(query: str, model: SentenceTransformer, centroids: dict) -> tuple[str,
     sims = {k: float(vec @ c) for k, c in centroids.items()}
     best = max(sims, key=sims.get)
     if sims[best] < CONFIDENCE_FLOOR:
-        return "low_confidence", ["help_center", "pricing", "billypedia"]
+        return "low_confidence", ["help_center", "pricing", "productwiki"]
     return best, SOURCE_MAP[best]
 ```
 
