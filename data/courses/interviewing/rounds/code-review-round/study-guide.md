@@ -1,11 +1,11 @@
 ---
-imported_hash: 937982839e536375
+imported_hash: 209406f8c5424b06
 title: Code Review Round — Study Guide
 summary: 'What to know: a systematic, repeatable approach to reviewing code — not "read it and see if it looks right."'
-order: 23
+order: 17
 kind: reading
 section: Code review round
-source: sisyphus/interviewing/rounds/code-review-round/study-guide.md
+source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/study-guide.md
 ---
 
 # Code Review Round — Study Guide
@@ -31,7 +31,7 @@ The highest-consequence review area. Interviewers watch whether you check these 
 | Concept | What to look for | Example / source |
 |---------|-----------------|-----------------|
 | Auth/authz | Missing or inconsistent permission checks, role escalation | [security ex.3](examples/security.md) — decorator removal drops auth boundary |
-| Input validation | Untrusted input reaching SQL, shell, file paths, template rendering | [security notes](../../notes/security.md) |
+| Input validation | Untrusted input reaching SQL, shell, file paths, template rendering | [security chapter](../../../ai-engineering/09-safety-and-security/readme.md) |
 | Tool over-permissioning | Wildcard commands, write access where read suffices, credentials in metadata | [security ex.1](examples/security.md) — over-permissioned MCP tool config |
 | Trust boundary violation | Untrusted content in system messages, retrieved docs as instructions | [security ex.2](examples/security.md) — untrusted content in system message |
 | Memory poisoning | Unvalidated writes to persistent memory, no sanitization or TTL | [ai-generated ex.3](examples/ai-generated.md) — unvalidated memory writes |
@@ -63,7 +63,7 @@ Third pass — will the next person understand and safely modify this code?
 | Eval threshold changes | Quality bar lowered without calibration evidence or version bump | [conventions ex.3](examples/conventions.md) — pass threshold halved |
 | Convention drift | Breaking established patterns without justification | SANYI Bianyi layer; [conventions ex.1](examples/conventions.md) |
 | Test/eval quality | Tests exist, test the right things, break when the code breaks | [evals guide §2](../../guides/6-evals-observability/interview-guide.md) — grader types and calibration |
-| Enforcement > documentation | Constraints in linters/types/CI, not prose docs agents ignore | [agent-harness notes](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md) — "encode invariants, don't micromanage implementations" |
+| Enforcement > documentation | Constraints in linters/types/CI, not prose docs agents ignore | [agent-harness notes](../../../ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md) — "encode invariants, don't micromanage implementations" |
 
 ### 5. Communication & feedback
 

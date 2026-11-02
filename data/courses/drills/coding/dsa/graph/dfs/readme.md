@@ -1,11 +1,11 @@
 ---
-imported_hash: 247480b578921e93
+imported_hash: 40518709e8e4dc8a
 title: D F S
 summary: ''
-order: 154
+order: 57
 kind: reading
 section: Dsa / Graph / Dfs
-source: sisyphus/drills/coding/dsa/graph/dfs/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/graph/dfs/README.md
 ---
 
 # D F S

@@ -1,11 +1,11 @@
 ---
-imported_hash: 55991073420bc814
+imported_hash: aef9633ca87a0b3f
 title: Four Sum
 summary: Given an array nums of n integers and an integer target, are there elements a, b, c, and d in nums such that a + b + c + d = target?
-order: 107
+order: 10
 kind: reading
 section: Dsa / Arrays and strings / Four sum
-source: sisyphus/drills/coding/dsa/arrays_and_strings/four_sum/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/four_sum/README.md
 ---
 
 # Four Sum

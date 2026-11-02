@@ -1,11 +1,11 @@
 ---
-imported_hash: 6d086068454a1e27
+imported_hash: 58d41eeb31e83899
 title: Group Anagrams — First-Principles Thinking Guide
 summary: Both work. Sorting is simpler to implement; frequency count is slightly faster for long strings.
-order: 165
+order: 68
 kind: reading
 section: Dsa / Hashing / Group anagrams
-source: sisyphus/drills/coding/dsa/hashing/group_anagrams/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/hashing/group_anagrams/THINKING.md
 ---
 
 # Group Anagrams — First-Principles Thinking Guide

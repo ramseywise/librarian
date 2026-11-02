@@ -1,11 +1,11 @@
 ---
-imported_hash: f2328de0c91962b3
+imported_hash: b76b3c0e36ea1a27
 title: Letter Combinations of a Phone Number — First-Principles Thinking Guide
 summary: Each digit maps to 3-4 letters. For each digit, try all its letters, then recurse for the next digit.
-order: 139
+order: 42
 kind: reading
 section: Dsa / Backtracking / Letter combination of digits
-source: sisyphus/drills/coding/dsa/backtracking/letter_combination_of_digits/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/backtracking/letter_combination_of_digits/THINKING.md
 ---
 
 # Letter Combinations of a Phone Number — First-Principles Thinking Guide

@@ -1,28 +1,26 @@
 ---
-imported_hash: bbdb71cbce63d9c3
+imported_hash: 4cc67723f25b1e72
 title: Start Here — the AI Engineering Journey
-summary: 'A step-by-step route through this repo''s knowledge: ten pillars, ordered so each builds on the last.'
+summary: 'A step-by-step route through the curriculum for interview prep: twelve pillars, ordered so each builds on the last.'
 order: 1
 kind: reading
-source: sisyphus/interviewing/guides/00-start-here.md
+source: learn-ai-engineering/practice/interviewing/guides/00-start-here.md
 ---
 
 # Start Here — the AI Engineering Journey
 
-A step-by-step route through this repo's knowledge: ten pillars, ordered so each builds
-on the last. Written for someone starting from (almost) zero — if you already know a
-pillar, skim its overview's resource map and move on.
+A step-by-step route through the curriculum for interview prep: twelve pillars, ordered so each
+builds on the last. Written for someone starting from (almost) zero. If you already know a pillar,
+skip to its interview guide.
 
 ## How each pillar works
 
-Every pillar folder has three layers:
+Every pillar folder has two files:
 
-1. **`00-overview.md`** — start here: why the pillar matters, the learning path through
-   it, and a resource map pointing at every book/PDF (`readings/`), runnable course
-   (repo folders), librarian wiki page, and cleaned note.
-2. **Detailed notes** (`01-…`, `02-…`) — deep dives, added pillar-by-pillar over time.
-3. **`interview-guide.md`** — the compressed exam-prep view: concepts, trade-offs, and a
-   question bank with answer sketches. Read it *last*, as a self-test.
+1. **`00-overview.md`**: why the pillar matters, and links to the curriculum chapters that teach it,
+   in order.
+2. **`interview-guide.md`**: the recall sheet: concepts, trade-offs, and a question bank with answer
+   sketches. Read it *last*, as a self-test.
 
 ## The journey
 
@@ -39,15 +37,16 @@ Every pillar folder has three layers:
 | 8 | [Data Eng & MLOps](8-data-eng-mlops/00-overview.md) | ship a monitored pipeline and deploy a model with rollback | 1 |
 | 9 | [System Design](9-system-design/00-overview.md) | design a whole LLM system aloud, trade-offs and all | 3–8 |
 | 10 | [Product & Delivery](10-product-delivery/00-overview.md) | frame, cost, and deliver a project end to end — and explain it to a funder | any |
+| 11 | [Stats & Experimentation](11-stats-experimentation/00-overview.md) | design an A/B test, read its result honestly, and say what a p-value doesn't mean | Python |
 
-Pillars 1 and 8 can run in parallel; 9 and 10 are integrative — revisit them repeatedly.
-
-**Coming pillars** (deferred): *Stats & Experimentation* (A/B testing, causal inference —
-seed: `data-analytics/readings/`).
+Pillars 1 and 8 can run in parallel; 9 and 10 are integrative — revisit them repeatedly. Pillar 11
+runs alongside pillar 1, and comes first for analyst and data science roles despite its number.
+Aiming for a data job rather than AI engineering? Start with
+[pillar 1's overview](1-foundations/00-overview.md), which sets out a path for analysts, scientists
+and engineers.
 
 ## Other entry points
 
-- Interview prep: [../README.md](../00-start-here/readme.md) — role × topic matrix + the
-  [rounds/](../rounds/) files (one per interview-round type).
-- Raw sources: [../notes/](../notes/) (cleaned Notion notes) and the librarian wiki (compiled
-  design experience; it scrapes this KB back in turn).
+- Interview prep: [../README.md](../00-start-here/readme.md) has the role × topic matrix and the
+  `rounds/` folders, one per interview-round type.
+- The curriculum: [CURRICULUM.md](../../../CURRICULUM.md).

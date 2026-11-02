@@ -1,11 +1,11 @@
 ---
-imported_hash: 7ae34b25fe1c0e9d
+imported_hash: f0d4163cf5e6d424
 title: First Missing Positive
 summary: Given an unsorted integer array, find the smallest missing positive integer.
-order: 105
+order: 8
 kind: reading
 section: Dsa / Arrays and strings / First missing positive
-source: sisyphus/drills/coding/dsa/arrays_and_strings/first_missing_positive/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/first_missing_positive/README.md
 ---
 
 # First Missing Positive

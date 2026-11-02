@@ -2,8 +2,8 @@
 
 Reads raw/repos/repos.txt — one repo path per line (# for comments).
 For each repo, extracts: CLAUDE.md, README.md, SANYI.md, akira findings, plus the
-learn-ai-engineering knowledge base (ai-engineering/, generative-ai/, data-*, programming/) and the
-sisyphus interview KB and drill indexes (interviewing/, drills/). See EXTRACT_GLOBS.
+learn-ai-engineering knowledge base (ai-engineering/, generative-ai/, data-*, programming/) and its
+interview KB and drill indexes (practice/interviewing/, practice/drills/). See EXTRACT_GLOBS.
 
 .claude/skills, .claude/docs, docs/ and .agents/ (CLAUDE_DOCS_GLOBS) are taken only
 from repos that core/scrape_claude_docs.py does not already cover — the librarian
@@ -29,6 +29,7 @@ import structlog
 from dotenv import load_dotenv
 
 from core.base import REPO_ROOT, ScraperBase
+from core.import_courses import _git_ignored, _matches_ignored
 from core.scrape_claude_docs import SKIP_PROJECTS, WORKSPACE_DIR
 
 load_dotenv()
@@ -48,9 +49,11 @@ EXTRACT_GLOBS = [
     # learn-harness-engineering-main, Knowledge_Graphs_for_RAG-main/notes/, ...)
     # that a recursive ** would pull in at ~50x the volume of the authored notes.
     "CURRICULUM.md",
-    # sisyphus: interview KB (moved from learn-ai-engineering 2026-10-28) and drill
-    # indexes. drills/ is index-only — problem files and drill-log.md stay out.
-    "interviewing/**/*.md",
+    # Interview KB and drill indexes. drills/ is index-only: problem files stay out.
+    # practice/ holds private and uncleared files too; scrape_repo keeps its ignored ones out.
+    "practice/interviewing/**/*.md",
+    "practice/drills/*.md",
+    "practice/drills/*/README.md",
     "ai-engineering/*.md",
     "ai-engineering/*/*.md",
     "ai-engineering/*/notes/*.md",
@@ -123,6 +126,9 @@ def scrape_repo(
 
     written = skipped = 0
 
+    # None (not a git checkout) can't tell published from private: take nothing from practice/.
+    practice_ignored = _git_ignored(repo_path, repo_path / "practice")
+
     patterns = EXTRACT_GLOBS
     if not _covered_by_claude_docs(repo_path):
         patterns = EXTRACT_GLOBS + CLAUDE_DOCS_GLOBS
@@ -134,6 +140,10 @@ def scrape_repo(
 
             # Build output filename: flatten path, preserve uniqueness
             rel = src.relative_to(repo_path)
+            if rel.parts[0] == "practice" and (
+                practice_ignored is None or _matches_ignored(str(rel), practice_ignored)
+            ):
+                continue
             flat_name = str(rel).replace("/", "--").replace("\\", "--")
             dest = repo_out / flat_name
 

@@ -1,11 +1,11 @@
 ---
-imported_hash: b326b90d2b7706cb
+imported_hash: 54ea00792d9bdaa9
 title: Coin Change Min Count
 summary: ''
-order: 145
+order: 48
 kind: reading
 section: Dsa / Dynamic programming / Coin change min count
-source: sisyphus/drills/coding/dsa/dynamic_programming/coin_change_min_count/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/dynamic_programming/coin_change_min_count/README.md
 ---
 
 # Coin Change Min Count

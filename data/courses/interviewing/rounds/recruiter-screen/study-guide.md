@@ -1,11 +1,11 @@
 ---
-imported_hash: 74dc66c87976e961
+imported_hash: ad6be5ea855bf702
 title: Study Guide — Recruiter Screen
 summary: This round is not studied — it's rehearsed.
-order: 73
+order: 60
 kind: reading
 section: Recruiter screen
-source: sisyphus/interviewing/rounds/recruiter-screen/study-guide.md
+source: learn-ai-engineering/practice/interviewing/rounds/recruiter-screen/study-guide.md
 ---
 
 # Study Guide — Recruiter Screen

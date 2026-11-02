@@ -1,11 +1,11 @@
 ---
-imported_hash: 4ad111546694cbc2
+imported_hash: 12aae546cdcdb961
 title: 'Worked Example: Scope Negotiation'
 summary: ''
-order: 51
+order: 44
 kind: reading
 section: Customer simulation / Examples
-source: sisyphus/interviewing/rounds/customer-simulation/examples/scope-negotiation.md
+source: learn-ai-engineering/practice/interviewing/rounds/customer-simulation/examples/scope-negotiation.md
 ---
 
 # Worked Example: Scope Negotiation

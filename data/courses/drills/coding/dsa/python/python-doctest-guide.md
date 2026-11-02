@@ -1,11 +1,11 @@
 ---
-imported_hash: 04ad26759cba9f8b
+imported_hash: dbed153035366a36
 title: Master Python's doctest to Ace Your Technical Interview
 summary: In a high-pressure coding interview, you often spend 20 minutes implementing a solution, only to realize you have no easy way to test it without writing boilerplate unittest or pytest code.
-order: 184
+order: 87
 kind: reading
 section: Dsa / Python
-source: sisyphus/drills/coding/dsa/python/python_doctest_guide.md
+source: learn-ai-engineering/practice/drills/coding/dsa/python/python_doctest_guide.md
 ---
 
 # Master Python's `doctest` to Ace Your Technical Interview

@@ -1,11 +1,11 @@
 ---
-imported_hash: 6fb754401f428a10
+imported_hash: 1ee2404d3d9c2d63
 title: Word Search II — First-Principles Thinking Guide
 summary: 'Without Trie: Check each word independently → redundant traversals.'
-order: 230
+order: 133
 kind: reading
 section: Dsa / Tries / Word search 2
-source: sisyphus/drills/coding/dsa/tries/word_search_2/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/tries/word_search_2/THINKING.md
 ---
 
 # Word Search II — First-Principles Thinking Guide

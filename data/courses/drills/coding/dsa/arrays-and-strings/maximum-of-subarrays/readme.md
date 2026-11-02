@@ -1,11 +1,11 @@
 ---
-imported_hash: f3d82d57edced59d
+imported_hash: a37abd4fc2890fcd
 title: Maximum Of Subarrays
 summary: ''
-order: 115
+order: 18
 kind: reading
 section: Dsa / Arrays and strings / Maximum of subarrays
-source: sisyphus/drills/coding/dsa/arrays_and_strings/maximum_of_subarrays/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/maximum_of_subarrays/README.md
 ---
 
 # Maximum Of Subarrays

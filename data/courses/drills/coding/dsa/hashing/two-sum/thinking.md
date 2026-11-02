@@ -1,11 +1,11 @@
 ---
-imported_hash: 09de2c1efb068cfd
+imported_hash: 0275b6b74a4d2dc8
 title: Two Sum — First-Principles Thinking Guide
 summary: 'For each index i, value num: complement = target - num If complement in seen: return [seen[complement], i] seen[num] = i'
-order: 167
+order: 70
 kind: reading
 section: Dsa / Hashing / Two sum
-source: sisyphus/drills/coding/dsa/hashing/two_sum/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/hashing/two_sum/THINKING.md
 ---
 
 # Two Sum — First-Principles Thinking Guide

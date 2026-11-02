@@ -1,11 +1,11 @@
 ---
-imported_hash: 209e6588998e3acb
+imported_hash: 79036a78dc606365
 title: Permutation in String — First-Principles Thinking Guide
 summary: A permutation of s1 has the same character frequencies.
-order: 196
+order: 99
 kind: reading
 section: Dsa / Recursion / Permutations in string
-source: sisyphus/drills/coding/dsa/recursion/permutations_in_string/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/recursion/permutations_in_string/THINKING.md
 ---
 
 # Permutation in String — First-Principles Thinking Guide

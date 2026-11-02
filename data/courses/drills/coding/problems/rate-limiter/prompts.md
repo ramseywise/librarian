@@ -1,11 +1,11 @@
 ---
-imported_hash: 55970a7deb2ff130
+imported_hash: 338dde1bd8e086e6
 title: rate-limiter — env1 drill (45 min, no AI)
 summary: Object-oriented design under time. No starter code — you design the interface as well as the implementation.
-order: 254
+order: 136
 kind: reading
 section: Problems / Rate limiter
-source: sisyphus/drills/coding/problems/rate-limiter/prompts.md
+source: learn-ai-engineering/practice/drills/coding/problems/rate-limiter/prompts.md
 ---
 
 # rate-limiter — env1 drill (45 min, no AI)
@@ -82,7 +82,7 @@ your implementation? If the answer is "it grows," fix it.
 
 ## Phase 5 — self-review (5 min)
 
-Before declaring done, run the checklist from `notes/brief-env1-noai.md`:
+Before declaring done, run this checklist:
 
 - Every test run, not just the last one
 - Empty / single / zero / boundary cases covered

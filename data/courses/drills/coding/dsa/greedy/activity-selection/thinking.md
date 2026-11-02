@@ -1,11 +1,11 @@
 ---
-imported_hash: f6b00818ca374250
+imported_hash: 427548c3925dea9c
 title: Activity Selection — First-Principles Thinking Guide
 summary: This is optimal — any algorithm must examine all intervals, and sorting is a known lower bound for comparison-based approaches.
-order: 160
+order: 63
 kind: reading
 section: Dsa / Greedy / Activity selection
-source: sisyphus/drills/coding/dsa/greedy/activity_selection/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/greedy/activity_selection/THINKING.md
 ---
 
 # Activity Selection — First-Principles Thinking Guide

@@ -1,11 +1,11 @@
 ---
-imported_hash: 97a8e46e495cab4d
+imported_hash: a1ee38f28b445509
 title: Minimum Window Substring
 summary: Given strings s and t, find the minimum window in s that contains all characters of t (including duplicates).
-order: 202
+order: 105
 kind: reading
 section: Dsa / Sliding window / Minimum window substring
-source: sisyphus/drills/coding/dsa/sliding_window/minimum_window_substring/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/sliding_window/minimum_window_substring/README.md
 ---
 
 # Minimum Window Substring

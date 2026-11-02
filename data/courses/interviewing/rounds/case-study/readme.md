@@ -1,11 +1,11 @@
 ---
-imported_hash: f1eec158e3a93919
+imported_hash: a2cb3ae61e66815f
 title: Case Study Round (live · code test · take-home · Work Trial · presentation/defense)
 summary: The 1h timed code test is emerging, not canonical — evidenced in CoderPad/CodeSignal pilots, not confirmed as a standard round at major AIE employers.
-order: 10
+order: 5
 kind: reading
 section: Case study
-source: sisyphus/interviewing/rounds/case-study/README.md
+source: learn-ai-engineering/practice/interviewing/rounds/case-study/README.md
 ---
 
 # Case Study Round (live · code test · take-home · Work Trial · presentation/defense)
@@ -91,7 +91,6 @@ The FDE signature round; the DS take-home-with-presentation is near-universal (2
 
 - [study-guide.md](study-guide.md) — template deep breakdown, ML vs LLM adaptation, ROI arithmetic, take-home best practices, defense prep, common mistakes
 - [questions.md](questions.md) — 12 questions with what's tested, model answer structure, study refs
-- [take-home-field-data.md](take-home-field-data.md) — what real AIE take-homes ask for (RAG 40%+, agents 30%+), how they're graded, and ~100 real prompts to practice on
 - [sources.md](sources.md) — internal guides and external references
 - [examples/](examples/) — worked case walkthroughs, split by domain (ML vs AIE), not by format
   - [ml-track/churn-prediction-takehome.md](examples/ml-track/churn-prediction-takehome.md) — technical test: 100K rows churn data, 3-hour timebox

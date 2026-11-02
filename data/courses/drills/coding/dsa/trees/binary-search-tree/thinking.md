@@ -1,11 +1,11 @@
 ---
-imported_hash: 004e090f559d92e8
+imported_hash: ee6715d1075114d9
 title: Binary Search Tree — First-Principles Thinking Guide
 summary: 'BST invariant: for every node, all left descendants < node < all right descendants.'
-order: 221
+order: 124
 kind: reading
 section: Dsa / Trees / Binary search tree
-source: sisyphus/drills/coding/dsa/trees/binary_search_tree/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/trees/binary_search_tree/THINKING.md
 ---
 
 # Binary Search Tree — First-Principles Thinking Guide

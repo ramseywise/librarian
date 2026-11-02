@@ -1,11 +1,11 @@
 ---
-imported_hash: 5508b2026a4c9d55
+imported_hash: d2b6a84736588d81
 title: Code Review Round
 summary: 'Reviewing unfamiliar code under observation: do you have a method, or just an eye?'
-order: 20
+order: 14
 kind: reading
 section: Code review round
-source: sisyphus/interviewing/rounds/code-review-round/README.md
+source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/README.md
 ---
 
 # Code Review Round

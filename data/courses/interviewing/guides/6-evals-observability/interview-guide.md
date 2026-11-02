@@ -1,11 +1,11 @@
 ---
-imported_hash: 0e7fb160a880bc29
+imported_hash: cc8d7d3fdfb253cc
 title: Evals & Observability — Study Guide
 summary: The topic that separates "built a demo" from "shipped a system." Nearly every 2026 loop asks some form of "how do you test non-deterministic outputs?" — this guide is that answer.
 order: 15
 kind: reading
 section: Evals observability
-source: sisyphus/interviewing/guides/6-evals-observability/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/6-evals-observability/interview-guide.md
 ---
 
 # Evals & Observability — Study Guide
@@ -160,8 +160,6 @@ Condensed from the book's [reference answers](https://github.com/bojieli/ai-agen
 
 ## Sources
 
-- notes: [eval-engineering.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/06-eval/eval-engineering.md) (overview of the 12-chapter eval syllabus, incl. Anthropic demystifying-evals synthesis and production layer), [support-agent-observability.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/generative-ai/06-observability/support-agent-observability.md)
-- images: [two-layer eval](../../images/two-layer-eval-human-llm-calibration.png)
+- notes: [Evaluation](../../../generative-ai/08-eval/readme.md) (overview of the 12-chapter eval syllabus, incl. Anthropic demystifying-evals synthesis and production layer), [Support agent observability](../../../generative-ai/06-observability/notes/05-support-agent-observability.md)
 - librarian wiki: Anthropic Three-Tier Eval Taxonomy · RAG Eval Metrics Suite · RAG Evaluation · Grounding Claim Methodology · Observability & Evaluation Glossary · HITL Annotation Pipeline · Synthetic Dataset Generation for RAG Eval · Eval Gate Contract · LLM Grader Calibration Insights · Observability — LangFuse vs LangSmith Decision · System Design — Unified Eval Harness
-- course refs: `generative-ai/06-observability/langfuse-evaluation-main`, `ai-engineering/06-eval/DeepLearning.AI-Evaluating-AI-Agents-master`
 - external: anthropic.com/engineering/demystifying-evals-for-ai-agents · langchain.com/blog/agent-evaluation-readiness-checklist

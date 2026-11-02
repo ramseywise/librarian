@@ -1,11 +1,11 @@
 ---
-imported_hash: e7b703473558b272
+imported_hash: c5ffa69193598ca1
 title: Binary Tree And Binary Search Tree
 summary: Trees are hierarchical data structures with a root node and child relationships.
-order: 219
+order: 122
 kind: reading
 section: Dsa / Trees
-source: sisyphus/drills/coding/dsa/trees/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/trees/Readme.md
 ---
 
 # Binary Tree And Binary Search Tree

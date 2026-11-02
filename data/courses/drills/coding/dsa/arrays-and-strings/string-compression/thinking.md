@@ -1,11 +1,11 @@
 ---
-imported_hash: 64e8d220b2ea6b50
+imported_hash: 4d39ce6f5f11022e
 title: String Compression — First-Principles Thinking Guide
 summary: Use a read pointer to count consecutive characters and a write pointer to write the compressed form back into the same array.
-order: 130
+order: 33
 kind: reading
 section: Dsa / Arrays and strings / String compression
-source: sisyphus/drills/coding/dsa/arrays_and_strings/string_compression/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/string_compression/THINKING.md
 ---
 
 # String Compression — First-Principles Thinking Guide

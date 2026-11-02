@@ -1,11 +1,11 @@
 ---
-imported_hash: 0fadf8bdcc8034fd
+imported_hash: 9e51cc7d23052719
 title: String Compression
 summary: Given an array of characters, compress it in-place.
-order: 129
+order: 32
 kind: reading
 section: Dsa / Arrays and strings / String compression
-source: sisyphus/drills/coding/dsa/arrays_and_strings/string_compression/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/string_compression/README.md
 ---
 
 # String Compression

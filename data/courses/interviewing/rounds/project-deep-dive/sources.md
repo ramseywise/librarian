@@ -1,11 +1,11 @@
 ---
-imported_hash: 990b318c31e93435
+imported_hash: 6eb2a35460761015
 title: Sources — Project Deep-Dive
 summary: The system-design round examples directory contains worked walkthroughs of AI systems (RAG pipelines, agent systems, evaluation harnesses).
-order: 63
+order: 55
 kind: reading
 section: Project deep dive
-source: sisyphus/interviewing/rounds/project-deep-dive/sources.md
+source: learn-ai-engineering/practice/interviewing/rounds/project-deep-dive/sources.md
 ---
 
 # Sources — Project Deep-Dive

@@ -1,11 +1,11 @@
 ---
-imported_hash: 70d0161c18e9688c
+imported_hash: 486c32e7c7b98483
 title: Product & Business Sense — Study Guide
 summary: 'The differentiator round for FDE/DS roles and the hidden rubric everywhere else: FDE loops weight business judgment + customer empathy at roughly half the evaluation.'
-order: 30
+order: 24
 kind: reading
 section: Product delivery
-source: sisyphus/interviewing/guides/10-product-delivery/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/10-product-delivery/interview-guide.md
 ---
 
 # Product & Business Sense — Study Guide
@@ -49,7 +49,7 @@ not whether you land their pet answer.
 
 ## 4. Nonprofit / mission-driven sector specifics
 
-A differentiating lens (and this repo's owner's beat — DSSG platform work):
+A differentiating lens:
 
 - **Constraints**: grant-cycle budgets (opex-averse → API bills need caps and
   predictability), volunteer/rotating maintainers (favor boring tech, documentation,
@@ -88,7 +88,6 @@ probe: a failure you learned from, adapting when a client rejects your recommend
 
 ## Sources
 
-- notes: [case-interview.md](../../notes/case-interview.md) (business-context tips, consulting-round expectations, ROI examples)
-- external (from research doc): FDE loop analyses — case study + customer empathy ≈ 50% of evaluation (Exponent FDE guide, Perspective AI Anthropic/FDE writeups, Sundeep Teki guide — links in `.claude/docs/plans/2026-07-17-interview-kb-consolidation.md`)
+- external: FDE loop analyses — case study + customer empathy ≈ 50% of evaluation (Exponent FDE guide, Perspective AI Anthropic/FDE writeups, Sundeep Teki guide)
 - librarian wiki: Agentic KPI Trees · Copilot Learning Loop · SupportAgent Product Design Patterns (interaction-level staging)
 - related round: [customer-simulation](../../rounds/customer-simulation/readme.md) · [leadership-rounds](../../rounds/leadership-rounds/readme.md)

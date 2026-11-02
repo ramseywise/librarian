@@ -1,11 +1,11 @@
 ---
-imported_hash: 67a848ab2934380a
+imported_hash: 55c7ecd02dcea4a1
 title: Technical Questions — ML/LLM Breadth Round
 summary: 'Rapid-fire conceptual fluency: can you explain core mechanisms in 60 seconds with one level of depth in reserve?'
-order: 101
+order: 70
 kind: reading
 section: Technical questions
-source: sisyphus/interviewing/rounds/technical-questions/README.md
+source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/README.md
 ---
 
 # Technical Questions — ML/LLM Breadth Round
@@ -28,7 +28,7 @@ Real screen question lists run: "What is RAG? Graph+RAG? Chain of Thought? Refle
 |-----|-----|-----|-----|
 | ●   | ●   | ◐   | ●   |
 
-AIE/FDE versions skew LLM-era topics; MLE adds classical depth; DS versions fold into the stats/SQL screen.
+AIE/FDE versions skew LLM-era topics; MLE adds classical depth; DS versions fold into the stats/SQL screen, so drill the [stats & experimentation guide](../../guides/11-stats-experimentation/interview-guide.md) and the [foundations guide](../../guides/1-foundations/interview-guide.md), which has spoken answers to the 18 ML Fundamentals questions.
 
 ## Folder contents
 
@@ -36,8 +36,7 @@ AIE/FDE versions skew LLM-era topics; MLE adds classical depth; DS versions fold
 |------|---------|
 | `questions.md` | 25–30 questions organized by domain, each with 60-second answer + one level deeper + study ref |
 | `mcq-bank.md` | 188 multiple-choice questions with full parity across all 11 guide topics, plus answer keys and a 40-item distinction drill |
-| `real-tech-question-bank.md` | 23 real interview questions in 9 themes (provider-agnostic config, evals, observability, …) with researched, sourced answers |
-| `theory-bank.md` | 38 theory questions from real loops by topic, with follow-ups, references, and "check yourself" MCQs (from ai-engineering-gym) |
+| `real-tech-question-bank.md` | 23 reported interview questions in 9 themes (provider-agnostic config, evals, observability, …) with researched, sourced answers |
 | `study-guide.md` | Method, trade-off pairs, flashcard approach, per-role priorities, practice plan, anti-patterns |
 | `sources.md` | Internal cross-reference (study guides, notes) + external resources |
 
@@ -53,4 +52,4 @@ AIE/FDE versions skew LLM-era topics; MLE adds classical depth; DS versions fold
 
 ## Note on content placement
 
-The substantive content for this round lives primarily in the domain study guides (all ten). This folder organizes the *method* (how to answer rapidly under pressure) and the *question index* (the drill set, with depth markers). Go to the study guides for the full treatment of any topic.
+The substantive content for this round lives primarily in the domain study guides. This folder organizes the *method* (how to answer rapidly under pressure) and the *question index* (the drill set, with depth markers). Go to the study guides for the full treatment of any topic.

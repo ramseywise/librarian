@@ -1,11 +1,11 @@
 ---
-imported_hash: 8eb8a5f8769bcaf6
+imported_hash: 8e172c3bf13c0ef3
 title: Moving Average from Data Stream — First-Principles Thinking Guide
 summary: 'Use a queue of size k. When a new value arrives: if full, dequeue the oldest and subtract from sum, then enqueue new and add to sum.'
-order: 193
+order: 96
 kind: reading
 section: Dsa / Queues / Moving average
-source: sisyphus/drills/coding/dsa/queues/moving_average/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/queues/moving_average/THINKING.md
 ---
 
 # Moving Average from Data Stream — First-Principles Thinking Guide

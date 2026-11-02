@@ -1,11 +1,11 @@
 ---
-imported_hash: 50c8e35083843c1a
+imported_hash: 52e2a4a95236ea9f
 title: 'Worked Example: 90-Day Sketch — Joining an AI Startup as Staff AI Engineer'
 summary: 'Company: Series B AI startup building an AI-native CRM for sales teams.'
-order: 57
+order: 50
 kind: reading
 section: Leadership rounds / Examples
-source: sisyphus/interviewing/rounds/leadership-rounds/examples/90-day-sketch.md
+source: learn-ai-engineering/practice/interviewing/rounds/leadership-rounds/examples/90-day-sketch.md
 ---
 
 # Worked Example: 90-Day Sketch — Joining an AI Startup as Staff AI Engineer

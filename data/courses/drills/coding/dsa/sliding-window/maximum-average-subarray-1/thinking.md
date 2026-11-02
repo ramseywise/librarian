@@ -1,11 +1,11 @@
 ---
-imported_hash: f76b778eaf8cb127
+imported_hash: f9c02048507f4c6f
 title: Maximum Average Subarray I — First-Principles Thinking Guide
 summary: 'Compute the sum of the first k elements. Slide the window: add the next element, subtract the element leaving the window.'
-order: 201
+order: 104
 kind: reading
 section: Dsa / Sliding window / Maximum average subarray 1
-source: sisyphus/drills/coding/dsa/sliding_window/maximum_average_subarray_1/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/sliding_window/maximum_average_subarray_1/THINKING.md
 ---
 
 # Maximum Average Subarray I — First-Principles Thinking Guide

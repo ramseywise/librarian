@@ -1,11 +1,11 @@
 ---
-imported_hash: c160d117ba83317f
+imported_hash: 457967e0b519582c
 title: Trie
 summary: ''
-order: 227
+order: 130
 kind: reading
 section: Dsa / Tries / Trie
-source: sisyphus/drills/coding/dsa/tries/trie/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/tries/trie/README.md
 ---
 
 # Trie

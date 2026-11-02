@@ -1,11 +1,11 @@
 ---
-imported_hash: a38b77cac62b72d7
+imported_hash: 0b3cfc1288b93c3a
 title: Sort 0s, 1s, and 2s (Dutch National Flag) — First-Principles Thinking Guide
 summary: 'Use three pointers: low, mid, high.'
-order: 128
+order: 31
 kind: reading
 section: Dsa / Arrays and strings / Sort 0s 1s 2s
-source: sisyphus/drills/coding/dsa/arrays_and_strings/sort_0s_1s_2s/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/sort_0s_1s_2s/THINKING.md
 ---
 
 # Sort 0s, 1s, and 2s (Dutch National Flag) — First-Principles Thinking Guide

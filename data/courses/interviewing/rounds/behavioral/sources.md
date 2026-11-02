@@ -1,21 +1,20 @@
 ---
-imported_hash: bea5778fe10c45e1
+imported_hash: 85dc4aa560ffeadc
 title: Behavioral Round — Sources
 summary: ''
-order: 4
+order: 3
 kind: reading
 section: Behavioral
-source: sisyphus/interviewing/rounds/behavioral/sources.md
+source: learn-ai-engineering/practice/interviewing/rounds/behavioral/sources.md
 ---
 
 # Behavioral Round — Sources
 
-## Internal (this repo + workspace)
+## Internal
 
 | Source | What it covers | Path |
 |--------|---------------|------|
 | Product & business study guide | Stakeholder translation, managing competing priorities, communicating technical trade-offs | [guides/10-product-delivery](../../guides/10-product-delivery/interview-guide.md) |
-| Case interview notes | Adaptability signals, self-awareness markers, structured thinking under pressure | [notes/case-interview.md](../../notes/case-interview.md) |
 | Customer simulation round | FDE-specific behavioral probes — client adaptation, trust-building, handling rejection | [rounds/customer-simulation.md](../customer-simulation/readme.md) |
 | Leadership rounds | Leadership-focused behavioral questions — team building, org influence, strategic decisions | [rounds/leadership-rounds.md](../leadership-rounds/readme.md) |
 
@@ -69,4 +68,4 @@ source: sisyphus/interviewing/rounds/behavioral/sources.md
 - **Story bank audit**: Use the 8–10 categories in [study-guide.md](study-guide.md) as a checklist — for each category, write one story in STAR+Reflection format before you interview.
 - **Aloud rehearsal**: Every story must be rehearsed spoken, not just written. Record yourself and play it back — written STAR stories almost always run long; spoken versions expose vague Actions and missing Results.
 - **Company values mapping**: Night before each interview, pull the company's values/principles page and map your 3 strongest stories to the 3 LPs or values most emphasized. Reangle the telling, don't invent new stories.
-- **Bar-raiser prep**: For FAANG-style bar raiser rounds, the failure story is heavily weighted. Use the [examples/failure-owned.md](examples/failure-owned.md) worked example as a calibration reference.
+- **Bar-raiser prep**: For FAANG-style bar raiser rounds, the failure story is heavily weighted. Calibrate against a real failure story of your own.

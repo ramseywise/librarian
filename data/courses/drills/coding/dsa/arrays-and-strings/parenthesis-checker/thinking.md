@@ -1,11 +1,11 @@
 ---
-imported_hash: 57a8a9e394afcf0c
+imported_hash: 7a46b3604990d5fe
 title: Parenthesis Checker — First-Principles Thinking Guide
 summary: Opening brackets push onto a stack. Closing brackets must match the most recent opening bracket (stack top).
-order: 126
+order: 29
 kind: reading
 section: Dsa / Arrays and strings / Parenthesis checker
-source: sisyphus/drills/coding/dsa/arrays_and_strings/parenthesis_checker/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/parenthesis_checker/THINKING.md
 ---
 
 # Parenthesis Checker — First-Principles Thinking Guide

@@ -1,11 +1,11 @@
 ---
-imported_hash: 7c8ab69b10746fe6
+imported_hash: d82a979179483598
 title: Design a Parking Lot
 summary: Design a parking lot that handles different types of vehicles (Car, Bike, Van) and different types of slots (Small, Compact, Large).
-order: 216
+order: 119
 kind: reading
 section: Dsa / System design / Parking lot
-source: sisyphus/drills/coding/dsa/system_design/parking_lot/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/system_design/parking_lot/README.md
 ---
 
 # Design a Parking Lot

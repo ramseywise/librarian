@@ -1,11 +1,11 @@
 ---
-imported_hash: 3747ec24c7d1e164
+imported_hash: ad3cdc6e47600d69
 title: Recruiter / HR Screen
 summary: Communication and enthusiasm are scored. Your story is pattern-matched against the req.
-order: 69
+order: 57
 kind: reading
 section: Recruiter screen
-source: sisyphus/interviewing/rounds/recruiter-screen/README.md
+source: learn-ai-engineering/practice/interviewing/rounds/recruiter-screen/README.md
 ---
 
 # Recruiter / HR Screen
@@ -49,7 +49,6 @@ Universal first gate. FDE screens lean harder on communication polish. All roles
 |------|--------------|
 | `README.md` | This file — overview, format, prep checklist, per-role weighting |
 | `questions.md` | 10–12 questions with what's tested, response structure, and recruiter red flags |
-| `probe-bank.md` | Recruiter openers with generic hints only; build your answers from voice-notes.md |
 | `study-guide.md` | Core material: narrative framework, comp negotiation, logistics prep, AI fluency, practice plan, anti-patterns |
 | `sources.md` | Internal cross-references and external comp/prep resources |
 

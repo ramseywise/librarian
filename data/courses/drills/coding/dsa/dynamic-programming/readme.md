@@ -1,11 +1,11 @@
 ---
-imported_hash: 6cd90f09648b5f5d
+imported_hash: e8555e5e898c39db
 title: Dynamic Programming
 summary: Dynamic programming solves complex problems by breaking them into overlapping subproblems.
-order: 142
+order: 45
 kind: reading
 section: Dsa / Dynamic programming
-source: sisyphus/drills/coding/dsa/dynamic_programming/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/dynamic_programming/Readme.md
 ---
 
 # Dynamic Programming

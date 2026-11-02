@@ -1,11 +1,11 @@
 ---
-imported_hash: df600d007eb27fa9
+imported_hash: e7162070654f8dfe
 title: Backtracking
 summary: Backtracking builds solutions incrementally, abandoning a path as soon as it determines that the path cannot lead to a valid solution.
-order: 135
+order: 38
 kind: reading
 section: Dsa / Backtracking
-source: sisyphus/drills/coding/dsa/backtracking/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/backtracking/Readme.md
 ---
 
 # Backtracking

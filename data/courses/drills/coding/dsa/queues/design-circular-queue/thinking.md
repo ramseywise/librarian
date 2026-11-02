@@ -1,11 +1,11 @@
 ---
-imported_hash: 24d8a17553892611
+imported_hash: ce409a11f48853c2
 title: Design Circular Queue — First-Principles Thinking Guide
 summary: Use an array of size k with front and rear pointers.
-order: 187
+order: 90
 kind: reading
 section: Dsa / Queues / Design circular queue
-source: sisyphus/drills/coding/dsa/queues/design_circular_queue/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/queues/design_circular_queue/THINKING.md
 ---
 
 # Design Circular Queue — First-Principles Thinking Guide

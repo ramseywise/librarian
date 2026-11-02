@@ -1,18 +1,18 @@
 ---
-imported_hash: e790f8a6d3206a5d
+imported_hash: 6c064d551f9a2d1f
 title: Data Engineering & MLOps — Study Guide
 summary: Tested directly in MLE loops and as the substrate of every system-design answer.
-order: 20
+order: 19
 kind: reading
 section: Data eng mlops
-source: sisyphus/interviewing/guides/8-data-eng-mlops/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/8-data-eng-mlops/interview-guide.md
 ---
 
 # Data Engineering & MLOps — Study Guide
 
 Tested directly in MLE loops and as the substrate of every system-design answer. The
-DataTalks courses in this repo map 1:1 to the interview checklist — each module below names
-its folder.
+checklist follows the module structure of the DataTalks DE and MLOps Zoomcamps; the
+[data-engineering chapters](../../../data-engineering/00-start-here/readme.md) teach the same ground.
 
 ## 1. Data engineering checklist (DataTalks DE structure)
 
@@ -37,8 +37,8 @@ its folder.
 - Formats & lakes: Parquet (columnar, predicate pushdown) over CSV for anything processed;
   lakehouse table formats give ACID over object storage.
 - Data quality & governance: expectations/contracts at ingest, lineage, PII classification
-  (ties to [security-safety](../7-security-safety/interview-guide.md) §5). Data mesh handouts in
-  `data-engineering/8-data-eng-data-mesh/` for the org-level decentralization story.
+  (ties to [security-safety](../7-security-safety/interview-guide.md) §5). [Mesh, fabric and modern data warehouse](../../../data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw.md)
+  for the org-level decentralization story.
 
 ## 2. MLOps checklist (DataTalks MLOps structure)
 
@@ -82,7 +82,6 @@ advantage.
 
 ## Sources
 
-- repo: `data-engineering/DataTalks Data Engineering/` (modules 01–06 + projects), `data-engineering/DataTalks MLOps/` (modules 01–07)
-- readings: `8-data-eng-data-mesh/` handouts, *The Data Warehouse Toolkit* (Kimball), *Machine Learning Engineering in Action*, `general/` (hidden-technical-debt, SE-for-ML)
+- chapters: [data engineering](../../../data-engineering/00-start-here/readme.md), [ML platform](../../../data-engineering/06-ml-platform/readme.md); the DataTalks DE and MLOps Zoomcamps are on GitHub
+- readings: *The Data Warehouse Toolkit* (Kimball), *Machine Learning Engineering in Action*, hidden technical debt in ML systems, software engineering for ML
 - librarian wiki: Embedder Warmup · Production Hardening Patterns · PGVector Migration Pattern · Cloud Run + Cloud SQL Pattern · Synthetic Dataset Generation (fingerprinting)
-- global rules: `~/.claude/rules/ml.md`, `~/.claude/rules/logging.md`

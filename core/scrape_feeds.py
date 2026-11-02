@@ -1,7 +1,7 @@
 """Fetch recent RSS/Atom feed posts → raw/web/
 
 Polls the recurring blog/newsletter sources tracked in learn-ai-engineering's
-SOURCES.md (Tier 1 + Tier 2) and drops new posts into the same raw/web/ queue that
+recurring-sources.md (Tier 1 + Tier 2) and drops new posts into the same raw/web/ queue that
 /learn already processes for arXiv papers.
 
 Mirrors core/scrape_arxiv.py: fetch → parse → keyword filter → dedup → write.
@@ -42,13 +42,13 @@ log = structlog.get_logger(__name__)
 
 @dataclass(frozen=True)
 class FeedSource:
-    """One recurring source from SOURCES.md."""
+    """One recurring source from recurring-sources.md."""
 
     key: str  # short slug, used in filenames and --feeds
     name: str  # human-readable, used in frontmatter
     url: str  # feed URL (RSS or Atom)
     tier: int  # 1 = primary (cite directly), 2 = aggregator (gap-detector)
-    scope: str  # which pillars it feeds, per SOURCES.md
+    scope: str  # which pillars it feeds, per recurring-sources.md
     # False = source publishes no discoverable feed. Kept in the table (rather than
     # dropped) so the gap stays visible and re-checkable; skipped unless named
     # explicitly via --feeds.
@@ -56,9 +56,9 @@ class FeedSource:
     note: str = ""
 
 
-# Seeded from ~/workspace/learn-ai-engineering/ai-engineering/SOURCES.md.
+# Seeded from ~/workspace/learn-ai-engineering/scripts/papers/recurring-sources.md.
 # arXiv is deliberately absent — core/scrape_arxiv.py owns it. dair.ai is absent
-# too: SOURCES.md records it as a hand-refreshed vendored snapshot, not a feed.
+# too: recurring-sources.md records it as a hand-refreshed vendored snapshot, not a feed.
 #
 # Feed URLs verified 2026-07-31. Anthropic Engineering and AI Builder Club are
 # JS-rendered with no RSS/Atom endpoint and no <link rel="alternate"> autodiscovery
@@ -99,7 +99,7 @@ DEFAULT_FEEDS: list[FeedSource] = [
 ]
 
 # Tier 2 synthesises Tier 1, so it earns a keyword gate that Tier 1 does not:
-# SOURCES.md treats aggregators as gap-detectors, not citations of record.
+# recurring-sources.md treats aggregators as gap-detectors, not citations of record.
 DEFAULT_KEYWORDS: list[str] = [
     "agent",
     "agentic",
@@ -483,7 +483,7 @@ def save_post(post: Post, output_dir: Path, dry_run: bool = False) -> Path | Non
     authors_str = ", ".join(post.authors[:5])
     categories_str = ", ".join(post.categories[:6])
 
-    # Tier 2 is a gap-detector, not a citation of record (SOURCES.md) — that maps onto
+    # Tier 2 is a gap-detector, not a citation of record (recurring-sources.md) — that maps onto
     # the raw/ confidence contract in CLAUDE.md.
     confidence = "medium" if post.tier == 1 else "low"
 

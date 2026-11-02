@@ -1,11 +1,11 @@
 ---
-imported_hash: 1885d57b26ac1a86
+imported_hash: 2fc0694e02441ee1
 title: Designing a Parking Lot — First-Principles Thinking Guide
 summary: ''
-order: 218
+order: 121
 kind: reading
 section: Dsa / System design / Parking lot
-source: sisyphus/drills/coding/dsa/system_design/parking_lot/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/system_design/parking_lot/THINKING.md
 ---
 
 # Designing a Parking Lot — First-Principles Thinking Guide

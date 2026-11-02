@@ -1,11 +1,11 @@
 ---
-imported_hash: f232a726f1baf692
+imported_hash: 32812c2cd3ff9171
 title: Stacks
 summary: A stack is a LIFO (Last In, First Out) data structure.
-order: 206
+order: 109
 kind: reading
 section: Dsa / Stacks
-source: sisyphus/drills/coding/dsa/stacks/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/stacks/Readme.md
 ---
 
 # Stacks

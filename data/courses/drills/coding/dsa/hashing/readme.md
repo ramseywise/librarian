@@ -1,11 +1,11 @@
 ---
-imported_hash: f847512a580ee12d
+imported_hash: aee99e3ee7583087
 title: Hashing
 summary: Hash tables provide O(1) average-case lookup, insertion, and deletion.
-order: 163
+order: 66
 kind: reading
 section: Dsa / Hashing
-source: sisyphus/drills/coding/dsa/hashing/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/hashing/Readme.md
 ---
 
 # Hashing

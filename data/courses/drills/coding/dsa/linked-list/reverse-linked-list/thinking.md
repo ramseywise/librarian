@@ -1,11 +1,11 @@
 ---
-imported_hash: bd6b5fefd0dfbce5
+imported_hash: 3032f9d55229ac9d
 title: Reverse Linked List — First-Principles Thinking Guide
 summary: Iterate through the list. At each node, reverse its next pointer to point to the previous node.
-order: 178
+order: 81
 kind: reading
 section: Dsa / Linked list / Reverse linked list
-source: sisyphus/drills/coding/dsa/linked_list/reverse_linked_list/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/linked_list/reverse_linked_list/THINKING.md
 ---
 
 # Reverse Linked List — First-Principles Thinking Guide

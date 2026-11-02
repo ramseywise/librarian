@@ -1,11 +1,11 @@
 ---
-imported_hash: 8557bb6a8b152e13
+imported_hash: 5aea2ce061e79921
 title: Moving Average
 summary: Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.
-order: 192
+order: 95
 kind: reading
 section: Dsa / Queues / Moving average
-source: sisyphus/drills/coding/dsa/queues/moving_average/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/queues/moving_average/README.md
 ---
 
 # Moving Average

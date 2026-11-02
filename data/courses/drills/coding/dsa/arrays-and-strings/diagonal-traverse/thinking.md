@@ -1,11 +1,11 @@
 ---
-imported_hash: 25e795645518ae09
+imported_hash: 71520f0f680b290d
 title: Diagonal Traverse — First-Principles Thinking Guide
 summary: ''
-order: 102
+order: 5
 kind: reading
 section: Dsa / Arrays and strings / Diagonal traverse
-source: sisyphus/drills/coding/dsa/arrays_and_strings/diagonal_traverse/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/diagonal_traverse/THINKING.md
 ---
 
 # Diagonal Traverse — First-Principles Thinking Guide

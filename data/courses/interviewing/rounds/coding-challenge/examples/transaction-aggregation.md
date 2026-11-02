@@ -1,11 +1,11 @@
 ---
-imported_hash: 22714fc23db7976f
+imported_hash: ee078f73f639b085
 title: 'Worked Example: Transaction Aggregation & Anomaly Detection (35 min, offline)'
 summary: This is the conventional-Python end of an AIE loop, and it pairs with the OLTP vs OLAP / SQL-vs-RAG MCQs.
-order: 42
+order: 35
 kind: reading
 section: Coding challenge / Examples
-source: sisyphus/interviewing/rounds/coding-challenge/examples/transaction-aggregation.md
+source: learn-ai-engineering/practice/interviewing/rounds/coding-challenge/examples/transaction-aggregation.md
 ---
 
 # Worked Example: Transaction Aggregation & Anomaly Detection (35 min, offline)

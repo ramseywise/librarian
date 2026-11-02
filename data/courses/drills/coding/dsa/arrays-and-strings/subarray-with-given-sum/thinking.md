@@ -1,11 +1,11 @@
 ---
-imported_hash: 1d23e3c8270f24bd
+imported_hash: 701280fdcb6fef91
 title: Subarray With Given Sum — First-Principles Thinking Guide
 summary: Since all elements are non-negative, adding an element increases the sum and removing from the left decreases it — perfect for a sliding window.
-order: 132
+order: 35
 kind: reading
 section: Dsa / Arrays and strings / Subarray with given sum
-source: sisyphus/drills/coding/dsa/arrays_and_strings/subarray_with_given_sum/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/subarray_with_given_sum/THINKING.md
 ---
 
 # Subarray With Given Sum — First-Principles Thinking Guide

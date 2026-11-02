@@ -1,11 +1,11 @@
 ---
-imported_hash: 7a611f75465be01a
+imported_hash: d2aa1fa013016b3b
 title: Permutations — First-Principles Thinking Guide
 summary: ''
-order: 141
+order: 44
 kind: reading
 section: Dsa / Backtracking / Permutations
-source: sisyphus/drills/coding/dsa/backtracking/permutations/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/backtracking/permutations/THINKING.md
 ---
 
 # Permutations — First-Principles Thinking Guide

@@ -1,11 +1,11 @@
 ---
-imported_hash: 482fe2ab3f54350c
+imported_hash: 4ded5c98e6a44a60
 title: Permutations
 summary: Given a collection of distinct integers, return all possible permutations.
-order: 140
+order: 43
 kind: reading
 section: Dsa / Backtracking / Permutations
-source: sisyphus/drills/coding/dsa/backtracking/permutations/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/backtracking/permutations/README.md
 ---
 
 # Permutations

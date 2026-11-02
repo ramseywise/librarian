@@ -1,7 +1,7 @@
 ---
-imported_hash: 909949fa48b3f4cd
+imported_hash: 667fa111b2150a91
 title: Guides
 summary: ''
 order: 100
-source: sisyphus/interviewing/guides
+source: learn-ai-engineering/practice/interviewing/guides
 ---

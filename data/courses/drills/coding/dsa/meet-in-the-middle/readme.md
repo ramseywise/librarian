@@ -1,11 +1,11 @@
 ---
-imported_hash: 0754a9bd23733979
+imported_hash: bf4faeb02250e5b7
 title: Meet in the Middle
 summary: The meet-in-the-middle technique splits a problem in half, solves each half independently, and combines results.
-order: 179
+order: 82
 kind: reading
 section: Dsa / Meet in the middle
-source: sisyphus/drills/coding/dsa/meet_in_the_middle/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/meet_in_the_middle/Readme.md
 ---
 
 # Meet in the Middle

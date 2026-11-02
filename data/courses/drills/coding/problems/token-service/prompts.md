@@ -1,11 +1,11 @@
 ---
-imported_hash: 701ee20722c3c25a
+imported_hash: 3ade822669635853
 title: token-service — env1 drill (45 min)
 summary: Session token issuing and verification, backed by SQLite.
-order: 255
+order: 137
 kind: reading
 section: Problems / Token service
-source: sisyphus/drills/coding/problems/token-service/prompts.md
+source: learn-ai-engineering/practice/drills/coding/problems/token-service/prompts.md
 ---
 
 # token-service — env1 drill (45 min)

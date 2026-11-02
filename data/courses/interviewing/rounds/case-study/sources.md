@@ -1,11 +1,11 @@
 ---
-imported_hash: b0360324b8d43292
+imported_hash: 2d589c17e6def29f
 title: Sources — Case Study Round
 summary: 'Note the two-source tension on tests: the first lists a test suite under what not to build in a 60-minute window; the second calls a missing suite the top Work Trial rejection reason.'
-order: 12
+order: 7
 kind: reading
 section: Case study
-source: sisyphus/interviewing/rounds/case-study/sources.md
+source: learn-ai-engineering/practice/interviewing/rounds/case-study/sources.md
 ---
 
 # Sources — Case Study Round
@@ -24,11 +24,10 @@ source: sisyphus/interviewing/rounds/case-study/sources.md
 
 ## Internal notes
 
-- [../../notes/case-interview.md](../../notes/case-interview.md) — raw source material: evaluation dimensions, RAG what-if chain, defense round tips, consulting-style loop patterns
 
 ### Code test / Work Trial provenance
 
-The code-test and Work Trial material (README format table, study-guide clock/dial/taxonomy, `examples/aie-track/one-hour-code-test.md`) derives from three research passes dated 2026-08-01, in `.claude/docs/research/`:
+The code-test and Work Trial material (README format table, study-guide clock/dial/taxonomy, `examples/aie-track/one-hour-code-test.md`) derives from three research passes dated 2026-08-01:
 
 - `2026-08-01_code-test_format-and-flaws.md` — format evidence, hidden-flaw taxonomy, the 60-minute clock, pragmatism/defensibility rubrics
 - `2026-08-01_code-test_openai-work-trial.md` — OpenAI Work Trial vs technical test; test-rigour dial, PR-review lens, observability weighting, async ambiguity protocol

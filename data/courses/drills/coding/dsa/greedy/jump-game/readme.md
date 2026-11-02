@@ -1,11 +1,11 @@
 ---
-imported_hash: 74ebd7f1f3a3e6f9
+imported_hash: d267ee70e57f5c30
 title: Jump Game
 summary: Given an integer array nums, you are initially positioned at the first index of the array.
-order: 161
+order: 64
 kind: reading
 section: Dsa / Greedy / Jump game
-source: sisyphus/drills/coding/dsa/greedy/jump_game/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/greedy/jump_game/README.md
 ---
 
 # Jump Game

@@ -1,11 +1,11 @@
 ---
-imported_hash: d259d1b397ddb3f8
+imported_hash: b9b7b44ec1228289
 title: First Missing Positive — First-Principles Thinking Guide
 summary: The answer must be in range [1, n+1]. We can use the array itself as a hash map by placing each number i at index i-1.
-order: 106
+order: 9
 kind: reading
 section: Dsa / Arrays and strings / First missing positive
-source: sisyphus/drills/coding/dsa/arrays_and_strings/first_missing_positive/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/first_missing_positive/THINKING.md
 ---
 
 # First Missing Positive — First-Principles Thinking Guide

@@ -1,16 +1,16 @@
 ---
-imported_hash: b2e64a52969e2616
+imported_hash: 602c81888d169741
 title: System Design Round — Sources
 summary: ''
-order: 79
+order: 63
 kind: reading
 section: System design round
-source: sisyphus/interviewing/rounds/system-design-round/sources.md
+source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/sources.md
 ---
 
 # System Design Round — Sources
 
-## Internal (this repo + workspace)
+## Internal
 
 | Source | What it covers | Path |
 |--------|---------------|------|
@@ -21,11 +21,10 @@ source: sisyphus/interviewing/rounds/system-design-round/sources.md
 | Evals & observability study guide | Grader types, trajectory vs outcome, three-tier taxonomy, trace architecture | [guides/6-evals-observability](../../guides/6-evals-observability/interview-guide.md) |
 | Security & safety study guide | Threat model, defense stack, source-sink analysis, compliance | [guides/7-security-safety](../../guides/7-security-safety/interview-guide.md) |
 | Data eng & MLOps study guide | Pipeline design, feature stores, model serving, CI/CD for ML | [guides/8-data-eng-mlops](../../guides/8-data-eng-mlops/interview-guide.md) |
-| Case interview notes | Process framework, trade-off types, bottleneck/failure tables, vantage-point framing | [notes/case-interview.md](../../notes/case-interview.md) |
-| Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [notes/agent-harness.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md) |
-| Reliable agents notes | PRINCE case study: agentic RAG, error recovery, context engineering, eval | [notes/reliable-agents.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/reliable-agents.md) |
-| RAG notes | 9 architecture patterns, production checklist, component trade-offs | [notes/rag.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/generative-ai/02-rag-retrieval/rag.md) |
-| Eval harness notes | Golden set design, grader calibration, regression vs capability | [06-eval/eval-engineering.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/06-eval/eval-engineering.md) |
+| Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [Harness anatomy](../../../ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md) |
+| Reliable agents notes | PRINCE case study: agentic RAG, error recovery, context engineering, eval | [Agentic RAG: PRINCE](../../../generative-ai/02-rag-retrieval/notes/08-agentic-rag-prince.md) |
+| RAG notes | 9 architecture patterns, production checklist, component trade-offs | [RAG pipeline](../../../generative-ai/02-rag-retrieval/notes/01-rag-pipeline.md) |
+| Eval harness notes | Golden set design, grader calibration, regression vs capability | [Evaluation](../../../generative-ai/08-eval/readme.md) |
 
 ### Librarian wiki (query via `search_wiki`)
 
@@ -65,23 +64,6 @@ source: sisyphus/interviewing/rounds/system-design-round/sources.md
 |------|-------------|
 | Production Hardening Patterns | Embedder warmup, retries, fallbacks, state persistence, circuit breakers, model pinning |
 | Cloud Run + Cloud SQL Pattern | Single-worker constraint, memory/CPU sizing, min-instances, concurrency ceiling |
-
-### Workspace references (design decision frameworks)
-
-| Source | What it covers | Path |
-|--------|---------------|------|
-| Archetype selection | 4 project archetypes (information retrieval, doc gen, workflow automation, conversational), complexity tiers | `ai-project-template` reference |
-| Deployment topology | 5 topologies (local → serverless), cost/ops trade-offs, decision criteria | `ai-project-template` reference |
-| Integration patterns | 5 patterns (MCP, Composio, Direct API, Webhooks, n8n), when to use each | `ai-project-template` reference |
-| Data pipeline patterns | 4 patterns (batch, event-driven, streaming, hybrid), freshness vs complexity | `ai-project-template` reference |
-| Support agents architecture | 5-layer guardrails, 3-framework comparison, grounding methodology, invocation flow | `playground/docs/support-agents/` |
-| Atlas agents | Forecast (self-learning loop), Segmentation (HDBSCAN + LLM naming), Knowledge (Neo4j + explanation) | `atlas/` |
-| PM-AI scoping | Meeting capture, typed fact extraction, lifecycle state machine, sole-writer pattern | `dssg/.claude/docs/scoping/project-mgmt-ai.md` |
-
-### Images
-
-- [Case interview evaluation dimensions](../../images/case-interview-evaluation-dimensions.png)
-- [9 RAG architectures](../../images/9-rag-architectures.png)
 
 ## External
 

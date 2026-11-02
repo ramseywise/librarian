@@ -1,11 +1,11 @@
 ---
-imported_hash: 83ddc6f0ec9e1f7d
+imported_hash: 5d4469c79a424249
 title: Maximum Average Subarray - 1
 summary: ''
-order: 200
+order: 103
 kind: reading
 section: Dsa / Sliding window / Maximum average subarray 1
-source: sisyphus/drills/coding/dsa/sliding_window/maximum_average_subarray_1/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/sliding_window/maximum_average_subarray_1/README.md
 ---
 
 # Maximum Average Subarray - 1

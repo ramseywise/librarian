@@ -1,26 +1,26 @@
 ---
-imported_hash: 8f767e731ab4a562
+imported_hash: 696e09b23b32c11d
 title: Interviewing KB
 summary: 'Roles: AIE (AI/agent engineer), MLE (ML engineer), DS (data scientist), FDE (forward-deployed / applied AI engineer).'
 order: 1
 kind: reading
-source: sisyphus/interviewing/README.md
+source: learn-ai-engineering/practice/interviewing/README.md
 ---
 
 # Interviewing KB
 
-Interview-prep knowledge base for ML / AI-engineering / DS / FDE roles. Three layers:
+Interview-prep knowledge base for ML / AI-engineering / DS / FDE roles. The teaching lives in the
+curriculum; this folder is the recall and round prep. [`../CROSSWALK.md`](../CROSSWALK.md) maps each
+curriculum unit to the guides and drills that test it. Three layers:
 
-1. **[Curriculum pillars](../guides/00-start-here.md)** (`guides/`) — ten numbered pillar
-   folders, each with a `00-overview.md` (learning path + full resource map: readings
-   PDFs, course code, wiki pages, notes), room for detailed notes, and an
-   `interview-guide.md` (the compiled exam-prep summary: concepts, trade-offs, question
-   bank with answer sketches, `Sources:` footer).
+1. **[Curriculum pillars](../guides/00-start-here.md)** (`guides/`) — twelve numbered pillar
+   folders, each with a `00-overview.md` (links to the curriculum chapters that teach the pillar)
+   and an `interview-guide.md` (the recall sheet: concepts, trade-offs, question bank with answer
+   sketches, `Sources:` footer).
 2. **[Interview rounds](#interview-rounds)** (`rounds/`) — one file per round type: what's
    tested, format and current trends, prep checklist, question bank, per-role weighting.
-3. **Sources** — [`notes/`](notes/) (cleaned Notion notes with provenance frontmatter),
-   [`images/`](images/), this repo's course folders, and the librarian wiki (public domains),
-   which also scrapes this KB back into its own knowledge graph.
+3. **Sources**: the [curriculum](../../README.md) and the librarian wiki (public domains), which
+   also scrapes this KB back into its own knowledge graph.
 
 **How to use:** learning from scratch → [guides/00-start-here.md](../guides/00-start-here.md).
 Interview prep → pick your target role in the matrix below → work the ● topics via their
@@ -43,11 +43,13 @@ Roles: **AIE** (AI/agent engineer), **MLE** (ML engineer), **DS** (data scientis
 | [Data engineering & MLOps](../guides/8-data-eng-mlops/interview-guide.md) | ◐ | ● | ◐ | ◐ |
 | [System design](../guides/9-system-design/interview-guide.md) | ● | ● | ◐ | ● |
 | [Product & business sense](../guides/10-product-delivery/interview-guide.md) | ◐ | ○ | ● | ● |
-| Stats & experimentation — *deferred (see below)* | ○ | ◐ | ● | ○ |
-| Coding patterns / DS&A — *deferred (see below)* | ◐ | ◐ | ◐ | ◐ |
+| [Stats & experimentation](../guides/11-stats-experimentation/interview-guide.md) | ○ | ◐ | ● | ○ |
+| Coding patterns / DS&A — [drills](../../drills/00-start-here/readme.md) | ◐ | ◐ | ◐ | ◐ |
 
-**Deferred topics** (separate milestone): stats/experimentation (seed material:
-`data-analytics/readings/`) and coding patterns (seed: `drills/python/leetcode/`).
+**Analyst or data engineer?** The matrix has no column for them. Analysts: treat stats, the metrics
+and SQL parts of ML foundations, and product sense as ●. Data engineers: treat data engineering and
+SQL as ●. The [foundations guide](../guides/1-foundations/interview-guide.md#0-three-jobs-and-what-each-is-interviewed-on)
+compares the jobs.
 
 ## Study guides
 
@@ -59,7 +61,8 @@ Roles: **AIE** (AI/agent engineer), **MLE** (ML engineer), **DS** (data scientis
 | [evals-observability](../guides/6-evals-observability/interview-guide.md) | Graders, capability vs regression, tracing, online sampling |
 | [security-safety](../guides/7-security-safety/interview-guide.md) | Prompt injection, guardrails, PII, compliance |
 | [context-engineering-cost](../guides/5-context-cost/interview-guide.md) | Caching, compaction, context rot, cost/latency budgets |
-| [ml-foundations](../guides/1-foundations/interview-guide.md) | Classical ML, DL basics, metrics, SQL/analytics screens |
+| [ml-foundations](../guides/1-foundations/interview-guide.md) | The three data jobs, classical ML, metrics, drift, SQL/analytics screens, and answers to the 18 ML Fundamentals questions |
+| [stats-experimentation](../guides/11-stats-experimentation/interview-guide.md) | Distributions, intervals, tests, power, regression, A/B design, CUPED, peeking, Bayesian A/B |
 | [data-engineering-mlops](../guides/8-data-eng-mlops/interview-guide.md) | Pipelines, orchestration, deployment, monitoring |
 | [system-design](../guides/9-system-design/interview-guide.md) | The design-round method: clarify → trade-offs → iterate |
 | [product-business](../guides/10-product-delivery/interview-guide.md) | ROI framing, product sense, nonprofit/enterprise constraints |
@@ -79,22 +82,19 @@ Roles: **AIE** (AI/agent engineer), **MLE** (ML engineer), **DS** (data scientis
 | [customer-simulation](../rounds/customer-simulation/readme.md) | FDE stakeholder role-play, ambiguous-client scenarios |
 | [leadership-rounds](../rounds/leadership-rounds/readme.md) | CTO / head-of-product conversations + reverse interview |
 
-Cross-round: [question-bank.md](question-bank.md) has ~560 reported questions (technical, system design,
-coding, behavioral, take-home), questions only, for cold recall.
-
 ## Maintenance
 
 **The split rule** — *"Is this true regardless of whether I'm being interviewed?"*
 Yes → `guides/`. No → `rounds/`. "Separate read and write tools" is true at work → guide.
-"Draw the architecture in under 3 minutes" is only true in an interview → round. Raw
-material lands in `notes/`; nothing lands in a round folder just because it was useful for
-that round.
+"Draw the architecture in under 3 minutes" is only true in an interview → round. Nothing
+lands in a round folder just because it was useful for that round.
 
 **Strip the preamble on ingest** — content starts at the `#`. Anything the model said
 *about* the notes ("here are condensed notes in the same style…") goes in `sources:`, not
 above the first heading. Same for scraped page chrome.
 
-- New raw material → `notes/` with provenance frontmatter (`origin`, `confidence`, `sources`, `cleaned`).
-- Moved/created guide and round files carry the same frontmatter block.
+- Guide and round files carry provenance frontmatter (`origin`, `confidence`, `sources`, `cleaned`) and
+  `units:` where the mapping to the curriculum is clear.
+- New files stay local until added to the allowlist in `practice/.gitignore`.
 - Guides cite sources by repo path + librarian wiki page title (compile-and-cite; no `wiki/private/` content).
-- Librarian scrapes `interviewing/**/*.md` into its `raw/repos/` tier — keep guides self-contained.
+- Librarian scrapes `practice/interviewing/**/*.md` into its `raw/repos/` tier — keep guides self-contained.

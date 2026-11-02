@@ -1,11 +1,11 @@
 ---
-imported_hash: 93c17c03d67ff7c7
+imported_hash: afc57a8812c84c1a
 title: MCQ Bank — Full Topic Parity
 summary: Multiple-choice drill bank covering all 11 guide topics.
-order: 102
+order: 71
 kind: reading
 section: Technical questions
-source: sisyphus/interviewing/rounds/technical-questions/mcq-bank.md
+source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/mcq-bank.md
 ---
 
 # MCQ Bank — Full Topic Parity
@@ -2065,9 +2065,9 @@ Every question is grounded in the guides under `../../guides/`:
 | E | `4-agents/interview-guide.md` |
 | F | `5-context-cost/interview-guide.md` |
 | G | `6-evals-observability/interview-guide.md` |
-| H | `7-security-safety/interview-guide.md`, `7-security-safety/prompt-injection.md` |
+| H | `7-security-safety/interview-guide.md` |
 | I | `8-data-eng-mlops/interview-guide.md` |
-| J | `9-system-design/interview-guide.md`, `9-system-design/06-component-cheatsheet.md` |
+| J | `9-system-design/interview-guide.md` |
 | K | `10-product-delivery/interview-guide.md` |
 
 Open-ended companions to this bank live in [questions.md](questions.md); the

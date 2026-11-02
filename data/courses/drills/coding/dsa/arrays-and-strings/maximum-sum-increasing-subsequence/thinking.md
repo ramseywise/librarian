@@ -1,11 +1,11 @@
 ---
-imported_hash: cdd28773fc7f6e4b
+imported_hash: 5dccc2224cedd4fd
 title: Maximum Sum Increasing Subsequence — First-Principles Thinking Guide
 summary: Similar to LIS but instead of counting length, track sum.
-order: 118
+order: 21
 kind: reading
 section: Dsa / Arrays and strings / Maximum sum increasing subsequence
-source: sisyphus/drills/coding/dsa/arrays_and_strings/maximum_sum_increasing_subsequence/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/maximum_sum_increasing_subsequence/THINKING.md
 ---
 
 # Maximum Sum Increasing Subsequence — First-Principles Thinking Guide

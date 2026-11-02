@@ -1,11 +1,11 @@
 ---
-imported_hash: 1b62e0ae97ff3f8e
+imported_hash: c86a17bd3d1f9f1a
 title: Climbing Stairs — First-Principles Thinking Guide
 summary: Since we only need the last two values, we optimize to O(1) space.
-order: 144
+order: 47
 kind: reading
 section: Dsa / Dynamic programming / Climbing stairs
-source: sisyphus/drills/coding/dsa/dynamic_programming/climbing_stairs/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/dynamic_programming/climbing_stairs/THINKING.md
 ---
 
 # Climbing Stairs — First-Principles Thinking Guide

@@ -1,16 +1,16 @@
 ---
-imported_hash: be80aefb50c841b6
+imported_hash: bb1d6869b9b226f8
 title: Code Review Round — Sources
 summary: ''
-order: 22
+order: 16
 kind: reading
 section: Code review round
-source: sisyphus/interviewing/rounds/code-review-round/sources.md
+source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/sources.md
 ---
 
 # Code Review Round — Sources
 
-## Internal (this repo + workspace)
+## Internal
 
 | Source | What it covers | Path |
 |--------|---------------|------|
@@ -18,9 +18,7 @@ source: sisyphus/interviewing/rounds/code-review-round/sources.md
 | Agents study guide | Harness conventions, tool design (ACI), SANYI contract discipline | [guides/4-agents](../../guides/4-agents/interview-guide.md) |
 | Evals & Observability study guide | Grader types, trajectory vs outcome — what "tests pass" actually tests | [guides/6-evals-observability](../../guides/6-evals-observability/interview-guide.md) |
 | Context & Cost study guide | Convention drift, hardcoded tunables, progressive disclosure | [guides/5-context-cost](../../guides/5-context-cost/interview-guide.md) |
-| Security notes | OWASP agent cheat sheet, source-sink analysis, defense stack with code examples | [notes/security.md](../../notes/security.md) |
-| Prompt injection notes | Injection techniques, mitigation patterns | [notes/prompt-injection.md](../../guides/7-security-safety/prompt-injection.md) |
-| Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [notes/agent-harness.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md) |
+| Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [Harness anatomy](../../../ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md) |
 
 ### Librarian wiki (query via `search_wiki`)
 

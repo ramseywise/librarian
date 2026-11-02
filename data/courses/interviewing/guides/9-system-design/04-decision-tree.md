@@ -1,11 +1,11 @@
 ---
-imported_hash: 4e663847c27b2a72
+imported_hash: 5388add99f2bf1f1
 title: System Design — Decision Tree
 summary: Pillar 9, detailed note 4. The middle layer between the 5-step process (too abstract under pressure — "design the components") and the pillar guides (too deep — 127 lines on RAG when you have 40 seconds).
-order: 25
+order: 21
 kind: reading
 section: System design
-source: sisyphus/interviewing/guides/9-system-design/04-decision-tree.md
+source: learn-ai-engineering/practice/interviewing/guides/9-system-design/04-decision-tree.md
 ---
 
 # System Design — Decision Tree
@@ -199,7 +199,7 @@ by default."
 
 **Breaks first:** `MemorySaver` in a multi-worker deploy → silently lost state.
 
-**Deeper:** [Agents §6](../4-agents/interview-guide.md) · [meeting-processor](../../rounds/system-design-round/examples/meeting-processor.md)
+**Deeper:** [Agents §6](../4-agents/interview-guide.md)
 
 #### A5. Where do humans gate it?
 
@@ -214,7 +214,7 @@ by default."
 **Say:** "Business rules live in application code, not in the prompt — the model proposes,
 deterministic code validates, and the human approves anything irreversible."
 
-**Deeper:** [Security §3–4](../7-security-safety/interview-guide.md) · [support-agent](../../rounds/system-design-round/examples/support-agent.md)
+**Deeper:** [Security §3–4](../7-security-safety/interview-guide.md)
 
 ---
 
@@ -237,7 +237,7 @@ beat, and sometimes it doesn't need beating."
 
 **Breaks first:** an ML system solving a problem the business didn't have.
 
-**Deeper:** [03-ml-system-design.md](03-ml-system-design.md) · [Foundations](../1-foundations/interview-guide.md)
+**Deeper:** [Foundations](../1-foundations/interview-guide.md)
 
 #### M2. Framing the ML problem
 
@@ -253,7 +253,7 @@ beat, and sometimes it doesn't need beating."
 **Say:** "Framing drives the metric. If it's ranking, accuracy is meaningless — I'd
 optimize NDCG or recall@k depending on how many slots the surface has."
 
-**Deeper:** [03-ml-system-design.md](03-ml-system-design.md) §2 · [Foundations](../1-foundations/interview-guide.md)
+**Deeper:** [Foundations](../1-foundations/interview-guide.md)
 
 #### M3. Metric choice
 
@@ -287,7 +287,7 @@ online serving and a feature store if the freshness requirement demands it."
 
 **Breaks first:** train/serve skew — features computed differently in the two paths.
 
-**Deeper:** [Data eng §1–2](../8-data-eng-mlops/interview-guide.md) · [forecasting-agent](../../rounds/system-design-round/examples/forecasting-agent.md)
+**Deeper:** [Data eng §1–2](../8-data-eng-mlops/interview-guide.md)
 
 #### M5. Drift & retraining
 
@@ -327,7 +327,7 @@ batch failures are far easier to reason about and replay."
 
 **Breaks first:** silent backlog growth with no queue-depth alarm.
 
-**Deeper:** [Data eng §1](../8-data-eng-mlops/interview-guide.md) · [meeting-processor](../../rounds/system-design-round/examples/meeting-processor.md)
+**Deeper:** [Data eng §1](../8-data-eng-mlops/interview-guide.md)
 
 #### P2. Delivery guarantees
 
@@ -344,7 +344,7 @@ mostly a marketing term, so I'd make the handler safe to re-run instead."
 
 **Breaks first:** retries producing duplicate side effects (double emails, double charges).
 
-**Deeper:** [Data eng §1](../8-data-eng-mlops/interview-guide.md) · [01-distributed-systems.md](01-distributed-systems.md)
+**Deeper:** [Data eng §1](../8-data-eng-mlops/interview-guide.md)
 
 #### P3. Failure handling
 
@@ -361,7 +361,7 @@ the DLQ a single bad payload blocks the pipeline."
 
 **Breaks first:** poison message in an infinite retry loop, consuming the whole worker pool.
 
-**Deeper:** [01-distributed-systems.md](01-distributed-systems.md)
+**Deeper:** [Storage and compute foundations](../../../data-engineering/01-storage-and-compute-foundations/readme.md)
 
 #### P4. State ownership
 
@@ -378,7 +378,6 @@ concurrent partial writes are the bug you can't reproduce."
 
 **Breaks first:** two workers racing on the same row, last-write-wins corruption.
 
-**Deeper:** [meeting-processor](../../rounds/system-design-round/examples/meeting-processor.md) · [01-distributed-systems.md](01-distributed-systems.md)
 
 ---
 

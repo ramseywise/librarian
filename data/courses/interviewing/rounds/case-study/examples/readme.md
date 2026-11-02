@@ -1,11 +1,11 @@
 ---
-imported_hash: 81b4b6688e1a8360
+imported_hash: 02e60f94168aa22c
 title: Examples — Case Study Round
 summary: Worked cases covering the round's formats.
-order: 15
+order: 9
 kind: reading
 section: Case study / Examples
-source: sisyphus/interviewing/rounds/case-study/examples/README.md
+source: learn-ai-engineering/practice/interviewing/rounds/case-study/examples/README.md
 ---
 
 # Examples — Case Study Round

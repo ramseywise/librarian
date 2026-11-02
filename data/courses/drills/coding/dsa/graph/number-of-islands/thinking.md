@@ -1,11 +1,11 @@
 ---
-imported_hash: f57fe81eec7fcb46
+imported_hash: 9f9e73c0e6e78464
 title: Number of Islands — First-Principles Thinking Guide
 summary: There's no simpler approach than DFS/BFS for connected components.
-order: 157
+order: 60
 kind: reading
 section: Dsa / Graph / Number of islands
-source: sisyphus/drills/coding/dsa/graph/number_of_islands/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/graph/number_of_islands/THINKING.md
 ---
 
 # Number of Islands — First-Principles Thinking Guide

@@ -1,11 +1,11 @@
 ---
-imported_hash: 90313047a7acbb23
+imported_hash: 0f85e4fdec986061
 title: Subarray Average Size K
 summary: ''
-order: 204
+order: 107
 kind: reading
 section: Dsa / Sliding window / Subarray average size k
-source: sisyphus/drills/coding/dsa/sliding_window/subarray_average_size_k/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/sliding_window/subarray_average_size_k/README.md
 ---
 
 # Subarray Average Size K

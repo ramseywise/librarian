@@ -1,11 +1,11 @@
 ---
-imported_hash: dc8ad09cb7dc5297
+imported_hash: 42c15556b1dd2d27
 title: System Design (ML/LLM/Agent) — Study Guide
 summary: The highest-weight technical round in 2026 AIE/MLE loops.
-order: 28
+order: 22
 kind: reading
 section: System design
-source: sisyphus/interviewing/guides/9-system-design/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/9-system-design/interview-guide.md
 ---
 
 # System Design (ML/LLM/Agent) — Study Guide
@@ -111,8 +111,5 @@ privacy guarantees) · feed/notification ranking (classic + ML hybrid).
 
 ## Sources
 
-- notes: [case-interview.md](../../notes/case-interview.md) (System Design Interview Handbook section + bottleneck/failure tables + vantage-point framing)
-- images: [case interview evaluation dimensions](../../images/case-interview-evaluation-dimensions.png)
 - librarian wiki: System Design — Shared Code-Index Service · System Design — Unified Eval Harness · System Design — Serverless Agent Backends · Orchestration Architecture Decision · Runtime Topology and Checkpointer Alignment
-- repo: `../../PORTFOLIO.md` (the deployed systems these drills describe)
 - guides: [rag](../3-rag/interview-guide.md) §5 latency budgets · [agents](../4-agents/interview-guide.md) §9 PRINCE reference architecture

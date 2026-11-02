@@ -1,11 +1,11 @@
 ---
-imported_hash: 99b75df2d1f43721
+imported_hash: fbe03131aaa6997c
 title: Real Tech Interview Question Bank
 summary: This bank contains 23 questions organized into 9 themes.
-order: 104
+order: 73
 kind: reading
 section: Technical questions
-source: sisyphus/interviewing/rounds/technical-questions/real-tech-question-bank.md
+source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/real-tech-question-bank.md
 ---
 
 # Real Tech Interview Question Bank
@@ -33,7 +33,7 @@ This mirrors the local repo's harness principle of keeping prompt-engineering ar
 
 - [LiteLLM — Compatibility & Extensibility](https://docs.litellm.ai/docs/guides/compatibility_extensibility) — unified I/O format across 100+ providers via one call interface.
 - [LangChain — init_chat_model](https://reference.langchain.com/python/langchain/chat_models/base/init_chat_model) — provider-agnostic model initializer with standard kwargs (temperature, timeout, max_tokens).
-- (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/03-tool-design.md`) — "separate the contract from the execution logic via a factory pattern," the same principle applied here to model config.
+- (course: [03-tool-design](../../../ai-engineering/03-harness-engineering/notes/03-tool-design.md)) — "separate the contract from the execution logic via a factory pattern," the same principle applied here to model config.
 
 </details>
 
@@ -80,8 +80,8 @@ Accept that the model core stays probabilistic — even `temperature=0` doesn't 
 
 - [Anthropic — Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — ground truth from the environment at each step, simple composable patterns over complex frameworks.
 - [Charles Sieg — Achieving Determinism with LLM Agents: An Architecture Guide](https://charlessieg.com/articles/achieving-determinism-with-llm-agents-architecture-guide.html) — "deterministic scaffolding around a non-deterministic core"; temperature=0 does not guarantee determinism.
-- (learn-ai-engineering: `ai-engineering/03-harness-engineering/reliable-agents.md`) — Bayer/PRINCE case study: retries at LLM-call and node level, cross-provider fallback, resume-from-failed-node via checkpointing, asymmetric QA, error fed back as context.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/06-evaluating-agents.md`) — pass@k vs. pass^k for measuring non-deterministic agent reliability across repeated trials.
+- (course: [08-agentic-rag-prince](../../../generative-ai/02-rag-retrieval/notes/08-agentic-rag-prince.md)) — Bayer/PRINCE case study: retries at LLM-call and node level, cross-provider fallback, resume-from-failed-node via checkpointing, asymmetric QA, error fed back as context.
+- (course: [06-evaluating-agents](../../../generative-ai/08-eval/notes/06-evaluating-agents.md)) — pass@k vs. pass^k for measuring non-deterministic agent reliability across repeated trials.
 
 </details>
 
@@ -102,7 +102,7 @@ Practical layers, in order I'd stand them up:
 
 - [LangSmith — Trajectory Evals](https://docs.langchain.com/langsmith/trajectory-evals) — grading the sequence of tool calls/messages, not just final output.
 - [Langfuse — AI Agent Evaluation: trajectory, tool calls, and task completion](https://langfuse.com/resources/engineering/ai-agent-evaluation) — outcome vs. trajectory as distinct, both-necessary evaluation axes.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/01-what-an-eval-is.md`, `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — task/trial/grader structure, code vs. LLM vs. human graders, "run multiple trials because agent behavior is non-deterministic," full review within 48h after a change.
+- (course: [01-what-an-eval-is](../../../generative-ai/08-eval/notes/01-what-an-eval-is.md), [11-production-and-the-maturity-ladder](../../../generative-ai/08-eval/notes/11-production-and-the-maturity-ladder.md)) — task/trial/grader structure, code vs. LLM vs. human graders, "run multiple trials because agent behavior is non-deterministic," full review within 48h after a change.
 
 </details>
 
@@ -127,7 +127,7 @@ For an LLM-agent codebase specifically, this maps onto the eval gate structure d
 
 - [Testsigma — What is Testing Pyramid?](https://testsigma.com/blog/testing-pyramid/) — unit tests on every commit, E2E reserved for release/nightly.
 - [DevRocks — Automated Tests in CI/CD: The Test Pyramid](https://www.devrocks.de/en/blog/automatisierte-tests-cicd-test-pyramide) — unit and integration on every commit because they're fast; E2E gated to PRs into main or nightly.
-- (learn-ai-engineering: `ai-engineering/06-eval/case-study/gate-contract.md`) — "run tests at the same layer as the change," with fast metric/schema tests distinct from slower report-rendering and grader-recalibration runs.
+- (course: [10-evals-in-ci](../../../generative-ai/08-eval/notes/10-evals-in-ci.md)) — "run tests at the same layer as the change," with fast metric/schema tests distinct from slower report-rendering and grader-recalibration runs.
 
 </details>
 
@@ -148,7 +148,7 @@ This is the same "test at the layer of the change" principle from the previous a
 
 - [Hadley Works (dev.to) — LLM Evaluation in CI: Stop Manual Testing Before It Costs You](https://dev.to/hadleyworks/llm-evaluation-in-ci-stop-manual-testing-before-it-costs-you-59i7) — use a cheaper/faster model for PR-time checks, reserve the full/expensive model for release or nightly runs to keep CI feedback fast and cheap.
 - [Digital Applied — LLM Model Routing 2026: Cost-Quality Optimization](https://www.digitalapplied.com/blog/llm-model-routing-2026-cost-quality-optimization-engineering-guide) — sort providers by score/cost to find the tradeoff frontier rather than treating every model as equally worth testing on every change.
-- (learn-ai-engineering: `ai-engineering/06-eval/case-study/gate-contract.md`, Gate 4 "Model And Runtime Comparison") — model/runtime comparison is its own gate, run and exported separately from the fast per-commit metric tests, precisely because it's a coarser-cadence, higher-cost evaluation.
+- (course: [10-evals-in-ci](../../../generative-ai/08-eval/notes/10-evals-in-ci.md), Gate 4 "Model And Runtime Comparison") — model/runtime comparison is its own gate, run and exported separately from the fast per-commit metric tests, precisely because it's a coarser-cadence, higher-cost evaluation.
 
 </details>
 
@@ -171,8 +171,8 @@ Instrument every agent call to emit a structured trace, modeled as a **trace tre
 
 - [OpenTelemetry: Inside the LLM Call — GenAI Observability with OpenTelemetry](https://opentelemetry.io/blog/2026/genai-observability/) — span structure and semantic conventions for LLM/agent tracing.
 - [Langfuse Docs — LLM Observability & Application Tracing](https://langfuse.com/docs/observability/overview) — trace/observation/session data model and framework wiring.
-- (learn-ai-engineering: `generative-ai/06-observability/support-agent-observability.md`) — base trace metadata schema and per-framework wiring used in this repo's support-agent system.
-- (learn-ai-engineering: `generative-ai/04-agentic-frameworks/notes/langfuse.md`) — concrete `lf.trace()` + `ContextVar` pattern for non-call-stack agents.
+- (course: [05-support-agent-observability](../../../generative-ai/06-observability/notes/05-support-agent-observability.md)) — base trace metadata schema and per-framework wiring used in this repo's support-agent system.
+- (course: [01-tracing-with-langfuse](../../../generative-ai/06-observability/notes/01-tracing-with-langfuse.md)) — concrete `lf.trace()` + `ContextVar` pattern for non-call-stack agents.
 
 </details>
 
@@ -192,8 +192,8 @@ When reading individual traces, don't stop at the aggregate score — walk the *
 
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — trajectory vs. outcome grading, reading traces not just scores.
 - [Langfuse — What does a good trace look like?](https://langfuse.com/docs/observability/best-practices) — practical trace-reading and debugging guidance.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — two-layer manual/LLM-judge evaluation strategy and online sampling rules (negative-feedback triggers, high-cost dialogues, time-window sampling, 48h post-change review).
-- (this repo: `interviewing/guides/6-evals-observability/interview-guide.md`) — condensed observability section with the same sampling rules.
+- (course: [11-production-and-the-maturity-ladder](../../../generative-ai/08-eval/notes/11-production-and-the-maturity-ladder.md)) — two-layer manual/LLM-judge evaluation strategy and online sampling rules (negative-feedback triggers, high-cost dialogues, time-window sampling, 48h post-change review).
+- (guide: [evals and observability](../../guides/6-evals-observability/interview-guide.md)) — condensed observability section with the same sampling rules.
 
 </details>
 
@@ -211,13 +211,13 @@ Treat the prompt exactly like production code:
 - **Pin the exact model snapshot** the prompt was validated against, not a moving alias — an alias that shifts underneath you is an undocumented, unrevertable deploy.
 - **Roll out progressively**, not as a hard cutover — start behind a flag or a small traffic percentage, compare against the existing prompt with an A/B or shadow run, and only promote to 100% once the eval gate and online monitoring both clear.
 
-This repo's own support-agent system does this concretely — `prompt_version` and `git_commit` are logged on every trace so any output can be tied back to the exact prompt text and code state that produced it, and prompts are fetched from a managed store (Langfuse) rather than hardcoded.
+A support-agent system can do this concretely: `prompt_version` and `git_commit` are logged on every trace so any output can be tied back to the exact prompt text and code state that produced it, and prompts are fetched from a managed store (Langfuse) rather than hardcoded.
 
 **Sources:**
 
 - [Langfuse — Prompt CI/CD: version, gate, and roll out prompts like code](https://langfuse.com/resources/engineering/prompt-cicd) — versioning, gating, and rollout workflow for prompts.
 - [Braintrust — Best Prompt Versioning Tools for Production Teams (2026)](https://www.braintrust.dev/articles/best-prompt-versioning-tools-2025) — prompt file/metadata/changelog pattern, PR-based review of prompt diffs.
-- (learn-ai-engineering: `generative-ai/06-observability/support-agent-observability.md`) — `prompt_version` + `git_commit` fields logged on every trace; remote prompt fetch pattern.
+- (course: [05-support-agent-observability](../../../generative-ai/06-observability/notes/05-support-agent-observability.md)) — `prompt_version` + `git_commit` fields logged on every trace; remote prompt fetch pattern.
 
 </details>
 
@@ -236,8 +236,8 @@ Compare old vs. new prompt on the **same fixed dataset** — an A/B or experimen
 
 - [LangSmith CI/CD Integration: Automated Regression Testing](https://markaicode.com/langsmith-cicd-automated-regression-testing/) — PR-triggered eval run, pass/fail gate against a dataset threshold.
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — grading trajectory + outcome, capability vs. regression suite distinction.
-- (learn-ai-engineering: `ai-engineering/06-eval/case-study/harness-patterns.md`, `ai-engineering/06-eval/notes/10-evals-in-ci.md`) — "prompt change confidence," tool-trajectory scoring, two-phase run/assert CI pattern, regression gate example.
-- (learn-ai-engineering: `ai-engineering/06-eval/case-study/gate-contract.md`) — `prompt_version` as a required field in every model/runtime comparison export.
+- (course: [10-evals-in-ci](../../../generative-ai/08-eval/notes/10-evals-in-ci.md), [10-evals-in-ci](../../../generative-ai/08-eval/notes/10-evals-in-ci.md)) — "prompt change confidence," tool-trajectory scoring, two-phase run/assert CI pattern, regression gate example.
+- (course: [10-evals-in-ci](../../../generative-ai/08-eval/notes/10-evals-in-ci.md)) — `prompt_version` as a required field in every model/runtime comparison export.
 
 </details>
 
@@ -255,8 +255,8 @@ Full review of traces for the first 24–48 hours after any prompt or model chan
 
 - [Galileo — 9 Best LLM Drift Monitoring Platforms](https://galileo.ai/blog/best-llm-output-drift-monitoring-platforms) — production drift monitoring approach and tooling landscape (Arize, Evidently, Phoenix).
 - [Markaicode — LangSmith CI/CD Integration: Automated Regression Testing](https://markaicode.com/langsmith-cicd-automated-regression-testing/) — CI regression gate blocking on pass-rate drop.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`, `ai-engineering/06-eval/notes/12-failure-modes.md`) — capability→regression eval graduation, "fix the eval system before the agent" debugging order, 48h full-review-after-change rule.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — Level 4 "continuous sampling with drift alerts" as the maturity target.
+- (course: [11-production-and-the-maturity-ladder](../../../generative-ai/08-eval/notes/11-production-and-the-maturity-ladder.md), [12-failure-modes](../../../generative-ai/08-eval/notes/12-failure-modes.md)) — capability→regression eval graduation, "fix the eval system before the agent" debugging order, 48h full-review-after-change rule.
+- (course: [11-production-and-the-maturity-ladder](../../../generative-ai/08-eval/notes/11-production-and-the-maturity-ladder.md)) — Level 4 "continuous sampling with drift alerts" as the maturity target.
 
 </details>
 
@@ -273,7 +273,7 @@ Accept non-determinism as structural rather than a bug to eliminate — even tem
 
 - [QAnswer — Why LLMs Are Not Deterministic Even at Temperature 0](https://www.qanswer.ai/blog/llm-non-determinism-temperature-zero) — sources of residual non-determinism at temp=0.
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — pass@k vs. pass^k definitions and when each applies.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/06-evaluating-agents.md`) — "run an eval set multiple times instead of once," pass@k / pass^k worked example.
+- (course: [06-evaluating-agents](../../../generative-ai/08-eval/notes/06-evaluating-agents.md)) — "run an eval set multiple times instead of once," pass@k / pass^k worked example.
 
 </details>
 
@@ -297,7 +297,7 @@ Anthropic's own guidance converges on the same point from the opposite direction
 
 - [Anthropic — Writing effective tools for AI agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — namespacing, meaningful context in returns, tool-description as the highest-leverage lever.
 - [Vercel — Build an AI Agent Harness](https://vercel.com/academy/build-ai-agent-harness) — five-section tool contract (what/when/when-not/do-not-use-for/examples).
-- (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/03-tool-design.md`) — ACI framing, the clarity test, four gating questions, schema rules, write-operation safety.
+- (course: [03-tool-design](../../../ai-engineering/03-harness-engineering/notes/03-tool-design.md)) — ACI framing, the clarity test, four gating questions, schema rules, write-operation safety.
 
 </details>
 
@@ -315,8 +315,8 @@ Skills work best layered on top of a small, sharp tool set — they make the *re
 **Sources:**
 
 - [Anthropic — Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — progressive disclosure, avoiding prompt sprawl, skills as reusable/auditable capability modules.
-- (learn-ai-engineering: `ai-engineering/03-harness-engineering/skills-design.md`) — description-as-routing-logic, token cost vs. routing precision, templates-inside-skill pattern.
-- (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/03-tool-design.md`) — "loading every tool/MCP server at startup degrades performance before the agent starts working," motivating progressive disclosure via skills.
+- (course: [03-tool-design](../../../ai-engineering/03-harness-engineering/notes/03-tool-design.md)) — description-as-routing-logic, token cost vs. routing precision, templates-inside-skill pattern.
+- (course: [03-tool-design](../../../ai-engineering/03-harness-engineering/notes/03-tool-design.md)) — "loading every tool/MCP server at startup degrades performance before the agent starts working," motivating progressive disclosure via skills.
 
 </details>
 
@@ -334,7 +334,7 @@ So the right mental model isn't "skills vs. tools" but "skills sit above tools, 
 **Sources:**
 
 - [Anthropic — Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — skills as composable capabilities layered on existing agent/tool infrastructure, not a replacement for it.
-- (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/07-orchestration.md`) — "what matters is tool quality, not tool quantity"; skills close the gap between single tool invocation and multi-tool orchestration without bloating system prompts.
+- (course: [07-orchestration](../../../ai-engineering/03-harness-engineering/notes/07-orchestration.md)) — "what matters is tool quality, not tool quantity"; skills close the gap between single tool invocation and multi-tool orchestration without bloating system prompts.
 
 </details>
 
@@ -352,8 +352,8 @@ Start from Anthropic's core guidance: find the simplest structure that solves th
 
 - [Anthropic — Building Effective AI Agents](https://www.anthropic.com/engineering/building-effective-agents) — workflows-vs-agents distinction, "find the simplest solution possible," cost/latency trade-off of agentic autonomy.
 - [Anthropic — Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — skills as the reusable-procedure layer distinct from both tools and agents.
-- (learn-ai-engineering: `ai-engineering/03-harness-engineering/notes/03-tool-design.md`) — MCP vs. in-process decision table, applicable to the tool/skill boundary question by analogy (promote complexity only when a specific condition holds, not in anticipation).
-- (learn-ai-engineering: `ai-engineering/03-harness-engineering/agents-design.md`) — multi-agent decomposition patterns and when a separate agent (vs. a single agent with more tools) is warranted, including least-privilege scoping per agent.
+- (course: [03-tool-design](../../../ai-engineering/03-harness-engineering/notes/03-tool-design.md)) — MCP vs. in-process decision table, applicable to the tool/skill boundary question by analogy (promote complexity only when a specific condition holds, not in anticipation).
+- (course: [04-multi-agent-design-patterns](../../../generative-ai/03-agentic-foundations/notes/04-multi-agent-design-patterns.md)) — multi-agent decomposition patterns and when a separate agent (vs. a single agent with more tools) is warranted, including least-privilege scoping per agent.
 
 </details>
 
@@ -377,9 +377,9 @@ The unifying principle: return what the agent needs to *decide*, not everything 
 
 - [Anthropic — Writing effective tools for AI agents](https://www.anthropic.com/engineering/writing-tools-for-agents) — pagination/truncation/filtering guidance, 25k-token default, MCP `maxResultSizeChars` annotation.
 - [Arize AI — Context management in agent harnesses](https://arize.com/blog/context-management-in-agent-harnesses/) — memory, files, and subagent patterns for bounding context.
-- (learn-ai-engineering: `ai-engineering/02-context-engineering/notes/04-retrieval.md`) — just-in-time context and identifier-vs-payload cost tradeoff.
-- (learn-ai-engineering: `ai-engineering/02-context-engineering/notes/10-tools-and-multi-agent.md`) — token-efficient tool design and sub-agent isolation for large operations.
-- (learn-ai-engineering: `ai-engineering/02-context-engineering/notes/05-compression-compaction.md`) — checkpointing to disk for long-running operations.
+- (course: [04-retrieval](../../../ai-engineering/02-context-engineering/notes/04-retrieval.md)) — just-in-time context and identifier-vs-payload cost tradeoff.
+- (course: [10-tools-and-multi-agent](../../../ai-engineering/02-context-engineering/notes/10-tools-and-multi-agent.md)) — token-efficient tool design and sub-agent isolation for large operations.
+- (course: [05-compression-compaction](../../../ai-engineering/02-context-engineering/notes/05-compression-compaction.md)) — checkpointing to disk for long-running operations.
 
 </details>
 
@@ -400,7 +400,7 @@ For **language variation**: don't assume an English-tuned pipeline or English-on
 
 - [MEMERAG: Multilingual End-to-End Meta-Evaluation Benchmark for RAG](https://arxiv.org/html/2502.17163v2) — native-language QA and expert annotation approach for multilingual RAG eval.
 - [Multi-lingual support for question generation in Ragas v2 — GitHub issue](https://github.com/vibrantlabsai/ragas/issues/1732) — documents the gap in current multilingual tooling.
-- (learn-ai-engineering: `generative-ai/06-observability/support-agent-observability.md`) — grounding tier promotion policy and log-only phase for a multilingual (Danish/English) support agent.
+- (course: [05-support-agent-observability](../../../generative-ai/06-observability/notes/05-support-agent-observability.md)) — grounding tier promotion policy and log-only phase for a multilingual (Danish/English) support agent.
 
 </details>
 
@@ -421,8 +421,8 @@ Every confirmed failure becomes a new row in the eval set so it can't silently r
 
 - [The RAG Debugging Playbook — DEV Community](https://dev.to/kuldeep_paul/the-rag-debugging-playbook-a-step-by-step-guide-to-trace-level-failures-and-fixes-56pa) — trace-level failure localization across data/retrieval/generation/pipeline layers.
 - [RAG Fails Silently: Debugging Retrieval, Citations, and Unsupported Claims — Towards AI](https://pub.towardsai.net/rag-fails-silently-debugging-retrieval-citations-and-unsupported-claims-aa6f730b730a) — evidence that generation-side grounding failure, not retrieval, is often the primary cause.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/12-failure-modes.md`) — "fix the evaluation system before changing the agent" practical debugging order (infra → traces → category concentration → agent).
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/07-evaluating-rag-and-grounding.md`, `ai-engineering/06-eval/case-study/grounding-claims.md`) — claim extraction as a debugging tool: wrong document = retrieval problem, wrong highlighted sentence = extraction problem, right claim/wrong explanation = generation problem.
+- (course: [12-failure-modes](../../../generative-ai/08-eval/notes/12-failure-modes.md)) — "fix the evaluation system before changing the agent" practical debugging order (infra → traces → category concentration → agent).
+- (course: [07-evaluating-rag-and-grounding](../../../generative-ai/08-eval/notes/07-evaluating-rag-and-grounding.md), [07-evaluating-rag-and-grounding](../../../generative-ai/08-eval/notes/07-evaluating-rag-and-grounding.md)) — claim extraction as a debugging tool: wrong document = retrieval problem, wrong highlighted sentence = extraction problem, right claim/wrong explanation = generation problem.
 
 </details>
 
@@ -443,8 +443,8 @@ Trustworthiness comes from where the rows originate and how disagreement is hand
 
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — start small with real failures, positive/negative case design, environment reset, saturation signal.
 - [LangChain — Agent evaluation readiness checklist](https://www.langchain.com/blog/agent-evaluation-readiness-checklist) — ruling out infra/data issues, trace inspection for grader fairness.
-- (learn-ai-engineering: `ai-engineering/06-eval/eval-engineering.md`) — the full "collect real failures → clear criteria → isolated tasks → repeated trials → code/model/human grading → inspect traces → expand" pipeline.
-- (learn-ai-engineering: `ai-engineering/06-eval/README.md`, `agent-eval.md` reference) — golden dataset curation rules: real user queries, balanced coverage, eligibility labels per gate, versioned, 50–200 rows for LLM grading.
+- (course: [08-eval](../../../generative-ai/08-eval/readme.md)) — the full "collect real failures → clear criteria → isolated tasks → repeated trials → code/model/human grading → inspect traces → expand" pipeline.
+- (course: [08-eval](../../../generative-ai/08-eval/readme.md)) — golden dataset curation rules: real user queries, balanced coverage, eligibility labels per gate, versioned, 50–200 rows for LLM grading.
 
 </details>
 
@@ -468,8 +468,8 @@ Practically, this means instrumenting the product itself, not just the model cal
 
 - [Eugene Yan — Patterns for Building LLM-based Systems & Products](https://eugeneyan.com/writing/llm-patterns/) — explicit vs. implicit feedback UX and their role in building eval/fine-tuning datasets.
 - [Nebuly — User intent and implicit feedback in conversational AI](https://www.nebuly.com/blog/explicit-implicit-llm-user-feedback-quick-guide) — explicit feedback capturing only 1–3% of users vs. 100% implicit coverage; rephrasing as a failure signal.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — online sampling rules (negative-feedback triggering, high-cost dialogues, time-window sampling, post-change full review).
-- (learn-ai-engineering: `generative-ai/06-observability/support-agent-observability.md`) — trace schema (`escalated`, `contact_support`, `grounding_score` fields) that makes feedback attributable to a specific run.
+- (course: [11-production-and-the-maturity-ladder](../../../generative-ai/08-eval/notes/11-production-and-the-maturity-ladder.md)) — online sampling rules (negative-feedback triggering, high-cost dialogues, time-window sampling, post-change full review).
+- (course: [05-support-agent-observability](../../../generative-ai/06-observability/notes/05-support-agent-observability.md)) — trace schema (`escalated`, `contact_support`, `grounding_score` fields) that makes feedback attributable to a specific run.
 
 </details>
 
@@ -489,8 +489,8 @@ The signals are raw material; turning them into trustworthy eval rows takes a de
 
 - [Microsoft Data Science + AI — Beyond thumbs up and thumbs down: A human-centered approach to evaluation design](https://medium.com/data-science-at-microsoft/beyond-thumbs-up-and-thumbs-down-a-human-centered-approach-to-evaluation-design-for-llm-products-d2df5c821da5) — limits of raw explicit ratings and need for human-centered labeling.
 - [Eugene Yan — Patterns for Building LLM-based Systems & Products](https://eugeneyan.com/writing/llm-patterns/) — feedback → eval/fine-tuning dataset pipeline, organizational discipline of sample→annotate→improve.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/03-eval-datasets.md`) — positive/negative case design, "include both to test capability and restraint," failure-seeded eval rows.
-- (learn-ai-engineering: `ai-engineering/06-eval/README.md`, `agent-eval.md` reference) — failure taxonomy labels (`citation_hallucination`, `unsupported_claim`, `rank_miss`, `wrong_escalation`) used to cluster and tag negative rows.
+- (course: [03-eval-datasets](../../../generative-ai/08-eval/notes/03-eval-datasets.md)) — positive/negative case design, "include both to test capability and restraint," failure-seeded eval rows.
+- (course: [08-eval](../../../generative-ai/08-eval/readme.md)) — failure taxonomy labels (`citation_hallucination`, `unsupported_claim`, `rank_miss`, `wrong_escalation`) used to cluster and tag negative rows.
 
 </details>
 
@@ -516,7 +516,7 @@ The right way to actually answer this for a specific scenario is the same triage
 
 - [Nick Talwar — 6 things your AI agents need that most teams skip](https://nicktalwar.substack.com/p/6-things-your-ai-agents-need-that) — drift monitoring via baseline-vs-production scoring gap as a concrete regression signal.
 - [Nebuly — User intent and implicit feedback in conversational AI](https://www.nebuly.com/blog/explicit-implicit-llm-user-feedback-quick-guide) — rephrasing/abandonment as implicit failure signals.
-- (learn-ai-engineering: `ai-engineering/06-eval/notes/11-production-and-the-maturity-ladder.md`) — rule-based sampling on negative feedback and high-cost/long dialogues as failure-concentration signals.
-- (learn-ai-engineering: `generative-ai/06-observability/support-agent-observability.md`) — `escalated`, `contact_support`, `grounding_score` as trace-level fields that operationalize these signals.
+- (course: [11-production-and-the-maturity-ladder](../../../generative-ai/08-eval/notes/11-production-and-the-maturity-ladder.md)) — rule-based sampling on negative feedback and high-cost/long dialogues as failure-concentration signals.
+- (course: [05-support-agent-observability](../../../generative-ai/06-observability/notes/05-support-agent-observability.md)) — `escalated`, `contact_support`, `grounding_score` as trace-level fields that operationalize these signals.
 
 </details>

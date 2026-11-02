@@ -1,11 +1,11 @@
 ---
-imported_hash: e708514ad961d656
+imported_hash: a594e8dc5d84cd68
 title: Reverse Linked List
 summary: ''
-order: 177
+order: 80
 kind: reading
 section: Dsa / Linked list / Reverse linked list
-source: sisyphus/drills/coding/dsa/linked_list/reverse_linked_list/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/linked_list/reverse_linked_list/README.md
 ---
 
 # Reverse Linked List

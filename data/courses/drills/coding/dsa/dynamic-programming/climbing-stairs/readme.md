@@ -1,11 +1,11 @@
 ---
-imported_hash: 0f19e5f39c7636cf
+imported_hash: fbb458f76844c056
 title: Climbing Stairs
 summary: You are climbing a staircase with n steps.
-order: 143
+order: 46
 kind: reading
 section: Dsa / Dynamic programming / Climbing stairs
-source: sisyphus/drills/coding/dsa/dynamic_programming/climbing_stairs/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/dynamic_programming/climbing_stairs/README.md
 ---
 
 # Climbing Stairs

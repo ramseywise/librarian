@@ -1,11 +1,11 @@
 ---
-imported_hash: c5eb3df91eaef75d
+imported_hash: dd83145f1774562f
 title: Contributing to Hello, Interview!
 summary: Thank you for your interest in contributing to Hello, Interview!
-order: 99
+order: 2
 kind: reading
 section: Dsa
-source: sisyphus/drills/coding/dsa/CONTRIBUTING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/CONTRIBUTING.md
 ---
 
 <!-- markdownlint-disable-next-line MD026 -->

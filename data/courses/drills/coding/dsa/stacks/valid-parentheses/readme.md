@@ -1,11 +1,11 @@
 ---
-imported_hash: 69978d7ef9c88f00
+imported_hash: 2b80e4bdeb8a73c1
 title: Valid Parentheses
 summary: Given a string s containing just the characters (, ), {, }, [, ], determine if the input string is valid.
-order: 209
+order: 112
 kind: reading
 section: Dsa / Stacks / Valid parentheses
-source: sisyphus/drills/coding/dsa/stacks/valid_parentheses/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/stacks/valid_parentheses/README.md
 ---
 
 # Valid Parentheses

@@ -201,26 +201,136 @@ def test_commit_hook_whitespace_fix_is_not_a_local_edit(tree: tuple[Path, Path])
     assert ic._recorded_hash(nxt.read_text()) == ic._hash(nxt.read_text())
 
 
-def test_drills_course_reads_sisyphus_drills(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    sisyphus = tmp_path / "sisyphus"
-    sql = sisyphus / "drills" / "sql"
-    sql.mkdir(parents=True)
-    (sql / "README.md").write_text("# SQL drills\n")
-    (sisyphus / "drills" / "coding").mkdir()
-    (sisyphus / "drills" / "coding" / "drill-log.md").write_text("# Log\n")
+def _git(repo: Path, *args: str) -> None:
+    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True)
+
+
+@pytest.fixture
+def practice(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
+    """A checkout whose practice/ is allowlisted the way learn-ai-engineering's is."""
+    source = tmp_path / "lae"
+    drills = source / "practice" / "drills"
+    (drills / "sql").mkdir(parents=True)
+    (drills / "sql" / "README.md").write_text("# SQL drills\n")
+    (drills / "sql" / "01-rank.md").write_text("# Rank\n\n![shot](img/open.png)\n")
+    (drills / "sql" / "img").mkdir()
+    (drills / "sql" / "img" / "open.png").write_bytes(b"\x89PNG")
+    (drills / "sql" / "private.md").write_text("# Private\n")
+    (drills / "coding").mkdir()
+    (drills / "coding" / "drill-log.md").write_text("# Log\n")
+    (drills / "coding" / "held.md").write_text("# Uncleared\n\n![fig](figure.png)\n")
+    (drills / "coding" / "figure.png").write_bytes(b"\x89PNG")
+    (drills / "secret-module").mkdir()
+    (drills / "secret-module" / "README.md").write_text("# Secret\n")
+    leetcode = drills / "python" / "leetcode"
+    leetcode.mkdir(parents=True)
+    (drills / "python" / "README.md").write_text("# Python\n")
+    (leetcode / "two-sum.md").write_text("# Two sum\n")
+    (source / "practice" / "interviewing").mkdir()
+    (source / "practice" / "interviewing" / "README.md").write_text("# Interviewing\n")
+    (source / "practice" / ".gitignore").write_text(
+        "*\n!*/\n!/.gitignore\n!/interviewing/README.md\n!/drills/sql/README.md\n"
+        "!/drills/sql/01-rank.md\n!/drills/sql/img/open.png\n!/drills/python/README.md\n"
+        "/drills/python/leetcode/\n"
+    )
+    _git(source.parent, "init", "-q", str(source))
+    _git(leetcode, "init", "-q")  # git reports this as one directory entry
+    _git(source, "add", "practice/")
     dest = tmp_path / "courses"
     monkeypatch.setattr(ic, "COURSES_DIR", dest)
+    return source, dest
 
-    plan = ic.build_plan(tmp_path / "lae", ["drills"], sisyphus)
-    ic.apply(plan, ["drills"], dry_run=False)
+
+def test_drills_course_reads_practice_drills(practice: tuple[Path, Path]) -> None:
+    source, dest = practice
+    ic.apply(ic.build_plan(source, ["drills"]), ["drills"], dry_run=False)
 
     lessons = [p.relative_to(dest).as_posix() for p in dest.rglob("*.md")]
     assert not any("drill-log" in p for p in lessons)  # progress history, not a lesson
     readme = (dest / "drills" / "sql" / "readme.md").read_text()  # not _module.md
-    assert "source: sisyphus/drills/sql/README.md" in readme
-    assert "source: sisyphus/drills" in (dest / "drills" / "_course.md").read_text()
+    assert "source: learn-ai-engineering/practice/drills/sql/README.md" in readme
+    assert (
+        "source: learn-ai-engineering/practice/drills"
+        in (dest / "drills" / "_course.md").read_text()
+    )
+
+
+def test_private_practice_files_do_not_import(practice: tuple[Path, Path]) -> None:
+    source, dest = practice
+    ic.apply(ic.build_plan(source, ["drills"]), ["drills"], dry_run=False)
+
+    files = {p.relative_to(dest).as_posix() for p in dest.rglob("*") if p.is_file()}
+    assert "drills/sql/01-rank.md" in files
+    assert "drills/sql/assets/img/open.png" in files  # tracked image comes along
+    for private in ("private", "held", "drill-log", "two-sum", "figure", "secret"):
+        assert not any(private in f for f in files), private
+
+
+def test_ignored_nested_repo_is_not_even_a_reference(practice: tuple[Path, Path]) -> None:
+    source, dest = practice
+    ignored = ic._git_ignored(source, source / "practice" / "drills")
+    assert ignored is not None and "practice/drills/python/leetcode/" in ignored  # dir entry
+    assert ic._matches_ignored("practice/drills/python/leetcode/two-sum.md", ignored)
+
+    ic.apply(ic.build_plan(source, ["drills"]), ["drills"], dry_run=False)
+    assert "references" not in _front(dest / "drills" / "python" / "_module.md")
+    assert "leetcode" not in (dest / "drills" / "python" / "_module.md").read_text()
+
+
+def test_ignored_image_is_not_copied(practice: tuple[Path, Path]) -> None:
+    source, dest = practice
+    gitignore = source / "practice" / ".gitignore"
+    gitignore.write_text(gitignore.read_text() + "!/drills/coding/held.md\n")
+    _git(source, "add", "practice/")
+    ic.apply(ic.build_plan(source, ["drills"]), ["drills"], dry_run=False)
+    assert (dest / "drills" / "coding" / "held.md").exists()
+    assert not list(dest.rglob("figure.png"))
+
+
+def test_practice_subjects_fail_closed_without_git(tmp_path: Path) -> None:
+    (tmp_path / "practice" / "drills").mkdir(parents=True)
+    (tmp_path / "practice" / "drills" / "private.md").write_text("# Private\n")
+    with pytest.raises(RuntimeError, match="not a git checkout"):
+        ic.build_plan(tmp_path, ["drills"])
+
+
+def test_links_rewrite_across_courses(practice: tuple[Path, Path]) -> None:
+    source, dest = practice
+    chapter = source / "data-engineering" / "01-storage"
+    chapter.mkdir(parents=True)
+    (chapter / "README.md").write_text("# Storage\n")
+    guide = source / "practice" / "interviewing" / "README.md"
+    guide.write_text("# Interviewing\n\n[Storage](../../data-engineering/01-storage/README.md)\n")
+    _git(source, "add", "practice/")
+    ic.apply(ic.build_plan(source, ["interviewing"]), ["interviewing"], dry_run=False)
+    body = (dest / "interviewing" / "00-start-here" / "readme.md").read_text()
+    assert "(../../data-engineering/01-storage/readme.md)" in body
+    assert not (dest / "data-engineering").exists()  # linked to, not imported
+
+
+def test_vendored_paths_are_not_fooled_by_practice_dirs(tmp_path: Path) -> None:
+    practice_dir = tmp_path / "practice"
+    for name in ("drills", "interviewing"):
+        (practice_dir / name).mkdir(parents=True)
+        assert not ic._is_vendored(practice_dir / name)
+    (practice_dir / "datatalks-de").mkdir()
+    assert ic._is_vendored(practice_dir / "datatalks-de")  # the rule still fires
+    nested = practice_dir / "drills" / "python" / "leetcode"
+    nested.mkdir(parents=True)
+    (nested / ".git").mkdir()
+    assert ic._is_vendored(nested)  # no longer exempt
+
+
+def test_vendored_urls_read_third_party(tmp_path: Path) -> None:
+    (tmp_path / "THIRD_PARTY.md").write_text(
+        "| Path | Upstream |\n|---|---|\n"
+        "| `a/practice/kept/` | https://github.com/x/kept | MIT | what |\n"
+        "| `a/old-main` (gitignored, never tracked) | https://github.com/x/old | gone | what |\n"
+    )
+    assert ic._vendored_urls(tmp_path) == {
+        "a/practice/kept": "https://github.com/x/kept",
+        "a/old-main": "https://github.com/x/old",
+    }
 
 
 def test_drill_frontmatter_becomes_drill_lesson(tree: tuple[Path, Path]) -> None:

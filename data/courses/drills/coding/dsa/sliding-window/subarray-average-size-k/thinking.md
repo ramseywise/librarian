@@ -1,11 +1,11 @@
 ---
-imported_hash: 657753df5d217e35
+imported_hash: 3aea0508e51995e3
 title: Subarray Average of Size K — First-Principles Thinking Guide
 summary: 'Same pattern as Maximum Average Subarray: slide a window of size K across the array.'
-order: 205
+order: 108
 kind: reading
 section: Dsa / Sliding window / Subarray average size k
-source: sisyphus/drills/coding/dsa/sliding_window/subarray_average_size_k/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/sliding_window/subarray_average_size_k/THINKING.md
 ---
 
 # Subarray Average of Size K — First-Principles Thinking Guide

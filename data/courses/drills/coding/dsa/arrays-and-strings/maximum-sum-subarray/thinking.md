@@ -1,11 +1,11 @@
 ---
-imported_hash: 86e10f1bd60b06e0
+imported_hash: e86b0a0c86cbb504
 title: Maximum Sum Subarray (Kadane's) — First-Principles Thinking Guide
 summary: 'At each position, decide: extend the current subarray or start fresh?'
-order: 120
+order: 23
 kind: reading
 section: Dsa / Arrays and strings / Maximum sum subarray
-source: sisyphus/drills/coding/dsa/arrays_and_strings/maximum_sum_subarray/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/maximum_sum_subarray/THINKING.md
 ---
 
 # Maximum Sum Subarray (Kadane's) — First-Principles Thinking Guide

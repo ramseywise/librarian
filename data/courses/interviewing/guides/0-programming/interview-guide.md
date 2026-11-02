@@ -1,11 +1,11 @@
 ---
-imported_hash: ef5df8da06488139
+imported_hash: 7457cc93875f71bd
 title: Programming Foundations — Study Guide
 summary: 'The coding screen: every interview loop has one.'
 order: 3
 kind: reading
 section: Programming
-source: sisyphus/interviewing/guides/0-programming/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/0-programming/interview-guide.md
 ---
 
 # Programming Foundations — Study Guide
@@ -296,6 +296,7 @@ HAVING COUNT(DISTINCT DATE_TRUNC('month', event_date)) = 2
 
 ## Sources
 
-- code: `drills/python/hackerrank/` (language topics), `drills/sql/hackerrank/` (SQL tracks), `drills/python/leetcode/` (DSA patterns + NeetCode exercises)
-- reference: `drills/python/leetcode/Competitive Programmer's Handbook - 296p.pdf`
-- overview: [00-overview.md](00-overview.md) (learning path + resource map)
+- chapters: [Python](../../../programming/python/readme.md), [SQL](../../../programming/sql/readme.md)
+- drills: [drills](../../../drills/00-start-here/readme.md), [Hello, Interview!](../../../drills/coding/dsa/readme.md) (DSA patterns)
+- reference: *Competitive Programmer's Handbook* (Antti Laaksonen), free online
+- overview: [00-overview.md](00-overview.md)

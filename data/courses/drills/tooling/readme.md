@@ -1,10 +1,10 @@
 ---
-imported_hash: 3953875c5882ff75
+imported_hash: b8b297bec1af2fa1
 title: Tooling
 summary: Drills follow the schema in ../README.md.
 order: 1
 kind: reading
-source: sisyphus/drills/tooling/README.md
+source: learn-ai-engineering/practice/drills/tooling/README.md
 ---
 
 # Tooling

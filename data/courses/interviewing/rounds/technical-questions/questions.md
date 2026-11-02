@@ -1,11 +1,11 @@
 ---
-imported_hash: 40bb8357a63f43bf
+imported_hash: 31f66491fe1cf918
 title: Question Bank — Technical / ML/LLM Breadth Round
 summary: Not questions — a coverage checklist. Say each aloud in 60 seconds; anything you stall on is a gap to take back to the guides.
-order: 103
+order: 72
 kind: reading
 section: Technical questions
-source: sisyphus/interviewing/rounds/technical-questions/questions.md
+source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/questions.md
 ---
 
 # Question Bank — Technical / ML/LLM Breadth Round

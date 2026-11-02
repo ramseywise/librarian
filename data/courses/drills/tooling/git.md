@@ -1,10 +1,10 @@
 ---
-imported_hash: a0e9640ad5a46be6
+imported_hash: 972555e073b2b9cc
 title: Git — Workflow Reference
 summary: Branch management, PR review, and stash patterns.
 order: 2
 kind: reading
-source: sisyphus/drills/tooling/git.md
+source: learn-ai-engineering/practice/drills/tooling/git.md
 ---
 
 # Git — Workflow Reference

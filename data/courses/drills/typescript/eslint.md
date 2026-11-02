@@ -1,15 +1,15 @@
 ---
-imported_hash: ed9e08c2e78884ae
+imported_hash: 023db52608391119
 title: ESLint — Reading & Fixing Findings (TS/React)
 summary: 'A finding reads: line:col error/warning <message> <rule-name>.'
 order: 2
 kind: reading
-source: sisyphus/drills/typescript/eslint.md
+source: learn-ai-engineering/practice/drills/typescript/eslint.md
 ---
 
 # ESLint — Reading & Fixing Findings (TS/React)
 
-Learning note from a real sweep of `nonprofit-success-ai`: 23 problems, but only **3
+Learning note from a real sweep of a TS/React project: 23 problems, but only **3
 rules**. Learn the rule, not the 23 lines. Run the linter with:
 
 ```bash

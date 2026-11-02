@@ -1,11 +1,11 @@
 ---
-imported_hash: e2c9bbcbcaa67a31
+imported_hash: 406fba0341f1bada
 title: Pillar 4 — Agents (orchestration, tools, memory, harness)
 summary: 'Systems where the LLM decides what to do next: call tools, keep state, plan multi-step work, recover from failures.'
 order: 10
 kind: reading
 section: Agents
-source: sisyphus/interviewing/guides/4-agents/00-overview.md
+source: learn-ai-engineering/practice/interviewing/guides/4-agents/00-overview.md
 ---
 
 # Pillar 4 — Agents (orchestration, tools, memory, harness)
@@ -15,43 +15,18 @@ work, recover from failures. This is the deepest pillar in the repo's sources �
 the librarian wiki and most of the cleaned notes are about — and the center of gravity of
 2026 AI-engineering work.
 
-## Learning path
+## Learn it in the curriculum
 
-1. **Concepts before frameworks** — *Building Applications with AI Agents* chs 1–5
-   (`ai-engineering/readings/ai_engineering/ai_agent_applications/`): agents, tool use, orchestration.
-   Pair with the ReAct paper (pillar 2) — the loop everything else elaborates.
-2. **One framework, properly** — LangGraph *or* Google ADK via
-   `generative-ai/03-agentic-foundations/` course repos; librarian's `wiki/langgraph/` and
-   `wiki/adk/` pages are the compiled experience layer on top.
-3. **Tools & MCP** — *Model Context Protocol* chapters (`ai-engineering/readings/ai_engineering/mcp/`);
-   tool-design-as-UX (ACI/poka-yoke) from the wiki patterns pages.
-4. **Memory & state** — notes ([memory.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md),
-   [deep-agents.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/deep-agents.md)) + `wiki/memory/` + the Memoria/
-   memory-augmented-RAG flow; chatbot-memory pilot paper (Yan et al. 2025, see librarian wiki).
-5. **Harness engineering** — the notes cluster unique to this repo:
-   [agent-harness](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md), [loop-engineering](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/04-loop-engineering/loop-engineering.md),
-   [reliable-agents](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/reliable-agents.md) — acceptance baselines, execution
-   boundaries, feedback signals, rollback.
-6. **Multi-agent, skeptically** — *From One Agent to Many* (agent applications ch 8),
-   `ai-engineering/readings/ai_engineering/multiagent context/`, notes
-   [agents-design.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agents-design.md); protocol/task-graph/isolation triad.
+The teaching lives in the chapters. Work them in this order, then use the [interview guide](interview-guide.md) as the recall sheet.
 
-## Resource map
-
-| Resource | Type | Where | What it teaches |
-|---|---|---|---|
-| *Building Applications with AI Agents* (chs 1–13) | pdf | `ai-engineering/readings/ai_engineering/ai_agent_applications/` | full agent lifecycle incl. validation, monitoring, protection |
-| *Generative AI Design Patterns* (chs 1–10) | pdf | `ai-engineering/readings/ai_engineering/ai design/` | pattern language: knowledge, actions, safeguards, composable workflows |
-| *AI Engineering* (Huyen, ch 6 RAG & Agents) | pdf | `ai-engineering/readings/ai_engineering/ai engineer/` | agents in the app-architecture frame |
-| MCP · LangChain · multiagent-context books | pdf | `ai-engineering/readings/ai_engineering/{mcp,langchain,multiagent context}/` | protocol + framework depth |
-| Generative agents (2304.03442) · Gorilla (2305.15334) · ToolLLM (2307.16789) | pdf | `generative-ai/01-llm-fundamentals/readings/` | tool-use research lineage |
-| LangGraph/ADK course repos | code | `generative-ai/03-agentic-foundations/` | guided framework builds |
-| deep-research bot | code | `generative-ai/chatbot/deep_research_bench/` | a real multi-step agent |
-| wiki/adk (19pp) · wiki/langgraph · wiki/deep-agents · wiki/patterns · wiki/memory · wiki/mcp | wiki | librarian | ~50 compiled pages of design experience |
-| agent-harness · agents-design · agents-guardrails · reliable-agents · deep-agents | note | [ai-engineering/03-harness-engineering/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/03-harness-engineering) | harness engineering |
-| loop-engineering · notes/01–10 | note | [ai-engineering/04-loop-engineering/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/04-loop-engineering) | loop design |
-| memory | note | [ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md) | memory architectures |
-| agents-google-adk | note | [generative-ai/03-agentic-foundations/](https://github.com/ramseywise/learn-ai-engineering/tree/main/generative-ai/03-agentic-foundations) | ADK framework |
+| Chapter | What it covers |
+|---|---|
+| [Agentic foundations](../../../generative-ai/03-agentic-foundations/readme.md) | Tools, ReAct, memory, multi-agent patterns |
+| [Agentic frameworks](../../../generative-ai/04-agentic-frameworks/readme.md) | LangGraph, ADK, LangSmith, how to choose |
+| [Agentic applications](../../../generative-ai/07-agentic-applications/readme.md) | Search, deep research, coding and data agents |
+| [Harness engineering](../../../ai-engineering/03-harness-engineering/readme.md) | Everything around the model that makes an agent reliable |
+| [Loop engineering](../../../ai-engineering/04-loop-engineering/readme.md) | Loop shapes, scorekeepers, autonomy |
+| [Graph engineering](../../../ai-engineering/05-graph-engineering/readme.md) | When a graph beats a loop, state, durable execution |
 
 ## Test yourself
 

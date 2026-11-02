@@ -1,11 +1,11 @@
 ---
-imported_hash: 9196bc2ec7f6d9cb
+imported_hash: cca7e8627661dc1c
 title: Course Schedule
 summary: Given numCourses and a list of prerequisites pairs, determine if it is possible to finish all courses.
-order: 152
+order: 55
 kind: reading
 section: Dsa / Graph / Course schedule
-source: sisyphus/drills/coding/dsa/graph/course_schedule/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/graph/course_schedule/README.md
 ---
 
 # Course Schedule

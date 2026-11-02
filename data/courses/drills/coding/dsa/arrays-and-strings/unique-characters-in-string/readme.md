@@ -1,11 +1,11 @@
 ---
-imported_hash: 52d7a94d292d3f76
+imported_hash: 2ee418a3d5ac13b0
 title: Unique Characters In String
 summary: Implement an algorithm to determine if a string has all unique characters.
-order: 133
+order: 36
 kind: reading
 section: Dsa / Arrays and strings / Unique characters in string
-source: sisyphus/drills/coding/dsa/arrays_and_strings/unique_characters_in_string/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/unique_characters_in_string/README.md
 ---
 
 # Unique Characters In String

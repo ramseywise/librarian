@@ -1,11 +1,11 @@
 ---
-imported_hash: c7fcd7147aa61ce5
+imported_hash: 05b4c1dbfcc73d16
 title: Longest Increasing Subsequence — First-Principles Thinking Guide
 summary: 'i=1 (9): no j where nums[j]<9 in valid range except none → dp[1]=1 i=2 (2): no j where nums[j]<2 → dp[2]=1 i=3 (5): j=2: nums[2]=2<5 → dp[3]=max(1, 1+1)=2 i=4 (3): j=2: nums[2]=2<3 → dp[4]=max(1, 1+1)=2 i=5 (7): j=2: 2<7→dp=2, j=3: 5<7→dp=m…'
-order: 148
+order: 51
 kind: reading
 section: Dsa / Dynamic programming / Longest increasing subsequence
-source: sisyphus/drills/coding/dsa/dynamic_programming/longest_increasing_subsequence/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/dynamic_programming/longest_increasing_subsequence/THINKING.md
 ---
 
 # Longest Increasing Subsequence — First-Principles Thinking Guide

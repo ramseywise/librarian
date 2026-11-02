@@ -1,11 +1,11 @@
 ---
-imported_hash: 9fb68f67f354ffc6
+imported_hash: ab6571494adc69f4
 title: Design Amazon Locker
 summary: Design a secure, scalable, and efficient system for an Amazon Locker service.
-order: 212
+order: 115
 kind: reading
 section: Dsa / System design / Amazon locker
-source: sisyphus/drills/coding/dsa/system_design/amazon_locker/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/system_design/amazon_locker/README.md
 ---
 
 # Design Amazon Locker

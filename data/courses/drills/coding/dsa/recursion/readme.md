@@ -1,11 +1,11 @@
 ---
-imported_hash: 2dc44c96351d3969
+imported_hash: ce2b83e6f8420443
 title: Recursion
 summary: Recursion solves problems by breaking them into smaller instances of the same problem.
-order: 194
+order: 97
 kind: reading
 section: Dsa / Recursion
-source: sisyphus/drills/coding/dsa/recursion/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/recursion/Readme.md
 ---
 
 # Recursion

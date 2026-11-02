@@ -1,11 +1,11 @@
 ---
-imported_hash: 8fdf1b8e199d6c6e
+imported_hash: b618fa0ac150ca3d
 title: Arrays and Strings
 summary: Core techniques for array and string manipulation including sliding window, two pointers, prefix sums, and sorting-based approaches.
-order: 100
+order: 3
 kind: reading
 section: Dsa / Arrays and strings
-source: sisyphus/drills/coding/dsa/arrays_and_strings/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/Readme.md
 ---
 
 # Arrays and Strings

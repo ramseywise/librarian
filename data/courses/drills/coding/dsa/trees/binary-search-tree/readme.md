@@ -1,11 +1,11 @@
 ---
-imported_hash: 203b24546dff1c99
+imported_hash: 93109766874854dd
 title: Binary Search Tree
 summary: ''
-order: 220
+order: 123
 kind: reading
 section: Dsa / Trees / Binary search tree
-source: sisyphus/drills/coding/dsa/trees/binary_search_tree/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/trees/binary_search_tree/README.md
 ---
 
 # Binary Search Tree

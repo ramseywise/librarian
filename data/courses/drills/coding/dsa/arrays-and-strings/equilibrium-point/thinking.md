@@ -1,11 +1,11 @@
 ---
-imported_hash: a63068258df19547
+imported_hash: fbb55b59ddb206d6
 title: Equilibrium Point — First-Principles Thinking Guide
 summary: 'For each index i: right_sum = total - left_sum - arr[i] If left_sum == right_sum: return i left_sum += arr[i]'
-order: 104
+order: 7
 kind: reading
 section: Dsa / Arrays and strings / Equilibrium point
-source: sisyphus/drills/coding/dsa/arrays_and_strings/equilibrium_point/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/equilibrium_point/THINKING.md
 ---
 
 # Equilibrium Point — First-Principles Thinking Guide

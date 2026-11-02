@@ -1,11 +1,11 @@
 ---
-imported_hash: 0b74bcbb2b613a91
+imported_hash: 34008b9ea8bd0542
 title: Pow(x, n) — First-Principles Thinking Guide
 summary: 'fast_pow(base, exp): If exp == 0: return 1 half = fast_pow(base, exp // 2) If exp is even: return half  half If exp is odd: return half  half  base'
-order: 198
+order: 101
 kind: reading
 section: Dsa / Recursion / Power of n
-source: sisyphus/drills/coding/dsa/recursion/power_of_n/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/recursion/power_of_n/THINKING.md
 ---
 
 # Pow(x, n) — First-Principles Thinking Guide

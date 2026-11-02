@@ -1,11 +1,11 @@
 ---
-imported_hash: 61a00d322b2c59c6
+imported_hash: 232afe3773b2589c
 title: System Design Round — Study Guide
 summary: The method for the highest-weight technical round.
-order: 80
+order: 64
 kind: reading
 section: System design round
-source: sisyphus/interviewing/rounds/system-design-round/study-guide.md
+source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/study-guide.md
 ---
 
 # System Design Round — Study Guide
@@ -100,17 +100,17 @@ components, organized by the question you're being asked.
 
 | Component | Study guide | Example |
 |-----------|-----------|---------|
-| Retrieval pipeline (chunking, embedding, hybrid search, reranking) | [RAG guide §1-3](../../guides/3-rag/interview-guide.md) | [rag-system](examples/rag-system.md), [support-agent](examples/support-agent.md) |
-| Orchestration (workflow patterns, agent loops, tool design) | [Agents guide §1-4](../../guides/4-agents/interview-guide.md) | [agent-system](examples/agent-system.md), [forecasting-agent](examples/forecasting-agent.md) |
-| Eval pipeline (graders, golden sets, online scoring) | [Evals guide §2-4](../../guides/6-evals-observability/interview-guide.md) | [eval-harness](examples/eval-harness.md), [support-agent](examples/support-agent.md) |
+| Retrieval pipeline (chunking, embedding, hybrid search, reranking) | [RAG guide §1-3](../../guides/3-rag/interview-guide.md) | [rag-system](examples/rag-system.md) |
+| Orchestration (workflow patterns, agent loops, tool design) | [Agents guide §1-4](../../guides/4-agents/interview-guide.md) | [agent-system](examples/agent-system.md) |
+| Eval pipeline (graders, golden sets, online scoring) | [Evals guide §2-4](../../guides/6-evals-observability/interview-guide.md) | [eval-harness](examples/eval-harness.md) |
 | Context management (token budgets, caching, compaction) | [Context/cost guide](../../guides/5-context-cost/interview-guide.md) | [scaling](examples/scaling.md) |
-| Safety layer (guardrails, trust separation, HITL) | [Security guide §3-4](../../guides/7-security-safety/interview-guide.md) | [support-agent](examples/support-agent.md) |
-| State & memory (checkpointers, session state, memory types) | [Agents guide §6](../../guides/4-agents/interview-guide.md) | [meeting-processor](examples/meeting-processor.md) |
-| Data pipeline (ingestion, preprocessing, feature stores) | [Data eng guide §1](../../guides/8-data-eng-mlops/interview-guide.md) | [meeting-processor](examples/meeting-processor.md), [rag-system](examples/rag-system.md) |
+| Safety layer (guardrails, trust separation, HITL) | [Security guide §3-4](../../guides/7-security-safety/interview-guide.md) | — |
+| State & memory (checkpointers, session state, memory types) | [Agents guide §6](../../guides/4-agents/interview-guide.md) | — |
+| Data pipeline (ingestion, preprocessing, feature stores) | [Data eng guide §1](../../guides/8-data-eng-mlops/interview-guide.md) | [rag-system](examples/rag-system.md) |
 | Observability & tracing (Langfuse vs Langsmith, metrics, cost) | [Evals guide §4-5](../../guides/6-evals-observability/interview-guide.md) | [eval-harness](examples/eval-harness.md) |
-| Deployment & ops (Cloud Run, CI/CD, model versioning, drift) | [Data eng guide §2](../../guides/8-data-eng-mlops/interview-guide.md) | [forecasting-agent](examples/forecasting-agent.md) |
-| Integration patterns (API, MCP, webhooks, event-driven) | [Agents guide §3](../../guides/4-agents/interview-guide.md) | [meeting-processor](examples/meeting-processor.md), [accounting-assistant](examples/accounting-assistant.md) |
-| Knowledge graphs (structured retrieval, entity relationships) | [RAG guide §5](../../guides/3-rag/interview-guide.md) | [forecasting-agent](examples/forecasting-agent.md), [accounting-assistant](examples/accounting-assistant.md) |
+| Deployment & ops (Cloud Run, CI/CD, model versioning, drift) | [Data eng guide §2](../../guides/8-data-eng-mlops/interview-guide.md) | — |
+| Integration patterns (API, MCP, webhooks, event-driven) | [Agents guide §3](../../guides/4-agents/interview-guide.md) | — |
+| Knowledge graphs (structured retrieval, entity relationships) | [RAG guide §5](../../guides/3-rag/interview-guide.md) | — |
 
 ## 4. Bottlenecks & failure modes (memorize the tables)
 
@@ -168,12 +168,7 @@ Three interview-format writeups in the librarian wiki — rehearse as full 45-mi
 2. **Unified eval harness** — golden set, two-tier grading (heuristic → LLM judge), regression vs capability, threshold governance
 3. **Serverless agent backends** — stateless invocations, session state in Postgres, streaming within platform timeouts, phase-2 stateful handoff
 
-Portfolio case studies (your own systems — strongest in interviews):
-
-- [Customer support agent](examples/support-agent.md) — 5-layer guardrails, 3-framework comparison, CRAG gate
-- [Financial forecasting](examples/forecasting-agent.md) — self-learning agentic loop, classical ML + LLM hybrid, knowledge graph
-- [Meeting intelligence](examples/meeting-processor.md) — event-driven pipeline, sole-writer state machine, multi-tenant
-- [Accounting assistant](examples/accounting-assistant.md) — three knowledge layers, graph vs RAG, regulatory accuracy
+Your own systems are the strongest material in an interview: prepare one or two the same way.
 
 Classic prompts to dry-run:
 

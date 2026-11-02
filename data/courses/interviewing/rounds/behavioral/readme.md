@@ -1,11 +1,11 @@
 ---
-imported_hash: de13d4f9ca26254c
+imported_hash: 57e42beab2f90850
 title: Behavioral Round
 summary: 'Evidence of how you actually operate: collaboration, conflict handling, ownership, adaptability, self-awareness.'
 order: 1
 kind: reading
 section: Behavioral
-source: sisyphus/interviewing/rounds/behavioral/README.md
+source: learn-ai-engineering/practice/interviewing/rounds/behavioral/README.md
 ---
 
 # Behavioral Round
@@ -54,6 +54,4 @@ Universal. For FDE the bar is higher and partially re-tested in customer-simulat
 
 - [study-guide.md](study-guide.md) — story bank framework, STAR deep dive, anti-patterns, practice plan
 - [questions.md](questions.md) — expanded question bank with what's tested and model answer structure
-- [probe-bank.md](probe-bank.md) — STAR questions by competency with interviewer dig-in probes (no sample answers)
 - [sources.md](sources.md) — internal and external references
-- [examples/](examples/) — worked STAR stories with annotations

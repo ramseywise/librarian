@@ -1,11 +1,11 @@
 ---
-imported_hash: 80451427079ad618
+imported_hash: 64aa0940ddc00e86
 title: Valid Parentheses — First-Principles Thinking Guide
 summary: 'For each char: If closing bracket: If stack empty or top doesn''t match → False Pop the stack Else (opening bracket): Push to stack'
-order: 210
+order: 113
 kind: reading
 section: Dsa / Stacks / Valid parentheses
-source: sisyphus/drills/coding/dsa/stacks/valid_parentheses/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/stacks/valid_parentheses/THINKING.md
 ---
 
 # Valid Parentheses — First-Principles Thinking Guide

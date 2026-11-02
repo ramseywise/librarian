@@ -1,11 +1,11 @@
 ---
-imported_hash: 1c46323c28155970
+imported_hash: 70127d744d3b2e41
 title: Coin Change — First-Principles Thinking Guide
 summary: ''
-order: 146
+order: 49
 kind: reading
 section: Dsa / Dynamic programming / Coin change min count
-source: sisyphus/drills/coding/dsa/dynamic_programming/coin_change_min_count/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/dynamic_programming/coin_change_min_count/THINKING.md
 ---
 
 # Coin Change — First-Principles Thinking Guide

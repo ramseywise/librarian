@@ -1,11 +1,11 @@
 ---
-imported_hash: 01f0b5117db10128
+imported_hash: cdb56385abe5ef2e
 title: Security & Safety — Study Guide
 summary: Every serious agent/LLM design question ends with "…and how do you make it safe?" FDE loops add compliance framing (banking, healthcare).
 order: 17
 kind: reading
 section: Security safety
-source: sisyphus/interviewing/guides/7-security-safety/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/7-security-safety/interview-guide.md
 ---
 
 # Security & Safety — Study Guide
@@ -148,7 +148,7 @@ Condensed from the book's [reference answers](https://github.com/bojieli/ai-agen
 
 ## Sources
 
-- notes: [security.md](../../notes/security.md) (OWASP agent cheat sheet + source–sink + PRINCE recovery), [prompt-injection.md](prompt-injection.md) (OWASP injection cheat sheet), [agents-guardrails.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agents-guardrails.md)
+- notes: [Safety and security](../../../ai-engineering/09-safety-and-security/readme.md), [Guardrail models](../../../ai-engineering/09-safety-and-security/notes/03-guardrail-models.md)
 - librarian wiki: Input Guardrails Pipeline · MCP Server Security Patterns · PII Masking Approaches · Presidio PII Redaction · Production Hardening Patterns
 - external: OWASP AI Agent Security Cheat Sheet · OWASP LLM Prompt Injection Prevention Cheat Sheet · martinfowler.com/articles/reliable-llm-bayer.html
-- readings: `general/` (Constitutional AI, TruthfulQA)
+- readings: [safety and security references](../../../ai-engineering/09-safety-and-security/references.md) (Constitutional AI, TruthfulQA)

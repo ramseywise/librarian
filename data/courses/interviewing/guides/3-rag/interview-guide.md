@@ -1,11 +1,11 @@
 ---
-imported_hash: 460d082ee8ad7304
+imported_hash: 786839dd90f9e696
 title: RAG — Study Guide
 summary: The default enterprise GenAI pattern and the most likely deep-dive topic in AIE/FDE loops.
 order: 9
 kind: reading
 section: Rag
-source: sisyphus/interviewing/guides/3-rag/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/3-rag/interview-guide.md
 ---
 
 # RAG — Study Guide
@@ -71,7 +71,7 @@ Self-RAG decides *inside the LLM* during generation.
 existing link structure (e.g. wikilinks) already gives you a traversable graph — say this
 before proposing entity extraction + community detection.
 
-**Knowledge-graph RAG in depth:** chapters in `ai-engineering/05-graph-engineering/sources/` (KG-powered
+**Knowledge-graph RAG in depth:** [KG-RAG and text-to-Cypher](../../../ai-engineering/05-graph-engineering/notes/11-kg-rag-and-text-to-cypher.md) (KG-powered
 retrieval, QA agents over graphs) cover the build path: entity linking → graph features →
 KG-RAG.
 
@@ -158,8 +158,6 @@ Condensed from the book's [reference answers](https://github.com/bojieli/ai-agen
 
 ## Sources
 
-- notes: [rag.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/generative-ai/02-rag-retrieval/rag.md) (9-architectures + production checklist), [memory.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md) (memory-augmented conversational RAG)
-- images: [9 RAG architectures](../../images/9-rag-architectures.png)
-- readings: `3-rag/` (RAG, Self-RAG, RAGAS, survey papers), `ai-engineering/05-graph-engineering/sources/` (KG-RAG chapters)
+- notes: [RAG pipeline](../../../generative-ai/02-rag-retrieval/notes/01-rag-pipeline.md) (9-architectures + production checklist), [Memory](../../../ai-engineering/02-context-engineering/notes/06-memory.md) (memory-augmented conversational RAG)
+- readings: [RAG references](../../../generative-ai/02-rag-retrieval/references.md) (RAG, Self-RAG, RAGAS, survey papers)
 - librarian wiki: RAG Retrieval Strategies · Agentic RAG — Advanced Patterns · RAG Reranking · Reciprocal Rank Fusion · RAG Evaluation · CRAG Retry Logic · Semantic Cache Pipeline · Vector Database Comparison · HistoryCondenser
-- course refs: `generative-ai/02-rag-retrieval/Deeplearning.ai-RAG-main`, `ai-engineering/05-graph-engineering/notebooks/knowledge-graphs-for-rag`

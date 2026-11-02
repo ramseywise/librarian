@@ -1,11 +1,11 @@
 ---
-imported_hash: 583f1745a15b86b9
+imported_hash: cc2969693a029848
 title: Amazon Locker — First-Principles Thinking Guide
 summary: ''
-order: 213
+order: 116
 kind: reading
 section: Dsa / System design / Amazon locker
-source: sisyphus/drills/coding/dsa/system_design/amazon_locker/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/system_design/amazon_locker/THINKING.md
 ---
 
 # Amazon Locker — First-Principles Thinking Guide

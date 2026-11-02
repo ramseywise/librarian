@@ -1,11 +1,11 @@
 ---
-imported_hash: 1da55d82343ee546
+imported_hash: ed4fdd93e2f770ec
 title: Generate Parentheses — First-Principles Thinking Guide
 summary: At each position, we can add ( if we haven't used all n, and ) if the count of ) is less than (.
-order: 137
+order: 40
 kind: reading
 section: Dsa / Backtracking / Generate parenthesis
-source: sisyphus/drills/coding/dsa/backtracking/generate_parenthesis/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/backtracking/generate_parenthesis/THINKING.md
 ---
 
 # Generate Parentheses — First-Principles Thinking Guide

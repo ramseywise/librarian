@@ -1,11 +1,11 @@
 ---
-imported_hash: ba79614841cc55e8
+imported_hash: 8af078d5e9e7f171
 title: Add Two Numbers — First-Principles Thinking Guide
 summary: Simulate digit-by-digit addition with carry, just like manual addition.
-order: 170
+order: 73
 kind: reading
 section: Dsa / Linked list / Add two numbers
-source: sisyphus/drills/coding/dsa/linked_list/add_two_numbers/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/linked_list/add_two_numbers/THINKING.md
 ---
 
 # Add Two Numbers — First-Principles Thinking Guide

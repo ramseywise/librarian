@@ -1,11 +1,11 @@
 ---
-imported_hash: 30f4314ad04cc411
+imported_hash: 2b9804dda763a740
 title: Min Stack — First-Principles Thinking Guide
 summary: 'pop(): stack.pop() min_stack.pop()'
-order: 208
+order: 111
 kind: reading
 section: Dsa / Stacks / Min stack
-source: sisyphus/drills/coding/dsa/stacks/min_stack/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/stacks/min_stack/THINKING.md
 ---
 
 # Min Stack — First-Principles Thinking Guide

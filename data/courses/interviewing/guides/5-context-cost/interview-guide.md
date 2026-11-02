@@ -1,11 +1,11 @@
 ---
-imported_hash: 27bb7ea466b19ba6
+imported_hash: c3f20962f4775a61
 title: Context Engineering & Cost/Latency — Study Guide
 summary: '"Context engineering" has replaced "prompt engineering" as the interview keyword: managing what the model sees across a whole system, plus the cost/latency consequences.'
 order: 13
 kind: reading
 section: Context cost
-source: sisyphus/interviewing/guides/5-context-cost/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/5-context-cost/interview-guide.md
 ---
 
 # Context Engineering & Cost/Latency — Study Guide
@@ -143,7 +143,7 @@ Condensed from the book's [reference answers](https://github.com/bojieli/ai-agen
 
 ## Sources
 
-- notes: [notes/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/02-context-engineering/notes) (5 layers + compaction + caching notes), [context-engineering.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/context-engineering.md) (skills tips), [agent-harness.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md) (offloading, progressive disclosure)
+- notes: [Context engineering](../../../ai-engineering/02-context-engineering/readme.md) (skills tips), [Harness anatomy](../../../ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md) (offloading, progressive disclosure)
 - librarian wiki: Prefix Caching · Semantic Cache Pipeline · ADK Context Engineering · Summarization Node · HistoryCondenser · Multi-Agent Orchestration Patterns (caching-driven topology choice)
-- readings: `ai_engineering/multiagent context/`
+- readings: [context engineering references](../../../ai-engineering/02-context-engineering/references.md)
 - external: developers.openai.com compaction guide · openai skills-shell-tips post

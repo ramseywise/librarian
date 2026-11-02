@@ -1,11 +1,11 @@
 ---
-imported_hash: 6aee37f089d4daf2
+imported_hash: 542ceb45b045bd13
 title: System Design
 summary: ''
-order: 211
+order: 114
 kind: reading
 section: Dsa / System design
-source: sisyphus/drills/coding/dsa/system_design/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/system_design/Readme.md
 ---
 
 # System Design

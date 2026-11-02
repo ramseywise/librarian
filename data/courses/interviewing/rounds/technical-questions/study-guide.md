@@ -1,11 +1,11 @@
 ---
-imported_hash: 88e9dbd6f74bb80a
+imported_hash: 0793ea5fd8c49941
 title: Study Guide — Technical / ML/LLM Breadth Round
 summary: Every answer has two modes. Know both before any interview.
-order: 106
+order: 75
 kind: reading
 section: Technical questions
-source: sisyphus/interviewing/rounds/technical-questions/study-guide.md
+source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/study-guide.md
 ---
 
 # Study Guide — Technical / ML/LLM Breadth Round

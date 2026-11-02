@@ -1,11 +1,11 @@
 ---
-imported_hash: 43475e17e56a41b3
+imported_hash: b8f084b1546321dd
 title: DFS Graph Traversal — First-Principles Thinking Guide
 summary: DFS uses implicit recursion (or explicit stack).
-order: 155
+order: 58
 kind: reading
 section: Dsa / Graph / Dfs
-source: sisyphus/drills/coding/dsa/graph/dfs/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/graph/dfs/THINKING.md
 ---
 
 # DFS Graph Traversal — First-Principles Thinking Guide

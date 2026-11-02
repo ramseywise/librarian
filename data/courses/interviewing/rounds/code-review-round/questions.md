@@ -1,11 +1,11 @@
 ---
-imported_hash: 531a5f183633fe0a
+imported_hash: ac73b05e5435663e
 title: Code Review Round — Questions & Model Answers
 summary: In a code review interview, the "question" is usually the code itself — you're handed a diff/PR and asked to review it.
-order: 21
+order: 15
 kind: reading
 section: Code review round
-source: sisyphus/interviewing/rounds/code-review-round/questions.md
+source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/questions.md
 ---
 
 # Code Review Round — Questions & Model Answers

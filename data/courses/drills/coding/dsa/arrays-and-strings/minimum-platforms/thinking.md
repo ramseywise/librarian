@@ -1,11 +1,11 @@
 ---
-imported_hash: 509cb5d98d8b04e9
+imported_hash: 425a991097118ca7
 title: Minimum Platforms — First-Principles Thinking Guide
 summary: 'Sort arrivals and departures separately. Do a merge-like scan: if next event is an arrival → need +1 platform.'
-order: 122
+order: 25
 kind: reading
 section: Dsa / Arrays and strings / Minimum platforms
-source: sisyphus/drills/coding/dsa/arrays_and_strings/minimum_platforms/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/minimum_platforms/THINKING.md
 ---
 
 # Minimum Platforms — First-Principles Thinking Guide

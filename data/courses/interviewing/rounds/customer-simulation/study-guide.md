@@ -1,11 +1,11 @@
 ---
-imported_hash: a0568bf38274b4de
+imported_hash: 77cd104f4159756c
 title: Customer Simulation — Study Guide
 summary: 'The most common failure in this round: arriving with a solution and defending it.'
-order: 47
+order: 40
 kind: reading
 section: Customer simulation
-source: sisyphus/interviewing/rounds/customer-simulation/study-guide.md
+source: learn-ai-engineering/practice/interviewing/rounds/customer-simulation/study-guide.md
 ---
 
 # Customer Simulation — Study Guide

@@ -1,11 +1,11 @@
 ---
-imported_hash: 8dc8c16bcaf61f77
+imported_hash: d4c8a3ea56d55a9b
 title: Agents — Study Guide
 summary: The centerpiece topic for AIE/FDE loops in 2026.
 order: 11
 kind: reading
 section: Agents
-source: sisyphus/interviewing/guides/4-agents/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/4-agents/interview-guide.md
 ---
 
 # Agents — Study Guide
@@ -227,7 +227,7 @@ Condensed from the book's [reference answers](https://github.com/bojieli/ai-agen
 
 ## Sources
 
-- notes: [agent-harness.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agent-harness.md) (harness anatomy + OpenClaw 10 principles), [reliable-agents.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/reliable-agents.md) (PRINCE case study), [agents-design.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agents-design.md) (protocol-driven multi-agent, decomposition), [loop-engineering.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/04-loop-engineering/loop-engineering.md), [deep-agents.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/deep-agents.md), [memory.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/sources/memory-augmented-rag-notion-export.md), [agents-google-adk.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/generative-ai/03-agentic-foundations/agents-google-adk.md)
+- notes: [Harness anatomy](../../../ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md) (harness anatomy + OpenClaw 10 principles), [Agentic RAG: PRINCE](../../../generative-ai/02-rag-retrieval/notes/08-agentic-rag-prince.md) (PRINCE case study), [Multi-agent design patterns](../../../generative-ai/03-agentic-foundations/notes/04-multi-agent-design-patterns.md) (protocol-driven multi-agent, decomposition), [Loop engineering](../../../ai-engineering/04-loop-engineering/readme.md), [Long-horizon execution](../../../ai-engineering/03-harness-engineering/notes/06-long-horizon-execution.md), [Memory](../../../ai-engineering/02-context-engineering/notes/06-memory.md), [Google ADK](../../../generative-ai/03-agentic-foundations/notes/06-google-adk-intensive.md)
 - librarian wiki: Agentic Workflow Patterns · ACI (Agent-Computer Interface) · ReAct Pattern · Plan and Execute Pattern · Multi-Agent Orchestration Patterns · Agent Memory Types · Deep Agents Framework · Framework Selection (LangChain vs LangGraph vs Deep Agents) · ADK Workflow Agents · MCP Protocol · A2A Agent Protocol · HITL and Interrupt Patterns
-- readings: `ai-engineering/readings/ai_engineering/` (building agents, multi-agent context, mcp), `ai-engineering/readings/general/` (ReAct, generative agents, Gorilla, ToolLLM)
+- readings: [agentic foundations references](../../../generative-ai/03-agentic-foundations/references.md) (building agents, multi-agent context, MCP, ReAct, generative agents, Gorilla, ToolLLM)
 - external: martinfowler.com/articles/reliable-llm-bayer.html · anthropic.com/engineering/building-effective-agents · openai.com/index/harness-engineering

@@ -1,11 +1,11 @@
 ---
-imported_hash: 1cd679a61a5316d1
+imported_hash: 25f1c51fbeece8b0
 title: AI-Generated & LLM Integration Code
 summary: 'async def handle_message(self, user_id: str, message: str) -> str: # Load user context context = await self.memory.get(user_id)'
-order: 25
+order: 19
 kind: reading
 section: Code review round / Examples
-source: sisyphus/interviewing/rounds/code-review-round/examples/ai-generated.md
+source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/examples/ai-generated.md
 ---
 
 # AI-Generated & LLM Integration Code
@@ -138,4 +138,4 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/ai-generated.md
 >
 > **[Info]** — Memory isolation relies on `user_id` — worth verifying that the caller authenticates users and that `user_id` can't be spoofed (one user reading another's memory history).
 
-**What this teaches**: Memory writes in agent systems are a security boundary. The OWASP Agent Security cheat sheet lists memory poisoning as a key risk — and this is exactly the "bad example" pattern they show. See [security guide §3](../../../guides/7-security-safety/interview-guide.md) on memory hygiene; [security notes](../../../notes/security.md) OWASP §3.
+**What this teaches**: Memory writes in agent systems are a security boundary. The OWASP Agent Security cheat sheet lists memory poisoning as a key risk — and this is exactly the "bad example" pattern they show. See [security guide §3](../../../guides/7-security-safety/interview-guide.md) on memory hygiene; [security chapter](../../../../ai-engineering/09-safety-and-security/readme.md) OWASP §3.

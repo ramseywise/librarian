@@ -1,11 +1,11 @@
 ---
-imported_hash: e6e90828fc25d7cb
+imported_hash: 03fb9bdda017840d
 title: Sliding Window
 summary: The sliding window technique iterates over a list K elements at a time.
-order: 199
+order: 102
 kind: reading
 section: Dsa / Sliding window
-source: sisyphus/drills/coding/dsa/sliding_window/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/sliding_window/Readme.md
 ---
 
 # Sliding Window

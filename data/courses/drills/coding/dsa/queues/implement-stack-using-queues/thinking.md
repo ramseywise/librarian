@@ -1,11 +1,11 @@
 ---
-imported_hash: 7d3c035aaf23a74f
+imported_hash: 07549e1ded643779
 title: Implement Stack Using Queues — First-Principles Thinking Guide
 summary: 'pop(): return queue.dequeue() top(): return queue.front()'
-order: 189
+order: 92
 kind: reading
 section: Dsa / Queues / Implement stack using queues
-source: sisyphus/drills/coding/dsa/queues/implement_stack_using_queues/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/queues/implement_stack_using_queues/THINKING.md
 ---
 
 # Implement Stack Using Queues — First-Principles Thinking Guide

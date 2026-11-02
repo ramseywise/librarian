@@ -1,11 +1,11 @@
 ---
-imported_hash: 66774ded2d475fbe
+imported_hash: dd985a0db9343c0c
 title: Coding-drill starter files
 summary: One file per question. Each carries the prompt as a module docstring, the clarifications the interviewer would give if asked, signatures stubbed with NotImplementedError, and a single happy-path smoke assert.
-order: 256
+order: 138
 kind: reading
 section: Prompts
-source: sisyphus/drills/coding/prompts/README.md
+source: learn-ai-engineering/practice/drills/coding/prompts/README.md
 ---
 
 # Coding-drill starter files
@@ -14,8 +14,8 @@ One file per question. Each carries the prompt as a module docstring, the
 clarifications the interviewer would give if asked, signatures stubbed with
 `NotImplementedError`, and a single happy-path smoke assert.
 
-**Copy, don't edit.** `coding-drill` copies a starter to
-`drills/coding/scratch/<qid>-<date>.py` so these stay pristine across attempts.
+**Copy, don't edit.** Copy a starter to `drills/coding/scratch/<qid>-<date>.py` (gitignored) so
+these stay pristine across attempts.
 
 Every file except `debug-dedup.py` fails at `NotImplementedError` on a fresh run.
 `debug-dedup.py` fails on its actual bug — that failure is the exercise.

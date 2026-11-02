@@ -1,11 +1,11 @@
 ---
-imported_hash: a460efd89b6e5cb3
+imported_hash: cf6abe1ca380cfb8
 title: Greedy
 summary: A greedy algorithm makes the locally optimal choice at each step, hoping to find the global optimum.
-order: 158
+order: 61
 kind: reading
 section: Dsa / Greedy
-source: sisyphus/drills/coding/dsa/greedy/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/greedy/Readme.md
 ---
 
 # Greedy

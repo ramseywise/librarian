@@ -1,11 +1,11 @@
 ---
-imported_hash: c2858b887ad79e70
+imported_hash: 2b8ae4f7ca72b3e4
 title: 'Worked Example: 1-Hour Timed Code Test (AIE track)'
 summary: This example walks the 60-minute clock end to end.
-order: 16
+order: 10
 kind: reading
 section: Case study / Examples / Aie track
-source: sisyphus/interviewing/rounds/case-study/examples/aie-track/one-hour-code-test.md
+source: learn-ai-engineering/practice/interviewing/rounds/case-study/examples/aie-track/one-hour-code-test.md
 ---
 
 # Worked Example: 1-Hour Timed Code Test (AIE track)

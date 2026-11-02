@@ -1,11 +1,11 @@
 ---
-imported_hash: a8d41b68ee87d9cc
+imported_hash: 25b6a9d1b5843499
 title: 'Example: Scaling a RAG System 100x'
 summary: '"Your RAG-based customer support system handles 1K queries/day.'
-order: 88
+order: 69
 kind: reading
 section: System design round / Examples
-source: sisyphus/interviewing/rounds/system-design-round/examples/scaling.md
+source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/examples/scaling.md
 ---
 
 # Example: Scaling a RAG System 100x

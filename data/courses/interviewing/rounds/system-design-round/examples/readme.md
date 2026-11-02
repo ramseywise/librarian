@@ -1,25 +1,16 @@
 ---
-imported_hash: 3c9a57ae8703995e
+imported_hash: b3a02629a78cae61
 title: System Design Round — Worked Examples
 summary: Each file walks through a full system design using the five-step process from the study guide.
-order: 81
+order: 65
 kind: reading
 section: System design round / Examples
-source: sisyphus/interviewing/rounds/system-design-round/examples/README.md
+source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/examples/README.md
 ---
 
 # System Design Round — Worked Examples
 
 Each file walks through a full system design using the five-step process from the [study guide](../study-guide.md). Practice by attempting the design yourself first (40-min timer), then compare.
-
-## Real systems (portfolio case studies)
-
-| System | File | Prompt | Key topics |
-|--------|------|--------|------------|
-| Customer support agent | [support-agent.md](support-agent.md) | "Design a help center agent with citation enforcement and human escalation" | 5-layer guardrails, CRAG, multi-framework comparison, grounding |
-| Financial forecasting | [forecasting-agent.md](forecasting-agent.md) | "Design a self-learning cash flow forecasting system" | Classical ML + LLM hybrid, agentic self-learning loop, knowledge graph, dynamic segmentation |
-| Meeting intelligence | [meeting-processor.md](meeting-processor.md) | "Design a meeting capture → typed fact extraction → lifecycle state machine" | Event-driven pipeline, sole-writer state machine, multi-tenant, template-rendered architecture |
-| Accounting assistant | [accounting-assistant.md](accounting-assistant.md) | "Design a support agent for accounting with regulatory knowledge" | Three knowledge layers (articles + rules + entities), knowledge graph vs RAG, intent routing, uncertainty signaling |
 
 ## Design patterns (generic prompts)
 

@@ -1,11 +1,11 @@
 ---
-imported_hash: 70eebfeb51447ccd
+imported_hash: 457114e47cc0386a
 title: Security & Trust Boundaries
 summary: '+ @router.get("/admin/users/{user_id}/export") + async def export_user_data(user_id: int, db: Database = Depends(get_db)): + user = await db.fetch_one("SELECT  FROM users WHERE id = :id", {"id": user_id}) + return {"data": user, "exported_a…'
-order: 28
+order: 22
 kind: reading
 section: Code review round / Examples
-source: sisyphus/interviewing/rounds/code-review-round/examples/security.md
+source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/examples/security.md
 ---
 
 # Security & Trust Boundaries
@@ -93,7 +93,7 @@ source: sisyphus/interviewing/rounds/code-review-round/examples/security.md
 >
 > Wrapping in explicit tags further helps the model distinguish data from instructions.
 
-**What this teaches**: Trust separation is the core defense against prompt injection. The "refactor" looks like a cleanup but is a security regression — it elevates untrusted content from user-role to system-role authority. See [security guide §2](../../../guides/7-security-safety/interview-guide.md) on source-sink analysis; [security notes](../../../notes/security.md) §2.
+**What this teaches**: Trust separation is the core defense against prompt injection. The "refactor" looks like a cleanup but is a security regression — it elevates untrusted content from user-role to system-role authority. See [security guide §2](../../../guides/7-security-safety/interview-guide.md) on source-sink analysis; [security chapter](../../../../ai-engineering/09-safety-and-security/readme.md) §2.
 
 ---
 

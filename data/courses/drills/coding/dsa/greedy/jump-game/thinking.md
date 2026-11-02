@@ -1,11 +1,11 @@
 ---
-imported_hash: 70ec481b68dbee7d
+imported_hash: 4e85e4e37c841f1a
 title: Jump Game — First-Principles Thinking Guide
 summary: 'For each index i from 0 to n-1: If i > farthest: return False ← Can''t reach this index farthest = max(farthest, i + nums[i]) If farthest >= n - 1: return True ← Early exit'
-order: 162
+order: 65
 kind: reading
 section: Dsa / Greedy / Jump game
-source: sisyphus/drills/coding/dsa/greedy/jump_game/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/greedy/jump_game/THINKING.md
 ---
 
 # Jump Game — First-Principles Thinking Guide

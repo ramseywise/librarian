@@ -1,11 +1,11 @@
 ---
-imported_hash: fd3327196d2fc92d
+imported_hash: b94375ddc572c454
 title: Design Circular Queue
 summary: ''
-order: 186
+order: 89
 kind: reading
 section: Dsa / Queues / Design circular queue
-source: sisyphus/drills/coding/dsa/queues/design_circular_queue/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/queues/design_circular_queue/README.md
 ---
 
 # Design Circular Queue

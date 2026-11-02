@@ -1,11 +1,11 @@
 ---
-imported_hash: 49d94669a6b591bd
+imported_hash: cf3b43f758b47e42
 title: Pow(x, n)
 summary: Implement pow(x, n), which calculates x raised to the power n.
-order: 197
+order: 100
 kind: reading
 section: Dsa / Recursion / Power of n
-source: sisyphus/drills/coding/dsa/recursion/power_of_n/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/recursion/power_of_n/README.md
 ---
 
 # Pow(x, n)

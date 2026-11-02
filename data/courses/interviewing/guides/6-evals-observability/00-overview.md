@@ -1,11 +1,11 @@
 ---
-imported_hash: c9a6998788b5dc1d
+imported_hash: aaf158026323d5ae
 title: Pillar 6 — Evals & Observability
 summary: How you know an AI system works — and keeps working.
 order: 14
 kind: reading
 section: Evals observability
-source: sisyphus/interviewing/guides/6-evals-observability/00-overview.md
+source: learn-ai-engineering/practice/interviewing/guides/6-evals-observability/00-overview.md
 ---
 
 # Pillar 6 — Evals & Observability
@@ -15,39 +15,14 @@ regression vs capability testing, tracing, drift. The pillar interviewers use to
 people who've shipped from people who've demoed: "how did you measure it?" has to have a
 real answer.
 
-## Learning path
+## Learn it in the curriculum
 
-1. **The taxonomy** — [eval-engineering.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/06-eval/eval-engineering.md) and
-   [01-what-an-eval-is.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/06-eval/notes/01-what-an-eval-is.md) (from Anthropic's
-   eval article) + librarian's *Anthropic Eval Taxonomy* page: unit/trajectory/e2e tiers,
-   capability vs regression harnesses.
-2. **Formal methodology** — *AI Engineering* chs 3–4 (Evaluation Methodology, Evaluate AI
-   Systems — `ai-engineering/readings/ai_engineering/ai engineer/`): the most systematic written
-   treatment.
-3. **RAG-specific metrics** — RAGAS/ARES from [pillar 3](../3-rag/00-overview.md);
-   faithfulness vs answer relevance vs context precision.
-4. **Agent evals** — *Validation and Measurement* + *Monitoring in Production* +
-   *Improvement Loops* (agent-applications book chs 9–11); pass@k vs pass^k; the
-   two-layer human/LLM calibration diagram in [../../images/](../../images/).
-5. **Observability in practice** — [support-agent-observability.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/generative-ai/06-observability/support-agent-observability.md) +
-   langfuse course refs (`generative-ai/06-observability/`): traces, spans, online
-   sampling, thumbs-down → eval-set loops.
-6. **Close the loop** — librarian `wiki/eval/` (16 pages) for judge design, annotation
-   pipelines, threshold governance from real systems.
+The teaching lives in the chapters. Work them in this order, then use the [interview guide](interview-guide.md) as the recall sheet.
 
-## Resource map
-
-| Resource | Type | Where | What it teaches |
-|---|---|---|---|
-| *AI Engineering* chs 3–4 | pdf | `ai-engineering/readings/ai_engineering/ai engineer/` | evaluation methodology end to end |
-| *Building Applications with AI Agents* chs 9–11 | pdf | `ai-engineering/readings/ai_engineering/ai_agent_applications/` | agent validation, monitoring, improvement loops |
-| RAGAS · ARES papers | pdf | `generative-ai/02-rag-retrieval/3-rag/` | automated RAG evaluation |
-| TruthfulQA + judge-bias papers | pdf | `ai-engineering/readings/general/` | why judges need calibration |
-| langfuse/langsmith course repos | code | `generative-ai/06-observability/` | hands-on tracing |
-| Anthropic Eval Taxonomy · LLM-judge + annotation pages (wiki/eval, 16pp) | wiki | librarian | compiled harness designs |
-| eval-engineering.md · support-agent-observability.md | note | [ai-engineering/06-eval/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/06-eval) · [generative-ai/06-observability/](https://github.com/ramseywise/learn-ai-engineering/tree/main/generative-ai/06-observability) | taxonomy + tracing |
-| agents-self-training.md | note | [../../notes/agents-self-training.md](../../notes/agents-self-training.md) | eval-driven training |
-| two-layer eval calibration · agentic lifecycle evals | image | [../../images/](../../images/) | human/LLM grading loop diagrams |
+| Chapter | What it covers |
+|---|---|
+| [Evaluation](../../../generative-ai/08-eval/readme.md) | Datasets, graders, judges, CI gates, production |
+| [Observability](../../../generative-ai/06-observability/readme.md) | Tracing, scoring, dashboards |
 
 ## Test yourself
 

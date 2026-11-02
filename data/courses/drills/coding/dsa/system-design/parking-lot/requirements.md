@@ -1,11 +1,11 @@
 ---
-imported_hash: e3d572b85e424ae7
+imported_hash: c28a3dcc44413e4a
 title: Parking Lot
 summary: ''
-order: 217
+order: 120
 kind: reading
 section: Dsa / System design / Parking lot
-source: sisyphus/drills/coding/dsa/system_design/parking_lot/Requirements.md
+source: learn-ai-engineering/practice/drills/coding/dsa/system_design/parking_lot/Requirements.md
 ---
 
 # Parking Lot

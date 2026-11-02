@@ -1,7 +1,7 @@
 ---
-imported_hash: 7641a6b21b522a01
+imported_hash: 24f28b64d754fdeb
 title: Coding
 summary: ''
 order: 100
-source: sisyphus/drills/coding
+source: learn-ai-engineering/practice/drills/coding
 ---

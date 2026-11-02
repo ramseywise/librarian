@@ -6,6 +6,7 @@ repo, so each of those files landed in data/raw/ twice and was compiled twice.
 
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -50,3 +51,34 @@ def test_skipped_project_keeps_claude_docs_globs(
     repo = _make_repo(tmp_path / "librarian")
     scrape_repo(repo, tmp_path / "out")
     assert len(list((tmp_path / "out" / "librarian").iterdir())) == 3
+
+
+def _make_practice(root: Path) -> Path:
+    for rel in (
+        "practice/interviewing/guide.md",
+        "practice/interviewing/private.md",
+        "practice/drills/README.md",
+        "practice/drills/sql/README.md",
+        "practice/drills/sql/01-rank.md",
+    ):
+        (root / rel).parent.mkdir(parents=True, exist_ok=True)
+        (root / rel).write_text(f"# {rel}\n")
+    return root
+
+
+def test_practice_ignored_files_stay_out(tmp_path: Path) -> None:
+    repo = _make_practice(tmp_path / "proj")
+    (repo / ".gitignore").write_text("practice/interviewing/private.md\n")
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    scrape_repo(repo, tmp_path / "out")
+    assert sorted(p.name for p in (tmp_path / "out" / "proj").iterdir()) == [
+        "practice--drills--README.md",
+        "practice--drills--sql--README.md",
+        "practice--interviewing--guide.md",
+    ]
+
+
+def test_practice_needs_git_to_tell_private_from_public(tmp_path: Path) -> None:
+    repo = _make_practice(tmp_path / "proj")
+    scrape_repo(repo, tmp_path / "out")
+    assert not list((tmp_path / "out" / "proj").iterdir())

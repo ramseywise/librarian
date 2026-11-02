@@ -1,11 +1,11 @@
 ---
-imported_hash: c69c4a04077e626a
+imported_hash: 7cb99e0a4b719460
 title: Trie (Prefix Tree) — First-Principles Thinking Guide
 summary: Each node represents a character. A path from root to a marked node spells a word.
-order: 228
+order: 131
 kind: reading
 section: Dsa / Tries / Trie
-source: sisyphus/drills/coding/dsa/tries/trie/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/tries/trie/THINKING.md
 ---
 
 # Trie (Prefix Tree) — First-Principles Thinking Guide

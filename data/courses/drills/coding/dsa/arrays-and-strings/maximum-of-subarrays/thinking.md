@@ -1,11 +1,11 @@
 ---
-imported_hash: 538c8797dd32437f
+imported_hash: e97c991729b95b7a
 title: Maximum of All Subarrays of Size K — First-Principles Thinking Guide
 summary: Use a deque that stores indices in decreasing order of their values.
-order: 116
+order: 19
 kind: reading
 section: Dsa / Arrays and strings / Maximum of subarrays
-source: sisyphus/drills/coding/dsa/arrays_and_strings/maximum_of_subarrays/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/maximum_of_subarrays/THINKING.md
 ---
 
 # Maximum of All Subarrays of Size K — First-Principles Thinking Guide

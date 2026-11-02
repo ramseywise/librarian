@@ -1,5 +1,5 @@
 ---
-imported_hash: 0c0f615d717ef521
+imported_hash: 1639e4cb0f2265a8
 title: Top orders per user, with a running total
 summary: orders(order_id, user_id, ordered_at, amount).
 order: 2
@@ -9,11 +9,14 @@ track: sql
 topic: window-functions
 difficulty: medium
 timebox_min: 20
+units:
+- programming/sql
+- data-analytics/06-applied-analyses/notes/06-sql-for-analytics.md
 wiki:
 - window-functions
 - partitioning
 - ranking
-source: sisyphus/drills/sql/window-functions/top-orders-per-user.md
+source: learn-ai-engineering/practice/drills/sql/window-functions/top-orders-per-user.md
 ---
 
 ## Prompt

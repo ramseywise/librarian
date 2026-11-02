@@ -1,11 +1,11 @@
 ---
-imported_hash: 229c6a7a67e40de1
+imported_hash: 021f2e6800dc47da
 title: Python
 summary: Functions to work with different collections
-order: 183
+order: 86
 kind: reading
 section: Dsa / Python
-source: sisyphus/drills/coding/dsa/python/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/python/Readme.md
 ---
 
 # Python

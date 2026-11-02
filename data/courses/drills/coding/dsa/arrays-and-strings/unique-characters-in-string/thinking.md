@@ -1,11 +1,11 @@
 ---
-imported_hash: 7a65b0c3ab24eb40
+imported_hash: 2f02fbe2ea7d391d
 title: Unique Characters in String — First-Principles Thinking Guide
 summary: ''
-order: 134
+order: 37
 kind: reading
 section: Dsa / Arrays and strings / Unique characters in string
-source: sisyphus/drills/coding/dsa/arrays_and_strings/unique_characters_in_string/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/unique_characters_in_string/THINKING.md
 ---
 
 # Unique Characters in String — First-Principles Thinking Guide

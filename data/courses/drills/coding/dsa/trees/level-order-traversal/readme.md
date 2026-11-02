@@ -1,11 +1,11 @@
 ---
-imported_hash: e884e0dabd2a2964
+imported_hash: 265b636aef647646
 title: Binary Tree Level Order Traversal
 summary: Given the root of a binary tree, return the level order traversal of its nodes' values (left to right, level by level).
-order: 222
+order: 125
 kind: reading
 section: Dsa / Trees / Level order traversal
-source: sisyphus/drills/coding/dsa/trees/level_order_traversal/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/trees/level_order_traversal/README.md
 ---
 
 # Binary Tree Level Order Traversal

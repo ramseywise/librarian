@@ -1,11 +1,11 @@
 ---
-imported_hash: 8d223dd58df7217e
+imported_hash: 888438f8f642aea5
 title: 'Worked Example: Retail Support Automation (Live Case)'
 summary: ''
-order: 18
+order: 12
 kind: reading
 section: Case study / Examples / Aie track
-source: sisyphus/interviewing/rounds/case-study/examples/aie-track/retail-support-automation.md
+source: learn-ai-engineering/practice/interviewing/rounds/case-study/examples/aie-track/retail-support-automation.md
 ---
 
 # Worked Example: Retail Support Automation (Live Case)

@@ -1,11 +1,11 @@
 ---
-imported_hash: d87ae08bbe1687cb
+imported_hash: d2948946dba97dc9
 title: Sources — Technical / ML/LLM Breadth Round
 summary: This file is the master cross-reference for round content.
-order: 105
+order: 74
 kind: reading
 section: Technical questions
-source: sisyphus/interviewing/rounds/technical-questions/sources.md
+source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/sources.md
 ---
 
 # Sources — Technical / ML/LLM Breadth Round
@@ -16,7 +16,7 @@ This file is the master cross-reference for round content. Pointers only — go 
 
 ## Internal: Study guides
 
-The ten domain study guides are the primary content source for this round. Each guide's question bank IS the drill set for its domain.
+The domain study guides are the primary content source for this round. Each guide's question bank IS the drill set for its domain.
 
 | Guide | What it covers for this round |
 |-------|-------------------------------|
@@ -32,12 +32,13 @@ The ten domain study guides are the primary content source for this round. Each 
 | `evals` | LLM-as-judge, RAGAS, golden sets, online vs offline eval, calibration. Q17–20 source. |
 | `security` | Prompt injection, PII handling, trust boundaries, least-privilege tool design. Q21–23 source. |
 | `ml-fundamentals` | Bias-variance, precision-recall, regularization, cross-validation. Q27–30 source. |
+| `1-foundations` | [Guide](../../guides/1-foundations/interview-guide.md): spoken answers to 18 ML Fundamentals questions, plus metrics, imbalance, calibration, drift. |
+| `11-stats-experimentation` | [Guide](../../guides/11-stats-experimentation/interview-guide.md): distributions, intervals, p-values, power, A/B design, CUPED, peeking, multiple comparisons, Bayesian A/B. The DS stats screen. |
 
 ---
 
 ## Internal: Notes and planning docs
 
-- `interviewing/notes/case-interview.md` — contains real screen question lists from actual interviews. Q7 of this round ("What is RAG? Graph+RAG? Chain of Thought? Reflection?") came from a real screen list documented there.
 - `interviewing/README.md` — the role × round matrix. Drives the per-role weighting column in this folder's README.
 - `interviewing/rounds/` — sibling round folders. This round overlaps with `system-design-round` (LLM system architecture questions surface in both) and `coding-challenge` (some coding screens include ML-adjacent implementation).
 

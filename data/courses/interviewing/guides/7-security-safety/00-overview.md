@@ -1,11 +1,11 @@
 ---
-imported_hash: 26a00fcbd9e6882e
+imported_hash: 9d2a854829a35326
 title: Pillar 7 — Security & Safety (prompt injection, guardrails, PII)
 summary: 'The adversarial pillar: what happens when inputs are hostile, outputs are harmful, or data is sensitive.'
 order: 16
 kind: reading
 section: Security safety
-source: sisyphus/interviewing/guides/7-security-safety/00-overview.md
+source: learn-ai-engineering/practice/interviewing/guides/7-security-safety/00-overview.md
 ---
 
 # Pillar 7 — Security & Safety (prompt injection, guardrails, PII)
@@ -15,36 +15,14 @@ data is sensitive. This repo's notes are unusually strong here (deeper than the 
 wiki) — prompt injection mechanics, agent threat models, and the guardrail patterns that
 actually hold.
 
-## Learning path
+## Learn it in the curriculum
 
-1. **The core attack** — [prompt-injection.md](prompt-injection.md): the
-   source–sink model (untrusted content flowing to privileged actions), why "just prompt
-   it not to" fails, the dual-LLM pattern.
-2. **The threat landscape** — [security.md](../../notes/security.md): OWASP AI Agent
-   Security taxonomy; OWASP cheat-sheet links in
-   [reading-list.md](../../notes/reading-list.md).
-3. **Defenses in layers** — [agents-guardrails.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/03-harness-engineering/agents-guardrails.md) +
-   librarian *Input Guardrails Pipeline*: templating, content boundaries, sanitizers,
-   moderation, output validation — and what each layer misses.
-4. **Agentic protection** — *Protecting Agentic Systems* (agent-applications book ch 12)
-   - *Setting Safeguards* (design-patterns book ch 9,
-   `ai-engineering/readings/ai_engineering/ai design/`); MCP-specific: librarian *MCP Server Security
-   Patterns*.
-5. **Compliance reality** — PII handling, GDPR/HIPAA constraints, governance layers —
-   the banking-chatbot worked example in [case-interview.md](../../notes/case-interview.md)
-   is the interview-shaped version.
+The teaching lives in the chapters. Work them in this order, then use the [interview guide](interview-guide.md) as the recall sheet.
 
-## Resource map
-
-| Resource | Type | Where | What it teaches |
-|---|---|---|---|
-| prompt-injection.md · agents-guardrails.md | note | [ai-engineering/01-prompt-engineering/](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/01-prompt-engineering/README.md) ([10 — adversarial prompting](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/01-prompt-engineering/notes/10-adversarial-prompting.md)) · [ai-engineering/03-harness-engineering/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/03-harness-engineering) | the pillar's primary depth (wiki gap) |
-| security.md | note | [../../notes/security.md](../../notes/security.md) | OWASP AI Agent taxonomy |
-| *Building Applications with AI Agents* ch 12 | pdf | `ai-engineering/readings/ai_engineering/ai_agent_applications/` | protecting agentic systems |
-| *Generative AI Design Patterns* ch 9 | pdf | `ai-engineering/readings/ai_engineering/ai design/` | safeguard patterns |
-| Constitutional AI (2212.08073) | pdf | `generative-ai/01-llm-fundamentals/readings/` | principle-guided harmlessness training |
-| Input Guardrails Pipeline · MCP Server Security Patterns · PII pages | wiki | librarian | deployed defense patterns |
-| OWASP LLM Top-10 + cheat sheets | link | [../../notes/reading-list.md](../../notes/reading-list.md) | the standard taxonomy |
+| Chapter | What it covers |
+|---|---|
+| [Safety and security](../../../ai-engineering/09-safety-and-security/readme.md) | Threat models, injection, guardrails, sandboxing, red teaming |
+| [Guardrails and autonomy](../../../generative-ai/03-agentic-foundations/notes/07-guardrails-and-autonomy.md) | Where agents need limits |
 
 ## Test yourself
 

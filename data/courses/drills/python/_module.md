@@ -1,13 +1,7 @@
 ---
-imported_hash: 589049ba716983f2
+imported_hash: d6c9e86b9c8f444e
 title: Python
-summary: 'HackerRank categories: Introduction, Basic Data Types, Strings, Sets, Math, Itertools, Collections, Date and Time, Errors and Exceptions, Classes, Built-ins, Python Functionals, Closures and Decorators, Numpy, Regex and Parsing, XML, Debugg…'
+summary: Python's teaching lives in programming/python/, and the seeded-bug problems and coding prompts are written in it.
 order: 102
-source: sisyphus/drills/python
-readings:
-- title: Competitive Programmer’s Handbook   296p
-  source: drills/python/leetcode/Competitive Programmer’s Handbook - 296p.pdf
-references:
-- title: LeetCodeCheat
-  source: drills/python/leetcode/LeetCodeCheat
+source: learn-ai-engineering/practice/drills/python
 ---

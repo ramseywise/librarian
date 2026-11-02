@@ -31,7 +31,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
       <div className="course-page-inner course-page-inner--practice">
         <h1 className="course-page-title">Practice</h1>
         <p className="course-page-lede">
-          Timed drills from sisyphus, by language. Attempt cold, then open the solution.
+          Timed drills, by language. Attempt cold, then open the solution.
         </p>
         {error && (
           <div className="practice-error">
@@ -42,7 +42,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
         {!drills && !error && <div className="practice-status">Loading drills…</div>}
         {drills && !drills.length && (
           <div className="practice-status">
-            No drills yet. Add files following the schema in sisyphus <code>drills/README.md</code>, then run{" "}
+            No drills yet. Add files following the schema in learn-ai-engineering <code>practice/drills/README.md</code>, then run{" "}
             <code>make import-courses</code>.
           </div>
         )}

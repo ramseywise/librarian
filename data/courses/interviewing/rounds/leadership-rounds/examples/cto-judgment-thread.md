@@ -1,11 +1,11 @@
 ---
-imported_hash: 093e34892720e0bd
+imported_hash: c44682e96d170b2c
 title: 'Worked Example: CTO Judgment Thread — Build vs Buy on Model Serving'
 summary: 'Company: Series A AI startup, ~30 engineers, building a B2B document intelligence product.'
-order: 58
+order: 51
 kind: reading
 section: Leadership rounds / Examples
-source: sisyphus/interviewing/rounds/leadership-rounds/examples/cto-judgment-thread.md
+source: learn-ai-engineering/practice/interviewing/rounds/leadership-rounds/examples/cto-judgment-thread.md
 ---
 
 # Worked Example: CTO Judgment Thread — Build vs Buy on Model Serving

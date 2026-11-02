@@ -1,11 +1,11 @@
 ---
-imported_hash: 91f041045bd2de8b
+imported_hash: cc596fa23f22f7a0
 title: 4Sum — First-Principles Thinking Guide
 summary: Sort first. Fix two elements with nested loops, then use two-pointer technique for the remaining pair.
-order: 108
+order: 11
 kind: reading
 section: Dsa / Arrays and strings / Four sum
-source: sisyphus/drills/coding/dsa/arrays_and_strings/four_sum/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/four_sum/THINKING.md
 ---
 
 # 4Sum — First-Principles Thinking Guide

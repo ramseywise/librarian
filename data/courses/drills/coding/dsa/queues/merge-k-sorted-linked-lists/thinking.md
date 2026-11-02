@@ -1,11 +1,11 @@
 ---
-imported_hash: b807e9dabeb0828c
+imported_hash: 781efd7e90719cb1
 title: Merge K Sorted Linked Lists — First-Principles Thinking Guide
 summary: Maintain a min-heap of size k containing one node from each list.
-order: 191
+order: 94
 kind: reading
 section: Dsa / Queues / Merge k sorted linked lists
-source: sisyphus/drills/coding/dsa/queues/merge_k_sorted_linked_lists/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/queues/merge_k_sorted_linked_lists/THINKING.md
 ---
 
 # Merge K Sorted Linked Lists — First-Principles Thinking Guide

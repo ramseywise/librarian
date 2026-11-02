@@ -1,50 +1,32 @@
 ---
-imported_hash: 36e78efb83f450fe
+imported_hash: e40a28b46d8a1517
 title: Pillar 8 — Data Engineering & MLOps
 summary: 'How data and models get to production and stay healthy: pipelines, orchestration, warehouses, deployment, monitoring.'
-order: 19
+order: 18
 kind: reading
 section: Data eng mlops
-source: sisyphus/interviewing/guides/8-data-eng-mlops/00-overview.md
+source: learn-ai-engineering/practice/interviewing/guides/8-data-eng-mlops/00-overview.md
 ---
 
 # Pillar 8 — Data Engineering & MLOps
 
 How data and models get to production and stay healthy: pipelines, orchestration,
-warehouses, deployment, monitoring. The DataTalks courses in this repo are a complete
-guided path — this pillar is the most "just do the course" of the ten.
+warehouses, deployment, monitoring. The chapters below are a complete guided path: this
+pillar is the most "just do the course" of the ten.
 
-## Learning path
+## Learn it in the curriculum
 
-1. **Data engineering end to end** — `data-engineering/DataTalks Data Engineering/`
-   modules 01–06 in order: Docker/Terraform → orchestration → warehouse → analytics
-   engineering (dbt) → batch (Spark) → streaming (Kafka). Each module has runnable
-   homework; do it, don't read it.
-2. **Dimensional modeling** — *The Data Warehouse Toolkit* (Kimball, `readings/`) after
-   module 03, when star schemas stop being abstract.
-3. **MLOps** — `data-engineering/DataTalks MLOps/` modules 01–07: tracking → training
-   pipelines → deployment → monitoring → best practices.
-4. **The cautionary tales** — *Hidden Technical Debt in ML Systems* + *Software
-   Engineering for ML* (Amershi, ICSE 2019) — short papers that name what the courses
-   guard against.
-5. **Book-depth engineering** — *Machine Learning Engineering in Action* (Ben Wilson,
-   `readings/`) as the narrative companion.
-6. **Org-scale data** — data mesh handouts (`data-engineering/8-data-eng-data-mesh/`) for the
-   decentralization story; LLM-era bridges (embedding pipelines as ETL, prompt/config
-   versioning) in the [interview guide](interview-guide.md) §3.
+The teaching lives in the chapters. Work them in this order, then use the [interview guide](interview-guide.md) as the recall sheet.
 
-## Resource map
-
-| Resource | Type | Where | What it teaches |
-|---|---|---|---|
-| DataTalks Data Engineering (01–06 + projects) | code | `data-engineering/DataTalks Data Engineering/` | the full DE stack, hands-on |
-| DataTalks MLOps (01–07) | code | `data-engineering/DataTalks MLOps/` | experiment tracking → monitored deployment |
-| *The Data Warehouse Toolkit* (Kimball) | pdf | see librarian wiki | dimensional modeling canon |
-| *ML Engineering in Action* (Wilson) | pdf | see librarian wiki | production ML war stories |
-| Hidden Technical Debt (NIPS 2015) · SE for ML (Amershi) | pdf | see librarian wiki | why ML systems rot |
-| Data mesh handouts | pdf | `data-engineering/8-data-eng-data-mesh/` | domain-oriented data architecture |
-| Embedder Warmup · Production Hardening Patterns · PGVector Migration · Cloud Run + Cloud SQL | wiki | librarian | deployment patterns from real systems |
-| ML practice rules | note | `~/.claude/rules/ml.md`, `logging.md` | personal engineering checklist |
+| Chapter | What it covers |
+|---|---|
+| [Data engineering](../../../data-engineering/00-start-here/readme.md) | The whole subject, with its reading order |
+| [Ingest and modelling](../../../data-engineering/02-ingest-and-modelling/readme.md) | Sources, dimensional models, contracts |
+| [Transform and orchestrate](../../../data-engineering/03-transform-and-orchestrate/readme.md) | dbt, idempotency, backfills, schedulers |
+| [Warehouse, lakehouse, streaming](../../../data-engineering/04-warehouse-lakehouse-streaming/readme.md) | Storage shapes, Kafka, cost |
+| [Quality and observability](../../../data-engineering/05-quality-and-observability/readme.md) | Tests, monitors, lineage, incidents |
+| [ML platform](../../../data-engineering/06-ml-platform/readme.md) | Feature stores, registries, serving, drift |
+| [Architecture and governance](../../../data-engineering/07-architecture-and-governance/readme.md) | Mesh and fabric, access control, GDPR |
 
 ## Test yourself
 

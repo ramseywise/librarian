@@ -1,11 +1,11 @@
 ---
-imported_hash: 95f6e648fcdcc8ca
+imported_hash: bb4e92b3759ce235
 title: Behavioral Round — Questions & Model Answers
 summary: Each question is a probe for a specific failure mode.
-order: 3
+order: 2
 kind: reading
 section: Behavioral
-source: sisyphus/interviewing/rounds/behavioral/questions.md
+source: learn-ai-engineering/practice/interviewing/rounds/behavioral/questions.md
 ---
 
 # Behavioral Round — Questions & Model Answers
@@ -58,7 +58,7 @@ failed"), no visible behavior change since, or the classic "I work too hard" non
 **What strong looks like**: Real stakes, clear causal role stated plainly, the fix, and a
 behavior change you've actually maintained. No hedging. No "the team" as a shield.
 
-**Study ref**: [examples/failure-owned.md](examples/failure-owned.md) — worked example with annotations; [study-guide.md](study-guide.md) §Failure story preparation.
+**Study ref**: [study-guide.md](study-guide.md) §Failure story preparation.
 
 ---
 
@@ -80,7 +80,7 @@ flagging the assumptions, or retrospectively rewriting history as if you'd been 
 to assume. You stated assumptions in writing. You built the thing that could be changed if
 you were wrong. You didn't pretend the requirements were clear.
 
-**Study ref**: [examples/ambiguity-rescued.md](examples/ambiguity-rescued.md) — worked example; [study-guide.md](study-guide.md) §Per-audience adaptation (ambiguity tolerance is weighted highest in startup loops).
+**Study ref**: [study-guide.md](study-guide.md) §Per-audience adaptation (ambiguity tolerance is weighted highest in startup loops).
 
 ---
 

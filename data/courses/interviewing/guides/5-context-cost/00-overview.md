@@ -1,11 +1,11 @@
 ---
-imported_hash: a13c129a39f61e0f
+imported_hash: ec76a9293b37759b
 title: Pillar 5 — Context Engineering & Cost/Latency
 summary: What actually goes into the model's context window, in what order, and what it costs.
 order: 12
 kind: reading
 section: Context cost
-source: sisyphus/interviewing/guides/5-context-cost/00-overview.md
+source: learn-ai-engineering/practice/interviewing/guides/5-context-cost/00-overview.md
 ---
 
 # Pillar 5 — Context Engineering & Cost/Latency
@@ -14,35 +14,15 @@ What actually goes into the model's context window, in what order, and what it c
 The unglamorous pillar that separates demos from products: prefix caching, compaction,
 context rot, token economics, and latency budgets.
 
-## Learning path
+## Learn it in the curriculum
 
-1. **The mental model** — notes: [context-engineering.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/ai-engineering/02-context-engineering/context-engineering.md)
-   - [notes/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/02-context-engineering/notes) (the 5 context layers,
-   static-first ordering); librarian's *Prefix Caching* page for the caching mechanism.
-2. **Why it matters mechanically** — KV cache + prefill/decode economics from the
-   [pillar-2 interview guide](../2-llm-fundamentals/interview-guide.md) §§1,4; ALiBi
-   (`ai-engineering/readings/general/`) for the long-context side.
-3. **Inference optimization in depth** — *AI Engineering* ch 9 (Inference Optimization,
-   `ai-engineering/readings/ai_engineering/ai engineer/`); for how deep the rabbit hole goes:
-   *AI Systems Performance Engineering* (`ai performance/`, esp. chs 15–19 on
-   multinode inference, prefill/decode disaggregation, KV-cache tuning).
-4. **Compaction & summarization** — librarian *Summarization Node* + ADK context pages;
-   the static/dynamic-context diagrams in [../../images/](../../images/)
-   (adk-static-vs-dynamic-context.png).
-5. **Budgeting practice** — do the napkin math for one of your own systems: tokens/query
-   × $/M × volume; p50/p95 latency per component. (This habit is graded in every design
-   round.)
+The teaching lives in the chapters. Work them in this order, then use the [interview guide](interview-guide.md) as the recall sheet.
 
-## Resource map
-
-| Resource | Type | Where | What it teaches |
-|---|---|---|---|
-| *AI Engineering* ch 9 | pdf | `ai-engineering/readings/ai_engineering/ai engineer/` | quantization, distillation, speculative decoding, serving metrics |
-| *AI Systems Performance Engineering* (chs 1–20) | pdf | `ai-engineering/readings/ai_engineering/ai performance/` | GPU/CUDA-level inference performance (awareness tier) |
-| ALiBi (2108.12409) | pdf | `ai-engineering/readings/general/` | long-context positional method |
-| Prefix Caching · ADK Context Engineering · Summarization Node | wiki | librarian | caching + compaction patterns from real builds |
-| context-engineering.md · notes/ | note | [ai-engineering/02-context-engineering/](https://github.com/ramseywise/learn-ai-engineering/tree/main/ai-engineering/02-context-engineering) | context layers, compaction instructions |
-| ADK context diagrams | image | [../../images/](../../images/) | static-vs-dynamic context, vibe-coding stakes spectrum |
+| Chapter | What it covers |
+|---|---|
+| [Context engineering](../../../ai-engineering/02-context-engineering/readme.md) | Budgeting the window, compaction, memory, failure modes |
+| [Inference engineering](../../../ai-engineering/07-inference-engineering/readme.md) | Where latency and cost come from |
+| [Cost and latency dashboards](../../../generative-ai/06-observability/notes/06-cost-and-latency-dashboards.md) | Watching spend in production |
 
 ## Test yourself
 

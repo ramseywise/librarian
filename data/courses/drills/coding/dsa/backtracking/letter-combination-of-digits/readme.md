@@ -1,11 +1,11 @@
 ---
-imported_hash: 1e8f9efebafb499a
+imported_hash: 8a30ad37d2c97732
 title: Letter Combination Of Digits
 summary: Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent.
-order: 138
+order: 41
 kind: reading
 section: Dsa / Backtracking / Letter combination of digits
-source: sisyphus/drills/coding/dsa/backtracking/letter_combination_of_digits/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/backtracking/letter_combination_of_digits/README.md
 ---
 
 # Letter Combination Of Digits

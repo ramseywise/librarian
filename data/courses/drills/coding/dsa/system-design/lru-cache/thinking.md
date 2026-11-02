@@ -1,11 +1,11 @@
 ---
-imported_hash: 990888f3965c99e2
+imported_hash: 2aea667630a35cf7
 title: Designing an LRU Cache — First-Principles Thinking Guide
 summary: ''
-order: 215
+order: 118
 kind: reading
 section: Dsa / System design / Lru cache
-source: sisyphus/drills/coding/dsa/system_design/lru_cache/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/system_design/lru_cache/THINKING.md
 ---
 
 # Designing an LRU Cache — First-Principles Thinking Guide

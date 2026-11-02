@@ -1,11 +1,11 @@
 ---
-imported_hash: efd2d7e521ab69c5
+imported_hash: 6b24775a506289d7
 title: 4Sum II — First-Principles Thinking Guide
 summary: 'count = 0 For each c in nums3, d in nums4: count += sum_ab[-(c + d)]'
-order: 181
+order: 84
 kind: reading
 section: Dsa / Meet in the middle / Four sum count
-source: sisyphus/drills/coding/dsa/meet_in_the_middle/four_sum_count/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/meet_in_the_middle/four_sum_count/THINKING.md
 ---
 
 # 4Sum II — First-Principles Thinking Guide

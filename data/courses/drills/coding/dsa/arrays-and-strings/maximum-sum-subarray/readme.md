@@ -1,11 +1,11 @@
 ---
-imported_hash: 0201db6bd233c679
+imported_hash: ca1e56e049a3fe92
 title: Maximum Sum Subarray
 summary: Kadane's Algorithm for Maximum Array Subsequence
-order: 119
+order: 22
 kind: reading
 section: Dsa / Arrays and strings / Maximum sum subarray
-source: sisyphus/drills/coding/dsa/arrays_and_strings/maximum_sum_subarray/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/maximum_sum_subarray/README.md
 ---
 
 # Maximum Sum Subarray

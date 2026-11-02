@@ -1,11 +1,11 @@
 ---
-imported_hash: dc4ff47d425a9366
+imported_hash: bf988405031f4557
 title: Queue
 summary: A queue is a FIFO (First In, First Out) data structure.
-order: 185
+order: 88
 kind: reading
 section: Dsa / Queues
-source: sisyphus/drills/coding/dsa/queues/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/queues/Readme.md
 ---
 
 # Queue

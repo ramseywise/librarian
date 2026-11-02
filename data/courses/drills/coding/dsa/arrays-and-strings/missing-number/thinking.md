@@ -1,11 +1,11 @@
 ---
-imported_hash: 3cb731abb7f8351c
+imported_hash: a047a9b66bbf2b07
 title: Missing Number in Array — First-Principles Thinking Guide
 summary: Expected sum of 1..n = n(n+1)/2. Actual sum = sum of array.
-order: 124
+order: 27
 kind: reading
 section: Dsa / Arrays and strings / Missing number
-source: sisyphus/drills/coding/dsa/arrays_and_strings/missing_number/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/missing_number/THINKING.md
 ---
 
 # Missing Number in Array — First-Principles Thinking Guide

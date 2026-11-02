@@ -1,11 +1,11 @@
 ---
-imported_hash: 1180a1caecfa72a2
+imported_hash: d9fda4f467355b1d
 title: Maximum Gap — First-Principles Thinking Guide
 summary: ''
-order: 114
+order: 17
 kind: reading
 section: Dsa / Arrays and strings / Maximum gap
-source: sisyphus/drills/coding/dsa/arrays_and_strings/maximum_gap/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/maximum_gap/THINKING.md
 ---
 
 # Maximum Gap — First-Principles Thinking Guide

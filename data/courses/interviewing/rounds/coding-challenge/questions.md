@@ -1,11 +1,11 @@
 ---
-imported_hash: 95a9def6d9aaae95
+imported_hash: c2a60c4f8093c421
 title: Coding Challenge — Question Bank
 summary: These assume a browser editor with no network and no AI assistant — stdlib only.
-order: 31
+order: 25
 kind: reading
 section: Coding challenge
-source: sisyphus/interviewing/rounds/coding-challenge/questions.md
+source: learn-ai-engineering/practice/interviewing/rounds/coding-challenge/questions.md
 ---
 
 # Coding Challenge — Question Bank
@@ -27,7 +27,7 @@ source: sisyphus/interviewing/rounds/coding-challenge/questions.md
 
 **Common pitfalls**: Implementing a linked list from scratch when `collections.OrderedDict` exists. Not handling the `key not found` path in `get`. Forgetting to evict on `put` when at capacity.
 
-**Study refs**: `drills/python/leetcode/` (LRU Cache #146)
+**Study refs**: LeetCode #146 (LRU Cache)
 
 ---
 
@@ -254,7 +254,6 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 
 **Common pitfalls**: Changing code before reproducing. Fixing the symptom (force-sorting output) without finding why dedup failed. Not writing a test that would catch the original bug.
 
-**Study refs**: `drills/python/leetcode/` debugging section
 
 ---
 
@@ -312,28 +311,6 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 **Key signals**: Does not trust "no exception = correct." Instruments the pipeline before reading the transform code. States what invariant would prevent recurrence.
 
 **Common pitfalls**: Reading the code top-to-bottom hoping to spot it (slow). Not pinning the stage where corruption enters. Fixing the immediate case without adding a guard.
-
----
-
-### 10a. Semantic search returns the wrong ranking
-
-**Setup**: A FastAPI + FAISS + sentence-transformers property search (`drills/coding/problems/property-search/`). It runs, returns results, and nothing throws. A cheap-listing price boost is supposed to lift cheaper properties. Then a design follow-up: add size and natural-language feature filters.
-
-**Testing**: Reading an unfamiliar retrieval stack, checking numbers instead of trusting them, then trade-off reasoning (structured filter vs. embedding, NLP vs. LLM extraction).
-
-**Approach**:
-
-1. Run the documented query and *count* the results against `max_results`; read the scores, not just the names
-2. Trace one result through: embed → normalize → `index.search` → loop → boost → response
-3. Work the boost formula by hand for a cheap and an expensive listing; check the sign of the factor against the docstring
-4. Fix each bug with the smallest change, then state the regression test that pins it
-5. Design: size as a structured pre/post-filter (not embedded text); feature matching NLP vs. LLM with latency, cost, determinism and fallback named
-
-**Key signals**: Counts results before reading code. Computes the boost for a concrete price instead of eyeballing it. Notices that FAISS already returns best-first, so any slice of it is suspect. In the design half, keeps hard constraints (size, price) out of the embedding and proposes a hybrid: LLM extraction to a fixed feature vocabulary, cached, with a deterministic fallback.
-
-**Common pitfalls**: Blaming the embedding model. Finding one bug and stopping. Fixing the boost by clamping instead of correcting the sign. "Just use an LLM" without latency, cost or failure mode. Putting numeric filters into the embedding text.
-
-**Study refs**: `CC/examples/property-search.md` (after the attempt only)
 
 ---
 
@@ -455,8 +432,6 @@ One problem revealed in levels over 45–90 minutes; each level extends the last
 
 **Common pitfalls**: Starting with code before clarifying. Storing raw values, then rewriting every method at L2. A background timer thread as the only expiry mechanism. Forgetting that expiry timestamps must survive a restart.
 
-**Study refs**: `drills/coding/implementation/key-value-store.md`
-
 ---
 
 ### 17. In-memory SQL-like database (LeetCode 2408 "Design SQL")
@@ -473,8 +448,6 @@ One problem revealed in levels over 45–90 minutes; each level extends the last
 **Key signals**: Picks a dict over a list because a delete must not shift ids. States that the counter is never rolled back. When adding the index, names the consistency obligation on every write path.
 
 **Common pitfalls**: A list of rows where `del` shifts every later id. Reusing freed ids. Adding an index that delete forgets to update. Hand-rolling CSV quoting instead of `csv.writer`.
-
-**Study refs**: `drills/coding/implementation/in-memory-db.md`
 
 ---
 
@@ -493,8 +466,6 @@ One problem revealed in levels over 45–90 minutes; each level extends the last
 
 **Common pitfalls**: A flat balance that loses per-grant expiry. A background expiry thread. Mutating state in arrival order so a late grant can never fund an earlier charge. Floats for money.
 
-**Study refs**: `drills/coding/implementation/credits-expiry-system.md`
-
 ---
 
 ### 19. Web crawler (single-threaded → politeness → concurrent)
@@ -511,13 +482,11 @@ One problem revealed in levels over 45–90 minutes; each level extends the last
 
 **Common pitfalls**: A global sleep as "rate limiting". Unbounded depth or domain scope. Ending when the queue is momentarily empty while workers are still fetching. A race between check-visited and add-visited.
 
-**Study refs**: `drills/coding/implementation/web-crawler.md`
-
 ---
 
 ## ML Coding (NumPy from scratch)
 
-Implement the maths, not the library call. Usually NumPy is allowed and sklearn and torch are not; ask. Drill files: `drills/coding/ml-coding/`.
+Implement the maths, not the library call. Usually NumPy is allowed and sklearn and torch are not; ask.
 
 ### 20. Numerically stable softmax
 

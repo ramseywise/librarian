@@ -1,11 +1,11 @@
 ---
-imported_hash: 33ef6aa74798341d
+imported_hash: a927fb8e532efa17
 title: Course Schedule — First-Principles Thinking Guide
 summary: 'DFS(node): If GRAY → cycle! return True If BLACK → already done, return False Mark GRAY For each neighbor: if DFS(neighbor) → cycle Mark BLACK return False'
-order: 153
+order: 56
 kind: reading
 section: Dsa / Graph / Course schedule
-source: sisyphus/drills/coding/dsa/graph/course_schedule/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/graph/course_schedule/THINKING.md
 ---
 
 # Course Schedule — First-Principles Thinking Guide

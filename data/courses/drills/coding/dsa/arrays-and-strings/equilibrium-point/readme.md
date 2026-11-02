@@ -1,11 +1,11 @@
 ---
-imported_hash: 2b8d99c661637708
+imported_hash: ff70efe252a2f185
 title: Equilibrium Point
 summary: ''
-order: 103
+order: 6
 kind: reading
 section: Dsa / Arrays and strings / Equilibrium point
-source: sisyphus/drills/coding/dsa/arrays_and_strings/equilibrium_point/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/equilibrium_point/README.md
 ---
 
 # Equilibrium Point

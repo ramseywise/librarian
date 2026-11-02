@@ -1,11 +1,11 @@
 ---
-imported_hash: 632cc8ca20682c00
+imported_hash: f86309f8b4aa9dcd
 title: Object Oriented Design
 summary: ''
-order: 182
+order: 85
 kind: reading
 section: Dsa / Object oriented design
-source: sisyphus/drills/coding/dsa/object_oriented_design/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/object_oriented_design/Readme.md
 ---
 
 # Object Oriented Design

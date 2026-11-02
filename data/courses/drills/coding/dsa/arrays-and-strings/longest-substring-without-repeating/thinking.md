@@ -1,11 +1,11 @@
 ---
-imported_hash: b710889440ced0d0
+imported_hash: 7e65ff6cccb83b9d
 title: Longest Substring Without Repeating — First-Principles Thinking Guide
 summary: Use a window [left, right]. Expand right.
-order: 112
+order: 15
 kind: reading
 section: Dsa / Arrays and strings / Longest substring without repeating
-source: sisyphus/drills/coding/dsa/arrays_and_strings/longest_substring_without_repeating/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/longest_substring_without_repeating/THINKING.md
 ---
 
 # Longest Substring Without Repeating — First-Principles Thinking Guide

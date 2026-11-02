@@ -1,11 +1,11 @@
 ---
-imported_hash: e6be09690e6594fc
+imported_hash: 83ac6ed5f028f570
 title: Activity Selection
 summary: Given a list of activities with start and end times, select the maximum number of non-overlapping activities that can be performed by a single person.
-order: 159
+order: 62
 kind: reading
 section: Dsa / Greedy / Activity selection
-source: sisyphus/drills/coding/dsa/greedy/activity_selection/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/greedy/activity_selection/README.md
 ---
 
 # Activity Selection

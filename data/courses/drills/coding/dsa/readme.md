@@ -1,11 +1,11 @@
 ---
-imported_hash: 90f018982f071eee
+imported_hash: 30f66186fd438d24
 title: Hello, Interview!
 summary: We welcome contributions in any programming language!
-order: 98
+order: 1
 kind: reading
 section: Dsa
-source: sisyphus/drills/coding/dsa/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/README.md
 ---
 
 <!-- markdownlint-disable-next-line MD026 -->

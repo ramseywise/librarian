@@ -1,11 +1,11 @@
 ---
-imported_hash: ff046ea2d6446dc1
+imported_hash: 1218008a25a538c2
 title: Longest Increasing Subsequence
 summary: Given an integer array nums, return the length of the longest strictly increasing subsequence.
-order: 147
+order: 50
 kind: reading
 section: Dsa / Dynamic programming / Longest increasing subsequence
-source: sisyphus/drills/coding/dsa/dynamic_programming/longest_increasing_subsequence/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/dynamic_programming/longest_increasing_subsequence/README.md
 ---
 
 # Longest Increasing Subsequence

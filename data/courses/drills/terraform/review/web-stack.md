@@ -1,5 +1,5 @@
 ---
-imported_hash: eb9162db349fb41f
+imported_hash: 2437967070848065
 title: Review a web stack before it ships
 summary: 'A teammate opens a PR with web-stack.tf: a security group, a Postgres RDS instance and an uploads bucket.'
 order: 2
@@ -14,7 +14,7 @@ wiki:
 - secrets-management
 - network-security
 - iac-review
-source: sisyphus/drills/terraform/review/web-stack.md
+source: learn-ai-engineering/practice/drills/terraform/review/web-stack.md
 ---
 
 ## Prompt

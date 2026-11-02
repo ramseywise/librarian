@@ -1,11 +1,11 @@
 ---
-imported_hash: 63d94aa0b755d330
+imported_hash: df96ff95e00cc5e8
 title: LLM Fundamentals — Study Guide
 summary: The breadth/theory round now front-loads transformer-era questions.
 order: 7
 kind: reading
 section: Llm fundamentals
-source: sisyphus/interviewing/guides/2-llm-fundamentals/interview-guide.md
+source: learn-ai-engineering/practice/interviewing/guides/2-llm-fundamentals/interview-guide.md
 ---
 
 # LLM Fundamentals — Study Guide
@@ -17,16 +17,16 @@ signal is).
 ## 1. Architecture core
 
 - **Tokenization** — BPE/SentencePiece subwords; why token ≠ word matters (cost, truncation,
-  multilingual inflation, arithmetic weirdness). `nn-zero-to-hero/nanogpt` builds this from
+  multilingual inflation, arithmetic weirdness). [nanoGPT](../../../generative-ai/09-llms-from-scratch/notes/03-nanogpt.md) builds this from
   scratch — cite hands-on experience.
 - **Attention** — `softmax(QKᵀ/√d)V`; self-attention = every token attends to every other
   (O(n²) — the reason long context is expensive and why "context rot" exists). Multi-head =
   parallel subspace views. Positional info via embeddings (learned, RoPE, ALiBi — ALiBi
-  paper is in `ai-engineering/readings/general/`).
+  paper in [the references](../../../generative-ai/01-llm-fundamentals/references.md)).
 - **Transformer block** — attention + MLP + residuals + layer norm; decoder-only for GPT-family
   (causal mask), encoder-only for BERT (bidirectional, classification/embedding), encoder-
   decoder for translation-style tasks. Papers: attention-is-all-you-need, BERT — both in
-  `ai-engineering/readings/general/`.
+  [the references](../../../generative-ai/01-llm-fundamentals/references.md).
 - **KV cache** — decode-time cache of past keys/values; the mechanism under prompt caching
   (see [context-engineering-cost guide](../5-context-cost/interview-guide.md) §3).
 - **Sampling** — temperature, top-p/top-k, why temperature 0 still isn't fully deterministic
@@ -43,7 +43,7 @@ signal is).
    - **DPO** — skips the reward model, optimizes preference pairs directly; more stable,
      cheaper, the common industry default now.
    - **Constitutional AI / RLAIF** — AI feedback guided by principles instead of (or before)
-     human labels; critique-and-revise loop (paper in `ai-engineering/readings/general/`).
+     human labels; critique-and-revise loop (paper in [the references](../../../generative-ai/01-llm-fundamentals/references.md)).
 4. **RL fundamentals behind it** (from the notes): MDP framing — agent/environment/state/
    action/reward/policy; exploration vs exploitation; value-based (DQN) vs policy-gradient
    (PPO) vs actor-critic. **MARL** exists (CTDE, QMIX, MADDPG) but say honestly: it's for
@@ -137,7 +137,7 @@ Condensed from the book's [reference answers](https://github.com/bojieli/ai-agen
 
 ## Sources
 
-- notes: [rl.md](https://github.com/ramseywise/learn-ai-engineering/blob/main/generative-ai/01-llm-fundamentals/rl.md) (RL/RLHF/MARL — confidence: low, verify claims), [agents-self-training.md](../../notes/agents-self-training.md) (Agent-Lightning, training-agent disaggregation)
-- readings: `general/` (attention, BERT, LLaMA, GPT-4, InstructGPT, Constitutional AI, CoT, ReAct, ToT, TruthfulQA), `2-llm-rlhf/` (DQN, PPO, RLHF preferences), `2-llm-fundamentals/` chapters
-- repo: `generative-ai/nn-zero-to-hero/` (nanogpt from scratch), `generative-ai/intro-to-nlp/`
+- notes: [RL and alignment](../../../generative-ai/05-rl/readme.md) (RL/RLHF/MARL — confidence: low, verify claims)
+- readings: [LLM fundamentals references](../../../generative-ai/01-llm-fundamentals/references.md) (attention, BERT, LLaMA, GPT-4, InstructGPT, Constitutional AI, CoT, ReAct, ToT, TruthfulQA), [RL references](../../../generative-ai/05-rl/references.md) (DQN, PPO, RLHF preferences)
+- chapters: [LLMs from scratch](../../../generative-ai/09-llms-from-scratch/readme.md), [NLP](../../../data-science/03-nlp/readme.md)
 - librarian wiki: Direct Preference Optimization · Chain of Thought · Self-Learning Agents

@@ -1,11 +1,11 @@
 ---
-imported_hash: 7cf9f2e0eb8532a9
+imported_hash: d93bbd7177a180bc
 title: Min Stack
 summary: Design a stack that supports push, pop, top, and retrieving the minimum element in constant time O(1).
-order: 207
+order: 110
 kind: reading
 section: Dsa / Stacks / Min stack
-source: sisyphus/drills/coding/dsa/stacks/min_stack/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/stacks/min_stack/README.md
 ---
 
 # Min Stack

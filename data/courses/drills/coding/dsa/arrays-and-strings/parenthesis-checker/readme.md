@@ -1,11 +1,11 @@
 ---
-imported_hash: b13c6917122d5b59
+imported_hash: 062b1cacb7d16d79
 title: Paranthesis Checker
 summary: ''
-order: 125
+order: 28
 kind: reading
 section: Dsa / Arrays and strings / Parenthesis checker
-source: sisyphus/drills/coding/dsa/arrays_and_strings/parenthesis_checker/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/arrays_and_strings/parenthesis_checker/README.md
 ---
 
 # Paranthesis Checker

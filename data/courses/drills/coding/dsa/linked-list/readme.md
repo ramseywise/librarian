@@ -1,11 +1,11 @@
 ---
-imported_hash: a83d1a68b117f9c2
+imported_hash: b2a2d55039a9ae6a
 title: Linked List
 summary: A linked list is a linear data structure where elements are stored in nodes, each pointing to the next.
-order: 168
+order: 71
 kind: reading
 section: Dsa / Linked list
-source: sisyphus/drills/coding/dsa/linked_list/Readme.md
+source: learn-ai-engineering/practice/drills/coding/dsa/linked_list/Readme.md
 ---
 
 # Linked List

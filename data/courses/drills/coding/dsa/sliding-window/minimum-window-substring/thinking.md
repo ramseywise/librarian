@@ -1,11 +1,11 @@
 ---
-imported_hash: 5b7a08c1bc8ab6f0
+imported_hash: 749f8f6fdd56042c
 title: Minimum Window Substring — First-Principles Thinking Guide
 summary: Check all O(n²) substrings, validate each in O(n) → O(n³).
-order: 203
+order: 106
 kind: reading
 section: Dsa / Sliding window / Minimum window substring
-source: sisyphus/drills/coding/dsa/sliding_window/minimum_window_substring/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/sliding_window/minimum_window_substring/THINKING.md
 ---
 
 # Minimum Window Substring — First-Principles Thinking Guide

@@ -1,16 +1,16 @@
 ---
-imported_hash: 48fbe60e07e72089
+imported_hash: 55f4e0feb8361a51
 title: Worked Examples
-summary: 'Nine files: eight full walkthroughs with narration annotations, plus one interviewer guide — the text in [NARRATE: ...] blocks is what you say out loud while typing.'
-order: 34
+summary: 'Eight full walkthroughs with narration annotations: the text in [NARRATE: ...] blocks is what you say out loud while typing.'
+order: 28
 kind: reading
 section: Coding challenge / Examples
-source: sisyphus/interviewing/rounds/coding-challenge/examples/README.md
+source: learn-ai-engineering/practice/interviewing/rounds/coding-challenge/examples/README.md
 ---
 
 # Worked Examples
 
-Nine files: eight full walkthroughs with narration annotations, plus one interviewer guide — the text in `[NARRATE: ...]` blocks is what you say out loud while typing.
+Eight full walkthroughs with narration annotations: the text in `[NARRATE: ...]` blocks is what you say out loud while typing.
 
 For the syntax underneath these — the patterns you should be able to produce without reference — see [code-from-heart.md](../code-from-heart.md).
 
@@ -21,12 +21,6 @@ For the syntax underneath these — the patterns you should be able to produce w
 | `lru-cache.md` | Live coding | Plan → code → test cycle; data structure justification; edge case handling |
 | `debugging-dedup.md` | Debugging | Reproduce → bisect → root cause → fix → regression prevention |
 | `retry-decorator.md` | Live coding (project-style) | Tests-first; production-readiness signals; `functools.wraps`; jitter |
-
-## Interviewer guide
-
-| File | Format | What it contains |
-|------|--------|---------------------|
-| `property-search.md` | Debugging + design (env1, 60 min) | The answer key for [`drills/coding/problems/property-search/`](../../../../drills/coding/problems/property-search/prompts.md): both seeded ranking bugs, expected fixes, NLP-vs-LLM discussion points, scoring. Question 10a. |
 
 ## Practicals — offline, stdlib only
 

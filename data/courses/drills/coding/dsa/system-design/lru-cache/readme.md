@@ -1,11 +1,11 @@
 ---
-imported_hash: a82f73d57a4ed1dc
+imported_hash: 3fcf3b3714e6e099
 title: Design an LRU Cache
 summary: Design a data structure for a Least Recently Used (LRU) cache.
-order: 214
+order: 117
 kind: reading
 section: Dsa / System design / Lru cache
-source: sisyphus/drills/coding/dsa/system_design/lru_cache/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/system_design/lru_cache/README.md
 ---
 
 # Design an LRU Cache

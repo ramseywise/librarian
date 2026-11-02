@@ -1,11 +1,11 @@
 ---
-imported_hash: 83b7ef5832821be8
+imported_hash: bb97afe55d76ec43
 title: Two Sum
 summary: Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
-order: 166
+order: 69
 kind: reading
 section: Dsa / Hashing / Two sum
-source: sisyphus/drills/coding/dsa/hashing/two_sum/README.md
+source: learn-ai-engineering/practice/drills/coding/dsa/hashing/two_sum/README.md
 ---
 
 # Two Sum

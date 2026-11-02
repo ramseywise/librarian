@@ -1,8 +1,7 @@
-"""Import learn-ai-engineering + sisyphus coursework → data/courses/
+"""Import learn-ai-engineering coursework → data/courses/
 
-One course per subject directory (ai-engineering, generative-ai, data-* from
-learn-ai-engineering, including programming; drills and interviewing from sisyphus — see
-SUBJECT_SOURCES).
+One course per subject directory (ai-engineering, generative-ai, data-*, programming; drills
+and interviewing from its top-level practice/ — see SUBJECT_SOURCES).
 Inside a subject, each top-level directory becomes a module and every
 authored .md / .mdx / .ipynb file under it becomes a lesson. Files at the subject root
 land in a synthetic `00-start-here` module. Subdirectories inside a module become
@@ -14,13 +13,18 @@ Conversions:
   blockquotes and link lists; course-promo components are dropped. Code fences are
   never touched.
 - .ipynb → markdown cells + fenced code cells. Outputs are dropped.
-- Relative images are copied into the module's `assets/`, and links to other imported
-  files are rewritten to the lesson they became.
+- Relative images are copied into the module's `assets/`, and links to files imported into
+  any course are rewritten to the lesson they became.
 
 Vendored upstream snapshots (`*-main`, `*-master`, hash-suffixed, nested git repos — see
-learn-ai-engineering/CURRICULUM.md, Sources) are NOT imported. They are listed on their module as
+learn-ai-engineering/THIRD_PARTY.md) are NOT imported. They are listed on their module as
 references, as are the bulky course folders in PRACTICE_REFERENCE_ONLY. PDFs are listed as
 readings. Gitignored files (fetched datasets) are never imported.
+
+practice/ mixes publishable drills with private and uncleared third-party files, and its
+.gitignore is the allowlist that separates them. So drills and interviewing fail closed: no
+git checkout means no import (see build_plan), and their ignored directories are not even
+listed as references.
 
 Each `slides/deck.yaml` below a module (spec: learn-ai-engineering
 .claude/skills/slides/references/deck-spec.md) becomes flashcards in the module's
@@ -40,7 +44,6 @@ Usage:
     uv run python core/import_courses.py --dry-run
     uv run python core/import_courses.py --subject ai-engineering
     uv run python core/import_courses.py --source ~/workspace/learn-ai-engineering
-    uv run python core/import_courses.py --sisyphus ~/workspace/sisyphus
 """
 
 from __future__ import annotations
@@ -67,17 +70,15 @@ from core.wiki_common import slugify
 log = structlog.get_logger()
 
 LAE = "learn-ai-engineering"
-SISYPHUS = "sisyphus"
 DEFAULT_SOURCE = WORKSPACE_DIR / LAE
-DEFAULT_SISYPHUS = WORKSPACE_DIR / SISYPHUS
 COURSES_DIR = REPO_ROOT / "data" / "courses"
 
 # Subjects that don't live at learn-ai-engineering/<slug>: slug → (repo, dir in that repo).
-# Interview prep and the language drills moved to sisyphus on 2026-10-28. On 2026-10-29
-# `programming` became the learn-ai-engineering course and the drills got their own slug.
+# On 2026-11-02 interview prep and the drills moved to learn-ai-engineering/practice/, whose
+# .gitignore admits only what is cleared for publication. These subjects fail closed.
 SUBJECT_SOURCES: dict[str, tuple[str, str]] = {
-    "drills": (SISYPHUS, "drills"),
-    "interviewing": (SISYPHUS, "interviewing"),
+    "drills": (LAE, "practice/drills"),
+    "interviewing": (LAE, "practice/interviewing"),
 }
 
 # slug → (title, order, summary). Order follows CURRICULUM.md Path C (broad → deep), with
@@ -93,18 +94,18 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
     "data-analytics": (
         "Data Analytics",
         2,
-        "Six pillars: Python for data analysis, probability and statistics, experimentation "
+        "Python for data analysis, probability and statistics, experimentation "
         "and causality, Bayesian analysis, visualisation and storytelling, applied analyses.",
     ),
     "data-science": (
         "Data Science",
         3,
-        "Four pillars: classical ML, deep learning, NLP, time series and recommenders.",
+        "Classical ML, deep learning, NLP, time series and recommenders.",
     ),
     "data-engineering": (
         "Data Engineering",
         4,
-        "Seven pillars: storage and compute foundations, ingest and modelling, transform and "
+        "Storage and compute foundations, ingest and modelling, transform and "
         "orchestrate, warehouse, lakehouse and streaming, quality and observability, ML "
         "platform, architecture and governance.",
     ),
@@ -143,8 +144,6 @@ _VENDORED_RE = re.compile(r"(-main|-master|-[0-9a-f]{7})$")
 # Nextra copy can be deleted from learn-ai-engineering. (BayesianML-master was renamed
 # to BayesianML on 2026-10-28 and no longer needs one.)
 VENDORED_ALLOW = {"Prompt-Engineering-Guide-main"}
-# Nested git repos are skipped unless they are your own work.
-NESTED_GIT_ALLOW = {"Leet-Code", "leetcode"}
 # `practice/<name>` course folders too big to read as lessons: each is a dozen or more
 # notebooks and READMEs that would bury a pillar's notes in the sidebar. Listed on the module
 # as references instead, like vendored snapshots. Smaller sets (McKinney, Ng ML, Mueller &
@@ -157,9 +156,9 @@ PRACTICE_REFERENCE_ONLY = {
     "text-analytics-with-python",
 }
 SKIP_DIRS = {"node_modules", ".next", ".ipynb_checkpoints", "__pycache__", "site-packages"}
-# sisyphus drill progress history — not lesson content.
+# Drill progress history (private, kept in sisyphus) — not lesson content.
 SKIP_FILES = {"drill-log.md"}
-DRILL_FIELDS = ("title", "track", "topic", "difficulty", "timebox_min")
+DRILL_FIELDS = ("title", "track", "topic", "difficulty", "timebox_min", "units")
 FLASHCARD_FILE = "_flashcards.md"
 
 _HASH_LINE_RE = re.compile(r"^imported_hash: [0-9a-f]+\n", re.MULTILINE)
@@ -235,13 +234,15 @@ def _is_vendored(path: Path) -> bool:
         return True
     if path.parent.name == "practice" and path.name in PRACTICE_REFERENCE_ONLY:
         return True
-    return (path / ".git").exists() and path.name not in NESTED_GIT_ALLOW
+    return (path / ".git").exists()
 
 
-def _git_ignored(source: Path, subject_dir: Path) -> set[str]:
-    """Repo-relative paths of gitignored files under a subject (datasets fetched by scripts).
+def _git_ignored(source: Path, subject_dir: Path) -> set[str] | None:
+    """Repo-relative paths of untracked gitignored files under a subject.
 
-    Empty when `source` is not a git checkout: nothing to go on, so nothing is filtered.
+    An ignored directory git will not descend into (a nested repo) comes back as one entry
+    with a trailing slash, so test membership with `_matches_ignored`. None when `source` is
+    not a git checkout: there is nothing to go on, which each caller has to decide about.
     """
     try:
         out = subprocess.run(
@@ -261,8 +262,33 @@ def _git_ignored(source: Path, subject_dir: Path) -> set[str]:
             check=True,
         ).stdout
     except (OSError, subprocess.CalledProcessError):
-        return set()
+        return None
     return {p for p in out.decode(errors="replace").split("\0") if p}
+
+
+def _matches_ignored(rel: str, ignored: set[str]) -> bool:
+    """Is repo-relative `rel` ignored, or inside an ignored directory entry?"""
+    return rel in ignored or any(p.endswith("/") and rel.startswith(p) for p in ignored)
+
+
+def _dir_has_ignored(rel: str, ignored: set[str]) -> bool:
+    """Is directory `rel` ignored, inside an ignored directory, or holding ignored files?"""
+    prefix = rel.rstrip("/") + "/"
+    return _matches_ignored(prefix, ignored) or any(p.startswith(prefix) for p in ignored)
+
+
+def _path_ignored(source: Path, target: Path) -> bool:
+    """Ask git about one path outside the subject listing (an image a lesson points at)."""
+    try:
+        return (
+            subprocess.run(
+                ["git", "-C", str(source), "check-ignore", "-q", "--", str(target)],
+                capture_output=True,
+            ).returncode
+            == 0
+        )
+    except OSError:
+        return False
 
 
 def _is_references(lesson: Lesson) -> bool:
@@ -271,13 +297,16 @@ def _is_references(lesson: Lesson) -> bool:
 
 
 def _vendored_urls(source: Path) -> dict[str, str]:
-    """Map `subject/.../dir` → upstream URL from CURRICULUM.md's Sources tables."""
-    vendored_md = source / "CURRICULUM.md"
+    """Map `subject/.../dir` → upstream URL from THIRD_PARTY.md's vendored and removed tables.
+
+    The path cell may carry a note after the path, as in "`dir-main` (gitignored)".
+    """
+    vendored_md = source / "THIRD_PARTY.md"
     if not vendored_md.exists():
         return {}
     urls: dict[str, str] = {}
-    for m in re.finditer(r"^\|\s*`([^`]+)`\s*\|\s*(https?://\S+)", vendored_md.read_text(), re.M):
-        urls[m.group(1)] = m.group(2)
+    for m in re.finditer(r"^\|\s*`([^`]+)`[^|]*\|\s*(https?://\S+)", vendored_md.read_text(), re.M):
+        urls[m.group(1).rstrip("/")] = m.group(2)
     return urls
 
 
@@ -300,7 +329,7 @@ def _file_rank(path: Path, meta: dict[str, tuple[int, str]]) -> tuple[int, int, 
     name = path.name.lower()
     if name == "readme.md":
         return (0, 0, name)
-    if name == "curriculum.md":
+    if name == "curriculum.md":  # subject files are merging into READMEs; this outlives them
         return (1, 0, name)
     if (n := _order_of(path.name)) is not None:
         return (2, n, name)
@@ -366,7 +395,11 @@ def _collect_extras(directory: Path, source: Path, urls: dict[str, str], module:
 
 def discover(source: Path, subject: str, subject_dir: Path | None = None) -> list[Module]:
     """`source` is the repo root (paths in metadata are relative to it); `subject_dir`
-    defaults to `source / subject` and differs only for SUBJECT_SOURCES entries."""
+    defaults to `source / subject` and differs only for SUBJECT_SOURCES entries.
+
+    Raises RuntimeError for a SUBJECT_SOURCES subject outside a git checkout: its .gitignore
+    is what keeps private files out, so without git nothing can be told apart.
+    """
     subject_dir = subject_dir or source / subject
     urls = _vendored_urls(source)
     modules: dict[str, Module] = {}
@@ -411,12 +444,21 @@ def discover(source: Path, subject: str, subject_dir: Path | None = None) -> lis
         if mod.lessons or mod.readings or mod.references:
             modules[name] = mod
 
-    ignored = _git_ignored(source, subject_dir)
+    listed = _git_ignored(source, subject_dir)
+    if listed is None and subject in SUBJECT_SOURCES:
+        raise RuntimeError(f"{subject}: {source} is not a git checkout, refusing to import")
+    ignored = listed or set()
     for mod in modules.values():
         mod.lessons = [
-            lesson for lesson in mod.lessons if str(lesson.src.relative_to(source)) not in ignored
+            lesson
+            for lesson in mod.lessons
+            if not _matches_ignored(str(lesson.src.relative_to(source)), ignored)
         ]
-        mod.readings = [r for r in mod.readings if r["source"] not in ignored]
+        mod.readings = [r for r in mod.readings if not _matches_ignored(r["source"], ignored)]
+        if subject in SUBJECT_SOURCES:  # don't publish even the names of private directories
+            mod.references = [
+                r for r in mod.references if not _dir_has_ignored(r["source"], ignored)
+            ]
         mod.lessons.sort(key=_is_references)  # stable: everything else keeps its walk order
         for i, lesson in enumerate(mod.lessons):
             lesson.order = i + 1
@@ -765,6 +807,8 @@ def _rewrite_body(
         target = resolve(url) or _find_moved_image(url, asset_root)
         if not target or target.suffix.lower() not in IMAGE_EXTS or not target.is_file():
             return url
+        if plan.source and _path_ignored(plan.source, target):
+            return url
         if target.stat().st_size > MAX_ASSET_BYTES:
             return url
         try:
@@ -806,6 +850,7 @@ class Plan:
     files: dict[Path, str] = field(default_factory=dict)  # dest (abs) → text
     assets: dict[Path, Path] = field(default_factory=dict)  # dest (abs) → source
     flashcards: int = 0
+    source: Path | None = None  # repo the images come from, asked about ignored paths
 
 
 def _hash(text: str) -> str:
@@ -831,20 +876,31 @@ def _recorded_hash(text: str) -> str | None:
     return m.group(1) if m else None
 
 
-def build_plan(source: Path, subjects: list[str], sisyphus: Path = DEFAULT_SISYPHUS) -> Plan:
-    plan = Plan()
-    roots = {LAE: source, SISYPHUS: sisyphus}
+def _discover_all(source: Path) -> dict[str, list[Module]]:
+    """Every subject that exists, selected or not: lessons link across courses."""
+    found: dict[str, list[Module]] = {}
+    for subject in SUBJECTS:
+        subject_dir = source / SUBJECT_SOURCES.get(subject, (LAE, subject))[1]
+        if subject_dir.is_dir():
+            found[subject] = discover(source, subject, subject_dir)
+    return found
+
+
+def build_plan(source: Path, subjects: list[str]) -> Plan:
+    plan = Plan(source=source)
+    discovered = _discover_all(source)
+    src_to_dest = {
+        lesson.src.resolve(): lesson.dest
+        for modules in discovered.values()
+        for mod in modules
+        for lesson in mod.lessons
+    }
     for subject in subjects:
         repo, rel = SUBJECT_SOURCES.get(subject, (LAE, subject))
-        root = roots[repo]
-        subject_dir = root / rel
-        if not subject_dir.is_dir():
-            log.warning("subject_missing", subject=subject, path=str(subject_dir))
+        if subject not in discovered:
+            log.warning("subject_missing", subject=subject, path=str(source / rel))
             continue
-        modules = discover(root, subject, subject_dir)
-        src_to_dest = {
-            lesson.src.resolve(): lesson.dest for mod in modules for lesson in mod.lessons
-        }
+        modules = discovered[subject]
         title, order, summary = SUBJECTS[subject]
         plan.files[COURSES_DIR / subject / "_course.md"] = render(
             {
@@ -856,8 +912,9 @@ def build_plan(source: Path, subjects: list[str], sisyphus: Path = DEFAULT_SISYP
         )
         for mod in modules:
             mod_summary = ""
-            if mod.src_dir and (mod.src_dir / "README.md").exists():
-                mod_readme = (mod.src_dir / "README.md").read_text(errors="replace")
+            readme = mod.src_dir / "README.md" if mod.src_dir else None
+            if readme and readme in {lesson.src for lesson in mod.lessons}:
+                mod_readme = readme.read_text(errors="replace")
                 mod_summary = _summary_from(mod_readme)
                 heading = _title_from(mod_readme, "")
                 # A placeholder README's H1 is just the folder name; prettify beats that.
@@ -865,16 +922,16 @@ def build_plan(source: Path, subjects: list[str], sisyphus: Path = DEFAULT_SISYP
                     mod.title = heading
             meta: dict = {"title": mod.title, "summary": mod_summary, "order": mod.order}
             if mod.src_dir:
-                meta["source"] = f"{repo}/{mod.src_dir.relative_to(root)}"
+                meta["source"] = f"{repo}/{mod.src_dir.relative_to(source)}"
             if mod.readings:
                 meta["readings"] = mod.readings
             if mod.references:
                 meta["references"] = mod.references
             plan.files[COURSES_DIR / subject / mod.name / "_module.md"] = render(meta)
             for lesson in mod.lessons:
-                _plan_lesson(plan, lesson, mod, root, src_to_dest, repo)
+                _plan_lesson(plan, lesson, mod, source, src_to_dest, repo)
             if mod.src_dir:
-                _plan_flashcards(plan, subject, mod, root, src_to_dest, repo)
+                _plan_flashcards(plan, subject, mod, source, src_to_dest, repo)
     return plan
 
 
@@ -922,7 +979,7 @@ def _plan_lesson(
         if body.startswith("---\n"):  # source frontmatter is not ours to keep…
             end = body.find("\n---", 4)
             if end != -1:
-                drill = _drill_meta(body[4:end])  # …except the sisyphus drill schema
+                drill = _drill_meta(body[4:end])  # …except the drill schema
                 body = body[end + 4 :].lstrip()
         if drill:
             kind = "drill"
@@ -957,7 +1014,7 @@ def _plan_lesson(
 
 
 def _drill_meta(head: str) -> dict:
-    """Fields of a sisyphus drill's frontmatter (drills/README.md) worth keeping.
+    """Fields of a drill's frontmatter (practice/drills/README.md) worth keeping.
 
     A drill is any file whose frontmatter names a `track`. Its `concepts` become `wiki`,
     the explicit concept links the courses API ranks first.
@@ -1033,20 +1090,15 @@ def apply(plan: Plan, subjects: list[str], dry_run: bool) -> dict[str, int]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
-    parser.add_argument("--sisyphus", type=Path, default=DEFAULT_SISYPHUS)
     parser.add_argument("--subject", action="append", choices=sorted(SUBJECTS))
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     source = args.source.expanduser().resolve()
-    sisyphus = args.sisyphus.expanduser().resolve()
     subjects = args.subject or list(SUBJECTS)
-    # Only require the repos the selected subjects actually read from.
-    needed = {SUBJECT_SOURCES.get(s, (LAE, s))[0] for s in subjects}
-    for repo, path in ((LAE, source), (SISYPHUS, sisyphus)):
-        if repo in needed and not path.is_dir():
-            parser.error(f"source not found: {path}")
-    plan = build_plan(source, subjects, sisyphus)
+    if not source.is_dir():
+        parser.error(f"source not found: {source}")
+    plan = build_plan(source, subjects)
     stats = apply(plan, subjects, args.dry_run)
     log.info(
         "import_courses_done",

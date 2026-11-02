@@ -1,11 +1,11 @@
 ---
-imported_hash: cb292a963d9511f6
+imported_hash: 3ce25a3e9362b384
 title: Merge Two Sorted Lists — First-Principles Thinking Guide
 summary: 'While both lists have nodes: If list1.val <= list2.val: current.next = list1; list1 = list1.next Else: current.next = list2; list2 = list2.next current = current.next'
-order: 176
+order: 79
 kind: reading
 section: Dsa / Linked list / Merge two sorted lists
-source: sisyphus/drills/coding/dsa/linked_list/merge_two_sorted_lists/THINKING.md
+source: learn-ai-engineering/practice/drills/coding/dsa/linked_list/merge_two_sorted_lists/THINKING.md
 ---
 
 # Merge Two Sorted Lists — First-Principles Thinking Guide
