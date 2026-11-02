@@ -93,6 +93,11 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
             </div>
           )}
           {lesson.summary && <p className="lesson-summary">{lesson.summary}</p>}
+          {!!lesson.flashcardCount && (
+            <a href={`#/flashcards/${lesson.id}`} className="flashcard-link">
+              Study {lesson.flashcardCount} flashcards
+            </a>
+          )}
 
           <div ref={proseRef} className="lesson-prose">
             {parts ? (

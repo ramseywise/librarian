@@ -2,7 +2,7 @@
 title: Synthetic Dataset Generation for RAG Eval
 tags: [eval, rag, pattern]
 summary: Four-mode pipeline for generating and maintaining a versioned synthetic test dataset from a knowledge base — article fingerprinting drives incremental refresh, stable content-derived IDs make Langfuse upserts idempotent, and four query categories cover the full quality surface.
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
   - data/raw/claude-docs/chat-agent/docs/eval/pipeline.md
@@ -241,7 +241,7 @@ own phrasing easy — generate with a **different model family**, then read the 
 - [[RAG Evaluation]]
 - [[Langfuse Platform]]
 - [[LLM Grader Calibration Insights]]
-- [[VA Eval Harness]]
+- [[Eval Harness]]
 - [[PGVector Migration Pattern]]
 - [[Synthesize the Cheap Half]] — extends (which half of an evaluation is safe to synthesize)
 - [[Consequence-Flagged KB Audit]] — extends (upstream audit that is the source of the financial_risk stratum and authoritative-article choices)

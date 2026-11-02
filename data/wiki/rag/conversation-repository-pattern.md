@@ -2,7 +2,7 @@
 title: Conversation Repository Pattern
 tags: [rag, memory, pattern]
 summary: Two-table PostgreSQL schema for persisting multi-turn conversation state — conversations table for sessions, messages table for turns with JSONB trace and sources columns enabling trace-linked retrieval debugging.
-updated: 2026-07-06
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/chat-agent/docs/architecture/conversation_repository.md
 ---
@@ -118,7 +118,7 @@ This schema is a **persistence layer** — it stores the durable record of what 
 ---
 
 ## See Also
-- [[Memory Architecture for VA Agents]]
+- [[Memory Architecture]]
 - [[Cloud Run + Cloud SQL Pattern]]
 - [[PGVector Migration Pattern]]
 - [[Agent Memory Types]]

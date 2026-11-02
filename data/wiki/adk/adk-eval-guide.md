@@ -2,7 +2,7 @@
 title: ADK Eval Guide
 tags: [adk, eval, pattern]
 summary: ADK evaluation methodology — the eval-fix loop, 8 built-in criteria, evalset schema, tool trajectory gotchas, multimodal eval, user simulation, and Vertex AI managed pointwise/pairwise eval.
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--04-agentic-frameworks--notes--google-adk.md
   - data/raw/claude-docs/project-g/.agents/skills/adk-eval-guide/SKILL.md
@@ -24,7 +24,7 @@ sources:
 
 ADK has a first-class evaluation framework via `adk eval`. This page covers the eval-fix loop, built-in criteria, evalset schema, critical gotchas, multimodal evaluation patterns, and user simulation for dynamic conversation testing.
 
-For the broader eval landscape, see [[VA Eval Harness]] and [[project-g Eval Architecture]].
+For the broader eval landscape, see [[Eval Harness]] and [[project-g Eval Architecture]].
 
 ---
 
@@ -430,7 +430,7 @@ clears the bar.
 ## See Also
 
 - [[ADK User Simulation Eval]]
-- [[VA Eval Harness]]
+- [[Eval Harness]]
 - [[project-g Eval Architecture]]
 - [[LLM Grader Calibration Insights]]
 - [[ADK Python API Reference]]

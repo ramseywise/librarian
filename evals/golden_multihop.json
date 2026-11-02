@@ -35,11 +35,11 @@
   {
     "id": "mh-004",
     "category": "multi-hop",
-    "query": "How does the VA eval harness's routing-accuracy suite map onto Anthropic's three-tier eval taxonomy, and what score floor does it enforce in CI?",
-    "expected_answer": "The VA eval harness's routing accuracy suite corresponds to Tier 2 (trajectory evals) in Anthropic's taxonomy—it checks whether the agent routes to the right domain/subagent, analogous to asserting the ordered list of nodes/tools visited, and it's implemented via the `tool_trajectory_avg_score` metric (exact match on tool name and args, 1.0 = perfect). The VA harness explicitly cites the Anthropic three-tier taxonomy as the framework underlying its four suites. In CI, `make eval-routing eval-behavioral` runs with a routing score floor of 0.85 and a behavioral floor of 0.90 (`check_floor.py`), failing the build if routing drops below that threshold to catch prompt/routing regressions before production.",
+    "query": "How does the eval harness's routing-accuracy suite map onto Anthropic's three-tier eval taxonomy, and what score floor does it enforce in CI?",
+    "expected_answer": "The eval harness's routing accuracy suite corresponds to Tier 2 (trajectory evals) in Anthropic's taxonomy—it checks whether the agent routes to the right domain/subagent, analogous to asserting the ordered list of nodes/tools visited, and it's implemented via the `tool_trajectory_avg_score` metric (exact match on tool name and args, 1.0 = perfect). The harness explicitly cites the Anthropic three-tier taxonomy as the framework underlying its four suites. In CI, `make eval-routing eval-behavioral` runs with a routing score floor of 0.85 and a behavioral floor of 0.90 (`check_floor.py`), failing the build if routing drops below that threshold to catch prompt/routing regressions before production.",
     "source_pages": [
       "data/wiki/eval/anthropic-eval-taxonomy.md",
-      "data/wiki/eval/va-eval-harness.md"
+      "data/wiki/eval/eval-harness.md"
     ],
     "difficulty": "medium"
   },

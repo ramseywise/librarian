@@ -82,6 +82,7 @@
 }
 .graph-status--live { color: var(--success); }
 .graph-status--offline { color: var(--offline); }
+.graph-status-count { color: var(--text-secondary); }
 
 .float-panel {
   position: absolute;
@@ -203,22 +204,6 @@
 }
 .wiki-node-title { font-size: var(--fs-base); color: #e8e8e8; line-height: 1.35; font-weight: 500; }
 .wiki-node-summary { font-size: var(--fs-xs); color: var(--text-secondary); margin-top: var(--space-1); line-height: 1.3; }
-
-.private-badge { border: 1px solid var(--private-border); color: var(--text-soft); font-weight: 600; }
-.private-badge--node {
-  margin-left: var(--space-2);
-  padding: 0 var(--space-1);
-  border-radius: var(--radius-xs);
-  font-size: var(--fs-2xs);
-  letter-spacing: 0.04em;
-}
-.private-badge--detail {
-  margin-left: var(--space-3);
-  padding: 1px var(--space-2);
-  border-radius: var(--radius-sm);
-  text-transform: none;
-  letter-spacing: 0;
-}
 
 /* ---- Node detail panel -------------------------------------------------------- */
 .detail-panel {

@@ -154,6 +154,10 @@ published: YYYY-MM-DD
   Concepts with no wiki page show as plain `drill.tags`. Attempt counts come from sisyphus
   `drills/coding/drill-log.md`, read live at request time (`SISYPHUS_DIR`) and never written
   into `data/` — this repo is public and the log is personal history.
+  Each `slides/deck.yaml` becomes flashcards in the module's `_flashcards.md` (frontmatter
+  `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
+  lesson id>`, studied at `#/flashcards/<id>`). Gitignored files and the course folders in
+  `PRACTICE_REFERENCE_ONLY` do not become lessons.
   Files with an `imported_hash:` line are importer-generated; editing one turns it into a
   local file the importer will never overwrite or delete. Files without the line are
   hand-authored and are never touched. Do not hand-edit the `imported_hash` value.

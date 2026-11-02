@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { layoutEdges, placeMissingNodes } from "../layout";
+import { declutter, layoutEdges, placeMissingNodes } from "../layout";
 
 const n = (id: string, domain: string) => ({ id, data: { domain: [domain] } });
 
@@ -50,5 +50,25 @@ describe("layoutEdges", () => {
       { source: "a", target: "b" },
       { source: "b", target: "c" },
     ]);
+  });
+});
+
+describe("declutter", () => {
+  const overlaps = (a: { x: number; y: number }, b: { x: number; y: number }) =>
+    Math.abs(a.x - b.x) < 190 && Math.abs(a.y - b.y) < 64;
+
+  it("separates stacked cards and keeps them near their layout spot", () => {
+    const pos = { a: { x: 0, y: 0 }, b: { x: 5, y: 3 }, c: { x: 10, y: -2 }, far: { x: 2000, y: 0 } };
+    const out = declutter(pos, ["a", "b", "c", "far"]);
+    expect(overlaps(out.a, out.b) || overlaps(out.a, out.c) || overlaps(out.b, out.c)).toBe(false);
+    for (const id of ["a", "b", "c"]) expect(Math.hypot(out[id].x, out[id].y)).toBeLessThan(400);
+    expect(Math.abs(out.far.x - 2000)).toBeLessThan(5); // an isolated card barely moves
+  });
+
+  it("only returns the requested ids and is deterministic", () => {
+    const pos = { a: { x: 0, y: 0 }, b: { x: 1, y: 1 }, c: { x: 2, y: 2 } };
+    const out = declutter(pos, ["a", "b"]);
+    expect(Object.keys(out).sort()).toEqual(["a", "b"]);
+    expect(declutter(pos, ["a", "b"])).toEqual(out);
   });
 });

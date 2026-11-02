@@ -2,7 +2,7 @@
 title: Consequence-Flagged KB Audit
 tags: [patterns, rag, eval, pattern]
 summary: Before indexing a help-center corpus for a support chatbot, audit every article into four fields (topic, must-be-exact facts, conditions/exceptions, financial-consequence flag) — the pass surfaces a recurring taxonomy of corpus defects (conflicting, near-duplicate, outdated, placeholder, non-article IDs, time-decaying figures) and a list of "must not imply" negative constraints that retrieval alone will never enforce.
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
 ---
@@ -59,7 +59,7 @@ not just in the index.
 ## Rules
 
 - **Audit before tuning.** A corpus ceiling (stale, duplicate, missing content) caps what
-  any retriever can reach; see [[VA vs HCA Retrieval Evaluation]] where data-ops fixes
+  any retriever can reach; see [[Production Retrieval Evaluation]] where data-ops fixes
   dominated model-level gains.
 - **Flag consequence, not difficulty.** A trivial fact with financial harm outranks a
   complex fact with none. The harm clause is what makes the flag reviewable.
@@ -71,5 +71,5 @@ not just in the index.
 ## See Also
 - [[RAG Knowledge Preparation]] — extends (concrete audit schema and defect taxonomy for the "remove redundant and outdated" and consistency steps)
 - [[Synthetic Dataset Generation for RAG Eval]] — prerequisite-for (supplies the financial_risk stratum and authoritative-article choices)
-- [[VA vs HCA Retrieval Evaluation]] — extends (explains where the corpus ceiling comes from)
+- [[Production Retrieval Evaluation]] — extends (explains where the corpus ceiling comes from)
 - [[Silence Reads as Clean]] — extends (silent-failure facts are the user-facing analogue: no error shown, so the chatbot is the only signal)

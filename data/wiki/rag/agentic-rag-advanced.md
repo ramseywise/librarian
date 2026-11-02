@@ -2,7 +2,7 @@
 title: Agentic RAG — Advanced Patterns
 tags: [rag, pattern]
 summary: Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
   - data/raw/agent-skills/advanced-rag-patterns/SKILL.md
@@ -203,7 +203,7 @@ merely frequent — users can route around a known weakness, but not around an u
 - [[RAG API Design Patterns]]
 - [[Multi-Agent Orchestration Patterns]]
 - [[A2A Agent Protocol]]
-- [[VA vs HCA Retrieval Evaluation]]
+- [[Production Retrieval Evaluation]]
 - [[RAG Interview Study Guide]] — prerequisite-for
 - [[RL for Retrieval Policies]] — extends (Self-RAG as a learned retrieval policy, alongside online RL and per-subtask modules)
 - [[RAG Architecture Selection]] — related (part of; the nine-architecture selection space these patterns sit inside, plus Fusion RAG)

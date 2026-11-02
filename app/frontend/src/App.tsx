@@ -19,6 +19,9 @@ const isNarrow = () =>
 const CoursesView = lazy(() =>
   import("./components/courses/CoursesView").then((m) => ({ default: m.CoursesView }))
 );
+const FlashcardsView = lazy(() =>
+  import("./components/courses/FlashcardsView").then((m) => ({ default: m.FlashcardsView }))
+);
 const PracticeView = lazy(() =>
   import("./components/courses/PracticeView").then((m) => ({ default: m.PracticeView }))
 );
@@ -34,7 +37,8 @@ export default function App() {
   const lastQueryRef = useRef("");
   const [route, navigate] = useHashRoute();
   const inPractice = route === "/practice";
-  const inCourses = route === "/courses" || route.startsWith("/courses/") || inPractice;
+  const inFlashcards = route.startsWith("/flashcards/");
+  const inCourses = route === "/courses" || route.startsWith("/courses/") || inPractice || inFlashcards;
   const courseRoute = route.replace(/^\/courses\/?/, "");
   // Course views set their own titles; the graph's is set here.
   useDocumentTitle(inCourses ? null : pageTitle("Graph"));
@@ -177,6 +181,8 @@ export default function App() {
               <Suspense fallback={<div className="app-loading">Loading…</div>}>
                 {inPractice ? (
                   <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />
+                ) : inFlashcards ? (
+                  <FlashcardsView deckId={route.slice("/flashcards/".length)} />
                 ) : (
                   <CoursesView route={courseRoute} navigate={navigate} onOpenConcept={openConcept} onAsk={askAbout} />
                 )}

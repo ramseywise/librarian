@@ -2,7 +2,7 @@
 title: Deterministic Scrub Before LLM Review
 tags: [patterns, eval, pattern]
 summary: When real customer tickets become eval fixtures, run a deterministic regex scrub first and let an LLM review only the placeholder-bearing output, using a local or DPA-covered model, then gate the commit on a grep check; the LLM pass exists to catch what the regex structurally misses.
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/skills/gdpr-scrub/SKILL.md
   - data/raw/claude-docs/playground/docs/tooling/eval-harness.md
@@ -10,7 +10,7 @@ sources:
 
 # Deterministic Scrub Before LLM Review
 
-From the playground repo's `gdpr-scrub` skill and its VA eval-harness doc. Real
+From the playground repo's `gdpr-scrub` skill and its assistant eval-harness doc. Real
 German/Austrian customer-service tickets were turned into eval fixtures for a virtual
 assistant. Every personal identifier had to go, and the semantic content the agent is
 tested on had to stay.
@@ -64,5 +64,5 @@ scrub breaks the compliance ordering above.
 ## See Also
 - [[Presidio PII Redaction for Langfuse]] — alternative-to (NER plus regex redaction at trace egress, not at fixture ingest)
 - [[PII Masking Approaches]] — extends (where this ingest-time variant sits among masking strategies)
-- [[VA Eval Harness]] — instance-of (the fixture pipeline this scrub feeds)
+- [[Eval Harness]] — instance-of (the fixture pipeline this scrub feeds)
 - [[Golden Set Mechanics]] — prerequisite-for (scrubbed tickets become golden fixtures)

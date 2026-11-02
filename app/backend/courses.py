@@ -2,7 +2,8 @@
 hand-authored) to the React course view, and ties lessons to wiki graph nodes.
 
 Layout: data/courses/<course>/_course.md, <course>/<module>/_module.md, and lesson
-.md files anywhere below a module. Ordering and titles come from frontmatter.
+.md files anywhere below a module. Ordering and titles come from frontmatter. Flashcards live
+in <course>/<module>/_flashcards.md, frontmatter `cards: [{front, back, lesson?}, ...]`.
 
 Lesson ↔ concept links come from three places, ranked in this order:
 - explicit: `wiki: [page-id, ...]` in lesson frontmatter, or inline [[Wiki Title]]
@@ -87,6 +88,7 @@ class LessonRec:
     body: str
     concepts: list[str] = field(default_factory=list)  # wiki page ids, ranked
     drill: dict[str, Any] = field(default_factory=dict)  # DRILL_KEYS, kind == "drill" only
+    flashcards: int = 0
 
 
 @dataclass
@@ -95,6 +97,7 @@ class Catalog:
     lessons: dict[str, LessonRec]  # id → lesson, in course order
     wiki: dict[str, WikiRef]
     by_concept: dict[str, list[str]]  # wiki id → lesson ids
+    decks: dict[str, dict[str, Any]] = field(default_factory=dict)  # module or lesson id → deck
 
 
 # ── Loading ──────────────────────────────────────────────────────────────────
@@ -237,6 +240,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
 
     courses: list[dict[str, Any]] = []
     lessons: dict[str, LessonRec] = {}
+    decks: dict[str, dict[str, Any]] = {}
     embed_texts: dict[str, str] = {}  # lesson id → text to embed
     if not courses_dir.is_dir():
         return Catalog([], {}, wiki, {})
@@ -276,15 +280,20 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                 lessons[r.id] = r
             if not recs and not mmeta.get("readings") and not mmeta.get("references"):
                 continue
+            module_title = str(mmeta.get("title") or mod_dir.name)
+            cards = _load_cards(mod_dir / "_flashcards.md", {r.id: r for r in recs})
+            decks |= _build_decks(course_dir.name, mod_dir.name, module_title, cards, recs)
             modules.append(
                 {
                     "id": mod_dir.name,
-                    "title": str(mmeta.get("title") or mod_dir.name),
+                    "title": module_title,
                     "summary": str(mmeta.get("summary") or ""),
-                    "order": int(mmeta.get("order") or 999),
+                    # 00-start-here is order 0, so `or 999` would sort it last.
+                    "order": int(999 if mmeta.get("order") is None else mmeta["order"]),
                     "readings": mmeta.get("readings") or [],
                     "references": mmeta.get("references") or [],
                     "lessons": [_outline(r) for r in recs],
+                    **({"flashcardCount": len(cards)} if cards else {}),
                 }
             )
         modules.sort(key=lambda m: (m["order"], m["id"]))
@@ -313,11 +322,50 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
     for lesson in ordered.values():
         for cid in lesson.concepts:
             by_concept.setdefault(cid, []).append(lesson.id)
-    return Catalog(courses, ordered, wiki, by_concept)
+    return Catalog(courses, ordered, wiki, by_concept, decks)
 
 
 def _meta(path: Path) -> dict[str, Any]:
     return frontmatter.load(path).metadata if path.exists() else {}
+
+
+def _load_cards(path: Path, recs: dict[str, LessonRec]) -> list[dict[str, Any]]:
+    """Well-formed cards from a module's _flashcards.md. A `lesson` not in this module (its
+    source was dropped, or a hand edit) falls back to the module deck."""
+    if not path.exists():
+        return []
+    raw = _meta(path).get("cards")
+    cards: list[dict[str, Any]] = []
+    for item in raw if isinstance(raw, list) else []:
+        if not isinstance(item, dict) or not item.get("front") or not item.get("back"):
+            continue
+        rec = recs.get(str(item.get("lesson")))
+        cards.append(
+            {
+                "id": str(len(cards)),
+                "front": str(item["front"]),
+                "back": str(item["back"]),
+                "lesson": rec.id if rec else None,
+                "lessonTitle": rec.title if rec else None,
+            }
+        )
+    return cards
+
+
+def _build_decks(
+    course: str, module: str, title: str, cards: list[dict[str, Any]], recs: list[LessonRec]
+) -> dict[str, dict[str, Any]]:
+    """The module's deck, plus one per lesson with cards. Sets each lesson's flashcard count."""
+    if not cards:
+        return {}
+    module_id = f"{course}/{module}"
+    decks = {module_id: {"id": module_id, "title": title, "course": course, "cards": cards}}
+    for r in recs:
+        mine = [c for c in cards if c["lesson"] == r.id]
+        r.flashcards = len(mine)
+        if mine:
+            decks[r.id] = {"id": r.id, "title": r.title, "course": course, "cards": mine}
+    return decks
 
 
 def _drill_meta(
@@ -455,6 +503,7 @@ def _outline(r: LessonRec) -> dict[str, Any]:
         "kind": r.kind,
         "summary": r.summary,
         **({"drill": r.drill} if r.drill else {}),
+        **({"flashcardCount": r.flashcards} if r.flashcards else {}),
     }
 
 
@@ -579,6 +628,15 @@ def practice(
             row["attempts"] = hit
         out.append(row)
     return out
+
+
+@router.get("/flashcards/{deck_id:path}")
+def flashcards(deck_id: str) -> dict[str, Any]:
+    """A study deck: every card in a module (`<course>/<module>`) or one lesson (lesson id)."""
+    deck = catalog().decks.get(deck_id)
+    if not deck:
+        raise HTTPException(status_code=404, detail="no flashcards here")
+    return deck
 
 
 def _drill_attempts(log: Path) -> dict[str, dict[str, Any]]:

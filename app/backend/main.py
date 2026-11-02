@@ -21,7 +21,7 @@ from shared.log_config import configure_logging, get_logger
 from .agent import run_agent_stream
 from .courses import router as courses_router
 from .courses import warm_catalog
-from .wiki_parser import parse_wiki, tag_shared_edges
+from .wiki_parser import parse_wiki, public_page_ids, tag_shared_edges
 
 # At import, not in a main(): uvicorn imports this module as an ASGI app and never
 # calls an entry point of ours. Must precede the first log call from any route.
@@ -147,7 +147,8 @@ async def get_graph(edges: Literal["wikilink", "all"] = "wikilink") -> dict[str,
 def get_semantic_edges(threshold: float = 0.65) -> list[dict]:
     from shared.embeddings import semantic_edges
 
-    return semantic_edges(threshold)
+    public = public_page_ids()
+    return [e for e in semantic_edges(threshold) if e["source"] in public and e["target"] in public]
 
 
 @app.post("/api/layout/umap")
@@ -163,7 +164,8 @@ def umap_layout() -> dict[str, dict]:
             status_code=503,
             detail=f"UMAP layout unavailable — umap-learn/numba vs numpy conflict: {e}",
         ) from e
-    return compute_umap_positions()
+    public = public_page_ids()
+    return {pid: xy for pid, xy in compute_umap_positions().items() if pid in public}
 
 
 # Per-message bound at the boundary; the agent applies the tighter count/total-chars

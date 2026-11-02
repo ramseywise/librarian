@@ -389,3 +389,60 @@ def test_cold_start_waits_for_the_first_build(monkeypatch: pytest.MonkeyPatch) -
     sentinel = object()
     monkeypatch.setattr(courses, "_load", lambda *_: sentinel)
     assert courses.catalog() is sentinel
+
+
+# ── flashcards ───────────────────────────────────────────────────────────────
+
+
+def _write_cards(cards: str) -> None:
+    _write(
+        courses.COURSES_DIR / "gen-ai" / "01-rag" / "_flashcards.md",
+        f"---\ncards:\n{cards}---\n",
+    )
+
+
+def test_flashcards_module_and_lesson_decks(client: TestClient) -> None:
+    _write_cards(
+        "- {front: 'What is **hybrid**?', back: 'Both `bm25` and vectors.', "
+        "lesson: gen-ai/01-rag/intro}\n"
+        "- {front: Module card, back: No lesson.}\n"
+        "- {front: Bad lesson, back: Falls back., lesson: gen-ai/01-rag/gone}\n"
+        "- {front: No back}\n"
+    )
+    module = client.get("/api/courses/flashcards/gen-ai/01-rag").json()
+    assert module["title"] == "RAG" and module["course"] == "gen-ai"
+    assert [c["front"] for c in module["cards"]] == [
+        "What is **hybrid**?",
+        "Module card",
+        "Bad lesson",
+    ]
+    assert module["cards"][0]["lessonTitle"] == "Intro"
+    assert module["cards"][2]["lesson"] is None
+
+    lesson = client.get("/api/courses/flashcards/gen-ai/01-rag/intro").json()
+    assert lesson["title"] == "Intro"
+    assert [c["back"] for c in lesson["cards"]] == ["Both `bm25` and vectors."]
+
+    catalog = {c["id"]: c for c in client.get("/api/courses").json()}
+    rag = next(m for m in catalog["gen-ai"]["modules"] if m["id"] == "01-rag")
+    assert rag["flashcardCount"] == 3
+    assert next(x for x in rag["lessons"] if x["title"] == "Intro")["flashcardCount"] == 1
+    assert client.get("/api/courses/lessons/gen-ai/01-rag/intro").json()["flashcardCount"] == 1
+
+
+def test_flashcards_file_is_not_a_lesson_and_missing_deck_is_404(client: TestClient) -> None:
+    before = client.get("/api/courses").json()
+    assert all("flashcardCount" not in m for c in before for m in c["modules"])
+    assert client.get("/api/courses/flashcards/gen-ai/01-rag").status_code == 404
+    _write_cards("- {front: F, back: B}\n")
+    assert client.get("/api/courses/lessons/gen-ai/01-rag/_flashcards").status_code == 404
+    assert client.get("/api/courses/flashcards/gen-ai/01-rag/intro").status_code == 404
+    assert client.get("/api/courses/flashcards/gen-ai/01-rag").status_code == 200
+
+
+def test_module_with_order_zero_sorts_first(client: TestClient) -> None:
+    module = courses.COURSES_DIR / "gen-ai" / "00-start-here"
+    _write(module / "_module.md", "---\ntitle: Start Here\norder: 0\n---\n")
+    _write(module / "welcome.md", "---\ntitle: Welcome\norder: 1\n---\nBody.\n")
+    gen_ai = next(c for c in client.get("/api/courses").json() if c["id"] == "gen-ai")
+    assert gen_ai["modules"][0]["id"] == "00-start-here"

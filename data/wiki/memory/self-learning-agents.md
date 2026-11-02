@@ -2,7 +2,7 @@
 title: Self-Learning Agents
 tags: [langgraph, adk, memory, eval, concept]
 summary: Four-level improvement stack for production agents — inference-time (ReAct, CoT, self-critique), session-time (reflection, procedural memory), operational (learning loop, HITL), and training-time (DPO). Most agents need the first three; DPO is a late-stage investment.
-updated: 2026-04-26
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
@@ -105,7 +105,7 @@ See [[Copilot Learning Loop]] for the full operational process.
 |-------|------------------|
 | **MVP** | [[ReAct Pattern]] loop, [[Chain of Thought]] in system prompt |
 | **Beta** | Self-critique on high-stakes outputs, corrective RAG subgraph |
-| **Production** | Reflection + procedural memory, operational learning loop, [[VA Eval Harness]] with regression gate |
+| **Production** | Reflection + procedural memory, operational learning loop, [[Eval Harness]] with regression gate |
 | **Scaled** | [[Direct Preference Optimization]] fine-tuning (if fine-tunable model), advanced episodic few-shot injection |
 
 ## See Also
@@ -115,5 +115,5 @@ See [[Copilot Learning Loop]] for the full operational process.
 - [[Agent Memory Types]]
 - [[LangGraph CRAG Pipeline]]
 - [[Copilot Learning Loop]]
-- [[VA Eval Harness]]
+- [[Eval Harness]]
 - [[Atlas Project]] — instance-of

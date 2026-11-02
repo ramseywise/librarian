@@ -2,7 +2,7 @@
 title: Trajectory Over Outcome
 tags: [eval, agents, concept]
 summary: "Why an agent has to be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are the two decisions an outcome score cannot see."
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
   - own-prose
@@ -151,7 +151,7 @@ broken (unreachable state, wrong reference, missing permission) before the agent
 - [[Eval Non-Determinism]] <!-- auto-linked -->
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
-- [[VA Eval Harness]] <!-- auto-linked -->
+- [[Eval Harness]] <!-- auto-linked -->
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]] <!-- auto-linked -->
 - [[RAG Evaluation]] — extends (the agent eval taxonomy this supplies the rationale for)
 - [[Bounding Agents Rather Than Trusting Them]] — related (guardrails need trajectory eval to be measurable)

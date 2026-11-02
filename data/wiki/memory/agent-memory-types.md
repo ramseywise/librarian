@@ -1,8 +1,8 @@
 ---
 title: Agent Memory Types
 tags: [memory, langgraph, concept]
-summary: Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for VA agents — backed by LangGraph BaseStore.
-updated: 2026-10-30
+summary: Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for assistant agents — backed by LangGraph BaseStore.
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/claude-docs/playground/docs/archived/librarian-components.md

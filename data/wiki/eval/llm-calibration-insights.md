@@ -2,7 +2,7 @@
 title: LLM Grader Calibration Insights
 tags: [eval, concept]
 summary: Calibration evidence for LLM-as-judge graders in the project-g eval pipeline — custom v3 grader outperforms DeepEval defaults (+0.214 score delta vs +0.086), domain-shift is the main failure pattern, passage context is required for grounding accuracy. Grounding cross-check vs DeepEval shows near-zero agreement until article text is wired in.
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/evals/llm-calibration-insights.md
   - data/raw/notion/2026-06-26-va-hca-retrieval-executive-summary.md
@@ -80,18 +80,18 @@ Thresholds live in `evals/metrics/_constants.py` (`TIER_THRESHOLDS`). Tier polic
 
 ## Grounding vs Faithfulness: Production Evidence
 
-The VA vs HCA retrieval evaluation (n=754 Danish questions) surfaces a cross-system pattern worth tracking in calibration:
+The Assistant A vs Assistant B retrieval evaluation (n=754 Danish questions) surfaces a cross-system pattern worth tracking in calibration:
 
-| Metric | VA | HCA | Interpretation |
+| Metric | Assistant A | Assistant B | Interpretation |
 |---|---|---|---|
 | Grounding | 0.776 | 0.633 | Grounding measures whether claims are tied to *retrieved* sources — reflects retrieval quality |
 | Faithfulness | 0.592 | 0.511 | Faithfulness measures whether the answer stays *within* retrieved content — reflects model extrapolation |
 
-**The faithfulness gap:** Both systems show low faithfulness (~0.5–0.6) despite acceptable grounding on VA. The model adds unsupported detail even when it successfully retrieved relevant sources. This is not a retrieval failure — it is a model behavior pattern that grounding scores can mask.
+**The faithfulness gap:** Both systems show low faithfulness (~0.5–0.6) despite acceptable grounding on Assistant A. The model adds unsupported detail even when it successfully retrieved relevant sources. This is not a retrieval failure — it is a model behavior pattern that grounding scores can mask.
 
 **Calibration implication:** When tuning grounding graders, ensure your calibration set includes cases where grounding is high but faithfulness is low (model extrapolates beyond sources). These are easy to falsely pass if grounding is the only metric.
 
-**Note:** Both metrics from the VA/HCA study are measured via LLM-as-judge (Grounding score = are claims tied to retrieved sources?; Faithfulness score = does answer stay within retrieved content?). Check your grader definition matches this distinction before comparing numbers across systems.
+**Note:** Both metrics from the Assistant A/B study are measured via LLM-as-judge (Grounding score = are claims tied to retrieved sources?; Faithfulness score = does answer stay within retrieved content?). Check your grader definition matches this distinction before comparing numbers across systems.
 
 ## Specific Calibration Numbers (BKH, 50 tasks, 25 liked / 25 disliked)
 
@@ -128,7 +128,7 @@ Pass `context=[passage.text ...]` not URLs. The comparison is apples-to-oranges 
 
 ## Domain-Shift Watch
 
-Custom graders calibrated on BKH show strong Δ on BKH but near-zero Δ on VA staging data. Likely causes: VA disliked responses are disliked for reasons answer_relevancy doesn't capture (tone, escalation handling, multi-turn context loss) rather than irrelevance.
+Custom graders calibrated on BKH show strong Δ on BKH but near-zero Δ on Assistant A staging data. Likely causes: Assistant A disliked responses are disliked for reasons answer_relevancy doesn't capture (tone, escalation handling, multi-turn context loss) rather than irrelevance.
 
 When re-running calibration on GT dataset, isolate by query type — accounting-specific queries vs nav/UI queries to see if Δ holds within domain before drawing cross-domain conclusions.
 
@@ -159,9 +159,9 @@ the last two are treated as grader or agent defects.
   review instead.
 
 ## See Also
-- [[VA vs HCA Retrieval Evaluation]]
+- [[Production Retrieval Evaluation]]
 - [[project-g Eval Architecture]]
-- [[VA Eval Harness]]
+- [[Eval Harness]]
 - [[RAG Evaluation]]
 - [[HITL Annotation Pipeline]]
 - [[RAG Eval Gate Contract]]

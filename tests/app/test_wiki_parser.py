@@ -215,19 +215,28 @@ def test_tag_shared_rule_matches_frontend_tag_edges() -> None:
 
 
 @pytest.mark.unit
-def test_private_pages_are_in_graph_flagged_and_not_a_domain(mock_wiki: Path) -> None:
-    """Deliberate decision D1 (2026-10-30), not an accident: data/wiki/private/ pages stay
-    visible in the LOCAL graph UI, flagged `private` so the UI can badge them. They are
-    not a filterable domain. (Courses API and MCP search exclude them — tested elsewhere.)
-    Change this test only together with a recorded decision."""
-    from backend.wiki_parser import parse_wiki
+def test_private_pages_are_excluded_from_graph(mock_wiki: Path) -> None:
+    """Decision D1, reversed 2026-11-02 (.claude/docs/plans/2026-10-30-frontend-audit-fixes.md):
+    data/wiki/private/ pages never reach the graph UI — not as nodes, not as wikilink
+    sources, not as a domain. Change this test only together with a recorded decision."""
+    from backend.wiki_parser import parse_wiki, public_page_ids
 
-    _write_page(mock_wiki, "private", "client-notes", "Client Notes", ["projects", "project"], "S")
+    _write_page(
+        mock_wiki,
+        "private",
+        "client-notes",
+        "Client Notes",
+        ["projects", "project"],
+        "S",
+        body="See [[Semantic Cache]].",
+    )
     result = parse_wiki()
-    by_id = {n["id"]: n for n in result["nodes"]}
-    assert by_id["client-notes"]["data"]["private"] is True
-    assert by_id["semantic-cache"]["data"]["private"] is False
+    ids = {n["id"] for n in result["nodes"]}
+    assert "client-notes" not in ids
+    assert "semantic-cache" in ids
+    assert all("client-notes" not in (e["source"], e["target"]) for e in result["edges"])
     assert "private" not in result["domains"]
+    assert "client-notes" not in public_page_ids()
 
 
 @pytest.mark.unit

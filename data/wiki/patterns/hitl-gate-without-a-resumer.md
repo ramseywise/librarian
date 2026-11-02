@@ -2,7 +2,7 @@
 title: HITL Gate Without a Resumer
 tags: [patterns, rag, pattern]
 summary: An interrupt() gate only earns its place when someone actually resumes the run; in an autonomous pipeline every gate collapses to auto-escalate, sequential gates compound the fire rate, and thresholds should be calibrated to a target escalation rate rather than a score value.
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/research/rag/rag-integration-strategy.md
 ---
@@ -30,7 +30,7 @@ whatever the fall-through path is, which in this case was escalation. So:
 
 The deciding question is not about architecture: *is there a resumer consuming the
 interrupts?* If yes, keep the gates. If no, replace them with auto-escalation and pass the
-confidence score up in the response payload. The calling layer (the VA) can then decide
+confidence score up in the response payload. The calling layer (the assistant) can then decide
 to escalate without needing any HITL resumption logic.
 
 ## Sequential gates compound

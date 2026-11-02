@@ -2,7 +2,7 @@
 title: Measurement Fix Mistaken for Model Gain
 tags: [patterns, eval, pattern]
 summary: "When an agent's citations and the ground truth use different identifiers for the same document (a KB domain migration, URL titles standing in for passages), correct answers score as failures; fixing the scorer moves the headline number more than any model change, so report v1-strict and v2-calibrated side by side and treat historical baselines as lower bounds."
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/project-g/docs/stakeholders/project-g-eval-framework.md
   - data/raw/repos/playground/docs--stakeholders--galactus-eval-framework.md
@@ -68,7 +68,7 @@ URL-mapping gap.
 ## See Also
 - [[LLM Grader Calibration Insights]] — extends
 - [[project-g Eval Architecture]] — instance-of
-- [[VA vs HCA Retrieval Evaluation]] — extends (URL-mapping gap as a miss category)
+- [[Production Retrieval Evaluation]] — extends (URL-mapping gap as a miss category)
 - [[RAG Eval Gate Contract]] — extends (alias-aware retrieval metrics)
 - [[Silent Fallthrough in String-Keyed Discovery]] — extends
 - [[Fallback Mistaken for the Design]] — alternative-to (the degraded path critiqued as the design; here it is scored as the model)

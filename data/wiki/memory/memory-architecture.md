@@ -1,13 +1,13 @@
 ---
-title: Memory Architecture for VA Agents
+title: Memory Architecture
 tags: [memory, langgraph, adk, pattern, concept]
-summary: Three-tier cognitive memory model (semantic/episodic/procedural), SQLite implementation pattern, context window management strategies, and self-improving reflection pattern for VA agents.
-updated: 2026-07-05
+summary: Three-tier cognitive memory model (semantic/episodic/procedural), SQLite implementation pattern, context window management strategies, and self-improving reflection pattern for assistant agents.
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/memory-architecture.md
 ---
 
-# Memory Architecture for VA Agents
+# Memory Architecture
 
 ## Three-Tier Memory Model
 

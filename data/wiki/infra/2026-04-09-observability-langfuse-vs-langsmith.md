@@ -2,7 +2,7 @@
 title: Observability — LangFuse vs LangSmith Decision
 tags: [infra, eval, decision]
 summary: Decision to use LangFuse first for RAG observability — native ragas/deepeval integrations, self-hostable, GDPR-friendly, and highest weighted score (8.58/10) for [client]'s AWS-hosted, high-compliance context.
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/archived/rag-agent-template-research.md
   - data/raw/claude-docs/playground/docs/archived/adk-orchestration-research.md
@@ -91,9 +91,9 @@ When annotation queues are needed:
 - RAGAS needs an LLM for grading — defaults to OpenAI. Configure with `langchain_anthropic.ChatAnthropic` (Haiku for cost) to stay within the Anthropic stack.
 - DeepEval similarly defaults to OpenAI — configure via `DeepEvalBaseLLM` subclass for Anthropic.
 
-## [client] VA Team Weighted Evaluation (2026-05)
+## [client] Assistant Team Weighted Evaluation (2026-05)
 
-A more comprehensive evaluation was conducted for [client]'s VA team context: AWS-hosted system, Google ADK-compatible, high-compliance accounting domain. See [[Langfuse Platform]] for full [client] adoption details.
+A more comprehensive evaluation was conducted for [client]'s assistant team context: AWS-hosted system, Google ADK-compatible, high-compliance accounting domain. See [[Langfuse Platform]] for full [client] adoption details.
 
 | Platform | Weighted Score | Best when |
 |---|---|---|

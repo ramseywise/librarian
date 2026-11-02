@@ -2,7 +2,7 @@
 title: MCP Protocol
 tags: [mcp, concept]
 summary: Model Context Protocol — how it separates tool definitions from agents, enabling independent deployment and runtime tool discovery; includes AWS Bedrock AgentCore deployment pattern from the Hypernova PoC.
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
@@ -132,7 +132,7 @@ Production auth: under active development in the MCP spec — refer to the MCP a
 
 ## AWS Bedrock AgentCore Deployment Pattern
 
-AWS Bedrock AgentCore Runtime is a managed container runtime that simplifies deploying MCP servers to production. The VA team's Hypernova PoC uses this pattern.
+AWS Bedrock AgentCore Runtime is a managed container runtime that simplifies deploying MCP servers to production. The assistant team's Hypernova PoC uses this pattern.
 
 ### How it works
 
@@ -164,9 +164,9 @@ Amazon Cognito JWT authorizer is the default auth pattern for Bedrock AgentCore 
 
 ### Per-Organization Token Forwarding
 
-When the MCP client (e.g., va-agents Next.js app) needs to pass organization-scoped credentials to the MCP server, the pattern is: forward the credential as an HTTP request header. The MCP server reads it from the request context on each call — no hardcoded or stored credentials.
+When the MCP client (e.g., assistant-agents Next.js app) needs to pass organization-scoped credentials to the MCP server, the pattern is: forward the credential as an HTTP request header. The MCP server reads it from the request context on each call — no hardcoded or stored credentials.
 
-Example (va-agents / [product].dk): the Next.js app sends the [product] API token (from the iframe) as a header on each MCP request. The [product]-mcp-server reads it and uses it for all [product] API calls in that request.
+Example (assistant-agents / [product].dk): the Next.js app sends the [product] API token (from the iframe) as a header on each MCP request. The [product]-mcp-server reads it and uses it for all [product] API calls in that request.
 
 ### Observability (auto-configured)
 
@@ -175,7 +175,7 @@ With `observability: enabled`:
 - **X-Ray**: every MCP tool call is traced with a segment including input/output
 - No SDK instrumentation required in the MCP server code
 
-See VA Hypernova MCP for the full production deployment of this pattern.
+See Hypernova MCP for the full production deployment of this pattern.
 
 ## See Also
 - [[Karpathy LLM Wiki Pattern]]

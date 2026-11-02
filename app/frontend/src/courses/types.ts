@@ -15,6 +15,8 @@ export interface LessonOutline {
   kind: "reading" | "notebook" | "drill" | string;
   summary: string;
   drill?: DrillMeta;
+  /** Absent when the lesson has no flashcards. */
+  flashcardCount?: number;
 }
 
 export interface SourceRef {
@@ -31,6 +33,8 @@ export interface CourseModule {
   readings: SourceRef[];
   references: SourceRef[];
   lessons: LessonOutline[];
+  /** Absent when the module has no flashcards. */
+  flashcardCount?: number;
 }
 
 export interface Course {
@@ -70,4 +74,21 @@ export interface PracticeDrill extends LessonOutline {
 export interface SearchHit extends LessonOutline {
   course: string;
   snippet: string;
+}
+
+export interface Flashcard {
+  id: string;
+  /** `**bold**` and `code` inline markup, from the slide deck. */
+  front: string;
+  back: string;
+  lesson: string | null;
+  lessonTitle: string | null;
+}
+
+export interface FlashcardDeck {
+  /** Module (`<course>/<module>`) or lesson id. */
+  id: string;
+  title: string;
+  course: string;
+  cards: Flashcard[];
 }

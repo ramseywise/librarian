@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 
 /**
  * Minimal hash router — `#/` (graph), `#/courses`, `#/practice`, `#/courses/<course>`,
- * `#/courses/<lesson id with slashes>`. Hash routing keeps deep links working
+ * `#/courses/<lesson id with slashes>`, `#/flashcards/<module or lesson id>`. Hash routing keeps deep links working
  * under the Vite dev server and the static build without server rewrites.
  */
 export function useHashRoute(): [string, (path: string) => void] {

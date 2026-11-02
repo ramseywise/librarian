@@ -2,7 +2,7 @@
 title: Agent Scaffolding Skill Layers
 tags: [pattern, context-management]
 summary: A three-layer Claude Code skill design for scaffolding agents — a generic parallel-subagent factory (L1), standalone capability add-skills that read the target before generating (L2), and a domain-specific bundle that orchestrates L2 skills in sequence (L3).
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/skills/agent-creation/new-support-agent/SKILL.md
   - data/raw/claude-docs/playground/skills/agent-creation/add-rag/SKILL.md
@@ -97,7 +97,7 @@ env-gated confidence gate (see [[HITL and Interrupt Patterns]]).
 ## See Also
 - [[Multi-Agent Role Specialization]] <!-- auto-linked -->
 - [[Skill Preloading via Agent Definition]] <!-- auto-linked -->
-- [[VA Product Design Patterns]] <!-- auto-linked -->
+- [[Product Design Patterns]] <!-- auto-linked -->
 - [[Send API Fan-out]] — the same parallel-dispatch discipline applied to LangGraph graph execution
 - [[Multi-Repo Claude Organization]] — the broader skill-scope (global vs per-repo) decision this pattern lives inside
 - [[SKILL.md Pattern]]

@@ -2,7 +2,7 @@
 title: ADK Deployment Patterns
 tags: [adk, infra, pattern]
 summary: ADK deployment targets (Agent Engine vs Cloud Run vs GKE), CI/CD with WIF, service account architecture, event-driven triggers, and Terraform patterns.
-updated: 2026-07-14
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/SKILL.md
   - data/raw/claude-docs/project-g/.agents/skills/adk-deploy-guide/references/agent-engine.md
@@ -317,7 +317,7 @@ gcloud run services update-traffic SERVICE_NAME \
 ---
 
 ## See Also
-- [[VA Product Design Patterns]] <!-- auto-linked -->
+- [[Product Design Patterns]] <!-- auto-linked -->
 
 - [[System Design — Serverless Agent Backends]] — instance-of
 - [[ADK Scaffold Patterns]]

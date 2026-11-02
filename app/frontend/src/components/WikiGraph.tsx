@@ -17,12 +17,15 @@ import { EdgeTogglePanel } from "./EdgeTogglePanel";
 import { LayoutSwitcher } from "./LayoutSwitcher";
 import { TagFilterPanel } from "./TagFilterPanel";
 import { useWikiData } from "../hooks/useWikiData";
-import { applyDagreLayout, placeMissingNodes, type XY } from "../utils/layout";
+import { applyDagreLayout, declutter, placeMissingNodes, type XY } from "../utils/layout";
 import {
   applyView,
-  expandOneHop,
+  degreeOf,
+  expandBridges,
   filterPrimaryIds,
-  focusNeighbourhood,
+  neighbours,
+  renderIds as computeRenderIds,
+  sampleIds,
   visibleEdges,
   type ViewState,
 } from "../utils/graphView";
@@ -71,12 +74,15 @@ function WikiGraphInner({
   } = useWikiData();
 
   const [edgeVis, setEdgeVis] = useState<EdgeVisibility>({
-    wikilink: false,
+    wikilink: true,
     semantic: false,
     "tag-shared": true,
   });
   const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
-  const [overviewMode, setOverviewMode] = useState(true);
+  // Sample-first: render a seed and grow it by clicking; "All" renders every page.
+  const [showAll, setShowAll] = useState(false);
+  /** Pages revealed by clicks since the last reset; they stay rendered (sample mode). */
+  const [revealed, setRevealed] = useState<Set<string>>(() => new Set());
   const [focusNodeId, setFocusNodeId] = useState<string | null>(null);
   const [loadingSemantic, setLoadingSemantic] = useState(false);
   // Narrow screens only: the control panels collapse behind one menu button.
@@ -92,10 +98,11 @@ function WikiGraphInner({
     if (layout === "umap-semantic" && hasNodes) void loadUmapPositions();
   }, [layout, hasNodes, loadUmapPositions]);
 
-  const structuralEdges = useMemo(
-    () => [...wikilinkEdges, ...tagSharedEdges],
-    [wikilinkEdges, tagSharedEdges],
-  );
+  // Neighbourhoods expand over wikilinks plus semantic edges once loaded — never over
+  // tag-shared edges, whose near-cliques pulled most of the graph into every click.
+  const linkEdges = useMemo(() => [...wikilinkEdges, ...semanticEdges], [wikilinkEdges, semanticEdges]);
+  const degree = useMemo(() => degreeOf(wikilinkEdges), [wikilinkEdges]);
+  const sample = useMemo(() => sampleIds(baseNodes, degree), [baseNodes, degree]);
 
   // --- Layout: base positions (UMAP or dagre), then the filter subgraph on top ----------
   const baseLayout = useMemo<Record<string, XY> | null>(() => {
@@ -110,24 +117,29 @@ function WikiGraphInner({
 
   const filterIds = useMemo(() => {
     const primary = filterPrimaryIds(baseNodes, activeTags);
-    return primary ? expandOneHop(primary, structuralEdges) : null;
-  }, [baseNodes, activeTags, structuralEdges]);
+    return primary ? expandBridges(primary, linkEdges) : null;
+  }, [baseNodes, activeTags, linkEdges]);
 
+  // Semantic layout keeps its positions under a filter (fitView zooms to the subgraph);
+  // Hierarchy re-runs dagre on the subgraph so it reads as its own tree.
   const positions = useMemo(() => {
-    if (!baseLayout || !filterIds) return baseLayout;
+    if (!baseLayout || !filterIds || layout !== "dagre") return baseLayout;
     const sub = baseNodes.filter((n) => filterIds.has(n.id));
-    // All three edge types shape the subgraph; wikilinks first so they win the
-    // one-parent-per-node choice in applyDagreLayout.
-    const subEdges = [...wikilinkEdges, ...semanticEdges, ...tagSharedEdges].filter(
-      (e) => filterIds.has(e.source) && filterIds.has(e.target),
-    );
+    // Wikilinks first so they win the one-parent-per-node choice in applyDagreLayout.
+    const subEdges = linkEdges.filter((e) => filterIds.has(e.source) && filterIds.has(e.target));
     return { ...baseLayout, ...positionsOf(applyDagreLayout(sub, subEdges)) };
-  }, [baseLayout, filterIds, baseNodes, wikilinkEdges, semanticEdges, tagSharedEdges]);
+  }, [baseLayout, filterIds, layout, baseNodes, linkEdges]);
 
-  // --- View: dimming / highlight / hidden, and the rendered edges -----------------------
+  // A new filter is a new view: drop the click focus so its neighbourhood doesn't linger
+  // beside (and dim) the filter subgraph.
+  useEffect(() => {
+    setFocusNodeId(null);
+  }, [activeTags]);
+
+  // --- View: what is rendered, dimming / highlight, and the rendered edges ---------------
   const focusIds = useMemo(
-    () => focusNeighbourhood(focusNodeId, structuralEdges, semanticEdges),
-    [focusNodeId, structuralEdges, semanticEdges],
+    () => (focusNodeId ? new Set([focusNodeId, ...neighbours(focusNodeId, linkEdges, degree)]) : null),
+    [focusNodeId, linkEdges, degree],
   );
 
   const view = useMemo<ViewState>(
@@ -137,16 +149,29 @@ function WikiGraphInner({
       focusIds,
       filterIds,
       activeTags,
-      overview: overviewMode,
     }),
-    [highlightedPages, focusNodeId, focusIds, filterIds, activeTags, overviewMode],
+    [highlightedPages, focusNodeId, focusIds, filterIds, activeTags],
   );
 
+  const rendered = useMemo(
+    () => computeRenderIds(showAll, sample, revealed, view),
+    [showAll, sample, revealed, view],
+  );
+
+  // UMAP positions overlap where pages are similar; spread just the rendered cards.
+  // Dagre output never overlaps, so a dagre-laid-out filter subgraph is left alone.
+  const placed = useMemo(() => {
+    if (!positions || layout !== "umap-semantic") return positions;
+    return { ...positions, ...declutter(positions, rendered ?? baseNodes.map((n) => n.id)) };
+  }, [positions, layout, rendered, baseNodes]);
+
   const viewNodes = useMemo(() => {
-    if (!positions) return NO_NODES;
-    const laidOut = baseNodes.map((n) => ({ ...n, position: positions[n.id] ?? n.position }));
+    if (!placed) return NO_NODES;
+    const laidOut = baseNodes
+      .filter((n) => !rendered || rendered.has(n.id))
+      .map((n) => ({ ...n, position: placed[n.id] ?? n.position }));
     return applyView(laidOut, view);
-  }, [positions, baseNodes, view]);
+  }, [placed, baseNodes, rendered, view]);
 
   const edges = useMemo(
     () =>
@@ -160,16 +185,26 @@ function WikiGraphInner({
   );
 
   // --- Sync derived nodes into React Flow state (keeps node dragging working) -----------
-  // A new `positions` object means a relayout: take the new positions and refit.
-  // Otherwise only view flags changed: keep where the user dragged nodes to.
+  // A new `positions` object means a relayout: take the new positions and refit. A new
+  // filter (or switching Sample/All) also refits, even when positions are unchanged. A new
+  // `placed` (declutter re-ran because the rendered set changed) takes the new positions
+  // without a refit, so revealed cards don't land on top of stale ones. Otherwise only
+  // view flags changed: keep where the user dragged nodes to.
   const [nodes, setNodes, onNodesChange] = useNodesState<WikiFlowNode>([]);
   const lastPositions = useRef<Record<string, XY> | null>(null);
+  const lastPlaced = useRef<Record<string, XY> | null>(null);
+  const lastFrame = useRef<{ filterIds: Set<string> | null; showAll: boolean } | null>(null);
   const pendingFit = useRef(false);
 
   useEffect(() => {
     const relayout = lastPositions.current !== positions;
     lastPositions.current = positions;
-    if (relayout && positions) pendingFit.current = true;
+    const reframe =
+      lastFrame.current?.filterIds !== filterIds || lastFrame.current?.showAll !== showAll;
+    lastFrame.current = { filterIds, showAll };
+    if ((relayout || reframe) && positions) pendingFit.current = true;
+    const moved = relayout || reframe || lastPlaced.current !== placed;
+    lastPlaced.current = placed;
     setNodes((prev) => {
       const prevById = new Map(prev.map((n) => [n.id, n]));
       return viewNodes.map((n) => {
@@ -177,13 +212,13 @@ function WikiGraphInner({
         if (!p) return n;
         return {
           ...n,
-          position: relayout ? n.position : p.position,
+          position: moved ? n.position : p.position,
           measured: p.measured,
           selected: p.selected,
         };
       });
     });
-  }, [viewNodes, positions, setNodes]);
+  }, [viewNodes, positions, placed, filterIds, showAll, setNodes]);
 
   useEffect(() => {
     if (!pendingFit.current || !nodes.length) return;
@@ -200,7 +235,10 @@ function WikiGraphInner({
 
   // --- focusPage (arriving from a lesson): fit to it, open its panel, report back -------
   // Declared after the layout fit so its fitView is queued last and wins on first load.
+  // The page may be outside the sample: focusing it puts it (and its neighbours) into
+  // the rendered set, and the fit waits until React Flow actually holds the node.
   const appliedFocus = useRef<string | null>(null);
+  const pendingFocusFit = useRef<string | null>(null);
   const hasRenderedNodes = nodes.length > 0;
   useEffect(() => {
     if (!focusPage) {
@@ -216,12 +254,20 @@ function WikiGraphInner({
       onFocusApplied?.();
       return;
     }
-    requestAnimationFrame(() => {
-      void fitView({ nodes: [{ id: focusPage }], padding: 2, maxZoom: 1.2, duration: 400 });
-    });
+    setFocusNodeId(focusPage);
+    pendingFocusFit.current = focusPage;
     onNodeSelect?.({ id: node.id, data: node.data });
     onFocusApplied?.();
-  }, [focusPage, hasRenderedNodes, baseNodes, fitView, onNodeSelect, onFocusApplied]);
+  }, [focusPage, hasRenderedNodes, baseNodes, onNodeSelect, onFocusApplied]);
+
+  useEffect(() => {
+    const id = pendingFocusFit.current;
+    if (!id || !nodes.some((n) => n.id === id)) return;
+    pendingFocusFit.current = null;
+    requestAnimationFrame(() => {
+      void fitView({ nodes: [{ id }], padding: 2, maxZoom: 1.2, duration: 400 });
+    });
+  }, [nodes, fitView]);
 
   // --- Handlers ------------------------------------------------------------------------
   const handleLoadSemantic = useCallback(async () => {
@@ -235,13 +281,27 @@ function WikiGraphInner({
     }
   }, [fetchSemanticEdges]);
 
+  // Clicking a node focuses it and, in sample mode, keeps its neighbours on the canvas
+  // so the graph can be walked outward click by click. Clicking it again unfocuses.
   const handleNodeClick = useCallback(
     (_: React.MouseEvent, node: WikiFlowNode) => {
       setFocusNodeId((prev) => (prev === node.id ? null : node.id));
+      setRevealed((prev) => {
+        const next = new Set(prev);
+        next.add(node.id);
+        for (const id of neighbours(node.id, linkEdges, degree)) next.add(id);
+        return next.size === prev.size ? prev : next;
+      });
       onNodeSelect?.({ id: node.id, data: node.data as WikiNodeData });
     },
-    [onNodeSelect],
+    [onNodeSelect, linkEdges, degree],
   );
+
+  const handleResetSample = useCallback(() => {
+    setRevealed(new Set());
+    setFocusNodeId(null);
+    onNodeSelect?.(null);
+  }, [onNodeSelect]);
 
   const handlePaneClick = useCallback(() => {
     setFocusNodeId(null);
@@ -264,9 +324,14 @@ function WikiGraphInner({
 
   return (
     <div className="graph-root">
-      {/* Connection status */}
+      {/* Connection status, and how much of the wiki is on the canvas */}
       <div className={`graph-status ${connected ? "graph-status--live" : "graph-status--offline"}`}>
         {connected ? "● live" : "○ connecting…"}
+        {hasNodes && (
+          <span className="graph-status-count">
+            {" "}· {nodes.length} of {baseNodes.length} pages
+          </span>
+        )}
       </div>
 
       {/* Narrow screens: one button in place of the four control panels. */}
@@ -299,12 +364,27 @@ function WikiGraphInner({
 
         {/* Depth toggle — top-right */}
         <div className="graph-depth seg">
-          <button onClick={() => setOverviewMode(true)} aria-pressed={overviewMode} className="seg-btn">
-            Projects
+          <button
+            onClick={() => setShowAll(false)}
+            aria-pressed={!showAll}
+            className="seg-btn"
+            title="Projects and each domain's best-linked pages; click a node to reveal its links"
+          >
+            Sample
           </button>
-          <button onClick={() => setOverviewMode(false)} aria-pressed={!overviewMode} className="seg-btn">
+          <button
+            onClick={() => setShowAll(true)}
+            aria-pressed={showAll}
+            className="seg-btn"
+            title="Render every page (slower)"
+          >
             All
           </button>
+          {!showAll && revealed.size > 0 && (
+            <button onClick={handleResetSample} className="seg-btn" title="Back to the default sample">
+              Reset
+            </button>
+          )}
         </div>
 
         <TagFilterPanel
@@ -324,6 +404,7 @@ function WikiGraphInner({
         onPaneClick={handlePaneClick}
         fitView
         fitViewOptions={{ padding: 0.15 }}
+        onlyRenderVisibleElements
         minZoom={0.1}
         maxZoom={3}
         proOptions={{ hideAttribution: true }}

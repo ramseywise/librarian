@@ -299,3 +299,19 @@
   .lesson { padding: var(--space-8) var(--space-7) 48px; }
   .course-page-inner { padding-left: var(--space-7); padding-right: var(--space-7); }
 }
+
+/* ---- Flashcards ---- */
+.flashcard-link { display: inline-block; font-size: var(--fs-md); color: var(--link); margin-bottom: var(--space-3); }
+.flashcard {
+  display: flex; flex-direction: column; justify-content: center; width: 100%; min-height: 260px; margin-top: var(--space-5);
+  text-align: left; background: var(--surface-card); border: 1px solid var(--border-card); border-radius: var(--radius-xl);
+  padding: var(--space-9); cursor: pointer; font-family: inherit; color: var(--text-strong);
+}
+.flashcard.is-flipped { border-color: var(--link); }
+.flashcard-side { font-size: var(--fs-sm); color: var(--text-faint); margin-bottom: var(--space-3); }
+.flashcard-text { font-size: 20px; line-height: 1.5; }
+.flashcard-text code { font-size: 0.9em; }
+.flashcard-source { margin-top: var(--space-3); font-size: var(--fs-md); color: var(--text-secondary); }
+.flashcard-source a { color: var(--link); }
+.flashcard-controls { display: flex; align-items: center; gap: var(--space-4); margin-top: var(--space-5); }
+.flashcard-count { color: var(--text-faint); font-size: var(--fs-base); margin-left: auto; }

@@ -2,7 +2,7 @@
 title: Stub Backend Is Permanent Dev Infrastructure
 tags: [patterns, infra, pattern]
 summary: "Treat the tool interface as the dev/prod seam: the stub backend behind it (a seeded MCP server over SQLite) is permanent dev, CI and staging infrastructure, not a placeholder to replace later; production is a second implementation of the same signatures, and a \"replace stubs with the real API\" phase is a planning error."
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/plans/va-agent-improvements.md
   - data/raw/claude-docs/playground/docs/plans/va-infra.md
@@ -11,7 +11,7 @@ sources:
 
 # Stub Backend Is Permanent Dev Infrastructure
 
-From the playground repo's virtual-assistant plans (2026-04). The VA ran on two runtimes
+From the playground repo's virtual-assistant plans (2026-04). The assistant ran on two runtimes
 (ADK and LangGraph) against an accounting product's data. A revised plan corrected an
 earlier build order, and that correction is the learning.
 
@@ -72,5 +72,5 @@ different matter and needs NLB or upgrade support.
 ## See Also
 - [[A Fake That Conforms to a Broken Seam]] — related (what goes wrong when the stub's shape drifts from production)
 - [[Stated Seams Drift, Enforced Seams Hold]] — extends (the tool interface is a seam worth enforcing)
-- [[VA Eval Harness]] — related (evals run against these runtimes and the stub backend)
+- [[Eval Harness]] — related (evals run against these runtimes and the stub backend)
 - [[Streaming Output Scrubbing]] — related (the other half of shipping SSE responses)

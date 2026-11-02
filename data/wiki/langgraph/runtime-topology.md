@@ -2,7 +2,7 @@
 title: Runtime Topology and Checkpointer Alignment
 tags: [infra, langgraph, concept]
 summary: Critical rule — checkpointer backend must match runtime hosting model. MemorySaver fails silently in Lambda and multi-worker deployments. Covers trigger patterns, observability tool choice (LangSmith vs Langfuse/GDPR), and key production signals.
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
 ---
@@ -36,7 +36,7 @@ async with AsyncPostgresSaver.from_conn_string(DATABASE_URL) as checkpointer:
 
 ## Trigger Patterns
 
-VA agents can be triggered in four ways:
+Assistant agents can be triggered in four ways:
 
 | Trigger | Description | Latency expectation |
 |---------|-------------|---------------------|

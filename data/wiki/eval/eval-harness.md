@@ -1,8 +1,8 @@
 ---
-title: VA Eval Harness
+title: Eval Harness
 tags: [eval, langgraph, adk, concept, pattern]
-summary: "Agent evaluation harness for VA agents — four eval suites (routing, quality, behavioral, error handling), JSON evalset schema, tool_trajectory_avg_score metric, LLM-as-judge, Makefile flow, and CI regression gate. Production golden dataset: ~100 questions from 700-question Intercom set, Langfuse pipeline live, CS agent validated."
-updated: 2026-10-17
+summary: "Agent evaluation harness for assistant agents — four eval suites (routing, quality, behavioral, error handling), JSON evalset schema, tool_trajectory_avg_score metric, LLM-as-judge, Makefile flow, and CI regression gate. Production golden dataset: ~100 questions from 700-question Intercom set, Langfuse pipeline live, CS agent validated."
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/skills/eval-creation/va-eval/SKILL.md
   - data/raw/claude-docs/playground/docs/evals/eval-harness-patterns.md
@@ -14,9 +14,9 @@ sources:
   - data/raw/claude-docs/playground/docs/plans/va-routing-eval.md
 ---
 
-# VA Eval Harness
+# Eval Harness
 
-Distinct from [[RAG Evaluation]] (which measures retrieval quality). The VA eval harness validates agent routing accuracy, tool trajectory, and behavioral correctness.
+Distinct from [[RAG Evaluation]] (which measures retrieval quality). This eval harness validates agent routing accuracy, tool trajectory, and behavioral correctness.
 
 ## Four Eval Suites
 
@@ -174,7 +174,7 @@ Status as of a 2026-07-03 team alignment meeting:
 | URL labels (retrieval targets) | Human-generated and validated by CS agents |
 | Full conversation context | Captured in separate column |
 | Evaluation pipeline | Live in Langfuse; runnable from terminal against staging, production, or dev |
-| Basic eval metrics | Connected to Langfuse eval pipeline (from VA agents and project-g) |
+| Basic eval metrics | Connected to Langfuse eval pipeline (from assistant agents and project-g) |
 | Dataset representativeness | Frequency analysis applied only across the 700-question subset — known limitation |
 | Answer quality evaluation | Next step after retrieval evaluation is stable |
 
@@ -192,13 +192,13 @@ Status as of a 2026-07-03 team alignment meeting:
 
 ### Relationship to project-g Eval
 
-The project-g Intercom URL-grounded dataset (754 rows) and the VA 100-question golden dataset are different cuts of the same source corpus. The 754-row set is the bulk benchmarking ground truth; the 100-question golden set is the curated, CS-validated operational baseline for ongoing Langfuse pipeline evaluation.
+The project-g Intercom URL-grounded dataset (754 rows) and the assistant's 100-question golden dataset are different cuts of the same source corpus. The 754-row set is the bulk benchmarking ground truth; the 100-question golden set is the curated, CS-validated operational baseline for ongoing Langfuse pipeline evaluation.
 
-## Concrete Implementation: va-langgraph Eval Framework
+## Concrete Implementation: assistant-langgraph Eval Framework
 
-The playground `va-langgraph` eval framework provides a concrete implementation of the abstract four-suite pattern above.
+The playground `assistant-langgraph` eval framework provides a concrete implementation of the abstract four-suite pattern above.
 
-**Location:** `va-langgraph/eval/`
+**Location:** `assistant-langgraph/eval/`
 **Dataset:** 278 fixtures, German language, real [vendor] support tickets (CES-rated 1–7). Stratified sampling: ~40 tickets per CES level.
 
 | CES | test_type | Signal |
@@ -209,7 +209,7 @@ The playground `va-langgraph` eval framework provides a concrete implementation 
 | 5–6 | `friction_high` / `pre_escalation` | Frustration / escalation risk |
 | 7 | `regression` | Failure mode |
 
-~24% of tickets (66/278) are structural escalations — the VA should decline these regardless of answer quality.
+~24% of tickets (66/278) are structural escalations — the assistant should decline these regardless of answer quality.
 
 **Four graders:**
 
@@ -265,7 +265,7 @@ From a cleanup session (2026-04-18) that consolidated a sprawling `evals/` root,
 - [[System Design — Unified Eval Harness]] <!-- auto-linked -->
 - [[RAG Eval Gate Contract]] <!-- auto-linked -->
 - [[Skill Eval Pipeline (Blind Comparison + Grading)]] <!-- auto-linked -->
-- [[VA vs HCA Retrieval Evaluation]]
+- [[Production Retrieval Evaluation]]
 - [[project-g Eval Architecture]]
 - [[RAG Evaluation]]
 - [[Input Guardrails Pipeline]]

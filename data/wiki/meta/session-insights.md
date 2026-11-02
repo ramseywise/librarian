@@ -2,7 +2,7 @@
 title: Session Insights
 tags: [context-management, llm, pattern, project]
 summary: Compiled insights from Claude Code sessions — 42 facet-analyzed sessions (friction, themes, skill candidates) plus aggregate telemetry over 1,856 migrated session notes (cost tail, tool-error mix, skill usage).
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/sessions/
   - data/raw/claude-docs/guacamayo/docs/insights-summary.md
@@ -60,7 +60,7 @@ Compiled from `~/.claude/usage-data/facets/` (42 sessions with LLM-analyzed outc
 
 **Infrastructure** (3 sessions):
 - Terraform restructure (48 files, new infra layout)
-- VA agent: RDS Postgres for LangGraph checkpointer + EFS for [product] SQLite (62 prompts — longest session)
+- Assistant agent: RDS Postgres for LangGraph checkpointer + EFS for [product] SQLite (62 prompts — longest session)
 - Playground infra consolidation and secrets audit
 
 ---
@@ -146,7 +146,7 @@ The `env-audit` and `polyglot-lint` patterns are most actionable — they're sma
 **Heavy token sessions (cost hotspots):**
 - `b669eebb`: 231k output tokens — codebase restructure with 6 prompts
 - `dd36bdeb`: 162k — terraform restructure (1 prompt, long execution)
-- `826a1a97`: 62 prompts — VA agent Phase 3 (longest in prompt count)
+- `826a1a97`: 62 prompts — assistant agent Phase 3 (longest in prompt count)
 - `64095580` + `4a5c5ba3` + `53ef9ef6`: each 65–93k — architecture planning and analysis sessions
 
 Architecture/planning sessions generate more output tokens per prompt than execution sessions. Keeping plans concise and scoping steps to ≤40% context window addresses this.
@@ -223,7 +223,7 @@ Architecture/planning sessions generate more output tokens per prompt than execu
 
 - **Runtime-agnostic orchestrator plan (session `c44fa991`):** When a RAG PoC grows to support multiple runtimes (LangGraph + ADK), write the refactor plan *before* touching files. The pattern: `orchestrator/{langgraph,adk}/` with shared `orchestrator/{memory,guardrails,prompts}/`. The factory selects the runtime via `ORCHESTRATION_STRATEGY` env var. This is the same pattern already implemented in the Librarian service — the PoC was converging on it independently.
 
-- **Graders vs metrics vs harnesses distinction (session `57042538`):** See [[VA Eval Harness]] — Eval Directory Structure section. The key conceptual point: graders produce metrics; harnesses run graders against evalsets; experiments test variants and push to LangSmith. These are four distinct concepts that should live in four distinct directories.
+- **Graders vs metrics vs harnesses distinction (session `57042538`):** See [[Eval Harness]] — Eval Directory Structure section. The key conceptual point: graders produce metrics; harnesses run graders against evalsets; experiments test variants and push to LangSmith. These are four distinct concepts that should live in four distinct directories.
 
 ### Friction patterns (new from this batch)
 

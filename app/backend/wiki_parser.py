@@ -24,6 +24,22 @@ def _domain_tag_set() -> set[str]:
     return {d.name for d in WIKI_DIR.iterdir() if d.is_dir() and d.name != "private"}
 
 
+def _public_pages() -> list[Path]:
+    """Wiki pages the graph UI may show: not `_`-prefixed, not under data/wiki/private/."""
+    return sorted(
+        f
+        for f in WIKI_DIR.rglob("*.md")
+        if not f.name.startswith("_") and f.relative_to(WIKI_DIR).parts[0] != "private"
+    )
+
+
+def public_page_ids() -> set[str]:
+    """Node ids parse_wiki() can emit. Semantic edges and UMAP positions are computed over
+    every page (private included, see shared/embeddings.py), so their endpoints filter to
+    this set before anything reaches the browser."""
+    return {f.stem for f in _public_pages()}
+
+
 def parse_wiki() -> dict:
     """Graph payload for /ws `graph_update` and GET /api/graph: {nodes, edges, domains}.
 
@@ -33,18 +49,18 @@ def parse_wiki() -> dict:
     `/api/graph?edges=all`. `domains` is the disk-derived domain list, sorted, without
     `private`.
 
-    Private pages (data/wiki/private/) ARE included, flagged `data.private = True`:
-    decision D1 (2026-10-30) keeps them visible in the local graph UI with a badge. The
-    courses API and MCP search still exclude them.
+    Private pages (data/wiki/private/) are excluded — neither nodes nor wikilink sources.
+    This reverses decision D1 (2026-10-30), which showed them with a badge: client and
+    company pages must not appear in the graph UI at all, matching the courses API and
+    MCP search.
     """
     nodes: list[dict] = []
     edges: list[dict] = []
     page_slugs: dict[str, str] = {}  # slug -> title
 
     # First pass: collect all pages
-    for md_file in sorted(WIKI_DIR.rglob("*.md")):
-        if md_file.name.startswith("_"):
-            continue
+    pages = _public_pages()
+    for md_file in pages:
         post = frontmatter.load(md_file)
         title = post.get("title") or md_file.stem
         page_id = md_file.stem
@@ -57,7 +73,6 @@ def parse_wiki() -> dict:
         page_slugs[slugify(title)] = title
 
         domain = [md_file.parent.name]
-        is_private = md_file.relative_to(WIKI_DIR).parts[0] == "private"
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
 
         nodes.append(
@@ -73,7 +88,6 @@ def parse_wiki() -> dict:
                     "updated": str(post.get("updated") or ""),
                     "path": str(md_file.relative_to(WIKI_DIR)),
                     "dimmed": False,
-                    "private": is_private,
                 },
                 "position": {"x": 0, "y": 0},
             }
@@ -83,9 +97,7 @@ def parse_wiki() -> dict:
 
     # Second pass: extract wikilinks → edges (with optional relationship types)
     seen_edges: set[tuple[str, str]] = set()
-    for md_file in WIKI_DIR.rglob("*.md"):
-        if md_file.name.startswith("_"):
-            continue
+    for md_file in pages:
         source_id = md_file.stem
         content = md_file.read_text()
 

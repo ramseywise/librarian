@@ -2,7 +2,7 @@
 title: project-g Eval Architecture
 tags: [eval, rag, concept]
 summary: Routing vs domain eval distinction (Strand A/E/F), grader interface contract, three-tier eval coverage, calibration methodology for the project-g HC agent eval pipeline, and ADK vs LangGraph parallel evaluation approach.
-updated: 2026-10-17
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/skills/eval-creation/va-eval/SKILL.md
@@ -158,19 +158,19 @@ Ground truth expansion pipeline:
 - URL domain mismatch inflating grounding failures → normalization merged
 - Article text available but unused in grounding → passage enrichment added
 
-## VA vs HCA Production Retrieval Benchmarking
+## Assistant A vs Assistant B Production Retrieval Benchmarking
 
-The Strand A (routing eval) framework has been applied to a full production comparison. Full results in [[VA vs HCA Retrieval Evaluation]].
+The Strand A (routing eval) framework has been applied to a full production comparison. Full results in [[Production Retrieval Evaluation]].
 
 **Key figures (n=754 Danish Intercom questions):**
 
 | System | MRR | Hit@5 |
 |---|---|---|
-| VA (production) | 0.286 | 0.350 |
-| HCA (production) | 0.248 | 0.301 |
+| Assistant A (production) | 0.286 | 0.350 |
+| Assistant B (production) | 0.248 | 0.301 |
 | Local-ADK (research) | 0.375 | 0.405 |
 
-**LLM-as-judge quality scores (VA vs HCA):**
+**LLM-as-judge quality scores (Assistant A vs Assistant B):**
 - Grounding: 0.776 vs 0.633 (+0.143 — the largest signal gap)
 - Answer Relevancy: 0.891 vs 0.825
 - Faithfulness: 0.592 vs 0.511 (both low — model extrapolation beyond sources is a cross-system issue)
@@ -181,7 +181,7 @@ The central finding: improvement levers are independent and should be sequenced 
 
 **Lever 1 — Corpus quality (dominant lever):** 47% of all 935 questions are missed by every system — corpus ceiling, not retrieval architecture. Scoping index to help articles + re-ingesting 202 missing articles raises Hit@5 ceiling from ~40% to ~59% with zero model change. **Go here first.**
 
-**Lever 2 — Retrieval strategy:** where VA beats HCA. VA pools 2–3 reformulated queries (~13 sources), HCA does narrow retry returning ~4. VA wins via broad pooling → reranking → top-5 filter.
+**Lever 2 — Retrieval strategy:** where Assistant A beats Assistant B. Assistant A pools 2–3 reformulated queries (~13 sources), Assistant B does narrow retry returning ~4. Assistant A wins via broad pooling → reranking → top-5 filter.
 
 ### Production Benchmarking Decision Gate
 
@@ -258,8 +258,8 @@ reference URLs gets **no** grounding score, not a zero.
 ## See Also
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] <!-- auto-linked -->
-- [[VA vs HCA Retrieval Evaluation]]
-- [[VA Eval Harness]]
+- [[Production Retrieval Evaluation]]
+- [[Eval Harness]]
 - [[LLM Grader Calibration Insights]]
 - [[RAG Evaluation]]
 - [[Input Guardrails Pipeline]]

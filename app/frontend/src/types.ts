@@ -11,8 +11,8 @@ export interface WikiNodeData extends Record<string, unknown> {
   path: string;
   dimmed: boolean;
   highlighted: boolean;
-  /** Page lives in data/wiki/private/ — shown locally, never committed (plan D1). */
-  private?: boolean;
+  /** Drawn at 1.5x: chat-cited pages only, which are few. Not part of the layout box. */
+  enlarged?: boolean;
 }
 
 export interface WikiEdgeData extends Record<string, unknown> {

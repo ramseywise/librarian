@@ -2,7 +2,7 @@
 title: LangSmith Platform
 tags: [infra, eval, concept]
 summary: "LangSmith mechanics — auto-instrumentation for LangGraph vs manual @traceable wiring for ADK, datasets, evaluator functions, annotation queues, and experiment comparison; the counterpart to Langfuse Platform."
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/frameworks/langsmith.md
   - data/raw/repos/learn-ai-engineering/generative-ai--04-agentic-frameworks--notes--langsmith.md
@@ -33,7 +33,7 @@ LangGraph is native — set the env vars and the whole graph is traced:
 ```bash
 LANGCHAIN_TRACING_V2=true
 LANGCHAIN_API_KEY=<key>
-LANGCHAIN_PROJECT=va-langgraph
+LANGCHAIN_PROJECT=assistant-langgraph
 ```
 
 ADK does not use LangChain, so `LANGCHAIN_TRACING_V2` **has no effect**. Wiring is manual
@@ -53,7 +53,7 @@ async def run_agent(query: str, session_id: str) -> dict:
 
 ```bash
 LANGSMITH_API_KEY=<key>
-LANGSMITH_PROJECT=va-google-adk
+LANGSMITH_PROJECT=assistant-google-adk
 LANGSMITH_TRACING=true          # ADK-specific flag — NOT LANGCHAIN_*
 ```
 
@@ -70,14 +70,14 @@ Collections of input/output examples that evaluations run against.
 
 ```python
 dataset = client.create_dataset(
-    "va-google-adk-eval-v1",
-    description="VA ADK routing + quality eval set, seeded from regression",
+    "assistant-google-adk-eval-v1",
+    description="Assistant ADK routing + quality eval set, seeded from regression",
 )
 
 client.create_example(
     inputs={"query": row["query"], "session_id": row["task_id"]},
     outputs={"response": row.get("response", "")},
-    dataset_name="va-google-adk-eval-v1",
+    dataset_name="assistant-google-adk-eval-v1",
 )
 ```
 
@@ -99,7 +99,7 @@ def routing_accuracy(run, example) -> dict:
 
 results = evaluate(
     lambda inputs: run_agent(inputs["query"], inputs["session_id"]),
-    data="va-google-adk-eval-v1",
+    data="assistant-google-adk-eval-v1",
     evaluators=[routing_accuracy, grounding_score],
     experiment_prefix="adk-eval",
 )
@@ -120,7 +120,7 @@ is unsurprising: the axes are properties of the agent, not of the observability 
 Native review UI, and a viable upgrade path from a file-based human-review script:
 
 ```python
-client.create_annotation_queue("va-uncertain-cases", description="Low-confidence grader outputs")
+client.create_annotation_queue("assistant-uncertain-cases", description="Low-confidence grader outputs")
 
 for run_id, score in grader_results.items():
     if score < 0.6:
@@ -137,7 +137,7 @@ Every `evaluate()` call creates an experiment, comparable in the Experiments tab
 query:
 
 ```python
-client.list_runs(project_name="va-google-adk", filter='eq(feedback_key, "grounding")')
+client.list_runs(project_name="assistant-google-adk", filter='eq(feedback_key, "grounding")')
 ```
 
 Running two frameworks against the **same dataset** with the **same evaluators** is what

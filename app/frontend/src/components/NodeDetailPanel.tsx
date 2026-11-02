@@ -39,11 +39,6 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
             <span className="detail-type">
               {TYPE_LABELS[data.typeTag] ?? data.typeTag}
             </span>
-            {data.private && (
-              <span className="private-badge private-badge--detail" title="Lives in data/wiki/private/ — local only, never committed">
-                private
-              </span>
-            )}
           </div>
           <div className="detail-title">
             {data.title}

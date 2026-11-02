@@ -1,8 +1,8 @@
 ---
 title: Observability and Runtime Patterns
 tags: [infra, concept]
-summary: Observability tool choice (LangSmith vs Langfuse), tracing architecture, runtime topology and checkpointer alignment rules, trigger patterns, and key signals to monitor for VA agents.
-updated: 2026-10-30
+summary: Observability tool choice (LangSmith vs Langfuse), tracing architecture, runtime topology and checkpointer alignment rules, trigger patterns, and key signals to monitor for assistant agents.
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
   - data/raw/agent-skills/observability/SKILL.md
@@ -100,7 +100,7 @@ How an agent turn is invoked affects latency expectations:
 
 | Trigger | Latency expectation | Notes |
 |---|---|---|
-| HTTP/API (sync) | p50 < 2s | Most common for VA |
+| HTTP/API (sync) | p50 < 2s | Most common for product assistants |
 | Webhook/Event | Near-real-time | Action triggers |
 | Message queue | Seconds to minutes | Background processing |
 | Cron/Schedule | Defined interval | Batch eval, sync jobs |

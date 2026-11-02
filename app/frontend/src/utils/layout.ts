@@ -1,4 +1,5 @@
 import dagre from "dagre";
+import { forceCollide, forceSimulation, forceX, forceY, type SimulationNodeDatum } from "d3-force";
 import type { Node, Edge } from "@xyflow/react";
 
 const NODE_W = 190;
@@ -117,4 +118,38 @@ export function placeMissingNodes(
       { x: 0, y: 0 };
   }
   return out;
+}
+
+/** Clear space kept between decluttered cards, in px. */
+const CARD_GAP = 16;
+
+/**
+ * Push overlapping cards apart while keeping each near its layout position. UMAP packs
+ * related pages tightly, so a cluster renders as a pile of ~190x64 cards on top of each
+ * other. Runs a short d3-force simulation over only `ids` (the rendered nodes): a
+ * collision force separates cards and a weak pull keeps each near its UMAP spot, so the
+ * semantic placement survives. Cards are wide and short, so y is stretched by the card
+ * aspect ratio for the simulation, which lets round collision bodies stand in for
+ * rectangles. Deterministic for the same input. Returns positions for `ids` only.
+ */
+export function declutter(positions: Record<string, XY>, ids: Iterable<string>, ticks = 120): Record<string, XY> {
+  const aspect = NODE_W / NODE_H;
+  type Body = SimulationNodeDatum & { id: string; ox: number; oy: number };
+  const bodies: Body[] = [];
+  for (const id of ids) {
+    const p = positions[id];
+    if (p) bodies.push({ id, x: p.x, y: p.y * aspect, ox: p.x, oy: p.y * aspect });
+  }
+  if (bodies.length < 2) return Object.fromEntries(bodies.map((b) => [b.id, positions[b.id]]));
+
+  forceSimulation(bodies)
+    // Radius covers the card corner: two circles this size can't hide overlapping
+    // rectangles on a diagonal, which a half-width radius would.
+    .force("collide", forceCollide<Body>((NODE_W + CARD_GAP) / Math.SQRT2).strength(0.9).iterations(2))
+    .force("x", forceX<Body>((b) => b.ox).strength(0.08))
+    .force("y", forceY<Body>((b) => b.oy).strength(0.08))
+    .stop()
+    .tick(ticks);
+
+  return Object.fromEntries(bodies.map((b) => [b.id, { x: b.x ?? b.ox, y: (b.y ?? b.oy) / aspect }]));
 }

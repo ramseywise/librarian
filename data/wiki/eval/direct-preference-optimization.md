@@ -2,7 +2,7 @@
 title: Direct Preference Optimization
 tags: [llm, concept]
 summary: Training-time technique that fine-tunes a model on human preference pairs (preferred vs rejected responses) without a reward model — replaces PPO/RLHF for preference alignment. Not applicable to API-only models.
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/self-learning-agents.md
 ---
@@ -38,7 +38,7 @@ DPO is a **training-time** technique. You collect preference data (human prefere
 
 DPO has largely replaced PPO for preference alignment in 2024–2025. If fine-tuning for preferences, use DPO.
 
-## When to Use DPO for VA Agents
+## When to Use DPO for Assistant Agents
 
 **Good fit:**
 - 1000+ labeled preference pairs from real user interactions

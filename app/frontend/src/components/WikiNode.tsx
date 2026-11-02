@@ -29,7 +29,7 @@ export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
           ? `0 0 14px ${color}88`
           : "none",
         opacity: data.dimmed && !selected ? 0.12 : 1,
-        transform: data.highlighted ? "scale(1.5)" : "scale(1)",
+        transform: data.enlarged ? "scale(1.5)" : "scale(1)",
         zIndex: data.highlighted ? 10 : undefined,
       }}
       title={data.summary}
@@ -37,7 +37,6 @@ export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
       <Handle type="target" position={Position.Top} style={{ background: color }} />
       <div className="wiki-node-domain" style={{ color }}>
         {data.domain[0] ?? data.typeTag}
-        {data.private && <span className="private-badge private-badge--node" title="Local-only page (data/wiki/private/)">private</span>}
       </div>
       <div className="wiki-node-title">
         {data.title}

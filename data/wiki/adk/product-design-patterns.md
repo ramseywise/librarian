@@ -1,15 +1,15 @@
 ---
-title: VA Product Design Patterns
+title: Product Design Patterns
 tags: [adk, langgraph, concept, pattern]
-summary: Product design patterns for embedded VA agents — three interaction levels, structured output as UI contract, page context awareness, escalation triggers, and tool count budget for routing quality.
-updated: 2026-04-26
+summary: Product design patterns for embedded assistant agents — three interaction levels, structured output as UI contract, page context awareness, escalation triggers, and tool count budget for routing quality.
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/va-product-patterns.md
 ---
 
-# VA Product Design Patterns
+# Product Design Patterns
 
-Patterns from the [product] [client] VA (production, embedded in [product].dk). Applicable to any product-embedded VA agent.
+Patterns from the [product] [client] assistant (production, embedded in [product].dk). Applicable to any product-embedded assistant agent.
 
 ## Three Interaction Levels
 
@@ -104,4 +104,4 @@ Minimum coverage before shipping level 3 (autonomous execution):
 - [[Input Guardrails Pipeline]]
 - [[SKILL.md Pattern]]
 - [[A2A Agent Protocol]]
-- [[VA Eval Harness]]
+- [[Eval Harness]]

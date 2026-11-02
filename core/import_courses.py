@@ -19,7 +19,14 @@ Conversions:
 
 Vendored upstream snapshots (`*-main`, `*-master`, hash-suffixed, nested git repos — see
 learn-ai-engineering/CURRICULUM.md, Sources) are NOT imported. They are listed on their module as
-references. PDFs are listed as readings.
+references, as are the bulky course folders in PRACTICE_REFERENCE_ONLY. PDFs are listed as
+readings. Gitignored files (fetched datasets) are never imported.
+
+Each `slides/deck.yaml` below a module (spec: learn-ai-engineering
+.claude/skills/slides/references/deck-spec.md) becomes flashcards in the module's
+`_flashcards.md`: one card per non-statement slide with a takeaway, front = `recall` or
+`title`, back = `takeaway`, attached to the lesson named in the slide's `source:`, or to the
+module if it names none. Inline `**bold**` and `code` markup is kept; the study view renders it.
 
 Re-runnable while learn-ai-engineering is mid-consolidation. Every generated file
 carries `imported_hash`, a hash of the text the importer wrote:
@@ -45,6 +52,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -79,35 +87,39 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
     "programming": (
         "Programming",
         1,
-        "A course in Python, SQL and TypeScript: notes, offline exercises and solutions.",
+        "Python (foundations, informatics, the language for engineers), SQL and TypeScript: "
+        "notes, offline exercises and solutions.",
     ),
     "data-analytics": (
         "Data Analytics",
         2,
-        "Analysing data with Python: pandas, statistics, visualisation and course projects.",
+        "Six pillars: Python for data analysis, probability and statistics, experimentation "
+        "and causality, Bayesian analysis, visualisation and storytelling, applied analyses.",
     ),
     "data-science": (
         "Data Science",
         3,
-        "Machine learning and deep learning fundamentals: course work, worked assignments "
-        "and notebooks.",
+        "Five pillars: classical ML, deep learning, NLP, LLMs from scratch, time series and "
+        "recommenders.",
     ),
     "data-engineering": (
         "Data Engineering",
         4,
-        "Pipelines, warehouses, orchestration and streaming, via two DataTalksClub Zoomcamps.",
+        "Seven pillars: storage and compute foundations, ingest and modelling, transform and "
+        "orchestrate, warehouse, lakehouse and streaming, quality and observability, ML "
+        "platform, architecture and governance.",
     ),
     "generative-ai": (
         "Generative AI",
         5,
         "LLM fundamentals, RAG, agentic foundations and frameworks, RL and alignment, "
-        "observability and applications.",
+        "observability, applications and evaluation.",
     ),
     "ai-engineering": (
         "AI Engineering",
         6,
-        "The engineering disciplines on top of models: prompt, context, harness, loop, graph "
-        "and eval.",
+        "The engineering disciplines on top of models: prompt, context, harness, loop and graph, "
+        "plus inference, multimodal, safety and security.",
     ),
     "drills": (
         "Drills",
@@ -134,10 +146,22 @@ _VENDORED_RE = re.compile(r"(-main|-master|-[0-9a-f]{7})$")
 VENDORED_ALLOW = {"Prompt-Engineering-Guide-main"}
 # Nested git repos are skipped unless they are your own work.
 NESTED_GIT_ALLOW = {"Leet-Code", "leetcode"}
+# `practice/<name>` course folders too big to read as lessons: each is a dozen or more
+# notebooks and READMEs that would bury a pillar's notes in the sidebar. Listed on the module
+# as references instead, like vendored snapshots. Smaller sets (McKinney, Ng ML, Mueller &
+# Guido, nn-zero-to-hero, BayesianML) stay lessons.
+PRACTICE_REFERENCE_ONLY = {
+    "datatalks-de",
+    "datatalks-mlops",
+    "intro-to-nlp",
+    "ng-deep-learning",
+    "text-analytics-with-python",
+}
 SKIP_DIRS = {"node_modules", ".next", ".ipynb_checkpoints", "__pycache__", "site-packages"}
 # sisyphus drill progress history — not lesson content.
 SKIP_FILES = {"drill-log.md"}
 DRILL_FIELDS = ("title", "track", "topic", "difficulty", "timebox_min")
+FLASHCARD_FILE = "_flashcards.md"
 
 _HASH_LINE_RE = re.compile(r"^imported_hash: [0-9a-f]+\n", re.MULTILINE)
 _TRAILING_WS_RE = re.compile(r"[ \t]+$", re.MULTILINE)
@@ -210,7 +234,41 @@ def _is_vendored(path: Path) -> bool:
         return False
     if _VENDORED_RE.search(path.name):
         return True
+    if path.parent.name == "practice" and path.name in PRACTICE_REFERENCE_ONLY:
+        return True
     return (path / ".git").exists() and path.name not in NESTED_GIT_ALLOW
+
+
+def _git_ignored(source: Path, subject_dir: Path) -> set[str]:
+    """Repo-relative paths of gitignored files under a subject (datasets fetched by scripts).
+
+    Empty when `source` is not a git checkout: nothing to go on, so nothing is filtered.
+    """
+    try:
+        out = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(source),
+                "ls-files",
+                "-z",
+                "-o",
+                "-i",
+                "--exclude-standard",
+                "--",
+                str(subject_dir.relative_to(source)),
+            ],
+            capture_output=True,
+            check=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return set()
+    return {p for p in out.decode(errors="replace").split("\0") if p}
+
+
+def _is_references(lesson: Lesson) -> bool:
+    """A `references.md` directly in a module: read last, after the notes it backs."""
+    return not lesson.rel_dir and lesson.src.name.lower() == "references.md"
 
 
 def _vendored_urls(source: Path) -> dict[str, str]:
@@ -354,7 +412,13 @@ def discover(source: Path, subject: str, subject_dir: Path | None = None) -> lis
         if mod.lessons or mod.readings or mod.references:
             modules[name] = mod
 
+    ignored = _git_ignored(source, subject_dir)
     for mod in modules.values():
+        mod.lessons = [
+            lesson for lesson in mod.lessons if str(lesson.src.relative_to(source)) not in ignored
+        ]
+        mod.readings = [r for r in mod.readings if r["source"] not in ignored]
+        mod.lessons.sort(key=_is_references)  # stable: everything else keeps its walk order
         for i, lesson in enumerate(mod.lessons):
             lesson.order = i + 1
             segs = [_dest_segment(s) for s in lesson.rel_dir]
@@ -571,6 +635,66 @@ def _summary_from(body: str) -> str:
     return ""
 
 
+# ── Flashcards ────────────────────────────────────────────────────────────────
+
+
+def _find_decks(directory: Path) -> Iterator[Path]:
+    """`slides/deck.yaml` files below a module, in path order (vendored dirs excluded)."""
+    for dp, dns, fns in os.walk(directory):
+        here = Path(dp)
+        dns[:] = sorted(
+            d
+            for d in dns
+            if not d.startswith(".") and d not in SKIP_DIRS and not _is_vendored(here / d)
+        )
+        if here.name == "slides" and "deck.yaml" in fns:
+            yield here / "deck.yaml"
+
+
+def _card_text(value: object) -> str:
+    """One line of card text; YAML folding can leave newlines and a value may not be a string."""
+    return " ".join(str(value).split()) if value is not None else ""
+
+
+def _card_lesson(source: object, base: Path, src_to_dest: dict[Path, Path]) -> str | None:
+    """Lesson id named by a slide's `source:` (relative to the deck's pillar), if imported."""
+    if not isinstance(source, str) or not source.strip():
+        return None
+    path = source.strip().split("#")[0]
+    dest = src_to_dest.get((base / path).resolve())
+    if dest is None:
+        log.info("flashcard_source_unresolved", base=str(base), source=source)
+        return None
+    return str(dest.with_suffix(""))
+
+
+def deck_flashcards(deck: Path, src_to_dest: dict[Path, Path]) -> list[dict[str, str]]:
+    """Cards from one deck.yaml. A deck that does not parse yields none and a warning, so one
+    half-written deck never stops an import."""
+    try:
+        data = yaml.safe_load(deck.read_text(errors="replace"))
+    except (OSError, yaml.YAMLError) as e:
+        log.warning("deck_unparseable", path=str(deck), error=str(e))
+        return []
+    parts = data.get("parts") if isinstance(data, dict) else None
+    cards: list[dict[str, str]] = []
+    for part in parts if isinstance(parts, list) else []:
+        slides = part.get("slides") if isinstance(part, dict) else None
+        for slide in slides if isinstance(slides, list) else []:
+            if not isinstance(slide, dict) or slide.get("layout") == "statement":
+                continue
+            front = _card_text(slide.get("recall")) or _card_text(slide.get("title"))
+            back = _card_text(slide.get("takeaway"))
+            if not front or not back:
+                continue
+            card = {"front": front, "back": back}
+            lesson = _card_lesson(slide.get("source"), deck.parent.parent, src_to_dest)
+            if lesson:
+                card["lesson"] = lesson
+            cards.append(card)
+    return cards
+
+
 # ── Link + asset rewriting ────────────────────────────────────────────────────
 
 
@@ -682,6 +806,7 @@ def _rewrite_body(
 class Plan:
     files: dict[Path, str] = field(default_factory=dict)  # dest (abs) → text
     assets: dict[Path, Path] = field(default_factory=dict)  # dest (abs) → source
+    flashcards: int = 0
 
 
 def _hash(text: str) -> str:
@@ -735,11 +860,10 @@ def build_plan(source: Path, subjects: list[str], sisyphus: Path = DEFAULT_SISYP
             if mod.src_dir and (mod.src_dir / "README.md").exists():
                 mod_readme = (mod.src_dir / "README.md").read_text(errors="replace")
                 mod_summary = _summary_from(mod_readme)
-                mod.title = (
-                    _title_from(mod_readme, mod.title)
-                    if len(_title_from(mod_readme, "")) < 60
-                    else mod.title
-                )
+                heading = _title_from(mod_readme, "")
+                # A placeholder README's H1 is just the folder name; prettify beats that.
+                if heading and len(heading) < 60 and heading != mod.src_dir.name:
+                    mod.title = heading
             meta: dict = {"title": mod.title, "summary": mod_summary, "order": mod.order}
             if mod.src_dir:
                 meta["source"] = f"{repo}/{mod.src_dir.relative_to(root)}"
@@ -750,7 +874,22 @@ def build_plan(source: Path, subjects: list[str], sisyphus: Path = DEFAULT_SISYP
             plan.files[COURSES_DIR / subject / mod.name / "_module.md"] = render(meta)
             for lesson in mod.lessons:
                 _plan_lesson(plan, lesson, mod, root, src_to_dest, repo)
+            if mod.src_dir:
+                _plan_flashcards(plan, subject, mod, root, src_to_dest, repo)
     return plan
+
+
+def _plan_flashcards(
+    plan: Plan, subject: str, mod: Module, root: Path, src_to_dest: dict[Path, Path], repo: str
+) -> None:
+    decks = list(_find_decks(mod.src_dir)) if mod.src_dir else []
+    cards = [card for deck in decks for card in deck_flashcards(deck, src_to_dest)]
+    if not cards:
+        return
+    plan.flashcards += len(cards)
+    plan.files[COURSES_DIR / subject / mod.name / FLASHCARD_FILE] = render(
+        {"decks": [f"{repo}/{deck.relative_to(root)}" for deck in decks], "cards": cards}
+    )
 
 
 def _plan_lesson(
@@ -799,6 +938,8 @@ def _plan_lesson(
     if lesson.src.name.lower() == "readme.md":
         fallback = "Overview"
     title = drill.pop("title", "") or meta_title or _title_from(body, fallback)
+    if lesson.src.name.lower() == "references.md":  # H1s here repeat the folder's name
+        title = "References"
     body = _rewrite_body(body, lesson, imports, src_to_dest, mod.src_dir or lesson.src.parent, plan)
 
     meta: dict = {
@@ -809,6 +950,8 @@ def _plan_lesson(
     }
     if lesson.rel_dir:
         meta["section"] = " / ".join(prettify(s) for s in lesson.rel_dir)
+    elif _is_references(lesson):  # own header, or it reads as part of the section above
+        meta["section"] = "References"
     meta.update(drill)
     meta["source"] = f"{repo}/{lesson.src.relative_to(source)}"
     plan.files[COURSES_DIR / lesson.dest] = render(meta, body)
@@ -906,7 +1049,13 @@ def main() -> None:
             parser.error(f"source not found: {path}")
     plan = build_plan(source, subjects, sisyphus)
     stats = apply(plan, subjects, args.dry_run)
-    log.info("import_courses_done", dry_run=args.dry_run, subjects=len(subjects), **stats)
+    log.info(
+        "import_courses_done",
+        dry_run=args.dry_run,
+        subjects=len(subjects),
+        flashcards=plan.flashcards,
+        **stats,
+    )
 
 
 if __name__ == "__main__":

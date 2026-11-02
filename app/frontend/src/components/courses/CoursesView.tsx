@@ -155,6 +155,11 @@ function Overview({ course, done, last, onOpen }: {
             <div className="course-module-kicker">Module {i + 1}</div>
             <h2 className="course-module-title">{m.title}</h2>
             {m.summary && <p className="course-module-summary">{m.summary}</p>}
+            {!!m.flashcardCount && (
+              <a href={`#/flashcards/${course.id}/${m.id}`} className="flashcard-link">
+                Study {m.flashcardCount} flashcards
+              </a>
+            )}
             <div className="course-module-list">
               {m.lessons.map((l) => (
                 <button key={l.id} onClick={() => onOpen(l.id)} className="course-nav-item course-row">

@@ -2,7 +2,7 @@
 title: Langfuse Platform
 tags: [infra, eval, concept]
 summary: Langfuse is an open-source LLM engineering platform for tracing, prompt management, and evaluation — chosen by [client]'s AI teams as the observability standard, with SSO and governance pending before production rollout. Instrumentation patterns vary by framework (lf.trace() for ADK, CallbackHandler for LangGraph, @observe for FastAPI).
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/articles/2026-07-19-langfuse-multi-agent-eval.md
   - data/raw/articles/2026-07-19-langfuse-mcp-python.md
@@ -103,7 +103,7 @@ The key architectural split: Datadog for ops, Langfuse for AI quality. Both are 
 
 See [[Observability — LangFuse vs LangSmith Decision]] for the original RAG-focused decision.
 
-The [client] VA team conducted a more comprehensive evaluation for an AWS-hosted, ADK-compatible, high-compliance accounting system:
+The [client] assistant team conducted a more comprehensive evaluation for an AWS-hosted, ADK-compatible, high-compliance accounting system:
 
 | Platform | Weighted Score | Best when |
 |---|---|---|

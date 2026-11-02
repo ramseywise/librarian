@@ -2,7 +2,7 @@
 title: Vector Database Comparison
 tags: [rag, infra, comparison]
 summary: Side-by-side of vector stores used across RAG pipelines — DuckDB (embedded local), ChromaDB, pgvector, OpenSearch (Bedrock), Pinecone, GCP Discovery Engine — with when-to-use guidance and migration notes.
-updated: 2026-10-16
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/rag/vector-databases.md
   - data/raw/claude-docs/project-g/docs/rag/vector-databases.md
@@ -14,7 +14,7 @@ sources:
 
 | Store | Where | Mode |
 |---|---|---|
-| OpenSearch | Bedrock KB (VA support agents) | Managed — Bedrock owns the index |
+| OpenSearch | Bedrock KB (assistant support agents) | Managed — Bedrock owns the index |
 | DuckDB | hc_rag default vector backend | Embedded, self-managed, no server |
 | ChromaDB | hc_rag optional backend | Embedded, persistent HNSW |
 | pgvector | Chat agent local/dev | Self-managed PostgreSQL extension |

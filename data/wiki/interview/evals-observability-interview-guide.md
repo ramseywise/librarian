@@ -2,7 +2,7 @@
 title: Evals and Observability Interview Study Guide
 tags: [eval, interview, reference]
 summary: Exam-prep reference for eval and observability questions — vocabulary, grader types, three-tier taxonomy, pass@k vs pass^k, and the tracing-first discipline.
-updated: 2026-10-30
+updated: 2026-11-02
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--6-evals-observability--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--evals-observability.md
@@ -80,7 +80,7 @@ You cannot evaluate what you cannot observe. Build the trace before the metric. 
 ## See Also
 - [[Anthropic Three-Tier Eval Taxonomy]] — instance-of
 - [[Observability & Evaluation Glossary]] — prerequisite-for
-- [[VA Eval Harness]] — instance-of
+- [[Eval Harness]] — instance-of
 - [[System Design — Unified Eval Harness]] — instance-of
 - [[Agents Interview Study Guide]] — extends
 - [[Parameterised Benchmark Instances]] — instance-of (the answer to benchmark leakage)

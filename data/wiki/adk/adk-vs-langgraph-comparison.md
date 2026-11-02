@@ -1,8 +1,8 @@
 ---
 title: ADK vs LangGraph Comparison
 tags: [adk, langgraph, comparison]
-summary: Side-by-side mental model comparison of Google ADK and LangGraph — primitive mappings, weighted scoring (LangGraph 716/845 for AWS/ADK-compatible context), VA team production findings, and the recommended vocabulary alignment approach.
-updated: 2026-10-17
+summary: Side-by-side mental model comparison of Google ADK and LangGraph — primitive mappings, weighted scoring (LangGraph 716/845 for AWS/ADK-compatible context), assistant-team production findings, and the recommended vocabulary alignment approach.
+updated: 2026-11-02
 sources:
   - data/raw/claude-docs/playground/docs/archived/adk-orchestration-research.md
   - data/raw/claude-docs/playground/docs/archived/adk-samples-patterns-analysis.md
@@ -218,9 +218,9 @@ The [client] ADK POC (April 2026) evaluated four orchestration topologies. **Age
 
 See [[Multi-Agent Orchestration Patterns]] for the full trade-off analysis and POC stack.
 
-## [client] VA Team Weighted Scoring (2026-05)
+## [client] Assistant Team Weighted Scoring (2026-05)
 
-The VA team conducted a formal weighted evaluation before committing to LangGraph for the next iteration of va-agents. The evaluation considered 11 criteria weighted by importance for their specific context (AWS-hosted, Google ADK-compatible, Python-native team, high-compliance accounting domain).
+The assistant team conducted a formal weighted evaluation before committing to LangGraph for the next iteration of assistant-agents. The evaluation considered 11 criteria weighted by importance for their specific context (AWS-hosted, Google ADK-compatible, Python-native team, high-compliance accounting domain).
 
 | Framework | Weighted Score (out of 845) | Notes |
 |---|---|---|
@@ -232,7 +232,7 @@ The VA team conducted a formal weighted evaluation before committing to LangGrap
 
 **ADK 2.0 Beta won on:** multi-modal (audio/video), GCP-native integrations, Gemini tool use.
 
-**Key driver of the decision:** The VA team has ~7 Python-native developers and 1 TypeScript developer. LangGraph is Python-first. ADK's advantages are GCP-native, which doesn't match the team's AWS deployment.
+**Key driver of the decision:** The assistant team has ~7 Python-native developers and 1 TypeScript developer. LangGraph is Python-first. ADK's advantages are GCP-native, which doesn't match the team's AWS deployment.
 
 ### Python vs TypeScript evaluation
 
@@ -243,14 +243,14 @@ The VA team conducted a formal weighted evaluation before committing to LangGrap
 
 Python wins primarily on: team expertise ratio (7:1 Python), ML library ecosystem, ADK + LangGraph native support.
 
-The "Brain and Limbs" hybrid option was also considered: Python for orchestration/RAG brain + TypeScript for tool execution via MCP. This is essentially the va-hypernova architecture — Python agent, TypeScript tools over MCP. See VA Hypernova MCP.
+The "Brain and Limbs" hybrid option was also considered: Python for orchestration/RAG brain + TypeScript for tool execution via MCP. This is essentially the assistant-hypernova architecture — Python agent, TypeScript tools over MCP. See Hypernova MCP.
 
-### VA team transition plan
+### Assistant team transition plan
 
-The VA team ([product].dk virtual assistant) is transitioning to LangGraph for its next iteration. Current production is Google ADK + Next.js (va-agents on AWS ECS). The transition is enabled by extracting tools into the MCP layer (va-hypernova) — the agent framework can change without rewriting the tool layer.
+The [client] assistant team ([product].dk virtual assistant) is transitioning to LangGraph for its next iteration. Current production is Google ADK + Next.js (assistant-agents on AWS ECS). The transition is enabled by extracting tools into the MCP layer (assistant-hypernova) — the agent framework can change without rewriting the tool layer.
 
 ## See Also
-- VA LangGraph Migration Roadmap <!-- backfill -->
+- Assistant LangGraph Migration Roadmap <!-- backfill -->
 - project-g Agent Feature Parity <!-- backfill -->
 - [[ADK JS TypeScript Patterns]]
 - [[ADK vs LangGraph Decision]]
