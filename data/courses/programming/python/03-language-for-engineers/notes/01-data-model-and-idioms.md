@@ -1,7 +1,7 @@
 ---
-imported_hash: 6072e0d6f451fe05
+imported_hash: 32a4b82de4d1e7f1
 title: 1 — The data model and idioms
-summary: 'add(1); add(2) # [1, 2] — shared between calls'
+summary: b = a a ───┐ ├──► [1, 2, 3] one object, two names b ───┘
 order: 12
 kind: reading
 section: Language for engineers / Notes
@@ -25,9 +25,36 @@ a is b           # True: same object
 a == [1, 2, 3, 4]  # True: equal value, different object
 ```
 
+```text
+a = [1, 2, 3]     a ───► [1, 2, 3]
+
+b = a             a ───┐
+                       ├──► [1, 2, 3]         one object, two names
+                  b ───┘
+
+b.append(4)       a ───┐
+                       ├──► [1, 2, 3, 4]      mutate: both names see the change
+                  b ───┘
+
+b = [9]           a ───► [1, 2, 3, 4]
+                  b ───► [9]                  rebind: only b moves
+```
+
 - `==` compares values (calls `__eq__`). `is` compares identity. Use `is` only for `None`, `True`, `False` and sentinels.
 - **Mutable**: `list`, `dict`, `set`, most objects. **Immutable**: `int`, `float`, `str`, `tuple`, `frozenset`, `bytes`.
-- Arguments are passed by assignment: the function gets another label on the caller's object. Mutating it is visible to the caller; rebinding it is not.
+- Arguments are passed by assignment: the function gets another label on the caller's object. Mutating it is visible to the caller; rebinding it is not:
+
+```python
+def mutate(xs):
+    xs.append(4)        # same object: the caller sees it
+
+def rebind(xs):
+    xs = [9]            # moves the local label only
+
+a = [1, 2, 3]
+mutate(a); print(a)     # [1, 2, 3, 4]
+rebind(a); print(a)     # [1, 2, 3, 4]
+```
 
 ### The mutable default trap
 

@@ -1,0 +1,118 @@
+---
+imported_hash: a2d097887698ecb1
+title: 07 — Inference Engineering
+summary: 'Inference engineering is the discipline of making a model answer fast enough and cheaply enough to ship: how requests are batched and scheduled, where the KV cache lives, how prefill and decode are split across hardware, and what the GPU is…'
+order: 1
+kind: reading
+source: learn-ai-engineering/ai-engineering/07-inference-engineering/README.md
+---
+
+# 07 — Inference Engineering
+
+> Interview recall: the checklists in these notes. Role map: [interviewing](../../interviewing/00-start-here/readme.md).
+> Position in the stack: *the substrate every other layer runs on*.
+> Jump to: [Scope](#scope) · [Reading order](#reading-order) · [References](#references)
+
+---
+
+## What it is
+
+Inference engineering is the discipline of making a model answer fast enough and cheaply
+enough to ship: how requests are batched and scheduled, where the KV cache lives, how
+prefill and decode are split across hardware, and what the GPU is actually doing while it
+waits. The layers above it decide *what* the model is asked. This layer decides what
+each of those calls costs in latency, throughput and money.
+
+**Inherits the weaknesses of:** the hardware and the model. A badly sized context
+([02](../02-context-engineering/readme.md)) or a loop that makes ten calls where two would do
+([04](../04-loop-engineering/readme.md)) is a cost this layer can shave but not remove.
+
+**Why a pillar, not a note.** Added 2026-10-31 (see the [structure decisions](../../.claude/skills/pillar/references/pillar-layout.md#structure-decisions)).
+The readings backlog held a full book on AI systems performance plus Huyen's inference
+chapter and a steady stream of serving papers, and none of the five pillars could hold them
+without turning into a GPU course.
+
+---
+
+## Scope
+
+| In | Out (lives elsewhere) |
+|---|---|
+| Serving: batching, scheduling, routing, autoscaling | How transformers work: [generative-ai/01](../../generative-ai/01-llm-fundamentals/readme.md) |
+| KV cache, prefix caching, prefill/decode disaggregation | Prompt caching as a context decision: [02/04](../02-context-engineering/notes/04-retrieval.md) |
+| Quantization, speculative decoding, compilers (torch.compile, Triton, XLA) | Fine-tuning and RL: [generative-ai/05](../../generative-ai/05-rl/readme.md) |
+| GPU architecture, CUDA kernels, memory hierarchy, profiling | Cost per task as an eval metric: [the Eval pillar](../../generative-ai/08-eval/readme.md) |
+| Multi-node networking, storage I/O, Kubernetes for GPUs | |
+
+---
+
+## Reading order
+
+Notes are written from the sources by the `/chapter` skill, one source chapter at a time.
+
+| # | Note | Main sources |
+|---|---|---|
+| 01 | [Why inference is its own discipline: latency, throughput, cost](notes/01-why-inference-is-its-own-discipline.md) | Huyen ch. 9; *AI Systems Performance Engineering* ch. 1 |
+| 02 | [The hardware: GPUs, memory hierarchy, interconnect](notes/02-the-hardware.md) | ch. 2, 6 |
+| 03 | [The platform: OS, containers, Kubernetes, storage, networking](notes/03-the-platform.md) | ch. 3–5 |
+| 04 | [Kernels: occupancy, memory access, arithmetic intensity, pipelining](notes/04-kernels.md) | ch. 7–12 |
+| 05 | [Compilers and frameworks: profiling, torch.compile, Triton, XLA](notes/05-compilers-and-frameworks.md) | ch. 13–14; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8 |
+| 06 | [Serving at scale: deployment, batching, routing, parallelism, autoscaling](notes/06-serving-at-scale.md) | ch. 15–16; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8, 10 |
+| 07 | [Prefill, decode and the KV cache](notes/07-prefill-decode-kv-cache.md) | ch. 17–19; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8 |
+| 08 | [Adaptive inference: speculative decoding, quantization, early exit](notes/08-adaptive-inference.md) | ch. 15, 16, 19; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8 |
+| 08b | [Serving encoders and vision models](notes/08b-serving-encoders-and-vision-models.md) | Lab; S-LoRA; vLLM and TEI docs |
+| 09 | [Checklist and AI-assisted tuning](notes/09-checklist-and-ai-assisted-tuning.md) | ch. 20, appendix |
+
+## Builds on and feeds into
+
+**Builds on**
+
+| Chapter | Why |
+|---|---|
+| [DS 02/01 Neural networks fundamentals](../../data-science/02-deep-learning/notes/01-neural-networks-fundamentals.md) | Optional background: what a forward pass is |
+| [GA 01 LLM fundamentals](../../generative-ai/01-llm-fundamentals/readme.md) | How transformers work |
+| [DE 06/02 Experiment tracking and model registry](../../data-engineering/06-ml-platform/notes/02-experiment-tracking-and-model-registry.md) | Optional background: versions, labels and rollback |
+| [DE 06/03 Batch and online serving](../../data-engineering/06-ml-platform/notes/03-batch-and-online-serving.md) | Optional background: serving shapes for an ordinary ML model |
+
+**Feeds into**
+
+| Chapter | Why |
+|---|---|
+| None in other subjects | AI engineering is the last subject in the path |
+
+---
+
+## Lab
+
+An inference simulator: batching policies under load, KV cache preemption and prefix cache hit rates. Its numbers are assumptions, kept in one parameter file. It comes in both languages, side by side, on the same inputs. Both run offline with a stub by default, and each README says how to swap in a real model.
+
+| Language | Folder | Run |
+|---|---|---|
+| TypeScript | [practice/inference-lab-ts/](practice/inference-lab-ts/readme.md) | `cd practice/inference-lab-ts && npx tsx run.ts` |
+| Python | [practice/inference-lab/](practice/inference-lab/readme.md) | `cd practice/inference-lab && uv run run.py` |
+
+## Layout
+
+```
+notes/                       topic notes (see Reading order)
+references.md                papers and books, mapped to notes
+sources/<book-slug>/chNN-*.pdf   book chapters
+sources/<author-year-slug>.pdf   papers
+sources/images/              figures used in notes and slides
+slides/                      lecture deck (deck.yaml → .pptx + .pdf)
+practice/                    the lab, in TypeScript and Python
+```
+
+Lecture deck: [`slides/inference-engineering.pptx`](slides/inference-engineering.pptx), a 4-part talk following one Llama-7B on an A100 from its first bandwidth sum to 244.7 tokens/s. Build with `make slides PILLAR=07-inference-engineering`.
+
+## Primary texts
+
+- Fregly, *AI Systems Performance Engineering*
+- Huyen, *AI Engineering*, ch. 9
+- Iusztin and Labonne, *LLM Engineer's Handbook*, ch. 8 and 10
+
+Everything else: [references.md](references.md).
+
+## References
+
+See [references.md](references.md).

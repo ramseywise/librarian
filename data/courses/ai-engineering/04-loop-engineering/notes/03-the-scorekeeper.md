@@ -1,8 +1,8 @@
 ---
-imported_hash: 44a5955272d2b24a
+imported_hash: 83cfb307a881e272
 title: 3 — The Scorekeeper
 summary: In a loop the generator runs cheaply, over and over.
-order: 5
+order: 4
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/03-the-scorekeeper.md
@@ -89,6 +89,16 @@ The maker trusts its own output and misses its own mistakes. Split the roles:
 - **Maker** produces the change.
 - **Checker** reviews it: a fresh agent with its own instructions and stricter rules, often a stronger model, and **without the maker's history**.
 
+```mermaid
+flowchart LR
+    S[("loop state<br/>what is next")] --> M["Maker<br/>one small change<br/>inside the write boundary"]
+    M -->|diff + hand-off| C["Checker<br/>fresh agent, no maker history<br/>runs the scorekeeper itself"]
+    SK[["scorekeeper<br/>tests · lint · held-out checks<br/>(outside the write boundary)"]] -.->|read-only| C
+    C -->|PASS| SAVE["save: commit,<br/>update state"]
+    C -->|FAIL + evidence| M
+    SAVE --> S
+```
+
 Three sources, one pattern:
 
 | Source | Maker | Checker |
@@ -98,6 +108,48 @@ Three sources, one pattern:
 | Google ADK | `RefinerAgent` | `CriticAgent` ([note 10](10-framework-bindings.md)) |
 
 A checker must be allowed to return **"clean."** A reviewer that cannot pass the work will make up findings. The same rule protects evolve loops ([note 08](08-self-improving-loops.md#the-anti-busywork-rule)).
+
+Two short prompts, adapted from *learn-harness-engineering* project 07, make the split concrete. Both read the loop contract ([note 09](09-failure-modes-and-guardrails.md#the-loop-contract)) and the loop state ([note 05](05-long-running-loops.md#memory-three-tiers-five-fields)). The maker does **one small change** inside the write boundary and checks its own work before handing over:
+
+```markdown
+## Your role
+You are the Maker. You implement one item per round and hand it to the Checker.
+1. Read the loop contract and loop state. "What is next" is your task;
+   the write boundary is your limit.
+2. Say your plan in two or three lines before editing.
+3. Make one small change. Run build, lint and unit tests yourself.
+4. Update "What was tried" in the state file.
+## Rules
+- Never edit tests, scoring scripts or the contract to make a check pass.
+- If the Checker's last report listed issues, fix those before anything new.
+- Judgment call or irreversible action? Add it to "Waiting for a human" and stop.
+## Hand-off
+Summary (1–3 lines) · Files changed · My checks (build/lint/tests)
+Where to look hardest: <the part you're least sure of>
+```
+
+The checker runs as a fresh agent, ideally a different or stronger model, and never trusts that summary:
+
+```markdown
+## Your role
+You are the Checker. Be strict, and be honest in both directions.
+1. Read the loop contract: the goal, the scorekeeper, the write boundary.
+2. Read the diff, not the Maker's summary of it.
+3. Run the scorekeeper commands yourself.
+## Checklist
+- Boundary: did any file outside the write boundary change? Were tests,
+  fixtures or scoring scripts touched? (Any yes is an automatic Fail.)
+- Tests: would they fail if the change were reverted?
+- Score: higher, equal or lower than the last score in the state file?
+## Report
+Verdict: PASS / FAIL / PASS WITH NOTES
+Scorekeeper output: <command>: <result> · Score: <before> → <after>
+Issues: [Critical | Medium | Minor] title · file:line · evidence · suggested fix
+A FAIL needs at least one Critical issue with evidence.
+A PASS needs the scorekeeper output to back it.
+```
+
+The original project-07 prompt told the checker that finding nothing was failure. This version deletes that line: PASS is a legitimate verdict when the scorekeeper output supports it.
 
 ---
 
@@ -120,14 +172,55 @@ Quick checklist:
 
 [Harness note 05: Verification loops](../../03-harness-engineering/notes/05-verification-loops.md) covers the machinery underneath this note: the three-layer termination check, asymmetric QA, grading criteria over vibes, loop detection, the retry taxonomy and eval-first development. This note covers *what* to measure; that one covers *how the harness enforces it*.
 
-For the scorekeeper as an eval artifact (building its dataset, calibrating a judge-based scorekeeper, telling a real gain from noise, and how optimizers game it), see [06-eval](../../06-eval/readme.md): [04 — Graders](../../06-eval/notes/04-graders.md), [05 — LLM-as-judge](../../06-eval/notes/05-llm-as-judge.md), [09 — Reading results](../../06-eval/notes/09-reading-results.md) and [12 — When evals go wrong](../../06-eval/notes/12-failure-modes.md#goodhart-the-eval-becomes-the-target).
+For the scorekeeper as an eval artifact (building its dataset, calibrating a judge-based scorekeeper, telling a real gain from noise, and how optimizers game it), see [the Eval pillar](../../../generative-ai/08-eval/readme.md): [04 — Graders](../../../generative-ai/08-eval/notes/04-graders.md), [05 — LLM as judge](../../../generative-ai/08-eval/notes/05-llm-as-judge.md), [15 — Calibrating a judge](../../../generative-ai/08-eval/notes/15-calibration-against-human-labels.md), [09 — Reading results](../../../generative-ai/08-eval/notes/09-reading-results.md) and [12 — When evals go wrong](../../../generative-ai/08-eval/notes/12-failure-modes.md#goodhart-the-eval-becomes-the-target).
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-eval.md` — graders, rubrics, held-out sets.
+- **A scorekeeper the loop can edit.** Symptom: the score goes green while the output is wrong. Fix: put scoring logic where the loop can't write, and enforce it structurally with permissions, a hook or a separate repo. An agent that can edit its own evaluator has a negotiation.
+- **All the checks visible.** Symptom: the loop overfits to the visible tests. Fix: hold some checks out and run them only as the final gate.
+- **Model judgment with no deterministic floor.** Symptom: scores vary between runs, and the loop argues with its grader. Fix: anchor on tests, compilers, linters and schema checks, and use a rubric only above them.
+- **A checker that can't pass the work.** Symptom: every round produces findings, whatever the state of the work. Fix: PASS is a legitimate verdict when scorekeeper output supports it, which is why this note's prompt deletes project-07's "finding nothing is failure" line.
+- **A checker carrying the maker's history.** Symptom: it agrees with the maker's reasoning. Fix: use a fresh agent with its own instructions, ideally a different or stronger model, that doesn't trust the maker's summary.
+- **Reading single passes.** Symptom: a sudden jump gets celebrated. Fix: watch the trend across runs, and treat a jump as a reason to look.
 
----
+## Try it
 
-→ Next: [04-building-blocks.md](04-building-blocks.md) — the six parts that surround the scorekeeper.
+1. Grade each scorekeeper on the four traits plus "hard to fake": (a) `pytest -q` in a directory the agent can write to; (b) a colleague's review each Friday; (c) a model asked "is this good?" with no rubric.
+
+   <details><summary>Answer</summary>
+
+   (a) Objective, automatic, fast and clear, but fakeable until the tests move out of the write scope. (b) Hard to fake, but neither automatic nor fast, so it can't drive passes. (c) Fails objective and clear, and it's gameable. Add a fixed rubric and a separate grader, above a deterministic floor.
+
+   </details>
+
+2. Karpathy's `autoresearch` has three files. Say who writes each, then say what breaks if the agent can edit `prepare.py`.
+
+   <details><summary>Answer</summary>
+
+   The agent writes `train.py`, nobody writes `prepare.py`, and the human writes `program.md`. If the agent could edit `prepare.py`, it could raise the score by changing the evaluation, and the loop's history of "improvements" would mean nothing.
+
+   </details>
+
+3. Run the [pillar lab](../practice/loop-scorekeeper-py/readme.md) and compare the honest maker with the maker that memorises the visible checks, reading only the `visible` column. What separates them?
+
+   <details><summary>What to check</summary>
+
+   Nothing does: both go 1/4, 3/4, 4/4 over three iterations. Only the held-out column differs, 4/4 for the honest maker and 0/4 for the other, which stops as `gamed` with `shippable=false`.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| What traits must a scorekeeper have? | Objective, automatic, fast and clear, per KodeKloud, plus hard to fake. A loop that can lower the bar will take the easiest path to green. |
+| How do you stop a loop gaming its tests? | Held-out checks, a tamper-proof location for scoring logic, auditable artifacts and watching the score trend. Permissions are rules, and prompt instructions are only suggestions. |
+| Deterministic checks or a model grader? | Deterministic first, with model judgment only above that floor for what no check can express. If the end state can only be described as "looks right", you have no scorekeeper yet. |
+| Why separate maker and checker? | The maker trusts its own output and misses its own mistakes. The checker is a fresh agent without the maker's history, and it must be allowed to return "clean" or it will invent findings. |
+| Verification adds latency and cost. When is it worth it? | LangChain's answer is when quality matters more than speed. In a loop the generator runs cheaply and repeatedly, so an unchecked one just produces plausible-looking work faster. |
+
+## Next
+
+[04-building-blocks.md](04-building-blocks.md): the six parts that surround the scorekeeper.

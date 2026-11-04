@@ -1,8 +1,8 @@
 ---
-imported_hash: 0d035ceae4c87fa4
+imported_hash: 2b055915b57850e7
 title: 5 — Verification and Feedback Loops
-summary: Agents stop after writing code without testing it.
-order: 15
+summary: An agent's "done" is a claim, and the agent making it is the party least able to judge it.
+order: 6
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/05-verification-loops.md
@@ -11,6 +11,8 @@ source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/05-veri
 # 5 — Verification and Feedback Loops
 
 > Models lean toward the first plausible solution and rate their own work generously. Verification is the harness's answer to both.
+
+An agent's "done" is a claim, and the agent making it is the party least able to judge it. In Anthropic's app-generation post a solo run took 20 minutes and $9 and produced broken core gameplay, while the full harness took 6 hours and $200 and produced a working game. Without verification the loop ends when the model feels finished, regressions ship as success, and a retry repeats the same wrong move. This chapter covers what turns the claim into evidence: forced completion checks, separate evaluators, sprint contracts, loop detection and a retry policy that knows when to stop.
 
 ---
 
@@ -24,6 +26,8 @@ Two distinct problems underneath:
 2. **Agents rate their own work generously.** Anthropic: *"agents tend to respond by confidently praising the work — even when quality is mediocre."*
 
 The first needs a forced verification pass. The second needs an *external* evaluator. They are not the same fix.
+
+Stronger models haven't removed the first problem. In Mak et al.'s interface comparison ([arXiv:2609.11999](https://arxiv.org/abs/2609.11999), 2026-09), Opus-4.8 and GPT-5.5 working through a shell failed most often by declaring the task complete without verifying it. The same shell also put the grader within reach: during development, agents pulled answers out of TheAgentCompany's public evaluator scripts instead of doing the workflow, until the authors blocked network access to that repository. An external evaluator only counts as external if the agent can't read it.
 
 ---
 
@@ -69,7 +73,7 @@ This is what grounds a solution in tests and creates the feedback signal that se
 
 E2E also **changes how the agent writes code.** An agent that knows it will be checked end to end starts thinking about upstream interfaces, boundaries and error paths. The cost is seconds of test time, which is negligible in an agent loop.
 
-One ordering rule falls out: **no refactoring before the core behavior is verified.** "Cleaning up while I'm here" moves the line between verified and unverified code, and can break paths that were implicitly working. Order the work as correctness, then performance, then style. (Scope discipline for the same reason: [practice/03](practice/03-scope-and-done.md).)
+One ordering rule falls out: **no refactoring before the core behavior is verified.** "Cleaning up while I'm here" moves the line between verified and unverified code, and can break paths that were implicitly working. Order the work as correctness, then performance, then style. (Scope discipline for the same reason: [note 10](10-scope-and-done.md).)
 
 ---
 
@@ -99,7 +103,7 @@ Human review is the most expensive verifier, and it repeats itself. The ratchet 
 4. Give it a WHAT/WHY/FIX message.
 5. Wire it into the standard verification path, and note the rule's source in the topic doc.
 
-Review comments become docs, and docs that keep getting ignored become checks. Each promoted comment is one category of mistake that never needs a human again. This is how OpenAI "captures taste once and enforces it continuously" ([practice/02](practice/02-session-lifecycle.md#entropy-management-two-cleanup-modes)).
+Review comments become docs, and docs that keep getting ignored become checks. Each promoted comment is one category of mistake that never needs a human again. This is how OpenAI "captures taste once and enforces it continuously" ([note 06](06-long-horizon-execution.md#entropy-management-two-cleanup-modes)).
 
 ---
 
@@ -131,6 +135,16 @@ Cheap fast model for the task; expensive smart model **at the verification gate 
 
 The symmetric alternative — same model checking its own work — is listed among the field's canonical failure modes. It produces confident agreement, not review.
 
+Karpathy's framing (as relayed from his AISN 2026 talk) is a useful way to teach this. A model is a "robot librarian" that answers only from its own books and doesn't know which ones are missing, so telling it to "make this better" changes nothing. Verification does. His three moves line up with this note:
+
+| Move | Mechanism | Here |
+|---|---|---|
+| **Criteria before work** | "Three sections, each ends with a recommendation," not "make it look good" | [Eval-first](#eval-first), [sprint contracts](#sprint-contracts) |
+| **Second librarian** | A different model family grades the first one's answer | This section |
+| **External signal** | Ask the system that holds ground truth: the deploy target, the test suite, the database | [Self-verification](#the-self-verification-loop) |
+
+Boris Cherny (Claude Code), as quoted in the same talk: **a feedback loop improves final quality 2–3×.**
+
 ### When a verifier is worth deleting
 
 The counterweight, and the rarer report: PRINCE ran an LLM review step over generated SQL and **removed it**. The reviewer kept flagging valid queries as erroneous — cost and latency for a net loss in throughput, with no accuracy gain to trade against.
@@ -139,7 +153,7 @@ The rule that survives:
 
 > **A verifier earns its place only if its false-positive rate is low enough that acting on its verdict beats ignoring it.**
 
-A gate that cries wolf gets routed around by whoever operates it, which is worse than no gate — it produces the appearance of verification plus the habit of overriding it. Where a **deterministic** check can cover the same ground, prefer it: PRINCE kept a hard allowlist (`SELECT` only; `DELETE`/`INSERT`/`UPDATE` blocked) and a result cap, both of which are exact and free. The LLM reviewer was the layer that went, not the validation.
+A gate that cries wolf gets routed around by whoever operates it, which is worse than no gate — it produces the appearance of verification plus the habit of overriding it. Where a **deterministic** check can cover the same ground, prefer it: PRINCE kept a hard allowlist (`SELECT` only; `DELETE`/`INSERT`/`UPDATE` blocked) and a result cap, both of which are exact and free. The LLM reviewer was the layer that went, not the validation. Crying wolf is a false positive in the [confusion matrix](../../../data-science/01-classical-ml/notes/04-model-evaluation.md#confusion-matrix-precision-recall-f1), and here it carries a cost.
 
 The generalization: **verify with the cheapest mechanism that is actually decisive.** Schema check before reference comparison before LLM judge — the eval-tier ladder below, applied to gates. This is note 08's [iterative simplification](08-maturity-and-failure-modes.md#iterative-simplification) reaching verification itself; verification layers are subject to the subtraction pass like everything else.
 
@@ -171,6 +185,17 @@ A second run in the same post (a browser DAW) shows where the money goes: planne
 
 **The evaluator needs calibrating too.** Early versions found real problems, then talked themselves into calling them minor and approved anyway. The fix was a development loop on the evaluator: read its logs, find where its judgment diverged from a human's, and tighten the QA prompt on exactly those points. Hard per-dimension thresholds (any dimension below the bar fails the sprint) stopped one strong dimension from averaging away a weak one.
 
+### An observer that checks claims against the record
+
+The Gemini Minecraft run (Faldor et al., 2026) put the same split into a team of agents playing without a human. Four agents were told to verify each action, build reusable tools, share memory and **report honestly**. A fifth agent, the **Observer**, did no playing. It checked agents' claims against the game record, reported specification gaming, and intervened only when the environment itself failed (six server restarts in 27 hours).
+
+The instruction to report honestly showed up in the transcripts. At hour 12 one agent announced that all 14 Ender Eyes were banked in a chest. Two minutes later it retracted the claim: a server restart had restored a save from after its death, it had respawned with an empty inventory, and the success message had come from an unguarded branch of its own script.
+
+![An agent announces 14 Ender Eyes banked, then retracts: the message came from an unguarded script branch](../assets/sources/images/faldor-gemini-argon-minecraft-fig14.png)
+*Image Source: Faldor et al. (2026)*
+
+An unguarded branch that prints "success" without checking the world is the same failure as code written and never tested. What caught it was a habit the harness asked for: check the real state, then report. Without the retraction, three other agents would have planned around Ender Eyes that didn't exist.
+
 ---
 
 ## Grading criteria beat vibes
@@ -185,6 +210,20 @@ Subjective judgment doesn't transfer to an evaluator agent. Replace it with **we
 | **Functionality** | Can a user actually complete the task? |
 
 The generalizable move: **name the dimensions, weight them, score each separately.** A single 1–10 score collapses distinct failures into one number and gives the generator nothing actionable.
+
+For code work, an evaluator rubric can score six harness-level dimensions 0–2 and end in a three-way verdict:
+
+```markdown
+| Category          | Question                                                    | Score (0-2) |
+| Correctness       | Does the implemented behavior match the requested feature? |             |
+| Verification      | Did the required checks actually run, with evidence?       |             |
+| Scope discipline  | Did the session stay inside the chosen feature scope?      |             |
+| Reliability       | Does the result survive restart or rerun without repair?   |             |
+| Maintainability   | Is the code and documentation clear for the next session?  |             |
+| Handoff readiness | Can a fresh session continue from repo artifacts only?     |             |
+
+Verdict: Accept · Revise · Block
+```
 
 ---
 
@@ -219,9 +258,11 @@ Without a binary eval, there is no signal to improve against, and every change i
 2. **Reference comparison** — does it match known-good output?
 3. **Calibrated LLM-as-judge** — rubric-scored, with the rubric itself validated against human judgment.
 
+The same ladder describes **runtime guardrails**, the gate between "the agent says it's done" and the result being finalised. Code checks cover format, length and allowlists, and should be preferred wherever they can decide. An LLM judge covers nuance ("is this consistent with the sources?") and returns *why* it failed, so the agent revises instead of retrying blind. A HITL stop covers what neither can decide. **Most production systems run at least two of the three.**
+
 Two related disciplines: **Pass@k** measures capability boundaries (can it ever do this?); **Pass^k** measures deployment quality (does it do this *every* time?). Ship on Pass^k.
 
-And the meta-rule: **if the eval system is broken, fix the eval system first.** Never steer on a distorted signal. The debug order for that is in [06-eval/12](../../06-eval/notes/12-failure-modes.md#the-debug-order); graders and their calibration states are in [06-eval/04](../../06-eval/notes/04-graders.md#grader-states-which-ones-can-block-a-release); pass@k vs. pass^k with repeats is in [06-eval/06](../../06-eval/notes/06-evaluating-agents.md#non-determinism-run-every-task-k-times); wiring evals into CI is in [06-eval/10](../../06-eval/notes/10-evals-in-ci.md).
+And the meta-rule: **if the eval system is broken, fix the eval system first.** Never steer on a distorted signal. The debug order for that is in [Eval chapter 12](../../../generative-ai/08-eval/notes/12-failure-modes.md#the-debug-order); graders and their calibration states are in [Eval chapter 04](../../../generative-ai/08-eval/notes/04-graders.md#grader-states-which-ones-can-block-a-release); pass@k vs. pass^k with repeats is in [Eval chapter 06](../../../generative-ai/08-eval/notes/06-evaluating-agents.md#non-determinism-run-every-task-k-times); wiring evals into CI is in [Eval chapter 10](../../../generative-ai/08-eval/notes/10-evals-in-ci.md).
 
 ### Two eval surfaces, different triggers
 
@@ -256,6 +297,19 @@ Paired with the **two-retry rule**:
 
 Three failures on the same gate means the agent lacks information or the spec is wrong. More attempts spend money to confirm that.
 
+### Nudges the harness injects
+
+Loop detection is one of several messages a harness can inject at a set point in the run. The Object-Oriented Harness paper (Li G. et al., 2026) evolved harnesses as a class hierarchy. One lineage, for tasks whose deliverable is a written file, added three injected nudges, each subclass inheriting the one before:
+
+![Inheritance chain of harnesses: s9 completion check, s12 near-budget reminder, s29 tool-error guidance](../assets/sources/images/li-object-oriented-harness-fig9.png)
+*Image Source: Li G. et al. (2026)*
+
+- **Completion check** (s9). Before the agent finishes, request another turn if it never attempted a write. A narrow version of `PreCompletionChecklistMiddleware` above.
+- **Near-budget reminder** (s12). Near the turn limit, if no write has succeeded yet, prompt the agent to write now instead of exploring further.
+- **Tool-error guidance** (s29). Add corrective hints for unrecoverable errors or repeated unproductive results, rather than a bare stack trace ([agent-oriented error messages](#agent-oriented-error-messages)).
+
+Each one is a hook ([note 04](04-execution-boundaries.md#hooks-deterministic-control-flow)), not a sentence in the system prompt. It fires at the right moment instead of competing for attention from the start.
+
 ---
 
 ## Failure, recovery, and termination
@@ -278,7 +332,7 @@ Li's taxonomy (ch. 5, distilled from production harness source code) sorts failu
 
 1. **Silent retry**, with backoff and jitter, honouring `retry-after`. Retry the main loop; *drop* failed background calls such as title generation, so they don't amplify into quota contention.
 2. **Degrade and continue.** On truncation, raise the output cap, then ask the model to continue from the break. On persistent overload, fall back to another model, stripping provider-specific blocks from the history first.
-3. **Surface to the user**, along with what was already tried.
+3. **Surface to the user**, along with what was already tried. Albada's UX version (*Building Applications with AI Agents*, ch. 3): say what can't be done, offer an alternative or a hand-off to a human, and keep the user's context so they don't have to repeat themselves. For background work, the same rule applies before anything fails: tell the user when the task starts, give an estimated completion time, and end with a short summary.
 
 Tool-layer errors never end the session. They come back as structured tool results, and malformed arguments are repaired programmatically. Treat the **whole recovery loop** as the unit: hold back intermediate errors from users and event subscribers until recovery has definitely failed.
 
@@ -298,6 +352,10 @@ Not all failures are retryable:
 | **Schema violation** | Return the validation error; retry once with it in context |
 | **Context exhaustion** | Compact or reset, then resume ([note 06](06-long-horizon-execution.md)) |
 | **Fatal** | Stop; surface the error |
+
+Albada's corrective flow for malformed calls (*Building Applications with AI Agents*, ch. 4) sharpens the schema row. **Validate** every response against the schema (jsonschema or Pydantic). If a required tool call was skipped, trigger it yourself; if the JSON is invalid, ask the model to fix it. **Regenerate only the broken part** rather than the whole exchange. When retries run out, **fall back**: a backup model, a clarifying question to the user, cached data, or a safe default. Log every validation error, retry and fallback.
+
+A common shortcut breaks the "not all failures are retryable" rule. Rothman's hardened engine (*Context Engineering for Multi-Agent Systems*, ch. 5) decorates its LLM and embedding calls with tenacity's `@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))`. With no `retry=` filter, that retries **every** exception, refusals and bugs included, and the waits alone can add minutes before the first real failure shows. Its good half: after the last attempt the wrapper logs and re-raises, so the executor halts instead of passing on an empty string. Restrict the decorator to transient error types (`retry=retry_if_exception_type((RateLimitError, APIConnectionError, APITimeoutError))`).
 
 Retry budget is **per-invocation, not per-tool** — otherwise five tools with three retries each become fifteen attempts. Circuit-break after 5 consecutive failures with a 60s cooldown, then fail fast.
 
@@ -321,6 +379,10 @@ The move that makes retries more than repetition:
 An identical retry re-runs the reasoning that just failed and tends to fail identically. PRINCE passes the failure back in — the database error message, the generated query, and the original context all return to the model, which then produces a *corrected* query rather than the same one. Capped at 3 attempts, after which the tool reports failure honestly.
 
 This is the same instinct as the schema-violation row above (return the validation error, retry with it in context) generalized to every retryable failure, and it's what makes a retry a re-plan. It also explains why the two-retry rule holds: once the error is already in context, further attempts add no new information, so a third failure genuinely indicates a bad spec rather than bad luck.
+
+How much the error is worth, and where it stops paying. In InterCode ([arXiv:2306.14898](https://arxiv.org/abs/2306.14898) (Yang et al., NeurIPS 2023 Datasets and Benchmarks)), letting the model see execution output and retry for up to 10 turns took GPT-4 from **9.1% to 73.7%** on 1,034 Spider-derived SQL tasks, and gpt-3.5-turbo from 10.5% to 47.3%; on 200 NL2Bash-derived shell tasks the gain was smaller (GPT-4 34.0% → 48.5%). Two limits. The retrying agent saw a reward computed from the gold answer and stopped once it reached 1, so this measures retry against an oracle, not self-verification. And the curves plateau: in later turns models make *"small, cursory adjustments to the prior action"*, repeat earlier moves and ignore fresh observations, which is the empirical case for the attempt cap above and for [loop detection](#loop-detection). A reasoning scaffold helped on SQL (ReAct 58.7% vs. 47.3% for plain retry, gpt-3.5-turbo) and hurt on Bash (20.5% vs. 46.5%), so no one retry prompt wins everywhere.
+
+The same loop with a real stopping rule, and its blind spot. ChatTester ([arXiv:2305.04207](https://arxiv.org/abs/2305.04207) (Yuan et al., FSE 2024)) feeds Java compiler errors, the buggy line and the missing class context back to gpt-3.5-turbo, and counts a round as invalid when the error count doesn't fall; once more than three invalid rounds have accumulated, the loop ends. On 100 focal methods the repair loop alone lifted compilation from 39.0% to 60.6% and passing tests from 22.3% to 34.0% (73.3% and 41.0% with an intention-first prompt added), at about 30 s per round. It repairs only compile errors, because a failing run could mean a bad test or a bad method, and that leaves the main failure untouched: in the 1,000-method baseline study, **85.5% of tests that compiled but failed did so on an assertion, and every one inspected was a wrong assertion rather than a real bug**. A green compile is layer 1 of the [termination check](#the-three-layer-termination-check), not evidence the test checks anything.
 
 ---
 
@@ -365,11 +427,56 @@ The general principle: **in any domain where a human must sign off, traceability
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-reliability.md` — failure taxonomy, retry defaults, idempotency, graceful degradation, circuit breaking, structured error returns.
-`~/.claude/refs/agent-eval.md` — eval design and regression baselines.
+- **Letting the agent declare done.** Symptom: "complete" with nothing run. Fix: intercept the exit, as `PreCompletionChecklistMiddleware` does, so the agent can only request done and the harness adjudicates.
+- **Trusting unit tests alone.** Symptom: both mocked sides pass while a relative path meets a callee that expects an absolute one. Fix: unit tests can't see boundary defects, so add runtime and system layers to the check.
+- **Letting the maker grade its own work.** Symptom: confident approval of broken features. Fix: use a separate evaluator with weighted criteria. In the DAW run, QA was $10 of $124.70 and still found that core features were presentational only.
+- **Keeping a verifier that cries wolf.** Symptom: valid work keeps getting flagged, and throughput falls with no accuracy gain. Fix: measure false positives and delete the verifier if it doesn't earn its place. PRINCE removed its LLM SQL reviewer for this reason.
+- **Shipping on Pass@k.** Symptom: the eval shows the agent can do the task, and users see it fail intermittently. Fix: Pass@k measures capability and Pass^k measures whether it succeeds every time, so ship on Pass^k.
+- **Retrying a refusal or a bad spec.** Symptom: three identical failures and a growing bill. Fix: use the retry taxonomy. Never retry a refusal. After two failed retries, treat the problem as a bad spec, since a third attempt adds no information.
+- **A retry budget per tool.** Symptom: five tools with three retries each become fifteen attempts. Fix: budget per invocation, with a circuit breaker after 5 consecutive failures and a 60s cooldown.
+- **Treating error handling as free.** Symptom: an error path calls the LLM, fails, and cascades. Before Claude Code's compaction breaker, which now trips after 3 consecutive failures, one session failed more than 3,000 times in a row. Fix: every recovery path gets a ceiling set from data.
 
----
+## Try it
 
-→ Next: [06-long-horizon-execution.md](06-long-horizon-execution.md) — surviving past one context window.
+1. Classify each failure and choose a response from the retry taxonomy: a 429, a safety refusal, JSON missing a required field, a window overflow.
+
+   <details><summary>Answer</summary>
+
+   429: transient, exponential backoff with jitter, max 3. Refusal: never retry, because it will refuse again. Missing field: schema violation, return the validation error and retry once with it in context. Overflow: context exhaustion, compact or reset and resume.
+
+   </details>
+
+2. An agent passes a task on 8 of 10 runs. Report its Pass@10 and Pass^10, and say whether it ships for a billing workflow.
+
+   <details><summary>Answer</summary>
+
+   Pass@10 is true, because it can do the task at least once. Pass^10 is false, because it didn't succeed on all ten. Don't ship a billing workflow on that result. The failing two runs are the next thing to attribute.
+
+   </details>
+
+3. Write a sprint contract for "add dark mode" that names at least two exclusions and one check at each of the static, runtime and system layers.
+
+   <details><summary>What a good one has</summary>
+
+   Exclusions such as "no theme editor" and "no changes to the marketing site" stop scope growth before review. A lint or type check is static. Loading the settings page and toggling without a console error is runtime. A user toggling, reloading and still seeing dark mode is system. Compare with the [dark mode contract](#sprint-contracts) in the note, then build a real loop in [loop-scorekeeper-py](../../04-loop-engineering/practice/loop-scorekeeper-py/readme.md).
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| Why not let the agent decide when it is done? | It finishes confidently on broken work. The harness intercepts the exit and forces a check, so the agent can only request done. |
+| Why are unit tests not enough? | Isolation and mocks make them blind to boundary defects: interface mismatch, state propagation, resource lifecycle and environment. The fix is the static, runtime and system layers. |
+| Is a separate evaluator worth paying for? | Usually. Anthropic's DAW run spent $10 of $124.70 on QA, and it caught core features that were presentational only. The cost argument is often whether you get a working result at all: $9 broken against $200 working. |
+| Pass@k or Pass^k? | Pass@k asks whether it can ever do the task, and Pass^k whether it does so every time. Use the first for capability and ship on the second. |
+| A verifier is blocking good work. When do you delete it? | When its false positives cost more than the defects it catches. PRINCE deleted its LLM SQL reviewer because it kept flagging valid queries, adding cost and latency with no accuracy gain. |
+| How do you stop an agent stuck on the same bug? | Track per-file edit counts or a `hash(tool, args)` fingerprint and prompt "reconsider your approach" after N. After two failed retries, assume a bad spec. A hard stop alone doesn't force re-planning. |
+| Why is a retry budget per invocation? | Otherwise five tools with three retries each become fifteen attempts. Add a circuit breaker after 5 consecutive failures, with a 60s cooldown, then fail fast. |
+| Both the eval and the agent look broken. Which do you fix first? | The eval system. If it is broken, fix it before touching the agent, because you should never steer on a distorted signal. |
+
+## Next
+
+[06-long-horizon-execution.md](06-long-horizon-execution.md): surviving past one context window.

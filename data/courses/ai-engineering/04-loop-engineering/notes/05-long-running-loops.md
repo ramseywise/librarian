@@ -1,8 +1,8 @@
 ---
-imported_hash: b2e7dee3648f0d98
+imported_hash: 55df143f4dbe078d
 title: 5 — Long-Running Loops
-summary: 'All three have the same fix: progress lives in files, not in the context window.'
-order: 7
+summary: A loop that runs for hours outlives the conversation that started it.
+order: 6
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/05-long-running-loops.md
@@ -11,6 +11,8 @@ source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/05-long-ru
 # 5 — Long-Running Loops
 
 > Context is a budget, not a bucket. A loop that runs for hours must forget on purpose and remember on disk.
+
+A loop that runs for hours outlives the conversation that started it. Each pass adds tool output and errors to the transcript until the agent loses the thread, wraps up early near the limit, or stops at session end and restarts blank. Without files carrying the state, a fresh pass reruns the attempt that failed an hour ago, and a bare `while` loop keeps going after the work is finished. This chapter covers how to spend context as a budget, what goes in memory, and how the guarded Ralph script stops on the scorekeeper's word.
 
 ---
 
@@ -65,7 +67,33 @@ Memory is the set of notes the loop reads at the start of every session so it ca
 | **What is next** | The very next step, so the next pass starts fast | `Check token refresh path in auth/session.py` |
 | **Waiting for a human** | Items that need a decision or sign-off | `Approve dropping the legacy cookie` |
 
-A ready-made file with these fields: [templates/loop-state.md](../templates/loop-state.md).
+The fields fit in one short file, `loop-state.md`, that every pass reads first and rewrites last. Keep it to "now" and "recent"; older entries move to the archive section at the bottom:
+
+```markdown
+# Loop state
+Updated: 2026-10-30 14:05 · Pass: 7 · Status: in progress   # in progress / done / blocked / stopped
+
+## Goal
+All tests in tests/auth/ pass      # copied from the loop contract; if they differ, the contract wins
+## Last score
+41/47 passing · held-out: not run
+## What was tried
+- pass 7: mock the clock in test_expiry → no change → rolled back
+- pass 6: fix refresh-token TTL → 38 → 41 → kept
+## What is next
+Check the token refresh path in auth/session.py
+## Waiting for a human
+- Approve dropping the legacy cookie (breaks sessions older than 30 days)
+
+| Passes | Saved | Rolled back | Checker fails | Human interventions | Cost so far |
+|---|---|---|---|---|---|
+| 7 | 4 | 3 | 1 | 0 | $2.10 |
+
+## Archive
+<older "what was tried" entries; delete anything that no longer reflects the code>
+```
+
+The run-stats row is what the evolve loop reads later ([note 08](08-self-improving-loops.md#cadence-and-inputs)), and what tells you a loop is rolling back more than it saves.
 
 "What was tried" earns its place. Without it, a fresh pass reruns the attempt that failed an hour ago.
 
@@ -85,12 +113,66 @@ while :; do cat PROMPT.md | claude -p; done
 
 Each run starts with a fresh context. The prompt tells the agent to read the plan and progress files, do the next item, update the files and exit. The filesystem carries everything between runs. That one-liner is the whole idea of re-entrant loops.
 
-What it lacks: a stop condition, a budget and a scorekeeper. A production version (the [templates/ralph.sh](../templates/ralph.sh) template) adds:
+What it lacks: a stop condition, a budget and a scorekeeper. A production version adds:
 
 - an **iteration cap** and a **wall-clock or cost cap**
 - a **done check** that runs the scorekeeper, not the agent's own claim
 - a **stall check**: stop if the score hasn't moved in N passes
 - a log line per pass
+
+The core of it is the ratchet: run the agent, re-score, then roll back, save or count a stall.
+
+```mermaid
+flowchart LR
+    A["agent pass<br/>fresh context,<br/>reads PROMPT.md + state"] --> B{"re-score"}
+    B -->|lower| RB["git reset --hard<br/>stall += 1"]
+    B -->|higher| SV["git commit<br/>best = now, stall = 0"]
+    B -->|same| ST["stall += 1"]
+    RB & SV & ST --> D{"done check<br/>(scorekeeper)"}
+    D -->|pass| OK(["exit 0: success"])
+    D -->|not yet| CAP{"stall, clock<br/>or iteration cap?"}
+    CAP -->|no| A
+    CAP -->|yes| ESC(["exit 1/2/3: escalate"])
+```
+
+A complete, guarded script (save it as `ralph.sh`):
+
+```bash
+#!/usr/bin/env bash
+# Usage: SCORE_CMD='pytest -q | tail -1' ./ralph.sh PROMPT.md
+#   SCORE_CMD prints one number (higher is better) as its last line.
+#   DONE_CMD (optional) exits 0 when the goal is met; defaults to SCORE_CMD.
+set -euo pipefail
+PROMPT_FILE="${1:?usage: ralph.sh PROMPT.md}"
+MAX_ITERS="${MAX_ITERS:-20}"; MAX_MINUTES="${MAX_MINUTES:-60}"; STALL_LIMIT="${STALL_LIMIT:-3}"
+SCORE_CMD="${SCORE_CMD:?set SCORE_CMD}"; DONE_CMD="${DONE_CMD:-$SCORE_CMD}"
+AGENT_CMD="${AGENT_CMD:-claude -p}"; LOG="${LOG:-ralph.log}"
+
+score() { bash -c "$SCORE_CMD" 2>/dev/null | tail -1 | grep -Eo '[0-9]+(\.[0-9]+)?' | tail -1 || echo 0; }
+log()   { echo "$(date -u +%FT%TZ) $*" | tee -a "$LOG"; }
+
+deadline=$(( $(date +%s) + MAX_MINUTES * 60 ))
+best=$(score); stall=0; log "start score=$best"
+for ((i = 1; i <= MAX_ITERS; i++)); do
+  (( $(date +%s) > deadline )) && { log "STOP wall-clock cap"; exit 2; }
+  $AGENT_CMD < "$PROMPT_FILE" >> "$LOG" 2>&1 || true   # fresh context every pass
+  now=$(score)
+  if awk "BEGIN{exit !($now < $best)}"; then           # worse: undo the pass
+    git reset --hard -q HEAD && git clean -fdq; stall=$((stall + 1))
+    log "pass=$i score=$now < $best ROLLED BACK"
+  elif awk "BEGIN{exit !($now > $best)}"; then         # better: commit it
+    git add -A && git commit -qm "ralph pass $i: $best -> $now" || true
+    log "pass=$i score=$now SAVED"; best=$now; stall=0
+  else
+    stall=$((stall + 1)); log "pass=$i score=$now no change"   # no movement
+  fi
+  bash -c "$DONE_CMD" >/dev/null 2>&1 && { log "DONE"; exit 0; }   # scorekeeper, not the agent
+  (( stall >= STALL_LIMIT )) && { log "STOP stalled; escalate"; exit 3; }
+done
+log "STOP iteration cap; escalate"; exit 1             # a cap is not success
+```
+
+The bare one-liner keeps running after the work is finished; this one stops on the scorekeeper's word or a cap, and its `git log` is a list of validated improvements. Each exit has its own code, so whatever wraps the script can tell success (0) from a cap (1), the clock (2) and a stall (3).
 
 Harnesses now ship this pattern: hooks catch the agent's attempt to finish and re-inject the prompt into a fresh context ([harness note 06](../../03-harness-engineering/notes/06-long-horizon-execution.md#ralph-loops)), and `/goal` does it as a built-in ([note 06](06-triggers-and-schedules.md#claude-code)).
 
@@ -122,10 +204,53 @@ Loops lean toward **reset**, because the Ralph and initializer/worker patterns a
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-context.md` — compaction triggers and what must survive them; `~/.claude/refs/agent-memory.md` — durable state and memory hygiene.
+- **The bare Ralph one-liner.** Symptom: it keeps running after the work is finished. Fix: add an iteration cap, a wall-clock or cost cap, a done check that runs the scorekeeper, a stall check and a log line per pass, as in `ralph.sh`.
+- **Taking the agent's "done" in a Ralph loop.** Symptom: the loop stops on a claim. Fix: the done check runs the scorekeeper, never the agent's own claim.
+- **Omitting "what was tried".** Symptom: a fresh pass reruns the attempt that failed an hour ago. Fix: record recent attempts in `loop-state.md`, especially failures.
+- **A transcript for a memory.** Symptom: state files grow until every pass spends its budget reading them. Fix: keep the now and recent tiers in one short file, move older entries to the archive, and read that only when needed.
+- **Context drift.** Symptom: the loop acts with full confidence on a schema or goal that changed. Fix: update or invalidate the affected notes whenever the code, schema or goal changes.
+- **Compacting only after the loop.** Symptom: raw output that has been acted on stays in the window. Fix: each pass ends by distilling what it learned, and big logs keep only head and tail in context.
+- **Doing everything in one session.** Symptom: a session runs out of context halfway through a change and leaves the repo broken. Fix: one item per session, leaving the repo committed, tested and noted.
 
----
+## Try it
 
-→ Next: [06-triggers-and-schedules.md](06-triggers-and-schedules.md) — what starts a loop when you don't.
+1. Fill in the five fields for a loop that has 41 of 47 auth tests passing and needs sign-off to drop a legacy cookie.
+
+   <details><summary>Answer</summary>
+
+   Goal: `All tests in tests/auth/ pass`. Last score: `41/47 passing`. What was tried: for example `Mocking the clock in test_expiry: no change`. What is next: the very next step, such as checking the token refresh path. Waiting for a human: `Approve dropping the legacy cookie`.
+
+   </details>
+
+2. Read the guarded `ralph.sh` above and list what stops it. Then say what `git log` tells you after a run.
+
+   <details><summary>Answer</summary>
+
+   The scorekeeper reporting done (exit 0), the iteration cap (1), the wall-clock cap (2) and a stall (3). Each exit has its own code, so a wrapper can tell success from the rest. `git log` is a list of validated improvements, because only passes that raised the score were saved.
+
+   </details>
+
+3. Your loop is the initializer/worker kind and spans four days. Choose compaction or reset, and say what must be on disk.
+
+   <details><summary>Answer</summary>
+
+   Reset, because the pattern already keeps state on disk and compaction drifts over repeated summaries. On disk: the feature list, progress log, scaffolding, `init` script and git history, since anything not written down is lost.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| What three walls does a long-running loop hit? | Context rot, context anxiety and session end. All three have one fix: progress lives in files, not in the context window. |
+| What's in a good loop memory? | Three tiers of now, recent and archive, and five fields: goal, last score, what was tried, what is next and what's waiting for a human. It stays small, because a few precise notes beat a transcript. |
+| What is a Ralph loop, and what does it lack? | A bash loop that re-runs the agent with fresh context, with state on the filesystem. The bare form lacks a stop condition, a budget and a scorekeeper. |
+| Compaction or reset for a loop? | Reset, usually. Ralph and initializer/worker already keep state on disk, and compaction risks summary-of-a-summary drift. Reset loses only what wasn't written down. |
+| What do the initializer and worker each do? | The initializer runs once and turns the task into files. The worker runs each session, picks one unfinished item, implements and tests it, commits, updates the log and exits cleanly. |
+| What is context drift, and why is it dangerous? | Notes that no longer match the code, schema or goal. The loop then acts on a stale picture with full confidence, so update notes when those change. |
+
+## Next
+
+[06-triggers-and-schedules.md](06-triggers-and-schedules.md): what starts a loop when you don't.

@@ -1,7 +1,7 @@
 ---
-imported_hash: 930b1b56f504f85b
+imported_hash: 4a44ed6c2bdf26ba
 title: 5 — Tools and Function Calling
-summary: A bare chat model has no agency, meaning no ability to complete tasks on its own.
+summary: A chat model cannot look up today's weather or change a thermostat, so without tools it invents the answer or restates your plan.
 order: 6
 kind: reading
 section: Notes
@@ -12,6 +12,8 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/05-tools
 
 > The prompt-side view of tools: how a tool definition becomes part of the prompt, and how to write one the model uses correctly. Designing the tool surface of a whole agent belongs to [03-harness-engineering/03-tool-design](../../03-harness-engineering/notes/03-tool-design.md).
 
+A chat model cannot look up today's weather or change a thermostat, so without tools it invents the answer or restates your plan. Giving it tools changes what it can do, but each definition is still prompt text, so a vague name, a missing enum or an overlapping pair sends it to the wrong call.
+
 ---
 
 ## The loop
@@ -20,7 +22,7 @@ A bare chat model has no *agency*, meaning no ability to complete tasks on its o
 
 The model never touches the world. It **proposes** a call, and your code **executes** it and appends the result.
 
-![Function-calling flow: tool definitions and messages in, a tool call out, the app executes it, results go back, final response](../assets/sources/images/agents/function-calling-flow.png)
+![Function-calling flow: tool definitions and messages in, a tool call out, the app executes it, results go back, final response](../assets/sources/images/dair-function-calling-flow.jpg)
 *Image Source: promptingguide.ai*
 
 ```
@@ -61,7 +63,7 @@ Two knobs worth knowing:
 
 In a conversational agent, wrap that in an outer user-input loop. The book's `run_conversation` does it: take input, append it as a `user` message, run the tool loop, and only return to the user once the reply has no tool calls. The **observation** (tool result) becomes context for the next step, which is ReAct with the bookkeeping done by the API ([03](03-core-techniques.md#react--reason--act)).
 
-![Conversational agent sequence: user → app → model, with zero or more tool invocations looped before the assistant message returns](../assets/sources/prompt-eng-for-llms/images/fig-8-2-conversational-agent-sequence.png)
+![Conversational agent sequence: user → app → model, with zero or more tool invocations looped before the assistant message returns](../assets/sources/images/berryman-prompt-engineering-for-llms-fig8-2.png)
 *Image Source: Berryman & Ziegler (2024), Fig. 8-2*
 
 The outer loop is what adds state across turns. In the book's thermostat agent, the model points out that 64°F is "actually quite cool" when the user says it's hot. It reads "LOTS cooler" as 50°F rather than something extreme. When asked to put things back, it restores the *original* 64°F, which it can do only by reading the earlier turns.
@@ -70,15 +72,15 @@ The outer loop is what adds state across turns. In the book's thermostat agent, 
 
 ## Under the hood: it's still document completion
 
-Tool calling is fine-tuning plus API sugar, not a new mechanism ([01](01-how-models-read-prompts.md)). The book's reconstruction of OpenAI's internal format:
+Tool calling is fine-tuning plus API sugar, not a new mechanism ([01](01-how-models-read-prompts.md)). OpenAI shipped its first model fine-tuned for tool calls in June 2023 and doesn't document the internal format. The book reconstructs it by interrogating the model:
 
-- Tool schemas are rendered into the system message as **TypeScript-style declarations** in a `namespace functions {}` block, with descriptions as doc comments. Why TypeScript rather than raw JSON schema: it has a richer type vocabulary, doc comments attach naturally to functions and arguments, and named arguments make the model write each argument's name right before its value, which cuts mis-assignment.
+- Tool schemas are appended to your system message under markdown headers (`# Tools`, `## functions`) as **TypeScript-style declarations** in a `namespace functions {}` block, with descriptions as `//` comments. They're ordinary prompt text, so they count against your token budget. Why TypeScript rather than raw JSON schema: it has a richer type vocabulary, doc comments attach naturally to functions and arguments, and named arguments make the model write each argument's name right before its value, which cuts mis-assignment.
 - A call is just more tokens: `<|im_start|>assistant to=functions.set_room_temp\n{"temp": 76}<|im_end|>`.
 - Results come back in a role created for the purpose: `<|im_start|>tool\nDONE<|im_end|>`. The API's `tool_call_id` is dropped internally once calls and results have been stitched together in order.
 
 Token by token, the model makes a chain of decisions: *who speaks next* (forced by the API inserting `<|im_start|>assistant`) *→ tool or text? → which tool? → which argument? → what value? → done?* That's five or so hierarchical classifiers, run by one next-token predictor in 10–20 tokens. Every part of your definition — names, descriptions, enums — is prompt text that steers those decisions. **Writing a tool definition is writing a prompt.**
 
-The book also notes the limits of that rendering (as of late 2023, OpenAI): `minimum`, `maximum`, `pattern`, `format`, `minItems` and nested descriptions **didn't make it into the internal prompt**. Validate constraints in code rather than relying on the schema to communicate them.
+The book also notes the limits of that rendering (OpenAI's 1106 models, November 2023): `enum` and `default` are rendered, but `minimum`, `maximum`, `pattern`, `format`, `minItems`, `uniqueItems` and the descriptions of nested parameters **didn't make it into the internal prompt**. Validate constraints in code rather than relying on the schema to communicate them.
 
 ---
 
@@ -90,8 +92,8 @@ The book also notes the limits of that rendering (as of late 2023, OpenAI): `min
 | **Self-documenting names** (`get_current_weather`, not `retrieveemail`) | Unbroken lowercase is hard to tokenize and read. The book suggests camelCase for OpenAI, matching its TypeScript framing |
 | **Descriptions say *when* to use it**, not just what it does | "Search the web for current information. Use when the user asks about recent events or data that may have changed since training." Keep them simple: legalese-style definitions overload the model's attention |
 | **Mirror public APIs the model already knows** | Copilot found the model could recite GitHub's docs; matching argument names reduced errors |
-| **Few, simple arguments; use `enum`s** | Complex parameter lists burn tokens and accuracy. Never paste a whole web API — design a simplified surface |
-| **Avoid long free-text arguments in JSON** | Escaping newlines and quotes is error-prone at length. Claude's XML-style tool format handles this better |
+| **Few, simple arguments; use `enum`s and `default`s** | Complex parameter lists burn tokens and accuracy. Never paste a whole web API — design a simplified surface |
+| **Avoid long free-text arguments in JSON** | Values must escape newlines and quotes, and the longer the text the likelier a missed escape; code is the worst case. The book noted that Anthropic then encoded calls as XML, which "in principle" suits long arguments better. Today's Claude API also passes tool inputs as JSON, so don't count on that |
 | **Drop arguments the app already knows** | The model will invent plausible placeholders (`"my-org"`, `"my-repo"`) for values it can't see. If an argument must stay, give it a default your code can detect and fill in, or tell the model to ask when unsure (less reliable) |
 | **Lean outputs whose shape the model can anticipate** | Say in the description what comes back, in free text or JSON. Don't pad results "just in case": it's noise in the next prompt |
 | **Errors that teach** | Phrase errors in the tool's own terms ("`date` must be YYYY-MM-DD"), not raw stack traces, so the model can retry correctly |
@@ -112,17 +114,17 @@ Reinforce choices in the system prompt as well, e.g. "Prefer `knowledge_base` fo
 |---|---|
 | Preamble | System rules, tool definitions, optional examples |
 | Prior conversation | Earlier turns plus attached **artifacts** (a flight list, a document) |
-| Current exchange | The latest user message and the tool traffic it triggers |
-| Agent response | The final message — usually the only part that stays in history verbatim |
+| Current exchange | The latest user message, anything the user implicitly attached (highlighted text, the component they clicked: attach it for them instead of making them paste), and the tool traffic it triggers |
+| Agent response | The final message. It joins the prior conversation at the next exchange, with this exchange's tool results either kept as tool messages or folded into an artifact attached to it |
 
 There's no fixed recipe for this; the book's answer is "evaluate, evaluate, evaluate." Practical choices:
 - **Expose only the tools relevant to the current state** of the conversation.
-- **Which artifacts:** include everything (simple, but it can confuse the model) or have the model pick the relevant ones (more accurate, more code).
-- **How to present them:** an `<artifact>` XML tag or an `## Attached Data` section. The format (JSON, plain text) doesn't seem to matter much. If every artifact came from a tool call, don't special-case them: leave the tool messages in history, where they also serve as tool-use examples.
+- **Which artifacts:** include everything (the model has all the information, but irrelevant bulk confuses it) or make a side request in which the model picks the relevant ones (a cleaner prompt, at the cost of substantial extra application code).
+- **How to present them:** an `<artifact>` XML tag or an `## Attached Data` section. The format (JSON, plain text) doesn't seem to matter much, anecdotally; test it. If every artifact came from a tool call, don't special-case them: leave the tool messages in history, where they also serve as tool-use examples.
 - **Summarize large artifacts** rather than inlining the whole document. Use RAG over them, or a bulleted summary that points to a `details('section 5')` tool the model can call to expand a section (the authors proposed this but hadn't tested it).
-- **Drop stale history** when the topic shifts: automatically after a period of user inactivity, or using a small, cheap model to judge relevance (a large one is overkill).
+- **Drop stale history** when the topic shifts: automatically after a period of user inactivity, or by having a model judge relevance. A large model is overkill here (too slow and expensive); the book suggests training a small one.
 
-The trade-off cuts both ways. Too much context confuses the model and costs latency and money. Too little starves it.
+The trade-off cuts both ways. Too much context confuses the model, can overflow the window, and costs latency and money. Too little starves it.
 
 Context selection is the subject of [02-context](../../02-context-engineering/readme.md).
 
@@ -152,8 +154,41 @@ UX that helps (the book's recommendations):
 
 - Book (PDF): [Ch 8](../sources/prompt-eng-for-llms/reading/08-conversational-agency.pdf) (internal format, tool guidelines, conversational agent, UX)
 - Agent-level tool design, MCP, skills: [03-harness-engineering/notes/03-tool-design.md](../../03-harness-engineering/notes/03-tool-design.md)
-- Vendor tool-use docs and benchmarks: [references.md](../readme.md#vendor-guides)
+- Vendor tool-use docs and benchmarks: [references.md](../references.md#vendor-guides)
 
 ---
 
-→ Next: [06-chaining-and-workflows.md](06-chaining-and-workflows.md) — composing many prompts into a pipeline.
+## Pitfalls
+
+- **Trusting the prompt to gate actions.** Symptom: "always confirm before booking" works in testing and gets skipped in production. Fix: intercept side-effecting calls in code, and show the exact arguments on an authorization card.
+- **Exposing an argument the app already knows.** Symptom: calls carrying invented placeholders like `"my-org"` and `"my-repo"`. Fix: remove the argument, or give it a default your code can detect and fill.
+- **Answering one of several parallel calls.** Symptom: the API rejects the next request or the model loses track. Fix: return a `tool` message for every `tool_call_id` before calling again.
+- **Relying on schema constraints the model never sees.** Symptom: arguments that break `minimum`, `pattern` or `format`. On OpenAI's 1106 models those fields didn't reach the internal prompt, and only `enum` and `default` were rendered. Fix: validate in code and return an error that teaches.
+- **Long free-text arguments, especially code.** Symptom: missed escapes and failed JSON parsing that grow with argument length. Fix: keep arguments short, and redesign the tool so it doesn't carry a whole document.
+- **Treating tool results as trusted.** Symptom: a fetched page's instructions get followed. Fix: treat results as untrusted input ([adversarial prompting](10-adversarial-prompting.md#indirect-prompt-injection)).
+- **Pasting a whole web API as tools.** Symptom: wrong tool choice and burned tokens, since every tool definition is prompt text. Fix: a few tools that partition the domain, with a simplified surface.
+
+## Try it
+
+1. Rewrite this definition using the note's rules: `retrieveemail(account_id, folder, query, limit, format, include_html)`, description "Retrieves email". The app already knows the account.
+   <details><summary>Answer</summary>Something like `search_email(query, folder="inbox")`, described as "Search the user's email. Use when the user asks about messages they received. Returns subject, sender and date for up to 20 matches." `account_id` goes, because the app knows it. `limit`, `format` and `include_html` become fixed choices in your code. `folder` gets an `enum`, and the description says when to use it and what comes back.</details>
+2. Add a side-effecting tool to the [tool server lab](../../03-harness-engineering/practice/tool-server-sandbox/readme.md), or sketch the change. Where does the approval check go, and what should the model get back if the user declines?
+   <details><summary>Answer</summary>Between parsing the call and running it, in application code, so no prompt wording can skip it. Return a normal tool result saying the user declined, in the tool's own terms. Every call needs a result, and that text lets the model respond sensibly.</details>
+3. Sort each symptom into the note's debugging table and name the fix: (a) `get_weather` is never called for "is it raining?", (b) `search_docs` and `search_kb` get picked at random, (c) `date` arrives as "next Tuesday".
+   <details><summary>Answer</summary>(a) Not called: say when in the description, and check the tool is actually being passed. (b) Wrong tool: remove the overlap, or add a routing rule to the system prompt. (c) Bad argument: add the format and an example to the parameter description, and return "`date` must be YYYY-MM-DD" so it can retry.</details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| Does the model execute tools? | No. It proposes a call as tokens, your code executes it and appends the result, and the loop stops when a reply has no tool calls. |
+| How do tool definitions reach the model on OpenAI, per the book's reconstruction? | As TypeScript-style declarations in a `namespace functions` block appended to the system message. They count against your budget, and a call is just more tokens. |
+| Why TypeScript rather than raw JSON Schema there? | Richer types, natural doc comments, and named arguments, which put each argument's name right before its value and cut mis-assignment. |
+| How would you force structured output with tools? | Define a tool whose parameters are your schema and set `tool_choice` to that tool. The call is the output, and no tool needs to exist. |
+| Should the system prompt or the code enforce confirmation before a booking? | Code. A prompt instruction will eventually be skipped, so let the model request freely and intercept side effects with approval that shows the exact arguments. |
+| Your agent has 40 tools and often picks the wrong one. What do you try first? | Expose only the tools relevant to the conversation's state, merge overlapping ones, sharpen when-to-use descriptions and add a routing rule. Every extra tool is a distractor. |
+| What's a good tool error? | One phrased in the tool's own terms, such as "`date` must be YYYY-MM-DD", so the model can retry correctly. A raw stack trace doesn't help it. |
+
+## Next
+
+[Chaining and workflows](06-chaining-and-workflows.md): one tool loop runs out of strength on multi-step work, so split it into many prompts.

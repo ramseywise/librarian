@@ -1,7 +1,7 @@
 ---
-imported_hash: f73c0d412b747212
+imported_hash: 89161c958390b01c
 title: Python
-summary: Seven course notebooks (arrays, DataFrames, plotting, aggregation, time series) plus McKinney's chapter notebooks and earlier Michigan/Wesleyan coursework.
+summary: Worked answers are in each module's practice/solutions/.
 order: 1
 kind: reading
 source: learn-ai-engineering/programming/python/README.md
@@ -9,14 +9,14 @@ source: learn-ai-engineering/programming/python/README.md
 
 # Python
 
-> From your first `if` to async, typed, tested code, then on to pandas. Four modules: the
-> *Python for Everybody* spine (01–02), the language features engineering code relies on (03), and
-> Python for data (04).
-> Jump to: [Modules](#modules) · [Setup](#setup) · [How exercises work](#how-exercises-work) · [Rules of thumb](#rules-of-thumb) · [Sources](#sources)
+> From your first `if` to async, typed, tested code. Three modules: the *Python for Everybody*
+> spine (01–02) and the language features engineering code relies on (03). Pandas comes next, in
+> [data-analytics 01](../../data-analytics/01-python-for-data-analysis/readme.md).
+> Jump to: [Syllabus](#syllabus) · [Study decks](#study-decks) · [Layout](#layout) · [Setup](#setup) · [How exercises work](#how-exercises-work) · [Rules of thumb](#rules-of-thumb) · [Sources](#sources)
 
 ---
 
-## Modules
+## Syllabus
 
 ### 01 — Foundations
 
@@ -49,13 +49,70 @@ source: learn-ai-engineering/programming/python/README.md
 | 05 | [Type hints and dataclasses](03-language-for-engineers/notes/05-types-and-dataclasses.md) | Type signatures, use Protocols, frozen dataclasses, Pydantic at boundaries | [py](03-language-for-engineers/practice/exercises/05_types.py) |
 | 06 | [Modules, packaging and tooling](03-language-for-engineers/notes/06-modules-packaging-tooling.md) | Lay out a package with `pyproject.toml`; use uv, ruff and pytest | [package](03-language-for-engineers/practice/exercises/06_tooling/) |
 | 07 | [Concurrency](03-language-for-engineers/notes/07-concurrency.md) | Choose threads vs asyncio vs processes, limit concurrency, add timeouts | [py](03-language-for-engineers/practice/exercises/07_concurrency.py) |
-
-### 04 — Python for data
-
-Seven course notebooks (arrays, DataFrames, plotting, aggregation, time series) plus McKinney's
-chapter notebooks and earlier Michigan/Wesleyan coursework. See [04-python-for-data/README.md](04-python-for-data/readme.md).
+| 08 | [Objects, inheritance and the MRO](03-language-for-engineers/notes/08-objects-inheritance-and-mro.md) | Choose classmethods and staticmethods, predict the MRO, use `super()`, descriptors and `__init_subclass__`, and avoid metaclasses | in-note Try it |
+| 09 | [Memory and the runtime](03-language-for-engineers/notes/09-memory-and-the-runtime.md) | Reason about refcounting and the GC, find a leak with `tracemalloc`, weigh `__slots__`, read bytecode with `dis` | in-note Try it |
 
 Worked answers are in each module's `practice/solutions/`. Try each exercise before you open them.
+
+### Next: Python for data
+
+This track stops at the language. The [programming syllabus](../00-start-here/readme.md) hands off to the
+[data-analytics 01 pillar](../../data-analytics/01-python-for-data-analysis/readme.md), which owns
+the seven course notebooks (arrays, DataFrames, plotting, aggregation, time series), McKinney's
+chapter notebooks and the earlier Michigan and Wesleyan coursework.
+
+---
+
+## Builds on and feeds into
+
+**Builds on**
+
+| Chapter | Why |
+|---|---|
+| None in other subjects | The entry point of the course |
+
+**Feeds into**
+
+| Chapter | Why |
+|---|---|
+| [DA 01 Python for data analysis](../../data-analytics/01-python-for-data-analysis/readme.md) | Pandas starts where this track ends |
+| [SQL 09 SQL from Python](../sql/notes/09-sql-from-python.md) | Parameters, DuckDB and pandas, from the Python side of [databases](02-informatics/notes/05-databases.md) |
+| [TypeScript](../typescript/readme.md) | Starts after 03; its [async](../typescript/notes/06-async.md) note leans on [concurrency](03-language-for-engineers/notes/07-concurrency.md) |
+| [Computer science foundations](../computer-science/readme.md) | Cost and memory arguments made on Python's own objects |
+| [Software design](../software-design/readme.md) | Refactoring and patterns written in Python |
+
+---
+
+## Study decks
+
+Each module has a deck that librarian turns into flashcards: the title is the question and the
+takeaway is the rule that answers it.
+
+| Module | Deck | Source |
+|---|---|---|
+| 01 | [python-foundations.pptx](01-foundations/slides/python-foundations.pptx) | [deck.yaml](01-foundations/slides/deck.yaml) |
+| 02 | [python-informatics.pptx](02-informatics/slides/python-informatics.pptx) | [deck.yaml](02-informatics/slides/deck.yaml) |
+| 03 | [python-for-engineers.pptx](03-language-for-engineers/slides/python-for-engineers.pptx) | [deck.yaml](03-language-for-engineers/slides/deck.yaml) |
+
+Rebuild one from the repo root with `make slides PILLAR=programming/python/01-foundations`.
+
+---
+
+## Layout
+
+```
+python/
+├── README.md
+├── check.sh                      ok / FAIL for every exercise or solution file; runs pytest for 06_tooling
+├── 01-foundations/
+│   ├── notes/                    01–05
+│   ├── slides/                   deck.yaml and the built deck
+│   └── practice/
+│       ├── exercises/            01_…05_.py, stubs with the asserts at the bottom
+│       └── solutions/            same names, worked
+├── 02-informatics/               same shape, notes and exercises 01–05
+└── 03-language-for-engineers/    same shape, notes 01–07; 06_tooling/ is a uv package (pyproject.toml, src/, tests/)
+```
 
 ---
 
@@ -71,8 +128,8 @@ bash check.sh solutions                   # every worked answer must pass
 ```
 
 01–03 need only the standard library. 03 · 06 is a small package run with [uv](https://docs.astral.sh/uv/)
-(`uv run pytest`), which installs pytest and ruff for you. 04 needs the scientific stack. Its
-README has a one-line `uv run` command for Jupyter.
+(`uv run pytest`), which installs pytest and ruff for you. The scientific stack belongs to the
+[next pillar](../../data-analytics/01-python-for-data-analysis/readme.md), and its README has the setup.
 
 ---
 
@@ -98,6 +155,15 @@ local server, and the concurrency exercise simulates the network with sleeps.
 
 ---
 
+## Primary texts
+
+- Severance, *Python for Everybody*: topic order for modules 01 and 02, paraphrased
+- VanderPlas, *A Whirlwind Tour of Python*
+- Python documentation
+- Ramalho, *Fluent Python*: further reading
+
+Everything else: [references.md](../00-start-here/references.md).
+
 ## Sources
 
 | Source | License | Used for |
@@ -106,7 +172,7 @@ local server, and the concurrency exercise simulates the network with sleeps.
 | Jake VanderPlas, [*A Whirlwind Tour of Python*](https://github.com/jakevdp/WhirlwindTourOfPython) | CC0 | 03 · 01–04 |
 | [Python documentation](https://docs.python.org/3/) | PSF | 03 throughout |
 | [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [pytest](https://docs.pytest.org/), [Pydantic](https://docs.pydantic.dev/) docs | MIT / Apache-2.0 | 03 · 05–06 |
-| Wes McKinney, *Python for Data Analysis*, 2nd ed. | Code and data MIT | 04 (see its README) |
+| Wes McKinney, *Python for Data Analysis*, 2nd ed. | Code and data MIT | The next pillar, [data-analytics 01](../../data-analytics/01-python-for-data-analysis/readme.md) |
 | Luciano Ramalho, *Fluent Python* | Proprietary | Further reading for 03, link only |
 
-Timed and interview-style Python problems are in [sisyphus `drills/`](https://github.com/ramseywise/sisyphus/blob/main/drills/README.md).
+Timed and interview-style Python problems are in [`programming/drills/`](../drills/readme.md).

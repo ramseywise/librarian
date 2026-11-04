@@ -1,7 +1,7 @@
 ---
-imported_hash: 5cbc5d0d67d98484
+imported_hash: ea02c895c7360482
 title: AI Engineering
-summary: All six are peer foundations. Graph is ordered fifth (after loop) because it presumes loop mastery, but it is a first-class discipline — not a frontier add-on.
+summary: 'The order is not a matter of taste: it encodes a nesting rule.'
 order: 1
 kind: reading
 source: learn-ai-engineering/ai-engineering/README.md
@@ -9,85 +9,152 @@ source: learn-ai-engineering/ai-engineering/README.md
 
 # AI Engineering
 
-> **Depth domain.** This folder goes deep on the six foundations of AI engineering.
-> The [interviewing guides](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/00-start-here.md) are the compressed
-> summary layer — read those for exam prep. Read here for synthesis and depth.
+> Engineer LLM systems that remain useful under real context limits, unreliable tools, long-running work, cost constraints, multimodal inputs, and adversarial pressure.
+>
+> **Depth domain.** This folder goes deep on the five foundations of AI engineering, and on the disciplines beneath and across them. Eval, which measures all of them, is the [Eval pillar in generative-ai](../../generative-ai/08-eval/readme.md).
 
----
+## Builds on
 
-## The six peer foundations
+| Chapter | Why |
+|---|---|
+| [GA 01 LLM fundamentals](../../generative-ai/01-llm-fundamentals/readme.md) | The model: tokens, attention and what a prompt becomes |
+| [DS 02 Deep learning](../../data-science/02-deep-learning/readme.md) | Training, and what a forward pass costs |
+| [DA 02 Probability and statistics](../../data-analytics/02-probability-and-statistics/readme.md) | Intervals and tests behind every measurement here |
+| [DA 03 Experimentation and causality](../../data-analytics/03-experimentation-and-causality/readme.md) | Prompt A against prompt B is an A/B test, with the same sample-size arithmetic |
+
+## The five peer foundations
 
 ```
-prompt → context → harness → loop → graph → eval
+prompt → context → harness → loop → graph
 ```
 
-The order is not a matter of taste — it encodes a nesting rule:
+The order is not a matter of taste: it encodes a nesting rule.
 
 - **Harness** implements loops.
 - Each **loop** step assembles **context**.
 - Each assembled **context** contains **prompts**.
-- **Graph** builds on loops — graphs make multi-agent organizations programmable the way loops make individual agent behavior programmable.
-- **Eval** measures every layer: prompt quality, context composition, harness reliability, loop behavior, graph correctness.
+- **Graph** builds on loops: graphs make multi-agent organizations programmable the way loops make individual agent behavior programmable.
 
-All six are peer foundations. Graph is ordered fifth (after loop) because it *presumes loop mastery*, but it is a first-class discipline — not a frontier add-on.
+All five are peer foundations. Graph is ordered fifth (after loop) because it *presumes loop mastery*, but it is a first-class discipline, not a frontier add-on.
 
----
+**Measuring all five: [Eval](../../generative-ai/08-eval/readme.md)**, in generative-ai. It grades
+prompt quality, context composition, harness reliability, loop behavior and graph correctness.
+Each pillar here keeps its own chapter on what to measure; the Eval pillar owns the shared machinery.
 
-## Pillar → interviewing-guide crosswalk
+**Underneath all five: [inference](../07-inference-engineering/readme.md)** (added 2026-10-31).
+Serving, KV cache, batching and GPU performance decide what every call above costs in
+latency and money. It is read after the five, not because it sits on top. Number 06 is unused here: Eval
+moved to generative-ai, and the folders were not renumbered.
 
-| Foundation | Depth (here) | Summary guide | Seed note(s) |
-|---|---|---|---|
-| prompt | [01-prompt-engineering/](../01-prompt-engineering/readme.md) | [2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md) | [README](../01-prompt-engineering/readme.md#rules-of-thumb) (summary), [notes/](01-prompt-engineering/notes/), [prompt-injection.md](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/7-security-safety/prompt-injection.md) (security) |
-| context | [02-context-engineering/](../02-context-engineering/readme.md) | [5-context-cost](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/5-context-cost/00-overview.md) | [context-engineering.md](../02-context-engineering/context-engineering.md), [memory.md](../02-context-engineering/sources/memory-augmented-rag-notion-export.md) |
-| harness | [03-harness-engineering/](../03-harness-engineering/readme.md) | [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) | [agent-harness.md](../03-harness-engineering/agent-harness.md), [agents-design.md](../03-harness-engineering/agents-design.md) |
-| loop | [04-loop-engineering/](../04-loop-engineering/readme.md) | [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) | [loop-engineering.md](../04-loop-engineering/loop-engineering.md), [notes/](04-loop-engineering/notes/), [practice/](04-loop-engineering/practice/), [reliable-agents.md](../03-harness-engineering/reliable-agents.md) |
-| graph | [05-graph-engineering/](../05-graph-engineering/readme.md) | [4-agents](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/4-agents/00-overview.md) | [graph-engineering.md](../05-graph-engineering/graph-engineering.md), 05-graph-engineering/sources/, 05-graph-engineering/notebooks/ |
-| eval | [06-eval/](../06-eval/readme.md) | [6-evals-observability](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/6-evals-observability/00-overview.md) | [eval-engineering.md](../06-eval/eval-engineering.md), [support-agent-observability.md](../generative-ai/06-observability/support-agent-observability.md) |
+**Across all five: [multimodal](../08-multimodal-engineering/readme.md) and
+[safety and security](../09-safety-and-security/readme.md)** (both added 2026-10-31). Each
+changes every layer rather than adding one. Multimodal swaps text for images, documents and
+audio at the edges. Safety and security model the attack surface each layer opens. Read them
+after the five, in either order.
+## Course outcomes
 
----
+By the end, you can design prompts and context deliberately; build verifiable harnesses; create bounded autonomous loops and multi-agent graphs; reason about inference cost and performance; build multimodal features; and threat-model, test, and respond to unsafe systems.
 
-## Recurring sources
+## Before you begin
 
-[SOURCES.md](sources.md) registers the sources swept periodically for pillar material,
-split into primary (cite directly) and aggregator (gap-detectors — prefer citing the
-primary source underneath). Update the sweep date and landed-notes list on each pass.
+**Required:** [Generative AI Unit 01](../../generative-ai/01-llm-fundamentals/readme.md) and practical Python or TypeScript. [Generative AI Unit 08](../../generative-ai/08-eval/readme.md) is a strong companion for measurement. Data Analytics helps with experiments and metrics.
 
----
+**Learning model:** take Units 01 to 05 in order. Unit 07 is the serving substrate; Units 08 and 09 are cross-cuts to use whenever the system has non-text inputs or meaningful risk. Study notes, review decks, complete side-by-side Python/TypeScript labs when present, and retain mastery evidence.
 
-## Summary vs. depth split
+## Course map
 
-**Interviewing guides** = compressed summaries for exam prep. Each guide covers a pillar end-to-end at interview depth: what you'd need to answer a question in an interview loop.
-
-**This folder** = depth for practitioners. Each pillar README defines the engineering discipline, names its position in the stack ("inherits the weaknesses of the layer below"), maps to the real cleaned notes and coursera code, and links back to the corresponding guide.
-
-No content is duplicated across `ai-engineering/` and `generative-ai/`. The cleaned operational
-notes (frontmatter `origin:`/`confidence:`) live *inside* each pillar directory (e.g.
-`01-prompt-engineering/README.md`), not in a separate `interviewing/notes/` layer — the five
-files remaining in sisyphus `interviewing/notes/` (`agents-self-training.md`, `case-interview.md`,
-`foundations.md`, `reading-list.md`, `security.md`) are the ones not yet claimed by a pillar.
-`interviewing/guides/` (in sisyphus since 2026-10-28) is the only pointer-only layer: it summarizes for exam prep and links
-back here for depth.
-
-**Architecture decision (absorbed, not pointer-only):** operational notes were designed as a
-separate `interviewing/notes/` pointer layer in the 2026-07-21 plans, but execution moved them
-physically into each pillar directory instead. That is the actual architecture — pillar dirs hold
-their own notes directly. The pointer-only design is superseded; `interviewing/notes/` is a
-residual holding area for content not yet claimed by any pillar, not a canonical source layer.
-
----
-
-## Working References — refs crosswalk
-
-Claude Code convention references (`~/.claude/refs/agent-*.md`) that map to the six pillars. Each ref is a practitioner-level convention file covering operational engineering knowledge. Consult the ref named in the pillar README's "Working References" section when working in that domain.
-
-| Ref | Pillar(s) | What it covers |
+| Unit | Focus | Mastery evidence |
 |---|---|---|
-| `agent-context.md` | 02-context | Four-lever model (write/select/compress/isolate), content priority ordering, compaction strategy, prompt versioning, progressive disclosure, subagent context isolation |
-| `agent-architecture.md` | 04-loop, 05-graph | Loop shapes (ReAct/Plan-then-Act/Plan-and-Revise), turn termination control, planning strategy (who holds the plan), schema contracts, multi-agent orchestration patterns |
-| `agent-tools.md` | 03-harness, 04-loop | Tool design principles (reversible/idempotent/observable/parallel-safe), promote-from-bash heuristic, tool schema rules, MCP vs. in-process decision, write-operation safety |
-| `agent-memory.md` | 05-graph | Memory taxonomy (episodic/semantic/procedural), state persistence by lifetime, checkpointing conventions, single-writer rule, memory vs. context distinction |
-| `agent-observability.md` | 06-eval | Four span types, minimum span attributes, cost attribution, OTel GenAI semconv v1.41, the six questions a complete trace must answer |
-| `agent-safety.md` | 01-prompt, 03-harness | Five protection layers, threat model (trust zones), prompt injection defense, credential custody, write-operation confirm gate, sandboxing, PII handling |
-| `agent-reliability.md` | 03-harness, 04-loop | Failure taxonomy, retry policy defaults, idempotency keys, resumability requirements, graceful degradation, circuit breaking, structured error returns |
-| `agent-runtime.md` | 04-loop | Topology variants (stateless function / long-lived process / managed runtime), stateless function constraints, cost and latency levers, model routing and cascade, streaming conventions |
-| `agent-eval.md` | 06-eval | Unit/eval seam (deterministic vs. nondeterministic behavior), grader interface contract, gate ladder, failure taxonomy labels, golden dataset curation rules, grader calibration states |
+| [01 Prompt engineering](../01-prompt-engineering/readme.md) | Instructions, decomposition, prompt evaluation | Versioned prompt and evaluation result |
+| [02 Context engineering](../02-context-engineering/readme.md) | Context as a constrained system | Context budget and retrieval decision |
+| [03 Harness engineering](../03-harness-engineering/readme.md) | Verification, tools, state, scope | Tested agent harness |
+| [04 Loop engineering](../04-loop-engineering/readme.md) | Goal, scorekeeper, stopping | Offline loop with independent verifier |
+| [05 Graph engineering](../05-graph-engineering/readme.md) | Multi-agent topology and state | Graph with routing, recovery, and checkpoints |
+| [07 Inference engineering](../07-inference-engineering/readme.md) | Latency, throughput, cost | Measured serving optimisation proposal |
+| [08 Multimodal engineering](../08-multimodal-engineering/readme.md) | Image, document, speech, generation | Modal feature with quality/cost evaluation |
+| [09 Safety and security](../09-safety-and-security/readme.md) | Threats, guardrails, response | Threat model and mitigated red-team finding |
+
+## Units
+
+### [01 Prompt engineering](../01-prompt-engineering/readme.md)
+
+**Objectives:** turn a task into instructions, examples, structure, and constraints (Berryman and Ziegler); diagnose prompt failures; compare prompt variants with an evaluation set (Huyen, ch. 5); account for adversarial prompting.
+
+**Learning:** [chapters, deck, and practice](../01-prompt-engineering/readme.md). **Evidence:** a versioned prompt with task cases, pass criteria, and observed failure modes.
+
+### [02 Context engineering](../02-context-engineering/readme.md)
+
+**Objectives:** model a context window as a budget ([Mei et al.](https://arxiv.org/abs/2507.13334)); select, compress, retrieve, and order information; preserve state across sessions; test context quality rather than assuming more is better ([Chroma, *Context Rot*](https://research.trychroma.com/context-rot)).
+
+**Learning:** [chapters, deck, and practice](../02-context-engineering/readme.md). **Evidence:** a context budgeter or design showing inclusion rules, truncation policy, measurements, and failure cases.
+
+### [03 Harness engineering](../03-harness-engineering/readme.md)
+
+**Objectives:** build a system around a model with tool boundaries, state, verification, retries, scope, and an auditable definition of done ([Anthropic, *Effective harnesses*](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); [OpenAI, *Harness engineering*](https://openai.com/index/harness-engineering/)).
+
+**Learning:** [chapters, deck, and practice](../03-harness-engineering/readme.md). **Evidence:** a harness with a task contract, independent checks, recorded state, and a safe stop path.
+
+### [04 Loop engineering](../04-loop-engineering/readme.md)
+
+**Objectives:** design goal-plus-scorekeeper cycles; select stop conditions and autonomy (Albada); externalise state (Oshin and Campos); handle long-running execution; identify loop failure modes.
+
+**Learning:** [chapters, deck, and paired labs](../04-loop-engineering/readme.md). **Evidence:** a Python or TypeScript loop that runs offline, records iterations, uses an independent scorekeeper, and ends with an explicit reason.
+
+### [05 Graph engineering](../05-graph-engineering/readme.md)
+
+**Objectives:** choose a graph only when structure is earned ([Anthropic, *Building effective agents*](https://www.anthropic.com/engineering/building-effective-agents)); design routing, fan-out, reducers, retries, approvals, checkpoints, and knowledge-graph integration (Negro et al.); distinguish agent graphs from knowledge graphs.
+
+**Learning:** [chapters, deck, and paired labs](../05-graph-engineering/readme.md). **Evidence:** a graph design or implementation with state schema, transition rules, failure handling, and a justification for every added node.
+
+### [07 Inference engineering](../07-inference-engineering/readme.md)
+
+**Objectives:** relate latency, throughput, and cost to hardware, batching, KV cache, prefill/decode, kernels, compilers, serving, and adaptive inference (Fregly; Huyen, ch. 9).
+
+**Learning:** [chapters and practice](../07-inference-engineering/readme.md). **Evidence:** a profiling or serving proposal that names the bottleneck, expected trade-off, metric, and rollback criterion.
+
+### [08 Multimodal engineering](../08-multimodal-engineering/readme.md)
+
+**Objectives:** design image/document input, multimodal retrieval, voice, image/video generation (Phoenix and Taylor, ch. 7 and 9), and multimodal evaluation with explicit quality, latency, and provenance constraints.
+
+**Learning:** [chapters and references](../08-multimodal-engineering/readme.md). **Evidence:** a modality feature specification or prototype with an input-quality check, budget, evaluation set, and fallback.
+
+### [09 Safety and security](../09-safety-and-security/readme.md)
+
+**Objectives:** threat-model an LLM system ([OWASP Top 10 for LLM](https://genai.owasp.org/llm-top-10/)); resist prompt injection and unsafe tool use ([Debenedetti et al.](https://arxiv.org/abs/2503.18813)); select guardrails and sandboxes; red-team systems; protect data and supply chain; prepare an incident response.
+
+**Learning:** [chapters and references](../09-safety-and-security/readme.md). **Evidence:** a threat model, one red-team test, layered mitigation plan, and incident response path.
+
+## Labs
+
+Decision (2026-11-01): **labs in both TypeScript and Python.** Each of pillars 01 to 05 and 07, and the Eval pillar in generative-ai, has one lab in
+`practice/`, in both languages side by side on the same inputs, so you can compare them. Every lab
+runs offline with a stub model by default, and each README says how to swap in a real model.
+
+| Pillar | Lab | TypeScript | Python |
+|---|---|---|---|
+| 01 prompt | Prompt eval harness | [prompt-eval-harness](../01-prompt-engineering/practice/prompt-eval-harness/readme.md) | [prompt-eval-harness-py](../01-prompt-engineering/practice/prompt-eval-harness-py/readme.md) |
+| 02 context | Context budgeter | [context-budgeter](../02-context-engineering/practice/context-budgeter/readme.md) | [context-budgeter-py](../02-context-engineering/practice/context-budgeter-py/readme.md) |
+| 03 harness | Tool server with sandboxing | [tool-server-sandbox](../03-harness-engineering/practice/tool-server-sandbox/readme.md) | [tool-server-sandbox-py](../03-harness-engineering/practice/tool-server-sandbox-py/readme.md) |
+| 04 loop | Loop with a scorekeeper | [loop-scorekeeper](../04-loop-engineering/practice/loop-scorekeeper/readme.md) | [loop-scorekeeper-py](../04-loop-engineering/practice/loop-scorekeeper-py/readme.md) |
+| 05 graph | LangGraph graph | [langgraph-graph-ts](../05-graph-engineering/practice/langgraph-graph-ts/readme.md) | [langgraph-graph](../05-graph-engineering/practice/langgraph-graph/readme.md) |
+| Eval (generative-ai/08) | Eval suite in CI | [eval-suite-ci](../../generative-ai/08-eval/practice/eval-suite-ci/readme.md) | [eval-suite-ci-py](../../generative-ai/08-eval/practice/eval-suite-ci-py/readme.md) |
+| 07 inference | Inference simulator | [inference-lab-ts](../07-inference-engineering/practice/inference-lab-ts/readme.md) | [inference-lab](../07-inference-engineering/practice/inference-lab/readme.md) |
+
+## Completion standard and next steps
+
+Complete a portfolio containing a measured prompt/context design, tested harness, bounded loop or graph, inference trade-off analysis, and a threat model with red-team evidence. Each item must identify the task, operator control, verification method, cost or latency budget, failure mode, and stop/rollback condition.
+
+For model fundamentals and application patterns, return to [Generative AI](../../generative-ai/00-start-here/readme.md); for data and evaluation foundations, use [Data Analytics](../../data-analytics/00-start-here/readme.md) and [Data Science](../../data-science/00-start-here/readme.md).
+
+## Primary texts
+
+- Berryman and Ziegler, *Prompt Engineering for LLMs*: the backbone of Unit 01
+- Huyen, *AI Engineering*: Units 01 and 07
+- Stratis, *AI Agents with MCP*: Unit 02
+- Albada, *Building Applications with AI Agents*: Units 03 and 04
+- Negro et al., *Knowledge Graphs and LLMs in Action*: Unit 05
+- Fregly, *AI Systems Performance Engineering*: Unit 07
+- Debenedetti et al., *Defeating Prompt Injections by Design*: Unit 09
+- Wilson and Yen, *The Developer's Playbook for Large Language Model Security*: recommended for Unit 09; not in the repo, and the notes do not rely on it
+
+Everything else: each pillar's own `references.md`.

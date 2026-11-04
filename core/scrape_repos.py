@@ -3,7 +3,7 @@
 Reads raw/repos/repos.txt — one repo path per line (# for comments).
 For each repo, extracts: CLAUDE.md, README.md, SANYI.md, akira findings, plus the
 learn-ai-engineering knowledge base (ai-engineering/, generative-ai/, data-*, programming/) and its
-interview KB and drill indexes (practice/interviewing/, practice/drills/). See EXTRACT_GLOBS.
+interview KB and drill indexes (practice/interviewing/, programming/drills/). See EXTRACT_GLOBS.
 
 .claude/skills, .claude/docs, docs/ and .agents/ (CLAUDE_DOCS_GLOBS) are taken only
 from repos that core/scrape_claude_docs.py does not already cover — the librarian
@@ -49,11 +49,10 @@ EXTRACT_GLOBS = [
     # learn-harness-engineering-main, Knowledge_Graphs_for_RAG-main/notes/, ...)
     # that a recursive ** would pull in at ~50x the volume of the authored notes.
     "CURRICULUM.md",
-    # Interview KB and drill indexes. drills/ is index-only: problem files stay out.
-    # practice/ holds private and uncleared files too; scrape_repo keeps its ignored ones out.
+    # Interview KB. practice/ holds private and uncleared files too; scrape_repo keeps its
+    # ignored ones out. Drill indexes come through the programming/ globs below, whose depth
+    # limit keeps problem files and the ignored folders under programming/drills/ out.
     "practice/interviewing/**/*.md",
-    "practice/drills/*.md",
-    "practice/drills/*/README.md",
     "ai-engineering/*.md",
     "ai-engineering/*/*.md",
     "ai-engineering/*/notes/*.md",

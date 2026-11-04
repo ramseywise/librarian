@@ -1,5 +1,5 @@
 ---
-imported_hash: 045b3d27985f3797
+imported_hash: 58205ca04608e009
 title: 7 — Modules, tsconfig and Tooling
 summary: '// main.ts import Calculator, { add } from ''./math.ts''; import type { Shape } from ''./shapes.ts''; // type-only: erased completely import  as path from ''node:path''; // the node: prefix for built-ins'
 order: 8
@@ -93,8 +93,20 @@ declare module 'date-wizard' {
 
 Interfaces merge, and type aliases don't. That is the main practical reason libraries expose interfaces.
 
+## Pitfalls
+
+- **Importing a type without `import type`.** `import { Shape }` of a type-only export fails when the code runs: "does not provide an export named `Shape`".
+- **Treating `node file.ts` as a check.** It strips types and runs the rest, so `const n: number = 'text'` runs without complaint. Run `tsc --noEmit` as well.
+- **Using an `enum` under Node's type stripping.** It is not erasable, so Node stops with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX`. `erasableSyntaxOnly` reports it at type-check time.
+- **Using `__dirname` in an ES module.** It raises `ReferenceError`. Use `import.meta.dirname`.
+- **Augmenting a type alias.** Only interfaces merge. Declaring a `type` twice gives "Duplicate identifier".
+
 ---
 
-## Exercises
+## Try it
 
 [`practice/typescript-exercises/11`](../practice/typescript-exercises/11/index.ts) and [`12`](../practice/typescript-exercises/12/index.ts) (write `declarations/*/index.d.ts`), and [`13`](../practice/typescript-exercises/13/index.ts) (module augmentation). From `practice/`, check with `node check.ts exercises/11/` and so on. The upstream fake `node_modules` folders are called `vendor/` here; see [`NOTICE.md`](../practice/typescript-exercises/notice.md).
+
+## Next
+
+[Runtime validation with Zod](08-runtime-validation-zod.md).

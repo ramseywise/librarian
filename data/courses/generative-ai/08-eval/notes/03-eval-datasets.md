@@ -1,0 +1,331 @@
+---
+imported_hash: 0f8ac5c5a86721f4
+title: 3 — Eval Datasets
+summary: A golden set of 300 questions scores grounding at 0.40, the generation team rewrites the prompt for a month, and the score barely moves, because half the rows could never have been answered from the index.
+order: 4
+kind: reading
+section: Notes
+source: learn-ai-engineering/generative-ai/08-eval/notes/03-eval-datasets.md
+---
+
+# 3 — Eval Datasets
+
+> The dataset decides what your eval can see. Start small and real, grow it from failures, keep it versioned, and make sure every row is fair for the gate that scores it.
+
+A golden set of 300 questions scores grounding at 0.40, the generation team rewrites the prompt for a month, and the score barely moves, because half the rows could never have been answered from the index. A dataset decides what every later number means. This chapter covers where rows come from, how they stay representative as traffic changes, and which rows are fair for which measurement.
+
+---
+
+## Start small, start real
+
+The first useful dataset is **20–50 tasks taken from real failures**: user complaints, support tickets, bad traces from error analysis ([02](02-defining-correct.md#find-failure-modes-by-reading-error-analysis)). Review each one by hand. A small, clean, realistic set beats a large, noisy benchmark, because every row in it is about *your* system.
+
+| Stage | Size | Purpose |
+|---|---|---|
+| **Example suite** | 5–20 | Eyeball diffs while iterating on a prompt ([01/09](../../../ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md#offline-the-tech-tree)) |
+| **First golden set** | 20–50 | Real failures, hand-reviewed. Enough to catch big regressions |
+| **Working set** | 100–300 | Enough for ±5–8 point error bars on a pass rate ([09](09-reading-results.md#how-many-tasks)) |
+| **LLM-graded sample** | 50–200 | Cost-capped subset for expensive judges |
+| **Large harness** | 1,000+ | Detecting small effects. Usually needs synthetic or logged data |
+
+Grow toward the next stage when the current one can't separate two versions you need to tell apart. Statistics tells you when that is ([09](09-reading-results.md)). For scale, Oshin & Campos suggest 10–50 starter examples for a LangChain app (*Learning LangChain*, ch. 10), and Huyen reports that the tasks in EleutherAI's eval harness have a median of 1,000 examples, with an average of 2,159. The Inverse Scaling prize organizers called 300 the absolute minimum and preferred 1,000, especially for synthesized examples (*AI Engineering*, ch. 4).
+
+---
+
+## Where tasks come from
+
+| Source | Strength | Watch out for |
+|---|---|---|
+| **Production logs / telemetry** | Real distribution, real phrasing | Doesn't exist before launch. Each big app change can make old rows obsolete. Consent and PII. Good *inputs*, weak *labels*: what the user did next was shaped by what your app suggested ([DS 01/14](../../../data-science/01-classical-ml/notes/14-learning-from-corrections.md#a-correction-rate-reads-two-things-at-once) measures this bias) |
+| **Real failures** (tickets, 👎, escalations) | The highest-value rows. Directly about your weak spots | Over-represents failure. Balance with normal traffic |
+| **Existing records** (pre-AI support logs, docs, forums) | Plentiful, realistic | Shape mismatch. You may need to adapt them into tasks, trading similarity to your problem against scale |
+| **Domain experts writing cases** | Hits the edge cases that matter | Slow. Experts write *hard* cases and under-sample common ones |
+| **Synthetic (LLM-generated)** | Cheap coverage of combinations | Tropes, unrealistic phrasing, bias toward the generating model |
+
+Telemetry is fine for graders that need no gold answer. Where you need one, Berryman & Ziegler suggest leaving telemetry to online evaluation. For existing records, GitHub Copilot is the standard example: no corpus of "what the user types next" existed, so the team took functions from open-source repos, deleted the bodies, and asked for completions. Function bodies run longer than typical suggestions, and edits that depend on the body (new imports) are already in the file, but the supply is nearly infinite (*Prompt Engineering for LLMs*, ch. 10).
+
+Public query logs give real phrasing but still need labels, and the labelling step shapes the set. WebQuestions crawled Google Suggest breadth-first from "Where was Barack Obama born?" and sent 100K questions to crowdworkers at $0.03 each. Workers could answer only with entities or values from the question entity's Freebase page, or mark the question unanswerable. Two workers gave the same answer on 6,642 of the 100K, and the released set has 5,810 questions. The best parser reached 31.4% against a 26.9% baseline, and the authors call the data "much more challenging and noisy" than hand-built semantic-parsing sets ([doi:10.18653/v1/d13-1160](https://doi.org/10.18653/v1/d13-1160) (Berant et al., EMNLP 2013)). The gold answers are whatever the knowledge base already holds.
+
+### Synthetic data done right
+
+Don't ask a model for "100 test questions". You'll get 100 variations of the same polite question. Generate along **dimensions** instead:
+
+1. Pick 3–4 dimensions that matter for your product: *persona* (new user, power user, frustrated), *intent* (billing, how-to, bug report), *complexity* (one-step, multi-step, ambiguous), *channel* (chat, email).
+2. Generate **tuples** of dimension values first (`frustrated × billing × ambiguous`). Check the tuples cover what you need.
+3. Turn each tuple into a natural-language query in a **separate** call.
+4. Read a sample. Delete the unrealistic ones.
+
+If you want several queries per tuple, ask for them in one call. Provided the output fits, that gives more variety than repeated calls at temperature > 0. Synthesis is easiest when you can start from the answer and invent the question backward. It is riskiest when the model doesn't know the domain well, because the rows come out as simplistic tropes, popular misconceptions or plain errors (*Prompt Engineering for LLMs*, ch. 10).
+
+Once a working set exists, **mutate it toward the edges** instead of generating from scratch. Albada lists three targeted moves (*Building Applications with AI Agents*, ch. 9):
+
+- **Adversarial:** "Find a user message that causes the agent to contradict itself."
+- **Counterfactual:** change one word in a passing case and see whether the agent fails.
+- **Interpolation:** blend two intents into one deliberately ambiguous request.
+
+Have a person review each mutated row before it joins the set.
+
+Pushing a generator toward failures costs diversity. Perez et al. had a 280B LM write questions for a 280B chatbot and graded the replies with an offensiveness classifier. Zero-shot generation drew offensive replies on 3.7% of 0.5M questions (18,444 failures). Each step that aimed harder lowered diversity: few-shot prompting on earlier failures reached 7.7%, fine-tuning on them 8.7%, and RL 13.9–42.3%. **At the strongest RL setting 78% of the questions contained the word "invisible"** (self-BLEU 84.4, against 42.3 for zero-shot). Human red-teamers found different failures: 35 of the 100 noun phrases in red-team questions that most often led to offensive replies never appeared in the human-written Bot-Adversarial Dialogue (BAD) dataset. The grader bounds the whole method. The classifier was 84.5% accurate on BAD, detects only the harm it was trained on, and its flags are candidates for "other classifiers or people" to confirm ([doi:10.18653/v1/2022.emnlp-main.225](https://doi.org/10.18653/v1/2022.emnlp-main.225) (Perez et al., EMNLP 2022)). Track a generated set's diversity (unique n-grams, self-BLEU) beside its failure rate, and keep human-written adversarial rows too.
+
+Two traps:
+
+- **Self-preference.** If the model generating the data is also a candidate under test, it'll find its own phrasing easy. If every row was written by model A, a harness that decides between A and B starts A with a head start. Generate with a different model family.
+- **Synthetic-only suites.** Use synthetic data to bootstrap and fill coverage gaps, then replace it with real traffic as you get it.
+
+### Harvest from failures
+
+The suite stays relevant by eating its own production failures. Every confirmed failure becomes a row:
+
+```
+production failure → triage (real failure, or eval bug?) → label with taxonomy → add to discovery set
+                                                                                     ↓ once fixed
+                                                                              move to regression set
+```
+
+OpenAI recommends keeping two pools: a **regression suite** of known, fixed failures that must keep passing, and a rolling **discovery set** of new production failures that shows where the system currently breaks.
+
+---
+
+## Coverage and balance
+
+Check the dataset against the distribution you care about:
+
+- **Slice by the dimensions** from your failure taxonomy and user mix: intent, language, difficulty, source type, user segment. Record the slice on every row so you can report by slice later. Say what unit the score is averaged over, too. The Stanford Sentiment Treebank gave a 5-class label to each of its 215,154 phrases, and most short phrases are neutral. Its RNTN model scored 80.7% over all phrases but 45.7% on whole sentences. A 21-sentence set built for one construction, negating a positive sentence, separated a bigram Naive Bayes model (19.0% correct reversals) from the RNTN (71.4%) ([doi:10.18653/v1/d13-1170](https://doi.org/10.18653/v1/d13-1170) (Socher et al., EMNLP 2013)). Slicing by answer type does the same for QA. On SQuAD's dev set, the logistic-regression baseline scored 72.1 F1 on dates but 31.2 on verb phrases, while humans stayed between 82.4 and 95.4 on every type ([doi:10.18653/v1/d16-1264](https://doi.org/10.18653/v1/d16-1264) (Rajpurkar et al., EMNLP 2016)). One average hides a model that only handles the easy types.
+- **Match production frequencies** for the headline number. Over-sample rare-but-costly cases in *separate* slices, not the headline. [DS 01/11](../../../data-science/01-classical-ml/notes/11-choosing-a-metric.md#sizing-a-benchmark-when-a-class-is-rare) sizes those quotas and shows the reweighting.
+- **Balance positive and negative cases** ([02](02-defining-correct.md#positive-and-negative-cases)). Make the negatives plausible. SQuAD 2.0 added 53,775 unanswerable questions that crowdworkers wrote to look answerable, each with a plausible decoy span in the paragraph. The best model fell from 85.8 F1 on SQuAD 1.1 to 66.3 (humans 89.5, always-abstain 48.9). On negatives generated automatically, the best score was 15.4 F1 higher ([arXiv:1806.03822](https://arxiv.org/abs/1806.03822) (Rajpurkar et al., ACL 2018)).
+- **Include off-distribution rows**, not only inputs that resemble your few-shot examples or training data. Prompted in-context accuracy fell as test inputs drifted from the exemplars, fastest with CoT (slope −1.4, across 4 LLMs and 9 synthetic tasks) ([arXiv:2509.10414](https://arxiv.org/abs/2509.10414) (de Wynter, 2025-09)). A CoT trained into a small model on a toy task fell to 0% exact match on unseen transformations ([arXiv:2508.01191](https://arxiv.org/abs/2508.01191) (Zhao et al., Findings of ACL 2026)).
+- **Cover the dependencies users actually have.** HumanEval's problems touch 4 libraries, MBPP's 8 and APPS's none. ODEX built 945 StackOverflow coding intents over 79 libraries. Every Codex model scored far lower on the library-dependent (open-domain) problems. For code-davinci-002 the open–closed pass@1 gap ran from 4.34 points in Spanish to 38.57 in Japanese, and model upgrades widened it in English and Japanese. CodeGen-6.1B matched the pass@1 of the 175B code-davinci-001 there, even though the two score similarly on HumanEval ([arXiv:2212.10481](https://arxiv.org/abs/2212.10481) (Wang et al., Findings of EMNLP 2023)). A set built from easy-to-test, self-contained inputs can rank models differently from your traffic.
+- **Watch the denominator.** "92% pass" means nothing until you say *of what*. Report pass rate per slice, with the slice size.
+
+---
+
+## Row eligibility: is this row fair for this gate?
+
+A row can be a valid task but unfair for a particular measurement. If the expected source isn't in the index, scoring that row on retrieval measures your corpus, not your retriever.
+
+The case study handles this with **named row pools**, each a subset of the one above it ([case study](13-case-study-support-agent.md#row-pools)):
+
+| Pool | Contains | Fair for |
+|---|---|---|
+| `all_gt` | Every golden row | Demand analysis: what users ask |
+| `source_mapped_gt` | Rows whose expected source maps to a known document | Corpus coverage |
+| `retrieval_eligible_gt` | Mapped rows whose source is actually indexed | Retrieval metrics |
+| `generation_eligible_gt` | Rows where retrieval found the expected source | Answer quality |
+| `quality_sample` | Deterministic, cost-capped sample of the above | LLM judges |
+
+```mermaid
+flowchart LR
+  A[all_gt<br/>demand] -->|source maps to a doc| B[source_mapped_gt<br/>corpus coverage]
+  B -->|source is indexed| C[retrieval_eligible_gt<br/>retrieval metrics]
+  C -->|retrieval found it| D[generation_eligible_gt<br/>answer quality]
+  D -->|deterministic, cost-capped| E[quality_sample<br/>LLM judges]
+  B -. dropped rows .-> X[diagnostic slice]
+  C -.-> X
+  D -.-> X
+```
+
+The rule: **a downstream gate never silently scores rows an upstream gate marked ineligible.** Ineligible rows appear only as a separate diagnostic slice. Otherwise a retrieval miss shows up as a "bad answer" and you fix the wrong thing.
+
+Here is that rule on a made-up set of 100 rows. The system's generator is the same in both grounding lines, and only the denominator differs:
+
+```python
+import hashlib
+
+# Each row carries what the pipeline knows about it, not just its input and reference.
+rows = (
+    [{"mapped": False, "indexed": False, "retrieved": False, "grounded": False}] * 10   # source unknown
+    + [{"mapped": True, "indexed": False, "retrieved": False, "grounded": False}] * 15  # not in the index
+    + [{"mapped": True, "indexed": True, "retrieved": False, "grounded": False}] * 25   # ranking missed it
+    + [{"mapped": True, "indexed": True, "retrieved": True, "grounded": True}] * 40
+    + [{"mapped": True, "indexed": True, "retrieved": True, "grounded": False}] * 10
+)
+
+pools = {
+    "all_gt": rows,
+    "source_mapped_gt": [r for r in rows if r["mapped"]],
+    "retrieval_eligible_gt": [r for r in rows if r["indexed"]],
+    "generation_eligible_gt": [r for r in rows if r["retrieved"]],
+}
+for name, pool in pools.items():
+    print(f"{name:24} n={len(pool):3}")
+
+def rate(pool, key):
+    return sum(r[key] for r in pool) / len(pool)
+
+print(f"grounding over every row:     {rate(rows, 'grounded'):.2f}  <- blames generation for the corpus")
+print(f"grounding, generation pool:   {rate(pools['generation_eligible_gt'], 'grounded'):.2f}")
+print(f"retrieval, retrieval pool:    {rate(pools['retrieval_eligible_gt'], 'retrieved'):.2f}")
+
+def split(row_id, test_share=0.2):         # a row keeps its split when the dataset grows
+    bucket = int(hashlib.sha256(row_id.encode()).hexdigest(), 16) % 100
+    return "test" if bucket < test_share * 100 else "dev"
+
+ids = [f"row-{i}" for i in range(1000)]
+first = {i: split(i) for i in ids[:500]}
+print("rows that changed split after doubling the set:", sum(first[i] != split(i) for i in first))
+print("test share:", sum(split(i) == "test" for i in ids) / len(ids))
+```
+
+Output:
+
+```text
+all_gt                   n=100
+source_mapped_gt         n= 90
+retrieval_eligible_gt    n= 75
+generation_eligible_gt   n= 50
+grounding over every row:     0.40  <- blames generation for the corpus
+grounding, generation pool:   0.80
+retrieval, retrieval pool:    0.67
+rows that changed split after doubling the set: 0
+test share: 0.192
+```
+
+Grounding is 0.80 on rows where the generator had the evidence, and 0.40 over every row. The corpus and retriever account for the other half. The split at the end is also worth copying: hashing the row ID keeps a row in the same split as the dataset grows, so test rows don't drift into dev.
+
+---
+
+## What a row contains
+
+A general shape (adapt the fields to your system):
+
+```json
+{
+  "id": "billing-refund-014",
+  "input": {"messages": [{"role": "user", "content": "I was charged twice for order 8812"}]},
+  "reference": {
+    "answer": "Apologizes, confirms the duplicate charge, issues a refund for one charge",
+    "expected_tool_calls": [{"name": "lookup_order", "args": {"order_id": "8812"}},
+                            {"name": "issue_refund", "match": "ANY_ARGS"}],
+    "expected_sources": ["help/billing/duplicate-charges"]
+  },
+  "labels": {"intent": "billing", "difficulty": "easy", "case_type": "positive", "language": "en"},
+  "eligibility": {"retrieval": true, "generation": true},
+  "provenance": {"source": "ticket", "added": "2026-10-02", "added_by": "ops-review"},
+  "graders": ["tool_trajectory", "grounding", "completeness"]
+}
+```
+
+What matters:
+
+- **A reference, not always an answer.** For open-ended tasks, the reference is a rubric or a list of required points, not a gold string to match.
+- **Labels** for slicing, **eligibility** per gate, **provenance** for trust.
+- **Graders named per row**, so a row only gets graders that make sense for it.
+
+Pin the row format with a JSON Schema and validate every row on load. A schema checks types, not consistency, so add **cross-field checks** too: every ID in `expected` must appear in the input. Albada's own example row shows why. The input order is `A89268`, the expected refund is `issue_refund(order_id="A12345", amount=19.99)`, and a correct agent would fail that row forever (*Building Applications with AI Agents*, ch. 9). The useful enums:
+
+| Field | Values | Why |
+|---|---|---|
+| `reference.expected_tool_calls[].match` | `EXACT`, `NORMALIZED`, `ANY_ARGS`, `JUDGE` | How strictly each call's arguments must match |
+| `reference.tool_match_mode` | `EXACT`, `IN_ORDER`, `ANY_ORDER`, `SUBSET`, `SUPERSET` | How the whole trajectory is compared ([06](06-evaluating-agents.md)) |
+| `reference.forbidden_tools` | tool names | Negative cases: the agent must *not* call these |
+| `reference.expected_state` | object | End-state assertions for outcome grading |
+| `labels.case_type` | `positive`, `negative`, `boundary`, `out_of_scope`, `adversarial` | Balance and slicing |
+| `split` | `dev`, `test`, `regression`, `discovery` | Keeps tuning data out of the reported number |
+| `provenance.source` | `production`, `ticket`, `feedback`, `expert`, `synthetic`, `benchmark` | Trust and drift checks |
+
+---
+
+## Splits, versioning, contamination
+
+- **Split it.** Keep a **dev** set you iterate against and a **held-out test** set you look at rarely. Tuning prompts against the full set overfits to it, exactly as in ML ([train, dev and test sets](../../../data-science/02-deep-learning/notes/03-structuring-ml-projects.md#train-dev-and-test-sets) in data science, [12](12-failure-modes.md#overfitting-the-dev-set)). Keep the failures you read apart from the rows you score too ([eyeball and blackbox sets](../../../data-science/01-classical-ml/notes/12-reading-the-errors.md#learning-from-errors-without-fitting-to-them)). For judge calibration, use train/dev/test splits of the human labels too ([15](15-calibration-against-human-labels.md#calibrate-against-human-labels)).
+- **Version it.** Datasets change. Store them in git (or a dataset tool with versions) and record the dataset version in every result. A score from v3 and a score from v4 are not comparable.
+- **Freeze the reference with the data.** If labels came from a grader, record the grader version. Change the grader and the labels shift ([case study](13-case-study-support-agent.md#would-different-judges-give-different-golden-traces)).
+- **Keep it out of training and prompts.** Don't paste eval rows into few-shot examples. Don't fine-tune on them. Don't let the agent see them at runtime.
+- **Reset state per trial.** If tasks touch a database, sandbox or file system, every trial starts from a clean snapshot. Otherwise one trial's side effects look like the next trial's failure.
+
+### Contamination: how public benchmarks fight it
+
+If eval rows end up in a model's training data, the score measures memory, not ability. The public benchmarks use four tactics, and each works for a private set too:
+
+| Tactic | Benchmark | How |
+|---|---|---|
+| **Unique answers** | GAIA | Answers need several sources combined, and some come from attachments (PDFs, audio, images) that aren't on the web |
+| **Parameterized templates** | AndroidWorld, τ²-bench | The task is a template ("change `[CONTACT_NAME]`'s number to `[NEW_PHONE]`"), filled with fresh values every run. A memorized action sequence won't replay. Fixing some parameters while varying others gives you controlled experiments |
+| **Temporal freshness** | SWE-bench-Live | Keep adding tasks created after the model's training cutoff |
+| **Canaries** | BIG-bench, Terminal-Bench | Embed a unique GUID in the data. If a model can produce it, the set has leaked. BIG-bench put one GUID in every task file, both so that scrapers can filter the files out and so that a later model can be probed for having trained on them. It asks anyone quoting a task to include the string. It can't catch text the tasks took from the web, which carries no canary ([arXiv:2206.04615](https://arxiv.org/abs/2206.04615) (Srivastava et al., TMLR 2023)) |
+| **Closed test set** | Enterprise Scenarios Leaderboard | Keep some test sets unpublished "to prevent gaming of the leaderboard" (*LLM Engineer's Handbook*, ch. 7). HLE keeps a private held-out set to detect overfitting. SHADE-Arena published only 5 of its 17 environments, to keep the rest out of training data ([PDF](https://assets.anthropic.com/m/4fb35becb0cd87e1/original/SHADE-Arena-Paper.pdf) (Kutasov et al., 2025-06)) |
+
+The earliest code benchmarks used two simpler tactics. **Write the rows by hand:** HumanEval's 164 problems were written from scratch because GitHub already holds solutions to problems from sources such as Codeforces, which makes up part of APPS ([arXiv:2107.03374](https://arxiv.org/abs/2107.03374) (Chen et al., 2021 ⚑)). **Audit overlap:** MBPP counted pretraining lines that matched its solutions. Only 32 of 974 problems (3.3%) had more than half their lines matched, and 91.5% had at most two matching lines ([arXiv:2108.07732](https://arxiv.org/abs/2108.07732) (Austin et al., 2021 ⚑)).
+
+For non-English suites, Iusztin & Labonne recommend human-translated versions of general benchmarks over machine-translated ones, plus tasks written in the native language (*LLM Engineer's Handbook*, ch. 7). How to detect contamination after the fact is in [12](12-failure-modes.md#contamination).
+
+---
+
+## Lessons from public benchmarks
+
+Li's survey of GAIA, SWE-bench Verified, τ²-bench, Terminal-Bench, AndroidWorld and OSWorld (*AI Agents in Depth*, ch. 6) carries over to private suites:
+
+- **Budget for rejection.** For SWE-bench Verified, OpenAI had 93 developers review 1,699 of the original 2,294 tasks. They checked that the description was clear, the tests complete and stable, the patch correct, and the difficulty sensible. Only **500 survived (29%)**. A row you didn't review is a row that might be wrong ([12](12-failure-modes.md#eval-bugs-look-like-agent-bugs)). OSWorld-Verified went through the same thing: over 300 issues surfaced in 15 months of use. Rows that no system ever passes are the cheapest place to look. BrowseComp's authors ran Deep Research 64 times per question and reviewed the 118 questions it never solved: 21 of them (18%) had a reference answer that was wrong, ambiguous or in the wrong format, and were removed ([arXiv:2504.12516](https://arxiv.org/abs/2504.12516) (Wei et al., 2025-04)). Unclear rows also cap the score. MBPP's authors hand-edited a subset of its crowd-sourced problems: on 100 problems that appear in both versions, edits touched 56% of the problem texts and 30% of the tests, and few-shot solve rate for the 137B model rose from 63% to 79% ([arXiv:2108.07732](https://arxiv.org/abs/2108.07732) (Austin et al., 2021 ⚑)).
+- **Adversarial filtering biases the set against the filter models.** The method is older than frontier models. SWAG was filtered against ELMo-era models (humans 88%, models under 60%), and BERT soon reached over 86%. HellaSwag rebuilt it with BERT-Large itself as the filter. Humans scored 95.6%, and BERT-Large, at 47.3%, was still the best model tested, so filtering against one model made the set hard for all of them. The authors called for benchmarks that "co-evolve with the evolving state-of-the-art in an adversarial way" ([doi:10.18653/v1/p19-1472](https://doi.org/10.18653/v1/p19-1472) (Zellers et al., ACL 2019)). ARC's Challenge set kept the 2,590 science questions that both a retrieval solver and a word co-occurrence solver got wrong, and no baseline did significantly better than random (25%) on it ([arXiv:1803.05457](https://arxiv.org/abs/1803.05457) (Clark et al., 2018 ⚑)). The filter model does not always come out on top. PIQA filtered against BERT-Large with AFLite, and BERT then ranked last of the three models tested: 66.8%, against 69.2% for the smaller GPT and 77.1% for RoBERTa-Large, with humans at 94.9% ([arXiv:1911.11641](https://arxiv.org/abs/1911.11641) (Bisk et al., AAAI 2020)). Humanity's Last Exam kept only the questions that stumped GPT-4o, Gemini 1.5 Pro, Claude 3.5 Sonnet and o1: about 13,000 of 70,000 attempts went on to two rounds of expert review, and 3,000 survived. Those same models then scored 3.3–9.4%, and the authors warn that "small inflections close to zero accuracy are not strongly indicative of progress". Their reviewers were also told it was fine not to check any answer that would take more than 5 minutes to solve, so some wrong labels got through ([arXiv:2501.14249](https://arxiv.org/abs/2501.14249) (Phan et al., 2025-01)). BrowseComp filtered against GPT-4o, o1 and an early Deep Research the same way, and GPT-4o scored 0.6% (Wei et al., above). A set filtered this way can show that a model is still far from the bar. It can't fairly rank the models it was filtered against.
+- **Score the shortcuts before trusting the headline.** Run the model on part of each row, or with easy distractors, and see how much of the score survives. On SWAG, BERT dropped only from 86.7% to 74.8% when it saw the candidate endings without the context, so most of the signal was in the endings (Zellers et al., above). CommonsenseQA's distractors were concepts related to the question, one of them written by a crowdworker. BERT-Large scored 55.9% against 88.9% for humans, and 92.3% when those distractors were swapped for random ones ([doi:10.18653/v1/n19-1421](https://doi.org/10.18653/v1/n19-1421) (Talmor et al., NAACL 2019)). BoolQ ran the check and passed it. On 16k yes/no questions that people had actually typed into Google, BERT scored 64.48% from the question alone and 66.74% from the passage alone, close to the 62.17% majority baseline, while the best model reached 80.43% against 90% for humans. So questions collected from real users were hard without any adversarial filtering ([doi:10.18653/v1/n19-1300](https://doi.org/10.18653/v1/n19-1300) (Clark et al., NAACL 2019)). Shortcuts can also be designed out at build time. CNN/Daily Mail turned news summary bullets into fill-in-the-blank questions, then replaced every entity with a marker (`ent212`) and reshuffled the markers each time a row was loaded, so the answer could come only from the document, not from world knowledge or which entities the paper writes about most. Even so, a baseline that picks the entity nearest the query's words scored 50.9% on CNN and 55.5% on Daily Mail test, against 63.0% and 69.0% for the Attentive Reader, because the bullets often share wording with the article (especially on Daily Mail) ([arXiv:1506.03340](https://arxiv.org/abs/1506.03340) (Hermann et al., NIPS 2015); 2015 LSTM readers, no human ceiling). PersonaChat found the same leak between a persona and the dialogue written from it, and had crowdworkers rewrite every persona with no shared content words. A ranking model trained on the original personas scored 0.473 on next-utterance accuracy (hits@1, 1 correct reply among 20) when tested with original personas, and 0.302 with the rewritten ones, below the 0.318 it got with no persona at all, so its apparent gain from "using the persona" was word matching ([doi:10.18653/v1/p18-1205](https://doi.org/10.18653/v1/p18-1205) (Zhang et al., ACL 2018); Profile Memory network, appendix Table 6 of the arXiv version). Training on the rewritten personas kept part of the gain (0.509 and 0.354).
+- **Match difficulty across splits.** On ARC-AGI-1 the public evaluation set was easier than the private one, so public scores didn't predict private ones. ARC-AGI-2 had 407 people attempt the tasks, kept only tasks that at least two of them solved, and assigned tasks to the public, semi-private and private splits so that mean human accuracy differed by no more than 1 percentage point between them ([arXiv:2505.11831](https://arxiv.org/abs/2505.11831) (Chollet et al., 2025-05)). For a private suite, stratify the dev/test split by difficulty or slice, not just at random.
+- **Check "fixed it" and "broke nothing" separately.** SWE-bench grades two test sets. **FAIL_TO_PASS** tests fail before the fix and pass after, which proves the problem is solved. **PASS_TO_PASS** tests pass both before and after, which proves nothing regressed.
+- **Use difficulty levels as a diagnostic.** GAIA's Level 1 needs 1–2 tools (humans 93.9%, GPT-4 30.3%), Level 2 needs multi-step reasoning (91.8% vs 9.7%), and Level 3 needs long combinations (87.3% vs 0%). Failing at a given level points to a different fix: L1 to prompts and tool use, L2 to planning, L3 to architecture or post-training.
+- **Tighten success conditions until a superficial fix can't pass.** τ²-bench accepts only an "excellent" speed rating, not "good". Loose conditions reward agents that half-solve the task.
+- **Start some tasks mid-stream.** OSWorld often begins from a configured intermediate state, not a clean one, and accepts more than one valid end state.
+- **Hold out at the level of generality you claim.** If the agent must handle new *kinds* of task, the test set needs task types the dev set never had, not just new instances of the same tasks. Kapoor et al. sorted 17 agent benchmarks this way. Only 1 of 8 domain-general benchmarks held out whole tasks, and 7 of the 17 had no holdout at all. The cost shows on WebArena, where the top agent at the time (STeP, 35.8%) "hardcodes policies to solve the specific tasks included in WebArena", such as building a Reddit profile URL by appending `/user/user_name` ([arXiv:2407.01502](https://arxiv.org/abs/2407.01502) (Kapoor et al., 2024-07)). A private suite tuned on the same tasks it reports on has the same problem ([12](12-failure-modes.md#overfitting-the-dev-set)). ALFWorld shows the split that tests it. Its **seen** set (140 tasks) reuses training rooms with objects moved, and its **unseen** set (134 tasks) uses rooms never seen in training. An agent trained only in the embodied simulator scored 33.6% on seen and 23.1% on unseen, while one trained on the text version scored 27.1% and 34.3%, so the in-distribution split alone would have picked the wrong training regime ([arXiv:2010.03768](https://arxiv.org/abs/2010.03768) (Shridhar et al., ICLR 2021); all tasks, 50K training episodes, oracle perception and teleport navigation, peak score per split, no confidence intervals).
+
+---
+
+## Checklist
+
+- [ ] First 20–50 rows are real failures, hand-reviewed
+- [ ] Synthetic rows generated along dimensions by a different model family, then read
+- [ ] Every row has slice labels, eligibility and provenance
+- [ ] Positive, negative and boundary cases present
+- [ ] Dev / held-out split. Held-out looked at rarely
+- [ ] Dataset versioned; version recorded with every result
+- [ ] A path for production failures to become rows
+
+---
+
+## Pitfalls
+
+- **Waiting for a big dataset.** Symptom: no evals for months while someone curates 1,000 rows. Fix: start with 5 to 20 real tasks, then grow by stage: 20 to 50, then 100 to 300, which gives about ±5 to 8 points.
+- **Generating synthetic rows freely.** Symptom: every generated question sounds alike, and they all pass. Fix: generate tuples along your dimensions first, write each query in a separate call, and replace synthetic rows with real traffic as you get it.
+- **Letting the coverage drift away from production.** Symptom: the suite is green while a new product area fills the support queue. Fix: match production frequencies, slice by the dimensions you care about, and keep harvesting failures into discovery and regression pools.
+- **Scoring ineligible rows.** Symptom: grounding looks terrible and prompt work doesn't help, as the script above shows. Fix: named row pools, and ineligible rows reported only as a diagnostic slice.
+- **Reusing eval rows elsewhere.** Symptom: a score far above similar unseen tasks. Rows have leaked into few-shot examples or training data. Fix: keep the test split out of prompts, fine-tuning and the retrieval index ([12](12-failure-modes.md#contamination)).
+- **Mutable references.** Symptom: scores jump with no code change after someone "tidied" the gold answers. Fix: version the dataset, freeze references, and record the version beside each result.
+- **Trusting a public benchmark's labels.** Symptom: a flawed task quietly penalizes or rewards agents. For SWE-bench Verified, OpenAI had 93 developers review 1,699 of the original 2,294 tasks, and only 500 survived. Fix: review a sample of any dataset you adopt, and reset the environment state for every row.
+
+## Try it
+
+1. Add 20 rows to the pool script that are mapped and indexed but missed by retrieval. Before running, predict which of the three printed rates change.
+
+   <details><summary>Answer</summary>
+
+   The grounding over every row falls from 0.40 to 0.33, and the retrieval rate falls from 0.67 to 0.53. The rate on the generation pool stays 0.80, since those rows never reach it. That is the point of the pools: a retrieval regression moves only the retrieval number.
+
+   </details>
+
+2. You have 200 labelled rows and a pass rate near 80%. What is the 95% margin, and can this set detect a 3-point gain?
+
+   <details><summary>Answer</summary>
+
+   1.96 × √(0.8 × 0.2 / 200) = ±5.5 points, inside this chapter's ±5 to 8 range. It cannot detect 3 points by comparing two independent rates. [09](09-reading-results.md#how-many-tasks) puts a paired 5-point difference at 400 to 800 tasks.
+
+   </details>
+
+3. A help-centre bot has 541 rows with expected URLs. Which pool should each of these use: demand analysis, retrieval MRR, and a costly LLM grounding judge?
+
+   <details><summary>Answer</summary>
+
+   Demand analysis uses `all_gt`, retrieval MRR uses `retrieval_eligible_gt`, and the judge uses `quality_sample`, a deterministic and cost-capped sample that keeps its eligibility labels.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| How big should a first eval set be? | Start at 5 to 20 real tasks, then 20 to 50, and 100 to 300 for about ±5 to 8 points. LLM-graded sets often stop at 50 to 200 because of cost, and 1,000 or more is for fine differences. |
+| Where do good rows come from? | Production failures first, then real traffic and expert-written cases, with synthetic rows generated along chosen dimensions to fill gaps. OpenAI's practice keeps a regression pool and a discovery pool of harvested failures. |
+| What is row eligibility? | A row can be a valid task yet unfair for one measurement. If the expected source isn't in the index, scoring it on retrieval measures the corpus, so pools narrow the rows from `all_gt` to `generation_eligible_gt`. |
+| Your grounding is 0.40 overall. Is the generator bad? | Not necessarily. Score it only on rows where retrieval found the source: in this chapter's example that gives 0.80, so the rest is a corpus and retrieval problem. |
+| How do you stop a public benchmark from being memorized? | Published tactics are unique answers (GAIA), parameterized templates (AndroidWorld, τ²-bench), tasks newer than the training cutoff (SWE-bench-Live), canary GUIDs (Terminal-Bench) and closed test sets. In your own suite, keep test rows out of training data and prompts. |
+| Why not just use synthetic data? | Synthetic rows carry tropes and unrealistic phrasing, and a generating model finds its own phrasing easy, which gives it a head start if it is also a candidate. Use them to bootstrap and fill gaps, generated by a different model family, then replace them with real traffic. |
+
+## Next
+
+[04-graders.md](04-graders.md): how each row gets scored.

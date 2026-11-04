@@ -1,8 +1,8 @@
 ---
-imported_hash: 0386145dccb3b3ed
+imported_hash: ff90e5baae6f9b52
 title: 7 — Structured Context and Schemas
 summary: 'A model reading unstructured context has to infer the role of each span: whether it''s an instruction or data, a fact or an example, current or stale.'
-order: 13
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/07-structured-context.md
@@ -42,6 +42,14 @@ The rule of thumb: **tags for boundaries, markdown for prose, JSON for anything 
 
 ## Three places schemas go
 
+```mermaid
+flowchart LR
+    I["Input schema<br/>how the task is presented"] --> M[Model]
+    S["State schema<br/>what carries across turns"] <--> M
+    M --> O["Output schema<br/>what comes back, validated"]
+    O -- "validation error fed back" --> M
+```
+
 ### 1. Input schemas — how a task is presented
 
 The upstream "context schema" is a fixed skeleton for a task prompt:
@@ -65,7 +73,21 @@ The upstream "context schema" is a fixed skeleton for a task prompt:
 {schema or template for the answer}
 ```
 
-The value is in the fixed order and the empty slots. A missing `Constraints` section is visible at a glance, and every task in a system looks the same to the model. The copyable YAML and JSON versions are in [templates/](../templates/).
+The value is in the fixed order and the empty slots. A missing `Constraints` section is visible at a glance, and every task in a system looks the same to the model. The upstream course also ships the same idea as a YAML context file with a token budget and a history policy. Trimmed:
+
+```yaml
+metadata:
+  token_budget: 800              # target ceiling for the whole context
+system:
+  role: assistant
+  constraints: [provide accurate information, acknowledge uncertainty, avoid unnecessary verbosity]
+memory:
+  enabled: true
+  max_turns: 3                   # raw window
+  pruning_strategy: drop_oldest  # or: summarize, prioritize
+```
+
+Writing the budget and pruning policy into the context spec, rather than leaving them implicit in code, makes them reviewable ([03](03-budgeting-the-window.md#history)).
 
 ### 2. State schemas — what carries across turns
 
@@ -86,6 +108,72 @@ This is the compaction target ([05](05-compression-compaction.md)) and the memor
 ### 3. Output schemas — what comes back
 
 Use the provider's structured-output mode (a JSON schema enforced at decode time) when code consumes the answer. When it isn't available, put the schema in the prompt plus one filled example, and validate on receipt. See [controlling output](../../01-prompt-engineering/notes/04-controlling-output.md).
+
+The fallback loop, condensed from the upstream course's `06_schema_design.py`. The validator's error message goes back into the context, so the retry knows what to fix:
+
+````python
+import json, re, jsonschema
+
+def query_with_schema(task, schema, max_attempts=3):
+    prompt = (f"{task}\n\nRespond with a single JSON object that conforms to this schema, "
+              f"and nothing else:\n{json.dumps(schema, indent=2)}")
+    for _ in range(max_attempts):
+        raw = llm(prompt)
+        fenced = re.search(r"```(?:json)?\s*(.*?)```", raw, re.DOTALL)
+        try:
+            obj = json.loads(fenced.group(1) if fenced else raw)
+            jsonschema.validate(obj, schema)
+            return obj
+        except (json.JSONDecodeError, jsonschema.ValidationError) as e:
+            prompt += f"\n\nYour previous response did not conform. Error: {e}. Try again."
+    raise ValueError("no schema-valid response")
+````
+
+With decode-time enforcement, the parse step can't fail, but `jsonschema.validate` still earns its place for constraints the provider's schema subset doesn't support (patterns, cross-field rules).
+
+Here is that loop run end to end, with `llm` replaced by a stub that replays three scripted replies: truncated JSON, a wrong type, then a valid object. It needs only `jsonschema`, with no API key.
+
+```python
+import json, re, jsonschema
+
+REPLIES = iter([
+    'Sure! Here is the state: {"goal": "migrate billing"',                     # truncated JSON
+    '```json\n{"goal": "migrate billing", "next_step": 3}\n```',               # wrong type
+    '```json\n{"goal": "migrate billing", "next_step": "update tests"}\n```',
+])
+prompts = []
+def llm(prompt):              # stub: replays three scripted replies, records what it was sent
+    prompts.append(prompt)
+    return next(REPLIES)
+
+def query_with_schema(task, schema, max_attempts=3):
+    prompt = (f"{task}\n\nRespond with a single JSON object that conforms to this schema, "
+              f"and nothing else:\n{json.dumps(schema, indent=2)}")
+    for _ in range(max_attempts):
+        raw = llm(prompt)
+        fenced = re.search(r"```(?:json)?\s*(.*?)```", raw, re.DOTALL)
+        try:
+            obj = json.loads(fenced.group(1) if fenced else raw)
+            jsonschema.validate(obj, schema)
+            return obj
+        except (json.JSONDecodeError, jsonschema.ValidationError) as e:
+            prompt += f"\n\nYour previous response did not conform. Error: {e}. Try again."
+    raise ValueError("no schema-valid response")
+
+schema = {"type": "object", "required": ["goal", "next_step"],
+          "properties": {"goal": {"type": "string"}, "next_step": {"type": "string"}}}
+print(query_with_schema("Write the state block.", schema))
+print("attempts:", len(prompts), " prompt grew from", len(prompts[0]), "to", len(prompts[-1]), "chars")
+```
+
+Output:
+
+```text
+{'goal': 'migrate billing', 'next_step': 'update tests'}
+attempts: 3  prompt grew from 292 to 600 chars
+```
+
+The third call succeeds, but the prompt has more than doubled. Each failed attempt stays in the window, so a retry loop is a context cost as well as a latency one, and that's why `max_attempts` stays small.
 
 ---
 
@@ -127,4 +215,60 @@ The upstream `cognitive-schemas/` library defines schemas per domain (user model
 
 ---
 
-→ Next: [08-cognitive-tools.md](08-cognitive-tools.md) — structuring the reasoning, not just the content.
+## Pitfalls
+
+- **Using JSON where a person's prose belongs.** Symptom: long instructions in escaped JSON strings that nobody can review and the model reads poorly. Fix: tags for boundaries, markdown for prose, JSON for anything a program reads back.
+- **Parsing with no validation.** Symptom: `json.loads` succeeds and a later step crashes on `next_step: 3`, far from the call that caused it. Fix: validate at the boundary, as `query_with_schema` does, and retry there.
+- **Treating decode-time enforcement as complete.** Symptom: the output parses and still breaks a pattern or cross-field rule, because the provider supports only a schema subset. Fix: keep `jsonschema.validate` after the call.
+- **Unbounded retries.** Symptom: cost spikes on one bad schema, and the prompt keeps growing, from 292 to 600 characters over three attempts in the worked example. Fix: cap attempts and raise an error your harness can handle.
+- **Changing a schema with no version.** Symptom: stored state from yesterday fails today's validation, or a downstream agent silently reads the wrong field. Fix: version schemas and migrate at the boundary.
+- **Appending state instead of overwriting it.** Symptom: three versions of `next_step` in the window, and the model follows an old one. Fix: treat the state block as overwritten on each update.
+- **Reading structure as proof of causation.** Symptom: claiming that tags help because of a known mechanism. Yang et al.'s circuit makes this plausible, but not proven. Fix: justify a format by measured results on your task.
+
+## Try it
+
+1. Change the worked example's schema to add `"enum": ["update tests", "ship"]` on `next_step`, and change the third reply to `"run tests"`. What happens?
+
+   <details><summary>Answer</summary>
+
+   All three attempts fail validation, so `query_with_schema` raises `ValueError: no schema-valid response`. The bound is working as intended: your harness now decides what to do, rather than the loop retrying forever.
+
+   </details>
+
+2. Choose a format for each one: the role description for a reviewer, the boundary between a user's upload and your instructions, an agent's handoff state read by code.
+
+   <details><summary>Answer</summary>
+
+   Markdown for the role description, XML-style tags for the boundary, and JSON with a schema for the handoff state, following this chapter's rule.
+
+   </details>
+
+3. Write the smallest YAML task spec for an agent that summarizes a ticket, in the shape used earlier (with a token budget and a turn limit). Which fields would you validate in code?
+
+   <details><summary>Answer</summary>
+
+   ```yaml
+   task: summarize_ticket
+   input: {ticket_id: "T-1042"}
+   output: {summary: string, severity: "low|medium|high"}
+   constraints: {token_budget: 800, max_turns: 3}
+   ```
+
+   Validate `severity` against the allowed set and `summary` as a non-empty string after the call, and enforce `token_budget` and `max_turns` in the harness, because the model can't enforce its own budget.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| Why does structure help a model at all? | It gives separation, addressability and consistency, so less attention goes to working out what each part is. Yang et al.'s symbolic circuit makes this plausible but doesn't prove it. |
+| JSON, XML tags or markdown? | Tags for boundaries, markdown for prose, JSON for anything a program reads back. |
+| If the provider enforces a schema at decode time, do you still validate? | Yes. Enforcement stops parse failures, but `jsonschema.validate` still catches constraints the provider's subset doesn't support, such as patterns and cross-field rules. |
+| A model returns invalid JSON one time in ten. What's your design? | A small retry loop that appends the validation error and caps attempts, then fails loudly to the harness. In the worked example three attempts took the prompt from 292 to 600 characters, so retries also cost context. |
+| How should agent state be stored in the window? | As a single block that's overwritten on each update, not an appended log, so there is only one current `next_step` for the model to follow. |
+| When do you use triples rather than prose? | When the facts are relationships that the task will traverse or check, and a table or graph gives the model and your code one consistent, addressable form. |
+
+## Next
+
+[08-cognitive-tools.md](08-cognitive-tools.md): schemas shape the content, and the next step is structuring the reasoning as well.

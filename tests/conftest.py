@@ -32,6 +32,18 @@ def _isolate_retrieval_log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr(server, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
 
 
+@pytest.fixture(autouse=True)
+def _isolate_courses(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Point the search index at an empty course root unless a test opts in.
+
+    Tests repoint WIKI_DIR at a tmp wiki; without this every index they build would also
+    embed the 749 real lessons under data/courses/.
+    """
+    from app.mcp_server import server
+
+    monkeypatch.setattr(server, "COURSES_DIR", tmp_path / "no-courses")
+
+
 # ---------------------------------------------------------------------------
 # Fake Anthropic client — drives the agent loop and the judge with no network.
 # ---------------------------------------------------------------------------

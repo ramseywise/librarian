@@ -1,5 +1,5 @@
 ---
-imported_hash: 85dc4aa560ffeadc
+imported_hash: f52f18615f82180c
 title: Behavioral Round — Sources
 summary: ''
 order: 3
@@ -14,7 +14,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/behavioral/sources.md
 
 | Source | What it covers | Path |
 |--------|---------------|------|
-| Product & business study guide | Stakeholder translation, managing competing priorities, communicating technical trade-offs | [guides/10-product-delivery](../../guides/10-product-delivery/interview-guide.md) |
+| Product & business pillar | Stakeholder translation, managing competing priorities, communicating technical trade-offs | [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md) |
 | Customer simulation round | FDE-specific behavioral probes — client adaptation, trust-building, handling rejection | [rounds/customer-simulation.md](../customer-simulation/readme.md) |
 | Leadership rounds | Leadership-focused behavioral questions — team building, org influence, strategic decisions | [rounds/leadership-rounds.md](../leadership-rounds/readme.md) |
 

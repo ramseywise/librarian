@@ -1,8 +1,8 @@
 ---
-imported_hash: d2948946dba97dc9
+imported_hash: d965281e0f9164ac
 title: Sources — Technical / ML/LLM Breadth Round
 summary: This file is the master cross-reference for round content.
-order: 74
+order: 77
 kind: reading
 section: Technical questions
 source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/sources.md
@@ -14,26 +14,22 @@ This file is the master cross-reference for round content. Pointers only — go 
 
 ---
 
-## Internal: Study guides
+## Internal: Pillar notes
 
-The domain study guides are the primary content source for this round. Each guide's question bank IS the drill set for its domain.
+The pillar notes are the primary content source for this round, and their `Interview checklist` sections are the drill set for each domain.
 
-| Guide | What it covers for this round |
+| Pillar | What it covers for this round |
 |-------|-------------------------------|
-| `transformers-attention` | Attention mechanism, multi-head attention, positional encoding, transformer architecture. The LLM fundamentals Q1 backbone. |
-| `hallucination-and-reliability` | Hallucination mechanisms, citation fabrication, mitigation strategies (RAG grounding, verifier agents, constrained decoding). Q2. |
-| `rag` | Full RAG pipeline, chunking strategies, hybrid search, reranking, CRAG/self-RAG, eval (RAGAS). Q8–12 source. |
-| `fine-tuning` | SFT, LoRA/QLoRA, RLHF, DPO, when fine-tuning vs RAG. Q3, Q4 depth. |
-| `alignment` | RLHF vs DPO, reward modeling, PPO instabilities, IPO/ORPO variants. Q4 source. |
-| `prompt-engineering` | CoT, zero-shot CoT, few-shot CoT, self-consistency. Q6 source. |
-| `inference-and-sampling` | Temperature, top-p, top-k, beam search, nucleus sampling. Q7 source. |
-| `context-engineering` | Context window management, lost-in-the-middle, prompt caching, token economics, context ordering. Q5, Q24–26 source. |
-| `agents` | Workflow vs agent, tool design, loop engineering, multi-agent patterns. Q13–16 source. |
-| `evals` | LLM-as-judge, RAGAS, golden sets, online vs offline eval, calibration. Q17–20 source. |
-| `security` | Prompt injection, PII handling, trust boundaries, least-privilege tool design. Q21–23 source. |
-| `ml-fundamentals` | Bias-variance, precision-recall, regularization, cross-validation. Q27–30 source. |
-| `1-foundations` | [Guide](../../guides/1-foundations/interview-guide.md): spoken answers to 18 ML Fundamentals questions, plus metrics, imbalance, calibration, drift. |
-| `11-stats-experimentation` | [Guide](../../guides/11-stats-experimentation/interview-guide.md): distributions, intervals, p-values, power, A/B design, CUPED, peeking, multiple comparisons, Bayesian A/B. The DS stats screen. |
+| [LLM fundamentals](../../../generative-ai/01-llm-fundamentals/readme.md) | Attention, positional encoding, hallucination, sampling, fine-tuning. Q1-Q4, Q7. |
+| [RL](../../../generative-ai/05-rl/readme.md) | RLHF, reward modeling, PPO. Q4. |
+| [prompting](../../../ai-engineering/01-prompt-engineering/readme.md) | CoT and self-consistency. Q6. |
+| [RAG and retrieval](../../../generative-ai/02-rag-retrieval/readme.md) | Pipeline, chunking, hybrid search, reranking, RAG eval. Q8-Q12. |
+| [context](../../../ai-engineering/02-context-engineering/readme.md) | Window management, lost in the middle, prompt caching, token economics. Q5, Q24-Q26. |
+| [harness](../../../ai-engineering/03-harness-engineering/readme.md) and [graphs](../../../ai-engineering/05-graph-engineering/readme.md) | Workflow vs agent, tool design, multi-agent patterns. Q13-Q16. |
+| [eval](../../../generative-ai/08-eval/readme.md) | LLM as judge, golden sets, online vs offline eval, calibration. Q17-Q20. |
+| [safety and security](../../../ai-engineering/09-safety-and-security/readme.md) | Prompt injection, PII, trust boundaries, least privilege. Q21-Q23. |
+| [classical ML](../../../data-science/01-classical-ml/readme.md) | Bias-variance, precision-recall, regularization, cross-validation. Q27-Q30. |
+| [experimentation](../../../data-analytics/03-experimentation-and-causality/readme.md) | Distributions, intervals, p-values, A/B tests. |
 
 ---
 

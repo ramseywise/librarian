@@ -1,5 +1,5 @@
 ---
-imported_hash: d226897e0f454176
+imported_hash: 596d0a661a7784bf
 title: System Design Round (ML/LLM/Agent)
 summary: 'The highest-weight technical round in 2026 AIE/MLE loops: structured ambiguity handling — clarify, requirements, design, shortcomings, iterate — with trade-off narration as the actual graded skill.'
 order: 61
@@ -44,11 +44,11 @@ Highest-weight round for AIE/MLE. For FDE the case study and customer simulation
 ## Folder contents
 
 - [study-guide.md](study-guide.md) — the method: process, the trunk (spine selection), trade-offs, reference architecture, bottlenecks, measurement
-- [sources.md](sources.md) — curated references (internal guides + librarian wiki + external)
+- [sources.md](sources.md) — curated references (pillar notes + librarian wiki + external)
 - [examples/](examples/) — worked system design walkthroughs by topic
 - [questions.md](questions.md) — sample prompts with model answer structures
 
-**Topic knowledge lives in [pillar 9](../../guides/9-system-design/)**, not here — including
-the [decision tree](../../guides/9-system-design/04-decision-tree.md) (four spines, walked
-node by node), distributed-systems fundamentals, and API design. This folder is *how to
-perform in the room*; the pillar is *what you need to know*.
+**Topic knowledge lives in the [pillar notes](../../00-start-here/readme.md)**, including
+[backend and system design](../../../programming/backend-and-system-design/readme.md) for distributed-systems
+fundamentals and API design. This folder is *how to perform in the room*, including the
+[decision tree](decision-tree.md) (four spines, walked node by node); the pillars are *what you need to know*.

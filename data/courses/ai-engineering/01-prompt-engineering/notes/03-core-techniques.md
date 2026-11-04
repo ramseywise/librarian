@@ -1,7 +1,7 @@
 ---
-imported_hash: 897c24565baa338a
+imported_hash: c5a3af1261665033
 title: 3 — Core Techniques
-summary: 'Instruction only, no examples. Instruction tuning (FLAN) and RLHF are what make this work: the model has seen enough instruction→response pairs to generalize.'
+summary: 'Teams copy a technique because a paper reported a big gain, then pay for it on tasks where it does nothing: chain-of-thought lifted GSM8K from 17.9% to 56.9% and barely moved commonsense questions.'
 order: 4
 kind: reading
 section: Notes
@@ -11,6 +11,8 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/03-core-
 # 3 — Core Techniques
 
 > The named techniques, grouped by what they buy you: **examples** teach the task, **reasoning** buys compute, **search** explores alternatives, **tools** reach outside the model. Each one is a way of shaping the document the model completes ([01](01-how-models-read-prompts.md)).
+
+Teams copy a technique because a paper reported a big gain, then pay for it on tasks where it does nothing: chain-of-thought lifted GSM8K from 17.9% to 56.9% and barely moved commonsense questions. This chapter sets out what each named technique costs and which failure it fixes, so you can start zero-shot and escalate deliberately.
 
 ---
 
@@ -35,7 +37,7 @@ source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/03-core-
 
 ## Zero-shot
 
-Instruction only, no examples. Instruction tuning (FLAN) and RLHF are what make this work: the model has seen enough instruction→response pairs to generalize.
+Instruction only, no examples. Instruction tuning (FLAN) and RLHF are what make this work: the model has seen enough instruction→response pairs to generalize. Before instruction tuning, zero-shot meant finding a document cue: GPT-2 would summarize a text if you appended `TL;DR` (book, Ch 4).
 
 ```
 Classify the text into neutral, negative or positive.
@@ -49,9 +51,9 @@ Start here. Add examples only when zero-shot fails in a way you can name.
 
 ## Few-shot
 
-Demonstrations in the prompt condition the model on the task (*in-context learning*, the GPT-3 result). It emerges with scale — small models barely benefit. Structure: `introduction → Q/A pairs → the real question`.
+Demonstrations in the prompt condition the model on the task (*in-context learning*, the GPT-3 result). It emerges with scale — small models barely benefit *in context*. On SuperGLUE, GPT-3 primed with 32 examples averaged 56.2 on the dev set at 350M parameters and 73.2 at 175B, and going from one example to 32 helped only slightly at most sizes, sometimes hurting the smaller models. The examples can still teach a small model if they go into its weights. ALBERT (223M), fine-tuned on the same number of labelled examples written as cloze prompts, scored 74.0 on the test set against GPT-3 175B's 71.8. The comparison is not level: PET also used up to 20,000 unlabelled examples per task to distil an ensemble, different example sets, and several hand-written patterns where GPT-3 used one ([arXiv:2009.07118](https://arxiv.org/abs/2009.07118) (Schick & Schütze, NAACL 2021)). Structure: `introduction → Q/A pairs → the real question`.
 
-Examples teach far more than the rule you had in mind. In the book's rating predictor, a handful of `(review title): (rating)` pairs implicitly teach that ratings are integers 1–5, the exact line format, and even the *distribution* of ratings (skewed to 4s and 5s) — structure that would be tedious to spell out. That's why few-shot is good for "I know it when I see it" categories, and why it's often worth adding just to pin down the output format cheaply.
+Examples teach far more than the rule you had in mind. In the book's rating predictor, a handful of `(review title): (rating)` pairs implicitly teach that ratings are integers 1–5, the exact line format, and even the *distribution* of ratings (skewed to 4s and 5s) — structure that would be tedious to spell out. That's why few-shot is good for "I know it when I see it" categories, and why it's often worth adding just to pin down the output format cheaply. Models have a compulsion to continue patterns, so a pattern shown in the examples is often followed more reliably than the same rule stated outright: in the book's words, implicit is often better than explicit. Examples also fix the persona: two sample scores in a grumpy reviewer's voice get a grumpy reviewer every time, which helps consistency (book, Ch 5).
 
 What actually matters in the examples (Min et al., 2022):
 
@@ -59,15 +61,23 @@ What actually matters in the examples (Min et al., 2022):
 - **Format** matters a lot; even a consistent format with random labels helps.
 - Sampling labels from the true distribution beats a uniform spread.
 
+**How much few-shot still buys depends on the model and the domain.** GPT-3 gained a lot from examples. In Microsoft's 2023 analysis of GPT-4-class models, few-shot improved only a little on zero-shot, because stronger instruction-followers need fewer examples. That analysis likely undercounts domain-specific tasks. If the model rarely saw your API in pretraining (Huyen's example is the Ibis dataframe library), a few examples still make a big difference (*AI Engineering*, ch. 5). Pay for examples in tokens as well: the same three labeled items cost 38 GPT-4 tokens as `Input:/Output:` blocks and 27 as `chickpea --> edible` lines. If the scores are equal, use the compact format.
+
+**On an unfamiliar task, "a few" can be far too few.** de Wynter tested GPT-4 Turbo, GPT-4o, Mixtral 8x7B and Phi-3.5 MoE on nine synthetic formal-language tasks (parity, pattern matching, maze solving, stack manipulation and others) with 0 to 100 exemplars, at temperature 0. In the paper's words, "peak average accuracy was at 50-100 exemplars". As the shot count grew, the gaps between models and between prompts narrowed, and a system prompt replaced with word salad came close to the real one. Two results cut the other way. Accuracy fell as the test inputs moved away from the exemplars' distribution, and the strongest prompts fell fastest: the slope was −1.4 for CoT, −0.5 for an APO-optimized prompt and −0.4 for a plain modus-ponens prompt. Closely related tasks also scored up to 31 points apart, and decision trees or kNN beat ICL's average accuracy in half the tasks ([arXiv:2509.10414](https://arxiv.org/abs/2509.10414) (de Wynter, 2025-09)). Treat a few-shot prompt as a learner fitted to its examples, and test it on inputs that don't look like them.
+
+**More examples buy reliability and cost creativity.** Phoenix & Taylor's rule of thumb: one to three examples are easy to add and almost always help. Past three to five, outputs get more reliable and less creative, and the more alike the examples are, the more tightly the output copies them (make every sample product name an animal and you only get animal names). Beyond three, experiment with both the count and the diversity of the set. They also cite Hsieh et al. (2023) for direction working better than examples, and good examples are harder to collect, so they try a clear instruction first and add examples second (*Prompt Engineering for Generative AI*, ch. 1).
+
 The book's three drawbacks — **use few-shot only when something is genuinely non-obvious**:
 
 | Drawback | What happens | Mitigation |
 |---|---|---|
 | Scales badly with context | Each example must carry the same rich context as the real question; the prompt balloons and similar blocks confuse attention | Keep examples scoped to teaching *format* only, or move context out |
-| Anchoring | The examples' range becomes the model's expectation | Cover a representative range; match the *true* outcome distribution; include edge cases but don't overweight them |
+| Anchoring | The examples' range becomes the model's expectation | Cover a representative range; match the *true* outcome distribution (a representative sample of real past cases does this for free); include non-trivial edge cases but don't overweight them |
 | Spurious patterns | Example *order* gets learned (ascending values, "happy path first, errors last") instead of content | Shuffle; evaluate subsets and orders; let DSPy select and order against a metric ([08](08-prompt-optimization.md)) |
 
-Spurious patterns turn up by luck more often than you'd expect: three examples land in accidentally ascending order 1 time in 6 (17%), and descending just as often. The "happy path first, edge cases last" habit is the classic trap — the model learns the *sequence*, so a real question that breaks it gets predicted as "no solution" regardless of its content. Shortening examples to dodge the context drawback has its own cost: it can nudge the model away from the deeper reasoning the full context would have supported.
+Anchoring survives even perfect coverage. Give one example for each rating 1 through 5 and the model may infer the ratings are equally common, so on an uninformative review it guesses 3. In the real data 5 is by far the most common rating, and the right uninformed guess. Covering edge cases is still worth a little bias: a model that has never seen an edge case has no idea how to handle it (book, Ch 5).
+
+Spurious patterns turn up by luck more often than you'd expect: three examples land in accidentally ascending order 1 time in 6 (17%), and descending just as often. With ten examples, a perfect ordering by chance is rarer than death by lightning (1 in 1.8 million against about 1 in 100,000 for US residents), but patterns that only mostly hold, or emerge partway through, still sway the model. Hand-written examples are the risk, because enumerating cases systematically produces ordered lists. The "happy path first, edge cases last" habit is the classic trap. In the book's apple-counting puzzles (text-davinci-003), three solvable examples come first and four "NA" cases (no integer solution, infinitely many) follow. The model continues the sequence and answers the solvable main question with "NA # no integer solutions". Swap one solvable example to the end and it gives an answer, though a wrong one ("Olive 4, Paul 5"): that puzzle needs chain-of-thought, not better examples. Shortening examples to dodge the context drawback has its own cost: it can nudge the model away from the deeper reasoning the full context would have supported, and examples much thinner than the real question have little left to teach except the output format (book, Ch 5). At four shots, arbitrary order alone is enough to break a prompt. Lu et al. ran all 24 orders of one fixed, balanced set of four SST-2 examples on GPT-2 and GPT-3 models from 0.1B to 175B. **Some orders scored over 85% and others about 50%, which is chance.** Scale narrowed the spread but did not remove it on Subj, and adding examples (up to 32, GPT-2 only) raised accuracy without shrinking the variance. A good order did not transfer between models. Its rank correlation between GPT-3 175B and 2.7B was 0.05, and one order fell from 88.7% to 51.6% moving from GPT-2 XL to GPT-2 Large. Most bad orders produced highly unbalanced predictions, skewed toward one label. The authors' fix needs no labelled dev set: generate a probing set with the model itself, then keep the orders whose predicted labels on it are most evenly spread (highest entropy). Across 11 classification tasks that gave a 13% relative gain, up to 30% where the variance was high. On GPT-3 175B SST-2, where the spread was already ±0.6 points, it changed nothing ([arXiv:2104.08786](https://arxiv.org/abs/2104.08786) (Lu et al., ACL 2022)). These are 2021 base models on classification. The same de Wynter study found that *randomly shuffling* the same exemplars barely moved accuracy, so its results count against fragility to arbitrary order at 50–100 shots. That is a different case from a systematic order such as happy path first, which teaches a pattern of its own, and the study did not test that case.
 
 Few-shot alone doesn't fix multi-step reasoning. When examples aren't enough, add reasoning to them — that's chain-of-thought.
 
@@ -77,7 +87,15 @@ Few-shot alone doesn't fix multi-step reasoning. When examples aren't enough, ad
 
 The model has fixed compute per token and no internal monologue ([01](01-how-models-read-prompts.md#property-2--autoregressive-no-lookahead-no-backtracking)). Without reasoning tokens, a yes/no answer is an intuitive guess, and any explanation after it is post-hoc rationalization. **CoT makes the model write the reasoning before the answer**, so the answer is conditioned on it.
 
+Writing it first doesn't guarantee the answer depends on it. [Lanham et al.](https://arxiv.org/abs/2307.13702) (2023) found that on three of eight multiple-choice tasks a 175B model's chain changed the final answer less than 10% of the time, against more than 60% on AQuA, and on seven of the eight a 13B model changed its answer after the chain more often than the 175B model did. [Calibrating judges with checks and critiques](../../../generative-ai/08-eval/notes/14-calibrating-judges-with-checks-and-critiques.md#part-4-test-whether-a-critique-reports-what-drove-the-verdict) applies an edit test of this kind to a judge's critiques.
+
+One fix is to build the chain so the answer can't skip it. **Selection-Inference** alternates two few-shot calls. Selection picks facts from the context by scoring each one's log-likelihood, because letting it generate the selection made up facts. Inference sees only the selected facts, not the question or earlier steps, and its output is appended to the context for the next round. With a frozen 7B Gopher model and 5-shot prompts on ten bAbI and ProofWriter tasks, it averaged 58.75% exact match against 2.94% prompting directly and 41.32% with a CoT-style prompt, and beat the 280B model with either (31.19% and 44.03%) ([arXiv:2205.09712](https://arxiv.org/abs/2205.09712) (Creswell et al., ICLR 2023); numbers from the arXiv v1 preprint). The lead shrank as ProofWriter proofs got deeper, which the authors partly put down to Selection, and the loop runs a fixed number of steps with no rule for when to stop. It is a [prompt chain](06-chaining-and-workflows.md#prompt-chaining) that trades extra calls for a trace you can check one step at a time.
+
 **Few-shot CoT** (Wei et al., 2022): examples show reason-then-answer.
+
+The rationale-before-answer idea is older than prompting. Ling et al. trained a sequence-to-sequence model to write a natural-language rationale and only then pick one of five options, on about 100,000 algebra word problems, a third gathered from GMAT and GRE prep sites and the rest written by crowdworkers. It scored 36.4% on a 250-question test set where seq2seq baselines without the program machinery stayed near chance (20.2–20.8%), and it mostly solved one- or two-step problems ([arXiv:1705.04146](https://arxiv.org/abs/1705.04146) (Ling et al., ACL 2017)). The authors put the rationale first for the reason CoT does: generated before the answer, it is "a more faithful representation of the steps used in computing the answer" than an explanation written after. That was supervised training on human rationales with small LSTMs, not prompting.
+
+Scratchpads came next. Nye et al. fine-tuned models to write intermediate steps between `<scratch>` tags before the answer. On 1–8-digit addition, models from 2M to 1B parameters solved the task with a scratchpad once past a critical size, and failed without one even at 1B. Only the scratchpad models could add 9- and 10-digit numbers, which were longer than anything in training. Prompted few-shot with four examples, a 137B model given a scratchpad rose from 8.8% to 20.1% on polynomial evaluation ([arXiv:2112.00114](https://arxiv.org/abs/2112.00114) (Nye et al., 2021-11, preprint)). The steps need enough data to learn: trained on only 374 programs, the scratchpad model predicted fewer program outputs correctly than direct prediction did (5% against 10%).
 
 ```
 Q: The odd numbers in this group add up to an even number: 4, 8, 9, 15, 12, 2, 1.
@@ -87,27 +105,41 @@ Q: The odd numbers in this group add up to an even number: 15, 32, 5, 13, 82, 7,
 A:
 ```
 
-![Standard prompting vs. chain-of-thought prompting](../assets/sources/images/cot.png)
+![Standard prompting vs. chain-of-thought prompting](../assets/sources/images/wei-chain-of-thought-fig1.png)
 *Image Source: Wei et al. (2022)*
 
-PaLM 540B: GSM8K math ~20% → ~60%; StrategyQA 69.4% → 75.6%; symbolic-reasoning tasks improve too. Like few-shot itself, it's an emergent ability of large models.
+With PaLM 540B and 8 exemplars, GSM8K math rose from **17.9% to 56.9%**, past the prior best of 55% (a fine-tuned GPT-3 with a verifier). On StrategyQA, CoT reached 75.6% against a prior state of the art of 69.4%. Symbolic-reasoning tasks improve too. **The gain is an emergent ability of scale.** Below about 100B parameters, models wrote fluent but illogical chains and scored *below* standard prompting ([arXiv:2201.11903](https://arxiv.org/abs/2201.11903) (Wei et al., 2022-01)). A survey by the same group counts a technique as emergent when it "shows no improvement or is harmful" below some scale, and lists thresholds from 2020–2022 papers. CoT beat standard prompting on GSM8K only from about 100B parameters (LaMDA; 68B in the paper's Table 1), and zero-shot CoT and least-to-most from GPT-3 175B. Instruction tuning *hurt* LaMDA models of 8B or less on ten NLU tasks, while a fine-tuned scratchpad helped 8-digit addition from about 40M ([arXiv:2206.07682](https://arxiv.org/abs/2206.07682) (Wei et al., TMLR 2022)). The thresholds belong to those model families, not to the techniques. On 14 BIG-Bench tasks PaLM 62B was above random where GPT-3 175B was not, and later training brought instruction following down to 11B (T0) and 1.3B (InstructGPT). The authors also concede that exact-match scoring can hide steady gains in log-likelihood as a sudden jump. Our extrapolation: if you run a small model, check on your eval that CoT helps before you pay for it.
 
-**Zero-shot CoT** (Kojima et al., 2022): append *"Let's think step by step."* No examples needed.
+**Zero-shot CoT** (Kojima et al., 2022): append *"Let's think step by step."* No examples needed. With text-davinci-002 it took MultiArith from **17.7% to 78.7%** and GSM8K from **10.4% to 40.7%**. That beat standard 8-shot prompting (33.8% and 15.6%) but stayed below 8-shot CoT (93.0% and 48.7%). It works in two calls. The first generates the reasoning. The second appends an extraction prompt such as *"Therefore, the answer (arabic numerals) is"* to pull out a parseable answer. **It doesn't help where there is no chain to write.** It made no difference on single-step arithmetic (SingleEq, AddSub) and lowered CommonsenseQA from 68.8% to 64.6% ([arXiv:2205.11916](https://arxiv.org/abs/2205.11916) (Kojima et al., 2022-05)).
 
-![Zero-shot CoT](../assets/sources/images/zero-cot.png)
+**Most of the gain is in math and symbolic work.** Sprague et al. pooled 1,218 CoT-versus-direct comparisons from 110 papers (ICLR 2024, EACL 2024, NAACL 2024). Symbolic reasoning, math and logical reasoning gained 14.2, 12.3 and 6.9 points on average. Across all other categories, CoT averaged 56.8 against 56.1 without it. Their own zero-shot runs (20 datasets, 14 models from Llama 2 7B to GPT-4o and Claude 3.5 Sonnet) agree. Math rose from 22.6% to 50.2% on average, and symbolic tasks from 45.2% to 56.1%, while commonsense moved only from 74.8% to 75.7%. Even inside MMLU, "as much as 95% of the total performance gain from CoT on MMLU is attributed to questions containing '=' in the question or generated output." Where CoT does help, a tool helps more. Having the model write a plan and hand it to a Python solver beat CoT on GSM8K-Hard (few-shot, Llama 3.1 70B: 47.8% with CoT, 68.0% with plan plus tool; see [PAL](#pal--program-aided-language-models)). In the authors' words, "CoT appears to be a poor (but universal) approximation to such solvers" ([arXiv:2409.12183](https://arxiv.org/abs/2409.12183) (Sprague et al., 2024-09)). Spend CoT tokens on multi-step math and logic, and make it earn its cost anywhere else on your eval.
+
+![CoT gains by task category: meta-analysis of 1,218 reported results (left) and zero-shot runs on 20 datasets and 14 models (right)](../assets/sources/images/sprague-cot-or-not-cot-fig1.png)
+*Each dot on the left is one reported CoT-minus-direct delta. Only math, symbolic and logical reasoning sit clearly right of zero. Image Source: Sprague et al., [To CoT or not to CoT?](https://arxiv.org/abs/2409.12183) (2024), Fig. 1*
+
+**A chain learned in training generalizes only near its training data.** Zhao et al. trained GPT- and LLaMA-style models from scratch (62K to 3B parameters) on synthetic letter transformations such as ROT-13 and cyclic shifts, then changed the task, the input length or the format at test time. Full-chain exact match was 100% in distribution, 0.01% on new combinations of transformations the model already knew, and 0% on unseen ones. A model trained on 4-letter inputs scored 0% on 3- and 5-letter inputs. Fine-tuned LLaMA3-8B and Qwen3-14B behaved the same way, reaching at most 8.52% on new combinations. The trace and the answer also came apart: on some shifts the model copied a familiar reasoning path and got the answer wrong, and on others it reached the right answer through a wrong path. The authors conclude that CoT reasoning "is effective when applied to (near) in-distribution data, but becomes fragile and prone to failure even under moderate distribution shifts" ([arXiv:2508.01191](https://arxiv.org/abs/2508.01191) (Zhao et al., Findings of ACL 2026)). The setup is CoT trained into small models on a toy domain, not CoT prompted from a general model, so read it as a warning, not a measurement of your model. Our extrapolation: a chain that reads well is not evidence the model can do the task on inputs unlike its training data, so put off-distribution cases in the eval.
+
+![Zero-shot CoT](../assets/sources/images/kojima-zero-shot-reasoners-fig1.png)
 *Image Source: Kojima et al. (2022)*
 
 **Plan-and-solve**: front-load a plan — *"Let's first understand the problem and devise a plan to solve the problem. Then, let's carry out the plan and solve the problem step by step."* Helps where zero-shot CoT skips steps. It uses no tools — it's closer to zero-shot CoT than to ReAct — but the two combine naturally: plan first, then run the think-act-observe loop.
 
+**Least-to-most** goes one step further and makes the plan a separate call. The first prompt only decomposes the problem into an ordered list of subquestions. The second solves them one at a time, appending each answer before asking the next, so later steps build on earlier ones. Its exemplars show a base case and a recursive step, where CoT exemplars are independent. **It wins when the test problems are harder than the exemplars.** With code-davinci-002 and two exemplars of 2–3-word lists, last-letter concatenation of 12 words scored 74.0% against 31.8% for CoT. On the SCAN length split it scored 99.7% against 16.2%, with 14 exemplars. The gain is small where the test is no harder than the examples. On GSM8K, with a single-pass prompt holding one 2-step exemplar, it took CoT from 60.87% to 62.39% overall, mostly on problems needing five or more steps (39.07% to 45.23%; it was slightly worse on 2-step problems, 74.53% against 76.68%), and with separate, tuned decomposition and solution prompts it was no better than CoT (68.01% against 68.61%). The authors concede that "decomposition prompts typically don't generalize well across different domains" ([arXiv:2205.10625](https://arxiv.org/abs/2205.10625) (Zhou et al., ICLR 2023)). Two calls in sequence is a small [prompt chain](06-chaining-and-workflows.md#prompt-chaining).
+
 **Auto-CoT** (Zhang et al., 2022): build the CoT examples automatically — cluster the questions, pick a representative from each cluster, generate its reasoning with zero-shot CoT. Diversity matters because hand-picked or generated demos can share the same mistakes. Simple heuristics (question ≤ 60 tokens, ≤ 5 reasoning steps) filter out bad demos.
 
-![Auto-CoT: cluster questions, then sample a demonstration from each cluster](../assets/sources/images/auto-cot.png)
+![Auto-CoT: cluster questions, then sample a demonstration from each cluster](../assets/sources/images/zhang-auto-cot-overview.png)
 *Image Source: Zhang et al. (2022)*
 
 Practical notes:
 - **Put reasoning in a parseable place** — a `<thinking>` block or an `# Analysis` section before `# Conclusion` ([02](02-prompt-anatomy.md#choosing-the-document-type)) — so the app can strip it before showing the answer.
-- **Reasoning must come first.** "Answer, then explain" gets you rationalization, not reasoning.
-- Variants worth knowing by name: **pause tokens** (fine-tune on a meaningless "pause" token, then insert ~10 after the question: the extra positions give earlier information time to integrate, buying compute without words — the model's "uh, um"), **Multimodal CoT** (two stages — generate a rationale from text + image, then infer the answer from it; a 1B model beat GPT-3.5 on ScienceQA), **Graph prompting** (GraphPrompt, for graph-structured tasks — niche).
+- **Reasoning must come first.** "Answer, then explain" gets you rationalization, not reasoning. Forbidding the work costs most. On the 1,000 algebra word problems of DRAW-1K, ChatGPT (January–February 2023) gave only wrong answers or "No Solution" on 84% of problems when the prompt demanded "Just provide the final number", against 20% when it could show its work. Failure rose with the number of additions and subtractions in the problem ([arXiv:2302.13814](https://arxiv.org/abs/2302.13814) (Shakarian et al., AAAI-MAKE 2023)). Each condition ran once, and the answer-only prompt was long and insistent, so part of the gap may be the instruction itself.
+- Variants worth knowing by name: **pause tokens** (fine-tune on a meaningless "pause" token, then insert ~10 after the question: the extra positions give earlier information time to integrate, buying compute without words — the model's "uh, um"), **Multimodal CoT** (two stages — generate a rationale from text + image, then infer the answer from it; a fine-tuned 738M model scored 90.5% on ScienceQA vs. ~76% for GPT-3.5 with CoT), **Graph prompting** (GraphPrompt, for graph-structured tasks — niche).
+
+![Multimodal CoT: the rationale combines what the text says and what the image shows before the answer](../assets/sources/images/zhang-multimodal-cot-fig1.png)
+*Image Source: Zhang et al. (2023)*
+
+The two-stage split exists because a one-stage chain hurt the small model. **A 200M text-only T5 fine-tuned on ScienceQA scored 81.63% answering directly and 69.32% writing the rationale first**: in 56% of 50 sampled errors the rationale hallucinated what the image showed. Adding image captions gained 0.8 points; fusing ViT image features into the encoder took the two-stage model from 78.57% to 85.31% ([arXiv:2302.00923](https://arxiv.org/abs/2302.00923) (Zhang et al., TMLR 2024)). The setup is fine-tuning, not prompting. Our extrapolation: when a chain has to reason about an image, give the reasoning step the image, not a caption of it.
 
 ---
 
@@ -115,7 +147,10 @@ Practical notes:
 
 Sample several CoT completions at non-zero temperature and take the **majority answer** (Wang et al., 2022). Replaces greedy decoding: different reasoning paths that converge on one answer are more trustworthy than any single path.
 
-Use it on arithmetic and commonsense tasks with a single extractable answer. It's N× the cost, and it doesn't help open-ended generation, where there's nothing to vote on. The same idea underlies **branch-solve-merge**: fan out to N solvers (high temperature or different assigned perspectives), then have a merge step synthesize the result.
+![Single-path reasoning (CoT) vs. multi-path reasoning (CoT-SC, ToT)](../assets/sources/images/dair-single-vs-multi-path-reasoning.png)
+*Image Source: DAIR.AI, Introduction to AI Agents (task decomposition). Left: one reasoning chain. Middle: CoT-SC samples several chains and votes. Right: ToT branches at every step.*
+
+Use it on arithmetic and commonsense tasks with a single extractable answer. The same vote works without chain-of-thought on classification: classify the same text three times and keep the most frequent label, which damps one-off misreadings at 3× the calls (*Prompt Engineering for Generative AI*, ch. 3). It's N× the cost, and it doesn't help open-ended generation, where there's nothing to vote on. The same idea underlies **branch-solve-merge**: fan out to N solvers (high temperature or different assigned perspectives), then have a merge step synthesize the result.
 
 ---
 
@@ -123,7 +158,7 @@ Use it on arithmetic and commonsense tasks with a single extractable answer. It'
 
 Two calls: first ask the model to generate facts relevant to the question, then answer with those facts in the prompt (Liu et al., 2022).
 
-![Generated knowledge: a few-shot prompt samples knowledge statements, which are then integrated with the question](../assets/sources/images/gen-knowledge.png)
+![Generated knowledge: a few-shot prompt samples knowledge statements, which are then integrated with the question](../assets/sources/images/liu-generated-knowledge-overview.png)
 *Image Source: Liu et al. (2022)*
 
 ```
@@ -139,12 +174,17 @@ With knowledge, the answer flips from a confident wrong "Yes" to "No." It works 
 
 Generalizes CoT into **search**: generate several candidate "thoughts" (intermediate steps), have the model **evaluate** each one (sure / maybe / impossible), and explore with BFS or DFS, backtracking from dead ends (Yao et al., 2023; Long, 2023). On Game of 24, GPT-4 with CoT solved 4% and with ToT 74%.
 
-![IO, CoT, CoT-SC and Tree of Thoughts compared](../assets/sources/images/TOT.png)
+![IO, CoT, CoT-SC and Tree of Thoughts compared](../assets/sources/images/yao-tree-of-thoughts-fig1.png)
 *Image Source: Yao et al. (2023)*
+
+The Game of 24 results also show what buys the gain. Sampling more CoT chains helps only a little (CoT-SC with 100 samples: 9%; best of 100 CoT: 49%), while a breadth of 5 kept candidates at each step reaches 74%. Most CoT failures happen at the first step, which is exactly where ToT's evaluate-and-backtrack helps:
+
+![Game of 24: success by method, scale analysis, and the step at which CoT fails](../assets/sources/images/yao-tree-of-thoughts-game-of-24-results.png)
+*Image Source: Yao et al. (2023), Table 2 and Fig. 3*
 
 Both steps are ordinary prompts. On Game of 24, a *propose* prompt generates candidate next steps and a *value* prompt rates whether the remaining numbers can still reach 24:
 
-![ToT on Game of 24: a propose prompt generates thoughts, a value prompt evaluates them](../assets/sources/images/TOT2.png)
+![ToT on Game of 24: a propose prompt generates thoughts, a value prompt evaluates them](../assets/sources/images/yao-tree-of-thoughts-fig2.png)
 *Image Source: Yao et al. (2023)*
 
 Real ToT needs a controller loop in code, so it's an orchestration pattern ([04-loop](../../04-loop-engineering/readme.md)) more than a prompt. A cheap single-prompt approximation (Hulbert, 2023):
@@ -163,7 +203,7 @@ The question is...
 
 The model writes code; an **interpreter** computes the answer (Gao et al., 2022). This moves exact computation out of the model, following the [tokens rule](01-how-models-read-prompts.md#property-1--tokens-not-characters): don't ask the model to do what code does reliably.
 
-![PAL: the model writes reasoning as code, an interpreter computes the answer](../assets/sources/images/pal.png)
+![PAL: the model writes reasoning as code, an interpreter computes the answer](../assets/sources/images/gao-pal-fig1.png)
 *Image Source: Gao et al. (2022)*
 
 How it works: the few-shot examples are *code with the reasoning in comments*, so the model's completion is a program. Your app runs it and reads a variable:
@@ -184,6 +224,8 @@ llm_out = llm(DATE_UNDERSTANDING_PROMPT.format(question=question))
 exec(llm_out)    # the model wrote the program; Python does the date arithmetic
 print(answer)    # Q: "Today is 27 February 2023. I was born exactly 25 years ago..." → 02/27/1998
 ```
+
+The idea still pays with modern models. On GSM8K-Hard (GSM8K with larger numbers), having the model write a plan as code and running it in Python beat writing the arithmetic out as CoT (few-shot): 68.0% against 47.8% for Llama 3.1 70B, and 70.4% against 52.2% for GPT-4o Mini. On plain GSM8K, whose numbers are easier, CoT was slightly ahead (96.1% against 94.4% for Llama 3.1 70B) ([arXiv:2409.12183](https://arxiv.org/abs/2409.12183) (Sprague et al., 2024-09)).
 
 `exec` on model output is only acceptable in a sandbox. DAIR's PAL notebook uses LangChain's legacy `OpenAI` completion class and `text-davinci-003`, both retired — swap in any current model. Today this is usually done with a code-execution tool rather than a hand-built prompt.
 
@@ -206,11 +248,14 @@ Action 3: Finish[Arthur's Magazine]
 
 A trace that recovers from a miss — the failed `Search[Front Row]` returns suggestions, and the next thought picks the right one:
 
-![A ReAct trace on HotpotQA](../assets/sources/images/react.png)
+![A ReAct trace on HotpotQA](../assets/sources/images/yao-react-fig1.png)
 *Image Source: Yao et al. (2022)*
 
 What the results show:
-- **Knowledge tasks (HotpotQA, FEVER):** ReAct grounds answers in retrieved facts, so it hallucinates less than CoT. But it's more brittle: one uninformative search derails it. The best results combined them: **ReAct ↔ CoT-SC**, falling back from one to the other when it gets stuck or unsure.
+- **Knowledge tasks (HotpotQA, FEVER):** ReAct grounds answers in retrieved facts, so it hallucinates less than CoT. But it's more brittle: one uninformative search derails it. The best results combined them: **ReAct ↔ CoT-SC**, falling back from one to the other when it gets stuck or unsure (best: 35.1 EM on HotpotQA with ReAct → CoT-SC and 64.6 on FEVER with CoT-SC → ReAct, vs. 29.4 / 56.3 for CoT alone).
+
+  ![ReAct prompting results on HotpotQA and FEVER](../assets/sources/images/yao-react-table1.png)
+  *Image Source: Yao et al. (2022), Table 1*
 - **With few-shot prompting alone, ReAct underperformed** standard and CoT prompting on HotpotQA at every model size. Fine-tuning on ~3,000 traces flipped that: a fine-tuned 8B ReAct beat a prompted 62B model, and a fine-tuned 62B beat a prompted 540B. Reasoning strategy plus light fine-tuning can stand in for scale. **Act** (tools, no Thought step) is worse than ReAct but still beats no tools.
 - **Decision tasks (ALFWorld, WebShop):** reasoning is what makes acting work — 71% vs. 45% for Act-only on ALFWorld. There the thoughts decompose the goal into subgoals, inject commonsense, pull the useful detail out of observations, track progress and re-plan on exceptions.
 
@@ -231,16 +276,16 @@ agent.run("Who is Olivia Wilde's boyfriend? What is his current age raised to th
 
 Pick demonstrations of multi-step reasoning **and** tool use from a task library, run them with a frozen model, and **pause generation whenever a tool is called**, splice in its output, then resume (Paranjape et al., 2023). Beats few-shot and Auto-CoT on BigBench and MMLU. Humans can fix mistakes by editing the task library or adding tools. Today this is mostly what native tool calling does, so it's of historical interest ([05](05-tools-and-function-calling.md)).
 
-![ART: select demonstrations from a task library, pause generation at tool calls, resume with the output](../assets/sources/images/ART.png)
+![ART: select demonstrations from a task library, pause generation at tool calls, resume with the output](../assets/sources/images/paranjape-art-overview.png)
 *Image Source: Paranjape et al. (2023)*
 
 ---
 
 ## Active-Prompt
 
-Auto-CoT picks *representative* questions to annotate. Active-Prompt picks the *most uncertain* ones (Diao et al., 2023): sample k answers per training question, measure disagreement, have humans write CoT for the top-uncertainty questions, and use those as the examples. It's active learning applied to choosing few-shot examples.
+Auto-CoT picks *representative* questions to annotate. Active-Prompt picks the *most uncertain* ones (Diao et al., ACL 2024): sample k answers per training question, measure disagreement, have humans write CoT for the top-uncertainty questions, and use those as the examples. It's active learning applied to choosing few-shot examples. With code-davinci-002 on GSM8K it scored 82.2% against 63.1% for hand-picked CoT examples. Most of that is self-consistency voting, which Active-Prompt also uses: voting alone reaches 78.0%, so choosing the uncertain questions adds about 4 points ([arXiv:2302.12246](https://arxiv.org/abs/2302.12246)).
 
-![Active-Prompt: estimate uncertainty, select, annotate, infer](../assets/sources/images/active-prompt.png)
+![Active-Prompt: estimate uncertainty, select, annotate, infer](../assets/sources/images/diao-active-prompt-overview.png)
 *Image Source: Diao et al. (2023)*
 
 ---
@@ -249,7 +294,7 @@ Auto-CoT picks *representative* questions to annotate. Active-Prompt picks the *
 
 A small tuned **policy model** generates a hint (keywords, a "stimulus") that's added to the main LLM's prompt (Li et al., 2023). For summarization, the hint is a list of keywords to cover. The policy model is trained with supervised learning and RL, so a cheap model steers an expensive frozen one. It's a research pattern, but the idea of having a small model write part of the big model's prompt reappears in routing and query-rewriting.
 
-![Directional stimulus prompting vs. standard prompting](../assets/sources/images/dsp.jpeg)
+![Directional stimulus prompting vs. standard prompting](../assets/sources/images/li-directional-stimulus-prompting-overview.jpg)
 *Image Source: Li et al. (2023)*
 
 ---
@@ -264,12 +309,19 @@ Verbal reinforcement learning (Shinn et al., 2023). Three parts:
 | **Evaluator** | Scores the trajectory — exact match, heuristics, unit tests, or an LLM judge |
 | **Self-reflection** | Turns the score into natural-language feedback, stored in memory for the next attempt |
 
-![Reflexion: actor, evaluator and self-reflection, with short- and long-term memory](../assets/sources/images/research/reflexion.png)
+![Reflexion: actor, evaluator and self-reflection, with short- and long-term memory](../assets/sources/images/shinn-reflexion-overview.png)
 *Image Source: Shinn et al. (2023)*
 
-Loop: attempt → evaluate → reflect → retry with the reflection in context. HumanEval pass@1 reached 91% vs. GPT-4's 80% at the time.
+Loop: attempt → evaluate → reflect → retry with the reflection in context. HumanEval pass@1 reached 91% vs. GPT-4's 80% at the time. The gain depends on the evaluator: on HumanEval the model writes its own unit tests, and on the harder LeetCode set (15% vs. 7.5%) it still roughly doubles the baseline:
+
+![Reflexion pass@1 on code benchmarks vs. the prior state of the art](../assets/sources/images/shinn-reflexion-programming-results.png)
+*Image Source: Shinn et al. (2023)*
+
+The same table has the counterexample. On MBPP Python, Reflexion scored **77.1% against GPT-4's 80.1%**: worse than not reflecting at all. The cause was the self-written tests. On MBPP, 16.3% of solutions that passed the agent's own tests were wrong, against 1.4% on HumanEval, so the agent stopped too early on wrong code ([arXiv:2303.11366](https://arxiv.org/abs/2303.11366)).
 
 **It works only when you get a do-over**, ideally with an objective evaluator (tests, compilers, checkers). It's useless for irreversible actions, and with a weak evaluator it reinforces confident mistakes. Memory is a sliding window, so long retry histories get truncated. Reflexion is a loop pattern; implementation lives in [04-loop](../../04-loop-engineering/readme.md), and evaluator design in [09-evaluating-prompts](09-evaluating-prompts.md).
+
+**Why a second pass helps at all.** Phoenix & Taylor's naming example: the model proposes a list of product names, and a second call that rates them consistently picks out "OneSize Glovewalkers" as the worst. The model generated it anyway because it predicts one token at a time and can't see where an answer is going. Given the whole answer to review, judging it is an easier prediction. Their lighter version of reflection is to ask, in the same chat, whether the output missed anything and to repeat until it stops changing (*Prompt Engineering for Generative AI*, ch. 1, 3). Without an objective evaluator, the MBPP caveat above still applies.
 
 ---
 
@@ -284,9 +336,41 @@ Loop: attempt → evaluate → reflect → retry with the reflection in context.
 ## Go deeper
 
 - Book (PDF): [Ch 5](../sources/prompt-eng-for-llms/reading/05-prompt-content.pdf) (few-shot drawbacks) · [Ch 8](../sources/prompt-eng-for-llms/reading/08-conversational-agency.pdf) (CoT, ReAct, plan-and-solve, Reflexion, branch-solve-merge)
-- Papers for every technique on this page: [references.md](../readme.md#technique-papers)
+- Papers for every technique on this page: [references.md](../references.md#technique-papers)
 - Worked prompts: [prompt-library.md](prompt-library.md)
 
 ---
 
-→ Next: [04-controlling-output.md](04-controlling-output.md) — sampling, stop sequences, structured output, and getting exactly the shape you want.
+## Pitfalls
+
+- **Adding CoT everywhere.** Symptom: more tokens and no gain. Sprague et al. found 56.8 with CoT against 56.1 without across categories other than math, symbolic and logical reasoning, and Kojima saw CommonsenseQA fall from 68.8% to 64.6%. Fix: spend CoT on multi-step math and logic, and make it earn its cost elsewhere on your eval.
+- **Trusting a chain because it reads well.** Symptom: a sound-looking chain with a wrong answer, or the reverse, as Zhao et al. saw under distribution shift. Fix: put off-distribution cases in the eval.
+- **Happy path first, edge cases last.** Symptom: the book's apple-counting prompt answers a solvable question with "NA" because the examples ended in NA. Fix: shuffle, evaluate subsets and orders, or let DSPy choose against a metric.
+- **Examples that anchor the distribution.** Symptom: on uninformative input the model guesses the middle, 3, because you showed one example per rating, when the real answer is the common 5. Fix: sample from the true outcome distribution, and keep a few edge cases without overweighting them.
+- **Reflexion with self-written tests.** Symptom: worse than not reflecting. On MBPP Python it scored 77.1% against GPT-4's 80.1%, since 16.3% of solutions passing the agent's own tests were wrong. Fix: use an objective evaluator, and never use it for irreversible actions.
+- **`exec` on model output outside a sandbox.** Symptom: arbitrary code runs with your app's permissions. Fix: PAL's approach needs a sandbox, and today usually a code-execution tool.
+
+## Try it
+
+1. A task's per-sample accuracy is 60%. Assuming samples are independent, what does self-consistency with 3 and 5 votes give? What if per-sample accuracy is 40%?
+   <details><summary>Answer</summary>At 60%: 64.8% with 3 votes, 68.3% with 5. At 40%: 35.2% and 31.7%, so voting makes it worse. Voting amplifies whichever answer is already most likely, and real samples are correlated, so treat these as upper bounds on the gain.</details>
+2. Sort these into a technique from the "which technique when" table, and name the cost: (a) computing compound interest on invoices, (b) picking a support category with a house-specific label set, (c) answering about yesterday's outage.
+   <details><summary>Answer</summary>(a) PAL: generate code and run it, which needs a sandbox. (b) Few-shot: a longer prompt, and anchoring. (c) ReAct or tool use, because the model lacks fresh information. It costs a loop and tools. Generated knowledge wouldn't help, since it adds no facts the model lacks.</details>
+3. With three hand-written examples, how often do they land in accidentally ascending order, and how often is ten examples perfectly ordered in one given direction or the other? What should you still do at ten?
+   <details><summary>Answer</summary>Ascending is 1 in 3! = 1 in 6. Ascending or descending at ten is 2 in 10!, or 1 in 1,814,400, the note's 1 in 1.8 million. Still check: patterns that only mostly hold still sway the model, and hand-written lists tend to be systematically ordered rather than random.</details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| Zero-shot or few-shot first? | Zero-shot, then add examples only when it fails in a way you can name. Few-shot still earns its place for non-obvious format, or a domain the model rarely saw, like Huyen's Ibis example. |
+| Do labels in few-shot examples have to be correct? | Less than you'd think. Min et al. found random labels still beat no examples, since label space, input distribution and format matter more. Don't take that as licence, though: correct labels aren't what's being tested there. |
+| How big are chain-of-thought's gains? | Large on math: Wei et al. took GSM8K from 17.9% to 56.9% with PaLM 540B. Near zero on commonsense: 74.8% to 75.7% in Sprague's runs, and small models scored below standard prompting. |
+| Why does "Let's think step by step" use two calls? | The first generates the reasoning, and the second appends an extraction prompt such as "Therefore, the answer (arabic numerals) is" to get a parseable answer. |
+| Why did Tree of Thoughts reach 74% on Game of 24 when 100 CoT samples got only 9%? | Most CoT failures come at the first step. Evaluating and backtracking fixes that, while sampling more chains doesn't. It needs a controller loop in code, so it is orchestration more than a prompt. |
+| You have invoice math failing under CoT. CoT, self-consistency or PAL? | PAL, in a sandbox. On GSM8K-Hard, plan plus Python reached 68.0% against 47.8% for CoT with Llama 3.1 70B, and code is exact where voting only reduces noise. |
+| When does Reflexion fail? | With a weak evaluator or irreversible actions. On MBPP Python, its self-written tests passed wrong solutions, so it stopped early and scored below no reflection. |
+
+## Next
+
+[Controlling output](04-controlling-output.md): sampling, stop sequences and structured output, to get the answer in exactly the shape your code expects.

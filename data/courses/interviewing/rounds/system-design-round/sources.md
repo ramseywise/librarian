@@ -1,8 +1,8 @@
 ---
-imported_hash: 602c81888d169741
+imported_hash: 53ec86e695fac125
 title: System Design Round — Sources
 summary: ''
-order: 63
+order: 64
 kind: reading
 section: System design round
 source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/sources.md
@@ -14,13 +14,12 @@ source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/so
 
 | Source | What it covers | Path |
 |--------|---------------|------|
-| System design study guide | The method: 5-step process, trade-off narration, reference architecture, bottleneck tables | [guides/9-system-design](../../guides/9-system-design/interview-guide.md) |
-| RAG study guide | Pipeline components, architecture menu (9 patterns), latency budgets, eval | [guides/3-rag](../../guides/3-rag/interview-guide.md) |
-| Agents study guide | Workflow patterns, tool design (ACI), harness engineering, loop engineering, multi-agent | [guides/4-agents](../../guides/4-agents/interview-guide.md) |
-| Context & cost study guide | Context engineering, token economics, caching, cost optimization | [guides/5-context-cost](../../guides/5-context-cost/interview-guide.md) |
-| Evals & observability study guide | Grader types, trajectory vs outcome, three-tier taxonomy, trace architecture | [guides/6-evals-observability](../../guides/6-evals-observability/interview-guide.md) |
-| Security & safety study guide | Threat model, defense stack, source-sink analysis, compliance | [guides/7-security-safety](../../guides/7-security-safety/interview-guide.md) |
-| Data eng & MLOps study guide | Pipeline design, feature stores, model serving, CI/CD for ML | [guides/8-data-eng-mlops](../../guides/8-data-eng-mlops/interview-guide.md) |
+| RAG pillar | Pipeline components, architecture options, production latency, eval | [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md) |
+| Agents pillar | Workflow patterns, tool design (ACI), harness engineering, loop engineering, multi-agent | [harness pillar](../../../ai-engineering/03-harness-engineering/readme.md) |
+| Context & cost pillar | Context engineering, token economics, caching, cost optimization | [context pillar](../../../ai-engineering/02-context-engineering/readme.md) |
+| Evals & observability pillar | Grader types, trajectory vs outcome, three-tier taxonomy, trace architecture | [eval pillar](../../../generative-ai/08-eval/readme.md) |
+| Security & safety pillar | Threat model, defense stack, source-sink analysis, compliance | [safety pillar](../../../ai-engineering/09-safety-and-security/readme.md) |
+| Data eng & MLOps pillar | Pipeline design, feature stores, model serving, CI/CD for ML | [data engineering](../../../data-engineering/00-start-here/readme.md) |
 | Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [Harness anatomy](../../../ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md) |
 | Reliable agents notes | PRINCE case study: agentic RAG, error recovery, context engineering, eval | [Agentic RAG: PRINCE](../../../generative-ai/02-rag-retrieval/notes/08-agentic-rag-prince.md) |
 | RAG notes | 9 architecture patterns, production checklist, component trade-offs | [RAG pipeline](../../../generative-ai/02-rag-retrieval/notes/01-rag-pipeline.md) |

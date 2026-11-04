@@ -1,5 +1,5 @@
 ---
-imported_hash: a6b75c736be18074
+imported_hash: 852f6b46064eb9af
 title: Questions — Case Study Round
 summary: 12 questions spanning live cases, take-homes, LLM cases, ML cases, defense rounds, and FDE customer-problem formats.
 order: 6
@@ -42,7 +42,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 **Value math to narrate:** deflection_rate × ticket_volume × cost_per_ticket = savings. At 40% deflection × 5000 tickets/month × $12 = $24K/month savings. Build cost $50K → payback in ~2 months.
 
-**Study refs:** [product-business guide](../../guides/10-product-delivery/interview-guide.md) §1 (framing), [system-design guide](../../guides/9-system-design/interview-guide.md) §3 (LLM architecture), [RAG guide](../../guides/3-rag/interview-guide.md)
+**Study refs:** [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md), [system-design method](../system-design-round/study-guide.md), [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md)
 
 ---
 
@@ -68,7 +68,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 **What to explicitly say in the writeup:** "I did not tune exhaustively — I prioritized a clean validation story over squeezing out 1 more point of AUROC. I would revisit tuning in week 2 with business input on the cost of false positives vs. false negatives."
 
-**Study refs:** [ml-foundations guide](../../guides/1-foundations/interview-guide.md) §7 (boosting, AUROC), [product-business guide](../../guides/10-product-delivery/interview-guide.md) §2 (ROI)
+**Study refs:** [classical ML](../../../data-science/01-classical-ml/readme.md) (boosting, AUROC), [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md)
 
 ---
 
@@ -95,7 +95,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 4. **Adapt if pressed:** "If you're seeing evidence in your data that a neural net would outperform, I'd want to see that comparison. I'd run a 2-layer MLP on the same holdout set and compare AUROCs. If it wins by more than 1 point, we switch."
 
-**Study refs:** [ml-foundations guide](../../guides/1-foundations/interview-guide.md) §7
+**Study refs:** [classical ML](../../../data-science/01-classical-ml/readme.md)
 
 ---
 
@@ -117,7 +117,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 5. **Close with honesty:** "The right answer is often to ship the reduced MVP and add data quality as a sprint 2 item. A 60%-of-target system that's live in 4 weeks beats a 100%-of-target system that's 3 months late."
 
-**Study refs:** [product-business guide](../../guides/10-product-delivery/interview-guide.md) §1
+**Study refs:** [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md)
 
 ---
 
@@ -145,7 +145,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 - 10× doc volume is a retrieval + cost problem, not a model problem.
 - Mitigations: (1) tiered indexing — recent/high-priority docs get more thorough chunking; (2) scheduled index rebuilds rather than continuous; (3) document freshness signals in the retrieval scoring; (4) consider a smaller embedding model if latency grows.
 
-**Study refs:** [RAG guide](../../guides/3-rag/interview-guide.md), [system-design guide](../../guides/9-system-design/interview-guide.md)
+**Study refs:** [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md), [system-design method](../system-design-round/study-guide.md)
 
 ---
 
@@ -171,7 +171,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 7. **Cost math:** 500 docs × 50 pages avg × 1000 tokens/page = 25M tokens to embed. At $0.02/1M tokens (text-embedding-3-small) = $0.50 one-time. Query cost: 8 chunks × 800 tokens + 200-token query + 500-token response = ~7K tokens/query. At GPT-4o rates (~$5/1M) = $0.035/query. At 100 queries/day = $3.50/day = $105/month.
 
-**Study refs:** [RAG guide](../../guides/3-rag/interview-guide.md), [system-design guide](../../guides/9-system-design/interview-guide.md) §3
+**Study refs:** [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md), [system-design method](../system-design-round/study-guide.md)
 
 ---
 
@@ -199,7 +199,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 6. **Risks:** Hallucinated company facts (mitigation: citation-required generation); tool errors propagating (mitigation: tool result validation before using in next step); runaway loops (mitigation: turn budget + explicit termination condition).
 
-**Study refs:** [agents guide](../../guides/4-agents/interview-guide.md), [system-design guide](../../guides/9-system-design/interview-guide.md)
+**Study refs:** [harness pillar](../../../ai-engineering/03-harness-engineering/readme.md), [system-design method](../system-design-round/study-guide.md)
 
 ---
 
@@ -223,7 +223,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 4. **Adapt if challenged:** "If you've found that fine-tuning achieves better faithfulness on your specific domain than RAG, I'd want to see that data. My baseline assumption was that RAG is easier to maintain, but if faithfulness metrics favor fine-tuning in your environment, I'd revise the architecture."
 
-**Study refs:** [system-design guide](../../guides/9-system-design/interview-guide.md) §3, [RAG guide](../../guides/3-rag/interview-guide.md)
+**Study refs:** [system-design method](../system-design-round/study-guide.md), [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md)
 
 ---
 
@@ -250,7 +250,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 4. **Close with a question:** "At 10× volume, the batch vs. real-time scoring decision matters a lot. Are we scoring at prediction time (user opens app) or overnight? That changes the architecture significantly."
 
-**Study refs:** [system-design guide](../../guides/9-system-design/interview-guide.md), [ml-foundations guide](../../guides/1-foundations/interview-guide.md)
+**Study refs:** [system-design method](../system-design-round/study-guide.md), [classical ML](../../../data-science/01-classical-ml/readme.md)
 
 ---
 
@@ -278,7 +278,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 4. **Commit with a next-step:** "I'd document the cut features as sprint 2 tickets with priority rankings based on expected impact. They're not lost — they're queued."
 
-**Study refs:** [product-business guide](../../guides/10-product-delivery/interview-guide.md) §1
+**Study refs:** [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md)
 
 ---
 
@@ -304,7 +304,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 4. **Close with a forward-looking question:** "The biggest open question in my mind is the threshold setting — the right precision-recall trade-off depends on the campaign budget. I've prepared the sensitivity analysis; I'd like your input on the business cost of a false positive vs. a false negative."
 
-**Study refs:** [product-business guide](../../guides/10-product-delivery/interview-guide.md)
+**Study refs:** [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md)
 
 ---
 
@@ -336,4 +336,4 @@ source: learn-ai-engineering/practice/interviewing/rounds/case-study/questions.m
 
 7. **Business framing:** "The value isn't just time saved. A doctor who misses a critical allergy in the chart creates liability. If AI reduces missed-allergy incidents by 30%, that's a risk-reduction story, not just an efficiency story. I'd frame the ROI in both dimensions."
 
-**Study refs:** [product-business guide](../../guides/10-product-delivery/interview-guide.md), [system-design guide](../../guides/9-system-design/interview-guide.md), [RAG guide](../../guides/3-rag/interview-guide.md)
+**Study refs:** [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md), [system-design method](../system-design-round/study-guide.md), [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md)

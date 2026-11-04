@@ -1,0 +1,223 @@
+---
+imported_hash: a4940f8e349ffdaf
+title: 3 — Multimodal RAG
+summary: A user of the invoice assistant asks, "Which supplier's prices rose most last year?" The answer exists, on page 14 of an annual supplier review, in a bar chart with no sentence describing it.
+order: 5
+kind: reading
+section: Notes
+source: learn-ai-engineering/ai-engineering/08-multimodal-engineering/notes/03-multimodal-rag.md
+---
+
+# 3 — Multimodal RAG
+
+> Text RAG assumes the answer is in the words. In real documents the answer is often in a chart or a table that the parser flattened, so multimodal retrieval is mostly a decision about what to index: captions of the visuals, or the pages themselves.
+
+A user of the invoice assistant asks, "Which supplier's prices rose most last year?" The answer exists, on page 14 of an annual supplier review, in a bar chart with no sentence describing it. Your text RAG pipeline parsed that page into the chart's title and some stray axis labels, embedded them, and will never find it. The retriever isn't weak. The pipeline threw the answer away before retrieval began. This chapter covers the three ways of keeping visual content searchable, the evidence comparing them, and how to run them at scale. It builds on the text pipeline in [the RAG pillar](../../../generative-ai/02-rag-retrieval/notes/01-rag-pipeline.md), and doesn't repeat chunking or reranking.
+
+## Three ways to make a chart findable
+
+```mermaid
+flowchart LR
+    P[Page with chart] --> A[Summarise visuals into text]
+    P --> B[Embed image in a shared space]
+    P --> C[Embed page as many patch vectors]
+    A --> A2[Text vector store plus original image in a document store]
+    B --> B2[One vector per image or page]
+    C --> C2[Late-interaction index]
+    A2 --> R[Retrieved page or image]
+    B2 --> R
+    C2 --> R
+    R --> G[VLM reads the original pixels]
+```
+
+**Summarise, then retrieve text.** A vision model writes a description of each table and figure. You embed the description with your existing text embedder, and keep a link back to the original image. At answer time you retrieve through the text but hand the model the pixels. You keep your existing retriever, you can use hybrid search, and a person can read what's indexed. It costs a vision call per visual element, and it fixes the summary's interpretation at index time: if the summary omits the number the user later asks about, retrieval can't help.
+
+How much a description loses has been measured, on photos. PICa gave a frozen, text-only GPT-3 a caption and tags in place of each image. On OK-VQA, a set of questions that need outside knowledge, it scored 48.0 with 16 examples in the prompt, against 39.4 for the best supervised model. The fuller the text, the better it did: 44.6 with tags only, 48.0 with a caption and tags, 53.3 with all five human captions. On VQAv2, where questions turn on what is in the picture, it trailed a supervised model by about 17 points (56.1 against 73.8), and its errors were colours and counts the caption never stated. The authors' own words: "the image is abstracted as text" and the captions "might miss important visual details" ([arXiv:2109.05014](https://arxiv.org/abs/2109.05014) (Yang et al., AAAI 2022)). Every test image was a COCO photo, so it says nothing directly about charts. Still, it is the risk above, measured: a summary is as good as what it chose to write down.
+
+**Embed the image directly.** A contrastive model such as CLIP puts images and text in the same space, so a text query can find an image with no caption ([arXiv:2103.00020](https://arxiv.org/abs/2103.00020) (Radford et al., ICML 2021)). ALIGN showed the recipe tolerates noisy data. It trained on 1.8 billion web alt-text pairs with only simple frequency and size filters, and edged CLIP at zero-shot retrieval mostly from text to image: Flickr30K recall@1 was 75.7 against 68.7 for text to image, and 88.6 against 88.0 for image to text. Noise still costs at equal size. In a smaller zero-shot ablation, 3 million of its pairs scored 8.1 on COCO image-to-text recall@1 against 18.9 for 3 million cleaned Conceptual Captions pairs, and four times as many noisy pairs (23.8) were needed to win. Its same-modality gains were smaller, and its text-to-text and image-to-image similarity scores slightly trailed earlier models after COCO fine-tuning, which the authors suspect is because it trained only across modalities ([arXiv:2102.05918](https://arxiv.org/abs/2102.05918) (Jia et al., ICML 2021)), so test same-modality search on such an index separately. Don't pick the encoder by its ImageNet score either. OpenCLIP's scaling study trained CLIP models from ViT-B/32 to ViT-g/14 on public LAION data and fitted error against compute on the best models at each budget. OpenAI's private training set gave the steeper curve for zero-shot ImageNet (exponent −0.16 against −0.11), but LAION's was steeper for COCO and Flickr30K image retrieval (−0.08 against −0.05 on COCO). At ViT-L/14 the two were level on ImageNet (75.2 against 75.5% zero-shot) while LAION-2B led COCO image-retrieval Recall@5 by 71.1 to 61.1 (224 px; the LAION model saw 34B samples to OpenAI's 13B, and at 13B it still led, 69.2 to 61.1). The authors suspect LAION suits retrieval because it was filtered by CLIP image-text similarity, but they did not test that, and the curves rest on only three OpenAI models ([arXiv:2212.07143](https://arxiv.org/abs/2212.07143) (Cherti et al., CVPR 2023)). ImageBind extends this to six modalities, including audio, video and depth, by aligning each to images, which permits cross-modal retrieval and arithmetic on embeddings ([arXiv:2305.05665](https://arxiv.org/abs/2305.05665) (Girdhar et al., CVPR 2023)). This works well for photos. It works badly for documents, since these models were trained on natural images and captions, and one vector has to stand for a whole dense page. See [Embeddings and similarity](../../../data-science/03-nlp/notes/04-embeddings-and-similarity.md#similarity-and-distance) in data science for how vectors in one space are compared.
+
+**Embed the page as a set of patches.** ColPali drops parsing altogether. It runs a vision-language model over the page image and keeps a 128-dimensional vector for each patch, then scores queries by late interaction, the same scoring that ColBERT uses on text ([arXiv:2407.01449](https://arxiv.org/abs/2407.01449) (Faysse et al., ICLR 2025)).
+
+## What the evidence says
+
+Two studies are worth reading closely, since they test different things.
+
+ColPali's authors built a benchmark of visually rich documents, ViDoRe, and reported nDCG@5 averaged across its datasets:
+
+| System | Avg nDCG@5 |
+|---|---|
+| Nomic Embed Vision | 12.9 |
+| Jina CLIP | 17.7 |
+| SigLIP, off the shelf | 51.4 |
+| BiPali: one vector per page, fine-tuned | 58.8 |
+| Unstructured parser + OCR, BM25 / BGE-M3 | 65.5 / 66.1 |
+| Unstructured parser + captioning, BM25 / BGE-M3 | 65.1 / 67.0 |
+| ColPali | 81.3 |
+
+Source: [arXiv:2407.01449](https://arxiv.org/abs/2407.01449), Table 2. The benchmark is the authors' own, built around visually rich documents, so read it as evidence about such pages and not all documents. Three findings carry over regardless.
+
+First, moving from one vector to late interaction, on the same language model, lifted the score from 58.8 to 81.3. Second, general contrastive models did poorly on documents, with the two weakest under 20. Third, the text-side baselines barely moved when they swapped BM25 for a neural embedder (65.5 versus 66.1, 65.1 versus 67.0). The authors' reading is that the bottleneck in industrial retrieval lies in the ingestion step and not the embedding model, so optimising the parser beats optimising the embedder on these documents.
+
+Riedler and Langer tested an answer system on the other side, using 100 questions about industrial documents, with GPT-4V and LLaVA as answer models. They compared CLIP embeddings to textual image summaries in a multi-vector retriever, and included a gold-context setting as an upper bound. Multimodal RAG could outperform single-modality settings, image retrieval was harder than text retrieval, and summaries looked more promising than multimodal embeddings. Their scoring was an LLM acting as judge, and the authors treat human annotation as the gold standard it only approximates ([arXiv:2410.21943](https://arxiv.org/abs/2410.21943) (Riedler and Langer, 2024-10, preprint)). So in that test, a CLIP-style embedding lost to summaries. In ColPali's test, patch-level embeddings beat summaries. The two results agree once you see that "image embedding" covers both a single CLIP vector and more than a thousand patch vectors.
+
+## Why late interaction works on pages
+
+A single vector for a page has to average everything on it, and the chart you want is a small part of a page. Late interaction keeps the pieces. For each query token, it finds the best matching patch and sums those best scores, a rule called MaxSim. The code below builds synthetic data to show this: a query with two topics, one page where both topics appear in small regions amid a lot of background, and another page that is mildly similar to everything.
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(7)
+D = 128
+
+def unit(x):
+    return x / np.linalg.norm(x, axis=-1, keepdims=True)
+
+topic_price, topic_supplier = unit(rng.normal(size=(2, D)))
+query = np.stack([topic_price, topic_supplier])
+
+def page(noise_patches, signals):
+    patches = list(rng.normal(size=(noise_patches, D)))
+    patches += [s + 0.2 * rng.normal(size=D) / np.sqrt(D) for s in signals]
+    return unit(np.array(patches))
+
+# Page A holds the answer: two sharp regions in a sea of background patches.
+page_a = page(1028, [topic_price, topic_supplier])
+# Page B is vaguely about both topics everywhere, with no sharp region.
+blend = unit(topic_price + topic_supplier)
+page_b = unit(0.25 * blend + rng.normal(size=(1030, D)) / np.sqrt(D))
+
+def maxsim(q, p):
+    return float((q @ p.T).max(axis=1).sum())
+
+def single_vector(q, p):
+    return float(unit(q.mean(axis=0)) @ unit(p.mean(axis=0)))
+
+for name, p in [("A (answer page)", page_a), ("B (vague page)", page_b)]:
+    print(f"{name:<17} MaxSim {maxsim(query, p):5.2f}   single-vector {single_vector(query, p):5.2f}")
+```
+
+Output:
+
+```text
+A (answer page)   MaxSim  1.96   single-vector  0.09
+B (vague page)    MaxSim  0.88   single-vector  0.99
+```
+
+
+The single vector prefers the vague page, because averaging over a thousand patches washes out the two sharp regions on the answer page. MaxSim prefers the answer page, because it asks only whether each query token has a strong match somewhere. It also gives you evidence for free. The patch that won for each query token shows where on the page the match came from, which the ColPali authors use for interpretability and which you can show users.
+
+## The bill for keeping every patch
+
+Late interaction stores far more per page. ColPali reports 257.5 KB per page for roughly a thousand 128-dimensional vectors at the naive setting ([arXiv:2407.01449](https://arxiv.org/abs/2407.01449)). Indexing, on the other hand, is faster than a full parse: 0.39 seconds per page on an L4 GPU for ColPali, against 7.22 seconds in the authors' measured pipeline of layout detection, OCR and captioning. Query encoding took about 30 ms on the same hardware, with a further cost for scoring that grows with corpus size. Pooling neighbouring patches is the first lever on storage: with a pool factor of 3, the number of vectors falls by 66.7% and 97.8% of the performance remains on average, though the text-dense dataset was a clear outlier.
+
+Do the sum for your own corpus before you pick a store:
+
+```python
+def index_gb(pages, vectors_per_page, dim, bytes_per_value=2):
+    return pages * vectors_per_page * dim * bytes_per_value / 1e9
+
+corpus = 2_000_000  # pages
+print(f"text chunks, 2.1 per page at 1024 dims, float32 : {index_gb(corpus, 2.1, 1024, 4):8.1f} GB")
+print(f"one vector per page at 1024 dims, float32       : {index_gb(corpus, 1, 1024, 4):8.1f} GB")
+print(f"patches, 1030 per page at 128 dims, 16-bit      : {index_gb(corpus, 1030, 128):8.1f} GB")
+print(f"patches, pool factor 3                          : {index_gb(corpus, 1030 / 3, 128):8.1f} GB")
+print("KB per page, unpooled:", 1030 * 128 * 2 / 1024)
+```
+
+Output:
+
+```text
+text chunks, 2.1 per page at 1024 dims, float32 :     17.2 GB
+one vector per page at 1024 dims, float32       :      8.2 GB
+patches, 1030 per page at 128 dims, 16-bit      :    527.4 GB
+patches, pool factor 3                          :    175.8 GB
+KB per page, unpooled: 257.5
+```
+
+
+The last line reproduces the paper's figure, which gives you confidence in the arithmetic. The result explains the common production design: use a cheap first stage to narrow to a few hundred pages, then rerank with late interaction. That first stage can be text or a single vector, since recall at a few hundred is a much easier job than precision at five. The [hybrid search note](../../../generative-ai/02-rag-retrieval/notes/03-keyword-semantic-and-hybrid-search.md) covers fusion in depth; here is the smallest version that merges a text route with a vision route:
+
+```python
+def rrf(rankings, k=60):
+    """Reciprocal rank fusion over ranked lists of page ids."""
+    scores = {}
+    for ranking in rankings:
+        for rank, page in enumerate(ranking, 1):
+            scores[page] = scores.get(page, 0) + 1 / (k + rank)
+    return sorted(scores, key=scores.get, reverse=True)
+
+text_route = ["p3", "p9", "p14", "p2"]   # good on prose
+vision_route = ["p14", "p7", "p3", "p21"]  # good on charts
+print(rrf([text_route, vision_route])[:4])
+```
+
+Output:
+
+```text
+['p3', 'p14', 'p9', 'p7']
+```
+
+
+Pages found by both routes rise to the top, and neither route's raw scores need to be comparable. The chart page `p14`, third on text alone, now shares the top score with `p3`.
+
+## Instructions change what an embedding means
+
+The same text can need different embeddings for different tasks. INSTRUCTOR embeds each input together with a short instruction describing the task and domain, so a single model covers many uses without retraining ([doi:10.18653/v1/2023.findings-acl.71](https://doi.org/10.18653/v1/2023.findings-acl.71) (Su et al., Findings of ACL 2023)). Across 70 English datasets, 66 of them unseen in training, the 335M model averaged 58.4 against 56.5 for the 4.8B Sent-T5-XXL. The fairer comparison is the same-size GTR it started from: **instruction fine-tuning added 5.9%**. Most of that came from classification, clustering and text evaluation. Retrieval gained only 0.4% (47.4 to 47.6), and several retrieval sets got worse, MS MARCO among them (42.7 to 39.7). UniIR applies the idea to multimodal retrieval: one model across several retrieval tasks, with the task named in an instruction. Its authors built the M-BEIR benchmark, and credit multi-task training plus instruction tuning for the generalisation they measured ([arXiv:2311.17136](https://arxiv.org/abs/2311.17136) (Wei et al., ECCV 2024)). When you pick a multimodal embedder, check whether it expects an instruction, and use the one it was trained with. INSTRUCTOR's tests reworded instructions only within its training template, and the gap between best and worst wording widens once the 300 Super-NaturalInstructions datasets are dropped from training. It never scored a model trained with instructions but queried without one on a benchmark. Its only look at that case is a plot of a few example pairs, so measure it on your own data before you ship.
+
+## Video adds time and chooses frames
+
+A video is thousands of images plus audio, and the cost forces selection. Video models pool before the language model sees anything. Video-ChatGPT encodes each of T sampled frames with CLIP, averages over space to get one token per frame and over time to get one token per patch position, and sends the T+N tokens through a single linear layer. Only that layer was trained, about 3 hours on 8 A100s with 100K instruction pairs. Its authors concede it misses subtle temporal relations in clips over two minutes and the details of small objects. On its own GPT-judged benchmark, temporal understanding was the weakest score for three of the four models it tested, and second-weakest for the fourth ([arXiv:2306.05424](https://arxiv.org/abs/2306.05424) (Maaz et al., ACL 2024)). An average over time keeps what stays on screen and blurs what happens once, which is why you retrieve frames around a moment rather than summarising the whole clip. VIOLET put a number on the cost of averaging in a video-text encoder pretrained on WebVid. Text-to-video recall@1 on MSRVTT was 20.8 with frame features averaged, 23.5 with them concatenated and 27.0 with a Video Swin encoder that models time across frames. The averaged and concatenated rows use a ResNet-50 per frame, so the gap is not time alone, and each is a single run. VIOLET scores every query-video pair in one fused pass, so it is a reranker rather than an index, and it never varies its frame count: 4 frames in pretraining, 5 downstream ([arXiv:2111.12681](https://arxiv.org/abs/2111.12681) (Fu et al., 2021-11, preprint)). VideoRAG ranks a corpus using 4 frames per video, then picks up to 32 frames, at 1 frame per second, for generation, with Whisper producing auxiliary text. It selects frames by relevance because the full combination space is impossibly large, and retrieving one video was enough in its experiments, since adding more raised cost with little benefit ([arXiv:2501.05874](https://arxiv.org/abs/2501.05874) (Jeong et al., Findings of ACL 2025)). For many business uses, such as recorded meetings or how-to clips, indexing the transcript with timestamps gets you most of the way. Frames then only need retrieving around the timestamp the transcript found. Try that before you build a frame index. MERLOT Reserve, a video model that pairs each 5-second segment's middle frame with either its transcript or its audio, gives a rough size for what the transcript misses. On TVQA, multiple-choice questions about TV episodes, one fine-tuned large model scored 85.6% on the test set given subtitles, 84.8% given audio instead and 86.1% given both, with the two predictions averaged. That is half a point from adding sound to a transcript, on scripted dialogue, with no seeds reported and no retrieval test ([arXiv:2201.02639](https://arxiv.org/abs/2201.02639) (Zellers et al., CVPR 2022)).
+
+## Answering with the right evidence
+
+Retrieval returns candidates. A vision model still has to read them, and everything in [chapter 1](01-image-input.md) applies. Send the original page, or a crop around the patches that matched, at a resolution where the text remains legible, and ask the model to cite the page and region. Then evaluate the stages separately, since the fix differs: if retrieval missed, change the index, and if the answer is wrong given the right page, change the reading step. The gold-context setting from Riedler and Langer is a simple way to measure this. Run your reader with the correct page handed to it, and the gap between that and your full system is what retrieval is costing you. [Chapter 7](07-evaluating-multimodal-systems.md) and [the RAG evaluation note](../../../generative-ai/08-eval/notes/07-evaluating-rag-and-grounding.md) cover this in more detail.
+
+## Choosing a design
+
+| Situation | Start with |
+|---|---|
+| Mostly text, occasional figures | Text RAG plus summaries of visuals, original images stored for reading |
+| Chart-heavy reports, slides, infographics | Late-interaction page retrieval, or a hybrid with a text first stage |
+| Photos, product images, cross-modal search | A single contrastive embedding per image |
+| Very large corpus with storage limits | Text or single-vector first stage, late-interaction rerank, token pooling |
+| Video and meetings | Timestamped transcript first, frames near the hit |
+
+## Pitfalls
+
+- **Discarding visuals at ingestion.** Retrieval tuning can't recover what was never indexed. Check whether your gold answers survive parsing.
+- **Evaluating on text-heavy queries only.** Multimodal gains show on visual questions, and your eval set must contain them.
+- **Treating "image embedding" as one thing.** A single CLIP vector and a thousand patch vectors behave nothing alike on documents.
+- **Letting captions go stale.** Summaries are bound to the model and prompt that wrote them. Record both, so you can regenerate.
+- **Forgetting that the index itself is an attack surface.** A planted page can rank high and carry instructions. See [chapter 9.2](../../09-safety-and-security/notes/02-prompt-injection-and-jailbreaks.md).
+
+## Try it
+
+1. Increase `noise_patches` for page A from 1028 to 5000 in the MaxSim experiment. How do the two scoring methods respond?
+2. Using `index_gb`, find the corpus size where the pooled patch index reaches a 1 TB budget.
+3. Add a third ranking to `rrf` that places `p21` first. Which page leads now, and what does the `k` constant do?
+4. Run [`practice/multimodal_rag_lab.py`](../practice/multimodal_rag_lab.py), which compares seven designs on 200 synthetic pages whose answers sit in 4 patches. Which design would you ship at 1M pages, and what changes if `TEXT_SHARE` rises from 0.4 to 0.9?
+
+<details><summary>Answers</summary>
+
+1. MaxSim's score is unchanged in practice, since each query token still finds its sharp patch. The single-vector score falls further, because more background is averaged in. Late interaction scales with region sharpness, not page size.
+2. Each pooled page costs `1030/3 × 128 × 2` bytes, about 87.9 KB, so 1 TB holds about 11.4 million pages.
+3. `p3` and `p14` still lead at about 0.0323 each (`1/61 + 1/63`). `p21` now appears in two lists and scores about 0.0320 (`1/61 + 1/64`), so a first place doesn't beat them. `k` flattens the difference between ranks: a large `k` rewards appearing in many lists over a top rank in one.
+4. In that run a single vector per page gets recall@5 of 0.52 and MaxSim over every patch gets 1.00, at about 264 GB per million pages against 0.3 GB. The single-vector first stage with a MaxSim rerank of the top 20 keeps recall@5 at 1.00 at about a tenth of the brute-force query time, which is why it is the common design, though it still stores the patches for that rerank. Clustered pooling holds recall at a third of the storage, while adjacent pooling falls to 0.95, so how you pool matters. Raising `TEXT_SHARE` to 0.9 lifts text-only recall@5 from 0.59 to 0.96: when text states the fact, text retrieval is enough, and for far less storage. Everything here follows from the fixture's assumptions, so check it against real pages.
+
+</details>
+
+## Interview checklist
+
+| Question | Answer |
+|---|---|
+| What is the first thing to check when a chart's answer is never retrieved? | Whether ingestion kept it. Parsers often reduce charts to stray labels, so no retriever can find them. Inspect the indexed text for known answers. |
+| Summaries or image embeddings? | Summaries reuse text infrastructure and beat single CLIP vectors in Riedler and Langer's test, at a per-element vision cost. Patch-level embeddings beat summaries on visually rich pages in ColPali's benchmark, at a storage cost. |
+| What is MaxSim? | For each query token, take the highest similarity across all document vectors, then sum over query tokens. It rewards a sharp local match, and averaging can't erase it. |
+| How do you make late interaction affordable? | Pool neighbouring patches, quantise values, and use a cheap first stage so that late interaction only reranks a few hundred candidates. |
+| How do you tell if retrieval or reading is the problem? | Hand the reader the gold page. Its score is an upper bound. The gap to your full system is retrieval's cost, and the gap from there to perfect is the reader's. |
+| Why did swapping BM25 for a neural embedder barely help in ColPali's baselines? | The ingestion step had already lost the visual information, so a better text embedder only reads the same incomplete text better. |
+
+## Next
+
+[Chapter 4 — Speech and voice agents](04-speech-and-voice-agents.md) adds a modality with a clock: the assistant now has to hear and respond within a few hundred milliseconds.

@@ -1,8 +1,8 @@
 ---
-imported_hash: 25b6a9d1b5843499
+imported_hash: fe8e0c0d1e854074
 title: 'Example: Scaling a RAG System 100x'
 summary: '"Your RAG-based customer support system handles 1K queries/day.'
-order: 69
+order: 71
 kind: reading
 section: System design round / Examples
 source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/examples/scaling.md
@@ -128,4 +128,4 @@ source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/ex
 
 ---
 
-**Study refs**: [study guide §4](../study-guide.md) bottleneck tables; [RAG guide §5](../../../guides/3-rag/interview-guide.md) for latency budgets; [context/cost guide](../../../guides/5-context-cost/interview-guide.md) for caching and token economics; librarian wiki: Semantic Cache Pipeline, Production Hardening Patterns.
+**Study refs**: [study guide §4](../study-guide.md) bottleneck tables; [RAG in production](../../../../generative-ai/02-rag-retrieval/notes/07-rag-in-production.md) for latency budgets; [context pillar](../../../../ai-engineering/02-context-engineering/readme.md) for caching and token economics; librarian wiki: Semantic Cache Pipeline, Production Hardening Patterns.

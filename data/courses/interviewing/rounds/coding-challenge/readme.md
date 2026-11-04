@@ -1,5 +1,5 @@
 ---
-imported_hash: fb401e7fffa630b5
+imported_hash: 71220235788b743f
 title: Coding Challenge
 summary: Live coding is increasingly project-style ("implement a rate limiter") over pure LeetCode.
 order: 23
@@ -47,10 +47,10 @@ Present in every loop but rarely the differentiator round. DS versions skew SQL/
 | `questions.md` | 31 questions by format with approach, signals, pitfalls — live coding, AI/ML practicals, debugging, pair, AI-assisted, multi-level implementation rounds (16–19), NumPy ML coding (20–25) |
 | `code-from-heart.md` | The stdlib patterns to write without reference — aggregation, sorting, validation, HTTP/auth minimums, plus a 25-min drill |
 | `study-guide.md` | Core methods: narration, debugging methodology, Python fluency, AI-assisted skills |
-| `sources.md` | Internal study guides + external resources |
+| `sources.md` | Pillar notes + external resources |
 | `examples/` | Nine worked walkthroughs — three general, five offline practicals, one interviewer guide (property search) |
 
-Drill-format practice files (prompt → hint ladder → solution) live in [`drills/coding/`](../../../drills/coding/):
+Drill-format practice files (prompt → hint ladder → solution) live in [`programming/drills/coding/`](../../../../programming/drills/coding/):
 `algorithms/` (89 LeetCode-style problems by pattern), `implementation/` (Q16–19), `ml-coding/` (Q20–25).
 
 ## The AIE practical variant

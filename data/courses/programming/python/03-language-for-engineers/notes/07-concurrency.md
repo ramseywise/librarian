@@ -1,5 +1,5 @@
 ---
-imported_hash: a1bf05d07ec00ad5
+imported_hash: 6100c918ef76c8eb
 title: 7 — Concurrency
 summary: The GIL lets only one thread run Python bytecode at a time.
 order: 18
@@ -42,6 +42,47 @@ with ThreadPoolExecutor(max_workers=8) as pool:
 `pool.map(fn, items)` is simpler when you want results in input order and any exception should stop you. Shared mutable state between threads needs a `threading.Lock`. Better: have each task return its result and combine them in the main thread.
 
 ## asyncio
+
+One thread runs an **event loop**. It keeps a queue of tasks that are ready, and a list of what the others are waiting for. A task runs until it reaches an `await` on something not yet finished, then hands control back. Nothing preempts it, which is why switching can only happen at an `await`:
+
+```python
+import asyncio
+
+async def worker(name: str, delay: float) -> None:
+    print(f"{name} start")
+    await asyncio.sleep(delay)   # hands control back to the loop
+    print(f"{name} done")
+
+async def main() -> None:
+    async with asyncio.TaskGroup() as tg:
+        tg.create_task(worker("a", 0.2))
+        tg.create_task(worker("b", 0.1))
+
+asyncio.run(main())
+# a start
+# b start
+# b done
+# a done
+```
+
+```mermaid
+sequenceDiagram
+    participant L as event loop
+    participant A as task a
+    participant B as task b
+    participant T as timers and sockets
+    L->>A: run until the first await
+    A-->>T: await sleep(0.2), suspend
+    L->>B: run until the first await
+    B-->>T: await sleep(0.1), suspend
+    Note over L: nothing is ready, so the loop sleeps until a timer is due
+    T-->>L: b's timer fires
+    L->>B: resume, b finishes
+    T-->>L: a's timer fires
+    L->>A: resume, a finishes
+```
+
+The total is about 0.2 s, not 0.3 s, because neither task holds the thread while it waits. A real fetcher has the same shape, with a concurrency limit added:
 
 ```python
 import asyncio
@@ -90,3 +131,7 @@ Retry only errors that can succeed next time (timeouts, 429, 5xx), never 4xx val
 ## Exercises
 
 [`practice/exercises/07_concurrency.py`](../practice/exercises/07_concurrency.py)
+
+## Next
+
+[8 — Objects, inheritance and MRO](08-objects-inheritance-and-mro.md): how classes really work, including the attribute lookup behind `super()`.

@@ -1,5 +1,5 @@
 ---
-imported_hash: 5812f3125c5c2dae
+imported_hash: 990ccd0b201ed2bb
 title: Project Deep-Dive / Experience Review
 summary: Expect drilling until the interviewer hits the boundary of your ownership.
 order: 53
@@ -63,4 +63,4 @@ Core in every senior loop. For FDE it doubles as a customer-communication sample
 |------|---------|
 | `questions.md` | 15 questions with signals, answer structures, follow-up probes |
 | `study-guide.md` | Frameworks: three-altitude method, decision docs, incident storytelling, impact quantification |
-| `sources.md` | Internal study guides + external resources |
+| `sources.md` | Pillar notes + external resources |

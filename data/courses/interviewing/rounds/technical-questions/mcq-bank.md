@@ -1,8 +1,8 @@
 ---
-imported_hash: afc57a8812c84c1a
+imported_hash: 4935319eaab9e57a
 title: MCQ Bank — Full Topic Parity
-summary: Multiple-choice drill bank covering all 11 guide topics.
-order: 71
+summary: Multiple-choice drill bank covering 11 topics.
+order: 74
 kind: reading
 section: Technical questions
 source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/mcq-bank.md
@@ -10,16 +10,15 @@ source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/mc
 
 # MCQ Bank — Full Topic Parity
 
-Multiple-choice drill bank covering all 11 guide topics. Standalone: it re-covers
+Multiple-choice drill bank covering 11 topics. Standalone: it re-covers
 ground the role-specific banks handle so it works on its own.
 
 **How to use**: cover the answer key, take a section, then read the rationale for every
 question you got wrong *and* every one you guessed right. The distractors are built from
-the specific confusions each guide flags — a lucky guess teaches nothing.
+the specific confusions the material flags — a lucky guess teaches nothing.
 
-**Sourcing**: questions are grounded in `../../guides/` — the numbers, ladders and
-terminology are the guides' own, so a wrong answer points at a specific section to reread.
-Where a guide explicitly warns that interviewers conflate two things (prefix vs semantic
+**Sourcing**: questions were written against topic guides that have since folded into the
+pillar notes (mapped under Sources below), so a wrong answer points at a pillar to reread. Where the material explicitly warns that interviewers conflate two things (prefix vs semantic
 caching, pass@k vs pass^k, CRAG vs Self-RAG), the bank tests that pair directly.
 
 | Section | Topic | Questions |
@@ -27,15 +26,15 @@ caching, pass@k vs pass^k, CRAG vs Self-RAG), the bank tests that pair directly.
 | A | Programming (Python, DSA, SQL, concurrency) | 20 |
 | B | ML foundations | 16 |
 | C | LLM fundamentals | 23 |
-| D | RAG | 22 |
+| D | RAG | 20 |
 | E | Agents | 20 |
 | F | Context & cost | 16 |
-| G | Evals & observability | 18 |
+| G | Evals & observability | 17 |
 | H | Security & safety | 18 |
 | I | Data engineering & MLOps | 14 |
 | J | System design | 15 |
 | K | Product & delivery | 12 |
-| **Total** | | **194** |
+| **Total** | | **191** |
 
 Answer keys are at the end of each section.
 
@@ -249,7 +248,7 @@ A11-B · A12-B · A13-B · A14-B · A15-B · A16-B · A17-C · A18-B · A19-C ·
 
 ### B1
 
-The guide calls one thing "the #1 practical sin" in applied ML. It is:
+The course calls one thing "the #1 practical sin" in applied ML. It is:
 
 A. Overfitting the validation set
 B. Data leakage
@@ -276,7 +275,7 @@ D. R², because it handles skew
 
 ### B4
 
-The interview move the guide says to make first when discussing any model result:
+The interview move the course says to make first when discussing any model result:
 
 A. Report the cross-validated standard deviation
 B. Name the naive baseline (majority class / mean predictor)
@@ -294,7 +293,7 @@ D. L1 applies to trees, L2 to linear models
 
 ### B6
 
-Why gradient boosting over a neural net on tabular data? The guide names four reasons —
+Why gradient boosting over a neural net on tabular data? The course names four reasons —
 which is *not* one?
 
 A. Sample efficiency
@@ -323,7 +322,7 @@ D. Covariate applies to classification, concept to regression
 
 ### B9
 
-Model is excellent offline, poor in production. The guide gives an ordered checklist.
+Model is excellent offline, poor in production. The course gives an ordered checklist.
 What do you check *first*?
 
 A. Drift
@@ -580,7 +579,7 @@ D. Positional embeddings failing past their trained length
 
 ### C20
 
-The guide's stated mitigation for long-context degradation:
+The course's stated mitigation for long-context degradation:
 
 A. Bigger context windows
 B. Context engineering, not bigger windows
@@ -642,7 +641,7 @@ C21-B · C22-C · C23-B
 
 ---
 
-## D. RAG (22 questions)
+## D. RAG (20 questions)
 
 ### D1
 
@@ -664,7 +663,7 @@ D. Sentence-level always, merged upward to fill the budget
 
 ### D3
 
-The guide's stance on semantic chunking:
+The course's stance on semantic chunking:
 
 A. The recommended default for production corpora
 B. Expensive at ingest and inconsistent — not the default
@@ -707,15 +706,6 @@ B. `"query: "` / `"passage: "` prefixes
 C. Lowercased text
 D. A fixed 512-token pad
 
-### D8
-
-Violating that rule costs roughly:
-
-A. 2–3% recall
-B. 5–8% recall
-C. 15–20% recall
-D. 40%+ recall
-
 ### D9
 
 Vector-only search and BM25-only search fail in which way?
@@ -739,19 +729,9 @@ D. k is tuned per corpus
 Why RRF instead of a weighted sum of BM25 and cosine scores?
 
 A. RRF is provably optimal for hit rate
-B. BM25 and cosine scores have incomparable distributions; rank fusion is parameter-free
+B. BM25 and cosine scores have incomparable distributions; rank fusion needs no score normalization
 C. RRF is faster to compute
 D. Weighted sums require normalized embeddings
-
-### D12
-
-In the guide's measured ladder, hybrid + cross-encoder reranking reached what hit rate,
-from a dense-only baseline of 45%?
-
-A. 55%
-B. 58%
-C. 68%
-D. 80%
 
 ### D13
 
@@ -809,7 +789,7 @@ D. +30%, past 10 variants
 
 ### D19
 
-GraphRAG restraint — the guide's caution:
+GraphRAG restraint — the course's caution:
 
 A. GraphRAG is always preferable for enterprise corpora
 B. It is overkill for factual lookup; for wiki-shaped corpora existing link structure already gives a traversable graph
@@ -843,15 +823,12 @@ B. Latency-critical paths
 C. Poor-quality corpora
 D. Corpora larger than 1M documents
 
-**Answers D**: D1-B · D2-B · D3-B · D4-B · D5-B · D6-B · D7-B · D8-C · D9-B · D10-B ·
-D11-B · D12-C · D13-B · D14-B · D15-B · D16-B · D17-B · D18-B · D19-B · D20-B ·
+**Answers D**: D1-B · D2-B · D3-B · D4-B · D5-B · D6-B · D7-B · D9-B · D10-B ·
+D11-B · D13-B · D14-B · D15-B · D16-B · D17-B · D18-B · D19-B · D20-B ·
 D21-B · D22-D
 
 **Rationale notes**
 
-- **D12**: The full ladder is dense 45% → BM25 50% → hybrid RRF 58% → hybrid +
-  cross-encoder 68%. Cross-encoder reranking is "the single highest-leverage add-on."
-  Cite numbers like this — measured claims beat vibes.
 - **D20**: The order matters — golden-set recall@k, then embedding/corpus language match,
   prefix rules, chunk truncation, *then* hybrid + reranker, all before touching the LLM.
 - **D22**: Scale is a reason to change the index (ANN/HNSW), not to abandon RAG.
@@ -871,7 +848,7 @@ D. Workflows run locally; agents run as services
 
 ### E2
 
-The guide says the interview answer that "is always open here" is:
+The course says the interview answer that "is always open here" is:
 
 A. "Use an agent — it generalizes better"
 B. Naming the workflow/agent distinction and defending the cheaper option
@@ -925,7 +902,7 @@ D. Require confirmation before destructive actions
 
 ### E8
 
-The guide's concrete poka-yoke example:
+The course's concrete poka-yoke example:
 
 A. Enum-typed arguments instead of free-form strings
 B. Requiring absolute paths so relative-path errors cannot occur
@@ -953,7 +930,7 @@ D. Session, user, org, global
 
 ### E11
 
-For agent memory, the guide's stated bias:
+For agent memory, the course's stated bias:
 
 A. Recall over precision — better to surface too much than miss something
 B. Precision over recall — a wrong memory is worse than a missing one
@@ -1025,7 +1002,7 @@ D. The task decomposes into fixed sequential steps
 
 ### E19
 
-Building agent tools, the guide's advice on how many:
+Building agent tools, the course's advice on how many:
 
 A. As many as possible — the model will pick
 B. Few, well-described, hard to misuse
@@ -1139,7 +1116,7 @@ D. Output-length discipline
 
 ### F10
 
-The guide insists cost be reported as:
+The course insists cost be reported as:
 
 A. Cost per API call
 B. Cost per successful task
@@ -1214,7 +1191,7 @@ F11-B · F12-B · F13-C · F14-B · F15-A · F16-B
 
 ---
 
-## G. Evals & observability (18 questions)
+## G. Evals & observability (17 questions)
 
 ### G1
 
@@ -1227,7 +1204,7 @@ D. Baseline, candidate, judge
 
 ### G2
 
-The grader ladder, cheapest and most reliable first:
+The grader ladder, cheapest first:
 
 A. Human → LLM-judge → code
 B. Code → LLM-judge → human
@@ -1239,7 +1216,7 @@ D. Code → human → LLM-judge
 Tier 1 (unit) evals are characterized by:
 
 A. Full end-to-end runs against production dependencies
-B. No LLM calls, and catching roughly 70% of regressions
+B. No LLM calls, and cheap enough to run on every commit
 C. Mocked tools with trajectory assertions
 D. Human review of sampled traces
 
@@ -1263,7 +1240,7 @@ D. Nightly on a full corpus
 
 ### G6
 
-Why does `0.75³ ≈ 42%` appear in the evals guide?
+Why does `0.75³ ≈ 42%` appear in the eval notes?
 
 A. It is the expected pass rate across three eval tiers
 B. It shows how per-step reliability compounds across a multi-step agent
@@ -1317,7 +1294,7 @@ D. Carry forward memory to test continuity
 
 ### G12
 
-When the eval and the agent both look broken, the guide says:
+When the eval and the agent both look broken, the course says:
 
 A. Fix the agent first — the eval is a measurement, not a product
 B. Fix the eval system before the agent
@@ -1335,25 +1312,16 @@ D. 100%
 
 ### G14
 
-After a model or prompt change, the guide recommends:
+After a model or prompt change, the course recommends:
 
 A. Rolling back if any metric drops
 B. A 48-hour full trace review
 C. Doubling the sampling rate for a week
 D. Freezing evals until metrics stabilize
 
-### G15
-
-The correct containment ordering:
-
-A. monitoring ⊃ observability ⊃ tracing ⊃ alerting
-B. observability ⊃ tracing ⊃ monitoring ⊃ alerting
-C. tracing ⊃ observability ⊃ alerting ⊃ monitoring
-D. alerting ⊃ monitoring ⊃ tracing ⊃ observability
-
 ### G16
 
-The guide's split of deployment effort:
+The course's split of deployment effort:
 
 A. Agent ~80%, management layer ~20%
 B. Agent ~40%, management layer ~60%
@@ -1379,7 +1347,7 @@ C. Merged into a single composite score
 D. Run in separate tiers, never together
 
 **Answers G**: G1-B · G2-B · G3-B · G4-B · G5-B · G6-B · G7-B · G8-A · G9-B · G10-B ·
-G11-B · G12-B · G13-B · G14-B · G15-B · G16-B · G17-B · G18-B
+G11-B · G12-B · G13-B · G14-B · G16-B · G17-B · G18-B
 
 **Rationale notes**
 
@@ -1405,7 +1373,7 @@ D. Direct is deliberate; indirect is accidental
 
 ### H2
 
-The guide's framing of the core problem:
+The course's framing of the core problem:
 
 A. Detection quality — better classifiers close the gap
 B. Source → sink: "you contain it, you don't detect it"
@@ -1486,7 +1454,7 @@ D. Blocking payment flows in an agentic commerce system
 
 ### H11
 
-The three boundaries the guide says to establish before shipping any agent:
+The three boundaries the course says to establish before shipping any agent:
 
 A. Model, data, and network
 B. Who can trigger it, where it can act, what it did
@@ -1575,7 +1543,7 @@ H11-B · H12-B · H13-B · H14-B · H15-B · H16-B · H17-B · H18-B
 
 ### I1
 
-The guide names one word "interviewers listen for" in orchestration. It is:
+The course names one word "interviewers listen for" in orchestration. It is:
 
 A. Atomicity
 B. Idempotency
@@ -1674,7 +1642,7 @@ D. Regulatory lineage and PII classification
 
 ### I12
 
-If neither condition holds, the guide says:
+If neither condition holds, the course says:
 
 A. Build a lightweight feature store anyway for future-proofing
 B. A well-tested mart is enough
@@ -1683,7 +1651,7 @@ D. Compute features inline at request time
 
 ### I13
 
-Batch vs streaming — the guide's default:
+Batch vs streaming — the course's default:
 
 A. Streaming, since it subsumes batch
 B. Batch until a product need forces streaming
@@ -1692,7 +1660,7 @@ D. Whichever matches the source system
 
 ### I14
 
-LLM-era mappings the guide says to state out loud — which is *wrong*?
+LLM-era mappings the course says to state out loud — which is *wrong*?
 
 A. Embedding pipelines are ETL
 B. Prompt/config versioning is model-registry thinking applied to prompts
@@ -1727,7 +1695,7 @@ D. However long the interviewer allows
 
 ### J2
 
-Step 1 is Clarify & scope. The guide's rule:
+Step 1 is Clarify & scope. The course's rule:
 
 A. Restate the prompt, then design
 B. Never design against the raw prompt
@@ -1790,7 +1758,7 @@ D. Abandon the whole design and restart
 
 ### J9
 
-You hit a genuine knowledge gap mid-round. The guide's tactic:
+You hit a genuine knowledge gap mid-round. The course's tactic:
 
 A. Reason from first principles without flagging it
 B. Say "my understanding there is superficial", then redirect
@@ -1835,7 +1803,7 @@ D. Pruning and periodic index rebuild
 
 ### J14
 
-The guide says "never stop at the design." Closing well means:
+The course says "never stop at the design." Closing well means:
 
 A. Summarizing the components you drew
 B. Stating success metrics with numbers — e.g. p95 under 2s while holding faithfulness above 0.9
@@ -1981,7 +1949,7 @@ D. Shipping behind a feature flag and measuring
 
 ### K12
 
-Nonprofit/mission-driven constraints the guide names — which is *not* one?
+Nonprofit/mission-driven constraints the course names — which is *not* one?
 
 A. Grant-cycle budgets make opex unpredictable, so API bills need caps
 B. Volunteer/rotating maintainers favor boring tech and managed services
@@ -2054,21 +2022,21 @@ pairs interviewers use to separate memorization from understanding.
 
 ## Sources
 
-Every question is grounded in the guides under `../../guides/`:
+Each section was written against a topic guide that has since folded into the pillar notes. Check an answer against the note:
 
-| Section | Guide |
+| Section | Pillar notes |
 |---|---|
-| A | `0-programming/interview-guide.md` |
-| B | `1-foundations/interview-guide.md` |
-| C | `2-llm-fundamentals/interview-guide.md` |
-| D | `3-rag/interview-guide.md` |
-| E | `4-agents/interview-guide.md` |
-| F | `5-context-cost/interview-guide.md` |
-| G | `6-evals-observability/interview-guide.md` |
-| H | `7-security-safety/interview-guide.md` |
-| I | `8-data-eng-mlops/interview-guide.md` |
-| J | `9-system-design/interview-guide.md` |
-| K | `10-product-delivery/interview-guide.md` |
+| A | [programming](../../../programming/00-start-here/readme.md) |
+| B | [classical ML](../../../data-science/01-classical-ml/readme.md) |
+| C | [LLM fundamentals](../../../generative-ai/01-llm-fundamentals/readme.md) |
+| D | [RAG](../../../generative-ai/02-rag-retrieval/readme.md) |
+| E | [harness](../../../ai-engineering/03-harness-engineering/readme.md), [loop](../../../ai-engineering/04-loop-engineering/readme.md), [graph](../../../ai-engineering/05-graph-engineering/readme.md) |
+| F | [context](../../../ai-engineering/02-context-engineering/readme.md) |
+| G | [eval](../../../generative-ai/08-eval/readme.md), [observability](../../../generative-ai/06-observability/readme.md) |
+| H | [safety](../../../ai-engineering/09-safety-and-security/readme.md) |
+| I | [data engineering](../../../data-engineering/00-start-here/readme.md) |
+| J | [system-design round](../system-design-round/study-guide.md) |
+| K | [scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md) |
 
 Open-ended companions to this bank live in [questions.md](questions.md); the
 study plan is in [study-guide.md](study-guide.md).

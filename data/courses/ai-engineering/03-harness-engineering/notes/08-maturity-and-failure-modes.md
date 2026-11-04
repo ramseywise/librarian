@@ -1,8 +1,8 @@
 ---
-imported_hash: 70bed4844a50e99e
+imported_hash: 67c0abc830e03cb4
 title: 8 — Harness Maturity and Failure Modes
-summary: Stage 4 remains emerging as of 2026 — treat it as direction, not a target.
-order: 18
+summary: Teams rarely know how mature their harness is, and "we have evals" often means one notebook run by hand.
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes.md
@@ -11,6 +11,8 @@ source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/08-matu
 # 8 — Harness Maturity and Failure Modes
 
 > Where a harness sits today, what to build next, and the five ways teams fool themselves.
+
+Teams rarely know how mature their harness is, and "we have evals" often means one notebook run by hand. Most teams claiming Stage 3 are at Stage 1, so they invest in the wrong next layer while plan errors propagate through expensive execution and the same failure recurs monthly. This chapter gives you a five-stage maturity model and a per-task pipeline to place your harness honestly, then covers production lessons from PRINCE, the failure modes, and how to remove parts of the harness when a model no longer needs them.
 
 ---
 
@@ -110,6 +112,8 @@ The corollary is that **cheap-and-wrong is the more expensive failure**, because
 
 The maturity ladder says *what* to build; these are the mechanisms that keep a Stage 2–3 harness running once real traffic hits it. All four come from PRINCE, and all four are unglamorous.
 
+PRINCE's own framing: the LangGraph workflow *is* the harness. It decides which component can act, which tools it can use, where the workflow can pause, how failures are retried, how state is persisted, and when to move from research to reflection to writing. Those are the control points for recovery, inspection, evaluation and human intervention that an unconstrained autonomous agent lacks. (PRINCE's retrieval stack is in [genai/02 agent-rag-patterns](../../../generative-ai/02-rag-retrieval/notes/08-agentic-rag-prince.md).)
+
 ### Resume from the failed node
 
 State persisted **after every step** means a failure resumes from that step instead of restarting the workflow. PRINCE checkpoints agent state to Postgres via a LangGraph checkpointer, with application-level state (logs, intermediate steps, citations) kept separately in DynamoDB.
@@ -162,7 +166,13 @@ Without runtime signals the agent can't tell "correct" from "looks correct", and
 - **One trace per session, one span per task, sub-spans per verification step**, using OpenTelemetry conventions so it plugs into standard tooling (Jaeger etc.). This is the raw material for [trace-driven improvement](05-verification-loops.md#trace-driven-improvement).
 - For UI work, a **browser validation loop**: snapshot before, trigger exactly one path, snapshot after, compare, fix the smallest responsible layer, re-run until the same path is clean twice.
 
-Process artifacts are covered in [note 05](05-verification-loops.md#sprint-contracts) (contracts, rubrics). Templates: [evaluator-rubric.md](../templates/evaluator-rubric.md).
+Process artifacts are covered in [note 05](05-verification-loops.md#sprint-contracts) (contracts, rubrics).
+
+**A run status is not a content verdict.** One of Rothman's published traces reads `Trace Status: Success`, while the Researcher step's own output begins "Note: The provided 'Sources' are unrelated to Apollo" (*Context Engineering for Multi-Agent Systems*, ch. 5). The book's walkthrough still describes that step as retrieving facts "related to the Apollo 11 mission", and the final answer was fluent, so the facts most likely came from the model's own memory rather than the knowledge base. The runtime layer recorded that every step returned. Nothing checked whether the retrieval step had anything to retrieve. Give steps a way to report "no grounding found" as a status the trace and the evaluator can see, not as prose inside a successful output.
+
+**Starting alert thresholds.** Albada's illustrative defaults (*Building Applications with AI Agents*, ch. 12): error or hallucination rate above **5% over a rolling hour**; **p99 latency above 2 s** on critical operations; **80% sustained** CPU, GPU or memory utilization; output drift (semantic similarity to expected outputs) **below 0.85**; and **any** race condition or synchronization failure in a multi-agent setup. Treat these as a first draft to tune against your own baseline. A 2 s p99 is impossible for the multi-call plans in [note 07](07-orchestration.md#the-latency-budget-of-a-sequential-plan). His point about tuning is the important one: thresholds that ignore workload peaks cause alert fatigue.
+
+**Test recovery by breaking things on purpose.** Chaos engineering applied to agents (ch. 12): inject faults such as a 500 ms latency spike on a dependency, noisy inputs or a killed plug-in, and watch whether the agent recovers. Run game days against a named hypothesis ("what if state sync fails across the swarm?") and measure recovery time and recovery point objectives. Control the blast radius: start in a sandbox, then move to production with automated rollback. This is the only way to find out whether the [recovery ladder](05-verification-loops.md#failure-recovery-and-termination) works before an outage tests it for you.
 
 ---
 
@@ -177,9 +187,7 @@ A per-area health record that both agents and humans read, so codebase quality i
 
 The scale: **A** all verification passing, clean and legible; **B** passing with minor gaps; **C** partially working, hard for agents to follow; **D** broken or structurally unsound.
 
-It does three jobs. A fresh session reads it and **fixes the lowest grade first.** The periodic cleanup loop ([practice/02](practice/02-session-lifecycle.md#entropy-management-two-cleanup-modes)) updates it, so the change history shows whether the repo is getting stronger or weaker. And it gives the subtraction pass below a baseline to measure against. Update it after significant sessions and before a new phase of work, not on a separate cleanup day.
-
-Template: [quality-document.md](../templates/quality-document.md).
+It does three jobs. A fresh session reads it and **fixes the lowest grade first.** The periodic cleanup loop ([note 06](06-long-horizon-execution.md#entropy-management-two-cleanup-modes)) updates it, so the change history shows whether the repo is getting stronger or weaker. And it gives the subtraction pass below a baseline to measure against. Update it after significant sessions and before a new phase of work, not on a separate cleanup day.
 
 ---
 
@@ -241,6 +249,21 @@ The third points somewhere interesting:
 
 Rather than a fixed configuration, the harness becomes a system that *compiles* a task specification into the tool set, context, and constraint layer that task needs.
 
+### An early step: a family of harnesses and a router
+
+The Object-Oriented Harness paper (Li G. et al., 2026, Google Cloud) is a concrete step toward the third frontier. Instead of one global harness, it evolves a **hierarchy of harness subclasses**. Each subclass inherits its parent's components and overrides or adds one. A **router** picks a harness per task, using lessons recorded about which harness worked on which kind of task.
+
+![Three designs: (a) one global harness, (b) a flat family of harnesses with a router, (c) an object-oriented hierarchy where specialized harnesses inherit from a base](../assets/sources/images/li-object-oriented-harness-fig1.png)
+*Image Source: Li G. et al. (2026)*
+
+Reported gain: up to **+15.79 points absolute** over the base harness. The findings matter for iterative simplification as much as for the frontier:
+
+- **A component that helps one task class can hurt another.** The paper cites evolved memory that helps hard tasks and hurts easy ones, and benchmark results where adding tools, skills or agents degraded behaviour. A single global harness has to carry every component for every task. Specialization lets each one live only where it pays.
+- **"Valid" is not "correct".** One subclass overrides the write backend for office documents, because a file that opens in the right format can still have the wrong content. Its verification is specific to that task class.
+- **Keep discovery and evaluation sets separate.** A harness evolved and scored on the same tasks overfits to them, just as a model does.
+
+The subtraction protocol above still applies, now per subclass: a component that never helps any task class gets deleted from the base.
+
 ---
 
 ## Builder gotchas
@@ -294,11 +317,58 @@ Items 1–8 get you to Stage 2. Items 9–16 get you to Stage 3. Item 17 keeps i
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-observability.md` — traces, event streams, structured logging.
-`~/.claude/refs/agent-eval.md` — binary evals, regression baselines, LLM-as-judge calibration.
+Eight deployment anti-patterns, the [five failure modes](#the-five-failure-modes) again at the level of individual design choices. Each looks like a model limitation and turns out to be a missing engineering constraint.
 
----
+| Anti-pattern | Symptom | Fix |
+|---|---|---|
+| **System prompt as knowledge base** | Prompt keeps growing; key rules get ignored | Keep conventions in the prompt and move knowledge to skills ([03](03-tool-design.md#progressive-disclosure-skills)) |
+| **Unbounded tool count** | Wrong tool chosen often | Merge overlapping tools, namespace the rest |
+| **No verification loop** | "Done" that nobody can check | Acceptance criteria per task type ([05](05-verification-loops.md#the-three-layer-termination-check)) |
+| **Boundaryless multi-agent** | State drift; failures can't be attributed | Roles, permissions, a worktree per agent ([07](07-orchestration.md#protocols-precede-collaboration)) |
+| **Unmanaged memory** | Decision quality drops after ~20 turns | Monitor tokens; compact or reset at a threshold ([06](06-long-horizon-execution.md#compaction-vs-context-reset)) |
+| **No evaluation** | Nobody knows whether a change regressed | Turn every failure into a test case |
+| **Premature multi-agent** | Coordination overhead exceeds the parallel gain | Find the single-agent limit first ([07](07-orchestration.md#when-not-to-go-multi-agent)) |
+| **Constraints by expectation** | Documented rules are followed selectively | Enforce with tools, linters and hooks ([04](04-execution-boundaries.md#prompts-vs-hooks)) |
 
-→ Next: [practice/01-repo-as-system-of-record.md](practice/01-repo-as-system-of-record.md) — the practice track: building this harness into a real repo.
+## Try it
+
+1. A team has schema-first tool specs, unit tests in CI and logs in a shared notebook. They say they are at Stage 3. Where are they, and what comes next?
+
+   <details><summary>Answer</summary>
+
+   Stage 1: tool specs and minimal verification through unit tests. Stage 2 needs static verification in CI, sandboxed execution, structured tracing, behavioral evals and branch-per-agent. The honest test: can they point to the code that runs verification on every task, without a human remembering to?
+
+   </details>
+
+2. Your agent's run status reads Success and its output is wrong. Which observability layer failed, and what do you add?
+
+   <details><summary>Answer</summary>
+
+   The runtime layer reported what the system did, and nothing checked the content. A run status is not a content verdict, as in Rothman's `Trace Status: Success` over a step whose output said its sources were unrelated. Add a process artifact with a binary verdict, such as a rubric or an acceptance check.
+
+   </details>
+
+3. Plan the subtraction protocol for your next model upgrade. List three components, the weakness each mitigates, and the eval you will re-run.
+
+   <details><summary>What a good plan has</summary>
+
+   One disable at a time, a re-run of the same eval suite, then delete if quality holds or keep and note the model version if it drops. If you have no binary eval, build that first (failure mode 5), since subtraction can't be measured without it. Remember that a component that helps one task class can hurt another, so read results per class when you can.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| What are the maturity stages, and where does most production value land? | Ad-hoc, Basic, Verified, Observability-first and Self-healing, numbered 0 to 4, with value concentrated at 2→3. Stage 4 is still emerging, so treat it as direction rather than a target. |
+| Which pipeline stage do teams skip, and why does it pay? | Approve, the human gate on the plan in Preflight → Plan → Approve → Tasks → Verify → Finish. Reviewing a wrong plan takes minutes, while reviewing code from a wrong plan takes an hour. |
+| Do you cut cost or raise accuracy first? | Accuracy. PRINCE accepted high inference costs early, because a system not good enough to adopt has no usage worth optimizing and cheap-and-wrong burns adoption. |
+| Runtime or process observability? | Runtime answers what the system did, through logs and traces. Process answers why a change should be accepted, through contracts and rubrics. You need both, and the harness collects them, not the agent. |
+| A new model is out. What do you do to the harness? | List components with the weakness each mitigates, disable one, run the eval suite, then delete it if quality holds. Opus 4.6 allowed Anthropic to remove sprint decomposition. |
+| What is the meta-failure among the five? | Skipped harness: claiming Stage 2 while at Stage 0, which hides the other four. Ask for the code that runs verification on every task with no human remembering. |
+
+## Next
+
+[09-repo-as-system-of-record.md](09-repo-as-system-of-record.md): building this harness into a real repo.

@@ -1,8 +1,8 @@
 ---
-imported_hash: 5ae466320917b359
+imported_hash: d2a16fdd4930e8aa
 title: System Design Round — Questions & Model Answers
 summary: System design questions are deliberately vague — the first thing you do is clarify, not design.
-order: 62
+order: 63
 kind: reading
 section: System design round
 source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/questions.md
@@ -32,7 +32,7 @@ System design questions are deliberately vague — the first thing you do is cla
 4. **Shortcomings**: Single-model dependency, latency under load, hallucination risk on financial questions
 5. **Close**: Deflection rate, resolution rate, CSAT, p95 latency, hallucination rate on golden set. Future: distilled model for FAQ tier, A/B prompt testing, feedback loop to eval set.
 
-**Study ref**: [security guide](../../guides/7-security-safety/interview-guide.md) §5 for compliance answers; [RAG guide](../../guides/3-rag/interview-guide.md) for retrieval design; [examples/rag-system.md](examples/rag-system.md) for a full walkthrough.
+**Study ref**: [compliance](../../../ai-engineering/09-safety-and-security/notes/07-compliance-and-regulation.md) for compliance answers; [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md) for retrieval design; [examples/rag-system.md](examples/rag-system.md) for a full walkthrough.
 
 ---
 
@@ -53,7 +53,7 @@ System design questions are deliberately vague — the first thing you do is cla
 4. **What breaks first**: Stale content ratio (→ recall ceiling), reranker becoming the bottleneck, eval set no longer representative of the query distribution.
 5. **Close**: Hit rate@5, faithfulness on golden set, p95 latency, cost per query. Future: GraphRAG for relationship queries, user feedback → eval set enrichment.
 
-**Study ref**: [RAG guide §1-5](../../guides/3-rag/interview-guide.md); [examples/rag-system.md](examples/rag-system.md).
+**Study ref**: [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md); [examples/rag-system.md](examples/rag-system.md).
 
 ---
 
@@ -75,7 +75,7 @@ System design questions are deliberately vague — the first thing you do is cla
 4. **Shortcomings**: Non-determinism, context rot on long tasks, tool description ambiguity under real inputs
 5. **Close**: Pass^k (deployment reliability, not just capability), task completion rate, cost per task, human-override frequency. Future: subagent context firewall for noisy subtasks, trace-based failure clustering.
 
-**Study ref**: [agents guide §1-5](../../guides/4-agents/interview-guide.md); [examples/agent-system.md](examples/agent-system.md); PRINCE case study.
+**Study ref**: [graph vs loop](../../../ai-engineering/05-graph-engineering/notes/01-graph-vs-loop.md); [examples/agent-system.md](examples/agent-system.md); PRINCE case study.
 
 ---
 
@@ -91,7 +91,7 @@ System design questions are deliberately vague — the first thing you do is cla
 4. **Targeted lever, re-measure**: One change at a time. Reranker added? Measure. Tool description rewritten? Measure. Model swapped? Measure.
 5. **Don't default to 'bigger model'**: A decent model with a great harness beats a great model with a bad harness."
 
-**Study ref**: [evals guide §5](../../guides/6-evals-observability/interview-guide.md); [agents guide §4](../../guides/4-agents/interview-guide.md) on harness engineering; OpenClaw principle #8 ("fix the eval system first").
+**Study ref**: [eval pillar](../../../generative-ai/08-eval/readme.md); [harness pillar](../../../ai-engineering/03-harness-engineering/readme.md) on harness engineering; OpenClaw principle #8 ("fix the eval system first").
 
 ---
 
@@ -113,7 +113,7 @@ System design questions are deliberately vague — the first thing you do is cla
 
 What *doesn't* change: the eval pipeline (just runs on a sample), the safety layer, the HITL path, the fundamental data flow."
 
-**Study ref**: [study guide §4](study-guide.md) bottleneck tables; [context/cost guide](../../guides/5-context-cost/interview-guide.md).
+**Study ref**: [study guide §4](study-guide.md) bottleneck tables; [context pillar](../../../ai-engineering/02-context-engineering/readme.md).
 
 ---
 
@@ -129,7 +129,7 @@ What *doesn't* change: the eval pipeline (just runs on a sample), the safety lay
 - **Retrieval**: Reduce reranker N, skip reranking for high-confidence first-pass results
 - **What I wouldn't cut**: Eval pipeline, safety layer, observability — these are cheap relative to model costs and losing them creates invisible quality drift"
 
-**Study ref**: [context/cost guide](../../guides/5-context-cost/interview-guide.md); model routing in [agents guide §2](../../guides/4-agents/interview-guide.md).
+**Study ref**: [context pillar](../../../ai-engineering/02-context-engineering/readme.md); model routing in [graph vs loop](../../../ai-engineering/05-graph-engineering/notes/01-graph-vs-loop.md).
 
 ---
 
@@ -146,7 +146,7 @@ What *doesn't* change: the eval pipeline (just runs on a sample), the safety lay
 
 **Hybrid is usually the answer**: Sensitive routes on-prem (or private cloud), general routes via API. Route by data classification, not by query type."
 
-**Study ref**: [security guide §5](../../guides/7-security-safety/interview-guide.md) on compliance; [data eng guide](../../guides/8-data-eng-mlops/interview-guide.md).
+**Study ref**: [compliance](../../../ai-engineering/09-safety-and-security/notes/07-compliance-and-regulation.md) on compliance; [data engineering](../../../data-engineering/00-start-here/readme.md).
 
 ---
 
@@ -162,7 +162,7 @@ What *doesn't* change: the eval pipeline (just runs on a sample), the safety lay
 
 Success metrics with numbers: 'p95 under 2s, faithfulness above 0.9 on golden set, deflection rate > 60%, hallucination rate < 5%.' One cost metric: 'cost per query under $0.03 at current volume.'"
 
-**Study ref**: [evals guide §2-5](../../guides/6-evals-observability/interview-guide.md); [examples/eval-harness.md](examples/eval-harness.md).
+**Study ref**: [graders](../../../generative-ai/08-eval/notes/04-graders.md); [examples/eval-harness.md](examples/eval-harness.md).
 
 ---
 
@@ -183,7 +183,7 @@ Success metrics with numbers: 'p95 under 2s, faithfulness above 0.9 on golden se
 
 **Platform decision**: Langfuse if you need self-hosting or multi-framework support. LangSmith if deeply LangChain-native. Custom (OpenTelemetry + Postgres) only for strict data residency AND custom trace schema needs."
 
-**Study ref**: [evals guide §4-5](../../guides/6-evals-observability/interview-guide.md); librarian wiki: Langfuse Platform, Observability — Langfuse vs Langsmith, Observability Runtime Patterns.
+**Study ref**: [tracing and observability](../../../generative-ai/08-eval/notes/08-tracing-and-observability.md); librarian wiki: Langfuse Platform, Observability — Langfuse vs Langsmith, Observability Runtime Patterns.
 
 ---
 
@@ -203,7 +203,7 @@ Success metrics with numbers: 'p95 under 2s, faithfulness above 0.9 on golden se
 
 5. **Cost transparency**: Return `usage: {input_tokens, output_tokens, model, cost_usd}` in every response. Consider an `/estimate` endpoint for cost prediction before processing."
 
-**Study ref**: [agents guide §3](../../guides/4-agents/interview-guide.md) for tool design / ACI; [security guide §2](../../guides/7-security-safety/interview-guide.md) for auth; librarian wiki: System Design — Serverless Agent Backends.
+**Study ref**: [tool design](../../../ai-engineering/03-harness-engineering/notes/03-tool-design.md) for tool design / ACI; [threat model](../../../ai-engineering/09-safety-and-security/notes/01-threat-model.md) for auth; librarian wiki: System Design — Serverless Agent Backends.
 
 ---
 
@@ -222,7 +222,7 @@ Success metrics with numbers: 'p95 under 2s, faithfulness above 0.9 on golden se
 
 **Ops concerns specific to AI**: embedder warmup (30-60s cold start → min-instances=1), model version pinning (silent drift without it), prompt versioning (as rigorous as code versioning), checkpointer/topology alignment (MemorySaver fails silently in multi-worker deploys)."
 
-**Study ref**: [data eng & MLOps guide §2](../../guides/8-data-eng-mlops/interview-guide.md); librarian wiki: Cloud Run + Cloud SQL Pattern, Production Hardening Patterns.
+**Study ref**: [ML platform](../../../data-engineering/06-ml-platform/readme.md); librarian wiki: Cloud Run + Cloud SQL Pattern, Production Hardening Patterns.
 
 ---
 
@@ -245,4 +245,4 @@ Success metrics with numbers: 'p95 under 2s, faithfulness above 0.9 on golden se
 
 **Schema evolution**: When the embedding model changes, the entire corpus needs re-embedding. Design for it: version embeddings in metadata, support dual-index during migration, run re-embedding as background job."
 
-**Study ref**: [RAG guide §1-2](../../guides/3-rag/interview-guide.md); [data eng guide §1](../../guides/8-data-eng-mlops/interview-guide.md); librarian wiki: Production Hardening Patterns, Embedder Warmup.
+**Study ref**: [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md); [data engineering](../../../data-engineering/00-start-here/readme.md); librarian wiki: Production Hardening Patterns, Embedder Warmup.

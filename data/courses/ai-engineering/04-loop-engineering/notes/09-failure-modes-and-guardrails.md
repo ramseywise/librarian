@@ -1,8 +1,8 @@
 ---
-imported_hash: f464a3fb4283fd86
+imported_hash: dbdfca1b934b0640
 title: 9 — Failure Modes and Guardrails
 summary: 'MindStudio''s list overlaps: no exit condition, repeated failures without adapting, context overflow, vague goal, not enough tool access.'
-order: 11
+order: 10
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/09-failure-modes-and-guardrails.md
@@ -23,19 +23,6 @@ source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/09-failure
 | **Weak verification** | The model grades itself and games it | Deterministic checks first, model judgment only above them ([03](03-the-scorekeeper.md)) |
 
 MindStudio's list overlaps: no exit condition, repeated failures without adapting, context overflow, vague goal, not enough tool access.
-
----
-
-## The traps table (KodeKloud)
-
-| Trap | Symptom | Fix |
-|---|---|---|
-| **No scorekeeper** | Runs, but results are inconsistent or meaningless | Write the scorekeeper first; objective and hard to game |
-| **Goal too big** | Never finishes; scope drifts | Cut it to one small, testable piece |
-| **Cheating the tests** | Score goes green, output is wrong | Protect the scorekeeper; held-out checks; audit outputs |
-| **Thrashing** | Lots of change, no improvement | Smaller goal, smaller changes, clearer score |
-| **Unsafe autonomy** | Risky commands or sweeping edits | Narrow the write scope; human approval for dangerous steps |
-| **Comprehension debt** | Scores are green, nobody understands the output | Read and review output regularly. The score is not understanding |
 
 ---
 
@@ -79,6 +66,24 @@ Every loop needs several **independent** ways to stop, so one failing doesn't le
 | **Stall detector** | Score unchanged for K passes, or the same action repeated | Change strategy once, then escalate |
 | **Human escalation** | Blocker it can't clear, irreversible action, judgment call | Pause and hand over full context |
 
+The exits are checked in order after every pass, and only one of them is a success:
+
+```mermaid
+flowchart TD
+    P["pass ends"] --> S{"scorekeeper:<br/>goal met?"}
+    S -->|yes| OK(["save, report, stop"])
+    S -->|no| H{"blocker, irreversible<br/>action or judgment call?"}
+    H -->|yes| HU(["pause, hand a human<br/>the full context"])
+    H -->|no| B{"budget spent?<br/>tokens · $ · wall clock"}
+    B -->|yes| BE(["escalate, state saved"])
+    B -->|no| ST{"score flat K passes<br/>or same action repeated?"}
+    ST -->|first time| CS["change strategy once"] --> N
+    ST -->|again| SE(["escalate"])
+    ST -->|no| I{"N passes reached?"}
+    I -->|yes| IE(["escalate: a cap is not success"])
+    I -->|no| N["next pass"]
+```
+
 Decide the human handoff points **before** the first run: blockers, risky or irreversible actions, and anything that needs taste. A loop that asks at the right moment is safer than one that keeps going.
 
 Harness machinery for stall detection and retries: [harness note 05](../../03-harness-engineering/notes/05-verification-loops.md#loop-detection).
@@ -99,7 +104,7 @@ Anthropic's *Effective Harnesses for Long-Running Agents* lists what an unattend
 
 ## Guardrails for self-modifying loops
 
-A loop that edits itself can turn one mistake into a permanent one. Prompt injection from a web page gets summarized as "experience" and then fires in every later session. A malicious package found by search gets wrapped as a tool. A faulty verifier keeps approving regressions. Li (*AI Agents in Depth*, ch. 8) sets three boundaries:
+A loop that edits itself can turn one mistake into a permanent one. Prompt injection from a web page gets summarized as "experience" and then fires in every later session. A malicious package found by search gets wrapped as a tool. A faulty verifier keeps approving regressions. Li (*AI Agents in Depth*, ch. 9) sets three boundaries:
 
 | Boundary | Rule |
 |---|---|
@@ -129,7 +134,7 @@ The through-line: treat an autonomous run as a **thermostat**, not a conversatio
 
 ## Design checklist
 
-Before shipping a loop, answer each one. The fillable version is [templates/loop-contract.md](../templates/loop-contract.md).
+Before shipping a loop, answer each one. The fillable version is the [loop contract](#the-loop-contract) below.
 
 - [ ] Is it worth a loop: repeating work, and a scorekeeper that can validate it?
 - [ ] What is the **trigger**: manual, schedule or event?
@@ -147,10 +152,104 @@ Before shipping a loop, answer each one. The fillable version is [templates/loop
 
 ---
 
-## Working reference
+## The loop contract
 
-`~/.claude/refs/agent-reliability.md` — retries, stall detection, recovery; `~/.claude/refs/agent-safety.md` — approval gates.
+The checklist as a file, `loop-contract.md`, filled in before the first pass and read by the maker and checker every round ([note 03](03-the-scorekeeper.md#maker-and-checker)). If a section is blank, the loop isn't ready.
+
+```markdown
+# Loop contract — auth-tests
+## Worth a loop?
+Repeats: until one goal is met · Why not one prompt: 6 failing tests, each needs a fix-and-rerun
+## Goal
+All tests in tests/auth/ pass.        # has an end → run-until-done (/goal); ongoing → timer (/loop)
+## Acceptance criteria (each a command)
+- [ ] `pytest tests/auth -q` passes
+- [ ] `ruff check src/auth` clean
+## Scorekeeper
+Command: `pytest tests/auth -q | tail -1` · Score: tests passing
+Held-out check (final gate only): `pytest tests/auth_edge -q`
+Checker (if model-graded): a different model from the maker; rubric at docs/rubric.md
+## Write boundary
+| May edit     | Must not edit                                 |
+| `src/auth/**` | `tests/**`, scoring scripts, this file        |
+Enforced by: a PreToolUse hook that blocks writes outside src/auth/   # not just this sentence
+## Trigger
+/goal
+## Stop rules
+| Exit       | Threshold                           | On trip                              |
+| Success    | scorekeeper + held-out green        | save, report                         |
+| Iterations | 20 passes                           | escalate                             |
+| Budget     | $5 or 60 minutes                    | escalate, state saved                |
+| Stall      | score unchanged 3 passes            | change strategy once, then escalate  |
+## Ratchet
+- [ ] A lower score rolls the change back automatically
+- [ ] Each green pass is committed before the next starts
+- [ ] Breaks are fixed before new work
+## Human gates
+Pause before: dependency changes, anything touching prod, deleting a test
+## How to work each pass
+1. Read this contract and loop-state.md.  2. Do the one item in "What is next".
+3. Run the scorekeeper. Up: commit. Down: revert.
+4. Stuck on the same error for 2 passes: change approach or simplify.
+5. Update loop-state.md before exiting.
+```
+
+The state file it points to is in [note 05](05-long-running-loops.md#memory-three-tiers-five-fields); the guarded script that enforces the stop rules and the ratchet is in [note 05](05-long-running-loops.md#the-ralph-loop).
 
 ---
 
-→ Next: [10-framework-bindings.md](10-framework-bindings.md) — the same loop in ADK, the Vercel AI SDK and LangGraph.
+## Pitfalls
+
+KodeKloud's six traps, with two more from this note's exit and self-modification sections.
+
+| Trap | Symptom | Fix |
+|---|---|---|
+| **No scorekeeper** | Runs, but results are inconsistent or meaningless | Write the scorekeeper first; objective and hard to game |
+| **Goal too big** | Never finishes; scope drifts | Cut it to one small, testable piece |
+| **Cheating the tests** | Score goes green, output is wrong | Protect the scorekeeper; held-out checks; audit outputs |
+| **Thrashing** | Lots of change, no improvement | Smaller goal, smaller changes, clearer score |
+| **Unsafe autonomy** | Risky commands or sweeping edits | Narrow the write scope; human approval for dangerous steps |
+| **Comprehension debt** | Scores are green, nobody understands the output | Read and review output regularly. The score is not understanding |
+| **Treating a cap as success** | The run stops at N passes and reports done | The iteration cap escalates; only the scorekeeper confirms the goal |
+| **Letting tool output become instructions** | An injected web page, summarized as "experience", fires in every later session | Treat raw output as evidence, and keep changes in a candidate area that serves no traffic until reviewed |
+
+## Try it
+
+1. Run the note's one-hour audit on any loop you have: how much was machine-confirmed, can you explain the last change, how many "I'll look later"s went unread, is context size trending up?
+
+   <details><summary>What to look for</summary>
+
+   Each answer maps to a silent cost: verification debt, comprehension rot, cognitive surrender and token blowout. These don't appear in traces, so a poor answer is the only signal you get. Pick the worst and apply its countermeasure.
+
+   </details>
+
+2. A loop's score is unchanged for K passes, then the action repeats. Which exit fires, and what happens next? Compare with a budget trip.
+
+   <details><summary>Answer</summary>
+
+   The stall detector: change strategy once, then escalate. A budget cap escalates with state saved. Neither is a success, since only the scorekeeper confirming the goal is.
+
+   </details>
+
+3. Fill in the [loop contract](#the-loop-contract) for a loop you run. Any blank section means it isn't ready. Then test a failure path in [loop-scorekeeper-py](../practice/loop-scorekeeper-py/readme.md), which has one scripted maker per way a loop ends.
+
+   <details><summary>What to check</summary>
+
+   Check that the run stops with the expected reason, not just that it stops. Best practices call for testing failure paths on purpose. Change a limit in the lab and confirm a different exit fires.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| What are Masood's three structural failures? | Context rot, termination failure and weak verification, fixed by pruning inside the loop, layered exits with no-progress detection, and deterministic checks first. |
+| What are Osmani's four silent costs? | Verification debt, comprehension rot, cognitive surrender and token blowout. They don't show up in traces and grow the longer a loop runs. |
+| What are the two ratchet rules? | The score only goes up, so a lower score is undone automatically, and fix breaks before adding more. A worktree per try and a commit per green pass make both cheap. |
+| How many ways should a loop stop? | Several independent ones: success, iteration cap, budget cap, stall detector and human escalation. Only one of them is a success. |
+| What can a self-modifying loop never edit? | The validators, test cases, release thresholds, audit logs and stable backups that approve its own updates. It may edit prompts, Skills, knowledge and tools. |
+| Green scores but nobody understands the code. Is that a problem? | Yes, comprehension debt: the score isn't understanding, and a fast loop requires fast reading. Osmani's point is to stay the engineer rather than the person who presses go. |
+
+## Next
+
+[10-framework-bindings.md](10-framework-bindings.md): the same loop in ADK, the Vercel AI SDK and LangGraph.

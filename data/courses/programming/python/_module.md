@@ -1,10 +1,14 @@
 ---
-imported_hash: a99640988d1c85ad
+imported_hash: 48dd89d067b2de0b
 title: Python
-summary: Seven course notebooks (arrays, DataFrames, plotting, aggregation, time series) plus McKinney's chapter notebooks and earlier Michigan/Wesleyan coursework.
-order: 100
+summary: Worked answers are in each module's practice/solutions/.
+order: 104
 source: learn-ai-engineering/programming/python
 readings:
-- title: NationalReadMe
-  source: programming/python/04-python-for-data/mckinney/datasets/babynames/NationalReadMe.pdf
+- title: Python foundations
+  source: programming/python/01-foundations/slides/python-foundations.pdf
+- title: Python informatics
+  source: programming/python/02-informatics/slides/python-informatics.pdf
+- title: Python for engineers
+  source: programming/python/03-language-for-engineers/slides/python-for-engineers.pdf
 ---

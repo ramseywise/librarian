@@ -1,5 +1,5 @@
 ---
-imported_hash: 2b62a499114f0d66
+imported_hash: 03604339369ad890
 title: TypeScript
 summary: The type challenges are in practice/type-challenges/challenges/.
 order: 1
@@ -11,11 +11,12 @@ source: learn-ai-engineering/programming/typescript/README.md
 
 > From "JavaScript for Python developers" to typed LLM apps, in nine modules. Each module is a
 > short note plus exercises that are checked by the type checker, by `node --test`, or by both.
-> Jump to: [Modules](#modules) · [Setup](#setup) · [How exercises are checked](#how-exercises-are-checked) · [Rules of thumb](#rules-of-thumb) · [Sources](#sources)
+> Study deck: [typescript.pptx](slides/typescript.pptx), which librarian turns into flashcards (source: [deck.yaml](slides/deck.yaml)).
+> Jump to: [Syllabus](#syllabus) · [Layout](#layout) · [Setup](#setup) · [How exercises are checked](#how-exercises-are-checked) · [Rules of thumb](#rules-of-thumb) · [Sources](#sources)
 
 ---
 
-## Modules
+## Syllabus
 
 | # | Note | You can… | Exercises |
 |---|---|---|---|
@@ -33,6 +34,44 @@ The type challenges are in [`practice/type-challenges/challenges/`](practice/typ
 Solutions sit next to each vendored exercise (`index.solution.ts`), in
 [`practice/type-challenges/solutions/`](practice/type-challenges/solutions/) and in
 [`practice/solutions/`](practice/solutions/). Try each exercise before you open them.
+
+---
+
+## Builds on and feeds into
+
+**Builds on**
+
+| Chapter | Why |
+|---|---|
+| [Python 03 Language for engineers](../python/readme.md) | TypeScript starts after it; types and asynchronous work have context by then |
+| [Python 03/07 Concurrency](../python/03-language-for-engineers/notes/07-concurrency.md) | The asyncio model that [async](notes/06-async.md) compares with promises |
+
+**Feeds into**
+
+| Chapter | Why |
+|---|---|
+| [Frontend and UX](../frontend-and-ux/readme.md) | Starts after this track; React and AI interfaces use its async and streaming |
+| [DA 05/06 Dashboard stacks](../../data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend.md) | The TypeScript end of a dashboard stack |
+| [AI Engineering](../../ai-engineering/00-start-here/readme.md) | Labs come in TypeScript and Python side by side |
+
+---
+
+## Layout
+
+```
+typescript/
+├── README.md
+├── notes/                        01–09
+├── slides/                       deck.yaml and the built study deck; `make slides PILLAR=programming/typescript`
+└── practice/                     one npm project: package.json, tsconfig.json, .gitignore (node_modules/)
+    ├── check.ts                  one tsc run with the errors grouped by exercise; --solutions swaps the solutions in
+    ├── exercises/                own runtime exercises 01, 06, 08, 09
+    ├── solutions/                same names, worked
+    ├── tests/                    node --test, one file per runtime exercise
+    ├── examples/claude.ts        live Anthropic SDK example
+    ├── typescript-exercises/     vendored 01–15 (index.ts, index.solution.ts, test.ts), LICENSE, NOTICE.md
+    └── type-challenges/          challenges/ vendored with its LICENSE; solutions/ written here
+```
 
 ---
 
@@ -76,6 +115,15 @@ Node 22.18+ runs `.ts` files directly by stripping the types, so there is no bui
 
 ---
 
+## Primary texts
+
+- TypeScript Handbook
+- *typescript-exercises*
+- *type-challenges*
+- Zod documentation
+
+Everything else: [references.md](../00-start-here/references.md).
+
 ## Sources
 
 | Source | License | Used for |
@@ -87,4 +135,4 @@ Node 22.18+ runs `.ts` files directly by stripping the types, so there is no bui
 | [Anthropic TypeScript SDK](https://github.com/anthropics/anthropic-sdk-typescript) | MIT | Note 09 and the live example |
 | [Total TypeScript](https://www.totaltypescript.com/) (Matt Pocock), [TypeScript Deep Dive](https://basarat.gitbook.io/typescript/) (Basarat) | Proprietary / read online | Further reading, link only |
 
-Timed and interview-style problems in TypeScript are in [sisyphus `drills/`](https://github.com/ramseywise/sisyphus/blob/main/drills/README.md).
+Timed and interview-style problems in TypeScript are in [`programming/drills/`](../drills/readme.md).

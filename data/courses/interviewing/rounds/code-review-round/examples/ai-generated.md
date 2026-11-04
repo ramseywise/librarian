@@ -1,5 +1,5 @@
 ---
-imported_hash: 25f1c51fbeece8b0
+imported_hash: 2d8b3b0f9bcd23cf
 title: AI-Generated & LLM Integration Code
 summary: 'async def handle_message(self, user_id: str, message: str) -> str: # Load user context context = await self.memory.get(user_id)'
 order: 19
@@ -42,7 +42,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/exam
 >
 > **[Info]** — Creates a new `OpenAI()` client per call. Consider a module-level or injected client.
 
-**What this teaches**: AI-generated code's signature failure: plausible parameters that don't exist. `normalize=True` looks completely reasonable — you'd only catch it by checking actual API docs. The `encoding_format` / return type mismatch shows internal inconsistency across lines generated plausibly but independently. See [agents guide §3](../../../guides/4-agents/interview-guide.md) on ACI — "fix the tool description before blaming the model" applies to reviewing LLM output too.
+**What this teaches**: AI-generated code's signature failure: plausible parameters that don't exist. `normalize=True` looks completely reasonable — you'd only catch it by checking actual API docs. The `encoding_format` / return type mismatch shows internal inconsistency across lines generated plausibly but independently. See [tool design](../../../../ai-engineering/03-harness-engineering/notes/03-tool-design.md) on ACI — "fix the tool description before blaming the model" applies to reviewing LLM output too.
 
 ---
 
@@ -83,7 +83,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/exam
 >
 > **[Info]** — No chunking consideration. If individual `page_content` entries are very long, 10 of them could overflow the model's context window. Consider a token budget check before assembly.
 
-**What this teaches**: AI-generated RAG code often produces a "works in demo, fails in production" pipeline. The code is syntactically correct and follows the basic pattern, but misses the quality controls (relevance filtering, attribution, token budgets) that separate a prototype from a system. See [agents guide §4](../../../guides/4-agents/interview-guide.md) on harness engineering — verification and feedback signals.
+**What this teaches**: AI-generated RAG code often produces a "works in demo, fails in production" pipeline. The code is syntactically correct and follows the basic pattern, but misses the quality controls (relevance filtering, attribution, token budgets) that separate a prototype from a system. See [harness pillar](../../../../ai-engineering/03-harness-engineering/readme.md) on harness engineering — verification and feedback signals.
 
 ---
 
@@ -138,4 +138,4 @@ source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/exam
 >
 > **[Info]** — Memory isolation relies on `user_id` — worth verifying that the caller authenticates users and that `user_id` can't be spoofed (one user reading another's memory history).
 
-**What this teaches**: Memory writes in agent systems are a security boundary. The OWASP Agent Security cheat sheet lists memory poisoning as a key risk — and this is exactly the "bad example" pattern they show. See [security guide §3](../../../guides/7-security-safety/interview-guide.md) on memory hygiene; [security chapter](../../../../ai-engineering/09-safety-and-security/readme.md) OWASP §3.
+**What this teaches**: Memory writes in agent systems are a security boundary. The OWASP Agent Security cheat sheet lists memory poisoning as a key risk — and this is exactly the "bad example" pattern they show. See [safety pillar](../../../../ai-engineering/09-safety-and-security/readme.md) on memory hygiene; [security chapter](../../../../ai-engineering/09-safety-and-security/readme.md) OWASP §3.

@@ -1,7 +1,7 @@
 ---
-imported_hash: 5b7a955ca2014f22
+imported_hash: 07017cabb15c602c
 title: 2 — Iterators, generators and comprehensions
-summary: An iterable can produce an iterator (list, dict, str, files).
+summary: 'def iter(self): # an iterator returns itself return self'
 order: 13
 kind: reading
 section: Language for engineers / Notes
@@ -21,6 +21,45 @@ it = iter([10, 20])   # calls __iter__
 next(it)              # 10
 next(it)              # 20
 next(it)              # raises StopIteration — the for loop catches this for you
+```
+
+A `for` loop is that protocol with the error handling written for you:
+
+```mermaid
+sequenceDiagram
+    participant L as for x in xs
+    participant A as iterable xs
+    participant I as iterator
+    L->>A: iter(xs) calls __iter__
+    A-->>L: returns an iterator
+    loop until exhausted
+        L->>I: next(it) calls __next__
+        I-->>L: a value, bound to x
+    end
+    L->>I: next(it)
+    I-->>L: raises StopIteration
+    Note over L: the loop catches it and ends
+```
+
+Any class with those two methods can sit on the right of a `for`:
+
+```python
+class Countdown:
+    def __init__(self, start: int):
+        self.n = start
+
+    def __iter__(self):         # an iterator returns itself
+        return self
+
+    def __next__(self):
+        if self.n == 0:
+            raise StopIteration
+        self.n -= 1
+        return self.n + 1
+
+c = Countdown(3)
+print(list(c))    # [3, 2, 1]
+print(list(c))    # []: an iterator is single-use
 ```
 
 An **iterable** can produce an iterator (`list`, `dict`, `str`, files). An **iterator** is single-use: once exhausted, it stays empty. That is why looping twice over a generator or a `map` object silently yields nothing the second time.

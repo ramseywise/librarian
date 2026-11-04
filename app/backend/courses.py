@@ -66,7 +66,7 @@ SEMANTIC_TOP_K = 6
 LESSON_PROSE_CHARS = 1500
 # Lesson vectors keyed by content hash, so a warm restart re-embeds nothing (gitignored).
 LESSON_VEC_CACHE = ROOT / ".cache" / "lesson_embeddings.npz"
-DRILL_KEYS = ("track", "topic", "difficulty", "timebox_min")  # practice/drills/README.md schema
+DRILL_KEYS = ("track", "topic", "difficulty", "timebox_min")  # programming/drills/README.md schema
 _FENCE_RE = re.compile(r"^\s*(```|~~~)")
 
 router = APIRouter(prefix="/api/courses")

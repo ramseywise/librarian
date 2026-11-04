@@ -146,11 +146,14 @@ published: YYYY-MM-DD
   to link concepts explicitly. Inline `[[Wiki Page]]` links work too. Images go in the
   module's `assets/` and are referenced relatively.
 - Seeded from `../learn-ai-engineering` by `make import-courses` (`core/import_courses.py`).
-  The `drills` and `interviewing` courses come from its top-level `practice/` (`practice/drills`
-  and `practice/interviewing`) — see `SUBJECT_SOURCES`. That tree's `.gitignore` is the
-  publication allowlist: only tracked files import, and the importer refuses to run on these
-  subjects outside a git checkout. Never import from sisyphus (private; `jobs/` is personal PII).
-  Drill files (frontmatter with a `track`, schema in `practice/drills/README.md`) import as
+  The `interviewing` course comes from its top-level `practice/interviewing` — see
+  `SUBJECT_SOURCES`. That tree's `.gitignore` is the publication allowlist. Drills are the `drills`
+  module of the Programming course (`programming/drills`), kept apart from local files by the
+  root `.gitignore`. For both (`FAIL_CLOSED_SUBJECTS`) gitignored files never import, not even
+  as references, and the importer refuses to run outside a git checkout. A full import removes
+  the generated files of the old `drills` course (`RETIRED_SUBJECTS`). Never import from
+  sisyphus (private; `jobs/` is personal PII).
+  Drill files (frontmatter with a `track`, schema in `programming/drills/README.md`) import as
   `kind: drill` with `track`/`topic`/`difficulty`/`timebox_min`/`units`, and their `concepts` become
   `wiki` links. They feed Practice mode: `GET /api/courses/practice` and the `#/practice` tab.
   Concepts with no wiki page show as plain `drill.tags`. Attempt counts come from sisyphus

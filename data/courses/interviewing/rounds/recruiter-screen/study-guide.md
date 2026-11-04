@@ -1,5 +1,5 @@
 ---
-imported_hash: ad6be5ea855bf702
+imported_hash: f8fb3673960457ee
 title: Study Guide — Recruiter Screen
 summary: This round is not studied — it's rehearsed.
 order: 60
@@ -13,6 +13,8 @@ source: learn-ai-engineering/practice/interviewing/rounds/recruiter-screen/study
 This round is not studied — it's rehearsed. The material here is a set of things to build and practice, not facts to memorize.
 
 ---
+
+Titles blur between companies. Read the job description to see which job it really is before preparing.
 
 ## 1. The 90-Second Narrative
 

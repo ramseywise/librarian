@@ -1,4 +1,4 @@
-/** Drill schema fields (learn-ai-engineering practice/drills/README.md), on lessons of kind "drill". */
+/** Drill schema fields (learn-ai-engineering programming/drills/README.md), on lessons of kind "drill". */
 export interface DrillMeta {
   track: string;
   topic?: string;

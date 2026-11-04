@@ -1,5 +1,5 @@
 ---
-imported_hash: c2a60c4f8093c421
+imported_hash: b915c8ecb7f8be32
 title: Coding Challenge — Question Bank
 summary: These assume a browser editor with no network and no AI assistant — stdlib only.
 order: 25
@@ -144,7 +144,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 
 **Common pitfalls**: Substring matching instead of tokenized overlap. No length normalization, so long docs win everything. `json.loads` with no try block. No grounding check. Asking the model for a float confidence. Padding results to k with irrelevant documents.
 
-**Study refs**: `examples/rag-pipeline-offline.md`, `guides/3-rag/`
+**Study refs**: `examples/rag-pipeline-offline.md`, [RAG pillar](../../../generative-ai/02-rag-retrieval/readme.md)
 
 ---
 
@@ -165,7 +165,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 
 **Common pitfalls**: Building a `while` loop that asks the model what to do next. Collapsing declined and failed into one error state. No gate before generation. Cannot answer "which step failed?" Retrying the whole pipeline instead of the failing step.
 
-**Study refs**: `examples/workflow-orchestration.md`, `guides/4-agents/`
+**Study refs**: `examples/workflow-orchestration.md`, [harness pillar](../../../ai-engineering/03-harness-engineering/readme.md)
 
 ---
 
@@ -186,7 +186,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 
 **Common pitfalls**: Floats for currency. One bad record kills the batch. Mean ± 3σ without noticing the outlier inflates σ. Divide-by-zero when all of a user's amounts are identical. Naive/aware datetime comparison.
 
-**Study refs**: `examples/transaction-aggregation.md`, `guides/8-data-eng-mlops/`
+**Study refs**: `examples/transaction-aggregation.md`, [data engineering](../../../data-engineering/00-start-here/readme.md)
 
 ---
 
@@ -207,7 +207,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 
 **Common pitfalls**: f-strings into SQL. Commit per row. Float currency. Answering the follow-up with "we'd use a bigger database." The opposite failure: refusing to use SQLite at all, or defending it because you just wrote it. Claiming an index helps without running the plan.
 
-**Study refs**: `examples/sqlite-pipeline-scaling.md`, `guides/8-data-eng-mlops/`, `guides/9-system-design/`
+**Study refs**: `examples/sqlite-pipeline-scaling.md`, [data engineering](../../../data-engineering/00-start-here/readme.md), [system-design method](../system-design-round/study-guide.md)
 
 ---
 
@@ -230,7 +230,7 @@ These assume a browser editor with no network and no AI assistant — stdlib onl
 
 **Common pitfalls**: `==` on signatures. `sha256(password)` with no salt. Decoding claims before verifying. Trusting the token's own `alg` header. Distinct error messages ("expired" vs "bad signature") that tell an attacker which half to work on. Secrets or PII inside the payload. Conflating authentication with authorization.
 
-**Study refs**: `examples/auth-api-endpoint.md`, `guides/7-security-safety/`, `code-from-heart.md` §13
+**Study refs**: `examples/auth-api-endpoint.md`, [safety pillar](../../../ai-engineering/09-safety-and-security/readme.md), `code-from-heart.md` §13
 
 ---
 

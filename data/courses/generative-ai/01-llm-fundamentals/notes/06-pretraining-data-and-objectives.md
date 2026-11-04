@@ -1,0 +1,176 @@
+---
+imported_hash: 5b274e396092c641
+title: '6 — Pretraining: data and objectives'
+summary: A team asks whether they should train their own support model on five years of tickets.
+order: 7
+kind: reading
+section: Notes
+source: learn-ai-engineering/generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md
+---
+
+# 6 — Pretraining: data and objectives
+
+> Pretraining buys knowledge, supervised fine-tuning buys format, preference optimization buys judgment, and LoRA makes the last two affordable. Know which stage a problem belongs to before you reach for fine-tuning.
+
+A team asks whether they should train their own support model on five years of tickets. Before anyone reaches for a GPU, it helps to know what the question means: what training optimises, what it needs, and what it costs. Pretraining is the stage that builds the base model every later stage inherits, and it takes almost all of the compute. Its loop is short enough to fit on a slide, while the scale it runs at is what makes it a capital decision. This chapter starts with the loop, runs it on the smallest data that shows every moving part, then looks at the data it reads. [Chapter 15](15-pretraining-runs-cost-and-scale.md) scales the arithmetic up until the reasons few organisations do this are plain.
+
+---
+
+## The pipeline
+
+```text
+raw text ──pretrain──▶ base model ──SFT──▶ instruction model ──preference optimization──▶ assistant
+ (trillions of tokens)   (continues text)   (follows the format)   (RLHF / DPO / RLAIF)    (helpful, harmless)
+```
+
+| Stage | Data | Objective | What it changes | Depth |
+|---|---|---|---|---|
+| Pretraining | Web, books, code; trillions of tokens, unlabeled | Next-token cross-entropy | Knowledge, language, reasoning ability | This note; *LLMs from Scratch*, ch. 5 |
+| Supervised fine-tuning (SFT) | Thousands to millions of (instruction, response) pairs | Same loss, on the response tokens | Format, instruction following, persona | [Chapter 07](07-sft-and-instruction-tuning.md); *LLMs from Scratch*, ch. 7; *LLM Engineer's Handbook*, ch. 5 |
+| Preference optimization | Pairs of responses ranked by humans or a model | Reward model + PPO, or DPO directly | Which of several acceptable answers the model prefers | [Chapter 08](08-preference-optimisation-overview.md); [05-RL](../../05-rl/readme.md) |
+
+The InstructGPT paper ([arXiv:2203.02155](https://arxiv.org/abs/2203.02155), Ouyang et al., 2022) is the reference recipe: demonstrations → SFT, comparisons → reward model, reward model → PPO. Its headline result: labelers preferred outputs of the 1.3B InstructGPT model to the 175B GPT-3. Alignment, not size, made the difference users noticed.
+
+---
+
+## Pretraining
+
+Pretraining is self-supervised: the label for each position is the next token in the text. [Fundamentals](../../../data-science/02-deep-learning/notes/01-neural-networks-fundamentals.md#backpropagation) and [optimisation](../../../data-science/02-deep-learning/notes/02-optimisation-and-regularisation.md#optimisers) in data science teach backprop, AdamW and the learning-rate sweep. Raschka writes the loop by hand (*LLMs from Scratch*, ch. 5; full code at [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)):
+
+```python
+import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+text = ("my refund is late. please refund my order. the order arrived late. "
+        "please cancel my order. my card was charged twice. refund my card. ") * 40
+chars = sorted(set(text))
+ids = torch.tensor([chars.index(c) for c in text])
+split = int(0.9 * len(ids))
+train_ids, val_ids = ids[:split], ids[split:]
+
+def batches(data, seq=32, batch=32, steps=300):
+    for _ in range(steps):
+        starts = torch.randint(0, len(data) - seq - 1, (batch,))
+        yield (torch.stack([data[s:s + seq] for s in starts]),
+               torch.stack([data[s + 1:s + seq + 1] for s in starts]))   # shifted one left
+
+torch.manual_seed(0)
+model = nn.Sequential(nn.Embedding(len(chars), 32), nn.Linear(32, 64), nn.ReLU(), nn.Linear(64, len(chars)))
+optimizer = torch.optim.AdamW(model.parameters(), lr=3e-3)
+
+def mean_loss(data):
+    with torch.no_grad():
+        return sum(F.cross_entropy(model(x).flatten(0, 1), y.flatten()).item()
+                   for x, y in batches(data, steps=10)) / 10
+
+print(f"untrained loss {mean_loss(train_ids):.3f}  ln(vocab) {math.log(len(chars)):.3f}")
+for input_ids, target_ids in batches(train_ids):     # targets = inputs shifted one to the left
+    logits = model(input_ids)                        # (batch, seq, vocab)
+    loss = F.cross_entropy(logits.flatten(0, 1), target_ids.flatten())
+    optimizer.zero_grad(); loss.backward(); optimizer.step()
+train, val = mean_loss(train_ids), mean_loss(val_ids)
+print(f"after 300 steps: train {train:.3f}  val {val:.3f}  val perplexity {math.exp(val):.1f}")
+```
+
+```text
+untrained loss 3.210  ln(vocab) 3.091
+after 300 steps: train 1.168  val 1.191  val perplexity 3.3
+```
+
+The first printed line is the check to run before any long job. An untrained model should score about `ln(vocab)`, because it spreads probability evenly across the vocabulary, and a very different value means a bug in the data or the loss. The model here sees only the previous character, so it stops improving at the entropy of that one-character view of this text. Its perplexity is about how many next characters it is still choosing between. The loop is the same one you would run on a real model.
+
+One forward pass scores every position at once: the causal mask lets the model predict token 2 from token 1, token 3 from tokens 1–2, and so on, all in parallel. Feeding the true previous tokens rather than the model's own guesses is called *teacher forcing* (*Building AI Agents*, ch. 2). It is why training is parallel while generation ([chapter 04](04-decoding-and-inference-behaviour.md)) is not.
+
+Things worth knowing about the loss:
+
+- **At initialization** the loss should be about `ln(vocab_size)`, the loss of a uniform guess: ≈ 10.8 for a 50,257-token vocabulary. Raschka's untrained GPT-2 scores 10.7940 on his first batch, a perplexity of about 48,725, close to the vocabulary size (*LLMs from Scratch*, ch. 5). If it starts far higher, the initialization is broken.
+- **Perplexity** = `exp(loss)`: the effective number of tokens the model is choosing between.
+- **Overfitting looks like this.** Raschka trains the 124M model for 10 epochs on one short story (Edith Wharton's "The Verdict", 5,145 tokens, 90/10 train/validation split, context cut to 256). It takes about five minutes on a MacBook Air. Training loss falls from 9.78 to 0.39 while validation loss stalls near 6.4, and the model starts reciting passages of the story verbatim. Real pretraining makes roughly one pass over a far larger corpus, with batch sizes of 1,024 or more. Verbatim recall survives that, though. GPT-2 XL (1.5B) had a training loss only about 10% below its test loss. Even so, Carlini et al. sampled 600,000 generations from it, ranked them with six membership-inference scores (the most precise compared the model's likelihood with zlib compression), and checked the top 1,800 candidates by hand. 604 were memorized training text, including names with phone numbers, 128-bit UUIDs and code. Some strings appeared in a single document of the training set ([arXiv:2012.07805](https://arxiv.org/abs/2012.07805) (Carlini et al., USENIX Security 2021)). The 604 are a lower bound from one model; the authors could not measure recall over the whole training set.
+
+![Line chart of training and validation loss against epochs (0–10) and tokens seen (0–45,000): both fall from about 10 to 7 in the first epoch, then training loss keeps falling to about 0.4 while validation loss flattens around 6 and creeps up after epoch 7](../assets/sources/images/build-a-large-language-model-from-scratch-fig5-12.png)
+*Image Source: Raschka, *Build a Large Language Model (From Scratch)* (Manning, 2024), Fig. 5-12*
+
+- **Save the optimizer state with the weights.** AdamW keeps two running statistics per parameter. Resume from weights alone and the first steps behave like a fresh optimizer (*LLMs from Scratch*, ch. 5). LLM360 made that mistake at scale: Amber's training code saved no optimizer state, so AdamW restarted from scratch at every resume. The authors suspect this caused the NaN losses that made them drop 4 of 360 data chunks ([arXiv:2312.06550](https://arxiv.org/abs/2312.06550) (Liu et al., 2023, preprint)). That state is most of the training memory. With mixed precision, Adam needs about 16 bytes per parameter: 2 for fp16 weights, 2 for fp16 gradients, and 12 for the fp32 master weights, momentum and variance. A 1.5B GPT-2 therefore needs at least 24 GB before activations, against 3 GB for its fp16 weights. ZeRO's answer is to shard that state across the data-parallel GPUs instead of copying it to each one. Sharding the optimizer state cuts per-GPU model-state memory 4×, and sharding the gradients as well cuts it 8×, at the same communication volume as plain data parallelism. With that, models of up to 13B trained with no model parallelism on 32 GB V100s, where plain data parallelism ran out of memory above 1.4B ([arXiv:1910.02054](https://arxiv.org/abs/1910.02054) (Rajbhandari et al., SC 2020)). Sharding the weights too (stage 3, the scheme PyTorch FSDP's full sharding follows) was described but not yet built at publication. The "W" in AdamW is *decoupled* weight decay. Under Adam, an L2 penalty is divided by the adaptive denominator, so weights with large gradients are barely regularized. Shrinking the weights directly, outside the gradient, cut test error by about 15% relative on CIFAR-10 and ImageNet 32×32 ResNets, and made the best learning rate independent of the best decay ([arXiv:1711.05101](https://arxiv.org/abs/1711.05101) (Loshchilov & Hutter, ICLR 2019)). That evidence is image classification only; the LLM default came by adoption.
+
+Real pretraining runs add data curation (deduplication, quality filtering, mixing code and text), learning-rate warmup and cosine decay ([chapter 15](15-pretraining-runs-cost-and-scale.md#the-batch-and-the-optimizer)), gradient clipping and mixed precision. Clipping does not prevent every blow-up. PaLM 540B's loss spiked about 20 times during training, at irregular intervals and sometimes late, although none of the smaller models spiked. The fix was to restart about 100 steps before the spike and skip 200–500 batches. Replaying those same batches from an earlier checkpoint caused no spike, so the authors blame the combination of data and parameter state, not bad data. PaLM also dropped all bias terms and added an auxiliary *z-loss* (10⁻⁴ · log²Z) that keeps the softmax normalizer near 1, both for stability ([arXiv:2204.02311](https://arxiv.org/abs/2204.02311) (Chowdhery et al., JMLR 2023)). Raschka also loads the released GPT-2 weights into the hand-built model, which proves the architecture in [chapter 02](02-attention-and-the-transformer-block.md) matches the real one (*LLMs from Scratch*, ch. 5).
+
+**Most "open" models release only the weights, which hides those steps.** LLM360 scored 16 open models, from GPT-J (2021) to Yi (2023), on seven artifacts: code, configs, weight checkpoints, optimizer checkpoints, data mix, data order and the data itself. Disclosure shrank as the models got stronger. Llama 2, Qwen, Mistral and Yi released weights and little else. LLM360's Amber (6.7B, 1.26T tokens) released all seven, with 360 checkpoints. It copied LLaMA's hyperparameters and still trailed LLaMA-7B, 45.2 to 49.7 averaged over four leaderboard tasks. The authors blame LLaMA's undisclosed data ([arXiv:2312.06550](https://arxiv.org/abs/2312.06550) (Liu et al., 2023, preprint)). OLMo released its 2.7T-token corpus (Dolma), more than 500 checkpoints, its training logs and a reproducible data order, under Apache 2.0 ([arXiv:2402.00838](https://arxiv.org/abs/2402.00838) (Groeneveld et al., ACL 2024)). OLMo 2 closed most of the gap. Its 7B model, trained on 4.05T tokens, averaged 62.9 on ten benchmarks against Llama 3.1 8B's 61.8, with about a quarter of the training compute (1.8 against 7.2 × 10²³ FLOPs). The last 5–10% of that compute is a *mid-training* stage: the learning rate decays to zero on a smaller mix of filtered web pages, academic text and synthetic math, and three or four such runs are averaged into the final model ([arXiv:2501.00656](https://arxiv.org/abs/2501.00656) (OLMo et al., 2024, preprint)). Open-weight frontier reports give that stage much more. GLM-4.5, a 355B mixture-of-experts model with 32B active, pretrained on 22T tokens: 15T of general text, then 7T with code, maths and science upweighted. Its highest-quality web bucket was repeated more than 3.2 times. It then mid-trained on about 1.1T more tokens. That was 500B of repository-level code with issues and pull requests, 500B of synthetic reasoning traces and 100B of long documents and agent trajectories, while the context grew from 4K to 32K and then 128K ([arXiv:2508.06471](https://arxiv.org/abs/2508.06471) (GLM-4.5 Team, 2025, preprint)). It used [Muon](15-pretraining-runs-cost-and-scale.md#the-batch-and-the-optimizer), and kept cosine decay after a warmup-stable-decay schedule underfit in early tests. The report has no ablation of the mid-training stages. The FLOPs are 6ND estimates and the benchmarks are Ai2's own suite, though four of the ten were held out from development.
+
+Not every curation step is a guaranteed win. Pythia trained eight model sizes, from 70M to 12B parameters, twice each: once on the Pile (300B tokens) and once on a near-deduplicated Pile of 207B tokens, run for about 1.5 epochs so that it also reached 300B. Both runs used the same data order and saved 154 checkpoints ([arXiv:2304.01373](https://arxiv.org/abs/2304.01373) (Biderman et al., 2023-04)). On eight standard benchmarks, deduplication showed "no clear benefit", and seeing the data a second time did no visible harm. Galactica pushed repetition further on a small, curated corpus: 106B tokens, 83% of them scientific papers, run for about 4.25 epochs (450B tokens). **Validation loss kept falling through four epochs at every size from 125M to 120B, and the 120B model first overfit at the start of the fifth, where it was stopped** ([arXiv:2211.09085](https://arxiv.org/abs/2211.09085) (Taylor et al., 2022, preprint)). The authors expected the opposite from earlier work on repeated data and leave the cause open, guessing at data quality or the scientific modalities. The exception was a held-out protein-sequence set, whose perplexity started rising at the fourth epoch, and there is no matched run on uncurated web text. The same suite showed that memorized 32-token sequences turn up at a steady rate through training, fitting a Poisson process. So putting sensitive data early or late in training does not change how much of it gets memorized. Each size was trained with one seed; the authors estimate that 25 seeds would have cost about $10 million. The 12B model alone took 72,300 A100-hours.
+
+![Line chart of validation loss against tokens seen (0–450B) for Galactica models from 125M to 120B, with dashed lines at each epoch boundary: every curve keeps falling across four epochs, and only the 120B curve ticks up just after the fourth boundary](../assets/sources/images/taylor-galactica-fig6.png)
+*Image Source: Taylor et al., [Galactica: A Large Language Model for Science](https://arxiv.org/abs/2211.09085) (2022), Fig. 6*
+
+Deduplication pays off on memorization more than on benchmarks. In C4, Lee et al. found one 61-word sentence repeated 61,036 times, and 4.6% of validation examples had a near-duplicate in training. They trained 1.5B models for about two epochs on the original and on deduplicated copies. On the original C4, 1.93% of tokens in unprompted generations sat inside a 50-token exact match with training data. On the deduplicated copies it was 0.14–0.19%, about 10× less, at equal or better perplexity ([doi:10.18653/v1/2022.acl-long.577](https://doi.org/10.18653/v1/2022.acl-long.577) (Lee et al., ACL 2022)). They ran no downstream tasks, so their result and Pythia's benchmark null measure different things. Goldfish loss tackles memorization in the objective.
+
+It leaves 1 in k tokens out of the loss, chosen by hashing the 13 preceding tokens, so every copy of a passage is masked in the same places. LLaMA-2-7B trained for 100 epochs on 100 Wikipedia articles reproduced 84 of them verbatim with the standard loss and none with k = 4. In a normal 1.1B run on 20B tokens, benchmark scores barely moved. The price is that it needs about a third more raw tokens (26.7B) to match a 20B-token standard run ([arXiv:2406.10209](https://arxiv.org/abs/2406.10209) (Hans et al., NeurIPS 2024)). It is not a privacy guarantee. In the 1.1B run, where 2,000 Wikipedia documents were repeated 50 times, a zlib-based membership-inference attack still flagged 88.5% of those documents at a 0.1% false-positive rate, against 99.75% with the standard loss.
+
+How much can a model hold at all? Morris et al. trained GPT-style models of up to 20M parameters on random bitstrings, which cannot be learned except by memorizing them, and measured about 3.6 bits per parameter. On deduplicated text, models memorized until that capacity was full, then began to generalize, with double descent at that point ([arXiv:2505.24832](https://arxiv.org/abs/2505.24832) (Morris et al., 2025-05, preprint)). For facts rather than random bits, Allen-Zhu & Li measured about 2 bits per parameter. They trained models from scratch on synthetic biographies, (name, attribute, value) facts written out as text, and the figure held across GPT-2, LLaMA and Mistral sizes once each fact had been seen 1,000 times.
+
+At 100 exposures it fell to 1 bit per parameter. Quantizing to int8 kept the full capacity and int4 cut it to 0.7. Mixing in junk data at 7 junk tokens per useful one cut capacity for the useful facts 20-fold. Prepending a domain-style tag to the useful data brought that loss down to 2× ([arXiv:2404.05405](https://arxiv.org/abs/2404.05405) (Allen-Zhu & Li, 2024-04, preprint)). Their fitted law says loss-based membership inference falls to chance at about 100 tokens per parameter, a ratio the authors say contemporary LLMs already exceed. They checked the law only on GPT-2 models up to 1.5B, and it covers a loss-threshold attack only, not extraction of rare strings like Carlini's UUIDs.
+
+---
+
+### What the data is
+
+Most pretraining text starts as Common Crawl, a scrape of billions of web pages, usually filtered into something like Google's C4. Filtering is crude: GPT-2's WebText kept only pages linked from Reddit posts with at least three upvotes (*AI Engineering*, ch. 2). C4 itself was one month of Common Crawl (April 2019). T5's authors kept only lines that end in terminal punctuation and dropped pages with fewer than three sentences, a word from a bad-word list or a curly bracket. They deduplicated repeated three-sentence spans and kept pages that langdetect scored at least 0.99 English, which left about 750GB ([arXiv:1910.10683](https://arxiv.org/abs/1910.10683) (Raffel et al., JMLR 2020)). With their 220M baseline trained on 34B tokens, the 6.1TB unfiltered version scored worst on every task (GLUE 81.46 against 83.28). Small in-domain sets won on matching tasks: Wikipedia plus books raised exact match on the fiction-heavy MultiRC from 25.78 to 50.93. Repetition hurt only at extremes. Cycling a small subset 1,024 times cut GLUE to 79.55, while 64 repeats barely moved it. CCNet, from Facebook the same year, filtered by resemblance instead of rules. It removed duplicate paragraphs, which made up 70% of the text in a monthly snapshot, and only then ran fastText language identification, so boilerplate no longer pulled pages in small languages into English. It then scored each page by its perplexity under a 5-gram model trained on that language's Wikipedia and split each language into thirds. On one shard of the February 2019 snapshot, 42% of characters survived deduplication against that shard alone and 28% against 100 shards. A BERT-Base trained on the lowest-perplexity third beat the same model trained on Wikipedia by 3.3 XNLI points averaged over English, Russian, Chinese and Urdu (75.9 against 72.6), at the same step count but with more data in most languages. Urdu's 7-point gain came from 2.2GB against Wikipedia's 106MB, so quantity and quality are mixed, and each score is one run. The filter rewards text that reads like Wikipedia: the authors note that valid blog comments and jargon-heavy forums land in the worst-scoring third ([arXiv:1911.00359](https://arxiv.org/abs/1911.00359) (Wenzek et al., LREC 2020)). Books entered through BookCorpus, which was gathered for a different job: training sentence embeddings to align novels with their film adaptations.
+
+It holds 11,038 free books by unpublished authors, each over 20,000 words, about 985M words in all, and Romance is the largest genre at 2,865 books ([arXiv:1506.06724](https://arxiv.org/abs/1506.06724) (Zhu et al., ICCV 2015)). The paper says nothing about licensing, consent or duplicates, yet the corpus went on to train GPT-1 and BERT. The mix decides what the model is good at. English is 45.88% of Common Crawl and Russian, second, about 6%, which shows up later as worse quality and higher token cost in other languages ([chapter 01](01-tokens-and-embeddings.md)). mT5 rebuilt C4 for 101 languages from all 71 monthly Common Crawl scrapes, replacing the English punctuation rule with a line-length filter. It sampled each language in proportion to its size raised to the power 0.3, which boosts the low-resource ones ([doi:10.18653/v1/2021.naacl-main.41](https://doi.org/10.18653/v1/2021.naacl-main.41) (Xue et al., NAACL 2021)). On zero-shot XNLI with mT5-Large, raising the exponent to 0.7 helped Russian (81.5 to 82.8) and hurt Swahili (75.4 to 70.6), and dropping the line-length filter cost 2 points.
+
+Sharing capacity across 101 languages cost the small models: mT5-Small trailed English-only T5-Small on SQuAD (84.7 against 87.2 F1), and the gap had almost closed at XXL (95.6 against 96.2). Newer reports filter with a model instead. Qwen2.5 used Qwen2-Instruct as the quality filter, downsampled e-commerce, social media and entertainment, upsampled science and technology, and grew the corpus from 7T to 18T tokens ([arXiv:2412.15115](https://arxiv.org/abs/2412.15115) (Qwen Team, 2024-12)). An earlier Phi model, phi-1.5, leaned on synthetic data even harder. It carried phi-1's synthetic Python "textbooks" ([arXiv:2306.11644](https://arxiv.org/abs/2306.11644) (Gunasekar et al., 2023-06, preprint)) over to common-sense text. The 1.3B model trained on 150B tokens drawn from a 30B-token set. About 20B of that set was synthetic "textbook" text generated from 20K seed topics, and the only real data was 6B tokens of filtered code. It used about 1.5K A100-hours of training compute. It matched Llama2-7B on common sense (WinoGrande 0.734 vs 0.691) and trailed it on knowledge (MMLU 0.376 vs 0.453) ([arXiv:2309.05463](https://arxiv.org/abs/2309.05463) (Li et al., 2023-09, preprint)).
+
+The generation recipe is described only as "intricate iterations", and there is no contamination analysis. Phi-3 pushed filtering hardest, keeping heavily filtered web data plus synthetic text in what Microsoft calls a "data optimal regime" ([arXiv:2404.14219](https://arxiv.org/abs/2404.14219) (Abdin et al., 2024-04)). **phi-3-mini (3.8B, 3.3T tokens) scored 68.8% on MMLU 5-shot, close to Mixtral 8x7B's 70.5%, but 64.0 on TriviaQA against Mixtral's 82.2.** Filtering kept reasoning and gave up stored facts. Both results come from Microsoft's internal eval pipeline, and the data was not released. Filtering can also remove a capability on purpose. With medicine as a proxy forget domain, dropping or loss-masking only the medical *tokens* hit medicine as hard as dropping whole documents and cost less on neighbouring biology. **At 1.8B parameters, matching an unfiltered model's medical loss would take about 7000× the compute.** It held up 10× better than an unlearning baseline against adversarial fine-tuning, and the filtered models still learned to refuse medical questions ([arXiv:2601.21571](https://arxiv.org/abs/2601.21571) (Rathi & Radford, 2026-01, preprint)). The evidence is that single proxy domain, at up to 1.8B parameters.
+
+Most mixtures are still set by hand. Megatron-Turing NLG (530B) kept the Common Crawl pages a fastText classifier scored as most like OpenWebText2, Wikipedia and Books3, about 20% of the extracted text, and removed near-duplicates with MinHash at a Jaccard similarity of 0.8. Only 53% and 34% of the documents in its two newest Common Crawl snapshots came from URLs unseen in earlier ones. Its weights then ran OpenWebText2 3.6 times and Wikipedia 3.2 times while seeing 0.2 of arXiv and GitHub and half of each crawl ([arXiv:2201.11990](https://arxiv.org/abs/2201.11990) (Smith et al., 2022, preprint)). The paper reports none of these choices against an alternative. The mixture weights can be learned rather than hand-set. DoReMi trains a 280M proxy model with Group DRO, which upweights whichever domain the proxy is furthest behind a reference model on, and reuses its domain weights for an 8B model. On the Pile, the weights moved Pile-CC from 11% to 61% of the mix and cut arXiv from 10.5% to 0.4%. The 8B model gained 6.5 points of average one-shot exact match on five generative QA tasks, reached the baseline's accuracy in 2.6× fewer steps, and improved perplexity on all 22 domains. The tuning cost 8% of the 8B run's compute ([arXiv:2305.10429](https://arxiv.org/abs/2305.10429) (Xie et al., NeurIPS 2023)). A 1B proxy did worse than the 280M one, and the authors cannot explain why the weights transfer across scales. DSIR selects documents instead of domains. It resamples raw data so its hashed n-gram distribution matches a target such as Wikipedia and books, and it processed 100M Pile documents in 4.5 hours on one CPU node. A BERT-base trained from scratch on the selection scored 82.30 on GLUE against 80.25 for random data ([arXiv:2302.03169](https://arxiv.org/abs/2302.03169) (Xie et al., NeurIPS 2023)). That is masked-LM evidence only, and n-grams are a surface signal. Code is in nearly every mix on the belief that it teaches reasoning.
+
+A survey of that belief cites GSM8K chain-of-thought scores rising from 12.4 for text-davinci-001 to 46.9 for code-trained text-davinci-002 ([arXiv:2401.00812](https://arxiv.org/abs/2401.00812) (Yang et al., 2024-01, preprint)). Those are different models, and the survey concedes that explicit causal evidence is still missing. Ruis et al. looked at the data side. They ranked 5M pretraining documents (2.5B tokens) of Cohere's Command R 7B and 35B by influence on 40 simple maths queries. Answers to factual questions turned up in the top 500 documents for 55% of queries at 7B. Answers to reasoning questions almost never did. The influential documents instead showed the procedure, often as code or formulas, and StackExchange appeared about 10× more often than its share of the data ([arXiv:2411.12580](https://arxiv.org/abs/2411.12580) (Ruis et al., ICLR 2025)). The sample is 2.5B tokens out of trillions, influence is computed only through MLP weights, and code was over-represented for control queries that need no reasoning. Capabilities also come from data nobody labelled. 1.4% of PaLM's training instances were bilingual, holding over 30M translation pairs across 44 languages. Removing the translation pairs, about 0.5% of examples, cost a 1B model 7.4 BLEU on zero-shot translation into English from high-resource languages, but only 2–3 BLEU at 8B ([arXiv:2305.10266](https://arxiv.org/abs/2305.10266) (Briakou et al., ACL 2023)). That evidence covers PaLM's data and English-paired translation only.
+
+Code corpora show what a documented pipeline involves. BigCode's StarCoder started from The Stack v1.2, 6.4TB of permissively licensed GitHub code in 384 languages, with an opt-out form; 44 people had opted out when the data was processed ([arXiv:2305.06161](https://arxiv.org/abs/2305.06161) (Li et al., TMLR 2023)). It kept 86 languages, near-deduplicated with MinHash, and removed files matching HumanEval, MBPP, APPS, GSM8K or DS-1000. To redact personal data, 1,399 crowd workers labelled 22,950 entities in 12,000 files, which trained an encoder to find secrets. It detected keys at 70.4 F1, against 6.7 for a regex baseline. StarCoderBase (15.5B) trained on 1T tokens, and StarCoder added 35B Python tokens on top. The paper also shows HumanEval misleading. CodeGen-16B-Mono came close to StarCoderBase on HumanEval (29.3 vs 30.4 pass@1) but scored half as much on DS-1000's data-science tasks (11.7 vs 23.8).
+
+The authors concede the opt-out works per repository, so copies of the same code in other repositories stay in the data, and that the model can still emit personal data. OpenCoder released its whole pipeline and its 960B-token corpus with ablations at 1.5B ([arXiv:2411.04905](https://arxiv.org/abs/2411.04905) (Huang et al., 2024, preprint)). About 75% of GitHub files were exact duplicates. On 485M Python files, deduplicating per file kept 32.7B tokens and deduplicating per repository kept 99.5B, yet the file-level corpus trained the better model on HumanEval and MBPP. Keeping only repositories with at least 5 GitHub stars, as SantaCoder had also tested, lowered training loss but made the model worse, which the authors put down to lost diversity. Dropping the algorithmic and synthetic data from the final annealing stage also hurt. These comparisons are shown only as training curves, one run per setting.
+
+Two limits are closing in, according to Huyen (*AI Engineering*, ch. 2). **Data:** models consume public text faster than people write it (Villalobos et al., 2022), and sites are shutting crawlers out; Longpre et al. (2024) found 45% of C4 restricted by terms of service or robots.txt after 2023–24. Training on model-generated text is one answer, but *Building AI Agents* (ch. 3) warns of *model collapse*: studies in which models trained on synthetic data lost performance or forgot skills they had learned. Rephrasing real pages is safer than generating new ones. WRAP had Mistral-7B rewrite C4 in Wikipedia and Q&A styles and trained on the rewrites mixed with the originals. A 1.3B model reached the same zero-shot accuracy about 3x faster, and Pile perplexity fell by about half. Training on the rewrites alone hurt perplexity on messy real text ([arXiv:2401.16380](https://arxiv.org/abs/2401.16380) (Maini et al., ACL 2024)). **Electricity:** data centres used an estimated 1–2% of world electricity at the time of writing, projected to reach 4–20% by 2030.
+
+---
+
+## Pitfalls
+
+- **Skipping the `ln(vocab)` check.** A loss that starts wrong is telling you there is a bug, long before the expensive part begins.
+- **Using only training loss.** Keep a held-out split from the same distribution, and watch it for the gap.
+- **Reading perplexity across tokenizers.** It depends on the vocabulary, so scores from different tokenizers are not comparable.
+- **Splitting after shuffling overlapping windows.** The same text ends up on both sides of the split and the validation score looks better than it is. Split first, then cut windows.
+- **Saving weights without the optimizer state.** A resumed run then behaves as if its optimizer were new.
+
+---
+
+## Try it
+
+1. In the training block, set `steps=0` in the training loop's `batches` call. What is the printed loss, and why?
+2. Change the model so that it cannot learn: replace `model(input_ids)` with `model(input_ids).detach().requires_grad_()`. What happens to the loss?
+
+<details>
+<summary>Answers</summary>
+
+1. Train loss stays at the untrained value, about 3.2 here, close to ln(22) = 3.09 for this text's 22 characters. Nothing has trained.
+2. The loss stays at the untrained value. The gradient stops at the detached tensor, so the weights never change, which is a common bug behind a flat curve.
+
+</details>
+
+---
+
+## Interview checklist
+
+| Question | Answer |
+|---|---|
+| What is the training objective of pretraining? | Cross-entropy of the next token at every position, with labels being the input shifted by one, so no human labels are needed |
+| What is teacher forcing, and why does it make training parallel? | Each position sees the true previous tokens, so one masked forward pass scores all positions at once. Generation has to wait for its own output |
+| What should the loss be before training? | About `ln(vocab)`. A different value suggests a bug |
+| Why does training need far more memory than inference? | Weights, gradients and optimizer state for every parameter, and activations. Adam alone keeps two extra values per weight |
+
+---
+
+## Next
+
+[15 — The pretraining run: batch, cost and scale](15-pretraining-runs-cost-and-scale.md) prices the loop at real scale and answers the question about the tickets.

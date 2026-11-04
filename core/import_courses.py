@@ -1,7 +1,8 @@
 """Import learn-ai-engineering coursework → data/courses/
 
-One course per subject directory (ai-engineering, generative-ai, data-*, programming; drills
-and interviewing from its top-level practice/ — see SUBJECT_SOURCES).
+One course per subject directory (ai-engineering, generative-ai, data-*, programming, whose
+drills/ folder is one of its modules; interviewing from its top-level practice/ — see
+SUBJECT_SOURCES).
 Inside a subject, each top-level directory becomes a module and every
 authored .md / .mdx / .ipynb file under it becomes a lesson. Files at the subject root
 land in a synthetic `00-start-here` module. Subdirectories inside a module become
@@ -21,10 +22,11 @@ learn-ai-engineering/THIRD_PARTY.md) are NOT imported. They are listed on their 
 references, as are the bulky course folders in PRACTICE_REFERENCE_ONLY. PDFs are listed as
 readings. Gitignored files (fetched datasets) are never imported.
 
-practice/ mixes publishable drills with private and uncleared third-party files, and its
-.gitignore is the allowlist that separates them. So drills and interviewing fail closed: no
-git checkout means no import (see build_plan), and their ignored directories are not even
-listed as references.
+practice/ mixes publishable interview material with private and uncleared third-party files,
+and its .gitignore is the allowlist that separates them. programming/drills/ does the same
+through the root .gitignore (nested repos, site-problem solutions, personal attempts). So
+FAIL_CLOSED_SUBJECTS fail closed: no git checkout means no import (see discover), and their
+ignored directories are not even listed as references.
 
 Each `slides/deck.yaml` below a module (spec: learn-ai-engineering
 .claude/skills/slides/references/deck-spec.md) becomes flashcards in the module's
@@ -74,12 +76,15 @@ DEFAULT_SOURCE = WORKSPACE_DIR / LAE
 COURSES_DIR = REPO_ROOT / "data" / "courses"
 
 # Subjects that don't live at learn-ai-engineering/<slug>: slug → (repo, dir in that repo).
-# On 2026-11-02 interview prep and the drills moved to learn-ai-engineering/practice/, whose
-# .gitignore admits only what is cleared for publication. These subjects fail closed.
+# On 2026-11-02 interview prep moved to learn-ai-engineering/practice/, whose .gitignore admits
+# only what is cleared for publication.
 SUBJECT_SOURCES: dict[str, tuple[str, str]] = {
-    "drills": (LAE, "practice/drills"),
     "interviewing": (LAE, "practice/interviewing"),
 }
+# Git is what keeps private files out of these. programming/ joined when drills moved under it.
+FAIL_CLOSED_SUBJECTS = {*SUBJECT_SOURCES, "programming"}
+# Former courses: a full import removes their generated files, keeping anything edited locally.
+RETIRED_SUBJECTS = ("drills",)
 
 # slug → (title, order, summary). Order follows CURRICULUM.md Path C (broad → deep), with
 # interviewing last because it is the summary layer, not the depth layer. Summaries are
@@ -89,7 +94,7 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
         "Programming",
         1,
         "Python (foundations, informatics, the language for engineers), SQL and TypeScript: "
-        "notes, offline exercises and solutions.",
+        "notes, offline exercises and solutions, plus timed drills and coding rounds.",
     ),
     "data-analytics": (
         "Data Analytics",
@@ -120,11 +125,6 @@ SUBJECTS: dict[str, tuple[str, int, str]] = {
         6,
         "The engineering disciplines on top of models: prompt, context, harness, loop and graph, "
         "plus inference, multimodal, safety and security.",
-    ),
-    "drills": (
-        "Drills",
-        7,
-        "Timed language drills (Python, SQL, TypeScript, Terraform) and interview-format coding rounds.",
     ),
     "interviewing": (
         "Interviewing",
@@ -397,8 +397,8 @@ def discover(source: Path, subject: str, subject_dir: Path | None = None) -> lis
     """`source` is the repo root (paths in metadata are relative to it); `subject_dir`
     defaults to `source / subject` and differs only for SUBJECT_SOURCES entries.
 
-    Raises RuntimeError for a SUBJECT_SOURCES subject outside a git checkout: its .gitignore
-    is what keeps private files out, so without git nothing can be told apart.
+    Raises RuntimeError for a FAIL_CLOSED_SUBJECTS subject outside a git checkout: its
+    .gitignore is what keeps private files out, so without git nothing can be told apart.
     """
     subject_dir = subject_dir or source / subject
     urls = _vendored_urls(source)
@@ -445,7 +445,7 @@ def discover(source: Path, subject: str, subject_dir: Path | None = None) -> lis
             modules[name] = mod
 
     listed = _git_ignored(source, subject_dir)
-    if listed is None and subject in SUBJECT_SOURCES:
+    if listed is None and subject in FAIL_CLOSED_SUBJECTS:
         raise RuntimeError(f"{subject}: {source} is not a git checkout, refusing to import")
     ignored = listed or set()
     for mod in modules.values():
@@ -455,7 +455,7 @@ def discover(source: Path, subject: str, subject_dir: Path | None = None) -> lis
             if not _matches_ignored(str(lesson.src.relative_to(source)), ignored)
         ]
         mod.readings = [r for r in mod.readings if not _matches_ignored(r["source"], ignored)]
-        if subject in SUBJECT_SOURCES:  # don't publish even the names of private directories
+        if subject in FAIL_CLOSED_SUBJECTS:  # don't publish even the names of private directories
             mod.references = [
                 r for r in mod.references if not _dir_has_ignored(r["source"], ignored)
             ]
@@ -1014,7 +1014,7 @@ def _plan_lesson(
 
 
 def _drill_meta(head: str) -> dict:
-    """Fields of a drill's frontmatter (practice/drills/README.md) worth keeping.
+    """Fields of a drill's frontmatter (programming/drills/README.md) worth keeping.
 
     A drill is any file whose frontmatter names a `track`. Its `concepts` become `wiki`,
     the explicit concept links the courses API ranks first.
@@ -1099,7 +1099,8 @@ def main() -> None:
     if not source.is_dir():
         parser.error(f"source not found: {source}")
     plan = build_plan(source, subjects)
-    stats = apply(plan, subjects, args.dry_run)
+    # Only a full import retires old courses, so `--subject x` keeps touching just x.
+    stats = apply(plan, [*subjects, *(RETIRED_SUBJECTS if not args.subject else ())], args.dry_run)
     log.info(
         "import_courses_done",
         dry_run=args.dry_run,

@@ -1,8 +1,8 @@
 ---
-imported_hash: acbef0cac638793a
+imported_hash: aa705b10a343f20f
 title: 3 — Tool Design as Harness Surface
-summary: Tool design follows ACI principles — Agent-Computer Interface, not Application Programming Interface.
-order: 13
+summary: The tool interface is the part of an agent that most often decides whether the model's ability reaches the task.
+order: 4
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/03-tool-design.md
@@ -12,11 +12,15 @@ source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/03-tool
 
 > Tools are the agent's action surface, and their descriptions are the routing logic. This is where most harnesses leak.
 
+The tool interface is the part of an agent that most often decides whether the model's ability reaches the task. SWE-agent resolved 18.0% of SWE-bench Lite with a purpose-built interface and 11.0% through a plain shell, with the same GPT-4 Turbo. A vague description sends calls to the wrong tool, a silent truncation makes the model believe it saw a whole file, and an unguarded retry on a write charges a customer three times. This chapter covers how to design the agent-computer interface so those failures stop at the boundary.
+
 ---
 
 ## ACI, not API
 
 Tool design follows **ACI principles — Agent-Computer Interface, not Application Programming Interface.** A tool is designed for a reader that has no documentation, no type hints, no autocomplete, and no ability to ask a follow-up question. It sees a name, a description, and a parameter schema.
+
+The term comes from SWE-agent ([arXiv:2405.15793](https://arxiv.org/abs/2405.15793), Yang et al., 2024-05), which measured it: the same GPT-4 Turbo resolved 18.0% of SWE-bench Lite through a purpose-built interface (a windowed file viewer, summarized search, an editor that lints every edit) against 11.0% through a plain Linux shell. Same model, same task; only the interface changed.
 
 Consequences:
 
@@ -53,6 +57,8 @@ Before writing a description, decide what *kind* of capability this is. Li gives
 | **Generality:** a general `code_interpreter` vs. a narrow tool | General: it covers the long tail for free | Narrow when security, permissions or performance demand it, or when the general route is unreliable. `grep` is dedicated because its flags differ across operating systems |
 
 Selection accuracy falls off once a model faces more than roughly a hundred tools, so every dedicated tool spends a shared budget. That is the quantitative case for the subtraction rule above.
+
+For strong current models the default has moved further toward the general executor. Mak et al. ([arXiv:2609.11999](https://arxiv.org/abs/2609.11999), 2026-09) ran Opus-4.8 and GPT-5.5 on TheAgentCompany and APEX-Agents under five interfaces. Bash alone beat a typed-tool catalog by 21.8–24.5 pp on TheAgentCompany and 4.8–7.4 pp on APEX-Agents "while using 19–72% fewer total tokens"; Opus-4.8 on TheAgentCompany went from 44.9% at $1.20 per task with typed tools to 69.4% at $0.37 with bash. Adding the typed tools on top of bash changed nothing (−0.6 pp, 95% CI [−3.0, +1.9]). Their rule: "favor bash alone when arbitrary execution can be isolated and PTC when security or compliance policies require a fixed tool catalog," where PTC (programmatic tool calling) means the model writes code against the fixed tools. This doesn't overturn SWE-agent. Its 2024 win was over a *bare* shell for GPT-4 Turbo, and the principles behind it (bounded output, feedback on every action) still hold; what has changed is that a frontier model no longer needs bespoke commands to apply them. The authors warn their results "may not carry over to later releases," so re-run the comparison when you change models.
 
 ---
 
@@ -151,12 +157,16 @@ The return path is as much a part of the tool as the call. Rules by tool type:
 | **Multimodal input** | Choose deliberately between passing the image and passing OCR text. Layout-heavy content needs the image; dense text is cheaper and more reliable as OCR. |
 | **Bulk data** | Use the **artifact pattern**. The model writes the SQL (and optionally the chart code); the system executes it and renders rows straight to the user. Data never passes through the model, which is slow and error-prone at transcribing thousands of rows. |
 
+SWE-agent's ablations (GPT-4 Turbo, SWE-bench Lite, 18.0% for the full interface) put numbers on several of these rules. Search that returned a summary of which files matched scored 18.0%; search that paged through matches one at a time scored 12.0%, worse than no search tool at all (15.7%), because agents "tend to look through every match exhaustively." A 100-line file window scored 18.0%, a 30-line window 14.3%, and showing the whole file 12.7%. Dropping the lint-on-edit check cost 3 points (15.0%), and keeping full history instead of collapsing all but the last five observations cost 3 more (15.0%). Failed edits compound: any edit attempt had a 90.5% chance of eventually succeeding, but after one failed edit that fell to 57.2%, so a check that catches a bad write immediately is worth more than it looks.
+
 **Parallel calls need fault boundaries.** Each tool declares whether it is concurrency-safe (default: no). Execution of a call can begin as soon as its arguments finish streaming and validate. A failure aborts only the calls in the same batch that depend on it; the independent calls and the parent task carry on.
+
+**`tool_choice` turns tool use from the model's call into yours** (*Building Applications with AI Agents*, ch. 4). `auto` lets the model decide, which suits general use. `required` (`any` on some APIs) forces at least one call, for steps whose answer has to come from a tool. `none` blocks calls, which is useful in tests or for a final prose turn. Pinning a named tool makes a step deterministic. A pipeline step that must extract into a schema should pin the tool rather than hope the model chooses it.
 
 ### Coding-agent search and edit tools
 
-![Comparison of Five File Editing Schemes](../assets/images/ai-agent-book/fig5-4.svg)
-*Figure 5-4, Comparison of Five File Editing Schemes. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter5.md) (Apache-2.0).*
+![Five file-editing schemes, each with an example edit and its trade-off: diff + apply model, old→new string, line numbers, and others](../assets/sources/images/li-ai-agents-in-depth-fig5-4.svg)
+*Image Source: Li, [AI Agents in Depth](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter5.md) (2026), Fig. 5-4 (Apache-2.0)*
 
 Search, from coarse to fine:
 
@@ -191,8 +201,8 @@ Skills invert this. A short name and description (*what* + *when*, ~10 tokens) s
 
 ### Tool discovery at scale
 
-![Hierarchical Tool Matching (Two-Level Semantic Search: Server-Level → Tool-Level)](../assets/images/ai-agent-book/fig4-2.svg)
-*Figure 4-2, Hierarchical Tool Matching (Two-Level Semantic Search: Server-Level → Tool-Level). From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter4.md) (Apache-2.0).*
+![Two-level tool matching: semantic search picks the GitHub server (0.92) from five, then the top-3 of its 26 tools](../assets/sources/images/li-ai-agents-in-depth-fig4-2.svg)
+*Image Source: Li, [AI Agents in Depth](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter4.md) (2026), Fig. 4-2 (Apache-2.0)*
 
 The cost of eager loading is concrete. Li measures five typical MCP servers at about 55K tokens of definitions, roughly 30% of a 200K window, before the first user message. The fixes, from heaviest to lightest:
 
@@ -200,11 +210,50 @@ The cost of eager loading is concrete. Li measures five typical MCP servers at a
 2. **Proactive discovery.** The agent declares a capability gap mid-task, and the system matches and injects tools. MCP-Zero matches in two levels, server first and then tool, and reports about 98% fewer tokens than full injection across ~2,800 tools. Dynamic discovery took Opus 4 from 49% to 74% on Anthropic's tool-selection eval. The production form is a resident `tool_search` meta-tool: OpenAI's `defer_loading`, and Claude Code deferring MCP tools by default. When nothing scores above threshold, return an explicit **"not found"**, so the agent rephrases, improvises with basic tools, or builds a new one.
 3. **Skills.** A thin resident catalog, read with ordinary file tools, with no embedding index to maintain. Cursor's version, a folder of tool descriptions the agent greps, cut tokens by 46.9%. Pi Coding Agent keeps MCP out of its core entirely and exposes it through a single ~200-token proxy tool.
 
+Albada's comparison of selection strategies (*Building Applications with AI Agents*, ch. 5, Table 5-2) adds the trade-offs:
+
+| Strategy | Strength | Weakness |
+|---|---|---|
+| **Standard** (all descriptions in the prompt, the model picks) | Simple; few-shot examples help | Scales poorly as tools are added |
+| **Semantic** (embed descriptions, retrieve) | Scales to many tools; low latency | Worse accuracy from **semantic collisions** between similar descriptions |
+| **Hierarchical** (pick a group, then a tool within it) | Scales, and more accurate when many tools look alike | Slower: sequential model calls |
+
+For a step that may need several tools at once, his pattern retrieves a fixed maximum (say five) semantically, then has the model filter that shortlist down to what the task needs, and runs the survivors in parallel. Two description habits reduce collisions: **include an example invocation** with typical inputs and outputs, and **state type and range constraints** ("x and y must be integers between 0 and 1,000") so the model can rule a tool out.
+
 **KV-cache rule for dynamic tools.** Never insert a newly loaded schema into the static prefix; that invalidates the whole cache. Append it at the end of the context *on the turn it is discovered*, and then leave it pinned where it landed, where it becomes ordinary cached history. Cache invalidation then comes only from TTL expiry or from modifying, removing or reordering tools already loaded. The cost is that weaker models handle schemas mid-trajectory poorly and may need post-training for it.
 
-MCP solves **interoperability**. Skills solve **choice overload**. They are complementary, not rivals.
+MCP solves **interoperability**. Skills solve **choice overload**. They are complementary, not rivals. A pattern seen early with skills: accuracy drops in the gap between calling one tool and orchestrating several. Skills close part of that gap by making the multi-tool procedure explicit without bloating the system prompt. What matters is tool quality, not tool quantity.
 
-This is the same mechanism as layer 2 in [02-context-engineering/notes/02](../../02-context-engineering/notes/02-context-anatomy.md), applied to capability rather than knowledge. See also [skills-design.md](../skills-design.md).
+This is the same mechanism as layer 2 in [02-context-engineering/notes/02](../../02-context-engineering/notes/02-context-anatomy.md#layer-2--on-demand-knowledge), applied to capability rather than knowledge.
+
+### Writing a skill
+
+OpenAI's [skills and shell tips](https://developers.openai.com/blog/skills-shell-tips) reduce to six rules.
+
+**1. The description is routing logic, not documentation.** It is the only text the agent has when it decides whether to load the skill, and it sits in every window. It should say when to use the skill, when not to, and what success looks like. Keep it terse:
+
+```yaml
+# bad (~45 tokens): details that belong in the body
+description: |
+  This skill handles the complete deployment process to production.
+  It covers environment checks, rollback procedures, and post-deploy
+  verification. Use this before deploying any code to production.
+
+# good (~9 tokens): the same routing signal
+description: Use when deploying to production or rolling back.
+```
+
+**2. Add negative examples.** A misfire costs a full body load plus a wrong-track start. "Don't call this skill when… (and what to do instead)" is worth more than another positive example, because the positive case is usually obvious from the name and the negative case never is.
+
+**3. Put templates and worked examples inside the skill.** They cost nothing until the skill fires, so the body is the right home for bulky, consistently shaped outputs: structured reports, escalation triage summaries, account plans, data-analysis write-ups. A worked example in the body beats a paragraph describing the format.
+
+**4. Design for long runs early.** A skill that runs for more than a few minutes should assume it will be interrupted: write progress to disk and resume from a checkpoint ([02-context/05](../../02-context-engineering/notes/05-compression-compaction.md#crash-recovery)).
+
+**5. For determinism, invoke explicitly.** Routing on descriptions is probabilistic. When a skill must run, write `Use the <skill name> skill.` in the instruction.
+
+**6. Skills plus network is an exfiltration path.** A skill body is instructions the agent follows. An injected instruction with network reach can move data out. The defensible default is **skills allowed, shell allowed, network on a minimal per-task allowlist**. Treat tool output as untrusted ([note 04](04-execution-boundaries.md#the-five-protection-layers)).
+
+Skills also improve with use. Karpathy's line (as relayed from his AISN 2026 talk): *"the best way to find a leak in a hose is to run water through it."* Run the skill on real tasks, fix what breaks, and the skill set compounds ([note 09](09-repo-as-system-of-record.md#karpathys-environment-layer)).
 
 ---
 
@@ -220,7 +269,64 @@ This is the same mechanism as layer 2 in [02-context-engineering/notes/02](../..
 
 Cost: latency per hop, plus a process to operate. Default to in-process; promote when one of the left-hand conditions actually holds rather than in anticipation.
 
-What the protocol gives you: three primitives (**tools**, **resources**, **prompts**) over two transports (**stdio** for local servers and **Streamable HTTP** for remote ones; the older SSE transport is deprecated). What it doesn't: it is request–response, so a server notification does not wake an idle agent. Event-driven behaviour needs its own channel ([note 07](07-orchestration.md#asynchronous-agents-events-and-safe-points)).
+Albada names the cost that pushes teams off in-process tools at scale: **duplication**. Every agent service that uses a local tool library has to deploy it, and every change means coordinating redeploys, so in practice teams quietly reimplement the same tools (*Building Applications with AI Agents*, ch. 4). That is the "multiple distinct callers" row arriving through org structure rather than architecture. His other middle option, vendor plug-in catalogues, has aged badly: the ChatGPT plug-ins he cites were retired in 2024 in favour of GPTs and, later, MCP connectors.
+
+### The protocol
+
+![MCP architecture: the host application talks to one MCP client per server; requests, responses and notifications flow client to server, elicitation and sampling requests flow server to client](../assets/ai-agents-with-mcp-fig2-3.png)
+*Image Source: Stratis, *AI Agents with MCP* (O'Reilly, 2025), Fig. 2-3*
+
+**Architecture.** The host is the application that holds the LLM. It runs **one client per server**, 1:1. Messages are JSON-RPC requests, responses and notifications. Each connection has a lifecycle of initialize (protocol version and capability negotiation), operate, shut down. The Python SDK's `ClientSessionGroup` drives several servers as if they were one, so two primitives with the same name raise an exception. Prefix tool names per server (`grader_…`), which also helps the model choose (*AI Agents with MCP*, ch. 4–5).
+
+**Primitives.** There are three: **tools**, **resources** and **prompts**. Who controls each one, and so how it enters the window, is in [context 10](../../02-context-engineering/notes/10-tools-and-multi-agent.md#mcp-a-protocol-for-moving-context).
+
+**Server-initiated requests.** Three client features let the server reach back through the client:
+
+- **Sampling** (`sampling/createMessage`) lets a server borrow the host's model. The spec says clients SHOULD keep a human in the loop and rate-limit.
+- **Elicitation** asks the user for structured input. The user can accept, decline or cancel, and the schema is limited to a flat subset of JSON Schema.
+- **Roots** (`file://` URIs) tell a server where it may work. They are advisory. The server is trusted to respect them, so **roots are not a security boundary** ([isolation](../../02-context-engineering/notes/10-tools-and-multi-agent.md#context-isolation-as-a-security-boundary)).
+
+**Transports.**
+
+- **stdio** for local servers.
+- **Streamable HTTP** for remote ones. It uses one endpoint: POST carries client messages, and an optional GET opens an SSE stream. Streams resume via `Last-Event-ID`, auth is OAuth 2.1, and local servers should bind to localhost.
+- The older HTTP+SSE transport is superseded.
+
+Stratis's ch. 2 describes Streamable HTTP as "GETs and PUTs". The spec uses POST and GET.
+
+> **Version-dependent.** These details follow the 2025-03-26 spec that Stratis cites, plus the 2025-06-18 revision, which added elicitation and structured tool output. Check the current spec before relying on a detail. Drop the book's ecosystem counts; they date from mid-2025.
+
+A minimal server has one primitive of each kind (FastMCP derives the output schema from type hints). This form needs `mcp<2`; the 2.x SDK renames `FastMCP` to `MCPServer`:
+
+```python
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("grader")
+
+@mcp.tool()                          # model-controlled
+def grader_report_card(student: str) -> ReportCard: ...
+
+@mcp.resource("file:///rubric.md")   # application-controlled: lazy, no side effects
+def rubric() -> str: ...
+
+@mcp.prompt()                        # user-controlled
+def review(student: str) -> str: ...
+
+if __name__ == "__main__":
+    mcp.run()                        # stdio; mcp.run("streamable-http") for remote
+```
+
+Stratis's runnable clients and servers (ch. 3 onward) are in the book's upstream repo.
+
+**Limits.** It is request–response, so a server notification does not wake an idle agent. Event-driven behaviour needs its own channel ([note 07](07-orchestration.md#asynchronous-agents-events-and-safe-points)). Lakshmanan & Hapke list three limits as of May 2025 (*Generative AI Design Patterns*, ch. 7):
+
+| Limit | Workaround |
+|---|---|
+| No auth enforcement in the spec | OAuth in front of the server (Cloudflare Workers) |
+| Mostly one-way: client calls server | A2A or ACP for agent-to-agent collaboration |
+| Calls time out at 30–60 s | Streamable HTTP transport, or return a job ID and poll |
+
+Discount two dated claims in older texts. *Building Applications with AI Agents* (ch. 4) describes MCP as "JSON-RPC 2.0 over HTTPS or WebSocket" and says the spec "does not yet mandate" a security solution. WebSocket was never a standard transport, and authorization has been in the spec since 2025, although auth on a remote server is still something you configure, not a default. That also dates the first row of the table.
 
 ### MCP supply-chain risks
 
@@ -253,6 +359,16 @@ When the downstream API offers no idempotency key, use one of two patterns:
 - **Query before mutate.** Before retrying, check whether the first attempt already landed ("does order #123 already have a refund?").
 - **Two-phase call.** `prepare_*` validates and returns a preview plus a short-lived **confirm token**; `commit_*` executes only with that token. A retry with a spent token is rejected rather than executed twice, and the preview gives a human or reviewer something concrete to approve.
 
+### Tools over persistent state
+
+Albada's cautionary case: an agent asked to optimize database performance "optimized" it by dropping half the rows of a production table (*Building Applications with AI Agents*, ch. 4). His rules for any tool that touches a live store:
+
+- **Register narrow operations, not `execute_sql`.** `get_user_profile(user_id)` and `add_new_customer(record)` each wrap one tested query. A read-only agent never receives a tool that can modify data.
+- **If free-form queries are unavoidable**, bind parameters or use prepared statements, reject statements containing `DROP` or `ALTER`, and run them under a database account with only the privileges the allowed queries need.
+- **Log every invocation and alert on anomalies**, such as unusually large deletions or schema changes, so a mistake is caught before it cascades.
+
+**Generated tools are code, so treat them like code.** Pointing a model at an OpenAPI spec to draft wrappers saves boilerplate. The safe loop is: generate, run in a sandbox, have a human review, pass CI, and regenerate when the spec changes. Generating tools on the fly *during* a run skips the review step, so it belongs behind the sandbox in [note 04](04-execution-boundaries.md#sandboxes).
+
 ---
 
 ## Asynchronous tool interfaces
@@ -270,10 +386,56 @@ Labs, upstream (Apache-2.0; READMEs partly in Chinese): [4-1 perception MCP serv
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-tools.md` — the four gating questions, promote-from-bash heuristic, schema rules, MCP decision table, write-operation safety.
+- **Silent truncation.** Symptom: the agent reasons confidently from a file it only saw part of. Fix: make it visible ("lines 1–200 of 4,812"), with `offset`/`limit` windows.
+- **Paging search results one at a time.** Symptom: the agent walks every match. SWE-agent's paged search scored 12.0%, below no search at all at 15.7%, against 18.0% for a summary. Fix: return a summary of which files matched.
+- **Auto-retrying a write with no idempotency key.** Symptom: one transient timeout becomes three charged invoices. Fix: apply the four gating questions. A tool that isn't idempotent is not retried without a key.
+- **Descriptions with only positive guidance.** Symptom: the model confuses `search`, `grep` and `read`. Fix: add WHEN NOT TO USE and DO NOT USE FOR, ratcheted from real misuse, plus examples. In Li's book, examples moved tool-call accuracy from about 72% to 90%.
+- **Loading every MCP definition up front.** Symptom: about 55K tokens, roughly 30% of a 200K window, spent on five servers before the first user message (Li's measurement). Fix: progressive disclosure or discovery, keeping the stable prefix intact for the cache.
+- **Helpful silent argument changes.** Symptom: edits to files with curly quotes fail in a way the model can't diagnose, because the tool straightened its input. Fix: pass arguments through unchanged, or say in the result what changed.
+- **Treating tool descriptions as trusted config.** Symptom: a server update quietly adds an instruction such as reading `~/.ssh` and passing it as `notes`. Fix: review descriptions as code, diff them on every update, namespace per server, and break the lethal triad.
+- **A tool name that implies the work is finished.** Symptom: the model treats `phone_call` as complete when it returns. Fix: name the initiation, as in `initiate_phone_call`, and report `phone_call_connected` and `phone_call_ended` as later events.
 
----
+## Try it
 
-→ Next: [04-execution-boundaries.md](04-execution-boundaries.md) — where the tools are allowed to run.
+1. Run the four gating questions on `charge_card(customer_id, amount_cents)` and say what the harness must do for each one that fails.
+
+   <details><summary>Answer</summary>
+
+   It isn't cleanly reversible, so it needs a confirmation gate. As written it isn't idempotent, so it must not be retried without an idempotency key; adding one is the better fix. It is observable only if it emits a trace the harness can inspect. Two concurrent charges aren't safe, so calls per customer are serialized.
+
+   </details>
+
+2. Five MCP servers cost about 55K tokens in Li's measurement. How many of a 200K window remain, and what is the first fix you try?
+
+   <details><summary>Answer</summary>
+
+   145K, with 27.5% gone (the note rounds to roughly 30%) before the first user message. Start with lazy loading or discovery, keeping tool definitions out of the changing part of the prefix so the KV cache survives. Measure selection accuracy afterwards, since selection falls as the visible catalog grows.
+
+   </details>
+
+3. Run the pillar lab, [tool-server-sandbox-py](../practice/tool-server-sandbox-py/readme.md) or its [TypeScript twin](../practice/tool-server-sandbox/readme.md), and read what the model sees when a call is blocked. Then add a tool of your own that returns a structured error.
+
+   <details><summary>What to check</summary>
+
+   A blocked call returns a tool error the model can read and doesn't end the session. Your error should carry a stable `error_code`, plus `is_fatal` and `retry_after` where relevant, so the agent can classify it instead of guessing from a string.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| Give evidence that the interface matters independently of the model. | SWE-agent: the same GPT-4 Turbo resolved 18.0% of SWE-bench Lite through a purpose-built interface and 11.0% through a plain shell. |
+| Typed catalog or bash for a strong current model? | Mak et al. found bash alone beat a typed catalog by 21.8–24.5 pp on TheAgentCompany and 4.8–7.4 pp on APEX-Agents with Opus-4.8 and GPT-5.5, using fewer tokens. Keep typed tools for steps needing a gate, an audit record or a retry policy. |
+| What are the four gating questions? | Reversible, idempotent, observable, parallel-safe. Failing them means, in order, a confirmation gate, no retry without an idempotency key, undebuggable, and serialized execution. |
+| A payment tool timed out and the customer was charged three times. What went wrong? | A non-idempotent write was auto-retried. Tools without idempotency keys must not be auto-retried, and the fix is a key on the call plus a query-before-mutate check. |
+| Why are negative boundaries in a description worth writing? | Positive descriptions leave the model to infer the boundary between similar tools. WHEN NOT TO USE and DO NOT USE FOR disambiguate `search`, `grep` and `read`, and each entry should come from observed misuse. |
+| Your agent has about 100 tools and picks wrongly. What are your options? | Merge overlapping tools, namespace the rest, and stop loading every definition up front. Use progressive disclosure or discovery, keeping dynamic content out of the cached prefix. |
+| Dedicated tool or Skill plus a general executor? | Use a Skill plus executor when parameters are complex, the procedure changes often, or the model is strong enough to compose it. Use a dedicated tool when the call is frequent, parameters are simple, or a smaller model must get it right every time. |
+| How do you make tool parameters error-proof? | Prefer enums over free strings, absolute paths over relative ones, and required parameters over optional ones with surprising defaults, so the mistake is harder to make. |
+
+## Next
+
+[04-execution-boundaries.md](04-execution-boundaries.md): where the tools are allowed to run.

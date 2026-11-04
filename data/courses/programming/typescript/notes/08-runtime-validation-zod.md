@@ -1,5 +1,5 @@
 ---
-imported_hash: 2a2cf99d8b7c489c
+imported_hash: d06162ed5a8ad2c7
 title: 8 — Runtime Validation with Zod
 summary: 'as is an assertion: "trust me". The fix is a schema that validates at runtime and produces the static type, so the two can''t drift apart.'
 order: 9
@@ -73,8 +73,20 @@ A zod schema can also produce JSON Schema (`z.toJSONSchema(User)`). That is how 
 
 Valibot (tiny bundles), ArkType (TS-like syntax, fast) and TypeBox (JSON Schema first) all solve the same problem. Pick one per codebase. Zod has the largest ecosystem, and the Anthropic SDK has zod helpers.
 
+## Pitfalls
+
+- **Casting with `as`.** `(await res.json()) as User` compiles and checks nothing, so `user.email.toLowerCase()` crashes when the API sent `{ mail: … }`. Parse it.
+- **Using `z.coerce.boolean()` for env flags.** It treats `"false"` as `true`, so a flag you turned off stays on. Use `z.enum(['true', 'false'])`.
+- **Writing the type and the schema separately.** The two drift apart. Derive the type with `z.infer<typeof User>`.
+- **Re-checking deep inside the code.** The same validation spreads through the program and is still missing somewhere. Parse once at the edge and pass the typed value around.
+- **Trusting structured LLM output or tool arguments.** Both come from the model. Parse them before running anything.
+
 ---
 
-## Exercises
+## Try it
 
 [`practice/exercises/08-zod.ts`](../practice/exercises/08-zod.ts): env config with defaults, chat messages, error reporting with `safeParse`, and parsing an LLM's fenced JSON. From `practice/`, check with `npm test`.
+
+## Next
+
+[TypeScript for AI apps](09-typescript-for-ai-apps.md).

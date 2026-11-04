@@ -1,7 +1,7 @@
 ---
-imported_hash: 6f8aa1073720a046
+imported_hash: 5242395ce045feca
 title: Data Science
-summary: 'Machine learning and deep learning fundamentals: course work, worked assignments and notebooks.'
+summary: Classical ML, deep learning, NLP, time series and recommenders.
 order: 3
 source: learn-ai-engineering/data-science
 ---

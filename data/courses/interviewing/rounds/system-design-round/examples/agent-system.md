@@ -1,8 +1,8 @@
 ---
-imported_hash: 9788c14bcab4edab
+imported_hash: 6db296836e62cdad
 title: 'Example: Automated Code Review Agent'
 summary: '"Design an agent that reviews pull requests and posts review comments.'
-order: 66
+order: 67
 kind: reading
 section: System design round / Examples
 source: learn-ai-engineering/practice/interviewing/rounds/system-design-round/examples/agent-system.md
@@ -102,4 +102,4 @@ GitHub webhook (PR created/updated)
 
 ---
 
-**Study refs**: [agents guide §1-4](../../../guides/4-agents/interview-guide.md) for workflow vs agent decision; [code-review round](../../code-review-round/) for the review method the agent implements; SANYI wiki pages for contract-based review.
+**Study refs**: [graph vs loop](../../../../ai-engineering/05-graph-engineering/notes/01-graph-vs-loop.md) for workflow vs agent decision; [code-review round](../../code-review-round/) for the review method the agent implements; SANYI wiki pages for contract-based review.

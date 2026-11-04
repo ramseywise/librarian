@@ -1,5 +1,5 @@
 ---
-imported_hash: dfda3c10311b40f2
+imported_hash: d6ca2bdcf0937c63
 title: Customer Simulation — Sources
 summary: ''
 order: 39
@@ -14,8 +14,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/customer-simulation/so
 
 ### Primary substrate
 
-- **Product & business guide** — `../../guides/10-product-delivery/interview-guide.md`
-  The entire guide is this round's substrate. Discovery frameworks, stakeholder communication, ROI framing, and delivery expectations are all treated there. Read before any scenario prep session.
+- **[Scoping an AI product](../../../generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md)**: ROI, cost per request and build-or-buy. Discovery and stakeholder communication live in this round's [study guide](study-guide.md). Read both before any scenario prep session.
 
 ### Supporting by scenario type
 

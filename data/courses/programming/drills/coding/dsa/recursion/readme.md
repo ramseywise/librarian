@@ -1,0 +1,16 @@
+---
+imported_hash: f1d498c1dab77099
+title: Recursion
+summary: Recursion solves problems by breaking them into smaller instances of the same problem.
+order: 195
+kind: reading
+section: Coding / Dsa / Recursion
+source: learn-ai-engineering/programming/drills/coding/dsa/recursion/Readme.md
+---
+
+# Recursion
+
+Recursion solves problems by breaking them into smaller instances of the same problem. A recursive solution has a base case (stopping condition) and a recursive case (self-referencing step).
+
+- Permutation in String [[Leetcode](https://leetcode.com/problems/permutation-in-string/)] [[Solution](permutations_in_string/)] [[Thinking](permutations-in-string/thinking.md)]
+- Pow(x, n) [[Leetcode](https://leetcode.com/problems/powx-n/)] [[Solution](power_of_n/)] [[Thinking](power-of-n/thinking.md)]

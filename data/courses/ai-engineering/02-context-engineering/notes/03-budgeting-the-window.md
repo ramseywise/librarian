@@ -1,8 +1,8 @@
 ---
-imported_hash: 9d4571b01cef9285
+imported_hash: d713a893b8952993
 title: 3 — Budgeting the Window
 summary: The upstream course calls this "the budget model".
-order: 9
+order: 4
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/03-budgeting-the-window.md
@@ -122,6 +122,18 @@ Pick examples that are diverse and include near-misses at the boundary, rather t
 
 Production systems combine all three: structured state for decisions, a rolling summary for narrative, and a short raw window for the most recent turns. Details in [05](05-compression-compaction.md) and [06](06-memory.md).
 
+Windowing in its simplest form reserves the output first, then drops the oldest turn until the rest fits. This is the core of the upstream course's `ContextManager` (`control_loop.py`):
+
+```python
+def fit_history(fixed, history, count, max_tokens=4000, reserved=1000):  # count: str -> int tokens
+    budget = max_tokens - reserved                 # output tokens come off the top
+    while history and count(fixed + "".join(history)) > budget:
+        history.pop(0)                             # drop_oldest
+    return history
+```
+
+The upstream version estimates tokens by word count. Pass the model's tokenizer (or the provider's token-count endpoint) as `count` instead: words undercount tokens by about a quarter on English prose, and by more on code and non-English text.
+
 ### Evidence
 
 - Retrieve fewer, better chunks. Reranking the top 20 down to the best 5 usually beats passing all 20 ([04](04-retrieval.md)).
@@ -137,6 +149,21 @@ Prompt caching changes the cost side of the budget without changing the attentio
 - **Cost budget:** stable content is close to free once cached, so order stable before dynamic ([02](02-context-anatomy.md#ordering-stable-before-dynamic)).
 - **Quality budget:** every token still competes for attention, cached or not. A cache hit doesn't make bloat harmless.
 
+### Cache engineering: edit the KV cache, not the text
+
+The catch with editing context is that most context edits destroy the cache. Summarizing an old tool result or dropping a turn changes the text, so everything after the edit is prefilled again. In agent workloads that bill is large: Fu et al. (Tsinghua, 2026, [arXiv:2610.28577](https://arxiv.org/abs/2610.28577)) measure **KV-cache reads at 82.4% of API cost**. History dependence also means matching on prefixes alone misses most of the reuse that is available.
+
+![Context engineering edits text and re-prefills; cache engineering drops or repositions KV entries directly](../assets/sources/images/fu-cache-engineering-agents-fig1.png)
+*Image Source: Fu et al. (2026)*
+
+Their alternative, **cache engineering** (implemented as AKV), lets the agent act on the KV cache directly. It drops or repositions cached entries rather than rewriting the text, so nothing is re-prefilled:
+
+- A **rolling-drop policy for tool responses** beats threshold summarization by **+1.7 points at 27.7% lower cost**.
+- Serving gains reach **1.2× throughput and 1.5× P95 latency**.
+- Letting the agent refine its own cache policy (recursive self-improvement) cuts a further **7.1%** of cost.
+
+This needs control of the serving stack, so it's not something you can do through a hosted API today. The budgeting lesson carries over anyway. Decide edits with the cache in mind: batch them, make them at stable boundaries, and prefer dropping whole blocks over rewriting text in the middle of the prefix.
+
 ---
 
 ## Measuring token efficiency
@@ -145,6 +172,28 @@ Prompt caching changes the cost side of the budget without changing the attentio
 2. **Ablate.** Drop one component, re-run the eval set and record the change in quality. Components whose removal costs nothing are candidates to cut.
 3. **Track quality per 1k tokens** alongside absolute quality. Two configurations with equal scores aren't equal if one uses half the window.
 4. **Watch for cliff edges.** Plot score against total context length. Where it bends down is your effective budget for that model and task.
+
+The upstream course's first experiment makes step 2 concrete. It starts from an atomic prompt and adds one layer at a time, logging what each layer costs and what it returns:
+
+```python
+import tiktoken
+enc = tiktoken.get_encoding("o200k_base")
+base = "Write a paragraph about climate change."
+layers = {
+    "role":        "You are a climate scientist writing for the public.",
+    "examples":    "Example of the register wanted: ...",
+    "constraints": "Under 120 words. Cite one quantitative fact. No jargon.",
+    "audience":    "Readers are high-school students.",
+}
+prompt = base
+for name, text in [("base", "")] + list(layers.items()):
+    prompt = f"{text}\n\n{prompt}" if text else prompt
+    out = llm(prompt)
+    p, r = len(enc.encode(prompt)), len(enc.encode(out))
+    print(f"{name:12} prompt={p:4} response={r:4} score={judge(out):.2f}")
+```
+
+Read the `score` column, not response length. The original reported `response_tokens / prompt_tokens` as "token efficiency", which rewards verbosity. Quality per prompt token is the number that tells you whether a layer earned its place.
 
 ---
 
@@ -159,4 +208,53 @@ Prompt caching changes the cost side of the budget without changing the attentio
 
 ---
 
-→ Next: [04-retrieval.md](04-retrieval.md) — how content gets *into* the window in the first place.
+## Pitfalls
+
+- **Forgetting the output reserve.** Symptom: answers cut off mid-sentence, or reasoning models spend their room on thinking, as the input fills the window to the limit. Fix: take `max_tokens` plus the thinking budget off the top before allocating anything.
+- **No ceiling on growing components.** Symptom: history or tool results crowd out retrieved evidence late in a session. Fix: give each growing component a cap, and let the cap trigger compaction.
+- **Treating the pyramid as measured.** Symptom: arguing over 20% against 25% with no data. The 20/30/30/15/5 split is a starting heuristic. Fix: ablate components and move tokens according to quality per 1k tokens.
+- **Treating cached tokens as free.** Symptom: a bloated 20k prefix survives review because it costs little, while answers miss the middle of the window. Fix: keep separate cost and quality budgets. A cache hit doesn't remove attention cost.
+- **Counting words instead of tokens.** Symptom: `fit_history` thinks the budget holds, and the request still overflows, since word counts undercount tokens by about a quarter. Fix: use the provider's token counter for real limits, or leave a margin.
+- **Rewarding the response-to-prompt ratio.** Symptom: the metric improves as answers get wordier. Fix: track quality per 1k tokens, and watch for cliff edges where one more trim costs a lot of quality.
+- **Editing the middle of the prefix.** Symptom: compaction lowers tokens but the bill doesn't fall, because everything after each edit is prefilled again. Fu et al. measure KV-cache reads at 82.4% of API cost. Fix: batch edits at stable boundaries and drop whole blocks rather than rewriting text.
+
+## Try it
+
+1. Run the [context budgeter lab](../practice/context-budgeter/readme.md) (`npx tsx run.ts`; the Python twin is in [context-budgeter-py](../practice/context-budgeter-py/)). In the tight window (3,500 tokens, 500 reserved), which items go first, and does the answer survive?
+
+   <details><summary>Answer</summary>
+
+   The limit is 2,825 tokens. `doc-seats` truncates from 900 to 852 tokens, `doc-sso` and turns 1 to 4 are dropped, and the answer still cites `doc-refunds`: "annual plans can be refunded within 30 days of renewal [doc-refunds]".
+
+   </details>
+
+2. In the same lab, look at the run where relevance is ranked wrongly. What does it show that a token dashboard could not?
+
+   <details><summary>Answer</summary>
+
+   It fits the budget (2,651 tokens used) yet `doc-refunds` goes from 718 to 0 and the answer becomes "I can't find that in the supplied documents." A budget can be met while the wrong content is sacrificed, so priorities need an eval, not only a counter.
+
+   </details>
+
+3. A window is 200k, with `max_tokens` of 8k and a 16k thinking budget. Applying the pyramid's percentages to what's left for input, how much do Level 2 and Level 3 each get?
+
+   <details><summary>Answer</summary>
+
+   200k − 24k = 176k left. At 30% each, that's 52.8k for critical context and examples, and 52.8k for recent history. Those are starting figures to measure against, not targets.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| What do you allocate first in a context budget, and why? | The output reserve: `max_tokens` plus any thinking budget. A window filled with input leaves the model no room to answer. |
+| How do you decide whether a component deserves its tokens? | Ablate it and measure quality per 1k tokens. The information-theoretic version is its added information about the right answer given everything else, `I(Y*; c \| C_rest)`. |
+| Does prompt caching change your budget? | It changes the cost side only. A cached 20k prefix is cheap and fast but still takes attention, so I keep separate cost and quality budgets. |
+| Your agent's edits to old tool results made it more expensive. Why? | An edit changes the text, so everything after it is prefilled again, and Fu et al. put KV-cache reads at 82.4% of API cost. Batch edits at stable boundaries. |
+| Summarize tool output or drop it on a rolling basis? | Where you control serving, Fu et al.'s rolling-drop beats threshold summarization by +1.7 points at 27.7% lower cost. On a hosted API you can't edit the KV cache, so you only get the lesson about edit timing. |
+| Is a 20/30/30/15/5 split correct? | It's a heuristic from the upstream reference. The two rules that matter are reserving output first and capping every growing component. |
+
+## Next
+
+[04-retrieval.md](04-retrieval.md): with the budget set, the next question is how content gets into the window in the first place.

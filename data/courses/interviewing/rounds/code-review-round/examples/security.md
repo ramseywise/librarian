@@ -1,5 +1,5 @@
 ---
-imported_hash: 457114e47cc0386a
+imported_hash: 012b4ffb73620a89
 title: Security & Trust Boundaries
 summary: '+ @router.get("/admin/users/{user_id}/export") + async def export_user_data(user_id: int, db: Database = Depends(get_db)): + user = await db.fetch_one("SELECT  FROM users WHERE id = :id", {"id": user_id}) + return {"data": user, "exported_a…'
 order: 22
@@ -41,7 +41,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/exam
 >
 > **[Warning]** `data_agent.py:6` — `DATABASE_URL` is passed directly into tool config. If this includes credentials (postgres://user:pass@host), they'll be visible in tool metadata and potentially in logs/traces. Use a connection alias or secrets reference.
 
-**What this teaches**: Agent tool permissions are the #1 security review target for AI engineering. Least privilege means read-only when reads suffice, specific command allowlists instead of wildcards, and credentials never in tool metadata. See [OWASP Agent Security](https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html) §1; [security guide §3](../../../guides/7-security-safety/interview-guide.md) on least privilege.
+**What this teaches**: Agent tool permissions are the #1 security review target for AI engineering. Least privilege means read-only when reads suffice, specific command allowlists instead of wildcards, and credentials never in tool metadata. See [OWASP Agent Security](https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html) §1; [safety pillar](../../../../ai-engineering/09-safety-and-security/readme.md) on least privilege.
 
 ---
 
@@ -93,7 +93,7 @@ source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/exam
 >
 > Wrapping in explicit tags further helps the model distinguish data from instructions.
 
-**What this teaches**: Trust separation is the core defense against prompt injection. The "refactor" looks like a cleanup but is a security regression — it elevates untrusted content from user-role to system-role authority. See [security guide §2](../../../guides/7-security-safety/interview-guide.md) on source-sink analysis; [security chapter](../../../../ai-engineering/09-safety-and-security/readme.md) §2.
+**What this teaches**: Trust separation is the core defense against prompt injection. The "refactor" looks like a cleanup but is a security regression — it elevates untrusted content from user-role to system-role authority. See [threat model](../../../../ai-engineering/09-safety-and-security/notes/01-threat-model.md) on source-sink analysis; [security chapter](../../../../ai-engineering/09-safety-and-security/readme.md) §2.
 
 ---
 

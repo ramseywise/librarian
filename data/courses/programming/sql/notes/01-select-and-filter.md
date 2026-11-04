@@ -1,5 +1,5 @@
 ---
-imported_hash: 9452215c53a58891
+imported_hash: 5dd8415073a2a6e9
 title: 1 — Selecting, Sorting and Filtering
 summary: Build them with bash practice/setup.sh, then open one with sqlite3 -header -column practice/data/survey.db.
 order: 2
@@ -60,7 +60,7 @@ SELECT * FROM Survey  WHERE reading BETWEEN 0 AND 1;                    -- inclu
 
 - `AND` binds tighter than `OR`. **Always parenthesise mixed `AND`/`OR`.** Leaving out the brackets in the third query returns every reading by `roe`, salinity or not.
 - Dates in ISO-8601 text (`YYYY-MM-DD`) compare correctly as strings. That is why SQLite gets away with storing them as `TEXT`.
-- `WHERE` runs **before** `SELECT`, so it can't see column aliases defined in the `SELECT` list (see [order of evaluation](#order-of-evaluation)).
+- `WHERE` runs **before** `SELECT`, so in standard SQL it can't see column aliases defined in the `SELECT` list (see [order of evaluation](#order-of-evaluation)). Postgres rejects such a query. SQLite accepts it as an extension, so don't rely on it if the query may move.
 
 ## Calculated columns
 

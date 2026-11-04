@@ -1,2 +1,5 @@
 # Empty placeholder (EXA_API_KEY="") matched across lines by generic-api-key
 data/courses/generative-ai/07-agentic-applications/chatbot/deep-research-bot/notebooks/03-rl-for-deep-research-agent.md:generic-api-key:36
+# Token count followed by a flag in sample loop output, misread as key=value by generic-api-key
+data/courses/ai-engineering/04-loop-engineering/practice/loop-scorekeeper-py/readme.md:generic-api-key:27
+data/courses/ai-engineering/04-loop-engineering/practice/loop-scorekeeper/readme.md:generic-api-key:33

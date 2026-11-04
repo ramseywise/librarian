@@ -1,8 +1,8 @@
 ---
-imported_hash: 3ac1e45abad46f8c
+imported_hash: 1c3e62a06c63838a
 title: 10 — Multi-Agent Context and Tool Design
-summary: 'The pattern: specialized agents handle focused tasks with clean context windows, returning condensed summaries to a lead coordinator.'
-order: 16
+summary: Your agent's window is full at 100k tokens, so you split the work among sub-agents and the orchestrator now holds 2k.
+order: 11
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/10-tools-and-multi-agent.md
@@ -12,6 +12,8 @@ source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/10-tool
 
 > Isolation is the highest-cost context lever. Use it when compression is not enough.
 
+Your agent's window is full at 100k tokens, so you split the work among sub-agents and the orchestrator now holds 2k. The window looks cured, but the same job may now spend 240k tokens to produce 6k of visible output, and every sub-agent's summary has become untrusted data that the next agent reads as fact. This chapter covers when isolation earns that price, how to define the tool and agent boundaries, and how to stop a schema change or a noisy tool from breaking the whole chain.
+
 ---
 
 ## Sub-agent architectures
@@ -20,13 +22,15 @@ The pattern: specialized agents handle focused tasks with **clean context window
 
 The economics are the point. A sub-agent may burn 100k tokens exploring a codebase and return a 2k-token summary. The orchestrator pays 2k for work that would have cost it 100k of its own window — and, more importantly, would have left 98k of exploration debris polluting the window it needs for synthesis.
 
-```
-Orchestrator (holds plan, stays small)
-  ├── Sub-agent A: explore subsystem X  ->  2k summary  (spent 80k internally)
-  ├── Sub-agent B: explore subsystem Y  ->  2k summary  (spent 60k internally)
-  └── Sub-agent C: explore subsystem Z  ->  2k summary  (spent 90k internally)
-
-Orchestrator window: ~6k of findings, not 230k of exploration.
+```mermaid
+flowchart TB
+    O["Orchestrator<br/>holds the plan, stays small"]
+    O --> A["Sub-agent A: explore subsystem X<br/>spends 80k internally"]
+    O --> B["Sub-agent B: explore subsystem Y<br/>spends 60k internally"]
+    O --> C["Sub-agent C: explore subsystem Z<br/>spends 90k internally"]
+    A -- "2k summary" --> R["Orchestrator window<br/>~6k of findings, not 230k of exploration"]
+    B -- "2k summary" --> R
+    C -- "2k summary" --> R
 ```
 
 The sub-agent's window is **discarded**, not merged. That discarding is the feature.
@@ -146,6 +150,36 @@ Most production agents are conditional loops with occasional parallel batches. P
 
 ---
 
+## MCP: a protocol for moving context
+
+The Model Context Protocol standardises how context from outside the agent reaches the window. Harness 03 is the authoritative note. It covers [when to choose MCP over an in-process tool](../../03-harness-engineering/notes/03-tool-design.md#mcp-vs-in-process), [the protocol itself](../../03-harness-engineering/notes/03-tool-design.md#the-protocol), its supply-chain risks, and the cost of loading every server's definitions eagerly ([tool discovery at scale](../../03-harness-engineering/notes/03-tool-design.md#tool-discovery-at-scale)). This section reads the protocol as context plumbing: who decides what enters the window, and what each hop costs.
+
+**Why a protocol.** The idea is borrowed from the Language Server Protocol. Without a shared interface, M models and N tools need M×N connectors; with one, M+N. Three models and four tools is 12 integrations without MCP and 7 with it (*AI Agents with MCP*, ch. 1).
+
+**Who controls each primitive** is the context-engineering question. The spec assigns each primitive to a different party:
+
+| Primitive | Controlled by | How it enters the window |
+|---|---|---|
+| **Tools** | The model | The model pulls context by calling them |
+| **Resources** | The application | The host decides what to attach. Read-only, addressed by URI, with `{var}` templates |
+| **Prompts** | The user | The user picks a template. It can be multi-turn and can embed resource links |
+
+The book's ch. 2 calls prompts application-controlled. Its own ch. 5 and the spec say user-controlled.
+
+Everything else about the protocol is in [harness 03](../../03-harness-engineering/notes/03-tool-design.md#the-protocol): the architecture, server-initiated requests, transports and a minimal server.
+
+### Designing MCP servers for the window
+
+- **Don't auto-generate a server from a REST API.** REST endpoints are granular, so one user action becomes several tool choices, and the errors compound. At 95% accuracy per choice, five choices succeed about 77% of the time (0.95⁵). Each call also re-sends the previous turns. A back-of-envelope estimate on the book's ch. 3 example server puts that at about 8× the tokens and nearly 7× the cost. If you start from a generated server, "aggressively curate" it (Jeremiah Lowin, Prefect). Better, build from **agent stories**: user stories written for the agent, each mapped to one end-to-end tool (*AI Agents with MCP*, ch. 5).
+- **Measure tool choice before and after you change descriptions.** The book suggests Promptfoo or PromptBench. This is the [tool-overlap](#tool-overlap) test, run as an eval.
+- **Resources carry hints for the host.** Annotations are `audience` (user, assistant), `priority` (0.0–1.0) and `lastModified`. They need FastMCP 2.11+ or the low-level API. Resource reads should be lazy and free of side effects. Three patterns from the book:
+  - Documentation servers (Context7, AWS).
+  - A discovery resource that lists entities, paired with a query tool, for large or changing sets.
+  - A cache keyed by resource reference (Tim Kellogg's tupac).
+- **Application control has a cost.** The book's ch. 3 client spends an extra LLM call every turn just to choose which resources and prompts to attach. That is [retrieval](04-retrieval.md) by another name, and it needs its own budget.
+
+---
+
 ## Orchestration and coordination
 
 The upstream multi-agent module has an orchestration progression and a coordination one. Only a few rungs are common in practice:
@@ -163,14 +197,64 @@ The upstream "emergent behaviour" and "field orchestration" material claims that
 
 Every hand-off is a prompt someone else will read. Give messages a schema (task, constraints, evidence, return shape), keep them self-contained, and log them. Cognition's warning applies: agents that share no context make decisions that conflict. Pass the decisions, not just the task.
 
+**A hand-off is a data contract.** Rothman's build shows two ways it breaks (*Context Engineering for Multi-Agent Systems*, ch. 2, 6):
+
+- **A changed shape.** Inserting a Summarizer between Researcher and Writer broke the pipeline. The Writer expected a `facts` key and received `summary`. Validate the shape at every boundary, not only at the end.
+- **An unbounded review loop.** A writer–validator loop needs a cap. His validator returns pass/fail plus feedback, the feedback is appended to the writer's next attempt, and revisions stop at 2.
+
+The book's ch. 2 calls its envelope `{protocol_version, sender, content, metadata}` "MCP". It is a homemade dict checked by key, not the Model Context Protocol ([above](#mcp-a-protocol-for-moving-context)).
+
+**Make plan dependencies explicit.** In the same book's engine, the planner emits a JSON plan whose steps refer to earlier outputs by placeholder (`$$STEP_1_OUTPUT$$`). The executor resolves the placeholders, and the trace logs both the **planned** input and the **resolved** one. A bad step can then be traced either to the plan or to the data it received. The engine also keeps its instructions (style and structure "blueprints") in a separate vector namespace and retrieves them by intent. That is [procedural memory](06-memory.md#episodic-semantic-procedural) retrieved like documents (*Context Engineering for Multi-Agent Systems*, appendix A).
+
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-context.md` — sub-agent context isolation: what the sub-agent receives vs. what it does not; orchestrator-holds-plan as the settled default.
-`~/.claude/refs/agent-tools.md` — the four tool design questions (reversible, idempotent, observable, parallel-safe), tool schema rules, MCP vs. in-process decision table.
-`~/.claude/refs/agent-safety.md` — trust zones and the five protection layers.
+- **Reaching for agents before compression.** Symptom: token spend multiplies with no quality gain: three sub-agents at 80k each is 240k real tokens for 6k of output. Fix: try compaction and retrieval first, and split only when tasks are truly independent.
+- **Thin agent descriptions.** Symptom: the orchestrator routes tasks to the wrong sub-agent, or to none. A ~9-token description gives it little to choose on, and a ~45-token one states when to use the agent. Fix: spend the extra tokens on the description.
+- **Treating a sub-agent's summary as fact.** Symptom: a wrong claim is repeated with growing confidence, or an injected instruction crosses agents. Fix: treat the summary as data, and verify what matters.
+- **Renaming a field between agents.** Symptom: downstream agents silently use empty input, as in Rothman's `facts` to `summary` breakage. Fix: define the contract in code and pass values with placeholders such as `$$STEP_1_OUTPUT$$`, not model memory.
+- **Auto-generating an MCP server from a REST API.** Symptom: one user action needs several tool choices, and 0.95⁵ ≈ 77% of runs succeed, at about 8× the tokens in the book's estimate. Fix: design tools around user actions.
+- **Treating MCP roots as a security boundary.** Symptom: a server reads outside the declared roots because nothing forced it not to. Fix: enforce access outside the protocol, with OS or sandbox controls.
+- **An unbounded review loop.** Symptom: a reviewer and a writer revise forever. Fix: cap revisions at 2, as in Rothman's design, then escalate.
 
----
+## Try it
 
-→ Next: [11-failure-modes.md](11-failure-modes.md) — how context goes wrong.
+1. A workflow needs 8 tool choices at 95% accuracy each. What's the chance that all are right? How much accuracy per choice would you need for 90% overall?
+
+   <details><summary>Answer</summary>
+
+   0.95⁸ ≈ 66.3%. For 90% overall you need 0.90^(1/8) ≈ 98.7% per choice, which is why fewer, higher-level tools usually beat better routing.
+
+   </details>
+
+2. You have 5 AI applications and 6 tool sources. How many integrations do you need with and without MCP?
+
+   <details><summary>Answer</summary>
+
+   Without: M×N = 30. With: M+N = 11. Same reasoning as this chapter's 12 against 7 example.
+
+   </details>
+
+3. Five research sub-agents use 60k tokens each and return 1.5k each, where a single-agent version takes 90k. Compare the orchestrator's window and the absolute spend.
+
+   <details><summary>Answer</summary>
+
+   The orchestrator holds 7.5k of results against up to 90k, so its window is 12× smaller. Absolute spend is at least 300k against 90k, so 3.3× higher before you count the orchestrator's own tokens. You'd pay that only if parallelism or isolation lifts quality or latency.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| When do you use sub-agents? | When the tasks are independent and the window is the constraint, after compression has been tried, since isolation has the highest cost: 240k real tokens for 6k visible in this chapter's example. |
+| What does the orchestrator hold? | The plan and summaries, about 2k rather than 100k, and that is the benefit of isolation. |
+| How long should an agent's description be? | Long enough to route on. A ~45-token description that says when to use it beats a ~9-token label, and the cost is small compared with a wrong delegation. |
+| Why does MCP help at scale? | It turns an M×N integration problem into M+N: 12 integrations become 7 in this chapter's example. |
+| Your team wants to auto-generate an MCP server from your REST API. What do you say? | No: granular endpoints mean several tool choices per action, and at 95% each five choices succeed only about 77% of the time, at around 8× the tokens in the book's estimate. |
+| An agent's output is passed to the next agent and a schema field is renamed. What should happen? | The pipeline should fail at the boundary rather than continue on empty input, as in Rothman's `facts` versus `summary` case. Pass outputs by reference and validate them in code. |
+
+## Next
+
+[11-failure-modes.md](11-failure-modes.md): every lever so far can fail, and the next step is recognizing how context goes wrong.

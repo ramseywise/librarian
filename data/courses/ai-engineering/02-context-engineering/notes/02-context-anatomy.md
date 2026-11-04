@@ -1,8 +1,8 @@
 ---
-imported_hash: 3fa6e8b3cdeaff4c
+imported_hash: 8bf995c6d74903e2
 title: 2 — The Anatomy of Effective Context
-summary: Context engineering is the discipline of deciding, per call, what occupies each of these and at what size.
-order: 8
+summary: An agent can have the right facts and still fail because they sit in the wrong place.
+order: 3
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/02-context-anatomy.md
@@ -12,12 +12,14 @@ source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/02-cont
 
 > What goes in the window, in what order, and which layer each piece belongs to.
 
+An agent can have the right facts and still fail because they sit in the wrong place. One team added `Current time: {{now}}` to a system prompt and watched time to first token go from 0.5 s to 3-5 s while the bill nearly doubled, and nothing about the model had changed. This chapter takes the window apart into its components and layers, then shows how altitude, disclosure and ordering decide whether each one helps the model or quietly works against it.
+
 ---
 
 ## The components
 
-![Overview of the Context Window Composition](../assets/images/ai-agent-book/fig2-1.svg)
-*Figure 2-1, Overview of the Context Window Composition. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) (Apache-2.0).*
+![Overview of the Context Window Composition](../assets/sources/images/li-ai-agents-in-depth-fig2-1.svg)
+*Image Source: Li, [AI Agents in Depth](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) (2026), Figure 2-1: Overview of the Context Window Composition (Apache-2.0)*
 
 A context window at inference time is composed of, roughly in order:
 
@@ -61,8 +63,8 @@ Test for this layer: *if it isn't true in nearly every task, it doesn't belong h
 
 ### Layer 2 — On-demand knowledge
 
-![Skills Progressive Disclosure Mechanism](../assets/images/ai-agent-book/fig2-11.svg)
-*Figure 2-11, Skills Progressive Disclosure Mechanism. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) (Apache-2.0).*
+![Skills Progressive Disclosure Mechanism](../assets/sources/images/li-ai-agents-in-depth-fig2-11.svg)
+*Image Source: Li, [AI Agents in Depth](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) (2026), Figure 2-11: Skills Progressive Disclosure Mechanism (Apache-2.0)*
 
 Reusable procedures and domain knowledge relevant only to certain tasks: skills, playbooks, deployment procedures, evaluation methodologies, debugging checklists, API-specific instructions, long reference docs.
 
@@ -108,8 +110,8 @@ This layer is the answer to prompt-altitude drift. "The agent keeps doing X" is 
 
 ## Ordering: stable before dynamic
 
-![Prompt Cache: Reusing the Prefix KV Cache Across Requests](../assets/images/ai-agent-book/fig2-10.svg)
-*Figure 2-10, Prompt Cache: Reusing the Prefix KV Cache Across Requests. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) (Apache-2.0).*
+![Prompt Cache: Reusing the Prefix KV Cache Across Requests](../assets/sources/images/li-ai-agents-in-depth-fig2-10.svg)
+*Image Source: Li, [AI Agents in Depth](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) (2026), Figure 2-10: Prompt Cache: Reusing the Prefix KV Cache Across Requests (Apache-2.0)*
 
 Ordering is not cosmetic — it determines cache economics and attention placement.
 
@@ -163,8 +165,8 @@ Position bias, the attention sink on the first token, and the "triangle" pattern
 
 ## Runtime state: the agent status bar
 
-![Agent Status Bar Architecture](../assets/images/ai-agent-book/fig2-14.svg)
-*Figure 2-14, Agent Status Bar Architecture. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) (Apache-2.0).*
+![Agent Status Bar Architecture](../assets/sources/images/li-ai-agents-in-depth-fig2-14.svg)
+*Image Source: Li, [AI Agents in Depth](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter2.md) (2026), Figure 2-14: Agent Status Bar Architecture (Apache-2.0)*
 
 The **status bar** is a short, structured block that the *harness* appends at the end of the context each turn, much like a phone's clock, battery and signal row. It is distinct from the system prompt, which is the fixed manual. The status bar is the live dashboard.
 
@@ -235,7 +237,7 @@ DAIR's case study (Saravia, n8n) is a planner agent that writes search tasks, pl
 | Unclear why it made a decision | Write the task list to external state (id, query, status, result summary, timestamp), so every decision is inspectable ([06](06-memory.md#structured-note-taking)) |
 | Undefined behavior when a search failed | Add **error-path instructions**: retry once, then record the failure and continue |
 
-Before shipping, check the context against four questions: **completeness** (does it cover every scenario?), **clarity** (could any part be read two ways?), **consistency** (do the system prompt and the tool descriptions agree?), and **testability** (can you check the behavior with an eval?). Then track task-completion rate, behavioral consistency across similar inputs, and error rate as the context changes. Avoiding over-constraint (rules that break on edge cases) and under-specification (vague goals) is a calibration problem. Evals settle it ([06-eval](../../06-eval/readme.md)).
+Before shipping, check the context against four questions: **completeness** (does it cover every scenario?), **clarity** (could any part be read two ways?), **consistency** (do the system prompt and the tool descriptions agree?), and **testability** (can you check the behavior with an eval?). Then track task-completion rate, behavioral consistency across similar inputs, and error rate as the context changes. Avoiding over-constraint (rules that break on edge cases) and under-specification (vague goals) is a calibration problem. Evals settle it ([the Eval pillar](../../../generative-ai/08-eval/readme.md)).
 
 ---
 
@@ -268,10 +270,62 @@ The upstream "molecule" material comes down to three rules:
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-context.md` — content priority ordering: stable content (system prompt, memory summaries) before ephemeral content (history, tool results, scratch reasoning). Also covers prompt versioning (`PROMPT_VERSION` identifiers; version bumps invalidate eval baselines).
+- **A timestamp in the system prompt.** Symptom: cache hit rate falls to near zero, TTFT jumps and the bill climbs, as in the `Current time` incident on a 100k-conversation/day agent. Fix: pass time as a late message or a clock tool.
+- **Writing at the wrong altitude.** Symptom: either brittle if-else rules that break on the first unlisted case, or vague advice the model ignores. Fix: state the principle and the reason, then add 2-5 canonical examples for the edge cases.
+- **Runtime conditions above the cache marker.** Symptom: many near-identical cached prefixes and a poor hit rate. N binary conditions make 2^N cache-key variants. Fix: move conditional fragments after the marker and keep the prefix the same for everyone.
+- **Sliding-window history instead of compaction.** Symptom: the agent re-runs tool calls and loops, because old results vanished and the prefix shifted each turn. Fix: compact in place ([05](05-compression-compaction.md)).
+- **Asking the LLM to maintain status.** Symptom: the status bar drifts and reasoning gets worse. In Li and Shi's study an LLM summarizer did worse than no status at all. Fix: compute status in code from tool results and inject it verbatim.
+- **Trusting a status bar that's sometimes wrong.** Symptom: the agent acts on a stale count without checking, because models trust the bar almost unconditionally. Li and Shi found errors under about 10% tolerated and larger ones worse than no bar. Fix: monitor its accuracy as a first-line metric, and source it only from real observations.
+- **Rotating few-shot examples per request.** Symptom: examples sit early, so each swap breaks the prefix and the cost rises with no quality gain. Fix: one fixed example set per task type.
 
----
+## Try it
 
-→ Next: [03-budgeting-the-window.md](03-budgeting-the-window.md) — how much of each component the window can afford.
+1. A system prompt has five yes-or-no runtime conditions before the cache marker. How many cache-key variants exist? What if three of them move after the marker?
+
+   <details><summary>Answer</summary>
+
+   2⁵ = 32 variants. Moving three leaves 2² = 4.
+
+   </details>
+
+2. A 20k-token prefix is sent on 10 calls. Using this chapter's rough figure of cached reads at one-tenth of fresh prefill, and ignoring any cache-write premium, how many fresh-token equivalents do you pay with and without a cache hit after the first call?
+
+   <details><summary>Answer</summary>
+
+   Without: 10 × 20k = 200k. With: 20k + 9 × 2k = 38k, or 81% less. Attention cost is the same in both cases, because a cached token still occupies the window.
+
+   </details>
+
+3. Sort these into the order this chapter prescribes: current query, tool schemas, retrieved documents, stable memory, runtime state, system prompt, history.
+
+   <details><summary>Answer</summary>
+
+   System prompt, tool schemas, stable memory, then retrieved documents, history, runtime state, and the query last. The first three make up the cacheable prefix. Putting longform data above the query also matches Anthropic's finding of up to 30% quality improvement on long-document work.
+
+   </details>
+
+4. Your status bar reports `pairs` but the model is asked for triples. What failure should you expect, and what would you test?
+
+   <details><summary>Answer</summary>
+
+   Li and Shi saw Claude fall from 100% to 7.6% when a question needed triple intersections and the bar stored only pairs. The bar is a lossy projection, so treat a new question type like a schema change: keep raw history until the bar covers it, and test questions in the new shape.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| What goes in the stable prefix and what stays out? | System prompt, tools and stable memory go in, in a fixed order. Time, per-user quota, retrieved documents and history stay out, because any change there invalidates everything after it. |
+| Your agent's bill doubled overnight and TTFT went from 0.5 s to 3-5 s, with no model change. First check? | Diff the assembled prompt between two calls and look for a value that changes in the prefix, such as a `Current time` line, then read the cache-hit numbers. |
+| What does "altitude" mean for a system prompt? | The level between brittle rules and vague guidance: specific enough to steer behaviour, general enough to carry heuristics, with 2-5 examples for the hard cases. |
+| What does a status bar buy, and how do you keep it accurate? | In Li and Shi (11 models, about 24k evals), weak models gained 40-54 points and strong models kept accuracy while cutting reasoning tokens 80-90%. Maintain it in code from observations, and monitor it, since errors above about 10% are worse than no bar. |
+| Why would sub-agents be byte-aligned with their parent? | So their side queries reuse the parent's cached prefix. Same prompt, tools, model config and message prefix means a cache hit instead of a fresh prefill. |
+| Flatten messages to `USER: ... ASSISTANT: ...` text to save effort? | No. The main damage is leaving the trained format, which leads to ignored tool results, repeated actions and text where a call was needed. Use the API's structured roles. |
+| How much cheaper is a cached read? | About one-tenth of fresh prefill at Anthropic, DeepSeek and OpenAI's GPT-5 family, as a rough figure that ignores any cache-write premium. Anthropic needs explicit `cache_control` breakpoints. |
+
+## Next
+
+[03-budgeting-the-window.md](03-budgeting-the-window.md): you know what goes in, and now you need to know how much of each component the window can afford.

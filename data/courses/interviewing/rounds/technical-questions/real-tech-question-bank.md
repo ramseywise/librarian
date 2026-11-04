@@ -1,8 +1,8 @@
 ---
-imported_hash: fbe03131aaa6997c
+imported_hash: b40448a72e5aec0a
 title: Real Tech Interview Question Bank
 summary: This bank contains 23 questions organized into 9 themes.
-order: 73
+order: 76
 kind: reading
 section: Technical questions
 source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/real-tech-question-bank.md
@@ -182,7 +182,7 @@ Instrument every agent call to emit a structured trace, modeled as a **trace tre
 Use a **two-layer strategy** rather than relying on one:
 
 1. **Layer 1 — rule-based manual sampling.** Pull traces flagged by negative user feedback, unusually long/high-token dialogues (a proxy for the agent circling), and a fixed daily time-window sample for baseline coverage; humans label execution quality and failure reason.
-2. **Layer 2 — LLM-as-judge at scale.** Run judge scoring over a much larger slice of traffic (typically 10–20% sampled, not 100%, for cost), calibrated against the layer-1 labels.
+2. **Layer 2 — LLM-as-judge at scale.** Run judge scoring over a much larger slice of traffic (sampled rather than 100%, for cost), calibrated against the layer-1 labels.
 
 Neither layer works alone — pure LLM-judge scoring drifts without human calibration, and pure human sampling never covers production volume. One special rule: after any prompt or model change, run **full review** (not sampled) on traces for the first 24–48 hours to catch regressions early.
 
@@ -193,7 +193,6 @@ When reading individual traces, don't stop at the aggregate score — walk the *
 - [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — trajectory vs. outcome grading, reading traces not just scores.
 - [Langfuse — What does a good trace look like?](https://langfuse.com/docs/observability/best-practices) — practical trace-reading and debugging guidance.
 - (course: [11-production-and-the-maturity-ladder](../../../generative-ai/08-eval/notes/11-production-and-the-maturity-ladder.md)) — two-layer manual/LLM-judge evaluation strategy and online sampling rules (negative-feedback triggers, high-cost dialogues, time-window sampling, 48h post-change review).
-- (guide: [evals and observability](../../guides/6-evals-observability/interview-guide.md)) — condensed observability section with the same sampling rules.
 
 </details>
 
@@ -394,7 +393,7 @@ Treat "one global eval set" as the failure mode — industry and language are bo
 
 For **industry variation**: build per-customer or per-vertical eval sets seeded from that customer's real queries and documents, not a generic benchmark — terminology, acceptable answer format, and what counts as "grounded" differ (legal citations vs. support-macro tone vs. clinical terminology). Track metrics per-segment, not only in aggregate, since a strong blended score can hide one industry silently regressing.
 
-For **language variation**: don't assume an English-tuned pipeline or English-only judge generalizes — retrieval quality, chunking, and embedding models can degrade non-uniformly across languages, and off-the-shelf frameworks like RAGAS have historically had thin non-English support (question generation in RAGAS v2 dropped the multilingual adapter that existed in v1). Practical approach: evaluate faithfulness/relevance with native-language judges or human review per language, watch for language-mismatch as its own failure mode (answer language ≠ query language), and consider starting new checks as **log-only diagnostics** before they become hard gates — exactly what one production system in this repo did for a Danish/English support agent, where over-aggressive grounding checks in a multilingual, paraphrase-heavy context caused excessive false escalations.
+For **language variation**: don't assume an English-tuned pipeline or English-only judge generalizes — retrieval quality, chunking, and embedding models can degrade non-uniformly across languages, and off-the-shelf frameworks like RAGAS have historically had thin non-English support (question generation in RAGAS v2 dropped the multilingual adapter that existed in v1). Practical approach: evaluate faithfulness/relevance with native-language judges or human review per language, watch for language-mismatch as its own failure mode (answer language ≠ query language), and consider starting new checks as **log-only diagnostics** before they become hard gates — exactly what one production system did for a bilingual support agent, where over-aggressive grounding checks in a multilingual, paraphrase-heavy context caused excessive false escalations.
 
 **Sources:**
 

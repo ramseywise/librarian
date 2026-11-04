@@ -1,7 +1,7 @@
 ---
-imported_hash: ce2e00f4ecad47cb
+imported_hash: 7f1d1e957eee3ab5
 title: 05 — RL & Alignment
-summary: Reinforcement learning underpins how modern LLMs are aligned to human preferences (RLHF, constitutional AI, DPO) and increasingly how agentic systems are trained to plan and self-correct.
+summary: Reinforcement learning is how a pretrained model becomes an assistant.
 order: 1
 kind: reading
 source: learn-ai-engineering/generative-ai/05-RL/README.md
@@ -9,222 +9,141 @@ source: learn-ai-engineering/generative-ai/05-RL/README.md
 
 # 05 — RL & Alignment
 
-> Depth layer. Summary: [interviewing/guides/2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md)
-> Position: fifth pillar — reinforcement learning and post-training alignment.
-> Presumes: [01-llm-fundamentals](../01-llm-fundamentals/readme.md).
+> Interview recall: the checklists in these notes. Role map: [interviewing](../../interviewing/00-start-here/readme.md).
+> Position: fifth pillar of [generative-ai](../00-start-here/readme.md). Presumes [01-llm-fundamentals](../01-llm-fundamentals/readme.md); feeds [03-agentic-foundations](../03-agentic-foundations/readme.md) and [generative-ai/08-eval](../08-eval/readme.md).
 
 ---
 
 ## What it is
 
-Reinforcement learning underpins how modern LLMs are aligned to human preferences
-(RLHF, constitutional AI, DPO) and increasingly how agentic systems are trained to
-plan and self-correct. This pillar covers RL fundamentals, the RLHF training pipeline,
-modern preference-optimization algorithms, and the connection between alignment and
-agentic behavior.
+Reinforcement learning is how a pretrained model becomes an assistant. It is also, more and more, how agents learn to plan, call tools and recover from mistakes. This pillar starts in plain language, moves to the RL vocabulary (MDPs, value and policy methods, exploration) and then follows RL through the LLM stack: RLHF, preference optimization, Constitutional AI and post-training for agents.
+
+## Why it matters
+
+The thread through all fourteen chapters is that **the reward signal is the product**. Where it comes from (humans, a reward model, a constitution, a verifier, an environment), how dense it is and how easy it is to game decides more than the choice of optimizer. If you build, buy or evaluate a trained model, this is the part that tells you what the model was actually asked to do.
+
+## The story
+
+A small agent in a treasure hunt knows nothing and is told only a score. It wins 0 of 100 games after 1,000 episodes of practice and 100 of 100 after 10,000, because the score was a good one. Put a language model in the agent's seat and the same loop becomes RLHF: humans supply the score, a reward model scales it, PPO or DPO optimizes it, and a KL penalty stops the model from hacking it. A written constitution can replace some of the humans. A verifier can replace the reward model, which is how DeepSeek-R1 learned to reason at scale. Agents then add long horizons, real tools and environments that cost more to build than the training run, and every step still comes back to one question: what is the score, and what happens when the model finds its loophole?
 
 ---
 
-## Curriculum — RL depth
+## Reading order
 
-Six topic areas, ordered from foundations through frontier techniques. Each lists what
-exists in this repo, what's missing, and recommended resources to fill gaps.
+New to RL? Start at 00. It assumes no notation and no data-science pillar. If you already know MDPs, TD and PPO, skim 01 and start at 02.
 
-### 1. RL Foundations
+| # | Chapter | Covers |
+|---|---|---|
+| 00 | [RL in plain language](notes/00-rl-in-plain-language.md) | Agent, reward, exploration, value and policy in plain words with small runnable examples; why this matters for LLMs |
+| 01 | [RL foundations](notes/01-rl-foundations.md) | MDP tuple; Bellman and TD; DQN and offline RL; policy gradients to the PPO clip; maximum entropy; exploration; how RL maps onto LLMs |
+| 02 | [RLHF pipeline](notes/02-rlhf-pipeline.md) | SFT and SFT in practice; reward-model training; PPO with a KL penalty |
+| 12 | [RLHF failure modes](notes/12-rlhf-failure-modes.md) | Read after 02. Reward hacking; overoptimization and the reverse KL; alignment tax; a toy of the whole failure |
+| 03 | [Preference optimization](notes/03-preference-optimization.md) | PPO, DPO, GRPO and GSPO; the decision framework |
+| 13 | [Preference variants](notes/13-preference-variants.md) | Read after 03. KTO, IPO, ORPO, SimPO, DiscoPOP; self-play with SPIN, SPPO, DITTO and RLHI |
+| 04 | [Constitutional AI and RLAIF](notes/04-constitutional-ai.md) | The constitution; critique and revision; RLAIF labels; red-teaming; self-improvement and scaling |
+| 05 | [Post-training for agents](notes/05-post-training-for-agents.md) | The three stages; SFT memorizes, RL generalizes; LLMs inside classic RL; learning without weights; when to pick SFT or RL |
+| 06 | [Data and environments](notes/06-data-and-environments.md) | Environments as practice fields; simulators; data quality; dataset engineering; preference data at practitioner scale |
+| 07 | [Reward design and tool calling](notes/07-reward-design-and-tool-calling.md) | Multi-turn rewards; judges as rewards; RLVP; RL for tool calling; dense signals and distillation |
+| 08 | [Reasoning RL and DeepSeek-R1](notes/08-reasoning-rl-deepseek-r1.md) | The R1 story; how little data and reward reasoning needs |
+| 09 | [Test-time search and training](notes/09-test-time-search-and-training.md) | MCTS, AB-MCTS, search instead of training; measuring the selection bottleneck |
+| 10 | [Engineering RL systems](notes/10-engineering-rl-systems.md) | Imitation and inverse RL; hierarchy and curricula; engineering an RL problem; scaling; running RL in production; what has dated |
+| 11 | [Multi-agent and RAG RL](notes/11-multi-agent-and-rag-rl.md) | CTDE, VDN/QMIX, MADDPG, MAPPO; path finding; RL over retrieval and tool actions; Self-RAG |
 
-Core RL theory needed before understanding RLHF and alignment.
+Chapters 12 and 13 sit where the table puts them; they were split out of 02 and 03 and kept those numbers so that links to the other chapters still hold. Short route for a working engineer: 02, 12, 03, 05, 07, then run the [Q-learning lab](practice/01-q-learning-treasure-hunt/).
 
-**Concepts:** Markov decision processes, policies, value functions, exploration vs.
-exploitation, temporal-difference learning, Q-learning, policy gradients.
+## Builds on and feeds into
 
-| Status | Resource | Location |
-|--------|----------|----------|
-| Exists | "Reinforcement Learning" book chapters 1-11 (PDFs) | [`2-llm-rlhf/`](2-llm-rlhf/) — chapters 1 (Why RL) through 11 (Conclusions) |
-| Exists | Sutton & Barto textbook (RLbook2020.pdf) | [`2-llm-rlhf/RLbook2020.pdf`](2-llm-rlhf/RLbook2020.pdf) |
-| Exists | rl.md — basics (MDP, agent/environment, policy, reward) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) |
-| Exists | rl.md — cleaned, restructured; covers MDP, MARL, RL-in-RAG with full translations | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) |
-| Partial | Foundations bridged in rl.md; dedicated foundations note not yet created | See rl.md Section 1 for LLM-context RL foundations |
-| **Done** | **Lab: tabular Q-learning on a treasure hunt (offline, numpy) — 0% wins at 1k episodes, 100% at 10k** | [`practice/01-q-learning-treasure-hunt/`](practice/01-q-learning-treasure-hunt/) |
+**Builds on**
 
-**Assessment:** Strong reference coverage (full textbook + chapter PDFs). rl.md now
-covers MDP and algorithm families in LLM context. A dedicated note distilling chapters
-1-5 of Sutton & Barto remains a lower-priority gap.
+| Chapter | Why |
+|---|---|
+| [DA 04/03 Priors and bandits](../../data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md) | Optional background: bandits and Thompson sampling, the case with no state |
+| [DA 06/08 States and sequences](../../data-analytics/06-applied-analyses/notes/08-states-and-sequences.md#markov-clv-and-what-the-pooled-chain-gets-wrong) | Optional background: a Markov chain with rewards is an MDP without actions |
 
----
+**Feeds into**
 
-### 2. RLHF — Reinforcement Learning from Human Feedback
-
-The core technique that made ChatGPT possible. Three-stage pipeline:
-supervised fine-tuning (SFT) -> reward model training -> RL optimization (PPO).
-
-**Concepts:** Human preference collection, Bradley-Terry model, reward model
-architecture, PPO for language models, KL penalty, reward hacking, overoptimization.
-
-| Status | Resource | Location |
-|--------|----------|----------|
-| Exists | rl.md — RLHF overview (Step 1-3: preferences -> reward model -> PPO) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) (lines 262-266) |
-| Exists | InstructGPT / GPT-4 papers | [`2-llm-rlhf/2303.08774v6.pdf`](2-llm-rlhf/2303.08774v6.pdf) (GPT-4), [`2-llm-rlhf/2203.02155v1.pdf`](2-llm-rlhf/2203.02155v1.pdf) |
-| Exists | LLM Handbook — preference alignment chapter | [`../01-llm-fundamentals/llm handbook/`](../01-llm-fundamentals/llm%20handbook/) |
-| Exists | LLM From Scratch — fine-tuning chapters | [`../01-llm-fundamentals/llm from scratch/`](../01-llm-fundamentals/llm%20from%20scratch/) |
-| **Done** | **rlhf-pipeline.md — SFT → reward model → PPO walkthrough with Bradley-Terry model, KL penalty, failure modes** | [`rlhf-pipeline.md`](rlhf-pipeline.md) |
-| Missing | Hands-on notebook: RLHF with HuggingFace TRL | Recommend: [HuggingFace TRL docs](https://huggingface.co/docs/trl/), [Anthropic RLHF paper](https://arxiv.org/abs/2204.05862) |
-
-**Assessment:** Core pipeline note exists. Hands-on notebook remains a gap.
+| Chapter | Why |
+|---|---|
+| [AIE 09 Safety and security](../../ai-engineering/09-safety-and-security/readme.md) | Alignment training (RLHF, constitutional AI) sits behind its guardrails |
+| [AIE 04/08 Self-improving loops](../../ai-engineering/04-loop-engineering/notes/08-self-improving-loops.md) | Lessons that may go into post-training |
+| [AIE 02/06 Memory](../../ai-engineering/02-context-engineering/notes/06-memory.md) | Parametric memory |
 
 ---
 
-### 3. PPO, DPO, and GRPO — Preference Optimization Algorithms
+## Layout
 
-The algorithm family that implements alignment. PPO was first; DPO simplified the
-pipeline; GRPO (DeepSeek) removes the critic network entirely.
-
-**Concepts:**
-
-- **PPO (Proximal Policy Optimization):** Clips policy update ratios for stability.
-  The workhorse of RLHF — used by OpenAI, Anthropic, and others.
-- **DPO (Direct Preference Optimization):** Eliminates the reward model entirely.
-  Trains directly on preference pairs (prompt, chosen, rejected). Simpler, cheaper,
-  increasingly standard.
-- **GRPO (Group Relative Policy Optimization):** DeepSeek's approach — removes the
-  critic, uses group-based advantage estimation. Powers DeepSeek-R1's reasoning.
-- **KTO, IPO, ORPO:** Newer variants optimizing different trade-offs (single-signal
-  feedback, bounded preferences, odds-ratio weighting).
-
-| Status | Resource | Location |
-|--------|----------|----------|
-| Exists | rl.md — DPO section (no reward model, direct preference training) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) (lines 271-286) |
-| Exists | rl.md — PPO overview (actor-critic, clipped ratios) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) (lines 122-124, 154) |
-| Exists | PPO reference links (DigitalOcean, Toloka, MathWorks) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) |
-| Exists | DPO paper (2305.18290v3.pdf) | [`2-llm-rlhf/2305.18290v3.pdf`](2-llm-rlhf/2305.18290v3.pdf) |
-| **Done** | **preference-optimization.md — PPO vs DPO vs GRPO vs KTO/IPO/ORPO: math, decision table, DeepSeek-R1** | [`preference-optimization.md`](preference-optimization.md) |
-
-**Assessment:** Full algorithm comparison note exists covering all major algorithms and
-the evolution story.
+```
+05-RL/
+├── README.md
+├── references.md           every source, mapped to notes; open gaps
+├── notes/                  00–13, read in order
+├── slides/                 deck.yaml and rl-and-alignment.pptx
+├── practice/
+│   └── 01-q-learning-treasure-hunt/   tabular Q-learning lab (offline, numpy)
+└── sources/                local PDFs: Sutton & Barto, Winder ch. 1–11, bandits, RLHF/DPO/PPO papers
+    ├── images/             figures from Li ch. 8, Huyen ch. 7–8, Koenigstein ch. 3, Albada ch. 7, Winder
+    ├── huyen-ai-engineering/, ai-agents-definitive-guide/, building-applications-with-ai-agents/,
+    │   building-ai-agents-llms-rag-kgs/   purchased chapter PDFs (see references.md § Books)
+    ├── misfiled/           non-RL papers from the old dump, kept for their owning pillar
+    └── winder-reinforcement-learning/
+```
 
 ---
 
-### 4. Reward Modeling
+## Rules of thumb
 
-The component that converts human preferences into a trainable signal. Central to
-RLHF; bypassed by DPO but understanding it is essential for the full picture.
-
-**Concepts:** Preference datasets, Bradley-Terry model, reward model architecture
-(typically a modified LLM with a scalar head), reward hacking, overoptimization,
-process vs. outcome reward models.
-
-| Status | Resource | Location |
-|--------|----------|----------|
-| Exists | rl.md — reward function mentions (brief) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) |
-| Exists | Reward hacking blog reference | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) (line 51) |
-| Exists | InstructGPT paper (describes reward model training) | [`2-llm-rlhf/`](2-llm-rlhf/) |
-| **Done** | **post-training-for-agents.md — reward density, scalar/vector/generative RMs, PRM vs ORM, RLVP path penalties, credit assignment** | [`post-training-for-agents.md`](post-training-for-agents.md#reward-design-for-multi-turn-agents) |
-| Missing | Cleaned note: reward model architecture (scalar head, training details) | Recommend: [Anthropic reward modeling](https://arxiv.org/abs/2204.05862), [OpenAI process reward models](https://openai.com/index/improving-mathematical-reasoning-with-process-reward-models/) |
-
-**Assessment:** Reward design is now covered from the agent-training angle (density,
-form, process vs. outcome, RLVP). RM architecture details remain a smaller gap.
-
----
-
-### 5. Constitutional AI / RLAIF
-
-Anthropic's approach: replace human preference labeling with AI-generated feedback
-guided by a constitution (a set of principles). Scales alignment without proportional
-human labor.
-
-**Concepts:** Constitutional principles, AI-generated critiques and revisions, RLAIF
-(RL from AI Feedback), self-improvement loops, harmlessness training, red-teaming.
-
-| Status | Resource | Location |
-|--------|----------|----------|
-| Exists | Constitutional AI paper | [`2-llm-rlhf/constitutional_ai.pdf`](2-llm-rlhf/constitutional_ai.pdf) |
-| Exists | Constitutional AI paper (duplicate) | [`../01-llm-fundamentals/readings/constitutional_ai.pdf`](../01-llm-fundamentals/readings/constitutional_ai.pdf) |
-| Exists | rl.md — brief mention | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) |
-| **Done** | **constitutional-ai.md — critique → revision → RLAIF loop, red-teaming, RLHF comparison** | [`constitutional-ai.md`](constitutional-ai.md) |
-| Note | Duplicate PDF in 01-llm-fundamentals/readings/ — canonical copy is here | [`2-llm-rlhf/constitutional_ai.pdf`](2-llm-rlhf/constitutional_ai.pdf) |
-
-**Assessment:** Note complete. Duplicate PDF dedup: canonical in `2-llm-rlhf/`;
-`01-llm-fundamentals/readings/constitutional_ai.pdf` is a redundant copy (noted in
-`constitutional-ai.md`; PDFs not tracked by link checker so no action required).
+| Rule | Note |
+|---|---|
+| Learn the words first: agent, state, action, reward, policy, value, exploration. Every later paper assumes them | 00, 01 |
+| The KL penalty to the SFT model is what keeps PPO from drifting into reward hacking. Remove it and the policy finds the reward model's blind spots | 02 |
+| A reward model is a proxy. Past some point, more optimization against it lowers true quality (overoptimization) | 02 |
+| Default to DPO when you have preference pairs and no verifier. Use GRPO/PPO when you can score outputs online (code that runs, math that checks) | 03 |
+| Constitutional AI swaps human harmlessness labels for AI critiques guided by written principles. The principles become the thing you audit | 04 |
+| Fine-tuning is for form, RAG is for facts. When in doubt, don't fine-tune: try prompts, retrieval and in-context learning (Reflexion, ExpeL) first | 02, 05 |
+| Start fine-tuning with about 50 good examples. If they show no gain, fix the setup before buying more data | 06 |
+| Apply LoRA to all linear layers, not only attention. For DPO, start at β = 0.1 (raise it if outputs turn wordy) with a learning rate about 100× below LoRA SFT's | 02, 03 |
+| Gate a learned judge behind a verifiable check: correctness first, judge ranking second | 07 |
+| Good SFT data often removes the need for RL. Data decides how far you can go; RL decides how much higher | 05, 06 |
+| SFT memorizes the demonstrations; RL generalizes to held-out scenarios. Use SFT for format, RL for behaviour under distribution shift | 05 |
+| Reward the outcome and penalize verifiable process violations (RLVP). Do not reward a lucky path that broke a constraint | 07 |
+| Mask tool outputs out of the loss when training tool-calling agents. The model should learn to call tools, not to predict their output | 07 |
+| Try search before training when pass@k already covers the task and a verifier exists. Train when you need the answer fast at one sample | 09 |
+| Check a random policy and a simple baseline before training, and compare runs across many seeds: three seeds can put two identical agents far apart | 10 |
 
 ---
 
-### 6. RL for Agentic Systems
+## Primary texts
 
-RL applied to agent planning, tool use, and retrieval — where alignment meets agency.
-Increasingly relevant as agents move from prompt-engineered to RL-trained.
+- Sutton and Barto, *Reinforcement Learning: An Introduction*
+- Li, *AI Agents in Depth*, ch. 8
+- Huyen, *AI Engineering*, ch. 7
+- Lattimore and Szepesvári, *Bandit Algorithms*: further reading
+- Winder, *Reinforcement Learning: Industrial Applications of Intelligent Agents*
 
-**Concepts:** RL for tool use, RL for retrieval (Self-RAG, adaptive retrieval), MARL
-(multi-agent RL), RL for reasoning (DeepSeek-R1, OpenAI o1), verifiable rewards.
+Everything else: [references.md](references.md).
 
-| Status | Resource | Location |
-|--------|----------|----------|
-| Exists | rl.md — MARL section (CTDE, MADDPG, credit assignment) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) (lines 55-196) |
-| Exists | rl.md — RL in RAG section (query rewriting, retrieval policy, tool use) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) (lines 197-259) |
-| Exists | ReAct paper | [`2-llm-rlhf/reAct_syergizing_reasoning_ancd_acting_in_language_models.pdf`](2-llm-rlhf/reAct_syergizing_reasoning_ancd_acting_in_language_models.pdf) |
-| Exists | Reflexion paper (language agents with RL) | [`2-llm-rlhf/reflexioin_language_agents_with_reinforcement_learning.pdf`](2-llm-rlhf/reflexioin_language_agents_with_reinforcement_learning.pdf) |
-| Exists | Deep-research-bot RL notebook | [`../07-agentic-applications/chatbot/deep-research-bot/notebooks/03_rl_for_deep_research_agent.ipynb`](../07-agentic-applications/chatbot/deep-research-bot/notebooks/03-rl-for-deep-research-agent.md) |
-| Exists | WebGPT reference (RL for web browsing) | [`../01-llm-fundamentals/rl.md`](../01-llm-fundamentals/rl.md) (line 239) |
-| **Done** | **post-training-for-agents.md — SFT vs RL (memorize vs generalize), when to choose which, data/environment > algorithm, tool-calling RL (ReTool, DAPO, loss masking), on-policy distillation and self-distillation** | [`post-training-for-agents.md`](post-training-for-agents.md) |
-| Partial | RL for reasoning (DeepSeek-R1, o1) | R1-Zero vs cold-start in [`post-training-for-agents.md`](post-training-for-agents.md#the-three-stages); algorithm side in [`preference-optimization.md`](preference-optimization.md#the-deepseek-r1-story) |
+## Resource map
 
-**Assessment:** Best-covered area after foundations. The MARL and RL-in-RAG notes in
-rl.md are rough (mixed zh/en Notion export) but contain real substance. The deep-research-bot
-notebook is a hands-on application. Agent post-training is now covered in
-[`post-training-for-agents.md`](post-training-for-agents.md).
+**Related notes**
 
----
+- [generative-ai/01-llm-fundamentals](../01-llm-fundamentals/readme.md): pretraining and SFT, the stage before this pillar.
+- [generative-ai/03-agentic-foundations](../03-agentic-foundations/readme.md): RL-trained agent patterns (ReAct, Reflexion) and multi-agent coordination.
+- [generative-ai/07-agentic-applications](../07-agentic-applications/readme.md): the deep-research-bot has an RL-for-deep-research notebook.
+- [generative-ai/08-eval](../08-eval/readme.md): environments as training grounds, trajectory scoring, preference annotation.
+- [ai-engineering/04-loop-engineering](../../ai-engineering/04-loop-engineering/readme.md): failure modes and guardrails, the runtime side of reward hacking.
 
-## Existing resource quality assessment
+**Books and courses:** Sutton & Barto (★), Li *AI Agents in Depth* ch. 8 (★), Huyen *AI Engineering* ch. 7–8 (★), *LLM Engineer's Handbook* ch. 5–6 (★), Raschka ch. 6–7, Koenigstein ch. 3, Albada ch. 7, Raieli & Iuculano ch. 8, Winder, Lattimore & Szepesvári, HF Deep RL Course, OpenAI Spinning Up. Full list with chapter → note mapping in [references.md](references.md).
 
-### `rl.md` (in 01-llm-fundamentals)
+**Practice and slides**
 
-- **Status:** Low-confidence Notion export, mixed Chinese/English, many bare URLs
-- **Strengths:** Covers MARL, RL-in-RAG, DPO/ILQL, reward hacking — real depth
-- **Recommendation:** Split into topic-specific cleaned notes and migrate to this pillar.
-  Keep a pointer in 01-llm-fundamentals for the pretraining->alignment pipeline story.
-  Topics to extract: (1) RLHF pipeline, (2) PPO/DPO/GRPO comparison, (3) RL for RAG/agents
+Deck: [slides/rl-and-alignment.pptx](slides/rl-and-alignment.pptx) and [.pdf](slides/rl-and-alignment.pdf), built from [slides/deck.yaml](slides/deck.yaml) with `make slides PILLAR=generative-ai/05-RL STRICT=1 PREVIEW=1`.
 
-### `2-llm-rlhf/` readings
+| Lab | What it shows | Run |
+|---|---|---|
+| [01-q-learning-treasure-hunt](practice/01-q-learning-treasure-hunt/) | Tabular Q-learning on a text adventure with hidden rules: 0% wins at 1k episodes, 100% at 10k | offline; from the lab folder, `uv run --no-project --with numpy python test_rl_learning.py --episodes 1000 10000` (~10 s) |
 
-- **Status:** 39 PDFs, mix of RL textbook chapters and research papers
-- **Strengths:** Comprehensive RL textbook (chapters 1-11), Sutton & Barto, key papers
-- **Issues:** Some papers are duplicated across pillars (constitutional_ai.pdf). Several
-  papers are not RL-specific (conversational-ai.pdf, rasa papers, batch-norm) — these may
-  be misfiled from a Notion dump.
-- **Recommendation:** Audit and reorganize. Move non-RL papers to appropriate pillars.
-  Create a readings index mapping each paper to the curriculum topic it supports.
+**Readings:** local PDFs in [sources/](sources/), indexed with arXiv ids in [references.md](references.md#core-papers). Open gaps (TRL notebook, reward-model architecture note) are in [references.md § Gaps](references.md#gaps).
 
----
+**Interviewing:** [role map](../../interviewing/00-start-here/readme.md) to these checklists, and the rounds.
 
-## Priority roadmap
-
-Ordered by impact for interview depth and conceptual completeness:
-
-1. ~~**RLHF pipeline walkthrough** (Topic 2)~~ **DONE** — [`rlhf-pipeline.md`](rlhf-pipeline.md)
-2. ~~**PPO vs DPO vs GRPO comparison** (Topic 3)~~ **DONE** — [`preference-optimization.md`](preference-optimization.md)
-3. ~~**rl.md cleanup and split**~~ **DONE** — translated, restructured, RLHF/DPO extracted to 05-RL
-4. ~~**Constitutional AI / RLAIF note** (Topic 5)~~ **DONE** — [`constitutional-ai.md`](constitutional-ai.md)
-5. ~~**Reward modeling depth** (Topic 4)~~ **MOSTLY DONE** — [`post-training-for-agents.md`](post-training-for-agents.md#reward-design-for-multi-turn-agents); RM architecture still open
-6. ~~**RL for agents** (Topic 6)~~ **DONE** — [`post-training-for-agents.md`](post-training-for-agents.md), lab [`practice/01-q-learning-treasure-hunt/`](practice/01-q-learning-treasure-hunt/)
-7. **Readings audit** — deduplicate, move misfiled papers, create index.
-
----
-
-## Cross-links
-
-| Direction | Pillar | Connection |
-|-----------|--------|------------|
-| Upstream | [01-llm-fundamentals](../01-llm-fundamentals/readme.md) | RL/RLHF is the post-pretraining alignment step. `rl.md` lives there as part of the training pipeline story. |
-| Upstream | Fine-tuning (in `01-llm-fundamentals/llm from scratch/`, `llm handbook/`) | SFT is stage 1 of the RLHF pipeline. Preference alignment (DPO) is an alternative to stage 2+3. |
-| Downstream | [03-agentic-foundations](../03-agentic-foundations/readme.md) | RL-trained agents (ReAct, Reflexion, tool-use RL). MARL for multi-agent coordination. |
-| Downstream | [07-agentic-applications](../07-agentic-applications/readme.md) | Deep-research-bot has an RL notebook (`03_rl_for_deep_research_agent.ipynb`). |
-| Lateral | [ai-engineering/06-eval](../../ai-engineering/06-eval/README.md) | Evaluation methodology for RL-trained agents: trajectory scoring, preference annotation, benchmarks. |
-| Lateral | [Li, *AI Agents in Depth* ch. 7](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter7.md) | Synthesized into [`post-training-for-agents.md`](post-training-for-agents.md); GPU labs linked upstream from its [Labs](post-training-for-agents.md#labs) table. |
-| Lateral | [interviewing/guides/2-llm-fundamentals](https://github.com/ramseywise/sisyphus/blob/main/interviewing/guides/2-llm-fundamentals/00-overview.md) | Summary layer — RLHF, alignment, and prompting compressed for interview prep. |
-
----
-
-## Next pillar
-
--> [06-observability/](../06-observability/readme.md) — once agents are trained and deployed,
-observability tooling (tracing, scoring, evaluation pipelines) closes the feedback loop.
+**Previous:** [04-agentic-frameworks](../04-agentic-frameworks/readme.md) · **Next:** [06-observability](../06-observability/readme.md): once agents are trained and deployed, tracing and scoring close the feedback loop.

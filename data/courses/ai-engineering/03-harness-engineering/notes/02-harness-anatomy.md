@@ -1,8 +1,8 @@
 ---
-imported_hash: e93478cafdc7e84f
+imported_hash: 71e161738cceffdb
 title: 2 — Harness Anatomy
-summary: 'Supporting: git versioning, planning files, test runners, self-verification hooks.'
-order: 12
+summary: '"Improve the harness" is not an actionable instruction until you can name the parts.'
+order: 3
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md
@@ -11,6 +11,8 @@ source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/02-harn
 # 2 — Harness Anatomy
 
 > The component inventory: what ships inside a harness, and which primitives are foundational.
+
+"Improve the harness" is not an actionable instruction until you can name the parts. Without an inventory, a failing agent gets another paragraph of prompt because that is the one part everyone can see, while the real gap sits in a missing log file, a boot script or a test the agent can't read. This chapter lists the nine components, sorts them into five subsystems you can diagnose against, and shows the build order that follows.
 
 ---
 
@@ -32,7 +34,7 @@ LangChain's anatomy, grouped by the job each does:
 
 **5. Sandboxes** — safe execution environments with pre-configured tooling (runtimes, CLIs, browsers). See [note 04](04-execution-boundaries.md).
 
-**6. Memory systems** — file-based standards (`AGENTS.md`, `MEMORY.md`) for continual learning across sessions. See [02-context-engineering/notes/05](../../02-context-engineering/notes/06-memory.md).
+**6. Memory systems** — file-based standards (`AGENTS.md`, `MEMORY.md`) for continual learning across sessions. See [02-context-engineering/notes/06](../../02-context-engineering/notes/06-memory.md).
 
 ### Orchestration & control
 
@@ -43,6 +45,15 @@ LangChain's anatomy, grouped by the job each does:
 **9. Context management tools** — web search, retrieval, and MCP access for information past the training cutoff; plus compaction and tool-output offloading.
 
 Supporting: git versioning, planning files, test runners, self-verification hooks.
+
+LangChain's Deep Agents docs group the same parts by the capability a user sees:
+
+| Capability group | Parts |
+|---|---|
+| **Execution environment** | Tools, a virtual filesystem, permissions, code execution |
+| **Context management** | Skills, memory, summarization and tool-output offloading, prompt caching |
+| **Delegation** | A to-do list, subagents |
+| **Steering** | Human-in-the-loop interrupts |
 
 ---
 
@@ -60,7 +71,24 @@ The nine components describe what *ships*. For diagnosing a failing agent, a coa
 
 Two of these map onto Norman's two gulfs from interaction design. The **gulf of execution** (the agent knows what it wants but can't act on it) is a tools or environment gap. The **gulf of evaluation** (it acted but can't tell whether that worked) is a feedback gap. Agents usually fail on evaluation. They are rarely stuck; they are confidently wrong.
 
-**Ablation** turns the table into a method. Remove one subsystem at a time on a fixed task and watch what breaks, and you learn which parts of *your* harness are load-bearing. [Practice lab 6](practice/04-exercises.md#lab-6--capstone-full-harness-cleanup-ablation) runs this end to end.
+**Ablation** turns the table into a method. Remove one subsystem at a time on a fixed task and watch what breaks, and you learn which parts of *your* harness are load-bearing.
+
+### One harness, read through the five subsystems
+
+DeepMind's Minecraft run (Faldor et al., 2026) is a compact example because the harness is small and fully described. Four general-purpose Gemini 4 Argon coding agents, with nothing Minecraft-specific, beat the game in 27 h 14 min.
+
+![Four coding agents each write a JavaScript program; a Mineflayer bot runs it on a shared Minecraft server; text comes back with position, health, inventory or the error; the players share chat and notes; a fifth Observer agent reads the record and never plays](../assets/sources/images/faldor-gemini-argon-minecraft-fig2.png)
+*Image Source: Faldor et al. (2026)*
+
+| Subsystem | In the Minecraft harness |
+|---|---|
+| Instructions | A one-paragraph objective plus a general part reused across environments: observe before acting, verify after, validate new tools on short tasks, record lessons, report honestly, don't exploit the evaluation |
+| Tools | One action: write and run a JavaScript program through the Mineflayer bot, with a timeout the agent picks (60 s by default). Plus the usual coding tools: shell, file editing, version control, web search |
+| Environment | Each agent on its own cloud machine. Programs can't start processes or write files. The server saves the world every 5 minutes and restarts from the last save |
+| State | Memory with a private and a team-shared part; values on the bot's global object persist between programs; compaction with an instruction to keep work in progress and next steps |
+| Feedback | Text back after every program (position, health, inventory, what it found, or the error); game chat; an independent Observer agent that checks claims against the server log |
+
+The action space is the interesting choice. There are no pixels and no keyboard. The agent acts by writing code, which makes bash-style composition ([below](#bash-as-a-general-purpose-tool)) the whole action space.
 
 ---
 
@@ -78,6 +106,8 @@ The filesystem is the primitive that the others lean on, because it solves four 
 This is the mechanism behind **state externalization** ([note 06](06-long-horizon-execution.md)) — progress lives in files, so the loop becomes re-entrant and independent of any single context window. It's also the mechanism behind **tool-call offloading**: keep the head and tail of a large tool output in-window above a token threshold, write the full output to disk, and let the model read it back only if needed. A 2,000-line log becomes ~40 lines plus a path.
 
 Git deserves separate mention: it is the only rollback mechanism most harnesses have. Branch-per-agent turns parallel experimentation into a safe operation with a free undo.
+
+**The filesystem is an interface, not a disk.** Deep Agents makes the backend pluggable behind the same file tools: in-memory agent state (the default, scoped to one thread), local disk, a LangGraph store that persists across threads, a composite that routes paths to different backends (for example `/memories/` to the store and everything else to state), or a custom backend. This is the filesystem version of "swap the backend, the tools don't change" ([below](#curriculum-view-the-causal-build-order)).
 
 **State across messages.** An always-on ("sessionless") agent, like OpenClaw reached over a chat app, may get its next message minutes or days later. Li splits the state in two:
 
@@ -177,11 +207,52 @@ Six items. Everything else in this note is elaboration on those.
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-runtime.md` — runtime boundaries and where execution happens.
-`~/.claude/refs/agent-tools.md` — tool schema rules and the promote-from-bash heuristic.
+- **Fixing an evaluation gap with more tools.** Symptom: the agent acts confidently and is wrong, and adding capability doesn't help. Fix: separate the two gulfs. Agents are rarely stuck on execution; most need a feedback signal that shows whether the action worked.
+- **Keeping progress only in the context window.** Symptom: a compaction or crash loses the run, and a 2,000-line log crowds out the task. Fix: use the filesystem for state, and leave the head and tail of large output plus a path in the window.
+- **Putting changing values in the system prompt.** Symptom: cache hit rate falls, because the branch or recent-commit list changes the prefix. Fix: append the environment status bar at the end of the context, before each inference.
+- **Holding a must-always rule in the innermost layer.** Symptom: "never push to main" holds until it doesn't. Fix: reliability requirements move outward to the deterministic shell, since a prompt can be ignored and a hook cannot. Then use the innermost layer that can hold the requirement, because cost and blast radius also grow outward.
+- **Typing every tool on day one.** Symptom: a large catalog with overlapping tools before anyone knows which get used. Fix: start with bash and promote to a typed tool when you need a gate, a rendered result, an audit record, parallelism or a retry policy.
+- **Guessing which parts are load-bearing.** Symptom: components nobody dares remove and nobody can justify. Fix: run an ablation, removing one subsystem at a time on a fixed task and watching what breaks.
 
----
+## Try it
 
-→ Next: [03-tool-design.md](03-tool-design.md) — the component with the highest failure rate.
+1. Attribute each failure to one of the five subsystems: (a) a new session spends its first 20 minutes finding out how to start the app; (b) the agent says the tests pass and it never ran them; (c) a resumed run redoes work already finished.
+
+   <details><summary>Answer</summary>
+
+   (a) Environment: the subsystem table puts `init.sh` there. (b) Feedback: a gulf of evaluation, closed by a verification gate or hook. (c) State: no progress log or feature list for the new session to read.
+
+   </details>
+
+2. Plan an ablation for a harness you use. Name the fixed task, the five removals, and the signal you will read each time.
+
+   <details><summary>What a good plan has</summary>
+
+   One task with a binary pass check, run several times per condition since a single run proves little. Remove instructions, tools, environment help, state files and feedback in turn. Read pass rate and the point where it fails, and treat a removal that changes nothing as a candidate for deletion ([note 08](08-maturity-and-failure-modes.md#iterative-simplification)).
+
+   </details>
+
+3. A team needs an audit record of every database write. Their agent writes through bash. Apply promote-from-bash and say what stays in bash.
+
+   <details><summary>Answer</summary>
+
+   Promote the database write to a typed tool, since an audit record is one of the five named reasons, and the typed call also gives you a place for a gate. Ordinary shell work such as builds and greps stays in bash, because none of the five reasons applies to it.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| What are the five subsystems of a harness? | Instructions, tools, environment, state and feedback. Every failure can be attributed to one of them, which is why this cut is for diagnosis while the nine components describe what ships. |
+| What are the gulfs of execution and evaluation, and which do agents hit more? | Execution is knowing what to do but being unable to act, a tools or environment gap. Evaluation is acting but being unable to tell if it worked, a feedback gap; agents usually fail here, confidently wrong rather than stuck. |
+| Why does the filesystem matter so much in a harness? | It lets state outlive one context window, so the loop becomes re-entrant, and it gives large tool output a home: a 2,000-line log can leave only its head, tail and a path in the window. |
+| Where do you put the current branch and recent commits, and why? | At the end of the context, before each inference. In the system prompt the changing values would break the KV cache. |
+| Bash or typed tools? | Start with bash, and promote when you need a gate, a rendered result, an audit record, parallelism or a retry policy. Bash is maximally capable and dangerous, so pair it with a sandbox and hooks. |
+| A requirement must hold on every run. Which layer does it go in? | The deterministic shell, because reliability requirements move outward. Otherwise use the innermost layer that can hold it, because a sentence is cheap and reversible while a subagent tier multiplies tokens and loses shared context. |
+
+## Next
+
+[03-tool-design.md](03-tool-design.md): the component with the highest failure rate.

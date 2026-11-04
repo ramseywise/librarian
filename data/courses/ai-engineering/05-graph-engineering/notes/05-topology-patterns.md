@@ -1,8 +1,8 @@
 ---
-imported_hash: dd96986322791ee7
+imported_hash: 81013079a2619b70
 title: 5 — Topology Patterns
-summary: The highest-yield first graph (02). Draft-then-review, research-then-write, build-then-test.
-order: 23
+summary: Teams pick a topology by reputation. They reach for a supervisor or a debate and find out in production that a substring match routed a tool result back into the loop, or that a self-review ratified a hallucination.
+order: 6
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/05-topology-patterns.md
@@ -11,6 +11,8 @@ source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/05-topolo
 # 5 — Topology Patterns
 
 > The handful of shapes that recur, what each costs, how each fails, and how the same shapes look in Claude Code.
+
+Teams pick a topology by reputation. They reach for a supervisor or a debate and find out in production that a substring match routed a tool result back into the loop, or that a self-review ratified a hallucination. Only a handful of shapes recur, and each has a known cost and a known way to fail. This chapter names them, shows them in Claude Code, and asks when collaboration brings in anything new.
 
 ---
 
@@ -28,17 +30,34 @@ source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/05-topolo
 
 The highest-yield first graph ([02](02-graph-primitives.md#the-first-graph-generate-then-verify)). Draft-then-review, research-then-write, build-then-test. **The separation creates the value; parallelism is a bonus.** Put deterministic checks before the LLM checker, and bound the back-edge.
 
+**Not every "actor-critic" loop qualifies.** Albada presents actor-critic as a lightweight quality gate: an actor proposes three candidate plans, a critic scores them 1–10 on a rubric (feasibility, cost, risk), and anything under 8 goes back with feedback. He recommends it when "evaluation is easier than generation", and calls it test-time compute that needs "no learning" (*Building Applications with AI Agents*, ch. 8). The trade-off he names, more inference cost for better output, is real. But in his example the critic is the same `llm` with the same history and no tools, so it is self-review. By the evidence [below](#when-multi-agent-beats-single-agent), self-review without new information is often neutral or harmful (Huang et al., ICLR 2024). The rubric only pays off when at least one of its criteria can be checked against something the actor didn't write: a cost computed in code, a constraint looked up, a simulation run.
+
+Albada's code also shows three wiring faults to avoid when you copy the pattern:
+
+- **Unbounded back-edge.** The critic routes back whenever the last message contains `"regenerate"`, and nothing counts the attempts. The only stop is `recursion_limit`.
+- **A substring router.** Routing on `"regenerate" in content` turns any tool output that happens to contain the word into another loop. Route on a structured field (`verdict: Literal["accept", "revise"]`) instead.
+- **Off-schema state.** The actor writes `state["candidates"]`, but `AgentState` only declares `operation` and `messages`, so there is no channel for it. Both nodes also return `history + new` into a key whose reducer is `operator.add`, which appends the whole history a second time on every pass. Declare every key you write, and return only the delta ([03](03-state-and-reducers.md#reducers-decide-merges)).
+
 ### Supervisor
 
 A coordinator node classifies each incoming task and dispatches it to a specialist, then decides whether the work is done or needs another specialist. It is the settled baseline for most multi-agent work: the orchestrator holds the plan, and the workers run in isolated contexts. n8n's AI Workflow Builder is a production example: a supervisor routing to five specialist subgraphs ([08](08-governance-and-production.md#case-study-n8ns-ai-workflow-builder)).
 
 Specialise by prompt first. n8n runs every specialist on the same model at temperature 0, and the roles differ only by system prompt. A separate model per node is an optimisation you justify with measurements, not the starting point.
 
+**How a supervisor mis-routes in practice.** Albada's supply-chain supervisor routes to inventory, transportation or supplier specialists. It asks the model to "Output ONLY the selected member's name … nothing else". The router then lower-cases the reply and compares it to the three names, with `else: return END` as the fallback (*Building Applications with AI Agents*, ch. 8). Two things go wrong:
+
+- **Silent ending.** Any reply that isn't exactly a name ("Inventory.", "the inventory specialist") ends the run. The user's answer is then the supervisor's one-word label.
+- **Crash instead of fallback.** The conditional edge's path map lists only the three specialists. LangGraph raises on a return value the map doesn't list, so the "fallback" crashes instead of ending.
+
+The fix is a schema, not a firmer prompt ([02 has the code](02-graph-primitives.md#a-router-fails-silently-unless-you-make-it-fail-loudly)). Use `with_structured_output` over a `Literal["inventory", "transportation", "supplier", "unknown"]`, and route `unknown` to a clarify or escalate node that exists in the graph. Albada's prose also describes the supervisor routing a disruption to transportation "while the inventory specialist concurrently scales" the warehouse. Its code can't do that: it picks exactly one specialist, and every specialist edge goes to `END`. Concurrent specialists need fan-out ([below](#fan-out--fan-in)), not a supervisor.
+
+When the specialists outgrow one agent's tool list, Albada gives two remedies to try before splitting into agents: **hierarchical tool selection** (group tools behind a few coarse tools) and **semantic tool selection** (embed the tool descriptions and retrieve the top k per query). The supervisor split only pays once the tool count or the roles' prompts actually conflict.
+
 ### Fan-out / fan-in
 
 Several workers run at once on independent branches, and a synthesiser merges their results into shared state. It wins on wall-clock time and costs tokens. Use `Send` when N is only known at runtime, and give the merge key a reducer ([03](03-state-and-reducers.md#dynamic-fan-out-the-send-api)).
 
-**The parallel review graph** is the canonical fan-out: a planner sets objectives, a worker produces, then security, logic and style reviewers run **in parallel**, a synthesiser collects their findings, and a pass/fail gate routes feedback back to the worker. flowtivity reports it as ~3× faster than the sequential version on code review. Measure it yourself before quoting the number ([Lab 4](../practice/01-agent-graph-labs.md#lab-4--subgraphs-and-the-parallel-review-graph)).
+**The parallel review graph** is the canonical fan-out: a planner sets objectives, a worker produces, then security, logic and style reviewers run **in parallel**, a synthesiser collects their findings, and a pass/fail gate routes feedback back to the worker. [flowtivity](https://flowtivity.ai/blog/graph-engineering-2026-guide-openclaw-codex/) reports it as ~3× faster than the sequential version on code review. That is a vendor figure: build the graph as a subgraph, time it against the sequential version on your own repo, and quote your number instead.
 
 ### Hierarchical: subgraphs
 
@@ -55,6 +74,9 @@ How state crosses the boundary:
 |---|---|
 | **Share keys** | Add the compiled subgraph directly; shared keys flow in and out |
 | **Differ** | Call the subgraph inside a wrapper node that maps parent state → child input and child output → parent update |
+
+![Pattern 1, different schemas: a wrapper node maps parent foo to child bar and back. Pattern 2, shared keys: the compiled subgraph is added directly and reads and writes foo and messages](../assets/sources/images/langchain-langgraph-docs-subgraph-state-patterns.png)
+*Image Source: LangGraph docs, subgraphs (LangChain), via sources/langgraph_extended.pptx*
 
 The wrapper is more code, and usually worth it: it makes the subgraph's contract explicit, and it stops a child from writing parent keys it shouldn't touch.
 
@@ -84,7 +106,7 @@ Three implementation levels, in increasing order of determinism:
 
 What you lose compared with LangGraph: there is no typed shared state, no reducers, and no checkpoints. State is whatever the orchestrator chooses to pass along, which is a context firewall when you want one ([03-harness note 07](../../03-harness-engineering/notes/07-orchestration.md)) and a liability when you need resume.
 
-This workspace already runs the fan-out pattern: `/akira` (parallel haiku scanners), `/workflow-research fan-out` (parallel scouts) and `/workflow-review` (a multi-reporter pipeline). Each is a parallel review graph with a synthesiser node.
+This repo's `/review` skill has the same shape: it sends a target to independent reviewers and merges what they report.
 
 ---
 
@@ -105,8 +127,8 @@ Li's *AI Agents in Depth* ([ch. 10](https://github.com/bojieli/ai-agent-book/blo
 
 ### Shared vs. isolated context
 
-![Shared Context vs. Non-Shared Context](../assets/images/ai-agent-book/fig10-1.svg)
-*Figure 10-1, Shared Context vs. Non-Shared Context. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter10.md) (Apache-2.0).*
+![Shared Context vs. Non-Shared Context](../assets/sources/images/li-ai-agents-in-depth-fig10-1.svg)
+*Image Source: Li, AI Agents in Depth, ch. 10, Fig. 10-1 (Apache-2.0)*
 
 The analogy is threads vs. processes. Agents with shared context see one trajectory, like threads sharing memory; nothing is lost in transfer, but everything accumulates. Isolated agents each have their own window, like processes, and communicate only through what they explicitly pass.
 
@@ -120,7 +142,7 @@ The analogy is threads vs. processes. Agents with shared context see one traject
 
 Rule of thumb: **if the cumulative context would exceed about half the window, don't share; if the task demands zero information loss, share.** Hybrid systems often share early (requirements and design in one trajectory) and switch to an explicit handoff once the work splits.
 
-Two shared-context mechanisms from the book's labs:
+Two shared-context mechanisms from Li's labs:
 
 - **Staged system prompts.** One agent, one trajectory, but the system prompt and tool set change by stage: requirements → implementation → review. Transitions are tool calls (`complete_requirements_analysis`, `submit_for_review`, then `approve_code` or `request_revision`), so the stage machine is explicit and can roll back.
 - **Role transfer.** `transfer_to_agent(target_role, reason)` swaps the active role over the same history: triage → research → data analysis → writing → back to triage. Guard against circular handoffs with a counter.
@@ -133,29 +155,60 @@ Two shared-context mechanisms from the book's labs:
 | **Manager** | One agent plans and calls the others as tools | Supervisor; fan-out / fan-in |
 | **Decentralised** | Each agent picks its successor | Handoff |
 
-The book treats topology as the multi-agent subset of graph engineering ([01](01-graph-vs-loop.md)). Communication runs over three channels: **tool parameters** (the brief and the return value), a **shared file system**, and a **message bus**. The first two are the two classic IPC paradigms, message passing and shared memory. Go's maxim applies: *"don't communicate by sharing memory; share memory by communicating."*
+Li treats topology as the multi-agent subset of graph engineering ([01](01-graph-vs-loop.md)). Communication runs over three channels: **tool parameters** (the brief and the return value), a **shared file system**, and a **message bus**. The first two are the two classic IPC paradigms, message passing and shared memory. Go's maxim applies: *"don't communicate by sharing memory; share memory by communicating."*
 
 ---
 
 ## When multi-agent beats single-agent
 
-The book's test is one question: **does the collaboration introduce information the single agent didn't have?**
+Li's test (*AI Agents in Depth*, ch. 10, Table 10-1) is one question: **does the collaboration introduce information the single agent didn't have?**
 
 | Collaboration | New information? | Evidence |
 |---|---|---|
 | **Self-review** (same model reviews its own output, no tools) | No | Often neutral or harmful: Huang et al. (ICLR 2024); the TACL self-correction survey ([arXiv:2406.01297](https://arxiv.org/abs/2406.01297)). CRITIC's gains vanish when the tools are removed. |
-| **Debate** among copies of one model | No | Matches a single agent given the same compute (Tran & Kiela, [arXiv:2604.02460](https://arxiv.org/abs/2604.02460)): by the data-processing inequality, recombining the same information can't add any |
+| **Debate** among copies of one model | No | On multi-hop QA (FRAMES, MuSiQue) at matched thinking-token budgets, a single agent was best or statistically tied at every budget above 100 tokens, across Qwen3, DeepSeek-R1 and Gemini 2.5 (Tran & Kiela, [arXiv:2604.02460](https://arxiv.org/abs/2604.02460)); debate was the strongest multi-agent variant but still didn't beat it. The argument is the data-processing inequality: recombining the same information can't add any |
 | **Execution, tool or visual feedback** | Yes | Large gains. RLEF ([arXiv:2410.02089](https://arxiv.org/abs/2410.02089)) trains on execution feedback; WebGen-Agent's screenshot feedback took Claude 3.5 Sonnet from 26.4% to 51.9% |
 
+The data-processing argument assumes the single agent uses its context perfectly, and Tran & Kiela flag that as its boundary. When they degraded the context (Qwen3-30B on MuSiQue 4-hop at a 1,000-token thinking budget, with 70% of the context tokens masked or swapped for random tokens), a sequential multi-agent pipeline beat the single agent; at 30% the single agent still led. Splitting can pay when one context is too long or too noisy to use well, which is a context problem, not new information.
+
+Kim et al. ([arXiv:2512.08296](https://arxiv.org/abs/2512.08296), 2025-12) add a second test from 260 controlled configurations: once a single agent already scores above about 45% on a task, adding agents had negative returns ([06](06-when-not-to-build-a-graph.md#what-fan-out-costs)).
+
 So a reviewer earns its node when it can **run something**: tests, a browser, a search, a type checker. A reviewer that only rereads the text is the same model a second time.
+
+A critic that reports to a **person** is a different case, because the person did not have its critique. Saunders et al. ([arXiv:2206.05802](https://arxiv.org/abs/2206.05802)) (OpenAI, 2022-06, preprint) fine-tuned one model to critique topic-based summaries (trained on passages under ~2,000 tokens, tested as an assistant on passages of 2,048–3,840). **Labelers shown eight model critiques found about 50% more flaws, and found a deliberately planted flaw 45% of the time against 27% unassisted**, in about the same time per task. Three limits come with that result. Labelers edited only 15.3% of the critiques they used, so people mostly take the critic's word. Refining an answer with the model's own critique helped only the largest models, and beat plain refinement only when the critique was picked best-of-N. And the model could tell an answer was flawed more often than it could say why, a gap that did not close with scale. These are 2022 supervised-only models on a task humans finish in about ten minutes, so the 50% figure is a starting point for your own measurement, not a constant.
 
 More steps alone also plateau. Budget-aware tool-use work (Google, 2025; BAVT, 2026) finds that agents spend steps poorly unless told their budget, so the manager should **allocate step budgets per worker** rather than let each run until it feels done. And the bill is real: Anthropic's research system uses about 15× the tokens of chat, and token usage explains about 80% of the performance variance ([06](06-when-not-to-build-a-graph.md#what-fan-out-costs)).
 
 ---
 
+## How multi-agent systems fail
+
+Cemri et al. ([arXiv:2503.13657](https://arxiv.org/abs/2503.13657), 2025) found 40–80% of tasks fail in the multi-agent systems they studied, and sorted 14 failure modes into three groups:
+
+| Category | Examples |
+|---|---|
+| Specification issues | ignoring the role or task spec, repeating steps, losing context, not recognising completion |
+| Inter-agent misalignment | conversation resets, not asking for clarification, derailment, withholding information, ignoring other agents, reasoning that does not match action |
+| Task verification | missing or weak checks, premature termination |
+
+The taxonomy comes from expert annotation of about 150 conversation traces, each averaging over 15,000 lines. No single cause dominates: failures spread across all three categories, and they are correlated. A bad architecture, for example, causes inefficient communication downstream, so fixing one mode rarely fixes the system (*Building AI Agents with LLMs, RAG, and Knowledge Graphs*, ch. 11).
+
+Four named problems come specifically from orchestration:
+
+| Failure | Shape | Mitigation |
+|---|---|---|
+| **Loop oscillation** | Two nodes bounce work between them indefinitely | Iteration counters on cyclic edges; forced escalation |
+| **Context pollution** | Nested workflows leak state upward, defeating isolation | Explicit boundary schemas; return summaries only |
+| **Concurrency collision** | Parallel branches write the same state or file | JoinNode barriers; per-branch ownership of state keys |
+| **Consensus deadlock** | Reviewer agents never agree, blocking progress | Tie-break rule, majority threshold, or a final arbiter |
+
+Two more problems are specific to many agents. **Hallucinations amplify**: one agent's invention becomes the next agent's input, so cross-validate claims that cross a handoff. **Failures are hard to attribute.** The fix is to **evaluate each component and the end-to-end result separately**. If the end-to-end eval fails while every component eval passes, the bug is in a handoff or integration. If one component eval fails, you know which agent to fix. Per-step traces (each agent's plan, prompt, tool calls and results) make that analysis fast.
+
+---
+
 ## The runtime as an operating system
 
-The book maps a multi-agent runtime onto an OS:
+Li maps a multi-agent runtime onto an OS (ch. 10, Table 10-2):
 
 | OS | Agent runtime |
 |---|---|
@@ -171,8 +224,8 @@ The Actor model (Hewitt, 1973) is the precedent: isolated actors that share noth
 
 ### A virtual file system with four areas
 
-![Mounting structure of the four area types in the Agent Virtual File System](../assets/images/ai-agent-book/fig10-2.svg)
-*Figure 10-2, Mounting structure of the four area types in the Agent Virtual File System. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter10.md) (Apache-2.0).*
+![Mounting structure of the four area types in the Agent Virtual File System](../assets/sources/images/li-ai-agents-in-depth-fig10-2.svg)
+*Image Source: Li, AI Agents in Depth, ch. 10, Fig. 10-2 (Apache-2.0)*
 
 | Area | Example | Access | Concurrency |
 |---|---|---|---|
@@ -181,7 +234,7 @@ The Actor model (Hewitt, 1973) is the precedent: isolated actors that share noth
 | **Mounted external** | `/mnt/gdrive` | External permissions apply | Eventually consistent; mostly read-only |
 | **Built-in read-only** | `/skills` | Everyone reads, no one writes | None needed |
 
-**Pass file paths, not file contents.** The manager in the book's translation lab keeps only a file index; the chapters themselves never enter its context.
+**Pass file paths, not file contents.** The manager in Li's book-translation lab keeps only a file index; the chapters themselves never enter its context.
 
 ### The control plane
 
@@ -198,12 +251,39 @@ The Actor model (Hewitt, 1973) is the precedent: isolated actors that share noth
 
 Peer collaboration exists mostly to stop **premature termination**, which comes in three forms: the lazy fake "done", the premature give-up, and the false claim of success. The cure is verification, which is why Loop Engineering puts it bluntly: *"the bottleneck of the loop is the verifier"* ([04-loop](../../04-loop-engineering/readme.md)). Debate, brainstorm and panel formats are peer variants; by the new-information test they help only when the panellists bring different tools or sources.
 
+**A worked peer system: the Virtual Lab** (Swanson et al., 2024, via *Building AI Agents with LLMs, RAG, and Knowledge Graphs*, ch. 9). A human sets the question. A Principal Investigator agent writes the role, expertise and goal prompts for a team of scientist agents (GPT-4), plus an optional critic. Work then happens in two kinds of meeting:
+
+- **Team meetings.** All agents take part over a fixed number of **rounds**. The PI opens, every scientist and the critic respond, and the PI summarises, decides and asks follow-ups. It writes a final summary for the human.
+- **Individual meetings.** One agent does a task such as writing code, usually with the critic, for a few rounds. Optionally the same task runs as several parallel meetings, which the PI then merges.
+
+Every meeting has the same input contract: agenda, agenda questions, optional rules, summaries of earlier meetings, extra context, and the round count. The round count is the bound on the back-edge.
+
+![Virtual Lab antibody design: phases 1–5 alternate team meetings (project specification, tool selection) and individual meetings (implementation, workflow design), each producing a summary that feeds the next](../assets/sources/images/building-ai-agents-llms-rag-kgs-fig9-26.png)
+*Image Source: Salvatore Raieli & Gabriele Iuculano, *Building AI Agents with LLMs, RAG, and Knowledge Graphs* (Packt, 2025), Fig. 9.26*
+
+On nanobodies against the SARS-CoV-2 KP.3 spike, the lab built a design workflow whose candidates were then validated in the wet lab. Three design choices make it more than debate. **Summaries, not transcripts**, cross meeting boundaries, which is the handoff package [below](#decentralised-orchestration-vs-choreography). **The critic is a separate role.** **The individual meetings run tools.** Raieli & Iuculano are candid about the limits. Agents suggest out-of-date tools because of their training cut-off (add RAG or search). The agenda and prompts are hand-crafted. Without a human pushing, agents "may give vague answers or not make decisions", or drift off task. This is human-led multi-agent work, not autonomy.
+
 ### Manager: agents as tools
 
-![Manager Parallel Coordination](../assets/images/ai-agent-book/fig10-6.svg)
-*Figure 10-6, Manager Parallel Coordination. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter10.md) (Apache-2.0).*
+![Manager Parallel Coordination](../assets/sources/images/li-ai-agents-in-depth-fig10-6.svg)
+*Image Source: Li, AI Agents in Depth, ch. 10, Fig. 10-6 (Apache-2.0)*
 
-To the manager, each sub-agent is a tool call that returns a structured summary. The weak point is the **planner**: a bad plan sinks every worker. Plan-and-Act ([arXiv:2503.09572](https://arxiv.org/abs/2503.09572); 54% on WebArena-Lite) puts the strongest model on planning. That doesn't contradict the advice to give a reviewer roughly the same capability as the agent it reviews; planner and reviewer are different roles.
+To the manager, each sub-agent is a tool call that returns a structured summary. The weak point is the **planner**: a bad plan sinks every worker. Plan-and-Act ([arXiv:2503.09572](https://arxiv.org/abs/2503.09572)) invests in the planner rather than the workers. It fine-tunes a dedicated LLaMA-3.3-70B planner on synthetic plans written back onto successful trajectories, and it **replans after every executor step** instead of committing to the first plan. Dynamic replanning took web-navigation success to 53.9%, and adding chain-of-thought to 57.6% on WebArena-Lite. That doesn't contradict the advice to give a reviewer roughly the same capability as the agent it reviews; planner and reviewer are different roles.
+
+**The ancestor: HuggingGPT** (Shen et al., 2023, [arXiv:2303.17580](https://arxiv.org/abs/2303.17580), via *Building AI Agents with LLMs, RAG, and Knowledge Graphs*, ch. 9). It is the manager pattern with models instead of agents as the workers. ChatGPT is the controller, and hundreds of Hugging Face models are the tools.
+
+![HuggingGPT in four stages: task planning, model selection, task execution, response generation, with ChatGPT as the controller over Hugging Face models](../assets/sources/images/building-ai-agents-llms-rag-kgs-fig9-7.png)
+*Image Source: Salvatore Raieli & Gabriele Iuculano, *Building AI Agents with LLMs, RAG, and Knowledge Graphs* (Packt, 2025), Fig. 9.7*
+
+Three of its mechanisms still carry over:
+
+- **Plans as a dependency graph.** Each subtask carries an id and a list of the ids it depends on. A `<resource>` placeholder stands for an upstream output and is replaced once that task completes. Tasks with no dependencies run in parallel.
+- **Retrieve, then choose.** All the model descriptions won't fit in context, so model selection filters by task type, ranks by download count (a popularity proxy for quality), and gives only the top k descriptions to the LLM for a single choice. This is tool selection by retrieval before it had a name, though it ranks by popularity and not by embedding.
+- **Hybrid execution.** Remote inference endpoints are tried first, with local inference as the fallback.
+
+Its listed limits are the manager pattern's limits. **Efficiency:** three of the four stages are LLM calls. **Planning** is only as good as the controller. **Context** runs out (the paper says even 32K tokens falls short for connecting many models). **Instability:** the controller ignores instructions and breaks the program flow.
+
+Li's labs show the two shapes:
 
 - **Sequential:** the book translation lab runs Glossary → Translation → Proofreading under a manager that holds only the file index.
 - **Parallel:** workers report over a message bus. Redis Pub/Sub has no persistence, so a worker that is down misses messages; RabbitMQ persists them. The parallel-search lab runs 10 searchers that broadcast `target_found`; the manager takes a lock, sends `terminate` to the rest, and times out any worker after 2 minutes.
@@ -211,8 +291,8 @@ To the manager, each sub-agent is a tool call that returns a structured summary.
 
 ### Decentralised: orchestration vs. choreography
 
-![MetaGPT Multi-Agent Collaboration Network](../assets/images/ai-agent-book/fig10-9.svg)
-*Figure 10-9, MetaGPT Multi-Agent Collaboration Network. From Li, [*AI Agents in Depth*](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter10.md) (Apache-2.0).*
+![MetaGPT Multi-Agent Collaboration Network](../assets/sources/images/li-ai-agents-in-depth-fig10-9.svg)
+*Image Source: Li, AI Agents in Depth, ch. 10, Fig. 10-9 (Apache-2.0)*
 
 Orchestration has a conductor; choreography has each agent know its next step. Choreography removes the bottleneck and the single point of failure, and makes the whole flow harder to see.
 
@@ -229,9 +309,65 @@ That is design by contract applied to agents. How existing frameworks sit on the
 
 **MCP connects an agent to tools; A2A connects an agent to other agents.**
 
+Albada's A2A walkthrough (*Building Applications with AI Agents*, ch. 8) shows the moving parts. An Agent Card lists identity, capabilities with input and output schemas, an endpoint, auth methods and a version. Discovery goes through a registry, then a handshake settles protocol version, timeouts and payload limits. Calls are JSON-RPC 2.0 over HTTPS, with `-32601 Method not found` for unknown methods. Two cautions. Albada serves the card at `/.well-known/agent.json`; the well-known path has changed between spec versions, so check the current A2A spec before hard-coding one. And Albada calls the protocol "still in its infancy": authentication is pluggable, but authorisation, rate limiting, trust establishment and abuse resistance are "far from solved". Treat a remote agent's output as untrusted input.
+
 ### Agent societies
 
 At the far end, there's no task at all, only agents living together. Smallville's generative agents keep a memory stream scored by importance, recency and relevance, plus reflection and planning; a Valentine's party emerged from one seeded intention. Agentopia ([arXiv:2606.07513](https://arxiv.org/abs/2606.07513)) runs 100 agents for ten simulated years on a weekly Plan → Contact → Activity → Review loop, and fine-tuning on the top 25% of trajectories improved social metrics by 15–24%. Vending-Bench Arena showed price wars and collusion between competing agents. For games like Werewolf, the book's lesson is to make the **judge code, not a model**, and to enforce who can see what in the runtime rather than in prompts.
+
+---
+
+## Searching for the topology: ADAS
+
+Everything above is hand-designed. **Automated Design of Agentic Systems** (Hu, Lu & Clune, ICLR 2025, [arXiv:2408.08435](https://arxiv.org/abs/2408.08435), via *Building Applications with AI Agents*, ch. 8) treats the topology itself as something to search. An agent is a Python `forward()` function. A meta-agent writes new ones, and an evaluation function scores them.
+
+![ADAS: a search space of agents defined in code, a search algorithm in which an LLM writes agents, and an evaluation function that scores each sampled agent on the task](../assets/sources/images/building-applications-with-ai-agents-fig8-1.png)
+*Image Source: Michael Albada, *Building Applications with AI Agents* (O'Reilly, 2025), Fig. 8-1*
+
+**Meta Agent Search** loops for about 25–30 generations:
+
+1. Condition the meta-agent on an archive of earlier agents and their scores.
+2. Draft a design, then implement it as code.
+3. Run two self-reflection passes, one for novelty and one for correctness.
+4. Evaluate on validation data, allowing up to five debugging retries on errors.
+5. Archive the result with a bootstrap confidence interval as its fitness.
+
+Reported results against hand-designed baselines:
+
+| Benchmark | MAS-discovered agent | Margin over best baseline |
+|---|---|---|
+| DROP (F1) | 79.4 ± 0.8 | +13.6 over Role Assignment |
+| MGSM | 53.4% ± 3.5 | +14.4 over LLM-Debate |
+| MMLU | 69.6% ± 3.2 | +2.0 over OPRO |
+| GPQA | 34.6% ± 3.2 | +1.7 over OPRO |
+
+Read the table with its error bars. On DROP and MGSM the gain is far outside the interval. On MMLU and GPQA the margin is smaller than the ±3.2 interval, so on those two the discovered agents are not distinguishable from prompt optimisation. Albada also reports that discovered agents transferred across domains (ARC agents applied to MMLU) and across models (GPT-3.5 to GPT-4).
+
+Two practical points:
+
+- **The evaluator is the attack surface.** Albada's `evaluate_forward_fn` runs each generated agent with `exec(forward_str, globals(), namespace)`, which is model-written code in your process with your globals. Run it in a sandbox ([03-harness note 04](../../03-harness-engineering/notes/04-execution-boundaries.md)).
+- **The search optimises whatever the evaluator measures.** Keep a held-out test set the search never sees. It is the anchor of [07](07-failure-modes-at-scale.md#anchors).
+
+---
+
+## Transport: when agents leave the process
+
+The graphs in this pillar pass state in memory. Albada's chapter traces what happens as agents spread across processes and machines (*Building Applications with AI Agents*, ch. 8). Each step up buys decoupling and costs consistency.
+
+| Layer | Examples | Buys | Costs |
+|---|---|---|---|
+| **In-process** | Function calls, graph edges, in-memory routers (AutoGen) | Simplicity, low latency | Doesn't survive distribution or a crash |
+| **Message broker / event bus** | Kafka (durable, partitioned, consumer groups, replayable), Redis Streams and RabbitMQ (lighter, lower latency; Redis durability is limited), NATS (+ JetStream for durable replay) | Senders and receivers decoupled; scale specialists independently; replay | Eventual consistency; error handling moves into every consumer |
+| **Actor framework** | Ray (`@ray.remote`), Orleans (virtual actors), Akka | Per-agent state and identity; one message at a time per actor, so no races inside an agent; supervision and restart | Cluster operations; Albada's threshold is beyond roughly 10–20 agents or under tight latency |
+| **Workflow engine** | Temporal; Airflow for batch DAGs; Dagger for local-to-CI | Durable steps, retries, resume after a crash without rerunning finished steps | Framework lock-in; activities must be idempotent |
+
+What Albada's examples skip, and you shouldn't:
+
+- **Redis Streams consumer.** Each specialist calls `xread` from `last_id = '0'` and filters on `task['agent']`. Every consumer reads every task, and a restarted consumer replays the whole stream from the beginning. Use consumer groups (`XREADGROUP` plus `XACK`) so each task is delivered to one worker and acknowledged. Make handlers idempotent, keyed on `task_id`, because a crash between doing the work and acking redelivers it.
+- **Temporal retries.** `RetryPolicy(maximum_attempts=3)` reruns an activity that failed *after* its side effect, so a logistics message gets sent twice. Albada's specialists end by calling `send_logistics_response`. Put the side effect in its own activity with an idempotency key.
+- **Actors per session.** One actor per (session, specialist), created lazily by a `SessionManager` actor, isolates state between sessions and serialises calls within one. But that manager is itself a single actor holding every handle, which makes it a bottleneck and a single point of failure.
+
+LangGraph's checkpointer already gives in-graph durability ([04](04-durable-execution-and-interrupts.md#checkpointers)). Reach for a broker or a workflow engine when steps span services, days, or human approvals outside the graph runtime, not by default.
 
 ---
 
@@ -251,10 +387,66 @@ From *AI Agents in Depth* ch. 10. All are linked upstream: the first three and 1
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-architecture.md` — subagent criteria, orchestrator-holds-plan baseline, dynamic fan-out.
+- **Routing on a substring.** Symptom: any tool output containing "regenerate" triggers another pass of Albada's actor-critic loop. Fix: route on a structured field such as `verdict: Literal["accept", "revise"]`, and count attempts, since `recursion_limit` is that listing's only stop.
+- **Writing keys the schema doesn't declare.** Symptom: the actor writes `candidates` with no channel for it, or `history + new` into an `operator.add` key appends the whole history again on each pass. Fix: declare every key you write and return only the new items.
+- **A supervisor that can't say "unknown".** Symptom: a reply such as "Inventory." ends the run with the label as the user's answer, or a return value missing from the path map crashes the run. Fix: use `with_structured_output` over a `Literal` that includes `unknown`, and route it to a clarify node that exists.
+- **A model per specialist from day one.** Symptom: several configurations to tune before you know any of them is needed. Fix: specialise by prompt first, as n8n does with every specialist on one model at temperature 0.
+- **A reviewer that can only read.** Symptom: reviews agree with the producer and the score doesn't move, since self-review and debate add no new information. Fix: give the reviewer something to run; execution feedback is what earns the node.
+- **Shared context past half the window.** Symptom: worker quality drops as a shared transcript grows. Fix: when cumulative context would pass about half the window, isolate workers and pass paths, not contents.
+- **Trusting choreography to end itself.** Symptom: agents hand off in cycles or defer politely forever. Fix: add a max-handoff guard, and carry a handoff package with the task, acceptance criteria, confirmed facts and artifact paths, never the full trajectory.
+- **Running a searched agent in your process.** Symptom: ADAS's `exec(forward_str, globals(), namespace)` runs model-written code with your globals. Fix: sandbox the evaluator, and keep a held-out test set the search never sees.
 
----
+## Try it
 
-→ Next: [06-when-not-to-build-a-graph.md](06-when-not-to-build-a-graph.md) — the negative case, and what fan-out really costs.
+1. Match each to a pattern, using the "Choosing a pattern" questions: (a) one reviewer per changed file, then one merged report; (b) billing, refunds and technical tickets that need different tools; (c) a security review another team owns and you reuse in three pipelines; (d) a draft checked by a test suite.
+
+   <details><summary>Answer</summary>
+
+   (a) Fan-out / fan-in with a reducer. (b) Supervisor over specialists. (c) A subgraph behind a wrapper node, so the contract is explicit. (d) Generate-then-verify, where the test suite is the deterministic check, and the place to start.
+
+   </details>
+
+2. You share a subgraph with a parent whose schema differs. What does the wrapper do, and what does it prevent?
+
+   <details><summary>Answer</summary>
+
+   It maps parent state to the child's input and the child's output to a parent update. That makes the contract explicit, and it stops the child from writing parent keys it shouldn't touch.
+
+   </details>
+
+3. Read the ADAS table with its error bars. On which benchmarks can you say the discovered agent beat the best baseline?
+
+   <details><summary>Answer</summary>
+
+   DROP (+13.6 with ±0.8) and MGSM (+14.4 with ±3.5). On MMLU (+2.0 with ±3.2) and GPQA (+1.7 with ±3.2) the margin is inside the interval, so those two are not distinguishable from prompt optimisation.
+
+   </details>
+
+4. Pick one lab from the table above and draw its topology, naming who holds the plan and what crosses each edge. For offline work, 10-6 and 10-8 need no key, though their code and data are in Chinese.
+
+   <details><summary>What to check</summary>
+
+   For 10-3, book translation, you should have a sequential manager holding only the file index, so files rather than text cross the edges. If your drawing shows contents crossing every edge, compare it with the "pass paths, not contents" rule.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| Name the five recurring topologies and how each fails. | Generate-then-verify (the checker agrees with reasoning it can see), supervisor (mis-routing, bottleneck), fan-out (missing reducer, correlated errors), hierarchical (failures hidden inside the subgraph), handoff (status values drift). |
+| What is the fix for a supervisor that mis-routes? | A schema rather than a firmer prompt: `with_structured_output` over a `Literal` with an `unknown` value, routed to a clarify or escalate node that exists in the graph. |
+| What do you lose building a graph with Claude Code subagents instead of LangGraph? | Typed shared state, reducers and checkpoints. State is whatever the orchestrator passes along, which is a context firewall when you want one and a liability when you need resume. |
+| When should agents share context and when should it be isolated? | Li's rule is not to share when cumulative context would pass about half the window. Isolated agents then pass paths rather than contents, as threads versus processes would suggest. |
+| Should you add a second LLM to review the first? | Ask if the collaboration brings in information. Self-review is often neutral or harmful and debate doesn't help much, but a reviewer that can run something gets execution feedback and earns its node. |
+| A single agent passes 60% of your task set. Does adding a team help? | Probably not on those numbers: Kim et al. found negative returns from extra agents above about 45% single-agent performance. Measure on your own tasks before adding any. |
+| Orchestration or choreography? | Orchestration has a conductor, which is a bottleneck and a single point of failure. Choreography removes both and makes the flow harder to see, so it needs a max-handoff guard. |
+| Ten parallel workers search and one finds the target. How do the rest stop? | In the parallel-search lab, the finder broadcasts `target_found`; the manager takes a lock, sends `terminate` to the rest and times out any worker after 2 minutes. |
+| Does debate among copies of one model beat a single agent? | Not at matched budgets. On multi-hop QA at matched thinking-token budgets, Tran & Kiela found a single agent best or statistically tied at every budget above 100 tokens. Copies of one model add no new information; execution or tool feedback does. |
+| What is the weak point of a manager with sub-agents? | The planner, because a bad plan sinks every worker. Plan-and-Act invests there: it fine-tunes a dedicated planner and replans after every executor step instead of committing to the first plan. |
+
+## Next
+
+[06-when-not-to-build-a-graph.md](06-when-not-to-build-a-graph.md): the negative case, and what fan-out really costs.

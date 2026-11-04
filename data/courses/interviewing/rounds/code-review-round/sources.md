@@ -1,5 +1,5 @@
 ---
-imported_hash: bb1d6869b9b226f8
+imported_hash: 7c7110406f2293dc
 title: Code Review Round — Sources
 summary: ''
 order: 16
@@ -14,10 +14,10 @@ source: learn-ai-engineering/practice/interviewing/rounds/code-review-round/sour
 
 | Source | What it covers | Path |
 |--------|---------------|------|
-| Security & Safety study guide | The invariants you check first: threat model, defense stack, OWASP agent risks | [guides/7-security-safety](../../guides/7-security-safety/interview-guide.md) |
-| Agents study guide | Harness conventions, tool design (ACI), SANYI contract discipline | [guides/4-agents](../../guides/4-agents/interview-guide.md) |
-| Evals & Observability study guide | Grader types, trajectory vs outcome — what "tests pass" actually tests | [guides/6-evals-observability](../../guides/6-evals-observability/interview-guide.md) |
-| Context & Cost study guide | Convention drift, hardcoded tunables, progressive disclosure | [guides/5-context-cost](../../guides/5-context-cost/interview-guide.md) |
+| Security & Safety pillar | The invariants you check first: threat model, defense stack, OWASP agent risks | [safety pillar](../../../ai-engineering/09-safety-and-security/readme.md) |
+| Agents pillar | Harness conventions, tool design (ACI), SANYI contract discipline | [harness pillar](../../../ai-engineering/03-harness-engineering/readme.md) |
+| Evals & Observability pillar | Grader types, trajectory vs outcome — what "tests pass" actually tests | [eval pillar](../../../generative-ai/08-eval/readme.md) |
+| Context & Cost pillar | Convention drift, hardcoded tunables, progressive disclosure | [context pillar](../../../ai-engineering/02-context-engineering/readme.md) |
 | Agent harness notes | Harness anatomy, OpenClaw 10 principles, enforcement > documentation | [Harness anatomy](../../../ai-engineering/03-harness-engineering/notes/02-harness-anatomy.md) |
 
 ### Librarian wiki (query via `search_wiki`)

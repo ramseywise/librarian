@@ -1,7 +1,7 @@
 ---
-imported_hash: f364c1df2df5395d
+imported_hash: 9151489775b01308
 title: Programming
-summary: 'A course in Python, SQL and TypeScript: notes, offline exercises and solutions.'
+summary: 'Python (foundations, informatics, the language for engineers), SQL and TypeScript: notes, offline exercises and solutions, plus timed drills and coding rounds.'
 order: 1
 source: learn-ai-engineering/programming
 ---

@@ -1,8 +1,8 @@
 ---
-imported_hash: 55c7ecd02dcea4a1
+imported_hash: 51f3da50df0a2bd4
 title: Technical Questions — ML/LLM Breadth Round
 summary: 'Rapid-fire conceptual fluency: can you explain core mechanisms in 60 seconds with one level of depth in reserve?'
-order: 70
+order: 73
 kind: reading
 section: Technical questions
 source: learn-ai-engineering/practice/interviewing/rounds/technical-questions/README.md
@@ -28,7 +28,7 @@ Real screen question lists run: "What is RAG? Graph+RAG? Chain of Thought? Refle
 |-----|-----|-----|-----|
 | ●   | ●   | ◐   | ●   |
 
-AIE/FDE versions skew LLM-era topics; MLE adds classical depth; DS versions fold into the stats/SQL screen, so drill the [stats & experimentation guide](../../guides/11-stats-experimentation/interview-guide.md) and the [foundations guide](../../guides/1-foundations/interview-guide.md), which has spoken answers to the 18 ML Fundamentals questions.
+AIE/FDE versions skew LLM-era topics; MLE adds classical depth; DS versions fold into the stats/SQL screen, so drill the [experimentation](../../../data-analytics/03-experimentation-and-causality/readme.md) and the [classical ML](../../../data-science/01-classical-ml/readme.md), which has spoken answers to the 18 ML Fundamentals questions.
 
 ## Folder contents
 

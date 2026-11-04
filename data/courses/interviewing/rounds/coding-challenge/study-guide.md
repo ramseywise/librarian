@@ -1,5 +1,5 @@
 ---
-imported_hash: 22e9234dd67b9ec7
+imported_hash: 0fcd578ae7d1d1a0
 title: Coding Challenge — Study Guide
 summary: 'The #1 differentiator in live coding is not correctness — it''s narration.'
 order: 27
@@ -156,7 +156,7 @@ For loops that allow or require an AI assistant:
 
 **MLE (Machine Learning Engineering)**: scikit-learn pipeline idioms, numpy/pandas manipulation, metric computation. May include debugging a training loop or a data preprocessing bug.
 
-**DS (Data Science)**: SQL and pandas heavy. "Parse this log file and report top-5 error codes" type problems. Expect GROUP BY logic in pandas, window functions in SQL.
+**DS (Data Science)**: SQL and pandas heavy. "Parse this log file and report top-5 error codes" type problems. Expect GROUP BY logic in pandas, window functions in SQL. For a SQL join, say how many rows the result should have before you write it.
 
 **FDE (Full-Stack/Data Engineering)**: practical scripting under time pressure. File I/O, CLI tools, JSON parsing, subprocess calls. Speed and correctness over elegance.
 

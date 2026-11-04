@@ -1,5 +1,5 @@
 ---
-imported_hash: 3242bf2c0b8e856a
+imported_hash: 64019e39986f4260
 title: 6 — Modules, packaging and tooling
 summary: Commit uv.lock. It pins every transitive version, so CI and teammates get the same environment.
 order: 17
@@ -65,7 +65,9 @@ uvx ruff check .                # run a tool without installing it into the proj
 uv python install 3.13          # manage Python versions too
 ```
 
-Commit `uv.lock`. It pins every transitive version, so CI and teammates get the same environment.
+Commit `uv.lock`. It pins every transitive version, so CI and teammates get the same environment. The split is the point: `pyproject.toml` holds the ranges you accept, such as `httpx>=0.27`, and the lock file records the exact version of every package, sub-dependencies included (*LLM Engineer's Handbook*, ch. 2, describing `poetry.lock`).
+
+Older projects reach the same place with three tools: pyenv for the interpreter, Poetry for dependencies and the environment, and a task runner such as Poe the Poet for `pyproject.toml` commands. The *LLM Engineer's Handbook* repo is built this way, on Python 3.11.8 and Poetry 1.8.3, and its authors already say uv "has lots of potential to replace Poetry" (ch. 2). uv covers all three jobs.
 
 ## ruff and pytest
 

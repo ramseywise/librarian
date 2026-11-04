@@ -57,9 +57,6 @@ def _make_practice(root: Path) -> Path:
     for rel in (
         "practice/interviewing/guide.md",
         "practice/interviewing/private.md",
-        "practice/drills/README.md",
-        "practice/drills/sql/README.md",
-        "practice/drills/sql/01-rank.md",
     ):
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         (root / rel).write_text(f"# {rel}\n")
@@ -72,9 +69,25 @@ def test_practice_ignored_files_stay_out(tmp_path: Path) -> None:
     subprocess.run(["git", "init", "-q", str(repo)], check=True)
     scrape_repo(repo, tmp_path / "out")
     assert sorted(p.name for p in (tmp_path / "out" / "proj").iterdir()) == [
-        "practice--drills--README.md",
-        "practice--drills--sql--README.md",
         "practice--interviewing--guide.md",
+    ]
+
+
+def test_drills_are_index_only(tmp_path: Path) -> None:
+    repo = tmp_path / "proj"
+    for rel in (
+        "programming/drills/README.md",
+        "programming/drills/sql/README.md",
+        "programming/drills/sql/01-rank.md",
+        "programming/drills/python/hackerrank/README.md",
+        "programming/drills/coding/drill-log.md",
+    ):
+        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        (repo / rel).write_text(f"# {rel}\n")
+    scrape_repo(repo, tmp_path / "out")
+    assert sorted(p.name for p in (tmp_path / "out" / "proj").iterdir()) == [
+        "programming--drills--README.md",
+        "programming--drills--sql--README.md",
     ]
 
 

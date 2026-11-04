@@ -1,17 +1,12 @@
 ---
-imported_hash: f0a34f725a395298
+imported_hash: 135c12ca95790dc0
 title: 06 — Observability
-summary: 'Observability for LLM applications means being able to see what happened inside an agent run: which tools were called, what the model received, how it responded, and whether the output was good.'
+summary: 'Observability for LLM applications means you can see what happened inside a run: which tools were called, what the model received and returned, how long each step took and what it cost, and whether the output was any good.'
 order: 6
 source: learn-ai-engineering/generative-ai/06-observability
-references:
-- title: langfuse-evaluation-main
-  source: generative-ai/06-observability/langfuse-evaluation-main
-  url: https://github.com/gustavobrieva1/langfuse-evaluation
-- title: Learning-LangFuse-main
-  source: generative-ai/06-observability/Learning-LangFuse-main
-  url: https://github.com/pedroalexleite/Learning-LangFuse
-- title: langfuse-mcp-python-main
-  source: generative-ai/06-observability/langfuse-mcp-python-main
-  url: https://github.com/Log-LogN/langfuse-mcp-python
+readings:
+- title: Observability
+  source: generative-ai/06-observability/slides/observability.pdf
+- title: Dong 2024 agentops
+  source: generative-ai/06-observability/sources/dong-2024-agentops.pdf
 ---

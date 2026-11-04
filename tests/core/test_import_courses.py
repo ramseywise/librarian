@@ -207,9 +207,10 @@ def _git(repo: Path, *args: str) -> None:
 
 @pytest.fixture
 def practice(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
-    """A checkout whose practice/ is allowlisted the way learn-ai-engineering's is."""
+    """A checkout laid out like learn-ai-engineering: practice/ is allowlisted, and the root
+    .gitignore keeps the private files under programming/drills/ out."""
     source = tmp_path / "lae"
-    drills = source / "practice" / "drills"
+    drills = source / "programming" / "drills"
     (drills / "sql").mkdir(parents=True)
     (drills / "sql" / "README.md").write_text("# SQL drills\n")
     (drills / "sql" / "01-rank.md").write_text("# Rank\n\n![shot](img/open.png)\n")
@@ -226,72 +227,127 @@ def practice(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Pat
     leetcode.mkdir(parents=True)
     (drills / "python" / "README.md").write_text("# Python\n")
     (leetcode / "two-sum.md").write_text("# Two sum\n")
-    (source / "practice" / "interviewing").mkdir()
+    (source / "practice" / "interviewing").mkdir(parents=True)
     (source / "practice" / "interviewing" / "README.md").write_text("# Interviewing\n")
+    (source / "practice" / "interviewing" / "private.md").write_text("# Private interview\n")
     (source / "practice" / ".gitignore").write_text(
-        "*\n!*/\n!/.gitignore\n!/interviewing/README.md\n!/drills/sql/README.md\n"
-        "!/drills/sql/01-rank.md\n!/drills/sql/img/open.png\n!/drills/python/README.md\n"
-        "/drills/python/leetcode/\n"
+        "*\n!*/\n!/.gitignore\n!/interviewing/README.md\n"
+    )
+    (source / ".gitignore").write_text(
+        "/programming/drills/sql/private.md\n"
+        "/programming/drills/coding/\n"
+        "/programming/drills/secret-module/\n"
+        "/programming/drills/python/leetcode/\n"
     )
     _git(source.parent, "init", "-q", str(source))
     _git(leetcode, "init", "-q")  # git reports this as one directory entry
-    _git(source, "add", "practice/")
+    _git(source, "add", ".gitignore", "practice/", "programming/")
     dest = tmp_path / "courses"
     monkeypatch.setattr(ic, "COURSES_DIR", dest)
     return source, dest
 
 
-def test_drills_course_reads_practice_drills(practice: tuple[Path, Path]) -> None:
+def test_drills_are_a_module_of_programming(practice: tuple[Path, Path]) -> None:
     source, dest = practice
-    ic.apply(ic.build_plan(source, ["drills"]), ["drills"], dry_run=False)
+    assert "drills" not in ic.SUBJECTS
+    ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
 
     lessons = [p.relative_to(dest).as_posix() for p in dest.rglob("*.md")]
     assert not any("drill-log" in p for p in lessons)  # progress history, not a lesson
-    readme = (dest / "drills" / "sql" / "readme.md").read_text()  # not _module.md
-    assert "source: learn-ai-engineering/practice/drills/sql/README.md" in readme
+    readme = (dest / "programming" / "drills" / "sql" / "readme.md").read_text()
+    assert "source: learn-ai-engineering/programming/drills/sql/README.md" in readme
     assert (
-        "source: learn-ai-engineering/practice/drills"
-        in (dest / "drills" / "_course.md").read_text()
+        "source: learn-ai-engineering/programming/drills"
+        in (dest / "programming" / "drills" / "_module.md").read_text()
     )
 
 
-def test_private_practice_files_do_not_import(practice: tuple[Path, Path]) -> None:
+def test_drill_under_programming_keeps_kind_drill(practice: tuple[Path, Path]) -> None:
     source, dest = practice
-    ic.apply(ic.build_plan(source, ["drills"]), ["drills"], dry_run=False)
+    (source / "programming" / "drills" / "sql" / "02-window.md").write_text(
+        "---\ntitle: Window\ntrack: sql\ntopic: window\ndifficulty: easy\ntimebox_min: 5\n"
+        "concepts: [window-functions]\nsource: original\n---\n\n## Prompt\n\nDo it.\n"
+    )
+    ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
+    meta = _front(dest / "programming" / "drills" / "sql" / "02-window.md")
+    assert meta["kind"] == "drill" and meta["track"] == "sql"
+    assert meta["wiki"] == ["window-functions"]
+
+
+def test_tracked_drill_log_is_still_not_a_lesson(practice: tuple[Path, Path]) -> None:
+    source, dest = practice
+    log = source / "programming" / "drills" / "sql" / "drill-log.md"
+    log.write_text("# Log\n")
+    _git(source, "add", "programming/drills/sql/drill-log.md")
+    ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
+    assert not list(dest.rglob("drill-log*"))
+
+
+def test_retired_course_files_are_removed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    dest = tmp_path / "courses"
+    monkeypatch.setattr(ic, "COURSES_DIR", dest)
+    (dest / "drills").mkdir(parents=True)
+    generated = ic.render({"title": "Old"})
+    (dest / "drills" / "_course.md").write_text(generated)
+    (dest / "drills" / "edited.md").write_text("# Mine\n")
+    plan = ic.Plan(source=tmp_path)
+    stats = ic.apply(plan, list(ic.RETIRED_SUBJECTS), dry_run=False)
+    assert stats["removed"] == 1
+    assert not (dest / "drills" / "_course.md").exists()
+    assert (dest / "drills" / "edited.md").exists()  # never delete what was edited here
+
+
+def test_private_files_do_not_import(practice: tuple[Path, Path]) -> None:
+    source, dest = practice
+    subjects = ["programming", "interviewing"]
+    ic.apply(ic.build_plan(source, subjects), subjects, dry_run=False)
 
     files = {p.relative_to(dest).as_posix() for p in dest.rglob("*") if p.is_file()}
-    assert "drills/sql/01-rank.md" in files
-    assert "drills/sql/assets/img/open.png" in files  # tracked image comes along
+    assert "programming/drills/sql/01-rank.md" in files
+    assert "programming/drills/assets/sql/img/open.png" in files  # tracked image comes along
+    assert "interviewing/00-start-here/readme.md" in files
     for private in ("private", "held", "drill-log", "two-sum", "figure", "secret"):
         assert not any(private in f for f in files), private
 
 
 def test_ignored_nested_repo_is_not_even_a_reference(practice: tuple[Path, Path]) -> None:
     source, dest = practice
-    ignored = ic._git_ignored(source, source / "practice" / "drills")
-    assert ignored is not None and "practice/drills/python/leetcode/" in ignored  # dir entry
-    assert ic._matches_ignored("practice/drills/python/leetcode/two-sum.md", ignored)
+    ignored = ic._git_ignored(source, source / "programming")
+    assert ignored is not None and "programming/drills/python/leetcode/" in ignored  # dir entry
+    assert ic._matches_ignored("programming/drills/python/leetcode/two-sum.md", ignored)
 
-    ic.apply(ic.build_plan(source, ["drills"]), ["drills"], dry_run=False)
-    assert "references" not in _front(dest / "drills" / "python" / "_module.md")
-    assert "leetcode" not in (dest / "drills" / "python" / "_module.md").read_text()
+    ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
+    module = dest / "programming" / "drills" / "_module.md"
+    assert "references" not in _front(module)
+    assert "leetcode" not in module.read_text()
 
 
 def test_ignored_image_is_not_copied(practice: tuple[Path, Path]) -> None:
     source, dest = practice
-    gitignore = source / "practice" / ".gitignore"
-    gitignore.write_text(gitignore.read_text() + "!/drills/coding/held.md\n")
-    _git(source, "add", "practice/")
-    ic.apply(ic.build_plan(source, ["drills"]), ["drills"], dry_run=False)
-    assert (dest / "drills" / "coding" / "held.md").exists()
+    gitignore = source / ".gitignore"
+    gitignore.write_text(
+        gitignore.read_text().replace(
+            "/programming/drills/coding/\n",
+            "/programming/drills/coding/figure.png\n/programming/drills/coding/drill-log.md\n",
+        )
+    )
+    _git(source, "add", ".gitignore", "programming/")
+    ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
+    assert (dest / "programming" / "drills" / "coding" / "held.md").exists()
     assert not list(dest.rglob("figure.png"))
 
 
-def test_practice_subjects_fail_closed_without_git(tmp_path: Path) -> None:
-    (tmp_path / "practice" / "drills").mkdir(parents=True)
-    (tmp_path / "practice" / "drills" / "private.md").write_text("# Private\n")
+@pytest.mark.parametrize(
+    ("subject", "rel"),
+    [("interviewing", "practice/interviewing"), ("programming", "programming/drills")],
+)
+def test_subjects_with_private_files_fail_closed_without_git(
+    tmp_path: Path, subject: str, rel: str
+) -> None:
+    (tmp_path / rel).mkdir(parents=True)
+    (tmp_path / rel / "private.md").write_text("# Private\n")
     with pytest.raises(RuntimeError, match="not a git checkout"):
-        ic.build_plan(tmp_path, ["drills"])
+        ic.build_plan(tmp_path, [subject])
 
 
 def test_links_rewrite_across_courses(practice: tuple[Path, Path]) -> None:
@@ -500,6 +556,7 @@ def test_nested_track_decks_attach_relative_to_their_own_folder(
     (py / "slides" / "deck.yaml").write_text(
         "parts: [{slides: [{layout: code, title: T, takeaway: A, source: notes/01-values.md}]}]\n"
     )
+    _git(source, "init")  # programming fails closed outside a checkout
     dest = tmp_path / "courses"
     monkeypatch.setattr(ic, "COURSES_DIR", dest)
     ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
@@ -600,6 +657,7 @@ def test_placeholder_readme_heading_does_not_become_the_module_title(
     written.mkdir()
     (written / "README.md").write_text("# 03 — Real Title\n\nBody.\n")
 
+    _git(source, "init")  # programming fails closed outside a checkout
     dest = tmp_path / "courses"
     monkeypatch.setattr(ic, "COURSES_DIR", dest)
     ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)

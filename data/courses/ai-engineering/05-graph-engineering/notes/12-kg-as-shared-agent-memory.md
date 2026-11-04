@@ -1,8 +1,8 @@
 ---
-imported_hash: 9e67c7b752401113
+imported_hash: 5281af7298e9caa0
 title: 12 — KG as Shared Agent Memory
-summary: This is where the two tracks meet. Track A's execution graph has state (note 03), which lasts for one run and lives in one process.
-order: 30
+summary: A fan-out of ten agents with no shared record derives the same findings ten times.
+order: 15
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/12-kg-as-shared-agent-memory.md
@@ -11,6 +11,8 @@ source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/12-kg-as-
 # 12 — KG as Shared Agent Memory
 
 > Fan-out without shared state re-derives the same findings. Fan-out over a shared, typed, provenance-carrying graph accumulates them. The agent forgets; the graph does not.
+
+A fan-out of ten agents with no shared record derives the same findings ten times. Give them a shared graph and they can accumulate, but mistakes now persist: a bad loop iteration gets reverted, while a false merge in shared memory misleads every agent that reads it afterwards. This chapter is about the write path that makes that safe, and how to measure whether the graph earns its place.
 
 ---
 
@@ -42,6 +44,26 @@ Each architecture moves a different bottleneck out of the agent's context. This 
 **3. Graph.** Workers publish **structured updates** to a shared typed graph. The synthesiser then traverses the graph instead of reading every source and transcript. **The graph moves shared facts, provenance and cross-session memory out of the agent.**
 
 The key point: a swarm on its own re-derives findings, and a swarm writing to a shared graph accumulates them. The graph is how redundancy turns into accumulation.
+
+```mermaid
+flowchart LR
+    subgraph L["1. Loop"]
+        A1[agent] -->|edit| H1[harness:<br/>train, measure]
+        H1 -->|keep or git reset| A1
+    end
+    subgraph S["2. Swarm"]
+        O2[orchestrator] --> W1[worker] & W2[worker] & W3[worker]
+        W1 & W2 & W3 -->|transcripts| Y2[synthesiser<br/>reads everything]
+    end
+    subgraph G["3. Graph"]
+        O3[orchestrator] --> V1[worker] & V2[worker] & V3[worker]
+        V1 & V2 & V3 -->|GraphUpdate| VAL{validator}
+        VAL -->|commit| KG[(shared KG)]
+        KG -->|traverse| Y3[synthesiser]
+        KG -.->|read before work| V1 & V2 & V3
+    end
+    L --> S --> G
+```
 
 ### Three roles at once
 
@@ -77,7 +99,49 @@ def publish(update, graph, validator):
         tx.commit()
 ```
 
-The JSON shape is in [templates/graph-update.schema.json](../templates/graph-update.schema.json). This is [note 03](03-state-and-reducers.md)'s reducer idea at database scale. Many writers are allowed, but they go through one serialising, validating merge function, so no write happens unchecked.
+The contract on the wire is a JSON Schema the validator enforces. Trimmed to its load-bearing parts:
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GraphUpdate",
+  "type": "object",
+  "required": ["run_id", "agent_id", "nodes", "edges"],
+  "properties": {
+    "run_id":   {"type": "string"},
+    "agent_id": {"type": "string"},
+    "nodes": {"type": "array", "items": {
+      "type": "object",
+      "required": ["id", "type", "name", "sources"],
+      "properties": {
+        "id": {"type": "string"}, "type": {"type": "string"}, "name": {"type": "string"},
+        "description": {"type": "string"}, "props": {"type": "object"},
+        "sources": {"$ref": "#/$defs/sources"}
+      }}},
+    "edges": {"type": "array", "items": {
+      "type": "object",
+      "required": ["src", "type", "dst", "sources", "confidence"],
+      "properties": {
+        "src": {"type": "string"}, "dst": {"type": "string"},
+        "type": {"type": "string", "description": "e.g. DEPENDS_ON, ALIAS_OF, RESOLVES_TO, CONTRADICTS"},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "evidence": {"type": "string"},
+        "sources": {"$ref": "#/$defs/sources"}
+      }}}
+  },
+  "$defs": {
+    "sources": {"type": "array", "minItems": 1, "items": {
+      "type": "object", "required": ["doc_id"],
+      "properties": {
+        "doc_id": {"type": "string"},
+        "start": {"type": "integer"}, "end": {"type": "integer"},
+        "quote": {"type": "string"}
+      }}}
+  }
+}
+```
+
+`minItems: 1` on `sources` is the provenance rule as a schema: a fact with no source span is rejected before it reaches the transaction. Compute `start`/`end` offsets in code from the `quote`, not by asking the model for character positions. This is [note 03](03-state-and-reducers.md)'s reducer idea at database scale. Many writers are allowed, but they go through one serialising, validating merge function, so no write happens unchecked.
 
 ### The non-negotiables
 
@@ -99,7 +163,7 @@ The synthesis's reference architecture keeps five concerns apart:
 | **Execution** | Tools, sub-agents and jobs in isolated environments | [05](05-topology-patterns.md), [07](07-failure-modes-at-scale.md) |
 | **Artifact** | Plans, drafts, code, reports and metrics as immutable versions | — |
 | **Graph** | Entities, claims, relations, provenance, task dependencies | 09–13 |
-| **Evaluation** | Deterministic checks, model graders, human review | [06-eval](../../06-eval/readme.md) |
+| **Evaluation** | Deterministic checks, model graders, human review | [the Eval pillar](../../../generative-ai/08-eval/readme.md) |
 
 **Anti-pattern: "the chat transcript became the database."** If a run's only durable record is its conversation log, then that log is serving as database, workflow engine and audit log at once, and it does all three badly. You can't query it, you can't roll it back, and the next agent can't read it without reading everything.
 
@@ -150,14 +214,70 @@ Don't start at the swarm. The synthesis's staged path matches [note 06](06-when-
 
 Move to the next stage only when the current one has been measured.
 
+The persistent graph at stage 3 needn't be a graph database. The community consensus [flowtivity](https://flowtivity.ai/blog/graph-engineering-2026-guide-openclaw-codex/) reports (attributed to Eugeniu Ghelbur) is four properties: a **small typed core** of node and edge types, **cheap indexing**, **hybrid retrieval** (keyword or vector to find an entry point, then edges to expand), and **temporal supersession** (a newer fact `SUPERSEDES` an older one instead of overwriting it). All four can be built on markdown files you own. A vendor-relayed opinion, not a result, but a sensible bar to clear before reaching for Neo4j.
+
+Gate stage 3 against flat retrieval, not only against no memory. Rusu et al. ([arXiv:2608.28978](https://arxiv.org/abs/2608.28978), 2026-08) had GPT-4o-mini extract every conversation turn into a nine-label ontology and answered from 2-hop subgraphs. On LongMemEval (500 questions) it lost to plain retrieval over the raw turns with the same five retrieval roots: token F1 0.417 vs. 0.468 (95% CI on the gap [−0.085, −0.016]). The worst category was recalling what the assistant itself had said, where judge accuracy fell from 0.911 to 0.607; the graph won only on temporal questions, and narrowly (judge 0.293 vs. 0.278). Detail the extractor drops can't be retrieved later. The same paper shows retention is cheap: scoring nodes on recency (90-day half-life), access frequency, centrality and turn decay, and pruning everything below 0.10, removed 9.8% of a 27,021-node graph with token F1 unchanged (+0.001) and judge accuracy down 1.6 points. The authors scope it themselves: one small extractor on one benchmark, so "these results characterise this extraction-based pipeline rather than graph-structured memory in general."
+
+Two drills test whether the graph is earning its place:
+
+- **With and without shared memory.** Fan out 5–10 workers over one corpus twice: once returning prose to a synthesiser that reads everything, once publishing validated `GraphUpdate`s that the synthesiser queries and must cite. Compare redundant findings, synthesiser input tokens, total tokens, and answer and path quality on a fixed question set. Add a third arm that keeps the workers' raw output in a flat retrieval index, so the graph has to beat verbatim recall, not just no memory.
+- **Contamination.** Inject one false `RESOLVES_TO` merge under a fake `run_id`, re-run the questions and trace every changed answer back to the bad edge, then roll back by deleting everything carrying that `run_id`. If provenance alone can't restore the answers, the write path isn't strict enough.
+
 ---
 
 ## Working reference
 
-`~/.claude/refs/agent-memory.md`: taxonomy, persistence by lifetime (in-turn → session → cross-session → **cross-agent**), and the single-writer rule. `~/.claude/refs/agent-architecture.md`: when to fan out.
-
-Related: [02-context note 06](../../02-context-engineering/notes/06-memory.md) (memory types and hygiene); [memory-augmented-rag-notion-export.md](../../02-context-engineering/sources/memory-augmented-rag-notion-export.md) (product memory designs). Practice: [KG Lab 7](../practice/02-knowledge-graph-labs.md#lab-7--swarm-with-and-without-shared-memory) and [KG Lab 8](../practice/02-knowledge-graph-labs.md#lab-8--contamination-drill).
+Related: [02-context note 06](../../02-context-engineering/notes/06-memory.md) (memory types and hygiene); [its production memory designs](../../02-context-engineering/notes/06-memory.md) (ChatGPT, OpenClaw, Memoria).
 
 ---
 
-→ Next: [13-graph-ml-and-gnns.md](13-graph-ml-and-gnns.md): predicting the edges and labels the graph doesn't have yet.
+## Pitfalls
+
+- **Letting workers write directly.** Symptom: a fact in the graph with no source and no way to remove it. Fix: every worker submits a `GraphUpdate` that a validator checks, with `minItems: 1` on `sources`.
+- **Merging destructively.** Symptom: a false merge can't be separated. Fix: store `ALIAS_OF` and `RESOLVES_TO` edges with evidence and confidence.
+- **Storing conclusions as truths.** Symptom: one agent's error overwrites a contradicting finding. Fix: store "agent A claims X, citing source S", and let contradictions coexist.
+- **Using a transcript as your database.** Symptom: the only durable record is a conversation log. Fix: keep the five planes apart, with control, execution, artifacts, graph and evaluation each stored separately.
+- **Reading compression as quality.** Symptom: a higher ratio of surface forms to canonicals is reported as progress. Fix: that ratio rewards over-merging, so measure pairwise precision and false-merge rate.
+- **Starting at the swarm.** Symptom: no baseline to say whether the graph helped. Fix: follow the four stages, and move on only when the current one has been measured.
+- **Quoting the Bun port.** Symptom: a slide says "$165,000 and peak parallelism 64". Fix: it is marked unverified here; plan from your own measured cost.
+
+## Try it
+
+1. Run the note's contamination drill on any small graph: inject one false `RESOLVES_TO` under a fake `run_id`, rerun your questions, trace every changed answer to the edge, and roll back. What must be true for the rollback to return the same answers?
+
+   <details><summary>Answer</summary>
+
+   Every derived fact must carry a `run_id` and a source span, and resolution must be edges rather than merged nodes. If a later agent wrote a conclusion from the bad edge, removing the edge leaves that claim behind, so you also need to find claims derived from it.
+
+   </details>
+
+2. Write the JSON a worker would submit for "Compound X binds Gene Y (paper P, chars 120–180)". Which fields would the validator reject if missing?
+
+   <details><summary>What to check</summary>
+
+   Check it against the schema above. `sources` must have at least one span, so an empty list is rejected. `run_id` and `agent_id` must be present to meet non-negotiable 1. Compute the offsets in code rather than trusting the model's.
+
+   </details>
+
+3. At which of the four stages is a team that has a verifier with isolated context, but no measurement across sessions? What gate comes next?
+
+   <details><summary>Answer</summary>
+
+   Stage 2, a role split. Stage 3 is a persistent graph, gated on queries across sessions working, and it should be tested against flat retrieval as well as against no memory.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| How is a KG different from graph state? | State lasts one run, in one process, and mistakes die with it. A KG lasts across runs, any agent reads it, and mistakes persist and spread. |
+| What are the non-negotiables of the write path? | Complete provenance, reversible entity resolution, and claims stored as claims rather than truths. |
+| Why isn't a swarm enough? | Without shared state, workers re-derive the same findings. Publishing to a shared typed graph turns that redundancy into accumulation. |
+| What does Claude Code's workflow limit tell you about cost? | Third-party write-ups report 16 concurrent and 1,000 total sub-agents per run, and Anthropic reports about 15× tokens for its multi-agent system. Topology makes spend tractable, not cheap. |
+| How do you test if the graph is earning its place? | Fan out 5–10 workers over one corpus with and without shared memory, compare redundancy, tokens and quality, and gate against flat retrieval too. |
+| A right answer came from an unsupported path. Is that a pass? | No. Evaluate path validity as well as correctness, because a right answer reached through a wrong path is luck. |
+
+## Next
+
+[13-graph-ml-and-gnns.md](13-graph-ml-and-gnns.md): predicting the edges and labels the graph doesn't have yet.

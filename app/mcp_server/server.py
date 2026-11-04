@@ -1,7 +1,7 @@
 """Librarian MCP Server
 
-Exposes the compiled wiki to any MCP client — Claude Code, playground agents,
-or other tools. Read-only.
+Exposes the compiled wiki and the course lessons in data/courses/ to any MCP client —
+Claude Code, playground agents, or other tools. Read-only.
 
 Tools:
   search_wiki          — hybrid search (FTS + semantic) with backlink-weighted ranking
@@ -14,6 +14,11 @@ Hybrid search: BM25 candidates (DuckDB fts extension) re-ranked with cosine
 similarity (sentence-transformers) and backlink count. Falls back to a tokenized
 per-term LIKE match when the fts extension is unavailable, and to text-only
 ranking when sentence-transformers is not installed.
+
+Course lessons live in their own table and FTS index (`course_pages`), never in `pages`.
+BM25 statistics, backlinks and typed edges are corpus-wide, so sharing a table would change
+wiki rankings. Their domain is derived from the path: `course`, `course/<subject>`. An
+unscoped search ranks the wiki only and lists the best lessons in a separate section.
 
 Usage:
     uv run python mcp_server/server.py
@@ -48,10 +53,13 @@ log = structlog.get_logger()
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WIKI_DIR = Path(os.getenv("WIKI_DIR", str(REPO_ROOT / "data" / "wiki")))
 PRIVATE_DIR = WIKI_DIR / "private"
+COURSES_DIR = Path(os.getenv("COURSES_DIR", str(REPO_ROOT / "data" / "courses")))
+COURSE_DOMAIN = "course"
 DB_PATH = Path(os.getenv("WIKI_DB_PATH", str(REPO_ROOT / ".wiki_index.duckdb")))
 LOGS_DIR = Path("logs")
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
-SCHEMA_VERSION = "7"  # 6→7: adds content_hash for incremental indexing (LIB-124)
+# 6→7: adds content_hash for incremental indexing (LIB-124). 7→8: adds course_pages.
+SCHEMA_VERSION = "8"
 
 
 def _domains() -> list[str]:
@@ -63,6 +71,41 @@ def _domains() -> list[str]:
     if not WIKI_DIR.is_dir():
         return []
     return sorted(d.name for d in WIKI_DIR.iterdir() if d.is_dir() and d.name != "private")
+
+
+def _course_domain(path: Path | str) -> str:
+    """`course/<subject>` for a lesson path. The path is the only source of a lesson's domain."""
+    return f"{COURSE_DOMAIN}/{Path(path).relative_to(COURSES_DIR).parts[0]}"
+
+
+def _course_ref(path: Path | str) -> str:
+    """The `course/<relative path>` form of a lesson path, as read_page accepts it."""
+    return f"{COURSE_DOMAIN}/{Path(path).relative_to(COURSES_DIR).as_posix()}"
+
+
+def _course_domains() -> list[str]:
+    """`course` plus one `course/<subject>` per directory under data/courses/."""
+    if not COURSES_DIR.is_dir():
+        return []
+    subjects = sorted(d.name for d in COURSES_DIR.iterdir() if d.is_dir())
+    return [COURSE_DOMAIN, *(f"{COURSE_DOMAIN}/{s}" for s in subjects)]
+
+
+def _is_course_domain(domain: str) -> bool:
+    return domain == COURSE_DOMAIN or domain.startswith(f"{COURSE_DOMAIN}/")
+
+
+def _resolve_course_dir(domain: str) -> Path | None:
+    """Directory for `course`, `course/<subject>` or deeper; None if absent or outside the root."""
+    rel = domain.removeprefix(COURSE_DOMAIN).strip("/")
+    candidate = COURSES_DIR / rel
+    if (
+        candidate.is_dir()
+        and candidate.resolve().is_relative_to(COURSES_DIR.resolve())
+        and not _is_private(candidate)
+    ):
+        return candidate
+    return None
 
 
 mcp = FastMCP("librarian")
@@ -147,6 +190,35 @@ def _is_private(path: Path | str) -> bool:
     return is_under_private(path, PRIVATE_DIR)
 
 
+def _wiki_pages() -> list[Path]:
+    """Indexable wiki pages: no private pages, no `_` or `.` files."""
+    return [
+        p
+        for p in WIKI_DIR.rglob("*.md")
+        if not p.name.startswith((".", "_")) and not _is_private(p)
+    ]
+
+
+def _course_pages(root: Path | None = None) -> list[Path]:
+    """Indexable lessons under root (default all of data/courses/).
+
+    `_course.md`, `_module.md` and `_flashcards.md` are skipped like any `_` file: the first
+    two are frontmatter-only catalog metadata whose summary and titles reappear in lessons,
+    and flashcards restate deck takeaways. A symlink leaving the course root is not a lesson.
+    """
+    courses_root = COURSES_DIR.resolve()
+    if _is_private(courses_root):
+        return []
+    # Runs several times per search, so resolve only files that are symlinks: rglob's `**`
+    # does not descend through directory symlinks, and resolving every path is most of the cost.
+    return [
+        p
+        for p in (root or COURSES_DIR).rglob("*.md")
+        if not p.name.startswith((".", "_"))
+        and (not p.is_symlink() or p.resolve().is_relative_to(courses_root))
+    ]
+
+
 def _log_retrieval(tool: str, **fields: object) -> None:
     """Append one JSON line of retrieval telemetry to logs/retrieval.jsonl.
 
@@ -187,40 +259,33 @@ def _content_hash(path: Path) -> str:
 
 
 def _stale_pages(con: duckdb.DuckDBPyConnection) -> list[Path]:
-    """Return paths of wiki pages whose content hash differs from the indexed hash.
+    """Return paths of wiki pages and lessons whose content hash differs from the indexed hash.
 
     Returns an empty list when the index is fully fresh and no pages have been deleted.
     """
     try:
         indexed: dict[str, str] = {
-            row[0]: row[1] for row in con.execute("SELECT path, content_hash FROM pages").fetchall()
+            row[0]: row[1]
+            for table in ("pages", "course_pages")
+            for row in con.execute(f"SELECT path, content_hash FROM {table}").fetchall()
         }
     except Exception:
-        return list(WIKI_DIR.rglob("*.md"))
+        return _wiki_pages() + _course_pages()
 
-    stale: list[Path] = []
-    current_paths: set[str] = set()
-    for p in WIKI_DIR.rglob("*.md"):
-        if _is_private(p) or p.name.startswith((".", "_")):
-            continue
-        current_paths.add(str(p))
-        chash = _content_hash(p)
-        if indexed.get(str(p)) != chash:
-            stale.append(p)
-    return stale
+    return [p for p in _wiki_pages() + _course_pages() if indexed.get(str(p)) != _content_hash(p)]
 
 
 def _has_deleted_pages(con: duckdb.DuckDBPyConnection) -> bool:
     """Return True if any page in the index no longer exists on disk."""
     try:
-        indexed_paths = {r[0] for r in con.execute("SELECT path FROM pages").fetchall()}
+        indexed_paths = {
+            r[0]
+            for table in ("pages", "course_pages")
+            for r in con.execute(f"SELECT path FROM {table}").fetchall()
+        }
     except Exception:
         return False
-    current_paths = {
-        str(p)
-        for p in WIKI_DIR.rglob("*.md")
-        if not _is_private(p) and not p.name.startswith((".", "_"))
-    }
+    current_paths = {str(p) for p in _wiki_pages() + _course_pages()}
     return bool(indexed_paths - current_paths)
 
 
@@ -279,7 +344,7 @@ def _read_pages(paths: list[Path]) -> list[tuple]:
 
 
 def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
-    """Drop and recreate all index tables, then re-index every wiki page.
+    """Drop and recreate all index tables, then re-index every wiki page and lesson.
 
     Called when the schema version mismatches or the index is absent.
     After this runs, subsequent calls take the incremental path via _stale_pages().
@@ -288,35 +353,32 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
 
     con.execute("DROP TABLE IF EXISTS meta")
     con.execute("DROP TABLE IF EXISTS pages")
+    con.execute("DROP TABLE IF EXISTS course_pages")
     con.execute("DROP TABLE IF EXISTS edges")
 
     con.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, val TEXT)")
 
-    con.execute("""
-        CREATE TABLE pages (
-            path         TEXT PRIMARY KEY,
-            title        TEXT,
-            tags         TEXT,
-            summary      TEXT,
-            updated      TEXT,
-            content      TEXT,
-            backlinks    INTEGER DEFAULT 0,
-            embedding    BLOB,
-            content_hash TEXT
-        )
-    """)
+    for table in ("pages", "course_pages"):
+        con.execute(f"""
+            CREATE TABLE {table} (
+                path         TEXT PRIMARY KEY,
+                title        TEXT,
+                tags         TEXT,
+                summary      TEXT,
+                updated      TEXT,
+                content      TEXT,
+                backlinks    INTEGER DEFAULT 0,
+                embedding    BLOB,
+                content_hash TEXT
+            )
+        """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
     con.execute("CREATE TABLE edges (source_path TEXT, target_path TEXT, relationship TEXT)")
 
     _ensure_fts(con)
 
     # Collect all pages
-    all_paths = [
-        page
-        for page in sorted(WIKI_DIR.rglob("*.md"))
-        if not page.name.startswith((".", "_")) and not _is_private(page)
-    ]
-    raw_pages = _read_pages(all_paths)
+    raw_pages = _read_pages(sorted(_wiki_pages()))
 
     # raw_pages tuples: (path, title, tags, summary, updated, content, content_hash)
     backlinks = _compute_backlinks(raw_pages)
@@ -377,16 +439,61 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
             log.warning("fts_index_failed", error=str(exc))
             HAS_FTS = False
 
+    n_lessons = _upsert_lessons(con, sorted(_course_pages()))
+
     con.execute("INSERT INTO meta VALUES ('schema_version', ?)", [SCHEMA_VERSION])
     con.execute("INSERT INTO meta VALUES ('built_at', ?)", [str(time.time())])
 
     log.info(
         "index_built",
         page_count=len(rows),
+        lesson_count=n_lessons,
         with_embeddings=bool(embeddings),
         typed_edges=len(typed_edges),
         unrecognized_annotations=n_unrecognized,
     )
+
+
+def _upsert_lessons(con: duckdb.DuckDBPyConnection, lessons: list[Path]) -> int:
+    """Embed and write lessons to course_pages, prune removed ones, refresh their FTS index.
+
+    Lessons carry no backlinks or edges: a wikilink from a lesson is not evidence about a
+    wiki page, and a lesson's title or stem must not capture a wiki link's resolution.
+    """
+    raw = _read_pages(lessons)
+    embeddings: dict[str, bytes] = {}
+    if HAS_EMBEDDINGS and raw:
+        try:
+            texts = [f"{r[1]}. {r[3]}\n\n{r[5][:600]}" for r in raw]
+            vecs = _get_emb_model().encode(texts, normalize_embeddings=True)
+            embeddings = {r[0]: _vec_to_blob(vecs[i].tolist()) for i, r in enumerate(raw)}
+        except Exception as e:
+            log.warning("embedding_failed", error=str(e))
+    if raw:
+        con.executemany(
+            "INSERT OR REPLACE INTO course_pages VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)",
+            [
+                (path, title, tags, summary, updated, content, embeddings.get(path), chash)
+                for path, title, tags, summary, updated, content, chash in raw
+            ],
+        )
+
+    current = {str(p) for p in _course_pages()}
+    indexed = {r[0] for r in con.execute("SELECT path FROM course_pages").fetchall()}
+    removed = indexed - current
+    if removed:
+        con.executemany("DELETE FROM course_pages WHERE path = ?", [(p,) for p in removed])
+        log.info("course_index_pruned", removed_count=len(removed))
+
+    if HAS_FTS:
+        try:
+            con.execute(
+                "PRAGMA create_fts_index('course_pages', 'path', 'title', 'summary', 'content', "
+                "overwrite=1)"
+            )
+        except Exception as exc:
+            log.warning("fts_index_failed", table="course_pages", error=str(exc))
+    return len(indexed - removed)
 
 
 def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
@@ -394,7 +501,22 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
 
     Called for incremental updates when the schema is valid but some pages have
     changed content. Also handles deleted pages (tombstones in DB but not on disk).
+    Lessons and wiki pages are refreshed independently: a course change leaves every
+    `pages` row, the wiki FTS index and the edges table as they were.
     """
+    lessons = [p for p in pages if p.is_relative_to(COURSES_DIR)]
+    pages = [p for p in pages if not p.is_relative_to(COURSES_DIR)]
+    indexed_lessons = {r[0] for r in con.execute("SELECT path FROM course_pages").fetchall()}
+    if lessons or indexed_lessons - {str(p) for p in _course_pages()}:
+        _ensure_fts(con)
+        _upsert_lessons(con, lessons)
+        log.info("incremental_course_update", stale_count=len(lessons))
+
+    indexed_wiki = {r[0] for r in con.execute("SELECT path FROM pages").fetchall()}
+    if not pages and not indexed_wiki - {str(p) for p in _wiki_pages()}:
+        con.execute("UPDATE meta SET val = ? WHERE key = 'built_at'", [str(time.time())])
+        return
+
     raw_pages = _read_pages(pages)
     if not raw_pages:
         # All changed pages were tombstones — skip re-embed, still prune deleted
@@ -402,12 +524,7 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
 
     # Recompute backlinks over full corpus — a page's backlink count depends on
     # all other pages' content. This is one dict comprehension, not re-embedding.
-    all_paths = [
-        p
-        for p in WIKI_DIR.rglob("*.md")
-        if not _is_private(p) and not p.name.startswith((".", "_"))
-    ]
-    all_raw = _read_pages(all_paths)
+    all_raw = _read_pages(_wiki_pages())
     backlinks = _compute_backlinks(all_raw)
 
     # Embed only the changed pages
@@ -469,12 +586,7 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
             log.warning("fts_index_failed", error=str(exc))
 
     # Prune deleted pages: in DB but not on disk
-    current_paths = {
-        str(p)
-        for p in WIKI_DIR.rglob("*.md")
-        if not _is_private(p) and not p.name.startswith((".", "_"))
-    }
-    removed = indexed_paths - current_paths
+    removed = indexed_paths - {str(p) for p in _wiki_pages()}
     if removed:
         con.executemany("DELETE FROM pages WHERE path = ?", [(p,) for p in removed])
         for p in removed:
@@ -486,7 +598,7 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
 
 
 def build_index(con: duckdb.DuckDBPyConnection, force: bool = False) -> None:
-    """Build or incrementally update the DuckDB index over data/wiki/ pages.
+    """Build or incrementally update the DuckDB index over data/wiki/ and data/courses/.
 
     force=True drops and re-embeds the whole corpus (admin path: `make index-rebuild`).
     """
@@ -536,13 +648,15 @@ def _resolve_domain_dir(domain: str) -> Path | None:
     Resolves to None for data/wiki/private/ so list_domain and get_domain_briefing
     cannot address it as a domain.
     """
-    candidate = WIKI_DIR / domain
-    if candidate.is_dir() and not _is_private(candidate):
-        return candidate
-    slug = domain.replace("_", "-").lower()
-    candidate = WIKI_DIR / slug
-    if candidate.is_dir() and not _is_private(candidate):
-        return candidate
+    root = WIKI_DIR.resolve()
+    for name in (domain, domain.replace("_", "-").lower()):
+        candidate = WIKI_DIR / name
+        if (
+            candidate.is_dir()
+            and candidate.resolve().is_relative_to(root)
+            and not _is_private(candidate)
+        ):
+            return candidate
     return None
 
 
@@ -576,6 +690,7 @@ def _like_candidates(
     tag_filter: str,
     tag_params: list,
     limit: int,
+    table: str = "pages",
 ) -> list[tuple]:
     """Tokenized per-term OR LIKE fallback when fts is unavailable or matches nothing.
 
@@ -593,7 +708,7 @@ def _like_candidates(
         like_params += [f"%{t}%"] * 3
     sql = f"""
         SELECT path, title, tags, summary, content, backlinks, embedding, NULL AS score
-        FROM pages
+        FROM {table}
         WHERE ({term_cond})
         {tag_filter}
         ORDER BY
@@ -704,7 +819,11 @@ def _degradation_reasons(con: duckdb.DuckDBPyConnection, *, has_fts: bool) -> li
 def _search_rows(
     query: str, domain: str = "", limit: int = 10, tool: str = "search_wiki", expand: bool = False
 ) -> tuple[list[tuple], list[str]]:
-    """Ranked wiki search returning raw rows — the single search core.
+    """Ranked search returning raw rows — the single search core.
+
+    An empty `domain` searches the wiki only, as does any wiki directory or tag.
+    `course` or `course/<subject>` searches lessons only. The corpora have separate
+    BM25 statistics, so their scores are not comparable and are never merged here.
 
     Returns `(rows, degraded)`: up to `limit` 7-tuples (path, title, tags,
     summary, content, backlinks, score) best first, plus the names of any
@@ -722,7 +841,16 @@ def _search_rows(
     the ranked rows (LIB-114 Step 2). Default off — production `search_wiki`
     keeps its prose expansion section; this path is exercised by the eval.
     """
-    tag_filter, tag_params = _domain_filter(domain)
+    table = "pages"
+    if _is_course_domain(domain):
+        table = "course_pages"
+        course_dir = _resolve_course_dir(domain)
+        if course_dir is None:
+            _log_retrieval(tool, query=query, domain=domain, n_results=0, top_paths=[], degraded=[])
+            return [], []
+        tag_filter, tag_params = "AND starts_with(path, ?)", [f"{course_dir.as_posix()}/"]
+    else:
+        tag_filter, tag_params = _domain_filter(domain)
 
     con = get_con()
     try:
@@ -733,13 +861,29 @@ def _search_rows(
             # DuckDB permits SELECT aliases in WHERE, so `score` filters directly
             sql = f"""
                 SELECT path, title, tags, summary, content, backlinks, embedding,
-                       fts_main_pages.match_bm25(path, ?) AS score
-                FROM pages
+                       fts_main_{table}.match_bm25(path, ?) AS score
+                FROM {table}
                 WHERE score IS NOT NULL
                 {tag_filter}
                 ORDER BY score DESC
                 LIMIT ?
             """
+            if table == "course_pages":
+                # duckdb 2.0 rejects the alias filter above ("Alias referenced - but
+                # the expression has side effects"), so the wiki query falls through
+                # to LIKE. Lessons are new, with no prior ranking to keep, so they
+                # use the form that binds. The wiki query is deliberately untouched.
+                sql = f"""
+                    SELECT * FROM (
+                        SELECT path, title, tags, summary, content, backlinks, embedding,
+                               fts_main_course_pages.match_bm25(path, ?) AS score
+                        FROM course_pages
+                        WHERE TRUE {tag_filter}
+                    )
+                    WHERE score IS NOT NULL
+                    ORDER BY score DESC
+                    LIMIT ?
+                """
             try:
                 rows = con.execute(sql, [query, *tag_params, limit * 3]).fetchall()
             except Exception as e:
@@ -751,7 +895,7 @@ def _search_rows(
                     degraded.append("no_fts")
 
         if not rows:
-            rows = _like_candidates(con, query, tag_filter, tag_params, limit)
+            rows = _like_candidates(con, query, tag_filter, tag_params, limit, table)
     finally:
         con.close()
 
@@ -838,7 +982,7 @@ def _expand_rows(ranked: list[tuple], limit: int) -> tuple[list[tuple], list[tup
 
 @mcp.tool()
 def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = False) -> str:
-    """Search the wiki using hybrid search (BM25 + semantic similarity + backlink rank).
+    """Search the wiki and course lessons using hybrid search (BM25 + semantic + backlink rank).
 
     Results are ranked by a blend of: BM25 relevance, semantic closeness
     (if sentence-transformers is installed), and inbound backlink count.
@@ -846,7 +990,10 @@ def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = Fa
     Args:
         query:  Search terms
         domain: Optional domain to scope the search — any directory under
-                data/wiki/ (e.g. 'rag', 'langgraph', 'patterns') or a domain tag
+                data/wiki/ (e.g. 'rag', 'langgraph', 'patterns') or a domain tag.
+                'course' searches all course lessons, 'course/<subject>' one course
+                (e.g. 'course/ai-engineering'). Omitted: results are ranked wiki pages,
+                followed by a short separate list of the best-matching lessons.
         limit:  Max results (default 10)
         expand: SPIKE — also return pages one typed relationship hop from the
                 results (`prerequisite-for` / `extends`). Answers "what else do
@@ -857,12 +1004,16 @@ def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = Fa
         Leads with a warning line when retrieval ran degraded (full-text search
         unavailable, or the index is behind the files on disk).
     """
-    rows, degraded = _search_rows(query, domain=domain, limit=limit)
+    in_courses = _is_course_domain(domain)
+    # /compact-wiki reads tool="search_wiki" telemetry as evidence about wiki pages.
+    tool = "search_courses" if in_courses else "search_wiki"
+    rows, degraded = _search_rows(query, domain=domain, limit=limit, tool=tool)
     warning = _degraded_notice(degraded)
+    lessons = "" if domain else _course_lessons_section(query)
 
     if not rows:
         suffix = f" in domain '{domain}'" if domain else ""
-        return f"{warning}No wiki pages found for: {query!r}{suffix}"
+        return f"{warning}No wiki pages found for: {query!r}{suffix}{lessons}"
 
     results = []
     for path, title, tags, summary, content, backlinks, _score in rows:
@@ -881,10 +1032,14 @@ def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = Fa
             end = min(len(content), idx + 160)
             snippet = content[start:end].replace("\n", " ").strip()
 
+        location = (
+            f"Page: `{_course_ref(path)}`\nDomain: {_course_domain(path)}\n"
+            if in_courses
+            else f"Path: `{path}`\nTags: {tags} · Backlinks: {backlinks}\n"
+        )
         results.append(
             f"**{title}**\n"
-            f"Path: `{path}`\n"
-            f"Tags: {tags} · Backlinks: {backlinks}\n"
+            f"{location}"
             f"Summary: {summary}\n" + (f"Snippet: ...{snippet}..." if snippet else "")
         )
 
@@ -893,7 +1048,26 @@ def search_wiki(query: str, domain: str = "", limit: int = 10, expand: bool = Fa
     if expand:
         body += _expansion_section([r[0] for r in rows])
 
-    return body
+    return body + lessons
+
+
+UNSCOPED_LESSON_LIMIT = 3
+
+
+def _course_lessons_section(query: str) -> str:
+    """Best lessons for an unscoped search, kept out of the wiki ranking ('' if none)."""
+    if not COURSES_DIR.is_dir():
+        return ""
+    rows, _ = _search_rows(
+        query, domain=COURSE_DOMAIN, limit=UNSCOPED_LESSON_LIMIT, tool="search_courses"
+    )
+    if not rows:
+        return ""
+    lines = [f"- **{r[1]}** (`{_course_ref(r[0])}`)\n  {r[3]}" for r in rows]
+    return (
+        f"\n\n---\n\n**Course lessons** (read with read_page; "
+        f'search with domain="{COURSE_DOMAIN}"):\n\n' + "\n".join(lines)
+    )
 
 
 # Degradation reason → what the caller loses. Phrased for a model reading the
@@ -949,19 +1123,50 @@ def _expansion_section(seed_paths: list[str]) -> str:
     )
 
 
+def _read_lesson(ref: str, not_found: str) -> str:
+    """Serve a `course/<relative path>` ref (`.md` optional) from inside the course root only.
+
+    Only COURSES_DIR counts here, so `course/../wiki/...` fails even for a public wiki page.
+    """
+    # lstrip keeps `course//etc/passwd` relative: an absolute part would replace the root.
+    target = COURSES_DIR / ref.removeprefix(COURSE_DOMAIN).lstrip("/")
+    if target.suffix != ".md":
+        target = target.with_name(f"{target.name}.md")
+    try:
+        inside = target.resolve().is_relative_to(COURSES_DIR.resolve())
+        readable = inside and target.is_file() and not _is_private(target)
+    except (OSError, RuntimeError, ValueError):
+        readable = False
+    if not readable:
+        _log_retrieval("read_page", path=ref, found=False, course=True)
+        return not_found
+    _log_retrieval("read_page", path=str(target), found=True, course=True)
+    return target.read_text(encoding="utf-8", errors="replace")
+
+
 def _read_page_text(path_or_title: str) -> str:
     """Resolve a page by path, wiki-relative path, slug, or title and return its text.
 
     The single page-read core — the read_page MCP tool and the chat agent both
     call this, so private exclusion and telemetry are enforced in one place.
+    Lessons are reached by `course/<relative path>` or by the absolute path search returns.
+    Slug and title lookup stays wiki-only: a loose match over 749 lessons would turn a
+    clean miss, or a unique wiki match, into a wrong or ambiguous answer.
     """
     # Private pages are indistinguishable from missing ones — a distinct "denied"
     # message would itself confirm the page exists.
     not_found = f"Page not found: {path_or_title!r}. Run search_wiki to find the right path."
 
+    if _is_course_domain(path_or_title):
+        return _read_lesson(path_or_title, not_found)
+
     candidate = Path(path_or_title)
     if candidate.exists():
-        if not candidate.resolve().is_relative_to(WIKI_DIR.resolve()):
+        resolved = candidate.resolve()
+        if resolved.is_relative_to(COURSES_DIR.resolve()):
+            ref = f"{COURSE_DOMAIN}/{resolved.relative_to(COURSES_DIR.resolve()).as_posix()}"
+            return _read_lesson(ref, not_found)
+        if not resolved.is_relative_to(WIKI_DIR.resolve()):
             _log_retrieval("read_page", path=str(candidate), found=False, outside_wiki=True)
             return not_found
         if _is_private(candidate):
@@ -1007,16 +1212,72 @@ def _read_page_text(path_or_title: str) -> str:
 
 @mcp.tool()
 def read_page(path_or_title: str) -> str:
-    """Read a specific wiki page by file path or title.
+    """Read a specific wiki page or course lesson by file path or title.
 
     Args:
-        path_or_title: Either a relative path like 'data/wiki/rag/rag-retrieval-strategies.md'
-                       or a page title like 'RAG Retrieval Strategies'
+        path_or_title: A relative path like 'data/wiki/rag/rag-retrieval-strategies.md',
+                       a page title like 'RAG Retrieval Strategies', or a lesson as
+                       'course/<subject>/<module>/<lesson>.md'. Titles resolve to wiki pages only.
 
     Returns:
         Full page content, or an error message if not found.
     """
     return _read_page_text(path_or_title)
+
+
+def _unknown_domain(domain: str) -> str:
+    valid = ", ".join(_domains() + _course_domains())
+    return f"Unknown domain: {domain!r}. Valid domains: {valid}"
+
+
+def _frontmatter_of(path: Path) -> dict:
+    """Frontmatter of a page, {} when the file is absent."""
+    if not path.is_file():
+        return {}
+    return _parse_frontmatter(path.read_text(encoding="utf-8", errors="ignore"))
+
+
+def _list_course_domain(domain: str) -> str:
+    """Courses for `course`, modules for `course/<subject>`, lessons for anything deeper."""
+    root = _resolve_course_dir(domain)
+    if root is None:
+        return _unknown_domain(domain)
+    depth = len(root.relative_to(COURSES_DIR).parts)
+    label = (
+        f"{COURSE_DOMAIN}/{root.relative_to(COURSES_DIR).as_posix()}" if depth else COURSE_DOMAIN
+    )
+
+    if depth < 2:
+        meta_file = "_module.md" if depth else "_course.md"
+        kind = "module" if depth else "course"
+        lines = []
+        for child in sorted(d for d in root.iterdir() if d.is_dir()):
+            n_lessons = len(_course_pages(child))
+            if not n_lessons:
+                continue
+            meta = _frontmatter_of(child / meta_file)
+            lines.append(
+                f"- **{meta.get('title', child.name)}** (`{label}/{child.name}`) · "
+                f"{n_lessons} lesson(s)\n  {meta.get('summary', '')}"
+            )
+        _log_retrieval("list_domain", domain=domain, n_results=len(lines))
+        if not lines:
+            return f"No pages found in domain '{domain}'"
+        return f"**{len(lines)} {kind}(s) in `{label}`**:\n\n" + "\n".join(lines)
+
+    lessons = sorted(_course_pages(root))
+    _log_retrieval("list_domain", domain=domain, n_results=len(lessons))
+    if not lessons:
+        return f"No pages found in domain '{domain}'"
+    lines = [_course_line(p) for p in lessons]
+    return f"**{len(lines)} lesson(s) in `{label}`**:\n\n" + "\n".join(lines)
+
+
+def _course_line(page: Path) -> str:
+    meta = _frontmatter_of(page)
+    return (
+        f"- **{meta.get('title', page.stem)}** (`{_course_ref(page)}`)\n  {meta.get('summary', '')}"
+    )
 
 
 @mcp.tool()
@@ -1027,15 +1288,18 @@ def list_domain(domain: str) -> str:
 
     Args:
         domain: Domain directory name — any directory under data/wiki/
-                (e.g. rag, langgraph, context, interview)
+                (e.g. rag, langgraph, context, interview). 'course' lists the courses,
+                'course/<subject>' its modules, 'course/<subject>/<module>' its lessons.
 
     Returns:
         All pages in the domain with title, tags, summary, and backlink count.
     """
+    if _is_course_domain(domain):
+        return _list_course_domain(domain)
+
     domain_dir = _resolve_domain_dir(domain)
     if domain_dir is None:
-        valid = ", ".join(_domains())
-        return f"Unknown domain: {domain!r}. Valid domains: {valid}"
+        return _unknown_domain(domain)
 
     pages = sorted(p for p in domain_dir.glob("*.md") if not p.name.startswith("_"))
     if not pages:
@@ -1077,16 +1341,18 @@ def list_domain(domain: str) -> str:
 
 @mcp.tool()
 def list_pages(tag: str = "", directory: str = "") -> str:
-    """List wiki pages, optionally filtered by tag or directory.
+    """List wiki pages and course lessons, optionally filtered by tag or directory.
 
     Args:
         tag:       Domain tag to filter (e.g. 'adk', 'langgraph', 'rag')
         directory: Subdirectory to list — any domain directory under data/wiki/
-                   (e.g. rag, langgraph, context, interview)
+                   (e.g. rag, langgraph, context, interview), or 'course' or
+                   'course/<subject>' for lessons. Omitted: the wiki, then all lessons.
 
     Returns:
         List of pages with title, tags, summary, and backlink count.
     """
+    lessons: list[Path] = []
     if directory:
         if ".." in directory or directory.startswith("/"):
             raise ValueError(f"Invalid directory: {directory!r}")
@@ -1095,9 +1361,14 @@ def list_pages(tag: str = "", directory: str = "") -> str:
             raise ValueError(f"Directory escapes wiki root: {directory!r}")
     else:
         search_dir = WIKI_DIR
+        lessons = _course_pages()
     pages = [
         p for p in search_dir.rglob("*.md") if not p.name.startswith("_") and not _is_private(p)
     ]
+    if directory and _is_course_domain(directory):
+        course_dir = _resolve_course_dir(directory)
+        lessons = _course_pages(course_dir) if course_dir else []
+        pages = []
 
     con = get_con()
     bl_map: dict[str, int] = {}
@@ -1125,6 +1396,12 @@ def list_pages(tag: str = "", directory: str = "") -> str:
             f"  {meta.get('summary', '')}"
         )
 
+    for lesson in sorted(lessons):
+        meta = _frontmatter_of(lesson)
+        if tag and tag not in meta.get("tags", []):
+            continue
+        results.append(_course_line(lesson))
+
     if not results:
         return (
             "No pages found"
@@ -1135,6 +1412,11 @@ def list_pages(tag: str = "", directory: str = "") -> str:
     _log_retrieval("list_pages", tag=tag, directory=directory, n_results=len(results))
     header = f"**{len(results)} page(s)**" + (f" tagged '{tag}'" if tag else "") + ":\n\n"
     return header + "\n".join(results)
+
+
+# Courses are far bigger than wiki domains: a whole subject is megabytes of context. The
+# largest AI Engineering module is under this limit.
+COURSE_BRIEFING_MAX_CHARS = 1_000_000
 
 
 @mcp.tool()
@@ -1148,15 +1430,28 @@ def get_domain_briefing(domain: str) -> str:
         domain: Domain directory name — any directory under data/wiki/
                 (e.g. rag, langgraph, context, interview)
 
+                'course/<subject>/<module>' briefs one course module. Larger course scopes
+                are refused when they exceed COURSE_BRIEFING_MAX_CHARS.
+
     Returns:
         Full content of all pages in the domain, ordered: decisions → patterns → concepts.
     """
-    domain_dir = _resolve_domain_dir(domain)
-    if domain_dir is None:
-        valid = ", ".join(_domains())
-        return f"Unknown domain: {domain!r}. Valid domains: {valid}"
-
-    pages = sorted(p for p in domain_dir.glob("*.md") if not p.name.startswith("_"))
+    if _is_course_domain(domain):
+        course_dir = _resolve_course_dir(domain)
+        if course_dir is None:
+            return _unknown_domain(domain)
+        pages = sorted(_course_pages(course_dir))
+        size = sum(p.stat().st_size for p in pages)
+        if size > COURSE_BRIEFING_MAX_CHARS:
+            return (
+                f"Domain '{domain}' is too large to brief ({len(pages)} lessons, {size} bytes). "
+                f"Use list_domain to pick a module, or search_wiki with this domain."
+            )
+    else:
+        domain_dir = _resolve_domain_dir(domain)
+        if domain_dir is None:
+            return _unknown_domain(domain)
+        pages = sorted(p for p in domain_dir.glob("*.md") if not p.name.startswith("_"))
     if not pages:
         return f"No pages found in domain '{domain}'"
 
@@ -1203,5 +1498,10 @@ if __name__ == "__main__":
             build_index(con, force=True)
         sys.exit(0)
 
-    log.info("starting_mcp_server", wiki_dir=str(WIKI_DIR), hybrid_search=HAS_EMBEDDINGS)
+    log.info(
+        "starting_mcp_server",
+        wiki_dir=str(WIKI_DIR),
+        courses_dir=str(COURSES_DIR),
+        hybrid_search=HAS_EMBEDDINGS,
+    )
     mcp.run()

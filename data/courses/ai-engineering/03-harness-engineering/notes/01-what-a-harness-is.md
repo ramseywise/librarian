@@ -1,8 +1,8 @@
 ---
-imported_hash: 36116ac9f1963d75
+imported_hash: 96db9ec0bc0bedb9
 title: 1 — What a Harness Is
-summary: A raw model is a text transformer. It becomes an agent only when something gives it durable state, tool execution, feedback loops, and enforceable constraints.
-order: 11
+summary: 'A model that answers well in a demo can still fail in production for reasons no better prompt fixes: it declares done without checking, repeats the same failing call, or takes an action nobody can undo.'
+order: 2
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/01-what-a-harness-is.md
@@ -11,6 +11,8 @@ source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/01-what
 # 1 — What a Harness Is
 
 > The definition, the four load-bearing parts, and why the same failure keeps being a configuration problem.
+
+A model that answers well in a demo can still fail in production for reasons no better prompt fixes: it declares done without checking, repeats the same failing call, or takes an action nobody can undo. Chain five steps that each succeed 90% of the time and the run lands near 60%. This chapter defines the harness, the code around the model that constrains, informs, verifies and corrects it, and shows why changing that code often moves results more than changing the model.
 
 ---
 
@@ -26,7 +28,7 @@ Four verbs worth keeping — a harness **constrains** (boundaries), **informs** 
 
 ### The expanded equation
 
-Li's version takes the component formula from [gen-AI 03](../../../generative-ai/03-agentic-foundations/agent-fundamentals.md), *Agent = LLM + Context + Tools*, and wraps three safeguard layers around the two non-model terms:
+Li's version takes the component formula from [gen-AI 03](../../../generative-ai/03-agentic-foundations/notes/01-agent-fundamentals.md), *Agent = LLM + Context + Tools*, and wraps three safeguard layers around the two non-model terms:
 
 > **Agent = LLM + [Context + Tools + Constrain + Verify + Correct] = Model + Harness**
 
@@ -85,14 +87,65 @@ Contrast this with the classic **agent = LLM + planning + tools + memory** decom
 
 **Reliability compounds negatively.** A step that succeeds 90% of the time, chained five times, lands near 60%. Real agents exceed five steps as soon as you count tool calls, output parses, and handoffs. Model quality shifts per-step accuracy a few points; harness structure changes *how many steps must succeed in a row* and *what happens when one doesn't*.
 
-Two data points:
+The arithmetic is short enough to run. The second column swaps in a model that is two points better per step. The third keeps the 90% model and adds one retry, which assumes failures are independent and the step is safe to repeat ([note 03](03-tool-design.md#the-four-gating-questions) covers when it isn't).
+
+```python
+def chain(per_step, steps):
+    return per_step ** steps
+
+def with_retries(per_step, retries):
+    # Assumes failures are independent and the step is safe to repeat.
+    return 1 - (1 - per_step) ** (retries + 1)
+
+print("steps  90% per step  92% (better model)  90% + one retry")
+for steps in (1, 5, 10, 20):
+    print(f"{steps:>5}  {chain(0.90, steps):>12.1%}  "
+          f"{chain(0.92, steps):>18.1%}  "
+          f"{chain(with_retries(0.90, 1), steps):>15.1%}")
+
+print(f"needed per step for 90% over 20 steps: {0.90 ** (1 / 20):.2%}")
+```
+
+Output:
+
+```text
+steps  90% per step  92% (better model)  90% + one retry
+    1         90.0%               92.0%            99.0%
+    5         59.0%               65.9%            95.1%
+   10         34.9%               43.4%            90.4%
+   20         12.2%               18.9%            81.8%
+needed per step for 90% over 20 steps: 99.47%
+```
+
+Two points of model quality move a five-step run about seven points. One retry moves it about thirty-six, and that retry is harness code. The numbers are this script's arithmetic, not a measurement, but the shape is why the benchmark results below come from harness changes.
+
+Three data points:
 
 - **LangChain DeepAgents**: 52.8% → 66.5% on Terminal Bench 2.0 (~rank 30 → top five), harness-only changes, fixed model.
 - **Osmani's observation**: Claude Opus 4.6 performs far below its ceiling in a loose harness and far above it in one with tighter tool design and prompts.
+- **Agent S4 (Agashe et al., 2026)**: model and harness loop held fixed, only the *interfaces* (tools, observation formats and the notes on when to use each) evolved from experience. Qwen3.8-27B went from 5.6% to **21.3%** binary success on OSWorld V2 (3.8×). That is above GPT-5.5 (13.0%) and Claude Opus 4.8 (20.6%) at about **4.3% and 1.5% of their cost per task**. On ScienceBoard the same model went from 41.4% to 58.6%.
+
+![Scatter of binary success against cost per task on OSWorld V2: Qwen3.8-27B with evolved interfaces at $1.10 and 21.3%, above Opus 4.8 at $72.40 and 20.6% and GPT-5.5 at $25.50 and 13.0%](../assets/sources/images/agashe-evolving-agent-interfaces-fig2.png)
+*Image Source: Agashe et al. (2026)*
+
+The Agent S4 gain came from what the model can see and do, not from what it knows. That is the observation/action-space lever above, automated: a meta-agent reads the task agent's trajectories, without success labels, and rewrites the interface repository. Validation tasks the meta-agent never sees decide which versions survive.
 
 The same pattern shows up in Li's nesting of engineering scopes: **prompt ⊂ context ⊂ harness ⊂ loop**. Each scope widens what the engineer controls: the instruction, then the working set, then the system the model runs in, then sustained operation across runs. *Graph engineering* (a mid-2026 label) is an orchestration view across these scopes, not a sixth one: a loop is a graph with a back edge, and a graph node can run its own loop ([05-graph](../../05-graph-engineering/readme.md)).
 
 Hence the slogan: *a decent model with a great harness beats a great model with a bad harness.* And the diagnostic order that falls out of it — when an agent fails, **audit the orchestration layer first** (tool descriptions, retry budgets, handoff schemas), **then the context layer** (data quality, coverage, recency). In a mature setup the model is rarely the bottleneck.
+
+### Where context ends and the harness begins
+
+| Context engineering | Harness engineering |
+|---|---|
+| What goes in the window on *this* call | The loop that decides *whether and when* to call |
+| Which documents, memory, tool results to inject | Which tools exist at all, and what they're allowed to do |
+| Token budget within one assembly | Cost envelope across a whole run |
+| Compaction as a technique | Compaction as middleware that fires on a trigger |
+
+Once assembly becomes **stateful and conditional**, with a loop deciding when to retrieve, compact, verify or spawn, you have crossed from context into harness. harness-engineering.ai's five-component checklist states the same scope: **context engineering** ([02-context](../../02-context-engineering/readme.md)), **tool orchestration** ([03](03-tool-design.md)), **verification loops** ([05](05-verification-loops.md)), **cost-envelope management** ([04](04-execution-boundaries.md#cost-envelope)) and **observability and evaluation** ([08](08-maturity-and-failure-modes.md#runtime-vs-process-observability), [the Eval pillar](../../../generative-ai/08-eval/readme.md)). The same source puts the claimed reliability impact at **5–15%** for prompt engineering, **15–30%** for context engineering and **50–80%** for harness engineering. Treat those numbers as directional, not measured. The ordering is what matters.
+
+LangChain draws the line between product categories the same way. A **framework** (LangChain, Vercel AI SDK, OpenAI Agents SDK, Google ADK) gives you abstractions and integrations. A **runtime** (LangGraph, Temporal, Inngest) gives you durable execution, streaming, HITL and persistence. A **harness** (Deep Agents SDK, Claude Agent SDK, Manus, coding CLIs) is batteries-included: predefined tools, prompts, a to-do planner, a virtual filesystem, subagents and history summarization. Pick a harness when the task is long and non-deterministic. Pick a runtime when you need low-level control of a workflow that mixes deterministic and agentic steps.
 
 ### Why coding agents matured first
 
@@ -104,6 +157,8 @@ Li's explanation (ch. 5) is a two-by-two of goal clarity against verification au
 | **Vague goal** | Efficiently off track: "improve code quality" scored by a linter | Hard to start: "make the UI look better" |
 
 Coding agents are mature not because code models are unusually strong, but because decades of tests, type checkers, linters, CI and Git already form a harness that puts most coding tasks in the top-left cell. The harness's job in any other domain is to push tasks into that cell.
+
+Karpathy's **car-wash test** (AISN 2026, relayed by a secondary YouTube breakdown) is the bottom-left cell in one line. Asked whether to drive or walk to a car wash 50 metres away, a model reasons about distance and says walk. It misses that the car has to be at the car wash. Models are brilliant at what can be measured and blind to unstated context. The harness supplies the missing context (a spec, the environment) and the check (a verification signal) that the model can't supply itself. His summary: *"You can outsource your thinking, but you can't outsource your understanding."*
 
 **Harness thickness depends on the model.** On a weak model, offloading logic puzzles to a constraint solver lifts accuracy dramatically; on a strong reasoning model, the gain converges to near zero. The same harness can support opposite conclusions depending on which model it's paired with, so state the model whenever you report a harness result.
 
@@ -129,11 +184,11 @@ For a coding agent working in a real repo, the failures fall into five recurring
 
 | Failure | What it looks like | Harness fix |
 |---|---|---|
-| **Vague requirements** | Builds something plausible that isn't what you meant | Feature list with verifiable behaviors ([practice/03](practice/03-scope-and-done.md)) |
-| **Implicit conventions** | Breaks rules that live only in people's heads | Repo as system of record ([practice/01](practice/01-repo-as-system-of-record.md)) |
-| **Incomplete environment** | Spends the session fighting setup, or "fixes" the wrong thing | `init.sh` plus a startup-readiness check ([practice/02](practice/02-session-lifecycle.md)) |
+| **Vague requirements** | Builds something plausible that isn't what you meant | Feature list with verifiable behaviors ([note 10](10-scope-and-done.md)) |
+| **Implicit conventions** | Breaks rules that live only in people's heads | Repo as system of record ([note 09](09-repo-as-system-of-record.md)) |
+| **Incomplete environment** | Spends the session fighting setup, or "fixes" the wrong thing | `init.sh` plus a startup-readiness check ([note 06](06-long-horizon-execution.md#phase-0-initialization-is-its-own-session)) |
 | **No verification** | Claims done when it isn't | Termination checks ([note 05](05-verification-loops.md#the-three-layer-termination-check)) |
-| **Cross-session loss** | Each session re-derives or undoes the last one | Progress log plus handoff ([practice/02](practice/02-session-lifecycle.md)) |
+| **Cross-session loss** | Each session re-derives or undoes the last one | Progress log plus handoff ([note 06](06-long-horizon-execution.md#the-session-lifecycle)) |
 
 ### Fix the harness first
 
@@ -175,6 +230,8 @@ Claude Code, Cursor, Codex, Aider, and Cline **"look more like each other than t
 
 Independent teams, different models, different companies — converging on filesystem access, bash, sandboxes, hooks, subagents, progressive disclosure, plan files, and verification loops. That convergence is the field's best evidence that these specific primitives are load-bearing rather than stylistic. [Note 02](02-harness-anatomy.md) enumerates them.
 
+OpenClaw's design notes, written for an always-on personal agent rather than a coding CLI, arrive at the same place: keep one stable perception → decision → action → feedback loop and add capability through tools, prompts and state, not by changing the loop. Their summary of where the stability comes from is a fair checklist for any harness: **message decoupling, state externalization, layered hints, memory integration and security boundaries**.
+
 ---
 
 ## The co-training loop
@@ -183,16 +240,58 @@ Harness complexity doesn't shrink as models improve — it **shifts**. Better mo
 
 Meanwhile the useful primitives get standardized into products, then embedded into the next generation's training data, which makes models better at exactly those primitives. Harness design and model development co-train.
 
-This is the harness's answer to Sutton's *Bitter Lesson*: general methods that scale with compute beat hand-encoded priors. Li's stance is to **endorse the direction but stay pragmatic about the pace**. Models do absorb harness layers; tool calling and long-horizon planning both used to be external orchestration. But training cycles take months, and no model internalizes every business's constraints at once. The harness covers what the model can't yet do reliably, drops each layer the model absorbs, and moves to the next frontier. Updates also have more than one home: in-context adaptation, external artifacts (docs, prompts, code) and weights each persist on a different timescale ([gen-AI 03](../../../generative-ai/03-agentic-foundations/agent-fundamentals.md#how-agents-learn)).
+This is the harness's answer to Sutton's *Bitter Lesson*: general methods that scale with compute beat hand-encoded priors. Li's stance is to **endorse the direction but stay pragmatic about the pace**. Models do absorb harness layers; tool calling and long-horizon planning both used to be external orchestration. But training cycles take months, and no model internalizes every business's constraints at once. The harness covers what the model can't yet do reliably, drops each layer the model absorbs, and moves to the next frontier. Updates also have more than one home: in-context adaptation, external artifacts (docs, prompts, code) and weights each persist on a different timescale ([gen-AI 03](../../../generative-ai/03-agentic-foundations/notes/01-agent-fundamentals.md#how-agents-learn)).
 
 Practical consequence: **a harness needs periodic subtraction, not just addition.** See [note 08](08-maturity-and-failure-modes.md#iterative-simplification).
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-architecture.md` — where responsibility sits between model, loop, and scaffolding; when a capability belongs in the harness rather than the prompt.
+- **Buying a model to fix a harness failure.** Symptom: the same failure comes back under the new model, at a higher price. Fix: run the [fix-the-harness loop](#fix-the-harness-first) on a fixed model first. LangChain moved DeepAgents from 52.8% to 66.5% on Terminal Bench 2.0 with harness-only changes.
+- **A faked acceptance baseline.** Symptom: runs are signed off with "looks good", and nobody can say what would have failed them. Fix: write a binary check per task type. This is the part the note calls most commonly faked.
+- **No rollback.** Symptom: every action needs a human gate, because a bad one can't be undone. Fix: treat rollback as one of the [four parts](#the-four-parts); it is the one most often missing, and [note 04](04-execution-boundaries.md#rollback) starts it with git and sandbox snapshots.
+- **Checking the agent's prose instead of its effects.** Symptom: the agent says the refund went through and it didn't. Fix: verify structured tool fields or the database row, as the refund table does. Model prose can be steered by injection.
+- **Counting only the steps you designed.** Symptom: each step looks fine in isolation and end-to-end success is poor. Fix: count tool calls, output parses and handoffs as steps, then measure the whole chain.
+- **An `AGENTS.md` that grows by habit.** Symptom: the file passes ~60 lines and the agent starts ignoring it. Fix: every line names the failure that produced it. A line that can't is speculative and goes. Pair the [ratchet](#the-ratchet) with periodic subtraction.
 
----
+## Try it
 
-→ Next: [02-harness-anatomy.md](02-harness-anatomy.md) — the component inventory.
+1. Your agent runs 20 steps and you want 90% end-to-end success. Without retries, how reliable must each step be? Change the script's inputs and work it out.
+
+   <details><summary>Answer</summary>
+
+   99.47% per step, the last line of the script's output. At the 90% per-step rate the same chain succeeds 12.2% of the time. That gap is why long chains need retries, checkpoints and rollback rather than a slightly better model.
+
+   </details>
+
+2. A support agent issues a refund on an order bought 12 days ago, although the policy allows 7. Which of the five functions in the refund table should have caught it, and how?
+
+   <details><summary>Answer</summary>
+
+   Context supplied the policy and didn't stop anything, since a model can ignore a sentence. The fix belongs in Constrain: a framework check on the policy window, of the same kind as the table's "refund ≤ order total", run before `process_refund`. Verify, which confirms in the database that the refund landed, runs too late and passes anyway.
+
+   </details>
+
+3. Fill in the [four parts](#the-four-parts) for an agent you use: acceptance baseline, execution boundary, feedback signals, rollback. Which is missing, and which is only a "looks good"?
+
+   <details><summary>What to look for</summary>
+
+   Expect rollback to be absent and the baseline to be weakest, the two patterns the note names. A part counts only if you can point to the code that enforces it. The pillar lab, [tool-server-sandbox-py](../practice/tool-server-sandbox-py/readme.md), builds one of them, the execution boundary, end to end.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| What is a harness? | Everything around the model that isn't the model: `Agent = Model + Harness`, where the harness informs, constrains, verifies and corrects. |
+| Your agent is 90% reliable per step over five steps. What end-to-end success do you expect, and what changes it most? | About 59%, from 0.9^5. Harness structure changes it most, because it sets how many steps must succeed in a row and what happens when one doesn't; a better model only moves per-step accuracy a few points. |
+| What are the four parts of a harness, and which do teams miss? | Acceptance baseline, execution boundary, feedback signals and rollback. Rollback is most often missing, and the baseline is most often faked with a "looks good". |
+| Give evidence that the harness matters as much as the model. | LangChain DeepAgents went from 52.8% to 66.5% on Terminal Bench 2.0 with a fixed model. Agent S4 evolved only interfaces and took Qwen3.8-27B from 5.6% to 21.3% on OSWorld V2, above GPT-5.5 at 13.0% and Opus 4.8 at 20.6%. |
+| An agent keeps failing and a stakeholder wants the newest model. What do you do? | Run, attribute the failure to one subsystem, fix only that one, and re-run the same task on the fixed model. Swapping first hides which part was missing, so the failure returns under the next model. |
+| How do framework, runtime and harness differ? | A framework gives abstractions and integrations, a runtime gives durable execution, streaming, HITL and persistence, and a harness is batteries-included: predefined tools, prompts, a to-do planner, a virtual filesystem, subagents and history summarization. |
+
+## Next
+
+[02-harness-anatomy.md](02-harness-anatomy.md): the component inventory, so a failure can be attributed to one part.

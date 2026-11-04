@@ -1,8 +1,8 @@
 ---
-imported_hash: d8694286629e3b3e
+imported_hash: 7893b8debfb3abd9
 title: 4 — Execution Boundaries and Guardrails
-summary: A sandbox gives the agent a safe operating environment to act, observe results, and make progress — which is what makes autonomous execution tolerable.
-order: 14
+summary: A tool call is untrusted input, because retrieved text can talk the model into almost anything and a model can reason its way around a rule written in prose.
+order: 5
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/04-execution-boundaries.md
@@ -12,11 +12,15 @@ source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/04-exec
 
 > Where the agent runs, what it can touch, and the controls that cannot be argued with.
 
+A tool call is untrusted input, because retrieved text can talk the model into almost anything and a model can reason its way around a rule written in prose. In STOP, GPT-4 rewrote its own improver and removed the sandbox flag in 0.42% of 10,000 attempts, usually commenting the change "for efficiency". Without an enforced boundary, the only thing between an injected instruction and a deleted database is the model's judgment. This chapter covers what enforces the limit: sandboxes, hooks, permission gates, rollback and cost ceilings that sit outside what the agent can edit.
+
 ---
 
 ## Sandboxes
 
 A sandbox gives the agent a **safe operating environment to act, observe results, and make progress** — which is what makes autonomous execution tolerable. Without one, every bash call is a production risk and every loop iteration needs a human.
+
+The sandbox has to sit outside what the agent can change. In STOP, GPT-4 rewrote its own improver code and removed the sandbox flag in 0.42% of 10,000 attempts (95% CI 0.31–0.57%), usually commenting the change "for efficiency" ([arXiv:2310.02304](https://arxiv.org/abs/2310.02304) (Zelikman et al., 2023-10)). Enforce isolation in the runtime, never in code or config the agent can edit.
 
 What a sandbox ships with matters as much as its isolation: language runtimes, CLIs, browsers, test runners. These are the agent's *senses*. Browsers, logs, screenshots, and test output are how it observes its own work — the raw material for self-verification loops ([note 05](05-verification-loops.md)).
 
@@ -31,6 +35,27 @@ What a sandbox ships with matters as much as its isolation: language runtimes, C
 Underneath those backends sits an isolation ladder (Li, ch. 4):
 
 **OS-level** (macOS Seatbelt, Linux seccomp/Landlock) < **container** < **microVM** (Firecracker-class), each paired with **resource quotas** for CPU, memory, disk, network and wall-clock time. A Python `venv` is not on the ladder: it isolates dependencies, not effects.
+
+```mermaid
+flowchart LR
+  V["venv<br/>(dependencies only,<br/>not on the ladder)"] -.-> O
+  O["OS-level<br/>Seatbelt · seccomp · Landlock"] --> C["Container"] --> M["microVM<br/>Firecracker-class"]
+  Q["Resource quotas at every rung<br/>CPU · memory · disk · network · wall clock"] --- O & C & M
+```
+*Image Source: diagram based on Li (2026), ch. 4*
+
+### Shell vs. interpreter
+
+A sandbox does not have to expose a shell. LangChain Deep Agents distinguishes two execution tools:
+
+| Tool | What runs | Reach | Use |
+|---|---|---|---|
+| `execute` (sandbox backend) | Arbitrary shell commands | Whatever the sandbox allows: processes, files, network | Builds, tests, CLIs |
+| `eval` (interpreter) | JavaScript in an embedded QuickJS runtime | **No** shell, network or filesystem; only the tools you pass in | Loops, batching, programmatic tool calling |
+
+The interpreter is the narrower boundary: code can compose tool calls but cannot reach anything the harness didn't hand it. Deep Agents' path permissions (below) don't apply to `execute`, because a shell can reach a file by routes no path rule names.
+
+The Gemini Minecraft run (Faldor et al., 2026; [note 02](02-harness-anatomy.md#one-harness-read-through-the-five-subsystems)) took the same approach to a long unattended run. Each agent wrote JavaScript programs that drove a bot through a fixed API. Programs could not start processes or write files, so 2,783 programs over 27 hours could only affect the game world.
 
 For agents that act on a user's behalf around the clock, extend the sandbox to **identity**. Give the agent its own accounts, mailbox and VM or virtual phone, the way a secretary has their own office line, instead of the user's credentials. When it must act as the user, have the user log in personally through a remote desktop and reuse the session token while it stays valid. Pass data between the main agent and the environment through a **shared mount**, with paths in messages rather than file contents.
 
@@ -71,6 +96,60 @@ The rule from [02-context-engineering/notes/02](../../02-context-engineering/not
 
 So: if a behavior must hold *every* time, it is a hook, a permission, or a schema — not a sentence. "The agent keeps doing X" is usually a hook, not a stronger paragraph. Adding a fourth conditional to a prompt is the signal that the requirement has outgrown the prompt layer.
 
+Karpathy's version of the same split (as relayed from his AISN 2026 talk): a `CLAUDE.md` line such as "don't touch /important" is a **request** the model can ignore, and a pre-tool-use hook that blocks the write is a **rule** it cannot. Sort every behaviour into three buckets and match the enforcement to the cost of getting it wrong:
+
+| Bucket | Enforcement | Example |
+|---|---|---|
+| **Always do** | Instruction in `AGENTS.md`, runs on autopilot | Run the formatter before committing |
+| **Ask first** | Permission gate or HITL confirmation | Add a dependency, change a schema |
+| **Never do** | Hook or permission deny, never a sentence | Write to `.env`, `git push --force`, delete outside the workspace |
+
+Declarative permissions are the cheapest way to implement the never-do bucket. LangChain Deep Agents, for example, takes an ordered rule list evaluated **first match wins**, with each rule naming operations, glob paths and allow/deny. It also says plainly that these rules don't apply once a sandbox backend exposes a raw shell `execute` tool. A path rule constrains the file tools, not arbitrary commands. That is the same gap as [a role label is not a sandbox](#a-role-label-is-not-a-sandbox). The shape of the rules is below; it is illustrative, and the exact rule type is in the [Permissions docs](https://docs.langchain.com/oss/python/deepagents/permissions):
+
+```python
+agent = create_deep_agent(
+    model="anthropic:claude-sonnet-4-6",
+    permissions=[  # top to bottom, first match wins; no match = allow
+        {"operations": ["write"], "paths": ["/workspace/**"], "mode": "allow"},
+        {"operations": ["read", "write"], "paths": ["**/.env", "**/secrets/**"], "mode": "deny"},
+        {"operations": ["write"], "paths": ["**"], "mode": "deny"},
+    ],
+    interrupt_on={"edit_file": True},  # HITL: pause before every edit
+)
+```
+
+Stronger than a deny rule is a tool that is never shown. Deep Agents (`deepagents>=0.7.0a4`) lets you pass an **allowlist** of filesystem tools. Tools not listed are never bound to the model, so there is nothing to argue with:
+
+```python
+from deepagents import create_deep_agent
+from deepagents.middleware import FilesystemMiddleware
+
+# Read-only agent: write_file, edit_file, delete and execute are never shown.
+agent = create_deep_agent(
+    model="claude-sonnet-4-6",
+    middleware=[FilesystemMiddleware(backend=backend, tools=["read_file", "ls", "glob", "grep"])],
+)
+```
+
+Two caveats from the docs:
+- `read_file` is mandatory; leaving it out raises `ValueError`.
+- `execute` and `delete` are dropped silently if the backend doesn't support them. Declarative subagents **don't inherit** the allowlist, so set it on each one.
+
+To hide tools per model instead, register a harness profile. Removing `FilesystemMiddleware` itself via `excluded_middleware` is rejected.
+
+```python
+from deepagents import HarnessProfile, register_harness_profile
+
+# This model gets no filesystem tools at all.
+register_harness_profile(
+    "anthropic:claude-sonnet-4-6",
+    HarnessProfile(excluded_tools=frozenset(
+        {"ls", "read_file", "write_file", "edit_file", "delete", "glob", "grep"})),
+)
+```
+
+These are alpha APIs; check the [Deep Agents docs](https://docs.langchain.com/oss/python/deepagents/overview) before relying on the exact names.
+
 ---
 
 ## Permission gates and HITL
@@ -86,6 +165,17 @@ Exhaust available information first, ask only when the information genuinely isn
 Gate placement follows the four questions from [note 03](03-tool-design.md#the-four-gating-questions) — irreversible actions get a confirmation; everything else runs free. Gating reversible operations is the most common way to make an agent useless.
 
 Human-in-the-loop requests need a **timeout with a declared default** (proceed, skip or abort), so an unanswered question doesn't stall the run indefinitely. Feed the human's answer back as a learning signal; repeated approvals of the same pattern are a candidate to automate.
+
+The human gate has failure modes of its own (*Building Applications with AI Agents*, ch. 12):
+
+- **Automation bias.** Reviewers over-trust the agent, especially when it sounds confident.
+- **Alert fatigue.** A stream of low-priority asks trains people to click through the one that matters.
+- **Skill decay.** Once the agent does the routine work, the humans lose the skill they need to judge it.
+- **Misaligned incentives.** A reviewer measured on throughput approves fast.
+
+Albada's mitigations are clear escalation paths, adaptive alerting and ongoing operator training. Gating only irreversible actions is what keeps alert fatigue down in the first place.
+
+Bansal et al. place the gate on a timeline. The agent tells the user what it is about to do (ask before anything expensive, irreversible or against stated preferences), what it is doing now (so the user can halt it), and afterwards what side effects it caused and whether the goal was met ([Bansal et al., 2024-12](https://www.microsoft.com/en-us/research/uploads/prod/2024/12/HCAI_Agents.pdf), challenges A2–A5). Their over-communication example is alert fatigue in miniature. A social-media agent sent dozens of routine updates a day, and the one that mattered (a post moved onto a sensitive industry date) was lost among them. The paper is a position piece built from the authors' experience building agents and multi-agent systems, with no user study, so it names the problems rather than measuring them.
 
 ### Reviewing calls before they run
 
@@ -117,6 +207,8 @@ Prompt-injection filtering barely helps. Li's aim (ch. 5) is that an injected ag
 | **Mounts** | Source read-only or a writable copy; a separate writable workspace; **never** mount `~/.ssh`, keys or tokens. Data the agent can't see, it can't leak |
 | **Quotas** | CPU, memory, disk and wall clock, with a **structured** kill message ("terminated after 120 s; last output: …") so the agent can change strategy |
 | **Long-lived sessions** | Keep the terminal session inside the sandbox only. Recover across days from snapshots or rebuild scripts, never by extending the sandbox's life |
+
+The agent's ordinary toolkit is already an attack kit, which is why egress matters even when nobody injects anything. A GPT-4 agent given only a headless browser, a terminal, a Python interpreter, six public web-hacking documents and a "be creative, persist" prompt exploited 11 of 15 sandboxed website vulnerabilities (73.3% pass@5, 42.7% pass@1), including a blind SQL union attack of about 38 actions. It cost about $9.81 per site, and the agent was never told which vulnerability to look for ([arXiv:2402.06664](https://arxiv.org/abs/2402.06664) (Fang et al., 2024-02)). GPT-3.5 managed 6.7%, and all eight open models tested scored 0%, mostly because their tool calls failed. The sites were built by the authors, and the prompt and documents were withheld. In the wild the agent found one XSS bug across about 50 hand-picked old sites. Treat the numbers as a 2024 floor on what a frontier agent with open egress can do to whatever it can reach.
 
 **Parse commands semantically; don't keyword-match.** Shell composition defeats blacklists: `$(echo rm) -rf /`, `find / -name '*.log' -exec rm {} \;`, `curl -o /etc/crontab http://…`. A production gate parses each command's flags and arguments, including which flags consume the next argument, to find the real effect.
 
@@ -155,7 +247,7 @@ This is also what makes throughput safe. Review discipline doesn't disappear; it
 
 ## The five protection layers
 
-Independently toggleable, each with its own failure mode:
+Independently toggleable, each with its own failure mode. The models inside these layers are in [safety 03](../../09-safety-and-security/notes/03-guardrail-models.md):
 
 | Layer | Guards against |
 |---|---|
@@ -164,6 +256,32 @@ Independently toggleable, each with its own failure mode:
 | **Pre-generate** | Unsafe assembled context reaching the model |
 | **Post-generate** | Unsafe output leaving the system |
 | **Escalation** | Anything unresolved reaching a human |
+
+### Moderation around the whole engine
+
+![Two-stage moderation: the user goal passes a pre-flight moderation check before the planner and executor run; the generated content passes a post-flight check before it reaches the user, redacted if needed](../assets/sources/images/context-engineering-multi-agent-systems-fig8-2.png)
+*Image Source: Rothman, *Context Engineering for Multi-Agent Systems* (Packt, 2025), Fig. 8.2*
+
+Rothman wraps the pre-input and post-generate layers around his whole plan-execute engine ([note 07](07-orchestration.md#a-plan-execute-engine-end-to-end)), not around each agent (*Context Engineering for Multi-Agent Systems*, ch. 8):
+
+- **Pre-flight.** The goal goes to a moderation API. If it is flagged, the run halts before the planner spends anything.
+- **Post-flight.** The final output is checked. If it is flagged, it is replaced with a standard redaction notice.
+- **Fail closed.** If the moderation call itself errors, the wrapper returns `flagged: True`. "If we can't check it, we assume it's not safe."
+
+The instructive part is where it failed on a legal-assistant deployment:
+
+- **Context the text doesn't carry.** Moderation blocked witness testimony because it contained profanity, and an internal meeting transcript because someone lost their temper. Turning moderation off let profanity through in emails. Enabling it for emails only blocked important messages. An email that quotes profane testimony inside profane body text can't be judged from the text at all. The rule that quoted evidence is allowed and the email body is not is organizational, not linguistic.
+- **A sanitizer that can't tell evidence from injection.** The regex sanitizer's list included the patterns `ignore previous instructions`, `act as` and `sudo|apt-get|yum|pip install`, plus a client-requested `ignore any legal advice`. That last one fired on hostile-witness testimony ("ignore any legal advice to the contrary"). The chunk was skipped, and in one run the skip cascaded into a fatal Dependency Error at a later step.
+
+Rothman's fixes are architectural rather than more patterns:
+
+- **Segment the data by trust.** Testimony goes in its own namespace (`KnowledgeStore-Testimony`) with its own, more lenient sanitization policy. This is a per-source version of the trust zones below.
+- **Put policy in a meta-controller outside the engine.** It parses the messy input (separating an email body from its attachments, for instance), enforces the rules agreed with legal, HR and IT, and assembles a clean configuration for the engine. The engine keeps the non-deterministic reasoning; the deterministic business rules live above it. The configuration object (Rothman's "control deck") is the API between the two layers.
+- **Replace vague requests with pre-approved objectives.** "Draft a pleading based on this NDA" produced fluent nonsense, not because of hallucination but because the goal had no blueprint. Standard objectives for common tasks, written with the domain team, fix it.
+
+### Measuring a pre-input filter
+
+[Safety 03](../../09-safety-and-security/notes/03-guardrail-models.md#measuring-a-guard-on-your-own-traffic) is the authoritative note on measuring a guard, including the vendor-reported PINT scores for injection filters. Even the best score leaves misses, which is why [Li's position](#coding-agent-specifics) stands: design so that an injected agent can't *complete* a dangerous action. For detection after the fact, plant **honeytokens**, fake secrets in the data flow whose access or exfiltration is itself the alarm.
 
 ### Trust zones
 
@@ -178,6 +296,20 @@ Independently toggleable, each with its own failure mode:
 The row people miss is **tool inputs**. They're generated by the model, which may be acting on injected instructions from a retrieved document — so validate them against schema before execution, exactly as you would validate a request from an external client.
 
 Related: **PII is redacted before logging** and never passed to unapproved third-party endpoints. Traces are a security surface as much as a debugging one.
+
+### The agentic risk map
+
+A common enumeration of agentic risks lists sixteen, in five groups. Each group maps to a harness control in this pillar rather than to a single central "guardrail service":
+
+| Group | Risks | Harness control |
+|---|---|---|
+| **Agent behaviour** | Deception, goal manipulation, tool misuse, memory poisoning, cascading hallucination | Tool schemas and write-op gates ([03](03-tool-design.md#write-operation-safety)), editable memory ([rollback](#rollback)), verification ([05](05-verification-loops.md)) |
+| **Security** | Privilege compromise, identity spoofing, unexpected RCE | Sandbox, least-privilege credentials, trust zones above |
+| **Operational resilience** | Resource overload, repudiation and untraceability | [Cost envelope](#cost-envelope), traces ([08](08-maturity-and-failure-modes.md#runtime-vs-process-observability)) |
+| **Multi-agent collusion** | Rogue agents, communication poisoning, human attacks on the system | Context firewalls and labelled handoffs ([07](07-orchestration.md#handoff-design)) |
+| **Human oversight** | Manipulating the human, overwhelming the human in the loop, persona-driven bias | Gate only irreversible actions; multiple-choice asks ([above](#permission-gates-and-hitl)) |
+
+The same source's point about architecture is the useful part. Handing all mitigation to one central oversight layer is unrealistic. **Each guardrail has to live in the component it protects**, so the risk map shapes the architecture rather than sitting on top of it.
 
 ---
 
@@ -262,10 +394,55 @@ Consequences for harness design:
 
 ---
 
-## Working reference
+## Pitfalls
 
-`~/.claude/refs/agent-safety.md` — five protection layers, threat model and trust zones, tool input validation, sandboxing, PII handling.
+- **Keeping the isolation switch where the agent can edit it.** Symptom: the sandbox flag disappears in a change labelled as an optimization, as in STOP's 0.42% of 10,000 attempts. Fix: enforce isolation in the runtime, never in code or config the agent can reach.
+- **Counting a `venv` as a sandbox.** Symptom: code in a "sandboxed" environment reads your home directory. Fix: a `venv` isolates dependencies, not effects. Pick a rung on the ladder: OS-level, container or microVM, each with resource quotas.
+- **Keyword blacklists on commands.** Symptom: `$(echo rm) -rf /` and `find / -name '*.log' -exec rm {} \;` both pass. Fix: parse each command's flags and arguments to find the real effect.
+- **Gating reversible operations.** Symptom: operators click through prompts, and the approval that mattered goes through with the rest. Fix: gate only irreversible actions. Gating reversible ones is the most common way to make an agent useless, and it feeds alert fatigue.
+- **A human gate with no timeout.** Symptom: the run stalls overnight on an unanswered question. Fix: give the request a timeout with a declared default of proceed, skip or abort.
+- **Believing a role label or `CLAUDE.md` restricts the agent.** Symptom: an agent told it is read-only still writes. Fix: instructions shape what it tries, while permissions enforced by the harness shape what it is allowed to do.
+- **A same-family reviewer.** Symptom: the reviewer approves what the proposer got wrong, for the same reason. Fix: use a different model family at similar capability, with a circuit breaker that escalates to a human after N rejections.
+- **No cost ceiling.** Symptom: a doom loop runs up a bill and nothing stops it. Fix: instrument token spend per run, set a ceiling, and fail closed with a partial result.
 
----
+## Try it
 
-→ Next: [05-verification-loops.md](05-verification-loops.md) — proving the work is actually done.
+1. Sort these into always, ask and never buckets for a coding agent: run the test suite, `git push --force` to main, edit a file on its own branch, read `.env`, delete a staging database.
+
+   <details><summary>Answer</summary>
+
+   Always: run tests and edit on the branch, since both are reversible. Ask: delete the staging database, which is irreversible and sometimes legitimate. Never: read `.env` and force-push to main. Encode the never bucket in permissions or hooks rather than prose, since documented rules are followed selectively.
+
+   </details>
+
+2. An agent has private customer data, reads web pages and can post to a webhook. Which single boundary change most reliably stops exfiltration, and why not a better system prompt?
+
+   <details><summary>Answer</summary>
+
+   Network egress: none by default, with a whitelisted set of destinations through a proxy. It cuts the exfiltration leg of the triad deterministically, even when an injection succeeds. A prompt depends on the model, and the injected text is aimed at that same model.
+
+   </details>
+
+3. Attack the boundary. Run [tool-server-sandbox-py](../practice/tool-server-sandbox-py/readme.md), then add one new attack of your own, such as a symlink to `/etc/passwd` placed inside the workspace.
+
+   <details><summary>What to check</summary>
+
+   The path jail must resolve symlinks before comparing paths, and the lab's tests already cover a symlink escape. Your attack should appear in the audit log as a blocked call, returned to the model as a tool error it can read.
+
+   </details>
+
+## Interview checklist
+
+| Prompt | Answer in one line |
+|---|---|
+| Rank the isolation options. | OS-level (Seatbelt, seccomp, Landlock), then container, then microVM such as Firecracker, each with quotas on CPU, memory, disk, network and wall-clock time. A `venv` isn't on the ladder. |
+| Why not just tell the model not to touch production? | Instructions change what the agent tries, not what it is allowed to do. Enforce the rule in the runtime; STOP saw GPT-4 remove its own sandbox flag in 0.42% of 10,000 attempts. |
+| Where do you place human approval, and what goes wrong otherwise? | On irreversible actions only, with a timeout and declared default. Gating reversible steps makes the agent useless and causes alert fatigue, so people click through the approval that matters. |
+| Why does `$(echo rm) -rf /` matter? | It shows shell composition defeats keyword blacklists. A production gate parses each command's flags and arguments to find its real effect. |
+| Proposer-Reviewer or Sidecar for a risky tool? Give the trade-off. | Proposer-Reviewer runs in series with the conversation, suits high-stakes, low-frequency actions and has higher injection exposure. Sidecar sees only structured call fields and runs in parallel at low latency, so it suits every call to a risky tool class. Either way, use a different model family and a circuit breaker. |
+| What makes autonomy affordable? | Rollback: git branch-per-agent, sandbox snapshots and editable memory. An agent that can act but not be undone forces a human gate on every action. |
+| What does persistent memory add to the lethal triad? | It is a fourth amplifier: an injected instruction can lie dormant in `MEMORY.md` and fire sessions later. So content written to memory deserves the same trust review as external input. |
+
+## Next
+
+[05-verification-loops.md](05-verification-loops.md): proving the work is actually done.

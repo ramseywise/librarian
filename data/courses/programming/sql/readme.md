@@ -1,5 +1,5 @@
 ---
-imported_hash: 5bfcc76498903b9d
+imported_hash: 3d89b04d03e69745
 title: SQL
 summary: Worked answers are in practice/solutions/.
 order: 1
@@ -11,11 +11,12 @@ source: learn-ai-engineering/programming/sql/README.md
 
 > From `SELECT` to query plans, in nine modules and a capstone. Every module is a short note plus
 > exercises you can run offline against SQLite.
-> Jump to: [Modules](#modules) · [Setup](#setup) · [The databases](#the-databases) · [Rules of thumb](#rules-of-thumb) · [Sources](#sources)
+> Study deck: [sql.pptx](slides/sql.pptx), which librarian turns into flashcards (source: [deck.yaml](slides/deck.yaml)).
+> Jump to: [Syllabus](#syllabus) · [Layout](#layout) · [Setup](#setup) · [The databases](#the-databases) · [Rules of thumb](#rules-of-thumb) · [Sources](#sources)
 
 ---
 
-## Modules
+## Syllabus
 
 | # | Note | You can… | Exercises |
 |---|---|---|---|
@@ -31,6 +32,40 @@ source: learn-ai-engineering/programming/sql/README.md
 | 10 | [Capstone: the SQL Murder Mystery](notes/10-capstone-murder-mystery.md) | Solve an open-ended investigation using everything above | — |
 
 Worked answers are in [`practice/solutions/`](practice/solutions/). Try each exercise before you open them.
+
+---
+
+## Builds on and feeds into
+
+**Builds on**
+
+| Chapter | Why |
+|---|---|
+| [Python 01 Foundations](../python/readme.md) | SQL starts after it, and [09](notes/09-sql-from-python.md) drives SQL from Python |
+
+**Feeds into**
+
+| Chapter | Why |
+|---|---|
+| [DA 06/06 SQL for analytics](../../data-analytics/06-applied-analyses/notes/06-sql-for-analytics.md) | Analytical SQL on top of these joins and window functions |
+| [Python 02/05 Databases](../python/02-informatics/notes/05-databases.md) | Hands the SQL itself to this track |
+
+---
+
+## Layout
+
+```
+sql/
+├── README.md
+├── notes/                        01–10
+├── slides/                       deck.yaml and the built study deck; `make slides PILLAR=programming/sql`
+└── practice/
+    ├── setup.sh                  builds data/clubdata.db from clubdata.sql; downloads sql-murder-mystery.db
+    ├── check.sh                  runs every solution (or exercise) file; calls setup.sh if clubdata.db is missing
+    ├── exercises/                01–08 .sql, 09 .py
+    ├── solutions/                same names, worked
+    └── data/                     survey.db and clubdata.sql committed; clubdata.db and sql-murder-mystery.db gitignored
+```
 
 ---
 
@@ -73,6 +108,15 @@ The notes point out where Postgres or DuckDB differ from SQLite, mostly for date
 
 ---
 
+## Primary texts
+
+- Software Carpentry, *Databases and SQL*
+- PGExercises
+- Knight Lab, *SQL Murder Mystery*
+- Winand, *Use The Index, Luke*
+
+Everything else: [references.md](../00-start-here/references.md).
+
 ## Sources
 
 | Source | License | Used for |
@@ -83,4 +127,4 @@ The notes point out where Postgres or DuckDB differ from SQLite, mostly for date
 | [Use The Index, Luke](https://use-the-index-luke.com/) | Read online | Background for 08 |
 | [Select Star SQL](https://selectstarsql.com/) | Proprietary, link only | Optional extra practice: an interactive book on a real dataset |
 
-Timed and interview-style SQL problems are in [sisyphus `drills/`](https://github.com/ramseywise/sisyphus/blob/main/drills/README.md).
+Timed and interview-style SQL problems are in [`programming/drills/`](../drills/readme.md).
