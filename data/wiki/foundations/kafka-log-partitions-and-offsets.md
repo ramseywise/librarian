@@ -43,3 +43,4 @@ Size consumers for catch-up rate, and alert on lag that is growing, not on lag t
 - [[Event Time, Watermarks and Late Data]] — related
 - [[Stream Joins Replay and Lambda Architecture]] — related
 - [[Data Engineering Foundations]] — related
+- [[Kafka Ingest Model, Delivery Semantics and Stream Windows]] — related (overlaps; candidate merge for /compact-wiki)

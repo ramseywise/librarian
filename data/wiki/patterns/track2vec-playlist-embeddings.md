@@ -2,7 +2,7 @@
 title: Track2Vec Playlist Co-Occurrence Embeddings
 tags: [llm, pattern]
 summary: Item2vec-style technique — treat playlists as "sentences" and item IDs as "words", train Word2Vec over co-occurrence to get dense embeddings that capture human curation intent rather than content similarity.
-updated: 2026-07-14
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/listen-wiseer/docs/plans/phase3a_preprocessing.md
 ---
@@ -56,3 +56,4 @@ feature-engineering pass, feeding the per-playlist LightGBM/CatBoost reranker (s
 - [[Agentic Workflow Patterns]]
 - [[Neural Probabilistic Language Model]] — prerequisite-for
 - [[HDBSCAN with KMeans Fallback]] — alternative-to
+- [[Word Embeddings and Similarity Measures]] — prerequisite-for

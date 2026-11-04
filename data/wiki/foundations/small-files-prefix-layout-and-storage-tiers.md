@@ -49,3 +49,5 @@ So Standard-IA wins only when data is read less than about once a month, and Gla
 - [[Table Format as a Commit Log over Parquet]] — related
 - [[Materialise or Query and Cost Tests]] — related
 - [[Warehouse Cost Meters: Bytes, Slots and Egress]] — related
+- [[Parquet Row Groups, Pruning and Sort Order]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Data Lake Partitioning and the Small Files Problem]] — related (overlaps; candidate merge for /compact-wiki)

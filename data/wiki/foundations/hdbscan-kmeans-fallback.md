@@ -71,3 +71,5 @@ They also say to guard UMAP with `n_samples > n_components + 1`.
 - [[Data Sufficiency Refusal]] — extends (refusing to report a metric the data cannot support)
 - [[Clustering Validation Against Named Baselines]] — alternative-to (centroid method validated against baselines)
 - [[Embedding Clustering and Anomaly Detection]] — related (UMAP then HDBSCAN on sentence embeddings, with c-TF-IDF cluster labels)
+- [[Validating Clusters Without Labels]] — related (null control for cluster structure)
+- [[Choosing k and Naming Clusters Honestly]] — related

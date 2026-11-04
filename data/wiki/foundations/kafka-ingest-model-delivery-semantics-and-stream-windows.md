@@ -58,3 +58,4 @@ For crawled documents feeding an LLM: normalise by content type (article, reposi
 ## See Also
 - [[Idempotent Window-Replace Loads]] — related
 - [[Data Engineering Foundations]] — related
+- [[Kafka Log, Partitions and Offsets]] — related (overlaps; candidate merge for /compact-wiki)

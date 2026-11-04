@@ -2,7 +2,7 @@
 title: Data Sufficiency Refusal
 tags: [foundations, eval, pattern]
 summary: A pure, never-raising guard reads the minimum positives in any CV fold against a stated floor and, when it fails, withholds the cost-sensitive metrics entirely — a run that refuses to answer is distinguishable from a run that failed and from a run that scored badly, and exits 0 because refusing was the correct output.
-updated: 2026-10-17
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/galactus/docs/research/2026-08-15_ml-parity_fraud.md
   - data/raw/claude-docs/galactus/docs/research/2026-08-15_ml-parity_segmentation.md
@@ -139,3 +139,4 @@ Mechanisms worth knowing:
 - [[A Sentinel Catches Forgetting, Not Asserting]] — extends (the unsupervised record's `seed` field)
 - [[Argued Empty List]] — extends (empty findings list is not a pass; constant-True rule)
 - [[ML Run Reproducibility Bar]] — extends (ratifies abort-vs-refuse as a taxonomy across runs)
+- [[Winner's Curse]] — related (why underpowered results mislead)

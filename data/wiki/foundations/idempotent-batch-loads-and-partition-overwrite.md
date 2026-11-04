@@ -47,3 +47,4 @@ An email or payment cannot be overwritten. Record an idempotency key derived fro
 - [[Orchestrator Core Loop, Logical Dates and Retries]] — prerequisite-for
 - [[dbt Incremental Models: Watermarks, Lookback and Strategies]] — related
 - [[Rerunnable Cleaning Loader with Assertions]] — related
+- [[Idempotent Backfills and Dated Corrections]] — related (overlaps; candidate merge for /compact-wiki)

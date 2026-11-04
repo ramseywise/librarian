@@ -79,3 +79,4 @@ The [[Transformer Architecture]] uses Layer Normalization instead of BN — norm
 - [[Transformer Architecture]] — extends (uses layer norm, the successor to BN)
 - [[LLM Fundamentals Interview Study Guide]] — instance-of
 - [[Batch Norm Eval Mode and Small-Batch Failure]] — extends
+- [[Pre-Norm vs Post-Norm and Warm-Up]] — related (where normalisation sits in the layer)

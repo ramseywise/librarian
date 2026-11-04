@@ -2,7 +2,7 @@
 title: Vector Database Comparison
 tags: [rag, infra, comparison]
 summary: Side-by-side of vector stores used across RAG pipelines — DuckDB (embedded local), ChromaDB, pgvector, OpenSearch (Bedrock), Pinecone, GCP Discovery Engine — with when-to-use guidance and migration notes.
-updated: 2026-11-02
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/playground/docs/rag/vector-databases.md
   - data/raw/claude-docs/project-g/docs/rag/vector-databases.md
@@ -110,3 +110,4 @@ Best for: fully managed RAG on GCP. Two modes: Agentic RAG (Gemini ADK agentic l
 - [[Agentic RAG — Advanced Patterns]]
 - [[Data Pipeline Pattern Selection]] — extends (backend choice scales with corpus size and deployment target)
 - [[Upgrade-Invariant Retrieval Contract]] — prerequisite-for
+- [[How Far Plain Postgres Stretches]] — related (how far pgvector's host goes)

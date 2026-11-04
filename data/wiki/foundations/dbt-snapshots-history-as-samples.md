@@ -35,3 +35,4 @@ Rows that vanish from the source are ignored by default, so a deleted row stays 
 - [[dbt Incremental Models: Watermarks, Lookback and Strategies]] — related
 - [[Backfills, As-Of Dimensions and Past-Dependent Tables]] — related (a dated dimension keeps a backfill honest)
 - [[dbt Layers, Materialisations and the ref Graph]] — related
+- [[Slowly Changing Dimensions Types 1, 2 and 3]] — prerequisite-for

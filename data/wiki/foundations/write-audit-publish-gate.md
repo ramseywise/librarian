@@ -32,3 +32,4 @@ Each stage covers what the last cannot: a model contract cannot see a null spike
 - [[Data Quality Dimensions and Tests as Failing-Row Queries]] — prerequisite-for
 - [[Data Incident Playbook: Contain Before Diagnosing]] — related
 - [[Rollback Restores Code Only]] — related
+- [[Write-Audit-Publish and Atomic Visibility]] — related (overlaps; candidate merge for /compact-wiki)

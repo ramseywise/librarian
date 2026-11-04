@@ -43,3 +43,5 @@ A late partition exposes a subtle failure: the mart row for that day was built b
 - [[Freshness Alerts Need a Date Spine]] — related
 - [[Rerunnable Cleaning Loader with Assertions]] — related
 - [[Batched Rerunnable Data Backfills]] — related
+- [[Idempotent Window-Replace Loads]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Idempotent Batch Loads and Partition Overwrite]] — related (overlaps; candidate merge for /compact-wiki)

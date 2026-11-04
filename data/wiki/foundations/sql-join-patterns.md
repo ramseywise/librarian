@@ -108,3 +108,4 @@ SELECT name FROM facilities;
 - [[Programming Interview Study Guide]] — related (predict-the-row-count idiom)
 - [[Programming Curriculum]] — related (course map)
 - [[Pandas Merge Validation and Many-to-Many Blow-up]] — related (the pandas merge and its row-count checks)
+- [[Semantic Layer: Metrics Compiled at the Requested Grain]] — related (refuses fan-out joins)

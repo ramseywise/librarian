@@ -20,3 +20,4 @@ A model stops being valid without anyone touching it because the scored populati
 - [[Weight-of-Evidence Logistic Scorecard]] — prerequisite-for
 - [[Prior Shift Correction for Oversampled Defaults]] — related
 - [[Drift Types and What Monitors Can See]] — related (PSI across simulated drift scenarios)
+- [[Drift Tests: Significance, Magnitude and False Alarms]] — related (PSI alongside significance tests)

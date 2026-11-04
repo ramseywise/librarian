@@ -24,3 +24,4 @@ Keep partition keys low in cardinality and leave finer selectivity to sorted row
 - [[Partitioning Strategies and Hot Spots]] — related
 - [[Parquet Row Groups, Pruning and Sort Order]] — prerequisite-for
 - [[B-Trees vs LSM-Trees]] — related (compaction of many small immutable files)
+- [[Small Files, Prefix Layout and Storage Tiers]] — related (overlaps; candidate merge for /compact-wiki)

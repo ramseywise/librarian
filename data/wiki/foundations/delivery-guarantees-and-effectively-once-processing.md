@@ -42,3 +42,4 @@ Timeliness is seeing up-to-date state and heals by waiting; integrity is no corr
 - [[Event Time, Watermarks and Late Data]] — related
 - [[Table Format as a Commit Log over Parquet]] — related
 - [[Stream Joins Replay and Lambda Architecture]] — related
+- [[Kafka Ingest Model, Delivery Semantics and Stream Windows]] — related (the Kafka settings that give each guarantee)

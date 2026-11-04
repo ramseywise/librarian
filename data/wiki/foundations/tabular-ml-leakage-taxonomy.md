@@ -114,3 +114,6 @@ unscored, although its presence alone is the label. Fix: also score
 - [[ML Run Reproducibility Bar]] — prerequisite-for (the planted-leak twin plants these shapes)
 - [[Time-Series Leakage: Shift and Rolling Windows]] — related (negative shifts and centred windows as leaks)
 - [[Resampling Before the Split Leaks]] — instance-of (resampler fitted outside the fold)
+- [[Train-Serving Skew and the Shared Feature Function]] — instance-of
+- [[Pipelines Prevent Preprocessing Leakage]] — instance-of
+- [[Point-in-Time As-Of Join for Features]] — related (the fix for temporal leakage in features)

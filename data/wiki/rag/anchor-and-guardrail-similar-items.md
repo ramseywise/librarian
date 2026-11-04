@@ -2,7 +2,7 @@
 title: Anchor-and-Guardrail Similar Items
 tags: [rag, llm, pattern]
 summary: A "more like this" layer where the opened item anchors similarity and the user's original search context guards against drift; it excludes the slate already seen, sorts by a combined related score rather than raw similarity, prefers one or two strong matches to three weak ones, hides itself when nothing qualifies, and returns reason codes for why it showed or didn't.
-updated: 2026-10-16
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-10-09-notion-search-and-recommendation-specs.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-10-09-notion-search-and-recommendation-specs.md
@@ -60,3 +60,4 @@ a bug.
 - [[Specificity-Adaptive Ranking and Slate Composition]] — extends (the main slate this layer sits beside; same controlled-rotation idea)
 - [[Constraint Tiers and Two-Phase Relaxation]] — related (the search context it uses as a guardrail)
 - [[RAG Reranking]] — alternative-to (learned relatedness vs. a transparent rule score)
+- [[EASE and Item-Based Neighbourhood Recommenders]] — related (item-item similarity models)

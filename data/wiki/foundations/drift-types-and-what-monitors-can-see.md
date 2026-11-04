@@ -33,3 +33,6 @@ Score monitoring alone misses most of this; watch inputs too. **Bin coded column
 - [[Imbalance Remedies Versus a Tuned Threshold]] — related
 - [[Calibrated Score, Deterministic Decision Rule]] — related
 - [[Distribution Monitors Need an Effect Size and a Fixed Reference]] — related (effect-size thresholds and a fixed reference for monitors)
+- [[Drift Triage: Broken Feeds, Benign Shifts and Concept Drift]] — extends
+- [[Drift Seen and Unseen in an Automated Router]] — instance-of
+- [[Monitoring Layers and What Each Can See]] — related

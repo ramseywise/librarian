@@ -104,3 +104,4 @@ The production smoke check follows the same honesty rules:
 - [[Audit-Don't-Assert Release Checklist]] — related (every checklist item names an artifact and a verifier)
 - [[Paid Tiers Start at the Beta, Not the Alpha]] — related (the host decision the rehearsal waits on)
 - [[Blue-Green View Swap for Data Deploys]] — related (data deploy with a real rollback)
+- [[Model Rollout: Shadow, Canary and A/B]] — related (rolling a model out rather than back)

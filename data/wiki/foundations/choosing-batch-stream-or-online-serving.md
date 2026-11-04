@@ -25,7 +25,7 @@ Failure at 03:00 means rerun at 04:00 while consumers read yesterday's table. Wr
 
 ## Precompute or compute on request
 
-Precomputing into a key-value store works when traffic concentrates. Estimate before building (illustrative extremes, not measurements): with Zipf-distributed requests, 1,000 keys cover 95.1% of 500,000 requests; with uniform traffic over about 15.9 million keys (zone pair, hour, rider segment), 100,000 keys cover 21.5%. Use your request logs for the real cumulative-coverage curve. If inputs include current session data, precomputing is not possible.
+Precomputing into a key-value store works when traffic concentrates. Estimate before building (illustrative extremes, not measurements): with Zipf-distributed requests, 1,000 keys cover 95.1% of 500,000 requests; with uniform traffic over about 16.9 million keys (zone pair, hour, rider segment), 100,000 keys cover 21.5%. Use your request logs for the real cumulative-coverage curve. If inputs include current session data, precomputing is not possible.
 
 ## Online: validate and measure
 

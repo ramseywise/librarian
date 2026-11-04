@@ -32,3 +32,4 @@ Share of new customers buying again within 90 days: 37.5% overall in the old yea
 - [[Explanatory Data Story and the Big Idea]] — related
 - [[Difference-in-Differences as Two-Way Fixed Effects]] — related
 - [[Chart Declutter and Direct Labelling]] — related (small multiples by segment show the within-segment fall)
+- [[Rate and Mix Decomposition]] — related (overlaps; candidate merge for /compact-wiki)

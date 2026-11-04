@@ -2,7 +2,7 @@
 title: Agent Retry Taxonomy
 tags: [llm, agents, infra, reference]
 summary: "Not all failures are retryable — a per-failure-mode response table, retry at both call and node level, and the move that makes a retry a re-plan: feed the error back as context — plus the layered failure/recovery/termination taxonomy with data-set ceilings."
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
@@ -129,3 +129,4 @@ human.
 - [[Python Concurrency Models]] — prerequisite-for (asyncio retry with backoff and jitter, timeouts, Semaphore)
 - [[Python Closures and Decorators]] — related (the retry decorator-factory shape)
 - [[TypeScript Async Patterns]] — related (retry with backoff, timeouts and AbortSignal in TS)
+- [[Idempotent Retries and Request IDs]] — prerequisite-for

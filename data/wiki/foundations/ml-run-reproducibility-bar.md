@@ -2,7 +2,7 @@
 title: ML Run Reproducibility Bar
 tags: [foundations, eval, pattern]
 summary: "A five-element bar that takes an ML prototype run from 'a finding in prose' to 'a finding a second person can refute from the record alone': tests in the default suite, a dry run on clean and planted-leak synthetic twins, guards the run owns, a validated run record with a reproduce check, and a data-handling sweep. It comes with the two ways a bar score misleads and the abort-vs-refuse guard taxonomy."
-updated: 2026-10-17
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-15-lending-parity.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-15-lending-parity.md
@@ -120,3 +120,4 @@ what makes the first run a template for the rest, instead of a one-off design it
 - [[REUSE/ADAPT/SKIP Asset Verdicts]] — extends (how each run's assets were scored against the bar)
 - [[ML Frame Sourcing — License, Horizon, Prevalence]] — extends (the frame swap that can dissolve a refusal)
 - [[Reproduce to Tell a Break From a Stuck Agent]] — extends (the reproduce check as the break discriminator)
+- [[Testing an ML System Beyond Its Code]] — related

@@ -56,3 +56,4 @@ Stream-table joins without versions: a replay joins to today's table and silentl
 - [[Delivery Guarantees and Effectively-Once Processing]] — related
 - [[Kafka Log, Partitions and Offsets]] — prerequisite-for
 - [[Backfills, As-Of Dimensions and Past-Dependent Tables]] — related
+- [[Slowly Changing Dimensions Types 1, 2 and 3]] — prerequisite-for

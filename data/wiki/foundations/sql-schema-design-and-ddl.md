@@ -96,3 +96,4 @@ A view is a saved query, so it always reflects current data. A materialised view
 - [[Programming Curriculum]] — related (course map)
 - [[Idempotent Window-Replace Loads]] — related (window replace in a transaction)
 - [[Transaction Isolation Levels and Anomalies]] — related (what atomic transactions do and do not prevent)
+- [[Dimensional Model Grain and the Four Design Steps]] — extends

@@ -83,3 +83,4 @@ DuckDB, BigQuery, Snowflake and ClickHouse store data by column and scan compres
 - [[Programming Curriculum]] — related (course map)
 - [[Partition Pruning, Clustering and Column Pruning]] — related (columnar engines skip by partition and min/max statistics)
 - [[B-Trees vs LSM-Trees]] — related (the storage structures behind the index)
+- [[Choosing a Store from the Access Pattern]] — related

@@ -58,3 +58,4 @@ Window replace only works when the source gives whole windows that nobody touche
 - [[SQL Schema Design and DDL]] — related (ON CONFLICT upserts and atomic transactions)
 - [[Rerunnable Cleaning Loader with Assertions]] — related
 - [[Data Engineering Foundations]] — related
+- [[Idempotent Backfills and Dated Corrections]] — related (overlaps; candidate merge for /compact-wiki)

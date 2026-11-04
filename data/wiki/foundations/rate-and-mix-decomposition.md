@@ -31,3 +31,4 @@ Use a measure comparable across cohorts, and only customers whose full window ha
 - [[Cohort Retention Triangle]] — related
 - [[Funnel Step Diagnosis]] — related (Simpson-style mix shifts)
 - [[Metric Tree Decomposition]] — related
+- [[Mix Effect vs Within-Segment Effect]] — related (overlaps; candidate merge for /compact-wiki)

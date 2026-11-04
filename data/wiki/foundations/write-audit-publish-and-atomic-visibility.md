@@ -22,3 +22,4 @@ The gap between written and visible is where tests run. Build a staging copy wit
 - [[Idempotent Batch Loads and Partition Overwrite]] — prerequisite-for
 - [[dbt Build Test Semantics, Severity and Source Freshness]] — related
 - [[Dagster Assets vs Airflow Tasks]] — related (both leave the checked table already written)
+- [[Write-Audit-Publish Gate]] — related (overlaps; candidate merge for /compact-wiki)

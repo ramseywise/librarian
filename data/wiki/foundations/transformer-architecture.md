@@ -91,3 +91,5 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - [[Neural Probabilistic Language Model]] — prerequisite-for (word embeddings that Transformers build on)
 - [[LLM Fundamentals Interview Study Guide]] — instance-of
 - [[Pre-Norm vs Post-Norm and Warm-Up]] — extends
+- [[LSTM Forget-Gate Bias and Vanishing Gradients]] — related (the recurrent models it replaced)
+- [[Encoder Tokens, Position and Attention Scaling]] — extends

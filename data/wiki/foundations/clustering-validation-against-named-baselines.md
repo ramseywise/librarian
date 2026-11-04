@@ -78,3 +78,5 @@ than about broken features — both produce a low score.
 - [[Rationale-Blind Worst-Case Review]] — extends (the advisor that found the escape hatch)
 - [[A Sentinel Catches Forgetting, Not Asserting]] — extends (a seeded sweep must not record `seed` as NotApplicable)
 - [[Precomputed Labels, Not Refits on Filter]] — related (publish labels from a job, do not refit per filter)
+- [[Clustering Categorical and Mixed Data]] — related (method choice for mixed customer data)
+- [[Validating Clusters Without Labels]] — related (same idea of a null control)

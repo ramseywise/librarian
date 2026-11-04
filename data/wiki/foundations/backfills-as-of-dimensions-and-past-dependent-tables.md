@@ -34,3 +34,4 @@ Because each day is independent and idempotent, a backfill can stop part-way, re
 - [[Dagster Assets vs Airflow Tasks]] — related
 - [[Airflow 3 Cron Timetables and the Logical Date]] — related
 - [[SQL Window Functions]] — related
+- [[Slowly Changing Dimensions Types 1, 2 and 3]] — prerequisite-for
