@@ -18,6 +18,8 @@ sources:
 
 **Average precision (AP)** summarises the PR curve and ignores the large pool of true negatives, so under heavy imbalance it is more informative than ROC AUC. A random ranker's AP equals the base rate (0.241 on the adult census, where the model has AUC 0.901 and AP 0.754). Always read PR as well when AUC looks high but the flagged set may be mostly false positives.
 
+Rule of thumb: use AUC or average precision for model selection on imbalanced data, and tune the threshold separately, because ranking quality and operating point are separate decisions.
+
 ## When the two disagree
 
 For fixed positives and negatives, one curve dominates another in ROC exactly when it dominates in PR. Once curves cross that link gives no ranking, and optimising AUC-ROC does not guarantee the area under PR. In a constructed example with 20 positives and 2,000 negatives, AUC-ROC prefers one curve (0.875 against 0.813) and AUC-PR the other (0.514 against 0.038), because PR area comes mostly from high precision at low recall. The example shows it can happen, not how often.

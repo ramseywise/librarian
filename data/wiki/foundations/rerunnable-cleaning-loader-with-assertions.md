@@ -66,3 +66,5 @@ CSV keeps only text, so every reader redoes type decisions (a date came back as 
 - [[Pandas Label Alignment and Dtypes]] — prerequisite-for
 - [[Groupby Silent Group Loss and Pivot Defaults]] — related
 - [[SQL from Python]] — related
+- [[Idempotent Batch Loads and Partition Overwrite]] — related
+- [[Medallion Layers Need Tests]] — related

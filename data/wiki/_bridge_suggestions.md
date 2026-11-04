@@ -1,6 +1,6 @@
 ---
 title: Bridge Suggestions
-updated: 2026-10-30
+updated: 2026-11-04
 ---
 
 # Bridge Suggestions
@@ -41,15 +41,15 @@ Consider creating a bridge page or adding cross-references.
   - mcp: 9 pages
 
 ## foundations ↔ graph (0 cross-links)
-  - foundations: 52 pages
+  - foundations: 440 pages
   - graph: 13 pages
 
 ## foundations ↔ mcp (0 cross-links)
-  - foundations: 52 pages
+  - foundations: 440 pages
   - mcp: 9 pages
 
 ## foundations ↔ private (0 cross-links)
-  - foundations: 52 pages
+  - foundations: 440 pages
   - private: 9 pages
 
 ## graph ↔ private (0 cross-links)
@@ -177,7 +177,7 @@ Consider creating a bridge page or adding cross-references.
   - graph: 13 pages
 
 ## foundations ↔ memory (2 cross-links)
-  - foundations: 52 pages
+  - foundations: 440 pages
   - memory: 12 pages
 
 ## harness ↔ memory (2 cross-links)

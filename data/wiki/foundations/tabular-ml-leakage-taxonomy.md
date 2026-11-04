@@ -113,3 +113,4 @@ unscored, although its presence alone is the label. Fix: also score
 - [[ML Stage Layering with Typed Contracts]] — prerequisite-for ("nothing fitted outside a fold" as a tree rule)
 - [[ML Run Reproducibility Bar]] — prerequisite-for (the planted-leak twin plants these shapes)
 - [[Time-Series Leakage: Shift and Rolling Windows]] — related (negative shifts and centred windows as leaks)
+- [[Resampling Before the Split Leaks]] — instance-of (resampler fitted outside the fold)

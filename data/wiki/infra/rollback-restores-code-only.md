@@ -2,7 +2,7 @@
 title: Rollback Restores Code Only
 tags: [infra, pattern]
 summary: "A host rollback restores code, never migrations, rows or schedules. So the promotion runbook states that scope before anyone needs it, sits on deploy invariants (a deploy never migrates, never runs the pipeline, never enables a schedule; promotion needs CI green on the exact SHA), invents no auto-promote threshold, and is authored before the host exists so its first read is not mid-incident."
-updated: 2026-10-17
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/akira/docs/plans/2026-09-29-dis268-deploy-promotion-path.md
   - data/raw/claude-docs/kiez-archive/docs/plans/2026-09-29-dis268-deploy-promotion-path.md
@@ -103,3 +103,4 @@ The production smoke check follows the same honesty rules:
 - [[A Check Must Say Why It Could Not Check]] — related (SKIPPED / NOT IMPLEMENTED in the smoke script)
 - [[Audit-Don't-Assert Release Checklist]] — related (every checklist item names an artifact and a verifier)
 - [[Paid Tiers Start at the Beta, Not the Alpha]] — related (the host decision the rehearsal waits on)
+- [[Blue-Green View Swap for Data Deploys]] — related (data deploy with a real rollback)

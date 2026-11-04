@@ -2,7 +2,7 @@
 title: PII Masking Approaches
 tags: [infra, eval, concept]
 summary: Regex vs LLM-based vs hybrid PII masking for conversation data pipelines — contextual PII is the hard problem; compliance sign-off is a hard gate before data moves.
-updated: 2026-10-17
+updated: 2026-11-04
 sources:
   - data/raw/meetings/2026-06-25-pii-masking-approval-decision.md
   - data/raw/claude-docs/playground/docs/research/VIR-115-pii-pipeline-design.md
@@ -192,3 +192,4 @@ What transfers:
 - [[Change the Channel, Not the Count]] — related (rights posture findings from the same compliance audit)
 - [[Study-Scoped Pseudonymous Attribution]] — extends (pseudonym is still personal data; erasure must cover linked rows)
 - [[Logger Redact Guardrail]] — related (the log-sink layer: a redact list as a guardrail for future call sites)
+- [[Pseudonymised Is Not Anonymised: Hashing Attacks and Keyed Pseudonyms]] — related (why hashing is not anonymisation)

@@ -5,6 +5,7 @@ summary: "EASE is a linear item-item model with a zero diagonal and a closed-for
 updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--02-collaborative-filtering-and-matrix-factorisation.md
+  - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--03-two-tower-and-evaluation.md
 ---
 
 # EASE and Item-Based Neighbourhood Recommenders

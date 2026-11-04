@@ -13,13 +13,13 @@ sources:
 
 | Scenario | Default rate | Worst feature PSI | Score PSI | ROC-AUC | Cost |
 |---|---|---|---|---|---|
-| No change | 0.030 | 0.011 | 0.007 | 0.764 | 141.0 |
-| Covariate (low credit limits) | 0.036 | 0.319 | 0.083 | 0.759 | 169.0 |
+| No change | 0.030 | 0.011 | 0.007 | 0.764 | 140.992 |
+| Covariate (low credit limits) | 0.036 | 0.319 | 0.083 | 0.759 | 169.033 |
 | Prior (default rate doubles) | 0.060 | 0.011 | 0.008 | 0.757 | 262.661 |
 | Concept (what predicts default changes) | 0.034 | 0.011 | 0.007 | 0.600 | 177.854 |
-| Skew: features one month stale | 0.030 | 0.531 (by level; 0.049 quantile) | 0.012 | 0.726 | 152.3 |
+| Skew: features one month stale | 0.030 | 0.531 (by level; 0.049 quantile) | 0.012 | 0.726 | 152.304 |
 | Skew: amounts in thousands | 0.030 | 7.706 | 3.291 | 0.753 | 145.081 |
-| Skew: a status filled with 0 | 0.030 | 3.539 | 0.073 | 0.717 | 150.3 |
+| Skew: a status filled with 0 | 0.030 | 3.539 | 0.073 | 0.717 | 150.311 |
 
 - **Covariate shift** P(x) moves, P(y given x) does not: loud, model still right (mean PD matches 0.036); the business decision changes.
 - **Prior shift** is nearly silent: only 3% of rows changed, so rare classes hide from feature monitors.
@@ -32,3 +32,4 @@ Score monitoring alone misses most of this; watch inputs too. **Bin coded column
 - [[Population Stability Index]] — prerequisite-for
 - [[Imbalance Remedies Versus a Tuned Threshold]] — related
 - [[Calibrated Score, Deterministic Decision Rule]] — related
+- [[Distribution Monitors Need an Effect Size and a Fixed Reference]] — related (effect-size thresholds and a fixed reference for monitors)

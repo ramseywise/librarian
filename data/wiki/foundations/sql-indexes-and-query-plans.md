@@ -2,7 +2,7 @@
 title: SQL Indexes and Query Plans
 tags: [foundations, concept]
 summary: "A B-tree index turns a full scan into a log-n lookup but every write pays for it; read EXPLAIN QUERY PLAN for SCAN vs SEARCH, order composite indexes equality-first/range-last, keep predicates sargable (no function on the indexed column), and know when indexes don't help — including columnar engines that use zone maps instead."
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/programming--sql--notes--08-indexes-and-query-plans.md
 ---
@@ -81,3 +81,5 @@ DuckDB, BigQuery, Snowflake and ClickHouse store data by column and scan compres
 - [[Pure Derivation Is a Generated Column]] — related (a stored generated column as the home for a trigram/full-text index)
 - [[Data Engineering Foundations]] — related (columnar warehouses and DuckDB)
 - [[Programming Curriculum]] — related (course map)
+- [[Partition Pruning, Clustering and Column Pruning]] — related (columnar engines skip by partition and min/max statistics)
+- [[B-Trees vs LSM-Trees]] — related (the storage structures behind the index)

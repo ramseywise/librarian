@@ -27,3 +27,5 @@ State each table's grain before joining. Compare row count and sum after the joi
 - [[SQL Join Patterns]] — extends
 - [[SQL NULL and Three-Valued Logic]] — related
 - [[Revenue Bridge Query]] — related
+- [[Conformed Dimensions, the Bus Matrix and Drilling Across]] — related (fan-out between facts and drilling across)
+- [[dbt Singular, Generic and Unit Tests with Reconciliation]] — related (the same reconciliation as a dbt test)

@@ -9,7 +9,7 @@ sources:
 
 # Choosing Which Rows to Label: Active Learning and Rules
 
-When labels are scarce there are two levers: get labels from rules, or choose which rows a person labels. Both are tested here on a generated review task (about 6% problems) and, for active learning, on a real 22.1% default file. Context: [[Label Quality: Agreement, Noise and Confident Learning]].
+When labels are scarce there are two levers: get labels from rules, or choose which rows a person labels. Both are tested here on a generated review task (about 6% problems) and, for active learning, on a real credit-default file. Context: [[Label Quality: Agreement, Noise and Confident Learning]].
 
 ## Weak supervision: rules as labels
 

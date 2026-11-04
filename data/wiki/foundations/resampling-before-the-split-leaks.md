@@ -17,6 +17,15 @@ Fix: use an imbalanced-learn style pipeline, in which a sampler is a step that r
 
 This is one case of the general rule that every fitted step belongs inside the fold ([[Pipelines Prevent Preprocessing Leakage]], [[Tabular ML Leakage Taxonomy]]).
 
+Swapping SMOTE for random oversampling is a useful check of the mechanism: the leaked estimate stays near 0.96 because exact copies of a defaulter land in both training and validation folds and a tree can memorise them. Interpolation is not required for the leak.
+
+Another caution: the pipeline estimate for SMOTE here (0.697) sits below a tuned figure elsewhere because this run fixes one large model (15 leaves, 300 rounds) with no tuning; compare leaked against pipeline within a run, not across runs.
+
+## Check
+
+- Does a sampler appear in a pipeline step rather than before the split?
+- Is ROC-AUC compared between the pipeline and a held-out test, not only the cross-validated score?
+
 ## See Also
 - [[Pipelines Prevent Preprocessing Leakage]] — extends
 - [[Tabular ML Leakage Taxonomy]] — instance-of

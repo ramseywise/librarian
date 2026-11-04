@@ -39,3 +39,5 @@ Grouped by category, the two agreed to three places (0.372, 0.615, 0.455 for the
 - [[Groupby Silent Group Loss and Pivot Defaults]] — related
 - [[Delta Method for Ratio Metrics]] — related
 - [[Ratio Metrics and the Denominator Trap]] — related
+- [[Semantic Layer: Metrics Compiled at the Requested Grain]] — related (a layer recomputes ratios from parts)
+- [[Dimensional Model Grain and the Four Design Steps]] — related (store parts of a ratio in a fact)

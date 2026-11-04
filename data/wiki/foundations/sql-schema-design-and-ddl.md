@@ -2,7 +2,7 @@
 title: SQL Schema Design and DDL
 tags: [foundations, concept]
 summary: "A schema makes promises about its data and constraints let the database keep them: the four data-hygiene rules behind normal forms, PRIMARY KEY/UNIQUE/CHECK/FOREIGN KEY semantics (and SQLite's off-by-default foreign keys), safe UPDATE/DELETE, ON CONFLICT upserts for idempotent loads, atomic transactions, and views vs materialised views."
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/programming--sql--notes--07-modeling-and-ddl.md
   - data/raw/repos/learn-ai-engineering/programming--sql--README.md
@@ -94,3 +94,5 @@ A view is a saved query, so it always reflects current data. A materialised view
 - [[Idempotency Lives on the Link Column, Not the Synthetic Key]] — related (a UNIQUE constraint that doesn't make a backfill idempotent)
 - [[Data Engineering Foundations]] — related (denormalised analytics tables built by pipelines)
 - [[Programming Curriculum]] — related (course map)
+- [[Idempotent Window-Replace Loads]] — related (window replace in a transaction)
+- [[Transaction Isolation Levels and Anomalies]] — related (what atomic transactions do and do not prevent)

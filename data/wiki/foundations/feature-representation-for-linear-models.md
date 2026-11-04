@@ -42,7 +42,7 @@ Rentals per 3-hour slot for one station over August, 248 slots; first 184 train,
 | Features, model | Test R squared |
 |---|---|
 | POSIX time, forest | -0.04 |
-| Hour, forest | 0.60 |
+| Hour, forest | 0.6 |
 | Hour + weekday, forest | 0.84 |
 | Hour + weekday as numbers, linear | 0.13 |
 | One-hot hour-weekday, ridge | 0.62 |

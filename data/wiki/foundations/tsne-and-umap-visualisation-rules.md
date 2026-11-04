@@ -12,11 +12,21 @@ sources:
 t-SNE finds a 2-D layout that keeps neighbourhoods: points close in the original space stay close. It has no `transform`, so it cannot map new points. On the 8x8 digits, k-means with 10 clusters on the 2-D picture reaches adjusted Rand index 0.39 for a PCA projection and 0.89 for t-SNE against the true digit, without t-SNE seeing labels.
 
 Rules for reading a plot:
+
 - Cluster sizes and distances between clusters mean little; use it to look, never to measure.
-- Run more than one `perplexity`; conclusions can change with it.
+- Run more than one `perplexity`; conclusions about how far apart two groups are change with it.
 - Never use it as features for a model.
 
+The common failure is reading distances: a conclusion about how far apart two groups sit changes with `perplexity`. The fix is to rerun with other settings and treat the plot as a way to look, not to measure.
+
+On the digits, a PCA 2-D projection overlaps most classes while t-SNE separates nearly all ten without seeing labels. That is why it suits inspection of neighbourhood structure, and why the picture alone is not evidence of how many groups exist.
+
 UMAP is from the same family of neighbour-graph methods and usually faster. In the authors' one-figure laptop timings, single-core UMAP took 87 seconds on MNIST against 292 for multi-core FIt-SNE and 1,450 for Barnes-Hut t-SNE, but on the 8x8 digits 9 against 17 for Barnes-Hut. Its better global-structure preservation is hedged ("arguably") and attributed to its initialisation and objective; using it for later clustering or anomaly detection is proposed, not evaluated, and mapping new points is left as future work. See [[PCA, NMF and Low-Rank Factorisation]] for the linear alternative.
+
+## Check
+
+- Was the plot rerun with more than one `perplexity`?
+- Is the claim about shape and neighbourhood, not size or distance?
 
 ## See Also
 - [[PCA, NMF and Low-Rank Factorisation]] — alternative-to

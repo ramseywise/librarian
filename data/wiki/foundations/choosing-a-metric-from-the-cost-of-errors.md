@@ -34,7 +34,7 @@ A metric without a baseline cannot be read. Training loss and metric needn't mat
 
 Accuracy ranked approve-everyone above a depth-2 tree on 10 of 10 seeds though the tree cost less on nine; balanced accuracy, MCC, PR-AUC ranked the tree higher on all ten. Averaged over seeds, boosting and the shallow tree tied on cost (141.5 and 141.4 per 1,000) and MCC, while boosting led PR-AUC (0.143 against 0.102): PR-AUC grades the ordering over all thresholds, cost grades this one. If the threshold is settled cost decides; if it will move, ordering matters.
 
-Tuning the threshold on each metric (boosted, cost per 1,000 at 5:1 and 20:1; approve-all 150.5 and 601.910): accuracy declines nobody (150.5, 601.910); balanced accuracy declines 27% (303.030, 471.150); MCC 150.062, 467.621; cost-tuned 148.817 (5:1) and 428.186 (20:1, tuned for it).
+Tuning the threshold on each metric (boosted, cost per 1,000 at 5:1 and 20:1; approve-all 150.5 and 601.9): accuracy declines nobody (150.5, 601.9); balanced accuracy declines 27% (303.030, 471.150); MCC 150.062, 467.621; cost-tuned 148.817 (5:1) and 428.186 (20:1, tuned for it).
 
 - **Balanced accuracy is a cost ratio.** It equals 1 - (FN/P + FP/N)/2, so maximising it minimises N x FN + P x FP, a cost ratio N:P (32:1 here), changing with the base rate.
 - **MCC has no cost term**, so picks the same threshold at both ratios; useful to check a thresholded classifier is not a trick when nobody can supply costs. It is not a guarantee: 0.65 occurred with recall 0.45 and zero false alarms; one case had accuracy 0.900, recall 0.989, MCC -0.032; and it halved (0.326 to 0.144) for the same model between a 22.1% and 3% base rate. It is undefined when a table row or column is empty.
