@@ -32,6 +32,12 @@ tool, streamed via SSE (`POST /api/chat/stream`) to the React graph UI's chat pa
 write-back tool exists yet (`/api/writeback` mutates a page's `## See Also` section directly
 from the UI, not via an agent tool call).
 
+**Map filter panel (2026-11):** the graph UI's left panel follows the curriculum
+(`app/backend/curriculum.py`, `GET /api/graph/curriculum`; cards take their main course's
+colour). It is an overlay: `data/wiki/` directories remain the canonical domains for tags,
+MCP and `/lint`. Pages no lesson links appear under "Beyond the curriculum" by directory.
+Private pages never appear. An empty module means the wiki has no page on that topic.
+
 **Code index (2026-07):** `tools/codemap/` — tree-sitter-based structural index (symbols,
 import edges) over source repos, separate from the wiki-compile pipeline. Exposed via MCP
 tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki tools. See

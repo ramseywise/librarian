@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { KNOWN, PALETTE, domainColor, tagColor } from "../domains";
+import { COURSE_COLORS, KNOWN, PALETTE, courseColor, domainColor, tagColor } from "../domains";
 
 describe("domainColor", () => {
   it("keeps historical colours for known domains", () => {
@@ -27,9 +27,24 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+describe("courseColor", () => {
+  it("gives a new course a stable palette colour", () => {
+    expect(PALETTE).toContain(courseColor("brand-new-course"));
+    expect(courseColor("brand-new-course")).toBe(courseColor("brand-new-course"));
+  });
+  it("never reuses a directory colour, so the legend stays unambiguous", () => {
+    const directories = new Set(Object.values(KNOWN));
+    for (const c of Object.values(COURSE_COLORS)) expect(directories.has(c)).toBe(false);
+  });
+  it("gives every course its own colour", () => {
+    const colours = Object.values(COURSE_COLORS);
+    expect(new Set(colours).size).toBe(colours.length);
+  });
+});
+
 describe("domain colour contrast", () => {
   const CARD_BG = "#1a1a1a"; // --surface-field in tokens.css
-  it.each([...Object.entries(KNOWN), ...PALETTE.map((c) => [c, c]), ["default", domainColor(undefined)]])(
+  it.each([...Object.entries(KNOWN), ...Object.entries(COURSE_COLORS), ...PALETTE.map((c) => [c, c]), ["default", domainColor(undefined)]])(
     "%s reaches 4.5:1 on the card background (small domain label text)",
     (_name, colour) => {
       const ratio = (luminance(colour) + 0.05) / (luminance(CARD_BG) + 0.05);

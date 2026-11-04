@@ -8,6 +8,7 @@ import {
   useReactFlow,
   ReactFlowProvider,
   BackgroundVariant,
+  type FitViewOptions,
   type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -16,10 +17,13 @@ import { WikiNode, type WikiFlowNode } from "./WikiNode";
 import { EdgeTogglePanel } from "./EdgeTogglePanel";
 import { LayoutSwitcher } from "./LayoutSwitcher";
 import { TagFilterPanel } from "./TagFilterPanel";
+import { useCurriculum } from "../hooks/useCurriculum";
 import { useWikiData } from "../hooks/useWikiData";
+import { facetsOf, withCourseGroups } from "../utils/curriculum";
 import { applyDagreLayout, declutter, placeMissingNodes, type XY } from "../utils/layout";
 import {
   applyView,
+  curriculumSampleIds,
   degreeOf,
   expandBridges,
   filterPrimaryIds,
@@ -34,6 +38,8 @@ import type { EdgeVisibility, LayoutMode, SelectedNode, WikiNodeData } from "../
 
 const NODE_TYPES = { wikiNode: WikiNode };
 const NO_NODES: WikiFlowNode[] = [];
+const SEMANTIC_DELAY_MS = 1500;
+const FIRST_NODE_MARK = "graph:first-node";
 
 interface WikiGraphProps {
   highlightedPages?: Set<string>;
@@ -45,6 +51,12 @@ interface WikiGraphProps {
   onBrief?: (domain: string) => void;
   activeTags: Set<string>;
   onActiveTagsChange: (tags: Set<string>) => void;
+}
+
+/** Fit padding that leaves room for the filter panel, unless it's behind the narrow-screen menu. */
+function fitPadding(padding: number): FitViewOptions["padding"] {
+  if (!window.matchMedia("(min-width: 760px)").matches) return padding;
+  return { top: padding, right: padding, bottom: padding, left: "330px" };
 }
 
 function positionsOf(nodes: Node[]): Record<string, XY> {
@@ -60,6 +72,13 @@ function WikiGraphInner({
   activeTags,
   onActiveTagsChange,
 }: WikiGraphProps) {
+  // Semantic edges arrive in the background after first paint. Tag-shared stays off until asked
+  // for: deriving them is ~42k pairs, and under a large filter they were most of the edge count.
+  const [edgeVis, setEdgeVis] = useState<EdgeVisibility>({
+    wikilink: true,
+    semantic: true,
+    "tag-shared": false,
+  });
   const {
     baseNodes,
     wikilinkEdges,
@@ -71,13 +90,7 @@ function WikiGraphInner({
     umapFailed,
     loadUmapPositions,
     connected,
-  } = useWikiData();
-
-  const [edgeVis, setEdgeVis] = useState<EdgeVisibility>({
-    wikilink: true,
-    semantic: false,
-    "tag-shared": true,
-  });
+  } = useWikiData({ tagShared: edgeVis["tag-shared"] });
   const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
   // Sample-first: render a seed and grow it by clicking; "All" renders every page.
   const [showAll, setShowAll] = useState(false);
@@ -91,18 +104,27 @@ function WikiGraphInner({
   const { fitView } = useReactFlow();
 
   const hasNodes = baseNodes.length > 0;
+  const curriculum = useCurriculum(baseNodes, hasNodes);
+  const facets = useMemo(() => facetsOf(curriculum), [curriculum]);
   const loadingUmap = layout === "umap-semantic" && hasNodes && !umapPositions && !umapFailed;
 
-  // UMAP positions are fetched once, on first use; the hook caches them.
+  // UMAP positions are fetched once, on first use; the hook caches them. `connected` retries a
+  // request that failed while the server restarted, which would otherwise stick on the fallback.
   useEffect(() => {
     if (layout === "umap-semantic" && hasNodes) void loadUmapPositions();
-  }, [layout, hasNodes, loadUmapPositions]);
+  }, [layout, hasNodes, connected, loadUmapPositions]);
 
-  // Neighbourhoods expand over wikilinks plus semantic edges once loaded — never over
+  // Neighbourhoods expand over wikilinks, plus semantic edges while they're shown — never over
   // tag-shared edges, whose near-cliques pulled most of the graph into every click.
-  const linkEdges = useMemo(() => [...wikilinkEdges, ...semanticEdges], [wikilinkEdges, semanticEdges]);
+  const linkEdges = useMemo(
+    () => (edgeVis.semantic ? [...wikilinkEdges, ...semanticEdges] : wikilinkEdges),
+    [edgeVis.semantic, wikilinkEdges, semanticEdges],
+  );
   const degree = useMemo(() => degreeOf(wikilinkEdges), [wikilinkEdges]);
-  const sample = useMemo(() => sampleIds(baseNodes, degree), [baseNodes, degree]);
+  const sample = useMemo(
+    () => (curriculum ? curriculumSampleIds(baseNodes, degree, curriculum) : sampleIds(baseNodes, degree)),
+    [baseNodes, degree, curriculum],
+  );
 
   // --- Layout: base positions (UMAP or dagre), then the filter subgraph on top ----------
   const baseLayout = useMemo<Record<string, XY> | null>(() => {
@@ -116,9 +138,9 @@ function WikiGraphInner({
   }, [hasNodes, layout, umapPositions, umapFailed, baseNodes, wikilinkEdges]);
 
   const filterIds = useMemo(() => {
-    const primary = filterPrimaryIds(baseNodes, activeTags);
+    const primary = filterPrimaryIds(baseNodes, activeTags, facets);
     return primary ? expandBridges(primary, linkEdges) : null;
-  }, [baseNodes, activeTags, linkEdges]);
+  }, [baseNodes, activeTags, facets, linkEdges]);
 
   // Semantic layout keeps its positions under a filter (fitView zooms to the subgraph);
   // Hierarchy re-runs dagre on the subgraph so it reads as its own tree.
@@ -149,8 +171,9 @@ function WikiGraphInner({
       focusIds,
       filterIds,
       activeTags,
+      facets,
     }),
-    [highlightedPages, focusNodeId, focusIds, filterIds, activeTags],
+    [highlightedPages, focusNodeId, focusIds, filterIds, activeTags, facets],
   );
 
   const rendered = useMemo(
@@ -170,8 +193,8 @@ function WikiGraphInner({
     const laidOut = baseNodes
       .filter((n) => !rendered || rendered.has(n.id))
       .map((n) => ({ ...n, position: placed[n.id] ?? n.position }));
-    return applyView(laidOut, view);
-  }, [placed, baseNodes, rendered, view]);
+    return withCourseGroups(applyView(laidOut, view), curriculum);
+  }, [placed, baseNodes, rendered, view, curriculum]);
 
   const edges = useMemo(
     () =>
@@ -186,22 +209,28 @@ function WikiGraphInner({
 
   // --- Sync derived nodes into React Flow state (keeps node dragging working) -----------
   // A new `positions` object means a relayout: take the new positions and refit. A new
-  // filter (or switching Sample/All) also refits, even when positions are unchanged. A new
+  // filter (or switching Sample/All, or the sample changing) also refits, even when positions are unchanged. A new
   // `placed` (declutter re-ran because the rendered set changed) takes the new positions
   // without a refit, so revealed cards don't land on top of stale ones. Otherwise only
   // view flags changed: keep where the user dragged nodes to.
   const [nodes, setNodes, onNodesChange] = useNodesState<WikiFlowNode>([]);
   const lastPositions = useRef<Record<string, XY> | null>(null);
   const lastPlaced = useRef<Record<string, XY> | null>(null);
-  const lastFrame = useRef<{ filterIds: Set<string> | null; showAll: boolean } | null>(null);
+  const lastFrame = useRef<{
+    filterIds: Set<string> | null;
+    showAll: boolean;
+    sample: Set<string>;
+  } | null>(null);
   const pendingFit = useRef(false);
 
   useEffect(() => {
     const relayout = lastPositions.current !== positions;
     lastPositions.current = positions;
     const reframe =
-      lastFrame.current?.filterIds !== filterIds || lastFrame.current?.showAll !== showAll;
-    lastFrame.current = { filterIds, showAll };
+      lastFrame.current?.filterIds !== filterIds ||
+      lastFrame.current?.showAll !== showAll ||
+      lastFrame.current?.sample !== sample;
+    lastFrame.current = { filterIds, showAll, sample };
     if ((relayout || reframe) && positions) pendingFit.current = true;
     const moved = relayout || reframe || lastPlaced.current !== placed;
     lastPlaced.current = placed;
@@ -218,7 +247,7 @@ function WikiGraphInner({
         };
       });
     });
-  }, [viewNodes, positions, placed, filterIds, showAll, setNodes]);
+  }, [viewNodes, positions, placed, filterIds, showAll, sample, setNodes]);
 
   useEffect(() => {
     if (!pendingFit.current || !nodes.length) return;
@@ -226,9 +255,9 @@ function WikiGraphInner({
     const ids = filterIds;
     requestAnimationFrame(() => {
       if (ids) {
-        void fitView({ nodes: [...ids].map((id) => ({ id })), padding: 0.3, duration: 400 });
+        void fitView({ nodes: [...ids].map((id) => ({ id })), padding: fitPadding(0.3), duration: 400 });
       } else {
-        void fitView({ padding: 0.15, duration: 300 });
+        void fitView({ padding: fitPadding(0.15), duration: 300 });
       }
     });
   }, [nodes, filterIds, fitView]);
@@ -281,6 +310,14 @@ function WikiGraphInner({
     }
   }, [fetchSemanticEdges]);
 
+  // The first paint doesn't wait for these. Retries on reconnect while none have landed.
+  const hasSemanticEdges = semanticEdges.length > 0;
+  useEffect(() => {
+    if (!hasRenderedNodes || !connected || !edgeVis.semantic || hasSemanticEdges) return;
+    const timer = setTimeout(() => void handleLoadSemantic(), SEMANTIC_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [hasRenderedNodes, connected, edgeVis.semantic, hasSemanticEdges, handleLoadSemantic]);
+
   // Clicking a node focuses it and, in sample mode, keeps its neighbours on the canvas
   // so the graph can be walked outward click by click. Clicking it again unfocuses.
   const handleNodeClick = useCallback(
@@ -320,13 +357,31 @@ function WikiGraphInner({
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  const miniMapColor = useCallback((n: WikiFlowNode) => domainColor(n.data.domain[0]), []);
+  const miniMapColor = useCallback(
+    (n: WikiFlowNode) => n.data.groupColor ?? domainColor(n.data.domain[0]),
+    [],
+  );
+
+  // Navigation → first node, for anyone timing a start (see performance.getEntriesByName).
+  useEffect(() => {
+    if (hasRenderedNodes && !performance.getEntriesByName(FIRST_NODE_MARK).length) {
+      performance.mark(FIRST_NODE_MARK);
+    }
+  }, [hasRenderedNodes]);
+
+  const statusText = !connected
+    ? hasNodes
+      ? "○ reconnecting…"
+      : "○ starting server…"
+    : loadingUmap
+      ? "● computing layout…"
+      : "● live";
 
   return (
     <div className="graph-root">
       {/* Connection status, and how much of the wiki is on the canvas */}
       <div className={`graph-status ${connected ? "graph-status--live" : "graph-status--offline"}`}>
-        {connected ? "● live" : "○ connecting…"}
+        {statusText}
         {hasNodes && (
           <span className="graph-status-count">
             {" "}· {nodes.length} of {baseNodes.length} pages
@@ -368,7 +423,7 @@ function WikiGraphInner({
             onClick={() => setShowAll(false)}
             aria-pressed={!showAll}
             className="seg-btn"
-            title="Projects and each domain's best-linked pages; click a node to reveal its links"
+            title="Projects and the best-linked pages of each course and directory; click a node to reveal its links"
           >
             Sample
           </button>
@@ -389,6 +444,7 @@ function WikiGraphInner({
 
         <TagFilterPanel
           domains={domains}
+          curriculum={curriculum}
           activeTags={activeTags}
           onChange={onActiveTagsChange}
           onBrief={onBrief}
@@ -403,7 +459,7 @@ function WikiGraphInner({
         onNodeClick={handleNodeClick}
         onPaneClick={handlePaneClick}
         fitView
-        fitViewOptions={{ padding: 0.15 }}
+        fitViewOptions={{ padding: fitPadding(0.15) }}
         onlyRenderVisibleElements
         minZoom={0.1}
         maxZoom={3}

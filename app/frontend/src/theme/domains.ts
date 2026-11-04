@@ -37,6 +37,17 @@ export const PALETTE = [
   "#4DB6AC", "#FFD54F", "#9575CD", "#A1887F", "#90A4AE",
 ];
 
+/** One per course; these colour the map's cards, so they share the 4.5:1 rule above. */
+export const COURSE_COLORS: Record<string, string> = {
+  programming: "#64B5F6",
+  "data-analytics": "#FFD54F",
+  "data-science": "#BA68C8",
+  "data-engineering": "#4DB6AC",
+  "generative-ai": "#FF8A65",
+  "ai-engineering": "#81C784",
+  interviewing: "#F48FB1",
+};
+
 /** Deterministic string hash (FNV-1a, 32-bit). */
 function hash(s: string): number {
   let h = 0x811c9dc5;
@@ -50,6 +61,10 @@ function hash(s: string): number {
 export function domainColor(domain: string | undefined | null): string {
   if (!domain) return "#688897";
   return KNOWN[domain] ?? PALETTE[hash(domain) % PALETTE.length];
+}
+
+export function courseColor(course: string): string {
+  return COURSE_COLORS[course] ?? PALETTE[hash(course) % PALETTE.length];
 }
 
 export const TYPE_COLORS: Record<string, string> = {

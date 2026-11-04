@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Edge, Node } from "@xyflow/react";
-import type { EdgeVisibility, WikiEdgeData, WikiNodeData } from "../types";
+import type { Curriculum, EdgeVisibility, Facets, WikiEdgeData, WikiNodeData } from "../types";
 
 /**
  * Pure view derivation for the wiki graph: which nodes are rendered, which are dimmed /
@@ -9,7 +9,7 @@ import type { EdgeVisibility, WikiEdgeData, WikiNodeData } from "../types";
  * testable.
  *
  * The graph is sample-first: by default React Flow only receives a small seed (project
- * pages plus each domain's best-linked pages), and clicking a node reveals its direct
+ * pages plus the best-linked pages of each course and directory), and clicking a node reveals its direct
  * neighbours. Rendering all ~900 nodes is an explicit opt-in ("All"). Neighbourhoods and
  * filters expand over wikilink (and loaded semantic) edges only — never tag-shared ones,
  * which form near-cliques (median degree ~120) and pulled most of the graph into every
@@ -22,6 +22,9 @@ type Link = { source: string; target: string; data?: { relationship?: string } }
 
 /** Pages kept per domain in the default sample, ranked by wikilink degree. */
 export const SAMPLE_PER_DOMAIN = 3;
+/** Pages kept per course, and per directory of pages no lesson links, once the curriculum is in. */
+export const SAMPLE_PER_COURSE = 5;
+export const SAMPLE_PER_BEYOND = 2;
 /** Most neighbours a single click reveals; the best-linked ones win. */
 export const REVEAL_CAP = 40;
 
@@ -58,14 +61,49 @@ export function sampleIds(
   return out;
 }
 
-/** Nodes whose primary domain or type tag is one of the active filter chips. */
-export function filterPrimaryIds(nodes: GraphNode[], activeTags: Set<string>): Set<string> | null {
+/**
+ * The sample once the curriculum is in, so the map opens matching the panel: every project
+ * page, the best-linked pages of each course (by main course, the one that colours them), and
+ * a few from each directory of unlinked pages.
+ */
+export function curriculumSampleIds(
+  nodes: GraphNode[],
+  degree: Map<string, number>,
+  c: Curriculum,
+): Set<string> {
+  const present = new Set(nodes.map((n) => n.id));
+  const out = new Set(nodes.filter((n) => n.data.typeTag === "project").map((n) => n.id));
+  const takeBest = (ids: string[], count: number) =>
+    ids
+      .filter((id) => present.has(id))
+      .sort((a, b) => (degree.get(b) ?? 0) - (degree.get(a) ?? 0) || a.localeCompare(b))
+      .slice(0, count)
+      .forEach((id) => out.add(id));
+  for (const course of c.courses) {
+    takeBest(
+      course.pageIds.filter((id) => c.primaryCourse[id] === course.id),
+      SAMPLE_PER_COURSE,
+    );
+  }
+  for (const b of c.beyond) takeBest(b.pageIds, SAMPLE_PER_BEYOND);
+  return out;
+}
+
+/** Does an active filter select this node? By directory, type tag, or curriculum facet. */
+function matchesFilter(n: GraphNode, activeTags: Set<string>, facets?: Facets): boolean {
+  if (n.data.domain.some((t) => activeTags.has(t)) || activeTags.has(n.data.typeTag)) return true;
+  if (facets) for (const t of activeTags) if (facets.get(t)?.has(n.id)) return true;
+  return false;
+}
+
+/** Nodes selected by the active filters. */
+export function filterPrimaryIds(
+  nodes: GraphNode[],
+  activeTags: Set<string>,
+  facets?: Facets,
+): Set<string> | null {
   if (activeTags.size === 0) return null;
-  return new Set(
-    nodes
-      .filter((n) => n.data.domain.some((t) => activeTags.has(t)) || activeTags.has(n.data.typeTag))
-      .map((n) => n.id),
-  );
+  return new Set(nodes.filter((n) => matchesFilter(n, activeTags, facets)).map((n) => n.id));
 }
 
 /**
@@ -122,6 +160,8 @@ export interface ViewState {
   /** Filter subgraph (primary matches + bridges), or null when no chip is active. */
   filterIds: Set<string> | null;
   activeTags: Set<string>;
+  /** Curriculum filter ids and their pages, once loaded. */
+  facets?: Facets;
 }
 
 /**
@@ -160,8 +200,7 @@ export function applyView(nodes: GraphNode[], v: ViewState): GraphNode[] {
   return nodes.map((n) => {
     const inChat = hasChat && hp.has(n.id);
     const inFocus = fn != null && fn.has(n.id);
-    const inTagFilter =
-      hasTagFilter && (n.data.domain.some((t) => at.has(t)) || at.has(n.data.typeTag));
+    const inTagFilter = hasTagFilter && matchesFilter(n, at, v.facets);
     const highlighted = hasChat ? inChat : fn ? inFocus : inTagFilter;
     const dimmed = hasChat ? !inChat : fn ? !inFocus : false;
     return { ...n, data: { ...n.data, highlighted, dimmed, enlarged: inChat } };
@@ -185,8 +224,8 @@ export interface EdgeSources {
  * marked `hidden`, so React Flow never holds the full tag-shared set (~42k edges). Only
  * edges with both endpoints among `viewNodes` (the rendered nodes) are considered.
  *
- * - Filter active: all three edge types inside the filter subgraph (toggles ignored).
- * - Otherwise: the toggled-on types.
+ * - The toggled-on types only. Tag-shared is off by default: it was ~19k of the edges under
+ *   a large filter and froze the tab for over a second.
  * - Chat highlight: only edges touching a highlighted page. Focus: only edges touching
  *   the focused node. Filter: only edges with both ends in the subgraph.
  * - Tag-shared edges are additionally pruned to those with at least one *emphasised*
@@ -205,12 +244,11 @@ export function visibleEdges(
   const hasChat = hp != null && viewNodes.some((n) => hp.has(n.id)); // as in applyView
   const focusId = v.focusId;
   const fm = v.filterIds;
-  const filtering = v.activeTags.size > 0;
 
   const candidates: GraphEdge[] = [
-    ...(filtering || vis.wikilink ? src.wikilink : []),
-    ...(filtering || vis.semantic ? src.semantic : []),
-    ...(filtering || vis["tag-shared"] ? src.tagShared : []),
+    ...(vis.wikilink ? src.wikilink : []),
+    ...(vis.semantic ? src.semantic : []),
+    ...(vis["tag-shared"] ? src.tagShared : []),
   ];
 
   const anyHighlighted = viewNodes.some((n) => n.data.highlighted);

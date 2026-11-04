@@ -27,12 +27,14 @@ Usage:
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 import struct
 import time
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import duckdb
 import frontmatter
@@ -43,6 +45,9 @@ from fastmcp import FastMCP
 from app.mcp_server.graph_expansion import build_typed_edges, expand_one_hop
 from core.wiki_common import ANY_TYPED_LINK_RE, CANONICAL_LINK_TYPES, WIKILINK_RE, slugify
 from shared.log_config import configure_logging
+
+if TYPE_CHECKING:
+    from sentence_transformers import SentenceTransformer
 
 load_dotenv()
 configure_logging()  # installs the secret-redaction processor
@@ -110,14 +115,10 @@ def _resolve_course_dir(domain: str) -> Path | None:
 
 mcp = FastMCP("librarian")
 
-# Optional semantic search — gracefully absent if sentence-transformers not installed
-try:
-    from sentence_transformers import SentenceTransformer
-
-    _emb_model: SentenceTransformer | None = None
-    HAS_EMBEDDINGS = True
-except ImportError:
-    HAS_EMBEDDINGS = False
+# Optional semantic search — gracefully absent if sentence-transformers not installed.
+# Checked, not imported: importing it pulls in torch, which took 4-13 s of API startup.
+HAS_EMBEDDINGS = importlib.util.find_spec("sentence_transformers") is not None
+_emb_model: SentenceTransformer | None = None
 
 # Optional FTS — installed per connection; absence is non-fatal but logged
 HAS_FTS = False
@@ -147,6 +148,8 @@ EMB_MODEL_ID = "all-MiniLM-L6-v2"
 def _get_emb_model() -> SentenceTransformer:
     global _emb_model
     if _emb_model is None:
+        from sentence_transformers import SentenceTransformer
+
         _emb_model = SentenceTransformer(EMB_MODEL_ID)
     return _emb_model
 

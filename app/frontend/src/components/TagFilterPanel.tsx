@@ -1,14 +1,156 @@
-import { domainColor } from "../theme/domains";
+import { useState } from "react";
+import { courseColor, domainColor } from "../theme/domains";
+import type { Curriculum, CurriculumCourse } from "../types";
+import { beyondFacet, courseFacet, isFacetId, moduleFacet } from "../utils/curriculum";
 
 interface Props {
   /** Domain list from the graph payload (disk-derived on the server; no `private`). */
   domains: string[];
+  /** Curriculum facet; null until it loads, and the panel shows directory chips until then. */
+  curriculum?: Curriculum | null;
   activeTags: Set<string>;
   onChange: (tags: Set<string>) => void;
   onBrief?: (domain: string) => void;
 }
 
-export function TagFilterPanel({ domains, activeTags, onChange, onBrief }: Props) {
+interface ChipProps {
+  id: string;
+  label: string;
+  count?: number;
+  color: string;
+  active: boolean;
+  onToggle: (id: string) => void;
+  /** Scope for the ↗ brief; no button without it. */
+  briefScope?: string;
+  onBrief?: (domain: string) => void;
+}
+
+function Chip({ id, label, count, color, active, onToggle, briefScope, onBrief }: ChipProps) {
+  const canBrief = onBrief && briefScope;
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className="chip-group"
+      style={{
+        background: active ? color + "22" : "transparent",
+        border: `1px solid ${active ? color : "var(--border-strong)"}`,
+      }}
+    >
+      <button
+        type="button"
+        aria-pressed={active}
+        onClick={() => onToggle(id)}
+        className={`chip-part${canBrief ? " chip-part--with-brief" : ""}`}
+        style={{ color: active ? color : "var(--text-ghost)" }}
+      >
+        {label}
+        {count != null && " "}
+        {count != null && <span className="cur-count">{count}</span>}
+      </button>
+      {canBrief && (
+        <button
+          type="button"
+          aria-label={`Brief me on ${label}`}
+          title={`Brief me on ${label}`}
+          onClick={() => onBrief(briefScope)}
+          className="chip-part chip-brief"
+          style={{ color: active ? color : "var(--text-muted)", background: color + "33" }}
+        >
+          ↗
+        </button>
+      )}
+    </div>
+  );
+}
+
+interface CourseRowProps {
+  course: CurriculumCourse;
+  activeTags: Set<string>;
+  onToggle: (id: string) => void;
+  onBrief?: (domain: string) => void;
+}
+
+function CourseRow({ course, activeTags, onToggle, onBrief }: CourseRowProps) {
+  const [open, setOpen] = useState(false);
+  const color = courseColor(course.id);
+  const id = courseFacet(course.id);
+  const active = activeTags.has(id);
+  return (
+    <li>
+      <div className="cur-row">
+        <button
+          type="button"
+          className="cur-toggle"
+          aria-expanded={open}
+          aria-label={`${open ? "Hide" : "Show"} modules in ${course.title}`}
+          onClick={() => setOpen((o) => !o)}
+        >
+          {open ? "▾" : "▸"}
+        </button>
+        <button
+          type="button"
+          className="cur-filter"
+          aria-pressed={active}
+          disabled={course.pageIds.length === 0}
+          style={active ? { color, borderColor: color } : undefined}
+          onClick={() => onToggle(id)}
+        >
+          <span className="cur-dot" style={{ background: color }} aria-hidden="true" />
+          <span className="cur-name">{course.title}</span>{" "}
+          <span className="cur-count">{course.pageIds.length}</span>
+        </button>
+      </div>
+      {open && (
+        <ul className="cur-modules">
+          {course.modules.map((m) => {
+            const mid = moduleFacet(course.id, m.id);
+            const mActive = activeTags.has(mid);
+            const empty = m.pageIds.length === 0;
+            return (
+              <li key={m.id} className="cur-row" title={empty ? "No wiki pages cover this yet" : undefined}>
+                <button
+                  type="button"
+                  className="cur-filter"
+                  aria-pressed={mActive}
+                  disabled={empty}
+                  style={mActive ? { color, borderColor: color } : undefined}
+                  onClick={() => onToggle(mid)}
+                >
+                  <span className="cur-name">{m.title}</span>{" "}
+                  <span className="cur-count">{m.pageIds.length}</span>
+                </button>
+                {m.firstLesson && (
+                  <a
+                    className="cur-action"
+                    href={`#/courses/${m.firstLesson}`}
+                    aria-label={`Open lessons for ${m.title}`}
+                    title={`Open lessons for ${m.title}`}
+                  >
+                    ▤
+                  </a>
+                )}
+                {onBrief && !empty && (
+                  <button
+                    type="button"
+                    className="cur-action"
+                    aria-label={`Brief me on ${m.title}`}
+                    title={`Brief me on ${m.title}`}
+                    onClick={() => onBrief(`course/${course.id}/${m.id}`)}
+                  >
+                    ↗
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </li>
+  );
+}
+
+export function TagFilterPanel({ domains, curriculum, activeTags, onChange, onBrief }: Props) {
   function toggle(tag: string) {
     const next = new Set(activeTags);
     if (next.has(tag)) next.delete(tag);
@@ -16,57 +158,85 @@ export function TagFilterPanel({ domains, activeTags, onChange, onBrief }: Props
     onChange(next);
   }
 
-  const allActive = activeTags.size === 0;
+  const allChip = (
+    <button
+      type="button"
+      aria-pressed={activeTags.size === 0}
+      className="chip chip--all"
+      onClick={() => onChange(new Set())}
+    >
+      All
+    </button>
+  );
+
+  if (!curriculum) {
+    return (
+      <div className="float-panel graph-filter-panel" role="group" aria-label="Filter by domain">
+        <div className="panel-label">Filter by Domain</div>
+        {allChip}
+        {domains
+          .filter((d) => d !== "private")
+          .map((tag) => (
+            <Chip
+              key={tag}
+              id={tag}
+              label={tag}
+              color={domainColor(tag)}
+              active={activeTags.has(tag)}
+              onToggle={toggle}
+              briefScope={tag}
+              onBrief={onBrief}
+            />
+          ))}
+      </div>
+    );
+  }
+
+  // Tags set from elsewhere (the node detail panel): shown so they can be cleared one by one.
+  const plainTags = [...activeTags].filter((t) => !isFacetId(t)).sort();
 
   return (
-    <div className="float-panel graph-filter-panel" role="group" aria-label="Filter by domain">
-      <div className="panel-label">Filter by Domain</div>
-      <button
-        type="button"
-        aria-pressed={allActive}
-        className="chip chip--all"
-        onClick={() => onChange(new Set())}
-      >
-        All
-      </button>
-      {domains.filter((d) => d !== "private").map((tag) => {
-        const active = activeTags.has(tag);
-        const color = domainColor(tag);
-        return (
-          <div
-            key={tag}
-            role="group"
-            aria-label={tag}
-            className="chip-group"
-            style={{
-              background: active ? color + "22" : "transparent",
-              border: `1px solid ${active ? color : "var(--border-strong)"}`,
-            }}
-          >
-            <button
-              type="button"
-              aria-pressed={active}
-              onClick={() => toggle(tag)}
-              className={`chip-part${onBrief ? " chip-part--with-brief" : ""}`}
-              style={{ color: active ? color : "var(--text-ghost)" }}
-            >
-              {tag}
-            </button>
-            {onBrief && (
-              <button
-                type="button"
-                aria-label={`Brief me on ${tag}`}
-                title={`Brief me on ${tag}`}
-                onClick={() => onBrief(tag)}
-                className="chip-part chip-brief"
-                style={{ color: active ? color : "var(--text-muted)", background: color + "33" }}
-              >
-                ↗
-              </button>
-            )}
+    <div
+      className="float-panel graph-filter-panel graph-filter-panel--tree"
+      role="group"
+      aria-label="Filter by curriculum"
+    >
+      <div className="cur-head">
+        <div className="panel-label">Curriculum</div>
+        {allChip}
+      </div>
+      {plainTags.length > 0 && (
+        <div className="cur-chips">
+          {plainTags.map((tag) => (
+            <Chip key={tag} id={tag} label={tag} color={domainColor(tag)} active onToggle={toggle} />
+          ))}
+        </div>
+      )}
+      <ul className="cur-tree">
+        {curriculum.courses.map((c) => (
+          <CourseRow key={c.id} course={c} activeTags={activeTags} onToggle={toggle} onBrief={onBrief} />
+        ))}
+      </ul>
+      {curriculum.beyond.length > 0 && (
+        <>
+          <div className="panel-label cur-beyond-label">Beyond the curriculum</div>
+          <div className="cur-chips">
+            {curriculum.beyond.map((b) => (
+              <Chip
+                key={b.domain}
+                id={beyondFacet(b.domain)}
+                label={b.domain}
+                count={b.pageIds.length}
+                color={domainColor(b.domain)}
+                active={activeTags.has(beyondFacet(b.domain))}
+                onToggle={toggle}
+                briefScope={b.domain}
+                onBrief={onBrief}
+              />
+            ))}
           </div>
-        );
-      })}
+        </>
+      )}
     </div>
   );
 }

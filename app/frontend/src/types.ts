@@ -13,6 +13,9 @@ export interface WikiNodeData extends Record<string, unknown> {
   highlighted: boolean;
   /** Drawn at 1.5x: chat-cited pages only, which are few. Not part of the layout box. */
   enlarged?: boolean;
+  /** Main course, when a lesson links this page: overrides the directory colour and label. */
+  groupColor?: string;
+  groupLabel?: string;
 }
 
 export interface WikiEdgeData extends Record<string, unknown> {
@@ -28,6 +31,35 @@ export interface EdgeVisibility {
   semantic: boolean;
   "tag-shared": boolean;
 }
+
+export interface CurriculumModule {
+  id: string;
+  title: string;
+  firstLesson: string | null;
+  pageIds: string[];
+}
+
+export interface CurriculumCourse {
+  id: string;
+  title: string;
+  pageIds: string[];
+  modules: CurriculumModule[];
+}
+
+/**
+ * GET /api/graph/curriculum: an overlay on the wiki, whose directories stay the canonical
+ * domains. Every public page is in a course or in `beyond`.
+ */
+export interface Curriculum {
+  courses: CurriculumCourse[];
+  beyond: { domain: string; pageIds: string[] }[];
+  primaryCourse: Record<string, string>;
+  /** Served from an older snapshot while a rebuild runs. */
+  stale: boolean;
+}
+
+/** Filter id (`course:<id>`, `module:<course>/<module>`, `beyond:<dir>`) → its pages. */
+export type Facets = Map<string, Set<string>>;
 
 export interface SelectedNode {
   id: string;

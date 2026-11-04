@@ -48,8 +48,10 @@ export function parseGraphMessage(raw: string): GraphPayload | null {
 }
 
 const EMPTY: GraphPayload = { nodes: [], edges: [], domains: [] };
+const NO_EDGES: Edge<WikiEdgeData>[] = [];
 
-export function useWikiData() {
+/** `tagShared`: derive the tag-shared edges. Costly, so the map asks only when they're shown. */
+export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) {
   const [graph, setGraph] = useState<GraphPayload>(EMPTY);
   const [semanticEdges, setSemanticEdges] = useState<Edge<WikiEdgeData>[]>([]);
   const [umapPositions, setUmapPositions] = useState<Record<string, XY> | null>(null);
@@ -92,8 +94,8 @@ export function useWikiData() {
 
   // ~42k edges on the current wiki; recomputed only when a new payload arrives.
   const tagSharedEdges = useMemo(
-    () => computeTagSharedEdges(graph.nodes, graph.domains),
-    [graph.nodes, graph.domains],
+    () => (tagShared ? computeTagSharedEdges(graph.nodes, graph.domains) : NO_EDGES),
+    [tagShared, graph.nodes, graph.domains],
   );
 
   const fetchSemanticEdges = useCallback(async (threshold = 0.65) => {

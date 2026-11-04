@@ -154,6 +154,55 @@
   gap: var(--space-2);
   max-width: 340px;
 }
+.graph-filter-panel--tree {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 300px;
+  max-height: calc(100% - 190px);
+  overflow-y: auto;
+}
+.cur-head { display: flex; align-items: center; justify-content: space-between; }
+.cur-head .panel-label { width: auto; margin-bottom: 0; }
+.cur-tree, .cur-modules { list-style: none; margin: 0; padding: 0; }
+.cur-modules { margin-left: var(--space-6); }
+.cur-row { display: flex; align-items: center; gap: var(--space-1); }
+.cur-toggle, .cur-action {
+  flex: none;
+  width: 20px;
+  background: transparent;
+  border: none;
+  padding: 2px 0;
+  text-align: center;
+  text-decoration: none;
+  font-size: var(--fs-sm);
+  font-family: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.cur-toggle:hover, .cur-action:hover { color: var(--text); }
+.cur-filter {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 2px var(--space-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: var(--fs-sm);
+  font-family: inherit;
+  text-align: left;
+  color: var(--text-ghost);
+  cursor: pointer;
+}
+.cur-filter:hover:not(:disabled) { background: var(--surface-active); }
+.cur-filter:disabled { color: var(--text-faint); opacity: 0.6; cursor: not-allowed; }
+.cur-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; }
+.cur-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cur-count { flex: none; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+.cur-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.cur-beyond-label { margin-top: var(--space-2); margin-bottom: 0; }
 .chip {
   padding: 3px var(--space-3);
   border-radius: var(--radius-pill);
@@ -494,6 +543,7 @@ button.citation-chip { cursor: pointer; }
   }
   .graph-controls.is-open > * { position: static; max-width: none; }
   .graph-controls.is-open .graph-filter-panel { width: 100%; }
+  .graph-controls.is-open .graph-filter-panel--tree { max-height: none; }
   .detail-panel { width: calc(100% - var(--space-9)); max-height: 60vh; }
 }
 

@@ -40,6 +40,11 @@ def public_page_ids() -> set[str]:
     return {f.stem for f in _public_pages()}
 
 
+def public_page_domains() -> dict[str, str]:
+    """Node id → its directory, the same `data.domain[0]` parse_wiki() emits."""
+    return {f.stem: f.parent.name for f in _public_pages()}
+
+
 def parse_wiki() -> dict:
     """Graph payload for /ws `graph_update` and GET /api/graph: {nodes, edges, domains}.
 

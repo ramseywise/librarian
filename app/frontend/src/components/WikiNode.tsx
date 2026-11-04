@@ -15,7 +15,7 @@ const TYPE_BORDER: Record<string, string> = {
 export type WikiFlowNode = Node<WikiNodeData>;
 
 export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
-  const color = domainColor(data.domain[0]);
+  const color = data.groupColor ?? domainColor(data.domain[0]);
   const borderStyle = TYPE_BORDER[data.typeTag] ?? "solid";
 
   return (
@@ -36,7 +36,7 @@ export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
     >
       <Handle type="target" position={Position.Top} style={{ background: color }} />
       <div className="wiki-node-domain" style={{ color }}>
-        {data.domain[0] ?? data.typeTag}
+        {data.groupLabel ?? data.domain[0] ?? data.typeTag}
       </div>
       <div className="wiki-node-title">
         {data.title}

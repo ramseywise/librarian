@@ -13,6 +13,7 @@ def test_rewarm_is_debounced(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[int] = []
     monkeypatch.setattr(main, "CATALOG_REWARM_DELAY_S", 0.02)
     monkeypatch.setattr(main, "warm_catalog", lambda: calls.append(1))
+    monkeypatch.setattr(main, "write_snapshot", lambda: None)
     monkeypatch.setattr(main, "_rewarm_handle", None)
 
     async def burst() -> None:

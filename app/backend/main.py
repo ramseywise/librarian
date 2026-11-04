@@ -4,9 +4,13 @@ import asyncio
 import contextlib
 import json
 import os
+import time
 from collections.abc import AsyncIterator, Callable
 from pathlib import Path
 from typing import Any, Literal, Self
+
+# Before the heavy imports below, so the startup log covers them too.
+_PROCESS_T0 = time.perf_counter()
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
@@ -21,6 +25,8 @@ from shared.log_config import configure_logging, get_logger
 from .agent import run_agent_stream
 from .courses import router as courses_router
 from .courses import warm_catalog
+from .curriculum import router as curriculum_router
+from .curriculum import write_snapshot
 from .wiki_parser import parse_wiki, public_page_ids, tag_shared_edges
 
 # At import, not in a main(): uvicorn imports this module as an ASGI app and never
@@ -49,6 +55,16 @@ def _in_background(fn: Callable[[], None]) -> None:
     fut.add_done_callback(_background_tasks.discard)
 
 
+def _run_in_order(jobs: list[Callable[[], None]]) -> None:
+    for job in jobs:
+        job()
+
+
+def _warm_course_data() -> None:
+    warm_catalog()
+    write_snapshot()
+
+
 async def _watch_and_broadcast(awatch: Callable[[str], AsyncIterator[object]]) -> None:
     async for _ in awatch(str(WIKI_DIR)):
         graph = parse_wiki()
@@ -71,7 +87,7 @@ def _schedule_catalog_rewarm() -> None:
     if _rewarm_handle is not None:
         _rewarm_handle.cancel()
     _rewarm_handle = asyncio.get_running_loop().call_later(
-        CATALOG_REWARM_DELAY_S, _in_background, warm_catalog
+        CATALOG_REWARM_DELAY_S, _in_background, _warm_course_data
     )
 
 
@@ -88,9 +104,11 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     # a cache hit. Needs no extra; warm_catalog() never raises, so startup cannot fail.
     # LIBRARIAN_SKIP_WARMUP=1 (set by tests/conftest.py) skips both warmups so tests that
     # enter the lifespan don't build the real catalog or load the embedding model.
+    # The jobs run one after another. A boot running them side by side segfaulted in torch's
+    # MPS copy path (1 of 4 tries, 2026-11-04); the cause isn't established, so this and the
+    # encode lock in shared/embeddings.py are precautions, not a proven fix.
     skip_warmup = os.environ.get("LIBRARIAN_SKIP_WARMUP") == "1"
-    if not skip_warmup:
-        _in_background(warm_catalog)
+    jobs: list[Callable[[], None]] = [] if skip_warmup else [_warm_course_data]
     try:
         from watchfiles import awatch
 
@@ -100,10 +118,13 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     else:
         # Warmup in background so server accepts connections immediately
         if not skip_warmup:
-            _in_background(warmup)
+            jobs.append(warmup)
         task = asyncio.create_task(_watch_and_broadcast(awatch))
         _background_tasks.add(task)
         task.add_done_callback(_background_tasks.discard)
+    if jobs:
+        _in_background(lambda: _run_in_order(jobs))
+    log.info("api.startup.ready", seconds=round(time.perf_counter() - _PROCESS_T0, 2))
     yield
 
 
@@ -116,6 +137,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(courses_router)
+app.include_router(curriculum_router)
 
 
 @app.websocket("/ws")
@@ -159,13 +181,15 @@ def umap_layout() -> dict[str, dict]:
     # reads numpy>=2.4,<2.5, but the lazy import stays — the extra is still optional.
     try:
         from .umap_layout import compute_umap_positions
+
+        positions = compute_umap_positions()  # imports umap only when it has to fit
     except ImportError as e:
         raise HTTPException(
             status_code=503,
             detail=f"UMAP layout unavailable — umap-learn/numba vs numpy conflict: {e}",
         ) from e
     public = public_page_ids()
-    return {pid: xy for pid, xy in compute_umap_positions().items() if pid in public}
+    return {pid: xy for pid, xy in positions.items() if pid in public}
 
 
 # Per-message bound at the boundary; the agent applies the tighter count/total-chars

@@ -176,11 +176,15 @@ describe("visibleEdges", () => {
     expect(out.some((e) => e.data?.edgeType === "wikilink")).toBe(true);
   });
 
-  it("filter mode shows all types inside the subgraph, ignoring toggles", () => {
+  it("filter mode honours the toggles inside the subgraph", () => {
     const v = { ...NONE, activeTags: new Set(["rag"]), filterIds: new Set(["a", "b"]) };
+    const on = visibleEdges(src, ALL_ON, applyView(nodes, v), v).map((e) => e.id);
+    expect(on.sort()).toEqual(["tag-shared:a->b", "wikilink:a->b"]);
+    const noTagShared = { ...ALL_ON, "tag-shared": false };
+    const ids = visibleEdges(src, noTagShared, applyView(nodes, v), v).map((e) => e.id);
+    expect(ids).toEqual(["wikilink:a->b"]);
     const off = { wikilink: false, semantic: false, "tag-shared": false };
-    const ids = visibleEdges(src, off, applyView(nodes, v), v).map((e) => e.id);
-    expect(ids.sort()).toEqual(["tag-shared:a->b", "wikilink:a->b"]);
+    expect(visibleEdges(src, off, applyView(nodes, v), v)).toEqual([]);
   });
 
   it("focus keeps only edges touching the focused node", () => {

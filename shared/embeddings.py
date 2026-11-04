@@ -5,12 +5,15 @@ import os
 import struct
 import threading
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import duckdb
 import frontmatter
 import numpy as np
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
+
+# Imported where used: torch and sklearn cost seconds, and a warm restart needs neither.
+if TYPE_CHECKING:
+    from sentence_transformers import SentenceTransformer
 
 WIKI_DIR = Path(__file__).parent.parent / "data" / "wiki"
 CACHE_DB = Path(__file__).parent.parent / ".embeddings_cache.duckdb"
@@ -24,6 +27,9 @@ _model_lock = threading.Lock()
 # and from executor threads (course-catalog build); concurrent INSERT OR REPLACE on the
 # same DuckDB file fails with a primary-key violation, so callers take turns.
 _cache_lock = threading.Lock()
+# Model load and encode take turns across threads: concurrent use is the suspect, not
+# established, in a segfault seen in torch's MPS copy path on Apple silicon.
+_encode_lock = threading.Lock()
 
 
 def _get_model() -> SentenceTransformer:
@@ -31,13 +37,23 @@ def _get_model() -> SentenceTransformer:
     if _model is None:
         with _model_lock:
             if _model is None:
+                from sentence_transformers import SentenceTransformer
+
                 _model = SentenceTransformer(MODEL_NAME)
     return _model
 
 
+def _encode(texts: list[str]) -> np.ndarray:
+    with _encode_lock:
+        return _get_model().encode(texts, normalize_embeddings=True)
+
+
 def warmup() -> None:
-    model = _get_model()
-    model.encode(["warmup"], normalize_embeddings=True)
+    _encode(["warmup"])
+
+
+def _wiki_files() -> list[Path]:
+    return sorted(f for f in WIKI_DIR.rglob("*.md") if not f.name.startswith("_"))
 
 
 def _page_text(md_file: Path) -> str:
@@ -84,6 +100,11 @@ def _blob_to_vec(blob: bytes) -> np.ndarray:
     return np.array(struct.unpack(f"{n}f", blob), dtype=np.float32)
 
 
+def current_page_ids() -> list[str]:
+    """Page ids compute_embeddings() would return, without reading or encoding anything."""
+    return [f.stem for f in _wiki_files()]
+
+
 def compute_embeddings() -> tuple[list[str], np.ndarray]:
     """Compute (or load from cache) embeddings for all wiki pages.
 
@@ -95,7 +116,7 @@ def compute_embeddings() -> tuple[list[str], np.ndarray]:
 
 
 def _compute_embeddings() -> tuple[list[str], np.ndarray]:
-    md_files = sorted(f for f in WIKI_DIR.rglob("*.md") if not f.name.startswith("_"))
+    md_files = _wiki_files()
     if not md_files:
         return [], np.array([])
 
@@ -122,9 +143,7 @@ def _compute_embeddings() -> tuple[list[str], np.ndarray]:
             to_encode.append((path_str, page_id, _page_text(md_file), chash))
 
     if to_encode:
-        model = _get_model()
-        texts = [t[2] for t in to_encode]
-        new_vecs = model.encode(texts, normalize_embeddings=True)
+        new_vecs = _encode([t[2] for t in to_encode])
         rows = []
         for i, (path_str, page_id, _, chash) in enumerate(to_encode):
             vec = new_vecs[i]
@@ -144,6 +163,8 @@ def _compute_embeddings() -> tuple[list[str], np.ndarray]:
 
 
 def semantic_edges(threshold: float = 0.65) -> list[dict]:
+    from sklearn.metrics.pairwise import cosine_similarity
+
     page_ids, vecs = compute_embeddings()
     if len(page_ids) < 2:
         return []
@@ -192,7 +213,7 @@ def encode_texts_cached(texts: list[str], cache_file: Path) -> np.ndarray:
 
     missing = [i for i, k in enumerate(keys) if k not in cached]
     if missing:
-        new = _get_model().encode([texts[i] for i in missing], normalize_embeddings=True)
+        new = _encode([texts[i] for i in missing])
         for i, vec in zip(missing, new, strict=True):
             cached[keys[i]] = np.asarray(vec, dtype=np.float32)
 
