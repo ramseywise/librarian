@@ -2,7 +2,7 @@
 title: Clustering Validation Against Named Baselines
 tags: [foundations, eval, pattern]
 summary: "Customer clustering is only evidence of structure when its silhouette beats a random partition and the trivial k=2 split computed in the same call, when unsupervised leakage analogues (restated timestamp columns, scaler fit outside resamples, a sum beside its own decomposition) are ruled out by name, and when a value-reading matrix-health rule stops a degenerate matrix escaping through the 'structure is weak' clause."
-updated: 2026-10-17
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/galactus/docs/plans/2026-08-14-gal-17-customer-segmentation.md
   - data/raw/repos/galactus/.claude--docs--plans--2026-08-14-gal-17-customer-segmentation.md
@@ -77,3 +77,4 @@ than about broken features — both produce a low score.
 - [[An Unrun Scan Is Not a Clean Scan]] — extends (tests outside testpaths collected zero in this build)
 - [[Rationale-Blind Worst-Case Review]] — extends (the advisor that found the escape hatch)
 - [[A Sentinel Catches Forgetting, Not Asserting]] — extends (a seeded sweep must not record `seed` as NotApplicable)
+- [[Precomputed Labels, Not Refits on Filter]] — related (publish labels from a job, do not refit per filter)

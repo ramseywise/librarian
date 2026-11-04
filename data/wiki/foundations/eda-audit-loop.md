@@ -38,3 +38,4 @@ An EDA is finished when someone else can act on it. A useful note has: what the 
 - [[Inspection Paradox in Metrics]] — related (the row unit decides whose average it is)
 - [[Small-N Trap and Shrinkage]] — related (why group tables mislead)
 - [[Data Science Curriculum Layers]] — related (the analytics layers this audit belongs to)
+- [[Anscombe's Quartet: Plot Before Summarising]] — related (why plot before summarising)

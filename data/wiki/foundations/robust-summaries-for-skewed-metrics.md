@@ -40,3 +40,4 @@ Pearson correlation is linear and as outlier-sensitive as the mean. One bad row 
 - [[Distribution Selection for Metrics]] — related (lognormal and zero-inflated shapes)
 - [[Statistical Test Selection]] — related (rank tests for the same skew problem)
 - [[CLT on Heavy-Tailed Metrics]] — related (skew also slows the central limit theorem)
+- [[Matplotlib Object Model and Seaborn Function Levels]] — related (box plots on a log scale for skewed values)

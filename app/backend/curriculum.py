@@ -29,7 +29,8 @@ log = get_logger(__name__)
 router = APIRouter(prefix="/api/graph")
 
 SNAPSHOT = ROOT / ".cache" / "curriculum.json"
-# Orientation pages rather than a subject, so they would link to everything.
+# Orientation pages and reading lists rather than a subject: the first would link to
+# everything, the second is always empty and would read as a gap in the wiki.
 SKIPPED_MODULES = {"00-start-here", "sources"}
 # About the wiki or a project, not a topic: most wrong links in the 2026-11-04 audit landed
 # here (LC 207 "Course Schedule" → the learn-ai-engineering project page).

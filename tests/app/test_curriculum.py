@@ -40,7 +40,11 @@ def _catalog() -> Catalog:
         {
             "id": "data",
             "title": "Data",
-            "modules": [module("stats", ["data/stats/a"]), module("viz", [])],
+            "modules": [
+                module("stats", ["data/stats/a"]),
+                module("viz", []),
+                module("sources", []),
+            ],
         },
         {"id": "leftover", "title": "leftover", "modules": []},
     ]
@@ -94,6 +98,11 @@ def test_empty_module_is_kept_so_the_gap_shows(client: TestClient) -> None:
     viz = _module(client.get("/api/graph/curriculum").json(), "data", "viz")
     assert viz["pageIds"] == []
     assert viz["firstLesson"] is None
+
+
+def test_reading_list_module_is_not_a_topic(client: TestClient) -> None:
+    body = client.get("/api/graph/curriculum").json()
+    assert [m["id"] for m in body["courses"][1]["modules"]] == ["stats", "viz"]
 
 
 def test_course_with_no_modules_is_dropped(client: TestClient) -> None:

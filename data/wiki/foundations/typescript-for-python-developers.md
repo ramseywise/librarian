@@ -2,7 +2,7 @@
 title: TypeScript for Python Developers
 tags: [foundations, reference]
 summary: "TypeScript is JavaScript with a checker that runs and then disappears, so learn the runtime traps first (`==` coercion, string-comparing `sort()`, truthy `[]`, reference equality), then annotate boundaries, prefer `unknown` over `any`, and turn on `strict` from day one."
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/programming--typescript--notes--01-js-for-python-devs.md
   - data/raw/repos/learn-ai-engineering/programming--typescript--notes--02-everyday-types.md
@@ -105,3 +105,4 @@ readonly with literal property types. Tuples (`[string, number]`) fix length and
 - [[TypeScript Generics and Type Transformations]] — extends
 - [[TypeScript Modules and Tooling]] — related (the build/run side of the same runtime facts)
 - [[Runtime Validation with Zod]] — extends
+- [[Dashboard Stack Layers and Choosing a Route]] — related (the full-stack dashboard route uses this)
