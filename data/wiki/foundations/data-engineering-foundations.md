@@ -2,7 +2,7 @@
 title: Data Engineering Foundations
 tags: [foundations, concept]
 summary: "The six stages of data engineering as a pipeline discipline — ingest, transform, orchestrate, warehouse, monitor, feature-serve — where each stage's job is to prepare data for the next, plus the modern-stack tools (DuckDB, Polars, Iceberg, Dagster) missing from Zoomcamp-era material."
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-engineering--README.md
@@ -115,3 +115,4 @@ See [[RAG Eval Gate Contract]].
 - [[learn-ai-engineering Project]] — extends (the curriculum repo this subject belongs to)
 - [[SQL Query Fundamentals]] — prerequisite-for (the SQL modules it assumes)
 - [[SQL Indexes and Query Plans]] — related (B-tree vs columnar zone maps)
+- [[EDA Audit Loop]] — related (auditing a table before trusting it)

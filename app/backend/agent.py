@@ -20,6 +20,7 @@ log = get_logger(__name__)
 MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-5-5")
 MAX_TOKENS = 8192
 MAX_TURNS = 8
+MAX_BRIEFING_CHARS = 40_000
 
 # History bounds. Prior turns are text only (no tool blocks), so these cap what a
 # follow-up re-sends; the oldest turns go first. Trimmed here rather than in the API
@@ -55,6 +56,7 @@ def _get_client() -> anthropic.AsyncAnthropic:
 
 
 _FRONTMATTER_RE = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
+_WIKI_PATH_RE = re.compile(r"\(`(/[^`]+\.md)`\)")
 
 
 def _strip_frontmatter(text: str) -> str:
@@ -85,6 +87,21 @@ def _read_page(page_id: str) -> str:
     # Private pages are unreachable by ID and by title alike — the server core
     # applies the same predicate on every lookup path.
     return server._read_page_text(page_id)
+
+
+def _domain_briefing(domain: str) -> str:
+    """Outline of a domain or course module: titles and summaries, not page bodies.
+
+    The MCP tool of the same name concatenates every page, which is 230k characters for rag
+    and 2.2M for patterns: too much for one chat turn. Private domains are refused by the
+    server core, and the listing is sorted by backlinks, so a cut keeps the best-linked pages.
+    """
+    listing = server.list_domain(domain)
+    listing = _WIKI_PATH_RE.sub(lambda m: f"(id: `{Path(m.group(1)).stem}`)", listing)
+    if len(listing) > MAX_BRIEFING_CHARS:
+        cut = listing.rfind("\n- **", 0, MAX_BRIEFING_CHARS)
+        listing = f"{listing[:cut]}\n\n[Listing cut to its best-linked pages.]"
+    return listing
 
 
 _TOOLS: list[dict[str, Any]] = [
@@ -119,7 +136,29 @@ _TOOLS: list[dict[str, Any]] = [
             "required": ["page_id"],
         },
     },
+    {
+        "name": "get_domain_briefing",
+        "description": (
+            "Outline a whole area: every page's title and summary, ready for read_page. "
+            "Use it when asked to brief on a domain or course module."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string",
+                    "description": (
+                        "A wiki directory such as 'rag', or a course module such as "
+                        "'course/data-analytics/02-probability-and-statistics'"
+                    ),
+                }
+            },
+            "required": ["domain"],
+        },
+    },
 ]
+
+_TOOL_ARG = {"search_wiki": "query", "read_page": "page_id", "get_domain_briefing": "domain"}
 
 _SYSTEM = """You are a discerning research analyst for a personal agent engineering knowledge base.
 Your job is not to recite documentation — it is to weigh evidence, surface trade-offs, flag gaps,
@@ -129,6 +168,9 @@ and help the user think clearly about design decisions.
 1. Use search_wiki to find relevant pages
 2. Use read_page on the 2–4 most relevant pages (prioritise concept and comparison pages over decision pages)
 3. Synthesise a critical, grounded answer
+
+When asked to brief on a domain or course module, start with get_domain_briefing and read the
+pages that matter most before summarising what the area covers and where it is thin.
 
 ## Response format
 Always lead with a **headline** — one sentence that directly answers the question.
@@ -268,7 +310,8 @@ async def run_agent_stream(
                 tool_results: list[dict[str, Any]] = []
                 for block in tool_uses:
                     args: dict[str, Any] = dict(block.input or {})
-                    arg = str(args.get("query" if block.name == "search_wiki" else "page_id", ""))
+                    arg_name = _TOOL_ARG.get(block.name, "page_id")
+                    arg = str(args.get(arg_name, ""))
                     tool_calls.append({"tool": block.name, "arg": arg})
                     if block.name == "search_wiki":
                         result = _search_wiki(args.get("query", ""))
@@ -281,6 +324,8 @@ async def run_agent_stream(
                             referenced_pages.add(page_id)
                             if page_id not in pages_read:
                                 pages_read.append(page_id)
+                    elif block.name == "get_domain_briefing":
+                        result = _domain_briefing(args.get("domain", ""))
                     else:
                         result = "Unknown tool."
 

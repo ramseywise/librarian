@@ -260,3 +260,25 @@ def test_api_graph_edges_all_adds_tag_shared(
     full = client.get("/api/graph", params={"edges": "all"}).json()
     assert {e["id"] for e in full["edges"]} == {"wl:a-page->b-page", "ts:a-page->b-page"}
     assert client.get("/api/graph", params={"edges": "bogus"}).status_code == 422
+
+
+def test_parse_wiki_reuses_the_parse_until_a_page_changes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from backend import wiki_parser
+
+    monkeypatch.setattr(wiki_parser, "WIKI_DIR", tmp_path)
+    monkeypatch.setattr(wiki_parser, "_parsed", None)
+    _write_page(tmp_path, "rag", "chunking", "Chunking", ["rag", "concept"], "One")
+    calls = []
+    real = wiki_parser.parse_wiki_uncached
+    monkeypatch.setattr(wiki_parser, "parse_wiki_uncached", lambda: calls.append(1) or real())
+
+    first = wiki_parser.parse_wiki()
+    first["edges"] = []  # a caller swapping edges must not reach the next caller's copy
+    wiki_parser.parse_wiki()
+    assert len(calls) == 1
+
+    _write_page(tmp_path, "rag", "chunking", "Chunking", ["rag", "concept"], "Longer summary")
+    assert wiki_parser.parse_wiki()["nodes"][0]["data"]["summary"] == "Longer summary"
+    assert len(calls) == 2

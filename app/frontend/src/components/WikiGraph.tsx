@@ -19,7 +19,7 @@ import { LayoutSwitcher } from "./LayoutSwitcher";
 import { TagFilterPanel } from "./TagFilterPanel";
 import { useCurriculum } from "../hooks/useCurriculum";
 import { useWikiData } from "../hooks/useWikiData";
-import { facetsOf, withCourseGroups } from "../utils/curriculum";
+import { facetsOf, isModuleFacet, withCourseGroups } from "../utils/curriculum";
 import { applyDagreLayout, declutter, placeMissingNodes, type XY } from "../utils/layout";
 import {
   applyView,
@@ -139,7 +139,10 @@ function WikiGraphInner({
 
   const filterIds = useMemo(() => {
     const primary = filterPrimaryIds(baseNodes, activeTags, facets);
-    return primary ? expandBridges(primary, linkEdges) : null;
+    if (!primary) return null;
+    // A module is a precise ask, so it shows its own pages. Bridges turned one with 29 into 153.
+    if ([...activeTags].some(isModuleFacet)) return primary;
+    return expandBridges(primary, linkEdges);
   }, [baseNodes, activeTags, facets, linkEdges]);
 
   // Semantic layout keeps its positions under a filter (fitView zooms to the subgraph);

@@ -60,8 +60,14 @@ EXTRACT_GLOBS = [
     "generative-ai/*/*.md",
     "generative-ai/*/notes/*.md",
     "data-engineering/*.md",
+    "data-engineering/*/*.md",
+    "data-engineering/*/notes/*.md",
     "data-science/*.md",
+    "data-science/*/*.md",
+    "data-science/*/notes/*.md",
     "data-analytics/*.md",
+    "data-analytics/*/*.md",
+    "data-analytics/*/notes/*.md",
     # programming/ (Python, SQL, TypeScript tracks). Same depth limit: practice/
     # holds vendored exercise repos and a node_modules tree, so only READMEs and
     # notes/ are taken, never a recursive **.

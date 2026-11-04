@@ -123,6 +123,16 @@ def test_lesson_links_concepts_and_excludes_private_and_tombstones(client: TestC
     assert rerank["concepts"] == []  # wiki: frontmatter naming private/tombstoned pages
 
 
+def test_lesson_links_pages_compiled_from_it() -> None:
+    raw = "data/raw/repos/learn-ai-engineering/basics--01-m--notes--stats.md"
+    wiki = {
+        "bayes": courses.WikiRef("bayes", "Bayes", "", "foundations", (raw,)),
+        "other": courses.WikiRef("other", "Other", "", "foundations", ("data/raw/x/stats.md",)),
+    }
+
+    assert courses._compiled_from(wiki) == {"basics/01-m/notes/stats": ["bayes"]}
+
+
 def test_prev_next_crosses_modules_but_not_courses(client: TestClient) -> None:
     rerank = client.get("/api/courses/lessons/gen-ai/01-rag/deep/rerank").json()
     assert rerank["prev"]["id"] == "gen-ai/01-rag/intro"

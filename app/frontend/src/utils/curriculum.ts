@@ -8,6 +8,7 @@ export const beyondFacet = (domain: string) => `beyond:${domain}`;
 
 const FACET_ID = /^(course|module|beyond):/;
 export const isFacetId = (tag: string) => FACET_ID.test(tag);
+export const isModuleFacet = (tag: string) => tag.startsWith("module:");
 
 /** Filter id → the pages it selects, for every course, module and "beyond" directory. */
 export function facetsOf(c: Curriculum | null): Facets | undefined {

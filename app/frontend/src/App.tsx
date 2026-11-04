@@ -72,7 +72,7 @@ export default function App() {
   const handleBrief = useCallback(
     (domain: string) => {
       setChatOpen(true);
-      handleSend(`get_domain_briefing("${domain}")`);
+      handleSend(`Brief me on "${domain}".`);
     },
     [handleSend]
   );

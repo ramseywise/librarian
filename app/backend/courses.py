@@ -5,8 +5,10 @@ Layout: data/courses/<course>/_course.md, <course>/<module>/_module.md, and less
 .md files anywhere below a module. Ordering and titles come from frontmatter. Flashcards live
 in <course>/<module>/_flashcards.md, frontmatter `cards: [{front, back, lesson?}, ...]`.
 
-Lesson ↔ concept links come from three places, ranked in this order:
+Lesson ↔ concept links come from four places, ranked in this order:
 - explicit: `wiki: [page-id, ...]` in lesson frontmatter, or inline [[Wiki Title]]
+- compiled: wiki pages whose `sources:` list this lesson's raw copy (data/raw/repos/
+  learn-ai-engineering/<lesson path with / as -->.md): the page was written from it
 - mentioned: wiki page titles that appear verbatim in the lesson text (multi-word
   titles only — single words like "Memory" match everything)
 - semantic: nearest wiki pages by embedding cosine (local MiniLM via shared.embeddings,
@@ -64,6 +66,7 @@ MAX_CONCEPTS = 12
 SEMANTIC_THRESHOLD = 0.55
 SEMANTIC_TOP_K = 6
 LESSON_PROSE_CHARS = 1500
+LESSON_RAW_PREFIX = "data/raw/repos/learn-ai-engineering/"
 # Lesson vectors keyed by content hash, so a warm restart re-embeds nothing (gitignored).
 LESSON_VEC_CACHE = ROOT / ".cache" / "lesson_embeddings.npz"
 DRILL_KEYS = ("track", "topic", "difficulty", "timebox_min")  # programming/drills/README.md schema
@@ -78,6 +81,7 @@ class WikiRef:
     title: str
     summary: str
     domain: str
+    sources: tuple[str, ...] = ()
 
 
 @dataclass
@@ -198,8 +202,20 @@ def _load_wiki(wiki_dir: Path) -> dict[str, WikiRef]:
             title=str(post.get("title") or md.stem),
             summary=str(post.get("summary") or ""),
             domain=rel.parts[0] if len(rel.parts) > 1 else "",
+            sources=tuple(str(x) for x in post.get("sources") or []),
         )
     return refs
+
+
+def _compiled_from(wiki: dict[str, WikiRef]) -> dict[str, list[str]]:
+    """Lesson id → the pages compiled from its raw copy."""
+    out: dict[str, list[str]] = {}
+    for ref in wiki.values():
+        for src in ref.sources:
+            if src.startswith(LESSON_RAW_PREFIX) and src.endswith(".md"):
+                lesson = src[len(LESSON_RAW_PREFIX) : -3].replace("--", "/")
+                out.setdefault(lesson, []).append(ref.id)
+    return out
 
 
 def _prose(body: str) -> str:
@@ -241,6 +257,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
     wiki = _load_wiki(wiki_dir)
     slugs = {slugify(r.title): r.id for r in wiki.values()} | {slugify(i): i for i in wiki}
     matcher, by_title = _concept_matcher(wiki)
+    compiled = _compiled_from(wiki)
     # Private/tombstoned page ids: never echoed back, not even as a drill tag.
     hidden = {md.stem for md in wiki_dir.rglob("*.md")} - set(wiki) if wiki_dir.is_dir() else set()
 
@@ -275,7 +292,9 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                         kind=str(post.get("kind") or "reading"),
                         source=str(post.get("source") or ""),
                         body=post.content,
-                        concepts=_rank_concepts(post, wiki, slugs, matcher, by_title),
+                        concepts=_rank_concepts(
+                            post, wiki, slugs, matcher, by_title, compiled.get(lid, [])
+                        ),
                         drill=_drill_meta(post, wiki, slugs, hidden)
                         if post.get("kind") == "drill"
                         else {},
@@ -393,6 +412,7 @@ def _rank_concepts(
     slugs: dict[str, str],
     matcher: re.Pattern[str] | None,
     by_title: dict[str, str],
+    compiled: list[str],
 ) -> list[str]:
     explicit = [str(x) for x in (post.get("wiki") or [])]
     explicit += [m.group(1) for m in WIKILINK_RE.finditer(post.content)]
@@ -401,6 +421,7 @@ def _rank_concepts(
         pid = _resolve_wikilink(target, wiki, slugs)
         if pid and pid not in ranked:
             ranked.append(pid)
+    ranked += [pid for pid in compiled if pid not in ranked]
     if matcher:
         counts: dict[str, int] = {}
         text = f"{post.get('title') or ''}\n{_prose(post.content)}"

@@ -45,7 +45,27 @@ def public_page_domains() -> dict[str, str]:
     return {f.stem: f.parent.name for f in _public_pages()}
 
 
+# Last parse and the file signature it was built from. Every page load asks twice (/api/graph
+# and /ws), and during the catalog warmup a parse competes for the GIL and takes seconds.
+_parsed: tuple[tuple, dict] | None = None
+
+
 def parse_wiki() -> dict:
+    """parse_wiki_uncached(), reused while no page has changed. Callers get their own top-level
+    dict, so swapping `edges` is safe, but nodes and edges are shared: don't mutate them."""
+    global _parsed
+    signature = tuple((str(f), *_stat_key(f)) for f in _public_pages())
+    if _parsed is None or _parsed[0] != signature:
+        _parsed = (signature, parse_wiki_uncached())
+    return dict(_parsed[1])
+
+
+def _stat_key(f: Path) -> tuple[int, int]:
+    st = f.stat()
+    return st.st_mtime_ns, st.st_size
+
+
+def parse_wiki_uncached() -> dict:
     """Graph payload for /ws `graph_update` and GET /api/graph: {nodes, edges, domains}.
 
     `edges` are wikilink edges only. Tag-shared edges (~42k pairs, ~10 MB of JSON on the

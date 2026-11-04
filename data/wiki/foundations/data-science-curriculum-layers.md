@@ -2,7 +2,7 @@
 title: Data Science Curriculum Layers
 tags: [foundations, concept]
 summary: "The tree-shaped ML curriculum — statistical foundations, then supervised learning branching to model evaluation and independently to unsupervised/ensembles/Bayesian — plus the six-layer analytics progression that precedes it and the branching decision that ends it."
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-science--README.md
@@ -143,3 +143,14 @@ them identically loses the distinction permanently.
 - [[Karpathy LLM Wiki Pattern]] — related (provenance-preserving filing, same instinct)
 - [[learn-ai-engineering Project]] — extends (the curriculum repo these layers come from)
 - [[Programming Curriculum]] — prerequisite-for (Python 04 hands off to these layers)
+- [[EDA Audit Loop]] — prerequisite-for (the descriptive-statistics and EDA layer, compiled)
+- [[Bayes Rule and the Base Rate Fallacy]] — prerequisite-for (probability foundations)
+- [[Expectation and Variance Rules]] — prerequisite-for (probability foundations)
+- [[Distribution Selection for Metrics]] — prerequisite-for (distributions and sampling)
+- [[CLT on Heavy-Tailed Metrics]] — prerequisite-for (distributions and sampling)
+- [[Maximum Likelihood and Estimator Bias]] — prerequisite-for (estimation)
+- [[Bootstrap Resampling and Its Failures]] — prerequisite-for (estimation)
+- [[P-Value Misreadings]] — prerequisite-for (hypothesis testing)
+- [[Regression Covariate Adjustment]] — prerequisite-for (regression and GLMs)
+- [[Data Generating Process Simulation Check]] — prerequisite-for (data generating process)
+- [[Panel Data Fixed Effects]] — prerequisite-for (panel data and fixed effects)

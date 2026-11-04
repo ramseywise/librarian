@@ -84,7 +84,7 @@ def test_module_filter_shows_its_pages(page: Page) -> None:
     pages = page.locator(".graph-status-count")
     expect(pages).to_contain_text(f"of {len(_get('/api/graph')['nodes'])} pages")
     shown = int(pages.inner_text().split()[1])
-    assert shown >= len(module["pageIds"])
+    assert shown == len(module["pageIds"])
 
 
 def _lesson_with_concepts() -> dict[str, Any]:

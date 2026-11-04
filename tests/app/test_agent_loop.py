@@ -368,3 +368,52 @@ def test_chat_rejects_bad_requests(api: tuple[TestClient, list[Any]], body: dict
     client, seen = api
     assert client.post("/api/chat/stream", json=body).status_code == 422
     assert seen == []
+
+
+@pytest.mark.unit
+def test_domain_briefing_outlines_pages_with_readable_ids(wiki: Path) -> None:
+    briefing = agent._domain_briefing("rag")
+
+    assert "(id: `chunking`)" in briefing
+    assert "How to chunk" in briefing
+    assert "Chunk by headings." not in briefing  # titles and summaries, not bodies
+    assert str(wiki) not in briefing
+
+
+@pytest.mark.unit
+def test_domain_briefing_refuses_private(wiki: Path) -> None:
+    (wiki / "private" / "client.md").write_text(
+        PAGE.format(title="Client", summary="Secret", body="Secret.")
+    )
+
+    briefing = agent._domain_briefing("private")
+
+    assert "Unknown domain" in briefing
+    assert "Secret" not in briefing
+
+
+@pytest.mark.unit
+def test_domain_briefing_cuts_long_listing_at_a_page(
+    wiki: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(agent, "MAX_BRIEFING_CHARS", 200)
+
+    briefing = agent._domain_briefing("rag")
+
+    assert briefing.endswith("[Listing cut to its best-linked pages.]")
+    assert briefing.count("- **") == 1
+
+
+@pytest.mark.unit
+async def test_agent_dispatches_briefing_tool(wiki: Path, fake_anthropic: type) -> None:
+    client = fake_anthropic(
+        [
+            fake_anthropic.tool_turn(("get_domain_briefing", {"domain": "rag"})),
+            fake_anthropic.text_turn("RAG covers chunking and reranking."),
+        ]
+    )
+
+    events = await _collect(agent.run_agent_stream('Brief me on "rag".', client=client))
+
+    assert _of(events, "token")
+    assert "(id: `chunking`)" in str(client.stream_calls[-1]["messages"])

@@ -67,7 +67,7 @@ def _warm_course_data() -> None:
 
 async def _watch_and_broadcast(awatch: Callable[[str], AsyncIterator[object]]) -> None:
     async for _ in awatch(str(WIKI_DIR)):
-        graph = parse_wiki()
+        graph = await asyncio.to_thread(parse_wiki)
         dead = []
         for ws in list(_ws_clients):
             try:
@@ -145,7 +145,8 @@ async def ws_endpoint(ws: WebSocket) -> None:
     await ws.accept()
     _ws_clients.append(ws)
     try:
-        await ws.send_json({"type": "graph_update", "data": parse_wiki()})
+        graph = await asyncio.to_thread(parse_wiki)
+        await ws.send_json({"type": "graph_update", "data": graph})
         while True:
             await ws.receive_text()
     except WebSocketDisconnect:
@@ -153,8 +154,10 @@ async def ws_endpoint(ws: WebSocket) -> None:
             _ws_clients.remove(ws)
 
 
+# Sync route (threadpool): parse_wiki reads every page, which on the event loop stalls all
+# other requests for as long as it takes.
 @app.get("/api/graph")
-async def get_graph(edges: Literal["wikilink", "all"] = "wikilink") -> dict[str, Any]:
+def get_graph(edges: Literal["wikilink", "all"] = "wikilink") -> dict[str, Any]:
     """Same payload as the /ws graph_update. `?edges=all` adds the tag-shared edges the
     UI derives client-side, for scripts that want the full edge set from the server."""
     graph = parse_wiki()
