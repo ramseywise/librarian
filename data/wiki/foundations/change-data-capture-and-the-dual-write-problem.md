@@ -47,7 +47,7 @@ A pipeline can trust an event log in a way it cannot trust a stream of commands,
 
 ## See Also
 - [[High-Watermark Incremental Extraction and Its Blind Spots]] — alternative-to
-- [[Idempotent Window-Replace Loads]] — related
+- [[Idempotent Batch Loads and Partition Overwrite]] — related
 - [[Kafka Ingest Model, Delivery Semantics and Stream Windows]] — related
 - [[Slowly Changing Dimensions Types 1, 2 and 3]] — related (versioned rows in a stream)
 - [[Data Engineering Foundations]] — related

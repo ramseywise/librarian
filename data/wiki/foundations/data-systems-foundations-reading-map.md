@@ -16,7 +16,7 @@ Almost every debate in the field reduces to one of these mechanisms: a slow quer
 2. What a file promises its reader: [[Encoding Compatibility and Schema Evolution]], [[Parquet Row Groups, Pruning and Sort Order]].
 3. Layout for OLTP and OLAP: [[Row Stores vs Column Stores]], [[B-Trees vs LSM-Trees]].
 4. When two writers meet: [[Transaction Isolation Levels and Anomalies]], [[MVCC Row Versions and Snapshots]], [[Three Ways to Be Serializable]].
-5. Where rows live and what a reader sees: [[Partitioning Strategies and Hot Spots]], [[Data Lake Partitioning and the Small Files Problem]], [[Replication Lag, Failover and Read Anomalies]], [[Quorums, Version Vectors and Last-Write-Wins]].
+5. Where rows live and what a reader sees: [[Partitioning Strategies and Hot Spots]], [[Small Files, Prefix Layout and Storage Tiers]], [[Replication Lag, Failover and Read Anomalies]], [[Quorums, Version Vectors and Last-Write-Wins]].
 6. What a node can know: [[Unreliable Networks, Clocks and Process Pauses]], [[Fencing Tokens and Zombie Writers]], [[Idempotent Retries and Request IDs]].
 7. How machines agree: [[Linearizability, Ordering and Quorum Reads]], [[Lamport Timestamps and Total Order Broadcast]], [[Atomic Commit and Why Two-Phase Commit Blocks]], [[Consensus and Coordination Services]].
 8. Computing across a cluster: [[MapReduce, the Shuffle and Spark Lineage]], [[Shuffle Skew and Salting]], [[Distributed Compute Cost and the Single-Machine Threshold]].

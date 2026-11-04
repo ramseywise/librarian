@@ -32,7 +32,7 @@ Most incidents are boring, so check in order: did data arrive, did it arrive onc
 
 ## Contain
 
-The cleanest containment is built before the incident: the [[Write-Audit-Publish Gate]], where readers see a gap, which is visible and honest, instead of a wrong number. Without a gate: pause the downstream DAG, restore a previous table version if the format supports it, or put a warning on the dashboard. A model can be rolled back separately from code, but not when the inputs are what is wrong.
+The cleanest containment is built before the incident: the [[Write-Audit-Publish and Atomic Visibility]], where readers see a gap, which is visible and honest, instead of a wrong number. Without a gate: pause the downstream DAG, restore a previous table version if the format supports it, or put a warning on the dashboard. A model can be rolled back separately from code, but not when the inputs are what is wrong.
 
 ## Verify and communicate
 
@@ -57,7 +57,7 @@ Triggers: user-visible degradation, any data loss, on-call intervention, long re
 Fixing raw in place; non-idempotent repair jobs; diagnosing before containing; backfilling without the blast radius; filling gaps silently; retraining as the reflex (it bakes the fault in); closing at the first green; no communication.
 
 ## See Also
-- [[Write-Audit-Publish Gate]] — prerequisite-for
+- [[Write-Audit-Publish and Atomic Visibility]] — prerequisite-for
 - [[Idempotent Backfills and Dated Corrections]] — extends
 - [[Lineage for Blast Radius and Rebuild Lists]] — prerequisite-for
 - [[Freshness Alerts Need a Date Spine]] — related

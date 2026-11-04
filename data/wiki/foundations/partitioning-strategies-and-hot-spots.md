@@ -40,6 +40,6 @@ Rebalancing should leave load fair, keep serving, and move no more than necessar
 Clients find the owner by asking any node, via a routing tier, or by knowing the map; all must agree on a changing assignment, so many systems use a coordination service or gossip (see [[Consensus and Coordination Services]]). A write touching several partitions cannot be made atomic by partitioning alone (see [[Atomic Commit and Why Two-Phase Commit Blocks]]).
 
 ## See Also
-- [[Data Lake Partitioning and the Small Files Problem]] — extends
+- [[Small Files, Prefix Layout and Storage Tiers]] — extends
 - [[Replication Lag, Failover and Read Anomalies]] — related
 - [[Faults, Load Parameters and Systems of Record]] — related (skewed load)

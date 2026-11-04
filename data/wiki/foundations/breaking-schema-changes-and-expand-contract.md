@@ -47,4 +47,4 @@ Treating renames as harmless; relying on CI alone (runtime checks still needed);
 - [[Data Contracts Beyond Schemas]] — prerequisite-for
 - [[Kafka Ingest Model, Delivery Semantics and Stream Windows]] — related
 - [[Data Engineering Foundations]] — related
-- [[Expand, Migrate, Contract]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Expand, Migrate, Contract]] — related (the live-table rollout)

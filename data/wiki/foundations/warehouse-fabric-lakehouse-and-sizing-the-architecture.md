@@ -45,4 +45,4 @@ Limits: a total order needs one leader, so across independent services some cros
 - [[Data Catalog Metadata: Push, Pull and Measuring Adoption]] — extends (the fabric's catalog, built out)
 - [[SQL Fan-Out and Source Reconciliation]] — related
 - [[Data Engineering Foundations]] — related (course map)
-- [[Lakehouse vs Warehouse Decision]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Lakehouse vs Warehouse Decision]] — related (lakehouse against warehouse in depth)

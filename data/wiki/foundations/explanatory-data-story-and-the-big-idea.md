@@ -23,7 +23,7 @@ When the sizing needs inputs you lack (a gross margin, revenue per retained cust
 
 ## Causality and scope
 
-A before-and-after with one change date also picks up anything else that changed. Do not present it as causal; name what else changed and propose a holdout (here, hold out 10% of customers). Say what the analysis does not show (the case did not test whether a separate spend increase earned its return). A recommendation is stronger for saying what it does not know. Separate a mix shift from within-segment change first: [[Mix Effect vs Within-Segment Effect]].
+A before-and-after with one change date also picks up anything else that changed. Do not present it as causal; name what else changed and propose a holdout (here, hold out 10% of customers). Say what the analysis does not show (the case did not test whether a separate spend increase earned its return). A recommendation is stronger for saying what it does not know. Separate a mix shift from within-segment change first: [[Rate and Mix Decomposition]].
 
 ## Chart and story shape
 
@@ -35,6 +35,6 @@ A before-and-after with one change date also picks up anything else that changed
 
 ## See Also
 - [[Dashboard Design: Paired Metrics and Context]] — related
-- [[Mix Effect vs Within-Segment Effect]] — prerequisite-for
+- [[Rate and Mix Decomposition]] — prerequisite-for
 - [[Misleading Axes: Dual Axes and Truncated Bars]] — related
 - [[Difference-in-Differences as Two-Way Fixed Effects]] — related (stronger designs than before/after)

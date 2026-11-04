@@ -42,4 +42,4 @@ A warehouse can train a model in SQL without moving data (BigQuery ML). Casting 
 - [[Separated Storage and Compute and Warehouse Billing Shapes]] — related
 - [[Partition Pruning, Clustering and Column Pruning]] — prerequisite-for
 - [[Data Engineering Foundations]] — related
-- [[Distributed Compute Cost and the Single-Machine Threshold]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Distributed Compute Cost and the Single-Machine Threshold]] — related (the evidence and engine comparison)

@@ -45,6 +45,13 @@ repos:
         files: ^app/frontend/.*\.(ts|tsx|js|jsx)$
         pass_filenames: false
 
+      - id: wiki-frontmatter-yaml
+        name: wiki frontmatter parses as YAML
+        language: system
+        entry: uv run pytest tests/hooks/test_wiki_frontmatter_yaml.py -q
+        files: ^data/wiki/.*\.md$
+        pass_filenames: false
+
       - id: no-hardcoded-paths
         name: no hardcoded /Users/ paths
         language: pygrep

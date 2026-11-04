@@ -293,3 +293,26 @@ def test_invalid_frontmatter_skips_that_page_only(mock_wiki: Path) -> None:
     after = wp.parse_wiki()
     assert {n["id"] for n in after["nodes"]} == {n["id"] for n in before["nodes"]}
     assert after["edges"] == before["edges"]
+
+
+def test_tombstones_are_not_public(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A retired page stays on disk for inbound links but is gone from every graph surface."""
+    import backend.wiki_parser as wp
+
+    wiki = tmp_path / "wiki"
+    (wiki / "rag").mkdir(parents=True)
+    (wiki / "rag" / "live.md").write_text(
+        "---\ntitle: Live\ntags: [rag, concept]\n---\nSee [[Old]].\n"
+    )
+    (wiki / "rag" / "old.md").write_text(
+        "---\ntitle: Old\ntags: [rag, tombstone]\n---\nRetired. See [[Live]] — supersedes.\n"
+    )
+    monkeypatch.setattr(wp, "WIKI_DIR", wiki)
+    monkeypatch.setattr(wp, "_parsed", None)
+
+    graph = wp.parse_wiki()
+
+    assert [n["id"] for n in graph["nodes"]] == ["live"]
+    assert graph["edges"] == []
+    assert wp.public_page_ids() == {"live"}
+    assert wp.public_page_domains() == {"live": "rag"}

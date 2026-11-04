@@ -9,7 +9,7 @@ sources:
 
 # Blue-Green View Swap for Data Deploys
 
-Data adds a problem services lack: rolling back code does not roll back the rows it wrote or decisions already made from them. One pattern gives data a real rollback: build a new version beside the old, audit it, switch readers with one small statement. It is the same idea as the [[Write-Audit-Publish Gate]] and the alias swap in [[Re-embedding a Vector Store with a Second Index]].
+Data adds a problem services lack: rolling back code does not roll back the rows it wrote or decisions already made from them. One pattern gives data a real rollback: build a new version beside the old, audit it, switch readers with one small statement. It is the same idea as the [[Write-Audit-Publish and Atomic Visibility]] and the alias swap in [[Re-embedding a Vector Store with a Second Index]].
 
 ## Run
 
@@ -23,6 +23,6 @@ Readers query a view over `build_1` (108320). Build `build_2`, audit it (28 rows
 - Timings are from a local file with no concurrent readers.
 
 ## See Also
-- [[Write-Audit-Publish Gate]] — related
+- [[Write-Audit-Publish and Atomic Visibility]] — related
 - [[Infrastructure as Code Plans: Drift, Replacement and State]] — related
 - [[Rollback Restores Code Only]] — related

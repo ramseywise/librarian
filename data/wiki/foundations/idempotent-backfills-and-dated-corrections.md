@@ -27,7 +27,7 @@ In a warehouse use `MERGE`, partition overwrite or `INSERT OVERWRITE`. Without t
 
 ## Fix forward in a layer you can read
 
-Raw stays as it arrived. Corrections go in a view over it, driven by a small table of `valid_from`, column, factor and a ticket reference. Duplicates drop by key; a unit change is corrected from its effective date. That keeps the evidence, and makes the correction reviewable and reversible. Overlapping correction windows make the lookup ambiguous (an error, or stacked factors), so test the table like any other. Audit the layer that will be published, not raw, or the gate never releases a repaired day (see [[Write-Audit-Publish Gate]]).
+Raw stays as it arrived. Corrections go in a view over it, driven by a small table of `valid_from`, column, factor and a ticket reference. Duplicates drop by key; a unit change is corrected from its effective date. That keeps the evidence, and makes the correction reviewable and reversible. Overlapping correction windows make the lookup ambiguous (an error, or stacked factors), so test the table like any other. Audit the layer that will be published, not raw, or the gate never releases a repaired day (see [[Write-Audit-Publish and Atomic Visibility]]).
 
 ## Late data needs its own trigger
 
@@ -43,5 +43,4 @@ A late partition exposes a subtle failure: the mart row for that day was built b
 - [[Freshness Alerts Need a Date Spine]] — related
 - [[Rerunnable Cleaning Loader with Assertions]] — related
 - [[Batched Rerunnable Data Backfills]] — related
-- [[Idempotent Window-Replace Loads]] — related (overlaps; candidate merge for /compact-wiki)
-- [[Idempotent Batch Loads and Partition Overwrite]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Idempotent Batch Loads and Partition Overwrite]] — related (write modes and purity; this page adds corrections and late data)

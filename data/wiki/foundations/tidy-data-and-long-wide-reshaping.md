@@ -21,7 +21,7 @@ Rule 3 is close to database normalisation: keep customers apart from orders so e
 
 ## Long and wide
 
-The same information in two layouts: wide has a column per week; long has one row per (product, week) with `week` and `units` as columns. In wide form `w1`, `w2`, `w3` are values of `week` sitting in the header, the first messy-data problem. Wide suits reading and matrix arithmetic, and can store a crossed design compactly; long suits `groupby`, plotting and modelling (plotting libraries that map columns to roles need it, see [[Matplotlib Figures, Axes and Seaborn Levels]]).
+The same information in two layouts: wide has a column per week; long has one row per (product, week) with `week` and `units` as columns. In wide form `w1`, `w2`, `w3` are values of `week` sitting in the header, the first messy-data problem. Wide suits reading and matrix arithmetic, and can store a crossed design compactly; long suits `groupby`, plotting and modelling (plotting libraries that map columns to roles need it, see [[Matplotlib Object Model and Seaborn Function Levels]]).
 
 - **`melt`**: wide to long (`id_vars` kept, other columns become a variable/value pair).
 - **`pivot`**: long to wide (pick row column, header column, value column). Each row/column combination must occur once; duplicates raise `ValueError: Index contains duplicate entries, cannot reshape`. `pivot_table` handles duplicates by aggregating (see [[Groupby Silent Group Loss and Pivot Defaults]]).

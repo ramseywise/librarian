@@ -54,5 +54,5 @@ Joining a sale to a tax rate as it is now makes a rerun non-deterministic. The t
 ## See Also
 - [[Dimensional Model Grain and the Four Design Steps]] — prerequisite-for
 - [[Data Vault Hubs, Links and Satellites]] — alternative-to (insert-only history)
-- [[Idempotent Window-Replace Loads]] — related
+- [[Idempotent Batch Loads and Partition Overwrite]] — related
 - [[Change Data Capture and the Dual-Write Problem]] — related

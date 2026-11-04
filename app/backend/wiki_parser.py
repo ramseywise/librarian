@@ -38,15 +38,15 @@ def _public_pages() -> list[Path]:
 
 
 def public_page_ids() -> set[str]:
-    """Node ids parse_wiki() can emit. Semantic edges and UMAP positions are computed over
-    every page (private included, see shared/embeddings.py), so their endpoints filter to
-    this set before anything reaches the browser."""
-    return {f.stem for f in _public_pages()}
+    """Node ids parse_wiki() emits. Semantic edges and UMAP positions are computed over
+    every page (private and tombstoned included, see shared/embeddings.py), so their endpoints
+    filter to this set before anything reaches the browser."""
+    return {n["id"] for n in parse_wiki()["nodes"]}
 
 
 def public_page_domains() -> dict[str, str]:
     """Node id → its directory, the same `data.domain[0]` parse_wiki() emits."""
-    return {f.stem: f.parent.name for f in _public_pages()}
+    return {n["id"]: n["data"]["domain"][0] for n in parse_wiki()["nodes"]}
 
 
 # Last parse and the file signature it was built from. Every page load asks twice (/api/graph
@@ -81,7 +81,7 @@ def parse_wiki_uncached() -> dict:
     Private pages (data/wiki/private/) are excluded — neither nodes nor wikilink sources.
     This reverses decision D1 (2026-10-30), which showed them with a badge: client and
     company pages must not appear in the graph UI at all, matching the courses API and
-    MCP search.
+    MCP search. Tombstones are excluded too, as they are from search.
     """
     nodes: list[dict] = []
     edges: list[dict] = []
@@ -102,6 +102,9 @@ def parse_wiki_uncached() -> dict:
         tags = post.get("tags") or []
         if isinstance(tags, str):
             tags = [tags]
+        # Retired pages stay on disk so inbound links resolve, but aren't part of the map.
+        if "tombstone" in tags:
+            continue
 
         page_slugs[page_id] = title
         # also register by title slug so wikilinks resolve

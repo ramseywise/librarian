@@ -56,6 +56,6 @@ Default to batch; move a source to streaming when a named consumer needs the fre
 For crawled documents feeding an LLM: normalise by content type (article, repository, post) with the source URL in metadata, so a new site means one new crawler; dispatch crawlers on the URL's domain with a generic fallback; a schemaless store suits hundreds of heterogeneous documents, with a warehouse at millions. Count successes and attempts per domain every run, since a crawler silently returning empty pages is the unstructured version of a source that stops sending. Prefer official APIs, exports or RSS to browser automation that violates a platform's terms.
 
 ## See Also
-- [[Idempotent Window-Replace Loads]] — related
+- [[Idempotent Batch Loads and Partition Overwrite]] — related
 - [[Data Engineering Foundations]] — related
-- [[Kafka Log, Partitions and Offsets]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Kafka Log, Partitions and Offsets]] — related (consumer lag, queue or log)

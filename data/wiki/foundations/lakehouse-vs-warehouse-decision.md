@@ -48,4 +48,4 @@ Pitfalls: a lake of Parquet without a metadata layer is not a lakehouse; lower c
 - [[Copy-on-Write vs Merge-on-Read]] — related
 - [[Object Store Guarantees and the Partial-Write Problem]] — prerequisite-for
 - [[Spark Shuffles and When One Machine Is Enough]] — related
-- [[Warehouse, Fabric and Lakehouse: Sizing the Physical Architecture]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Warehouse, Fabric and Lakehouse: Sizing the Physical Architecture]] — related (data fabric, MDW and sizing)

@@ -36,5 +36,5 @@ A declarative DataFrame API with an optimiser (Catalyst) lets the engine rearran
 - [[Shuffle Skew and Salting]] — extends
 - [[Distributed Compute Cost and the Single-Machine Threshold]] — related
 - [[Spark Shuffles and When One Machine Is Enough]] — related
-- [[Data Lake Partitioning and the Small Files Problem]] — related
+- [[Small Files, Prefix Layout and Storage Tiers]] — related
 - [[Idempotent Retries and Request IDs]] — related

@@ -94,6 +94,6 @@ A view is a saved query, so it always reflects current data. A materialised view
 - [[Idempotency Lives on the Link Column, Not the Synthetic Key]] — related (a UNIQUE constraint that doesn't make a backfill idempotent)
 - [[Data Engineering Foundations]] — related (denormalised analytics tables built by pipelines)
 - [[Programming Curriculum]] — related (course map)
-- [[Idempotent Window-Replace Loads]] — related (window replace in a transaction)
+- [[Idempotent Batch Loads and Partition Overwrite]] — related (window replace in a transaction)
 - [[Transaction Isolation Levels and Anomalies]] — related (what atomic transactions do and do not prevent)
 - [[Dimensional Model Grain and the Four Design Steps]] — extends

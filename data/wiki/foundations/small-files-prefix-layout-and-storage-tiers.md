@@ -1,11 +1,12 @@
 ---
 title: "Small Files, Prefix Layout and Storage Tiers"
 tags: [foundations, concept]
-summary: "On an object store, file count and size decide request cost and whether column pruning works, and cold storage tiers lose money for tables that are read often or made of small objects."
+summary: "On an object store, file count and size decide request cost and whether column pruning works: partition by what you delete or backfill by, sort by what you filter on, and remember cold storage tiers lose money for tables that are read often or made of small objects."
 updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--01b-object-storage-and-the-data-lake.md
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--05-cost.md
+  - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--05-partitioning-and-replication.md
 ---
 # Small Files, Prefix Layout and Storage Tiers
 
@@ -26,7 +27,13 @@ Small files come from streaming sinks writing every minute, partitioning by too 
 
 ## Hive-style prefixes
 
-Putting the partition in the key (`month=05/`) lets engines skip prefixes, saving requests as well as bytes. On the 21.8 MB table: all months, all columns 24 GETs and 21.8 MB; one column 2.3 MB; one month and one column 3 GETs and 0.2 MB. Columns and partitions multiply, but only if the partition column is in the `WHERE`. See [[Partition Pruning, Clustering and Column Pruning]].
+Folder layout in object storage obeys the same rules as database partitioning, and Hive-style `key=value` folders make it readable to any engine. Putting the partition in the key (`month=05/`) lets engines skip prefixes, saving requests as well as bytes. On the 21.8 MB table: all months, all columns 24 GETs and 21.8 MB; one column 2.3 MB; one month and one column 3 GETs and 0.2 MB. Columns and partitions multiply, but only if the partition column is in the `WHERE`. See [[Partition Pruning, Clustering and Column Pruning]].
+
+A million trips written `PARTITION_BY (day)` made 31 files averaging 438 KB, and a filter on one day reported `Scanning Files: 1/31`: the engine read the folder names and opened one file. This is the footer-statistics pruning of [[Parquet Row Groups, Pruning and Sort Order]] one level higher, so the partition key should be what most queries filter on, usually a date.
+
+Going too far: partitioning by day and zone made 8060 files averaging 2.6 KB. The same rows took 21.0 MB against 13.6 MB (footer overhead) and a full scan went from 3.0 ms to 705.5 ms, because the engine opens thousands of tiny files and reads a footer for each. Each folder also costs a list call on object storage.
+
+Keep partition keys low in cardinality and leave finer selectivity to sorted row groups inside each file: **partition by what you delete or backfill by, sort by what you filter on**. For a workload where 90% of queries filter by day and 50% also by zone: partition by day, sort by zone within files. If you partition by ingest timestamp while queries filter on event time, pruning does nothing for them. Remedy for tiny files: compact, or partition more coarsely.
 
 ## Request prices and limits
 
@@ -49,5 +56,6 @@ So Standard-IA wins only when data is read less than about once a month, and Gla
 - [[Table Format as a Commit Log over Parquet]] — related
 - [[Materialise or Query and Cost Tests]] — related
 - [[Warehouse Cost Meters: Bytes, Slots and Egress]] — related
-- [[Parquet Row Groups, Pruning and Sort Order]] — related (overlaps; candidate merge for /compact-wiki)
-- [[Data Lake Partitioning and the Small Files Problem]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Parquet Row Groups, Pruning and Sort Order]] — prerequisite-for
+- [[Partitioning Strategies and Hot Spots]] — related
+- [[B-Trees vs LSM-Trees]] — related (compaction of many small immutable files)

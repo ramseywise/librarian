@@ -57,7 +57,7 @@ A static limit wide enough to survive normal variation is often wide enough for 
 - Block versus warn is a per-table decision: block where wrong data costs more than late data (finance, training sets).
 
 ## See Also
-- [[Write-Audit-Publish Gate]] — extends
+- [[Write-Audit-Publish and Atomic Visibility]] — extends
 - [[Reconciliation Against a Producer Control Total]] — extends
 - [[Rerunnable Cleaning Loader with Assertions]] — related (the analyst's by-hand version)
 - [[Data Incident Playbook: Contain Before Diagnosing]] — extends

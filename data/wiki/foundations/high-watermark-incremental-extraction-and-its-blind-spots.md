@@ -47,7 +47,7 @@ The `dlt` library keeps the high-water mark as state between runs (`dlt.sources.
 Order of cost: copy the table if small; watermark with overlap if rows are never hard-deleted and a small error is tolerable; CDC when deletes matter, the table is too big to re-read, or consumers need minutes of freshness.
 
 ## See Also
-- [[Idempotent Window-Replace Loads]] — prerequisite-for
+- [[Idempotent Batch Loads and Partition Overwrite]] — prerequisite-for
 - [[Change Data Capture and the Dual-Write Problem]] — alternative-to
 - [[SQL Schema Design and DDL]] — related (upserts)
 - [[Data Engineering Foundations]] — related

@@ -37,6 +37,6 @@ Plot early: a chart is the fastest way to find what is wrong with data and what 
 - **Titles** state what to see ("Revenue rises and jumps in December"), not the column name.
 
 ## See Also
-- [[Matplotlib Figures, Axes and Seaborn Levels]] — extends
+- [[Matplotlib Object Model and Seaborn Function Levels]] — extends
 - [[Tidy Data and Long-Wide Reshaping]] — prerequisite-for
 - [[Robust Summaries for Skewed Metrics]] — related

@@ -40,4 +40,4 @@ Rule: data at rest in Parquet sorted by the main filter column; between engines 
 ## See Also
 - [[Row Stores vs Column Stores]] — extends (the same mechanism seen from inside a database)
 - [[Encoding Compatibility and Schema Evolution]] — prerequisite-for
-- [[Small Files, Prefix Layout and Storage Tiers]] — related (overlaps; candidate merge for /compact-wiki)
+- [[Small Files, Prefix Layout and Storage Tiers]] — related (what file layout costs on an object store)

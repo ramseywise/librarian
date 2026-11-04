@@ -24,4 +24,4 @@ Usually repoint consumers one by one through views or a semantic layer ([[Blue-G
 ## See Also
 - [[Expand, Migrate, Contract]] — related
 - [[Reconciliation Against a Producer Control Total]] — related
-- [[Write-Audit-Publish Gate]] — related
+- [[Write-Audit-Publish and Atomic Visibility]] — related
