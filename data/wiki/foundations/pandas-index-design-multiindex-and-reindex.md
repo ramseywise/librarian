@@ -15,7 +15,7 @@ When a column identifies rows, `set_index` makes lookups read as what they are (
 
 ## Non-unique indexes change the return type
 
-An index need not be unique. With a customer index where one customer has two rows, `loc["ana"]` returns a DataFrame of shape (2, 8) while a customer with one row returns a Series of shape (8,). Passing a list, `loc[["eli"]]`, always returns a DataFrame. Check `index.is_unique` or pass a list.
+An index need not be unique. With a customer index where one customer has two rows, `loc["ana"]` returns a DataFrame of shape (2, 8) while a customer with one row returns a Series of shape (8,). Passing a one-element list always returns a DataFrame. Check `index.is_unique` or pass a list.
 
 ## reindex: conform to a fixed list of labels
 

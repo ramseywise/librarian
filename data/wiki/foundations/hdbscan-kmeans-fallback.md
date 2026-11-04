@@ -2,7 +2,7 @@
 title: HDBSCAN with KMeans Fallback
 tags: [foundations, pattern]
 summary: Clustering selection strategy that tries density-based HDBSCAN first and falls back to KMeans when silhouette drops below 0.25 — plus the diagnostic discipline that treats a fallback as a feature-quality signal rather than a resolved choice.
-updated: 2026-10-17
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/atlas/skills/segment-analysis/SKILL.md
   - data/raw/claude-docs/atlas/skills/eval-report/SKILL.md
@@ -70,3 +70,4 @@ They also say to guard UMAP with `n_samples > n_components + 1`.
 - [[Track2Vec Playlist Co-Occurrence Embeddings]] — alternative-to
 - [[Data Sufficiency Refusal]] — extends (refusing to report a metric the data cannot support)
 - [[Clustering Validation Against Named Baselines]] — alternative-to (centroid method validated against baselines)
+- [[Embedding Clustering and Anomaly Detection]] — related (UMAP then HDBSCAN on sentence embeddings, with c-TF-IDF cluster labels)

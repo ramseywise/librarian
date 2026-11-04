@@ -31,3 +31,4 @@ Splitting each regressor into unit mean and deviation reproduces FE (0.4722) and
 - [[Difference-in-Differences as Two-Way Fixed Effects]] — extends
 - [[Staggered Rollout Bias in Two-Way Fixed Effects]] — related
 - [[Pseudoreplication and Intraclass Correlation]] — related
+- [[Multilevel vs Fixed Effects vs Clustered Standard Errors]] — related

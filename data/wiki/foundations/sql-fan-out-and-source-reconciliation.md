@@ -25,5 +25,5 @@ State each table's grain before joining. Compare row count and sum after the joi
 
 ## See Also
 - [[SQL Join Patterns]] — extends
-- [[SQL NULL Three-Valued Logic]] — related
+- [[SQL NULL and Three-Valued Logic]] — related
 - [[Revenue Bridge Query]] — related

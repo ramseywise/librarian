@@ -2,7 +2,7 @@
 title: SQL Join Patterns
 tags: [foundations, pattern]
 summary: "Choosing inner, left, self, anti and cross joins by what should happen to unmatched rows — and the two silent-wrong-answer traps: a WHERE filter on a LEFT JOIN's right table turning it back into an inner join, and fan-out when the join key isn't unique."
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/programming--sql--notes--04-joins.md
   - data/raw/repos/learn-ai-engineering/programming--sql--README.md
@@ -107,3 +107,4 @@ SELECT name FROM facilities;
 - [[SQL Window Functions]] — alternative-to (lag/lead replace many self-joins)
 - [[Programming Interview Study Guide]] — related (predict-the-row-count idiom)
 - [[Programming Curriculum]] — related (course map)
+- [[Pandas Merge Validation and Many-to-Many Blow-up]] — related (the pandas merge and its row-count checks)

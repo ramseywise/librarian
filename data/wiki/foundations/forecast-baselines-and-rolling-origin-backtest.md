@@ -50,3 +50,4 @@ Keep the seasonal naive running beside the chosen model; if the model's rolling 
 - [[Newsvendor Critical Ratio]] — extends (turns the backtest error distribution into a stocking or staffing quantile)
 - [[Confidence Interval Coverage and Wilson]] — related (coverage as a testable claim)
 - [[Label Horizon vs Sampling Window]] — related
+- [[Forecast Issue Time and Measured Leakage]] — extends (issue time, horizon and measured leak sizes)

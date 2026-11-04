@@ -2,7 +2,7 @@
 title: RAG Retrieval Strategies
 tags: [rag, concept]
 summary: Comprehensive reference for chunking, embedding, vector store, and hybrid search strategies — component choices, tradeoffs, and swap paths used in the Librarian pipeline.
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/articles/2026-07-19-rag-deeplearning.md
   - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
@@ -319,3 +319,4 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[Hedging Belongs in the Gate, Not the Answer]] — related (generation-side finding from the same template research)
 - [[Contextual Retrieval]] — extends (index-time chunk prefixes for both BM25 and dense paths)
 - [[Index-Time Distillation]] — extends (aggregation and rule-induction questions chunk retrieval cannot answer)
+- [[Sentence Embeddings as Features for Classical ML]] — related (dense encoders as features, cost and model-retirement trade-offs)

@@ -2,7 +2,7 @@
 title: SQL Window Functions
 tags: [foundations, pattern]
 summary: "A window function computes over a group but keeps every row — the tool for top-N per group, dedup-latest, running totals, moving averages, lag/lead comparisons and share-of-total; it runs after GROUP BY so it must be filtered from an outer CTE, and its default RANGE frame silently groups ties."
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/programming--sql--notes--06-window-functions.md
   - data/raw/repos/learn-ai-engineering/programming--sql--README.md
@@ -106,3 +106,4 @@ FROM bookings GROUP BY facid;
 - [[SQL Join Patterns]] — alternative-to (lag/lead vs self-join)
 - [[Programming Interview Study Guide]] — related (ranking functions and dedup-latest as interview staples)
 - [[Programming Curriculum]] — related (course map)
+- [[Groupby Split-Apply-Combine and Result Shapes]] — related (pandas transform is the PARTITION BY form)

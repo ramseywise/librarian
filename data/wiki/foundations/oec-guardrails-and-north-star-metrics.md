@@ -47,3 +47,4 @@ A figure that looks interesting or different is usually wrong. A button change s
 - [[A/B Test Lifecycle and Interval Decisions]] — prerequisite-for
 - [[Ratio Metrics and the Denominator Trap]] — extends
 - [[Distribution Selection for Metrics]] — related
+- [[Metric Tree Decomposition]] — extends

@@ -2,7 +2,7 @@
 title: Three-Level Duplicate Classification
 tags: [foundations, pattern]
 summary: A first-pass entity-resolution layer for multi-source ingestion that sorts candidate pairs into not_duplicate / possible_duplicate / confirmed_duplicate from deterministic signals that differ for time-bound and place-like entities, routes the uncertain middle to human review, hides confirmed duplicates through the existing visibility gate, and never deletes or merges automatically.
-updated: 2026-10-16
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/diskoe/docs/research/2026-10-09-notion-content-data-contract-pages.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-10-09-notion-content-data-contract-pages.md
@@ -70,3 +70,4 @@ embeddings.
 - [[Layered Ingestion Failure Posture]] — related (where a dedupe step sits in an ingestion pipeline)
 - [[Hide-Unknown Display Contract]] — extends (the same contract's visibility gate)
 - [[Graded-Uncertainty Enrichment Contract]] — related (the same "uncertain middle routes to review" idea, applied to enrichment)
+- [[Blocking and Fellegi-Sunter Match Weights]] — extends (blocking and a three-way decision from learned weights)

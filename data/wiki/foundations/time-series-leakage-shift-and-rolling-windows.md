@@ -1,5 +1,5 @@
 ---
-title: Time-Series Leakage: Shift and Rolling Windows
+title: "Time-Series Leakage: Shift and Rolling Windows"
 tags: [foundations, pattern]
 summary: shift and rolling windows build comparisons and features from the past, but a negative shift or a centred window reads the future and leaks, and count-based windows misbehave on irregular rows.
 updated: 2026-11-04

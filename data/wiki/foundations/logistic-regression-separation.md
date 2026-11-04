@@ -22,3 +22,4 @@ Never read the unpenalised coefficient: the optimiser has stopped, not found an 
 ## See Also
 - [[Generalised Linear Models and Deviance]] — related
 - [[Small-N Trap and Shrinkage]] — related (shrinkage as a stabiliser)
+- [[Prior Choice and Prior Predictive Checks]] — related (a weak prior stabilises separated fits)

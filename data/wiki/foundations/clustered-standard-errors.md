@@ -30,3 +30,4 @@ A resampling alternative is the cluster bootstrap ([[Bootstrap Resampling and It
 - [[Robust Standard Errors]] — extends (for correlated rather than unequal-variance errors)
 - [[Independence Pitfalls]] — related
 - [[Regression Covariate Adjustment]] — related
+- [[Multilevel vs Fixed Effects vs Clustered Standard Errors]] — related

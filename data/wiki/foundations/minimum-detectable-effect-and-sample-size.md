@@ -35,3 +35,4 @@ Halving the effect needs four times the users, so relative lifts of a percent on
 - [[P-Value Misreadings]] — related (a huge n makes tiny lifts significant)
 - [[Delta Method for Ratio Metrics]] — related
 - [[Confidence Interval Coverage and Wilson]] — related
+- [[A/B Test Lifecycle and Interval Decisions]] — related (the full test pipeline this sizing sits in)

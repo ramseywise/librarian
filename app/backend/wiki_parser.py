@@ -3,8 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 
 import frontmatter
+import yaml
 
 from core.wiki_common import CANONICAL_LINK_TYPES, TYPED_LINK_RE, WIKILINK_RE, slugify
+from shared.log_config import get_logger
+
+log = get_logger(__name__)
 
 WIKI_DIR = Path(__file__).parent.parent.parent / "data" / "wiki"
 RELATIONSHIP_TYPES = CANONICAL_LINK_TYPES
@@ -86,7 +90,13 @@ def parse_wiki_uncached() -> dict:
     # First pass: collect all pages
     pages = _public_pages()
     for md_file in pages:
-        post = frontmatter.load(md_file)
+        # One bad page must not take the graph down: this runs in the /ws watcher too, and an
+        # exception there ends live updates until restart.
+        try:
+            post = frontmatter.load(md_file)
+        except yaml.YAMLError as e:
+            log.error("wiki_page_skipped", page=md_file.name, error=str(e).splitlines()[0])
+            continue
         title = post.get("title") or md_file.stem
         page_id = md_file.stem
         tags = post.get("tags") or []
@@ -124,6 +134,8 @@ def parse_wiki_uncached() -> dict:
     seen_edges: set[tuple[str, str]] = set()
     for md_file in pages:
         source_id = md_file.stem
+        if source_id not in node_ids:
+            continue
         content = md_file.read_text()
 
         # Extract typed relationships from See Also sections

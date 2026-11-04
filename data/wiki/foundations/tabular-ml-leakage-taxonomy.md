@@ -2,7 +2,7 @@
 title: Tabular ML Leakage Taxonomy
 tags: [foundations, eval, reference]
 summary: Six leakage classes for tabular ML — target, temporal, group, fit-before-split, resampling outside the fold, train/serve skew — all answering one question ("at the moment this line runs, what does it know that it would not know at prediction time?"), plus why a leakage verdict needs the person who knows how the data was collected, not a correlation ranking.
-updated: 2026-10-30
+updated: 2026-11-04
 sources:
   - data/raw/claude-docs/galactus/skills/review-leakage/SKILL.md
   - data/raw/claude-docs/galactus/skills/prototype-genesis/SKILL.md
@@ -112,3 +112,4 @@ unscored, although its presence alone is the label. Fix: also score
 - [[Calibrated Score, Deterministic Decision Rule]] — prerequisite-for (leakage check before the training library)
 - [[ML Stage Layering with Typed Contracts]] — prerequisite-for ("nothing fitted outside a fold" as a tree rule)
 - [[ML Run Reproducibility Bar]] — prerequisite-for (the planted-leak twin plants these shapes)
+- [[Time-Series Leakage: Shift and Rolling Windows]] — related (negative shifts and centred windows as leaks)

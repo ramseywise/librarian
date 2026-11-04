@@ -33,3 +33,4 @@ After fitting: heteroskedasticity ([[Robust Standard Errors]]), grouped rows ([[
 - [[Statistical Test Selection]] — related (ANOVA and t-tests are regressions)
 - [[Minimum Detectable Effect and Sample Size]] — related (adjustment lowers required n)
 - [[Explain vs Predict Modelling]] — related
+- [[CUPED Variance Reduction]] — related (the pre-period covariate case)

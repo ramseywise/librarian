@@ -42,3 +42,4 @@ Sizes for one simple line chart: PNG 50 KB, SVG 24 KB, PDF 8 KB. PNG has fixed p
 - [[Chart Declutter and Direct Labelling]] — extends
 - [[Chart Colour Scales and Accessibility]] — related
 - [[Interactive Charts and When They Pay]] — alternative-to (interactive rather than static)
+- [[Matplotlib Figures, Axes and Seaborn Levels]] — related (overlaps; candidate merge for /compact-wiki)

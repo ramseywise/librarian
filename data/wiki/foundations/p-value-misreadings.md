@@ -32,3 +32,4 @@ Report the estimate and its interval, not just the verdict. Significant results 
 - [[Confidence Interval Coverage and Wilson]] — related
 - [[Data Defect Correlation]] — related (a tiny p on selected data is still wrong)
 - [[Eval Error Bars and Sample Size]] — related
+- [[Bayesian A/B Testing with Expected Loss]] — alternative-to

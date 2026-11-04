@@ -13,7 +13,7 @@ Time carries rules that labels do not: rows have order, months have different le
 
 ## Make gaps visible
 
-With a `DatetimeIndex`, partial strings are slices (`daily.loc["2024-02"]`), and label slices include both ends. A year of daily revenue with three days removed had 363 rows against 366 calendar days and a four-day range returned two rows with no warning. `asfreq("D")` conforms the series to a regular frequency and shows the gaps as `NaN` (3 here). What a gap means then decides the treatment: an outage is true zero, so leave `NaN`; a sensor might be interpolated; a price carried forward. See [[Pandas Missing Data Decisions]]. Sort the index before slicing (`is_monotonic_increasing`).
+With a `DatetimeIndex`, partial strings are slices (`daily.loc["2024-02"]`), and label slices include both ends. A year of daily revenue with three days removed had 363 rows against the full calendar year and a four-day range returned two rows with no warning. `asfreq("D")` conforms the series to a regular frequency and shows the gaps as `NaN` (3 here). What a gap means then decides the treatment: an outage is true zero, so leave `NaN`; a sensor might be interpolated; a price carried forward. See [[Pandas Missing Data Decisions]]. Sort the index before slicing (`is_monotonic_increasing`).
 
 ## resample is a groupby on time bins
 

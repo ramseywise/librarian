@@ -2,7 +2,7 @@
 title: Transformer Architecture
 tags: [foundations, llm, concept]
 summary: The Transformer model architecture (Vaswani et al., 2017) — encoder-decoder stacks of self-attention and feed-forward layers that replaced RNNs/CNNs for sequence transduction, enabling parallelized training and constant-length dependency paths.
-updated: 2026-07-19
+updated: 2026-11-04
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
 ---
@@ -90,3 +90,4 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - [[Batch Normalization]] — prerequisite-for (layer norm in Transformer is the successor)
 - [[Neural Probabilistic Language Model]] — prerequisite-for (word embeddings that Transformers build on)
 - [[LLM Fundamentals Interview Study Guide]] — instance-of
+- [[Pre-Norm vs Post-Norm and Warm-Up]] — extends

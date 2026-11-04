@@ -29,3 +29,5 @@ The smaller the power, the worse the inflation: a win from a small test is likel
 ## See Also
 - [[Eval Error Bars and Sample Size]] — related
 - [[Confidence Interval Coverage and Wilson]] — related
+- [[Experiment Ramps and Overlapping Tests]] — related (portfolio-level inflation of shipped lifts)
+- [[Partial Pooling for Segment Winners]] — extends

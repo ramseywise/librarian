@@ -43,3 +43,4 @@ Many metrics, many segments, many looks at a running experiment, and forking ana
 - [[Small-N Trap and Shrinkage]] — related (subgroups are small and many)
 - [[Statistical Test Selection]] — related
 - [[Minimum Detectable Effect and Sample Size]] — related
+- [[Peeking and Sequential Testing]] — related (repeated looks as multiple tests)

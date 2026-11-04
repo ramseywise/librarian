@@ -34,3 +34,4 @@ Across 2,000 simulated experiments with true lifts Normal(0, 0.2) and standard e
 - [[Prior Choice and Prior Predictive Checks]] — prerequisite-for
 - [[Winner's Curse]] — related (the inflation shrinkage removes)
 - [[Logistic Regression Separation]] — related
+- [[Adam, AdamW and Decoupled Weight Decay]] — related

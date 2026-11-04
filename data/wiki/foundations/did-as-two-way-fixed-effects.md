@@ -23,3 +23,4 @@ With a differential trend (tilt 0.15) TWFE gave 7.394 against 3.596, yet only 1 
 - [[Panel Data Fixed Effects]] — prerequisite-for
 - [[Staggered Rollout Bias in Two-Way Fixed Effects]] — extends
 - [[Clustered Standard Errors]] — related
+- [[Causal Design Selection Beyond Randomisation]] — related (worked pre-trend example and alternatives)

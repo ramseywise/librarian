@@ -15,7 +15,7 @@ Controlled-experiment Using Pre-Experiment Data removes noise unrelated to the t
 
 Replace each outcome Y with Y - theta (X - mean X), where theta = cov(X, Y) / var(X) is the slope of Y on X (a linear control variate). Variance falls by rho squared, the squared correlation.
 
-Simulation (40,000 users, true effect 0.12, rho = 0.702): raw effect 0.101, SE 0.0488, z 2.08; CUPED effect 0.123, SE 0.0348, z 3.53; variance ratio 0.508, which equals 1 - rho squared, so about 51% of the users give the same power. Over 1,500 repeated runs the mean estimate stayed near 0.12 (raw 0.116, CUPED 0.123) while the spread fell from 0.216 to 0.153, about 30% (the square root of the halved variance).
+Simulation (40,000 users, true effect 0.12, rho = 0.702): raw effect 0.101, SE 0.0488, z 2.08; CUPED effect 0.123, SE 0.0348, z 3.53; variance ratio 0.508, which equals 1 - rho squared, so about 51% of the users give the same power. Over repeated simulations the mean estimate stayed near 0.12 (raw 0.116, CUPED 0.123) while the spread fell from 0.216 to 0.153, about 30% (the square root of the halved variance).
 
 ## Properties
 

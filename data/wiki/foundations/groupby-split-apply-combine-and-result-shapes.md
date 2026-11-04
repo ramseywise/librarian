@@ -36,7 +36,7 @@ A key can be a column, a list of columns (giving a MultiIndex, see [[Pandas Inde
 ## Current-pandas behaviour
 
 - `mean` on a frame with text columns raises `TypeError` (old versions silently dropped them). Select numeric columns or pass `numeric_only=True`.
-- `groupby(axis=1)` was removed in 3.0; `grouped["a", "b"]` must be `grouped[["a", "b"]]`.
+- `groupby(axis=1)` was removed in 3.0; selecting several columns with `grouped["a", "b"]` must pass a list of names instead.
 - `size` counts rows; `count` counts non-missing values per column. They differ exactly when a column has gaps.
 
 ## Pitfalls

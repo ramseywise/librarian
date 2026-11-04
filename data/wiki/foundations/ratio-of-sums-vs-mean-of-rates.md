@@ -38,3 +38,4 @@ Grouped by category, the two agreed to three places (0.372, 0.615, 0.455 for the
 - [[Groupby Split-Apply-Combine and Result Shapes]] — prerequisite-for
 - [[Groupby Silent Group Loss and Pivot Defaults]] — related
 - [[Delta Method for Ratio Metrics]] — related
+- [[Ratio Metrics and the Denominator Trap]] — related

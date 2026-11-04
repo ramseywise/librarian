@@ -12,7 +12,7 @@ sources:
 
 ## Assignment by salted hash
 
-Assignment must be random, stable per user and independent of other tests. Hash the user id with a per-experiment salt and take the result modulo the number of arms. There is no assignment table, a returning user lands in the same arm, and changing the salt gives a fresh independent split. In a 60,000-user check, two salts gave independent splits (chi-square p 0.867) with an interaction estimate of -0.052 (p = 0.59) when the true interaction was zero. Quality of the hash matters: in a published test of hashes over a million sequential ids, only a cryptographic hash passed, and weak hashes correlated experiments. Test your hash.
+Assignment must be random, stable per user and independent of other tests. Hash the user id with a per-experiment salt and take the result modulo the number of arms. There is no assignment table, a returning user lands in the same arm, and changing the salt gives a fresh independent split. In a simulated check, two salts gave independent splits (chi-square p 0.867) with an interaction estimate of -0.052 (p = 0.59) when the true interaction was zero. Quality of the hash matters: in a published test of hashes over a million sequential ids, only a cryptographic hash passed, and weak hashes correlated experiments. Test your hash.
 
 ## Overlap and layers
 

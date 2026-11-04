@@ -33,7 +33,7 @@ Randomisation is what separates an experiment from observational data: a coin de
 
 ## Unit of analysis
 
-Analyse at the unit randomised. In an A/A simulation (users with 1 to 10 pageviews), analysing by pageview gave 10.8% false positives against 4.6% by user: rows from one person are correlated ([[Pseudoreplication and Intraclass Correlation]]).
+Analyse at the unit randomised. In an A/A simulation (users with 1 to 10 pageviews), analysing by pageview gave a false-positive rate of 0.108 against 0.046 by user: rows from one person are correlated ([[Pseudoreplication and Intraclass Correlation]]).
 
 ## Reporting from the interval
 

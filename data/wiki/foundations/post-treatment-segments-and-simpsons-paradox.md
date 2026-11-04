@@ -22,7 +22,7 @@ If a ramp ran A heavy on a strong day and B heavy on a weak one, B won on both d
 
 ## Post-treatment segment: pool instead
 
-If the subgroup is something the treatment changed, the pooled table is the right one. Example: a change moved people out of a "reached deep page" segment. Both segments improved (24.0% vs 20.0% deep, 2.74% vs 2.0% shallow) while the total was flat at 3.80% both arms, because users moved between segments. A segment is safe only if fixed before assignment (device, country). Check by running the sample-ratio test within each segment: here the deep group's 4,000 vs 2,000 fails immediately ([[Sample Ratio Mismatch]]). Also "buyers spent less" may mean the treatment created new, smaller buyers: use unconditional rates.
+If the subgroup is something the treatment changed, the pooled table is the right one. Example: a change moved people out of a "reached deep page" segment. Both segments improved (conversion 0.24 vs 0.20 deep, 0.0274 vs 0.02 shallow) while the total was flat at 0.0380 in both arms, because users moved between segments. A segment is safe only if fixed before assignment (device, country). Check by running the sample-ratio test within each segment: here the deep group's 4,000 vs 2,000 fails immediately ([[Sample Ratio Mismatch]]). Also "buyers spent less" may mean the treatment created new, smaller buyers: use unconditional rates.
 
 ## See Also
 - [[Confounders, Mediators and Colliders]] — extends

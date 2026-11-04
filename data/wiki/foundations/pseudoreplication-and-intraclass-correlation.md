@@ -37,3 +37,6 @@ If the group effect may be correlated with the predictor, standard-error fixes a
 - [[Expectation and Variance Rules]] — prerequisite-for (variances add only for uncorrelated rows)
 - [[Inspection Paradox in Metrics]] — related
 - [[CLT on Heavy-Tailed Metrics]] — related (the central limit theorem also needs independence)
+- [[Interference and Cluster-Randomised Experiments]] — related
+- [[Partial Pooling and Multilevel Models]] — related
+- [[Stratified and Cluster Survey Design]] — related

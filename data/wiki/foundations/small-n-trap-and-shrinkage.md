@@ -50,3 +50,4 @@ Sample sizes are never large: once N is large enough you start subdividing, and 
 - [[Confidence Interval Coverage and Wilson]] — related
 - [[CLT on Heavy-Tailed Metrics]] — related
 - [[EDA Audit Loop]] — related (group tables keep N)
+- [[Partial Pooling and Multilevel Models]] — extends

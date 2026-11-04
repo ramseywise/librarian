@@ -1,7 +1,7 @@
 ---
 title: Clustering Control World Test
 tags: [foundations, pattern]
-summary: Before trusting behavioural clusters, run the pipeline on a control world drawn from one Gaussian: HDBSCAN's silhouette gate can pass it, UMAP-map silhouettes cannot tell structure from noise, and clusters must beat a one-line rule on a real decision.
+summary: "Before trusting behavioural clusters, run the pipeline on a control world drawn from one Gaussian: HDBSCAN's silhouette gate can pass it, UMAP-map silhouettes cannot tell structure from noise, and clusters must beat a one-line rule on a real decision."
 updated: 2026-11-04
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--06-applied-analyses--notes--05-segmentation-and-rfm.md

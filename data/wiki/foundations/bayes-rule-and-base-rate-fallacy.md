@@ -61,3 +61,4 @@ For a team that tests modest changes the base rate is usually low, so a win at p
 - [[Independence Pitfalls]] — prerequisite-for (the independence needed to chain evidence)
 - [[Winner's Curse]] — related (low base rate and low power compound)
 - [[Eval Error Bars and Sample Size]] — related (judge and classifier rates need the same accounting)
+- [[Beta-Binomial Updating and Credible Intervals]] — extends

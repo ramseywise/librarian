@@ -32,6 +32,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import frontmatter
+import yaml
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -193,7 +194,11 @@ def _load_wiki(wiki_dir: Path) -> dict[str, WikiRef]:
         rel = md.relative_to(wiki_dir)
         if md.name.startswith("_") or rel.parts[0] == "private":
             continue
-        post = frontmatter.load(md)
+        try:
+            post = frontmatter.load(md)
+        except yaml.YAMLError as e:
+            log.error("wiki_page_skipped", page=md.name, error=str(e).splitlines()[0])
+            continue
         tags = post.get("tags") or []
         if "tombstone" in tags:
             continue

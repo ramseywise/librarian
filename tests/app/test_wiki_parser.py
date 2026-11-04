@@ -282,3 +282,14 @@ def test_parse_wiki_reuses_the_parse_until_a_page_changes(
     _write_page(tmp_path, "rag", "chunking", "Chunking", ["rag", "concept"], "Longer summary")
     assert wiki_parser.parse_wiki()["nodes"][0]["data"]["summary"] == "Longer summary"
     assert len(calls) == 2
+
+
+@pytest.mark.unit
+def test_invalid_frontmatter_skips_that_page_only(mock_wiki: Path) -> None:
+    import backend.wiki_parser as wp
+
+    before = wp.parse_wiki()
+    (mock_wiki / "rag" / "broken.md").write_text("---\nsummary: Gate: run evals\n---\n[[x]]\n")
+    after = wp.parse_wiki()
+    assert {n["id"] for n in after["nodes"]} == {n["id"] for n in before["nodes"]}
+    assert after["edges"] == before["edges"]

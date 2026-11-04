@@ -33,7 +33,7 @@ Simulate outcomes from the prior and ask whether they are believable (one call i
 
 ## A default for logistic regression
 
-Scale non-binary inputs to mean 0 and sd 0.5, put independent Cauchy(0, 2.5) on coefficients and Cauchy(0, 10) on the intercept. It stays stable under complete separation (see [[Logistic Regression Separation]]): on six separated points, the flat fit's slope ran to 100.3 with P(y = 1) 1.000000 at the largest x; Normal(0, 100) gave 39.1, Normal(0, 10) gave 9.6 and 0.9918, and Cauchy(0, 2.5) gave slope 3.6 and 0.859, about what six observations are worth. Unscaled inputs make the default meaningless.
+Scale non-binary inputs to mean 0 and sd 0.5, put independent Cauchy(0, 2.5) on coefficients and Cauchy(0, 10) on the intercept. It stays stable under complete separation (see [[Logistic Regression Separation]]): on six separated points, the flat fit's slope ran to 100.3 with P(y = 1) 1.000000 at the largest x; Normal(0, 100) gave 39.1, Normal(0, 10) gave 9.6 and 0.991752, and Cauchy(0, 2.5) gave slope 3.6 and 0.859, about what six observations are worth. Unscaled inputs make the default meaningless.
 
 ## The prior washes out
 

@@ -41,3 +41,4 @@ Any ratio of sums where the units differ from the denominator's grain: per-sessi
 - [[Maximum Likelihood and Estimator Bias]] — prerequisite-for
 - [[Independence Pitfalls]] — related
 - [[Minimum Detectable Effect and Sample Size]] — related
+- [[Ratio Metrics and the Denominator Trap]] — related

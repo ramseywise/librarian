@@ -2,7 +2,7 @@
 title: Self-Attention Mechanism
 tags: [foundations, llm, concept]
 summary: Self-attention (intra-attention) relates different positions of a single sequence to compute a representation — the core primitive enabling Transformers to model long-range dependencies in O(1) path length.
-updated: 2026-07-19
+updated: 2026-11-04
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
   - data/raw/pdfs/2020-10-01-rasa-dialogue-transformers.md
@@ -54,3 +54,4 @@ This is more suitable than RNNs for multi-turn dialogue because conversations co
 - [[Dialogue Transformers — TED Policy]] — instance-of
 - [[Prefix Caching]] — extends (exploits repeated attention computation)
 - [[LLM Fundamentals Interview Study Guide]] — instance-of
+- [[Encoder Tokens, Position and Attention Scaling]] — extends
