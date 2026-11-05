@@ -1,0 +1,12 @@
+[
+  {"input": "/write silent failures in agent evals", "expected": true},
+  {"input": "I want to write a post on what we learned about graph retrieval, what have I got?", "expected": true},
+  {"input": "outline an essay from the wiki on context engineering", "expected": true},
+  {"input": "what could I write about from my harness notes?", "expected": true},
+  {"input": "draft an article on prompt caching using what's in the wiki", "expected": true},
+  {"input": "what does the wiki say about prompt caching?", "expected": false},
+  {"input": "write a new chapter for the RAG module", "expected": false},
+  {"input": "argue against my view on hybrid search", "expected": false},
+  {"input": "compile this article into the wiki", "expected": false},
+  {"input": "write a python function that parses frontmatter", "expected": false}
+]

@@ -1,0 +1,602 @@
+[
+  {
+    "id": "uniform-001",
+    "category": "retrieval",
+    "query": "Should I use a pretrained text embedding model with a linear classifier on top, or fine-tune it, compared with plain TF-IDF?",
+    "expected_answer": "A small frozen encoder lost to TF-IDF at all label counts, a larger one only won with few labels, and fine-tuning DistilBERT clearly beat word counts only at 5,000 labels. Measure on your own task and keep TF-IDF as the benchmark.",
+    "source_pages": [
+      "data/wiki/foundations/frozen-vs-fine-tuned-sentence-encoders.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-002",
+    "category": "retrieval",
+    "query": "When fitting a hidden-group model for customer data with numeric and categorical columns, why does it report too many groups?",
+    "expected_answer": "Correlated columns within a class violate the local independence assumption, so the model adds classes to explain them and inflates the class count; BIC can still pick one class when there is no structure.",
+    "source_pages": [
+      "data/wiki/foundations/latent-class-analysis-for-mixed-data.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-003",
+    "category": "retrieval",
+    "query": "Our monitoring screen stayed green for months while repeat purchases quietly dropped by a third. How should the metrics be set up so that doesn't happen?",
+    "expected_answer": "Pair every growth metric that can be pushed by spending with a health metric (e.g. repeat rate) and give each metric context like prior year or target, built around a named recurring decision.",
+    "source_pages": [
+      "data/wiki/foundations/dashboard-design-paired-metrics-and-context.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-004",
+    "category": "retrieval",
+    "query": "Lint passes on my machine but the pull request build fails with import sorting errors on many matrix jobs even though I never touched imports. Why?",
+    "expected_answer": "PR CI builds the merge of main and the branch, so a changed default on main can break it while the branch tip is green. Reproduce against the merge ref and find the single root cause behind all failing legs.",
+    "source_pages": [
+      "data/wiki/patterns/ci-tests-the-merge-ref.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-005",
+    "category": "retrieval",
+    "query": "How many units should a retailer order for a seasonal product when demand is uncertain and leftovers are sold at a discount?",
+    "expected_answer": "Order the demand quantile equal to underage cost divided by underage plus overage cost rather than the mean forecast; the gain is real but small and forecast error matters more.",
+    "source_pages": [
+      "data/wiki/foundations/newsvendor-critical-ratio.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-006",
+    "category": "retrieval",
+    "query": "How do I make sure the same ranked 'what to look at next' list comes out in the same order on a report, a map view and a dashboard?",
+    "expected_answer": "Put the derivation and its input readers in one shared module, extract a pure scoring function per surface, and assert all give the same relative order over one fixture set.",
+    "source_pages": [
+      "data/wiki/patterns/cross-surface-order-parity-test.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-007",
+    "category": "retrieval",
+    "query": "How do I choose the confidence threshold at which a cheap model hands a query to a stronger model?",
+    "expected_answer": "Label a few hundred cases, set the threshold on one part and check error on a held-out part, because thresholds often overrun the error budget on new data and scores may not transfer across tasks.",
+    "source_pages": [
+      "data/wiki/infra/confidence-gated-escalation.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-008",
+    "category": "retrieval",
+    "query": "Old machine learning notebooks from years ago no longer run after upgrading libraries; how do I decide which are quick fixes and which need rewriting?",
+    "expected_answer": "Triage in two phases: renamed or moved parameters and namespaces are mechanical find-and-replace, while removed APIs with no equivalent need a genuine rewrite. The page also gives migration maps for sklearn, TensorFlow 1 to 2 and PyMC3 to PyMC 5.",
+    "source_pages": [
+      "data/wiki/foundations/notebook-dependency-staleness.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-009",
+    "category": "retrieval",
+    "query": "My project scaffold generates an evaluation-grader feature even for projects that have no conversational agent, because the project type label usually matches. How should I decide when to enable it?",
+    "expected_answer": "Gate the feature on a predicate over the component that produces its input (the agent), not on a project-type label, and gate the per-item toggles too so explicit overrides can't break the coupling.",
+    "source_pages": [
+      "data/wiki/patterns/gate-coupled-features-on-the-producer.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-010",
+    "category": "retrieval",
+    "query": "When is it a good idea to run an AI feature as on-demand functions instead of an always-on server?",
+    "expected_answer": "Pick it for bursty, stateless tasks finishing in under about 30 seconds where idle cost matters; accept cold starts and timeouts, and avoid it for long responses or persistent connections.",
+    "source_pages": [
+      "data/wiki/infra/serverless-deployment.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-011",
+    "category": "retrieval",
+    "query": "Our experiment dashboard lets us look daily and stop as soon as the probability that B beats A passes 95%, but too many launches turn out to do nothing. What is going on?",
+    "expected_answer": "Bayesian stopping rules are not immune to repeated looks: a daily P(B>A)>0.95 rule shipped 23.8% of no-effect changes in simulation, and an expected-loss rule needs a minimum sample size to avoid shipping harmful changes.",
+    "source_pages": [
+      "data/wiki/foundations/peeking-under-bayesian-stopping-rules.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-012",
+    "category": "retrieval",
+    "query": "How do I figure out how my LLM app is failing before deciding what metrics to build?",
+    "expected_answer": "Read about 100 traces, write a free-text note on the first thing that went wrong in each, group the notes into 5-15 categories, rank by frequency times cost, and only build graders for failures you have seen.",
+    "source_pages": [
+      "data/wiki/eval/error-analysis-open-axial-coding.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-013",
+    "category": "retrieval",
+    "query": "How can I strip French bank account numbers and names from observability traces before they leave my process?",
+    "expected_answer": "Run a Presidio analyzer with a French spaCy model, a CamemBERT name recogniser and custom regex/checksum recognisers for IBAN, card, SIRET and similar, hooked in through the tracing SDK's mask callback as the single interception point.",
+    "source_pages": [
+      "data/wiki/infra/presidio-pii-redaction.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-014",
+    "category": "retrieval",
+    "query": "I run many parallel agent workers and they keep rediscovering the same findings. What shared structure fixes that?",
+    "expected_answer": "A typed knowledge graph of entities, claims and relations acts as shared state so fan-out accumulates findings instead of re-deriving them, the step beyond a single loop or an unconnected swarm.",
+    "source_pages": [
+      "data/wiki/graph/knowledge-graph-as-shared-agent-memory.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-015",
+    "category": "retrieval",
+    "query": "Should the support knowledge retrieval be fully managed by a cloud vendor's knowledge base or a Python service, and what migration path was chosen?",
+    "expected_answer": "Start with the fully managed cloud knowledge-base option for prototyping, then migrate to a polyglot setup once evaluation validates quality, since the managed option gives up retry logic, caching and custom reranking.",
+    "source_pages": [
+      "data/wiki/langgraph/2026-04-12-orchestration-architecture.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-016",
+    "category": "retrieval",
+    "query": "Our agent benchmark questions leaked into training data and scores now reflect memorisation. How do I design the benchmark so that can't happen?",
+    "expected_answer": "Publish a generator of parameterised task templates, keep instances private and drawn fresh each run, grade on final environment state, and hold out whole templates or domains when training, since templates can still be overfit.",
+    "source_pages": [
+      "data/wiki/eval/parameterised-benchmark-instances.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-017",
+    "category": "retrieval",
+    "query": "How should an automation loop behave when one stage needs a person who may take days to respond?",
+    "expected_answer": "The orchestrator detects the gate, halts and prints the next step, never dispatches the gate stage itself, and re-derives its position from files each time it is re-invoked.",
+    "source_pages": [
+      "data/wiki/patterns/orchestrate-around-the-human-gate.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-018",
+    "category": "retrieval",
+    "query": "What does expected loss versus unexpected loss mean for bank capital, and why does capital rise much more slowly than loss as default probability rises?",
+    "expected_answer": "Expected loss is PD x LGD x EAD covered by pricing; capital covers the unexpected part in a one-in-a-thousand-year bad state of a one-factor model, with correlation declining as PD rises, so capital grows slower than expected loss.",
+    "source_pages": [
+      "data/wiki/foundations/basel-irb-capital-vocabulary.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-019",
+    "category": "retrieval",
+    "query": "When is it worth splitting an AI system into several agents with different jobs instead of one agent with tools?",
+    "expected_answer": "Only when the task needs genuinely different modes of thinking and one agent can't hold quality; it is never a starting point, and roles that are just different prompts for the same task fail the test.",
+    "source_pages": [
+      "data/wiki/patterns/multi-agent-role-specialization.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-020",
+    "category": "retrieval",
+    "query": "Obsidian can't toggle edge types or lay out notes by embedding similarity; what local tool explores the wiki graph that way?",
+    "expected_answer": "A local React Flow explorer with wikilink, semantic and shared-tag edge types, UMAP layout, and an agent chat that highlights nodes and proposes wikilinks to write back.",
+    "source_pages": [
+      "data/wiki/projects/librarian-graph-explorer.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-021",
+    "category": "retrieval",
+    "query": "Why did my cross-validation score look great after selecting the top features on all the data first?",
+    "expected_answer": "Feature selection outside the CV loop leaks: on pure noise it produced R squared 0.89 versus -0.03 when selection ran inside a pipeline refit per fold. Any fitted preprocessing step belongs inside the folds.",
+    "source_pages": [
+      "data/wiki/foundations/pipelines-prevent-preprocessing-leakage.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-022",
+    "category": "retrieval",
+    "query": "Our script that copies shared skills into generated projects passes CI, yet projects ship with broken paths and missing referenced files. Why didn't the check catch it?",
+    "expected_answer": "A guard that only checks listed names exist upstream cannot see machine-local paths in content, orphaned directories, referenced but unvendored dependencies or stale indexes; add content checks and a report-only check mode instead of silent repair.",
+    "source_pages": [
+      "data/wiki/patterns/name-only-sync-guards-miss-content-drift.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-023",
+    "category": "retrieval",
+    "query": "How should I structure a machine-learning code template so users don't just write one giant run script?",
+    "expected_answer": "Organise by process stage (ingest, transform, features, training, evaluation, calibration, monitoring) with Pydantic schemas at each boundary, keeping technique folders as libraries the stages call.",
+    "source_pages": [
+      "data/wiki/foundations/ml-stage-layering.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-024",
+    "category": "retrieval",
+    "query": "What rules should I follow when launching coding agents in separate git worktrees?",
+    "expected_answer": "Branch from committed state, create the worktree in the target repo, let the dispatcher own the git workflow, and treat the agent's commits as provisional until a human reviews the diff.",
+    "source_pages": [
+      "data/wiki/patterns/worktree-agent-dispatch-contract.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-025",
+    "category": "retrieval",
+    "query": "Our single roadmap document has turned into a requirements list, backlog, decision log and risk register all at once and nobody can cite anything. How should I restructure it?",
+    "expected_answer": "Split it into three documents answering scope, requirements and roadmap, give requirements, decisions, risks and doc-vs-code contradictions stable prefixed IDs, and never treat dated research docs as contracts.",
+    "source_pages": [
+      "data/wiki/meta/three-doc-spec-split.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-026",
+    "category": "retrieval",
+    "query": "How does a convolution network see far back in an audio signal without needing hundreds of layers?",
+    "expected_answer": "By doubling the dilation factor each layer while keeping the filter causal, the receptive field grows exponentially with depth (1 to 512 gives 1024 samples per block), as in WaveNet.",
+    "source_pages": [
+      "data/wiki/foundations/dilated-causal-convolutions.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-027",
+    "category": "retrieval",
+    "query": "My retrieval step is a web search with no reranker score; how can I still estimate how confident the answer is?",
+    "expected_answer": "Derive confidence from which source answered: direct synthesized answer is high, raw results medium, nothing found low. Collapse tiers that cause no behaviour change and let only the lowest trigger an honest non-answer.",
+    "source_pages": [
+      "data/wiki/patterns/provenance-tiered-confidence-gate.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-028",
+    "category": "retrieval",
+    "query": "A chatbot attached the sources from an earlier question to a new unrelated answer in a long conversation, yet all my single-message tests pass. What is the bug?",
+    "expected_answer": "The citation collector walked message history backwards without stopping at the most recent human message, so earlier turns' tool citations leaked in; stop the walk at the latest user turn.",
+    "source_pages": [
+      "data/wiki/patterns/turn-bounded-citation-walk.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-029",
+    "category": "retrieval",
+    "query": "If a secondary lookup fails but the main page data loaded, should I throw to the error page or render a degraded page?",
+    "expected_answer": "Keep rendering the degraded shape but log the failure where on-call actually looks, since the problem is that failure and absence look alike to operators; throw only if continuing could record a wrong outcome.",
+    "source_pages": [
+      "data/wiki/patterns/degrade-the-render-surface-the-failure.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-030",
+    "category": "retrieval",
+    "query": "My test expectations were generated by running the function itself, so it scores 100%. How do I get a threshold I can trust?",
+    "expected_answer": "Export real rows with expected set to null and the observed output stored separately, have a human label them blind from the written rule, append them with provenance, measure, and gate at the observed rate.",
+    "source_pages": [
+      "data/wiki/eval/own-oracle-fixtures-blind-relabel.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-031",
+    "category": "retrieval",
+    "query": "The TypeScript backend in our template has no retrieval evaluation suite that the Python one has; is that a gap to fill?",
+    "expected_answer": "Not necessarily: ask whether the backend's role requires it. The TS agent has no retrieval step, so hit-rate grading would be meaningless, making the missing suite a deliberate asymmetry rather than a gap.",
+    "source_pages": [
+      "data/wiki/patterns/role-scoped-parity.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-032",
+    "category": "retrieval",
+    "query": "How do I make an LLM-written summary with claims checkable by code instead of trusting it?",
+    "expected_answer": "Label each piece of evidence E1..En, require claims to cite labels, keep the output schema as plain strings so out-of-vocabulary values reach QC, then run deterministic rules whose worst outcome is the verdict.",
+    "source_pages": [
+      "data/wiki/prompting/evidence-labelled-generation-with-deterministic-qc.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-033",
+    "category": "retrieval",
+    "query": "In which repository should I open a ticket when an idea comes up while I'm working in a different repo?",
+    "expected_answer": "File it in the repo whose code it changes, not a central board; when moving a misfiled issue, fully qualify cross-repo references first because bare #N references rebind to the destination repo.",
+    "source_pages": [
+      "data/wiki/patterns/issues-live-in-the-repo-they-change.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-034",
+    "category": "retrieval",
+    "query": "What thresholds should an evaluation report use so it doesn't print misleading percentages from few human labels?",
+    "expected_answer": "Always print N with rates, show raw counts only for buckets under 30, add a fixed insufficient-N banner when the total is under 100, and compute before/after deltas only when both runs clear the floor on the same population.",
+    "source_pages": [
+      "data/wiki/eval/small-n-reporting-floor.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-035",
+    "category": "retrieval",
+    "query": "How do I decide which screens get the bottom navigation bar in a Next.js app without a pathname conditional?",
+    "expected_answer": "Use nested route groups so the layout file location determines membership, and add a guard on the location because a page moved one directory silently gains or loses the tab bar while render tests pass.",
+    "source_pages": [
+      "data/wiki/patterns/layout-membership-by-location.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-036",
+    "category": "retrieval",
+    "query": "We launched a ranked list with hand-picked weights and want to know how much clicks depend on being near the top versus quality, without a separate experiment platform.",
+    "expected_answer": "Serve the same selected items in a seeded random order on a small fraction of requests (one in twenty), flag them, and compare interaction rates by position between explore and normal serves.",
+    "source_pages": [
+      "data/wiki/patterns/explore-slice-for-position-bias.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-037",
+    "category": "retrieval",
+    "query": "How should I anonymise real support tickets into test fixtures, and where does an LLM fit in?",
+    "expected_answer": "Run a deterministic regex scrub first to replace structural PII with typed placeholders, then have a local or data-processing-agreement-covered LLM review only the placeholder output, and gate the commit with a grep check.",
+    "source_pages": [
+      "data/wiki/patterns/deterministic-scrub-before-llm-review.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-038",
+    "category": "retrieval",
+    "query": "What does it mean to design the cycle that re-prompts and stops an agent when nobody is watching?",
+    "expected_answer": "It is the layer above the harness: the trigger, topology, verifier and stop rules that decide what an agent does next and when it quits, replacing you as the person prompting it.",
+    "source_pages": [
+      "data/wiki/loop/loop-engineering.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-039",
+    "category": "retrieval",
+    "query": "Which parts of a retrieval-augmented pipeline can be trained with reinforcement learning, and why is it hard end to end?",
+    "expected_answer": "Query rewriting, evidence selection, continue-or-stop and tool use each have actions and rewards, optimised online, per-subtask or Self-RAG style; reward sparsity makes end-to-end training hard.",
+    "source_pages": [
+      "data/wiki/rag/rl-for-retrieval-policies.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-040",
+    "category": "retrieval",
+    "query": "How do I prove a sales forecasting model is better than a simple approach?",
+    "expected_answer": "Compare against free baselines, above all seasonal naive, over many rolling origins using a scaled error plus bias, and hold the last origin back as an untouched exam.",
+    "source_pages": [
+      "data/wiki/foundations/forecast-baselines-and-rolling-origin-backtest.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-041",
+    "category": "retrieval",
+    "query": "I sliced my model's mistakes by 21 customer groups and a few look much worse, but I'm worried they are chance findings. How do I check?",
+    "expected_answer": "Use Wilson intervals and a false-discovery correction like Benjamini-Hochberg across slices, confirm on unread rows, and note group error-rate gaps are expected because FPR, PPV and FNR are tied by an identity.",
+    "source_pages": [
+      "data/wiki/foundations/slicing-errors-with-correction-and-the-rate-identity.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-042",
+    "category": "retrieval",
+    "query": "How do I compute a proper standard error for revenue per session in an A/B test randomised by user?",
+    "expected_answer": "Use a first-order Taylor expansion using variances and covariance across users; treating sessions as independent understated the standard error by about 40%, and a user-level bootstrap agrees with it.",
+    "source_pages": [
+      "data/wiki/foundations/delta-method-for-ratio-metrics.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-043",
+    "category": "retrieval",
+    "query": "Why does my document classifier have decent accuracy but fail on rare genres, and which metric shows it?",
+    "expected_answer": "Large classes carry accuracy while small ones are barely predicted; macro-F1 exposes that, log-loss punishes overconfident Naive Bayes, and multi-label tasks need micro versus macro averages.",
+    "source_pages": [
+      "data/wiki/foundations/text-classification-metrics-macro-f1-log-loss-and-calibration.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-044",
+    "category": "retrieval",
+    "query": "What are the standard terms for the pieces of an agent evaluation setup, like one attempt versus the full record of it?",
+    "expected_answer": "Task, trial (one attempt, run multiple because outputs vary), grader, trajectory (full record) and outcome (final state), with the evaluation harness treating the agent harness as the system under test.",
+    "source_pages": [
+      "data/wiki/eval/eval-harness-anatomy.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-045",
+    "category": "retrieval",
+    "query": "How do I build a recommendation ranker so a logged result can be reproduced exactly later?",
+    "expected_answer": "Make it pure functions with time, viewport, session history and a seed passed in, ties broken by id, signals in [0,1], and write one serve row before responding.",
+    "source_pages": [
+      "data/wiki/patterns/replayable-slate-ranker.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-046",
+    "category": "retrieval",
+    "query": "I need human-graded relevance data for evaluating a recommender but can't just sample at random from the candidates. How should I pick what to grade?",
+    "expected_answer": "Freeze an offline snapshot, derive strata from its counts and fill each pool with a mix: top slate, ranks 6-20, near-threshold scores, one per exclusion reason and random items; expect real data to expose defects fixtures missed.",
+    "source_pages": [
+      "data/wiki/eval/stratified-judgment-pool-for-ranker-benchmark.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-047",
+    "category": "retrieval",
+    "query": "Our overall repeat rate fell 11 points. How do I tell if each channel got worse or the channel proportions shifted?",
+    "expected_answer": "Split the change into a rate effect (new segment rates on old mix) and a mix effect, noting the split depends on order and doesn't prove cause.",
+    "source_pages": [
+      "data/wiki/foundations/rate-and-mix-decomposition.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-048",
+    "category": "retrieval",
+    "query": "I replaced one config variable with two and did a search-and-replace of the old name, but the generated hooks shipped broken. What went wrong?",
+    "expected_answer": "Splitting a multi-segment path variable is not a rename; each consumer wanted a different segment, so every consumer must be read individually and the result verified by rendering rather than grepping.",
+    "source_pages": [
+      "data/wiki/patterns/read-every-consumer-migration.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-049",
+    "category": "retrieval",
+    "query": "How do I decide whether to ship variant B using the probability it beats A and what I would lose if wrong?",
+    "expected_answer": "Sample each arm's Beta posterior to get P(B>A), a lift interval and expected loss; ship when expected loss is below the smallest difference you care about, and report lift size.",
+    "source_pages": [
+      "data/wiki/foundations/bayesian-ab-testing-with-expected-loss.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-050",
+    "category": "retrieval",
+    "query": "What naming scheme should git branches follow so they tie back to tickets?",
+    "expected_answer": "Use type-TICKET-short-slug with a per-repo type list and a hotfix escape hatch for production-blocking bugs.",
+    "source_pages": [
+      "data/wiki/patterns/branch-naming-convention.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-051",
+    "category": "retrieval",
+    "query": "What changes operationally when I move from running a container on one machine to hosting it 24/7 for a distributed team?",
+    "expected_answer": "The container stays the same, but uptime becomes someone's responsibility: monitoring, health checks, auto-restart, env management and optionally a custom domain, on platforms like Railway or Cloud Run.",
+    "source_pages": [
+      "data/wiki/infra/cloud-service-deployment.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-052",
+    "category": "retrieval",
+    "query": "Several parallel plans each invented their own way to look up operator info before the database table exists. How do I avoid that?",
+    "expected_answer": "Ship the lookup as a typed fixture behind the final async interface, with null meaning one thing, enumerated invariant tests and separate display and scoring fields, and have one dispatcher name the canonical contract first.",
+    "source_pages": [
+      "data/wiki/patterns/async-seam-before-the-table.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-053",
+    "category": "retrieval",
+    "query": "How do I automatically grade subjective outputs like summaries with another model?",
+    "expected_answer": "Use a second model scoring against 3-5 criteria, calibrated against human grades, as a complement to exact-match golden sets rather than a replacement.",
+    "source_pages": [
+      "data/wiki/eval/llm-as-judge-evaluation.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "uniform-054",
+    "category": "retrieval",
+    "query": "How can I estimate customer lifetime value from monthly state transitions in one calculation, and what goes wrong?",
+    "expected_answer": "Treat churned as absorbing, build the transition table, and solve V=(I - P/(1+d))^-1 R; a single pooled chain averages unlike customers and undervalues them by about 19%, so use a mixture of chains.",
+    "source_pages": [
+      "data/wiki/foundations/markov-chain-customer-value.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-055",
+    "category": "retrieval",
+    "query": "How should an automated code reviewer phrase a suspicion it can't fully prove versus one confirmed by a test?",
+    "expected_answer": "Each finding carries one of four states: verified, supported, hypothesis or question, where hypotheses must not be phrased as confirmed defects and questions as clarification requests; the producing subagent self-verifies.",
+    "source_pages": [
+      "data/wiki/patterns/evidence-classification-model.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-056",
+    "category": "retrieval",
+    "query": "When combining findings from several external analysis tools, should I normalise their severity levels?",
+    "expected_answer": "No: keep each tool's native severity untouched and add a separate merge-impact field answering whether this PR should merge, owned by the orchestrator.",
+    "source_pages": [
+      "data/wiki/patterns/source-severity-vs-merge-impact.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-057",
+    "category": "retrieval",
+    "query": "My transformer classifier trains fine and gets good accuracy as a batch, but gives much worse results one example at a time. No errors raised.",
+    "expected_answer": "Likely batch_first=False default so examples attend across the batch (0.966 batched vs 0.658 single), plus padding mask issues and loss broadcast shape; test that padding doesn't change output.",
+    "source_pages": [
+      "data/wiki/foundations/transformer-encoder-silent-shape-bugs.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "uniform-058",
+    "category": "retrieval",
+    "query": "How do I stop a CI guard script from passing when it silently scanned nothing?",
+    "expected_answer": "Record how many units were inspected and fail when the count falls below a plausible floor (e.g. at least 30 files), since a check unable to distinguish clean from not run is worse than none.",
+    "source_pages": [
+      "data/wiki/patterns/scan-floor-guard-against-silent-no-op-checks.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-059",
+    "category": "retrieval",
+    "query": "How should linter and test failure messages be written so a coding agent can fix problems without a human?",
+    "expected_answer": "State WHAT failed, WHY the rule exists and HOW to fix it, and promote review comments you repeat into such checks.",
+    "source_pages": [
+      "data/wiki/harness/agent-oriented-error-messages.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "uniform-060",
+    "category": "retrieval",
+    "query": "How are coding practice reps organised and logged separately from course material, and how do they link to concepts?",
+    "expected_answer": "As a gym of language/topic tracks with one file per drill; frontmatter concepts create concept-to-drill graph edges, bodies are spoiler-safe, and one append-only log is read live by practice mode.",
+    "source_pages": [
+      "data/wiki/interview/drill-gym-tracks-and-schema.md"
+    ],
+    "difficulty": "medium"
+  }
+]

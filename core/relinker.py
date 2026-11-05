@@ -25,7 +25,7 @@ from pathlib import Path
 
 import frontmatter
 
-from core.wiki_common import WIKILINK_RE, slugify
+from core.wiki_common import WIKILINK_RE, page_aliases, slugify
 
 REPO_ROOT = Path(__file__).parent.parent
 WIKI_DIR = REPO_ROOT / "data" / "wiki"
@@ -52,6 +52,7 @@ class PageInfo:
     tags: list[str]
     domain: str
     type_tag: str
+    aliases: list[str] = field(default_factory=list)
     outgoing_links: set[str] = field(default_factory=set)
     incoming_links: set[str] = field(default_factory=set)
 
@@ -88,6 +89,7 @@ def load_pages() -> dict[str, PageInfo]:
             tags=tags,
             domain=domain,
             type_tag=type_tag,
+            aliases=page_aliases(post.metadata),
         )
     return pages
 
@@ -97,6 +99,9 @@ def build_link_graph(pages: dict[str, PageInfo]) -> None:
     for stem, info in pages.items():
         slug_to_stem[stem] = stem
         slug_to_stem[slugify(info.title)] = stem
+    for stem, info in pages.items():
+        for alias in info.aliases:
+            slug_to_stem.setdefault(slugify(alias), stem)
 
     for stem, info in pages.items():
         content = info.path.read_text()

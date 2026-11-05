@@ -1,0 +1,38 @@
+{
+  "skill": "wiki-rename",
+  "template_literals": [
+    "Renamed: [[<old title>]] -> [[<new title>]]",
+    "File: <old path> -> <new path>",
+    "Inbound links updated: <n> across <n> pages (<n> private)",
+    "Alias added: <old title | none (<reason>)>",
+    "Remaining references: <none, or one per line below>",
+    "Leak check: <clean | <n> blockers: <public file:line>>"
+  ],
+  "must_mention": [
+    "core/wiki_rename.py",
+    "--apply",
+    "--no-alias",
+    "core/wiki_telemetry.py check",
+    "core/wiki_telemetry.py log rename",
+    "stop for a yes",
+    "make eval-gate"
+  ],
+  "must_not_mention": [
+    "git mv",
+    "git commit"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/wiki-rename old-page \"New Title\"",
+      "output_regex": [
+        "(?m)^Renamed: \\[\\[.+\\]\\] -> \\[\\[.+\\]\\]$",
+        "(?m)^Inbound links updated: \\d+ across \\d+ pages \\(\\d+ private\\)$",
+        "(?m)^Alias added: ",
+        "(?m)^Remaining references:",
+        "(?m)^Leak check: (clean|\\d+ blockers)"
+      ],
+      "good": "Renamed: [[Old Page]] -> [[New Title]]\nFile: rag/old-page.md -> rag/new-title.md\nInbound links updated: 12 across 9 pages (1 private)\nAlias added: Old Page\nInbound links, public: 8 before, 8 after\nRemaining references:\n  evals/golden_dataset.json\nLeak check: clean\n",
+      "bad": "I moved rag/old-page.md to rag/new-title.md with mv. The links should still work.\n"
+    }
+  ]
+}

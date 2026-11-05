@@ -46,6 +46,11 @@ Every move cites its evidence in a dry-run report first, and only the moves Rams
    Absent or sparse telemetry is fine — age/size/similarity carry the first runs.
 5. **Inbound links**: backlink counts from lint or the index — retire candidates need
    ≤1 inbound link.
+6. **Hubs**: `uv run python core/wiki_graph.py --json` → `hubs`. A top hub with
+   `clusters_spanned` ≤3 has many links into few topics, so it may be doing several pages'
+   work. Split candidates are evidence for Ramsey only: split is not one of the three moves,
+   so nothing in phase 4 acts on them. If `stability` is below 0.9 the clusters are not settled:
+   say so under that heading and list none.
 
 ### Phase 2 — Dry-run report
 
@@ -99,6 +104,9 @@ Stats before: orphan <n>%, average degree <n>, main component <n>%, stale <n>%, 
 
 ## Compress candidates
 - [[session-log]] — 694 lines; keep last ~30 rows, roll older into month summaries
+
+## Split candidates (not applied here)
+- [[F]] — evidence: 47 links, spans 3 clusters, 410 lines
 
 ## Left alone (near-misses worth recording)
 - [[E]] — stale but 14 retrievals; staleness is not disuse

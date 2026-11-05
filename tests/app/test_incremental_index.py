@@ -338,3 +338,40 @@ def test_force_triggers_full_rebuild(wiki: Path, monkeypatch: pytest.MonkeyPatch
     server.build_index(con, force=True)
     assert calls == [True]
     con.close()
+
+
+# ---------------------------------------------------------------------------
+# Tombstones: never indexed, and leave the index when a page is retired
+# ---------------------------------------------------------------------------
+
+
+def _retire(path: Path) -> None:
+    path.write_text(
+        "---\ntitle: Retired\ntags: [test, tombstone]\nsummary: Retired.\n"
+        "updated: 2026-08-20\n---\n\n# Retired\n\nunmistakable-retired-text\n"
+    )
+
+
+def test_tombstone_with_no_row_is_not_stale(wiki: Path) -> None:
+    """A tombstone is skipped at indexing, so it must not read as stale on every connection."""
+    _retire(wiki / "notes" / "retired.md")
+    con = _fresh_con()
+    server.build_index(con)
+    assert server._stale_pages(con) == []
+    assert server._degradation_reasons(con, has_fts=True) == []
+    con.close()
+
+
+def test_page_retired_after_build_leaves_the_index(wiki: Path) -> None:
+    alpha = wiki / "notes" / "alpha.md"
+    con = _fresh_con()
+    server.build_index(con)
+    _retire(alpha)
+    assert server._stale_pages(con) == [alpha]
+
+    server.build_index(con)
+    assert server._stale_pages(con) == []
+    paths = {r[0] for r in con.execute("SELECT path FROM pages").fetchall()}
+    assert str(alpha) not in paths
+    assert str(wiki / "notes" / "beta.md") in paths
+    con.close()

@@ -1,0 +1,12 @@
+[
+  {"input": "/wiki-rename old-page \"New Title\"", "expected": true},
+  {"input": "rename the wiki page on reranking to Cross-Encoder Reranking", "expected": true},
+  {"input": "this page's title is inconsistent, change it and fix the links", "expected": true},
+  {"input": "the wiki page name has a typo, can you correct it everywhere?", "expected": true},
+  {"input": "merge these two overlapping wiki pages", "expected": false},
+  {"input": "retire this page, its content has moved", "expected": false},
+  {"input": "rename this python function across the repo", "expected": false},
+  {"input": "rename this course lesson", "expected": false},
+  {"input": "find dead wikilinks", "expected": false},
+  {"input": "move this page from rag to context", "expected": false}
+]

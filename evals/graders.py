@@ -38,6 +38,8 @@ class GoldenEntry:
     expected_answer: str
     source_pages: list[str]
     difficulty: str
+    # Pages checked by hand to also contain the answer. They count for hit rate and MRR, not recall.
+    accept_pages: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -116,7 +118,7 @@ class RetrievalGrader:
         retrieved: list[RetrievalResult],
     ) -> RetrievalGraderResult:
         retrieved_paths = [r.page_path for r in retrieved]
-        rr = self._reciprocal_rank(entry.source_pages, retrieved_paths)
+        rr = self._reciprocal_rank(entry.source_pages + entry.accept_pages, retrieved_paths)
         matched = sum(
             any(self._matches(exp, p) for p in retrieved_paths) for exp in entry.source_pages
         )
@@ -486,6 +488,7 @@ def load_golden_dataset(path: str | None = None) -> list[GoldenEntry]:
             expected_answer=item["expected_answer"],
             source_pages=item["source_pages"],
             difficulty=item["difficulty"],
+            accept_pages=item.get("accept_pages", []),
         )
         for item in raw
     ]

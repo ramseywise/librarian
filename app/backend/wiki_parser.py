@@ -5,7 +5,13 @@ from pathlib import Path
 import frontmatter
 import yaml
 
-from core.wiki_common import CANONICAL_LINK_TYPES, TYPED_LINK_RE, WIKILINK_RE, slugify
+from core.wiki_common import (
+    CANONICAL_LINK_TYPES,
+    TYPED_LINK_RE,
+    WIKILINK_RE,
+    page_aliases,
+    slugify,
+)
 from shared.log_config import get_logger
 
 log = get_logger(__name__)
@@ -86,6 +92,7 @@ def parse_wiki_uncached() -> dict:
     nodes: list[dict] = []
     edges: list[dict] = []
     page_slugs: dict[str, str] = {}  # slug -> title
+    aliases_to_id: dict[str, str] = {}  # slug of a former name -> current page id
 
     # First pass: collect all pages
     pages = _public_pages()
@@ -109,6 +116,7 @@ def parse_wiki_uncached() -> dict:
         page_slugs[page_id] = title
         # also register by title slug so wikilinks resolve
         page_slugs[slugify(title)] = title
+        aliases_to_id.update({slugify(alias): page_id for alias in page_aliases(post.metadata)})
 
         domain = [md_file.parent.name]
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
@@ -149,7 +157,8 @@ def parse_wiki_uncached() -> dict:
 
         for match in WIKILINK_RE.finditer(content):
             raw = match.group(1).strip()
-            target_id = slugify(raw)
+            target_slug = slugify(raw)
+            target_id = target_slug if target_slug in node_ids else aliases_to_id.get(target_slug)
             if target_id not in node_ids or target_id == source_id:
                 continue
             key = (source_id, target_id)
@@ -157,8 +166,8 @@ def parse_wiki_uncached() -> dict:
                 continue
             seen_edges.add(key)
             edge_data: dict = {"edgeType": "wikilink"}
-            if target_id in typed_links:
-                edge_data["relationship"] = typed_links[target_id]
+            if target_slug in typed_links:
+                edge_data["relationship"] = typed_links[target_slug]
             edges.append(
                 {
                     "id": f"wl:{source_id}->{target_id}",

@@ -1,0 +1,12 @@
+[
+  {"input": "/wiki-graph", "expected": true},
+  {"input": "what is the wiki actually about, going by its links?", "expected": true},
+  {"input": "which pages hold the wiki together?", "expected": true},
+  {"input": "show me the wiki's hubs and bridges", "expected": true},
+  {"input": "how do the link clusters compare with the directories?", "expected": true},
+  {"input": "find orphan pages and dead wikilinks", "expected": false},
+  {"input": "merge these two overlapping wiki pages", "expected": false},
+  {"input": "what is the wiki missing?", "expected": false},
+  {"input": "give me this week's wiki review", "expected": false},
+  {"input": "what does the wiki say about graph retrieval?", "expected": false}
+]

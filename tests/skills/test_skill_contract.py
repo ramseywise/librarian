@@ -26,6 +26,9 @@ CONTRACT_SKILLS = [
     "wiki-weekly",
     "harness-audit",
     "evals-bootstrap",
+    "wiki-graph",
+    "write",
+    "wiki-rename",
 ]
 SECTIONS = ["Core rule", "Workflow", "Output format", "Calibration"]
 FORMAT_FILES = sorted(SKILLS_DIR.glob("*/evals/format.json"))

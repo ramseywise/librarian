@@ -246,6 +246,17 @@ class TestSnapshot:
         assert [r["date"] for r in rows] == ["2026-11-05", "2026-11-06"]
         assert rows[0]["metrics"]["average_degree"]["value"] == 2.0
 
+    def test_row_records_the_graph_shape_as_plain_numbers(
+        self, wiki: Path, telemetry: Path
+    ) -> None:
+        run(["snapshot"], wiki, telemetry)
+        row = json.loads((telemetry / "metrics.jsonl").read_text().splitlines()[-1])
+        assert isinstance(row["clusters"], int)
+        assert isinstance(row["unsettled"], int)
+        assert 0.0 <= row["stability"] <= 1.0
+        # Report-only: not a banded metric, so the health strip never colours it.
+        assert not {"clusters", "unsettled", "stability"} & set(row["metrics"])
+
     def test_row_cap_drops_oldest(self, wiki: Path, telemetry: Path) -> None:
         telemetry.mkdir()
         old = [

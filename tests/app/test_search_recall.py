@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from app.mcp_server import server
@@ -136,3 +137,80 @@ def test_block_list_tagged_tombstone_stays_out_of_index(wiki: Path) -> None:
     )
     result = server.search_wiki("zombie retrieval verbiage")
     assert "Old Retrieval Page" not in result
+
+
+def _page(wiki: Path, stem: str, title: str, body: str, extra: str = "") -> None:
+    (wiki / "rag" / f"{stem}.md").write_text(
+        f"---\ntitle: {title}\ntags: [rag, concept]\nsummary: {title}.\n{extra}"
+        f"updated: 2026-11-05\n---\n\n# {title}\n\n{body}\n"
+    )
+
+
+def test_fallback_ranks_by_terms_matched_not_title_word(
+    wiki: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Common query words match everywhere; they must not crowd out the page matching them all."""
+    for i in range(20):
+        _page(wiki, f"filler-{i}", f"What Filler {i}", "what")
+    _page(wiki, "target", "Consensus Notes", "What zebra quorum means.")
+    monkeypatch.setattr(server, "_ensure_fts", lambda con: False)
+    rows, _ = server._search_rows("What zebra quorum?", limit=1, tool="test")
+    assert rows[0][0].endswith("target.md")
+
+
+@pytest.mark.parametrize("has_fts", [True, False], ids=["bm25", "fallback"])
+def test_frontmatter_alias_is_searchable(
+    wiki: Path, monkeypatch: pytest.MonkeyPatch, has_fts: bool
+) -> None:
+    """Indexed content is the whole file, frontmatter included, so aliases match without a column."""
+    _page(wiki, "aliased", "Formal Name", "Body text.", extra="aliases: [zanzibarism]\n")
+    if not has_fts:
+        monkeypatch.setattr(server, "_ensure_fts", lambda con: False)
+    rows, _ = server._search_rows("zanzibarism", limit=3, tool="test")
+    assert rows[0][0].endswith("aliased.md")
+
+
+class _FakeModel:
+    def encode(self, texts: list[str], normalize_embeddings: bool = True) -> np.ndarray:
+        return np.array([[1.0, 0.0]])
+
+
+def _row(path: str, score: float | None, backlinks: int, vec: list[float] | None) -> tuple:
+    blob = server._vec_to_blob(vec) if vec else None
+    return (path, path, "", "", "", backlinks, blob, score)
+
+
+@pytest.fixture()
+def embedded(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(server, "HAS_EMBEDDINGS", True)
+    monkeypatch.setattr(server, "_get_emb_model", lambda: _FakeModel())
+
+
+@pytest.mark.usefixtures("embedded")
+def test_a_heavily_linked_page_gets_no_lift_from_its_links() -> None:
+    rows = [_row("hub", 1.0, 100, [0.5, 0.5]), _row("specific", 0.95, 0, [1.0, 0.0])]
+    assert [r[0] for r in server._rerank("q", rows, 2)] == ["specific", "hub"]
+
+
+@pytest.mark.usefixtures("embedded")
+def test_similarity_can_overturn_a_small_text_lead() -> None:
+    rows = [_row("keyword", 1.0, 0, [0.0, 1.0]), _row("meaning", 0.9, 0, [1.0, 0.0])]
+    assert [r[0] for r in server._rerank("q", rows, 2)] == ["meaning", "keyword"]
+
+
+@pytest.mark.usefixtures("embedded")
+def test_a_large_text_lead_survives_a_small_similarity_gap() -> None:
+    rows = [_row("strong", 1.0, 0, [0.6, 0.8]), _row("weak", 0.2, 0, [0.7, 0.71])]
+    assert [r[0] for r in server._rerank("q", rows, 2)] == ["strong", "weak"]
+
+
+@pytest.mark.usefixtures("embedded")
+def test_a_page_with_no_embedding_still_ranks_on_text() -> None:
+    rows = [_row("no-vector", 1.0, 0, None), _row("weak", 0.1, 0, [0.5, 0.5])]
+    assert [r[0] for r in server._rerank("q", rows, 2)] == ["no-vector", "weak"]
+
+
+def test_without_embeddings_the_candidate_order_stands(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(server, "HAS_EMBEDDINGS", False)
+    rows = [_row("first", None, 0, None), _row("second", None, 50, None)]
+    assert [r[0] for r in server._rerank("q", rows, 2)] == ["first", "second"]

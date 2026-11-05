@@ -201,6 +201,7 @@
       "data/wiki/mcp/mcp-protocol.md",
       "data/wiki/adk/adk-context-engineering.md"
     ],
+    "accept_pages": ["data/wiki/adk/skill-md-pattern.md"],
     "difficulty": "medium"
   },
   {
@@ -231,6 +232,7 @@
     "source_pages": [
       "data/wiki/patterns/react-pattern.md"
     ],
+    "accept_pages": ["data/wiki/memory/self-learning-agents.md"],
     "difficulty": "medium"
   },
   {
@@ -463,6 +465,7 @@
     "source_pages": [
       "data/wiki/adk/adk-context-engineering.md"
     ],
+    "accept_pages": ["data/wiki/eval/skill-eval-pipeline.md"],
     "difficulty": "hard"
   },
   {

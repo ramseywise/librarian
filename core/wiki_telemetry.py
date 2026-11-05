@@ -44,7 +44,7 @@ from core.sensitive import (  # noqa: E402
     scan_text,
     terms_pattern,
 )
-from core.wiki_common import TYPED_LINK_RE, WIKILINK_RE, slugify  # noqa: E402
+from core.wiki_common import TYPED_LINK_RE, WIKILINK_RE, page_aliases, slugify  # noqa: E402
 
 WIKI_DIR = REPO_ROOT / "data" / "wiki"
 TELEMETRY_DIR = REPO_ROOT / "data" / "telemetry"
@@ -81,7 +81,7 @@ TITLE_LEAK_MIN_WORDS = 3
 
 # Real questions only: `eval`, `sweep`, `diag` and `review_smoke` rows are harness traffic.
 QUERY_TOOLS = {"search_wiki", "search_courses"}
-# The retrieval log has no score field, and the fused RRF score the server computes is
+# The retrieval log has no score field, and the blended score the server computes is
 # rank-based, with no absolute meaning. So the only defensible floor is "returned nothing".
 ASKED_FLOOR_NOTE = (
     "Floor: a query counts as unanswered only if its latest healthy search returned zero results. "
@@ -116,6 +116,7 @@ class Page:
     updated: date | None
     body: str
     parsed: bool  # False: broken YAML, so tags and date are unknown
+    aliases: tuple[str, ...] = ()
 
     @property
     def domain(self) -> str:
@@ -153,7 +154,8 @@ def _load_page(path: Path, wiki_dir: Path) -> Page:
     tags = [tags] if isinstance(tags, str) else [str(t) for t in tags]
     title = str(post.get("title") or path.stem)
     updated = _to_date(post.get("updated"))
-    return Page(path, rel, path.stem, title, tags, updated, post.content, parsed=True)
+    aliases = tuple(page_aliases(post.metadata))
+    return Page(path, rel, path.stem, title, tags, updated, post.content, True, aliases)
 
 
 def _public_files(wiki_dir: Path) -> list[Path]:
@@ -176,13 +178,16 @@ def _public_pages(wiki_dir: Path) -> list[Page]:
 
 
 def _slug_map(pages: Iterable[Page]) -> dict[str, Page]:
-    """Link slug → page. Stems win over titles, the same resolution as core/relinker.py."""
+    """Link slug → page. Stems beat titles beat aliases, the same resolution as core/relinker.py."""
     pages = [p for p in pages if not p.stem.startswith("_")]
     slugs: dict[str, Page] = {}
     for page in pages:
         slugs.setdefault(slugify(page.stem), page)
     for page in pages:
         slugs.setdefault(slugify(page.title), page)
+    for page in pages:
+        for alias in page.aliases:
+            slugs.setdefault(slugify(alias), page)
     return slugs
 
 
@@ -267,6 +272,21 @@ def _band_status(healthy: bool, broken: bool) -> str:
     return "healthy" if healthy else "broken" if broken else "watch"
 
 
+def _link_edges(
+    pages: list[Page], slugs: dict[str, Page]
+) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
+    """Distinct (outbound, inbound) links between scored pages, keyed by rel. No self-links."""
+    outbound: dict[str, set[str]] = {p.rel: set() for p in pages}
+    inbound: dict[str, set[str]] = {p.rel: set() for p in pages}
+    for page in pages:
+        for match in WIKILINK_RE.finditer(page.body):
+            target = slugs.get(_link_target(match.group(1))[0])
+            if target is not None and target.scored and target.rel != page.rel:
+                outbound[page.rel].add(target.rel)
+                inbound[target.rel].add(page.rel)
+    return outbound, inbound
+
+
 def compute_stats(wiki_dir: Path, today: date) -> dict[str, Any]:
     """The six health numbers plus page count, hubs, domains and open conflicts.
 
@@ -279,16 +299,10 @@ def compute_stats(wiki_dir: Path, today: date) -> dict[str, Any]:
     slugs = _slug_map(public)
     total = len(pages)
 
-    outbound: dict[str, set[str]] = {p.rel: set() for p in pages}
-    inbound: dict[str, set[str]] = {p.rel: set() for p in pages}
+    outbound, inbound = _link_edges(pages, slugs)
     see_also = typed = stale = undated = stubs = 0
     cutoff = today - timedelta(days=STALE_DAYS)
     for page in pages:
-        for match in WIKILINK_RE.finditer(page.body):
-            target = slugs.get(_link_target(match.group(1))[0])
-            if target is not None and target.scored and target.rel != page.rel:
-                outbound[page.rel].add(target.rel)
-                inbound[target.rel].add(page.rel)
         entries, typed_entries = _see_also_counts(page.body)
         see_also += entries
         typed += typed_entries
@@ -825,9 +839,22 @@ def _cmd_stats(args: argparse.Namespace) -> int:
     return 0
 
 
+def _graph_shape(wiki_dir: Path) -> dict[str, Any]:
+    """Cluster count, unsettled pages and stability for a snapshot row: report-only, no bands."""
+    # Imported here: wiki_graph imports this module, and only snapshots need networkx and sklearn.
+    from core.wiki_graph import analyse, load_graph
+
+    report = analyse(load_graph(wiki_dir))
+    return {
+        "clusters": len(report.clusters),
+        "unsettled": report.unsettled,
+        "stability": report.stability,
+    }
+
+
 def _cmd_snapshot(args: argparse.Namespace) -> int:
     stats = compute_stats(args.wiki_dir, args.today)
-    write_snapshot(stats, args.telemetry_dir)
+    write_snapshot({**stats, **_graph_shape(args.wiki_dir)}, args.telemetry_dir)
     print(_render_stats(stats))
     print(f"\nSnapshot {stats['date']} written to {_display(args.telemetry_dir / METRICS_FILE)}")
     return 0

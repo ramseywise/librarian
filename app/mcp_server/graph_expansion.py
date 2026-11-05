@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from core.wiki_common import TYPED_LINK_RE, slugify
+from core.wiki_common import TYPED_LINK_RE, slugify, text_aliases
 
 # The two relationship types that express "you need this to understand that".
 EXPANSION_RELATIONSHIPS = frozenset({"prerequisite-for", "extends"})
@@ -56,6 +56,9 @@ def build_typed_edges(pages: list[tuple[str, str, str]]) -> list[tuple[str, str,
     for path, title, _ in pages:
         slug_to_path[slugify(title)] = path
         slug_to_path[slugify(Path(path).stem)] = path
+    for path, _, content in pages:
+        for alias in text_aliases(content):
+            slug_to_path.setdefault(slugify(alias), path)
 
     edges: list[tuple[str, str, str]] = []
     seen: set[tuple[str, str, str]] = set()

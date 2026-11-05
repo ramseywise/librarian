@@ -85,13 +85,16 @@ eval-live:
 eval-nofts:
 	uv run python evals/run_eval.py --live --arm nofts --verbose --save-baseline
 
-# Both gated live arms — healthy pipeline and degraded fallback. A ranking
-# change must clear both, not trade one for the other.
+# Every gated live arm: healthy pipeline, degraded fallback, uniformly sampled wiki
+# pages, and lesson search. A ranking change must clear all of them, not trade one
+# for another.
 eval-gate:
 	uv run python evals/run_eval.py --live --arm sem --verbose
 	uv run python evals/run_eval.py --live --arm nofts --verbose
+	uv run python evals/run_eval.py --live --arm uniform --verbose
+	uv run python evals/run_eval.py --live --arm course --verbose
 
-.PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps
+.PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps wiki-graph
 
 wiki-stats:
 	uv run python core/wiki_telemetry.py stats
@@ -105,6 +108,9 @@ wiki-check:
 # The curriculum sections read the course catalog, which needs the api extra.
 wiki-gaps:
 	uv run --extra api python core/wiki_telemetry.py gaps
+
+wiki-graph:
+	uv run python core/wiki_graph.py
 
 test:
 	uv run pytest tests/ --ignore=tests/e2e -v
@@ -171,7 +177,8 @@ help:
 	@echo "wiki-snapshot    — wiki-stats + one dated row in data/telemetry/metrics.jsonl"
 	@echo "wiki-check       — private-leak check (exit 1 on a wikilink into private/)"
 	@echo "wiki-gaps        — regenerate data/telemetry/gaps.md and print the top five"
+	@echo "wiki-graph       — hubs, bridges and consensus clusters of the wiki's link graph"
 	@echo "eval             — run retrieval + answer graders over golden dataset; save baseline"
 	@echo "eval-live        — eval the live sem arm (gated against its baseline); save live baseline"
 	@echo "eval-nofts       — eval the degraded no-fts arm (gated); save nofts baseline"
-	@echo "eval-gate        — run both gated live arms (sem + nofts); no baseline written"
+	@echo "eval-gate        — run every gated live arm (sem, nofts, uniform, course); no baseline written"

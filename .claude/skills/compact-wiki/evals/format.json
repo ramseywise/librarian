@@ -5,6 +5,7 @@
     "## Merge candidates",
     "## Retire candidates",
     "## Compress candidates",
+    "## Split candidates (not applied here)",
     "## Left alone (near-misses worth recording)",
     "# Wiki Compaction Applied — <date>",
     "Applied:      <n> merged, <n> retired, <n> compressed",
@@ -16,7 +17,8 @@
     "core/wiki_telemetry.py log compact",
     "STOP for approval",
     "tooling-ledger",
-    "truncate `logs/retrieval.jsonl`"
+    "truncate `logs/retrieval.jsonl`",
+    "core/wiki_graph.py --json"
   ],
   "must_not_mention": [
     "_log.md",

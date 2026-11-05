@@ -43,7 +43,13 @@ from dotenv import load_dotenv
 from fastmcp import FastMCP
 
 from app.mcp_server.graph_expansion import build_typed_edges, expand_one_hop
-from core.wiki_common import ANY_TYPED_LINK_RE, CANONICAL_LINK_TYPES, WIKILINK_RE, slugify
+from core.wiki_common import (
+    ANY_TYPED_LINK_RE,
+    CANONICAL_LINK_TYPES,
+    WIKILINK_RE,
+    slugify,
+    text_aliases,
+)
 from shared.log_config import configure_logging
 
 if TYPE_CHECKING:
@@ -261,10 +267,17 @@ def _content_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
 
 
+def _is_tombstone(path: Path) -> bool:
+    meta = _parse_frontmatter(path.read_text(encoding="utf-8", errors="ignore"))
+    return "tombstone" in meta.get("tags", [])
+
+
 def _stale_pages(con: duckdb.DuckDBPyConnection) -> list[Path]:
     """Return paths of wiki pages and lessons whose content hash differs from the indexed hash.
 
     Returns an empty list when the index is fully fresh and no pages have been deleted.
+    A tombstone with no index row is correct, not stale: _read_pages never indexes one. One that
+    still has a row was retired since the last build, so it stays stale until _update_pages prunes it.
     """
     try:
         indexed: dict[str, str] = {
@@ -275,7 +288,11 @@ def _stale_pages(con: duckdb.DuckDBPyConnection) -> list[Path]:
     except Exception:
         return _wiki_pages() + _course_pages()
 
-    return [p for p in _wiki_pages() + _course_pages() if indexed.get(str(p)) != _content_hash(p)]
+    return [
+        p
+        for p in _wiki_pages() + _course_pages()
+        if indexed.get(str(p)) != _content_hash(p) and (str(p) in indexed or not _is_tombstone(p))
+    ]
 
 
 def _has_deleted_pages(con: duckdb.DuckDBPyConnection) -> bool:
@@ -306,6 +323,9 @@ def _compute_backlinks(pages: list[tuple]) -> dict[str, int]:
         # also register by stem
         stem = Path(path).stem
         slug_to_path[stem] = path
+    for row in pages:
+        for alias in text_aliases(row[5]):
+            slug_to_path.setdefault(slugify(alias), row[0])
 
     counts: dict[str, int] = {p[0]: 0 for p in pages}
     for row in pages:
@@ -576,6 +596,15 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
     if typed_edges:
         con.executemany("INSERT INTO edges VALUES (?, ?, ?)", typed_edges)
 
+    # Prune deleted and newly tombstoned pages: in DB but no longer indexable. Before the FTS
+    # rebuild, which would otherwise keep their text searchable.
+    removed = indexed_paths - {row[0] for row in all_raw}
+    if removed:
+        con.executemany("DELETE FROM pages WHERE path = ?", [(p,) for p in removed])
+        for p in removed:
+            con.execute("DELETE FROM edges WHERE source_path = ? OR target_path = ?", [p, p])
+        log.info("index_pruned", removed_count=len(removed))
+
     # Rebuild FTS index — DuckDB FTS has no row-level update API; overwrite=1 re-reads
     # indexed columns from the table (fast) but cannot be avoided.
     global HAS_FTS
@@ -587,14 +616,6 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
             )
         except Exception as exc:
             log.warning("fts_index_failed", error=str(exc))
-
-    # Prune deleted pages: in DB but not on disk
-    removed = indexed_paths - {str(p) for p in _wiki_pages()}
-    if removed:
-        con.executemany("DELETE FROM pages WHERE path = ?", [(p,) for p in removed])
-        for p in removed:
-            con.execute("DELETE FROM edges WHERE source_path = ? OR target_path = ?", [p, p])
-        log.info("index_pruned", removed_count=len(removed))
 
     con.execute("UPDATE meta SET val = ? WHERE key = 'built_at'", [str(time.time())])
     log.info("incremental_index_update", stale_count=len(pages))
@@ -687,6 +708,9 @@ def _domain_filter(domain: str) -> tuple[str, list]:
     return "AND lower(tags) LIKE '%' || lower(?) || '%'", [domain]
 
 
+_QUERY_PUNCTUATION = "?!.,:;\"'()"
+
+
 def _like_candidates(
     con: duckdb.DuckDBPyConnection,
     query: str,
@@ -700,11 +724,14 @@ def _like_candidates(
     Each whitespace-separated term matches independently, so a multi-word query
     like "compaction strategies" still finds "strategies for compacting context"
     — the old whole-phrase LIKE required the exact phrase to appear verbatim.
+    Pages matching the most terms come first: OR on words like "what" matches nearly every
+    page, so sorting on backlinks alone fills the candidate cap with the best-linked pages.
     """
-    terms = query.lower().split() or [query.lower()]
-    term_cond = " OR ".join(
-        ["(lower(content) LIKE ? OR lower(title) LIKE ? OR lower(summary) LIKE ?)"] * len(terms)
-    )
+    terms = [t.strip(_QUERY_PUNCTUATION) for t in query.lower().split()]
+    terms = [t for t in terms if t] or [query.lower()]
+    term_match = "(lower(content) LIKE ? OR lower(title) LIKE ? OR lower(summary) LIKE ?)"
+    term_cond = " OR ".join([term_match] * len(terms))
+    terms_matched = " + ".join([f"CASE WHEN {term_match} THEN 1 ELSE 0 END"] * len(terms))
     title_cond = " OR ".join(["lower(title) LIKE ?"] * len(terms))
     like_params: list = []
     for t in terms:
@@ -715,89 +742,64 @@ def _like_candidates(
         WHERE ({term_cond})
         {tag_filter}
         ORDER BY
+            {terms_matched} DESC,
             CASE WHEN ({title_cond}) THEN 0 ELSE 1 END,
             backlinks DESC,
             updated DESC
         LIMIT ?
     """
-    params = like_params + tag_params + [f"%{t}%" for t in terms] + [limit * 3]
+    params = like_params + tag_params + like_params + [f"%{t}%" for t in terms] + [limit * 3]
     return con.execute(sql, params).fetchall()
 
 
-RRF_K = 60
-
-
-def _rrf_ranks(order: list[int], k: int = RRF_K) -> dict[int, float]:
-    """Map each row index to its 1/(k + rank) contribution for one channel.
-
-    `order` is row indices best-first. Ties are not detected — callers sort on a
-    channel's own scores, so equal scores take an arbitrary but stable order.
-    """
-    return {idx: 1.0 / (k + rank) for rank, idx in enumerate(order, start=1)}
+# Measured 2026-11-05 on four golden sets. This blend beat or tied RRF on all of them, and RRF
+# with a backlink channel scored MRR 0.547 on questions about uniformly sampled pages (0.767 here).
+TEXT_WEIGHT = 0.5
+SEMANTIC_WEIGHT = 0.5
 
 
 def _rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
-    """Fuse BM25, semantic, and backlink channels with Reciprocal Rank Fusion.
+    """Blend text relevance and semantic similarity, best first.
 
     rows are 8-tuples (path, title, tags, summary, content, backlinks, embedding,
-    score); returns 7-tuples with the fused score in place of the embedding.
+    score); returns 7-tuples with the blended score in place of the embedding.
+    BM25 rows carry a real relevance score (normalised against the max), which keeps
+    how far ahead the best match is; fallback rows have score NULL, so position in the
+    SQL ordering stands in. A row with no embedding scores 0 on similarity.
 
-    Each channel contributes 1/(RRF_K + rank) per row. RRF replaces the previous
-    fixed 0.5/0.3/0.2 weighted blend of raw scores, whose weights only made sense
-    when all three channels were on comparable scales — BM25 was max-normalised
-    (so the top hit always scored 1.0 regardless of absolute relevance), cosine
-    sat on its own [-1, 1], and backlinks were normalised against whatever the
-    candidate set's maximum happened to be. Ranks are scale-free, so a channel
-    can no longer dominate by having a wider numeric range.
-
-    Channels are included only when they carry signal: the semantic channel needs
-    embeddings, the backlink channel needs at least one non-zero count. A row
-    absent from a channel contributes nothing for it rather than a zero rank,
-    which is what keeps a missing embedding from being read as "maximally
-    dissimilar".
+    Backlinks are deliberately not a signal. They say how central a page is, not whether
+    it answers this query, so they buried specific pages under hubs. A golden set whose
+    answers are mostly hubs will read that as an improvement: see evals/run_eval.py.
     """
-    if not rows:
-        return []
-
     raw_scores = [r[7] for r in rows]
-    have_bm25 = any(s is not None for s in raw_scores)
+    max_bm25 = max((s for s in raw_scores if s is not None), default=0.0)
 
-    channels: list[dict[int, float]] = []
-
-    # Text channel: BM25 score order when fts ran, else the SQL fallback's own
-    # ordering (title-match, backlinks, recency), which is already best-first.
-    if have_bm25:
-        text_order = sorted(
-            range(len(rows)),
-            key=lambda i: raw_scores[i] if raw_scores[i] is not None else float("-inf"),
-            reverse=True,
-        )
-    else:
-        text_order = list(range(len(rows)))
-    channels.append(_rrf_ranks(text_order))
+    def text_score(i: int) -> float:
+        s = raw_scores[i]
+        if s is not None and max_bm25 > 0:
+            return s / max_bm25
+        return 1.0 - (i / len(rows))
 
     if HAS_EMBEDDINGS and len(rows) > 1:
         try:
             model = _get_emb_model()
             q_vec = model.encode([query], normalize_embeddings=True)[0].tolist()
-            sims = {i: _cosine(q_vec, _blob_to_vec(row[6])) for i, row in enumerate(rows) if row[6]}
-            if sims:
-                sem_order = sorted(sims, key=lambda i: sims[i], reverse=True)
-                channels.append(_rrf_ranks(sem_order))
+            scored = [
+                (
+                    TEXT_WEIGHT * text_score(i)
+                    + SEMANTIC_WEIGHT * (_cosine(q_vec, _blob_to_vec(row[6])) if row[6] else 0.0),
+                    i,
+                    row,
+                )
+                for i, row in enumerate(rows)
+            ]
+            # Sort on (score, -original index) so equal-scoring rows keep candidate order.
+            scored.sort(key=lambda t: (t[0], -t[1]), reverse=True)
+            return [(*row[:6], score) for score, _, row in scored[:limit]]
         except Exception as e:
             log.warning("hybrid_rerank_failed", error=str(e))
 
-    # Backlinks only rank when they discriminate — an all-zero column would
-    # otherwise inject an arbitrary tie-break order as if it were evidence.
-    backlinks = {i: row[5] for i, row in enumerate(rows) if row[5]}
-    if backlinks:
-        bl_order = sorted(backlinks, key=lambda i: backlinks[i], reverse=True)
-        channels.append(_rrf_ranks(bl_order))
-
-    fused = [(sum(ch.get(i, 0.0) for ch in channels), i, row) for i, row in enumerate(rows)]
-    # Sort on (score, -original index) so equal-scoring rows keep candidate order.
-    fused.sort(key=lambda t: (t[0], -t[1]), reverse=True)
-    return [(*row[:6], score) for score, _, row in fused[:limit]]
+    return [(*row[:6], text_score(i)) for i, row in enumerate(rows[:limit])]
 
 
 def _degradation_reasons(con: duckdb.DuckDBPyConnection, *, has_fts: bool) -> list[str]:
@@ -1134,6 +1136,15 @@ def _read_lesson(ref: str, not_found: str) -> str:
     return target.read_text(encoding="utf-8", errors="replace")
 
 
+def _pages_formerly_named(slug: str) -> list[Path]:
+    """Public pages with `slug` among their aliases. Reads every page, so only after a slug miss."""
+    return [
+        page
+        for page in _wiki_pages()
+        if any(slugify(alias) == slug for alias in text_aliases(page.read_text(encoding="utf-8")))
+    ]
+
+
 def _read_page_text(path_or_title: str) -> str:
     """Resolve a page by path, wiki-relative path, slug, or title and return its text.
 
@@ -1178,6 +1189,8 @@ def _read_page_text(path_or_title: str) -> str:
 
     slug = slugify(path_or_title)
     matches = [p for p in WIKI_DIR.rglob(f"*{slug}*.md") if not _is_private(p)]
+    if not matches:
+        matches = _pages_formerly_named(slug)
     if not matches:
         words = path_or_title.lower().split()
         for word in words:

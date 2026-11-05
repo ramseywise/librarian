@@ -1,0 +1,41 @@
+{
+  "skill": "write",
+  "template_literals": [
+    "Angle: <what this piece argues that no single page does>",
+    "Outline:",
+    "1. <point> (→ [[Page]], [[Page]])",
+    "Disagreements:",
+    "Weak points:",
+    "- One source: <claim> (→ [[Page]])",
+    "- Self-reported: <figure>, from <who claims it> (→ [[Page]])",
+    "Missing: <what would strengthen it, or \"nothing\">",
+    "First pass: the phrasing is a placeholder, to rewrite in your own voice."
+  ],
+  "must_mention": [
+    "Never open `data/wiki/private/`",
+    "data/wiki/_conflicts.md",
+    "core/wiki_telemetry.py ask",
+    "Draft only if asked",
+    "(self-reported)",
+    "a summary of [[Page]]"
+  ],
+  "must_not_mention": [
+    "Write\n",
+    "Edit\n"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/write silent failures in agent evals",
+      "output_regex": [
+        "(?m)^Angle: ",
+        "(?m)^Outline:\\n1\\. .+\\(→ \\[\\[.+\\]\\]",
+        "(?m)^Disagreements:$",
+        "(?m)^Weak points:$",
+        "(?m)^Missing: ",
+        "(?m)^Read: \\[\\["
+      ],
+      "good": "Angle: an eval that can't fail is worse than none, because it reads as evidence\n\nOutline:\n1. Silence is reported as success (→ [[Silence Reads As Clean]], [[Silent Failure Catalogue]])\n2. Gates need a planted fault (→ [[Ungated Metric Convention]])\n\nDisagreements:\n- Floors vs trends for retrieval metrics (→ [[Ungated Metric Convention]], [[RAG Evaluation]])\n\nWeak points:\n- One source: planted faults catch most reviewer drift (→ [[Ungated Metric Convention]])\n\nMissing: a measured false-pass rate\nRead: [[Silence Reads As Clean]], [[Silent Failure Catalogue]], [[Ungated Metric Convention]], [[RAG Evaluation]]\n",
+      "bad": "Silent failures are a major problem in AI today. Studies show that 73% of teams have experienced them. Here is your finished article, ready to publish.\n"
+    }
+  ]
+}

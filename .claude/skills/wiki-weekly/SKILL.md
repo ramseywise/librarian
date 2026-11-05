@@ -7,6 +7,7 @@ allowed-tools:
   - Bash(uv run python core/wiki_telemetry.py stats --json)
   - Bash(uv run python core/wiki_telemetry.py snapshot)
   - Bash(uv run python core/wiki_telemetry.py check)
+  - Bash(uv run python core/wiki_graph.py --json)
   - Bash(uv run --extra api python core/wiki_telemetry.py gaps)
   - Bash(uv run python core/wiki_telemetry.py log weekly *)
 ---
@@ -47,9 +48,15 @@ Every number comes from the telemetry script or its files, and the report ends i
    ```
    Take the top three lines it prints. Add any metric whose status is `watch` or `broken`, and any domain with fewer than five pages. Do not open `data/wiki/private/`.
 
-6. **Three next actions**, in order of what they would change most. Each one names a command (`/ingest <source>`, `/lint`, `/compact-wiki`, `/gaps`, or `/ingest resolve`) and the line above that it answers. Exactly three, even in a quiet week: `make wiki-check` passing does not count as an action.
+6. **Shape.**
+   ```bash
+   uv run python core/wiki_graph.py --json
+   ```
+   Report the number of entries in `clusters`, then `unsettled`, then the `page` of the first entry in `bridges`. If `stability` is below 0.9, append ` (clusters unsettled)` to the line. No trend and no verdict: these numbers have no bands. If this fails, print `Shape: unavailable (<reason>)` and carry on: the review does not depend on it.
 
-7. **Log, only if a snapshot was written in step 2.**
+7. **Three next actions**, in order of what they would change most. Each one names a command (`/ingest <source>`, `/lint`, `/compact-wiki`, `/gaps`, or `/ingest resolve`) and the line above that it answers. Exactly three, even in a quiet week: `make wiki-check` passing does not count as an action.
+
+8. **Log, only if a snapshot was written in step 2.**
    ```bash
    uv run python core/wiki_telemetry.py log weekly "snapshot <date>, <pages> pages, <open_conflicts> open conflicts"
    ```
@@ -69,6 +76,8 @@ Against <YYYY-MM-DD>: <what moved, with both numbers, or "no change", or "first 
 Unresolved: <n> open conflicts
 - <conflict topic>
 Private leak check: <clean | <n> blockers: <public file:line> | unavailable (<reason>)>
+
+Shape: <n> clusters, <n> unsettled pages, top bridge <page>
 
 Thin spots:
 - <gap line, watch or broken metric, or small domain>

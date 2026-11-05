@@ -37,7 +37,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from core.wiki_common import WIKILINK_RE, slugify
+from core.wiki_common import WIKILINK_RE, page_aliases, slugify
 from shared.log_config import get_logger
 
 from . import leitner
@@ -85,6 +85,7 @@ class WikiRef:
     summary: str
     domain: str
     sources: tuple[str, ...] = ()
+    aliases: tuple[str, ...] = ()
 
 
 @dataclass
@@ -210,8 +211,16 @@ def _load_wiki(wiki_dir: Path) -> dict[str, WikiRef]:
             summary=str(post.get("summary") or ""),
             domain=rel.parts[0] if len(rel.parts) > 1 else "",
             sources=tuple(str(x) for x in post.get("sources") or []),
+            aliases=tuple(page_aliases(post.metadata)),
         )
     return refs
+
+
+def _wiki_slugs(wiki: dict[str, WikiRef]) -> dict[str, str]:
+    """Link slug → page id. Stems beat titles beat aliases, so an imported lesson's link to a
+    page's old name keeps resolving after a rename."""
+    aliases = {slugify(a): r.id for r in wiki.values() for a in r.aliases}
+    return aliases | {slugify(r.title): r.id for r in wiki.values()} | {slugify(i): i for i in wiki}
 
 
 def _compiled_from(wiki: dict[str, WikiRef]) -> dict[str, list[str]]:
@@ -262,7 +271,7 @@ def _resolve_wikilink(target: str, wiki: dict[str, WikiRef], slugs: dict[str, st
 @lru_cache(maxsize=2)
 def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
     wiki = _load_wiki(wiki_dir)
-    slugs = {slugify(r.title): r.id for r in wiki.values()} | {slugify(i): i for i in wiki}
+    slugs = _wiki_slugs(wiki)
     matcher, by_title = _concept_matcher(wiki)
     compiled = _compiled_from(wiki)
     # Private/tombstoned page ids: never echoed back, not even as a drill tag.
@@ -547,7 +556,7 @@ def _wiki_json(ref: WikiRef) -> dict[str, str]:
 
 def _link_wikilinks(body: str, cat: Catalog) -> str:
     """[[Title|alias]] → [alias](#wiki:<id>) outside code; unresolved → plain text."""
-    slugs = {slugify(r.title): r.id for r in cat.wiki.values()}
+    slugs = _wiki_slugs(cat.wiki)
     out, in_fence = [], False
     for line in body.split("\n"):
         if _FENCE_RE.match(line):

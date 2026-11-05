@@ -1,0 +1,37 @@
+{
+  "skill": "wiki-graph",
+  "template_literals": [
+    "Pages: <n>  Links: <n>  Stability: <0.000>",
+    "Cut points: <n> pages, <n> links",
+    "Clusters: <n>, plus <n> unsettled pages",
+    "Top hub: <page>, <n> links, spans <n> clusters",
+    "Directories that split:",
+    "Clusters with no majority directory:",
+    "Worth a look:"
+  ],
+  "must_mention": [
+    "uv run python core/wiki_graph.py",
+    "never stored",
+    "below 0.9",
+    "/compact-wiki",
+    "/lint"
+  ],
+  "must_not_mention": [
+    "data/wiki/private",
+    "logs/retrieval.jsonl"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/wiki-graph",
+      "output_regex": [
+        "(?m)^Pages: \\d+  Links: \\d+  Stability: \\d\\.\\d{3}$",
+        "(?m)^Cut points: \\d+ pages, \\d+ links$",
+        "(?m)^Clusters: \\d+, plus \\d+ unsettled pages$",
+        "(?m)^Top hub: \\S+, \\d+ links, spans \\d+ clusters$",
+        "(?m)^Worth a look: "
+      ],
+      "good": "Pages: 1245  Links: 5962  Stability: 0.948\nCut points: 0 pages, 0 links\n\nClusters: 17, plus 52 unsettled pages\n1. Silent failures: 226 pages, mostly patterns\n\nTop hub: patterns/silence-reads-as-clean.md, 87 links, spans 5 clusters\nTop bridge: foundations/data-engineering-foundations.md, 0.117: an overview that lists the data pages\n\nDirectories that split: foundations (4 clusters: data systems, statistics, classical ML, LLM basics)\nClusters with no majority directory: agent runtime\n\nWorth a look: foundations splits four ways\n",
+      "bad": "The wiki is in great shape. The patterns directory is the biggest and everything looks well connected, so no changes are needed.\n"
+    }
+  ]
+}

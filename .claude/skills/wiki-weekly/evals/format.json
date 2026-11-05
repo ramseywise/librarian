@@ -10,7 +10,8 @@
     "Thin spots:",
     "Next:",
     "3. <action> (`/command`): <the line it answers>",
-    "Snapshot: <written | not needed, latest row <YYYY-MM-DD> | failed (<reason>)>"
+    "Snapshot: <written | not needed, latest row <YYYY-MM-DD> | failed (<reason>)>",
+    "Shape: <n> clusters, <n> unsettled pages, top bridge <page>"
   ],
   "must_mention": [
     "This is not the course `/weekly`",
@@ -24,7 +25,8 @@
     "never a gap topic or page name",
     "Exactly three",
     "about 40 lines",
-    "page count is never a health number"
+    "page count is never a health number",
+    "core/wiki_graph.py --json"
   ],
   "must_not_mention": [
     "_log.md",
@@ -43,9 +45,10 @@
         "(?m)^Private leak check: (clean|\\d+ blockers|unavailable)",
         "(?m)^Thin spots:$",
         "(?m)^Next:\\n1\\. .+\\n2\\. .+\\n3\\. .+$",
-        "(?m)^Snapshot: (written|not needed|failed)"
+        "(?m)^Snapshot: (written|not needed|failed)",
+        "(?m)^Shape: (\\d+ clusters, \\d+ unsettled pages, top bridge \\S+|unavailable)"
       ],
-      "good": "Wiki week: 2026-10-29 to 2026-11-05\n\nAdded:\n- 2026-11-03 ingest data/raw/web/x.md -> 2 new, 3 updated, 9 links, 0 conflicts\n\nHealth: 1239 pages, orphan 0.6%, average degree 13.9, main component 100%, stale 1.9%, typed links 89.4%, stubs 1.3%\nAgainst 2026-10-29: stale 1.2% to 1.9%\n\nUnresolved: 0 open conflicts\nPrivate leak check: clean\n\nThin spots:\n- asked: reward model training (first seen 2026-08-04, count 2)\n\nNext:\n1. Compile a source on reward models (`/ingest <source>`): the top gap above\n2. Refresh the gaps once it lands (`/gaps`): the same line\n3. Check the stale pages (`/lint`): stale moved up\n\nSnapshot: not needed, latest row 2026-11-01\n",
+      "good": "Wiki week: 2026-10-29 to 2026-11-05\n\nAdded:\n- 2026-11-03 ingest data/raw/web/x.md -> 2 new, 3 updated, 9 links, 0 conflicts\n\nHealth: 1239 pages, orphan 0.6%, average degree 13.9, main component 100%, stale 1.9%, typed links 89.4%, stubs 1.3%\nAgainst 2026-10-29: stale 1.2% to 1.9%\n\nUnresolved: 0 open conflicts\nPrivate leak check: clean\n\nShape: 17 clusters, 52 unsettled pages, top bridge foundations/data-engineering-foundations.md\n\nThin spots:\n- asked: reward model training (first seen 2026-08-04, count 2)\n\nNext:\n1. Compile a source on reward models (`/ingest <source>`): the top gap above\n2. Refresh the gaps once it lands (`/gaps`): the same line\n3. Check the stale pages (`/lint`): stale moved up\n\nSnapshot: not needed, latest row 2026-11-01\n",
       "bad": "This week the course tests passed and two decks are stale. Page count is up, great progress! Next: keep improving coverage.\n"
     }
   ]

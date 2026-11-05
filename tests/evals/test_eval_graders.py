@@ -114,6 +114,33 @@ def test_golden_dataset_difficulty_distribution() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize(
+    ("filename", "root"),
+    [("golden_wiki_uniform.json", "data/wiki/"), ("golden_courses.json", "data/courses/")],
+)
+def test_arm_golden_sets_point_at_real_public_pages(filename: str, root: str) -> None:
+    repo_root = Path(__file__).parents[2]
+    entries = load_golden_dataset(str(GOLDEN_PATH.parent / filename))
+    assert len({e.id for e in entries}) == len(entries)
+    for e in entries:
+        assert e.source_pages
+        for page in e.source_pages:
+            assert page.startswith(root), page
+            assert "/private/" not in page, e.id
+            assert (repo_root / page).exists(), page
+
+
+@pytest.mark.unit
+def test_every_arm_with_its_own_set_is_gated() -> None:
+    from evals.run_eval import ARM_DATASETS, LIVE_ARM_FLOORS, _resolve_dataset_path
+
+    for arm, filename in ARM_DATASETS.items():
+        assert _resolve_dataset_path(None, arm).name == filename
+        assert LIVE_ARM_FLOORS[arm]["hit_rate"] > 0
+        assert LIVE_ARM_FLOORS[arm]["mrr"] > 0
+
+
+@pytest.mark.unit
 def test_golden_dataset_source_pages_exist_in_wiki() -> None:
     """Each source_page path must exist under data/wiki/ in the repo.
 

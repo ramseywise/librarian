@@ -1,0 +1,512 @@
+[
+  {
+    "id": "ai-engineering-002",
+    "category": "course",
+    "query": "How should I split the response-time allowance in a phone-call assistant between listening, thinking and speaking so callers don't wait or talk over it?",
+    "expected_answer": "A voice agent starts from a latency budget of a few hundred milliseconds; the lesson covers the cascaded versus speech-to-speech architectures, spending the budget across stages, detecting end of speech and treating interruption as a state machine.",
+    "source_pages": [
+      "data/courses/ai-engineering/08-multimodal-engineering/notes/04-speech-and-voice-agents.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ai-engineering-003",
+    "category": "course",
+    "query": "I changed my CUDA code to run more threads at once but it didn't get faster. How do I work out what is actually holding it back?",
+    "expected_answer": "Read the profiler first and classify the kernel as underutilized, latency-bound, memory-bound or compute-bound; each regime has its own fix, and applying the wrong one (e.g. more occupancy on an already memory-saturated kernel) does nothing.",
+    "source_pages": [
+      "data/courses/ai-engineering/07-inference-engineering/notes/04-kernels.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "ai-engineering-004",
+    "category": "course",
+    "query": "I fine-tuned a small image-and-text model to pull fields from scanned invoices as JSON and it scored well, but after saving and reloading it the score fell to zero with only a rounding warning. What happened?",
+    "expected_answer": "Saving the tuned model can silently undo the gain (the lesson's example drops from 0.93 to 0, with just a rounding warning), so the saved artifact must be re-evaluated; the lesson also covers label masking, image resolution and layers reached as score drivers.",
+    "source_pages": [
+      "data/courses/ai-engineering/08-multimodal-engineering/notes/02b-fine-tuning-a-vision-language-model.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "ai-engineering-005",
+    "category": "course",
+    "query": "How do I decide how many tokens go to instructions, retrieved documents and chat history in an LLM request before the context fills up?",
+    "expected_answer": "Treat the context window as a budget split among instructions, evidence and working space, decide the allocation up front, shrink each component in turn, and account for caching and token efficiency.",
+    "source_pages": [
+      "data/courses/ai-engineering/02-context-engineering/notes/03-budgeting-the-window.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-007",
+    "category": "course",
+    "query": "My node classifier on a graph looks great in testing, but I suspect its features leak test labels through neighbours, and path-count features just reward high-degree nodes. What's going on?",
+    "expected_answer": "Standard classifiers assume independent rows but a node's label depends on its neighbours, so naive features leak labels; the lesson builds manual node and relationship features, DWPC to discount hubs, and ReFeX for semi-automated features.",
+    "source_pages": [
+      "data/courses/ai-engineering/05-graph-engineering/notes/13-graph-ml-and-gnns.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "ai-engineering-008",
+    "category": "course",
+    "query": "Where can I find ready-to-copy starter prompts for common tasks like classification, extraction and summarising, with the reason each works?",
+    "expected_answer": "A collection of small copyable prompts grouped by task, each with the lesson it teaches, built from frame, task and format parts; most are from older model generations so the shape transfers but strong models need less scaffolding.",
+    "source_pages": [
+      "data/courses/ai-engineering/01-prompt-engineering/notes/prompt-library.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "ai-engineering-009",
+    "category": "course",
+    "query": "Besides a goal and a checker, what extra pieces make an autonomous agent loop safer and able to reach further, such as isolated copies of the repo and fresh helper agents?",
+    "expected_answer": "Six building blocks surround the goal and scorekeeper: automations, worktrees, skills, connectors/plugins, sub-agents and memory, each fixing a specific failure and added only when that failure appears.",
+    "source_pages": [
+      "data/courses/ai-engineering/04-loop-engineering/notes/04-building-blocks.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-analytics-002",
+    "category": "course",
+    "query": "How do I parse date strings into datetimes in pandas, shift data in time, and handle time zones for date-indexed data?",
+    "expected_answer": "The notebook covers datetime types and string conversion, indexing a date-indexed series, generating date ranges and frequencies, shifting/lagging, and time zone localization and conversion.",
+    "source_pages": [
+      "data/courses/data-analytics/01-python-for-data-analysis/practice/mckinney/ch11.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-analytics-003",
+    "category": "course",
+    "query": "How do I build a Keras autoencoder that learns a latent distribution on MNIST, with the sampling trick and the variational lower bound as loss?",
+    "expected_answer": "The assignment builds a variational autoencoder: an encoder producing mean and log-variance, sampling via the reparametrization trick, a decoder, and a loss from the variational lower bound, then trained on MNIST.",
+    "source_pages": [
+      "data/courses/data-analytics/04-bayesian-analysis/practice/bayesianml/week-5/assignment.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-analytics-004",
+    "category": "course",
+    "query": "Our A/B test has millions of users and the dashboard shows a 50.4/49.6 split instead of 50/50. Should I worry about it?",
+    "expected_answer": "A small imbalance on a huge sample can signal a sample ratio mismatch, e.g. a logging bug losing some users in one arm; it is a trust check to run before believing any result.",
+    "source_pages": [
+      "data/courses/data-analytics/03-experimentation-and-causality/notes/03-experimentation-at-scale.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-analytics-006",
+    "category": "course",
+    "query": "How do I decide which kind of plot suits my question, and which visual channels do people read most accurately?",
+    "expected_answer": "A plot can be described as independent decisions of a grammar of graphics, encodings are ranked by how accurately people decode them, and the plot should be chosen by the question being asked.",
+    "source_pages": [
+      "data/courses/data-analytics/05-visualisation-and-storytelling/notes/01-grammar-and-chart-choice.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-analytics-007",
+    "category": "course",
+    "query": "Customers who opted into a loyalty club spent more than those who didn't; how do I build a fair comparison group and check balance before looking at the outcome?",
+    "expected_answer": "Self-selection biases the naive difference, so check covariate balance and overlap first, then compare designs such as exact matching, propensity matching/weighting and entropy balancing, and judge them without peeking at the outcome.",
+    "source_pages": [
+      "data/courses/data-analytics/03-experimentation-and-causality/notes/05-matching-and-weighting.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-analytics-009",
+    "category": "course",
+    "query": "Revenue is up slightly and active users jumped, yet we're spending far more to get there. How do I pick one number to steer by and pair it so it can't be gamed?",
+    "expected_answer": "Build a tree from the top metric to changeable drivers, choose a north star with guardrail and counter-metrics, watch how proxies go wrong, and write definitions two analysts would compute identically.",
+    "source_pages": [
+      "data/courses/data-analytics/06-applied-analyses/notes/11-metric-trees.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-engineering-003",
+    "category": "course",
+    "query": "A backend team switched a column from dollars to cents and our revenue report suddenly jumped a hundredfold. How do we stop upstream changes silently breaking downstream tables?",
+    "expected_answer": "A data contract is a written, machine-checked agreement between producers and consumers covering schema and meaning; enforce it on each batch (stop or quarantine) and block breaking changes before they merge.",
+    "source_pages": [
+      "data/courses/data-engineering/02-ingest-and-modelling/notes/04-data-contracts.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-engineering-004",
+    "category": "course",
+    "query": "Why isn't a cron job running my pipeline scripts enough, and what do retries, task dependencies and run dates add in a workflow scheduler?",
+    "expected_answer": "An orchestrator makes dependencies, retries for transient failures, the logical date of a run, computing what is missing and non-clock triggers explicit; the lesson builds a toy one in about fifty lines before comparing real tools.",
+    "source_pages": [
+      "data/courses/data-engineering/03-transform-and-orchestrate/notes/02-orchestrate.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-engineering-005",
+    "category": "course",
+    "query": "What is the difference between storing data as CSV, JSON, Avro and Parquet, and why does it matter that a file carries its schema?",
+    "expected_answer": "Programs must encode data to bytes; CSV and JSON leave types to inference while Avro and Parquet carry a schema, Parquet is a columnar file and Arrow its in-memory counterpart, and schema drift across files has to be handled.",
+    "source_pages": [
+      "data/courses/data-engineering/01-storage-and-compute-foundations/notes/02-encoding-and-files.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-engineering-006",
+    "category": "course",
+    "query": "My stream consumer crashed after writing to the database but before saving its position, and some events now count twice. How do I get correct totals and cope with late events?",
+    "expected_answer": "A log lets each reader keep its own offset; delivery can be at-most-once, at-least-once or exactly-once, achieved by storing the offset with the data (idempotent sink); late events need event-time windows and watermarks.",
+    "source_pages": [
+      "data/courses/data-engineering/04-warehouse-lakehouse-streaming/notes/04-kafka-and-stream-semantics.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-engineering-007",
+    "category": "course",
+    "query": "Why is DuckDB so much faster than SQLite when averaging one column across millions of rows, but slower for fetching one customer's record?",
+    "expected_answer": "Row layouts keep a record's fields together, favouring point lookups and transactions, while columnar layouts keep each column together, favouring aggregates through better compression, sort orders and CPU loops.",
+    "source_pages": [
+      "data/courses/data-engineering/01-storage-and-compute-foundations/notes/03-row-and-column-stores.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-engineering-008",
+    "category": "course",
+    "query": "Should I keep a separate data warehouse, or store everything as open table files in a data lake with a metadata layer on top?",
+    "expected_answer": "A lakehouse keeps one copy of data in open formats readable by many engines, with a metadata/log layer enforcing guarantees; warehouses still do some things better, so the decision depends on workload, and medallion layers are only a convention.",
+    "source_pages": [
+      "data/courses/data-engineering/04-warehouse-lakehouse-streaming/notes/03-lakehouse-vs-warehouse.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-engineering-009",
+    "category": "course",
+    "query": "How do I find out that a data feed went stale or its values changed units before a stakeholder notices, and trace which downstream tables are affected?",
+    "expected_answer": "Monitors compare each new batch to a reference or its own history (freshness, volume, distribution), store the result as a time series and alert on it; lineage then shows what else a bad table affects.",
+    "source_pages": [
+      "data/courses/data-engineering/05-quality-and-observability/notes/02-monitors-and-lineage.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-001",
+    "category": "course",
+    "query": "Why do I need a separate test set as well as a validation set when tuning hyperparameters, and how do I run k-fold cross-validation and grid search in scikit-learn?",
+    "expected_answer": "Tuning parameters against a validation set can overfit it, so keep an untouched test set; the notebook shows cross_val_score, stratified and other fold strategies, and grid search with cross-validation.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/practice/intro-to-ml-in-python/05-model-evaluation-and-improvement.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-002",
+    "category": "course",
+    "query": "My movie recommender predicts star ratings accurately, but its top-10 lists are poor and my offline scores look too good to be true. What am I doing wrong?",
+    "expected_answer": "Rating-error metrics don't measure top-N ranking quality, and random splits can leak the future; evaluate with a time-aware split and ranking metrics, and note that what you optimise matters more than model choice.",
+    "source_pages": [
+      "data/courses/data-science/05-time-series-and-recommenders/notes/02-collaborative-filtering-and-matrix-factorisation.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-science-003",
+    "category": "course",
+    "query": "How does k-nearest neighbours classify and predict values, and which settings control overfitting versus underfitting?",
+    "expected_answer": "The notebook covers classification versus regression, generalization, overfitting and underfitting against model complexity, and k-nearest neighbours' number of neighbours, strengths and weaknesses.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/practice/intro-to-ml-in-python/02-supervised-learning.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-science-005",
+    "category": "course",
+    "query": "After computing accuracy on a classifier, how do I go through its wrong predictions systematically without just tuning to the examples I read?",
+    "expected_answer": "Name the error types, profile the confusion cells, read rows, slice and count, diagnose, then confirm any fix on data you did not read, since a fix made from noise looks good only on the rows you inspected.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/notes/12-reading-the-errors.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-006",
+    "category": "course",
+    "query": "I need to link bank payment lines to invoices with no shared ID, and comparing every pair is millions of comparisons. How do I narrow candidates and decide when to leave a line unmatched?",
+    "expected_answer": "Cut candidates by blocking, score pairs (Fellegi-Sunter with match, non-match and uncertain outcomes), rank per line with learning-to-rank, and abstain when unsure since a wrong link is worse than none.",
+    "source_pages": [
+      "data/courses/data-science/05-time-series-and-recommenders/notes/04-entity-matching-and-learning-to-rank.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "data-science-007",
+    "category": "course",
+    "query": "What does the four-fifths rule say about selection rates between groups, and why can't all the different fairness definitions hold at once?",
+    "expected_answer": "The impact ratio compares group selection rates, and demographic parity, equalized odds and calibration within groups can't all be satisfied together when base rates differ; an audit states which gaps exist and what closing each costs.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/notes/15-fairness-in-automated-scoring.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "data-science-008",
+    "category": "course",
+    "query": "How do the regularisation parameter C and a Gaussian RBF kernel change an SVM's decision boundary, and how would I build a spam filter with one?",
+    "expected_answer": "The exercise shows C=1 versus C=100 on a linear SVM, implements the Gaussian kernel (sigma related to gamma), applies it to nonlinear datasets, and trains an SVM spam classifier.",
+    "source_pages": [
+      "data/courses/data-science/01-classical-ml/practice/ng-machine-learning/ex6/ex6.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "data-science-009",
+    "category": "course",
+    "query": "How do I classify movie review polarity with a word list versus a trained model, and what preprocessing mistake flips the meaning of a negated phrase?",
+    "expected_answer": "Compare lexicon, supervised and sequence-model approaches on IMDb reviews; default stop-word lists contain 'not' and 'no', so removing them turns 'not good' into 'good'; explanations then come from LIME and topic models.",
+    "source_pages": [
+      "data/courses/data-science/03-nlp/notes/06-sentiment-analysis.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-001",
+    "category": "course",
+    "query": "My automated grader disagrees with human reviewers on some rows. Its written explanations sound plausible, but do they reflect what actually drove its verdict?",
+    "expected_answer": "Use code checks, slices of errors by flags and coded critiques as evidence for what to fix, but test critiques with cue and edit tests since they can be after-the-fact accounts; humans still decide.",
+    "source_pages": [
+      "data/courses/generative-ai/08-eval/notes/14-calibrating-judges-with-checks-and-critiques.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "generative-ai-002",
+    "category": "course",
+    "query": "What are the core principles for writing a reliable prompt for a text classification assistant that sometimes returns a label and sometimes a paragraph?",
+    "expected_answer": "Prompts fail when vague; five principles fix most: give direction, specify format, provide examples, evaluate quality and divide labour, shown by turning a one-line prompt into a testable one.",
+    "source_pages": [
+      "data/courses/generative-ai/01-llm-fundamentals/notes/10-prompting-fundamentals.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-003",
+    "category": "course",
+    "query": "How do I build a character-level neural net in PyTorch that predicts the next letter from the previous three using learned embeddings?",
+    "expected_answer": "The notebook builds a vocabulary and a dataset with a fixed block size of three characters, then trains an embedding-plus-hidden-layer MLP to predict the next character.",
+    "source_pages": [
+      "data/courses/generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero/makemore/makemore-part2-mlp.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-004",
+    "category": "course",
+    "query": "How can I write and train a small GPT from scratch on a laptop CPU, and what sanity checks catch most bugs?",
+    "expected_answer": "Two routes (video lectures and a book) cover building a language model; the chapter runs a complete roughly 80-line character-level GPT that trains in under a minute and lists checks that catch most bugs.",
+    "source_pages": [
+      "data/courses/generative-ai/01-llm-fundamentals/notes/12-build-a-tiny-gpt.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "generative-ai-005",
+    "category": "course",
+    "query": "My network's starting loss is far too high and my tanh units are saturated, so training barely moves. How do I fix initialization and add normalization between layers?",
+    "expected_answer": "Fix the confidently wrong softmax at init by scaling the output layer, fix saturated tanh with principled (Kaiming) initialization, then add a batch normalization layer.",
+    "source_pages": [
+      "data/courses/generative-ai/09-llms-from-scratch/practice/nn-zero-to-hero/makemore/makemore-part3-bn.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "generative-ai-007",
+    "category": "course",
+    "query": "Which numbers show that an LLM grader agrees with humans, why look at Cohen's kappa before raw agreement, and how do I correct its pass rate?",
+    "expected_answer": "Label a set, split it, iterate on dev and score test once; report the judge's two error rates separately, read kappa before raw agreement, correct the pass rate, and recalibrate when anything changes.",
+    "source_pages": [
+      "data/courses/generative-ai/08-eval/notes/15-calibration-against-human-labels.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "generative-ai-008",
+    "category": "course",
+    "query": "Before building an AI feature, how do I estimate costs and return on investment to decide whether it's worth building?",
+    "expected_answer": "Scope in dependency order: user, problem, metric, constraint; token arithmetic and caching for the real bill; ROI driven by adoption; build versus buy; phased rollout; measure each step of the adoption funnel.",
+    "source_pages": [
+      "data/courses/generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "interviewing-001",
+    "category": "course",
+    "query": "In a timed interview with no pandas, how do I compute per-user monthly totals from messy transaction records and flag odd ones using only the standard library?",
+    "expected_answer": "A 35-minute walkthrough: clarify what counts as anomalous, parse defensively around malformed records, aggregate, detect anomalies, and note that aggregation over structured records is a SQL-style problem rather than a vector-store one.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/coding-challenge/examples/transaction-aggregation.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "interviewing-002",
+    "category": "course",
+    "query": "A diff written by an AI assistant reads clean and the library calls look right, but I suspect something is off. What hidden flaws are typical in machine-generated code?",
+    "expected_answer": "Typical flaws are plausible but nonexistent API parameters, retrieval pipelines with no relevance threshold, hardcoded tunables or missing citations, and unvalidated writes to agent memory that allow poisoning.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/code-review-round/examples/ai-generated.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "interviewing-003",
+    "category": "course",
+    "query": "What coding problems come up in live-coding interviews, like an LRU cache, rate limiter or retry with backoff, and what do interviewers look for?",
+    "expected_answer": "A bank of project-style and AI/ML practical coding questions, each with what it tests, an approach, key signals, common pitfalls and study references.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/coding-challenge/questions.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "interviewing-005",
+    "category": "course",
+    "query": "How is the system design interview for ML and LLM roles structured and graded, and what steps should I follow?",
+    "expected_answer": "The round is graded on process: a vague prompt, a five-step method of clarifying, requirements, design, shortcomings and iteration, with trade-off narration, adaptability to curveballs and the full harness around the model.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/system-design-round/readme.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "interviewing-006",
+    "category": "course",
+    "query": "A retailer wants AI to cut support costs and I have 45 minutes in a live case. What should I clarify first and how do I structure the answer?",
+    "expected_answer": "Clarify before designing, then walk eight sections: objective and users, constraints, data, a baseline first, an MVP pipeline, offline and online evaluation, risks and safety, and milestones.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/case-study/examples/aie-track/retail-support-automation.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "interviewing-007",
+    "category": "course",
+    "query": "In a 45-minute offline coding test I'm given documents, a query and a fake LLM function and must return a validated answer. How do I pace it and handle malformed output?",
+    "expected_answer": "Clarify then commit, build retrieval, construct the prompt, parse and validate structured output with graceful handling of missing or malformed results, wire and test, and close; it looks like four features but is one pipeline.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/coding-challenge/examples/rag-pipeline-offline.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "interviewing-008",
+    "category": "course",
+    "query": "In a design interview, how do I answer 'our agent system is performing below expectations, what do you do?'",
+    "expected_answer": "Measure before changing: instrument traces and cluster failures, fix a broken eval first, decompose the pipeline into retrieval, tool design, model and context issues, then change one lever at a time and re-measure.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/system-design-round/questions.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "interviewing-009",
+    "category": "course",
+    "query": "In a churn-prediction take-home review, how do I defend using gradient boosting when asked why I didn't use a neural network?",
+    "expected_answer": "Acknowledge the challenge, justify boosting by sample size, mixed tabular features and interpretability, and state the conditions under which you would change your answer.",
+    "source_pages": [
+      "data/courses/interviewing/rounds/case-study/questions.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-002",
+    "category": "course",
+    "query": "How do I find the k most common numbers in an array in linear time instead of sorting?",
+    "expected_answer": "Count occurrences in a hash map, bucket elements by frequency in an array indexed by count, and read from the highest bucket down until k are collected, giving O(n); a size-k heap is the O(n log k) alternative.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/algorithms/347-top-k-frequent-elements.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "programming-003",
+    "category": "course",
+    "query": "I need every shortest sequence of one-letter changes from one word to another; my search only gives me a single path. How do I get all of them?",
+    "expected_answer": "Group words by wildcard patterns to form an implicit graph, run BFS recording all predecessors at the shortest distance, then DFS backward from the end word to rebuild every shortest path.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/algorithms/126-word-ladder-ii.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "programming-004",
+    "category": "course",
+    "query": "How do I add static typing to function signatures checked by mypy, and avoid writing __init__ by hand for classes that mostly hold data?",
+    "expected_answer": "Type hints are checked by tools rather than Python; the lesson covers everyday hints, structural typing with protocols, dataclasses to remove boilerplate, and Pydantic for data from outside.",
+    "source_pages": [
+      "data/courses/programming/python/03-language-for-engineers/notes/05-types-and-dataclasses.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-005",
+    "category": "course",
+    "query": "How do I encode an arbitrary binary tree into a single string and rebuild exactly the same tree from it?",
+    "expected_answer": "Use a preorder traversal that writes each node's value and a null marker for missing children, then parse the string with a position cursor, both in O(n).",
+    "source_pages": [
+      "data/courses/programming/drills/coding/algorithms/297-serialize-and-deserialize-binary-tree.md"
+    ],
+    "difficulty": "easy"
+  },
+  {
+    "id": "programming-006",
+    "category": "course",
+    "query": "In a social feed design, one account with hundreds of thousands of followers makes delivering a single post take nearly a minute. How do I design around that?",
+    "expected_answer": "The walkthrough costs out three feed designs and shows the celebrity-follower fan-out dominating write cost; it also sizes a key-value store with a log-structured node, quorums and concurrent writes, with assumptions stated.",
+    "source_pages": [
+      "data/courses/programming/backend-and-system-design/notes/09-design-walkthroughs-kv-store-and-feed.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "programming-007",
+    "category": "course",
+    "query": "How do I reverse a linked list in chunks of k nodes while leaving a short final chunk untouched?",
+    "expected_answer": "Process one group at a time: check k nodes remain, reverse just those in place, reconnect with the previous tail using a dummy head, and leave a short tail as is, in O(n) time and O(1) space.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/algorithms/025-reverse-nodes-in-k-group.md"
+    ],
+    "difficulty": "medium"
+  },
+  {
+    "id": "programming-008",
+    "category": "course",
+    "query": "In my grid game, placing a ship with horizontal=False still lays it across a row, and only the vertical-placement test fails. What's wrong?",
+    "expected_answer": "The else branch was a copy of the if branch and still advanced the column; vertical placement must hold the column fixed and advance the row, and the bug hid because the default run only placed horizontal ships.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/battleship/solutions/bug-1.md"
+    ],
+    "difficulty": "hard"
+  },
+  {
+    "id": "programming-009",
+    "category": "course",
+    "query": "Design a prepaid-balance system where grants expire, spending uses the soonest-expiring credits first, and events can arrive out of order.",
+    "expected_answer": "Model each grant as a lot with remaining amount and expiry in a min-heap, expire lots by timestamp rather than a timer, and make final state depend on event timestamps via buffer-and-replay for out-of-order events.",
+    "source_pages": [
+      "data/courses/programming/drills/coding/implementation/credits-expiry-system.md"
+    ],
+    "difficulty": "medium"
+  }
+]

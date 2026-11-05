@@ -45,9 +45,14 @@ a toggleable layer of term nodes and the hover definitions in lessons. The map's
 reads the latest telemetry row through `GET /api/wiki/health`.
 
 **Verbs (2026-11):** `/quiz`, `/gaps`, `/challenge`, `/wiki-weekly`, `/harness-audit`,
-`/evals-bootstrap`, plus the `ingest-reviewer` agent, which checks what an ingest wrote against
-its raw source. `/wiki-weekly` is the wiki's report; `/weekly` is the course's. All six skip
-private pages.
+`/evals-bootstrap`, `/wiki-graph` (hubs, bridges and consensus clusters, from `make wiki-graph`),
+`/write` (a cited outline from the wiki; `/write-chapter` is for course chapters), plus the
+`ingest-reviewer` agent, which checks what an ingest wrote against its raw source.
+`/wiki-weekly` is the wiki's report; `/weekly` is the course's. All eight skip private pages.
+`/wiki-rename` (`core/wiki_rename.py`) renames a page and rewrites its links, in `private/` too,
+reporting those only as a count.
+
+**Retrieval evals (2026-11):** `make eval-gate` runs four gated arms, and a ranking change must clear all of them: `sem` (hand-picked questions whose answers are mostly hub pages), `nofts` (the degraded path), `uniform` (questions on uniformly sampled wiki pages) and `course` (lesson search). Search blends BM25 and similarity equally. Backlinks are deliberately not a ranking signal; `sem` alone rewards them, so never judge ranking on it alone.
 
 **Code index (2026-07):** `tools/codemap/` — tree-sitter-based structural index (symbols,
 import edges) over source repos, separate from the wiki-compile pipeline. Exposed via MCP
@@ -227,6 +232,7 @@ Content...
 
 ### Frontmatter Rules
 
+- `aliases` (optional): former names. Links and `read_page` still resolve through them, after stems and titles, and Obsidian reads the same key. Written by `/wiki-rename`.
 - `tags`: must include at least one domain tag (see Domains below) and one type tag
 - `summary`: must fit on one line; should answer "what do I need to know about this?"
 - `updated`: set to today's date whenever the page is modified

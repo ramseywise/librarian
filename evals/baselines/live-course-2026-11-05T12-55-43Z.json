@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-11-05T12-55-43Z",
+  "mode": "live",
+  "arm": "course",
+  "dataset": "golden_courses.json",
+  "golden_set_hash": "fa4c498dbf9c27c6e17354e133a0a12f2de414321651969ae4cf97197b496da3",
+  "embedding_model_id": "all-MiniLM-L6-v2",
+  "edge_count": 6817,
+  "n_entries": 51,
+  "hit_rate": 0.9215686274509803,
+  "mean_reciprocal_rank": 0.8270152505446623,
+  "mean_expected_set_recall": 0.9215686274509803,
+  "mean_token_overlap": 1.0,
+  "mean_semantic_similarity": 1.0,
+  "floors": {
+    "hit_rate": 0.6,
+    "mrr": 0.4
+  }
+}

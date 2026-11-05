@@ -492,7 +492,11 @@ def test_acceptance_list_domain_real_subject_lists_modules(real_corpus: None) ->
 def test_acceptance_wiki_scoped_results_match_a_wiki_only_index(
     real_corpus: None, _real_dbs: tuple[Path, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The regression gate: paths, order and scores all equal to an index without courses."""
+    """The regression gate: paths, order and scores all equal to an index without courses.
+
+    Scores compare approximately: DuckDB's BM25 sum varies by ~1e-15 between runs on a
+    multi-term query, and the blended score is proportional to it.
+    """
     queries = ["retrieval strategies", "context compaction", "CRAG retrieve grade rewrite"]
     domains = server._domains()
     assert len(domains) > 5
@@ -509,7 +513,10 @@ def test_acceptance_wiki_scoped_results_match_a_wiki_only_index(
     with_courses = run()
     monkeypatch.setattr(server, "COURSES_DIR", tmp_path / "no-courses")
     monkeypatch.setattr(server, "DB_PATH", _real_dbs[1])
-    assert run() == with_courses
+    wiki_only = run()
+    assert [[p for p, _ in r] for r in wiki_only] == [[p for p, _ in r] for r in with_courses]
+    for got, want in zip(wiki_only, with_courses, strict=True):
+        assert [s for _, s in got] == pytest.approx([s for _, s in want])
     assert any(with_courses)
 
 

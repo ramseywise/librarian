@@ -12,7 +12,7 @@ produces a 1.0 baseline that proves the grader mechanics are wired correctly,
 and it gates on the regression floors (exit 1 below floor).
 
 *Live* (`--live`): retrieval goes through the real search core
-(`app.mcp_server.server._search_rows` — BM25 + RRF rerank), so hit-rate and
+(`app.mcp_server.server._search_rows` — BM25 + semantic rerank), so hit-rate and
 MRR measure actual pipeline quality.  Answers stay oracle (live answer grading
 needs the LLM — separate concern).  Retrieved paths are absolute; the grader's
 suffix matching handles the repo-relative golden `source_pages`, so no
@@ -77,19 +77,34 @@ HIT_RATE_FLOOR = 0.60
 MRR_FLOOR = 0.40
 
 # Per-arm live floors, derived from the committed baselines minus a tolerance for
-# run-to-run noise (embedding nondeterminism, tie order). The `nofts` arm scores
-# far below the oracle floors by construction — retrieval there is substring
-# matching — so gating it against HIT_RATE_FLOOR/MRR_FLOOR would either fail
-# permanently or force those floors down and stop protecting the healthy arm.
-# Each arm is therefore gated against its own measured baseline.
+# run-to-run noise (embedding nondeterminism, tie order). Retrieval in the `nofts`
+# arm is substring matching, a different path from the healthy arm, so each arm is
+# gated against its own measured baseline.
 LIVE_FLOOR_TOLERANCE = 0.05
 
 LIVE_ARM_FLOORS: dict[str, dict[str, float]] = {
-    # evals/baselines/live-baseline-2026-08-04T14-24-15Z.json — hit 1.0, MRR 0.905
+    # Set from evals/baselines/live-baseline-2026-08-04T14-24-15Z.json — hit 1.0, MRR 0.905.
+    # Latest measures MRR 0.864: not lowered to follow it. 89% of this set's answers are in the
+    # top decile of pages by backlinks, so it rewards ranking hubs first and cannot judge ranking
+    # alone. `uniform` is the check on it. A ranking change must clear every arm.
     "sem": {"hit_rate": 0.95, "mrr": 0.85},
-    # evals/baselines/live-nofts-baseline-2026-08-04T14-24-43Z.json — hit 0.58, MRR 0.295
-    "nofts": {"hit_rate": 0.53, "mrr": 0.245},
+    # Set from live-nofts-2026-11-05T11-57-02Z.json — hit 0.94, MRR 0.77. Latest, live-nofts-2026-11-05T12-54-35Z.json,
+    # measures hit 0.92, MRR 0.738, after backlinks left the rerank: not lowered to follow it.
+    "nofts": {"hit_rate": 0.89, "mrr": 0.72},
+    # evals/baselines/live-uniform-2026-11-05T12-55-11Z.json — hit 0.917, MRR 0.767
+    "uniform": {"hit_rate": 0.86, "mrr": 0.71},
+    # evals/baselines/live-course-2026-11-05T12-55-43Z.json — hit 0.922, MRR 0.827
+    "course": {"hit_rate": 0.87, "mrr": 0.77},
 }
+
+# Arms with their own question set. Both sets were written from a seeded random sample of pages
+# by an agent with no access to search: `uniform` from wiki pages, `course` from lessons.
+ARM_DATASETS: dict[str, str] = {
+    "uniform": "golden_wiki_uniform.json",
+    "course": "golden_courses.json",
+}
+# Lessons are a separate corpus, reached only through this search domain.
+ARM_DOMAINS: dict[str, str] = {"course": "course"}
 
 
 # ---------------------------------------------------------------------------
@@ -108,18 +123,20 @@ def _oracle_answer(entry: GoldenEntry) -> str:
 
 
 def _live_retrieval(entry: GoldenEntry, arm: str = "sem") -> list[RetrievalResult]:
-    """Retrieve through the real search core (BM25 + RRF rerank)."""
+    """Retrieve through the real search core (BM25 + semantic rerank)."""
     from app.mcp_server.server import _search_rows
 
     rows, _degraded = _search_rows(
-        entry.query, domain="", limit=10, tool="eval", expand=(arm == "graph")
+        entry.query, domain=ARM_DOMAINS.get(arm, ""), limit=10, tool="eval", expand=(arm == "graph")
     )
     return [RetrievalResult(page_path=row[0], score=float(row[6])) for row in rows]
 
 
-def _resolve_dataset_path(dataset_path: str | None) -> Path:
-    """Mirror load_golden_dataset's default so provenance can hash the file."""
-    return Path(dataset_path) if dataset_path else Path(__file__).parent / "golden_dataset.json"
+def _resolve_dataset_path(dataset_path: str | None, arm: str = "sem") -> Path:
+    """An explicit path, else the arm's own set, else load_golden_dataset's default."""
+    if dataset_path:
+        return Path(dataset_path)
+    return Path(__file__).parent / ARM_DATASETS.get(arm, "golden_dataset.json")
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +151,7 @@ def run(
     live: bool = False,
     arm: str = "sem",
 ) -> EvalReport:
-    entries = load_golden_dataset(dataset_path)
+    entries = load_golden_dataset(str(_resolve_dataset_path(dataset_path, arm)))
 
     retrieval_grader = RetrievalGrader()
     answer_grader = AnswerGrader()
@@ -441,11 +458,12 @@ def main() -> None:
     )
     parser.add_argument(
         "--arm",
-        choices=["lex", "sem", "graph", "nofts"],
+        choices=["lex", "sem", "graph", "nofts", "uniform", "course"],
         default="sem",
         help="Live-mode ablation arm: lex (BM25 only), sem (current pipeline), "
         "graph (sem + one-hop typed expansion), nofts (fts forced off — the "
-        "degraded substring-fallback path)",
+        "degraded substring-fallback path), uniform (sem on questions about uniformly "
+        "sampled wiki pages), course (lesson search)",
     )
     parser.add_argument(
         "--agent",
@@ -478,7 +496,7 @@ def main() -> None:
 
     if args.save_baseline:
         baseline_dir = Path(__file__).parent / "baselines"
-        dataset_file = _resolve_dataset_path(args.dataset)
+        dataset_file = _resolve_dataset_path(args.dataset, args.arm)
         if args.live:
             prefix = f"live-{args.arm}"
             if "multihop" in dataset_file.stem:
@@ -491,7 +509,7 @@ def main() -> None:
         print(f"\nBaseline saved → {path}")
 
     # Gate on floors. Oracle mode uses the global floors. Live mode gates only
-    # the arms with a committed baseline (sem, nofts) — `lex` and `graph` are
+    # the arms with a committed baseline (see LIVE_ARM_FLOORS) — `lex` and `graph` are
     # ablations with no regression contract, so they stay report-only.
     if args.live:
         floors = LIVE_ARM_FLOORS.get(args.arm)
