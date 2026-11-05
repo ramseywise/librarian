@@ -1,9 +1,9 @@
 ---
-imported_hash: 6f919090df54c736
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/programming/python/01-foundations/slides/deck.yaml
-- learn-ai-engineering/programming/python/02-informatics/slides/deck.yaml
-- learn-ai-engineering/programming/python/03-language-for-engineers/slides/deck.yaml
+- programming/python/01-foundations/slides/deck.yaml
+- programming/python/02-informatics/slides/deck.yaml
+- programming/python/03-language-for-engineers/slides/deck.yaml
 cards:
 - front: What do Python's arithmetic operators return?
   back: '`/` always returns a float, and `//` floors toward negative infinity rather than zero.'

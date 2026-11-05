@@ -1,7 +1,7 @@
 ---
-imported_hash: 4a72da3c8dcf7820
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-science/03-nlp/slides/deck.yaml
+- data-science/03-nlp/slides/deck.yaml
 cards:
 - front: What does bag of words keep from a document, and what does it lose?
   back: Bag of words makes text tabular by keeping word counts and discarding their order.

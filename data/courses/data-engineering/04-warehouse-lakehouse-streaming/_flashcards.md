@@ -1,7 +1,7 @@
 ---
-imported_hash: 5bc4bd65a9f51b1c
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-engineering/04-warehouse-lakehouse-streaming/slides/deck.yaml
+- data-engineering/04-warehouse-lakehouse-streaming/slides/deck.yaml
 cards:
 - front: Why does a column store make SELECT star expensive?
   back: A column store reads only the columns you name, so your column list is your first cost control.

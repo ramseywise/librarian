@@ -1,7 +1,7 @@
 ---
-imported_hash: c43dd778669503e6
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/programming/backend-and-system-design/slides/deck.yaml
+- programming/backend-and-system-design/slides/deck.yaml
 cards:
 - front: What should a client do after a timeout?
   back: Retry only what is idempotent or carries a key. Otherwise read the state before acting.

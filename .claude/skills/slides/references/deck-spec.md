@@ -198,8 +198,8 @@ stamped deck no longer matches its yaml, and reports decks with no stamp without
   and when the first agenda part is not marked `overview: true`.
 - **Layout mix.** No layout above 25% of the deck. No three consecutive slides with one layout.
   Each part has at least one `code` block or worked example and one `image` or `flow`. An `overview: true` part owes no code.
-- **Flashcard pairs.** `title` (or `recall`) is the prompt and `takeaway` is the answer. Librarian
-  imports one card per slide and attaches it to the lesson named in `source:`, so write a takeaway
+- **Flashcard pairs.** `title` (or `recall`) is the prompt and `takeaway` is the answer. `make flashcards` builds
+  one card per slide and attaches it to the lesson named in `source:`, so write a takeaway
   that stands alone. `source:` must name the note file, as in `notes/03-estimation.md`.
 - **Coverage.** Every note in the pillar has at least one slide with `source:` pointing at it.
 - **Size.** 30 to 45 content slides for a pillar of 10 or more notes, 15 to 30 for a smaller pillar,

@@ -1,7 +1,7 @@
 ---
-imported_hash: 24f36b14f3bfcb8e
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/ai-engineering/03-harness-engineering/slides/deck.yaml
+- ai-engineering/03-harness-engineering/slides/deck.yaml
 cards:
 - front: What separates a production harness from a demo?
   back: Context plus tools is the demo, while constrain, verify and correct make up the production harness.

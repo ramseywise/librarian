@@ -1,7 +1,7 @@
 ---
-imported_hash: de015927f0ab2070
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-engineering/03-transform-and-orchestrate/slides/deck.yaml
+- data-engineering/03-transform-and-orchestrate/slides/deck.yaml
 cards:
 - front: Which layer is allowed to hold business logic?
   back: Staging is mechanical, core holds the joins and rules, and marts answer questions, so every number has an obvious place to look.

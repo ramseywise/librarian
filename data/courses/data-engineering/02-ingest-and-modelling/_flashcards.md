@@ -1,7 +1,7 @@
 ---
-imported_hash: 1cedba55f63c4a7c
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-engineering/02-ingest-and-modelling/slides/deck.yaml
+- data-engineering/02-ingest-and-modelling/slides/deck.yaml
 cards:
 - front: What happens without the BEGIN if the insert fails?
   back: Delete and insert one window in one transaction, so a re-run replaces data and a crash leaves it untouched.

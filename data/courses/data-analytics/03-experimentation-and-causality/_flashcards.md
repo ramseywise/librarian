@@ -1,7 +1,7 @@
 ---
-imported_hash: db38f39785ea9c59
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-analytics/03-experimentation-and-causality/slides/deck.yaml
+- data-analytics/03-experimentation-and-causality/slides/deck.yaml
 cards:
 - front: What are the stages of a well-run A/B test?
   back: Run the trust check before reading the outcome, because a broken split invalidates everything after it.

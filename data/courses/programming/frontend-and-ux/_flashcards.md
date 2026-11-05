@@ -1,7 +1,7 @@
 ---
-imported_hash: 05d9d7d6573a9b0c
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/programming/frontend-and-ux/slides/deck.yaml
+- programming/frontend-and-ux/slides/deck.yaml
 cards:
 - front: What does a browser build from your page?
   back: A DOM from the HTML, a CSSOM from the CSS and an accessibility tree, then style, layout, paint and composite.

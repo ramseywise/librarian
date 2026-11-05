@@ -28,11 +28,9 @@ through the root .gitignore (nested repos, site-problem solutions, personal atte
 FAIL_CLOSED_SUBJECTS fail closed: no git checkout means no import (see discover), and their
 ignored directories are not even listed as references.
 
-Each `slides/deck.yaml` below a module in the source (spec:
-.claude/skills/slides/references/deck-spec.md) becomes flashcards in the module's
-`_flashcards.md`: one card per non-statement slide with a takeaway, front = `recall` or
-`title`, back = `takeaway`, attached to the lesson named in the slide's `source:`, or to the
-module if it names none. Inline `**bold**` and `code` markup is kept; the study view renders it.
+Flashcards are not imported. Decks are authored in librarian, and `make flashcards`
+(tools/slides/flashcards.py) builds each module's `_flashcards.md` from the local deck specs.
+The importer never writes or removes a `_flashcards.md`.
 
 Re-runnable while learn-ai-engineering is mid-consolidation. Every generated file
 carries `imported_hash`, a hash of the text the importer wrote:
@@ -159,6 +157,7 @@ SKIP_DIRS = {"node_modules", ".next", ".ipynb_checkpoints", "__pycache__", "site
 # Drill progress history (private, kept in sisyphus) — not lesson content.
 SKIP_FILES = {"drill-log.md"}
 DRILL_FIELDS = ("title", "track", "topic", "difficulty", "timebox_min", "units")
+# Built from the local deck specs by tools/slides/flashcards.py; never planned or removed here.
 FLASHCARD_FILE = "_flashcards.md"
 
 _HASH_LINE_RE = re.compile(r"^imported_hash: [0-9a-f]+\n", re.MULTILINE)
@@ -676,66 +675,6 @@ def _summary_from(body: str) -> str:
     return ""
 
 
-# ── Flashcards ────────────────────────────────────────────────────────────────
-
-
-def _find_decks(directory: Path) -> Iterator[Path]:
-    """`slides/deck.yaml` files below a module, in path order (vendored dirs excluded)."""
-    for dp, dns, fns in os.walk(directory):
-        here = Path(dp)
-        dns[:] = sorted(
-            d
-            for d in dns
-            if not d.startswith(".") and d not in SKIP_DIRS and not _is_vendored(here / d)
-        )
-        if here.name == "slides" and "deck.yaml" in fns:
-            yield here / "deck.yaml"
-
-
-def _card_text(value: object) -> str:
-    """One line of card text; YAML folding can leave newlines and a value may not be a string."""
-    return " ".join(str(value).split()) if value is not None else ""
-
-
-def _card_lesson(source: object, base: Path, src_to_dest: dict[Path, Path]) -> str | None:
-    """Lesson id named by a slide's `source:` (relative to the deck's pillar), if imported."""
-    if not isinstance(source, str) or not source.strip():
-        return None
-    path = source.strip().split("#")[0]
-    dest = src_to_dest.get((base / path).resolve())
-    if dest is None:
-        log.info("flashcard_source_unresolved", base=str(base), source=source)
-        return None
-    return str(dest.with_suffix(""))
-
-
-def deck_flashcards(deck: Path, src_to_dest: dict[Path, Path]) -> list[dict[str, str]]:
-    """Cards from one deck.yaml. A deck that does not parse yields none and a warning, so one
-    half-written deck never stops an import."""
-    try:
-        data = yaml.safe_load(deck.read_text(errors="replace"))
-    except (OSError, yaml.YAMLError) as e:
-        log.warning("deck_unparseable", path=str(deck), error=str(e))
-        return []
-    parts = data.get("parts") if isinstance(data, dict) else None
-    cards: list[dict[str, str]] = []
-    for part in parts if isinstance(parts, list) else []:
-        slides = part.get("slides") if isinstance(part, dict) else None
-        for slide in slides if isinstance(slides, list) else []:
-            if not isinstance(slide, dict) or slide.get("layout") == "statement":
-                continue
-            front = _card_text(slide.get("recall")) or _card_text(slide.get("title"))
-            back = _card_text(slide.get("takeaway"))
-            if not front or not back:
-                continue
-            card = {"front": front, "back": back}
-            lesson = _card_lesson(slide.get("source"), deck.parent.parent, src_to_dest)
-            if lesson:
-                card["lesson"] = lesson
-            cards.append(card)
-    return cards
-
-
 # ── Link + asset rewriting ────────────────────────────────────────────────────
 
 
@@ -849,7 +788,6 @@ def _rewrite_body(
 class Plan:
     files: dict[Path, str] = field(default_factory=dict)  # dest (abs) → text
     assets: dict[Path, Path] = field(default_factory=dict)  # dest (abs) → source
-    flashcards: int = 0
     source: Path | None = None  # repo the images come from, asked about ignored paths
 
 
@@ -930,22 +868,7 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
             plan.files[COURSES_DIR / subject / mod.name / "_module.md"] = render(meta)
             for lesson in mod.lessons:
                 _plan_lesson(plan, lesson, mod, source, src_to_dest, repo)
-            if mod.src_dir:
-                _plan_flashcards(plan, subject, mod, source, src_to_dest, repo)
     return plan
-
-
-def _plan_flashcards(
-    plan: Plan, subject: str, mod: Module, root: Path, src_to_dest: dict[Path, Path], repo: str
-) -> None:
-    decks = list(_find_decks(mod.src_dir)) if mod.src_dir else []
-    cards = [card for deck in decks for card in deck_flashcards(deck, src_to_dest)]
-    if not cards:
-        return
-    plan.flashcards += len(cards)
-    plan.files[COURSES_DIR / subject / mod.name / FLASHCARD_FILE] = render(
-        {"decks": [f"{repo}/{deck.relative_to(root)}" for deck in decks], "cards": cards}
-    )
 
 
 def _plan_lesson(
@@ -1070,8 +993,8 @@ def apply(plan: Plan, subjects: list[str], dry_run: bool) -> dict[str, int]:
         if not subject_dir.is_dir():
             continue
         for path in subject_dir.rglob("*.md"):
-            if path in plan.files:
-                continue
+            if path in plan.files or path.name == FLASHCARD_FILE:
+                continue  # flashcards are built by tools/slides/flashcards.py, not planned here
             current = path.read_text()
             recorded = _recorded_hash(current)
             if recorded is None or _hash(current) != recorded:
@@ -1105,7 +1028,6 @@ def main() -> None:
         "import_courses_done",
         dry_run=args.dry_run,
         subjects=len(subjects),
-        flashcards=plan.flashcards,
         **stats,
     )
 

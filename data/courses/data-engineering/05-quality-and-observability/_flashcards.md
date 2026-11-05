@@ -1,7 +1,7 @@
 ---
-imported_hash: 818c567145767800
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-engineering/05-quality-and-observability/slides/deck.yaml
+- data-engineering/05-quality-and-observability/slides/deck.yaml
 cards:
 - front: Why plant synthetic faults in a feed?
   back: Synthetic faults let us score every check against what really happened.

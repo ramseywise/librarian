@@ -1,7 +1,7 @@
 ---
-imported_hash: 1c66681a0602c6e8
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/programming/typescript/slides/deck.yaml
+- programming/typescript/slides/deck.yaml
 cards:
 - front: Which command checks types, and which runs code?
   back: '`node file.ts` strips types without checking them, so `tsc --noEmit` is a separate step you must run.'

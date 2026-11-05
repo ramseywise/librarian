@@ -1,7 +1,7 @@
 ---
-imported_hash: e9743334dd8708b4
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-analytics/04-bayesian-analysis/slides/deck.yaml
+- data-analytics/04-bayesian-analysis/slides/deck.yaml
 cards:
 - front: What are the five steps of a Bayesian analysis?
   back: A posterior is prior times likelihood, renormalised, and everything else in the pillar follows from that.

@@ -1,7 +1,7 @@
 ---
-imported_hash: 81e1c199a6703ab3
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/01-llm-fundamentals/slides/deck.yaml
+- generative-ai/01-llm-fundamentals/slides/deck.yaml
 cards:
 - front: How does a model get from a customer's text to the next token?
   back: The model turns tokens into vectors, mixes them with attention, and samples one next token at a time.

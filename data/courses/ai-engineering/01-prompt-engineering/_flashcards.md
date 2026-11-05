@@ -1,7 +1,7 @@
 ---
-imported_hash: 52b2085a24057b28
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/ai-engineering/01-prompt-engineering/slides/deck.yaml
+- ai-engineering/01-prompt-engineering/slides/deck.yaml
 cards:
 - front: Why can nothing later in a prompt change how earlier text was read?
   back: Attention flows one way, so a model reasons further only by writing tokens, which is why chain-of-thought works.

@@ -410,43 +410,7 @@ def test_drill_frontmatter_becomes_drill_lesson(tree: tuple[Path, Path]) -> None
     )
 
 
-# ── pillar layout and flashcards ─────────────────────────────────────────────
-
-REAL_SOURCE = ic.DEFAULT_SOURCE
-REAL_DECK = REAL_SOURCE / "ai-engineering" / "01-prompt-engineering" / "slides" / "deck.yaml"
-
-DECK = """
-deck: {title: Stats}
-parts:
-  - title: One
-    slides:
-      - layout: statement
-        title: Skipped, it is a statement
-        statement: Big sentence.
-        takeaway: Statement takeaways are not cards.
-        source: notes/01-estimation.md
-      - layout: bullets
-        title: Skipped, no takeaway
-        source: notes/01-estimation.md
-      - layout: bullets
-        title: The title
-        recall: "What does **MLE** do?"
-        takeaway: >-
-          Maximises the `likelihood`
-          of the data.
-        source: notes/01-estimation.md#mle
-      - layout: bullets
-        title: Falls back to the title
-        takeaway: Attaches to the module.
-      - layout: bullets
-        title: Unknown note
-        takeaway: Also attaches to the module.
-        source: notes/99-gone.md
-  - title: Closing
-    agenda: false
-    slides:
-      - {layout: bullets, title: From the README, takeaway: Anchor stripped., source: "README.md#rules"}
-"""
+# ── pillar layout ─────────────────────────────────────────────
 
 
 def _front(path: Path) -> dict:
@@ -469,8 +433,6 @@ def pillar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]
         (mod / rel).parent.mkdir(parents=True, exist_ok=True)
         (mod / rel).write_text(text)
     (mod / "practice" / "datatalks-de" / "syllabus.pdf").write_bytes(b"%PDF")
-    (mod / "slides").mkdir()
-    (mod / "slides" / "deck.yaml").write_text(DECK)
     (subject / "README.md").write_text("# Data Analytics\n")
     (subject / "references.md").write_text("# Data analytics references\n")
     (subject / "sources" / "book").mkdir(parents=True)
@@ -486,82 +448,25 @@ def _sync_analytics(source: Path) -> dict[str, int]:
     return ic.apply(ic.build_plan(source, ["data-analytics"]), ["data-analytics"], dry_run=False)
 
 
-def test_deck_slides_become_flashcards(pillar: tuple[Path, Path]) -> None:
+def test_importer_does_not_write_or_remove_flashcards(pillar: tuple[Path, Path]) -> None:
+    """Flashcards are built by tools/slides/flashcards.py; the importer leaves them alone."""
     source, dest = pillar
     _sync_analytics(source)
     mod = dest / "data-analytics" / "02-statistics"
-    meta = _front(mod / "_flashcards.md")
-    assert meta["decks"] == ["learn-ai-engineering/data-analytics/02-statistics/slides/deck.yaml"]
-    lesson = "data-analytics/02-statistics/notes/01-estimation"
-    assert meta["cards"] == [
-        {
-            "front": "What does **MLE** do?",
-            "back": "Maximises the `likelihood` of the data.",
-            "lesson": lesson,
-        },
-        {"front": "Falls back to the title", "back": "Attaches to the module."},
-        {"front": "Unknown note", "back": "Also attaches to the module."},
-        {
-            "front": "From the README",
-            "back": "Anchor stripped.",
-            "lesson": "data-analytics/02-statistics/readme",
-        },
-    ]
-
-
-def test_flashcards_follow_the_sync_contract(pillar: tuple[Path, Path]) -> None:
-    source, dest = pillar
-    deck = source / "data-analytics" / "02-statistics" / "slides" / "deck.yaml"
-    cards = dest / "data-analytics" / "02-statistics" / "_flashcards.md"
-
-    _sync_analytics(source)
-    assert _sync_analytics(source)["updated"] == 0  # idempotent
-
-    deck.write_text(DECK.replace("Attaches to the module.", "Changed answer."))
-    assert _sync_analytics(source)["updated"] == 1
-    assert "Changed answer." in cards.read_text()
-
-    deck.unlink()
-    assert _sync_analytics(source)["removed"] == 1
-    assert not cards.exists()
-
-
-def test_dry_run_writes_nothing(pillar: tuple[Path, Path]) -> None:
-    source, dest = pillar
-    plan = ic.build_plan(source, ["data-analytics"])
-    assert plan.flashcards == 4
-    assert ic.apply(plan, ["data-analytics"], dry_run=True)["created"] > 0
-    assert not dest.exists()
-
-
-def test_half_written_deck_is_skipped_not_fatal(pillar: tuple[Path, Path]) -> None:
-    source, dest = pillar
-    (source / "data-analytics" / "02-statistics" / "slides" / "deck.yaml").write_text(
-        "parts: [{slides: [unclosed\n"
+    assert not (mod / "_flashcards.md").exists()
+    assert (
+        ic.build_plan(source, ["data-analytics"]).files.keys().isdisjoint({mod / "_flashcards.md"})
     )
-    _sync_analytics(source)
-    assert not (dest / "data-analytics" / "02-statistics" / "_flashcards.md").exists()
-    assert (dest / "data-analytics" / "02-statistics" / "readme.md").exists()
 
-
-def test_nested_track_decks_attach_relative_to_their_own_folder(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """programming/python/<module>/slides/deck.yaml: the track is the librarian module."""
-    source = tmp_path / "lae"
-    py = source / "programming" / "python" / "01-foundations"
-    (py / "notes").mkdir(parents=True)
-    (py / "slides").mkdir()
-    (py / "notes" / "01-values.md").write_text("# Values\n")
-    (py / "slides" / "deck.yaml").write_text(
-        "parts: [{slides: [{layout: code, title: T, takeaway: A, source: notes/01-values.md}]}]\n"
-    )
-    _git(source, "init")  # programming fails closed outside a checkout
-    dest = tmp_path / "courses"
-    monkeypatch.setattr(ic, "COURSES_DIR", dest)
-    ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
-    meta = _front(dest / "programming" / "python" / "_flashcards.md")
-    assert meta["cards"][0]["lesson"] == "programming/python/01-foundations/notes/01-values"
+    # Even one that still carries the old imported_hash survives a sync that does not plan it.
+    cards = mod / "_flashcards.md"
+    cards.write_text(ic.render({"decks": [], "cards": [{"front": "Q", "back": "A"}]}))
+    assert "imported_hash" in cards.read_text()
+    stats = _sync_analytics(source)
+    assert cards.exists() and stats["removed"] == 0
+    (source / "data-analytics" / "02-statistics" / "notes" / "01-estimation.md").unlink()
+    assert _sync_analytics(source)["removed"] == 1  # the lesson goes, the cards stay
+    assert cards.exists()
 
 
 def test_pillar_layout_modules_sections_and_references(pillar: tuple[Path, Path]) -> None:
@@ -617,33 +522,6 @@ def test_gitignored_files_do_not_import(pillar: tuple[Path, Path]) -> None:
     assert not (root / "practice" / "lab" / "datasets").exists()
     assert "readings" not in _front(root / "_module.md")
     assert (root / "practice" / "lab" / "01-lab.md").exists()  # untracked but not ignored
-
-
-@pytest.mark.skipif(not REAL_DECK.exists(), reason="needs the learn-ai-engineering checkout")
-def test_real_prompt_engineering_deck(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The deck-spec worked example, into a temp dir. The deck is still being edited, so the
-    expected count is derived from the YAML rather than hard-coded."""
-    monkeypatch.setattr(ic, "COURSES_DIR", tmp_path)
-    plan = ic.build_plan(REAL_SOURCE, ["ai-engineering"])
-    path = tmp_path / "ai-engineering" / "01-prompt-engineering" / "_flashcards.md"
-    cards = _front_text(plan.files[path])["cards"]
-
-    slides = [s for p in yaml.safe_load(REAL_DECK.read_text())["parts"] for s in p["slides"]]
-    expected = [s for s in slides if s["layout"] != "statement" and s.get("takeaway")]
-    assert expected and len(cards) == len(expected)
-    assert {c["front"] for c in cards} == {
-        " ".join(s.get("recall", s["title"]).split()) for s in expected
-    }
-
-    lesson_files = {str(p.relative_to(tmp_path).with_suffix("")) for p in plan.files}
-    attached = [c for c in cards if "lesson" in c]
-    assert attached and all(c["lesson"] in lesson_files for c in attached)
-    # Every slide in this deck names a note or the README, so every card has a lesson.
-    assert len(attached) == len(cards)
-
-
-def _front_text(text: str) -> dict:
-    return yaml.safe_load(text.split("---\n")[1])
 
 
 def test_placeholder_readme_heading_does_not_become_the_module_title(

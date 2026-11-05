@@ -1,7 +1,7 @@
 ---
-imported_hash: 60729c0d2a1eeb94
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/03-agentic-foundations/slides/deck.yaml
+- generative-ai/03-agentic-foundations/slides/deck.yaml
 cards:
 - front: What does a plain-code check of the restock order reveal?
   back: Code confirmed the item and found a stockout the model never mentioned, and per-step errors compound quickly over a long run.

@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: slides slides-all deck-graph deck-graph-check deck-check app app-build obsidian api ui import-courses mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
+.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build obsidian api ui import-courses mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
 
 app:
 	docker compose up
@@ -51,6 +51,9 @@ slides:  ## Build a deck: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug
 	@uv run -q --with python-pptx --with pillow --with resvg-py python tools/slides/build_deck.py \
 		$(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/$(LECTURE).yaml,deck.yaml) \
 		$(if $(PREVIEW),--preview $(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/.preview/$(LECTURE),.preview)) $(if $(PDF),--pdf) $(if $(STRICT),--strict) $(if $(LEVEL),--level $(LEVEL))
+
+flashcards:  ## Build every module's _flashcards.md from its local deck specs [CHECK=1 to only check]
+	@uv run -q python tools/slides/flashcards.py $(if $(CHECK),--check)
 
 slides-all:  ## Build every deck in every course [PDF=1]
 	@find data/courses -path '*/slides/deck.yaml' -o -path '*/slides/lectures/*.yaml' | sort | xargs -n1 -I{} uv run -q --with python-pptx --with pillow --with resvg-py python tools/slides/build_deck.py {} $(if $(PDF),--pdf)
@@ -144,6 +147,7 @@ help:
 	@echo "index-rebuild    — force full rebuild of the wiki search index"
 	@echo "api              — start FastAPI backend directly (port 8000)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
+	@echo "flashcards       — build each module's _flashcards.md from its local deck specs"
 	@echo "import-courses   — sync ../learn-ai-engineering coursework into data/courses/"
 	@echo "install-ui       — npm install for app/frontend/"
 	@echo "install-api      — uv sync --extra api"

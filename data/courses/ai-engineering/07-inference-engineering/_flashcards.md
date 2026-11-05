@@ -1,7 +1,7 @@
 ---
-imported_hash: dd7a2a02da3f637e
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/ai-engineering/07-inference-engineering/slides/deck.yaml
+- ai-engineering/07-inference-engineering/slides/deck.yaml
 cards:
 - front: What bounds prefill and decode, and which latency does each set?
   back: Prefill is compute-bound and sets TTFT; decode is memory-bandwidth-bound and sets TPOT.

@@ -1,7 +1,7 @@
 ---
-imported_hash: 8bd74a4ce200ddc0
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-analytics/02-probability-and-statistics/slides/deck.yaml
+- data-analytics/02-probability-and-statistics/slides/deck.yaml
 cards:
 - front: What are the stages of the EDA loop and how does it end?
   back: An EDA is finished when someone else can act on the written findings, including every row you removed.

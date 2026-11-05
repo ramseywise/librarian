@@ -1,7 +1,7 @@
 ---
-imported_hash: 9006be7bdd6152b0
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/programming/computer-science/slides/deck.yaml
+- programming/computer-science/slides/deck.yaml
 cards:
 - front: How do you estimate an exponent without any theory?
   back: Double `n` and take `log2` of the time ratio, which estimates the exponent. A slope that misses your prediction is telling you something about the machine or the code.

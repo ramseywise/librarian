@@ -1,7 +1,7 @@
 ---
-imported_hash: a90e1727ecb56bb7
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-analytics/05-visualisation-and-storytelling/slides/deck.yaml
+- data-analytics/05-visualisation-and-storytelling/slides/deck.yaml
 cards:
 - front: What does Anscombe's quartet show about summary statistics?
   back: Plot before you summarise, because identical statistics can hide completely different data.

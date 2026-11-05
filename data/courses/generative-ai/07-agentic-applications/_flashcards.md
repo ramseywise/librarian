@@ -1,7 +1,7 @@
 ---
-imported_hash: 8482e57a22751b53
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/07-agentic-applications/slides/deck.yaml
+- generative-ai/07-agentic-applications/slides/deck.yaml
 cards:
 - front: In the internet search agent, what does the workflow graph do, in order, and what bounds its cost?
   back: A router node and a fixed plan keep search bounded and debuggable, for one extra classifier call.

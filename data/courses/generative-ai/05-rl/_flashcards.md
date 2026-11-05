@@ -1,7 +1,7 @@
 ---
-imported_hash: f9f494042205f124
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/05-RL/slides/deck.yaml
+- generative-ai/05-rl/slides/deck.yaml
 cards:
 - front: What are the steps of the agent-environment loop?
   back: An agent sees a state, acts, and receives a reward and a new state, and training adjusts its policy to raise total reward.

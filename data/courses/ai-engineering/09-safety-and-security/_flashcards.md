@@ -1,7 +1,7 @@
 ---
-imported_hash: e38241ea57fe7cec
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/ai-engineering/09-safety-and-security/slides/deck.yaml
+- ai-engineering/09-safety-and-security/slides/deck.yaml
 cards:
 - front: Which combination of capabilities can make an agent leak?
   back: An agent with untrusted input, private data and external communication can be made to leak.

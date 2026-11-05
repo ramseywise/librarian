@@ -1,7 +1,7 @@
 ---
-imported_hash: 2a8a140e581d2faf
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/06-observability/slides/deck.yaml
+- generative-ai/06-observability/slides/deck.yaml
 cards:
 - front: What changed on 11, 14 and 17 October?
   back: Three different failures overlap in one fortnight, and each is visible to a different tool, which is why no single chart will do.

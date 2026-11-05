@@ -1,7 +1,7 @@
 ---
-imported_hash: 20106c1fdd0ef23a
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/ai-engineering/02-context-engineering/slides/deck.yaml
+- ai-engineering/02-context-engineering/slides/deck.yaml
 cards:
 - front: Why does a larger context window not solve the attention problem?
   back: Added tokens do not expand the attention budget. They split the same budget across more claimants.

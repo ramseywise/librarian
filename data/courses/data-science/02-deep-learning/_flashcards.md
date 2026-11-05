@@ -1,7 +1,7 @@
 ---
-imported_hash: c6024eb172549409
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-science/02-deep-learning/slides/deck.yaml
+- data-science/02-deep-learning/slides/deck.yaml
 cards:
 - front: Which call does the chain-rule bookkeeping of backprop for you?
   back: Backprop is the chain rule with bookkeeping, and `backward()` does the bookkeeping.

@@ -1,7 +1,7 @@
 ---
-imported_hash: 7f881de11c724b49
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/programming/sql/slides/deck.yaml
+- programming/sql/slides/deck.yaml
 cards:
 - front: In what order does SQL evaluate a query?
   back: FROM, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT. Rows have no order unless you ask for one.

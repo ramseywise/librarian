@@ -1,7 +1,7 @@
 ---
-imported_hash: 109a9dc66290a96a
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/ai-engineering/08-multimodal-engineering/slides/deck.yaml
+- ai-engineering/08-multimodal-engineering/slides/deck.yaml
 cards:
 - front: How does an image spend context, and what makes it cost more?
   back: Images cost context as text does, and cost grows with area.

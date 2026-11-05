@@ -1,7 +1,7 @@
 ---
-imported_hash: 00c16d00d4381caa
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/ai-engineering/04-loop-engineering/slides/deck.yaml
+- ai-engineering/04-loop-engineering/slides/deck.yaml
 cards:
 - front: Which step in try-test-fix-save makes progress a ratchet, and what does a bad pass then cost?
   back: The save step makes progress a ratchet, so a bad pass costs one rollback and not the whole run.

@@ -1,7 +1,7 @@
 ---
-imported_hash: 3db61b99dd2b9ffa
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/08-eval/slides/deck.yaml
+- generative-ai/08-eval/slides/deck.yaml
 cards:
 - front: Name the five steps of the core eval flow in order.
   back: An eval runs tasks through k trials, captures what happened, grades each dimension and aggregates with an error bar.

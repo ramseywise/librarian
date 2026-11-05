@@ -1,7 +1,7 @@
 ---
-imported_hash: d601aab8667dd34d
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/09-llms-from-scratch/slides/deck.yaml
+- generative-ai/09-llms-from-scratch/slides/deck.yaml
 cards:
 - front: What does each micrograd operation store, and why is that enough?
   back: Each operation stores its inputs and one local rule, which is all that the backward pass needs.

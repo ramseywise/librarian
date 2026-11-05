@@ -1,7 +1,7 @@
 ---
-imported_hash: a1a1329d106ed763
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/02-rag-retrieval/slides/deck.yaml
+- generative-ai/02-rag-retrieval/slides/deck.yaml
 cards:
 - front: What three costs does RAG add?
   back: RAG gives the model facts at inference time, in exchange for latency, an index to maintain and a new way to fail.

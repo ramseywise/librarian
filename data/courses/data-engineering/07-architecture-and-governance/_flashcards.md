@@ -1,7 +1,7 @@
 ---
-imported_hash: c4747e5df7b78d7f
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-engineering/07-architecture-and-governance/slides/deck.yaml
+- data-engineering/07-architecture-and-governance/slides/deck.yaml
 cards:
 - front: How do a modern data warehouse, a lakehouse and a data fabric differ?
   back: An MDW keeps a lake and a warehouse, a lakehouse drops the warehouse copy, and a fabric adds a governance layer on top.

@@ -101,10 +101,11 @@ per sheet, in `<pillar>/slides/.preview/`. That folder is gitignored.
 - In the pillar README, add a line pointing to `slides/<topic>.pptx` and `slides/deck.yaml`
   in the Layout or Start-here section.
 - Run `make deck-graph-check`.
+- Run `make flashcards`. It rewrites the module's `_flashcards.md` from every local `slides/deck.yaml` and `slides/lectures/*.yaml`, so a changed takeaway or `source:` reaches the study view. Run it again after any later deck edit.
 
 ## Step 7 — Stage, don't commit
 
-`git add` the YAML, any new image in `assets/` and the readme change. The `.pptx`, the `.pdf` and
+`git add` the YAML, any new image in `assets/`, the readme change and the module's `_flashcards.md`. The `.pptx`, the `.pdf` and
 `.preview/` are gitignored. Show
 `git status` and `git diff --staged --stat`, and suggest a commit message such as
 `docs(<pillar>): lecture deck from notes`. Don't commit.

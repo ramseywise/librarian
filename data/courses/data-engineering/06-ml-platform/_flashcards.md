@@ -1,7 +1,7 @@
 ---
-imported_hash: dc9ceb26fc79b4e2
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-engineering/06-ml-platform/slides/deck.yaml
+- data-engineering/06-ml-platform/slides/deck.yaml
 cards:
 - front: What does a point-in-time join do to your score, and why take it?
   back: A point-in-time join gives a worse score that is true, which is the only score you can act on.

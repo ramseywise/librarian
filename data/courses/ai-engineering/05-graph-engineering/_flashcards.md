@@ -1,7 +1,7 @@
 ---
-imported_hash: a578950cbcb77486
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/ai-engineering/05-graph-engineering/slides/deck.yaml
+- ai-engineering/05-graph-engineering/slides/deck.yaml
 cards:
 - front: Why does the Airflow-style DAG model break when you apply it to agents?
   back: Graph engineering for agents means cyclic graphs, because retrying and revising need a way back.

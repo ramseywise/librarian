@@ -1,7 +1,7 @@
 ---
-imported_hash: 76785288f777b427
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-engineering/01-storage-and-compute-foundations/slides/deck.yaml
+- data-engineering/01-storage-and-compute-foundations/slides/deck.yaml
 cards:
 - front: Why does a slow backend hurt more as a request calls more of them?
   back: State latency as percentiles from the client, since the tail reaches most requests that fan out, and percentiles cannot be averaged.

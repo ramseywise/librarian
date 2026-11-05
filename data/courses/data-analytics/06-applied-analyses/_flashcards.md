@@ -1,7 +1,7 @@
 ---
-imported_hash: 47bd374da56903a2
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-analytics/06-applied-analyses/slides/deck.yaml
+- data-analytics/06-applied-analyses/slides/deck.yaml
 cards:
 - front: How should you score a forecast so that one split can't decide the model?
   back: Score a forecast over many origins, and keep one final period out of selection altogether.

@@ -1,7 +1,7 @@
 ---
-imported_hash: 20da8ede9b17e60f
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/programming/software-design/slides/deck.yaml
+- programming/software-design/slides/deck.yaml
 cards:
 - front: What do you do when you spot a code smell?
   back: A smell is a reason to look, never a verdict. Refactor a file because you keep having to change it, not because it smells.

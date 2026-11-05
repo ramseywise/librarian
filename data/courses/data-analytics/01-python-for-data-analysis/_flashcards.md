@@ -1,7 +1,7 @@
 ---
-imported_hash: 1656a848ad7b168d
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-analytics/01-python-for-data-analysis/slides/deck.yaml
+- data-analytics/01-python-for-data-analysis/slides/deck.yaml
 cards:
 - front: What happens when you add Series whose labels differ?
   back: Arithmetic between Series aligns on labels and gives NaN where a label exists on only one side.

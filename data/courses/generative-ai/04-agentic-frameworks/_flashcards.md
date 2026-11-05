@@ -1,7 +1,7 @@
 ---
-imported_hash: cfa9490a359f70d0
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/generative-ai/04-agentic-frameworks/slides/deck.yaml
+- generative-ai/04-agentic-frameworks/slides/deck.yaml
 cards:
 - front: Who does what in a ReAct loop?
   back: The model never runs anything itself; it proposes an action and the code around it runs the action and returns the observation.

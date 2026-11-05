@@ -1,7 +1,7 @@
 ---
-imported_hash: 2edb3b85751d5ca3
+generated_by: tools/slides/flashcards.py
 decks:
-- learn-ai-engineering/data-science/05-time-series-and-recommenders/slides/deck.yaml
+- data-science/05-time-series-and-recommenders/slides/deck.yaml
 cards:
 - front: Which four choices define a forecasting problem, and what do they decide?
   back: A forecasting problem is defined by its issue time, horizon, information set and loss, and these decide which features are legal.
