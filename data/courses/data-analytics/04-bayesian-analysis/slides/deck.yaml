@@ -1,0 +1,531 @@
+# Bayesian Analysis lecture deck. Covers notes 01-07.
+# Build: make slides PILLAR=data-analytics/04-bayesian-analysis STRICT=1 PREVIEW=1
+# Spec:  .claude/skills/slides/references/deck-spec.md
+# Running example: Larkspur, a fictional online plant shop. All Larkspur numbers come from
+# synthetic data with fixed seeds in the notes.
+deck:
+  title: Bayesian Analysis
+  subtitle: How likely, how much, and what should we do?
+  tagline: |-
+    Update · Sample · Prior · Test · Decide · Scale · Pool
+  reference: "Notes: data-analytics/04-bayesian-analysis"
+  output: bayesian-analysis.pptx
+  notes: >-
+    Larkspur is the fictional plant shop from the experimentation pillar. Its checkout test is finished and the p-value is tiny, and the
+    head of product asks a question a p-value cannot answer. We build the machinery to answer it, learn to distrust that machinery, and end with a decision in dollars.
+
+parts:
+  - title: The update
+    summary: Generative story · Prior to posterior · Closed form and sampler
+    notes: >-
+      Everything in the pillar is this one move: write how the data could have been generated, then condition on what you saw.
+    slides:
+      - layout: statement
+        title: The question a p-value cannot answer
+        kicker: The problem
+        statement: "Larkspur's checkout test is significant. The head of product asks how likely B is to be better, and how much it could cost to be wrong. A p-value answers neither."
+        attribution: Larkspur, the checkout test from the experimentation pillar
+        takeaway: A p-value is about the data given no effect. Decisions need the probability of the effect given the data.
+        source: notes/01-bayesian-inference.md
+        notes: >-
+          The p-value is not wrong. It answers a different question. This pillar answers the one the stakeholder asked, and chapter 4 returns to Larkspur with the answer.
+
+      - layout: flow
+        title: One move, from story to decision
+        recall: What are the five steps of a Bayesian analysis?
+        steps:
+          - {label: Story, sub: "how data arises"}
+          - {label: Prior, sub: "plausible before data"}
+          - {label: Likelihood, sub: "chance of this data"}
+          - {label: Posterior, sub: "plausible after", accent: "D4621A"}
+          - {label: Decision, sub: "lowest expected cost"}
+        bullets:
+          - "**Story first:** the model is the generative story written in code."
+          - "**Output:** a distribution you can ask direct questions of, not one number."
+        takeaway: A posterior is prior times likelihood, renormalised, and everything else in the pillar follows from that.
+        source: notes/01-bayesian-inference.md
+        notes: >-
+          The generative habit is the thing to practise. If you cannot simulate fake data from the model, you do not yet have a model.
+
+      - layout: code
+        title: The sampler should agree with the algebra
+        recall: "How do you use a closed form when you also have a sampler?"
+        lang: python
+        code: |-
+          post = stats.beta(4 + 32, 4 + 18)  # 32 of 50
+          print(post.mean(), post.std())
+
+          with pm.Model():
+              p = pm.Beta("p", 4, 4)
+              pm.Binomial("y", n=50, p=p, observed=32)
+              idata = pm.sample(1000, tune=1000)
+          draws = idata.posterior["p"].values.flatten()
+          print(draws.mean(), draws.std())
+        bullets:
+          - "**Closed form:** mean 0.6207, sd 0.0632."
+          - "**NUTS, 4000 draws:** mean 0.6190, sd 0.0638."
+          - "**Use it:** a conjugate case is a test of your sampling setup."
+        takeaway: Where a closed form exists, use it, and use it to check the sampler before you trust the sampler elsewhere.
+        source: notes/01-bayesian-inference.md
+        notes: >-
+          Beta prior plus binomial data gives a Beta posterior: add heads to the first number and tails to the second. The chapter's run is seeded, so your exact digits on the NUTS line will vary slightly without the seed.
+
+      - layout: table
+        title: Four stories, four direct answers
+        recall: "Why can one recipe handle counts, lies, launches and serial numbers?"
+        lead: Each answer is a statement about the unknown, with its uncertainty.
+        header: [Problem, Model, Answer]
+        widths: [3, 4, 5]
+        rows:
+          - ["Text messages", "Poisson with a switchpoint", "P(rate rose) 0.9994"]
+          - ["Honest survey", "Randomised response, 35 of 100 yes", "Cheating 0.207, 95% [0.035, 0.392]"]
+          - ["Challenger at 31F", "Logistic regression on temperature", "P(damage) 0.989, 95% [0.900, 1.000]"]
+          - ["German tanks", "Uniform on serial numbers, max 912", "Mean 982, 95% [913, 1186]"]
+        takeaway: The same recipe handles counts, lies, launches and serial numbers, because only the story changes.
+        source: notes/01-bayesian-inference.md
+        notes: >-
+          For the tanks, the posterior mean, median and MAP disagree: 982, 958 and 912. Which one to report depends on a loss function, which is part five. The text-message story shows a latent switch as one more unknown: over 74 days the rate moves from 17.76 to 22.68 a day, and the switchpoint posterior puts 0.489 on day 45 and 0.354 on day 44, with no change-point test in sight.
+
+  - title: Trusting the sampler
+    summary: One MCMC step · Diagnostics · Fix the model
+    notes: >-
+      Most real posteriors need a sampler, and a sampler can fail without raising an error. This part is how you tell, and what to do.
+    slides:
+      - layout: statement
+        title: A chain can look busy and learn nothing
+        kicker: The problem
+        statement: "A Metropolis chain accepts 98.7% of its proposals, which sounds healthy. From 19,000 kept draws it has an effective sample size of 11."
+        attribution: Step size 0.002, from the chapter's hand-written sampler
+        takeaway: Acceptance rate does not measure health, and a sampler can fail without raising any error.
+        source: notes/02-mcmc-and-pymc.md
+        notes: >-
+          The chain accepts everything because every proposal is tiny. It barely moves, so the draws are almost copies of each other.
+
+      - layout: image
+        title: Step size decides how much a chain learns
+        recall: "What wastes draws in step size, and what do you read to judge a chain?"
+        image: ../assets/bayes-metropolis-step-size.png
+        caption: "Three Metropolis chains on the same target. Generated by the code in notes/02-mcmc-and-pymc.md."
+        bullets:
+          - "**Step 0.002:** accepted 98.7%, ESS 11."
+          - "**Step 0.1:** accepted 57.6%, ESS 3594."
+          - "**Step 3.0:** accepted 2.8%, ESS 278."
+        takeaway: Both too small and too large waste draws, so read effective sample size and never the raw draw count.
+        source: notes/02-mcmc-and-pymc.md
+        notes: >-
+          Too small and the chain crawls. Too large and it rarely moves. NUTS tunes this during warm-up, which is why you should not hand-tune it for routine models.
+
+      - layout: code
+        title: The same model with a new geometry
+        recall: "What does the non-centred form change, and what does it remove?"
+        lang: python
+        code: |-
+          with pm.Model():
+              mu = pm.Normal("mu", 0, 5)
+              tau = pm.HalfCauchy("tau", 5)
+              raw = pm.Normal("raw", 0, 1, shape=8)
+              theta = mu + tau * raw
+              pm.Normal("obs", theta, sigma, observed=y)
+              idata = pm.sample(1000, tune=1000)
+          print(int(idata.sample_stats["diverging"].sum()))
+        bullets:
+          - "**Centred:** 88 divergences, tau ESS 64."
+          - "**Non-centred:** 2 divergences, tau ESS 2143."
+          - "**Why:** sampling `raw` removes the funnel between `theta` and `tau`."
+        takeaway: The non-centred form leaves the model unchanged and removes the funnel the sampler could not cross.
+        source: notes/02-mcmc-and-pymc.md
+        notes: >-
+          Eight schools is from Gelman et al., Bayesian Data Analysis. Two divergences is not zero, so you would still raise target_accept and check again. Three fixes measured in the chapter: standardising the Challenger data took ESS from 304 to 2591, ordered means took label switching from r_hat 1.73 to 1.0, and non-centring eight schools took 88 divergences to 2. Bad diagnostics usually point at the geometry, so reparameterise before you add draws.
+
+  - title: Priors and bandits
+    summary: Prior predictive · Washout · Winner's curse · Thompson sampling
+    notes: >-
+      Priors are assumptions you can test, by simulating from them. Once you have posteriors you can also act on them while you learn, which is what a bandit does.
+    slides:
+      - layout: statement
+        title: Wide is not the same as neutral
+        kicker: The problem
+        statement: "A Normal(0, 10) prior on a logit coefficient looks harmless. It puts 65% of its mass on probabilities below 0.01 or above 0.99."
+        attribution: Simulated in the chapter, 200,000 prior draws
+        takeaway: A prior that looks vague on one scale can be extreme on the scale you care about.
+        source: notes/03-priors-and-bandits.md
+        notes: >-
+          Normal(0, 1.5) puts almost nothing out there. Cauchy(0, 2.5), the Gelman et al. default, puts 32 percent there, which is why it is meant for standardised predictors. Simulate from the prior before you fit: on twenty-three launches, the chance it predicts all or none failing is 0.29 under Normal(0, 100), 0.18 under Normal(0, 5) and 0.02 under Normal(0, 1.5).
+
+      - layout: image
+        title: Data washes the prior out
+        recall: "When do priors matter most, and where should you spend your care?"
+        image: ../assets/bayes-prior-washout.png
+        caption: "Two priors on one coin. Generated by the code in notes/03-priors-and-bandits.md."
+        bullets:
+          - "**Start:** the two posterior means differ by 0.333."
+          - "**At N=500:** the gap is 0.010."
+          - "**Thin data:** that is where the prior decides."
+        takeaway: Priors matter most when data is thin, so spend your care on small segments and early looks.
+        source: notes/03-priors-and-bandits.md
+        notes: >-
+          Flat Beta(1,1) against a biased Beta(2,10). A prior is not a permanent thumb on the scale, unless it puts zero mass somewhere. Priors also take back a winner's inflation: of 2000 simulated experiments, 91 reach significance, their mean observed lift is 0.759 against a mean true lift of 0.246, and a prior fitted across all experiments brings it to 0.220. The last part returns to this with segments.
+
+      - layout: code
+        title: Thompson sampling is one line of posterior
+        recall: "How does Thompson sampling choose an arm, and where does exploration come from?"
+        lang: python
+        code: |-
+          rng = np.random.default_rng(5)
+          p = np.array([0.85, 0.60, 0.75])
+          wins, trials = np.zeros(3), np.zeros(3)
+          for _ in range(1000):
+              draw = rng.beta(1 + wins, 1 + trials - wins)
+              i = np.argmax(draw)
+              wins[i] += rng.random() < p[i]
+              trials[i] += 1
+          print(trials.astype(int))
+        bullets:
+          - "**Allocation:** traffic follows the chance each arm is best."
+          - "**Regret at 2000 pulls:** random 100.0, max mean 28.3, Thompson 22.8, 95% bound 14.6."
+          - "**Not always best:** the upper bound won on p of 0.15, 0.20, 0.10."
+        takeaway: Sample once from each posterior, play the highest, and exploration follows from the remaining uncertainty.
+        source: notes/03-priors-and-bandits.md
+        notes: >-
+          The chapter's class-based version sends 926, 26 and 48 pulls of 1000 to the three arms. Regret is averaged over 300 runs. Thompson is the simple default rather than the winner in every setting.
+
+  - title: Larkspur, answered
+    summary: P(B > A) · Lift interval · Expected loss · Peeking
+    notes: >-
+      Back to the question from the first slide. The closed form makes this cheap enough that no sampler is needed.
+    slides:
+      - layout: statement
+        title: Now answer the head of product
+        kicker: The problem
+        statement: "A: 2,079 conversions from 42,141. B: 2,335 from 41,859. How likely is B to be better, by how much, and what does each choice risk?"
+        attribution: Larkspur checkout test, synthetic data with fixed seeds
+        takeaway: The same counts that gave a p-value can answer the stakeholder's questions directly once you add a prior.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          These are the same counts the experimentation pillar analysed, so the two answers can be compared side by side.
+
+      - layout: code
+        title: Three answers from one posterior
+        recall: "Which outputs of a Bayesian A/B test drive the decision?"
+        lang: python
+        code: |-
+          rng = np.random.default_rng(1)
+          a = rng.beta(1 + 2079, 1 + 42141 - 2079, 400_000)
+          b = rng.beta(1 + 2335, 1 + 41859 - 2335, 400_000)
+          d = b - a
+          print((d > 0).mean())
+          print(np.percentile(d, [2.5, 97.5]) * 100)
+          print(np.maximum(-d, 0).mean() * 100)  # ship B
+          print(np.maximum(d, 0).mean() * 100)   # keep A
+          print((d > 0.005).mean(), (d > 0.010).mean())
+        bullets:
+          - "**P(B > A):** 0.99999."
+          - "**Lift, 95%:** +0.34 to +0.95 points."
+          - "**Loss:** ship B 0.000001 points, keep A 0.645 points."
+          - "**Size:** P(> 0.5pp) 0.83, P(> 1pp) 0.011."
+        takeaway: P(B > A) is only one of the outputs, and the lift interval and expected loss are the ones that drive the decision.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          Near certainty that B is better, but only 1 percent that the lift exceeds a full point. The first number alone would oversell this to anyone planning revenue.
+
+      - layout: image
+        title: Certain about direction, unsure about size
+        recall: "When does the prior change the answer in a Bayesian A/B test?"
+        image: ../assets/bayes-larkspur-posteriors.png
+        caption: "Larkspur's posteriors under uniform priors. Generated by the code in notes/04-bayesian-ab-testing.md."
+        bullets:
+          - "**Clear:** the two rates barely overlap."
+          - "**Still wide:** lift spans almost three-fold, +0.34 to +0.95."
+          - "**Priors, day one:** Beta(1,1) gives 0.950, Beta(500,9500) gives 0.689."
+        takeaway: With this much data the prior barely matters, but on day one it changes the answer from 0.950 to 0.689.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The day-one comparison is 900 visitors per arm, A 42 conversions and B 58. An informative prior centred on the historic rate is what stops a noisy first day from driving the decision.
+
+      - layout: table
+        title: Peeking is not free here either
+        recall: "Does calling a test Bayesian make daily stopping safe, and what do you do instead?"
+        lead: Share of simulated tests that ship B, by true effect. Thirty-day tests.
+        header: [Stopping rule, No effect, "-0.5pp", "+1pp", Mean day]
+        widths: [5, 2, 2, 2, 2]
+        highlight: [1]
+        rows:
+          - ["P(B>A) > 0.95, last day only", "0.047", "0.000", "0.987", "30.0"]
+          - ["P(B>A) > 0.95, checked daily", "0.238", "0.046", "0.995", "6.2"]
+          - ["Expected loss < 0.05pp, daily", "0.589", "0.143", "1.000", "3.9"]
+          - ["Expected loss, daily from day 14", "0.482", "0.038", "1.000", "14.1"]
+        takeaway: Calling it Bayesian does not make daily stopping safe, so choose the rule and judge it by its error rates.
+        source: notes/04-bayesian-ab-testing.md
+        notes: >-
+          The expected-loss rule ships most no-effect tests, since under no effect shipping costs little. Waiting until day 14 cuts the harmful ships at minus half a point from 14 percent to 4. That can be a fine choice, but only if you know that is what you chose.
+
+  - title: From posterior to decision
+    summary: Loss functions · Bayes action · Dollars
+    notes: >-
+      A posterior is not a decision. Adding what each mistake costs is what gets you from one to the other.
+    slides:
+      - layout: statement
+        title: Which number is the answer?
+        kicker: The problem
+        statement: "One right-skewed posterior has a mean of 20.03, a median of 16.85 and a mode of 10. Each is the correct answer to a different question about cost."
+        attribution: Gamma(2, 10) posterior, from the chapter
+        takeaway: A point estimate is a decision, and the loss function is what picks it.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Reporting the mean quietly assumes squared loss. Most business costs are not squared and not symmetric.
+
+      - layout: image
+        title: Each loss picks its own point
+        recall: "What is the Bayes action, and what makes it move?"
+        image: ../assets/bayes-actions-skewed-posterior.png
+        caption: "Bayes actions on a skewed posterior. Generated by the code in notes/05-loss-functions-and-decisions.md."
+        bullets:
+          - "**Squared loss:** the mean."
+          - "**Absolute loss:** the median."
+          - "**Narrow zero-one loss:** the mode."
+        takeaway: The Bayes action minimises expected loss under the posterior, and it moves when the costs move.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          Also in the chapter: the Price is Right bid falls from 14,700 to 11,800 as the risk of overbidding grows from 30,000 to 150,000, on a posterior mean of 20,000.
+
+      - layout: code
+        title: Stock by cost, not by the average
+        recall: "Under asymmetric costs, is the mean the best action?"
+        lang: python
+        code: |-
+          rng = np.random.default_rng(2)
+          rate = rng.gamma(1 + 1200, 1 / (0.03 + 30), 8000)
+          demand = rng.poisson(rate)
+          def cost(q, short=5.0, over=1.0):
+              under = np.maximum(demand - q, 0)
+              extra = np.maximum(q - demand, 0)
+              return (short*under + over*extra).mean()
+          grid = np.arange(20, 70)
+          best = grid[np.argmin([cost(q) for q in grid])]
+          print(best, cost(40), cost(best))
+        bullets:
+          - "**The mean says:** stock 40, at a cost of 15.26."
+          - "**The Bayes action:** stock 46, at a cost of 9.92."
+          - "**Why:** a shortage costs five times an overstock."
+        takeaway: With asymmetric costs the best action is not the mean, and using the mean has a price you can compute.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          This is the newsvendor problem. The answer lands near the 5/6 quantile of predictive demand, which you can check against the sampled grid.
+
+      - layout: table
+        title: Larkspur's decision, in dollars
+        recall: "Why can the same posterior say ship or wait?"
+        lead: "Hypothetical: 480,000 visitors and $30 an order. Gain is $92,906 on average, 95% [$49,559, $136,395]."
+        header: [Cost to ship, Expected net gain, Chance of regret]
+        widths: [3, 4, 3]
+        highlight: [2]
+        rows:
+          - ["$25,000", "$67,906", "0.001"]
+          - ["$60,000", "$32,906", "0.069"]
+          - ["$90,000", "$2,906", "0.448"]
+        takeaway: The same posterior can say ship or wait, depending on what shipping costs, so put that cost in the calculation.
+        source: notes/05-loss-functions-and-decisions.md
+        notes: >-
+          At 90,000 the expected gain is still positive, yet there is a 45 percent chance of losing money. The visitor count and order value are hypothetical, chosen to show the method. Replace them with your own.
+
+  - title: Bayesian machine learning
+    summary: EM · MCMC · Variational inference · Gaussian processes
+    notes: >-
+      The coursework in practice/BayesianML is this part. The ideas are the same; the scale forces approximations, and each has a known way of being wrong.
+    slides:
+      - layout: statement
+        title: Past a certain size, you must approximate
+        kicker: The problem
+        statement: "Latent labels, a VAE's encoder and a costly hyperparameter search all share one problem: the exact posterior is out of reach. Each approximation fails in its own way."
+        attribution: BayesianML coursework, weeks 2 to 6
+        takeaway: Every scalable Bayesian method trades exactness for speed, and each has a failure you can check for.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          EM returned local optima, ADVI understated correlated uncertainty, and a GP is only as good as its kernel. The chapter measures each.
+
+      - layout: flow
+        title: Four approximations, one course
+        recall: Which method does each week of the coursework teach?
+        steps:
+          - {label: EM, sub: "week 2, mixtures"}
+          - {label: MCMC, sub: "week 4, logistic"}
+          - {label: VI and VAE, sub: "week 5, ELBO", accent: "D4621A"}
+          - {label: GP and BO, sub: "week 6, tuning"}
+        bullets:
+          - "**EM:** 8 of 10 restarts reach log likelihood -1107.8; the others stop at -1186.9 and -1268.1."
+          - "**MCMC:** ESS of 155 under Metropolis and 3306 under NUTS."
+        takeaway: Each method answers the same posterior question at a different point on the trade-off between speed and exactness.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The final assignment combines the VAE with Bayesian optimisation to search a latent space with human feedback. Restart EM, since a single run cannot show you it stopped short.
+
+      - layout: code
+        title: The ELBO you can check by hand
+        recall: "What is the ELBO's gap to the log evidence, and what does raising it do?"
+        lang: python
+        code: |-
+          x = 2.0                 # x ~ N(z, 1), z ~ N(0, 1)
+          log_ev = stats.norm.logpdf(x, 0, np.sqrt(2))
+          def elbo(m, s, n=200_000):
+              rng = np.random.default_rng(0)
+              z = m + s * rng.standard_normal(n)
+              recon = stats.norm.logpdf(x, z, 1).mean()
+              kl = -np.log(s) + (s*s + m*m) / 2 - 0.5
+              return recon - kl
+          print(log_ev - elbo(0.0, 1.0))     # q = prior
+          print(log_ev - elbo(1.0, 0.7071))  # q = exact
+        bullets:
+          - "**Log evidence:** -2.2655."
+          - "**q at the prior:** gap 1.1544."
+          - "**q at the exact posterior:** gap 0.0005, sampling noise."
+        takeaway: The ELBO's gap to the log evidence is the KL divergence from the true posterior, so raising it improves the approximation.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          A VAE's loss is this same expression, with an encoder network producing m and s for each data point, using the reparameterised draws shown here.
+
+      - layout: table
+        title: Mean-field ADVI cannot see correlation
+        recall: "What does mean-field variational inference misstate, and how do you check it?"
+        lead: The chapter's Bayesian regression, fitted both ways.
+        header: [Quantity, ADVI, NUTS]
+        widths: [4, 3, 3]
+        highlight: [2]
+        rows:
+          - ["sd of a", "0.127", "0.390"]
+          - ["sd of a + b", "0.181", "0.113"]
+          - ["Correlation of a and b", "-0.01", "-0.96"]
+        takeaway: Mean-field variational inference is fast and misstates correlated uncertainty, so check it against NUTS on a small version.
+        source: notes/06-bayesian-machine-learning.md
+        notes: >-
+          The factorised q cannot represent the -0.96 correlation. It gets both spreads wrong: too narrow on a, too wide on a plus b. The chapter closes with a Gaussian process plus expected improvement, which spends each costly evaluation where it is most likely to beat the best so far: on one small tuning problem it reached a best log loss of 0.1016 against about 0.112 for random search. Treat that as a demonstration, not a benchmark.
+
+  - title: Partial pooling
+    summary: The winner's number · Weights by size · When it fails · Few groups
+    notes: >-
+      Every test in this pillar so far had one number to estimate. Most real analyses have many related numbers, one per market or segment. Partial pooling estimates them together.
+    slides:
+      - layout: statement
+        title: The raw winner measured +3.17, and is truly +1.25
+        kicker: The problem
+        statement: "Of 24 segments, the raw winner has 672 users an arm and measured +3.17. Pooling takes it to +1.27, and picks a different segment, truly better at +1.79."
+        attribution: "Simulated experiment, 24 segments. Pooled pick: 8,102 users an arm"
+        takeaway: A segment wins by holding positive noise, so estimate the segments together before shipping one.
+        recall: Why does the raw winner among 24 segments overstate its lift, and what did pooling pick instead?
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          This is the winner's curse from the statistics pillar, in the form an analyst meets it weekly. A hand-built grid and PyMC agree to within 0.014 in any segment, so this is arithmetic we can check.
+
+      - layout: image
+        title: Each group's weight depends on how much data it has
+        recall: What is the partial pooling weight, and how much did a 5-user market move?
+        image: ../assets/bayes-multilevel-shrinkage.png
+        caption: Raw market means pulled towards the overall mean, in proportion to their noise.
+        bullets:
+          - "**Weight** on the group's data: τ²/(τ²+σ²/n)."
+          - "**5 users:** $54.26 to $42.10, true $45.39, weight 0.16."
+          - "**262 users:** weight 0.91, barely moves."
+          - "**RMSE over 200 datasets:** none 5.13, complete 5.98, partial 3.47."
+        takeaway: Partial pooling beat no pooling in 96% of datasets, because it trusts each group exactly as far as its data allows.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The same structure explains why ignoring groups is costly. An intraclass correlation of only 0.036 multiplies the variance of a mean by about 5 at this cluster size.
+
+      - layout: table
+        title: Clustered errors, fixed effects, or multilevel
+        recall: When do you use clustered standard errors, fixed effects and a multilevel model, and what did each give on correlated data?
+        lead: "With a market effect correlated with the discount, truth 2: pooled 3.04, random intercepts 2.83, fixed effects and within-between 1.99."
+        header: [Tool, Use it when, Watch for]
+        widths: [3, 4.4, 4.2]
+        rows:
+          - [Clustered SEs, "Groups are a nuisance", "Too few clusters"]
+          - [Fixed effects or within-between, "The group effect may correlate with a predictor", "Group-constant variables are lost in fixed effects"]
+          - [Multilevel, "Group estimates or their spread are the question", "Needs exchangeable groups, and enough of them"]
+        takeaway: Pick by the question, and when a group effect may correlate with a predictor, add its group mean or use fixed effects.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          McNeish and colleagues make the case for the simpler tool: by their count a multilevel model makes 10 assumptions and clustered standard errors 3. Bell and Jones note that standard random effects assume within and between effects are equal, and splitting a predictor into a group mean and a deviation removes that assumption. Plain random intercepts give 2.83 with nothing in the output to warn you. Also check for missing standard errors, which appeared silently in 7 of 400 runs, and for random slopes: leaving them out gave an SE of 0.222 where the model with slopes gave 0.276.
+
+      - layout: code
+        title: Over 1,000 datasets, pooling fixes the claim
+        recall: Across 1,000 simulated datasets, how did pooling change the winner's overstatement, the pick and the coverage?
+        lang: Text output
+        code: |-
+          1,000 datasets         raw     pooled
+          RMSE per segment       1.357   0.489
+          winner minus its true  +2.93   +0.09
+          true lift of the pick  1.26    1.46
+          90% interval covers    0.90    0.90
+
+          truly best segment     1.98
+        bullets:
+          - "**Fixes how much you claim**, nearly all of it."
+          - "**Improves which you pick**, partly."
+          - "Coverage is calibrated in both."
+        takeaway: Pooling almost removes the overstatement and improves the pick, and it still leaves you short of the truly best segment.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          This is the argument of Gelman, Hill and Yajima. Classical corrections such as Bonferroni keep estimates where they are and widen intervals, whereas partial pooling moves the estimates themselves.
+
+      - layout: image
+        title: Pooling pays when groups are noisy and exchangeable
+        recall: In which scenarios does pooling stop paying, and what happens to a true outlier?
+        image: ../assets/bayes-multilevel-scenarios.png
+        caption: Pooled RMSE as a share of per-segment RMSE, across eight scenarios. Below 1, pooling wins.
+        bullets:
+          - "**No differences:** 0.16; intervals too wide."
+          - "**Well measured:** 0.93 and 0.99, no gain."
+          - "**True +5.0:** pulled down 3.74, RMSE 3.01 to 3.76."
+          - "**Wrong centre:** −1.10; a size predictor fixes it."
+        takeaway: Shrinkage works against the rare real winner, so follow up a large raw effect with a new test.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The baseline ratio is 0.36. In the outlier world the other 23 segments still improve, from 1.25 to 0.49. Adding size as a group-level predictor brings the wrong-centre RMSE back to 0.49.
+
+      - layout: image
+        title: With few groups, the spread is close to a guess
+        recall: How well can 3 markets estimate tau, and what did a tight half-normal prior do when tau was really 2?
+        image: ../assets/bayes-multilevel-few-groups.png
+        caption: Estimated spread between groups, against the number of groups, with a true τ of 6.
+        bullets:
+          - "**3 markets:** τ from 0 to 15.53; zero in 11% of datasets."
+          - "**50 markets:** 4.67 to 7.34."
+          - "**Half-normal(0.25)** when τ = 2: ratio 1.25, covers 48%."
+        takeaway: With few groups the prior decides, so report a range of priors. As Gelman and Loken warn, inference can be sensitive to model assumptions.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          With 5 markets τ hits zero in 8% of datasets. MixedLM's single answer of 2.52 compares with a PyMC interval of 0.37 to 9.74, and a correlation can sit at the boundary of 1.00. On a logit scale, the within-market effect is not the population-averaged one: 0.500 against 0.306, and the typical market's 4.89% is not the average of 6.71%.
+
+  - title: Wrap-up
+    agenda: false
+    divider: false
+    slides:
+      - layout: cards
+        title: Rules of thumb
+        recall: "What are most Bayesian failures, and what does each one have?"
+        cards:
+          - {title: Tell and test the story, body: "Write how the data arises, then simulate the prior.", accent: "D4621A"}
+          - {title: Check the chain, body: "r_hat, ESS and divergences before any result.", accent: "D4621A"}
+          - {title: Report three things, body: "P(B > A), the lift interval and expected loss.", accent: "D4621A"}
+          - {title: Fix the stopping rule, body: "Peeking costs error here too. Measure how much.", accent: "D4621A"}
+          - {title: Price the mistake, body: "Choose the action with the lowest expected cost.", accent: "D4621A"}
+          - {title: Pool then check, body: "Estimate related groups together, and report a range across priors.", accent: "D4621A"}
+        takeaway: Most Bayesian failures are unchecked models and unpriced decisions, and each one has a check you can run.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          These six are what to carry out of the pillar. The rest is reference.
+
+      - layout: bullets
+        title: Where to go next
+        bullets:
+          - "**Visualisation and storytelling:** putting these answers in front of people."
+          - "**Eval pillar in generative-ai:** comparing LLM variants on small samples."
+          - "**Read:** Davidson-Pilon, then McElreath, then Gelman et al."
+          - "**Beyond this pillar:** model building in data-science, pipelines in data-engineering."
+        aside:
+          title: Practice
+          accent: "1E3A5F"
+          body: "Every chapter block runs as written. Change a seed and a prior, and predict the result before you run it."
+        takeaway: The next step is to run chapter 4 on your own test's counts and price the decision in chapter 5.
+        source: notes/07-multilevel-models-and-partial-pooling.md
+        notes: >-
+          The BayesianML coursework is kept as written and needs its pinned environment. The chapters run on current PyMC. McElreath's Statistical Rethinking lectures are free on YouTube if you want the long version of the last part.

@@ -27,6 +27,8 @@ from .courses import router as courses_router
 from .courses import warm_catalog
 from .curriculum import router as curriculum_router
 from .curriculum import write_snapshot
+from .glossary import router as glossary_router
+from .wiki_health import router as wiki_health_router
 from .wiki_parser import parse_wiki, public_page_ids, tag_shared_edges
 
 # At import, not in a main(): uvicorn imports this module as an ASGI app and never
@@ -138,6 +140,8 @@ app.add_middleware(
 )
 app.include_router(courses_router)
 app.include_router(curriculum_router)
+app.include_router(glossary_router)
+app.include_router(wiki_health_router)
 
 
 @app.websocket("/ws")

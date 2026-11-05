@@ -1,6 +1,6 @@
 ---
 name: compact-wiki
-description: "Periodic wiki compaction ritual — the recompile stage of the Karpathy pattern. Gathers evidence (page age, size, relinker similarity, retrieval telemetry), proposes merge/retire/compress moves as a dry-run report, applies ONLY Ramsey-approved moves. Manual, ~monthly. Trigger on: /compact-wiki, 'compact the wiki', 'wiki maintenance', 'consolidate wiki pages'."
+description: "Periodic wiki compaction ritual — the recompile stage of the Karpathy pattern. Gathers evidence (page age, size, relinker similarity, retrieval telemetry), proposes merge/retire/compress moves as a dry-run report, applies ONLY Ramsey-approved moves. Manual, ~monthly. Trigger on: /compact-wiki, 'compact the wiki', 'wiki maintenance', 'consolidate wiki pages'. Use when Ramsey runs the monthly compaction, or after ~5 ingests. Do NOT use for compiling new sources (/ingest), a health check with no merges (/lint), answering questions from the wiki (/query), or taxonomy drift (/wiki-sync)."
 disable-model-invocation: true
 allowed-tools: Read Grep Glob Bash Edit Write
 ---
@@ -10,9 +10,15 @@ is written in phase 1–2; apply (phase 4) touches only moves Ramsey explicitly 
 
 Rationale and evidence base: `.claude/docs/plans/2026-07-17-knowledge-compaction.md`.
 
-## Invariants (from CLAUDE.md contract — never violate)
+## Core rule
 
-- `raw/` is immutable. Compaction touches `data/wiki/` only.
+Every move cites its evidence in a dry-run report first, and only the moves Ramsey approved are applied.
+
+## Workflow
+
+### Invariants (from CLAUDE.md contract — never violate)
+
+- `data/raw/` is immutable. Compaction touches `data/wiki/` only.
 - Every removed page leaves a **tombstone** (same filename, `tombstone` tag, one-line
   body pointing to its successor: `[[Successor]] — supersedes`). Inbound wikilinks stay
   valid; tombstones are excluded from search ranking automatically.
@@ -22,10 +28,12 @@ Rationale and evidence base: `.claude/docs/plans/2026-07-17-knowledge-compaction
   merged page contained (same discipline as guacamayo's /synthesize, provenance instead
   of voice).
 
-## Phase 1 — Gather signals (mechanical, read-only)
+### Phase 1 — Gather signals (mechanical, read-only)
 
-1. **Age**: `grep -rh "^updated:" wiki --include="*.md"` → pages >60 days stale.
-2. **Size**: `find wiki -name "*.md" -not -name "_*" -exec wc -l {} +` → pages over
+0. **Stats before**: `uv run python core/wiki_telemetry.py stats --json`. Print the result;
+   it is the "before" half of the final report.
+1. **Age**: `grep -rh "^updated:" data/wiki --include="*.md"` → pages >60 days stale.
+2. **Size**: `find data/wiki -name "*.md" -not -name "_*" -exec wc -l {} +` → pages over
    ~300 lines (reference dumps, accumulators).
 3. **Similarity**: read `data/wiki/_relink_suggestions.md` if present; optionally run
    `uv run python core/relinker.py` first. High-similarity pairs = merge candidates.
@@ -39,12 +47,49 @@ Rationale and evidence base: `.claude/docs/plans/2026-07-17-knowledge-compaction
 5. **Inbound links**: backlink counts from lint or the index — retire candidates need
    ≤1 inbound link.
 
-## Phase 2 — Dry-run report
+### Phase 2 — Dry-run report
 
-Propose moves grouped by type, each with cited evidence. No move without evidence.
+Propose moves grouped by type, each with cited evidence. No move without evidence. Print
+the dry-run template under Output format.
+
+### Phase 3 — STOP for approval
+
+Ramsey approves per move (approve all / subset / none). No approval, no writes.
+
+### Phase 4 — Apply approved moves only
+
+- **Merge**: integrate content into successor (union sources, preserve everything
+  true), turn merged-away page into a tombstone, update `updated:` dates.
+- **Retire**: replace body with tombstone format, add `tombstone` to tags, add
+  `[[Successor]] — supersedes` line.
+- **Compress**: apply the accumulator ceiling (last ~30 entries + month rollups).
+- Then: update `data/wiki/_index.md`, run `uv run python core/relinker.py`, rotate telemetry
+  (summarize the window's aggregate into the report; truncate `logs/retrieval.jsonl`),
+  append a one-line run record to the plan doc's `## Review` section, and add a
+  `guacamayo/.claude/docs/tooling-ledger.md` row (status `hypothesis`, verification: "next
+  compaction's evidence quality / no lint regressions").
+- Finish with `/lint` expectations: zero new dead links, zero new orphans (tombstones
+  are exempt from orphan rules — they exist to be pointed at, not linked from).
+- **Stats after**: `uv run python core/wiki_telemetry.py stats --json`. Print the result.
+- **Log the run**, once, counts only, never a page name:
+  ```bash
+  uv run python core/wiki_telemetry.py log compact "4 merged, 2 retired, 1 compressed"
+  ```
+  If Ramsey approved nothing, nothing was written: no stats after, no log line.
+
+### Cadence
+
+Manual, Ramsey-triggered, ~monthly (or after ~5 ingests). Never scheduled, never
+model-invoked.
+
+## Output format
+
+Phase 2, before any write:
 
 ```markdown
 # Wiki Compaction Dry-Run — <date>
+
+Stats before: orphan <n>%, average degree <n>, main component <n>%, stale <n>%, typed links <n>%, stubs <n>%
 
 ## Merge candidates
 - [[A]] + [[B]] → [[A]] — evidence: similarity 0.87, co-retrieved 5×, B stale 84d, 2 shared sources
@@ -59,26 +104,27 @@ Propose moves grouped by type, each with cited evidence. No move without evidenc
 - [[E]] — stale but 14 retrievals; staleness is not disuse
 ```
 
-## Phase 3 — STOP for approval
+Phase 4, after the approved moves:
 
-Ramsey approves per move (approve all / subset / none). No approval, no writes.
+```markdown
+# Wiki Compaction Applied — <date>
 
-## Phase 4 — Apply approved moves only
+Applied:      <n> merged, <n> retired, <n> compressed
+Not approved: <n> moves
+Stats before: orphan <n>%, average degree <n>, main component <n>%, stale <n>%, typed links <n>%, stubs <n>%
+Stats after:  orphan <n>%, average degree <n>, main component <n>%, stale <n>%, typed links <n>%, stubs <n>%
+Lint:         <n> new dead links, <n> new orphans
+Telemetry:    <the window's retrieval aggregate, before truncation>
+```
 
-- **Merge**: integrate content into successor (union sources, preserve everything
-  true), turn merged-away page into a tombstone, update `updated:` dates.
-- **Retire**: replace body with tombstone format, add `tombstone` to tags, add
-  `[[Successor]] — supersedes` line.
-- **Compress**: apply the accumulator ceiling (last ~30 entries + month rollups).
-- Then: update `data/wiki/_index.md`, run `uv run python core/relinker.py`, rotate telemetry
-  (summarize the window's aggregate into the report; truncate `logs/retrieval.jsonl`),
-  append a one-line run record to the plan doc's `## Review` section, and add a
-  `guacamayo/.claude/docs/tooling-ledger.md` row (status `hypothesis`, verification: "next
-  compaction's evidence quality / no lint regressions").
-- Finish with `/lint` expectations: zero new dead links, zero new orphans (tombstones
-  are exempt from orphan rules — they exist to be pointed at, not linked from).
+## Calibration
 
-## Cadence
+Over-compaction loses knowledge: a merge on similarity alone can collapse two pages that
+answer different queries, and a retire on age alone removes a page people still use. A
+stale page (>60 days) with retrievals is not a retire candidate, and a retire candidate has
+≤1 inbound link. Under-compaction is a report with no candidates despite pages over ~300 lines or accumulators
+past ~30 rows.
 
-Manual, Ramsey-triggered, ~monthly (or after ~5 ingests). Never scheduled, never
-model-invoked.
+Co-retrieval counts as evidence at ≥3 shared result sets in the window. Absent or sparse
+telemetry is fine: age, size and similarity carry the first runs. Success is zero new dead
+links and zero new orphans, not the number of pages removed.

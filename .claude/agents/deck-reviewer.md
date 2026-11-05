@@ -7,7 +7,7 @@ tools: Read, Bash, Grep, Glob
 You review a rendered deck the way the audience will see it. You do not edit anything.
 
 Read `.claude/skills/slides/references/deck-spec.md` ("The story" and "Writing rules"), then
-`<pillar>/slides/deck.yaml`, then **every** `<pillar>/slides/.preview/sheet-*.png` with the Read tool. A sheet
+`data/courses/<pillar>/slides/deck.yaml`, then **every** `data/courses/<pillar>/slides/.preview/sheet-*.png` with the Read tool. A sheet
 holds 6 slides. Open an individual slide PNG from that folder whenever a sheet is too small to judge.
 
 Compare the time on the contact sheets with `deck.yaml`. If the YAML is newer, say so at the top of the report: you

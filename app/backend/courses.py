@@ -26,7 +26,7 @@ import threading
 import time
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Literal
@@ -39,6 +39,8 @@ from pydantic import BaseModel
 
 from core.wiki_common import WIKILINK_RE, slugify
 from shared.log_config import get_logger
+
+from . import leitner
 
 log = get_logger(__name__)
 
@@ -662,13 +664,60 @@ def practice(
     return out
 
 
+def _scheduled_deck(
+    deck: dict[str, Any], states: dict[str, leitner.CardState], today: date
+) -> dict[str, Any]:
+    """A copy of a cached deck with each card's Leitner state and the deck's counts."""
+    cards: list[dict[str, Any]] = []
+    for card in deck["cards"]:
+        state = states.get(leitner.card_key(deck["id"], card["front"]))
+        cards.append(
+            card
+            | {
+                "box": state.box if state else None,
+                "dueOn": state.due_on.isoformat() if state else None,
+                "status": leitner.status_of(state, today),
+            }
+        )
+    counts = Counter(c["status"] for c in cards)
+    return deck | {"cards": cards, "dueCount": counts["due"], "newCount": counts["new"]}
+
+
 @router.get("/flashcards/{deck_id:path}")
 def flashcards(deck_id: str) -> dict[str, Any]:
     """A study deck: every card in a module (`<course>/<module>`) or one lesson (lesson id)."""
     deck = catalog().decks.get(deck_id)
     if not deck:
         raise HTTPException(status_code=404, detail="no flashcards here")
-    return deck
+    return _scheduled_deck(deck, leitner.load_states(FLASHCARD_LOG), date.today())
+
+
+@router.get("/flashcards-due")
+def flashcards_due() -> dict[str, Any]:
+    """Cards to study today across every module deck, reviewed and never-seen counted apart."""
+    states = leitner.load_states(FLASHCARD_LOG)
+    today = date.today()
+    modules: list[dict[str, Any]] = []
+    for deck_id, deck in catalog().decks.items():
+        if deck_id.count("/") != 1:
+            continue
+        counted = _scheduled_deck(deck, states, today)
+        if counted["dueCount"] or counted["newCount"]:
+            modules.append(
+                {
+                    "deck": deck_id,
+                    "title": deck["title"],
+                    "due": counted["dueCount"],
+                    "new": counted["newCount"],
+                }
+            )
+    modules.sort(key=lambda m: (-m["due"], m["deck"]))
+    return {
+        "today": today.isoformat(),
+        "due": sum(m["due"] for m in modules),
+        "new": sum(m["new"] for m in modules),
+        "modules": modules,
+    }
 
 
 class CardResult(BaseModel):
@@ -693,6 +742,7 @@ def flashcard_result(body: CardResult) -> dict[str, bool]:
     entry = {
         "ts": datetime.now(UTC).isoformat(),
         "deck": body.deck,
+        "card": leitner.card_key(body.deck, card["front"]),
         "lesson": card["lesson"],
         "source": rec.source if rec else "",
         "front": card["front"],

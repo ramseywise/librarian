@@ -1,17 +1,17 @@
 import type { CSSProperties } from "react";
 import type { Edge, Node } from "@xyflow/react";
-import type { Curriculum, EdgeVisibility, Facets, WikiEdgeData, WikiNodeData } from "../types";
+import type { EdgeVisibility, Facets, WikiEdgeData, WikiNodeData } from "../types";
 
 /**
  * Pure view derivation for the wiki graph: which nodes are rendered, which are dimmed /
  * highlighted, and which edges are drawn, given the current filter, chat highlight, click
- * focus and sample/all toggle. WikiGraph memoises these; keeping them pure keeps them
+ * focus and the level of the map. WikiGraph memoises these; keeping them pure keeps them
  * testable.
  *
- * The graph is sample-first: by default React Flow only receives a small seed (project
- * pages plus the best-linked pages of each course and directory), and clicking a node reveals its direct
- * neighbours. Rendering all ~900 nodes is an explicit opt-in ("All"). Neighbourhoods and
- * filters expand over wikilink (and loaded semantic) edges only — never tag-shared ones,
+ * The map opens on the atlas (components/atlas). React Flow only ever receives a focused subset
+ * (a sector's best-linked pages, or a page's neighbourhood) and clicking a node reveals its
+ * direct neighbours; every page under a filter is an explicit opt-in ("All nodes"). Neighbourhoods
+ * and filters expand over wikilink (and loaded semantic) edges only — never tag-shared ones,
  * which form near-cliques (median degree ~120) and pulled most of the graph into every
  * filter and click.
  */
@@ -20,11 +20,6 @@ type GraphNode = Node<WikiNodeData>;
 type GraphEdge = Edge<WikiEdgeData>;
 type Link = { source: string; target: string; data?: { relationship?: string } };
 
-/** Pages kept per domain in the default sample, ranked by wikilink degree. */
-export const SAMPLE_PER_DOMAIN = 3;
-/** Pages kept per course, and per directory of pages no lesson links, once the curriculum is in. */
-export const SAMPLE_PER_COURSE = 5;
-export const SAMPLE_PER_BEYOND = 2;
 /** Most neighbours a single click reveals; the best-linked ones win. */
 export const REVEAL_CAP = 40;
 
@@ -35,58 +30,6 @@ export function degreeOf(edges: Link[]): Map<string, number> {
     deg.set(e.target, (deg.get(e.target) ?? 0) + 1);
   }
   return deg;
-}
-
-/** Default sample: every project page plus the `perDomain` best-linked pages of each domain. */
-export function sampleIds(
-  nodes: GraphNode[],
-  degree: Map<string, number>,
-  perDomain = SAMPLE_PER_DOMAIN,
-): Set<string> {
-  const out = new Set<string>();
-  const byDomain = new Map<string, GraphNode[]>();
-  for (const n of nodes) {
-    if (n.data.typeTag === "project") out.add(n.id);
-    const d = n.data.domain[0] ?? "";
-    const list = byDomain.get(d);
-    if (list) list.push(n);
-    else byDomain.set(d, [n]);
-  }
-  for (const list of byDomain.values()) {
-    list
-      .sort((a, b) => (degree.get(b.id) ?? 0) - (degree.get(a.id) ?? 0) || a.id.localeCompare(b.id))
-      .slice(0, perDomain)
-      .forEach((n) => out.add(n.id));
-  }
-  return out;
-}
-
-/**
- * The sample once the curriculum is in, so the map opens matching the panel: every project
- * page, the best-linked pages of each course (by main course, the one that colours them), and
- * a few from each directory of unlinked pages.
- */
-export function curriculumSampleIds(
-  nodes: GraphNode[],
-  degree: Map<string, number>,
-  c: Curriculum,
-): Set<string> {
-  const present = new Set(nodes.map((n) => n.id));
-  const out = new Set(nodes.filter((n) => n.data.typeTag === "project").map((n) => n.id));
-  const takeBest = (ids: string[], count: number) =>
-    ids
-      .filter((id) => present.has(id))
-      .sort((a, b) => (degree.get(b) ?? 0) - (degree.get(a) ?? 0) || a.localeCompare(b))
-      .slice(0, count)
-      .forEach((id) => out.add(id));
-  for (const course of c.courses) {
-    takeBest(
-      course.pageIds.filter((id) => c.primaryCourse[id] === course.id),
-      SAMPLE_PER_COURSE,
-    );
-  }
-  for (const b of c.beyond) takeBest(b.pageIds, SAMPLE_PER_BEYOND);
-  return out;
 }
 
 /** Does an active filter select this node? By directory, type tag, or curriculum facet. */
@@ -151,6 +94,84 @@ export function neighbours(
     .slice(0, cap);
 }
 
+/** See Also types that say how two pages relate; `related` and untyped links only say that they do. */
+const WEAK_RELATIONSHIPS = new Set(["related"]);
+const isStrong = (e: Link) => !!e.data?.relationship && !WEAK_RELATIONSHIPS.has(e.data.relationship);
+
+export interface Neighbourhood {
+  ids: Set<string>;
+  /** Hops out from the page that are in `ids`, whole or in part. */
+  hops: number;
+  /** Pages reachable from it over any wikilink: the M of "showing N of M". */
+  total: number;
+}
+
+/**
+ * A page and its neighbourhood, out to as many hops as `cap` allows. Walks typed links first,
+ * since they say how pages relate, and takes whole hops while they fit. A hop that doesn't fit
+ * is filled with its best-linked pages and the walk stops. If typed links run out with room
+ * left, the walk carries on over `related` and untyped links.
+ *
+ * Takes wikilink edges only: semantic edges land seconds later and would reframe the view.
+ */
+export function pageNeighbourhood(
+  id: string,
+  edges: Link[],
+  degree: Map<string, number>,
+  cap: number,
+): Neighbourhood {
+  const strong = new Map<string, string[]>();
+  const any = new Map<string, string[]>();
+  const link = (map: Map<string, string[]>, a: string, b: string) => {
+    const list = map.get(a);
+    if (list) list.push(b);
+    else map.set(a, [b]);
+  };
+  for (const e of edges) {
+    if (e.source === e.target) continue;
+    link(any, e.source, e.target);
+    link(any, e.target, e.source);
+    if (isStrong(e)) {
+      link(strong, e.source, e.target);
+      link(strong, e.target, e.source);
+    }
+  }
+
+  const ids = new Set([id]);
+  let hops = 0;
+  let frontier = [id];
+  let adjacency = strong;
+  while (ids.size < cap) {
+    const next = new Set<string>();
+    for (const from of frontier) for (const to of adjacency.get(from) ?? []) if (!ids.has(to)) next.add(to);
+    if (next.size === 0) {
+      if (adjacency === any) break;
+      // Typed links ran out: widen from everything held so far, without counting a hop for it.
+      adjacency = any;
+      frontier = [...ids];
+      continue;
+    }
+    hops += 1;
+    const room = cap - ids.size;
+    const ranked = [...next].sort((a, b) => (degree.get(b) ?? 0) - (degree.get(a) ?? 0) || a.localeCompare(b));
+    for (const to of ranked.slice(0, room)) ids.add(to);
+    if (next.size > room) break;
+    frontier = ranked;
+  }
+
+  const reach = new Set([id]);
+  const stack = [id];
+  while (stack.length) {
+    for (const to of any.get(stack.pop()!) ?? []) {
+      if (!reach.has(to)) {
+        reach.add(to);
+        stack.push(to);
+      }
+    }
+  }
+  return { ids, hops, total: reach.size };
+}
+
 export interface ViewState {
   /** Pages referenced by the last chat answer (empty/undefined = none). */
   chatHighlight?: Set<string>;
@@ -162,6 +183,10 @@ export interface ViewState {
   activeTags: Set<string>;
   /** Curriculum filter ids and their pages, once loaded. */
   facets?: Facets;
+  /** The page a focused view is about: marked, without dimming the rest. */
+  anchorId?: string | null;
+  /** Pages the map's search matches, while it has a query: the rest dim. */
+  searchIds?: Set<string> | null;
 }
 
 /**
@@ -201,22 +226,26 @@ export function applyView(nodes: GraphNode[], v: ViewState): GraphNode[] {
     const inChat = hasChat && hp.has(n.id);
     const inFocus = fn != null && fn.has(n.id);
     const inTagFilter = hasTagFilter && matchesFilter(n, at, v.facets);
-    const highlighted = hasChat ? inChat : fn ? inFocus : inTagFilter;
-    const dimmed = hasChat ? !inChat : fn ? !inFocus : false;
+    const inSearch = v.searchIds?.has(n.id) ?? false;
+    const highlighted = (hasChat ? inChat : fn ? inFocus : inTagFilter) || inSearch || n.id === v.anchorId;
+    const dimmed = v.searchIds ? !inSearch : hasChat ? !inChat : fn ? !inFocus : false;
     return { ...n, data: { ...n.data, highlighted, dimmed, enlarged: inChat } };
   });
 }
 
 export const EDGE_STYLES: Record<string, CSSProperties> = {
-  wikilink: { stroke: "#666", strokeWidth: 1 },
-  semantic: { stroke: "#4a90d9", strokeWidth: 1, strokeDasharray: "4 3" },
-  "tag-shared": { stroke: "#e8943a", strokeWidth: 1, strokeDasharray: "2 4" },
+  wikilink: { stroke: "var(--edge-wikilink)", strokeWidth: 1 },
+  semantic: { stroke: "var(--edge-semantic)", strokeWidth: 1, strokeDasharray: "4 3" },
+  "tag-shared": { stroke: "var(--edge-tag)", strokeWidth: 1, strokeDasharray: "2 4" },
+  mentions: { stroke: "var(--concept)", strokeWidth: 1, strokeDasharray: "1 5", opacity: 0.55 },
 };
 
 export interface EdgeSources {
   wikilink: GraphEdge[];
   semantic: GraphEdge[];
   tagShared: GraphEdge[];
+  /** Term → page, already limited to the terms on the canvas. */
+  mentions?: GraphEdge[];
 }
 
 /**
@@ -249,6 +278,7 @@ export function visibleEdges(
     ...(vis.wikilink ? src.wikilink : []),
     ...(vis.semantic ? src.semantic : []),
     ...(vis["tag-shared"] ? src.tagShared : []),
+    ...(vis.terms ? (src.mentions ?? []) : []),
   ];
 
   const anyHighlighted = viewNodes.some((n) => n.data.highlighted);

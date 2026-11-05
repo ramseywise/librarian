@@ -8,9 +8,10 @@ interface Props {
 }
 
 const EDGE_META: { key: keyof EdgeVisibility; label: string; color: string; description: string }[] = [
-  { key: "wikilink", label: "Wikilinks", color: "#aaa", description: "Explicit [[...]] references" },
-  { key: "semantic", label: "Semantic", color: "#4a90d9", description: "Cosine similarity ≥ 0.65 (MiniLM)" },
-  { key: "tag-shared", label: "Tag-shared", color: "#e8943a", description: "Pages sharing a domain tag (cross-domain structural links). Shown around emphasised pages only: projects in overview, the filter, the clicked node or chat results." },
+  { key: "wikilink", label: "Wikilinks", color: "var(--edge-wikilink-label)", description: "Explicit [[...]] references" },
+  { key: "semantic", label: "Semantic", color: "var(--edge-semantic)", description: "Cosine similarity ≥ 0.65 (MiniLM)" },
+  { key: "tag-shared", label: "Tag-shared", color: "var(--edge-tag)", description: "Pages sharing a domain tag (cross-domain structural links). Shown around emphasised pages only: projects in overview, the filter, the clicked node or chat results." },
+  { key: "terms", label: "Glossary terms", color: "var(--concept)", description: "Glossary terms on these pages, joined to the pages that mention them" },
 ];
 
 export function EdgeTogglePanel({ visibility, onChange, onLoadSemantic, loadingSemanticEdges }: Props) {
@@ -24,7 +25,7 @@ export function EdgeTogglePanel({ visibility, onChange, onLoadSemantic, loadingS
 
   return (
     <div className="float-panel graph-edge-panel">
-      <div className="panel-label">Edge Types</div>
+      <div className="panel-label">Layers</div>
       {EDGE_META.map(({ key, label, color, description }) => (
         <label key={key} className="edge-row" title={description}>
           <input

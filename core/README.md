@@ -17,6 +17,9 @@ source (Notion / Linear / web / PDFs / repos / sessions / ...)
 `core/manifest.py` tracks what has been ingested (SHA-256 hash dedup). Run
 `core/lint_raw.py` before ingesting to enforce the filename convention.
 `core/relinker.py` runs after compilation to discover missing semantic links.
+`core/ingest_gate.py` triages each raw file before compiling it: unchanged or duplicate, and whether to
+compile, strip or route to private, using the scans in `core/sensitive.py`. `core/wiki_telemetry.py` computes
+the health numbers and runs the private-leak check.
 
 ## Entry points
 

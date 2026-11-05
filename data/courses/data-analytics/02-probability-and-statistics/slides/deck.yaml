@@ -1,0 +1,532 @@
+# Probability and Statistics lecture deck. Covers notes 01-08.
+# Build: make slides PILLAR=data-analytics/02-probability-and-statistics STRICT=1 PREVIEW=1
+# Spec:  .claude/skills/slides/references/deck-spec.md
+# Running example: Larkspur, a fictional online plant shop. All Larkspur numbers come from
+# synthetic data with fixed seeds in the notes.
+deck:
+  title: Probability and Statistics
+  subtitle: Saying true things about data you have not seen
+  tagline: |-
+    Look · Reason · Sample · Test · Regress · Generate · Repeat
+  reference: "Notes: data-analytics/02-probability-and-statistics"
+  output: probability-and-statistics.pptx
+  notes: >-
+    Larkspur is a fictional online plant shop with twenty thousand users and a new checkout it wants to judge. We will
+    take its data from a messy extract to a regression that holds up. At each step the question is the same: what are
+    we entitled to claim about the users we have not seen?
+
+parts:
+  - title: Look before you summarise
+    summary: Types and units · Impossible values · Shape picks the summary · Whose average
+    notes: >-
+      The first job is to find out what the data are. Most errors that reach a decision start here rather than in the statistics.
+    slides:
+      - layout: statement
+        title: Finance asks for the average customer
+        kicker: The problem
+        statement: "Mean spend is 3.30. The median is zero, 95% of users spent nothing, and that was after two rows at 48,000 were removed."
+        attribution: Larkspur synthetic extract, 20,000 users
+        takeaway: Before quoting any summary, establish what one row is and what shape the column has.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          With those two bad rows left in, the raw mean is 8.10. Neither number describes anyone. By the end of this part we will know which number answers which question.
+
+      - layout: flow
+        title: EDA is a loop that ends in a written finding
+        recall: What are the stages of the EDA loop and how does it end?
+        steps:
+          - {label: Type-check, sub: "what is one row?"}
+          - {label: Impossible values, sub: "missing, negative, duplicate"}
+          - {label: Shape, sub: "one column at a time"}
+          - {label: Summaries, sub: "what the shape allows"}
+          - {label: Write it down, sub: "findings and questions", accent: "D4621A"}
+        bullets:
+          - "**Count every exclusion:** 6 refunds and 2 test rows, with a named owner to confirm."
+          - "**Missing is data:** compare missing and non-missing groups before dropping."
+          - "A new question sends you back to the start."
+        takeaway: An EDA is finished when someone else can act on the written findings, including every row you removed.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          Tukey's point was that inference answers a framed question, and exploration tells you whether you framed the right one. Each exclusion is an analyst's choice, so write it down.
+
+      - layout: code
+        title: Two rows in twenty thousand ran the summary
+        recall: What do two 48,000 rows do to the buyers' mean, standard deviation and median?
+        lang: Text output
+        code: |-
+          buyers, cleaned
+            mean 65.86   median 37.38
+            std  93.65   IQR     60.75
+
+          with the two 48,000 rows left in
+            mean 161.25  median 37.45
+            std  2139.32
+        bullets:
+          - "**Mean and SD** chase the tail."
+          - "**Median, IQR, MAD** ignore it."
+          - "A big gap between them is your outlier alarm."
+        takeaway: When mean and median disagree by a lot, the tail is running the summary, so look at the tail.
+        source: notes/01-descriptive-statistics-and-eda.md
+        notes: >-
+          The right summary depends on the question. Finance forecasting a total needs the mean. A product manager describing a typical buyer wants the median. Neither is more true. Three more traps from the chapter: 200 random groups range from 0 to 15.46 around 3.30, so show N with every rate. One bad row moved Pearson from +0.44 to -0.31 while Spearman stayed at about +0.42. And users average 68 sessions, but a random session belongs to a user with 373, so state the denominator.
+
+  - title: The rules of reasoning
+    summary: Conditionals · Bayes and base rates · Independence · Expectation and variance
+    notes: >-
+      Now we want to reason about data we have not seen. There are only a few rules, and each one guards against a mistake intuition makes reliably.
+    slides:
+      - layout: statement
+        title: A 99% accurate fraud filter flags an order
+        kicker: The problem
+        statement: "If 1 order in 1,000 is fraud, that flag is wrong about nine times in ten."
+        attribution: "0.99 × 0.001 / (0.99 × 0.001 + 0.01 × 0.999) = 9%"
+        takeaway: P(flag given fraud) and P(fraud given flag) can be a hundred times apart, and the base rate sets the gap.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          Nobody miscalculated. They answered the wrong conditional. Let us see where the 9% comes from.
+
+      - layout: flow
+        title: Count a million orders and Bayes does itself
+        recall: Of 10,980 flagged orders out of a million, how many are fraud, and why?
+        steps:
+          - {label: "1M orders", sub: "1,000 fraud"}
+          - {label: "Fraud flagged", sub: "990 at 99%"}
+          - {label: "Legit flagged", sub: "9,990 at 1% error", accent: "D4621A"}
+          - {label: "Flagged total", sub: "10,980, 9% fraud"}
+        bullets:
+          - "**Base rate 1 in 100** lifts it to 50%; so does **99.9% accuracy**."
+          - "**Two independent flags** reach 91%, if they are truly independent."
+        takeaway: With a rare event, false positives from the huge negative group swamp the true hits.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          The same arithmetic applies to testing. A p-value is P of data given no effect. Reinhart's hundred drugs example, with ten that work, gives about 8 real and 4.5 false discoveries, so 64% of the significant ones are real.
+
+      - layout: code
+        title: The whole calculation fits in three lines
+        recall: What is P(fraud given flag) at base rates of 1 in 1,000, 1 in 100 and 1 in 10, with a 99% accurate filter?
+        lang: Python
+        code: |-
+          def posterior(base, acc=0.99):
+              hit = acc * base
+              return hit / (hit + (1 - acc) * (1 - base))
+
+          for base in (0.001, 0.01, 0.1):
+              print(base, round(posterior(base), 2))
+          # 0.001 0.09
+          # 0.01 0.5
+          # 0.1 0.92
+        bullets:
+          - "Same filter, three answers."
+          - "Only the base rate changed."
+        takeaway: The accuracy of a test does not tell you what a positive result means until you add the base rate.
+        source: notes/02-probability-foundations.md
+        notes: >-
+          The habit from the chapter is to compute it, then simulate it. If the two disagree you have learned something. One more rule from this chapter before we move on. Expectations always add, but variances need independence: at 5 sessions per user with rho 0.5, the naive standard error is 1.75 times too small.
+
+  - title: Samples and estimates
+    summary: Six distributions · CLT coverage · Intervals · Bootstrap
+    notes: >-
+      A handful of shapes describe most analytics data, and means of those shapes behave well until they do not. A number without a range cannot support a decision, so we also build the range.
+    slides:
+      - layout: statement
+        title: A foundation funds small schools
+        kicker: The problem
+        statement: "The best-scoring schools were small. So were the worst."
+        attribution: Wainer, The Most Dangerous Equation, as discussed in Bayesian Methods for Hackers, ch. 4
+        takeaway: Small groups have noisy averages, so they crowd both ends of any ranking with no real difference.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          We simulate it with 5,000 counties drawn from one height distribution. All ten tallest and all ten shortest have fewer than 300 people, while the median county has 808. A bigger biased sample has the opposite problem: when buyers reply four times as often, 57,152 survey rows give a mean of 11.06, while 5,000 random rows give 3.00 against a truth of 3.12. More rows made it more precise and no less wrong.
+
+      - layout: table
+        title: Name the distribution and you can usually name the test
+        recall: Which distribution fits conversions, errors per hour, waiting time, order value and an unknown rate?
+        header: [Data, Distribution, Typical question]
+        widths: [5, 2.4, 4]
+        rows:
+          - [Conversions out of n users, Binomial, "Is p higher in B?"]
+          - ["Errors per hour", Poisson, "Did the rate change?"]
+          - [Gap between events, Exponential, "How long until the next?"]
+          - [Order value, Lognormal, "Typical order, and how heavy a tail?"]
+          - [A rate you are unsure of, Beta, "What do I believe p is?"]
+        takeaway: Every test and every Bayesian model starts from a distribution, so naming it usually names the method.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          Poisson and Exponential are two views of the same process. Every scipy distribution has the same methods. Watch for the off-by-one: sf of 9 gives P of 10 or more.
+
+      - layout: table
+        title: On revenue, the CLT takes its time
+        recall: How often does a nominal 95% Normal interval cover Larkspur's revenue mean at n = 30, 300, 3,000 and 30,000?
+        header: [n, Skew of the mean, Coverage of a 95% interval]
+        widths: [2, 3.4, 5]
+        highlight: [0]
+        rows:
+          - ["30", "4.68", "0.563"]
+          - ["300", "1.34", "0.832"]
+          - ["3,000", "0.46", "0.928"]
+          - ["30,000", "0.22", "0.948"]
+        takeaway: N of 30 is not a law, because a skewed zero-inflated metric can need tens of thousands of users for a 95% interval to mean 95%.
+        source: notes/03-distributions-and-sampling.md
+        notes: >-
+          The law of large numbers says where the mean goes, and the central limit theorem says how it wobbles on the way. Neither fixes selection bias or dependent rows. This is zero-inflated lognormal spend. Small samples mostly contain few whales, so they understate both the mean and the spread. The formula cannot warn you, because the standard error comes from the same sample.
+
+      - layout: code
+        title: Near zero, swap Wald for Wilson
+        recall: What does Wald give for 0 of 50, and how do Wald and Wilson coverage compare at p = 0.02 and n = 50?
+        lang: Text output
+        code: |-
+          0/50  Wald [0.0000, 0.0000]
+                Wilson [0.0000, 0.0714]
+
+          p=0.02 n=50
+            Wald cover 0.633
+            Wilson cover 0.920
+        bullets:
+          - "**Wald** claims certainty from 50 users."
+          - "**Wilson** inverts the score test."
+          - "Test any procedure by simulating coverage."
+        takeaway: Use Wilson for rates in small segments, because Wald collapses near zero and can cover far below its label.
+        source: notes/04-estimation.md
+        notes: >-
+          At n of 4,000 the two are indistinguishable. Simulating coverage is the general way to test any interval you do not trust. An estimate alone cannot support a plan: revenue per user of 2.68 is only usable with its interval of [2.09, 3.27], and the 95% describes the procedure's hit rate, which our simulation put at 94.8%.
+
+      - layout: flow
+        title: The bootstrap replaces algebra with resampling
+        recall: How does the bootstrap get a standard error, and which unit do you resample for a ratio metric?
+        steps:
+          - {label: Sample, sub: "n independent users"}
+          - {label: Resample, sub: "with replacement"}
+          - {label: Recompute, sub: "any statistic"}
+          - {label: Read spread, sub: "SE and interval", accent: "D4621A"}
+        loop: Repeat thousands of times
+        bullets:
+          - "Revenue per session: **delta SE 0.193, bootstrap 0.195, naive by session 0.116**."
+          - "**Fails** at the sample maximum, on rows that are not independent, and on tails the sample missed."
+        takeaway: Resample the independent unit, because bootstrapping sessions gave 0.027 where the true standard error was 0.049.
+        source: notes/04-estimation.md
+        notes: >-
+          The delta method needed a page of algebra. Efron's bootstrap needs three lines and works for medians and percentiles. Use BCa on skewed statistics. Precision also sets the cost of a test: n per arm is about 16 sigma squared over delta squared, so in Kohavi's example a 5% change costs about 409,000 users per arm on revenue and about 122,000 on conversion. The next pillar turns that into a plan.
+
+  - title: From a number to a decision
+    summary: The recipe · Choosing a test · What p is not · Multiple comparisons · Winner's curse
+    notes: >-
+      Now we ask whether a pattern could plausibly be noise. Hypothesis tests answer that one narrow question very well.
+    slides:
+      - layout: statement
+        title: One segment of twenty reached p = 0.04
+        kicker: The problem
+        statement: "Twenty tests of nothing produce at least one false positive 64% of the time."
+        attribution: "1 − 0.95²⁰; simulated at 62% with 30 users per arm"
+        takeaway: Treat a win found by slicing as a hypothesis to confirm, since noise alone usually produces one somewhere among twenty.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          A hypothesis test is a narrow tool: could this be noise? We start by seeing how it works without any formula. When you do run many tests, correct for them: of 100 tests with 10 real, raw thresholds gave 11 hits and 3 false, Holm 5 hits and 0 false, Benjamini-Hochberg 7 hits and 0 false. And expect winners to shrink: at 17% power and a true 1% lift, significant estimates average 2.45%.
+
+      - layout: flow
+        title: Every test follows one recipe
+        recall: What are the steps of a hypothesis test, and what must be fixed before you see the data?
+        steps:
+          - {label: State H0, sub: "what no effect means"}
+          - {label: Fix α, sub: "before seeing data"}
+          - {label: Statistic, sub: "and its null distribution"}
+          - {label: p-value, sub: "this extreme, by chance"}
+          - {label: Decide, sub: "with the effect size", accent: "D4621A"}
+        bullets:
+          - "A test answers one question: could this be noise?"
+          - "The effect size and interval answer the question the business asked."
+        takeaway: Every test states a null, fixes alpha in advance, computes a surprise under the null, and then needs an effect size to mean anything.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          Every test in this chapter differs only in its statistic and its null distribution. Once you see this, a table of tests stops looking like a list to memorise. Welch is the two-group default, a paired t-test suits the same units twice, ANOVA with Tukey suits three or more groups, chi-square or Fisher suits categories, and Mann-Whitney tests a tendency rather than a mean.
+
+      - layout: code
+        title: Shuffling the labels shows what a test does
+        recall: How does a permutation test build its null distribution, and how close was it to Welch here?
+        lang: Python
+        code: |-
+          pool = np.concatenate([a, b])
+          for i in range(10_000):
+              rng.shuffle(pool)
+              diffs[i] = pool[400:].mean() - pool[:400].mean()
+          np.mean(np.abs(diffs) >= abs(obs))
+          # permutation p = 0.007, Welch p = 0.009
+        bullets:
+          - "No effect means labels are arbitrary."
+          - "Classical tests approximate this."
+          - "Unsure of a formula? Shuffle."
+        takeaway: A p-value is how often chance alone gives a result this extreme, which you can compute directly by shuffling labels.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          This uses 400 skewed order values in each arm. Under a true null, p-values are uniform, and that uniformity is what alpha of 0.05 means.
+
+      - layout: table
+        title: What a p-value is not
+        recall: Give three common misreadings of a p-value, and the correct reading of each.
+        header: [Wrong reading, Why]
+        widths: [5.2, 6.2]
+        rows:
+          - ["p = 0.03: 3% chance the null is true", "p assumes the null. The other direction needs a prior"]
+          - ["p = 0.2: no effect", "The test may be underpowered"]
+          - ["p = 0.003: a big effect", "5M per arm makes a 0.9% lift significant"]
+          - ["0.049 vs 0.051: they disagree", "The difference between them is not itself significant"]
+        takeaway: A p-value measures surprise under the null, not the chance the null is true, the size of an effect, or its importance.
+        source: notes/05-hypothesis-testing.md
+        notes: >-
+          The American Statistical Association's 2016 statement says these same things formally. Reinhart's book walks through them with examples.
+
+  - title: Models that hold other things fixed
+    summary: The t-test as OLS · Covariates · Diagnostics · Clustering · Logistic · Poisson
+    notes: >-
+      Everything so far compared groups. Regression does that and lets you hold other things fixed.
+    slides:
+      - layout: statement
+        title: Free precision is one line away
+        kicker: The problem
+        statement: "Adding last month's spend cut the standard error from 0.343 to 0.287, with no extra traffic."
+        attribution: Larkspur simulated experiment, 20,000 users, true effect 1.5
+        takeaway: A t-test is a regression on a 0/1 column, so you can add pre-period covariates and shrink the error for free.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          The difference in means of 1.350 and t of 3.942 match OLS exactly. The covariate removed 30% of the variance, which equals its R squared. Randomisation already made the estimate unbiased, so what it buys is precision. Only use variables measured before assignment.
+
+      - layout: flow
+        title: Choose the model from the outcome, then check it
+        recall: Which model fits a continuous outcome, a yes/no outcome and a count, and what do you check afterwards?
+        steps:
+          - {label: Continuous, sub: "OLS"}
+          - {label: Yes or no, sub: "logistic, log-odds link"}
+          - {label: Count, sub: "Poisson with offset"}
+          - {label: Diagnostics, sub: "residuals, leverage, clusters", accent: "D4621A"}
+        bullets:
+          - "**One family:** linear predictor, a distribution, a link function."
+          - "**Cluster on the user:** 27.8% false positives at nominal 5% until you do."
+          - "**Overdispersed?** Robust SEs or negative binomial."
+        takeaway: Pick the GLM from the outcome's type, then check residuals, leverage, dispersion and clustering before trusting any standard error.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          Overdispersion example: dispersion 8.3, Poisson SE 0.0155 against robust 0.0509. A test using the first would have called the effect highly significant. An offset turns a count into a rate per day. Clustering on user brought that 27.8% down to 3.5%, and robust errors change the uncertainty without changing the estimate.
+
+      - layout: code
+        title: "A logistic coefficient of 0.4 is not one number"
+        recall: What does a logistic coefficient of 0.4 do to the odds, and to probability at baselines of 2% and 50%?
+        lang: Python
+        code: |-
+          from scipy.special import expit, logit
+
+          for base in (0.02, 0.20, 0.50, 0.80):
+              new = expit(logit(base) + 0.4)
+              print(base, round(new, 3), round(new - base, 3))
+          # 0.02 0.03  0.01
+          # 0.2  0.272 0.072
+          # 0.5  0.599 0.099
+          # 0.8  0.856 0.056
+        bullets:
+          - "Odds always multiply by 1.49."
+          - "Points depend on the baseline."
+        takeaway: Report average marginal effects to stakeholders, since an odds ratio implies a different point change at each baseline.
+        source: notes/06-regression-and-glms.md
+        notes: >-
+          A coefficient of 28 with a standard error of 171,000 is separation, not a strong effect. Gelman and colleagues showed a Cauchy prior with scale 2.5 on standardised inputs gives stable fits. That leads into the Bayesian pillar.
+
+  - title: A model is a claim about the rows
+    summary: Write the process · Bias and coverage · Turning points · Big data
+    notes: >-
+      So far we have asked whether an estimate is precise. Now we ask whether it estimates the right thing, and to test that we write down the process that made the rows.
+    slides:
+      - layout: statement
+        title: A coupon lifts spend 22%, and a regression says 95%
+        kicker: The problem
+        statement: "We wrote the simulation, so we know the truth. A straight line in tenure says about 95%, and across a thousand datasets its 95% interval never contains the truth."
+        attribution: Larkspur simulation, 800 customers per dataset
+        takeaway: Precision cannot rescue the wrong form, so write down the process and the estimand before choosing an estimator.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Three words to keep apart. The estimand is the number you want, the estimator is the recipe, and the estimate is what one dataset gives. Even the estimand needs care: the coupon is worth 15.29 pounds averaged over all customers and 18.98 over the customers who actually got one.
+
+      - layout: code
+        title: "Simulate first: the wrong form never covers the truth"
+        recall: Across 1,000 simulated datasets, how did the linear and quadratic tenure models do on bias and coverage?
+        lang: Text output
+        code: |-
+          truth 0.200, 1000 datasets, n=800
+          estimator       mean    bias    sd   cover
+          diff in means  0.688   0.488 0.054   0.000
+          linear tenure  0.685   0.485 0.054   0.000
+          quadratic      0.200  -0.000 0.040   0.941
+          spline df=5    0.200  -0.000 0.040   0.943
+        bullets:
+          - "Linear in tenure barely beats no adjustment."
+          - "The spline finds the form unaided."
+          - "**Coverage zero:** tight, and always wrong."
+        takeaway: A simulation grades the procedure rather than one answer, and coverage is the grade that shows the form is wrong.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          One dataset gives 0.663, 0.666, 0.195 and 0.196, which looks like a modelling choice until you run a thousand. The specification belongs to the whole model: fit the pounds in levels and the mean is 20.18 against a true 15.29, with coverage of 74.5%.
+
+      - layout: image
+        title: A quadratic must turn, even when the data do not
+        recall: What peak does a quadratic report when the truth rises then flattens, and how do you check a claimed turning point?
+        image: ../assets/stats-dgp-quadratic-story.png
+        caption: Two worlds, one significant squared term. Peak at 29.2 is real; peak at 50.1 is invented.
+        bullets:
+          - "**Rises then falls:** peak 29.2 [28.7, 29.6]."
+          - "**Rises then flattens:** peak 50.1 [46.3, 55.4], and the truth never falls."
+          - "**Check:** data past the turn, a spline, a theory."
+        takeaway: A significant squared term does not show a turning point, because a quadratic has to turn somewhere.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          The squared term in the flattening world has a p-value of 3.6e-19 and the story it tells is false. In fairness, the invented decline is small: a fall of 0.06 on the log scale after the peak, against a true rise of 0.03. A careful reader would not quote that as a story; a less careful one would quote the turning point and its p-value.
+
+      - layout: compare
+        title: To explain and to predict are different jobs
+        recall: Why can a short wrong model win on held-out error at n = 30, and what happens as n grows?
+        lead: "Shmueli (2010), simulated: the true form against a shorter wrong model, scored on held-out rows."
+        emphasis: right
+        left:
+          title: Small n, the wrong model wins
+          bullets:
+            - "n = 30: wrong model wins 78% of held-out tests"
+            - "RMSE 2.070 against 2.107, about 2% apart"
+            - "Its slope is 1.184; true 1.0, true form 1.004"
+          tag: Good forecast, wrong coefficient
+        right:
+          title: Large n, the truth catches up
+          bullets:
+            - "n = 300: a tie, 0.512"
+            - "n = 3,000: true form wins 81%"
+            - "Choose by the job: effect or forecast"
+          tag: Say which job you are doing
+        takeaway: Winning on held-out error says the forecast is good, and says nothing about whether a coefficient is right.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Selection rules disagree too. At n of 800, the share of runs choosing the true form was 0 for R squared, 0.39 for adjusted R squared, 0.77 for AIC, 0.98 for BIC and 0.70 for cross-validation. Adjusted R squared preferred degree 10 by 0.659 to 0.658. Breiman's Rashomon point is the same: many models fit equally well and tell different stories.
+
+      - layout: image
+        title: A million self-selected rows, worth 278 random ones
+        recall: Why can a million self-selected rows have the error of 278 random rows, and why does the interval not warn you?
+        image: ../assets/stats-dgp-meng-interval.png
+        caption: Same error, opposite honesty. A selected sample's interval is tight and misses.
+        bullets:
+          - "Response 10.9% with the trait, 9.6% without: **rho 0.02**."
+          - "**RMSE 0.0275 against 0.0276**, a tie."
+          - "**Coverage 0% of 50 draws against 95.3%.**"
+        takeaway: Sample size shrinks the interval around the bias, so a large selected sample is confidently wrong.
+        source: notes/07-data-generating-process.md
+        notes: >-
+          Meng's identity says the error is rho times the root of one minus f over f, times the standard deviation; it checked here to a difference of minus 3.5e-14. You cannot estimate rho from the sample. Selection also breaks external validity, and reweighting depends on what drove it: the population value is 0.157; selected on tenure gives 0.117, reweighted to 0.169; selected on keenness gives 0.265, and reweighted it stays 0.264. Better fit is no defence: a sample that opted in by segment scored R squared 0.774 and RMSE 0.990 on itself, and 2.461 on the population, where the best line manages 1.984.
+
+  - title: The same units, over time
+    summary: Between and within · Two-way effects · Coverage · Event studies
+    notes: >-
+      Panels let a unit act as its own control, which removes everything fixed about it. We will see how much that buys and exactly where it stops.
+    slides:
+      - layout: statement
+        title: Do deeper discounts sell more?
+        kicker: The problem
+        statement: "A pooled regression on 5,200 store-weeks says one more discount point loses a full unit. The simulation says it adds half a unit."
+        attribution: "Pooled slope −1.005, naive SE 0.017; truth +0.5"
+        takeaway: A tiny standard error on a pooled panel can sit on an estimate with the wrong sign.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Clustering takes the standard error to 0.044 and leaves the estimate where it is. This simulation is deliberately extreme, with a correlation between store means of minus 0.996, so that the wrong sign is impossible to miss.
+
+      - layout: image
+        title: Between stores the slope falls; within stores it rises
+        recall: What slope do between-store, store-effects and store-and-week models give, and why are they different?
+        image: ../assets/stats-panel-pooled-vs-within.png
+        caption: One panel, split into variation between stores and within them.
+        bullets:
+          - "**Between stores:** −1.488."
+          - "**Store effects only:** −0.041, because season still confounds."
+          - "**Store and week:** 0.472, SE 0.026."
+        takeaway: Fixed effects choose which variation answers the question, and here it takes both store and week to get the sign right.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          The variance splits as 15.79 in total, 10.51 between stores and 5.28 within them. A fixed-effects model throws away the first part on purpose.
+
+      - layout: code
+        title: Three hundred panels, and one model covers
+        recall: Which estimator and standard error reach 95% coverage across 300 simulated panels, and why does clustering alone not help?
+        lang: Text output
+        code: |-
+          truth 0.5, 300 panels
+          model            mean    sd    se   cover
+          pooled naive   -0.906 0.055 0.018   0.000
+          pooled cluster -0.906 0.055 0.054   0.000
+          store cluster   0.013 0.026 0.027   0.000
+          store+week cl.  0.502 0.023 0.024   0.947
+        bullets:
+          - "Clustering fixes the SE, not the bias."
+          - "Pooled SE now honest, still 0% cover."
+          - "Both effects needed."
+        takeaway: Fix the estimate with the design and the uncertainty with clustering, because neither one does the other's job.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Clustering matters when the regressor is sticky: with sticky discounts, unadjusted coverage was 69.7% against 94.0% clustered. The caveat from Abadie and colleagues, by way of The Effect, is that clustering is not automatic: the case for it rests on effect heterogeneity with sampling of groups, or on clustered assignment.
+
+      - layout: table
+        title: What fixed effects cannot do
+        recall: Name three failures fixed effects cannot repair, and what the estimate was in each.
+        header: [Problem, Estimate (truth 0.5), What to do]
+        widths: [3.6, 4.2, 3.6]
+        rows:
+          - [Never-changing attribute, "`AbsorbingEffectError`", Within-between model]
+          - [Unmeasured competitor, "0.199; 0.502 once measured", Measure it]
+          - [Manager reacts to last week, "0.133", "Change the design"]
+          - [Little movement within stores, "SE 0.026 to 0.510, estimate −0.056", "Check within SD first"]
+          - [Stores respond differently, "0.901, where the average is 0.5", Check the weights]
+          - ["Staggered, growing effect", "0.096 against 4.531", Clean comparisons]
+        takeaway: Fixed effects remove what is fixed about a unit, and everything that changes over time is still your problem.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          No regression here repairs the manager who reacts to last week: ask how discounts get set. In the little-movement row, within-store standard deviation fell from 2.0 to 0.1. In the different-responses row, the regression weights stores by the variance of their discounts. In the staggered row the true effect was 4.531, half never-treated stores give 3.010 against 4.561, and a clean comparison gets 4.572.
+
+      - layout: image
+        title: An event study is a check that can fail
+        recall: In the event study, how did the parallel pre-period look, and what did a tilt of 0.15 a week do to the estimate?
+        image: ../assets/stats-panel-event-study.png
+        caption: Lead coefficients for a parallel world and a tilted one.
+        bullets:
+          - "**Parallel:** leads from −0.97 to 0.22, 0 of 7 outside."
+          - "**Tilt 0.15 a week:** TWFE 7.394 against 3.596."
+          - "In this panel only 1 of 7 leads fires."
+        takeaway: A flat pre-period is a check that can fail, and passing it does not prove the trends would have stayed parallel.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          Difference-in-differences by hand equals the two-way fixed-effects estimate, 3.493822, against a true 3.596 and a raw gap of 10.012. Over 100 panels, a tilt of 0.15 flags 99% of the time, but a gentle tilt of 0.05 flags 36% against a 24% false-alarm rate with no tilt, and the bias is still 1.29. A clean pre-period is weak evidence against a gentle trend. A within-between model gives both numbers at once: within 0.4722 and between minus 1.4884. Whether to treat groups as fixed or random is the decision pillar 04 takes up in note 07.
+
+  - title: Wrap-up
+    agenda: false
+    divider: false
+    slides:
+      - layout: cards
+        title: Rules of thumb
+        recall: Give one rule of thumb for each stage, from looking at data through to panels.
+        cards:
+          - {title: Look and reason, body: "What is one row? Count exclusions. P(A|B) is not P(B|A). Variances need independence."}
+          - {title: Sample and estimate, body: "N of 30 is no law. Bias does not shrink. Wilson for small counts. Bootstrap the independent unit."}
+          - {title: Test, body: "Welch by default. One primary question. Distrust winners at low power."}
+          - {title: Regress, body: "Pre-period covariates. Cluster at randomisation. Marginal effects. Check dispersion."}
+          - {title: Generate, body: "Write the process, then simulate. Grade by coverage. A big selected sample is confidently wrong."}
+          - {title: Repeat, accent: "D4621A", body: "Fixed effects remove only what is fixed. Check within variation. A flat pre-period can still mislead."}
+        takeaway: Most statistical errors that reach a decision are one-line mistakes, and each stage here has a check that catches them.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          If you keep one sentence: always ask what the independent unit is, because that single question fixes more real analyses than any fancy method.
+
+      - layout: bullets
+        title: Where to go next
+        recall: What comes after this pillar, and how do you practise it?
+        bullets:
+          - "**03 Experimentation and causality:** the checkout goes to a real A/B test, with metrics and peeking."
+          - "**04 Bayesian analysis:** priors, posteriors and P(B beats A); note 07 settles fixed or random effects."
+          - "**Run the code:** every chapter is a notebook on synthetic data; coursework in `practice/`."
+          - "**Read:** Bruce & Bruce; Reinhart, Statistics Done Wrong; Stat 110 lectures."
+        aside:
+          title: The one idea to keep
+          accent: "1E3A5F"
+          body: Ask what the independent unit is, and how the rows got into the table.
+        takeaway: The next pillar takes these tools to an experiment, where randomisation finally lets us talk about causes.
+        source: notes/08-panel-data-and-fixed-effects.md
+        notes: >-
+          We can now say what is true of the users we saw and what is likely of those we did not. What we still cannot say is what caused what. For that, we randomise.

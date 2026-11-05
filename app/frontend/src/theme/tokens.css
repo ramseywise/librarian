@@ -1,6 +1,10 @@
 /* Design tokens: the colours, radii, spacing and type sizes the UI repeats.
-   Domain colours are data-driven and stay in theme/domains.ts. */
+   Domain colours are data-driven and stay in theme/domains.ts. The dark values are the default;
+   [data-theme="light"] below overrides the colours. theme/__tests__/tokens.test.ts checks
+   the contrast of both. */
 :root {
+  color-scheme: dark;
+
   /* Surfaces, darkest to lightest */
   --bg: #0f0f0f;
   --surface: #111;           /* header, chat panel, inputs */
@@ -42,6 +46,7 @@
 
   /* Accents */
   --accent: #2196f3;
+  --accent-fill: #1976d2; /* behind white text; --accent is for text and marks on the page */
   --accent-text: #90caf9;
   --link: #64b5f6;
   --success: #4caf50;
@@ -52,6 +57,20 @@
   --send: #2a5298;
   --stop: #5a2a2a;
   --error-note: #d0756a;
+  --warn-soft: #ffb74d;
+
+  /* Reading views */
+  --prose-text: #d4d4d4;
+  --prose-heading: #f0f0f0;
+  --prose-quote: #c8c8c8;
+  --code-bg: #1d1d1d;
+  --pre-bg: #141414;
+
+  /* Graph edges */
+  --edge-wikilink: #666;
+  --edge-wikilink-label: #aaa;
+  --edge-semantic: #4a90d9;
+  --edge-tag: #e8943a;
 
   /* Radii */
   --radius-xs: 3px;
@@ -76,6 +95,10 @@
 
   /* Type */
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* System serifs only: reading text shouldn't wait on a web font. */
+  --font-reading: Charter, "Bitstream Charter", "Iowan Old Style", Georgia, Cambria, "Times New Roman", serif;
+  --fs-reading: 17px;
+  --measure-reading: 68ch;
   --fs-2xs: 9px;
   --fs-xs: 10px;
   --fs-sm: 11px;
@@ -93,6 +116,77 @@
   --z-detail: 20;
   --z-drawer: 30;
   --z-overlay: 40;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces, lightest last to mirror the dark ladder's meaning: same names, same roles */
+  --bg: #f7f6f2;
+  --surface: #fbfaf7;
+  --surface-sidebar: #f2f1ec;
+  --surface-raised: #ffffff;
+  --surface-card: #ffffff;
+  --surface-pager: #f2f1ec;
+  --surface-field: #efeee9;
+  --surface-active: #e2e0d9;
+  --surface-tab: #e9e7e1;
+  --surface-selected: #dbe8f5;
+  --surface-user-msg: #e7e8f7;
+
+  /* Borders */
+  --border: #dcdad3;
+  --border-faint: #e6e4de;
+  --border-subtle: #d8d6cf;
+  --border-card: #dedcd5;
+  --border-chip: #d6d4cc;
+  --border-strong: #c5c3bb;
+  --border-emphasis: #aaa89f;
+  --border-pressed: #8d8b83;
+  --border-user-msg: #c9cbea;
+  --border-selected: #8fb3d6;
+
+  /* Text: each clears 4.5:1 on the darkest light surface it can sit on (--surface-active) */
+  --text-strong: #141414;
+  --text: #1f1f1f;
+  --text-body: #2a2a2a;
+  --text-soft: #3d3d3d;
+  --text-dim: #4d4d4d;
+  --text-secondary: #555;
+  --text-muted: #585858;
+  --text-faint: #5a5a5a;
+  --text-ghost: #5c5c5c;
+  --text-void: #5e5e5e;
+
+  /* Accents */
+  --accent: #0b5cad;
+  --accent-fill: #0b5cad;
+  --accent-text: #0a4f94;
+  --link: #0a55a0;
+  --success: #17692a;
+  --danger: #b71c1c;
+  --offline: #b71c1c;
+  --warn: #8a4b00;
+  --concept: #6d2a80;
+  --send: #2a5298;
+  --stop: #8a3a3a;
+  --error-note: #9c3528;
+  --warn-soft: #7c5200;
+
+  /* Reading views */
+  --prose-text: #26241f;
+  --prose-heading: #141414;
+  --prose-quote: #33312b;
+  --code-bg: #eceae4;
+  --pre-bg: #f2f1ec;
+
+  /* Graph edges */
+  --edge-wikilink: #9a988f;
+  --edge-wikilink-label: #4d4d4d;
+  --edge-semantic: #1b5fa8;
+  --edge-tag: #8a4b00;
+
+  --shadow-overlay: 0 8px 40px rgba(0, 0, 0, 0.18);
 }
 
 /* Breakpoints (CSS custom properties can't be used in media queries, so they're

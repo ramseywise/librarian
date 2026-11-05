@@ -70,6 +70,14 @@ def test_multiword_query_recalls_stemmed_page(wiki: Path) -> None:
     )
 
 
+def test_bm25_path_answers_without_degrading(wiki: Path) -> None:
+    """A query DuckDB rejects falls back to LIKE, so recall tests alone can't see it."""
+    rows, degraded = server._search_rows("compaction strategies", domain="", limit=5, tool="test")
+    assert rows
+    assert rows[0][0].endswith("context-compaction.md")
+    assert not degraded
+
+
 def test_fallback_tokenized_like_recalls_per_term(
     wiki: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

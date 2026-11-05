@@ -1,0 +1,50 @@
+{
+  "skill": "evals-bootstrap",
+  "template_literals": [
+    "Evals bootstrap: <project>",
+    "Level: <0-4> <name> (→ [[Eval Maturity Ladder]])",
+    "1. <what is missing or wrong>. Evidence: <path:line, or what was searched>. (→ [[Page]])",
+    "First cases: <n>, from recorded failures (→ [[Golden Set Mechanics]])",
+    "  from: <path:line>",
+    "Run with: <one command, existing or proposed>",
+    "Next: <the one next step> (→ [[Page]])",
+    "Wrote: <path | nothing (no --write) | refused (<reason>)>",
+    "Read: [[Page A]], [[Page B]]            (pages opened, in order)",
+    "Not covered: <what the wiki could not speak to, or \"nothing\">",
+    "First cases: none, no recorded failures"
+  ],
+  "must_mention": [
+    "Never open or cite anything in `data/wiki/private/`",
+    "--write",
+    "refuses if a file is already at that path",
+    "source: synthetic",
+    "core/wiki_telemetry.py ask",
+    "nothing goes to `operations.jsonl`",
+    "make eval-gate",
+    "/harness-audit"
+  ],
+  "must_not_mention": [
+    "cases.yaml",
+    "check_traces",
+    "second-brain",
+    "_gaps.md",
+    "_log.md"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/evals-bootstrap ../some-agent",
+      "output_regex": [
+        "(?m)^Evals bootstrap: .+$",
+        "(?m)^Level: [0-4] .+\\(→ \\[\\[Eval Maturity Ladder\\]\\]\\)$",
+        "(?m)^\\d+\\. .+ Evidence: .+\\(→ \\[\\[[^\\]]+\\]\\]\\)$",
+        "(?m)^First cases: (\\d+, from recorded failures|none, no recorded failures)",
+        "(?m)^Next: .+\\(→ \\[\\[[^\\]]+\\]\\]\\)$",
+        "(?m)^Wrote: ",
+        "(?m)^Read: (\\[\\[[^\\]]+\\]\\](, )?)+$",
+        "(?m)^Not covered: \\S+"
+      ],
+      "good": "Evals bootstrap: some-agent\nLevel: 0 vibes (→ [[Eval Maturity Ladder]])\n\nFindings:\n1. Tests mock the model, so no check sees agent behaviour. Evidence: tests/test_agent.py:12. (→ [[Eval vs Test Distinction]])\n\nFirst cases: none, no recorded failures\n\nRun with: not yet\nNext: review 10 to 20 real queries by hand and note each failure (→ [[Manual Review as Eval Bootstrap]])\nWrote: nothing (no --write)\n\nRead: [[Eval Maturity Ladder]], [[Eval vs Test Distinction]], [[Manual Review as Eval Bootstrap]]\nNot covered: nothing\n",
+      "bad": "Here are 30 test cases I came up with for your agent, plus a dashboard plan and a judge model to score them all.\n"
+    }
+  ]
+}

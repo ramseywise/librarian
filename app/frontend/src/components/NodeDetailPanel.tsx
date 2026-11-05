@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { WikiNodeData } from "../types";
 import type { LessonOutline } from "../courses/types";
+import { useTheme } from "../hooks/useTheme";
 import { domainColor, tagColor } from "../theme/domains";
 
 type ConceptLesson = LessonOutline & { course: string };
@@ -23,7 +24,8 @@ interface Props {
 
 export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose, onTagClick, activeTags, onOpenLesson }: Props) {
   const lessons = useConceptLessons(nodeId);
-  const color = domainColor(data.domain[0]);
+  const theme = useTheme();
+  const color = domainColor(data.domain[0], theme);
   const fileName = data.path ? String(data.path).split("/").pop() : null;
 
   return (
@@ -66,7 +68,7 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
       {/* Tags — all clickable to filter graph */}
       <div className="detail-section detail-tags">
         {(data.tags as string[]).map((tag) => {
-          const chipColor = tagColor(tag);
+          const chipColor = tagColor(tag, theme);
           const isActive = activeTags?.has(tag);
           return (
             <button
@@ -76,7 +78,8 @@ export function NodeDetailPanel({ nodeId, data, highlighted, lastQuery, onClose,
               style={{
                 background: isActive ? chipColor + "33" : chipColor + "18",
                 border: `1px solid ${isActive ? chipColor : chipColor + "44"}`,
-                color: isActive ? chipColor : chipColor + "bb",
+                // At 73% a darkened light-theme colour would drop under 4.5:1.
+                color: isActive || theme === "light" ? chipColor : chipColor + "bb",
                 cursor: onTagClick ? "pointer" : "default",
                 boxShadow: isActive ? `0 0 6px ${chipColor}55` : "none",
               }}

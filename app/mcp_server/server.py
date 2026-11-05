@@ -861,32 +861,19 @@ def _search_rows(
         fts_ok = _ensure_fts(con)
         degraded = _degradation_reasons(con, has_fts=fts_ok)
         if fts_ok:
-            # DuckDB permits SELECT aliases in WHERE, so `score` filters directly
+            # A subquery, not an alias in WHERE: duckdb 2.0 rejects that form because
+            # match_bm25 has side effects.
             sql = f"""
-                SELECT path, title, tags, summary, content, backlinks, embedding,
-                       fts_main_{table}.match_bm25(path, ?) AS score
-                FROM {table}
+                SELECT * FROM (
+                    SELECT path, title, tags, summary, content, backlinks, embedding,
+                           fts_main_{table}.match_bm25(path, ?) AS score
+                    FROM {table}
+                    WHERE TRUE {tag_filter}
+                )
                 WHERE score IS NOT NULL
-                {tag_filter}
                 ORDER BY score DESC
                 LIMIT ?
             """
-            if table == "course_pages":
-                # duckdb 2.0 rejects the alias filter above ("Alias referenced - but
-                # the expression has side effects"), so the wiki query falls through
-                # to LIKE. Lessons are new, with no prior ranking to keep, so they
-                # use the form that binds. The wiki query is deliberately untouched.
-                sql = f"""
-                    SELECT * FROM (
-                        SELECT path, title, tags, summary, content, backlinks, embedding,
-                               fts_main_course_pages.match_bm25(path, ?) AS score
-                        FROM course_pages
-                        WHERE TRUE {tag_filter}
-                    )
-                    WHERE score IS NOT NULL
-                    ORDER BY score DESC
-                    LIMIT ?
-                """
             try:
                 rows = con.execute(sql, [query, *tag_params, limit * 3]).fetchall()
             except Exception as e:

@@ -2,7 +2,7 @@
 title: Graded Rehearsal Drill Harness
 tags: [interview, meta, pattern]
 summary: Three sibling Claude Code skills (spoken answers, coding questions, assessment environments) that share one harness design — explicit coach/mock stance, a spoiler gate on worked solutions, the learner types every character, a process rubric graded strictly, and an append-only content-free history log keyed by stable question ids that the question generator must preserve.
-updated: 2026-10-30
+updated: 2026-11-05
 sources:
   - data/raw/claude-docs/sisyphus/skills/coding-drill/SKILL.md
   - data/raw/claude-docs/sisyphus/skills/env-drill/SKILL.md
@@ -125,3 +125,5 @@ actually stores (a Stop-hook writer was proposed to timestamp rows).
 - [[Code Review Drill — SANYI]] — alternative-to (a single worked drill rather than a harness)
 - [[Drill Gym Tracks and Schema]] — related (the drill content format the harness grades)
 - [[AI Engineering Field Question Bank]] — related (questions-only bank for cold recall)
+- [[Spaced Repetition and Self-Quizzing From a Knowledge Base]] — prerequisite-for (the research on recall and spacing)
+- [[Flashcard Schedulers: Leitner, SM-2 and FSRS]] — related (what could schedule repeat drills)

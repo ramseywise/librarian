@@ -6,8 +6,8 @@ import {
   expandBridges,
   filterPrimaryIds,
   neighbours,
+  pageNeighbourhood,
   renderIds,
-  sampleIds,
   visibleEdges,
   type ViewState,
 } from "../graphView";
@@ -28,7 +28,7 @@ const edge = (source: string, target: string, edgeType: WikiEdgeData["edgeType"]
 const NONE: ViewState = {
   focusId: null, focusIds: null, filterIds: null, activeTags: new Set(),
 };
-const ALL_ON: EdgeVisibility = { wikilink: true, semantic: true, "tag-shared": true };
+const ALL_ON: EdgeVisibility = { wikilink: true, semantic: true, "tag-shared": true, terms: true };
 
 const nodes = [node("p", "projects", "project"), node("a", "rag"), node("b", "eval"), node("c", "memory")];
 const flags = (ns: Node<WikiNodeData>[]) =>
@@ -55,22 +55,7 @@ describe("filter derivation", () => {
   });
 });
 
-describe("sample and reveal", () => {
-  const many = [
-    node("p", "projects", "project"),
-    node("r1", "rag"), node("r2", "rag"), node("r3", "rag"), node("r4", "rag"),
-    node("e1", "eval"),
-  ];
-  const links = [
-    { source: "r1", target: "r2" }, { source: "r1", target: "r3" }, { source: "r1", target: "e1" },
-    { source: "r2", target: "r3" },
-  ];
-
-  it("keeps every project page plus each domain's best-linked pages", () => {
-    const ids = sampleIds(many, degreeOf(links), 2);
-    expect([...ids].sort()).toEqual(["e1", "p", "r1", "r2"]);
-  });
-
+describe("reveal", () => {
   it("neighbours: typed links first, then by degree, capped", () => {
     const edges = [
       { source: "r1", target: "r2" },
@@ -150,7 +135,7 @@ describe("visibleEdges", () => {
 
   it("respects the toggles when no filter is active", () => {
     const v = NONE;
-    const out = visibleEdges(src, { wikilink: true, semantic: false, "tag-shared": false }, applyView(nodes, v), v);
+    const out = visibleEdges(src, { wikilink: true, semantic: false, "tag-shared": false, terms: false }, applyView(nodes, v), v);
     expect(out.map((e) => e.id)).toEqual(["wikilink:a->b"]);
     expect(out[0].style).toBeDefined();
   });
@@ -183,7 +168,7 @@ describe("visibleEdges", () => {
     const noTagShared = { ...ALL_ON, "tag-shared": false };
     const ids = visibleEdges(src, noTagShared, applyView(nodes, v), v).map((e) => e.id);
     expect(ids).toEqual(["wikilink:a->b"]);
-    const off = { wikilink: false, semantic: false, "tag-shared": false };
+    const off = { wikilink: false, semantic: false, "tag-shared": false, terms: false };
     expect(visibleEdges(src, off, applyView(nodes, v), v)).toEqual([]);
   });
 
@@ -197,5 +182,42 @@ describe("visibleEdges", () => {
     const v = NONE;
     const out = visibleEdges(src, ALL_ON, applyView(nodes, v), v);
     expect(out.find((e) => e.data?.edgeType === "semantic")?.animated).toBe(true);
+  });
+});
+
+describe("pageNeighbourhood", () => {
+  const link = (source: string, target: string, relationship?: string) => ({
+    id: `${source}-${target}`,
+    source,
+    target,
+    data: { edgeType: "wikilink" as const, relationship },
+  });
+  const edges = [
+    link("p", "typed", "extends"),
+    link("typed", "typed2", "instance-of"),
+    link("p", "plain"),
+    link("plain", "far"),
+    link("x", "y"),
+  ];
+  const degree = new Map([["typed", 2], ["typed2", 1], ["plain", 2], ["far", 1]]);
+
+  it("walks typed links before untyped ones", () => {
+    const n = pageNeighbourhood("p", edges, degree, 3);
+    expect([...n.ids].sort()).toEqual(["p", "typed", "typed2"]);
+    expect(n.hops).toBe(2);
+  });
+
+  it("counts everything reachable, however little fits", () => {
+    expect(pageNeighbourhood("p", edges, degree, 2).total).toBe(5);
+  });
+
+  it("never passes the cap and stops at its component", () => {
+    expect(pageNeighbourhood("p", edges, degree, 2).ids.size).toBe(2);
+    const all = pageNeighbourhood("p", edges, degree, 100);
+    expect([...all.ids].sort()).toEqual(["far", "p", "plain", "typed", "typed2"]);
+  });
+
+  it("holds just the page when it has no links", () => {
+    expect([...pageNeighbourhood("alone", edges, degree, 10).ids]).toEqual(["alone"]);
   });
 });

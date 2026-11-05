@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTheme } from "../hooks/useTheme";
 import { courseColor, domainColor } from "../theme/domains";
 import type { Curriculum, CurriculumCourse } from "../types";
 import { beyondFacet, courseFacet, isFacetId, moduleFacet } from "../utils/curriculum";
@@ -73,6 +74,7 @@ interface CourseRowProps {
 
 function CourseRow({ course, activeTags, onToggle, onBrief }: CourseRowProps) {
   const [open, setOpen] = useState(false);
+  useTheme();
   const color = courseColor(course.id);
   const id = courseFacet(course.id);
   const active = activeTags.has(id);
@@ -151,6 +153,7 @@ function CourseRow({ course, activeTags, onToggle, onBrief }: CourseRowProps) {
 }
 
 export function TagFilterPanel({ domains, curriculum, activeTags, onChange, onBrief }: Props) {
+  useTheme(); // Colours below are read at render, so a theme switch has to render this again.
   function toggle(tag: string) {
     const next = new Set(activeTags);
     if (next.has(tag)) next.delete(tag);

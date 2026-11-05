@@ -1,13 +1,19 @@
 ---
 name: learn
-description: "Process the queued reading list — arXiv papers and RSS/blog posts — and surface relevant items for current work. Runs /ingest on data/raw/web/ scoped to fetched files, then queries the wiki for what's new and surfaces the top 3. Optional topic filter: /learn RL alignment. Run from the librarian repo."
+description: "Process the queued reading list — arXiv papers and RSS/blog posts — and surface relevant items for current work. Runs /ingest on data/raw/web/ scoped to fetched files, then queries the wiki for what's new and surfaces the top 3. Optional topic filter: /learn RL alignment. Run from the librarian repo. Use when working through fetched arXiv and feed items, or asking what is new and worth reading. Do NOT use for compiling a specific source (/ingest), questions about what the wiki already knows (/query), or adding items to a course reading list, which the human decides."
 ---
 
 You are a research curator processing the reading queue and surfacing relevant items
 for the current learning agenda.
 
+## Core rule
+
+Ingest what is queued, surface at most 3 items worth reading, and leave every decision about the curriculum to the human.
+
+## Workflow
+
 This skill is the human gate for the automated fetch pipelines, which write two kinds of
-queue file into `raw/web/`:
+queue file into `data/raw/web/`:
 - `*-arxiv-*.md` — papers, from `ARXIV_FETCH_ENABLED=true uv run cartographer --cron`
 - `*-feed-*.md` — RSS/blog posts, from `FEED_FETCH_ENABLED=true uv run cartographer --cron`
 
@@ -18,7 +24,7 @@ switch to `~/workspace/librarian` first.
 
 ---
 
-## Step 1 — Parse arguments
+### Step 1 — Parse arguments
 
 Parse `$ARGUMENTS`:
 - **No argument** → process everything queued
@@ -28,9 +34,9 @@ Store any keywords as `TOPIC_FILTER`.
 
 ---
 
-## Step 2 — Check the queue
+### Step 2 — Check the queue
 
-Use Bash to count pending queue files in `raw/web/`:
+Use Bash to count pending queue files in `data/raw/web/`:
 
 ```bash
 find data/raw/web -maxdepth 1 \( -name '*-arxiv-*.md' -o -name '*-feed-*.md' \) 2>/dev/null | wc -l
@@ -44,9 +50,9 @@ If count > 0, report: "Found N queued items. Processing..."
 
 ---
 
-## Step 3 — Ingest queued papers
+### Step 3 — Ingest queued papers
 
-Run the ingest skill scoped to `raw/web/` for fetched queue files only.
+Run the ingest skill scoped to `data/raw/web/` for fetched queue files only.
 
 Use Bash to identify the queue files pending ingest (not yet in manifest):
 
@@ -63,7 +69,7 @@ if MANIFEST_PATH.exists():
             entry = json.loads(line)
             manifest_paths.add(entry['path'])
 
-web_dir = REPO_ROOT / 'raw' / 'web'
+web_dir = REPO_ROOT / 'data' / 'raw' / 'web'
 queued = sorted(set(web_dir.glob('*-arxiv-*.md')) | set(web_dir.glob('*-feed-*.md')))
 pending = [f for f in queued
            if str(f.relative_to(REPO_ROOT)) not in manifest_paths]
@@ -73,15 +79,16 @@ for f in pending:
 ```
 
 For each pending file, invoke the `/ingest` skill with that path (or call it once with
-`raw/web/` — the ingest skill handles targeted compile mode).
+`data/raw/web/` — the ingest skill handles targeted compile mode).
 
 Invoke: `/ingest data/raw/web/`
 
-This will compile new arXiv markdown files into wiki pages. Wait for ingest to complete.
+This will compile new arXiv markdown files into wiki pages. Wait for ingest to complete. Its report, log line and reviewer verdict
+belong to that run: `/learn` does not repeat them.
 
 ---
 
-## Step 4 — Surface top items
+### Step 4 — Surface top items
 
 After ingest, query the wiki to find what was just added. Read the newly compiled wiki
 pages for the ingested items.
@@ -110,9 +117,25 @@ three items from the same feed — a high-volume blog should not crowd out the r
 
 ---
 
-## Step 5 — Output
+### Step 5 — Output
 
-Print a clean summary:
+Print a clean summary, in the template under Output format.
+
+---
+
+### Notes
+
+- Queue files stay in `data/raw/web/` after ingest — the manifest tracks what's been compiled.
+- Re-running `/learn` on an already-ingested batch is safe — ingest skips unchanged files.
+- To fetch fresh items before running `/learn`:
+  `ARXIV_FETCH_ENABLED=true FEED_FETCH_ENABLED=true uv run cartographer --cron`
+- To fetch without the full cron: `uv run python -m core.scrape_arxiv` or
+  `uv run python -m core.scrape_feeds` (add `--list-feeds` to see the source table,
+  `--dry-run` to preview).
+- Feed volume varies a lot by source — the fetcher's default window is 7 days, so a
+  wider `--since-days` can queue a large batch in one go.
+
+## Output format
 
 ```
 ## Learning Queue — YYYY-MM-DD
@@ -144,16 +167,8 @@ Use the `arXiv <id> | … | Categories: …` line for papers and the
 If `TOPIC_FILTER` was set and 0 items matched: report that and show up to 3 unfiltered
 picks instead with a note that the filter returned nothing.
 
----
+## Calibration
 
-## Notes
+3 picks, or all if fewer than 3 remain after filtering. A longer list is the failure this skill exists to prevent: it hands the triage back to the human. Too narrow is the opposite failure: three items from one high-volume feed, or an empty result that hides everything because a keyword missed, which is why a filter matching 0 items still shows up to 3 unfiltered picks.
 
-- Queue files stay in `raw/web/` after ingest — the manifest tracks what's been compiled.
-- Re-running `/learn` on an already-ingested batch is safe — ingest skips unchanged files.
-- To fetch fresh items before running `/learn`:
-  `ARXIV_FETCH_ENABLED=true FEED_FETCH_ENABLED=true uv run cartographer --cron`
-- To fetch without the full cron: `uv run python -m core.scrape_arxiv` or
-  `uv run python -m core.scrape_feeds` (add `--list-feeds` to see the source table,
-  `--dry-run` to preview).
-- Feed volume varies a lot by source — the fetcher's default window is 7 days, so a
-  wider `--since-days` can queue a large batch in one go.
+Keep the excerpt to 2-3 sentences of the abstract or summary. Tier 2 feed posts are `low` confidence: a pick that cites one as the record has overclaimed. Never write to the curriculum, however good the pick looks.

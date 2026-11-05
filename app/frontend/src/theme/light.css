@@ -1,0 +1,8 @@
+/* Light values for the colours theme/components.css writes out literally. */
+[data-theme="light"] .wiki-node-title { color: var(--text-strong); }
+[data-theme="light"] .chat-markdown a { color: var(--link); }
+[data-theme="light"] .chat-markdown pre { background: var(--pre-bg); color: var(--text-body); }
+[data-theme="light"] .chat-markdown :not(pre) > code { background: var(--code-bg); color: #6f4a00; }
+[data-theme="light"] .citation-chip { border-color: #9fbbe0; background: #e4edf8; color: #0a4f94; }
+[data-theme="light"] .citation-chip--warn { border-color: #b89a3a; background: #f7efd2; color: #6f5200; }
+[data-theme="light"] .grounding-warn { color: #6f5200; }

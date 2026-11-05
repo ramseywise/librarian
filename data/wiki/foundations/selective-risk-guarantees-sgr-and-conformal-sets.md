@@ -2,7 +2,7 @@
 title: "Selective Risk Guarantees: SGR and Conformal Sets"
 tags: [foundations, comparison]
 summary: "When a contract names an error rate instead of a price, a binomial-bound threshold search (SGR) keeps the promise but needs many labels; conformal sets are not a good cost router, yet class-conditional ones bound missed positives on any scorer."
-updated: 2026-11-04
+updated: 2026-11-05
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--13-automate-review-or-reject.md
 ---
@@ -42,3 +42,4 @@ Rule: one error target, use SGR; a cost, price it; keep by-class conformal for a
 - [[Review Route Thresholds From Priced Costs]] — alternative-to
 - [[Probability Calibration and Reliability Curves]] — related
 - [[Drift Seen and Unseen in an Automated Router]] — related
+- [[Confidence-Gated Escalation]] — alternative-to (an empirical held-out check instead of a bound)

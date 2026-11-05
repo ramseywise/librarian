@@ -2,7 +2,7 @@
 title: Structured Output
 tags: [prompting, llm, concept]
 summary: Getting machine-parseable output via a six-rung ladder (ask, show, fence, prefill, constrain, route through a tool) — a schema guarantees shape not truth, so pair it with content validation, and beware that a strict template can lower accuracy.
-updated: 2026-10-30
+updated: 2026-11-05
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--04-controlling-output.md
@@ -76,3 +76,4 @@ format in a separate step.
 - [[Python Type Hints and Dataclasses]] — related (Pydantic validation at the boundary for LLM output)
 - [[Runtime Validation with Zod]] — related (the code-side parse that pairs with the constrain rung)
 - [[TypeScript for AI Apps]] — instance-of (zod output format plus parsed_output null and refusal checks)
+- [[Jev Decision Model]] — related (a model whose whole output is schema-restricted)

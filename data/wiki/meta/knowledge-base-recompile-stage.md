@@ -2,7 +2,7 @@
 title: Knowledge Base Recompile Stage
 tags: [meta, memory, pattern]
 summary: "A compiled LLM wiki needs a recompile stage, not just a compile stage — a periodic, dry-run-first ritual that merges, retires (tombstone + supersedes) and compresses pages from age, size, similarity and retrieval-telemetry evidence, so precision does not decay as the KB grows."
-updated: 2026-10-17
+updated: 2026-11-05
 sources:
   - data/raw/repos/librarian/.claude--docs--plans--2026-07-17-knowledge-compaction.md
   - data/raw/repos/librarian/.claude--docs--CHANGELOG.md
@@ -89,3 +89,4 @@ mechanism.
 - [[Single Writer, Offline Consolidation]] — alternative-to (consolidation off the critical path, applied to agent memory)
 - [[Memory Lifecycle]] — extends
 - [[Freshness Key Blind to Content Semantics]] — extends (the search index this ritual feeds)
+- [[Wiki Health Metrics]] — related (the numbers that show when upkeep is due)

@@ -54,16 +54,18 @@ run and not yet reviewed, from `git status --short`.
 
 ## Step 5 — Stale decks
 
+Decks are built in the librarian repo. Run this there:
+
 ```bash
 make deck-check
 ```
 
 A stale deck no longer matches its `deck.yaml`. To find decks whose notes moved on, compare the last commit of a
-pillar's `notes/` with that of its `slides/deck.yaml`:
+pillar's `notes/` with that of its `slides/deck.yaml`, also in the librarian repo:
 
 ```bash
-git log -1 --format=%cs -- <pillar>/notes
-git log -1 --format=%cs -- <pillar>/slides/deck.yaml
+git log -1 --format=%cs -- data/courses/<pillar>/notes
+git log -1 --format=%cs -- data/courses/<pillar>/slides/deck.yaml
 ```
 
 Name the pillars whose notes are newer. `/slides <pillar>` is the fix.

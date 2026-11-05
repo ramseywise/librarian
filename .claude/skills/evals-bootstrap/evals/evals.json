@@ -1,0 +1,12 @@
+[
+  {"input": "/evals-bootstrap ../listen-wiseer", "expected": true},
+  {"input": "this agent has no evals, help me set up a first suite", "expected": true},
+  {"input": "start a golden set for my agent from its real failures", "expected": true},
+  {"input": "how would I know a prompt change broke this agent? set something up", "expected": true},
+  {"input": "plan a first regression eval suite for this project using what's in the wiki", "expected": true},
+  {"input": "run make eval-gate and show me the baseline diff", "expected": false},
+  {"input": "audit this agent's permissions and hooks", "expected": false},
+  {"input": "test the deck reviewer on planted faults", "expected": false},
+  {"input": "scaffold a new LangGraph agent called triage", "expected": false},
+  {"input": "what does the wiki say about golden sets?", "expected": false}
+]

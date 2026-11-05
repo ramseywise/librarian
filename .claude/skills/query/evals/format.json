@@ -1,0 +1,30 @@
+{
+  "skill": "query",
+  "template_literals": [
+    "Read: [[Page A]], [[Page B]]            (pages opened, in order)",
+    "Not covered: <what the wiki could not answer, or \"nothing\">",
+    "Outside the wiki:"
+  ],
+  "must_mention": [
+    "core/wiki_telemetry.py ask",
+    "Bash(uv run python core/wiki_telemetry.py ask *)",
+    "reworded",
+    "never the raw question"
+  ],
+  "must_not_mention": [
+    "_gaps.md",
+    "_log.md"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/query what is the recommended chunking strategy for long documents?",
+      "output_regex": [
+        "\\(→ \\[\\[[^\\]]+\\]\\]\\)",
+        "(?m)^Read: ((\\[\\[[^\\]]+\\]\\](, )?)+|none)$",
+        "(?m)^Not covered: \\S+"
+      ],
+      "good": "Use structure-aware chunks with overlap (→ [[Chunking Strategies]]).\n\nRead: [[Chunking Strategies]], [[Parent Document Retrieval]]\nNot covered: nothing\n",
+      "bad": "Use 512-token chunks, which is the common default.\n"
+    }
+  ]
+}

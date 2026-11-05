@@ -5,6 +5,8 @@ import { NodeDetailPanel } from "./components/NodeDetailPanel";
 import { pageTitle, useDocumentTitle } from "./components/courses/useDocumentTitle";
 import { useChatStream } from "./hooks/useChatStream";
 import { useHashRoute } from "./hooks/useHashRoute";
+import { useSlashSearch } from "./hooks/useSlashSearch";
+import { ThemeToggle } from "./components/ThemeToggle";
 import type { SelectedNode } from "./types";
 import "./theme/tokens.css";
 import "./theme/components.css";
@@ -36,6 +38,7 @@ export default function App() {
   const [focusPage, setFocusPage] = useState<string | null>(null);
   const lastQueryRef = useRef("");
   const [route, navigate] = useHashRoute();
+  useSlashSearch();
   const inPractice = route === "/practice";
   const inFlashcards = route.startsWith("/flashcards/");
   const inCourses = route === "/courses" || route.startsWith("/courses/") || inPractice || inFlashcards;
@@ -157,6 +160,7 @@ export default function App() {
           </button>
         </nav>
         <div className="app-header-actions">
+          <ThemeToggle />
           {!inCourses && highlightedPages.size > 0 && (
             <button onClick={clearHighlights} className="pill-btn pill-btn--accent">
               ✕ {highlightedPages.size} highlighted

@@ -1,0 +1,363 @@
+# Glossary terms the map draws as a layer (app/backend/glossary.py, GET /api/glossary).
+#
+# Each definition paraphrases the wiki page it cites, so `page` must be a public, live page:
+# never data/wiki/private/, never a tombstone. No organisation or person names.
+# A form with two or more capitals (RAG, BM25, A/B test) matches with exact case; any other
+# form ignores case. Forms match on word boundaries, so plurals need their own alias.
+
+# --- Retrieval -------------------------------------------------------------------------
+- id: rag
+  label: RAG
+  aliases: [retrieval-augmented generation, retrieval augmented generation]
+  def: Fetching relevant knowledge at question time and answering from it; a family of architectures that differ in what each buys and costs.
+  page: rag-architecture-selection
+- id: chunking
+  label: Chunking
+  aliases: [chunk, chunks, chunked]
+  def: Cutting documents into retrievable units, usually with metadata and rewriting so each unit can stand alone.
+  page: rag-knowledge-preparation
+- id: embeddings
+  label: Embeddings
+  aliases: [embedding, dense vectors, dense vector]
+  def: Vectors that place similar text close together; storing them apart from the content keeps content changes and recipe changes separate.
+  page: embedding-side-table
+- id: bm25
+  label: BM25
+  aliases: [Okapi BM25, lexical search, keyword search]
+  def: Ranks documents by saturated, length-normalised term matches, and so is blind to synonyms.
+  page: bm25-and-the-lexical-gap
+- id: vector-database
+  label: Vector database
+  aliases: [vector databases, vector store, vector stores]
+  def: A store that serves nearest-neighbour search over embeddings, chosen by how it will be hosted and what it must scale to.
+  page: vector-databases
+- id: hybrid-search
+  label: Hybrid search
+  aliases: [hybrid retrieval, hybrid retriever]
+  def: Combining lexical and vector retrieval so each covers what the other misses.
+  page: rag-retrieval-strategies
+- id: reranking
+  label: Reranking
+  aliases: [reranker, rerankers, rerank, re-ranking, cross-encoder, cross-encoders]
+  def: A second, costlier pass that reorders retrieved candidates, by cross-encoder or by LLM.
+  page: rag-reranking
+- id: rrf
+  label: Reciprocal rank fusion
+  aliases: [RRF, rank fusion]
+  def: Merges several ranked lists by position alone, so their scores never need comparing.
+  page: reciprocal-rank-fusion
+- id: semantic-cache
+  label: Semantic cache
+  aliases: [semantic caching]
+  def: Answers from a validated store when a new query embeds close to a known one, skipping retrieval altogether.
+  page: semantic-cache
+- id: crag
+  label: CRAG
+  aliases: [corrective RAG]
+  def: Corrective retrieval that goes back and retrieves again when the reranker's confidence falls below a threshold.
+  page: crag-retry-logic
+- id: contextual-retrieval
+  label: Contextual retrieval
+  aliases: [situating prefix]
+  def: An LLM writes a short situating prefix for each chunk at index time, restoring the context chunking cut away.
+  page: contextual-retrieval
+- id: text-to-sql
+  label: Text-to-SQL
+  aliases: [text to SQL, NL2SQL]
+  def: Answering from structured data by generating a query, with schema subsetting, mechanical validation and bounded retries.
+  page: text-to-sql-retrieval
+- id: knowledge-graph
+  label: Knowledge graph
+  aliases: [knowledge graphs]
+  def: A domain graph of typed entities and named relationships, best built from the questions it has to answer.
+  page: knowledge-graph-fundamentals
+
+# --- Context and prompting -------------------------------------------------------------
+- id: context-window
+  label: Context window
+  aliases: [context windows]
+  def: The tokens a model can attend to at once; adding more thins attention instead of expanding capacity.
+  page: why-context-is-finite
+- id: context-engineering
+  label: Context engineering
+  aliases: [context assembly]
+  def: Assembling the context window as a minimisation problem, the smallest high-signal set that gets the desired outcome.
+  page: context-engineering
+- id: compaction
+  label: Context compaction
+  aliases: [compaction, compacting history]
+  def: Turning a long interaction history into a smaller state the work can continue from.
+  page: context-compaction
+- id: prefix-caching
+  label: Prefix caching
+  aliases: [prompt caching, prompt cache]
+  def: Reusing computed state for a repeated prompt prefix, which cuts latency and cost for stable instructions and tool schemas.
+  page: prefix-caching
+- id: few-shot
+  label: Few-shot prompting
+  aliases: [few-shot, few shot, few-shot examples]
+  def: Worked examples before the task; they steer format reliably, and they also teach distribution, order and range.
+  page: few-shot-prompting
+- id: chain-of-thought
+  label: Chain of thought
+  aliases: [chain-of-thought, CoT]
+  def: Prompting a model to show its reasoning before answering, which helps on multi-step logic at no training cost.
+  page: chain-of-thought
+- id: prompt-injection
+  label: Prompt injection
+  aliases: [injection attack, injection attacks]
+  def: Adversarial input that steers a model, possible because instructions and data share one channel; mitigated, never fully solved.
+  page: prompt-injection
+- id: structured-output
+  label: Structured output
+  aliases: [structured outputs, JSON mode]
+  def: Getting machine-parseable answers; a schema guarantees shape but not truth, so content still needs validating.
+  page: structured-output
+- id: prompt-chaining
+  label: Prompt chaining
+  aliases: [chained prompts]
+  def: Splitting a task into single-job prompts with fixed inputs and outputs, wired as a pipeline or a DAG.
+  page: prompt-chaining
+- id: temperature
+  label: Temperature
+  aliases: [top_p, top-p, sampling parameters]
+  def: A sampling knob for how much a model explores likely alternatives; even at zero, output is not deterministic.
+  page: sampling-parameters
+- id: fine-tuning
+  label: Fine-tuning
+  aliases: [fine-tune, fine-tuned, finetuning, LoRA]
+  def: Prompt engineering by other means, worth it when a static prompt is long, stable and still not followed.
+  page: fine-tuning-as-prompt-compression
+
+# --- Agents ----------------------------------------------------------------------------
+- id: react
+  label: ReAct
+  aliases: [ReAct loop, ReAct agent]
+  def: The basic single-agent loop, where the model alternates thought and tool calls until it can answer.
+  page: react-pattern
+- id: harness
+  label: Agent harness
+  aliases: [agent harnesses, harness engineering]
+  def: Everything between request and output except the weights; its reliability tends to dominate the model's.
+  page: harness-engineering
+- id: subagent
+  label: Subagent
+  aliases: [subagents, sub-agent, sub-agents]
+  def: A separate agent with its own context, a context-management technique before it is an architecture.
+  page: harness-orchestration
+- id: hitl
+  label: Human in the loop
+  aliases: [human-in-the-loop, HITL]
+  def: Where a person reviews or decides; found by running one task at fixed levels of involvement and seeing where quality drops.
+  page: hitl-gradient
+- id: guardrails
+  label: Guardrails
+  aliases: [guardrail, input guardrails]
+  def: Deterministic safety stages that run before a model call, such as size checks, injection detection and redaction.
+  page: input-guardrails-pipeline
+- id: skill-md
+  label: SKILL.md
+  aliases: [skill file, skill files]
+  def: A skill declared as frontmatter plus instructions, loaded on demand instead of living in the system prompt.
+  page: skill-md-pattern
+- id: lifecycle-hooks
+  label: Lifecycle hooks
+  aliases: [lifecycle hook, PreToolUse, PostToolUse]
+  def: Scripts run around tool events that can block by exit code, enforcing rules without reminding the model.
+  page: claude-code-hook-architecture
+- id: mcp
+  label: MCP
+  aliases: [Model Context Protocol]
+  def: A protocol that separates tool definitions from agents, so tools deploy independently and are discovered at runtime.
+  page: mcp-protocol
+- id: a2a
+  label: A2A
+  aliases: [Agent-to-Agent, agent cards, agent card]
+  def: An open specification for agents to talk to each other, built on a task lifecycle and agent cards.
+  page: a2a-agent-protocol
+- id: checkpointer
+  label: Checkpointer
+  aliases: [checkpointers, MemorySaver]
+  def: Persists graph state between steps; its backend must match how the runtime is hosted or it fails silently.
+  page: runtime-topology
+- id: reducer
+  label: State reducer
+  aliases: [state reducers, reducers]
+  def: A function that defines how parallel node outputs merge into shared state, so simultaneous writes do not collide.
+  page: langgraph-state-reducers
+- id: stop-rules
+  label: Stop rules
+  aliases: [stop rule, stop condition, stop conditions, stall detector]
+  def: Layered, independent ways a loop ends, such as verifier, iteration cap, budget and stall detector; the cap is only the backstop.
+  page: loop-termination-design
+- id: agent-memory
+  label: Agent memory
+  aliases: [episodic memory, semantic memory, procedural memory]
+  def: What persists beyond the context window, commonly split into semantic, episodic and procedural tiers.
+  page: agent-memory-types
+
+# --- Evaluation and operations ---------------------------------------------------------
+- id: golden-set
+  label: Golden set
+  aliases: [golden sets, golden dataset, golden datasets]
+  def: Fixed cases of input, expected result and metadata that every eval runs against, sized by purpose and kept from going stale.
+  page: golden-set-mechanics
+- id: llm-judge
+  label: LLM as judge
+  aliases: [LLM-as-judge, LLM judge, LLM judges]
+  def: A separate model scoring outputs against a rubric, for subjective quality, once calibrated against human grades.
+  page: llm-as-judge-evaluation
+- id: trace
+  label: Trace
+  aliases: [traces, tracing]
+  def: One request recorded as a tree of spans with inputs, outputs, tokens and latency; the raw material for evals and cost attribution.
+  page: agent-trace-anatomy
+- id: eval-harness
+  label: Eval harness
+  aliases: [evaluation harness, evalset, evalsets]
+  def: The suites, case format, metrics and CI gate that test an agent's behaviour repeatably.
+  page: eval-harness
+- id: precision-recall
+  label: Precision and recall
+  aliases: [precision-recall, PR curve, PR curves, average precision]
+  def: How much of the flagged set is right and how much of the true set was found; on rare positives these tell more than ROC.
+  page: precision-recall-vs-roc-and-average-precision
+- id: drift
+  label: Drift
+  aliases: [concept drift, covariate shift, concept shift]
+  def: The data or its relationship to the target changing after training; some kinds are loud and harmless, others silent to input monitors.
+  page: drift-types-and-what-monitors-can-see
+- id: canary
+  label: Canary rollout
+  aliases: [canary, shadow deployment, shadow mode]
+  def: Sending a stable hashed share of traffic to a new model, usually after a shadow run has shown where it disagrees.
+  page: model-rollout-shadow-canary-and-ab
+- id: mlops
+  label: MLOps
+  aliases: [continuous training]
+  def: Running the ML lifecycle in production; maturity is how much of it runs without a person.
+  page: mlops-maturity-levels-and-ct-vs-ci-cd
+
+# --- ML and statistics -----------------------------------------------------------------
+- id: transformer
+  label: Transformer
+  aliases: [transformers, encoder-decoder]
+  def: Stacks of self-attention and feed-forward layers that replaced recurrent models for sequence work and train in parallel.
+  page: transformer-architecture
+- id: self-attention
+  label: Self-attention
+  aliases: [multi-head attention, intra-attention]
+  def: Relates positions of one sequence to each other to build its representation, modelling long-range dependencies directly.
+  page: self-attention-mechanism
+- id: vanishing-gradients
+  label: Vanishing gradients
+  aliases: [vanishing gradient, exploding gradients, gradient clipping]
+  def: Gradients that shrink to nothing across many steps, so early inputs stop influencing learning; clipping handles the opposite failure.
+  page: lstm-forget-gate-bias-and-vanishing-gradients
+- id: batch-norm
+  label: Batch normalization
+  aliases: [batch normalisation, batch norm, BatchNorm]
+  def: Normalises layer inputs with mini-batch statistics, allowing higher learning rates; train and inference behaviour differ.
+  page: batch-normalization
+- id: rlhf
+  label: RLHF
+  aliases: [reinforcement learning from human feedback]
+  def: Supervised fine-tuning, then a reward model trained on comparisons, then reinforcement learning against it; all three stages matter.
+  page: rlhf-pipeline
+- id: regularisation
+  label: Regularisation
+  aliases: [regularization, early stopping, weight decay]
+  def: Limiting model complexity with a knob whose validation curve peaks in the middle; early stopping is the same penalty in time.
+  page: regularisation-knobs-and-early-stopping
+- id: bias-variance
+  label: Bias-variance tradeoff
+  aliases: [bias-variance, bias variance, overfitting, underfitting]
+  def: Expected error splits into bias, variance and noise, and model complexity trades the first two.
+  page: bias-variance-decomposition-and-model-complexity
+- id: cross-validation
+  label: Cross-validation
+  aliases: [cross validation, k-fold, nested CV]
+  def: Estimating performance on repeated splits that mirror how the model meets new data; the best score found is optimistic.
+  page: cross-validation-variants-and-nested-search
+- id: gradient-boosting
+  label: Gradient boosting
+  aliases: [gradient-boosted, gradient boosted, XGBoost, LightGBM]
+  def: Fits shallow trees to loss gradients in sequence, with the number of rounds tuned by early stopping.
+  page: gradient-boosting-mechanics-and-library-choice
+- id: random-forest
+  label: Random forest
+  aliases: [random forests, bagging]
+  def: Averages deep trees, reducing variance only as far as their errors are decorrelated, hence the feature subsampling.
+  page: random-forests-and-bagging
+- id: logistic-regression
+  label: Logistic regression
+  aliases: [odds ratio, odds ratios]
+  def: Models the log-odds of an outcome; a coefficient is a change in log-odds, so the change in probability depends on the starting rate.
+  page: logistic-odds-ratios-vs-marginal-effects
+- id: leakage
+  label: Data leakage
+  aliases: [target leakage, feature leakage]
+  def: A feature or step that knows something it could not know at prediction time, which inflates offline scores.
+  page: tabular-ml-leakage-taxonomy
+- id: clustering
+  label: Clustering
+  aliases: [k-means, DBSCAN, agglomerative clustering]
+  def: Grouping unlabelled data, where each algorithm assumes a different cluster shape and the clusters still need inspecting.
+  page: clustering-algorithms-kmeans-agglomerative-dbscan
+- id: umap
+  label: UMAP
+  aliases: [t-SNE, tSNE]
+  def: Neighbourhood-preserving projections for 2-D pictures; read cluster shape, not size or distance, and do not feed them to a model.
+  page: tsne-and-umap-visualisation-rules
+- id: ab-test
+  label: A/B test
+  aliases: [A/B tests, A/B testing, AB test]
+  def: A randomised comparison that fixes metric, minimum effect and sample before launch, then decides on the interval.
+  page: ab-test-lifecycle-and-interval-decisions
+- id: p-value
+  label: p-value
+  aliases: [p-values, p value]
+  def: The chance of data at least this extreme if the null were true; it is neither the chance the null is true nor an effect size.
+  page: p-value-misreadings
+- id: confidence-interval
+  label: Confidence interval
+  aliases: [confidence intervals, Wilson interval]
+  def: A claim about a procedure's long-run coverage; the textbook interval for a proportion fails on rare events.
+  page: confidence-interval-coverage-and-wilson
+- id: bayes-rule
+  label: Bayes' rule
+  aliases: [Bayes rule, Bayes' theorem, base rate, base rates]
+  def: Converts P(B|A) into P(A|B) through the base rate, which is why an accurate test of a rare event is mostly false positives.
+  page: bayes-rule-and-base-rate-fallacy
+
+# --- Data systems ----------------------------------------------------------------------
+- id: feature-store
+  label: Feature store
+  aliases: [feature stores, point-in-time join, point-in-time joins]
+  def: A point-in-time join with a registry, an offline history, an online store and a materialisation job around it.
+  page: feature-stores-parts-and-when-you-need-one
+- id: lakehouse
+  label: Lakehouse
+  aliases: [lakehouses, data lakehouse]
+  def: A transactional metadata layer over open files, giving one copy of the data and many engines.
+  page: lakehouse-vs-warehouse-decision
+- id: dbt
+  label: dbt
+  aliases: [dbt models, dbt model]
+  def: Compiles templated SELECTs into warehouse SQL and runs them in dependency order, layer by layer.
+  page: dbt-layers-materialisations-and-the-ref-graph
+- id: medallion
+  label: Medallion layers
+  aliases: [medallion architecture, medallion, bronze, silver and gold]
+  def: Bronze, silver and gold layers that organise where problems get fixed; they detect nothing without tests.
+  page: medallion-layers-need-tests
+- id: idempotency
+  label: Idempotency
+  aliases: [idempotent, idempotency key, idempotency keys]
+  def: Making a repeated request harmless, typically with a request ID stored in the same transaction as the write.
+  page: idempotent-retries-and-request-ids
+- id: window-functions
+  label: Window functions
+  aliases: [window function]
+  def: SQL that computes over a group while keeping every row, used for top-N per group, running totals and lag comparisons.
+  page: sql-window-functions

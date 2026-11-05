@@ -1,0 +1,41 @@
+{
+  "skill": "gaps",
+  "template_literals": [
+    "Wrote data/telemetry/gaps.md",
+    "Asked, not answered:  <n>",
+    "Modules with no page: <n>",
+    "Lesson links missing: <n>",
+    "Withheld:             <n>",
+    "1. <asked | lesson link | module>: <topic> (first seen YYYY-MM-DD, count <n>)",
+    "Logged: <yes | no (list unchanged) | failed (<reason>)>",
+    "Top five: none"
+  ],
+  "must_mention": [
+    "uv run --extra api python core/wiki_telemetry.py gaps",
+    "core/wiki_telemetry.py log gaps",
+    "An unchanged list is a no-op and logs nothing",
+    "the detail is the three counts and nothing else",
+    "gitignored",
+    "carries no scores",
+    "/curriculum"
+  ],
+  "must_not_mention": [
+    "_gaps.md",
+    "_log.md",
+    "_metrics.md"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/gaps",
+      "output_regex": [
+        "(?m)^Wrote data/telemetry/gaps\\.md$",
+        "(?m)^Asked, not answered: +(\\d+|unavailable)",
+        "(?m)^Withheld: +\\d+$",
+        "(?m)^(Top five: none|1\\. (asked|lesson link|module): .+ \\(first seen \\d{4}-\\d{2}-\\d{2}, count \\d+\\))$",
+        "(?m)^Logged: (yes|no|failed)"
+      ],
+      "good": "Wrote data/telemetry/gaps.md\nAsked, not answered:  1\nModules with no page: 2\nLesson links missing: 9\nWithheld:             0\n\nTop five:\n1. asked: reward model training (first seen 2026-08-04, count 2)\n\nLogged: no (list unchanged)\n",
+      "bad": "The wiki is missing a few things. You should probably write a page on linked lists and on dynamic programming.\n"
+    }
+  ]
+}

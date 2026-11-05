@@ -460,6 +460,7 @@ function SearchBox({ value, onChange, placeholder, small }: {
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      data-view-search
       className={`search-box${small ? " search-box--small" : ""}`}
     />
   );

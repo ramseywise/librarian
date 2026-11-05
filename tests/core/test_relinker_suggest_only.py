@@ -151,3 +151,27 @@ def test_empty_sections_are_omitted(wiki: Path) -> None:
 def test_append_see_also_is_gone() -> None:
     """Stops the auto-write helper being quietly reintroduced."""
     assert not hasattr(core.relinker, "append_see_also")
+
+
+def test_private_pages_never_reach_the_suggestions_file(
+    wiki: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The file is tracked in a public repo: a private title in it is a leak."""
+    (wiki / "private").mkdir()
+    (wiki / "private" / "secret.md").write_text(
+        "---\ntitle: Secret Client Page\ntags: [private, concept]\n---\n\n"
+        "# Secret Client Page\n\nInternal notes.\n"
+    )
+    # Embeddings glob private pages too, so give the page the highest similarity going.
+    stems = ["alpha", "beta", "gamma", "orphan", "secret"]
+    monkeypatch.setattr("shared.embeddings.compute_embeddings", lambda: (stems, None))
+    monkeypatch.setattr(
+        "sklearn.metrics.pairwise.cosine_similarity",
+        lambda _vecs: numpy.full((5, 5), 0.95),
+    )
+
+    report, pages = _run(wiki)
+
+    assert "secret" not in pages
+    assert report.auto_candidates, "fixture no longer exercises the auto-threshold path"
+    assert "Secret Client Page" not in (wiki / "_relink_suggestions.md").read_text()

@@ -1,4 +1,4 @@
-export type EdgeType = "wikilink" | "semantic" | "tag-shared";
+export type EdgeType = "wikilink" | "semantic" | "tag-shared" | "mentions";
 export type LayoutMode = "dagre" | "umap-semantic";
 
 export interface WikiNodeData extends Record<string, unknown> {
@@ -30,6 +30,25 @@ export interface EdgeVisibility {
   wikilink: boolean;
   semantic: boolean;
   "tag-shared": boolean;
+  /** The glossary layer: term nodes and their "mentions" edges, focused views only. */
+  terms: boolean;
+}
+
+/** One entry of GET /api/glossary. Only terms with a public mention are served. */
+export interface GlossaryTerm {
+  id: string;
+  label: string;
+  aliases: string[];
+  def: string;
+  /** The live public page that explains it, if there is one. */
+  page: string | null;
+  mentions: number;
+}
+
+export interface Glossary {
+  terms: GlossaryTerm[];
+  /** Term id → public pages mentioning it (GET /api/glossary/mentions). */
+  mentions: Record<string, string[]>;
 }
 
 export interface CurriculumModule {

@@ -1,0 +1,12 @@
+[
+  {"input": "/harness-audit ../listen-wiseer", "expected": true},
+  {"input": "audit this agent's harness and tell me what a bad session could break", "expected": true},
+  {"input": "review the sandbox, hooks and permissions of my agent project against the wiki", "expected": true},
+  {"input": "can my agent skip its verification step? check the setup", "expected": true},
+  {"input": "how exposed is this agent to prompt injection exfiltration, given its tools? audit it", "expected": true},
+  {"input": "set up a first eval suite for this agent", "expected": false},
+  {"input": "security review the current diff", "expected": false},
+  {"input": "war game this plan and rank the threats", "expected": false},
+  {"input": "give me an ADK briefing before I start this agent build", "expected": false},
+  {"input": "run a health check on the wiki", "expected": false}
+]

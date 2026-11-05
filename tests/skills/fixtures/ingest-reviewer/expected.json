@@ -1,0 +1,12 @@
+{
+  "source": "source.md",
+  "new_pages": ["idempotency-keys-for-tool-retries.md", "agent-tool-retries.md"],
+  "faulty_page": "idempotency-keys-for-tool-retries.md",
+  "linking_page": "agent-tool-retries.md",
+  "faults": [
+    {"type": "name", "needle": "Tarnfield Logistics", "in_source": true},
+    {"type": "unsupported", "needle": "37 percent", "in_source": false}
+  ],
+  "must_not_flag": ["Redis", "Michael Nygard"],
+  "stripped_correctly": ["Priya Venkataraman"]
+}

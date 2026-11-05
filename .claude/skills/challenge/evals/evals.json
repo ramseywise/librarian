@@ -1,0 +1,12 @@
+[
+  {"input": "/challenge a judge model is enough, we don't need human labels", "expected": true},
+  {"input": "argue against my view that reranking is always worth the latency", "expected": true},
+  {"input": "push back on this using the wiki: LangGraph beats ADK for voice agents", "expected": true},
+  {"input": "I think semantic caching is safe by default. What does the wiki have against that?", "expected": true},
+  {"input": "what's the wiki's case against keeping all memory in context?", "expected": true},
+  {"input": "what does the wiki say about reranking?", "expected": false},
+  {"input": "red team this rollout plan and rank the threats", "expected": false},
+  {"input": "how does this design behave when the classifier doesn't know?", "expected": false},
+  {"input": "review this note for the RAG pillar", "expected": false},
+  {"input": "quiz me on the reranking pages", "expected": false}
+]

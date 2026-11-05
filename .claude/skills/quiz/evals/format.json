@@ -1,0 +1,53 @@
+{
+  "skill": "quiz",
+  "template_literals": [
+    "Quiz: <n> questions from <n> pages",
+    "1. [recall] <question> (→ [[Page]])",
+    "2. [application] <question> (→ [[Page]])",
+    "Results: <n> correct, <n> partial, <n> wrong",
+    "1. <correct | partial | wrong>: <what the page says> (→ [[Page]])",
+    "Reread: [[Page]], [[Page]]",
+    "Page problems found:",
+    "- [[Page]] — unsupported: <the claim>, not in <source path>",
+    "- [[Page]] — copied: <the first few words of the run>, from <source path>"
+  ],
+  "must_mention": [
+    "Read-only",
+    "Never open `data/wiki/private/`",
+    "Do not show answers",
+    "grade it `wrong`",
+    "do not log anything",
+    "8 or more consecutive words",
+    "not checked (source unavailable)",
+    "/practice"
+  ],
+  "must_not_mention": [
+    "wiki_telemetry.py",
+    "_log.md",
+    "_gaps.md",
+    "_metrics.md"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/quiz Semantic Caching (questions)",
+      "output_regex": [
+        "(?m)^Quiz: \\d+ questions from \\d+ pages$",
+        "(?m)^\\d+\\. \\[recall\\] .+\\(→ \\[\\[[^\\]]+\\]\\]\\)$",
+        "(?m)^\\d+\\. \\[application\\] .+\\(→ \\[\\[[^\\]]+\\]\\]\\)$"
+      ],
+      "good": "Quiz: 2 questions from 1 pages\n\n1. [recall] What does the page say invalidates a cached answer? (→ [[Semantic Caching]])\n2. [application] A support bot's prices change hourly. Which threshold would you change first? (→ [[Semantic Caching]])\n",
+      "bad": "Here are some questions on caching:\n1. What is semantic caching?\n2. Why does it matter?\n"
+    },
+    {
+      "prompt": "/quiz Semantic Caching (grading)",
+      "output_regex": [
+        "(?m)^Results: \\d+ correct, \\d+ partial, \\d+ wrong$",
+        "(?m)^\\d+\\. (correct|partial|wrong): .+\\(→ \\[\\[[^\\]]+\\]\\]\\)$",
+        "(?m)^Reread: (\\[\\[|none)",
+        "(?m)^Page problems found:$"
+      ],
+      "good": "Results: 1 correct, 0 partial, 1 wrong\n\n1. correct: a stale embedding version invalidates the entry (→ [[Semantic Caching]])\n2. wrong: the page lowers the similarity floor, not the TTL (→ [[Semantic Caching]])\n\nReread: [[Semantic Caching]]\nPage problems found:\nnone\n",
+      "bad": "You got 1 of 2 right. Nice work! I fixed a vague sentence on the page while I was there.\n"
+    }
+  ]
+}

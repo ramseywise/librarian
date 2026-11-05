@@ -1,0 +1,53 @@
+{
+  "skill": "challenge",
+  "template_literals": [
+    "Position: <the claim, in one line>",
+    "Against it:",
+    "1. <the objection> (→ [[Page]])",
+    "Open conflicts that bear on it:",
+    "Strongest objection: <1, 2, ...>, because <one line>",
+    "Read: [[Page A]], [[Page B]]            (pages opened, in order)",
+    "Not covered: <what the wiki could not speak to, or \"nothing\">",
+    "The wiki has nothing against this position."
+  ],
+  "must_mention": [
+    "core/wiki_telemetry.py ask",
+    "Bash(uv run python core/wiki_telemetry.py ask *)",
+    "never the raw position",
+    "Never open `data/wiki/private/`",
+    "data/wiki/_conflicts.md",
+    "`**Status:**` does not start with `Resolved`",
+    "from general knowledge",
+    "/review-defense"
+  ],
+  "must_not_mention": [
+    "Outside the wiki:",
+    "_gaps.md",
+    "_log.md"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/challenge a judge model is enough, we don't need human labels",
+      "output_regex": [
+        "(?m)^Position: .+$",
+        "(?m)^Against it:$",
+        "(?m)^1\\. .+\\(→ \\[\\[[^\\]]+\\]\\]\\)$",
+        "(?m)^Read: ((\\[\\[[^\\]]+\\]\\](, )?)+|none)$",
+        "(?m)^Not covered: \\S+"
+      ],
+      "good": "Position: A judge model removes the need for human labels.\n\nAgainst it:\n1. A judge's score can only be trusted as far as it agrees with people, so it needs a labelled calibration set first (→ [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]])\n\nOpen conflicts that bear on it:\nnone\n\nStrongest objection: 1, because it is the only one the wiki makes.\n\nRead: [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]], [[LLM-as-Judge Evaluation]]\nNot covered: nothing\n",
+      "bad": "Good point, but in general most teams find judge models drift over time, and research shows humans disagree too.\n"
+    },
+    {
+      "prompt": "/challenge tabs are better than spaces in YAML",
+      "output_regex": [
+        "(?m)^Position: .+$",
+        "(?m)^The wiki has nothing against this position\\.$",
+        "(?m)^Read: ((\\[\\[[^\\]]+\\]\\](, )?)+|none)$",
+        "(?m)^Not covered: arguments against .+$"
+      ],
+      "good": "Position: Tabs are better than spaces in YAML.\n\nThe wiki has nothing against this position.\n\nOpen conflicts that bear on it:\nnone\n\nRead: none\nNot covered: arguments against YAML indentation\n",
+      "bad": "Position: Tabs are better than spaces in YAML.\n\nAgainst it:\n1. The YAML spec forbids tabs for indentation.\n\nRead: none\nNot covered: nothing\n"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "skill": "compact-wiki",
+  "template_literals": [
+    "# Wiki Compaction Dry-Run — <date>",
+    "## Merge candidates",
+    "## Retire candidates",
+    "## Compress candidates",
+    "## Left alone (near-misses worth recording)",
+    "# Wiki Compaction Applied — <date>",
+    "Applied:      <n> merged, <n> retired, <n> compressed",
+    "Stats before: orphan <n>%",
+    "Stats after:  orphan <n>%"
+  ],
+  "must_mention": [
+    "core/wiki_telemetry.py stats --json",
+    "core/wiki_telemetry.py log compact",
+    "STOP for approval",
+    "tooling-ledger",
+    "truncate `logs/retrieval.jsonl`"
+  ],
+  "must_not_mention": [
+    "_log.md",
+    "wiki_stats.py"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/compact-wiki",
+      "output_regex": [
+        "(?m)^# Wiki Compaction Dry-Run — \\d{4}-\\d{2}-\\d{2}$",
+        "(?m)^Stats before: orphan \\d",
+        "(?m)^## Merge candidates$",
+        "(?m)^## Retire candidates$",
+        "(?m)^## Compress candidates$",
+        "(?m)^## Left alone"
+      ],
+      "good": "# Wiki Compaction Dry-Run — 2026-11-05\n\nStats before: orphan 4%, average degree 5, main component 91%, stale 12%, typed links 40%, stubs 3%\n\n## Merge candidates\n- none\n\n## Retire candidates\n- none\n\n## Compress candidates\n- none\n\n## Left alone (near-misses worth recording)\n- none\n",
+      "bad": "I merged [[A]] into [[B]] and retired [[C]].\n"
+    }
+  ]
+}

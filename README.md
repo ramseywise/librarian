@@ -249,7 +249,11 @@ PDFs on the module instead of importing them. It is idempotent: each generated f
 carries an `imported_hash`, so a file you edit in librarian — or author from scratch —
 is never overwritten or deleted by a later import.
 
-Each `slides/deck.yaml` in a module also becomes flashcards: one card per slide with a
+Lecture decks for every course are built here from `data/courses/<course>/<module>/slides/deck.yaml`
+and the module's `assets/`: `make slides PILLAR=<course>/<module> [PREVIEW=1] [PDF=1]`, or
+`make slides-all`. Built files are gitignored. See `.claude/skills/slides/SKILL.md`.
+
+Each `slides/deck.yaml` in a source module also becomes flashcards: one card per slide with a
 takeaway (front = `recall` or `title`, back = `takeaway`), attached to the lesson its
 `source:` names. Study them from a module or lesson with "Study N flashcards" (flip, next,
 shuffle). There is no scheduling.

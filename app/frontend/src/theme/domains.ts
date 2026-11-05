@@ -7,7 +7,13 @@
  * directory gets a stable colour from the palette, so adding a domain needs no code change.
  * Every colour must reach 4.5:1 on the card background (--surface-field), since it
  * colours the small domain label on each card; domains.test.ts enforces this.
+ *
+ * The tables hold the dark-theme colours, which are light tints. In the light theme each is
+ * darkened at its own hue until it reaches the same contrast, so a domain stays the same
+ * colour family and no second table can drift.
  */
+
+import { currentTheme, type Theme } from "../utils/theme";
 
 export const KNOWN: Record<string, string> = {
   rag: "#2196F3",
@@ -58,13 +64,71 @@ function hash(s: string): number {
   return h >>> 0;
 }
 
-export function domainColor(domain: string | undefined | null): string {
-  if (!domain) return "#688897";
-  return KNOWN[domain] ?? PALETTE[hash(domain) % PALETTE.length];
+/** --surface-field under [data-theme="light"] in tokens.css; tokens.test.ts keeps them equal. */
+export const LIGHT_CARD_BG = "#efeee9";
+const LIGHT_TARGET_RATIO = 4.6;
+
+/** WCAG relative luminance of a #RRGGBB colour. */
+export function luminance(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-export function courseColor(course: string): string {
-  return COURSE_COLORS[course] ?? PALETTE[hash(course) % PALETTE.length];
+export function contrastRatio(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/** Hue and saturation of a #RRGGBB colour, h in 0-1. */
+function hueSat(hex: string): { h: number; s: number; l: number } {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  const d = max - min;
+  if (!d) return { h: 0, s: 0, l };
+  const s = d / (1 - Math.abs(2 * l - 1));
+  const h = max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return { h: h / 6, s, l };
+}
+
+function fromHsl(h: number, s: number, l: number): string {
+  const a = s * Math.min(l, 1 - l);
+  const channel = (n: number) => {
+    const k = (n + h * 12) % 12;
+    const v = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(v * 255).toString(16).padStart(2, "0");
+  };
+  return `#${channel(0)}${channel(8)}${channel(4)}`.toUpperCase();
+}
+
+const lightCache = new Map<string, string>();
+
+/** The colour at its own hue, darkened until it is readable on the light card background. */
+export function lightVariant(hex: string): string {
+  const cached = lightCache.get(hex);
+  if (cached) return cached;
+  const { h, s, l } = hueSat(hex);
+  let out = hex;
+  for (let next = l; next > 0 && contrastRatio(out, LIGHT_CARD_BG) < LIGHT_TARGET_RATIO; next -= 0.005) {
+    out = fromHsl(h, s, next);
+  }
+  lightCache.set(hex, out);
+  return out;
+}
+
+const forTheme = (hex: string, theme: Theme) => (theme === "light" ? lightVariant(hex) : hex);
+
+export function domainColor(domain: string | undefined | null, theme: Theme = currentTheme()): string {
+  if (!domain) return forTheme("#688897", theme);
+  return forTheme(KNOWN[domain] ?? PALETTE[hash(domain) % PALETTE.length], theme);
+}
+
+export function courseColor(course: string, theme: Theme = currentTheme()): string {
+  return forTheme(COURSE_COLORS[course] ?? PALETTE[hash(course) % PALETTE.length], theme);
 }
 
 export const TYPE_COLORS: Record<string, string> = {
@@ -78,6 +142,6 @@ export const TYPE_COLORS: Record<string, string> = {
 };
 
 /** Colour for any tag shown as a chip: type tags first, then domains. */
-export function tagColor(tag: string): string {
-  return TYPE_COLORS[tag] ?? domainColor(tag);
+export function tagColor(tag: string, theme: Theme = currentTheme()): string {
+  return TYPE_COLORS[tag] ? forTheme(TYPE_COLORS[tag], theme) : domainColor(tag, theme);
 }

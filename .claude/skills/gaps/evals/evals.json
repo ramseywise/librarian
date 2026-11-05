@@ -1,0 +1,12 @@
+[
+  {"input": "/gaps", "expected": true},
+  {"input": "what is the wiki missing?", "expected": true},
+  {"input": "which questions has the wiki failed to answer lately?", "expected": true},
+  {"input": "refresh the wiki gaps list and show me the top five", "expected": true},
+  {"input": "what should I ingest next? show me what's uncovered", "expected": true},
+  {"input": "find orphan pages and dead wikilinks", "expected": false},
+  {"input": "where in the course should vector databases go?", "expected": false},
+  {"input": "ingest this article on spaced repetition", "expected": false},
+  {"input": "what does the wiki say about spaced repetition?", "expected": false},
+  {"input": "give me this week's wiki review", "expected": false}
+]

@@ -69,6 +69,10 @@ def load_pages() -> dict[str, PageInfo]:
     for md_file in sorted(WIKI_DIR.rglob("*.md")):
         if md_file.name.startswith("_"):
             continue
+        # _relink_suggestions.md is tracked and the repo is public, so private pages
+        # must never become a source or target of a suggestion.
+        if "private" in md_file.relative_to(WIKI_DIR).parts:
+            continue
         post = frontmatter.load(md_file)
         title = post.get("title") or md_file.stem
         tags = post.get("tags") or []

@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FlashcardDeck } from "../../../courses/types";
+import { FlashcardsDue } from "../FlashcardsDue";
 import { FlashcardsView, InlineMarkup } from "../FlashcardsView";
 
 const deck: FlashcardDeck = {
@@ -106,5 +107,111 @@ describe("InlineMarkup", () => {
     expect(container.querySelector("strong")?.textContent).toBe("bold x");
     expect([...container.querySelectorAll("code")].map((c) => c.textContent)).toEqual(["x", "a*b"]);
     expect(container.textContent).toBe("Use bold x then a*b at 5 * 3 < $4");
+  });
+});
+
+describe("FlashcardsView study filter", () => {
+  const scheduled: FlashcardDeck = {
+    id: "c1/m1",
+    title: "Module One",
+    course: "c1",
+    dueCount: 1,
+    newCount: 1,
+    cards: [
+      { id: "0", front: "Later question", back: "a", lesson: null, lessonTitle: null, box: 3, dueOn: "2099-01-01", status: "later" },
+      { id: "1", front: "Due question", back: "b", lesson: null, lessonTitle: null, box: 2, dueOn: "2020-01-01", status: "due" },
+      { id: "2", front: "New question", back: "c", lesson: null, lessonTitle: null, box: null, dueOn: null, status: "new" },
+    ],
+  };
+
+  function stubScheduled() {
+    const fetchMock = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async () => new Response(JSON.stringify(scheduled), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    return fetchMock;
+  }
+
+  const gradeKnew = async (user: ReturnType<typeof userEvent.setup>) => {
+    await user.click(screen.getByRole("button", { pressed: false, name: /Question/ }));
+    await user.click(screen.getByRole("button", { name: "Knew it" }));
+  };
+
+  it("hides the filter for a deck with no schedule", async () => {
+    stubDeck();
+    render(<FlashcardsView deckId="c1/m1" />);
+    await screen.findByText("First question");
+    expect(screen.queryByRole("group", { name: "Study filter" })).toBeNull();
+  });
+
+  it("starts on all cards and shows today's counts", async () => {
+    stubScheduled();
+    render(<FlashcardsView deckId="c1/m1" />);
+    await screen.findByText("Later question");
+    expect(screen.getByRole("button", { name: "Due today: 1 + 1 new" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "All 3" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("1 of 3")).toBeInTheDocument();
+    expect(screen.getByText(/Box 3/)).toBeInTheDocument();
+  });
+
+  it("the filter studies due and new cards only, and graded ones leave the queue", async () => {
+    const user = userEvent.setup();
+    const fetchMock = stubScheduled();
+    render(<FlashcardsView deckId="c1/m1" />);
+    await screen.findByText("Later question");
+    await user.click(screen.getByRole("button", { name: /Due today/ }));
+    expect(screen.getByText("Due question")).toBeInTheDocument();
+    expect(screen.getByText("1 of 2")).toBeInTheDocument();
+
+    await gradeKnew(user);
+    expect(screen.getByText("New question")).toBeInTheDocument();
+    expect(screen.getByText("1 of 1")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Due today: 0 + 1 new" })).toBeInTheDocument();
+
+    await gradeKnew(user);
+    expect(screen.getByText(/Nothing left to study today/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Due today: 0 + 0 new" })).toBeInTheDocument();
+    expect(fetchMock.mock.calls.filter(([url]) => String(url).endsWith("flashcard-results"))).toHaveLength(2);
+
+    await user.click(screen.getByRole("button", { name: "All 3" }));
+    expect(screen.getByText("Later question")).toBeInTheDocument();
+  });
+
+  it("a route ending in ?due opens filtered and fetches the plain deck id", async () => {
+    const fetchMock = stubScheduled();
+    render(<FlashcardsView deckId="c1/m1?due" />);
+    await screen.findByText("Due question");
+    expect(fetchMock.mock.calls[0][0]).toBe("/api/courses/flashcards/c1/m1");
+    expect(screen.getByRole("button", { name: /Due today/ })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("a deck with nothing due says so instead of hanging on Loading", async () => {
+    const quiet = { ...scheduled, cards: [scheduled.cards[0]], dueCount: 0, newCount: 0 };
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(quiet), { status: 200 })));
+    render(<FlashcardsView deckId="c1/m1?due" />);
+    expect(await screen.findByText(/Nothing left to study today/)).toBeInTheDocument();
+  });
+});
+
+describe("FlashcardsDue", () => {
+  const stub = (body: unknown, status = 200) =>
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify(body), { status })));
+
+  it("shows the totals and links each module to its filtered deck", async () => {
+    stub({ today: "2026-11-05", due: 4, new: 7, modules: [{ deck: "c1/m1", title: "Module One", due: 4, new: 7 }] });
+    render(<FlashcardsDue />);
+    const box = await screen.findByRole("region", { name: "Flashcards due today" });
+    expect(box).toHaveTextContent("4 due today, 7 new");
+    expect(screen.getByRole("link", { name: "Module One" })).toHaveAttribute("href", "#/flashcards/c1/m1?due");
+  });
+
+  it("renders nothing with nothing to study, or when the request fails", async () => {
+    stub({ today: "2026-11-05", due: 0, new: 0, modules: [] });
+    const { container, unmount } = render(<FlashcardsDue />);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(container).toBeEmptyDOMElement();
+    unmount();
+    stub({}, 500);
+    const failed = render(<FlashcardsDue />);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(failed.container).toBeEmptyDOMElement();
   });
 });

@@ -1,0 +1,46 @@
+{
+  "skill": "harness-audit",
+  "template_literals": [
+    "Harness audit: <project>",
+    "Worst session: <one sentence>",
+    "Stage: <ladder stage> (→ [[Harness Maturity and Failure Modes]])",
+    "1. [HIGH] <area>: <what is true>. Evidence: <path:line>. (→ [[Page]])",
+    "Held: <area> (<path:line>), <area> (<path:line>)",
+    "Not checked: <what could not be read, or \"nothing\">",
+    "Fix first: <finding number>: <the smallest change>; after it, the worst session is <one sentence>",
+    "Read: [[Page A]], [[Page B]]            (pages opened, in order)",
+    "Not covered: <concerns the wiki has no page for, or \"nothing\">"
+  ],
+  "must_mention": [
+    "Read-only",
+    "Never open or cite anything in `data/wiki/private/`",
+    "never open a secrets file or print a value",
+    "core/wiki_telemetry.py ask",
+    "nothing goes to `operations.jsonl`",
+    "/evals-bootstrap",
+    "/security-review"
+  ],
+  "must_not_mention": [
+    "four rings",
+    "second-brain",
+    "_gaps.md",
+    "_log.md"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/harness-audit ../some-agent",
+      "output_regex": [
+        "(?m)^Harness audit: .+$",
+        "(?m)^Worst session: .+$",
+        "(?m)^\\d+\\. \\[(HIGH|MED|LOW)\\] .+ Evidence: .+\\(→ \\[\\[[^\\]]+\\]\\]\\)$",
+        "(?m)^Held: ",
+        "(?m)^Not checked: ",
+        "(?m)^Fix first: ",
+        "(?m)^Read: (\\[\\[[^\\]]+\\]\\](, )?)+$",
+        "(?m)^Not covered: \\S+"
+      ],
+      "good": "Harness audit: some-agent\nWorst session: An injected run reads the customer table and posts it to the webhook tool.\nStage: 1 (→ [[Harness Maturity and Failure Modes]])\n\nFindings:\n1. [HIGH] Exfiltration: private data, fetched pages and an outbound webhook share one agent. Evidence: agent/tools.py:14. (→ [[Lethal Triad]])\n\nHeld: Gates (.claude/settings.json:9)\nNot checked: nothing\nFix first: 1: remove the webhook tool from this agent; after it, the worst session is a wrong answer in the local log.\n\nRead: [[Lethal Triad]], [[Harness Maturity and Failure Modes]]\nNot covered: nothing\n",
+      "bad": "Your harness looks decent overall. You should add more guardrails and maybe a sandbox, and consider better logging.\n"
+    }
+  ]
+}

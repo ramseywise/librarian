@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COURSE_COLORS, KNOWN, PALETTE, courseColor, domainColor, tagColor } from "../domains";
+import { COURSE_COLORS, KNOWN, LIGHT_CARD_BG, PALETTE, TYPE_COLORS, contrastRatio, courseColor, domainColor, lightVariant, tagColor } from "../domains";
 
 describe("domainColor", () => {
   it("keeps historical colours for known domains", () => {
@@ -51,4 +51,50 @@ describe("domain colour contrast", () => {
       expect(ratio).toBeGreaterThanOrEqual(4.5);
     },
   );
+});
+
+describe("light theme colours", () => {
+  const hues = [
+    ...Object.entries(KNOWN),
+    ...Object.entries(COURSE_COLORS),
+    ...Object.entries(TYPE_COLORS),
+    ...PALETTE.map((c) => [c, c]),
+    ["default", domainColor(undefined, "dark")],
+  ];
+
+  function hue(hex: string): number {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    const max = Math.max(r, g, b);
+    const d = max - Math.min(r, g, b);
+    if (!d) return 0;
+    const h = max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return h * 60;
+  }
+
+  it.each(hues)("%s reaches 4.5:1 on the light card background", (_name, colour) => {
+    expect(contrastRatio(lightVariant(colour), LIGHT_CARD_BG)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it.each(hues)("%s keeps its hue", (_name, colour) => {
+    const diff = Math.abs(hue(lightVariant(colour)) - hue(colour));
+    expect(Math.min(diff, 360 - diff)).toBeLessThan(6);
+  });
+
+  it("keeps every domain and every course its own colour", () => {
+    const domains = Object.values(KNOWN).map(lightVariant);
+    expect(new Set(domains).size).toBe(domains.length);
+    const courses = Object.values(COURSE_COLORS).map(lightVariant);
+    expect(new Set(courses).size).toBe(courses.length);
+  });
+
+  it("stays a plain hex: NodeDetailPanel appends an alpha to it", () => {
+    for (const [, colour] of hues) expect(lightVariant(colour)).toMatch(/^#[0-9A-Fa-f]{6}$/);
+  });
+
+  it("the theme argument picks the table", () => {
+    expect(domainColor("eval", "dark")).toBe("#FFEB3B");
+    expect(domainColor("eval", "light")).toBe(lightVariant("#FFEB3B"));
+    expect(courseColor("programming", "light")).toBe(lightVariant("#64B5F6"));
+    expect(tagColor("decision", "light")).toBe(lightVariant("#ef9a9a"));
+  });
 });

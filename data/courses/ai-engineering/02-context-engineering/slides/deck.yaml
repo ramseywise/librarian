@@ -1,0 +1,996 @@
+# Lecture deck for ai-engineering/02-context-engineering, notes 01-13 and the 99 appendix.
+# Build: make slides PILLAR=02-context-engineering STRICT=1 PREVIEW=1
+# Running example: a deep-research agent that must track OpenAI co-founders' current roles
+# inside a 128K window (Li, Experiment 2-9, in notes/05).
+deck:
+  title: Context Engineering
+  subtitle: The smallest set of high-signal tokens
+  tagline: |-
+    One research agent, a 128K window, and 367k characters of search results.
+    What goes in, what shrinks, what splits off, and how you find out what went wrong.
+  reference: "Notes: ai-engineering/02-context-engineering"
+  output: context-engineering.pptx
+  notes: >-
+    This is the second pillar of the course. Prompt engineering wrote the instructions. Today we decide
+    everything else that shares the window with them, on every call. One research agent stays with us
+    the whole way, and it fails in every way the notes describe, so each technique arrives as the fix for
+    something we have just watched break.
+parts:
+  - title: Why the window fills
+    summary: The agent overflows · What occupies the window · How to budget it
+    divider: true
+    agenda: true
+    notes: >-
+      We start with the failure. A research agent runs out of window five iterations in. To understand why
+      that is more than a size problem we need three things: why more tokens hurt, what is actually sitting
+      in the window, and how to spend it deliberately.
+    slides:
+      - layout: statement
+        kicker: The problem
+        title: Seven searches overflow a 128K window
+        statement: "Seven searches return about 367k characters. A 128K window overflows at iteration 5, and the task fails."
+        attribution: "Li, AI Agents in Depth, Experiment 2-9: tracking OpenAI co-founders' current roles with Kimi K3"
+        takeaway: An agent with no plan for its window dies on its own tool results, however capable the model is.
+        recall: What happened to the research agent that kept every search result in a 128K window?
+        source: notes/05-compression-compaction.md
+        notes: >-
+          Here is our agent for the day. Its job is simple: find what each OpenAI co-founder does now. It
+          searches, reads, searches again. Seven searches bring back about 367 thousand characters, and with
+          no compression the run overflows at iteration five and fails. The model was never the limit. So why
+          not just buy a bigger window? That is the next slide.
+      - layout: bullets
+        kicker: Why not a bigger window
+        title: A bigger window divides attention more thinly
+        lead: Find the smallest set of high-signal tokens that maximizes the likelihood of the outcome you want.
+        bullets:
+          - "Every token attends to every other: **n² pairs** for n tokens"
+          - Doubling the context quadruples the pairs, while the parameters resolving them stay fixed
+          - Token cost is not the binding constraint. A 150k window can fit the budget and still degrade output
+          - "\"It fits\" is an upper bound on what is possible, not a target"
+        aside:
+          title: The thesis is a minimization
+          accent: "D4621A"
+          body: The instinct with a large window is to fill it. Every token competes for a fixed attention budget, so the instinct is wrong.
+        takeaway: Added tokens do not expand the attention budget. They split the same budget across more claimants.
+        recall: Why does a larger context window not solve the attention problem?
+        source: notes/01-why-context-is-finite.md
+        notes: >-
+          Anthropic frames the job as a minimization, and the mechanism explains why. In a transformer every
+          token attends to every other token, so doubling the context quadruples the pairs while the
+          parameters stay the same. Attention gets thinner, not just slower. So a bigger window moves the
+          overflow further out and leaves the quality problem in place. What does that quality problem look
+          like when you measure it?
+      - layout: image
+        kicker: The evidence
+        title: The effective window depends on the task
+        image: ../assets/sources/images/zhang-recursive-language-models-fig1.png
+        caption: "Zhang, Kraska & Khattab, Recursive Language Models (2025), Fig. 1"
+        bullets:
+          - Frontier models now reliably find a planted needle at 1M+ tokens
+          - They struggle at far shorter lengths when the answer depends on almost every line
+          - "So rot is measured per task: a needle test tells you little about synthesis"
+          - Our agent synthesizes, so expect its usable window to sit well below the advertised one
+        takeaway: A model's advertised window says nothing about the length at which your task starts to fail.
+        recall: Why can a model pass a needle test at 1M tokens and still fail on shorter inputs?
+        source: notes/01-why-context-is-finite.md
+        notes: >-
+          This figure compares GPT-5 with a recursive variant across context lengths on three tasks. Needle in
+          a haystack holds up. OOLONG, where the answer depends on nearly every line, falls off much earlier.
+          So the useful question is never how big the window is. It is where the knee sits for your task.
+          We will measure that knee in the last part.
+      - layout: cards
+        kicker: What rot looks like
+        title: Context rot starts long before the limit
+        cards:
+          - title: Middle neglect
+            body: Start and end are recalled and the middle is not. Lost in the middle.
+          - title: Distractor sensitivity
+            body: Plausible but wrong content pulls the answer further off target as the window grows.
+          - title: Instruction decay
+            body: System-prompt rules obeyed early in a session are quietly dropped later.
+          - title: Needle degradation
+            accent: "D4621A"
+            body: A planted fact, present verbatim, is missed more often as filler grows.
+        takeaway: Context rot is a gradual decline from well below the limit, so filler is a cost and not free insurance.
+        recall: Name the four observed shapes of context rot.
+        source: notes/01-why-context-is-finite.md
+        notes: >-
+          Rot is not a cliff at the window edge. Here are the four shapes people have observed. For our agent
+          the dangerous ones are the first two: the founder whose role changed sits in the middle of a long
+          page, and a stale article nearby pulls the answer the wrong way. Now let's open the window and see
+          what is taking up all that room.
+      - layout: image
+        kicker: The anatomy
+        title: Six kinds of content compete for one window
+        image: ../assets/sources/images/li-ai-agents-in-depth-fig2-1.svg
+        caption: "Li, AI Agents in Depth (2026), Fig. 2-1 (Apache-2.0)"
+        bullets:
+          - "**System prompt:** role, framing, constraints"
+          - "**Tool definitions:** resident on every call"
+          - "**Retrieved knowledge** and **memory**"
+          - "**Runtime state:** date, user, permissions"
+          - "**History:** including tool calls and results"
+          - "**The current turn:** last"
+        takeaway: Context engineering decides, per call, what occupies each slot of the window and at what size.
+        recall: "What does context engineering decide on each call?"
+        source: notes/02-context-anatomy.md
+        notes: >-
+          This is the map for the rest of the talk. Every technique today moves something between these slots.
+          In our agent the history slot, holding the raw search results, grew until it pushed out everything
+          else. The first slot we tune is the one we write by hand, the system prompt.
+      - layout: compare
+        kicker: The system prompt
+        title: Write the system prompt at the right altitude
+        emphasis: right
+        left:
+          title: Too low, or too high
+          accent: "94A3B8"
+          bullets:
+            - "**Too low:** hardcoded if/else in prose, brittle on any case not enumerated"
+            - "\"If the user says X, reply Y. If Z, reply W...\""
+            - "**Too high:** vague guidance that assumes context the model lacks"
+            - "\"Be helpful and use good judgment.\""
+        right:
+          title: The right altitude
+          bullets:
+            - Specific enough to guide, flexible enough to generalize
+            - Heuristics with clear signals
+            - "\"Prefer X when the signal is A; escalate when uncertain.\""
+          tag: Fourth conditional? Reach for a tool or a code control
+        takeaway: When a prompt collects a fourth conditional, the fix is usually a tool or a code-level control and not a fifth rule.
+        recall: What goes wrong at each extreme of system prompt altitude?
+        source: notes/02-context-anatomy.md
+        notes: >-
+          Too low and you are writing a program in English, and it breaks on the first case you did not list.
+          Too high and the model invents its own reading. The middle is heuristics plus signals. When you
+          catch yourself adding a fourth conditional, stop. That rule probably belongs somewhere other than
+          the prompt, which is exactly the question on the next slide.
+      - layout: steps
+        kicker: Where each instruction belongs
+        title: Sort content by frequency, stability and enforcement
+        axis: always resident → enforced in code
+        steps:
+          - title: Persistent instruction
+            text: "identity, conventions, invariants. Test: true in nearly every task?"
+          - title: On-demand knowledge
+            text: skills and playbooks. A short description stays resident, the procedure loads when triggered
+          - title: Runtime injection
+            text: date, tenant, permissions, assembled at request time
+          - title: Long-term memory
+            text: a compact index plus retrievable detail, never a pasted transcript
+          - title: Deterministic system
+            accent: "D4621A"
+            text: hooks, permissions, schemas, validators. A code control cannot be talked out of enforcing itself
+        takeaway: "\"The agent keeps doing X\" is usually a job for a hook, not for a stronger sentence in the prompt."
+        recall: "If the agent keeps doing X, where does the fix usually belong?"
+        source: notes/02-context-anatomy.md
+        notes: >-
+          Five layers, and you sort by how often something is needed and how firmly it must hold. In the DAIR
+          deep-research case study the agent searched for stale news because "latest" meant last year. The fix
+          was a runtime injection of the current date, not another sentence of instruction. Where that date lands in the window turns out
+          to matter a great deal.
+      - layout: image
+        kicker: Ordering
+        title: The cache is a prefix match, so stable goes first
+        image: ../assets/sources/images/li-ai-agents-in-depth-fig2-10.svg
+        caption: "Li, AI Agents in Depth (2026), Fig. 2-10 (Apache-2.0)"
+        bullets:
+          - "The first differing token invalidates **everything after it**"
+          - "Order: system, tools, stable memory, then retrieved, history, state, query"
+          - "Long documents above the query: up to **30%** better (Anthropic)"
+        takeaway: Cache economics and attention placement point the same way, so stable content goes first and the query goes last.
+        recall: Why does content order in the window matter for prompt caching?
+        source: notes/02-context-anatomy.md
+        notes: >-
+          The prompt cache matches a prefix. One changed token and everything after it is prefilled again. So
+          stable content goes first, dynamic content goes late. Anthropic also measures up to thirty percent
+          better quality on long-document work when the query comes last, so the two pressures agree. Getting
+          this wrong has a price, and the next slide shows the bill.
+      - layout: table
+        kicker: What it costs to get wrong
+        title: One timestamp nearly doubled the bill
+        lead: "`Current time: {{now}}` in a 100k-conversation/day system prompt: TTFT **0.5 s to 3–5 s**, bill nearly doubled."
+        header: [Pattern, What breaks, Fix]
+        widths: [3.2, 3.6, 3.2]
+        highlight: [0]
+        rows:
+          - [Timestamp in the system prompt, Prefix changes every request, Late message or a clock tool]
+          - ["Per-request user config", Same, State at the end]
+          - [Reordering tools by usage, Tokens re-prefilled per tool, Fixed order]
+          - [Sliding-window history, Prefix shifts and old results vanish, "Compaction, not truncation"]
+          - ["Flattening to `USER:` text", Leaves the trained format, Structured API roles]
+        takeaway: Any per-request value placed early in the prompt invalidates the cached prefix on every call.
+        recall: What did adding a timestamp to a high-volume system prompt do, and what is the fix?
+        source: notes/02-context-anatomy.md
+        notes: >-
+          This is a production incident from the notes. Someone added the current time to a system prompt
+          serving a hundred thousand conversations a day. Time to first token went from half a second to three
+          to five seconds, and the bill nearly doubled. The other rows are the same bug in different clothes.
+          Our agent needs the date too, so it goes late. Next, the most useful thing that can go late.
+      - layout: code
+        kicker: Worked example
+        title: Put a status bar at the end of the window
+        lang: xml
+        code: |-
+          <agent_status>
+          - phone_call: 3 invocations
+            (Xfinity: 3/3 max)
+          - Current time: 2025-09-14 10:30:45
+          - TODO: [1] Cancel plan (in_progress)
+          </agent_status>
+        bullets:
+          - "Weak models gain **40–54 points**; a 2B model with a bar matches a frontier model without one"
+          - "Strong models cut reasoning tokens **80–90%**"
+          - "Lossy: a pairs-only bar on a triple question, **100% to 7.6%**"
+          - "Errors above about **10%** are worse than no bar"
+        takeaway: In-context learning behaves like retrieval more than reasoning, so give the model the count instead of making it count.
+        recall: What does an agent status bar buy, and when does it backfire?
+        source: notes/02-context-anatomy.md
+        notes: >-
+          A status bar is distilled state at the very end of the window, maintained in code. Weak models gain
+          forty to fifty-four points, and strong models keep their accuracy while cutting reasoning tokens by
+          eighty to ninety percent. It is lossy, though: when a question needed triples and the bar stored
+          pairs, Claude fell from 100 percent to 7.6. Our agent's bar would hold which founders it has
+          confirmed. With the layout settled, how much room does each slot get?
+      - layout: compare
+        kicker: The budget
+        title: Two rules matter more than any percentage split
+        lead: Investments, such as a rule used on every call, go in the stable prefix. Expenses, such as a tool result read once, get cleared.
+        emphasis: right
+        left:
+          title: "A starting split: complex reasoning"
+          accent: "94A3B8"
+          bullets:
+            - "System **15%**, examples **25%**"
+            - "History **30%**, input **20%**"
+            - "Reserve **10%**"
+            - "Simple Q&A shifts to 70% history, 0% examples"
+          tag: A guess to measure against
+        right:
+          title: The rules
+          bullets:
+            - "**Reserve the output first:** `max_tokens` and the thinking budget come off the top"
+            - "**Give every growing component a ceiling:** history, tool results, retrieved chunks"
+            - The ceiling is what triggers compaction
+          tag: A full window leaves no room to answer
+        takeaway: Reserve the output first and cap everything that grows, then treat any percentage split as a guess to measure.
+        recall: Which two budgeting rules matter more than the percentage split?
+        source: notes/03-budgeting-the-window.md
+        notes: >-
+          You will see tidy percentage tables in the literature. They are starting guesses. Two rules do more
+          work. Take the output reservation off the top, because a full window leaves no room to answer. And
+          give every growing thing a ceiling. Our agent had no ceiling on tool results, and that one missing
+          number is why it died at iteration five.
+      - layout: image
+        kicker: The frontier
+        title: Text edits break the cache, so edit the cache itself
+        image: ../assets/sources/images/fu-cache-engineering-agents-fig1.png
+        caption: "Fu et al., Cache Engineering for Agents (2026), Fig. 1"
+        bullets:
+          - "KV-cache reads are **82.4%** of API cost in agent workloads"
+          - "Rolling-drop of tool responses: **+1.7 points at 27.7% lower cost** than threshold summarization"
+          - "Serving gains reach **1.2×** throughput and **1.5×** P95 latency"
+        takeaway: In agent workloads cache reads dominate cost, so a context edit that forces a re-prefill can cost more than it saves.
+        recall: Why can summarizing an old tool result be more expensive than it looks?
+        source: notes/03-budgeting-the-window.md
+        notes: >-
+          There is a catch to everything we are about to do. Summarizing an old tool result changes the text,
+          so everything after it is prefilled again. Fu and colleagues at Tsinghua measure cache reads at 82.4
+          percent of API cost and drop entries from the KV cache directly. Most of us have no access to the
+          serving stack, so the practical lesson is to batch edits and make them at stable boundaries.
+      - layout: code
+        kicker: Monday morning
+        title: Measure what each layer of the prompt buys
+        lang: python
+        code: |-
+          layers = {"role": ..., "examples": ...,
+                    "constraints": ..., "audience": ...}
+          prompt = "Write a paragraph about climate change."
+          for name, text in [("base", "")] + list(layers.items()):
+              prompt = f"{text}\n\n{prompt}" if text else prompt
+              out = llm(prompt)
+              p = len(enc.encode(prompt))
+              print(f"{name:12} prompt={p:4} score={judge(out):.2f}")
+        takeaway: Remove anything whose deletion does not move an eval score, and judge each layer by quality per prompt token.
+        recall: How do you decide whether a section of a prompt has earned its tokens?
+        source: notes/03-budgeting-the-window.md
+        notes: >-
+          So the budget gets set by evidence. Add one layer at a time, record tokens and score, and see which
+          layers pay. Watch the metric: response length over prompt length rewards verbosity, so track quality
+          per prompt token. That closes the first part. We know why the window fills and how to lay it out.
+          Next: what should come in at all?
+
+  - title: What comes in
+    summary: Retrieve when it is needed · Remember what lasts · Give it a structure
+    divider: true
+    agenda: true
+    notes: >-
+      Our agent's real mistake was loading things before it knew it needed them. This part covers the two
+      ways content enters the window, retrieval from outside and memory from earlier, and the structure that
+      keeps both legible.
+    slides:
+      - layout: statement
+        kicker: The problem
+        title: Guessing relevance up front loads the whole corpus
+        statement: "Fifty files at 5,000 tokens is 250,000 tokens. The agent needed three of them."
+        attribution: "Index plus three files comes to about 15.5k. Worked in notes/04."
+        takeaway: Pre-retrieval guesses relevance before the model has reasoned, and pays for every wrong guess in tokens.
+        recall: How many tokens do identifiers save when an agent needs 3 of 50 files, and why?
+        source: notes/04-retrieval.md
+        notes: >-
+          Here is the sum. A file path costs about ten tokens and a file costs five thousand. Load fifty files
+          up front and you spend 250 thousand. Keep an index of paths and read the three you need and you
+          spend about 15.5 thousand. The difference is who decides what is relevant, and when.
+      - layout: compare
+        kicker: The shift
+        title: Let the model pull what its reasoning asks for
+        emphasis: right
+        left:
+          title: Pre-computed
+          accent: "94A3B8"
+          bullets:
+            - Embed corpus and query, stuff top-k, generate
+            - Relevance is guessed **before** the model reasons
+            - "Fifty files at 5k tokens each: **250k**"
+          tag: Fast, deterministic, often wrong
+        right:
+          title: Just-in-time
+          bullets:
+            - "Keep **identifiers**: paths, IDs, queries"
+            - The agent loads what its reasoning says it needs
+            - "Index plus the three files it reads: **about 15.5k**"
+          tag: "Costs: latency, wandering, non-determinism"
+        takeaway: "Pre-load only what is needed on 80% or more of turns, and leave the long tail to tools."
+        recall: What single design question decides between pre-loading content and fetching it with a tool?
+        source: notes/04-retrieval.md
+        notes: >-
+          Just-in-time retrieval has real costs: it is slower, it can wander, and it is not deterministic. So
+          the default is a hybrid, and one question decides each item: is this needed on at least 80 percent of
+          turns? Yes, pre-load it. No, keep an identifier and a tool. For our agent the plan is resident and
+          the pages are fetched.
+      - layout: table
+        kicker: The choice
+        title: Long context, cache, retrieval or tools
+        header: [Option, Use when, Costs]
+        widths: [2.4, 4.2, 3.6]
+        highlight: [2]
+        rows:
+          - ["**Long context**", "Fits well inside the effective window; asked once or twice", "Full prefill per call; rot"]
+          - ["**Prompt cache**", "Fits, and the same corpus serves many queries", "Storage per hour; any prefix change misses"]
+          - ["**Retrieval**", "Does not fit, changes often, or permissions differ per user", "A pipeline to build and tune"]
+          - ["**Just-in-time tools**", "Agents over codebases, file systems, APIs", "Latency, wandering, non-determinism"]
+        takeaway: These options combine, as a cached prefix plus retrieval or tools for the long tail, and permissions force retrieval.
+        recall: When does per-user permissioning rule out loading everything into context?
+        source: notes/04-retrieval.md
+        notes: >-
+          This is a genuine decision, so it earns a table. Read it by the "use when" column. Notice that
+          permissions alone can force retrieval, because you cannot put a document in a shared prefix if only
+          some users may read it. In practice you combine these. Then, when you do retrieve, how many chunks
+          should you take?
+      - layout: flow
+        kicker: How much to retrieve
+        title: Retrieve wide, rerank hard, send narrow
+        steps:
+          - {label: Wide first stage, sub: recall}
+          - {label: Rerank, sub: precision}
+          - {label: Narrow set, sub: what reaches the window}
+        bullets:
+          - "**Simple lookup:** few chunks, since more is pure dilution"
+          - "**Comparison or synthesis:** more chunks, since it needs breadth"
+          - "**Ambiguous or exploratory:** wide, then rerank hard"
+        takeaway: Recall and precision are separate jobs, with a fast wide first stage followed by a reranker that picks what reaches the window.
+        recall: Why split retrieval into a wide first stage and a reranker?
+        source: notes/04-retrieval.md
+        notes: >-
+          Depth scales with the task. A lookup wants few chunks because every extra one dilutes. Our agent is
+          comparing sources across several people, so it needs breadth. Don't ask one stage to do both jobs: a
+          fast first stage gets recall, and a reranker gets precision. The chunks themselves have a problem,
+          though, and that is the next slide.
+      - layout: image
+        kicker: The evidence
+        title: A chunk out of context does not know what it says
+        image: ../assets/sources/images/li-ai-agents-in-depth-fig3-14.svg
+        caption: "Li, AI Agents in Depth (2026), Fig. 3-14 (Apache-2.0)"
+        bullets:
+          - "\"Q2 revenue grew 3%\": which company, which year?"
+          - An LLM writes a short prefix per chunk; index prefix and chunk
+          - "Top-20 failures **down 49%**, **67%** with a reranker"
+          - "About **$1 per million** document tokens with prompt caching"
+        takeaway: Contextual retrieval adds meaning to chunks at index time, while contextual compression removes text at query time.
+        recall: What does contextual retrieval do at index time, and what does it buy?
+        source: notes/04-retrieval.md
+        notes: >-
+          Chunking strips the context that made a sentence meaningful. Anthropic's fix has an LLM write a short
+          prefix for each chunk at index time. Top-20 retrieval failures fall 49 percent with contextual
+          embeddings plus contextual BM25, and 67 percent with a reranker. That handles content from outside.
+          What about what the agent already learned?
+      - layout: image
+        kicker: Memory
+        title: Memory only matters once it enters a window
+        image: ../assets/sources/images/li-ai-agents-in-depth-fig3-3.svg
+        caption: "Li, AI Agents in Depth (2026), Fig. 3-3 (Apache-2.0)"
+        bullets:
+          - Extract candidate facts; match against existing memories
+          - "An LLM picks **ADD, UPDATE, DELETE or NOOP**"
+          - "\"Moved to Shanghai\" UPDATEs \"lives in Beijing\""
+          - Absolute dates; do not store what is derivable
+        takeaway: Append-only memory is slow-motion context poisoning, so new facts must update or delete the old ones.
+        recall: Why must a memory system update and delete, rather than only append?
+        source: notes/06-memory.md
+        notes: >-
+          Memory affects the model only by entering a window, so every memory decision is a context decision.
+          A founder moves to a new company. If the old role stays stored next to the new one, the agent now has
+          a contradiction it will resolve arbitrarily. So each write chooses add, update, delete or no-op. The
+          format of those facts is the next choice.
+      - layout: table
+        kicker: The format
+        title: Match the memory format to the stakes
+        header: [Format, Wins, Loses]
+        widths: [2.4, 3.8, 3.8]
+        rows:
+          - [Simple notes, Cheapest; passes basic recall, Links between facts]
+          - [JSON cards, Partial updates; predictable, Rigid when a fact fits three categories]
+          - [Advanced JSON cards, "Disambiguation: the user's dentist vs. their father's cardiologist", Expensive to generate and maintain]
+          - [User as Code, "Typed state from a fact log: aggregation **~99%** vs. 6–43%", "Needs a `notes` field for what won't type"]
+        takeaway: Use rich cards for critical, low-volume facts and simple notes for high-volume, low-stakes ones.
+        recall: Which memory format suits critical low-volume facts, and which suits high-volume low-stakes ones?
+        source: notes/06-memory.md
+        notes: >-
+          There is no single best format. Simple notes are cheap but lose the links between facts. Advanced
+          cards disambiguate but are expensive to maintain. Typed state built from a fact log wins aggregation
+          questions at about 99 percent against six to forty-three. Mix them according to what is at stake. But
+          should you be extracting at all?
+      - layout: image
+        kicker: The evidence
+        title: A strong model may do better searching the raw record
+        image: ../assets/sources/images/peng-memorytax-fig1.png
+        caption: "Peng (2026), one LoCoMo conversation: 419 turns, 152 questions"
+        bullets:
+          - "Mem0 beats full context only with the weakest model: GPT-4o-mini, **78% vs. 74%**"
+          - "The writer caps every reader: Opus 5.5 on a GPT-4o-mini graph, **45% vs. 43%**"
+          - "A coding agent reading the raw history as one file: **99%**, under half full context's cost"
+          - "Caveats: one conversation, one run per cell"
+        takeaway: Extraction loses information for good, so with a strong model keep the source and make it searchable.
+        recall: What does "the writer caps every reader" mean for extraction-based memory?
+        source: notes/06-memory.md
+        notes: >-
+          Peng asks whether designed memory still pays once a model can search its own history. On one
+          conversation, Mem0 wins only with the weakest reader. A strong reader on a store written by a weak
+          model barely helps, 45 percent against 43. Reading the raw file with search reached 99 percent. The
+          author's caveats are serious, so read this as a direction and not a benchmark. Whatever you keep, it
+          needs a shape.
+      - layout: compare
+        kicker: Structure
+        title: Structure tells the model what each part is
+        lead: Structure compresses meaning, not tokens. The model spends less attention working out what it is looking at.
+        emphasis: none
+        left:
+          title: Tags and markdown, for the reader
+          bullets:
+            - "**XML-style tags:** wrap documents, separate sections"
+            - "**Markdown:** instructions and readable prompts"
+            - "Weak boundary: a retrieved doc's `##` collides with yours"
+        right:
+          title: JSON and YAML, for machines
+          bullets:
+            - "**JSON:** machine state and tool I/O; token-heavy, escaping inside strings"
+            - "**YAML:** nested config-like state; whitespace and ambiguous types"
+            - "**Closed sets:** every free-text field that code reads needs enumerated values"
+        takeaway: Use tags for boundaries, markdown for prose, and JSON for anything a program reads back.
+        recall: Which format should you use for document boundaries, for prose, and for state a program reads?
+        source: notes/07-structured-context.md
+        notes: >-
+          Structure saves attention rather than tokens. The DAIR deep-research case study showed the failure
+          directly: status values drifted between pending and to-do, done and finished, across runs, until the code reading them
+          broke. The fix is a closed set of allowed values. And since that state gets re-injected, it has to be
+          valid.
+      - layout: code
+        kicker: Worked example
+        title: Validate at the boundary and feed the error back
+        lang: python
+        code: |-
+          for _ in range(max_attempts):
+              raw = llm(prompt)
+              fenced = re.search(FENCE_RE, raw, re.DOTALL)
+              try:
+                  text = fenced.group(1) if fenced else raw
+                  obj = json.loads(text)
+                  jsonschema.validate(obj, schema)
+                  return obj
+              except (json.JSONDecodeError,
+                      jsonschema.ValidationError) as e:
+                  prompt += (f"\n\nDid not conform. "
+                             f"Error: {e}. Try again.")
+          raise ValueError("no schema-valid response")
+        bullets:
+          - Prefer the provider's **structured-output mode**
+          - The validator's message tells the retry what to fix
+          - Keep `jsonschema.validate` for rules the provider's subset cannot express
+        takeaway: A malformed state block that is re-injected compounds on every turn, so validate at the boundary.
+        recall: Why must structured state be validated before it re-enters the window?
+        source: notes/07-structured-context.md
+        notes: >-
+          A loop you will write many times. Parse, validate, and on failure hand the validator's message back so
+          the retry knows what to fix. Use the provider's structured-output mode when you have it and keep the
+          validator for what it cannot express. So we now choose what comes in. But our agent's searches are
+          still enormous, which takes us to shrinking.
+
+  - title: What shrinks and what splits off
+    summary: Compact the history · Keep the rules · Reason in isolation · Split into sub-agents
+    divider: true
+    agenda: true
+    notes: >-
+      Even with good selection the window still grows. Two levers remain, and they are in order of cost: make
+      content smaller, or move it into its own window. This part returns to the overflowing agent and fixes it.
+    slides:
+      - layout: statement
+        kicker: The problem
+        title: Compaction silently deletes your safety rules
+        statement: "Claude Code's /compact on Sonnet 4.6 keeps 53% of safety rules after one round, and 10% after five."
+        attribution: "Zerhoudi et al. (2026), 20 production agent configurations, 50% compression per round"
+        takeaway: A summarizer cannot tell which sentence is a rule, so it compresses rules at the same rate as everything else.
+        recall: What fraction of safety rules survive five rounds of general-purpose compaction, and why so few?
+        source: notes/05-compression-compaction.md
+        notes: >-
+          Compaction is what lets an agent run for hours, so we need it. But look at what it does by default.
+          Over twenty production agent configurations, the /compact prompt keeps 53 percent of safety rules
+          after one round and 10 percent after five. "Don't delete emails until I confirm" is exactly the
+          sentence that goes. So compaction has to be designed.
+      - layout: flow
+        kicker: The pipeline
+        title: Compact in stages, cheapest and safest first
+        steps:
+          - {label: Prune, sub: dead branches}
+          - {label: Clear tool output, sub: keep the conclusion}
+          - {label: Extract state, sub: "files, decisions, TODOs"}
+          - {label: Summarize middle, sub: lossy but bounded}
+          - {label: Keep recent, sub: last N turns verbatim}
+        bullets:
+          - "**Trigger at phase boundaries**, not at 95% mid-edit; about 80% occupancy as a backstop"
+          - "**Identifiers verbatim:** UUIDs, hashes, paths. One wrong digit fails the next call"
+          - Compaction rewrites the prefix, so each one pays a full re-prefill
+        takeaway: Compact at a phase boundary and keep recent turns verbatim, because the agent's working state lives in those turns.
+        recall: Why are recent turns kept verbatim, and why are phase boundaries the better trigger?
+        source: notes/05-compression-compaction.md
+        notes: >-
+          The pipeline has five stages and the last matters most. Recent turns stay verbatim because the
+          half-finished edit and the error being debugged live there. Compacting mid-edit at 95 percent forces
+          a summary of an incoherent state, so prefer a natural seam, with about 80 percent as a backstop.
+      - layout: table
+        kicker: Worked example
+        title: Six compression strategies, one research task
+        lead: "Back to our agent: a 128K window, seven searches, about 367k characters."
+        header: [Strategy, Result]
+        widths: [4.4, 5.6]
+        highlight: [3]
+        rows:
+          - [No compression, Overflowed at iteration 5. Failed]
+          - [Summarize each result separately, "12 iterations, 277k tokens; repeated facts across pages"]
+          - [One combined summary, "10 iterations, 93k tokens; long inputs truncated at the tail"]
+          - ["**Context-aware** (query and known state in the prompt)", "**7 iterations, 40k tokens**; a 148k-char page to 2k chars"]
+          - [Context-aware plus citations, "223k tokens; lossy content, lossless index to sources"]
+          - ["Adaptive: batch at 80%, `[COMPRESSED]` marker", "175k tokens; full fidelity early on"]
+        takeaway: Compression is understanding, so the compressor needs the task and the known state in its prompt.
+        recall: Which compression strategy finished the OpenAI co-founders task cheapest, and what did its prompt contain?
+        source: notes/05-compression-compaction.md
+        notes: >-
+          This is the payoff for our running example. Same task, same window, six strategies. Summarizing each
+          page separately finishes but repeats facts. The winner tells the compressor the query and what the
+          agent already knows, so it can throw away everything else: seven iterations and forty thousand
+          tokens, and one 148 thousand character page became two thousand with every role change kept.
+      - layout: image
+        kicker: The fix
+        title: Take the rules out of the summary's hands
+        image: ../assets/sources/images/zerhoudi-compaction-cliff-fig3.png
+        caption: "Zerhoudi, Mitrović & Granitzer, The Compaction Cliff (2026), Fig. 3"
+        bullets:
+          - "Classify each line by type and pin constraints: **0.96** recall over five rounds"
+          - "Wang et al.: a constraint registry appended verbatim, retention **90–95%**"
+          - "Then check deterministically: self-reported 1.00 recall had silently dropped a mean **57%**"
+        takeaway: Pin constraints outside the summary and verify with a deterministic check, because compactors misreport what they kept.
+        recall: How do you stop compaction from dropping constraints, and why is a deterministic check needed?
+        source: notes/05-compression-compaction.md
+        notes: >-
+          Both papers reach the same fix. Keep the rules away from the summarizer. Typed pinning holds 0.96
+          recall over five rounds in this figure, while the plain compactors slide. The surprising part is the
+          check: configurations reporting perfect recall had silently dropped a mean of 57 percent of their
+          constraints. Trust a string comparison here, not the model.
+      - layout: steps
+        kicker: Retention
+        title: What survives compaction, in order
+        steps:
+          - title: Architectural decisions
+            accent: "D4621A"
+            text: "\"X over Y because Z\", verbatim. Lose the reason and the agent re-litigates it"
+          - title: User constraints and safety rules
+            accent: "D4621A"
+            text: pinned verbatim, outside the summary
+          - title: Modified files and critical changes
+            text: the diff so far is state, not history
+          - title: Verification status
+            text: which tests ran, pass or fail
+          - title: Unresolved TODOs
+            text: everything not yet done, with rollback notes
+          - title: Tool output
+            accent: "94A3B8"
+            text: deletable. Keep the conclusion
+        takeaway: "40k tokens of test output compress to \"17 passed, 2 failed\", while a one-sentence rationale cannot compress at all."
+        recall: Rank what must survive compaction, and say why tool output comes last.
+        source: notes/05-compression-compaction.md
+        notes: >-
+          The asymmetry is the idea. A forty thousand token test output compresses to one line with
+          essentially no loss. A one-sentence rationale cannot compress at all without losing what makes it
+          useful. So order by what is expensive to regenerate. Reasoning can shrink too, by moving out of the
+          main window.
+      - layout: image
+        kicker: Reasoning
+        title: Run each reasoning step as its own isolated call
+        image: ../assets/sources/images/ebouky-cognitive-tools-fig1.png
+        caption: "Ebouky et al., Eliciting Reasoning with Cognitive Tools (2025), Fig. 1"
+        bullets:
+          - "**A:** all operations listed in one prompt"
+          - "**B:** each operation is a tool call with its own prompt"
+          - "GPT-4.1 on AIME 2024: **32.0% to 53.0%** pass@1; one prompt with the same operations reached **42.0%**"
+          - Only the result returns to the main trace
+        takeaway: Cognitive tools apply context isolation to reasoning, because only each step's result returns to the main trace.
+        recall: What is the difference between cognitive prompting and cognitive tools, and what did the change buy?
+        source: notes/08-cognitive-tools.md
+        notes: >-
+          Ebouky and colleagues take four reasoning operations: understand the question, recall related
+          problems, examine the answer, and backtrack. Listed in one prompt they are cognitive prompting. Run
+          as separate calls they are cognitive tools. GPT-4.1 on AIME 2024 went from 32 to 53 percent, and the
+          one-prompt version reached only 42, so isolation alone is worth another eleven points. A model
+          verdict still has blind spots, though.
+      - layout: code
+        kicker: Worked example
+        title: Where you can verify with code, do
+        lang: python
+        code: |-
+          def python_validator(response):
+              blocks = re.findall(CODE_RE, response, re.S)
+              if not blocks:
+                  return False, "No Python code block found."
+              for i, block in enumerate(blocks, 1):
+                  try:
+                      compile(block, "<llm>", "exec")
+                  except SyntaxError as e:
+                      return False, f"Block {i}: {e}"
+              return True, "ok"
+        bullets:
+          - "Loop: generate, validate, feed the problem back, **max 3**"
+          - "Same-model verifiers share blind spots; past 2–3 rounds they rarely help"
+          - "A self-graded stop condition is a demo, not a pattern"
+        takeaway: Tests, parsers and calculators beat a model's verdict, so replace a model verifier with a deterministic check where possible.
+        recall: Why does a same-model verifier stop helping after a few rounds?
+        source: notes/08-cognitive-tools.md
+        notes: >-
+          A model verifying itself shares its own blind spots, so past two or three rounds it rarely helps.
+          Anything you can check with a parser, a test or a calculator, check that way. And a stop condition
+          where the model grades itself above 0.8 is a demo. Before we leave reasoning, a word on a format you
+          will run into.
+      - layout: code
+        kicker: Protocols
+        title: Protocol shells are prompts with good section headers
+        lang: protocol
+        code: |-
+          /research.literature{
+            intent="Structured understanding",
+            input={ topic="Context compaction",
+                    key_questions=[...] },
+            process=[
+              /map{action="Foundations, terms"},
+              /explore{action="Key works, limits"},
+              /synthesize{action="Patterns, gaps"}
+            ],
+            output={ findings="Per question, cited" }
+          }
+        bullets:
+          - "**Real:** explicit intent, inputs, steps and output improve consistency"
+          - "**Oversold:** the syntax has no special power; markdown with the same four sections does as well"
+          - Use it for procedures shared with non-engineers
+        takeaway: A protocol shell's value is its four explicit sections, and markdown with the same sections works as well.
+        recall: What is real and what is oversold about protocol shells?
+        source: notes/09-protocols.md
+        notes: >-
+          You will meet this syntax, and it looks like a programming language. It is not. Its value is making
+          you write down intent, inputs, process and output. The same four sections in markdown do as well. So
+          take the discipline and don't worry about the notation. Now the most expensive lever.
+      - layout: compare
+        kicker: Isolation
+        title: A sub-agent buys a clean window at a real price
+        emphasis: left
+        left:
+          title: Why it works
+          bullets:
+            - "A sub-agent may burn **100k** exploring and return a **2k** summary"
+            - The sub-agent window is **discarded**, not merged
+            - "The **orchestrator holds the plan**; workers get a bounded task and a return shape"
+          tag: Clean windows for synthesis
+        right:
+          title: What it costs
+          accent: "D4621A"
+          bullets:
+            - Lost shared context; duplicated or contradictory work
+            - "The summary is lossy: what it omits is gone"
+            - "Three at 80k each: **240k** real tokens for 6k visible"
+          tag: Try Compress before Isolate
+        takeaway: Sub-agents suit genuinely parallel, separable work, and they should be passed the decisions as well as the task.
+        recall: What does a sub-agent buy the orchestrator, and what does it cost in absolute spend?
+        source: notes/10-tools-and-multi-agent.md
+        notes: >-
+          In the DAIR case study one agent managed tasks, memory, search and the report, and it forgot steps as
+          that grew. The fix was a search worker receiving only the query text. That is cheap for
+          the orchestrator's window and expensive overall: three sub-agents at 80 thousand each is 240 thousand
+          real tokens for six thousand visible. So try compression first.
+      - layout: compare
+        kicker: Tools
+        title: Tool descriptions and results are context too
+        emphasis: right
+        left:
+          title: Bad (~45 tokens)
+          accent: "94A3B8"
+          code: |-
+            description: |
+              This skill handles the complete
+              deployment process to production.
+              It covers environment checks,
+              rollback procedures, and post-
+              deploy verification. Use this
+              before deploying any code to
+              production.
+        right:
+          title: Good (~9 tokens)
+          code: |-
+            description: Use when deploying to
+              production or rolling back.
+          tag: "Plus: when not to use it, and what instead"
+        takeaway: Tool descriptions are resident on every call, and results should return what the agent needs to decide, with structured errors.
+        recall: How do tool definitions and tool results each spend the context budget?
+        source: notes/10-tools-and-multi-agent.md
+        notes: >-
+          These tokens are resident in every window, so write them tersely. Results matter even more. A tool
+          returning fifty thousand tokens brings back the bulk-loading problem we fixed earlier. Paginate,
+          return identifiers, and return errors the agent can act on rather than a stack trace. That covers
+          the levers. Next: how do you tell which one has failed?
+
+  - title: When it still goes wrong
+    summary: Five failures · Diagnose in the window · Measure · Climb only when you must
+    divider: true
+    agenda: true
+    notes: >-
+      A context system fails in ways that look like a stupid model. This part gives the failure taxonomy, a
+      diagnostic order, the experiment that settles arguments, and a way to decide how much machinery you need.
+    slides:
+      - layout: statement
+        kicker: The problem
+        title: A wrong answer is rarely the model's fault
+        statement: "The agent reports a founder's old job. The reflex is to swap the model. Print the window first."
+        attribution: "Most context bugs are assembly bugs (notes/11)"
+        takeaway: Teams routinely misdiagnose context failures as a weak model, so inspect what was actually sent before changing anything.
+        recall: What is the first thing to do when a context-heavy agent gives a wrong answer?
+        source: notes/11-failure-modes.md
+        notes: >-
+          Picture our agent finishing and confidently reporting a founder's old job. The reflex is to reach for
+          a better model. Don't. First look at what was actually sent, because most of these bugs are assembly
+          bugs. To read what you see you need names for the failures.
+      - layout: table
+        kicker: The taxonomy
+        title: Five failures with five different fixes
+        header: [Failure, Mechanism, Signature]
+        widths: [1.8, 4, 4.2]
+        rows:
+          - [Rot, Occupancy grows and recall degrades, "Right earlier, wrong later; facts present but unused"]
+          - [Poisoning, A false statement is treated as ground truth, Confidently builds on something wrong]
+          - [Distraction, Marginal content crowds out signal, Answers an adjacent question]
+          - [Clash, Two contradictory pieces coexist, Inconsistent answers; arbitrary resolution]
+          - [Injection, Adversarial instructions arrive as data, Follows instructions the operator never gave]
+        takeaway: Rot, poisoning, distraction, clash and injection have distinct causes and fixes, yet get misdiagnosed as each other.
+        recall: Name the five context failure modes and the signature of each.
+        source: notes/11-failure-modes.md
+        notes: >-
+          Learn the signatures. An old role and a new role both retrieved is clash. An old role written into
+          memory as current is poisoning. A long summary about the wrong founder is distraction. Each has a
+          different fix, so naming it correctly is most of the work.
+      - layout: steps
+        kicker: The diagnostic
+        title: Diagnose in this order, and do not skip step five
+        steps:
+          - title: Print the actual window
+            text: what was sent, not what you think you assembled
+          - title: Check occupancy
+            text: above about 50%, suspect rot and distraction first
+          - title: Search for contradictions
+            text: the wrong claim appears with two values, so clash
+          - title: Check provenance
+            text: no legitimate source for the wrong fact, so poisoning or injection
+          - title: Test in isolation
+            accent: "D4621A"
+            text: "same task, minimal context. Works: a context problem. Fails: prompt or capability"
+        takeaway: Rerunning the task with minimal context is the step that separates a context problem from a prompt or capability problem.
+        recall: Walk through the five-step context diagnostic, and say what the last step separates.
+        source: notes/11-failure-modes.md
+        notes: >-
+          Five steps, in order of cost. Printing the window finds most bugs. Step five is the one people skip:
+          run the same task with minimal context. If it works, the context was the problem, and if it fails,
+          no amount of context work will help. One of the five failures needs its own treatment.
+      - layout: steps
+        kicker: Injection
+        title: Layer injection defenses, because only code is a guarantee
+        axis: probabilistic → guaranteed
+        steps:
+          - title: Structural delimiting
+            text: untrusted content in tags; it is data, never instructions
+          - title: Trust zones
+            text: never promote a zone implicitly
+          - title: Instruction hierarchy
+            text: the system prompt outranks retrieved content
+          - title: Isolation
+            text: untrusted content in a discarded sub-agent window
+          - title: Code-level enforcement
+            accent: "D4621A"
+            text: a permission hook cannot be talked out of denying a write
+          - title: Egress control
+            accent: "D4621A"
+            text: allowlists, confirmation gates, no credentials in reachable context
+        takeaway: Every context-level defense against injection is probabilistic, and only code-level controls are guarantees.
+        recall: Which prompt-injection defenses are guarantees, and which are only probabilistic?
+        source: notes/11-failure-modes.md
+        notes: >-
+          Our agent reads web pages, and a page can carry instructions. The first four defenses reduce the odds
+          because they all run through the model. The last two run in code, so they hold whatever the model
+          was persuaded of. Now that we can name failures, how do we measure the fix?
+      - layout: flow
+        kicker: Evaluation
+        title: Instrument each stage, so a failure has an address
+        steps:
+          - {label: "Exists?", sub: corpus}
+          - {label: "Retrieved?", sub: select}
+          - {label: "Survived?", sub: "budget, compaction"}
+          - {label: "Used?", sub: faithfulness}
+        bullets:
+          - "**Select:** recall@k, precision@k, MRR"
+          - "**Use:** faithfulness, citation accuracy. Faithful does not mean correct"
+          - "**Compress:** plant N facts, compact, ask for each"
+          - "**Long context:** length sweep at 10/25/50/75%; the knee is your budget"
+          - "**Cost:** tokens per successful task, next to accuracy"
+        takeaway: A context eval asks whether the fact existed, was retrieved, survived and was used, so each failure points at one stage.
+        recall: What four questions does a context eval ask in sequence?
+        source: notes/12-evaluating-context.md
+        notes: >-
+          A single accuracy number tells you nothing about where it broke. Ask four questions in order. Did the
+          fact exist, did it come back, did it survive budget and compaction, and did the answer use it? Then
+          the length sweep from the start of the talk finds your knee. One experiment settles most arguments.
+      - layout: code
+        kicker: Worked example
+        title: Ablation settles what stays in the window
+        lang: text
+        code: |-
+          for component in window:
+              remove component, hold the rest fixed
+              re-run the eval set
+              record change in quality and in tokens
+
+          no change,  big saving -> cut it
+          small drop, big saving -> compress it
+          large drop, any        -> keep and pin it
+        bullets:
+          - "Components: prompt section, memory block, retrieved set, tool definitions"
+          - Ablation sets the budget by evidence rather than habit
+          - "Every production context bug becomes a regression case"
+        takeaway: Removing one component while holding the rest fixed shows whether to cut it, compress it or protect it from compaction.
+        recall: Describe the ablation experiment and the three actions its result can trigger.
+        source: notes/12-evaluating-context.md
+        notes: >-
+          This is the experiment to remember. Take one component away, change nothing else, rerun the eval set,
+          and record quality and tokens. No real change and a big token saving: cut it. A small drop: compress
+          it. A big drop: keep it and protect it from compaction. Now, how much of all this do you actually
+          need?
+      - layout: table
+        kicker: How much machinery
+        title: Climb the maturity ladder only when you must
+        header: [Level, What is in the window, Chapters]
+        widths: [2.4, 5.4, 2.2]
+        rows:
+          - [1 Atom, "Task, constraints, output format", "02"]
+          - [2 Molecule, Plus examples, "02, 03"]
+          - [3 Cell, Plus memory across turns, "05, 06"]
+          - [4 Organ, Specialized contexts under an orchestrator, "10"]
+          - [5 Cognitive system, "Plus reasoning tools, schemas, verification loops", "07, 08"]
+        takeaway: Most production failures at level 4 are level-2 problems, and each rung multiplies cost and failure modes.
+        recall: What does the context maturity ladder warn about teams who jump to orchestration?
+        source: notes/13-putting-it-together.md
+        notes: >-
+          Each rung multiplies cost and failure modes. Most failures that show up at the orchestration level
+          are really prompt and example problems underneath. So start low and climb on evidence. That gives us
+          an order for designing a system from scratch.
+      - layout: steps
+        kicker: Monday morning
+        title: Design a context system in this order of questions
+        steps:
+          - title: What does success look like?
+            accent: "D4621A"
+            text: build the eval set first
+          - title: What is the smallest window that could work?
+            text: start at level 1 or 2
+          - title: What does the model lack?
+            text: "facts: retrieval. Continuity: memory. Method: cognitive tools"
+          - title: What grows?
+            text: a ceiling and a compaction rule for each
+          - title: What can live outside the window?
+            text: write before select, select before compress, isolate last
+          - title: What can go wrong?
+            text: walk the five failure modes against the design
+        takeaway: Start from the eval set and the smallest workable window, then add machinery only for something the model demonstrably lacks.
+        recall: In what order do you ask the design questions for a new context system?
+        source: notes/13-putting-it-together.md
+        notes: >-
+          This is what to take to your next design meeting. The eval set comes first and the smallest window
+          second. Then each question buys one mechanism. Our agent, redesigned this way, has a ceiling on tool
+          results, a context-aware compressor, pinned rules and a date injected late. Last, a warning about
+          something you will read.
+      - layout: image
+        kicker: Appendix
+        title: Treat the "field theory" of context as metaphor
+        image: ../assets/sources/images/wang-attractor-cycles-fig1.png
+        caption: "Wang et al. (2025): the grounded version of an \"attractor\" is this 2-cycle"
+        bullets:
+          - "\"Attractors\" and \"resonance\" borrow physics; their protocols act as ordinary structured prompts"
+          - The real results underneath are modest and small-scale
+          - "**Early framing is sticky:** restart rather than argue"
+          - "**Salience is earned** by structure, edge placement and restating at decision points"
+        takeaway: Ask what the measurable behavior is, because the field-theory vocabulary has little testable content beyond a few small results.
+        recall: How should you read claims about context attractors and resonance?
+        source: notes/99-speculative-field-track.md
+        notes: >-
+          A large part of the upstream course treats context as a semantic field. Under the vocabulary are two
+          real papers with modest findings. This one shows paraphrases falling into a 2-cycle between two
+          clusters. Treat the rest as hypothesis or metaphor, and keep the practical bits: early framing is
+          sticky, so restart instead of arguing.
+
+  - title: Wrap-up
+    agenda: false
+    divider: false
+    slides:
+      - layout: cards
+        kicker: Closing
+        title: Rules of thumb
+        cards:
+          - title: Assembling
+            body: Stable before dynamic. Reserve the output first; give every growing component a ceiling.
+          - title: Getting content in
+            body: Just-in-time via identifiers. Retrieve wide, rerank hard, send narrow.
+          - title: Keeping it small
+            body: Clear tool results first. Pin rules outside the summary. Give the compressor the task.
+          - title: Reasoning
+            body: Separate calls for separate steps. A deterministic check beats a model verifier.
+          - title: Isolation
+            body: Compress before you isolate. The orchestrator holds the plan.
+          - title: Shipping
+            accent: "0EA5C9"
+            body: Look in the window before the weights. Ablate to set the budget. Climb only on evidence.
+        takeaway: "Justify every token: keep stable content first, cap what grows, pin the rules, and measure before adding machinery."
+        recall: Give one rule of thumb each for assembling, selecting, compressing and isolating context.
+        source: notes/13-putting-it-together.md
+        notes: >-
+          Six cards, one per decision you now own. If you keep only one, keep the last: look in the window
+          before you look at the weights. Our agent never needed a better model. It needed a ceiling, a
+          compressor that knew the task, and rules that stayed out of the summary.
+      - layout: bullets
+        kicker: Next
+        title: Where to go next
+        bullets:
+          - "**03 Harness engineering:** when the loop that assembles context becomes stateful"
+          - "**Eval pillar (generative-ai):** RAG and grounding metrics, tracing where the tokens go"
+          - "**Practice:** `practice/context-budgeter` in this pillar"
+          - "**Read:** Anthropic, Effective context engineering for AI agents; Li, AI Agents in Depth ch. 2–3"
+        aside:
+          title: The one idea to keep
+          accent: "1E3A5F"
+          body: Every token competes for a fixed attention budget. Justify each one's place, keep the rest one tool call away, and measure.
+        takeaway: Next comes the harness, which owns the loop that assembles this context on every call and keeps it reliable.
+        recall: Which pillar picks up when the loop assembling context becomes stateful?
+        source: notes/13-putting-it-together.md
+        notes: >-
+          Next is the harness, because everything today ran inside a loop we took for granted. Then eval, which
+          generalizes today's measurements. Before you go, run the context budgeter in the practice folder on
+          one of your own prompts and see where the tokens sit.

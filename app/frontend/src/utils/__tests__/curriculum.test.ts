@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Node } from "@xyflow/react";
 import type { Curriculum, WikiNodeData } from "../../types";
 import { courseColor, domainColor } from "../../theme/domains";
-import { applyView, curriculumSampleIds, filterPrimaryIds } from "../graphView";
+import { applyView, filterPrimaryIds } from "../graphView";
 import { facetsOf, withCourseGroups } from "../curriculum";
 
 function node(id: string, domain = "rag", typeTag = "concept"): Node<WikiNodeData> {
@@ -53,19 +53,6 @@ describe("curriculum filters", () => {
     };
     const lit = applyView(nodes, v).filter((n) => n.data.highlighted).map((n) => n.id);
     expect(lit).toEqual(["a"]);
-  });
-});
-
-describe("curriculumSampleIds", () => {
-  const degree = new Map([["e", 9], ["c", 5], ["d", 1], ["b", 3]]);
-
-  it("takes projects, each course's main pages, and the best of each beyond directory", () => {
-    expect([...curriculumSampleIds(nodes, degree, curriculum)].sort()).toEqual(["a", "b", "c", "e", "p"]);
-  });
-
-  it("ignores pages the graph no longer has", () => {
-    const fewer = nodes.filter((n) => n.id !== "e");
-    expect(curriculumSampleIds(fewer, degree, curriculum).has("e")).toBe(false);
   });
 });
 

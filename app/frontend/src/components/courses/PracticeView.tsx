@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
 import { usePracticeDrills } from "../../hooks/useCourses";
 import { DrillTimer } from "./DrillTimer";
+import { FlashcardsDue } from "./FlashcardsDue";
 import { DrillBadges } from "./LessonView";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
@@ -33,6 +34,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
         <p className="course-page-lede">
           Timed drills, by language. Attempt cold, then open the solution.
         </p>
+        <FlashcardsDue />
         {error && (
           <div className="practice-error">
             Could not load drills: {error}{" "}

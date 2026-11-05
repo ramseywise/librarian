@@ -2,7 +2,7 @@
 title: Context Engineering and Cost Interview Study Guide
 tags: [interview, context, reference]
 summary: Exam-prep reference for context and cost questions — context rot as the root problem, the five context layers sorted by frequency/stability/enforcement, compaction retention priorities, prefix vs semantic caching, skill descriptions as routing logic, the rank-ordered cost/latency levers, and reporting cost per successful task.
-updated: 2026-10-30
+updated: 2026-11-05
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--5-context-cost--interview-guide.md
   - data/raw/repos/learn-ai-engineering/interviewing--guides--5-context-cost--00-overview.md
@@ -69,7 +69,7 @@ explicitly to use the skill when determinism matters.
 ## Cost/latency levers, rank-ordered
 
 1. Prefix caching (free if ordering is right)
-2. Model routing — small model for classify/rewrite/grade, large for synthesis
+2. Model routing ([[Cheap-First Gating and Model Cascades]]) — small model for classify/rewrite/grade, large for synthesis
 3. Streaming (perceived latency; also needed inside serverless timeouts)
 4. Semantic cache for paraphrase traffic
 5. Compaction and tool-output offloading
@@ -123,3 +123,4 @@ as spend.
 - [[Context Compaction]] — extends
 - [[Agents Interview Study Guide]] — related (harness and long-horizon side)
 - [[System Design Interview Study Guide]] — related (cost trade-offs in the design round)
+- [[Cheap-First Gating and Model Cascades]] — extends (the evidence behind lever 2, model routing)

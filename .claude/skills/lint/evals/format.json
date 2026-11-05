@@ -1,0 +1,37 @@
+{
+  "skill": "lint",
+  "template_literals": [
+    "Rates: orphan <n>%, average degree <n>, main component <n>%, stale <n>%, typed links <n>%, stubs <n>%, open conflicts <n>",
+    "Fixed (mechanical, --fix only):",
+    "Proposed (semantic):",
+    "[BLOCKER] data/wiki/concepts/foo.md — dead wikilink: [[Bar Baz]] (no matching file)",
+    "[WARN]    data/wiki/agents/my-page.md — orphan (no incoming backlinks)",
+    "[NOTE]    data/wiki/concepts/bar.md — summary too short (4 words)",
+    "N blockers, N warnings, N notes"
+  ],
+  "must_mention": [
+    "core/wiki_telemetry.py stats --json",
+    "core/wiki_telemetry.py check",
+    "Private leak",
+    "never fix BLOCKER without asking",
+    "--quick",
+    "> 15%"
+  ],
+  "must_not_mention": [
+    "wiki_stats.py",
+    "_metrics.md"
+  ],
+  "output_cases": [
+    {
+      "prompt": "/lint",
+      "output_regex": [
+        "(?m)^Rates: (orphan \\d|unavailable)",
+        "(?m)^Fixed \\(mechanical, --fix only\\):$",
+        "(?m)^Proposed \\(semantic\\):$",
+        "(?m)^\\d+ blockers, \\d+ warnings, \\d+ notes$"
+      ],
+      "good": "Rates: orphan 4%, average degree 5.1, main component 91%, stale 12%, typed links 40%, stubs 3%, open conflicts 1\n\nFixed (mechanical, --fix only):\nnone\n\nProposed (semantic):\n[BLOCKER] data/wiki/rag/a.md — dead wikilink: [[Nope]] (no matching file)\n\n1 blockers, 0 warnings, 0 notes\n",
+      "bad": "[BLOCKER] data/wiki/rag/a.md — dead wikilink: [[Nope]]\n1 blocker\n"
+    }
+  ]
+}

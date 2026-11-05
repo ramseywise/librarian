@@ -1,0 +1,12 @@
+[
+  {"input": "/wiki-weekly", "expected": true},
+  {"input": "give me this week's wiki review", "expected": true},
+  {"input": "what changed in the wiki this week and what should I do next?", "expected": true},
+  {"input": "how is wiki health trending? orphan rate, stubs, open conflicts", "expected": true},
+  {"input": "weekly check-in on the knowledge base: what got added, what's unresolved", "expected": true},
+  {"input": "/weekly", "expected": false},
+  {"input": "weekly health report for the course: tests, reviewer findings, stale decks", "expected": false},
+  {"input": "run a full lint on the wiki and list every orphan", "expected": false},
+  {"input": "it's been a month, compact the wiki", "expected": false},
+  {"input": "what is the wiki missing?", "expected": false}
+]

@@ -1,10 +1,10 @@
 # Deck spec — `slides/deck.yaml` and `slides/lectures/*.yaml`
 
-`scripts/slides/build_deck.py` renders one YAML file into a 16:9 `.pptx` in the course's
+`tools/slides/build_deck.py` renders one YAML file into a 16:9 `.pptx` in the course's
 house style (navy title bar with an orange edge, breadcrumb strip, white cards with
-coloured stripes, tinted takeaway strip). The style comes from
-`05-graph-engineering/sources/langgraph_extended.pptx`. The worked example is
-`ai-engineering/01-prompt-engineering/slides/deck.yaml`.
+coloured stripes, tinted takeaway strip). Specs live in `data/courses/<course>/<module>/slides/`,
+and a spec's `source:` and `covers:` paths are relative to that module or to `data/courses/`.
+The worked example is `data/courses/ai-engineering/01-prompt-engineering/slides/deck.yaml`.
 
 ## Top level
 
@@ -161,7 +161,7 @@ attribution: smaller line under it
 
 ### `image`
 ```yaml
-image: ../sources/images/wei-chain-of-thought-fig1.png   # relative to the YAML; .png/.jpg/.svg (SVG is rasterised)
+image: ../assets/wei-chain-of-thought-fig1.png   # relative to the YAML; .png/.jpg/.svg (SVG is rasterised)
 caption: Standard vs. CoT prompting (Wei et al., 2022)
 bullets: [...]                      # optional: image left, bullets right
 ```
@@ -184,7 +184,7 @@ warns on each rule it can check, so `STRICT=1` fails until they hold.
 It also warns on a content slide with no `recall` whose title is not a question, and on a list question
 in `recall` answered by a one-line takeaway.
 
-Each build stamps the sha256 of `deck.yaml` into the pptx. `make deck-check`, part of `make test`, fails when a
+Each build stamps the sha256 of `deck.yaml` into the pptx. `make deck-check` fails when a
 stamped deck no longer matches its yaml, and reports decks with no stamp without failing them.
 
 - **Spine.** Every part runs problem, what breaks, principle, technique, evidence, what you do on
@@ -226,10 +226,10 @@ lecture:
 ```
 
 **Graph.** Lectures are the nodes, and `requires`, `next` and `related` are the edges. Edges point at notes, because a
-note exists before its lecture does. In `DECKS.md`, a target with no lecture yet is labelled "<note title>, notes only". A
+note exists before its lecture does. In `data/courses/_decks.md`, a target with no lecture yet is labelled "<note title>, notes only". A
 generated slide shows the note title, plus the subject if it is elsewhere. Both start
-naming the lecture the day one is written. `make deck-graph-check`, part of `make test`, fails on an edge or `covers`
-path that does not exist, a note two lectures claim, and a cycle in `requires`. `make deck-graph` regenerates `DECKS.md`,
+naming the lecture the day one is written. `make deck-graph-check`, also run by `tests/slides/`, fails on an edge or `covers`
+path that does not exist, a note two lectures claim, and a cycle in `requires`. `make deck-graph` regenerates `_decks.md`,
 the curriculum-wide map.
 
 **Generated slides.** "Where this lecture sits" follows the title slide, and "Where this leads" closes the lecture. Both
@@ -251,7 +251,7 @@ make slides PILLAR=<pillar> LECTURE=01-statistical-foundations STRICT=1 PREVIEW=
 ```
 
 `LEVEL=` works as it does for a single deck. Previews are in `slides/lectures/.preview/<stem>/`. A YAML image path has
-one more `../` than in `deck.yaml`: `../../../sources/images/...` from a pillar in `data-science/`.
+one more `../` than in `deck.yaml`: `../../assets/...`.
 
 ## Writing rules
 

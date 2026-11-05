@@ -2,7 +2,7 @@
 title: Wiki Graph Engineering — Edge Quality Over Edge Count
 tags: [meta, rag, decision]
 summary: Why librarian's link graph under-connects, why the typed-relationship subgraph is the layer worth querying, and the design choices behind one-hop retrieval expansion.
-updated: 2026-10-30
+updated: 2026-11-05
 sources:
   - data/wiki/_relink_suggestions.md
   - data/wiki/_bridge_suggestions.md
@@ -188,3 +188,4 @@ until a query demands it.
 - [[Demote the Auto-Writer Before a Semantic Change]] — extends (why the relinker went suggest-only before slug unification)
 - [[Closed-Vocabulary Parser Silently Drops Invented Types]] — extends (invented edge types never become edges)
 - [[Evidence-Driven Wiki Compaction]] — extends (relinker evidence consumed by compaction)
+- [[Wiki Health Metrics]] — extends (the rates tracked for this graph)

@@ -6,7 +6,7 @@ updated: 2026-10-17
 sources:
   - data/raw/repos/datathon_mcp/.claude--docs--research--awo-welfare-data-harvester.md
   - data/raw/repos/datathon_mcp/.claude--docs--plans--harvester-integration.md
-  - data/raw/repos/datathon_mcp/.claude--docs--research--federated-data-pool-mcp-prep.md
+  - data/raw/repos/datathon_mcp/ (research note, file name withheld: it names a private page)
   - data/raw/repos/datathon_mcp/CLAUDE.md
 ---
 

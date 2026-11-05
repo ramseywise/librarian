@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Lesson } from "../../courses/types";
+import { useGlossary } from "../../hooks/useGlossary";
 import { DrillTimer } from "./DrillTimer";
 import { Markdown } from "./Markdown";
 import { splitSolution } from "./markdownUtils";
@@ -47,9 +48,10 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
   const body = stripDuplicateH1(lesson.body, lesson.title);
   const parts = lesson.kind === "drill" ? splitSolution(body) : null;
   const [showSolution, setShowSolution] = useState(false);
+  const glossary = useGlossary(null, true);
   useEffect(() => setShowSolution(false), [lesson.id]);
   const md = (text: string) => (
-    <Markdown body={text} lessonId={lesson.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} />
+    <Markdown body={text} lessonId={lesson.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} terms={glossary?.terms} />
   );
 
   useEffect(() => {

@@ -1,18 +1,18 @@
 ---
 name: slides
-description: "Build a lecture deck (.pptx) for any pillar (ai-engineering, generative-ai, data-analytics, data-science, data-engineering) or programming module from its notes, in the course's house style (the LangGraph deck look). Writes <pillar>/slides/deck.yaml, renders it with scripts/slides/build_deck.py, previews every slide and fixes overflow. Usage: /slides 02-context-engineering, /slides generative-ai/02-rag-retrieval, /slides data-analytics/06-applied-analyses, /slides programming/python/01-foundations. Run from the learn-ai-engineering repo."
+description: "Build a lecture deck (.pptx) for any module of any course (ai-engineering, generative-ai, data-analytics, data-science, data-engineering, programming, interviewing) from its notes, in the course's house style (the LangGraph deck look). Writes data/courses/<pillar>/slides/deck.yaml, renders it with tools/slides/build_deck.py, previews every slide and fixes overflow. Usage: /slides 02-context-engineering, /slides generative-ai/02-rag-retrieval, /slides data-analytics/06-applied-analyses, /slides programming/python/01-foundations. Run from the librarian repo: media is built here, not in learn-ai-engineering."
 ---
 
 You are turning one pillar's notes into a lecture deck. The notes are the source of truth.
 The deck is a talk built on them: one idea per slide, with the evidence kept in. It is not
 the notes reflowed onto slides.
 
-The rendering is deterministic. You write a YAML spec, and `scripts/slides/build_deck.py`
+The rendering is deterministic. You write a YAML spec, and `tools/slides/build_deck.py`
 draws it. Never hand-edit the `.pptx`. Edit the YAML and rebuild.
 
 Read `references/deck-spec.md` before writing the spec. It has the schema, the layout
 catalogue, the palette and the writing rules. The worked example is
-`ai-engineering/01-prompt-engineering/slides/deck.yaml`.
+`data/courses/ai-engineering/01-prompt-engineering/slides/deck.yaml`.
 
 ---
 
@@ -20,6 +20,7 @@ catalogue, the palette and the writing rules. The worked example is
 
 ## Step 1 — Pick the pillar
 
+Below, paths are relative to `data/courses/`, and a pillar is a course's module directory.
 `$ARGUMENTS` names a pillar directory under `ai-engineering/` (`02-context-engineering`, or
 just `02`), a path such as `data-science/03-nlp`, or a programming module such as
 `programming/sql/01-select`. Below, `<pillar>` means that full path, and `make slides PILLAR=`
@@ -36,8 +37,8 @@ first and keep what still matches the notes. A deck inherits its notes' errors, 
   - the claim it makes
   - the numbers that back the claim
   - any contrast, table, pipeline or ladder it contains
-- `sources/images/` (if present). Figures from the papers can go on `image` slides. Images
-  sit flat in that folder, named `<first-author-lastname>-<short-title>-fig<N>.<ext>` (e.g.
+- `assets/` (if present). Figures from the papers can go on `image` slides. Images
+  sit in that folder, named `<first-author-lastname>-<short-title>-fig<N>.<ext>` (e.g.
   `li-ai-agents-in-depth-fig5-4.svg`). A figure the notes don't show yet goes into the note
   first, then onto a slide: the notes are the source of truth.
 
@@ -87,32 +88,30 @@ per sheet, in `<pillar>/slides/.preview/`. That folder is gitignored.
    any warning is left.
 4. Add `PDF=1` on the final build. It writes `slides/<topic>.pdf`, one page per slide, which
    opens in a VS Code tab. The pages are images (1600 px, JPEG), with no speaker notes. The
-   PDF is **committed** alongside the `.pptx`, at about 5 MB per deck. The size hook skips
-   `.pdf`, but every rebuild adds a copy to history, so regenerate it once per finished
-   revision, not on every iteration.
-5. Check the size: `ls -la <pillar>/slides/*.pptx`. **Keep the `.pptx` under
-   1000 KB.** The pre-commit hook `check-added-large-files --maxkb=1000` rejects anything
-   bigger, and the decks so far are 270–860 KB. The builder already shrinks every image to
+   PDF and the `.pptx` are gitignored: this repo is public, and the YAML and `assets/`
+   rebuild them. `make slides-all PDF=1` rebuilds every deck.
+5. Check the size: `ls -la data/courses/<pillar>/slides/*.pptx`. **Keep the `.pptx` under
+   1000 KB**, so a deck stays easy to send. The decks so far are 270–860 KB. The builder already shrinks every image to
    about 220 dpi at its size on the slide, and stores it as JPEG when that is smaller, so
    the original images can stay as they are. If a deck still goes over, the cause is too
-   many image slides. Cut the weakest ones, or split the pillar into two decks. Don't raise
-   the hook limit.
+   many image slides. Cut the weakest ones, or split the pillar into two decks.
 
 ## Step 6 — Wire it in
 
 - In the pillar README, add a line pointing to `slides/<topic>.pptx` and `slides/deck.yaml`
   in the Layout or Start-here section.
-- Run `make link-check`.
+- Run `make deck-graph-check`.
 
 ## Step 7 — Stage, don't commit
 
-`git add` the YAML, the `.pptx`, the `.pdf` and the README change, and nothing in `.preview/`. Show
+`git add` the YAML, any new image in `assets/` and the readme change. The `.pptx`, the `.pdf` and
+`.preview/` are gitignored. Show
 `git status` and `git diff --staged --stat`, and suggest a commit message such as
 `docs(<pillar>): lecture deck from notes`. Don't commit.
 
 ## When the builder is the problem
 
-If a layout can't express the content, or renders it badly, fix `scripts/slides/build_deck.py`.
+If a layout can't express the content, or renders it badly, fix `tools/slides/build_deck.py`.
 Don't contort the content to fit. Keep layouts generic, since every pillar uses them.
 Document any new layout or key in `references/deck-spec.md`. Rebuild
 `01-prompt-engineering` afterwards to check that the change didn't break the existing deck.

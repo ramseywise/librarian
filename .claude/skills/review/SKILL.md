@@ -14,7 +14,7 @@ seen why the content was written this way, so do not tell them.
 | Target | Machine checks | Dispatch |
 |---|---|---|
 | A note, or a pillar | `make chapter-check PILLAR=<path>`, `python3 scripts/curriculum_map.py issues --pillar <pillar>` | `audience-editor` (the path only) and `citation-checker` (the path, with "all") per note |
-| `slides/deck.yaml`, or `<pillar> --deck` | `make slides PILLAR=<pillar> PREVIEW=1` unless `--report`; with `--report`, use the existing `.preview/` | `deck-reviewer` (the pillar path) |
+| `slides/deck.yaml`, or `<pillar> --deck` | In the librarian repo, where decks are built: `make slides PILLAR=<pillar> PREVIEW=1` unless `--report`; with `--report`, use the existing `.preview/` | `deck-reviewer` (the pillar path) |
 | `programming/drills/` or `practice/` drill, prompt, problem, MCQ, guide or lab, including `<pillar>/practice/` | `make drill-check DRILL_PATH=<path>`, `make crosswalk-check` | `drill-reviewer` (the path only) |
 
 Fix or report machine-check failures first. A reviewer shouldn't spend a full read on what a script already caught.

@@ -2,7 +2,7 @@
 title: Technical Breadth Round Playbook
 tags: [interview, reference]
 summary: "The ML/LLM breadth round grades the follow-up, not the definition. Rehearse every concept as a 60-second answer plus a different layer one level deeper. Use the honest-gap move instead of bluffing. Drill trade-off pairs by their deciding axis rather than their verdict. Audit every resume claim two levels deep. Real loops add scenario chains (main question on a concrete system, then a follow-up that multiplies a dimension) and theory questions graded on their follow-ups."
-updated: 2026-10-30
+updated: 2026-11-05
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions.md
   - data/raw/repos/learn-ai-engineering/interviewing--rounds--technical-questions--README.md
@@ -56,7 +56,7 @@ stands out.
 ## Trade-off pairs: drill the axis, not the call
 
 The verdict depends on context. The **axis that decides it** is what lets you reason live.
-Flashcard front: the pair. Back: the axis plus a one-line default.
+Flashcard front: the pair. Back: the axis plus a one-line default. Review by recall at growing gaps ([[Spaced Repetition and Self-Quizzing From a Knowledge Base]]).
 
 | Pair | Deciding axis | Default |
 |---|---|---|
@@ -133,3 +133,5 @@ stats/SQL screen. FDE: context/cost and security first.
 - [[Durable vs Performative Knowledge Split]] — instance-of (method here, content in domain guides)
 - [[Recruiter Screen Playbook]] — extends (one-liners named there get audited here)
 - [[Agent Engineering Question Chains]] — extends (the scenario half of the round)
+- [[Spaced Repetition and Self-Quizzing From a Knowledge Base]] — related (why recall cards at growing gaps)
+- [[Flashcard Schedulers: Leitner, SM-2 and FSRS]] — related (scheduling those cards)

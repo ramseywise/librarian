@@ -38,6 +38,17 @@ colour). It is an overlay: `data/wiki/` directories remain the canonical domains
 MCP and `/lint`. Pages no lesson links appear under "Beyond the curriculum" by directory.
 Private pages never appear. An empty module means the wiki has no page on that topic.
 
+**Atlas and glossary (2026-11):** above 1,000 pages the graph opens on an aggregate ring
+(`app/frontend/src/components/atlas/`, drawn on canvas); choosing a sector opens a capped React
+Flow view of it. `data/glossary.yaml` (hand-edited, served by `app/backend/glossary.py`) supplies
+a toggleable layer of term nodes and the hover definitions in lessons. The map's health strip
+reads the latest telemetry row through `GET /api/wiki/health`.
+
+**Verbs (2026-11):** `/quiz`, `/gaps`, `/challenge`, `/wiki-weekly`, `/harness-audit`,
+`/evals-bootstrap`, plus the `ingest-reviewer` agent, which checks what an ingest wrote against
+its raw source. `/wiki-weekly` is the wiki's report; `/weekly` is the course's. All six skip
+private pages.
+
 **Code index (2026-07):** `tools/codemap/` — tree-sitter-based structural index (symbols,
 import edges) over source repos, separate from the wiki-compile pipeline. Exposed via MCP
 tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki tools. See
@@ -72,6 +83,8 @@ All raw sources may include an optional `confidence` field in frontmatter:
 | `low` | Web scrapes, unverified transcripts | Claims marked provisional |
 
 When a `low` confidence source contradicts a `high` confidence wiki claim, flag the conflict but note the disparity. When a `high` confidence source contradicts `medium`, update the wiki and note both sources. Default to `medium` if the field is absent.
+
+**Self-reported claims:** when a source makes a claim about itself (a vendor about its product, an author about their own tool) and nothing independent confirms it, name the source and write "(self-reported)" inline straight after the claim. This holds whatever the source's confidence level.
 
 #### Book source format (`data/raw/books/<author-title.md>`)
 
@@ -142,6 +155,13 @@ published: YYYY-MM-DD
 - **ADRs live in their domain directory** — not a flat `decisions/` dir. Use `type: decision` tag.
 - **Projects stay flat** in `data/wiki/projects/` until a project exceeds ~5 pages.
 
+### `data/telemetry/` — Wiki Health Telemetry (generated)
+
+Written by `core/wiki_telemetry.py`, never by hand. Outside `data/wiki/`, so the MCP index, relinker and graph don't see it.
+
+- **Tracked:** `metrics.jsonl` (one row per day, at most 36, from `make wiki-snapshot`) and `operations.jsonl` (`log <op> "<detail>"`: last ~30 entries in full, older ones one row per month). This repo is public: `log` refuses text that names a private page.
+- **Gitignored (query history):** `asked.jsonl` (`ask "<topic>"`) and `gaps.md` (`make wiki-gaps`).
+
 ### `data/courses/` — Coursework (authored, editable)
 
 - Learning content served by the Courses tab of the graph UI (`app/backend/courses.py`).
@@ -167,12 +187,18 @@ published: YYYY-MM-DD
   into `data/` — this repo is public and the log is personal history.
   Each `slides/deck.yaml` becomes flashcards in the module's `_flashcards.md` (frontmatter
   `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
-  lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). Gitignored files and the course folders in
+  lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). `app/backend/leitner.py` computes due dates from that log; it stores no schedule of its own. Gitignored files and the course folders in
   `PRACTICE_REFERENCE_ONLY` do not become lessons.
   Files with an `imported_hash:` line are importer-generated; editing one turns it into a
   local file the importer will never overwrite or delete. Files without the line are
   hand-authored and are never touched. Do not hand-edit the `imported_hash` value.
 - Private and tombstoned wiki pages are never linked from lessons.
+- **Media is built here, for every course.** Deck specs are `<course>/<module>/slides/deck.yaml`
+  or `slides/lectures/NN-slug.yaml`, images are in the module's `assets/`, and `tools/slides/`
+  renders them: `make slides PILLAR=<course>/<module> [PREVIEW=1] [PDF=1]`, `make slides-all`,
+  `make deck-check`, `make deck-graph`. Authoring steps are in the `/slides` skill. Built `.pptx`
+  and `.pdf` files are gitignored. The importer does not touch specs. `tools/presenter/` is a
+  separate LLM-driven tool for one-off talks, not course media.
 
 ---
 
@@ -203,6 +229,10 @@ Content...
 - `summary`: must fit on one line; should answer "what do I need to know about this?"
 - `updated`: set to today's date whenever the page is modified
 - `sources`: list all raw files this page was derived from
+
+### Optional Sections
+
+`## What argues against it` and `## Open questions` go before `## See Also`. Both are optional and recommended for `patterns/` pages. Write them only when a source supports them, never to fill the slot. Existing pages are not backfilled.
 
 ### Domain Tags (first-class — always include at least one)
 
@@ -265,8 +295,9 @@ rules. Only `/compact-wiki` creates tombstones.
 
 ## Ingest Protocol
 
-Run this checklist for **every** new raw source, without exception.
+Run this checklist for **every** new raw source, without exception. Log one line per run: `uv run python core/wiki_telemetry.py log ingest "<source> -> <n> new, <n> updated"`.
 
+0. **Triage first:** `uv run python core/ingest_gate.py triage <files>` reports whether each file is unchanged, a duplicate of compiled content, changed or new, and routes it: `clear`, `strip` (contact details), `decide` (a listed term or private page name: generalise, or compile to `data/wiki/private/`) or `stop` (a secret). When unsure, use `private/`. Terms live in `data/wiki/private/_sensitive-terms.txt`. The steps are in the ingest skill.
 1. **Read the source fully** before writing anything to `data/wiki/`.
 2. **Identify** all entities, concepts, decisions, and open questions mentioned.
 3. **Extract atomic concepts** — this is the most important step for graph density. For every named technique, pattern, algorithm, or method mentioned in the source, ask: *does this deserve its own page?* Create a new page if yes. Examples of things that get their own page: `semantic caching`, `RRF fusion`, `inter-annotator agreement`, `prefix caching`, `CRAG retry loop`, `HistoryCondenser`. Do NOT bury these as bullets inside a coarser page — they become nodes in the graph only if they are pages. Rule of thumb: if it has a name and a non-obvious mechanism, it gets a page.
@@ -316,8 +347,22 @@ Run lint to find health issues. Check each of the following:
 - **Unrecognized link types** — typed-syntax annotations whose type is not canonical (WARN)
 - **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain links (NOTE)
 - **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
+- **Private leak** — a page outside `private/` has a wikilink resolving into `private/` (`make wiki-check`, exit 1; a 3+ word private title in public text is a WARN). Reports name the public file and line, never the private page
 
-Output a prioritised list: BLOCKER (conflicts, dead links) → WARN (orphans, stale, untyped) → NOTE (missing coverage, bridge gaps, stale suggestions).
+Output a prioritised list: BLOCKER (conflicts, dead links, private leak) → WARN (orphans, stale, untyped) → NOTE (missing coverage, bridge gaps, stale suggestions).
+
+### Health numbers (`make wiki-stats`)
+
+Deterministic. Private pages, tombstones and underscore files are out of every rate; page count is printed but is not a health number. Between the bands reads `watch`. The bands are local heuristics, not research results: see [Wiki Health Metrics](data/wiki/meta/wiki-health-metrics.md) for where each comes from. Average degree counts both ends of a link, so it reads double a links-per-page figure.
+
+| Number | Definition | Healthy | Broken |
+|---|---|---|---|
+| Orphan rate | pages with no inbound wikilink ÷ pages | < 5% | > 15% |
+| Average degree | (inbound + outbound links) ÷ pages | 8–20 | < 4 |
+| Main component | pages in the largest connected component ÷ pages | ≥ 80% | < 60% |
+| Stale rate | pages with `updated` older than 60 days ÷ pages | report only | none |
+| Typed-link rate | typed See Also entries ÷ See Also entries | ≥ 50% | none |
+| Stub rate | pages under 200 body words ÷ pages | < 5% | none |
 
 ---
 
@@ -394,6 +439,7 @@ When a new source contradicts an existing wiki claim:
 
 **Status:** Unresolved — needs human review
 **Impact:** [which projects or decisions does this affect?]
+**Would settle it:** [the source, measurement or test that would decide between the claims]
 ```
 
 3. Tag the affected page with `conflict` in frontmatter.

@@ -2,7 +2,7 @@
 title: Evidence-Driven Wiki Compaction
 tags: [meta, pattern]
 summary: "The recompile stage of an LLM-compiled wiki: a manual, roughly monthly ritual. It gathers age, size, similarity and retrieval-telemetry evidence, proposes merge, retire and compress moves as a dry-run report, and applies only the moves a human approves. Removed pages become tombstones, so no inbound link breaks."
-updated: 2026-10-17
+updated: 2026-11-05
 sources:
   - data/raw/repos/librarian/.claude--skills--compact-wiki--SKILL.md
   - data/raw/repos/librarian/CLAUDE.md
@@ -70,3 +70,4 @@ delta. That gives a rough temporal model at markdown cost.
 - [[Signal Without a Consumer]] — instance-of (telemetry made useful by a ritual that reads it)
 - [[Compiled-Prose KB vs Graph-Native Store]] — alternative-to (automated dedup/entity resolution)
 - [[Knowledge Base Recompile Stage]] — instance-of
+- [[Wiki Health Metrics]] — prerequisite-for (the stale and orphan signals)

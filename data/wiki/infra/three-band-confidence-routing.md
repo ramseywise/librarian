@@ -2,7 +2,7 @@
 title: Three-Band Confidence Routing
 tags: [infra, eval, pattern]
 summary: "Turning a model score into one of three actions (auto-allow, human or stronger-model review, auto-act) with two thresholds set per category from the cost of each error type, instead of one global cutoff — the shared decision layer under moderation, document extraction and fraud scoring."
-updated: 2026-11-04
+updated: 2026-11-05
 sources:
   - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--content-moderation.md
   - data/raw/repos/sisyphus/interviewing--rounds--system-design-round--walkthroughs--document-processing.md
@@ -61,3 +61,5 @@ suspicion before using it as a threshold: see [[Confidence That Is Not a Probabi
 - [[Borderline-Band Sufficiency Probe]] — instance-of (the same two-threshold band applied to retrieval sufficiency, with a cheap LLM as the middle-band reviewer)
 - [[Selective Risk Guarantees: SGR and Conformal Sets]] — alternative-to
 - [[Review Route Thresholds From Priced Costs]] — extends
+- [[Cheap-First Gating and Model Cascades]] — extends (the pipeline view: bands as the gate of a cascade)
+- [[Confidence-Gated Escalation]] — extends (setting and checking the threshold on held-out data)

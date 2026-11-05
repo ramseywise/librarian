@@ -13,13 +13,14 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.backend import courses
+from app.backend import courses, leitner
 
 _REAL_NEIGHBOURS = courses._semantic_neighbours
 
@@ -460,6 +461,78 @@ def test_flashcard_result_logs_catalog_text_with_its_lesson(client: TestClient) 
         "missed",
     )
     assert (second["front"], second["lesson"], second["source"]) == ("Loose", None, "")
+
+
+def _log_review(front: str, deck: str, result: str, days_ago: int, **extra: object) -> None:
+    ts = datetime.now(UTC) - timedelta(days=days_ago)
+    courses.FLASHCARD_LOG.parent.mkdir(exist_ok=True)
+    with courses.FLASHCARD_LOG.open("a") as f:
+        rec = {"ts": ts.isoformat(), "deck": deck, "front": front, "result": result}
+        f.write(json.dumps(rec | extra) + "\n")
+
+
+def test_flashcard_result_logs_a_stable_card_key(client: TestClient) -> None:
+    _write_cards("  - {front: Why hybrid?, back: Recall, lesson: gen-ai/01-rag/intro}\n")
+    for deck in ("gen-ai/01-rag", "gen-ai/01-rag/intro"):
+        body = {"deck": deck, "card": "0", "result": "knew"}
+        assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
+    first, second = [json.loads(x) for x in courses.FLASHCARD_LOG.read_text().splitlines()]
+    assert first["card"] == second["card"] == leitner.card_key("gen-ai/01-rag", "Why hybrid?")
+    assert {"ts", "deck", "lesson", "source", "front", "result"} <= set(first)
+
+
+def test_deck_carries_each_cards_schedule_and_counts(client: TestClient) -> None:
+    _write_cards(
+        "  - {front: Fresh, back: B}\n"
+        "  - {front: Reviewed today, back: B}\n"
+        "  - {front: Overdue, back: B, lesson: gen-ai/01-rag/intro}\n"
+        "  - {front: Missed yesterday, back: B}\n"
+    )
+    _log_review("Reviewed today", "gen-ai/01-rag", "knew", 0)
+    # Old-format record from the lesson deck: no card field.
+    _log_review("Overdue", "gen-ai/01-rag/intro", "knew", 5)
+    _log_review("Missed yesterday", "gen-ai/01-rag", "missed", 1)
+
+    deck = client.get("/api/courses/flashcards/gen-ai/01-rag").json()
+    by_front = {c["front"]: c for c in deck["cards"]}
+    assert by_front["Fresh"]["status"] == "new" and by_front["Fresh"]["box"] is None
+    assert by_front["Reviewed today"]["status"] == "later"
+    assert by_front["Reviewed today"]["box"] == 2
+    assert by_front["Overdue"]["status"] == "due" and by_front["Overdue"]["box"] == 2
+    assert by_front["Missed yesterday"]["status"] == "due"
+    assert by_front["Missed yesterday"]["box"] == 1
+    assert (deck["dueCount"], deck["newCount"]) == (2, 1)
+
+    lesson = client.get("/api/courses/flashcards/gen-ai/01-rag/intro").json()
+    assert (lesson["dueCount"], lesson["newCount"]) == (1, 0)
+
+    # The catalog is cached: a schedule must not stick to it once the log is gone.
+    courses.FLASHCARD_LOG.unlink()
+    deck = client.get("/api/courses/flashcards/gen-ai/01-rag").json()
+    assert {c["status"] for c in deck["cards"]} == {"new"}
+
+
+def test_flashcards_due_counts_module_decks_only(client: TestClient) -> None:
+    _write_cards(
+        "  - {front: Fresh, back: B, lesson: gen-ai/01-rag/intro}\n"
+        "  - {front: Overdue, back: B}\n"
+        "  - {front: Reviewed today, back: B}\n"
+    )
+    _log_review("Overdue", "gen-ai/01-rag", "knew", 5)
+    _log_review("Reviewed today", "gen-ai/01-rag", "knew", 0)
+    # A card no deck holds any more, and a line the log can't parse, must not count.
+    _log_review("Deleted card", "gen-ai/01-rag", "knew", 9)
+    with courses.FLASHCARD_LOG.open("a") as f:
+        f.write("{broken\n")
+
+    body = client.get("/api/courses/flashcards-due").json()
+    assert (body["due"], body["new"]) == (1, 1)
+    assert body["modules"] == [{"deck": "gen-ai/01-rag", "title": "RAG", "due": 1, "new": 1}]
+
+
+def test_flashcards_due_with_no_log_or_cards(client: TestClient) -> None:
+    body = client.get("/api/courses/flashcards-due").json()
+    assert (body["due"], body["new"], body["modules"]) == (0, 0, [])
 
 
 def test_flashcard_result_rejects_unknown_cards_and_grades(client: TestClient) -> None:

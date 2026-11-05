@@ -117,6 +117,9 @@ ignore = ["E501", "RUF001", "RUF002", "RUF003", "N803", "N806"]
 [tool.ruff.lint.per-file-ignores]
 # load_dotenv() must run before app modules import (they read env at import time)
 "app/backend/main.py" = ["E402"]
+# Ported whole from the course repo's deck builder; annotating it adds nothing yet.
+"tools/slides/*" = ["ANN"]
+"tests/slides/*" = ["ANN"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

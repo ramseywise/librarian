@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: app app-build obsidian api ui import-courses mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
+.PHONY: slides slides-all deck-graph deck-graph-check deck-check app app-build obsidian api ui import-courses mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
 
 app:
 	docker compose up
@@ -43,6 +43,27 @@ install-codemap:
 install-presenter:
 	uv sync --extra presenter
 
+# Lecture decks for every course. Specs and images live in data/courses; built files are gitignored.
+SLIDES_DIR = data/courses/$(PILLAR)
+
+slides:  ## Build a deck: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]
+	@test -n "$(PILLAR)" || { echo "usage: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]"; exit 1; }
+	@uv run -q --with python-pptx --with pillow --with resvg-py python tools/slides/build_deck.py \
+		$(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/$(LECTURE).yaml,deck.yaml) \
+		$(if $(PREVIEW),--preview $(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/.preview/$(LECTURE),.preview)) $(if $(PDF),--pdf) $(if $(STRICT),--strict) $(if $(LEVEL),--level $(LEVEL))
+
+slides-all:  ## Build every deck in every course [PDF=1]
+	@find data/courses -path '*/slides/deck.yaml' -o -path '*/slides/lectures/*.yaml' | sort | xargs -n1 -I{} uv run -q --with python-pptx --with pillow --with resvg-py python tools/slides/build_deck.py {} $(if $(PDF),--pdf)
+
+deck-graph:  ## Regenerate data/courses/_decks.md, the map of every module and lecture
+	@uv run -q python tools/slides/deck_graph.py build
+
+deck-graph-check:  ## Fail if a lecture's covers or edges name a missing note, or two lectures claim one note
+	@uv run -q python tools/slides/deck_graph.py check
+
+deck-check:  ## Fail if a built deck no longer matches its yaml; decks not built yet are reported only
+	@python3 tools/slides/deck_stamp.py
+
 codemap-reindex:
 	uv run codemap
 
@@ -66,6 +87,21 @@ eval-nofts:
 eval-gate:
 	uv run python evals/run_eval.py --live --arm sem --verbose
 	uv run python evals/run_eval.py --live --arm nofts --verbose
+
+.PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps
+
+wiki-stats:
+	uv run python core/wiki_telemetry.py stats
+
+wiki-snapshot:
+	uv run python core/wiki_telemetry.py snapshot
+
+wiki-check:
+	uv run python core/wiki_telemetry.py check
+
+# The curriculum sections read the course catalog, which needs the api extra.
+wiki-gaps:
+	uv run --extra api python core/wiki_telemetry.py gaps
 
 test:
 	uv run pytest tests/ --ignore=tests/e2e -v
@@ -127,6 +163,10 @@ help:
 	@echo "ingest           — run all scrapers → data/raw/, then run /ingest in Claude Code to compile into wiki"
 	@echo "lint-raw         — validate data/raw/ filenames match YYYY-MM-DD-slug convention"
 	@echo "lint             — reminder: use /lint in Claude Code"
+	@echo "wiki-stats       — print wiki health numbers"
+	@echo "wiki-snapshot    — wiki-stats + one dated row in data/telemetry/metrics.jsonl"
+	@echo "wiki-check       — private-leak check (exit 1 on a wikilink into private/)"
+	@echo "wiki-gaps        — regenerate data/telemetry/gaps.md and print the top five"
 	@echo "eval             — run retrieval + answer graders over golden dataset; save baseline"
 	@echo "eval-live        — eval the live sem arm (gated against its baseline); save live baseline"
 	@echo "eval-nofts       — eval the degraded no-fts arm (gated); save nofts baseline"

@@ -2,7 +2,7 @@
 title: Karpathy LLM Wiki Pattern
 tags: [llm, concept]
 summary: The compiler analogy for personal knowledge bases — raw sources in, LLM compiles them into structured interlinked wiki pages, no vector infra needed.
-updated: 2026-10-30
+updated: 2026-11-05
 sources:
   - data/raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
   - data/raw/repos/librarian/.claude--docs--plans--2026-07-17-knowledge-compaction.md
@@ -156,3 +156,5 @@ broken pattern cannot report "no drift".
 - [[Knowledge Base Recompile Stage]] — extends (the consolidation stage the compile/query/lint trio lacks)
 - [[Evidence-Driven Wiki Compaction]] — extends (the recompile stage)
 - [[Compiled-Prose KB vs Graph-Native Store]] — extends (the compiled-prose bet against graph-native stores)
+- [[Spaced Repetition and Self-Quizzing From a Knowledge Base]] — extends (quizzing yourself from the compiled wiki)
+- [[Wiki Health Metrics]] — extends (repeatable numbers for the lint stage)

@@ -28,7 +28,7 @@ through the root .gitignore (nested repos, site-problem solutions, personal atte
 FAIL_CLOSED_SUBJECTS fail closed: no git checkout means no import (see discover), and their
 ignored directories are not even listed as references.
 
-Each `slides/deck.yaml` below a module (spec: learn-ai-engineering
+Each `slides/deck.yaml` below a module in the source (spec:
 .claude/skills/slides/references/deck-spec.md) becomes flashcards in the module's
 `_flashcards.md`: one card per non-statement slide with a takeaway, front = `recall` or
 `title`, back = `takeaway`, attached to the lesson named in the slide's `source:`, or to the

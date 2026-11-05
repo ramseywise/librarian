@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Post-write hook: quick lint after any write to data/wiki/
-# Checks only dead wikilinks and missing frontmatter fields — fast checks only.
+# Checks dead wikilinks, missing frontmatter fields and links into private/ — fast checks only.
 # Full lint is run manually via /lint.
 
 set -euo pipefail
@@ -9,6 +9,8 @@ FILE_PATH="${CLAUDE_TOOL_INPUT_FILE_PATH:-}"
 
 # Only run on data/wiki/ writes. Absolute paths are normalised to the repo-relative
 # form first, so a write addressed as /…/librarian/data/wiki/x.md is still checked.
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+FILE_PATH="${FILE_PATH#"$REPO_ROOT"/}"
 FILE_PATH="${FILE_PATH#*/librarian/}"
 if [[ "$FILE_PATH" != data/wiki/* ]] || [[ "$FILE_PATH" == *.gitkeep ]]; then
   exit 0
@@ -87,6 +89,19 @@ while IFS= read -r link; do
   fi
 done < <(sed -n 's/.*\[\[\([^]|#]*\)[^]]*\]\].*/\1/p' "$FILE_PATH" 2>/dev/null \
            | grep -v '^_' || true)
+
+# Private leak: a public page must not link into data/wiki/private/. Output names the
+# line, never the private page. Reads private/ only, so it stays fast (no whole-wiki scan).
+if [[ "$FILE_PATH" != data/wiki/private/* ]] && [[ -x .venv/bin/python ]]; then
+  if ! LEAKS=$(.venv/bin/python core/wiki_telemetry.py check --wiki-dir data/wiki --file "$FILE_PATH" 2>/dev/null); then
+    if [[ -n "$LEAKS" ]]; then
+      echo "⚠ wiki-lint: PRIVATE LEAK — ${LEAKS}" >&2
+    else
+      echo "⚠ wiki-lint: leak check failed to run on ${FILE_PATH}, so it is NOT cleared — run /lint" >&2
+    fi
+    ISSUES=$((ISSUES + 1))
+  fi
+fi
 
 # Check for orphan prevention: new pages must have at least one incoming backlink
 # Only check .md files in wiki subdirectories (not _index, _conflicts, _relink_suggestions, _bridge_suggestions)

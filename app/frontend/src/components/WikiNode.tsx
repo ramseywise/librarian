@@ -1,6 +1,7 @@
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { Node } from "@xyflow/react";
 import type { WikiNodeData } from "../types";
+import { useTheme } from "../hooks/useTheme";
 import { domainColor } from "../theme/domains";
 
 const TYPE_BORDER: Record<string, string> = {
@@ -15,7 +16,8 @@ const TYPE_BORDER: Record<string, string> = {
 export type WikiFlowNode = Node<WikiNodeData>;
 
 export function WikiNode({ data, selected }: NodeProps<WikiFlowNode>) {
-  const color = data.groupColor ?? domainColor(data.domain[0]);
+  const theme = useTheme();
+  const color = data.groupColor ?? domainColor(data.domain[0], theme);
   const borderStyle = TYPE_BORDER[data.typeTag] ?? "solid";
 
   return (

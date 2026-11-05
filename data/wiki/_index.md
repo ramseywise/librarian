@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [meta, reference]
 summary: Auto-generated table of contents for every page in data/wiki/, grouped by domain directory.
-updated: 2026-11-04
+updated: 2026-11-05
 sources:
   - data/wiki/
 ---
@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**1239 pages** across 17 domains.
+**1245 pages** across 17 domains.
 
 ## Foundations
 
@@ -155,6 +155,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Feature Representation for Linear Models]] — Binning, interactions, polynomials, log transforms, selection and domain features give linear models shape; trees gain little from them.
 - [[Feature Stores: Parts and When You Need One]] — A feature store is a point-in-time join with a registry, an offline history store, an online latest-value store and a materialisation job around it; most teams with one model need only the join and a shared function.
 - [[Fencing Tokens and Zombie Writers]] — A paused or deposed worker still believes it holds a lock; majority quorums settle truth inside a cluster, and a monotonically increasing fencing token checked at the resource stops stale writers, which is how zombie task attempts are neutralised.
+- [[Flashcard Schedulers: Leitner, SM-2 and FSRS]] — Leitner boxes and SM-2 need no review history, while FSRS fits per-card memory parameters and beats half-life regression at predicting recall on its own project's benchmark; prediction is not learning, and no controlled comparison of learning outcomes was found, so start simple.
 - [[Forecast Baselines and Rolling-Origin Backtest]] — A forecasting model earns trust only by beating free baselines (seasonal naive above all) across many rolling origins, scored with a scaled error plus bias, with the final origin held back as an untouched exam.
 - [[Forecast Issue Time and Measured Leakage]] — Fix the issue time, horizon, information set and loss before fitting; every feature lag must be at least the horizon, and three common leaks were measured on one hourly series.
 - [[Freshness Alerts Need a Date Spine]] — An age check on max(loaded_at) clears the moment a newer partition lands, with the hole still behind it; pairing it with a list of expected dates keeps firing until the gap is repaired.
@@ -380,6 +381,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Slowly Changing Dimensions Types 1, 2 and 3]] — Overwriting a dimension label rewrites published history; type 2 closes the old row and opens a new surrogate key so facts keep the label in force at event time, and a hash compare makes the load safe to re-run.
 - [[Small Files, Prefix Layout and Storage Tiers]] — On an object store, file count and size decide request cost and whether column pruning works: partition by what you delete or backfill by, sort by what you filter on, and remember cold storage tiers lose money for tables that are read often or made of small objects.
 - [[Small-N Trap and Shrinkage]] — Averages from small groups are noisy, so the best and worst groups of any league table are the smallest ones even when no group differs; show N beside every rate, rank by a lower bound, or shrink toward the overall rate with pseudo-observations.
+- [[Spaced Repetition and Self-Quizzing From a Knowledge Base]] — Retrieving material beats rereading it at a delay but not immediately, and the best gap between sessions grows with how long you need to keep it; a KB suits recall questions asked and graded later, with no credit for how a quiz feels straight after reading.
 - [[Spark Shuffles and When One Machine Is Enough]] — What a groupBy and a join cost in a distributed engine, which Spark habits to avoid, and when DuckDB or Polars on one machine is the better answer.
 - [[SQL Date Spine and Window Frames]] — Grouping drops periods with no rows, which inflates averages and lies on charts; start from a table of every period and left join. Also: explicit window frames, lag-by-rows pitfalls, QUALIFY for top-N and a one-scan funnel with FILTER.
 - [[SQL Fan-Out and Source Reconciliation]] — Joining before aggregating repeats rows of the one side once per match and inflates sums with no error; aggregate the many side to the one side's grain first, and reconcile every report total to the source.
@@ -1150,6 +1152,9 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 - [[Agent Security Risk Taxonomy]] — The sixteen agentic security risks in five families, and the architectural claim that mitigation belongs in the component that owns the risk rather than in a central supervisory layer.
 - [[Agent Management Layer]] — The six systems a production agent needs beyond the agent itself — evaluation frameworks, fallback/escalation, drift monitoring, HITL checkpoints, audit logging, and a defined handoff protocol — argued as 60% of the deployment, with HITL corrections doubling as the training-data pipeline only if they are logged.
+- [[Cheap-First Gating and Model Cascades]] — Send each request to a cheap model and let a gate decide whether it escalates; published savings run from modest to large by task and date, simple baselines often match learned routers, and routers fail on unfamiliar or adversarial queries.
+- [[Confidence-Gated Escalation]] — A gate that escalates when a cheap model's confidence is low needs its threshold set on one labelled sample and checked on another, because thresholds overrun their error budget on held-out data and a score measured on one task may not hold on the next.
+- [[Jev Decision Model]] — TypeSafe AI's proprietary hosted model returns typed decisions with probabilities instead of text; its speed and price gains are partly confirmed independently against named comparators, while accuracy and calibration vary by task, and no peer-reviewed evaluation exists yet.
 - [[Observability — LangFuse vs LangSmith Decision]] — Decision to use LangFuse first for RAG observability — native ragas/deepeval integrations, self-hostable, GDPR-friendly, and highest weighted score (8.58/10) for [client]'s AWS-hosted, high-compliance context.
 - [[Cloud Run + Cloud SQL Pattern]] — Single-container Cloud Run service (FastAPI + SPA) connected to Cloud SQL via the built-in Auth Proxy unix socket — no public IP, no SSL config, private GCP-internal networking by default.
 - [[Cloud Service Deployment]] — A long-running 24/7 hosted service — the same container as single-service plus monitoring, health checks, and env management, chosen when the system must be available without anyone starting it.
@@ -1269,6 +1274,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Wiki Graph Engineering — Edge Quality Over Edge Count]] — Why the link graph under-connects, why the typed-relationship subgraph is the layer worth querying, and the pinned edge-count denominator behind one-hop retrieval expansion.
 - [[Three-Doc Spec Split]] — scope / requirements / roadmap as three docs with stable prefixed IDs (PR-, CR-, TR-, D-, RK-) that plans and PRs cite
 - [[Evidence-Gated Skill Pipeline]] — chained single-purpose skills over one evidence store, each refusing to run without the upstream analysis section, with a [VERIFY] tag carrying uncertainty across stages
+- [[Wiki Health Metrics]] — The six deterministic numbers this wiki tracks and what each band means; every threshold is a local heuristic, with degree 8–20 and stub under 200 words set from this wiki's first snapshot and the rest second-brain-os's uncited convention.
 - [[Workflow Pipeline Telemetry Audit]] — What a week of ledgers on a triage → build → review agent pipeline showed: ledgers that do not join, a dead retry counter, 3/3 unscoped-to-plan items invalidated vs 0/44 scoped, logging that dies with the loop, and a BUILT row that outran its evidence.
 - [[Design Evidence Annex]] — Keep mechanisms on a design-of-record's plates under a line budget, move audit-grade evidence verbatim to an annex, draw each figure once, and leave `<span id>` stubs for every removed anchor.
 - [[Capability vs Phase Skills]] — phase skills advance Status: and write the plan doc; capability skills write their own decisions artifact and never touch Status:, enforced by hook scope

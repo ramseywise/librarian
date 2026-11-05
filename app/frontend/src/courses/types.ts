@@ -83,6 +83,10 @@ export interface Flashcard {
   back: string;
   lesson: string | null;
   lessonTitle: string | null;
+  /** Leitner box 1-5; null until first graded. Absent only on an API older than scheduling. */
+  box?: number | null;
+  dueOn?: string | null;
+  status?: "new" | "due" | "later";
 }
 
 export interface FlashcardDeck {
@@ -91,4 +95,15 @@ export interface FlashcardDeck {
   title: string;
   course: string;
   cards: Flashcard[];
+  /** Reviewed cards due today or overdue. */
+  dueCount?: number;
+  /** Cards never graded. */
+  newCount?: number;
+}
+
+export interface FlashcardsDueSummary {
+  today: string;
+  due: number;
+  new: number;
+  modules: { deck: string; title: string; due: number; new: number }[];
 }

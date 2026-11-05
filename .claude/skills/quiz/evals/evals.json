@@ -1,0 +1,12 @@
+[
+  {"input": "quiz me on the eval pages", "expected": true},
+  {"input": "/quiz Semantic Caching, Prefix Caching", "expected": true},
+  {"input": "test me on what the wiki says about RRF fusion", "expected": true},
+  {"input": "give me six questions from the memory domain and grade my answers against the pages", "expected": true},
+  {"input": "how much do I actually remember from the harness pages? ask me", "expected": true},
+  {"input": "what does the wiki say about RRF fusion?", "expected": false},
+  {"input": "write a new drill on sliding window for the programming track", "expected": false},
+  {"input": "review this deck.yaml for the RAG pillar", "expected": false},
+  {"input": "run a lint pass and list the stale pages", "expected": false},
+  {"input": "argue against my view that reranking is always worth it", "expected": false}
+]

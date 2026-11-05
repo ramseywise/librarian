@@ -1,5 +1,6 @@
 import type { Node } from "@xyflow/react";
 import { courseColor } from "../theme/domains";
+import type { Theme } from "./theme";
 import type { Curriculum, Facets, WikiNodeData } from "../types";
 
 export const courseFacet = (course: string) => `course:${course}`;
@@ -27,7 +28,7 @@ export function facetsOf(c: Curriculum | null): Facets | undefined {
  * lesson links keep their directory colour. Done per render rather than on the graph payload:
  * a new `baseNodes` array means a relayout, and the curriculum arriving must not move cards.
  */
-export function withCourseGroups<T extends Node<WikiNodeData>>(nodes: T[], c: Curriculum | null): T[] {
+export function withCourseGroups<T extends Node<WikiNodeData>>(nodes: T[], c: Curriculum | null, theme?: Theme): T[] {
   if (!c) return nodes;
   const titles = new Map(c.courses.map((x) => [x.id, x.title]));
   return nodes.map((n) => {
@@ -35,7 +36,7 @@ export function withCourseGroups<T extends Node<WikiNodeData>>(nodes: T[], c: Cu
     if (!course) return n;
     return {
       ...n,
-      data: { ...n.data, groupColor: courseColor(course), groupLabel: titles.get(course) ?? course },
+      data: { ...n.data, groupColor: courseColor(course, theme), groupLabel: titles.get(course) ?? course },
     };
   });
 }

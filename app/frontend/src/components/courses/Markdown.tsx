@@ -7,6 +7,9 @@ import rehypeSanitize from "rehype-sanitize";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import "./courses.css";
+import type { GlossaryTerm as Term } from "../../types";
+import { GlossaryTerm } from "./GlossaryTerm";
+import { GLOSS_TAG, rehypeGlossary } from "./rehypeGlossary";
 import { CLOBBER_PREFIX, assetUrl, isExternal, rehypeHeadingIds, resolveRelative, sanitizeSchema } from "./markdownUtils";
 
 interface Props {
@@ -14,6 +17,8 @@ interface Props {
   lessonId: string;
   onOpenLesson: (id: string) => void;
   onOpenConcept: (pageId: string) => void;
+  /** Glossary terms to define in the text; without them the text renders as written. */
+  terms?: Term[];
 }
 
 const Pre = ({ children }: { children?: ReactNode }) => <CodeBlock>{children}</CodeBlock>;
@@ -56,6 +61,15 @@ function CodeBlock({ children }: { children?: ReactNode }) {
   );
 }
 
+/** Not an intrinsic element, so not in the Components type; react-markdown looks it up by name all the same. */
+const glossaryComponent = {
+  [GLOSS_TAG]: ({ "data-label": label = "", "data-def": def = "", children }: {
+    "data-label"?: string;
+    "data-def"?: string;
+    children?: ReactNode;
+  }) => <GlossaryTerm label={label} def={def}>{children}</GlossaryTerm>,
+} as Components;
+
 function buildComponents(
   lessonId: string,
   onOpenLesson: (id: string) => void,
@@ -64,6 +78,7 @@ function buildComponents(
   return {
     pre: Pre,
     table: Table,
+    ...glossaryComponent,
     a: ({ href = "", children, id, ...rest }) => {
       // `<a id="x">` / `<a name="x">` target anchors (no href). The sanitiser already
       // prefixed them (user-content-x), which scrollToAnchor looks for.
@@ -108,13 +123,19 @@ function buildComponents(
   };
 }
 
-function MarkdownInner({ body, lessonId, onOpenLesson, onOpenConcept }: Props) {
+function MarkdownInner({ body, lessonId, onOpenLesson, onOpenConcept, terms }: Props) {
   const components = useMemo(
     () => buildComponents(lessonId, onOpenLesson, onOpenConcept),
     [lessonId, onOpenLesson, onOpenConcept],
   );
+  const plugins = useMemo<Options["rehypePlugins"]>(() => {
+    if (!terms?.length) return rehypePlugins;
+    const withTerms = [...(rehypePlugins ?? [])];
+    withTerms.splice(withTerms.indexOf(rehypeKatex), 0, [rehypeGlossary, { terms }]);
+    return withTerms;
+  }, [terms]);
   return (
-    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={components}>
+    <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={plugins} components={components}>
       {body}
     </ReactMarkdown>
   );
