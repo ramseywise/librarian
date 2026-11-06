@@ -9,11 +9,11 @@
     "Leak check: <clean | <n> blockers: <public file:line>>"
   ],
   "must_mention": [
-    "core/wiki_rename.py",
+    "librarian.wiki.rename",
     "--apply",
     "--no-alias",
-    "core/wiki_telemetry.py check",
-    "core/wiki_telemetry.py log rename",
+    "librarian wiki check",
+    "librarian wiki log rename",
     "stop for a yes",
     "make eval-gate"
   ],

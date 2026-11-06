@@ -2,7 +2,7 @@
 
 Step B2 characterized the two colliding variants (A: lower+replace-space,
 B: regex collapse) and measured blast radius 0 over the live wiki; B3 collapsed
-both onto variant B as `core.wiki_common.slugify`. These tests pin the single
+both onto variant B as `librarian.wiki.common.slugify`. These tests pin the single
 semantic and assert every former call site resolves to the same function, so a
 local re-definition would fail here rather than silently re-forking resolution.
 
@@ -12,7 +12,7 @@ their own definitions deliberately — see the LIB-110 plan, Out of Scope.
 
 import pytest
 
-from core.wiki_common import slugify
+from librarian.wiki.common import slugify
 
 # (input, expected slug) — the divergent cases from B2, now with one answer.
 CASES = [
@@ -36,10 +36,10 @@ def test_slugify(text: str, expected: str) -> None:
 
 def test_single_definition_across_consumers() -> None:
     """All link-resolution modules must share the one slugify."""
-    import app.backend.wiki_parser as wiki_parser
-    import app.mcp_server.graph_expansion as graph_expansion
-    import app.mcp_server.server as server
-    import core.relinker as relinker
+    import apps.mcp.graph_expansion as graph_expansion
+    import apps.mcp.server as server
+    import librarian.wiki.parser as wiki_parser
+    import librarian.wiki.relinker as relinker
 
     for module in (wiki_parser, graph_expansion, server, relinker):
         assert module.slugify is slugify

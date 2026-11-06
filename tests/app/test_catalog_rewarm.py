@@ -1,4 +1,4 @@
-"""Wiki-change bursts coalesce into one course-catalog rebuild (app/backend/main.py)."""
+"""Wiki-change bursts coalesce into one course-catalog rebuild (apps/api/main.py)."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from app.backend import main
+from apps.api import main
 
 
 def test_rewarm_is_debounced(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -33,7 +33,7 @@ def test_compute_embeddings_is_serialised(monkeypatch: pytest.MonkeyPatch) -> No
     import threading
     import time
 
-    import shared.embeddings as emb
+    import librarian.retrieval.embeddings as emb
 
     active, peak = 0, 0
     guard = threading.Lock()

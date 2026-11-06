@@ -21,7 +21,7 @@ Librarian captures that knowledge once, structures it for retrieval, and surface
 ```
 Sessions ──────────────────────────────► data/raw/sessions/    ─┐
 Docs (.claude/skills/, CLAUDE.md) ─────► data/raw/claude-docs/  │
-Repo scraper (core/scrape_repos.py) ─────► data/raw/repos/        │
+Repo scraper (src/librarian/ingest/scrape_repos.py) ─────► data/raw/repos/        │
 Google Drive ──MCP──────────────────────► data/raw/gdrive/        ├──► /ingest ──► data/wiki/
 Notion ────────MCP──────────────────────► data/raw/notion/        │
 Meetings, PDFs, web, books, articles ──► data/raw/*/            ─┘
@@ -69,7 +69,7 @@ Meetings, PDFs, web, books, articles ──► data/raw/*/            ─┘
 ```
 
 That's it — this is the command people forget. Full pipeline mode pulls Notion + GDrive via
-MCP, scrapes local sources (`make scrape` + `core/scrape_repos.py`), and compiles every changed
+MCP, scrapes local sources (`make scrape` + `src/librarian/ingest/scrape_repos.py`), and compiles every changed
 file into `data/wiki/` in one shot. Other variants:
 
 ```
@@ -142,7 +142,7 @@ Optionally scrape repos you're actively working on:
 
 ```bash
 # Add repos to data/raw/repos/repos.txt, then:
-uv run python core/scrape_repos.py
+uv run librarian scrape repos
 /ingest data/raw/repos/
 ```
 
@@ -179,10 +179,10 @@ The `contracts` review dimension (via `uv run --project ~/workspace/guacamayo re
 | `data/wiki/` | LLM-compiled knowledge — one `.md` per concept, pattern, or decision; structured frontmatter, wikilinks |
 | `data/wiki/private/` | Company-specific pages, gitignored — same format, local only |
 | `CLAUDE.md` | Compiler contract — schema rules, ingest checklist, conflict policy, domain taxonomy |
-| `core/` | Scrapers: `scrape_sessions.py` (Claude/Codex), `scrape_claude_docs.py` (workspace docs), `scrape_repos.py` (repos) |
-| `app/mcp_server/` | FastMCP server: `search_wiki` (hybrid FTS + semantic + backlink rank), `read_page`, `list_domain`, `get_domain_briefing` |
-| `app/backend/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Anthropic chat agent |
-| `app/frontend/` | React + Vite graph UI — React Flow (`@xyflow/react`) force-directed graph, chat panel, live wiki watch |
+| `src/librarian/` | The Python package behind the `librarian` CLI: `wiki/` (parser, telemetry, graph, rename, relinker), `ingest/` (scrapers, gate, raw lint), `courses/` (catalog, importer, curriculum), `retrieval/` (embeddings), `config.py` (paths and settings, `LIBRARIAN_ROOT`). Run `uv run librarian --help` |
+| `apps/mcp/` | FastMCP server: `search_wiki` (hybrid FTS + semantic + backlink rank), `read_page`, `list_domain`, `get_domain_briefing` |
+| `apps/api/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Anthropic chat agent |
+| `apps/web/` | React + Vite graph UI — React Flow (`@xyflow/react`) force-directed graph, chat panel, live wiki watch |
 | `.claude/skills/` | `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb` — Claude Code slash commands |
 
 ---
@@ -192,7 +192,7 @@ The `contracts` review dimension (via `uv run --project ~/workspace/guacamayo re
 Pre-configured in `.claude/settings.json` — available to Claude Code and any MCP client automatically.
 
 ```bash
-uv run python app/mcp_server/server.py
+uv run librarian mcp
 ```
 
 **Tools:**
@@ -293,13 +293,13 @@ shuffle). There is no scheduling.
 
 | Directory | Source | Scraper |
 |---|---|---|
-| `raw/sessions/` | Claude Code + Codex session JSONL | `core/scrape_sessions.py` |
-| `raw/claude-docs/` | `.claude/` docs from workspace projects | `core/scrape_claude_docs.py` |
-| `raw/repos/` | CLAUDE.md, skills, docs from configured repos | `core/scrape_repos.py` + `repos.txt` |
+| `raw/sessions/` | Claude Code + Codex session JSONL | `src/librarian/ingest/scrape_sessions.py` |
+| `raw/claude-docs/` | `.claude/` docs from workspace projects | `src/librarian/ingest/scrape_claude_docs.py` |
+| `raw/repos/` | CLAUDE.md, skills, docs from configured repos | `src/librarian/ingest/scrape_repos.py` + `repos.txt` |
 | `raw/notion/` | Notion pages | MCP connector |
 | `raw/gdrive/` | Google Drive docs | MCP connector |
-| `raw/linear/` | Linear issues + projects | `core/ingest_linear.py` |
-| `raw/pdfs/` | PDF text extracts | `core/ingest_pdf.py` |
+| `raw/linear/` | Linear issues + projects | `src/librarian/ingest/ingest_linear.py` |
+| `raw/pdfs/` | PDF text extracts | `src/librarian/ingest/ingest_pdf.py` |
 | `raw/meetings/` | Meeting transcripts | Manual drop |
 | `raw/web/` | Web article captures | Manual drop or URL mode |
 | `raw/books/` | Book quotes + notes | Manual drop (see `CLAUDE.md` for format) |

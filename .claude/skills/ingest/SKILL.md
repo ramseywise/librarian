@@ -70,14 +70,14 @@ Run both scrapers from the librarian directory:
 make scrape   # run from the repo root
 
 # Scrape CLAUDE.md, README, skill files, and docs from configured repos
-uv run python core/scrape_repos.py
+uv run librarian scrape repos
 ```
 
 `make scrape` pulls:
 - Claude Code docs from all workspace projects (`.claude/docs/`, `.claude/skills/`, `docs/`, `.agents/`)
 - Claude Code + Codex session notes → `data/raw/sessions/`
 
-`core/scrape_repos.py` pulls:
+`librarian/ingest/scrape_repos.py` pulls:
 - CLAUDE.md, README.md, SANYI.md, `.claude/skills/**/*.md`, `docs/**/*.md` from repos listed in `data/raw/repos/repos.txt`
 - Saves to `data/raw/repos/<repo-name>/`
 
@@ -163,7 +163,7 @@ Write the cleaned copy as a **new** dated file in the same `data/raw/` subdirect
 Before touching the manifest, run:
 
 ```bash
-uv run python core/lint_raw.py   # run from the repo root
+uv run librarian ingest lint-raw   # run from the repo root
 ```
 
 If any **ERRORS** are reported → stop and tell the user which files need renaming before ingesting. WARNINGs are advisory only; do not block on them.
@@ -175,7 +175,7 @@ If any **ERRORS** are reported → stop and tell the user which files need renam
 Before reading any source file, run:
 
 ```bash
-uv run python core/ingest_gate.py triage <files or dirs>
+uv run librarian ingest triage <files or dirs>
 ```
 
 Then act on each file's **status**:
@@ -231,7 +231,7 @@ Follow `CLAUDE.md` exactly for each file triage did not skip.
 9. **Update manifest** (see Step 9 below).
 10. **Relink pass:** after all files in this cycle are ingested, run the relinker to discover additional semantic links:
     ```bash
-    uv run --extra api python core/relinker.py
+    uv run librarian wiki relink
     ```
     The relinker is **suggest-only** — it never modifies a wiki page. It writes
     `data/wiki/_relink_suggestions.md` (auto-tier, mid-tier, and orphan-backfill
@@ -269,7 +269,7 @@ Run this once, after the last file, not once per file. Skip it if triage skipped
 1. **Print the report** (see Output format).
 2. **Log the run**, in one command:
    ```bash
-   uv run python core/wiki_telemetry.py log ingest "data/raw/web/x.md -> 2 new, 3 updated, 9 links, 0 conflicts"
+   uv run librarian wiki log ingest "data/raw/web/x.md -> 2 new, 3 updated, 9 links, 0 conflicts"
    ```
    `data/telemetry/operations.jsonl` is committed and `data/raw/` is not, so the detail is the source and the four counts, nothing else. Never name a private page. If the run wrote to `data/wiki/private/`, or the filename carries an organisation or person name, log the directory (`data/raw/notion/`) instead of the file.
 3. **Call the `ingest-reviewer` agent once**, unless `--no-review` was passed. Give it the raw source path (or paths) and the list of pages written, new and updated. It returns PASS or a numbered defect list. Print the verdict as it came. Do not fix the defects in the same run: they are for the human.

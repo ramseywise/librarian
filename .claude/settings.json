@@ -2,13 +2,24 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
         "hooks": [
           {
             "type": "command",
             "command": "bash .claude/hooks/raw-immutable.sh",
             "timeout": 10,
             "statusMessage": "Checking raw/ immutability..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/raw_immutable_bash.py",
+            "timeout": 10,
+            "statusMessage": "Checking raw/ immutability (Bash)..."
           }
         ]
       }
@@ -29,12 +40,9 @@
   },
   "permissions": {
     "allow": [
-      "Bash(sed:*)",
       "Bash(xargs:*)",
       "Bash(diff:*)",
-      "Bash(mv:*)",
       "Bash(cp:*)",
-      "Bash(rm:*)",
       "Bash(touch:*)",
       "Bash(wc:*)",
       "Bash(echo:*)",

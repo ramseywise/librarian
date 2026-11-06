@@ -1,15 +1,12 @@
-"""Unit tests for core/lint_raw.py — filename convention validation."""
+"""Unit tests for librarian/ingest/lint_raw.py — filename convention validation."""
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).parents[2]))
-
-import core.lint_raw as lint_module
-from core.lint_raw import DATE_SLUG_RE, EXEMPT_PREFIXES, check_dir, main
+import librarian.ingest.lint_raw as lint_module
+from librarian.ingest.lint_raw import DATE_SLUG_RE, EXEMPT_PREFIXES, check_dir, main
 
 # ---------------------------------------------------------------------------
 # DATE_SLUG_RE pattern

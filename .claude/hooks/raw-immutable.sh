@@ -10,7 +10,19 @@
 
 set -euo pipefail
 
+# Claude Code delivers hook input as JSON on stdin ({"tool_input": {"file_path": ...}}); it
+# does NOT set CLAUDE_TOOL_INPUT_FILE_PATH. The env var is kept only as a fallback for tests.
 FILE_PATH="${CLAUDE_TOOL_INPUT_FILE_PATH:-}"
+if [[ -z "$FILE_PATH" && ! -t 0 ]]; then
+  FILE_PATH="$(python3 -c '
+import json, sys
+try:
+    ti = json.load(sys.stdin).get("tool_input") or {}
+    print(ti.get("file_path") or ti.get("notebook_path") or "")
+except Exception:
+    pass
+' || true)"
+fi
 
 [[ -z "$FILE_PATH" ]] && exit 0
 

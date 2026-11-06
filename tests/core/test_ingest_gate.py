@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 import pytest
 
-from core import ingest_gate, manifest
-from core.sensitive import private_names, scan_text, terms_pattern
+from librarian.ingest import ingest_gate, manifest
+from librarian.ingest.sensitive import private_names, scan_text, terms_pattern
 
 PRIVATE_STEM = "acme-renewal-notes"
 # Assembled so this test file doesn't itself look like a leaked key.

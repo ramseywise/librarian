@@ -1,15 +1,12 @@
-"""Unit tests for core/scrape_feeds.py — RSS/Atom feed scraper."""
+"""Unit tests for librarian/ingest/scrape_feeds.py — RSS/Atom feed scraper."""
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).parents[2]))
-
-from core.scrape_feeds import (
+from librarian.ingest.scrape_feeds import (
     DEFAULT_FEEDS,
     FeedScraper,
     FeedSource,
@@ -325,9 +322,9 @@ def test_fetch_recent_skips_disabled_feeds(monkeypatch: pytest.MonkeyPatch) -> N
             requested.append(url)
             return _FakeResponse()
 
-    monkeypatch.setattr("core.scrape_feeds.httpx.Client", lambda **_: _FakeClient())
+    monkeypatch.setattr("librarian.ingest.scrape_feeds.httpx.Client", lambda **_: _FakeClient())
 
-    from core.scrape_feeds import fetch_recent
+    from librarian.ingest.scrape_feeds import fetch_recent
 
     fetch_recent(feeds=[TIER1, off], since_days=36500)
 
@@ -339,9 +336,10 @@ def test_run_dedups_against_known_urls(tmp_path: Path, monkeypatch: pytest.Monke
         _post(title="Fresh", url="https://e.com/fresh"),
         _post(title="Seen", url="https://e.com/seen/?utm_source=rss"),
     ]
-    monkeypatch.setattr("core.scrape_feeds.fetch_recent", lambda **_: posts)
+    monkeypatch.setattr("librarian.ingest.scrape_feeds.fetch_recent", lambda **_: posts)
     monkeypatch.setattr(
-        "core.scrape_feeds._load_feed_urls_from_manifest", lambda: {"https://e.com/seen"}
+        "librarian.ingest.scrape_feeds._load_feed_urls_from_manifest",
+        lambda: {"https://e.com/seen"},
     )
 
     written = FeedScraper(output_dir=tmp_path).run()

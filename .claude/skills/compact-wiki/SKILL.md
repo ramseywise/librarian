@@ -30,13 +30,13 @@ Every move cites its evidence in a dry-run report first, and only the moves Rams
 
 ### Phase 1 — Gather signals (mechanical, read-only)
 
-0. **Stats before**: `uv run python core/wiki_telemetry.py stats --json`. Print the result;
+0. **Stats before**: `uv run librarian wiki stats --json`. Print the result;
    it is the "before" half of the final report.
 1. **Age**: `grep -rh "^updated:" data/wiki --include="*.md"` → pages >60 days stale.
 2. **Size**: `find data/wiki -name "*.md" -not -name "_*" -exec wc -l {} +` → pages over
    ~300 lines (reference dumps, accumulators).
 3. **Similarity**: read `data/wiki/_relink_suggestions.md` if present; optionally run
-   `uv run python core/relinker.py` first. High-similarity pairs = merge candidates.
+   `uv run librarian wiki relink` first. High-similarity pairs = merge candidates.
    The relinker is suggest-only, so this file is now its *complete* output — the
    auto-tier pairs it used to write straight into pages appear here too, under
    `## Auto-Link Candidates`. That tier is the strongest merge evidence in the file.
@@ -46,7 +46,7 @@ Every move cites its evidence in a dry-run report first, and only the moves Rams
    Absent or sparse telemetry is fine — age/size/similarity carry the first runs.
 5. **Inbound links**: backlink counts from lint or the index — retire candidates need
    ≤1 inbound link.
-6. **Hubs**: `uv run python core/wiki_graph.py --json` → `hubs`. A top hub with
+6. **Hubs**: `uv run librarian wiki graph --json` → `hubs`. A top hub with
    `clusters_spanned` ≤3 has many links into few topics, so it may be doing several pages'
    work. Split candidates are evidence for Ramsey only: split is not one of the three moves,
    so nothing in phase 4 acts on them. If `stability` is below 0.9 the clusters are not settled:
@@ -68,17 +68,17 @@ Ramsey approves per move (approve all / subset / none). No approval, no writes.
 - **Retire**: replace body with tombstone format, add `tombstone` to tags, add
   `[[Successor]] — supersedes` line.
 - **Compress**: apply the accumulator ceiling (last ~30 entries + month rollups).
-- Then: update `data/wiki/_index.md`, run `uv run python core/relinker.py`, rotate telemetry
+- Then: update `data/wiki/_index.md`, run `uv run librarian wiki relink`, rotate telemetry
   (summarize the window's aggregate into the report; truncate `logs/retrieval.jsonl`),
   append a one-line run record to the plan doc's `## Review` section, and add a
   `guacamayo/.claude/docs/tooling-ledger.md` row (status `hypothesis`, verification: "next
   compaction's evidence quality / no lint regressions").
 - Finish with `/lint` expectations: zero new dead links, zero new orphans (tombstones
   are exempt from orphan rules — they exist to be pointed at, not linked from).
-- **Stats after**: `uv run python core/wiki_telemetry.py stats --json`. Print the result.
+- **Stats after**: `uv run librarian wiki stats --json`. Print the result.
 - **Log the run**, once, counts only, never a page name:
   ```bash
-  uv run python core/wiki_telemetry.py log compact "4 merged, 2 retired, 1 compressed"
+  uv run librarian wiki log compact "4 merged, 2 retired, 1 compressed"
   ```
   If Ramsey approved nothing, nothing was written: no stats after, no log line.
 

@@ -1,19 +1,20 @@
 """Codemap DuckDB schema — symbols, files, import edges for indexed repos.
 
 Mirrors the meta/schema_version/built_at convention used by
-app/mcp_server/server.py's .wiki_index.duckdb.
+apps/mcp/server.py's .wiki_index.duckdb.
 """
 
 from __future__ import annotations
 
 import contextlib
 import time
-from pathlib import Path
 
 import duckdb
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-DB_PATH = REPO_ROOT / ".code_index.duckdb"
+from librarian.config import get_settings
+
+REPO_ROOT = get_settings().root
+DB_PATH = get_settings().code_index_path
 SCHEMA_VERSION = "2"
 
 _SCHEMA_STATEMENTS = [

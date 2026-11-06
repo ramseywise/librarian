@@ -1,19 +1,16 @@
-"""Unit tests for core/manifest.py."""
+"""Unit tests for librarian/ingest/manifest.py."""
 
 from __future__ import annotations
 
 import hashlib
 import json
-import sys
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).parents[2]))
-
-import core.manifest as manifest_module
-from core.manifest import (
+import librarian.ingest.manifest as manifest_module
+from librarian.ingest.manifest import (
     ManifestSession,
     check,
     coverage_gaps,

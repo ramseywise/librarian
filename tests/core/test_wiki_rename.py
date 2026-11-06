@@ -1,4 +1,4 @@
-"""core/wiki_rename.py and alias resolution against synthetic wikis. All names here are made up."""
+"""librarian.wiki.rename and alias resolution against synthetic wikis. All names here are made up."""
 
 from __future__ import annotations
 
@@ -8,14 +8,14 @@ from pathlib import Path
 import frontmatter
 import pytest
 
-from app.backend import courses as course_catalog
-from app.backend import wiki_parser
-from app.mcp_server import server
-from app.mcp_server.graph_expansion import build_typed_edges
-from core.relinker import build_link_graph, load_pages
-from core.wiki_common import page_aliases, text_aliases
-from core.wiki_rename import apply_plan, build_plan, main
-from core.wiki_telemetry import _public_pages, _slug_map, compute_stats
+from apps.mcp import server
+from apps.mcp.graph_expansion import build_typed_edges
+from librarian.courses import catalog as course_catalog
+from librarian.wiki import parser as wiki_parser
+from librarian.wiki.common import page_aliases, text_aliases
+from librarian.wiki.relinker import build_link_graph, load_pages
+from librarian.wiki.rename import apply_plan, build_plan, main
+from librarian.wiki.telemetry import _public_pages, _slug_map, compute_stats
 
 TODAY = date(2026, 11, 5)
 PRIVATE_TITLE = "Acme Secret Roadmap"
@@ -245,7 +245,7 @@ class TestAliasResolution:
         assert _slug_map(_public_pages(aliased))["former-name"].stem == "former-name"
 
     def test_relinker_resolves(self, aliased: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr("core.relinker.WIKI_DIR", aliased)
+        monkeypatch.setattr("librarian.wiki.relinker.WIKI_DIR", aliased)
         pages = load_pages()
         build_link_graph(pages)
         assert pages["reader"].outgoing_links == {"current"}

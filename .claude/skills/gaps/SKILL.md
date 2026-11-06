@@ -4,8 +4,8 @@ description: "Show what the wiki is missing. Regenerates the gitignored gaps lis
 allowed-tools:
   - Read
   - Grep
-  - Bash(uv run --extra api python core/wiki_telemetry.py gaps)
-  - Bash(uv run python core/wiki_telemetry.py log gaps *)
+  - Bash(uv run librarian wiki gaps)
+  - Bash(uv run librarian wiki log gaps *)
 ---
 
 You are refreshing the list of what the wiki does not cover. The script decides what is a gap; you report it.
@@ -22,7 +22,7 @@ Every gap reported comes from the script's output, and no gap topic ever reaches
 
 2. **Regenerate.**
    ```bash
-   uv run --extra api python core/wiki_telemetry.py gaps
+   uv run librarian wiki gaps
    ```
    The `api` extra is what lets the script read the courses: without it both course sections say `unavailable`. If the command fails, print the failure and stop. Write no gaps by hand.
 
@@ -32,7 +32,7 @@ Every gap reported comes from the script's output, and no gap topic ever reaches
 
 5. **Log, only if the list changed.** Compare entries with step 1, ignoring the date in the title. If any entry was added, dropped or recounted, or this is a first run:
    ```bash
-   uv run python core/wiki_telemetry.py log gaps "<a> asked, <l> lesson links, <m> modules"
+   uv run librarian wiki log gaps "<a> asked, <l> lesson links, <m> modules"
    ```
    `data/telemetry/operations.jsonl` is tracked in a public repo and gap topics come from query history, so the detail is the three counts and nothing else. An unchanged list is a no-op and logs nothing. `gaps.md` and `asked.jsonl` are gitignored: never copy an entry into a tracked file. If `log` exits 2 it refused the text: report that, and do not retry with other wording.
 

@@ -11,8 +11,8 @@
     "The wiki has nothing against this position."
   ],
   "must_mention": [
-    "core/wiki_telemetry.py ask",
-    "Bash(uv run python core/wiki_telemetry.py ask *)",
+    "librarian wiki ask",
+    "Bash(uv run librarian wiki ask *)",
     "never the raw position",
     "Never open `data/wiki/private/`",
     "data/wiki/_conflicts.md",

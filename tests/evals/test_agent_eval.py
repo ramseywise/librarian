@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from app.mcp_server import server
+from apps.mcp import server
 from evals.graders import (
     AgentGrader,
     AgentRun,

@@ -15,7 +15,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from app.mcp_server import server
+from apps.mcp import server
 
 REAL_WIKI = server.REPO_ROOT / "data" / "wiki"
 REAL_COURSES = server.REPO_ROOT / "data" / "courses"

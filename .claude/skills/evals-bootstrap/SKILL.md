@@ -6,7 +6,7 @@ allowed-tools:
   - Glob
   - Grep
   - Write
-  - Bash(uv run python core/wiki_telemetry.py ask *)
+  - Bash(uv run librarian wiki ask *)
 ---
 
 You are planning a first eval suite for an agent project, using the eval experience compiled in this wiki. Run from the librarian repo, so the wiki is on hand.
@@ -47,7 +47,7 @@ Every finding cites a wiki page that was opened, and every case comes from a rec
 
 6. **Close.** Print the report. If `Not covered` is not `nothing`, record it:
    ```bash
-   uv run python core/wiki_telemetry.py ask "<reworded topic>"
+   uv run librarian wiki ask "<reworded topic>"
    ```
    Topic only, with no project name in it. This is not a wiki operation, so nothing goes to `operations.jsonl`, and a run with no cases changes nothing at all.
 

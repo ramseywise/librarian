@@ -12,7 +12,7 @@ produces a 1.0 baseline that proves the grader mechanics are wired correctly,
 and it gates on the regression floors (exit 1 below floor).
 
 *Live* (`--live`): retrieval goes through the real search core
-(`app.mcp_server.server._search_rows` — BM25 + semantic rerank), so hit-rate and
+(`apps.mcp.server._search_rows` — BM25 + semantic rerank), so hit-rate and
 MRR measure actual pipeline quality.  Answers stay oracle (live answer grading
 needs the LLM — separate concern).  Retrieved paths are absolute; the grader's
 suffix matching handles the repo-relative golden `source_pages`, so no
@@ -25,7 +25,7 @@ gated so a ranking change cannot improve one arm at the other's expense.  The
 `lex` and `graph` ablations remain report-only.
 
 *Agent* (`--agent`, BILLABLE): runs each query through the real chat agent
-(`app.backend.agent.run_agent_stream`, the path the UI uses) and grades the run with
+(`apps.api.agent.run_agent_stream`, the path the UI uses) and grades the run with
 `AgentGrader` — expected source-page recall over pages read and pages cited, plus
 citation grounding. `--judge` adds `LLMJudgeGrader` (one more billable call per entry)
 scoring the answer against `expected_answer`. `--limit N` caps the entries run.
@@ -48,9 +48,6 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
-
-# Make the evals package importable when run as a script from the repo root.
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from evals.graders import (
     AgentEvalReport,
@@ -124,7 +121,7 @@ def _oracle_answer(entry: GoldenEntry) -> str:
 
 def _live_retrieval(entry: GoldenEntry, arm: str = "sem") -> list[RetrievalResult]:
     """Retrieve through the real search core (BM25 + semantic rerank)."""
-    from app.mcp_server.server import _search_rows
+    from apps.mcp.server import _search_rows
 
     rows, _degraded = _search_rows(
         entry.query, domain=ARM_DOMAINS.get(arm, ""), limit=10, tool="eval", expand=(arm == "graph")
@@ -163,7 +160,7 @@ def run(
         # The index must exist BEFORE the flag flips — build_index also consults
         # HAS_EMBEDDINGS, and a rebuild triggered mid-run would persist an
         # embedding-less index that later sem/graph arms silently rank against.
-        from app.mcp_server import server
+        from apps.mcp import server
 
         server.get_con().close()
         restore_embeddings = server.HAS_EMBEDDINGS
@@ -173,7 +170,7 @@ def run(
         # the path taken when the fts extension is unavailable. Same ordering
         # constraint as `lex` — build the index while fts still works, so the arm
         # measures degraded *retrieval*, not a degraded index.
-        from app.mcp_server import server
+        from apps.mcp import server
 
         server.get_con().close()
         restore_fts = server._ensure_fts
@@ -185,7 +182,7 @@ def run(
         else:
             retrieved_lists = [_oracle_retrieval(e) for e in entries]
     finally:
-        from app.mcp_server import server
+        from apps.mcp import server
 
         if restore_embeddings is not None:
             server.HAS_EMBEDDINGS = restore_embeddings
@@ -238,7 +235,7 @@ def _print_failures(
 
 def _edge_count() -> int:
     """Row count of the materialized typed-edges table."""
-    from app.mcp_server.server import get_con
+    from apps.mcp.server import get_con
 
     con = get_con()
     try:
@@ -261,7 +258,7 @@ def _save_baseline(
     golden set, embedding model, or edge count has since changed is not
     comparable, and without the hash that drift is invisible.
     """
-    from app.mcp_server.server import EMB_MODEL_ID
+    from apps.mcp.server import EMB_MODEL_ID
 
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(tz=UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
@@ -308,7 +305,7 @@ async def collect_agent_run(
     Consumes the same SSE events the UI does, so the eval measures the shipped path.
     Telemetry lines are tagged source="eval" so they can be filtered from chat traffic.
     """
-    from app.backend import agent
+    from apps.api import agent
 
     tokens: list[str] = []
     grounding: dict[str, list[str]] = {"pages_read": [], "cited": [], "ungrounded": []}
@@ -412,7 +409,7 @@ def _main_agent(args: argparse.Namespace) -> None:
     import anthropic
     from dotenv import load_dotenv
 
-    from app.backend import agent
+    from apps.api import agent
 
     load_dotenv(Path(__file__).parent.parent / ".env")
     entries = load_golden_dataset(args.dataset)

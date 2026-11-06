@@ -10,8 +10,8 @@
     "N blockers, N warnings, N notes"
   ],
   "must_mention": [
-    "core/wiki_telemetry.py stats --json",
-    "core/wiki_telemetry.py check",
+    "librarian wiki stats --json",
+    "librarian wiki check",
     "Private leak",
     "never fix BLOCKER without asking",
     "--quick",

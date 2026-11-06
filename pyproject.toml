@@ -19,22 +19,12 @@ dependencies = [
 ]
 
 [project.scripts]
+librarian = "librarian.cli:main"
 cartographer = "tools.cartographer.__main__:main"
 codemap = "tools.codemap.__main__:main"
 presenter = "tools.presenter.__main__:main"
 
 [project.optional-dependencies]
-viz = [
-    "streamlit>=1.65.0",
-    "st-cytoscape>=0.0.3",
-    "networkx>=3.7",
-    "python-frontmatter>=1.3.0",
-    "umap-learn>=0.5.6",
-    # Floors, not features: without them the numpy<2.5 ceiling lets the resolver
-    # backtrack to llvmlite 0.36 (py<3.10 only) and the build dies in setup.py.
-    "numba>=0.68.1",
-    "llvmlite>=0.50.0",
-]
 api = [
     "fastapi>=0.162.0",
     "uvicorn[standard]>=0.54.0",
@@ -48,8 +38,10 @@ api = [
     # numpy 2.5 support; Dependabot must not lift it unilaterally.
     "numpy>=2.4,<2.5",
     "scikit-learn>=1.9.1",
+    # librarian/wiki/graph.py (librarian wiki graph): Louvain clusters. Was only in `viz`.
+    "networkx>=3.7",
     "ollama>=0.6.3",
-    # /api/layout/umap (app/backend/umap_layout.py). Was only in `viz`, so an
+    # /api/layout/umap (apps/api/umap_layout.py). Was only in `viz`, so an
     # `--extra api` install served 503 and the graph fell back to the dagre layout.
     "umap-learn>=0.5.6",
     "numba>=0.68.1",
@@ -78,7 +70,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["tools", "shared", "core"]
+packages = ["src/librarian", "tools", "apps"]
+# The React app is built by Vite and shipped by its own Dockerfile, not inside the wheel.
+exclude = ["apps/web"]
 
 [tool.uv]
 package = true
@@ -99,12 +93,17 @@ dev = [
     "playwright>=1.64.1",
     "tree-sitter-python>=0.25.0",
     "tree-sitter>=0.26.0",
-    # tests/app/test_writeback_security.py imports fastapi.testclient. Also in the
+    # tests/app import fastapi.testclient. Also in the
     # `api` extra, but extras are not installed by `uv sync --group dev`.
     "fastapi>=0.162.0",
+    # librarian/wiki/graph.py (tests/core/test_wiki_graph.py, and /wiki-graph via bare `uv run`).
+    # Also in the `api` extra; same reason as fastapi above.
+    "networkx>=3.7",
+    "scikit-learn>=1.9.1",
 ]
 
 [tool.ruff]
+src = ["src", "."]
 line-length = 100
 target-version = "py312"
 
@@ -116,7 +115,7 @@ ignore = ["E501", "RUF001", "RUF002", "RUF003", "N803", "N806"]
 
 [tool.ruff.lint.per-file-ignores]
 # load_dotenv() must run before app modules import (they read env at import time)
-"app/backend/main.py" = ["E402"]
+"apps/api/main.py" = ["E402"]
 # Ported whole from the course repo's deck builder; annotating it adds nothing yet.
 "tools/slides/*" = ["ANN"]
 "tests/slides/*" = ["ANN"]

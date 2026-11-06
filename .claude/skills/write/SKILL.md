@@ -5,7 +5,7 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - Bash(uv run python core/wiki_telemetry.py ask *)
+  - Bash(uv run librarian wiki ask *)
 ---
 
 You are assembling evidence for something Ramsey will write. The research is done, and the argument is Ramsey's to make.
@@ -32,7 +32,7 @@ Every point in the outline cites the wiki pages behind it, and no number or quot
 
 7. **Record the gap.** If `Missing` is not `nothing`, run this with the topic reworded, never the raw request:
    ```bash
-   uv run python core/wiki_telemetry.py ask "<reworded topic>"
+   uv run librarian wiki ask "<reworded topic>"
    ```
    If the command fails, say so after the outline. Offer to ingest the finished piece as a source once it is published.
 

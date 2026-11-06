@@ -13,12 +13,12 @@
     "Stats after:  orphan <n>%"
   ],
   "must_mention": [
-    "core/wiki_telemetry.py stats --json",
-    "core/wiki_telemetry.py log compact",
+    "librarian wiki stats --json",
+    "librarian wiki log compact",
     "STOP for approval",
     "tooling-ledger",
     "truncate `logs/retrieval.jsonl`",
-    "core/wiki_graph.py --json"
+    "librarian wiki graph --json"
   ],
   "must_not_mention": [
     "_log.md",

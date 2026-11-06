@@ -1,4 +1,4 @@
-"""core/wiki_telemetry.py against a fixture wiki with known numbers.
+"""librarian.wiki.telemetry against a fixture wiki with known numbers.
 
 Fixture graph (edges are distinct directed page pairs):
 
@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from core.wiki_telemetry import (
+from librarian.wiki.telemetry import (
     METRICS_MAX_ROWS,
     OPERATIONS_KEEP_FULL,
     compute_stats,
@@ -595,7 +595,6 @@ class TestHook:
         if not root.exists():
             (root / "data").mkdir(parents=True)
             (root / "data" / "wiki").symlink_to(wiki, target_is_directory=True)
-            (root / "core").symlink_to(REPO / "core", target_is_directory=True)
             (root / ".venv").symlink_to(REPO / ".venv", target_is_directory=True)
         proc = subprocess.run(
             ["bash", str(HOOK)],

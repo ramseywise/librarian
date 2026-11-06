@@ -1,4 +1,4 @@
-"""core/wiki_graph.py against synthetic wikis. All names here are made up."""
+"""librarian.wiki.graph against synthetic wikis. All names here are made up."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from core.wiki_graph import analyse, load_graph, main, render
-from core.wiki_telemetry import compute_stats
+from librarian.wiki.graph import analyse, load_graph, main, render
+from librarian.wiki.telemetry import compute_stats
 
 TODAY = date(2026, 11, 5)
 PRIVATE_TITLE = "Acme Secret Roadmap"
@@ -70,7 +70,7 @@ def test_same_wiki_gives_same_report(joined: Path) -> None:
 def test_edge_order_does_not_depend_on_the_hash_seed(joined: Path) -> None:
     # Louvain walks adjacency order, so a set-ordered edge list changes clusters between processes.
     script = (
-        "import sys; from pathlib import Path; from core.wiki_graph import load_graph; "
+        "import sys; from pathlib import Path; from librarian.wiki.graph import load_graph; "
         "print(list(load_graph(Path(sys.argv[1])).edges))"
     )
     orders = {

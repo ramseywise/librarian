@@ -21,9 +21,8 @@ pytest.importorskip("pptx")
 from pptx import Presentation
 
 HERE = Path(__file__).resolve().parents[2] / "tools" / "slides"
-sys.path.insert(0, str(HERE))
-import build_deck as bd  # noqa: E402
-import deck_stamp as ds  # noqa: E402
+from tools.slides import build_deck as bd  # noqa: E402
+from tools.slides import deck_stamp as ds  # noqa: E402
 
 
 def slide(title, **over):

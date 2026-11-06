@@ -7,18 +7,15 @@ fails if an auto-write path is ever reintroduced.
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).parents[2]))
-
 pytest.importorskip("sklearn", reason="relink() needs the `api` extra")
 numpy = pytest.importorskip("numpy", reason="relink() needs the `api` extra")
 
-import core.relinker  # noqa: E402
-from core.relinker import build_link_graph, load_pages, relink  # noqa: E402
+import librarian.wiki.relinker  # noqa: E402
+from librarian.wiki.relinker import build_link_graph, load_pages, relink  # noqa: E402
 
 
 def _build_wiki(tmp_path: Path) -> Path:
@@ -61,7 +58,7 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     orphan's best hub sits above the 0.3 backfill floor but below the auto gate.
     """
     wiki_dir = _build_wiki(tmp_path)
-    monkeypatch.setattr(core.relinker, "WIKI_DIR", wiki_dir)
+    monkeypatch.setattr(librarian.wiki.relinker, "WIKI_DIR", wiki_dir)
 
     stems = ["alpha", "beta", "gamma", "orphan"]
     raw = {
@@ -79,11 +76,11 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         )
 
     monkeypatch.setattr("sklearn.metrics.pairwise.cosine_similarity", _sim)
-    monkeypatch.setattr("shared.embeddings.compute_embeddings", lambda: (stems, None))
+    monkeypatch.setattr("librarian.retrieval.embeddings.compute_embeddings", lambda: (stems, None))
     return wiki_dir
 
 
-def _run(wiki_dir: Path) -> tuple[core.relinker.RelinkReport, dict[str, object]]:
+def _run(wiki_dir: Path) -> tuple[librarian.wiki.relinker.RelinkReport, dict[str, object]]:
     pages = load_pages()
     build_link_graph(pages)
     return relink(pages), pages
@@ -150,7 +147,7 @@ def test_empty_sections_are_omitted(wiki: Path) -> None:
 
 def test_append_see_also_is_gone() -> None:
     """Stops the auto-write helper being quietly reintroduced."""
-    assert not hasattr(core.relinker, "append_see_also")
+    assert not hasattr(librarian.wiki.relinker, "append_see_also")
 
 
 def test_private_pages_never_reach_the_suggestions_file(
@@ -164,7 +161,7 @@ def test_private_pages_never_reach_the_suggestions_file(
     )
     # Embeddings glob private pages too, so give the page the highest similarity going.
     stems = ["alpha", "beta", "gamma", "orphan", "secret"]
-    monkeypatch.setattr("shared.embeddings.compute_embeddings", lambda: (stems, None))
+    monkeypatch.setattr("librarian.retrieval.embeddings.compute_embeddings", lambda: (stems, None))
     monkeypatch.setattr(
         "sklearn.metrics.pairwise.cosine_similarity",
         lambda _vecs: numpy.full((5, 5), 0.95),

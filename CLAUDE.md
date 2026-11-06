@@ -27,20 +27,19 @@ generic documentation.
 Analysis community plugin for cosine-similarity edges between pages. Do NOT use the
 Streamlit visualizer — it was deprecated and the script has since been removed.
 
-**Agent layer:** `app/backend/agent.py` — an Anthropic-based chat agent (#96) with its own wiki-search
+**Agent layer:** `apps/api/agent.py` — an Anthropic-based chat agent (#96) with its own wiki-search
 tool, streamed via SSE (`POST /api/chat/stream`) to the React graph UI's chat panel. No
-write-back tool exists yet (`/api/writeback` mutates a page's `## See Also` section directly
-from the UI, not via an agent tool call).
+write-back route or tool exists; the UI is read-only over the wiki.
 
 **Map filter panel (2026-11):** the graph UI's left panel follows the curriculum
-(`app/backend/curriculum.py`, `GET /api/graph/curriculum`; cards take their main course's
+(`src/librarian/courses/curriculum.py`, `GET /api/graph/curriculum`; cards take their main course's
 colour). It is an overlay: `data/wiki/` directories remain the canonical domains for tags,
 MCP and `/lint`. Pages no lesson links appear under "Beyond the curriculum" by directory.
 Private pages never appear. An empty module means the wiki has no page on that topic.
 
 **Atlas and glossary (2026-11):** above 1,000 pages the graph opens on an aggregate ring
-(`app/frontend/src/components/atlas/`, drawn on canvas); choosing a sector opens a capped React
-Flow view of it. `data/glossary.yaml` (hand-edited, served by `app/backend/glossary.py`) supplies
+(`apps/web/src/components/atlas/`, drawn on canvas); choosing a sector opens a capped React
+Flow view of it. `data/glossary.yaml` (hand-edited, served by `src/librarian/courses/glossary.py`) supplies
 a toggleable layer of term nodes and the hover definitions in lessons. The map's health strip
 reads the latest telemetry row through `GET /api/wiki/health`.
 
@@ -49,7 +48,7 @@ reads the latest telemetry row through `GET /api/wiki/health`.
 `/write` (a cited outline from the wiki; `/write-chapter` is for course chapters), plus the
 `ingest-reviewer` agent, which checks what an ingest wrote against its raw source.
 `/wiki-weekly` is the wiki's report; `/weekly` is the course's. All eight skip private pages.
-`/wiki-rename` (`core/wiki_rename.py`) renames a page and rewrites its links, in `private/` too,
+`/wiki-rename` (`librarian.wiki.rename`) renames a page and rewrites its links, in `private/` too,
 reporting those only as a count.
 
 **Retrieval evals (2026-11):** `make eval-gate` runs four gated arms, and a ranking change must clear all of them: `sem` (hand-picked questions whose answers are mostly hub pages), `nofts` (the degraded path), `uniform` (questions on uniformly sampled wiki pages) and `course` (lesson search). Search blends BM25 and similarity equally. Backlinks are deliberately not a ranking signal; `sem` alone rewards them, so never judge ranking on it alone.
@@ -58,6 +57,24 @@ reporting those only as a count.
 import edges) over source repos, separate from the wiki-compile pipeline. Exposed via MCP
 tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki tools. See
 `.claude/docs/plans/codemap-code-index.md`.
+
+---
+
+## Code Layout
+
+- `src/librarian/` — the library, installed as the `librarian` package: `config.py` (every path and
+  setting; `LIBRARIAN_ROOT` or a `pyproject.toml` above the package locates the repo), `log_config.py`,
+  `cli.py`, `wiki/` (parser, health, telemetry, graph, rename, relinker, common), `retrieval/`
+  (embeddings), `courses/` (catalog, curriculum, leitner, glossary, importer) and `ingest/`
+  (scrapers, ingest gate, manifest, raw lint).
+- `apps/api` (FastAPI, `librarian api`), `apps/mcp` (FastMCP, `librarian mcp`), `apps/web` (React/Vite).
+  Apps import the library; the library never imports `apps/`, so route functions live in
+  `apps/api/routers/` and the logic they call in `src/librarian/`.
+- `tools/` — cartographer, codemap, presenter, slides. They import the library, never the reverse.
+- CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
+  `librarian ingest triage|lint-raw|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
+  `librarian courses import`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
+  module's `main(argv)`, and `python -m librarian.<module>` works too.
 
 ---
 
@@ -73,7 +90,7 @@ tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki to
   - `data/raw/playground-docs/` — Research + plan docs from playground repo and `.claude/docs/archived/`
   - `data/raw/pdfs/` — Extracted text from research PDFs
   - `data/raw/web/` — Saved web research, bookmarks, article captures
-  - `data/raw/repos/` — CLAUDE.md, README, skill files, and docs scraped from active repos via `core/scrape_repos.py`; configure which repos to scrape in `data/raw/repos/repos.txt`
+  - `data/raw/repos/` — CLAUDE.md, README, skill files, and docs scraped from active repos via `src/librarian/ingest/scrape_repos.py`; configure which repos to scrape in `data/raw/repos/repos.txt`
   - `data/raw/books/` — Curated quotes and notes from books (format below)
   - `data/raw/articles/` — Web article captures with highlighted quotes (format below)
 
@@ -148,6 +165,9 @@ published: YYYY-MM-DD
   - `data/wiki/foundations/` — ML/DS/data-engineering fundamentals: classical ML, deep learning, NLP, data systems, MLOps
   - `data/wiki/interview/` — Coding-interview patterns (arrays/hashing, two pointers, sliding window, …), system design, prep references
   - `data/wiki/meta/` — Wiki-about-wiki: Karpathy pattern, Claude workflow system, session knowledge
+  - `data/wiki/graph/` — Graph engineering and knowledge graphs: node, edge and state primitives, graph governance, entity resolution, text-to-Cypher, graph ML, graph retrieval, multi-agent topology and failure modes
+  - `data/wiki/harness/` — Agent harness engineering: harness anatomy and maturity, execution boundaries and guardrails, retry and termination design, verification loops, tool design, deployment anti-patterns
+  - `data/wiki/loop/` — Loop engineering: the cycle that re-prompts, checks and stops an agent unattended (autonomy ladder, termination design, state files, evolve loop, self-modification, where lessons are stored)
   - `data/wiki/projects/` — Per-project knowledge (generic, public — librarian, listen-wiseer, etc.)
   - `data/wiki/private/` — Company/project-specific pages; **gitignored, never committed**. Move pages here when they contain proprietary context, client names, or internal project details. Use the same page format — they are still compiled and queryable locally.
   - `data/wiki/_index.md` — Auto-generated TOC, updated after every ingest. Do not list `data/wiki/private/` entries here.
@@ -162,21 +182,21 @@ published: YYYY-MM-DD
 
 ### `data/telemetry/` — Wiki Health Telemetry (generated)
 
-Written by `core/wiki_telemetry.py`, never by hand. Outside `data/wiki/`, so the MCP index, relinker and graph don't see it.
+Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so the MCP index, relinker and graph don't see it.
 
 - **Tracked:** `metrics.jsonl` (one row per day, at most 36, from `make wiki-snapshot`) and `operations.jsonl` (`log <op> "<detail>"`: last ~30 entries in full, older ones one row per month). This repo is public: `log` refuses text that names a private page.
 - **Gitignored (query history):** `asked.jsonl` (`ask "<topic>"`) and `gaps.md` (`make wiki-gaps`).
 
 ### `data/courses/` — Coursework (authored, editable)
 
-- Learning content served by the Courses tab of the graph UI (`app/backend/courses.py`).
+- Learning content served by the Courses tab of the graph UI (`src/librarian/courses/catalog.py`).
   It is **not** raw input and **not** compiled wiki: edit it directly, add lessons freely.
 - Layout: `<course>/<module>/[section dirs/]<lesson>.md`; `_course.md` and `_module.md`
   hold `title` / `summary` / `order` frontmatter. Lesson frontmatter: `title`, `summary`,
   `order`, optional `section`, `kind` (`reading` | `notebook`), and `wiki: [page-id, …]`
   to link concepts explicitly. Inline `[[Wiki Page]]` links work too. Images go in the
   module's `assets/` and are referenced relatively.
-- Seeded from `../learn-ai-engineering` by `make import-courses` (`core/import_courses.py`).
+- Seeded from `../learn-ai-engineering` by `make import-courses` (`librarian.courses.importer`).
   The `interviewing` course comes from its top-level `practice/interviewing` — see
   `SUBJECT_SOURCES`. That tree's `.gitignore` is the publication allowlist. Drills are the `drills`
   module of the Programming course (`programming/drills`), kept apart from local files by the
@@ -194,7 +214,7 @@ Written by `core/wiki_telemetry.py`, never by hand. Outside `data/wiki/`, so the
   `slides/lectures/*.yaml` of each module into its `_flashcards.md`. The importer neither writes nor
   removes it, and the tool only deletes files carrying its own `generated_by` line. Frontmatter
   `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
-  lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). `app/backend/leitner.py` computes due dates from that log; it stores no schedule of its own. Gitignored files and the course folders in
+  lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). `src/librarian/courses/leitner.py` computes due dates from that log; it stores no schedule of its own. Gitignored files and the course folders in
   `PRACTICE_REFERENCE_ONLY` do not become lessons.
   Files with an `imported_hash:` line are importer-generated; editing one turns it into a
   local file the importer will never overwrite or delete. Files without the line are
@@ -303,9 +323,9 @@ rules. Only `/compact-wiki` creates tombstones.
 
 ## Ingest Protocol
 
-Run this checklist for **every** new raw source, without exception. Log one line per run: `uv run python core/wiki_telemetry.py log ingest "<source> -> <n> new, <n> updated"`.
+Run this checklist for **every** new raw source, without exception. Log one line per run: `uv run librarian wiki log ingest "<source> -> <n> new, <n> updated"`.
 
-0. **Triage first:** `uv run python core/ingest_gate.py triage <files>` reports whether each file is unchanged, a duplicate of compiled content, changed or new, and routes it: `clear`, `strip` (contact details), `decide` (a listed term or private page name: generalise, or compile to `data/wiki/private/`) or `stop` (a secret). When unsure, use `private/`. Terms live in `data/wiki/private/_sensitive-terms.txt`. The steps are in the ingest skill.
+0. **Triage first:** `uv run librarian ingest triage <files>` reports whether each file is unchanged, a duplicate of compiled content, changed or new, and routes it: `clear`, `strip` (contact details), `decide` (a listed term or private page name: generalise, or compile to `data/wiki/private/`) or `stop` (a secret). When unsure, use `private/`. Terms live in `data/wiki/private/_sensitive-terms.txt`. The steps are in the ingest skill.
 1. **Read the source fully** before writing anything to `data/wiki/`.
 2. **Identify** all entities, concepts, decisions, and open questions mentioned.
 3. **Extract atomic concepts** — this is the most important step for graph density. For every named technique, pattern, algorithm, or method mentioned in the source, ask: *does this deserve its own page?* Create a new page if yes. Examples of things that get their own page: `semantic caching`, `RRF fusion`, `inter-annotator agreement`, `prefix caching`, `CRAG retry loop`, `HistoryCondenser`. Do NOT bury these as bullets inside a coarser page — they become nodes in the graph only if they are pages. Rule of thumb: if it has a name and a non-obvious mechanism, it gets a page.
@@ -320,7 +340,7 @@ Run this checklist for **every** new raw source, without exception. Log one line
 7. **Add cross-references (bidirectional):** after updating pages, scan for opportunities to add `[[wikilinks]]` to related pages. Prefer linking atomic concept pages from within broader topic pages — this is how graph edges form. Every atomic concept page should appear as an inline `[[wikilink]]` inside at least one coarser page. **Additionally:** for each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships where the type is clear.
 8. **Update `data/wiki/_index.md`:** add any new pages to the appropriate section.
 9. **Check for orphans (blocking):** any new page MUST have at least one incoming backlink from another wiki page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
-10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run python core/relinker.py` to discover additional semantic links. The relinker is **suggest-only** — it never modifies a wiki page. Review `data/wiki/_relink_suggestions.md` and add the worthwhile candidates **manually, with typed relationships** (`- [[Page]] — extends`); delete the entries you dismiss. Adding untyped links is what the graph already has too many of (see `data/wiki/meta/wiki-graph-engineering.md`).
+10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run librarian wiki relink` to discover additional semantic links. The relinker is **suggest-only** — it never modifies a wiki page. Review `data/wiki/_relink_suggestions.md` and add the worthwhile candidates **manually, with typed relationships** (`- [[Page]] — extends`); delete the entries you dismiss. Adding untyped links is what the graph already has too many of (see `data/wiki/meta/wiki-graph-engineering.md`).
 11. **Accumulator ceiling:** pages that receive per-session appended rows (e.g.
     `meta/session-log.md`) keep the last ~30 entries in full; when an append pushes
     past that, roll older entries into month-range summary rows at ingest time —
@@ -405,7 +425,7 @@ In `## See Also` sections, annotate links with a relationship type using `— ty
 
 **Direction:** the type describes the *linked* page relative to the page it is written
 on. `- [[X]] — prerequisite-for` on page P reads "X is a prerequisite for P". Retrieval
-expansion (`app/mcp_server/graph_expansion.py`) depends on this reading, so write the link
+expansion (`apps/mcp/graph_expansion.py`) depends on this reading, so write the link
 on the page that X relates *to*.
 
 | Type | `- [[X]] — type` on page P means |
@@ -420,7 +440,7 @@ on the page that X relates *to*.
 
 Use `related` rather than inventing a type (`part-of`, `depends-on`, `complements`, …);
 put the nuance in a parenthetical note: `- [[X]] — related (part of; the eval stage)`.
-Canonical types are defined once in `core/wiki_common.py` (`CANONICAL_LINK_TYPES`).
+Canonical types are defined once in `src/librarian/wiki/common.py` (`CANONICAL_LINK_TYPES`).
 
 Untyped links (`- [[Page]]`) are still valid — type gradually during future ingests.
 The parser extracts relationship types into edge metadata for graph visualization.

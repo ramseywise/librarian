@@ -8,6 +8,7 @@ under data/raw/ as intended behaviour, and a blanket write-block breaks all of t
 
 from __future__ import annotations
 
+import json
 import subprocess
 from pathlib import Path
 
@@ -24,7 +25,8 @@ def run_hook(file_path: str) -> tuple[int, str]:
     proc = subprocess.run(
         ["bash", str(HOOK)],
         cwd=REPO,
-        env={"PATH": "/usr/bin:/bin:/usr/local/bin", "CLAUDE_TOOL_INPUT_FILE_PATH": file_path},
+        input=json.dumps({"tool_name": "Write", "tool_input": {"file_path": file_path}}),
+        env={"PATH": "/usr/bin:/bin:/usr/local/bin"},
         capture_output=True,
         text=True,
     )
@@ -60,7 +62,7 @@ def test_blocks_via_traversal_path(existing_raw_file: Path) -> None:
 
 
 def test_permits_creating_new_raw_file() -> None:
-    """The ingest path — core/ scripts create new files under data/raw/."""
+    """The ingest path — librarian ingest and scrape commands create new files under data/raw/."""
     code, err = run_hook("data/raw/web/_does-not-exist-a91f.md")
     assert code == ALLOW, f"creation must be permitted or ingest breaks: {err}"
 
@@ -72,7 +74,7 @@ def test_permits_creating_raw_file_in_new_subdir() -> None:
 
 
 def test_ignores_paths_outside_raw() -> None:
-    for path in ("data/wiki/rag/chunking.md", "app/mcp_server/server.py", "CLAUDE.md"):
+    for path in ("data/wiki/rag/chunking.md", "apps/mcp/server.py", "CLAUDE.md"):
         code, err = run_hook(path)
         assert code == ALLOW, f"{path} must not be blocked: {err}"
 
@@ -83,7 +85,7 @@ def test_ignores_empty_path() -> None:
 
 
 def test_every_etl_ingest_script_target_dir_stays_writable() -> None:
-    """The nine core/ writers all create into data/raw/ subdirs — none may be blocked."""
+    """The nine ingest writers all create into data/raw/ subdirs — none may be blocked."""
     for subdir in (
         "notion",
         "linear",

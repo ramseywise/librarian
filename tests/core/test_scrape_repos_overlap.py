@@ -11,8 +11,8 @@ from pathlib import Path
 
 import pytest
 
-from core import scrape_repos
-from core.scrape_repos import CLAUDE_DOCS_GLOBS, EXTRACT_GLOBS, scrape_repo
+from librarian.ingest import scrape_repos
+from librarian.ingest.scrape_repos import CLAUDE_DOCS_GLOBS, EXTRACT_GLOBS, scrape_repo
 
 
 def _make_repo(root: Path) -> Path:

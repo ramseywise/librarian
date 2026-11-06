@@ -24,7 +24,7 @@ Report everything, change nothing unless `--fix` was passed, and even then chang
 Run this first, in every mode, and report the result:
 
 ```bash
-uv run python core/wiki_telemetry.py stats --json
+uv run librarian wiki stats --json
 ```
 
 Report what the script returns; never compute or estimate a rate yourself. If it fails, write `Rates: unavailable (<reason>)`.
@@ -33,7 +33,7 @@ Report what the script returns; never compute or estimate a rate yourself. If it
 
 #### BLOCKER — must fix before trusting the wiki
 
-- **Private leak** — run `uv run python core/wiki_telemetry.py check`; a failure is a BLOCKER. Report the public file and line the script gives, never the private title
+- **Private leak** — run `uv run librarian wiki check`; a failure is a BLOCKER. Report the public file and line the script gives, never the private title
 - **Unresolved conflicts** — pages tagged `conflict` in frontmatter; also check `data/wiki/_conflicts.md` for open entries
 - **Dead wikilinks** — `[[Page Name]]` references that don't match any file in `data/wiki/`
 - **Missing frontmatter fields** — any page missing `title`, `tags`, `summary`, or `updated`

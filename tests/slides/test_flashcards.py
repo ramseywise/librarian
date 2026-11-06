@@ -1,13 +1,11 @@
 """tools/slides/flashcards.py: module flashcards built from local deck and lecture specs."""
 
-import sys
 from pathlib import Path
 
 import pytest
 import yaml
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools" / "slides"))
-import flashcards as fc
+from tools.slides import flashcards as fc
 
 DECK = """
 deck: {title: Stats}

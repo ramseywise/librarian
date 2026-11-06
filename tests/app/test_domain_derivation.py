@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from app.backend import wiki_parser
-from app.mcp_server import server
+from apps.mcp import server
+from librarian.wiki import parser as wiki_parser
 
 
 @pytest.fixture()
@@ -60,7 +60,7 @@ def test_real_wiki_dirs_are_all_domains() -> None:
 
 
 def test_relinker_domain_tags_follow_disk(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    from core import relinker
+    from librarian.wiki import relinker
 
     monkeypatch.setattr(relinker, "WIKI_DIR", wiki)
     assert relinker._domain_tag_set() == {"context", "rag"}

@@ -4,12 +4,12 @@ description: "Weekly review of the wiki, under one page: what was added, what is
 allowed-tools:
   - Read
   - Grep
-  - Bash(uv run python core/wiki_telemetry.py stats --json)
-  - Bash(uv run python core/wiki_telemetry.py snapshot)
-  - Bash(uv run python core/wiki_telemetry.py check)
-  - Bash(uv run python core/wiki_graph.py --json)
-  - Bash(uv run --extra api python core/wiki_telemetry.py gaps)
-  - Bash(uv run python core/wiki_telemetry.py log weekly *)
+  - Bash(uv run librarian wiki stats --json)
+  - Bash(uv run librarian wiki snapshot)
+  - Bash(uv run librarian wiki check)
+  - Bash(uv run librarian wiki graph --json)
+  - Bash(uv run librarian wiki gaps)
+  - Bash(uv run librarian wiki log weekly *)
 ---
 
 You are writing the wiki's weekly review. This is not the course `/weekly` from `learn-ai-engineering`, which reports on course tests, reviewer findings, readings and decks: this one covers `data/wiki/` only.
@@ -24,13 +24,13 @@ Every number comes from the telemetry script or its files, and the report ends i
 
 1. **Current numbers.**
    ```bash
-   uv run python core/wiki_telemetry.py stats --json
+   uv run librarian wiki stats --json
    ```
    Use `metrics.<name>.value` and `.status`, `pages`, `domains` and `open_conflicts`. Never compute or estimate a rate yourself. If this fails, print the failure and stop: there is no review without it.
 
 2. **Trend.** Read `data/telemetry/metrics.jsonl`. Rows are oldest first, so the latest row is the last line. If there is no row, or the latest row is seven or more days old:
    ```bash
-   uv run python core/wiki_telemetry.py snapshot
+   uv run librarian wiki snapshot
    ```
    and remember that a snapshot was written. Compare the current numbers with the row that was latest before this step. With no earlier row, write `first row`. `metrics.jsonl` is tracked and holds no page titles beyond public hubs, so leave it for Ramsey to stage.
 
@@ -38,19 +38,19 @@ Every number comes from the telemetry script or its files, and the report ends i
 
 4. **Unresolved.** Read `data/wiki/_conflicts.md`: an entry whose `**Status:**` does not start with `Resolved` is open. The count must match `open_conflicts`; if not, say so. Then run the leak check:
    ```bash
-   uv run python core/wiki_telemetry.py check
+   uv run librarian wiki check
    ```
    Exit 1 is a blocker: report the public file and line it gives, never a private title. Warnings are counted, not listed.
 
 5. **Thin spots.** Refresh and read the gaps:
    ```bash
-   uv run --extra api python core/wiki_telemetry.py gaps
+   uv run librarian wiki gaps
    ```
    Take the top three lines it prints. Add any metric whose status is `watch` or `broken`, and any domain with fewer than five pages. Do not open `data/wiki/private/`.
 
 6. **Shape.**
    ```bash
-   uv run python core/wiki_graph.py --json
+   uv run librarian wiki graph --json
    ```
    Report the number of entries in `clusters`, then `unsettled`, then the `page` of the first entry in `bridges`. If `stability` is below 0.9, append ` (clusters unsettled)` to the line. No trend and no verdict: these numbers have no bands. If this fails, print `Shape: unavailable (<reason>)` and carry on: the review does not depend on it.
 
@@ -58,7 +58,7 @@ Every number comes from the telemetry script or its files, and the report ends i
 
 8. **Log, only if a snapshot was written in step 2.**
    ```bash
-   uv run python core/wiki_telemetry.py log weekly "snapshot <date>, <pages> pages, <open_conflicts> open conflicts"
+   uv run librarian wiki log weekly "snapshot <date>, <pages> pages, <open_conflicts> open conflicts"
    ```
    `operations.jsonl` is tracked in a public repo and gaps come from query history, so the detail is those counts and never a gap topic or page name. A re-run inside the week wrote no snapshot, so it is a no-op and logs nothing. If `log` exits 2 it refused the text: report that, and do not retry with other wording.
 

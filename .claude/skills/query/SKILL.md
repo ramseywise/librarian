@@ -6,7 +6,7 @@ allowed-tools:
   - Glob
   - Grep
   - Write
-  - Bash(uv run python core/wiki_telemetry.py ask *)
+  - Bash(uv run librarian wiki ask *)
 ---
 
 You are querying a compiled personal knowledge base. Answer only from what is in the wiki — do not use general knowledge unless the wiki has no coverage and you explicitly flag it.
@@ -37,7 +37,7 @@ Every claim in the answer comes from a wiki page and cites it, and anything that
 
 6. End with the trailer (see Output format). If `Not covered` is not `nothing`, record it:
    ```bash
-   uv run python core/wiki_telemetry.py ask "<reworded topic>"
+   uv run librarian wiki ask "<reworded topic>"
    ```
    Queries are personal history: pass the topic, reworded, never the raw question. If the command fails, say so after the trailer.
 

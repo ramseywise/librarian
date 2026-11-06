@@ -58,7 +58,7 @@ Use Bash to identify the queue files pending ingest (not yet in manifest):
 
 ```bash
 uv run python -c "
-from core.manifest import REPO_ROOT, MANIFEST_PATH
+from librarian.ingest.manifest import REPO_ROOT, MANIFEST_PATH
 import json, re
 from pathlib import Path
 
@@ -129,8 +129,8 @@ Print a clean summary, in the template under Output format.
 - Re-running `/learn` on an already-ingested batch is safe — ingest skips unchanged files.
 - To fetch fresh items before running `/learn`:
   `ARXIV_FETCH_ENABLED=true FEED_FETCH_ENABLED=true uv run cartographer --cron`
-- To fetch without the full cron: `uv run python -m core.scrape_arxiv` or
-  `uv run python -m core.scrape_feeds` (add `--list-feeds` to see the source table,
+- To fetch without the full cron: `uv run librarian scrape arxiv` or
+  `uv run librarian scrape feeds` (add `--list-feeds` to see the source table,
   `--dry-run` to preview).
 - Feed volume varies a lot by source — the fetcher's default window is 7 days, so a
   wider `--since-days` can queue a large batch in one go.

@@ -1,4 +1,4 @@
-"""core/import_courses.py — MDX/notebook conversion and the idempotent sync contract.
+"""librarian.courses.importer — MDX/notebook conversion and the idempotent sync contract.
 
 The sync contract is what lets coursework be edited in librarian while
 learn-ai-engineering is still being consolidated: generated files carry an
@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from core import import_courses as ic
+from librarian.courses import importer as ic
 
 
 def test_mdx_callouts_tabs_screenshots_and_promo_drop() -> None:

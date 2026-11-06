@@ -14,13 +14,14 @@ For non-localhost hosting, set CODEMAP_API_HOST/CODEMAP_API_PORT and run:
 from __future__ import annotations
 
 import os
-from pathlib import Path
 
 import duckdb
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 
-load_dotenv(Path(__file__).parent.parent.parent / ".env")
+from librarian.config import get_settings
+
+load_dotenv(get_settings().dotenv_file)
 
 from tools.codemap import db, symbol_embeddings  # noqa: E402
 

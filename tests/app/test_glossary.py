@@ -1,4 +1,4 @@
-"""Glossary terms as a graph layer (app/backend/glossary.py)."""
+"""Glossary terms as a graph layer (librarian/courses/glossary.py)."""
 
 from __future__ import annotations
 
@@ -9,7 +9,9 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
-from app.backend import glossary, wiki_parser
+from apps.api.routers import glossary as glossary_routes
+from librarian.courses import glossary
+from librarian.wiki import parser as wiki_parser
 
 
 def _page(wiki: Path, rel: str, body: str, tags: str = "[rag, concept]") -> None:
@@ -38,7 +40,7 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 @pytest.fixture()
 def client() -> TestClient:
     app = FastAPI()
-    app.include_router(glossary.router)
+    app.include_router(glossary_routes.router)
     return TestClient(app)
 
 

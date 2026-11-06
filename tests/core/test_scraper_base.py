@@ -1,15 +1,12 @@
-"""Unit tests for core/base.py — ScraperBase ABC."""
+"""Unit tests for librarian/ingest/base.py — ScraperBase ABC."""
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-sys.path.insert(0, str(Path(__file__).parents[2]))
-
-from core.base import ScraperBase
-from core.manifest import ManifestSession
+from librarian.ingest.base import ScraperBase
+from librarian.ingest.manifest import ManifestSession
 
 # ---------------------------------------------------------------------------
 # Concrete minimal subclass for testing
@@ -84,7 +81,7 @@ class TestScraperBaseCli:
     def test_cli_runs_with_no_args(self) -> None:
         """cli() parses [] args, instantiates, calls run(), prints summary."""
         with (
-            patch("core.base.configure_logging"),
+            patch("librarian.ingest.base.configure_logging"),
             patch.object(StubScraper, "run", return_value=[]) as mock_run,
             patch("sys.argv", ["prog"]),
         ):
@@ -93,7 +90,7 @@ class TestScraperBaseCli:
 
     def test_cli_passes_dry_run_flag(self) -> None:
         with (
-            patch("core.base.configure_logging"),
+            patch("librarian.ingest.base.configure_logging"),
             patch.object(StubScraper, "run", return_value=[Path("/tmp/x.md")]) as mock_run,
             patch("sys.argv", ["prog", "--dry-run"]),
             patch("builtins.print") as mock_print,
@@ -106,7 +103,7 @@ class TestScraperBaseCli:
 
     def test_cli_uses_source_name_in_summary(self) -> None:
         with (
-            patch("core.base.configure_logging"),
+            patch("librarian.ingest.base.configure_logging"),
             patch.object(StubScraper, "run", return_value=[]),
             patch("sys.argv", ["prog"]),
             patch("builtins.print") as mock_print,
@@ -118,7 +115,7 @@ class TestScraperBaseCli:
     def test_cli_custom_description_used_in_parser(self) -> None:
         """cli() forwards description to ArgumentParser — smoke-test no crash."""
         with (
-            patch("core.base.configure_logging"),
+            patch("librarian.ingest.base.configure_logging"),
             patch.object(StubScraper, "run", return_value=[]),
             patch("sys.argv", ["prog"]),
         ):

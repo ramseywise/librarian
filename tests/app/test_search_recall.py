@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from app.mcp_server import server
+from apps.mcp import server
 
 PAGE = """---
 title: {title}

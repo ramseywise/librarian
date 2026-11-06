@@ -1,4 +1,4 @@
-"""UMAP layout reuse (app/backend/umap_layout.py): page changes don't move the map."""
+"""UMAP layout reuse (apps/api/umap_layout.py): page changes don't move the map."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import pytest
 
 pytest.importorskip("duckdb")
 
-from app.backend import umap_layout
+from apps.api import umap_layout
 
 
 class _FakeUMAP:

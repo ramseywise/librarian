@@ -17,6 +17,7 @@ as a warning (and fails the run under --strict).
 from __future__ import annotations
 
 import argparse
+import itertools
 import re
 import shutil
 import subprocess
@@ -33,11 +34,7 @@ from pptx.opc.constants import RELATIONSHIP_TYPE as RT
 from pptx.oxml.ns import qn
 from pptx.util import Inches, Pt
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import itertools
-
-import deck_graph
-import deck_stamp
+from tools.slides import deck_graph, deck_stamp
 
 # ---------------------------------------------------------------------------
 # Theme

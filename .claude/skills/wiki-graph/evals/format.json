@@ -10,7 +10,7 @@
     "Worth a look:"
   ],
   "must_mention": [
-    "uv run python core/wiki_graph.py",
+    "uv run librarian wiki graph",
     "never stored",
     "below 0.9",
     "/compact-wiki",

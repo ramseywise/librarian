@@ -18,7 +18,7 @@
     "--write",
     "refuses if a file is already at that path",
     "source: synthetic",
-    "core/wiki_telemetry.py ask",
+    "librarian wiki ask",
     "nothing goes to `operations.jsonl`",
     "make eval-gate",
     "/harness-audit"

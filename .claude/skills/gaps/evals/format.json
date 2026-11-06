@@ -11,8 +11,8 @@
     "Top five: none"
   ],
   "must_mention": [
-    "uv run --extra api python core/wiki_telemetry.py gaps",
-    "core/wiki_telemetry.py log gaps",
+    "uv run librarian wiki gaps",
+    "librarian wiki log gaps",
     "An unchanged list is a no-op and logs nothing",
     "the detail is the three counts and nothing else",
     "gitignored",

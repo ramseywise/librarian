@@ -2,8 +2,8 @@
 
 Moving a module up or down a directory without fixing its `Path(__file__).parent...`
 chain points it outside the repo, and every consumer then sees an empty or missing
-directory instead of an error. That happened when shared/embeddings.py, core/cron.py
-and core/enrich.py moved one level up: the relinker embedded zero pages and the cron
+directory instead of an error. That happened when librarian/retrieval/embeddings.py, tools/cartographer/cron.py
+and tools/cartographer/enrich.py moved one level up: the relinker embedded zero pages and the cron
 synced session notes into ~/workspace/raw/ for weeks without a failure.
 """
 
@@ -17,13 +17,17 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 CASES = [
-    ("core.cron", "_REPO_ROOT", REPO_ROOT),
-    ("core.cron", "LIBRARIAN_RAW_SESSIONS", REPO_ROOT / "data" / "raw" / "sessions"),
-    ("core.cron", "LIBRARIAN_WIKI_DIR", REPO_ROOT / "data" / "wiki"),
-    ("core.enrich", "LIBRARIAN_RAW_SESSIONS", REPO_ROOT / "data" / "raw" / "sessions"),
-    ("core.relinker", "WIKI_DIR", REPO_ROOT / "data" / "wiki"),
-    ("shared.embeddings", "WIKI_DIR", REPO_ROOT / "data" / "wiki"),
-    ("shared.embeddings", "CACHE_DB", REPO_ROOT / ".embeddings_cache.duckdb"),
+    ("tools.cartographer.cron", "_REPO_ROOT", REPO_ROOT),
+    ("tools.cartographer.cron", "LIBRARIAN_RAW_SESSIONS", REPO_ROOT / "data" / "raw" / "sessions"),
+    ("tools.cartographer.cron", "LIBRARIAN_WIKI_DIR", REPO_ROOT / "data" / "wiki"),
+    (
+        "tools.cartographer.enrich",
+        "LIBRARIAN_RAW_SESSIONS",
+        REPO_ROOT / "data" / "raw" / "sessions",
+    ),
+    ("librarian.wiki.relinker", "WIKI_DIR", REPO_ROOT / "data" / "wiki"),
+    ("librarian.retrieval.embeddings", "WIKI_DIR", REPO_ROOT / "data" / "wiki"),
+    ("librarian.retrieval.embeddings", "CACHE_DB", REPO_ROOT / ".embeddings_cache.duckdb"),
 ]
 
 

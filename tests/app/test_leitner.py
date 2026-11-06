@@ -1,4 +1,4 @@
-"""Leitner scheduling replayed from the flashcard self-grade log (app/backend/leitner.py)."""
+"""Leitner scheduling replayed from the flashcard self-grade log (librarian/courses/leitner.py)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from app.backend.leitner import BOX_DAYS, CardState, card_key, load_states, replay, status_of
+from librarian.courses.leitner import BOX_DAYS, CardState, card_key, load_states, replay, status_of
 
 DECK = "programming/drills"
 FRONT = "What is a closure?"

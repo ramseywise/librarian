@@ -6,8 +6,8 @@
     "Outside the wiki:"
   ],
   "must_mention": [
-    "core/wiki_telemetry.py ask",
-    "Bash(uv run python core/wiki_telemetry.py ask *)",
+    "librarian wiki ask",
+    "Bash(uv run librarian wiki ask *)",
     "reworded",
     "never the raw question"
   ],

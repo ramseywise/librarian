@@ -13,7 +13,8 @@ from __future__ import annotations
 
 import sys
 
-from shared.log_config import configure_logging
+from librarian.config import get_settings
+from librarian.log_config import configure_logging
 
 
 def main() -> None:
@@ -21,7 +22,7 @@ def main() -> None:
     """Route to the appropriate cartographer subcommand."""
     if "--cron" in sys.argv:
         sys.argv.remove("--cron")
-        from core.cron import run_cron
+        from tools.cartographer.cron import run_cron
 
         run_cron()
 
@@ -42,7 +43,7 @@ def main() -> None:
         _run_facts()
 
     else:
-        from shared.parser import main as parser_main
+        from tools.cartographer.session_parser import main as parser_main
 
         parser_main()
 
@@ -53,8 +54,8 @@ def _run_migrate() -> None:
     import json
     from pathlib import Path
 
-    from core.migrate import migrate_jsonl_to_notes
-    from shared.parser import iter_sessions
+    from tools.cartographer.migrate import migrate_jsonl_to_notes
+    from tools.cartographer.session_parser import iter_sessions
 
     p = argparse.ArgumentParser(description="Migrate JSONL sessions to session notes")
     p.add_argument("--projects-dir", default="~/.claude/projects")
@@ -94,8 +95,8 @@ def _run_compare() -> None:
     import argparse
     from pathlib import Path
 
-    from core.migrate import compare_sources
-    from shared.parser import iter_sessions, parse_session_notes
+    from tools.cartographer.migrate import compare_sources
+    from tools.cartographer.session_parser import iter_sessions, parse_session_notes
 
     p = argparse.ArgumentParser(description="Compare JSONL vs session notes")
     p.add_argument("--projects-dir", default="~/.claude/projects")
@@ -129,7 +130,7 @@ def _run_enrich() -> None:
     import argparse
     from pathlib import Path
 
-    from core.enrich import run_enrich
+    from tools.cartographer.enrich import run_enrich
 
     p = argparse.ArgumentParser(description="Enrich session notes with cost + facet data")
     p.add_argument(
@@ -155,7 +156,7 @@ def _run_facts() -> None:
     from datetime import UTC, datetime, timedelta
     from pathlib import Path
 
-    from core.cron import EmptyInputError
+    from tools.cartographer.cron import EmptyInputError
     from tools.cartographer.factstore import (
         from_findings_jsonl,
         from_jsonl,
@@ -165,7 +166,7 @@ def _run_facts() -> None:
         upsert_findings,
     )
 
-    repo_root = Path(__file__).resolve().parents[2]
+    repo_root = get_settings().root
     p = argparse.ArgumentParser(description="Refresh the session fact table + dashboard")
     p.add_argument("--store", default=str(repo_root / "data" / "sessions.db"))
     p.add_argument("--projects-dir", default="~/.claude/projects")
@@ -272,8 +273,8 @@ def _run_facts() -> None:
     # zero rows — which is how it sat for weeks (#60).
     notes_dir = Path(args.notes_dir).expanduser()
     if not args.no_derive:
-        from core.migrate import derive_notes
-        from shared.parser import iter_sessions
+        from tools.cartographer.migrate import derive_notes
+        from tools.cartographer.session_parser import iter_sessions
 
         projects_dir = Path(args.projects_dir).expanduser()
         sessions = iter_sessions(projects_dir)

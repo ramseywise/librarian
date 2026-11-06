@@ -16,17 +16,17 @@
   "must_mention": [
     "This is not the course `/weekly`",
     "not the course repo's /weekly",
-    "core/wiki_telemetry.py stats --json",
-    "core/wiki_telemetry.py snapshot",
-    "core/wiki_telemetry.py check",
-    "core/wiki_telemetry.py log weekly",
+    "librarian wiki stats --json",
+    "librarian wiki snapshot",
+    "librarian wiki check",
+    "librarian wiki log weekly",
     "the latest row is the last line",
     "logs nothing",
     "never a gap topic or page name",
     "Exactly three",
     "about 40 lines",
     "page count is never a health number",
-    "core/wiki_graph.py --json"
+    "librarian wiki graph --json"
   ],
   "must_not_mention": [
     "_log.md",

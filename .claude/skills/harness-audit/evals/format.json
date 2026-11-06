@@ -15,7 +15,7 @@
     "Read-only",
     "Never open or cite anything in `data/wiki/private/`",
     "never open a secrets file or print a value",
-    "core/wiki_telemetry.py ask",
+    "librarian wiki ask",
     "nothing goes to `operations.jsonl`",
     "/evals-bootstrap",
     "/security-review"

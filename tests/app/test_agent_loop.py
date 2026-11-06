@@ -16,9 +16,9 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from app.backend import agent
-from app.backend import main as main_module
-from app.mcp_server import server
+from apps.api import agent
+from apps.api import main as main_module
+from apps.mcp import server
 
 PAGE = """---
 title: {title}

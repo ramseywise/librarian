@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Never
 import duckdb
 import pytest
 
-from app.mcp_server import server
+from apps.mcp import server
 
 if TYPE_CHECKING:
     from pathlib import Path

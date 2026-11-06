@@ -1,4 +1,4 @@
-"""shared.embeddings.encode_texts_cached — the on-disk lesson-vector cache behind
+"""librarian.retrieval.embeddings.encode_texts_cached — the on-disk lesson-vector cache behind
 course ↔ concept semantic linking. A fake model stands in for MiniLM."""
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 np = pytest.importorskip("numpy")  # needs the `api` extra; CI without it skips
-embeddings = pytest.importorskip("shared.embeddings")
+embeddings = pytest.importorskip("librarian.retrieval.embeddings")
 
 
 class _FakeModel:

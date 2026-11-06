@@ -20,7 +20,9 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.backend import courses, leitner
+from apps.api.routers import courses as courses_routes
+from librarian.courses import catalog as courses
+from librarian.courses import leitner
 
 _REAL_NEIGHBOURS = courses._semantic_neighbours
 
@@ -91,7 +93,7 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setattr(courses, "_semantic_neighbours", lambda texts, ids: None)
     courses._load.cache_clear()
     app = FastAPI()
-    app.include_router(courses.router)
+    app.include_router(courses_routes.router)
     with TestClient(app) as c:
         yield c
     courses._load.cache_clear()
@@ -297,9 +299,9 @@ def test_merge_semantic_caps_top_k_and_total() -> None:
 def test_semantic_falls_back_without_api_extra(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """CI installs no extras: numpy / shared.embeddings are not importable. The real
+    """CI installs no extras: numpy / librarian.retrieval.embeddings are not importable. The real
     neighbour function must return None and the catalog keep explicit + mention links."""
-    for mod in ("numpy", "shared.embeddings", "sentence_transformers"):
+    for mod in ("numpy", "librarian.retrieval.embeddings", "sentence_transformers"):
         monkeypatch.setitem(sys.modules, mod, None)  # None in sys.modules → ImportError
     assert _REAL_NEIGHBOURS(["some lesson"], ["hybrid-search"]) is None
 
@@ -313,12 +315,12 @@ def test_semantic_failure_degrades_instead_of_failing(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     pytest.importorskip("numpy")  # needs the api extra to reach the embedding stack
-    import shared.embeddings
+    import librarian.retrieval.embeddings
 
     def boom() -> None:
         raise OSError("cache locked")
 
-    monkeypatch.setattr(shared.embeddings, "compute_embeddings", boom)
+    monkeypatch.setattr(librarian.retrieval.embeddings, "compute_embeddings", boom)
     assert _REAL_NEIGHBOURS(["some lesson"], ["hybrid-search"]) is None
 
 
@@ -343,12 +345,12 @@ def test_semantic_failure_retries_after_backoff(
     pytest.importorskip("numpy")
     import time
 
-    import shared.embeddings
+    import librarian.retrieval.embeddings
 
     def boom() -> None:
         raise OSError("cache locked")
 
-    monkeypatch.setattr(shared.embeddings, "compute_embeddings", boom)
+    monkeypatch.setattr(librarian.retrieval.embeddings, "compute_embeddings", boom)
     monkeypatch.setattr(courses, "_semantic_failed_at", None)
     assert _REAL_NEIGHBOURS(["some lesson"], ["hybrid-search"]) is None
     assert courses._semantic_failed_at is not None
@@ -372,14 +374,16 @@ def test_semantic_skips_ambiguous_page_stems(monkeypatch: pytest.MonkeyPatch) ->
     """compute_embeddings keys by stem over all of data/wiki/ (private/ included); a stem
     present twice can't be attributed to the visible page, so it is never a candidate."""
     np = pytest.importorskip("numpy")
-    import shared.embeddings
+    import librarian.retrieval.embeddings
 
     vecs = np.array([[1.0, 0.0], [1.0, 0.0], [0.0, 1.0]])
     monkeypatch.setattr(
-        shared.embeddings, "compute_embeddings", lambda: (["foo", "foo", "bar"], vecs)
+        librarian.retrieval.embeddings, "compute_embeddings", lambda: (["foo", "foo", "bar"], vecs)
     )
     monkeypatch.setattr(
-        shared.embeddings, "encode_texts_cached", lambda texts, _p: np.array([[0.8, 0.6]])
+        librarian.retrieval.embeddings,
+        "encode_texts_cached",
+        lambda texts, _p: np.array([[0.8, 0.6]]),
     )
     out = _REAL_NEIGHBOURS(["a lesson"], ["foo", "bar"])
     assert out is not None

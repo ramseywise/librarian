@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 import pytest
-
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "app"))
 
 
 def _write_page(
@@ -65,7 +62,7 @@ def mock_wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         "Monitor agent systems in production",
     )
 
-    import backend.wiki_parser as wp
+    import librarian.wiki.parser as wp
 
     monkeypatch.setattr(wp, "WIKI_DIR", tmp_path)
     return tmp_path
@@ -73,7 +70,7 @@ def mock_wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 @pytest.mark.unit
 def test_parse_wiki_returns_nodes_and_edges(mock_wiki: Path) -> None:
-    from backend.wiki_parser import parse_wiki
+    from librarian.wiki.parser import parse_wiki
 
     result = parse_wiki()
     assert "nodes" in result
@@ -83,7 +80,7 @@ def test_parse_wiki_returns_nodes_and_edges(mock_wiki: Path) -> None:
 
 @pytest.mark.unit
 def test_all_nodes_have_required_fields(mock_wiki: Path) -> None:
-    from backend.wiki_parser import parse_wiki
+    from librarian.wiki.parser import parse_wiki
 
     result = parse_wiki()
     for node in result["nodes"]:
@@ -100,7 +97,7 @@ def test_all_nodes_have_required_fields(mock_wiki: Path) -> None:
 
 @pytest.mark.unit
 def test_no_self_referencing_edges(mock_wiki: Path) -> None:
-    from backend.wiki_parser import parse_wiki
+    from librarian.wiki.parser import parse_wiki
 
     result = parse_wiki()
     for edge in result["edges"]:
@@ -109,7 +106,7 @@ def test_no_self_referencing_edges(mock_wiki: Path) -> None:
 
 @pytest.mark.unit
 def test_all_edge_targets_exist(mock_wiki: Path) -> None:
-    from backend.wiki_parser import parse_wiki
+    from librarian.wiki.parser import parse_wiki
 
     result = parse_wiki()
     node_ids = {n["id"] for n in result["nodes"]}
@@ -137,7 +134,7 @@ def test_no_yaml_parse_errors(mock_wiki: Path) -> None:
 
 @pytest.mark.unit
 def test_wikilink_edges_extracted(mock_wiki: Path) -> None:
-    from backend.wiki_parser import parse_wiki
+    from librarian.wiki.parser import parse_wiki
 
     result = parse_wiki()
     wikilink_edges = [e for e in result["edges"] if e["data"].get("edgeType") == "wikilink"]
@@ -146,7 +143,7 @@ def test_wikilink_edges_extracted(mock_wiki: Path) -> None:
 
 @pytest.mark.unit
 def test_typed_relationship_extracted(mock_wiki: Path) -> None:
-    from backend.wiki_parser import parse_wiki
+    from librarian.wiki.parser import parse_wiki
 
     result = parse_wiki()
     typed = [e for e in result["edges"] if e["data"].get("relationship")]
@@ -160,7 +157,7 @@ def test_payload_has_no_tag_shared_edges_and_lists_domains(mock_wiki: Path) -> N
 
     Tag-shared edges were ~42k pairs / ~10 MB per graph_update; the UI now derives them.
     """
-    from backend.wiki_parser import parse_wiki
+    from librarian.wiki.parser import parse_wiki
 
     result = parse_wiki()
     assert {e["data"]["edgeType"] for e in result["edges"]} == {"wikilink"}
@@ -169,7 +166,7 @@ def test_payload_has_no_tag_shared_edges_and_lists_domains(mock_wiki: Path) -> N
 
 @pytest.mark.unit
 def test_cross_domain_tag_shared_edges(mock_wiki: Path) -> None:
-    from backend.wiki_parser import parse_wiki, tag_shared_edges
+    from librarian.wiki.parser import parse_wiki, tag_shared_edges
 
     result = parse_wiki()
     tag_shared = tag_shared_edges(result["nodes"], result["domains"])
@@ -186,9 +183,9 @@ def _node(nid: str, directory: str, tags: list[str]) -> dict:
 
 @pytest.mark.unit
 def test_tag_shared_rule_matches_frontend_tag_edges() -> None:
-    """Same cases as app/frontend/src/utils/__tests__/tagEdges.test.ts — the Python rule
+    """Same cases as apps/web/src/utils/__tests__/tagEdges.test.ts — the Python rule
     (used by /api/graph?edges=all) and the client-side one must stay identical."""
-    from backend.wiki_parser import tag_shared_edges
+    from librarian.wiki.parser import tag_shared_edges
 
     domains = ["rag", "eval", "memory"]
     assert tag_shared_edges(
@@ -219,7 +216,7 @@ def test_private_pages_are_excluded_from_graph(mock_wiki: Path) -> None:
     """Decision D1, reversed 2026-11-02 (.claude/docs/plans/2026-10-30-frontend-audit-fixes.md):
     data/wiki/private/ pages never reach the graph UI — not as nodes, not as wikilink
     sources, not as a domain. Change this test only together with a recorded decision."""
-    from backend.wiki_parser import parse_wiki, public_page_ids
+    from librarian.wiki.parser import parse_wiki, public_page_ids
 
     _write_page(
         mock_wiki,
@@ -246,8 +243,8 @@ def test_api_graph_edges_all_adds_tag_shared(
     """GET /api/graph defaults to the slim payload; ?edges=all restores tag-shared edges."""
     from fastapi.testclient import TestClient
 
-    import app.backend.main as main_module
-    import app.backend.wiki_parser as app_wp
+    import apps.api.main as main_module
+    import librarian.wiki.parser as app_wp
 
     _write_page(tmp_path, "rag", "a-page", "A Page", ["rag", "concept"], "S", "[[B Page]]")
     _write_page(tmp_path, "eval", "b-page", "B Page", ["eval", "rag", "concept"], "S")
@@ -265,7 +262,7 @@ def test_api_graph_edges_all_adds_tag_shared(
 def test_parse_wiki_reuses_the_parse_until_a_page_changes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from backend import wiki_parser
+    from librarian.wiki import parser as wiki_parser
 
     monkeypatch.setattr(wiki_parser, "WIKI_DIR", tmp_path)
     monkeypatch.setattr(wiki_parser, "_parsed", None)
@@ -286,7 +283,7 @@ def test_parse_wiki_reuses_the_parse_until_a_page_changes(
 
 @pytest.mark.unit
 def test_invalid_frontmatter_skips_that_page_only(mock_wiki: Path) -> None:
-    import backend.wiki_parser as wp
+    import librarian.wiki.parser as wp
 
     before = wp.parse_wiki()
     (mock_wiki / "rag" / "broken.md").write_text("---\nsummary: Gate: run evals\n---\n[[x]]\n")
@@ -297,7 +294,7 @@ def test_invalid_frontmatter_skips_that_page_only(mock_wiki: Path) -> None:
 
 def test_tombstones_are_not_public(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """A retired page stays on disk for inbound links but is gone from every graph surface."""
-    import backend.wiki_parser as wp
+    import librarian.wiki.parser as wp
 
     wiki = tmp_path / "wiki"
     (wiki / "rag").mkdir(parents=True)

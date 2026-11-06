@@ -14,25 +14,25 @@ obsidian:
 	open -a Obsidian $(PWD)/data/wiki
 
 api:
-	cd app && uv run --extra api uvicorn backend.main:app --reload --port 8000
+	uv run --extra api librarian api --reload --port 8000
 
 # Sync coursework from ../learn-ai-engineering (including practice/: drills, interviewing)
 # into data/courses/ (idempotent; local edits are kept). Pass ARGS="--dry-run" or ARGS="--subject generative-ai".
 import-courses:
-	uv run python core/import_courses.py $(ARGS)
+	uv run librarian courses import $(ARGS)
 
 mcp:
-	uv run python app/mcp_server/server.py
+	uv run librarian mcp
 
 # Force a full drop + re-embed of the wiki index (normal edits re-index incrementally).
 index-rebuild:
-	uv run python app/mcp_server/server.py --rebuild
+	uv run librarian mcp --rebuild
 
 ui:
-	cd app/frontend && npm run dev
+	cd apps/web && npm run dev
 
 install-ui:
-	cd app/frontend && npm install
+	cd apps/web && npm install
 
 install-api:
 	uv sync --extra api
@@ -48,7 +48,7 @@ SLIDES_DIR = data/courses/$(PILLAR)
 
 slides:  ## Build a deck: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]
 	@test -n "$(PILLAR)" || { echo "usage: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]"; exit 1; }
-	@uv run -q --with python-pptx --with pillow --with resvg-py python tools/slides/build_deck.py \
+	@uv run -q --with python-pptx --with pillow --with resvg-py python -m tools.slides.build_deck \
 		$(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/$(LECTURE).yaml,deck.yaml) \
 		$(if $(PREVIEW),--preview $(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/.preview/$(LECTURE),.preview)) $(if $(PDF),--pdf) $(if $(STRICT),--strict) $(if $(LEVEL),--level $(LEVEL))
 
@@ -56,7 +56,7 @@ flashcards:  ## Build every module's _flashcards.md from its local deck specs [C
 	@uv run -q python tools/slides/flashcards.py $(if $(CHECK),--check)
 
 slides-all:  ## Build every deck in every course [PDF=1]
-	@find data/courses -path '*/slides/deck.yaml' -o -path '*/slides/lectures/*.yaml' | sort | xargs -n1 -I{} uv run -q --with python-pptx --with pillow --with resvg-py python tools/slides/build_deck.py {} $(if $(PDF),--pdf)
+	@find data/courses -path '*/slides/deck.yaml' -o -path '*/slides/lectures/*.yaml' | sort | xargs -n1 -I{} uv run -q --with python-pptx --with pillow --with resvg-py python -m tools.slides.build_deck {} $(if $(PDF),--pdf)
 
 deck-graph:  ## Regenerate data/courses/_decks.md, the map of every module and lecture
 	@uv run -q python tools/slides/deck_graph.py build
@@ -97,20 +97,20 @@ eval-gate:
 .PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps wiki-graph
 
 wiki-stats:
-	uv run python core/wiki_telemetry.py stats
+	uv run librarian wiki stats
 
 wiki-snapshot:
-	uv run python core/wiki_telemetry.py snapshot
+	uv run librarian wiki snapshot
 
 wiki-check:
-	uv run python core/wiki_telemetry.py check
+	uv run librarian wiki check
 
-# The curriculum sections read the course catalog, which needs the api extra.
+# The curriculum sections read the course catalog (no api extra needed).
 wiki-gaps:
-	uv run --extra api python core/wiki_telemetry.py gaps
+	uv run librarian wiki gaps
 
 wiki-graph:
-	uv run python core/wiki_graph.py
+	uv run librarian wiki graph
 
 test:
 	uv run pytest tests/ --ignore=tests/e2e -v
@@ -125,16 +125,16 @@ install-browsers:
 	uv run playwright install chromium
 
 scrape-sessions:
-	uv run python core/scrape_sessions.py
+	uv run librarian scrape sessions
 
 scrape-docs:
-	uv run python core/scrape_claude_docs.py
+	uv run librarian scrape docs
 
 scrape-repos:
-	uv run python core/scrape_repos.py
+	uv run librarian scrape repos
 
 lint-raw:
-	uv run python core/lint_raw.py
+	uv run librarian ingest lint-raw
 
 scrape: scrape-docs scrape-sessions scrape-repos
 	@echo "Done — run /ingest in Claude Code to compile all changed sources into wiki"
@@ -155,7 +155,7 @@ help:
 	@echo "ui               — start Vite dev server directly (port 5173)"
 	@echo "flashcards       — build each module's _flashcards.md from its local deck specs"
 	@echo "import-courses   — sync ../learn-ai-engineering coursework into data/courses/"
-	@echo "install-ui       — npm install for app/frontend/"
+	@echo "install-ui       — npm install for apps/web/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"
 	@echo "install-presenter — uv sync --extra presenter"

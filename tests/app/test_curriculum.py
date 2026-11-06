@@ -1,4 +1,4 @@
-"""Curriculum facet of the graph (app/backend/curriculum.py)."""
+"""Curriculum facet of the graph (librarian/courses/curriculum.py)."""
 
 from __future__ import annotations
 
@@ -9,8 +9,9 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.backend import curriculum
-from app.backend.courses import Catalog, LessonRec, WikiRef
+from apps.api.routers import curriculum as curriculum_routes
+from librarian.courses import curriculum
+from librarian.courses.catalog import Catalog, LessonRec, WikiRef
 
 
 def _lesson(lid: str, course: str, module: str, concepts: list[str]) -> LessonRec:
@@ -78,7 +79,7 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setattr(curriculum, "public_page_domains", lambda: dict(PUBLIC))
     monkeypatch.setattr(curriculum, "_current_signature", lambda: [1, 1])
     app = FastAPI()
-    app.include_router(curriculum.router)
+    app.include_router(curriculum_routes.router)
     return TestClient(app)
 
 

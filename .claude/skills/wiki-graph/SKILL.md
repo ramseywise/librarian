@@ -3,8 +3,8 @@ name: wiki-graph
 description: "Show the shape of the wiki's link graph: hubs, bridges, cut points and consensus clusters, with each cluster named and what the numbers mean, under one page. Read-only. Use when asked what the wiki is actually about, which pages hold it together, how the clusters compare with the directories, or where a topic has split. Do NOT use for page health such as orphans and dead links (/lint), merging or retiring pages (/compact-wiki), finding what the wiki lacks (/gaps), or the weekly review (/wiki-weekly)."
 allowed-tools:
   - Read
-  - Bash(uv run python core/wiki_graph.py)
-  - Bash(uv run python core/wiki_graph.py --json)
+  - Bash(uv run librarian wiki graph)
+  - Bash(uv run librarian wiki graph --json)
 ---
 
 You are reading the wiki's link graph for Ramsey. The script decides every number; you name the clusters and say what the numbers mean.
@@ -19,7 +19,7 @@ Every number comes from the script's output, and a cluster name is written at re
 
 1. **Run the script.**
    ```bash
-   uv run python core/wiki_graph.py
+   uv run librarian wiki graph
    ```
    If it fails, print the failure and stop. Write no numbers by hand.
 

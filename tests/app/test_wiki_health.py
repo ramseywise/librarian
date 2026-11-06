@@ -9,7 +9,8 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.backend import wiki_health
+from apps.api.routers import wiki_health as wiki_health_routes
+from librarian.wiki import health as wiki_health
 
 ROW = {
     "date": "2026-11-05",
@@ -23,7 +24,7 @@ ROW = {
 def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setattr(wiki_health, "METRICS_FILE", tmp_path / "metrics.jsonl")
     app = FastAPI()
-    app.include_router(wiki_health.router)
+    app.include_router(wiki_health_routes.router)
     return TestClient(app)
 
 

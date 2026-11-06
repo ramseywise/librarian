@@ -1,0 +1,242 @@
+"""Scrape local git repos → raw/repos/
+
+Reads raw/repos/repos.txt — one repo path per line (# for comments).
+For each repo, extracts: CLAUDE.md, README.md, SANYI.md, akira findings, plus the
+learn-ai-engineering knowledge base (ai-engineering/, generative-ai/, data-*, programming/) and its
+interview KB and drill indexes (practice/interviewing/, programming/drills/). See EXTRACT_GLOBS.
+
+.claude/skills, .claude/docs, docs/ and .agents/ (CLAUDE_DOCS_GLOBS) are taken only
+from repos that librarian/ingest/scrape_claude_docs.py does not already cover — the librarian
+itself and repos nested below ~/workspace/<dir>/. Scraping them from both put the
+same file in data/raw/ twice under two paths.
+
+Idempotent: skips files whose content hasn't changed since last scrape.
+
+Usage:
+    uv run librarian scrape repos
+    uv run librarian scrape repos --dry-run
+    uv run librarian scrape repos --repos-file path/to/repos.txt
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import shutil
+from pathlib import Path
+
+import structlog
+from dotenv import load_dotenv
+
+from librarian.config import get_settings
+from librarian.courses.importer import _git_ignored, _matches_ignored
+from librarian.ingest.base import ScraperBase
+from librarian.ingest.scrape_claude_docs import SKIP_PROJECTS, WORKSPACE_DIR
+
+load_dotenv()
+log = structlog.get_logger()
+
+DEFAULT_REPOS_FILE = get_settings().raw_dir / "repos" / "repos.txt"
+DEFAULT_OUTPUT_DIR = get_settings().raw_dir / "repos"
+
+# Files and glob patterns to extract from each repo
+EXTRACT_GLOBS = [
+    "CLAUDE.md",
+    "README.md",
+    "SANYI.md",
+    "src/agents/akira/findings/*.md",
+    # learn-ai-engineering knowledge base. Depth-limited on purpose: the pillar
+    # dirs also hold vendored third-party repos (Prompt-Engineering-Guide-main,
+    # learn-harness-engineering-main, Knowledge_Graphs_for_RAG-main/notes/, ...)
+    # that a recursive ** would pull in at ~50x the volume of the authored notes.
+    "CURRICULUM.md",
+    # Interview KB. practice/ holds private and uncleared files too; scrape_repo keeps its
+    # ignored ones out. Drill indexes come through the programming/ globs below, whose depth
+    # limit keeps problem files and the ignored folders under programming/drills/ out.
+    "practice/interviewing/**/*.md",
+    "ai-engineering/*.md",
+    "ai-engineering/*/*.md",
+    "ai-engineering/*/notes/*.md",
+    "generative-ai/*.md",
+    "generative-ai/*/*.md",
+    "generative-ai/*/notes/*.md",
+    "data-engineering/*.md",
+    "data-engineering/*/*.md",
+    "data-engineering/*/notes/*.md",
+    "data-science/*.md",
+    "data-science/*/*.md",
+    "data-science/*/notes/*.md",
+    "data-analytics/*.md",
+    "data-analytics/*/*.md",
+    "data-analytics/*/notes/*.md",
+    # programming/ (Python, SQL, TypeScript tracks). Same depth limit: practice/
+    # holds vendored exercise repos and a node_modules tree, so only READMEs and
+    # notes/ are taken, never a recursive **.
+    "programming/*.md",
+    "programming/*/*.md",
+    "programming/*/notes/*.md",
+    "programming/*/*/README.md",
+    "programming/*/*/notes/*.md",
+    "drills/*.md",
+    "drills/*/README.md",
+]
+
+# Already scraped into data/raw/claude-docs/ for top-level workspace projects; only
+# taken here for repos that scraper skips (see _covered_by_claude_docs).
+CLAUDE_DOCS_GLOBS = [
+    ".claude/skills/**/*.md",
+    ".claude/docs/**/*.md",
+    "docs/**/*.md",
+    ".agents/**/*.md",
+]
+
+# Never extract these (build artifacts, lock files, etc.)
+EXCLUDE_STEMS = {"package-lock", "yarn.lock", "uv.lock", "poetry.lock"}
+EXCLUDE_DIRS = {".venv", "node_modules", "__pycache__", ".git", "dist", "build"}
+
+
+def _content_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+
+
+def _should_skip(path: Path) -> bool:
+    for part in path.parts:
+        if part in EXCLUDE_DIRS:
+            return True
+    return path.stem in EXCLUDE_STEMS
+
+
+def _covered_by_claude_docs(repo_path: Path) -> bool:
+    """True when librarian/ingest/scrape_claude_docs.py already scrapes this repo's .claude/ and docs/."""
+    return (
+        repo_path.resolve().parent == WORKSPACE_DIR.resolve()
+        and repo_path.name not in SKIP_PROJECTS
+    )
+
+
+def scrape_repo(
+    repo_path: Path,
+    output_dir: Path,
+    dry_run: bool = False,
+) -> tuple[int, int]:
+    """Scrape one repo into output_dir/<repo-name>/. Returns (written, skipped)."""
+    if not repo_path.is_dir():
+        log.warning("repo_not_found", path=str(repo_path))
+        return 0, 0
+
+    repo_name = repo_path.name
+    repo_out = output_dir / repo_name
+
+    if not dry_run:
+        repo_out.mkdir(parents=True, exist_ok=True)
+
+    written = skipped = 0
+
+    # None (not a git checkout) can't tell published from private: take nothing from practice/.
+    practice_ignored = _git_ignored(repo_path, repo_path / "practice")
+
+    patterns = EXTRACT_GLOBS
+    if not _covered_by_claude_docs(repo_path):
+        patterns = EXTRACT_GLOBS + CLAUDE_DOCS_GLOBS
+
+    for pattern in patterns:
+        for src in repo_path.glob(pattern):
+            if not src.is_file() or _should_skip(src):
+                continue
+
+            # Build output filename: flatten path, preserve uniqueness
+            rel = src.relative_to(repo_path)
+            if rel.parts[0] == "practice" and (
+                practice_ignored is None or _matches_ignored(str(rel), practice_ignored)
+            ):
+                continue
+            flat_name = str(rel).replace("/", "--").replace("\\", "--")
+            dest = repo_out / flat_name
+
+            # Idempotency: skip if content identical
+            if dest.exists() and _content_hash(src) == _content_hash(dest):
+                skipped += 1
+                continue
+
+            if dry_run:
+                print(f"  [would write] {repo_name}/{flat_name}")
+            else:
+                shutil.copy2(src, dest)
+                log.info("scraped_file", repo=repo_name, file=flat_name)
+
+            written += 1
+
+    return written, skipped
+
+
+def load_repos(repos_file: Path) -> list[Path]:
+    if not repos_file.exists():
+        log.warning("repos_file_not_found", path=str(repos_file))
+        return []
+    paths = []
+    for line in repos_file.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        paths.append(Path(line).expanduser())
+    return paths
+
+
+class RepoScraper(ScraperBase):
+    source_name = "scrape-repos"
+    output_dir = DEFAULT_OUTPUT_DIR
+
+    def __init__(
+        self,
+        repos_file: Path = DEFAULT_REPOS_FILE,
+        output_dir: Path = DEFAULT_OUTPUT_DIR,
+    ) -> None:
+        self._repos_file = repos_file
+        self.output_dir = output_dir
+
+    def run(self, dry_run: bool = False) -> list[Path]:
+        repos = load_repos(self._repos_file)
+        if not repos:
+            print("No repos configured. Add paths to raw/repos/repos.txt.")
+            return []
+
+        total_written = total_skipped = 0
+        for repo_path in repos:
+            w, s = scrape_repo(repo_path, self.output_dir, dry_run=dry_run)
+            print(f"  {repo_path.name}: {w} written, {s} skipped")
+            total_written += w
+            total_skipped += s
+
+        prefix = "[dry-run] " if dry_run else ""
+        print(
+            f"\n{prefix}Total: {total_written} written, {total_skipped} skipped → {self.output_dir}"
+        )
+        # Return a sentinel list (paths not tracked per-file in this scraper)
+        return [self.output_dir] if total_written > 0 else []
+
+    @classmethod
+    def _add_args(cls, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "--repos-file",
+            type=Path,
+            default=DEFAULT_REPOS_FILE,
+            help="Path to repos.txt (default: raw/repos/repos.txt)",
+        )
+        parser.add_argument(
+            "--output-dir",
+            type=Path,
+            default=DEFAULT_OUTPUT_DIR,
+            help="Output directory (default: raw/repos/)",
+        )
+
+    @classmethod
+    def _from_args(cls, args: argparse.Namespace) -> RepoScraper:
+        return cls(repos_file=args.repos_file, output_dir=args.output_dir)
+
+
+def main(argv: list[str] | None = None) -> None:
+    RepoScraper.cli(description="Scrape local repos → raw/repos/", argv=argv)
+
+
+if __name__ == "__main__":
+    main()

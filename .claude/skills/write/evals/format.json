@@ -14,7 +14,7 @@
   "must_mention": [
     "Never open `data/wiki/private/`",
     "data/wiki/_conflicts.md",
-    "core/wiki_telemetry.py ask",
+    "librarian wiki ask",
     "Draft only if asked",
     "(self-reported)",
     "a summary of [[Page]]"

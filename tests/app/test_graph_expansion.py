@@ -8,8 +8,8 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from app.mcp_server import server
-from app.mcp_server.graph_expansion import (
+from apps.mcp import server
+from apps.mcp.graph_expansion import (
     EXPANSION_RELATIONSHIPS,
     build_typed_edges,
     expand_one_hop,

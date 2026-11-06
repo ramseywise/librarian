@@ -10,7 +10,7 @@
     "Review: <PASS | numbered defect list | skipped (--no-review) | not run (<reason>)>"
   ],
   "must_mention": [
-    "core/wiki_telemetry.py log ingest",
+    "librarian wiki log ingest",
     "ingest-reviewer",
     "--no-review",
     "under 200",

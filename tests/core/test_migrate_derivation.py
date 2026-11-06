@@ -21,8 +21,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from core.migrate import derive_notes
-from shared.parser import _parse_one_session_note
+from tools.cartographer.migrate import derive_notes
+from tools.cartographer.session_parser import _parse_one_session_note
 
 
 def _fake_session(

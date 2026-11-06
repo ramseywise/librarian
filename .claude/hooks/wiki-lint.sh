@@ -5,7 +5,17 @@
 
 set -euo pipefail
 
+# Hook input is JSON on stdin; the env var is only a fallback (used by tests).
 FILE_PATH="${CLAUDE_TOOL_INPUT_FILE_PATH:-}"
+if [[ -z "$FILE_PATH" && ! -t 0 ]]; then
+  FILE_PATH="$(python3 -c '
+import json, sys
+try:
+    print((json.load(sys.stdin).get("tool_input") or {}).get("file_path") or "")
+except Exception:
+    pass
+' || true)"
+fi
 
 # Only run on data/wiki/ writes. Absolute paths are normalised to the repo-relative
 # form first, so a write addressed as /…/librarian/data/wiki/x.md is still checked.
@@ -93,7 +103,7 @@ done < <(sed -n 's/.*\[\[\([^]|#]*\)[^]]*\]\].*/\1/p' "$FILE_PATH" 2>/dev/null \
 # Private leak: a public page must not link into data/wiki/private/. Output names the
 # line, never the private page. Reads private/ only, so it stays fast (no whole-wiki scan).
 if [[ "$FILE_PATH" != data/wiki/private/* ]] && [[ -x .venv/bin/python ]]; then
-  if ! LEAKS=$(.venv/bin/python core/wiki_telemetry.py check --wiki-dir data/wiki --file "$FILE_PATH" 2>/dev/null); then
+  if ! LEAKS=$(.venv/bin/librarian wiki check --wiki-dir data/wiki --file "$FILE_PATH" 2>/dev/null); then
     if [[ -n "$LEAKS" ]]; then
       echo "⚠ wiki-lint: PRIVATE LEAK — ${LEAKS}" >&2
     else

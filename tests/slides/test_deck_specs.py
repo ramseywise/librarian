@@ -1,15 +1,14 @@
 """Every course deck spec must be buildable from this repo alone."""
 
 import re
-import sys
 from pathlib import Path
 
 import pytest
 import yaml
 
+from tools.slides import deck_graph
+
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "tools" / "slides"))
-import deck_graph  # noqa: E402
 
 COURSES = ROOT / "data" / "courses"
 SPECS = sorted([*COURSES.rglob("slides/deck.yaml"), *COURSES.rglob("slides/lectures/*.yaml")])

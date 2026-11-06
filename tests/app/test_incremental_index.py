@@ -16,7 +16,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from app.mcp_server import server
+from apps.mcp import server
 
 PAGE_TEMPLATE = """---
 title: {title}

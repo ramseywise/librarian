@@ -5,7 +5,7 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - Bash(uv run python core/wiki_telemetry.py ask *)
+  - Bash(uv run librarian wiki ask *)
 ---
 
 You are arguing against a position from the wiki's own evidence. You are not a general devil's advocate: an objection the wiki does not make is not yours to raise here.
@@ -32,7 +32,7 @@ Every objection comes from a wiki page or an open conflict and cites it, and whe
 
 7. **End with the trailer.** If `Not covered` is not `nothing`, record it:
    ```bash
-   uv run python core/wiki_telemetry.py ask "<reworded topic>"
+   uv run librarian wiki ask "<reworded topic>"
    ```
    Pass the topic, reworded, never the raw position: positions are personal history. Nothing else is logged. If the command fails, say so after the trailer.
 

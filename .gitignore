@@ -71,10 +71,11 @@ data/wiki/meta/session-log.md
 
 # Runtime logs — cron output (cartographer, codemap) and MCP retrieval telemetry.
 # logs/ at the repo root is the only log location; the cron scripts, both launchd
-# plists, and app/mcp_server/server.py all write here.
+# plists, and apps/mcp/server.py all write here.
 logs/*.log
 logs/*.jsonl
 logs/*.err
+logs/*.bak-*
 
 # Local caches (lesson embedding vectors for course concept linking)
 .cache/
