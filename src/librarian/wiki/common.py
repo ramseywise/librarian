@@ -1,7 +1,7 @@
 """Shared wiki-markup patterns — the single definition site (LIB-110 Phase B).
 
 WIKILINK_RE, TYPED_LINK_RE, and slugify were previously defined per-module in
-wiki_parser, the MCP server, relinker, and graph_expansion; they must stay
+wiki_parser, retrieval, relinker, and graph_expansion; they must stay
 identical or link resolution diverges between the index and the UI.
 """
 
@@ -22,6 +22,35 @@ def fm(post: frontmatter.Post) -> dict[str, Any]:
     `post.get("tags") or []` a type error. The values are whatever YAML held; callers validate.
     """
     return post.metadata
+
+
+def page_tags(meta: Mapping[str, object]) -> list[str]:
+    """`tags:` as a list of strings: absent or empty is `[]`, a bare string is one tag."""
+    tags = meta.get("tags") or []
+    if isinstance(tags, str):
+        return [tags]
+    return [str(t) for t in tags]  # type: ignore[attr-defined]
+
+
+def parse_frontmatter(text: str) -> dict[str, Any]:
+    """A page's frontmatter in the shapes the index and listings rely on; `{}` if unparseable.
+
+    The one text-to-metadata parser for wiki pages and lessons. `tags` is always a list of
+    strings and every other value a string, because `updated` parses as `datetime.date` and
+    would leak into a DuckDB insert. Callers that need the raw YAML values (graph, relinker,
+    telemetry) read `frontmatter.load` themselves and share `page_tags`/`page_aliases` here.
+    A hand-rolled line parser once dropped block-list tags (`tags:\\n  - rag`), indexing those
+    pages with zero tags.
+    """
+    try:
+        meta = dict(fm(frontmatter.loads(text)))
+    except Exception:
+        return {}
+    meta["tags"] = page_tags(meta)
+    for key, val in meta.items():
+        if key != "tags" and not isinstance(val, str):
+            meta[key] = "" if val is None else str(val)
+    return meta
 
 
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")

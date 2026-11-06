@@ -10,7 +10,6 @@ from pathlib import Path
 
 import pytest
 
-from apps.mcp import server
 from evals.graders import (
     AgentGrader,
     AgentRun,
@@ -19,6 +18,7 @@ from evals.graders import (
     parse_judge_reply,
 )
 from evals.run_eval import run_agent_eval
+from librarian.retrieval import corpus, embeddings
 
 
 def _entry(
@@ -146,10 +146,10 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     (wiki_dir / "private").mkdir()
     (wiki_dir / "rag" / "chunking.md").write_text(PAGE.format(t="Chunking", b="By headings."))
     (wiki_dir / "rag" / "reranking.md").write_text(PAGE.format(t="Reranking", b="Rerank."))
-    monkeypatch.setattr(server, "WIKI_DIR", wiki_dir)
-    monkeypatch.setattr(server, "PRIVATE_DIR", wiki_dir / "private")
-    monkeypatch.setattr(server, "DB_PATH", tmp_path / ".idx.duckdb")
-    monkeypatch.setattr(server, "HAS_EMBEDDINGS", False)
+    monkeypatch.setattr(corpus, "WIKI_DIR", wiki_dir)
+    monkeypatch.setattr(corpus, "PRIVATE_DIR", wiki_dir / "private")
+    monkeypatch.setattr(corpus, "DB_PATH", tmp_path / ".idx.duckdb")
+    monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
     return wiki_dir
 
 
@@ -185,7 +185,7 @@ async def test_run_agent_eval_end_to_end(wiki: Path, fake_anthropic: type) -> No
     assert "By headings [page:chunking]" in json.dumps(client.create_calls[0]["messages"])
     assert "no floor" in str(report)
 
-    lines = (server.LOGS_DIR / "agent.jsonl").read_text().splitlines()
+    lines = (corpus.LOGS_DIR / "agent.jsonl").read_text().splitlines()
     assert [json.loads(x)["source"] for x in lines] == ["eval", "eval"]
 
 

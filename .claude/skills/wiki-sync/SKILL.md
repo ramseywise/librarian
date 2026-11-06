@@ -11,7 +11,7 @@ You are auditing the Librarian wiki for structural drift between the wiki conten
 There is no hand-maintained domain list anywhere in the graph pipeline. The **directories under `data/wiki/` (minus `private/`) are the domain list**:
 
 - `librarian/wiki/wiki_parser.py` — `_domain_tag_set()` derives the set from disk; `parse_wiki()` sends it to the UI as the payload's sorted `domains` field (graph_update over `/ws` and `GET /api/graph`). `tag_shared_edges()` uses it for `GET /api/graph?edges=all`.
-- `apps/mcp/server.py` — `_domains()`, same derivation, for MCP domain filters.
+- `src/librarian/retrieval/corpus.py` — `wiki_domains()`, same derivation, for MCP domain filters.
 - `librarian/courses/catalog.py` — `_load_wiki()` takes each page's domain from its first path component (private and tombstoned pages skipped).
 - `apps/web/src/theme/domains.ts` — maps a domain **name to a colour only**. `KNOWN` holds fixed colours for established domains; any other domain gets a deterministic colour from `PALETTE` via `domainColor()`. Nodes, detail panel and minimap take their domain list from the payload and their colours from this module. The filter panel shows payload domains only until the curriculum loads; after that it follows `GET /api/graph/curriculum` (`librarian/courses/curriculum.py`), an overlay whose "Beyond the curriculum" group is still derived from directories, and pages a lesson links take `courseColor()` from `COURSE_COLORS`. Course colours are not domain drift.
 - `apps/web/src/utils/tagEdges.ts` — derives tag-shared edges client-side with the same rule as `tag_shared_edges()` in wiki_parser.py.
@@ -45,7 +45,7 @@ Extract the keys of `const KNOWN: Record<string, string> = {...}` and the `PALET
 
 ### Derivation functions (confirm they still derive, not list)
 - `librarian/wiki/wiki_parser.py` — `_domain_tag_set()` must read `WIKI_DIR` at call time and exclude `private`; `parse_wiki()` must return `domains`.
-- `apps/mcp/server.py` — `_domains()`, same rule.
+- `src/librarian/retrieval/corpus.py` — `wiki_domains()`, same rule.
 - If either has been replaced by a literal set/list, that is **DRIFT**.
 
 ### Remaining hardcoded lists

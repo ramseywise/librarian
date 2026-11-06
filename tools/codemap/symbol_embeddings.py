@@ -2,7 +2,7 @@
 
 Mirrors librarian/retrieval/embeddings.py's content-hash-cached embedding pattern,
 applied to symbol name+kind+signature+docstring text instead of wiki page
-text, and apps/mcp/server.py's HAS_EMBEDDINGS optional-import gate.
+text, and librarian.retrieval.embeddings' HAS_EMBEDDINGS optional-import gate.
 Gracefully absent if sentence-transformers isn't installed — activates
 automatically when it is (e.g. via `uv sync --extra api --extra codemap`).
 

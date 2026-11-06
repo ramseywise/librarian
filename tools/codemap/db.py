@@ -1,7 +1,7 @@
 """Codemap DuckDB schema — symbols, files, import edges for indexed repos.
 
 Mirrors the meta/schema_version/built_at convention used by
-apps/mcp/server.py's .wiki_index.duckdb.
+librarian.retrieval's .wiki_index.duckdb.
 """
 
 from __future__ import annotations

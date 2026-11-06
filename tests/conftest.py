@@ -26,10 +26,10 @@ def _isolate_retrieval_log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> N
     polluting it skew which pages look retrieval-hot. Per-test patches in
     tests/app/ remain but are now redundant.
     """
-    from apps.mcp import server
+    from librarian.retrieval import corpus
 
-    monkeypatch.setattr(server, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(server, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
+    monkeypatch.setattr(corpus, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setattr(corpus, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
 
 
 @pytest.fixture(autouse=True)
@@ -39,9 +39,9 @@ def _isolate_courses(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     Tests repoint WIKI_DIR at a tmp wiki; without this every index they build would also
     embed the 749 real lessons under data/courses/.
     """
-    from apps.mcp import server
+    from librarian.retrieval import corpus
 
-    monkeypatch.setattr(server, "COURSES_DIR", tmp_path / "no-courses")
+    monkeypatch.setattr(corpus, "COURSES_DIR", tmp_path / "no-courses")
 
 
 # ---------------------------------------------------------------------------

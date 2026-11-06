@@ -14,7 +14,8 @@ from pathlib import Path
 
 import pytest
 
-from apps.mcp import server
+from librarian import retrieval
+from librarian.retrieval import corpus
 
 PAGE = """---
 title: {title}
@@ -65,23 +66,23 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         )
     )
 
-    monkeypatch.setattr(server, "WIKI_DIR", wiki_dir)
-    monkeypatch.setattr(server, "PRIVATE_DIR", wiki_dir / "private")
-    monkeypatch.setattr(server, "DB_PATH", tmp_path / ".idx.duckdb")
-    monkeypatch.setattr(server, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(server, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
+    monkeypatch.setattr(corpus, "WIKI_DIR", wiki_dir)
+    monkeypatch.setattr(corpus, "PRIVATE_DIR", wiki_dir / "private")
+    monkeypatch.setattr(corpus, "DB_PATH", tmp_path / ".idx.duckdb")
+    monkeypatch.setattr(corpus, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setattr(corpus, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
     return wiki_dir
 
 
 def test_domain_search_returns_pages_in_the_directory(wiki: Path) -> None:
     """The path branch still works — this is the pre-existing behaviour."""
-    result = server.search_wiki("SPLINTERCUE", domain="interview")
+    result = retrieval.search("SPLINTERCUE", domain="interview")
     assert "Trade-Off Narration Formula" in result
 
 
 def test_domain_search_returns_tagged_pages_outside_the_directory(wiki: Path) -> None:
     """The regression this fix cures: tagged-but-relocated pages stay reachable."""
-    result = server.search_wiki("SPLINTERCUE", domain="interview")
+    result = retrieval.search("SPLINTERCUE", domain="interview")
     assert "LLM Inference Economics" in result, (
         "a page tagged `interview` but filed under foundations/ must still be "
         "reachable via --domain interview; filtering on path alone drops it"
@@ -90,7 +91,7 @@ def test_domain_search_returns_tagged_pages_outside_the_directory(wiki: Path) ->
 
 def test_domain_search_still_excludes_untagged_pages(wiki: Path) -> None:
     """The union must not degrade into no filter at all."""
-    result = server.search_wiki("SPLINTERCUE", domain="interview")
+    result = retrieval.search("SPLINTERCUE", domain="interview")
     assert "Batch Normalization" not in result, (
         "a foundations/ page with no `interview` tag must not leak into the domain"
     )
@@ -98,6 +99,6 @@ def test_domain_search_still_excludes_untagged_pages(wiki: Path) -> None:
 
 def test_unknown_domain_still_falls_back_to_tag_match(wiki: Path) -> None:
     """No directory named `concept` exists, so the else-branch handles it."""
-    result = server.search_wiki("SPLINTERCUE", domain="concept")
+    result = retrieval.search("SPLINTERCUE", domain="concept")
     assert "LLM Inference Economics" in result
     assert "Batch Normalization" in result

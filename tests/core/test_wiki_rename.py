@@ -8,9 +8,10 @@ from pathlib import Path
 import frontmatter
 import pytest
 
-from apps.mcp import server
-from apps.mcp.graph_expansion import build_typed_edges
+from librarian import retrieval
 from librarian.courses import catalog as course_catalog
+from librarian.retrieval import corpus
+from librarian.retrieval.graph_expansion import build_typed_edges
 from librarian.wiki import parser as wiki_parser
 from librarian.wiki.common import page_aliases, text_aliases
 from librarian.wiki.relinker import build_link_graph, load_pages
@@ -278,13 +279,13 @@ class TestAliasResolution:
     def test_read_page_finds_the_old_name(
         self, aliased: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setattr(server, "WIKI_DIR", aliased)
-        assert "# Current" in server._read_page_text("Former Name")
+        monkeypatch.setattr(corpus, "WIKI_DIR", aliased)
+        assert "# Current" in retrieval.read_page("Former Name")
 
     def test_read_page_does_not_answer_from_a_private_alias(
         self, aliased: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         write(aliased, "private/hidden.md", "Hidden", extra="aliases:\n  - Quiet Words\n")
-        monkeypatch.setattr(server, "WIKI_DIR", aliased)
-        monkeypatch.setattr(server, "PRIVATE_DIR", aliased / "private")
-        assert server._read_page_text("Quiet Words").startswith("Page not found")
+        monkeypatch.setattr(corpus, "WIKI_DIR", aliased)
+        monkeypatch.setattr(corpus, "PRIVATE_DIR", aliased / "private")
+        assert retrieval.read_page("Quiet Words").startswith("Page not found")

@@ -2,7 +2,7 @@
 
 tests/app/test_private_exclusion.py covers the MCP server. The chat agent in
 apps/api/agent.py used to reach the same pages through its own rglob walk; since
-the S7 collapse it delegates to server._search_rows/_read_page_text, so these tests
+the S7 collapse it delegates to ranking.search_rows/_read_page_text, so these tests
 now prove the delegation preserves the exclusion end-to-end from the agent's entry
 points (the SSE chat panel's tool handlers).
 """
@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 
 from apps.api import agent
-from apps.mcp import server
+from librarian.retrieval import corpus, embeddings
 
 PAGE = """---
 title: {title}
@@ -48,12 +48,12 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     )
 
     # The agent delegates to the server core, so the seam is the server's anchors.
-    monkeypatch.setattr(server, "WIKI_DIR", wiki_dir)
-    monkeypatch.setattr(server, "PRIVATE_DIR", wiki_dir / "private")
-    monkeypatch.setattr(server, "DB_PATH", tmp_path / ".idx.duckdb")
-    monkeypatch.setattr(server, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(server, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
-    monkeypatch.setattr(server, "HAS_EMBEDDINGS", False)
+    monkeypatch.setattr(corpus, "WIKI_DIR", wiki_dir)
+    monkeypatch.setattr(corpus, "PRIVATE_DIR", wiki_dir / "private")
+    monkeypatch.setattr(corpus, "DB_PATH", tmp_path / ".idx.duckdb")
+    monkeypatch.setattr(corpus, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setattr(corpus, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
+    monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
     return wiki_dir
 
 
@@ -101,6 +101,6 @@ def test_server_anchor_is_absolute() -> None:
     server's anchors, so absoluteness is the invariant that keeps clause (b) intact
     regardless of where uvicorn starts.
     """
-    assert server.WIKI_DIR.is_absolute()
-    assert server.PRIVATE_DIR.is_absolute()
-    assert server.PRIVATE_DIR == server.WIKI_DIR / "private"
+    assert corpus.WIKI_DIR.is_absolute()
+    assert corpus.PRIVATE_DIR.is_absolute()
+    assert corpus.PRIVATE_DIR == corpus.WIKI_DIR / "private"

@@ -13,6 +13,7 @@ from librarian.wiki.common import (
     WIKILINK_RE,
     fm,
     page_aliases,
+    page_tags,
     slugify,
 )
 
@@ -108,9 +109,7 @@ def parse_wiki_uncached() -> dict:
             continue
         title = fm(post).get("title") or md_file.stem
         page_id = md_file.stem
-        tags = fm(post).get("tags") or []
-        if isinstance(tags, str):
-            tags = [tags]
+        tags = page_tags(fm(post))
         # Retired pages stay on disk so inbound links resolve, but aren't part of the map.
         if "tombstone" in tags:
             continue

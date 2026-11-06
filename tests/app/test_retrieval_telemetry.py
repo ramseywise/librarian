@@ -8,7 +8,8 @@ from typing import TYPE_CHECKING, Never
 import duckdb
 import pytest
 
-from apps.mcp import server
+from librarian import retrieval
+from librarian.retrieval import corpus, embeddings, index
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -17,10 +18,10 @@ if TYPE_CHECKING:
 def test_log_retrieval_appends_valid_json_line(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(server, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(server, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
+    monkeypatch.setattr(corpus, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setattr(corpus, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
 
-    server._log_retrieval("search_wiki", query="crag", domain="rag", n_results=3)
+    corpus.log_retrieval("search_wiki", query="crag", domain="rag", n_results=3)
 
     lines = (tmp_path / "logs" / "retrieval.jsonl").read_text().splitlines()
     assert len(lines) == 1
@@ -37,9 +38,9 @@ class _ExplodingPath:
 
 
 def test_log_retrieval_never_raises(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(server, "LOGS_DIR", _ExplodingPath())
+    monkeypatch.setattr(corpus, "LOGS_DIR", _ExplodingPath())
     # Must not propagate — telemetry can never break retrieval
-    server._log_retrieval("read_page", path="data/wiki/x.md", found=True)
+    corpus.log_retrieval("read_page", path="data/wiki/x.md", found=True)
 
 
 @pytest.fixture()
@@ -58,14 +59,14 @@ def tmp_wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         "---\ntitle: Index\ntags: [meta]\nsummary: TOC\nupdated: 2026-07-17\n---\n\n"
         "# Index\n\n[[Alive Page]] [[Retired Page]]\n"
     )
-    monkeypatch.setattr(server, "WIKI_DIR", wiki)
-    monkeypatch.setattr(server, "HAS_EMBEDDINGS", False)
+    monkeypatch.setattr(corpus, "WIKI_DIR", wiki)
+    monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
     return wiki
 
 
 def test_build_index_skips_tombstones(tmp_wiki: Path, tmp_path: Path) -> None:
     con = duckdb.connect(str(tmp_path / "idx.duckdb"))
-    server.build_index(con)
+    index.build_index(con)
     paths = [r[0] for r in con.execute("SELECT path FROM pages").fetchall()]
     con.close()
 
@@ -76,7 +77,7 @@ def test_build_index_skips_tombstones(tmp_wiki: Path, tmp_path: Path) -> None:
 def test_build_index_skips_underscore_files(tmp_wiki: Path, tmp_path: Path) -> None:
     """_index.md/_conflicts.md are meta files — never indexed, never counted as backlinks."""
     con = duckdb.connect(str(tmp_path / "idx.duckdb"))
-    server.build_index(con)
+    index.build_index(con)
     rows = con.execute("SELECT path, backlinks FROM pages").fetchall()
     con.close()
 
@@ -89,6 +90,6 @@ def test_build_index_skips_underscore_files(tmp_wiki: Path, tmp_path: Path) -> N
 
 
 def test_tombstone_still_readable(tmp_wiki: Path) -> None:
-    content = server.read_page.fn if hasattr(server.read_page, "fn") else server.read_page
+    content = retrieval.read_page.fn if hasattr(retrieval.read_page, "fn") else retrieval.read_page
     result = content(str(tmp_wiki / "retired.md"))
     assert "supersedes" in result

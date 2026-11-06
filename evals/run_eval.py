@@ -12,7 +12,7 @@ produces a 1.0 baseline that proves the grader mechanics are wired correctly,
 and it gates on the regression floors (exit 1 below floor).
 
 *Live* (`--live`): retrieval goes through the real search core
-(`apps.mcp.server._search_rows` — BM25 + semantic rerank), so hit-rate and
+(`librarian.retrieval.search_rows` — BM25 + semantic rerank), so hit-rate and
 MRR measure actual pipeline quality.  Answers stay oracle (live answer grading
 needs the LLM — separate concern).  Retrieved paths are absolute; the grader's
 suffix matching handles the repo-relative golden `source_pages`, so no
@@ -62,6 +62,8 @@ from evals.graders import (
     RetrievalResult,
     load_golden_dataset,
 )
+from librarian import retrieval
+from librarian.retrieval import embeddings
 
 if TYPE_CHECKING:
     import anthropic
@@ -121,9 +123,7 @@ def _oracle_answer(entry: GoldenEntry) -> str:
 
 def _live_retrieval(entry: GoldenEntry, arm: str = "sem") -> list[RetrievalResult]:
     """Retrieve through the real search core (BM25 + semantic rerank)."""
-    from apps.mcp.server import _search_rows
-
-    rows, _degraded = _search_rows(
+    rows, _degraded = retrieval.search_rows(
         entry.query, domain=ARM_DOMAINS.get(arm, ""), limit=10, tool="eval", expand=(arm == "graph")
     )
     return [RetrievalResult(page_path=row[0], score=float(row[6])) for row in rows]
@@ -153,41 +153,15 @@ def run(
     retrieval_grader = RetrievalGrader()
     answer_grader = AnswerGrader()
 
-    restore_embeddings = None
-    restore_fts = None
-    if live and arm == "lex":
-        # Lexical arm: drop the semantic + backlink blend so ranking is BM25-only.
-        # The index must exist BEFORE the flag flips — build_index also consults
-        # HAS_EMBEDDINGS, and a rebuild triggered mid-run would persist an
-        # embedding-less index that later sem/graph arms silently rank against.
-        from apps.mcp import server
-
-        server.get_con().close()
-        restore_embeddings = server.HAS_EMBEDDINGS
-        server.HAS_EMBEDDINGS = False
-    elif live and arm == "nofts":
-        # Degraded arm: force the tokenized-LIKE fallback so the floor gate covers
-        # the path taken when the fts extension is unavailable. Same ordering
-        # constraint as `lex` — build the index while fts still works, so the arm
-        # measures degraded *retrieval*, not a degraded index.
-        from apps.mcp import server
-
-        server.get_con().close()
-        restore_fts = server._ensure_fts
-        server._ensure_fts = lambda con: False
-
-    try:
+    # `lex` drops the semantic blend (BM25 only); `nofts` forces the tokenized-LIKE fallback.
+    # `disabled` builds the index first, so the arm measures degraded retrieval, not a
+    # degraded index.
+    off = {"lex": ("embeddings",), "nofts": ("fts",)}.get(arm, ()) if live else ()
+    with retrieval.disabled(*off):
         if live:
             retrieved_lists = [_live_retrieval(e, arm=arm) for e in entries]
         else:
             retrieved_lists = [_oracle_retrieval(e) for e in entries]
-    finally:
-        from apps.mcp import server
-
-        if restore_embeddings is not None:
-            server.HAS_EMBEDDINGS = restore_embeddings
-        if restore_fts is not None:
-            server._ensure_fts = restore_fts
 
     candidate_answers = [_oracle_answer(e) for e in entries]
 
@@ -235,9 +209,7 @@ def _print_failures(
 
 def _edge_count() -> int:
     """Row count of the materialized typed-edges table."""
-    from apps.mcp.server import get_con
-
-    con = get_con()
+    con = retrieval.open_index()
     try:
         return con.execute("SELECT count(*) FROM edges").fetchone()[0]
     finally:
@@ -258,8 +230,6 @@ def _save_baseline(
     golden set, embedding model, or edge count has since changed is not
     comparable, and without the hash that drift is invisible.
     """
-    from apps.mcp.server import EMB_MODEL_ID
-
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(tz=UTC).strftime("%Y-%m-%dT%H-%M-%SZ")
     out_path = out_dir / f"{prefix}-{ts}.json"
@@ -271,7 +241,7 @@ def _save_baseline(
         "arm": arm if live else None,
         "dataset": dataset_file.name,
         "golden_set_hash": hashlib.sha256(dataset_file.read_bytes()).hexdigest(),
-        "embedding_model_id": EMB_MODEL_ID,
+        "embedding_model_id": embeddings.MODEL_NAME,
         "edge_count": _edge_count() if live else None,
         "n_entries": report.n_entries,
         "hit_rate": report.hit_rate,

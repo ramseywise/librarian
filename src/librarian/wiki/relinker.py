@@ -25,7 +25,7 @@ from pathlib import Path
 import frontmatter
 
 from librarian.config import get_settings
-from librarian.wiki.common import WIKILINK_RE, fm, page_aliases, slugify
+from librarian.wiki.common import WIKILINK_RE, fm, page_aliases, page_tags, slugify
 
 REPO_ROOT = get_settings().root
 WIKI_DIR = get_settings().wiki_dir
@@ -76,9 +76,7 @@ def load_pages() -> dict[str, PageInfo]:
             continue
         post = frontmatter.load(md_file)
         title = fm(post).get("title") or md_file.stem
-        tags = fm(post).get("tags") or []
-        if isinstance(tags, str):
-            tags = [tags]
+        tags = page_tags(fm(post))
         domain = md_file.parent.name
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
 

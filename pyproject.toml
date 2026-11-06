@@ -155,33 +155,28 @@ type = "forbidden"
 source_modules = ["apps"]
 forbidden_modules = ["tools"]
 
-# api -> mcp: apps/api/agent.py imports apps.mcp.server for the wiki-search tool. Phase 2 of
-# .claude/docs/plans/2026-11-06-production-refactor.md moves that logic into librarian.
 [[tool.importlinter.contracts]]
 name = "apps.api and apps.mcp are independent"
 type = "independence"
 modules = ["apps.api", "apps.mcp"]
-ignore_imports = ["apps.api.agent -> apps.mcp.server"]
 
-# Dependencies run downwards: courses -> wiki -> ingest. wiki.telemetry's course-gap report
-# imports courses.catalog/curriculum inside a function (the gap list needs the catalog); that
-# upward edge is the one known exception, recorded here instead of hidden. retrieval (embeddings) and
-# config/log_config are leaves that any layer may use; retrieval itself imports none of them.
+# Dependencies run downwards: courses -> retrieval -> wiki -> ingest. retrieval (the index, ranking
+# and the public search API) reads wiki pages through librarian.wiki.common, so it sits above wiki.
+# Two known upward edges are recorded here instead of hidden: wiki.telemetry's course-gap report
+# imports courses.catalog/curriculum inside a function (the gap list needs the catalog), and
+# wiki.relinker uses retrieval.embeddings for its suggestions (embeddings is the shared model
+# loader and cache, which imports none of the wiki). config/log_config are leaves any layer may use.
 [[tool.importlinter.contracts]]
 name = "librarian sub-packages are layered"
 type = "layers"
 layers = [
     "librarian.courses",
+    "librarian.retrieval",
     "librarian.wiki",
     "librarian.ingest",
 ]
 ignore_imports = [
     "librarian.wiki.telemetry -> librarian.courses.catalog",
     "librarian.wiki.telemetry -> librarian.courses.curriculum",
+    "librarian.wiki.relinker -> librarian.retrieval.embeddings",
 ]
-
-[[tool.importlinter.contracts]]
-name = "librarian.retrieval is a leaf"
-type = "forbidden"
-source_modules = ["librarian.retrieval"]
-forbidden_modules = ["librarian.courses", "librarian.wiki", "librarian.ingest"]

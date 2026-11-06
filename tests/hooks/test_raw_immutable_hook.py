@@ -74,7 +74,7 @@ def test_permits_creating_raw_file_in_new_subdir() -> None:
 
 
 def test_ignores_paths_outside_raw() -> None:
-    for path in ("data/wiki/rag/chunking.md", "apps/mcp/server.py", "CLAUDE.md"):
+    for path in ("data/wiki/rag/chunking.md", "src/librarian/retrieval/index.py", "CLAUDE.md"):
         code, err = run_hook(path)
         assert code == ALLOW, f"{path} must not be blocked: {err}"
 

@@ -8,8 +8,9 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from apps.mcp import server
-from apps.mcp.graph_expansion import (
+from librarian.retrieval import corpus, index, ranking
+from librarian.retrieval import format as render
+from librarian.retrieval.graph_expansion import (
     EXPANSION_RELATIONSHIPS,
     build_typed_edges,
     expand_one_hop,
@@ -153,17 +154,17 @@ def typed_wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         )
     )
 
-    monkeypatch.setattr(server, "WIKI_DIR", wiki_dir)
-    monkeypatch.setattr(server, "PRIVATE_DIR", wiki_dir / "private")
-    monkeypatch.setattr(server, "DB_PATH", tmp_path / ".idx.duckdb")
-    monkeypatch.setattr(server, "LOGS_DIR", tmp_path / "logs")
-    monkeypatch.setattr(server, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
+    monkeypatch.setattr(corpus, "WIKI_DIR", wiki_dir)
+    monkeypatch.setattr(corpus, "PRIVATE_DIR", wiki_dir / "private")
+    monkeypatch.setattr(corpus, "DB_PATH", tmp_path / ".idx.duckdb")
+    monkeypatch.setattr(corpus, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setattr(corpus, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
     return wiki_dir
 
 
 def test_build_index_materializes_typed_edges(typed_wiki: Path) -> None:
     con = duckdb.connect(":memory:")
-    server.build_index(con)
+    index.build_index(con)
     edges = con.execute("SELECT source_path, target_path, relationship FROM edges").fetchall()
     con.close()
 
@@ -176,7 +177,7 @@ def test_build_index_materializes_typed_edges(typed_wiki: Path) -> None:
 
 def test_expansion_section_reads_edges_table(typed_wiki: Path) -> None:
     """Same output as the old per-call full scan, now served from the table."""
-    section = server._expansion_section([str(typed_wiki / "rag" / "chunking.md")])
+    section = render.expansion_section([str(typed_wiki / "rag" / "chunking.md")])
     assert "one typed hop away" in section
     assert "Reranking" in section
     assert "prerequisite-for" in section
@@ -189,26 +190,26 @@ def test_expansion_section_reads_edges_table(typed_wiki: Path) -> None:
 
 def test_search_rows_expand_merges_neighbour_with_decay(typed_wiki: Path) -> None:
     """The one-hop neighbour joins the rows at DECAY × its best seed's score."""
-    rows, _ = server._search_rows("ZQUERYMARKER", expand=True)
+    rows, _ = ranking.search_rows("ZQUERYMARKER", expand=True)
     by_name = {Path(r[0]).name: r for r in rows}
     assert set(by_name) == {"chunking.md", "reranking.md"}
 
     seed_score = by_name["chunking.md"][6]
-    assert by_name["reranking.md"][6] == pytest.approx(server.EXPANSION_DECAY * seed_score)
+    assert by_name["reranking.md"][6] == pytest.approx(ranking.EXPANSION_DECAY * seed_score)
     # An expanded page never outranks the direct hit that reached it.
     assert Path(rows[0][0]).name == "chunking.md"
 
 
 def test_search_rows_without_expand_is_unchanged(typed_wiki: Path) -> None:
     """expand=False (the production default) returns only direct hits."""
-    rows, _ = server._search_rows("ZQUERYMARKER")
+    rows, _ = ranking.search_rows("ZQUERYMARKER")
     assert [Path(r[0]).name for r in rows] == ["chunking.md"]
 
 
 def test_expand_telemetry_logs_fired_edges(typed_wiki: Path) -> None:
     """Fired edges land in retrieval telemetry as (seed, neighbour, rel) triples."""
-    server._search_rows("ZQUERYMARKER", expand=True)
-    entry = json.loads(server.RETRIEVAL_LOG.read_text().strip().splitlines()[-1])
+    ranking.search_rows("ZQUERYMARKER", expand=True)
+    entry = json.loads(corpus.RETRIEVAL_LOG.read_text().strip().splitlines()[-1])
     edges = [tuple(e) for e in entry["expansion_edges"]]
     assert len(edges) == 1
     seed, neighbour, rel = edges[0]
@@ -218,6 +219,6 @@ def test_expand_telemetry_logs_fired_edges(typed_wiki: Path) -> None:
 
 
 def test_expand_false_logs_no_expansion_edges(typed_wiki: Path) -> None:
-    server._search_rows("ZQUERYMARKER")
-    entry = json.loads(server.RETRIEVAL_LOG.read_text().strip().splitlines()[-1])
+    ranking.search_rows("ZQUERYMARKER")
+    entry = json.loads(corpus.RETRIEVAL_LOG.read_text().strip().splitlines()[-1])
     assert "expansion_edges" not in entry

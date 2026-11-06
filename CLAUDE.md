@@ -65,10 +65,10 @@ tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki to
 - `src/librarian/` — the library, installed as the `librarian` package: `config.py` (every path and
   setting; `LIBRARIAN_ROOT` or a `pyproject.toml` above the package locates the repo), `log_config.py`,
   `cli.py`, `wiki/` (parser, health, telemetry, graph, rename, relinker, common), `retrieval/`
-  (embeddings), `courses/` (catalog, curriculum, leitner, glossary, importer) and `ingest/`
+  (index, ranking, search/read API, embeddings), `courses/` (catalog, curriculum, leitner, glossary, importer) and `ingest/`
   (scrapers, ingest gate, manifest, raw lint).
 - `apps/api` (FastAPI, `librarian api`), `apps/mcp` (FastMCP, `librarian mcp`), `apps/web` (React/Vite).
-  Apps import the library; the library never imports `apps/`, so route functions live in
+  Apps import the library (`apps/mcp/server.py` and `apps/api/agent.py` use only the public names of `librarian.retrieval`); the library never imports `apps/`, so route functions live in
   `apps/api/routers/` and the logic they call in `src/librarian/`.
 - `tools/` — cartographer, codemap, presenter, slides. They import the library, never the reverse.
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
@@ -425,7 +425,7 @@ In `## See Also` sections, annotate links with a relationship type using `— ty
 
 **Direction:** the type describes the *linked* page relative to the page it is written
 on. `- [[X]] — prerequisite-for` on page P reads "X is a prerequisite for P". Retrieval
-expansion (`apps/mcp/graph_expansion.py`) depends on this reading, so write the link
+expansion (`src/librarian/retrieval/graph_expansion.py`) depends on this reading, so write the link
 on the page that X relates *to*.
 
 | Type | `- [[X]] — type` on page P means |

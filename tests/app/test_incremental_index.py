@@ -16,7 +16,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from apps.mcp import server
+from librarian.retrieval import corpus, embeddings, index, ranking
 
 PAGE_TEMPLATE = """---
 title: {title}
@@ -49,10 +49,10 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     _make_page(wiki_dir, "notes", "beta.md", "Beta", "Beta body content.")
     _make_page(wiki_dir, "notes", "gamma.md", "Gamma", "Gamma body content.")
 
-    monkeypatch.setattr(server, "WIKI_DIR", wiki_dir)
-    monkeypatch.setattr(server, "PRIVATE_DIR", wiki_dir / "private")
-    monkeypatch.setattr(server, "DB_PATH", tmp_path / ".idx.duckdb")
-    monkeypatch.setattr(server, "HAS_EMBEDDINGS", False)
+    monkeypatch.setattr(corpus, "WIKI_DIR", wiki_dir)
+    monkeypatch.setattr(corpus, "PRIVATE_DIR", wiki_dir / "private")
+    monkeypatch.setattr(corpus, "DB_PATH", tmp_path / ".idx.duckdb")
+    monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
     return wiki_dir
 
 
@@ -67,21 +67,21 @@ def _fresh_con() -> duckdb.DuckDBPyConnection:
 
 def test_stale_pages_empty_after_fresh_build(wiki: Path) -> None:
     con = _fresh_con()
-    server.build_index(con)
-    stale = server._stale_pages(con)
+    index.build_index(con)
+    stale = index.stale_pages(con)
     assert stale == [], f"expected no stale pages after fresh build, got {stale}"
     con.close()
 
 
 def test_stale_pages_detects_single_edit(wiki: Path) -> None:
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     alpha = wiki / "notes" / "alpha.md"
     original = alpha.read_text()
     alpha.write_text(original + "\nExtra line added.")
 
-    stale = server._stale_pages(con)
+    stale = index.stale_pages(con)
     stale_names = [Path(p).name for p in stale]
     assert stale_names == ["alpha.md"], (
         f"only alpha.md was changed; stale_pages returned {stale_names}"
@@ -96,12 +96,12 @@ def test_stale_pages_detects_single_edit(wiki: Path) -> None:
 
 def test_new_page_inserted_incrementally(wiki: Path) -> None:
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     # Add a fourth page
     _make_page(wiki, "notes", "delta.md", "Delta", "Delta body content.")
 
-    server.build_index(con)  # should take incremental path
+    index.build_index(con)  # should take incremental path
 
     paths = {r[0] for r in con.execute("SELECT path FROM pages").fetchall()}
     assert any("delta.md" in p for p in paths), (
@@ -125,18 +125,18 @@ def test_changed_page_encode_called_once(wiki: Path, monkeypatch: pytest.MonkeyP
             return [[0.1] * 384 for _ in texts]
 
     fake_model = _FakeModel()
-    monkeypatch.setattr(server, "HAS_EMBEDDINGS", True)
+    monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", True)
     # _get_emb_model() is the single seam for the embedding model
-    monkeypatch.setattr(server, "_get_emb_model", lambda: fake_model)
+    monkeypatch.setattr(embeddings, "get_model", lambda: fake_model)
 
     con = _fresh_con()
-    server.build_index(con)  # full rebuild — encodes all 3 pages
+    index.build_index(con)  # full rebuild — encodes all 3 pages
     encode_inputs.clear()  # reset counter
 
     alpha = wiki / "notes" / "alpha.md"
     alpha.write_text(alpha.read_text() + "\nChanged content.")
 
-    server.build_index(con)  # incremental — should call encode once with 1 text
+    index.build_index(con)  # incremental — should call encode once with 1 text
 
     assert len(encode_inputs) == 1, (
         f"expected 1 encode call for 1 changed page, got {len(encode_inputs)}"
@@ -149,7 +149,7 @@ def test_changed_page_encode_called_once(wiki: Path, monkeypatch: pytest.MonkeyP
 
 def test_changed_page_content_hash_updated(wiki: Path) -> None:
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     alpha = wiki / "notes" / "alpha.md"
     old_hash = con.execute(
@@ -157,7 +157,7 @@ def test_changed_page_content_hash_updated(wiki: Path) -> None:
     ).fetchone()[0]
 
     alpha.write_text(alpha.read_text() + "\nChanged content.")
-    server.build_index(con)
+    index.build_index(con)
 
     new_hash = con.execute(
         "SELECT content_hash FROM pages WHERE path = ?", [str(alpha)]
@@ -173,12 +173,12 @@ def test_changed_page_content_hash_updated(wiki: Path) -> None:
 
 def test_deleted_page_pruned_from_index(wiki: Path) -> None:
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     gamma = wiki / "notes" / "gamma.md"
     gamma.unlink()
 
-    server.build_index(con)
+    index.build_index(con)
 
     paths = {r[0] for r in con.execute("SELECT path FROM pages").fetchall()}
     assert not any("gamma.md" in p for p in paths), (
@@ -190,7 +190,7 @@ def test_deleted_page_pruned_from_index(wiki: Path) -> None:
 def test_deleted_page_edges_pruned(wiki: Path) -> None:
     """Edges referencing a deleted page are removed."""
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     gamma = wiki / "notes" / "gamma.md"
     gamma_path = str(gamma)
@@ -202,7 +202,7 @@ def test_deleted_page_edges_pruned(wiki: Path) -> None:
     )
 
     gamma.unlink()
-    server.build_index(con)
+    index.build_index(con)
 
     edges = con.execute(
         "SELECT * FROM edges WHERE source_path = ? OR target_path = ?",
@@ -225,13 +225,11 @@ def test_schema_mismatch_triggers_full_rebuild(wiki: Path) -> None:
     con.execute("INSERT INTO meta VALUES ('schema_version', '6')")
     con.execute("INSERT INTO meta VALUES ('built_at', '1000000')")
 
-    assert server._index_needs_rebuild(con) is True, (
-        "mismatched schema_version should trigger rebuild"
-    )
+    assert index.needs_rebuild(con) is True, "mismatched schema_version should trigger rebuild"
 
     # After a real build, it should be False
-    server.build_index(con)
-    assert server._index_needs_rebuild(con) is False, (
+    index.build_index(con)
+    assert index.needs_rebuild(con) is False, (
         "_index_needs_rebuild should be False after build_index"
     )
     con.close()
@@ -240,7 +238,7 @@ def test_schema_mismatch_triggers_full_rebuild(wiki: Path) -> None:
 def test_missing_index_triggers_rebuild(wiki: Path) -> None:
     """An empty connection (no meta table) triggers _index_needs_rebuild."""
     con = _fresh_con()
-    assert server._index_needs_rebuild(con) is True
+    assert index.needs_rebuild(con) is True
     con.close()
 
 
@@ -251,10 +249,10 @@ def test_missing_index_triggers_rebuild(wiki: Path) -> None:
 
 def test_build_index_idempotent(wiki: Path) -> None:
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     count_before = con.execute("SELECT COUNT(*) FROM pages").fetchone()[0]
-    server.build_index(con)  # second call — nothing changed
+    index.build_index(con)  # second call — nothing changed
     count_after = con.execute("SELECT COUNT(*) FROM pages").fetchone()[0]
 
     assert count_before == count_after == 3, (
@@ -270,7 +268,7 @@ def test_build_index_idempotent(wiki: Path) -> None:
 
 def test_pages_table_has_content_hash_column(wiki: Path) -> None:
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     # DuckDB PRAGMA table_info returns (cid, name, type, notnull, dflt_value, pk)
     cols = {row[1] for row in con.execute("PRAGMA table_info('pages')").fetchall()}
@@ -280,7 +278,7 @@ def test_pages_table_has_content_hash_column(wiki: Path) -> None:
 
 def test_content_hash_populated_for_all_pages(wiki: Path) -> None:
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     null_hashes = con.execute("SELECT path FROM pages WHERE content_hash IS NULL").fetchall()
     assert null_hashes == [], f"some pages have NULL content_hash: {null_hashes}"
@@ -299,17 +297,17 @@ def _edges(con: duckdb.DuckDBPyConnection) -> set[tuple[str, str, str]]:
 def test_edited_page_typed_edges_refreshed(wiki: Path) -> None:
     """Adding then removing a typed link on an edit is reflected in the edges table."""
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
     alpha = wiki / "notes" / "alpha.md"
     beta_path = str(wiki / "notes" / "beta.md")
     assert _edges(con) == set()
 
     _make_page(wiki, "notes", "alpha.md", "Alpha", "## See Also\n- [[Beta]] — extends")
-    server.build_index(con)
+    index.build_index(con)
     assert _edges(con) == {(str(alpha), beta_path, "extends")}
 
     _make_page(wiki, "notes", "alpha.md", "Alpha", "No links any more.")
-    server.build_index(con)
+    index.build_index(con)
     assert _edges(con) == set(), "edge from removed link should be dropped"
     con.close()
 
@@ -318,24 +316,24 @@ def test_new_page_resolves_existing_dangling_link(wiki: Path) -> None:
     """A link to a not-yet-existing page becomes an edge once that page is added."""
     _make_page(wiki, "notes", "alpha.md", "Alpha", "## See Also\n- [[Delta]] — extends")
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
     assert _edges(con) == set()
 
     delta = _make_page(wiki, "notes", "delta.md", "Delta", "Delta body.")
-    server.build_index(con)
+    index.build_index(con)
     assert _edges(con) == {(str(wiki / "notes" / "alpha.md"), str(delta), "extends")}
     con.close()
 
 
 def test_force_triggers_full_rebuild(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
 
     calls: list[bool] = []
-    monkeypatch.setattr(server, "_full_rebuild", lambda c: calls.append(True))
-    server.build_index(con)
+    monkeypatch.setattr(index, "_full_rebuild", lambda c: calls.append(True))
+    index.build_index(con)
     assert calls == [], "fresh index should not rebuild without force"
-    server.build_index(con, force=True)
+    index.build_index(con, force=True)
     assert calls == [True]
     con.close()
 
@@ -356,21 +354,21 @@ def test_tombstone_with_no_row_is_not_stale(wiki: Path) -> None:
     """A tombstone is skipped at indexing, so it must not read as stale on every connection."""
     _retire(wiki / "notes" / "retired.md")
     con = _fresh_con()
-    server.build_index(con)
-    assert server._stale_pages(con) == []
-    assert server._degradation_reasons(con, has_fts=True) == []
+    index.build_index(con)
+    assert index.stale_pages(con) == []
+    assert ranking.degradation_reasons(con, has_fts=True) == []
     con.close()
 
 
 def test_page_retired_after_build_leaves_the_index(wiki: Path) -> None:
     alpha = wiki / "notes" / "alpha.md"
     con = _fresh_con()
-    server.build_index(con)
+    index.build_index(con)
     _retire(alpha)
-    assert server._stale_pages(con) == [alpha]
+    assert index.stale_pages(con) == [alpha]
 
-    server.build_index(con)
-    assert server._stale_pages(con) == []
+    index.build_index(con)
+    assert index.stale_pages(con) == []
     paths = {r[0] for r in con.execute("SELECT path FROM pages").fetchall()}
     assert str(alpha) not in paths
     assert str(wiki / "notes" / "beta.md") in paths

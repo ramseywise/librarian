@@ -36,11 +36,12 @@ def test_slugify(text: str, expected: str) -> None:
 
 def test_single_definition_across_consumers() -> None:
     """All link-resolution modules must share the one slugify."""
-    import apps.mcp.graph_expansion as graph_expansion
-    import apps.mcp.server as server
+    import librarian.retrieval.graph_expansion as graph_expansion
+    import librarian.retrieval.index as index
+    import librarian.retrieval.pages as pages
     import librarian.wiki.parser as wiki_parser
     import librarian.wiki.relinker as relinker
 
-    for module in (wiki_parser, graph_expansion, server, relinker):
+    for module in (wiki_parser, graph_expansion, index, pages, relinker):
         assert module.slugify is slugify
         assert not hasattr(module, "_slug")

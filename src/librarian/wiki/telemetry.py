@@ -40,7 +40,14 @@ from librarian.ingest.sensitive import (
     scan_text,
     terms_pattern,
 )
-from librarian.wiki.common import TYPED_LINK_RE, WIKILINK_RE, fm, page_aliases, slugify
+from librarian.wiki.common import (
+    TYPED_LINK_RE,
+    WIKILINK_RE,
+    fm,
+    page_aliases,
+    page_tags,
+    slugify,
+)
 
 REPO_ROOT = get_settings().root
 WIKI_DIR = get_settings().wiki_dir
@@ -147,8 +154,7 @@ def _load_page(path: Path, wiki_dir: Path) -> Page:
         title = match.group(1).strip().strip("\"'") if match else path.stem
         body = _FM_BLOCK_RE.sub("", text, count=1)
         return Page(path, rel, path.stem, title, [], None, body, parsed=False)
-    tags = fm(post).get("tags") or []
-    tags = [tags] if isinstance(tags, str) else [str(t) for t in tags]
+    tags = page_tags(fm(post))
     title = str(fm(post).get("title") or path.stem)
     updated = _to_date(fm(post).get("updated"))
     aliases = tuple(page_aliases(post.metadata))

@@ -11,9 +11,10 @@ from typing import Any, cast
 
 import anthropic
 
-from apps.mcp import server
+from librarian import retrieval
 from librarian.config import get_settings
 from librarian.log_config import get_logger
+from librarian.retrieval import corpus
 
 log = get_logger(__name__)
 
@@ -72,10 +73,10 @@ def _search_wiki(query: str) -> str:
     # data/wiki/private/ is never searched — Buyi confidentiality invariant, clause (b).
     # The server's search core indexes only public pages, so the agent inherits the
     # exclusion (and retrieval telemetry) from the single implementation.
-    rows, degraded = server._search_rows(query, domain="", limit=8, tool="agent_search")
+    rows, degraded = retrieval.search_rows(query, domain="", limit=8, tool="agent_search")
     # The chat agent sees the same degradation notice the MCP tool emits — it is
     # the signal that a thin result set reflects the retrieval path, not the wiki.
-    warning = server._degraded_notice(degraded)
+    warning = retrieval.degraded_notice(degraded)
     if not rows:
         return warning + "No pages found matching that query."
 
@@ -91,7 +92,7 @@ def _search_wiki(query: str) -> str:
 def _read_page(page_id: str) -> str:
     # Private pages are unreachable by ID and by title alike — the server core
     # applies the same predicate on every lookup path.
-    return server._read_page_text(page_id)
+    return retrieval.read_page(page_id)
 
 
 def _domain_briefing(domain: str) -> str:
@@ -101,7 +102,7 @@ def _domain_briefing(domain: str) -> str:
     and 2.2M for patterns: too much for one chat turn. Private domains are refused by the
     server core, and the listing is sorted by backlinks, so a cut keeps the best-linked pages.
     """
-    listing = server.list_domain(domain)
+    listing = retrieval.list_domain(domain)
     listing = _WIKI_PATH_RE.sub(lambda m: f"(id: `{Path(m.group(1)).stem}`)", listing)
     if len(listing) > MAX_BRIEFING_CHARS:
         cut = listing.rfind("\n- **", 0, MAX_BRIEFING_CHARS)
@@ -227,15 +228,15 @@ def extract_citations(text: str) -> list[str]:
 def _log_answer(**fields: object) -> None:
     """Append one JSON line of answer telemetry to logs/agent.jsonl.
 
-    Same contract as server._log_retrieval: never raises — telemetry must not break a
-    chat answer. The path is derived from server.LOGS_DIR at call time, so anything
+    Same contract as retrieval.corpus.log_retrieval: never raises — telemetry must not break a
+    chat answer. The path is derived from corpus.LOGS_DIR at call time, so anything
     that redirects retrieval telemetry (the test autouse fixture) redirects this too.
     The answer text is deliberately not logged — only its shape.
     """
     try:
-        server.LOGS_DIR.mkdir(exist_ok=True)
+        corpus.LOGS_DIR.mkdir(exist_ok=True)
         entry = {"ts": datetime.now(UTC).isoformat(), **fields}
-        with (server.LOGS_DIR / AGENT_LOG_NAME).open("a", encoding="utf-8") as f:
+        with (corpus.LOGS_DIR / AGENT_LOG_NAME).open("a", encoding="utf-8") as f:
             f.write(json.dumps(entry) + "\n")
     except Exception as e:
         log.warning("agent.telemetry_failed", error=str(e))
@@ -365,7 +366,7 @@ async def run_agent_stream(
 
     # Highlight stays sourced from tool results only — a cited id is never added, so a
     # hallucinated citation cannot light up a graph node.
-    valid_pages = {p for p in referenced_pages if next(server.WIKI_DIR.rglob(f"{p}.md"), None)}
+    valid_pages = {p for p in referenced_pages if next(corpus.WIKI_DIR.rglob(f"{p}.md"), None)}
     if valid_pages:
         yield {"type": "highlight", "pages": sorted(valid_pages)}
 

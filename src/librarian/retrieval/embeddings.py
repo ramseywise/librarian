@@ -1,21 +1,44 @@
+"""The one embedding stack: model loader, vector blobs and the page/text caches.
+
+Everything that turns text into a vector goes through `encode`: the search index
+(`librarian.retrieval.index`), query ranking (`librarian.retrieval.ranking`), the graph's
+semantic edges and the course catalog. One model name (`Settings.embedding_model`), one
+loader behind one lock, one blob format.
+
+Two caches remain, because they hold different vectors and key them differently, so they cannot
+share rows without changing ranking: the DuckDB search index stores a vector per page embedded
+from the *whole file text* (frontmatter included, first 600 characters), keyed by path and
+content hash. The caches here (`compute_embeddings`, `encode_texts_cached`) embed `title.
+summary` plus the *body*, for the graph and the catalog.
+
+numpy and sentence-transformers are optional (the `api` extra): `import` of this module needs
+neither, so the MCP server runs without them and search falls back to text-only ranking.
+"""
+
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import os
 import struct
 import threading
+from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import duckdb
 import frontmatter
-import numpy as np
 
 from librarian.config import get_settings
 
 # Imported where used: torch and sklearn cost seconds, and a warm restart needs neither.
 if TYPE_CHECKING:
+    import numpy as np
     from sentence_transformers import SentenceTransformer
+
+# Checked, not imported: importing sentence_transformers pulls in torch, which took 4-13 s of
+# API startup. Tests and the eval harness flip this to force the text-only path.
+HAS_EMBEDDINGS = importlib.util.find_spec("sentence_transformers") is not None
 
 WIKI_DIR = get_settings().wiki_dir
 CACHE_DB = get_settings().embeddings_cache_path
@@ -34,7 +57,7 @@ _cache_lock = threading.Lock()
 _encode_lock = threading.Lock()
 
 
-def _get_model() -> SentenceTransformer:
+def get_model() -> SentenceTransformer:
     global _model
     if _model is None:
         with _model_lock:
@@ -45,13 +68,14 @@ def _get_model() -> SentenceTransformer:
     return _model
 
 
-def _encode(texts: list[str]) -> np.ndarray:
+def encode(texts: list[str]) -> np.ndarray:
+    """Unit-length vectors for `texts`, one row each (the only call site of `model.encode`)."""
     with _encode_lock:
-        return _get_model().encode(texts, normalize_embeddings=True)
+        return get_model().encode(texts, normalize_embeddings=True)
 
 
 def warmup() -> None:
-    _encode(["warmup"])
+    encode(["warmup"])
 
 
 def _wiki_files() -> list[Path]:
@@ -93,14 +117,21 @@ def _open_cache() -> duckdb.DuckDBPyConnection:
     return con
 
 
-def _vec_to_blob(vec: np.ndarray) -> bytes:
-    flat = vec.tolist()
+def vec_to_blob(vec: Sequence[float] | np.ndarray) -> bytes:
+    """Native-order float32 blob, the format of both the index and the caches."""
+    flat: list[float] = vec.tolist() if hasattr(vec, "tolist") else list(vec)  # pyright: ignore[reportAttributeAccessIssue]
     return struct.pack(f"{len(flat)}f", *flat)
 
 
-def _blob_to_vec(blob: bytes) -> np.ndarray:
-    n = len(blob) // 4
-    return np.array(struct.unpack(f"{n}f", blob), dtype=np.float32)
+def blob_to_floats(blob: bytes) -> list[float]:
+    """A blob as Python floats; needs no numpy, which the search path must not require."""
+    return list(struct.unpack(f"{len(blob) // 4}f", blob))
+
+
+def blob_to_vec(blob: bytes) -> np.ndarray:
+    import numpy as np
+
+    return np.array(blob_to_floats(blob), dtype=np.float32)
 
 
 def current_page_ids() -> list[str]:
@@ -119,6 +150,8 @@ def compute_embeddings() -> tuple[list[str], np.ndarray]:
 
 
 def _compute_embeddings() -> tuple[list[str], np.ndarray]:
+    import numpy as np
+
     md_files = _wiki_files()
     if not md_files:
         return [], np.array([])
@@ -128,7 +161,7 @@ def _compute_embeddings() -> tuple[list[str], np.ndarray]:
     for path, chash, blob in con.execute(
         "SELECT path, content_hash, vector FROM embeddings"
     ).fetchall():
-        cached[path] = (chash, _blob_to_vec(blob))
+        cached[path] = (chash, blob_to_vec(blob))
 
     page_ids: list[str] = []
     vecs: list[np.ndarray] = []
@@ -146,13 +179,13 @@ def _compute_embeddings() -> tuple[list[str], np.ndarray]:
             to_encode.append((path_str, page_id, _page_text(md_file), chash))
 
     if to_encode:
-        new_vecs = _encode([t[2] for t in to_encode])
+        new_vecs = encode([t[2] for t in to_encode])
         rows = []
         for i, (path_str, page_id, _, chash) in enumerate(to_encode):
             vec = new_vecs[i]
             page_ids.append(page_id)
             vecs.append(vec)
-            rows.append((path_str, chash, _vec_to_blob(vec), MODEL_NAME))
+            rows.append((path_str, chash, vec_to_blob(vec), MODEL_NAME))
         con.executemany("INSERT OR REPLACE INTO embeddings VALUES (?, ?, ?, ?)", rows)
 
     # Prune stale cache entries (deleted pages)
@@ -205,6 +238,8 @@ def encode_texts_cached(texts: list[str], cache_file: Path) -> np.ndarray:
     rewritten (atomically) only when something was encoded or pruned, and pruned to the
     current texts so it never grows past the live set.
     """
+    import numpy as np
+
     keys = [_text_key(t) for t in texts]
     cached: dict[str, np.ndarray] = {}
     if cache_file.exists():
@@ -216,7 +251,7 @@ def encode_texts_cached(texts: list[str], cache_file: Path) -> np.ndarray:
 
     missing = [i for i, k in enumerate(keys) if k not in cached]
     if missing:
-        new = _encode([texts[i] for i in missing])
+        new = encode([texts[i] for i in missing])
         for i, vec in zip(missing, new, strict=True):
             cached[keys[i]] = np.asarray(vec, dtype=np.float32)
 

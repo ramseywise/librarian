@@ -11,7 +11,7 @@ src/librarian/
   log_config.py  structlog setup with secret redaction
   cli.py         `librarian <group> <verb>`: thin dispatchers to each module's main(argv)
   wiki/          parser, health, telemetry, graph, rename, relinker, common
-  retrieval/     embeddings (needs the `api` extra)
+  retrieval/     index, ranking, search/read API, embeddings (the `api` extra adds the model)
   courses/       catalog, curriculum, leitner, glossary, importer
   ingest/        scrapers, ingest gate, manifest, sensitive scans, raw lint
 ```
@@ -81,6 +81,23 @@ The session tooling that used to live beside these (`cron`, `enrich`, `migrate`)
 | `wiki/rename.py` | Renames a wiki page and rewrites every inbound link. Dry run by default. |
 | `wiki/parser.py`, `wiki/health.py` | The graph payload the API serves, and the latest telemetry row. |
 
+## Retrieval
+
+`librarian.retrieval` is the one place that indexes, ranks and serves the wiki and the lessons. The MCP server, the chat agent and the evals call only its public names: `search`, `search_rows`, `degraded_notice`, `read_page`, `list_domain`, `list_pages`, `domain_briefing`, `open_index`, `rebuild_index`, `disabled`, `IndexBusyError`.
+
+| Module | Purpose |
+|--------|---------|
+| `retrieval/corpus.py` | Locations (wiki, courses, index, logs), domain derivation, the private-page rule, retrieval telemetry. |
+| `retrieval/index.py` | DuckDB index: full rebuild, content-hash incremental update, open and rebuild. |
+| `retrieval/ranking.py` | BM25 (fts) with a tokenized-LIKE fallback, the semantic rerank, the 50/50 blend, typed-edge expansion, and `disabled()` for the evals. |
+| `retrieval/format.py`, `retrieval/pages.py` | Search results as text; read, list and brief pages and lessons. |
+| `retrieval/graph_expansion.py` | One-hop typed-relationship neighbours. |
+| `retrieval/embeddings.py` | The one model loader, lock, `HAS_EMBEDDINGS` flag and blob helpers, plus the page-embedding and text caches. numpy and sentence-transformers load lazily. |
+
+Index ownership: DuckDB lets one read-write opener exclude every other process, even readers, and the API and the MCP server both refresh the index on open. Measured on two processes searching in a loop, the old code failed 571 to 617 opens in 25 s, and 206 more while a rebuild ran. Now `index.connect()` retries a lock error with backoff (20 ms doubling to 500 ms, with jitter) for up to 60 s, then raises `IndexBusyError`. Opens therefore queue instead of failing; the same test gives no errors. Not chosen: read-only opens (they still fail whenever a read-write holder exists, and the MCP server must refresh after an ingest), and having the MCP server call the API (it would stop working when the API is down). Index writes stay in whichever process opens first; callers must close the connection promptly.
+
+Embeddings: the index embeds the whole file, while the graph, relinker and course caches embed the body, so their stores stay separate (merging them would change ranking). All of them share one model (`LIBRARIAN_EMBEDDING_MODEL`, default the same MiniLM the server hard-coded), one loader and one lock.
+
 ## Constraints
 
 - `data/raw/` is **immutable input** — scrapers append, never modify or delete existing files.
@@ -89,4 +106,4 @@ The session tooling that used to live beside these (`cron`, `enrich`, `migrate`)
 - Wiki compilation stays in Claude Code skills; this package is ETL and read-side logic only.
 - `courses` imports `ingest`, never the reverse. The git-ignore helpers both sides need live in
   `ingest/gitignore.py` (they used to sit in `courses/importer.py`, which made `ingest.scrape_repos`
-  import `courses`). `import-linter` enforces the sub-package layering; see `pyproject.toml`.
+  import `courses`). `retrieval` sits between them (`courses` -> `retrieval` -> `wiki` -> `ingest`), with the upward edges recorded in `pyproject.toml`; `import-linter` enforces the sub-package layering; see `pyproject.toml`.

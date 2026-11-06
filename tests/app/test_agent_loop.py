@@ -17,8 +17,8 @@ from fastapi.testclient import TestClient
 
 from apps.api import agent
 from apps.api import main as main_module
-from apps.mcp import server
 from librarian.config import Settings, get_settings
+from librarian.retrieval import corpus, embeddings
 
 PAGE = """---
 title: {title}
@@ -44,10 +44,10 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     (wiki_dir / "rag" / "reranking.md").write_text(
         PAGE.format(title="Reranking", summary="Second-stage rank", body="Cross-encoders.")
     )
-    monkeypatch.setattr(server, "WIKI_DIR", wiki_dir)
-    monkeypatch.setattr(server, "PRIVATE_DIR", wiki_dir / "private")
-    monkeypatch.setattr(server, "DB_PATH", tmp_path / ".idx.duckdb")
-    monkeypatch.setattr(server, "HAS_EMBEDDINGS", False)
+    monkeypatch.setattr(corpus, "WIKI_DIR", wiki_dir)
+    monkeypatch.setattr(corpus, "PRIVATE_DIR", wiki_dir / "private")
+    monkeypatch.setattr(corpus, "DB_PATH", tmp_path / ".idx.duckdb")
+    monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
     return wiki_dir
 
 
@@ -60,7 +60,7 @@ def _of(events: list[dict[str, Any]], kind: str) -> list[dict[str, Any]]:
 
 
 def _agent_log() -> list[dict[str, Any]]:
-    path = server.LOGS_DIR / agent.AGENT_LOG_NAME
+    path = corpus.LOGS_DIR / agent.AGENT_LOG_NAME
     return [json.loads(line) for line in path.read_text().splitlines()]
 
 
@@ -245,7 +245,7 @@ async def test_answer_telemetry_line(wiki: Path, fake_anthropic: type) -> None:
     assert line["error"] is False
     assert isinstance(line["latency_ms"], int | float) and line["latency_ms"] >= 0
     assert "ts" in line
-    raw = (server.LOGS_DIR / agent.AGENT_LOG_NAME).read_text()
+    raw = (corpus.LOGS_DIR / agent.AGENT_LOG_NAME).read_text()
     assert "SECRET_ANSWER_TEXT" not in raw
 
 
@@ -255,7 +255,7 @@ async def test_telemetry_failure_never_breaks_the_answer(
 ) -> None:
     blocker = tmp_path / "not-a-dir"
     blocker.write_text("")
-    monkeypatch.setattr(server, "LOGS_DIR", blocker)  # mkdir under a file fails
+    monkeypatch.setattr(corpus, "LOGS_DIR", blocker)  # mkdir under a file fails
     client = fake_anthropic([fake_anthropic.text_turn("Fine.")])
     events = await _collect(agent.run_agent_stream("q", client=client))
     assert events[-1] == {"type": "done"}
