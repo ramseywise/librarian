@@ -23,7 +23,7 @@ If the extraction is empty or garbled, such as a scanned PDF, say so and stop. N
 what you remember about the paper. Figures come from:
 
 ```bash
-uv run -q --with pymupdf python scripts/papers/figures.py captions <pdf>
+uv run -q --with pymupdf python ../learn-ai-engineering/scripts/papers/figures.py captions <pdf>
 ```
 
 ## Return exactly this

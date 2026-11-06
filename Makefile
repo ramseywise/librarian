@@ -95,6 +95,7 @@ eval-gate:
 	uv run python evals/run_eval.py --live --arm course --verbose
 
 .PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps wiki-graph
+.PHONY: chapter-check chapter-check-all link-check curriculum crosswalk crosswalk-check manifest-check drill-check review-findings signals smoke-labs
 
 wiki-stats:
 	uv run librarian wiki stats
@@ -190,3 +191,41 @@ help:
 	@echo "eval-live        — eval the live sem arm (gated against its baseline); save live baseline"
 	@echo "eval-nofts       — eval the degraded no-fts arm (gated); save nofts baseline"
 	@echo "eval-gate        — run every gated live arm (sem, nofts, uniform, course); no baseline written"
+
+# Course checks: stdlib ports of the learn-ai-engineering scripts, run over data/courses/.
+# Private lessons (data/courses/private/) are skipped and never named. Paths are relative to data/courses/.
+chapter-check-all:  ## Hold the pillared courses to the chapter standard and programming/ to its metadata rules
+	uv run librarian courses check chapters --all --strict
+
+chapter-check:  ## Check notes against the chapter standard: make chapter-check PILLAR=data-analytics/06-applied-analyses [STRICT=1]
+	@test -n "$(PILLAR)" || { echo "usage: make chapter-check PILLAR=<course>/<module> [STRICT=1]"; exit 1; }
+	uv run librarian courses check chapters $(PILLAR) $(if $(STRICT),--strict)
+
+link-check:  ## Verify relative links in the public lessons resolve
+	uv run librarian courses check links
+
+curriculum:  ## Rebuild the curriculum map (.cache/) and print integration issues: make curriculum [PILLAR=data-science/01-classical-ml]
+	uv run librarian courses check curriculum build
+	uv run librarian courses check curriculum issues $(if $(PILLAR),--pillar $(PILLAR))
+
+crosswalk:  ## Validate drill and round units and links, then regenerate .cache/crosswalk.md
+	uv run librarian courses check crosswalk
+
+crosswalk-check:  ## Validate drill and round units and links; fail if .cache/crosswalk.md is stale
+	uv run librarian courses check crosswalk --check
+
+manifest-check:  ## Validate practice/manifest.yaml files where present (labs live in learn-ai-engineering)
+	uv run librarian courses check manifest
+
+drill-check:  ## Check drill schema: make drill-check [DRILL_PATH=programming/drills/sql]
+	uv run librarian courses check drills $(DRILL_PATH)
+
+review-findings:  ## Reviewer precision, open decisions and recurring faults from logs/review/findings.jsonl
+	uv run librarian courses review findings report
+
+signals:  ## Weekly review signals (reviewer log, flashcards, drills, wiki searches): make signals [WRITE=1]
+	uv run librarian courses review signals $(if $(WRITE),--write)
+
+smoke-labs:  ## Run a practice folder's labs headless: make smoke-labs FOLDER=<course>/<module>/practice
+	@test -n "$(FOLDER)" || { echo "usage: make smoke-labs FOLDER=<course>/<module>/practice"; exit 1; }
+	uv run librarian courses check smoke-labs $(FOLDER)

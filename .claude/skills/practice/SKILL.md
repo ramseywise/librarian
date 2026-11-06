@@ -1,9 +1,12 @@
 ---
 name: practice
-description: "Author and wire one piece of practice material: a drill in programming/drills/, a coding prompt, or a round file in practice/interviewing/rounds/. Places it by the split rule, applies the schema and units, clears the licence and allowlist, runs the checks and the drill-reviewer, and logs findings. Usage: /practice <path> to wire an existing file, /practice drill <track> <topic> \"<idea>\", or /practice round <round> \"<idea>\". Run from the learn-ai-engineering repo."
+description: "Author and wire one piece of practice material: a drill in programming/drills/, a coding prompt, or a round file in interviewing/rounds/. Places it by the split rule, applies the schema and units, clears the licence and allowlist, runs the checks and the drill-reviewer, and logs findings. Usage: /practice <path> to wire an existing file, /practice drill <track> <topic> \"<idea>\", or /practice round <round> \"<idea>\". Run from the librarian repo."
 ---
 
-You add one piece of practice material and leave it wired in, checked and reviewed. Practice tests what the notes
+You add one piece of practice material and leave it wired in, checked and reviewed. The checks and the reviewer
+run here over `data/courses/` (paths below are relative to it). Licence and allowlist files (`THIRD_PARTY.md`,
+`practice/.gitignore`) and the import of new files live in `../learn-ai-engineering`: author there, then
+`make import-courses` here. Private drills (`data/courses/private/`) are never checked or named. Practice tests what the notes
 teach, so a new file never becomes the only home of a topic.
 
 `$ARGUMENTS` is a path to wire, or `drill <track> <topic> "<idea>"`, or `round <round> "<idea>"`.
@@ -16,13 +19,13 @@ Ask the split rule: "Is this true regardless of whether I'm being interviewed?"
   answer is findable in the note above it, in the table format the note already uses and under the 7000-word cap. If
   no note answers it, report a gap for `/write-chapter` and stop. Don't write the answer here.
 - **Yes, and it's something to practise**: a drill under `programming/drills/<track>/<topic>/`.
-- **No**: a file in `practice/interviewing/rounds/<round>/`. The rounds are listed in
-  [the role map](../../../practice/interviewing/README.md). Check that round's `study-guide.md` and `questions.md`
+- **No**: a file in `interviewing/rounds/<round>/`. The rounds are listed in
+  [the role map](../../../data/courses/interviewing/00-start-here). Check that round's `study-guide.md` and `questions.md`
   first, and add to them rather than repeat them.
 
 ## Step 2 — Write to the schema
 
-**Drills** follow [the drill schema](../../../programming/drills/README.md): frontmatter `title`, `track`, `topic`,
+**Drills** follow [the drill schema](../../../data/courses/programming/drills/readme.md): frontmatter `title`, `track`, `topic`,
 `difficulty`, `timebox_min`, `concepts`, and `source` where it applies. No H1 in the body. `## Prompt`, `## Starter`
 and `## Tests`, in that order, then optional `## Hints`, a solution inside `<details>`, and notes. The tests must fail
 bad code, and the solution must pass them.
@@ -38,7 +41,7 @@ Name a note rather than a pillar when one note covers it. `concepts` on a drill 
 
 ## Step 4 — Clear the licence and allowlist
 
-`practice/.gitignore` fails closed, and the root `.gitignore` names the drill folders that stay local. Before a
+In the sibling, `practice/.gitignore` fails closed, and the root `.gitignore` names the drill folders that stay local. Before a
 `practice/` file gets a line in the allowlist:
 
 1. **Licence.** Written here, or copied from an upstream with a licence that allows it, recorded in `THIRD_PARTY.md`.
@@ -47,17 +50,18 @@ Name a note rather than a pillar when one note covers it. `concepts` on a drill 
 2. **Personal data.** No drill logs, attempts, employers, deployments or names. Scrub it, or leave the file ignored.
 3. **Add one line**, `!/interviewing/rounds/<round>/<file>.md`, in sorted order.
 
-A tracked file that links to an ignored one fails `make crosswalk`. Don't list the ignored file to fix that: remove the
+A tracked file that links to an ignored one fails `make crosswalk-check`. Don't list the ignored file to fix that: remove the
 link. Never delete an untracked or ignored file, since git can't restore it.
 
 ## Step 5 — Check
 
 ```bash
 make drill-check DRILL_PATH=<path>
-make crosswalk
+make crosswalk-check
 ```
 
-`make crosswalk` validates units and links and regenerates `practice/CROSSWALK.md`. Fix failures before going further.
+`make crosswalk` validates units and links (silently skipping anything that reaches `private/`) and writes `.cache/crosswalk.md`;
+`make crosswalk-check` fails if that file is stale. Fix failures before going further.
 `make drill-check` applies the schema only to markdown under a `drills/` folder. It doesn't check a round's markdown,
 so a round file is held to this skill by your reading and the reviewer.
 
@@ -69,13 +73,13 @@ the material as a learner would. Fix what can't change the meaning, and list the
 Log every finding, rejected ones included, in the format in [/review Step 4](../review/SKILL.md):
 
 ```bash
-python3 scripts/review/findings.py patterns
-python3 scripts/review/findings.py add <<'JSONL'
+uv run librarian courses review findings patterns
+uv run librarian courses review findings add <<'JSONL'
 {"run": "<date>-<short target>", "reviewer": "drill-reviewer", "target": "<path>", "line": 12, "kind": "wrong-answer", "decision": "applied", "summary": "<one line, no personal data>"}
 JSONL
 ```
 
 ## Step 7 — Hand over
 
-Run `make test`, stage by explicit path, and report: the file, the units, any licence question and any gap. The user
+Run `uv run pytest -q`, stage by explicit path, and report: the file, the units, any licence question and any gap. The user
 commits.

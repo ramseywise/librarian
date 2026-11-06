@@ -1,6 +1,6 @@
 ---
 name: review
-description: "Quality gate for course content. Sends a note, deck, drill, guide or lab to the right independent reviewers, applies only fixes that cannot change meaning, lists the rest for the user and logs every decision. Usage: /review <note, deck.yaml, drill or practice path>, /review <pillar> for its notes, /review <pillar> --deck, /review <path> --report for no edits, /review status for the log, /review eval <reviewer> to test a reviewer on planted faults. Run from the learn-ai-engineering repo."
+description: "Quality gate for course content. Sends a note, deck, drill, guide or lab to the right independent reviewers, applies only fixes that cannot change meaning, lists the rest for the user and logs every decision. Usage: /review <note, deck.yaml, drill or practice path>, /review <pillar> for its notes, /review <pillar> --deck, /review <path> --report for no edits, /review status for the log, /review eval <reviewer> to test a reviewer on planted faults. Run from the librarian repo."
 ---
 
 You run the quality gate on one piece of content or one pillar. The reviewers report and you decide. They have not
@@ -13,11 +13,11 @@ seen why the content was written this way, so do not tell them.
 
 | Target | Machine checks | Dispatch |
 |---|---|---|
-| A note, or a pillar | `make chapter-check PILLAR=<path>`, `python3 scripts/curriculum_map.py issues --pillar <pillar>` | `audience-editor` (the path only) and `citation-checker` (the path, with "all") per note |
-| `slides/deck.yaml`, or `<pillar> --deck` | In the librarian repo, where decks are built: `make slides PILLAR=<pillar> PREVIEW=1` unless `--report`; with `--report`, use the existing `.preview/` | `deck-reviewer` (the pillar path) |
-| `programming/drills/` or `practice/` drill, prompt, problem, MCQ, guide or lab, including `<pillar>/practice/` | `make drill-check DRILL_PATH=<path>`, `make crosswalk-check` | `drill-reviewer` (the path only) |
+| A note, or a pillar | `make chapter-check PILLAR=<path>`, `uv run librarian courses check curriculum issues --pillar <pillar>` | `audience-editor` (the path only) and `citation-checker` (the path, with "all") per note |
+| `slides/deck.yaml`, or `<pillar> --deck` | `make slides PILLAR=<pillar> PREVIEW=1` unless `--report`; with `--report`, use the existing `.preview/` | `deck-reviewer` (the pillar path) |
+| `programming/drills/` or `interviewing/` drill, prompt, problem, MCQ, guide or lab, including `<pillar>/practice/` | `make drill-check DRILL_PATH=<path>`, `make crosswalk-check` | `drill-reviewer` (the path only) |
 
-Fix or report machine-check failures first. A reviewer shouldn't spend a full read on what a script already caught.
+Paths are relative to `data/courses/`; `private/` is never reviewed here. Fix or report machine-check failures first. A reviewer shouldn't spend a full read on what a script already caught.
 
 ## Step 2 — Dispatch
 
@@ -44,34 +44,34 @@ Log every finding, including the ones you rejected. This is how reviewer precisi
 Use the reviewer's own `kind`, or its status for `citation-checker`. Don't log a citation that verified.
 
 ```bash
-python3 scripts/review/findings.py patterns   # reuse a slug if one fits
-python3 scripts/review/findings.py add <<'JSONL'
+uv run librarian courses review findings patterns   # reuse a slug if one fits
+uv run librarian courses review findings add <<'JSONL'
 {"run": "2026-11-02-<short target>", "reviewer": "drill-reviewer", "target": "<path>", "line": 12, "kind": "wrong-answer", "decision": "applied", "summary": "<one line, no personal data>", "pattern": "<optional slug>"}
 {"run": "...", "reviewer": "...", "target": "...", "kind": "prose", "decision": "rejected", "reason": "<why>", "summary": "..."}
 JSONL
 ```
 
 Set `pattern` only for a fault a script or spec could prevent, such as `preprint-missing`. When the user settles a
-listed finding, record it with `findings.py decide <id> applied|rejected --reason "..."`.
+listed finding, record it with `uv run librarian courses review findings decide <id> applied|rejected --reason "..."`.
 
 ## Step 5 — Report
 
 Keep a table per item: verdict, findings applied, listed, rejected, and citations or checks verified and unverifiable.
 Put anything a source contradicts, and any wrong drill answer, first. Re-run the Step 1 checks if you edited, and
 `make link-check`. Then show `make review-findings`, and for each promotion candidate propose a script check or spec
-change. Don't build it unless the user agrees. Once it exists, run `findings.py promote <pattern> --to <where>`.
+change. Don't build it unless the user agrees. Once it exists, run `uv run librarian courses review findings promote <pattern> --to <where>`.
 
-Stage only the files you changed, by explicit path, plus `scripts/review/findings.jsonl`. Show
+Stage only the files you changed, by explicit path. The findings log (`logs/review/findings.jsonl`) is gitignored: never stage it. Show
 `git diff --staged --stat` and suggest a commit message. Do not commit.
 
 ## Testing a reviewer
 
-Each reviewer with a case in `scripts/review/evals/cases.json` has fixtures with planted faults and a clean control.
+Each reviewer with a case in a cases file (`logs/review/evals/cases.json` by default, or `--cases`; the fixtures are kept in `../learn-ai-engineering`, not copied here) has fixtures with planted faults and a clean control.
 Run this after changing a reviewer's definition, not on a schedule.
 
 1. For each case for `<reviewer>`, dispatch the reviewer with only the fixture path. Don't mention that it is a test.
 2. Save each report to `.claude/docs/evals/<case id>.txt`, which is gitignored.
-3. Run `python3 scripts/review/score_eval.py <reviewer> --reports .claude/docs/evals --record`.
+3. Run `uv run librarian courses review score-eval <reviewer> --cases <cases.json> --reports .claude/docs/evals --record`.
 
 Report recall on planted faults and any findings on the clean control. A lower score than the last row in
-`scripts/review/evals/results.jsonl` is a regression: say so rather than editing the fixture to pass.
+`logs/review/evals/results.jsonl` is a regression: say so rather than editing the fixture to pass.

@@ -11,6 +11,8 @@ torch, fastapi) load only for the verbs that need them.
     librarian ingest notion|linear|pdf                 pull a source into data/raw/
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
     librarian courses import                           sync coursework into data/courses/
+    librarian courses check chapters|curriculum|links|drills|manifest|crosswalk|smoke-labs
+    librarian courses review findings|signals|score-eval
     librarian mcp [--rebuild]                          the wiki MCP server (stdio)
     librarian api [--port N] [--reload]                the FastAPI backend (uvicorn)
 """
@@ -78,13 +80,54 @@ GROUPS: dict[str, dict[str, Verb]] = {
         "import": Verb(
             "librarian.courses.importer:main", help="sync coursework into data/courses/"
         ),
+        "check": Verb("librarian.cli:_run_check", help="chapters|curriculum|links|drills|..."),
+        "review": Verb("librarian.cli:_run_review", help="findings|signals|score-eval"),
     },
+}
+
+# `courses check <name>` and `courses review <name>`: a second level of the same thin dispatch.
+_CHECKS: dict[str, str] = {
+    "chapters": "librarian.courses.checks.check_chapters:main",
+    "curriculum": "librarian.courses.checks.curriculum_map:main",
+    "links": "librarian.courses.checks.link_check:main",
+    "drills": "librarian.courses.checks.check_drills:main",
+    "manifest": "librarian.courses.checks.check_manifest:main",
+    "crosswalk": "librarian.courses.checks.crosswalk:main",
+    "smoke-labs": "librarian.courses.checks.smoke_labs:main",
+}
+_REVIEWS: dict[str, str] = {
+    "findings": "librarian.courses.review.findings:main",
+    "signals": "librarian.courses.review.signals:main",
+    "score-eval": "librarian.courses.review.score_eval:main",
 }
 
 
 def _resolve(target: str) -> Callable[[list[str]], Any]:
     module, _, func = target.partition(":")
     return getattr(importlib.import_module(module), func)
+
+
+def _run_nested(group: str, table: dict[str, str], argv: list[str]) -> int:
+    if not argv or argv[0] in ("-h", "--help"):
+        print(f"usage: librarian courses {group} <{'|'.join(table)}> [args...]")
+        return 0
+    target = table.get(argv[0])
+    if target is None:
+        print(
+            f"librarian courses {group}: unknown name {argv[0]!r} (one of: {', '.join(table)})",
+            file=sys.stderr,
+        )
+        return 2
+    result = _resolve(target)(argv[1:])
+    return result if isinstance(result, int) else 0
+
+
+def _run_check(argv: list[str]) -> int:
+    return _run_nested("check", _CHECKS, argv)
+
+
+def _run_review(argv: list[str]) -> int:
+    return _run_nested("review", _REVIEWS, argv)
 
 
 def _run_mcp(argv: list[str]) -> int:

@@ -81,6 +81,9 @@ logs/*.log
 logs/*.jsonl
 logs/*.err
 logs/*.bak-*
+# Course reviewer working data (findings log, eval results) and the signals report: personal history
+logs/review/
+logs/signals/
 
 # Local caches (lesson embedding vectors for course concept linking)
 .cache/

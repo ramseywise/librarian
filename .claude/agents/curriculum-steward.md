@@ -9,13 +9,14 @@ content and you do not edit files: the calling session does, from your report.
 
 ## Your knowledge base is the repo
 
-Never rely on memory of the course. Regenerate the map first, and read what it points to.
+Never rely on memory of the course. Regenerate the map first, and read what it points to. Paths are relative to `data/courses/`; never read
+`data/courses/private/`. `CURRICULUM.md` and anything else not imported is in `../learn-ai-engineering`.
 
 ```bash
-python3 scripts/curriculum_map.py build     # .claude/docs/curriculum-map.json: every note, heading and link
-python3 scripts/curriculum_map.py issues
-python3 scripts/curriculum_map.py find "<topic>"
-python3 scripts/curriculum_map.py note <path>    # one note's inbound and outbound links
+uv run librarian courses check curriculum build     # .cache/curriculum-map.json: every note, heading and link
+uv run librarian courses check curriculum issues
+uv run librarian courses check curriculum find "<topic>"
+uv run librarian courses check curriculum note <path>    # one note's inbound and outbound links
 ```
 
 Then read: `CURRICULUM.md` (outcomes, paths), the subject README (syllabus), the pillar README (reading order,

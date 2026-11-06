@@ -1,6 +1,6 @@
 ---
 name: pillar
-description: "Bring one pillar (<area>/NN-* in ai-engineering, generative-ai, data-analytics, data-science or data-engineering) to the standard layout and definition of done in .claude/skills/pillar/references/pillar-layout.md: README with reading order, notes/ with frontmatter, references.md, sources/ with flat images/, vendored course snapshots folded into notes and listed for removal. Usage: /pillar generative-ai/02-rag-retrieval, or /pillar new <name> to scaffold a new pillar. Run from the learn-ai-engineering repo."
+description: "Bring one pillar (<area>/NN-* in ai-engineering, generative-ai, data-analytics, data-science or data-engineering) to the standard layout and definition of done in .claude/skills/pillar/references/pillar-layout.md: README with reading order, notes/ with frontmatter, references.md, sources/ with flat images/, vendored course snapshots folded into notes and listed for removal. Usage: /pillar generative-ai/02-rag-retrieval, or /pillar new <name> to scaffold a new pillar. Run from the librarian repo."
 ---
 
 You are normalising one pillar so it looks and works like the others. Read
@@ -9,7 +9,11 @@ You are normalising one pillar so it looks and works like the others. Read
 `ai-engineering/02-context-engineering/` and `ai-engineering/05-graph-engineering/`.
 
 Check each note with `make chapter-check PILLAR=<pillar>` and list what falls short of the chapter standard. Run
-`python3 scripts/curriculum_map.py issues --pillar <pillar>` for what falls short in how the notes connect, and fix it through `/curriculum fix <pillar>`.
+`uv run librarian courses check curriculum issues --pillar <pillar>` for what falls short in how the notes connect, and fix it through `/curriculum fix <pillar>`.
+
+Checks run here over `data/courses/` (`make chapter-check`, `make link-check`, `librarian courses check curriculum`);
+the ledger, PDFs and `scripts/papers/` stay in `../learn-ai-engineering`, and a new note is authored there and
+brought in with `make import-courses` (an edited imported file becomes a local one the importer never overwrites).
 
 The pillar's content is the point. Do not rewrite notes that already work. Move, rename,
 add frontmatter, write the missing README and references.md, and fold vendored material
@@ -21,7 +25,7 @@ in. Content changes beyond that are for `/papers` and `/chapter`.
 
 `$ARGUMENTS` is a pillar path (`generative-ai/02-rag-retrieval`, `data-science/03-nlp`, or `ai-engineering/04`). Raw course folders go in the pillar's `practice/`. The four subject areas keep one shared `sources/` at the subject root (see `pillar-layout.md`).
 `new <name>` scaffolds a new pillar instead (skip to Step 4, then add it to `HOMES` in
-`scripts/papers/potw.py`, to the parent subject README (its syllabus) and to the structure decisions in `pillar-layout.md`, with the reason).
+`../learn-ai-engineering/scripts/papers/potw.py`, to the parent subject README (its syllabus) and to the structure decisions in `pillar-layout.md`, with the reason).
 
 List everything in the pillar:
 
@@ -79,7 +83,7 @@ For each snapshot the user approves:
 
 ```bash
 make link-check
-python3 scripts/papers/potw.py status --list queued | grep '"pillar": "<home key>"' | wc -l
+(cd ../learn-ai-engineering && python3 scripts/papers/potw.py status --list queued) | grep '"pillar": "<home key>"' | wc -l
 ```
 
 The second command shows how much reading is waiting for this pillar, which goes in the report.

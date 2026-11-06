@@ -12,7 +12,7 @@ Also compare the frontmatter `sources:` with the body, both ways.
 
 ## For each citation
 
-1. **Locate it.** Find the row in `scripts/papers/ledger.jsonl` by arXiv id or title. A row with `local_pdf`
+1. **Locate it.** Find the row in `../learn-ai-engineering/scripts/papers/ledger.jsonl` (the ledger and PDFs live in the sibling repo, read only) by arXiv id or title. A row with `local_pdf`
    gives you the text:
    ```bash
    uv run -q --with pypdf python -c "import sys,re,pypdf; t='\n'.join(p.extract_text() or '' for p in pypdf.PdfReader(sys.argv[1]).pages); [print(m.start(), t[max(0,m.start()-200):m.end()+200].replace('\n',' ')) for m in re.finditer(sys.argv[2], t)]" <pdf> '<number or phrase>'

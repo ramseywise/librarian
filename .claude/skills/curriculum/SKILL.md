@@ -1,12 +1,15 @@
 ---
 name: curriculum
-description: "Keep the course one coherent whole as it grows. Shows the curriculum map and its integration problems, decides where a new topic belongs, wires a new or moved note into READMEs, Next links, decks and syllabi, and audits a subject for overlap and order. Usage: /curriculum (status), /curriculum place \"vector databases\", /curriculum integrate <note path>, /curriculum audit <subject or pillar>, /curriculum fix <pillar>. Run from the learn-ai-engineering repo."
+description: "Keep the course one coherent whole as it grows. Shows the curriculum map and its integration problems, decides where a new topic belongs, wires a new or moved note into READMEs, Next links, decks and syllabi, and audits a subject for overlap and order. Usage: /curriculum (status), /curriculum place \"vector databases\", /curriculum integrate <note path>, /curriculum audit <subject or pillar>, /curriculum fix <pillar>. Run from the librarian repo."
 ---
 
-You keep the curriculum integrated. Every new note makes the course bigger, and only integration makes it better:
+You keep the curriculum integrated. Paths are relative to `data/courses/` in this repo. Most lessons there are
+importer-generated (an `imported_hash:` line): editing one makes it a local file the importer will never overwrite, so
+author notes in `../learn-ai-engineering` and run `make import-courses`, unless the user wants a local edit.
+PDF, paper and ledger steps stay in that sibling. Every new note makes the course bigger, and only integration makes it better:
 a chapter nobody links to, or one that repeats another under a new name, is a net cost.
 
-The map (`scripts/curriculum_map.py`) answers structure, and the `curriculum-steward` agent answers what takes
+The map (`librarian courses check curriculum`, over `data/courses/`) answers structure, and the `curriculum-steward` agent answers what takes
 reading. You make the edits, because the agent never does. Read
 `.claude/skills/pillar/references/pillar-layout.md` first: it says which file does which job.
 
@@ -41,17 +44,17 @@ Run this after any new or moved note. `/write-chapter` calls it. Make these edit
    subject README has no chapter lists, so do not add one.
 6. **Deck.** The map reports `deck_gap`. Revising a deck is a `/slides` run: name it in the report as the next step,
    unless the user asked for it.
-7. **Practice.** If `programming/drills/` or `practice/` has drills on the topic, link them, and run `make crosswalk` if units changed.
+7. **Practice.** If `programming/drills/` or `interviewing/` has drills on the topic, link them, and run `make crosswalk` if units changed.
 
 ```bash
-python3 scripts/curriculum_map.py issues --pillar <pillar>
+uv run librarian courses check curriculum issues --pillar <pillar>
 make chapter-check PILLAR=<pillar>
 make link-check
 ```
 
 ## Audit: `audit <subject or pillar>`
 
-Run `python3 scripts/curriculum_map.py issues --pillar <scope>`, then dispatch `curriculum-steward`. For a whole
+Run `uv run librarian courses check curriculum issues --pillar <scope>`, then dispatch `curriculum-steward`. For a whole
 subject, dispatch one per pillar, then one across the subject's boundaries, at most 3 at a time. Report findings
 ranked by what a learner would suffer. Change nothing. Say how far each reader read: an audit that read only headings
 says so.

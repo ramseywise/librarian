@@ -1,6 +1,6 @@
 ---
 name: weekly
-description: "Weekly health report for the course: runs the tests, the reviewer findings log, the learner and reviewer signals, the readings status, pending decisions and stale decks, then reports what needs the user. Changes no content and commits nothing. Usage: /weekly. Run from the learn-ai-engineering repo."
+description: "Weekly health report for the course: runs the tests, the reviewer findings log, the learner and reviewer signals, the readings status, pending decisions and stale decks, then reports what needs the user. Changes no content and commits nothing. Usage: /weekly. Run from the librarian repo."
 ---
 
 You are preparing the user's weekly look at the course. You run checks and report. You change no notes, decks, drills,
@@ -14,10 +14,10 @@ Personal history (drill logs, flashcard results, signal reports) stays out of tr
 ## Step 1 — Tests
 
 ```bash
-make test
+uv run pytest -q
 ```
 
-Record each failing target and its first error. Don't fix anything. `make test` runs them all before it fails, so one
+Record each failing test and its first error. Don't fix anything. pytest runs them all before it fails, so one
 failure doesn't hide the rest.
 
 ## Step 2 — Reviewer findings
@@ -40,6 +40,7 @@ Summarize what changed since last week, and turn it into proposals for the user.
 ## Step 4 — Readings
 
 ```bash
+cd ../learn-ai-engineering   # the ledger, potw.py and the nightly log live in the sibling
 python3 scripts/papers/potw.py status
 python3 scripts/papers/check_ledger.py
 python3 scripts/papers/check_ledger.py --list no-references
@@ -48,20 +49,20 @@ tail -60 .claude/logs/papers-nightly.log
 
 Report the backlog by status, the ledger check's report-only counts, and how the last nightly run ended: stop hour,
 usage limit, or nothing left. The log is local. Quote only what the user needs. Also report notes changed by a nightly
-run and not yet reviewed, from `git status --short`.
+run and not yet reviewed, from `git status --short` in the sibling.
 
-`make ledger-report` rewrites a tracked file, so leave it to the user unless they ask.
+In the sibling, `make ledger-report` rewrites a tracked file, so leave it to the user unless they ask.
 
 ## Step 5 — Stale decks
 
-Decks are built in the librarian repo. Run this there:
+Decks are built in this repo:
 
 ```bash
 make deck-check
 ```
 
 A stale deck no longer matches its `deck.yaml`. To find decks whose notes moved on, compare the last commit of a
-pillar's `notes/` with that of its `slides/deck.yaml`, also in the librarian repo:
+pillar's `notes/` with that of its `slides/deck.yaml`, in this repo:
 
 ```bash
 git log -1 --format=%cs -- data/courses/<pillar>/notes

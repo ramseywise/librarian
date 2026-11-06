@@ -186,6 +186,25 @@ class Settings(BaseSettings):
         return self.cache_dir / "curriculum.json"
 
     @property
+    def curriculum_map_file(self) -> Path:
+        """Output of `librarian courses check curriculum` (gitignored with .cache/)."""
+        return self.cache_dir / "curriculum-map.json"
+
+    @property
+    def review_dir(self) -> Path:
+        """Working data of the course reviewers: findings log, eval results. Gitignored (logs/)."""
+        return self.logs_dir / "review"
+
+    @property
+    def review_findings_log(self) -> Path:
+        return self.review_dir / "findings.jsonl"
+
+    @property
+    def signals_dir(self) -> Path:
+        """Where `librarian courses review signals --write` puts its report. Gitignored (logs/)."""
+        return self.logs_dir / "signals"
+
+    @property
     def sisyphus_dir(self) -> Path:
         return self.override_sisyphus_dir or self.root.parent / "sisyphus"
 

@@ -16,7 +16,7 @@ standard and not against yours.
 
 1. **Lost reader.** A term that neither the prerequisites nor this note define. A step that assumes something
    this reader has not been taught. An earlier note may have taught it: check with
-   `python3 scripts/curriculum_map.py find "<term>"`, and suggest a link in place of a definition.
+   `uv run librarian courses check curriculum find "<term>"`, and suggest a link in place of a definition.
 2. **Evidence.** A number with no setup. A strong claim with no support.
 3. **Structure the checker cannot see.** A hook that does not state the problem and what goes wrong without
    it. A concept with no worked example. Pitfalls with no symptom. An exercise whose answer does not follow

@@ -1,12 +1,16 @@
 ---
 name: write-chapter
-description: "Write one new chapter from scratch to the chapter standard: place it in the curriculum, research it from real sources, draft it, run an independent review, test its code and wire it into the course. Never cites what was not read. Usage: /write-chapter <pillar> <NN-slug> [PDF paths or a brief], or /write-chapter \"<topic>\" to place it first. Run from the learn-ai-engineering repo."
+description: "Write one new chapter from scratch to the chapter standard: place it in the curriculum, research it from real sources, draft it, run an independent review, test its code and wire it into the course. Never cites what was not read. Usage: /write-chapter <pillar> <NN-slug> [PDF paths or a brief], or /write-chapter \"<topic>\" to place it first. Run from the librarian repo."
 ---
 
 You are writing one chapter of the course. Agents read and review; you hold the outline, the argument and every
 sentence. Read `.claude/skills/pillar/references/pillar-layout.md` ("notes/" and "notes/: the chapter") and
 `.claude/skills/pillar/references/audience-profiles.md`. Reading sources into a note that already exists is `/chapter`
 or `/papers`, not this skill.
+
+Checks run here over `data/courses/` (`make chapter-check`, `make link-check`, `librarian courses check curriculum`);
+the ledger, PDFs and `scripts/papers/` stay in `../learn-ai-engineering`, and a new note is authored there and
+brought in with `make import-courses` (an edited imported file becomes a local one the importer never overwrites).
 
 ## Step 1 — Place it
 
@@ -31,7 +35,7 @@ agents at a time:
 - `web-researcher`, one per open question, for what the local sources do not settle.
 
 **Everything cited must be read.** A source you know of but no agent has read is not a citation. Add it to the report
-as a candidate instead. Add new readings to the ledger with `scripts/papers/discover.py curated` rather than citing them
+as a candidate instead. Add new readings to the ledger with `../learn-ai-engineering/scripts/papers/discover.py curated` (run it in that repo) rather than citing them
 unread. If evidence on a concept is thin, say so in the chapter and in the report, and set `confidence` to match.
 
 ## Step 3 — Draft
@@ -56,11 +60,11 @@ Run `/curriculum integrate <note path>`, and add the `references.md` rows. Then:
 
 ```bash
 make chapter-check PILLAR=<note path>
-python3 scripts/curriculum_map.py issues --pillar <pillar>
+uv run librarian courses check curriculum issues --pillar <pillar>
 make link-check
 ```
 
-Then mark any ledger readings you folded in, with `potw.py mark integrated`, if their rows map to this chapter.
+Then mark any ledger readings you folded in, with `potw.py mark integrated` (in `../learn-ai-engineering`), if their rows map to this chapter.
 
 ## Step 6 — Report and stage
 
