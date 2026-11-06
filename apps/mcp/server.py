@@ -48,6 +48,7 @@ from librarian.wiki.common import (
     ANY_TYPED_LINK_RE,
     CANONICAL_LINK_TYPES,
     WIKILINK_RE,
+    fm,
     slugify,
     text_aliases,
 )
@@ -647,7 +648,7 @@ def _parse_frontmatter(text: str) -> dict:
     otherwise and would leak into the DuckDB insert).
     """
     try:
-        meta = dict(frontmatter.loads(text).metadata)
+        meta = dict(fm(frontmatter.loads(text)))
     except Exception:
         return {}
     tags = meta.get("tags") or []

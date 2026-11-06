@@ -11,6 +11,7 @@ from librarian.wiki.common import (
     CANONICAL_LINK_TYPES,
     TYPED_LINK_RE,
     WIKILINK_RE,
+    fm,
     page_aliases,
     slugify,
 )
@@ -105,9 +106,9 @@ def parse_wiki_uncached() -> dict:
         except yaml.YAMLError as e:
             log.error("wiki_page_skipped", page=md_file.name, error=str(e).splitlines()[0])
             continue
-        title = post.get("title") or md_file.stem
+        title = fm(post).get("title") or md_file.stem
         page_id = md_file.stem
-        tags = post.get("tags") or []
+        tags = fm(post).get("tags") or []
         if isinstance(tags, str):
             tags = [tags]
         # Retired pages stay on disk so inbound links resolve, but aren't part of the map.
@@ -131,8 +132,8 @@ def parse_wiki_uncached() -> dict:
                     "tags": tags,
                     "domain": domain,
                     "typeTag": type_tag,
-                    "summary": post.get("summary") or "",
-                    "updated": str(post.get("updated") or ""),
+                    "summary": fm(post).get("summary") or "",
+                    "updated": str(fm(post).get("updated") or ""),
                     "path": str(md_file.relative_to(WIKI_DIR)),
                     "dimmed": False,
                 },
@@ -160,7 +161,7 @@ def parse_wiki_uncached() -> dict:
             raw = match.group(1).strip()
             target_slug = slugify(raw)
             target_id = target_slug if target_slug in node_ids else aliases_to_id.get(target_slug)
-            if target_id not in node_ids or target_id == source_id:
+            if target_id is None or target_id not in node_ids or target_id == source_id:
                 continue
             key = (source_id, target_id)
             if key in seen_edges:

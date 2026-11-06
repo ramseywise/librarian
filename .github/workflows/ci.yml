@@ -27,6 +27,20 @@ jobs:
       # tests stay blocking.
       test-command: "uv run pytest tests/ --ignore=tests/e2e -q"
 
+  architecture:
+    # Import contracts and the type check. The shared python-ci workflow only lints and tests.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      # All extras, not just the dev group: pyright resolves every import, and
+      # sentence-transformers, umap, pptx and replicate live only in extras.
+      - run: uv sync --group dev --all-extras
+      - run: uv run lint-imports
+      - run: uv run pyright
+
   frontend:
     # The React graph/courses/chat UI. Separate job: the shared python-ci workflow
     # knows nothing about Node, and the two suites have no shared setup.

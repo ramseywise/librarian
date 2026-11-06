@@ -15,9 +15,10 @@ from bisect import bisect_left, bisect_right
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import structlog
+from anthropic.types import TextBlock
 
 log = structlog.get_logger(__name__)
 
@@ -1151,7 +1152,7 @@ def call_claude(api_key: str, prompt: str, model: str = "claude-sonnet-4-6") -> 
             "Missing sections are a symptom of truncation here, not of the model "
             "ignoring the contract — raise _MAX_REPORT_TOKENS rather than retrying."
         )
-    return message.content[0].text if message.content else ""
+    return cast("TextBlock", message.content[0]).text if message.content else ""
 
 
 class ReportTruncatedError(RuntimeError):

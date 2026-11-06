@@ -206,7 +206,7 @@ def _line(result: Triage) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     commands = parser.add_subparsers(dest="command", required=True)
     command = commands.add_parser("triage", help="classify raw files before compiling them")
     command.add_argument("paths", nargs="+", type=Path)

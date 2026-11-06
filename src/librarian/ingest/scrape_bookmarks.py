@@ -85,8 +85,8 @@ def _extract_content(html: str) -> tuple[str, str]:
     title = ""
     if soup.title and soup.title.string:
         title = soup.title.string.strip()
-    elif soup.find("h1"):
-        title = soup.find("h1").get_text(strip=True)
+    elif h1 := soup.find("h1"):
+        title = h1.get_text(strip=True)
 
     main = (
         soup.find("main")

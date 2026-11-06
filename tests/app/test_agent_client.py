@@ -2,7 +2,20 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+
 import pytest
+
+from librarian.config import get_settings
+
+
+@pytest.fixture(autouse=True)
+def _fresh_settings(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Rebuild the cached Settings after each env change, and again once it is undone."""
+    get_settings.cache_clear()
+    yield
+    monkeypatch.undo()
+    get_settings.cache_clear()
 
 
 def test_missing_anthropic_api_key_raises_runtime_error(
@@ -13,7 +26,8 @@ def test_missing_anthropic_api_key_raises_runtime_error(
 
     # Reset the cached client so the factory runs again
     monkeypatch.setattr(agent_module, "_client", None)
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    # An empty env value beats the repo's .env file, so a developer's real key cannot leak in.
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
 
     with pytest.raises(RuntimeError, match="ANTHROPIC_API_KEY"):
         agent_module._get_client()

@@ -29,8 +29,8 @@ import structlog
 from dotenv import load_dotenv
 
 from librarian.config import get_settings
-from librarian.courses.importer import _git_ignored, _matches_ignored
 from librarian.ingest.base import ScraperBase
+from librarian.ingest.gitignore import git_ignored, matches_ignored
 from librarian.ingest.scrape_claude_docs import SKIP_PROJECTS, WORKSPACE_DIR
 
 load_dotenv()
@@ -133,7 +133,7 @@ def scrape_repo(
     written = skipped = 0
 
     # None (not a git checkout) can't tell published from private: take nothing from practice/.
-    practice_ignored = _git_ignored(repo_path, repo_path / "practice")
+    practice_ignored = git_ignored(repo_path, repo_path / "practice")
 
     patterns = EXTRACT_GLOBS
     if not _covered_by_claude_docs(repo_path):
@@ -147,7 +147,7 @@ def scrape_repo(
             # Build output filename: flatten path, preserve uniqueness
             rel = src.relative_to(repo_path)
             if rel.parts[0] == "practice" and (
-                practice_ignored is None or _matches_ignored(str(rel), practice_ignored)
+                practice_ignored is None or matches_ignored(str(rel), practice_ignored)
             ):
                 continue
             flat_name = str(rel).replace("/", "--").replace("\\", "--")

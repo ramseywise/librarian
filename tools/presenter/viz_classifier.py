@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
+import anthropic
 import yaml
+from anthropic.types import TextBlock
 
 from tools.presenter._client import create_client, parse_json_response
 from tools.presenter.models import ImageConcept, SlideContent, VizPrompt
@@ -49,7 +52,7 @@ def _load_library() -> dict:
 
 
 def _generate_scene_description(
-    client: object,
+    client: anthropic.Anthropic,
     model: str,
     slide_context: str,
     deck_style_context: str,
@@ -64,11 +67,13 @@ def _generate_scene_description(
         messages=[{"role": "user", "content": user_msg}],
     )
 
-    return parse_json_response(client, response.content[0].text, model, SCENE_SYSTEM)
+    return parse_json_response(
+        client, cast("TextBlock", response.content[0]).text, model, SCENE_SYSTEM
+    )
 
 
 def _translate_to_image_prompt(
-    client: object,
+    client: anthropic.Anthropic,
     model: str,
     scene: dict,
     template: str,
@@ -104,7 +109,9 @@ def _translate_to_image_prompt(
         messages=[{"role": "user", "content": user_msg}],
     )
 
-    filled_vars = parse_json_response(client, response.content[0].text, model, PROMPT_SYSTEM)
+    filled_vars = parse_json_response(
+        client, cast("TextBlock", response.content[0]).text, model, PROMPT_SYSTEM
+    )
     filled = template.format(**{k: filled_vars.get(k, k) for k in variables})
     return f"{filled}, {style}"
 
@@ -193,7 +200,9 @@ def propose_image_concepts(
 
     concepts = [
         ImageConcept(**item)
-        for item in parse_json_response(client, response.content[0].text, model, system)
+        for item in parse_json_response(
+            client, cast("TextBlock", response.content[0]).text, model, system
+        )
     ]
 
     # Fill prompts for each concept using two-pass

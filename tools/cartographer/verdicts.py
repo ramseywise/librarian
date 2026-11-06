@@ -127,7 +127,7 @@ def parse_metric(metric: str) -> list[MetricClause]:
         is_percent = bool(thr and thr.group("pct"))
         if thr and thr.group("denom"):
             # "12/18" form -- normalise to a percentage threshold.
-            value = round(100 * value / float(thr.group("denom")), 2)
+            value = round(100 * float(thr.group("value")) / float(thr.group("denom")), 2)
             is_percent = True
         clauses.append(
             MetricClause(
@@ -163,7 +163,7 @@ def _bash_antipatterns_p50(rows: list[dict[str, Any]]) -> float | None:
 
 
 def _bash_antipatterns_total(rows: list[dict[str, Any]]) -> float | None:
-    values = [r.get("bash_antipatterns") for r in rows if r.get("bash_antipatterns") is not None]
+    values = [v for r in rows if (v := r.get("bash_antipatterns")) is not None]
     if not values:
         return None
     return float(sum(values))

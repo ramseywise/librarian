@@ -40,7 +40,7 @@ from librarian.ingest.sensitive import (
     scan_text,
     terms_pattern,
 )
-from librarian.wiki.common import TYPED_LINK_RE, WIKILINK_RE, page_aliases, slugify
+from librarian.wiki.common import TYPED_LINK_RE, WIKILINK_RE, fm, page_aliases, slugify
 
 REPO_ROOT = get_settings().root
 WIKI_DIR = get_settings().wiki_dir
@@ -147,10 +147,10 @@ def _load_page(path: Path, wiki_dir: Path) -> Page:
         title = match.group(1).strip().strip("\"'") if match else path.stem
         body = _FM_BLOCK_RE.sub("", text, count=1)
         return Page(path, rel, path.stem, title, [], None, body, parsed=False)
-    tags = post.get("tags") or []
+    tags = fm(post).get("tags") or []
     tags = [tags] if isinstance(tags, str) else [str(t) for t in tags]
-    title = str(post.get("title") or path.stem)
-    updated = _to_date(post.get("updated"))
+    title = str(fm(post).get("title") or path.stem)
+    updated = _to_date(fm(post).get("updated"))
     aliases = tuple(page_aliases(post.metadata))
     return Page(path, rel, path.stem, title, tags, updated, post.content, True, aliases)
 
@@ -736,7 +736,7 @@ def _course_gaps(
     withheld: set[str] = set()
     for lesson_id in cat.lessons:
         post = frontmatter.load(courses_dir / f"{lesson_id}.md")
-        targets = [str(t) for t in post.get("wiki") or []]
+        targets = [str(t) for t in fm(post).get("wiki") or []]
         # Code holds things like [[1, 2]]: not links.
         prose = _INLINE_CODE_RE.sub("", courses._prose(post.content))
         targets += [m.group(1) for m in WIKILINK_RE.finditer(prose)]

@@ -336,7 +336,7 @@ def render(plan: Plan, applied: bool, inbound: tuple[int, int] | None = None) ->
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("old", help="the page's current file stem or title")
     parser.add_argument("new", help="the new title, Title Case; the file name is made from it")
     parser.add_argument("--apply", action="store_true", help="write the changes")

@@ -1756,7 +1756,7 @@ def render_review_card(findings: list[dict]) -> str:
         if repo_rows:
             source_tag = ""
             # Consume `source` field (F8) when present on any finding in this repo
-            sources = {f.get("source") for f in repo_findings if f.get("source")}
+            sources = {f["source"] for f in repo_findings if f.get("source")}
             if sources:
                 source_tag = (
                     f' <span style="font-size:10px;color:var(--text-3)">'

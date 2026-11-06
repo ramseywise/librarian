@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+from typing import cast
+
+import anthropic
+from anthropic.types import TextBlock
+
 from tools.presenter._client import create_client, parse_json_response
 from tools.presenter.models import DeckIntake, DeckOutline, SlideContent, SlideOutline
 
@@ -45,7 +50,7 @@ def generate_slide_content(
 
 
 def _generate_one_slide(
-    client: object,
+    client: anthropic.Anthropic,
     slide: SlideOutline,
     deck_context: str,
     model: str,
@@ -71,7 +76,9 @@ def _generate_one_slide(
         messages=[{"role": "user", "content": user_msg}],
     )
 
-    data = parse_json_response(client, response.content[0].text, model, SLIDE_SYSTEM)
+    data = parse_json_response(
+        client, cast("TextBlock", response.content[0]).text, model, SLIDE_SYSTEM
+    )
     return SlideContent(
         slide_number=slide.number,
         slide_type=slide.type,

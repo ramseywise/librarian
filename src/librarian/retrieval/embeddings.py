@@ -84,9 +84,10 @@ def _open_cache() -> duckdb.DuckDBPyConnection:
     if "model_name" not in cols:
         con.execute("ALTER TABLE embeddings ADD COLUMN model_name TEXT DEFAULT ''")
     # Invalidate cache if model changed
-    stale = con.execute(
+    row = con.execute(
         "SELECT COUNT(*) FROM embeddings WHERE model_name != ?", [MODEL_NAME]
-    ).fetchone()[0]
+    ).fetchone()
+    stale = row[0] if row else 0
     if stale > 0:
         con.execute("DELETE FROM embeddings WHERE model_name != ?", [MODEL_NAME])
     return con

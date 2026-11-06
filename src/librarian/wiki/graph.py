@@ -276,7 +276,7 @@ def render(report: GraphReport) -> str:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("--json", action="store_true", help="print the report as JSON")
     parser.add_argument("--wiki-dir", type=Path, default=WIKI_DIR)
     args = parser.parse_args(argv)

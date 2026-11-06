@@ -10,10 +10,11 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any
+from typing import Any, cast
 
 import anthropic
 import structlog
+from anthropic.types import TextBlock
 
 log = structlog.get_logger(__name__)
 
@@ -69,7 +70,7 @@ def parse_json_response(
             }
         ],
     )
-    repaired = repair.content[0].text if repair.content else ""
+    repaired = cast("TextBlock", repair.content[0]).text if repair.content else ""
     try:
         return json.loads(_strip_fences(repaired))
     except json.JSONDecodeError as exc:

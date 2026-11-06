@@ -58,7 +58,7 @@ def _timestamp(raw: object) -> datetime | None:
     ts = ts if ts.tzinfo else ts.replace(tzinfo=UTC)
     try:
         # A date at the end of the calendar has no local day, or no due date after it.
-        ts.astimezone().date() + timedelta(days=max(BOX_DAYS))
+        _ = ts.astimezone().date() + timedelta(days=max(BOX_DAYS))
     except (OverflowError, OSError):
         return None
     return ts

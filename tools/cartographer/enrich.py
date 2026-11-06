@@ -13,10 +13,11 @@ import contextlib
 import json
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import frontmatter
 import structlog
+from anthropic.types import TextBlock
 from dotenv import load_dotenv
 
 from librarian.config import get_settings
@@ -206,7 +207,7 @@ def _classify_session(
             system=_CLASSIFY_SYSTEM,
             messages=[{"role": "user", "content": _CLASSIFY_PROMPT.format(**context)}],
         )
-        text = msg.content[0].text.strip() if msg.content else ""
+        text = cast("TextBlock", msg.content[0]).text.strip() if msg.content else ""
         if not text:
             return None
         if text.startswith("```"):
@@ -259,7 +260,7 @@ def _enrich_file(
                 inp = meta.get("input_tokens", 0)
                 out = meta.get("output_tokens", 0)
                 # cache_read may be in existing frontmatter (PreCompact writes it)
-                cr = post.metadata.get("cache_read_tokens", 0) or 0
+                cr = int(post.metadata.get("cache_read_tokens", 0) or 0)  # pyright: ignore[reportArgumentType]
                 cw = 0
                 model = "claude-sonnet-4-6"
 

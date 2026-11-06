@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from typing import cast
+
+from anthropic.types import TextBlock
 from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
@@ -40,7 +43,9 @@ def generate_outline(intake: DeckIntake, model: str) -> DeckOutline:
         messages=[{"role": "user", "content": user_msg}],
     )
 
-    data = parse_json_response(client, response.content[0].text, model, OUTLINE_SYSTEM)
+    data = parse_json_response(
+        client, cast("TextBlock", response.content[0]).text, model, OUTLINE_SYSTEM
+    )
     return DeckOutline(**data)
 
 
@@ -101,5 +106,7 @@ def _apply_edit(
         messages=[{"role": "user", "content": user_msg}],
     )
 
-    data = parse_json_response(client, response.content[0].text, model, OUTLINE_SYSTEM)
+    data = parse_json_response(
+        client, cast("TextBlock", response.content[0]).text, model, OUTLINE_SYSTEM
+    )
     return DeckOutline(**data)

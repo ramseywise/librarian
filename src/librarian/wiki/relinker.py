@@ -25,7 +25,7 @@ from pathlib import Path
 import frontmatter
 
 from librarian.config import get_settings
-from librarian.wiki.common import WIKILINK_RE, page_aliases, slugify
+from librarian.wiki.common import WIKILINK_RE, fm, page_aliases, slugify
 
 REPO_ROOT = get_settings().root
 WIKI_DIR = get_settings().wiki_dir
@@ -75,8 +75,8 @@ def load_pages() -> dict[str, PageInfo]:
         if "private" in md_file.relative_to(WIKI_DIR).parts:
             continue
         post = frontmatter.load(md_file)
-        title = post.get("title") or md_file.stem
-        tags = post.get("tags") or []
+        title = fm(post).get("title") or md_file.stem
+        tags = fm(post).get("tags") or []
         if isinstance(tags, str):
             tags = [tags]
         domain = md_file.parent.name
@@ -239,14 +239,14 @@ def detect_bridge_gaps(pages: dict[str, PageInfo]) -> list[tuple[str, str, int]]
                 src_domain = info.domain
                 tgt_domain = pages[target].domain
                 if src_domain != tgt_domain:
-                    pair = tuple(sorted([src_domain, tgt_domain]))
+                    pair = (min(src_domain, tgt_domain), max(src_domain, tgt_domain))
                     cross_links[pair] += 1
 
     gaps: list[tuple[str, str, int]] = []
     domains = [d for d, ps in domain_pages.items() if len(ps) >= 5]
     for i, d1 in enumerate(domains):
         for d2 in domains[i + 1 :]:
-            pair = tuple(sorted([d1, d2]))
+            pair = (min(d1, d2), max(d1, d2))
             count = cross_links.get(pair, 0)
             if count < 3:
                 gaps.append((pair[0], pair[1], count))

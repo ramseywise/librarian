@@ -192,7 +192,7 @@ def build(courses: Path = COURSES_DIR, check: bool = False) -> dict[str, int]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
     parser.add_argument("--check", action="store_true", help="exit 1 if a file would change")
     parser.add_argument("--courses", type=Path, default=COURSES_DIR)
     args = parser.parse_args()

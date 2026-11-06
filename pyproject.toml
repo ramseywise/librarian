@@ -100,6 +100,8 @@ dev = [
     # Also in the `api` extra; same reason as fastapi above.
     "networkx>=3.7",
     "scikit-learn>=1.9.1",
+    "import-linter>=2.0",
+    "pyright>=1.1.380",
 ]
 
 [tool.ruff]
@@ -123,3 +125,63 @@ ignore = ["E501", "RUF001", "RUF002", "RUF003", "N803", "N806"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.pyright]
+typeCheckingMode = "basic"
+pythonVersion = "3.12"
+venvPath = "."
+venv = ".venv"
+include = ["src", "apps", "tools"]
+exclude = ["apps/web", "**/node_modules", "**/__pycache__"]
+# Diagnostics suppressed (file still analysed for others' imports): python-pptx's stubs type
+# placeholders and fills as base classes with no `text`/`text_frame`/`_solidFill`, and lxml
+# ships no `etree` stub, so renderer.py's 11 errors are all stub gaps, not logic. Remove this
+# when the renderer moves to typed wrappers.
+ignore = ["tools/presenter/renderer.py"]
+
+[tool.importlinter]
+root_packages = ["librarian", "apps", "tools"]
+include_external_packages = false
+
+[[tool.importlinter.contracts]]
+name = "The library does not import its callers"
+type = "forbidden"
+source_modules = ["librarian"]
+forbidden_modules = ["apps", "tools"]
+
+[[tool.importlinter.contracts]]
+name = "The apps do not import tools"
+type = "forbidden"
+source_modules = ["apps"]
+forbidden_modules = ["tools"]
+
+# api -> mcp: apps/api/agent.py imports apps.mcp.server for the wiki-search tool. Phase 2 of
+# .claude/docs/plans/2026-11-06-production-refactor.md moves that logic into librarian.
+[[tool.importlinter.contracts]]
+name = "apps.api and apps.mcp are independent"
+type = "independence"
+modules = ["apps.api", "apps.mcp"]
+ignore_imports = ["apps.api.agent -> apps.mcp.server"]
+
+# Dependencies run downwards: courses -> wiki -> ingest. wiki.telemetry's course-gap report
+# imports courses.catalog/curriculum inside a function (the gap list needs the catalog); that
+# upward edge is the one known exception, recorded here instead of hidden. retrieval (embeddings) and
+# config/log_config are leaves that any layer may use; retrieval itself imports none of them.
+[[tool.importlinter.contracts]]
+name = "librarian sub-packages are layered"
+type = "layers"
+layers = [
+    "librarian.courses",
+    "librarian.wiki",
+    "librarian.ingest",
+]
+ignore_imports = [
+    "librarian.wiki.telemetry -> librarian.courses.catalog",
+    "librarian.wiki.telemetry -> librarian.courses.curriculum",
+]
+
+[[tool.importlinter.contracts]]
+name = "librarian.retrieval is a leaf"
+type = "forbidden"
+source_modules = ["librarian.retrieval"]
+forbidden_modules = ["librarian.courses", "librarian.wiki", "librarian.ingest"]

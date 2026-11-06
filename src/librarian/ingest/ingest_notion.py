@@ -123,7 +123,7 @@ class NotionScraper(ScraperBase):
             print("Usage: uv run librarian ingest notion <page-id-or-url>")
             sys.exit(1)
 
-        settings = Settings()
+        settings = Settings()  # pyright: ignore[reportCallIssue]  # values come from env aliases
         page_id = page_id_from_arg(self._page_id)
 
         log.info("fetching_notion_page", page_id=page_id)

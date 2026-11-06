@@ -104,7 +104,9 @@ class ReplicateProvider:
                 "Install it with: uv add replicate"
             ) from err
         self._replicate = _replicate
-        self._client = _replicate.Client(api_token=api_token)
+        self._client = _replicate.Client(  # pyright: ignore[reportPrivateImportUsage]
+            api_token=api_token
+        )
         self.model = model
 
     def generate_image(self, prompt: str, dest: Path, width: int, height: int) -> Path:

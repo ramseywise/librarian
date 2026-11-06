@@ -1031,7 +1031,7 @@ def raster(path: Path) -> Path:
     """python-pptx only embeds bitmaps, so render an SVG to a PNG beside the temp files."""
     if path.suffix.lower() != ".svg":
         return path
-    import resvg_py
+    import resvg_py  # pyright: ignore[reportMissingImports]  # optional; not in pyproject
 
     out = Path(tempfile.gettempdir()) / "build_deck_svg" / f"{path.stem}-{abs(hash(str(path)))}.png"
     if not out.exists() or out.stat().st_mtime < path.stat().st_mtime:
@@ -1055,7 +1055,7 @@ def shrink(path: Path, w_in: float, h_in: float, dpi: int = 220) -> Path:
     stem = f"{path.stem}-{abs(hash((str(path), target)))}"
     if img.width > target[0]:
         img = img.convert("RGBA" if img.mode in ("RGBA", "LA", "P") else "RGB").resize(
-            target, Image.LANCZOS
+            target, Image.Resampling.LANCZOS
         )
     png = out_dir / f"{stem}.png"
     img.save(png, optimize=True)
@@ -1345,7 +1345,7 @@ def build(spec_path: Path, level: str | None = None) -> Path:
             notes = sl.get("notes", "")
             if src:
                 notes = f"{notes}\n\nSource: {src}".strip()
-            s.notes_slide.notes_text_frame.text = notes
+            s.notes_slide.notes_text_frame.text = notes  # pyright: ignore[reportOptionalMemberAccess]
         if in_agenda:
             agenda_idx += 1
 
@@ -1572,11 +1572,11 @@ def render_pngs(pptx: Path, out_dir: Path, size: int = 2400) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     for old in out_dir.glob("*.png"):
         old.unlink()
-    n = len(Presentation(pptx).slides)
+    n = len(Presentation(str(pptx)).slides)
     with tempfile.TemporaryDirectory() as tmp:
         singles = []
         for i in range(n):
-            prs = Presentation(pptx)
+            prs = Presentation(str(pptx))
             ids = prs.slides._sldIdLst
             for k, sld in reversed(list(enumerate(ids))):
                 if k != i:
@@ -1587,7 +1587,7 @@ def render_pngs(pptx: Path, out_dir: Path, size: int = 2400) -> list[Path]:
                 if rel.reltype == RT.NOTES_SLIDE:
                     prs.slides[0].part.drop_rel(rId)
             p = Path(tmp) / f"slide-{i + 1:02d}.pptx"
-            prs.save(p)
+            prs.save(str(p))
             singles.append(p)
         try:
             subprocess.run(
@@ -1625,7 +1625,8 @@ def contact_sheets(pngs: list[Path], out_dir: Path) -> list[Path]:
         for k, img in enumerate(group):
             r, c = divmod(k, 2)
             sheet.paste(
-                img.resize((tw, th), Image.LANCZOS), (10 + c * (tw + 10), 15 + r * (th + 15))
+                img.resize((tw, th), Image.Resampling.LANCZOS),
+                (10 + c * (tw + 10), 15 + r * (th + 15)),
             )
         sp = out_dir / f"sheet-{sheet_i // per + 1:02d}.png"
         sheet.save(sp)
@@ -1645,7 +1646,9 @@ def write_pdf(pngs: list[Path], pdf: Path, width: int = 1600) -> Path:
     for p in pngs:
         img = Image.open(p).convert("RGB")
         if img.width > width:
-            img = img.resize((width, round(img.height * width / img.width)), Image.LANCZOS)
+            img = img.resize(
+                (width, round(img.height * width / img.width)), Image.Resampling.LANCZOS
+            )
         pages.append(img)
     # Write beside the target, then rename: a viewer with the PDF open reloads on change and
     # would otherwise read a half-written file and report it corrupt.
@@ -1663,7 +1666,7 @@ def write_pdf(pngs: list[Path], pdf: Path, width: int = 1600) -> Path:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
     ap.add_argument(
         "spec", type=Path, nargs="*", help="one deck.yaml; with --check, none means every deck"
     )
@@ -1693,7 +1696,7 @@ def main() -> None:
     if len(args.spec) != 1:
         ap.error("give exactly one deck.yaml to build")
     out = build(args.spec[0], args.level)
-    print(f"deck: {out}  ({len(Presentation(out).slides)} slides)")
+    print(f"deck: {out}  ({len(Presentation(str(out)).slides)} slides)")
     if args.preview or args.pdf:
         with tempfile.TemporaryDirectory() as tmp:
             pngs = render_pngs(out, args.preview or Path(tmp))

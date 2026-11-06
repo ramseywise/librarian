@@ -64,6 +64,8 @@ import structlog
 import yaml
 
 from librarian.config import get_settings
+from librarian.ingest.gitignore import git_ignored as _git_ignored
+from librarian.ingest.gitignore import matches_ignored as _matches_ignored
 from librarian.ingest.scrape_claude_docs import WORKSPACE_DIR
 from librarian.wiki.common import slugify
 
@@ -234,40 +236,6 @@ def _is_vendored(path: Path) -> bool:
     if path.parent.name == "practice" and path.name in PRACTICE_REFERENCE_ONLY:
         return True
     return (path / ".git").exists()
-
-
-def _git_ignored(source: Path, subject_dir: Path) -> set[str] | None:
-    """Repo-relative paths of untracked gitignored files under a subject.
-
-    An ignored directory git will not descend into (a nested repo) comes back as one entry
-    with a trailing slash, so test membership with `_matches_ignored`. None when `source` is
-    not a git checkout: there is nothing to go on, which each caller has to decide about.
-    """
-    try:
-        out = subprocess.run(
-            [
-                "git",
-                "-C",
-                str(source),
-                "ls-files",
-                "-z",
-                "-o",
-                "-i",
-                "--exclude-standard",
-                "--",
-                str(subject_dir.relative_to(source)),
-            ],
-            capture_output=True,
-            check=True,
-        ).stdout
-    except (OSError, subprocess.CalledProcessError):
-        return None
-    return {p for p in out.decode(errors="replace").split("\0") if p}
-
-
-def _matches_ignored(rel: str, ignored: set[str]) -> bool:
-    """Is repo-relative `rel` ignored, or inside an ignored directory entry?"""
-    return rel in ignored or any(p.endswith("/") and rel.startswith(p) for p in ignored)
 
 
 def _dir_has_ignored(rel: str, ignored: set[str]) -> bool:
@@ -856,7 +824,7 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
                 mod_summary = _summary_from(mod_readme)
                 heading = _title_from(mod_readme, "")
                 # A placeholder README's H1 is just the folder name; prettify beats that.
-                if heading and len(heading) < 60 and heading != mod.src_dir.name:
+                if heading and len(heading) < 60 and heading != readme.parent.name:
                     mod.title = heading
             meta: dict = {"title": mod.title, "summary": mod_summary, "order": mod.order}
             if mod.src_dir:
@@ -955,7 +923,7 @@ def _drill_meta(head: str) -> dict:
 
 
 def apply(plan: Plan, subjects: list[str], dry_run: bool) -> dict[str, int]:
-    stats = dict.fromkeys(
+    stats: dict[str, int] = dict.fromkeys(
         ("created", "updated", "unchanged", "kept_local_edit", "removed", "assets"), 0
     )
     for dest, text in plan.files.items():
@@ -1011,7 +979,7 @@ def apply(plan: Plan, subjects: list[str], dry_run: bool) -> dict[str, int]:
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").split("\n")[0])
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--subject", action="append", choices=sorted(SUBJECTS))
     parser.add_argument("--dry-run", action="store_true")

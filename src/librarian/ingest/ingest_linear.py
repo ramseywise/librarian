@@ -108,7 +108,7 @@ class LinearScraper(ScraperBase):
         self._team_key = team_key
 
     def run(self, dry_run: bool = False) -> list[Path]:
-        settings = Settings()
+        settings = Settings()  # pyright: ignore[reportCallIssue]  # values come from env aliases
         project_id = self._project_id or settings.linear_project_id
         team_key = self._team_key
 

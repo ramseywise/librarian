@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import structlog
 from lxml import etree
@@ -9,6 +10,9 @@ from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.oxml.ns import qn
 from pptx.util import Inches, Pt
+
+if TYPE_CHECKING:
+    from pptx.presentation import Presentation as PptxPresentation
 
 from tools.presenter.outline import DeckOutline
 from tools.presenter.slide_writer import SlideContent
@@ -35,7 +39,7 @@ def _slug(text: str) -> str:
 
 
 def _add_image_slide(
-    prs: Presentation,
+    prs: PptxPresentation,
     content: SlideContent,
     image_path: Path | None,
 ) -> None:
@@ -94,7 +98,7 @@ def _add_image_slide(
     log.info("renderer.slide.added", number=content.slide_number, type=content.slide_type)
 
 
-def _add_text_slide(prs: Presentation, content: SlideContent) -> None:
+def _add_text_slide(prs: PptxPresentation, content: SlideContent) -> None:
     """For data/code_demo/team slides — text-only layout."""
     try:
         layout = prs.slide_layouts[LAYOUT_CONTENT]
@@ -138,7 +142,7 @@ def _add_text_slide(prs: Presentation, content: SlideContent) -> None:
     log.info("renderer.slide.text", number=content.slide_number, type=content.slide_type)
 
 
-def _add_title_slide(prs: Presentation, title: str) -> None:
+def _add_title_slide(prs: PptxPresentation, title: str) -> None:
     layout = prs.slide_layouts[LAYOUT_TITLE]
     slide = prs.slides.add_slide(layout)
     placeholders = {ph.placeholder_format.idx: ph for ph in slide.placeholders}

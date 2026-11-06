@@ -166,9 +166,9 @@ def _parse_feed(xml_text: str) -> list[Paper]:
         )
 
         authors = [
-            (a.find("atom:name", _NS).text or "").strip()
+            (name.text or "").strip()
             for a in entry.findall("atom:author", _NS)
-            if a.find("atom:name", _NS) is not None
+            if (name := a.find("atom:name", _NS)) is not None
         ]
 
         published_elem = entry.find("atom:published", _NS)

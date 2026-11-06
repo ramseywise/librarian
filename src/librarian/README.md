@@ -87,5 +87,6 @@ The session tooling that used to live beside these (`cron`, `enrich`, `migrate`)
 - Manifest format (JSON lines, one entry per file) is a contract — the `path` and `hash`
   keys are relied upon by wiki compilation skills.
 - Wiki compilation stays in Claude Code skills; this package is ETL and read-side logic only.
-- `courses.importer` imports `ingest.scrape_claude_docs`, and `ingest.scrape_repos` imports
-  `courses.importer`: a known two-way dependency between the two sub-packages.
+- `courses` imports `ingest`, never the reverse. The git-ignore helpers both sides need live in
+  `ingest/gitignore.py` (they used to sit in `courses/importer.py`, which made `ingest.scrape_repos`
+  import `courses`). `import-linter` enforces the sub-package layering; see `pyproject.toml`.

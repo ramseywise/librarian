@@ -100,7 +100,7 @@ def compute_umap_positions(n_neighbors: int = 10, min_dist: float = 0.3) -> dict
         random_state=42,
         low_memory=False,
     )
-    coords: np.ndarray = reducer.fit_transform(vecs)
+    coords: np.ndarray = np.asarray(reducer.fit_transform(vecs))
 
     x_min, x_max = coords[:, 0].min(), coords[:, 0].max()
     y_min, y_max = coords[:, 1].min(), coords[:, 1].max()

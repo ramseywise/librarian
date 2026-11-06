@@ -145,6 +145,14 @@ ingest: scrape-docs scrape-sessions scrape-repos
 lint:
 	@echo "Run /lint via Claude Code"
 
+# Architecture contracts (pyproject.toml [tool.importlinter]): library never imports apps/tools, etc.
+lint-imports:
+	uv run lint-imports
+
+# pyright, basic mode, over src apps tools (pyproject.toml [tool.pyright]).
+typecheck:
+	uv run pyright
+
 help:
 	@echo "app              — start api + ui via Docker (one command)"
 	@echo "app-build        — rebuild Docker images and start"

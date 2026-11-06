@@ -2,23 +2,27 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import re
 import time
 from collections.abc import AsyncGenerator, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import anthropic
 
 from apps.mcp import server
+from librarian.config import get_settings
 from librarian.log_config import get_logger
 
 log = get_logger(__name__)
 
-# Read from the environment at import (main.py loads .env first); tests reload this module.
-MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-5-5")
+
+def default_model() -> str:
+    """The model used when a caller does not pass one (`Settings.anthropic_model`)."""
+    return get_settings().anthropic_model
+
+
 MAX_TOKENS = 8192
 MAX_TURNS = 8
 MAX_BRIEFING_CHARS = 40_000
@@ -46,7 +50,7 @@ def _get_client() -> anthropic.AsyncAnthropic:
     """
     global _client
     if _client is None:
-        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        api_key = get_settings().anthropic_api_key
         if not api_key:
             raise RuntimeError(
                 "ANTHROPIC_API_KEY is not set. "
@@ -242,7 +246,7 @@ async def run_agent_stream(
     history: Sequence[dict[str, str]] | None = None,
     *,
     client: anthropic.AsyncAnthropic | None = None,
-    model: str = MODEL,
+    model: str | None = None,
     source: str = "chat",
 ) -> AsyncGenerator[dict[str, Any], None]:
     """Run the tool-use loop and yield SSE-ready events.
@@ -253,6 +257,7 @@ async def run_agent_stream(
     the eval harness can drive the loop without the env.
     `source` tags the telemetry line so eval traffic can be filtered from chat.
     """
+    model = model or default_model()
     started = time.monotonic()
     prior = _trim_history(history or [])
     messages: list[dict[str, Any]] = [*prior, {"role": "user", "content": query}]
@@ -276,8 +281,10 @@ async def run_agent_stream(
                     model=model,
                     max_tokens=MAX_TOKENS,
                     system=_SYSTEM,
-                    tools=_TOOLS,
-                    messages=messages,
+                    # Plain dicts in the API's wire shape; the SDK's TypedDict unions are not
+                    # worth mirroring here.
+                    tools=cast("Any", _TOOLS),
+                    messages=cast("Any", messages),
                 ) as stream:
                     async for event in stream:
                         if event.type == "content_block_delta" and event.delta.type == "text_delta":

@@ -36,7 +36,7 @@ import yaml
 from librarian.config import get_settings
 from librarian.courses import leitner
 from librarian.log_config import get_logger
-from librarian.wiki.common import WIKILINK_RE, page_aliases, slugify
+from librarian.wiki.common import WIKILINK_RE, fm, page_aliases, slugify
 
 log = get_logger(__name__)
 
@@ -192,15 +192,15 @@ def _load_wiki(wiki_dir: Path) -> dict[str, WikiRef]:
         except yaml.YAMLError as e:
             log.error("wiki_page_skipped", page=md.name, error=str(e).splitlines()[0])
             continue
-        tags = post.get("tags") or []
+        tags = fm(post).get("tags") or []
         if "tombstone" in tags:
             continue
         refs[md.stem] = WikiRef(
             id=md.stem,
-            title=str(post.get("title") or md.stem),
-            summary=str(post.get("summary") or ""),
+            title=str(fm(post).get("title") or md.stem),
+            summary=str(fm(post).get("summary") or ""),
             domain=rel.parts[0] if len(rel.parts) > 1 else "",
-            sources=tuple(str(x) for x in post.get("sources") or []),
+            sources=tuple(str(x) for x in fm(post).get("sources") or []),
             aliases=tuple(page_aliases(post.metadata)),
         )
     return refs
@@ -291,18 +291,18 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                         id=lid,
                         course=course_dir.name,
                         module=mod_dir.name,
-                        title=str(post.get("title") or md.stem),
-                        summary=str(post.get("summary") or ""),
-                        order=int(post.get("order") or 999),
-                        section=str(post.get("section") or ""),
-                        kind=str(post.get("kind") or "reading"),
-                        source=str(post.get("source") or ""),
+                        title=str(fm(post).get("title") or md.stem),
+                        summary=str(fm(post).get("summary") or ""),
+                        order=int(fm(post).get("order") or 999),
+                        section=str(fm(post).get("section") or ""),
+                        kind=str(fm(post).get("kind") or "reading"),
+                        source=str(fm(post).get("source") or ""),
                         body=post.content,
                         concepts=_rank_concepts(
                             post, wiki, slugs, matcher, by_title, compiled.get(lid, [])
                         ),
                         drill=_drill_meta(post, wiki, slugs, hidden)
-                        if post.get("kind") == "drill"
+                        if fm(post).get("kind") == "drill"
                         else {},
                     )
                 )
@@ -403,10 +403,10 @@ def _drill_meta(
     post: frontmatter.Post, wiki: dict[str, WikiRef], slugs: dict[str, str], hidden: set[str]
 ) -> dict[str, Any]:
     """DRILL_KEYS, plus `tags`: declared concepts with no wiki page yet (shown as plain labels)."""
-    meta = {k: post[k] for k in DRILL_KEYS if post.get(k) is not None}
+    meta = {k: post[k] for k in DRILL_KEYS if fm(post).get(k) is not None}
     tags = [
         str(x)
-        for x in (post.get("wiki") or [])
+        for x in (fm(post).get("wiki") or [])
         if not _resolve_wikilink(str(x), wiki, slugs) and slugify(str(x)) not in hidden
     ]
     return meta | ({"tags": tags} if tags else {})
@@ -420,7 +420,7 @@ def _rank_concepts(
     by_title: dict[str, str],
     compiled: list[str],
 ) -> list[str]:
-    explicit = [str(x) for x in (post.get("wiki") or [])]
+    explicit = [str(x) for x in (fm(post).get("wiki") or [])]
     explicit += [m.group(1) for m in WIKILINK_RE.finditer(post.content)]
     ranked: list[str] = []
     for target in explicit:
@@ -430,7 +430,7 @@ def _rank_concepts(
     ranked += [pid for pid in compiled if pid not in ranked]
     if matcher:
         counts: dict[str, int] = {}
-        text = f"{post.get('title') or ''}\n{_prose(post.content)}"
+        text = f"{fm(post).get('title') or ''}\n{_prose(post.content)}"
         for m in matcher.finditer(text):
             pid = by_title[m.group(1).lower()]
             counts[pid] = counts.get(pid, 0) + 1
@@ -448,8 +448,8 @@ Neighbours = list[list[tuple[str, float]]]
 
 
 def _lesson_text(post: frontmatter.Post, stem: str) -> str:
-    title = str(post.get("title") or stem)
-    summary = str(post.get("summary") or "")
+    title = str(fm(post).get("title") or stem)
+    summary = str(fm(post).get("summary") or "")
     return f"{title}. {summary}\n\n{_prose(post.content)[:LESSON_PROSE_CHARS]}"
 
 

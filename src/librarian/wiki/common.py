@@ -9,9 +9,20 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
+from typing import Any
 
 import frontmatter
 import yaml
+
+
+def fm(post: frontmatter.Post) -> dict[str, Any]:
+    """A page's frontmatter as `dict[str, Any]`.
+
+    python-frontmatter annotates `Post.get` and `Post.metadata` as `object`, which makes every
+    `post.get("tags") or []` a type error. The values are whatever YAML held; callers validate.
+    """
+    return post.metadata
+
 
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
 # `- [[X]] — type` describes X relative to the page it is written on: "X is a

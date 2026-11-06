@@ -6,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./wiki:/app/wiki:ro
+      - ./data:/app/data:ro
       - ./.env:/app/.env:ro
     environment:
       - PYTHONUNBUFFERED=1

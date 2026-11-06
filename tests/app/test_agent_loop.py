@@ -7,7 +7,6 @@ No test here touches the network: the client is always the conftest FakeAnthropi
 
 from __future__ import annotations
 
-import importlib
 import json
 from collections.abc import AsyncIterator
 from pathlib import Path
@@ -19,6 +18,7 @@ from fastapi.testclient import TestClient
 from apps.api import agent
 from apps.api import main as main_module
 from apps.mcp import server
+from librarian.config import Settings, get_settings
 
 PAGE = """---
 title: {title}
@@ -72,10 +72,20 @@ def _agent_log() -> list[dict[str, Any]]:
 @pytest.mark.unit
 def test_default_model_is_opus_5_5(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
+    # _env_file=None: a developer's .env must not decide the default.
+    monkeypatch.setattr(agent, "get_settings", lambda: Settings(_env_file=None))
+    assert agent.default_model() == "claude-opus-5-5"
+
+
+@pytest.mark.unit
+def test_model_comes_from_env_via_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_MODEL", "claude-test-env")
+    get_settings.cache_clear()
     try:
-        assert importlib.reload(agent).MODEL == "claude-opus-5-5"
+        assert agent.default_model() == "claude-test-env"
     finally:
-        importlib.reload(agent)
+        monkeypatch.undo()
+        get_settings.cache_clear()
 
 
 @pytest.mark.unit

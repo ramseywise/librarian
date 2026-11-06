@@ -22,6 +22,7 @@ import importlib
 import sys
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -81,7 +82,7 @@ GROUPS: dict[str, dict[str, Verb]] = {
 }
 
 
-def _resolve(target: str) -> Callable[[list[str]], object]:
+def _resolve(target: str) -> Callable[[list[str]], Any]:
     module, _, func = target.partition(":")
     return getattr(importlib.import_module(module), func)
 

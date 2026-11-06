@@ -310,7 +310,7 @@ async def collect_agent_run(
     tokens: list[str] = []
     grounding: dict[str, list[str]] = {"pages_read": [], "cited": [], "ungrounded": []}
     async for event in agent.run_agent_stream(
-        query, client=client, model=model or agent.MODEL, source="eval"
+        query, client=client, model=model or agent.default_model(), source="eval"
     ):
         if event["type"] == "token":
             tokens.append(event["content"])
@@ -427,7 +427,7 @@ def _main_agent(args: argparse.Namespace) -> None:
             report,
             Path(__file__).parent / "baselines",
             dataset_file=_resolve_dataset_path(args.dataset),
-            model=agent.MODEL,
+            model=agent.default_model(),
         )
         print(f"\nBaseline saved → {path}")
 
