@@ -108,6 +108,9 @@ dev = [
 src = ["src", "."]
 line-length = 100
 target-version = "py312"
+# Course labs are learner material, kept as their authors wrote them; library lint rules don't apply.
+extend-exclude = ["data/courses"]
+force-exclude = true
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "N", "UP", "ANN", "B", "C4", "SIM", "RUF"]

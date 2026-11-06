@@ -1,23 +1,31 @@
+# One service, one port: the API serves the built web UI too. http://localhost:8000
+#
+#   docker compose up --build
+#
+# Set LIBRARIAN_API_TOKEN (and ANTHROPIC_API_KEY) in .env before exposing the port beyond
+# this machine. For UI development use `make ui` (Vite on :5173) against `make api`.
 services:
-  api:
+  librarian:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
     ports:
-      - "8000:8000"
+      - "${LIBRARIAN_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - SERVE_COURSE_SOURCES=false
     volumes:
+      # Content, read-only.
       - ./data:/app/data:ro
-      - ./.env:/app/.env:ro
-    environment:
-      - PYTHONUNBUFFERED=1
+      # Writable state: indexes, caches, logs, flashcard results.
+      - librarian-var:/app/var
+    tmpfs:
+      # Private content stays on the host: these empty mounts hide it from the container.
+      - /app/data/wiki/private
+      - /app/data/courses/private
+    restart: unless-stopped
 
-  ui:
-    build:
-      context: apps/web
-      dockerfile: Dockerfile
-    ports:
-      - "5173:5173"
-    environment:
-      - VITE_API_URL=http://api:8000
-    depends_on:
-      - api
+volumes:
+  librarian-var:

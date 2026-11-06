@@ -1,0 +1,45 @@
+"""Note 07: a stub chat model for LCEL, with bind_tools so structured output runs offline."""
+
+import json
+from collections.abc import Callable
+from itertools import count
+
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import AIMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
+
+_ids = count(1)
+
+
+class RuleModel(BaseChatModel):
+    """Replies from a function of the prompt text. Tool-bound copies reply with a tool call."""
+
+    rule: Callable[[str], str]
+    bound_tool: str | None = None
+
+    @property
+    def _llm_type(self) -> str:
+        return "rule-stub"
+
+    def bind_tools(self, tools, tool_choice=None, **kwargs):
+        first = tools[0]
+        name = (
+            first["function"]["name"]
+            if isinstance(first, dict)
+            else getattr(first, "__name__", None) or first.name
+        )
+        return self.model_copy(update={"bound_tool": name})
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+        text = self.rule("\n".join(str(m.content) for m in messages))
+        if self.bound_tool:
+            call = {
+                "name": self.bound_tool,
+                "args": json.loads(text),
+                "id": f"call_{next(_ids)}",
+                "type": "tool_call",
+            }
+            message = AIMessage(content="", tool_calls=[call])
+        else:
+            message = AIMessage(content=text)
+        return ChatResult(generations=[ChatGeneration(message=message)])

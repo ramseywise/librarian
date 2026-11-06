@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Edge, Node } from "@xyflow/react";
 import type { GraphPayload, WikiEdgeData, WikiNodeData } from "../types";
 import { tagSharedEdges as computeTagSharedEdges } from "../utils/tagEdges";
+import { wsProtocols } from "../utils/auth";
 import type { XY } from "../utils/layout";
 
 const RECONNECT_MS = 2000;
@@ -66,7 +67,7 @@ export function useWikiData({ tagShared = true }: { tagShared?: boolean } = {}) 
     let disposed = false;
 
     function connect() {
-      const sock = new WebSocket(wsUrl(window.location));
+      const sock = new WebSocket(wsUrl(window.location), wsProtocols());
       ws = sock;
       sock.onopen = () => setConnected(true);
       sock.onclose = () => {

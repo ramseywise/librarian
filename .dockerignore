@@ -7,14 +7,21 @@
 .mypy_cache
 **/__pycache__
 **/node_modules
-apps/web
+**/dist
+apps/web/coverage
 *.duckdb
 *.duckdb.wal
 logs
+var
 .env
 .env.*
-data/raw
+# Content is mounted at run time, never baked in. Private trees are named as well so a future
+# COPY of data/ cannot pick them up.
+data
 data/wiki/private
+data/courses/private
 .claude
 tests
 evals
+explain-skill
+second-brain-os

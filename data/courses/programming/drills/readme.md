@@ -16,8 +16,10 @@ maps each curriculum unit to the drills and guides that test it.
 
 This folder is the **drills** module of the Programming course: every tracked `.md` here is a
 lesson, each track folder a section. A
-file with `track:` in its frontmatter feeds Practice mode. Notebooks, `.sql`, `.ts` and `.py` files
-stay here and are linked, not imported.
+file with `track:` in its frontmatter feeds Practice mode. The `.py`, `.sql` and `.ts` files that go with a drill live beside it in this
+tree, so relative links to them resolve. Notebooks are converted to lessons separately. Licensed third-party
+material keeps its `LICENSE` and is listed in [`THIRD_PARTY.md`](../../THIRD_PARTY.md); material without a clear licence
+stays in the gitignored `private/` mirror.
 
 ## Tracks
 

@@ -107,3 +107,6 @@ data/courses/**/slides/lectures/*.pdf
 data/courses/**/slides/.*.pdf.tmp
 data/courses/**/slides/.preview/
 data/courses/**/slides/lectures/.preview/
+
+# Deployment state (indexes, caches, logs); path from LIBRARIAN_STATE_DIR
+/var/

@@ -130,6 +130,10 @@ def _run_mcp(argv: list[str]) -> int:
     return int(_resolve("apps.mcp.server:main")(argv) or 0)
 
 
+def _is_loopback(host: str) -> bool:
+    return host in {"localhost", "::1"} or host.startswith("127.")
+
+
 def _run_api(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="librarian api", description="FastAPI backend (uvicorn).")
     ap.add_argument("--host", default="127.0.0.1")
@@ -138,7 +142,23 @@ def _run_api(argv: list[str]) -> int:
     args = ap.parse_args(argv)
     import uvicorn
 
-    uvicorn.run("apps.api.main:app", host=args.host, port=args.port, reload=args.reload)
+    from librarian.config import get_settings
+    from librarian.log_config import configure_logging, get_logger
+
+    if not get_settings().api_token and not _is_loopback(args.host):
+        configure_logging()
+        get_logger(__name__).warning(
+            "api.auth.open", host=args.host, hint="set LIBRARIAN_API_TOKEN"
+        )
+    # The app logs one structured line per request; uvicorn's access log would repeat it
+    # with the query string.
+    uvicorn.run(
+        "apps.api.main:app",
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
+        access_log=False,
+    )
     return 0
 
 

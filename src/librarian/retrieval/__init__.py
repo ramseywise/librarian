@@ -8,6 +8,7 @@ Callers (the MCP server, the chat agent, the eval harness) use only the names ex
     read_page(path_or_title)              one page or lesson, private pages excluded
     list_domain(domain), list_pages(...)  listings; domain_briefing(domain) concatenates a domain
     open_index(), rebuild_index()         index lifecycle (refresh-on-open, forced rebuild)
+    embeddings_ready()                    the model is loaded, or the rerank is off (readiness probe)
     disabled("fts", "embeddings")         switch BM25 / the semantic rerank off, for the evals
 
 Modules: `corpus` (locations, privacy, telemetry), `index` (build, refresh, open), `ranking`
@@ -15,6 +16,7 @@ Modules: `corpus` (locations, privacy, telemetry), `index` (build, refresh, open
 `graph_expansion` (one-hop typed neighbours), `embeddings` (the model, vectors and caches).
 """
 
+from librarian.retrieval.embeddings import embeddings_ready
 from librarian.retrieval.format import degraded_notice
 from librarian.retrieval.format import search_text as search
 from librarian.retrieval.index import IndexBusyError, open_index, rebuild_index
@@ -26,6 +28,7 @@ __all__ = [
     "degraded_notice",
     "disabled",
     "domain_briefing",
+    "embeddings_ready",
     "list_domain",
     "list_pages",
     "open_index",

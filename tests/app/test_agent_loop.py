@@ -325,7 +325,11 @@ def api(monkeypatch: pytest.MonkeyPatch) -> tuple[TestClient, list[tuple[str, An
     """TestClient without lifespan (no warmup/watcher); agent replaced by a recorder."""
     seen: list[tuple[str, Any]] = []
 
-    async def fake_stream(query: str, history: Any = None) -> AsyncIterator[dict[str, Any]]:  # noqa: ANN401
+    async def fake_stream(
+        query: str,
+        history: Any = None,  # noqa: ANN401
+        on_usage: Any = None,  # noqa: ANN401
+    ) -> AsyncIterator[dict[str, Any]]:
         seen.append((query, history))
         yield {"type": "done"}
 

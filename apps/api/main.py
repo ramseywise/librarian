@@ -12,13 +12,14 @@ from typing import Any, Literal, Self
 _PROCESS_T0 = time.perf_counter()
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 
 from librarian.config import get_settings
 
 load_dotenv(get_settings().dotenv_file)
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, model_validator
 
 from apps.api.agent import run_agent_stream
@@ -26,6 +27,13 @@ from apps.api.routers.courses import router as courses_router
 from apps.api.routers.curriculum import router as curriculum_router
 from apps.api.routers.glossary import router as glossary_router
 from apps.api.routers.wiki_health import router as wiki_health_router
+from apps.api.security import (
+    WS_SUBPROTOCOL,
+    RequestLogMiddleware,
+    chat_limiter,
+    require_token,
+)
+from librarian import retrieval
 from librarian.courses.catalog import warm_catalog
 from librarian.courses.curriculum import write_snapshot
 from librarian.log_config import configure_logging, get_logger
@@ -109,6 +117,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     # The jobs run one after another. A boot running them side by side segfaulted in torch's
     # MPS copy path (1 of 4 tries, 2026-11-04); the cause isn't established, so this and the
     # encode lock in librarian/retrieval/embeddings.py are precautions, not a proven fix.
+    watcher: asyncio.Task[None] | None = None
     skip_warmup = os.environ.get("LIBRARIAN_SKIP_WARMUP") == "1" or get_settings().skip_warmup
     jobs: list[Callable[[], None]] = [] if skip_warmup else [_warm_course_data]
     try:
@@ -121,23 +130,45 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         # Warmup in background so server accepts connections immediately
         if not skip_warmup:
             jobs.append(warmup)
-        task = asyncio.create_task(_watch_and_broadcast(awatch))
-        _background_tasks.add(task)
-        task.add_done_callback(_background_tasks.discard)
+        watcher = asyncio.create_task(_watch_and_broadcast(awatch))
+        _background_tasks.add(watcher)
+        watcher.add_done_callback(_background_tasks.discard)
     if jobs:
         _in_background(lambda: _run_in_order(jobs))
     log.info("api.startup.ready", seconds=round(time.perf_counter() - _PROCESS_T0, 2))
-    yield
+    try:
+        yield
+    finally:
+        await _shutdown(watcher)
 
 
-app = FastAPI(title="Librarian Graph API", lifespan=lifespan)
+async def _shutdown(watcher: asyncio.Task[None] | None) -> None:
+    """Stop the wiki watcher and pending catalog rewarm, and close live websockets."""
+    global _rewarm_handle
+    if _rewarm_handle is not None:
+        _rewarm_handle.cancel()
+        _rewarm_handle = None
+    if watcher is not None:
+        watcher.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await watcher
+    for ws in list(_ws_clients):
+        with contextlib.suppress(Exception):
+            await ws.close(code=1001)
+    _ws_clients.clear()
+    log.info("api.shutdown.done")
+
+
+# Every route needs the token when one is set, /healthz and /readyz and the static UI excepted.
+app = FastAPI(title="Librarian Graph API", lifespan=lifespan, dependencies=[Depends(require_token)])
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=get_settings().cors_origin_list,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(RequestLogMiddleware)
 app.include_router(courses_router)
 app.include_router(curriculum_router)
 app.include_router(glossary_router)
@@ -146,7 +177,10 @@ app.include_router(wiki_health_router)
 
 @app.websocket("/ws")
 async def ws_endpoint(ws: WebSocket) -> None:
-    await ws.accept()
+    # Echo the "bearer" subprotocol the client used to carry its token, or the browser fails the handshake.
+    await ws.accept(
+        subprotocol=WS_SUBPROTOCOL if WS_SUBPROTOCOL in ws.scope["subprotocols"] else None
+    )
     _ws_clients.append(ws)
     try:
         graph = await asyncio.to_thread(parse_wiki)
@@ -234,10 +268,15 @@ class ChatRequest(BaseModel):
 
 @app.post("/api/chat/stream")
 async def chat_stream(req: ChatRequest) -> StreamingResponse:
+    settings = get_settings()
+    chat_limiter.admit(settings)  # 429 before any model call
     history = [t.model_dump() for t in req.history]
 
+    def on_usage(input_tokens: int, output_tokens: int) -> None:
+        chat_limiter.record_usage(settings, input_tokens, output_tokens)
+
     async def generate() -> AsyncIterator[str]:
-        async for event in run_agent_stream(req.query, history):
+        async for event in run_agent_stream(req.query, history, on_usage=on_usage):
             yield f"data: {json.dumps(event)}\n\n"
 
     return StreamingResponse(
@@ -245,3 +284,44 @@ async def chat_stream(req: ChatRequest) -> StreamingResponse:
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+@app.get("/healthz")
+def healthz() -> dict[str, str]:
+    """Liveness: the process answers."""
+    return {"status": "ok"}
+
+
+# The index check opens (and refreshes) the DuckDB index, so a passing answer is reused.
+_READY_TTL_S = 30.0
+_ready_until = 0.0
+
+
+@app.get("/readyz")
+def readyz() -> JSONResponse:
+    """Readiness: the search index opens and, if semantic rerank is on, the model is loaded."""
+    global _ready_until
+    checks: dict[str, bool] = {}
+    if time.monotonic() < _ready_until:
+        checks["index"] = True
+    else:
+        try:
+            retrieval.open_index().close()
+            checks["index"] = True
+            _ready_until = time.monotonic() + _READY_TTL_S
+        except Exception as exc:
+            log.warning("api.readyz.index_failed", error=str(exc), error_type=type(exc).__name__)
+            checks["index"] = False
+    checks["embeddings"] = retrieval.embeddings_ready()
+    ready = all(checks.values())
+    return JSONResponse(
+        {"status": "ready" if ready else "not_ready", "checks": checks},
+        status_code=200 if ready else 503,
+    )
+
+
+# Last, so every route above keeps precedence. The UI routes with `#/...`, so a plain static
+# mount needs no SPA fallback. The bundle itself holds nothing private.
+_web_dir = get_settings().web_dir
+if _web_dir.is_dir():
+    app.mount("/", StaticFiles(directory=_web_dir, html=True), name="web")

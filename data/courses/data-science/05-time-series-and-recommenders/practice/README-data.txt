@@ -1,0 +1,1 @@
+Data is not vendored. UCI Bike Sharing: https://archive.ics.uci.edu/dataset/275 . MovieLens 100k: https://grouplens.org/datasets/movielens/100k/ (its licence forbids redistribution; download it yourself).

@@ -66,7 +66,13 @@ class Settings(BaseSettings):
     # Content. WIKI_DIR / COURSES_DIR override the defaults, as they did for the MCP server.
     override_wiki_dir: Path | None = Field(default=None, validation_alias=_env("WIKI_DIR"))
     override_courses_dir: Path | None = Field(default=None, validation_alias=_env("COURSES_DIR"))
-    # Index and caches. Still at the repo root; moving them under var/ is a later phase.
+    # One directory for everything the app writes (indexes, caches, logs, flashcard results).
+    # Unset: the old locations (index files at the root, `logs/`, `.cache/`). A deployment sets
+    # it to a volume so `data/` can be mounted read-only.
+    override_state_dir: Path | None = Field(
+        default=None, validation_alias=_env("LIBRARIAN_STATE_DIR")
+    )
+    # Index and caches. Each override below beats the state dir.
     override_wiki_db_path: Path | None = Field(default=None, validation_alias=_env("WIKI_DB_PATH"))
     override_embeddings_cache_path: Path | None = Field(
         default=None, validation_alias=_env("EMBEDDINGS_CACHE_PATH")
@@ -85,8 +91,34 @@ class Settings(BaseSettings):
     override_course_sources_dir: Path | None = Field(
         default=None, validation_alias=_env("COURSE_SOURCES_DIR")
     )
-    # Local only: a deployment sets SERVE_COURSE_SOURCES=false (phase 5) and the route 404s.
+    # Local only: a deployment sets SERVE_COURSE_SOURCES=false and the route 404s.
     serve_course_sources: bool = Field(default=True, validation_alias=_env("SERVE_COURSE_SOURCES"))
+
+    # API access. With no token the API is open (local dev); with one, every /api route and the
+    # websocket require `Authorization: Bearer <token>`. /healthz and /readyz are always open.
+    api_token: str = Field(default="", validation_alias=_env("LIBRARIAN_API_TOKEN"))
+    # Comma-separated browser origins allowed by CORS. The Vite dev server by default.
+    cors_origins: str = Field(
+        default="http://localhost:5173", validation_alias=_env("LIBRARIAN_CORS_ORIGINS")
+    )
+    # The built web UI (`npm run build` in apps/web), served by the API at "/" when it exists.
+    override_web_dir: Path | None = Field(default=None, validation_alias=_env("LIBRARIAN_WEB_DIR"))
+    # POST /api/chat/stream limits, per process. 0 turns a limit off.
+    chat_rate_limit: int = Field(default=20, validation_alias=_env("LIBRARIAN_CHAT_RATE_LIMIT"))
+    chat_rate_window_s: int = Field(
+        default=60, validation_alias=_env("LIBRARIAN_CHAT_RATE_WINDOW_S")
+    )
+    chat_daily_budget_usd: float = Field(
+        default=5.0, validation_alias=_env("LIBRARIAN_CHAT_DAILY_BUDGET_USD")
+    )
+    # USD per million tokens, used only to estimate the daily spend. Set to the configured model's
+    # list price; the cap is an estimate, not a bill.
+    chat_input_usd_per_mtok: float = Field(
+        default=5.0, validation_alias=_env("LIBRARIAN_CHAT_INPUT_USD_PER_MTOK")
+    )
+    chat_output_usd_per_mtok: float = Field(
+        default=25.0, validation_alias=_env("LIBRARIAN_CHAT_OUTPUT_USD_PER_MTOK")
+    )
 
     # Models and endpoints.
     embedding_model: str = Field(
@@ -155,8 +187,22 @@ class Settings(BaseSettings):
         return self.data_dir / "concept_homes.json"
 
     @property
+    def web_dir(self) -> Path:
+        return self.override_web_dir or self.root / "apps" / "web" / "dist"
+
+    @property
+    def state_dir(self) -> Path | None:
+        return self.override_state_dir.expanduser() if self.override_state_dir else None
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
     def logs_dir(self) -> Path:
-        return self.override_logs_dir or self.root / "logs"
+        if self.override_logs_dir:
+            return self.override_logs_dir
+        return self.state_dir / "logs" if self.state_dir else self.root / "logs"
 
     @property
     def retrieval_log(self) -> Path:
@@ -168,19 +214,22 @@ class Settings(BaseSettings):
 
     @property
     def wiki_db_path(self) -> Path:
-        return self.override_wiki_db_path or self.root / ".wiki_index.duckdb"
+        return self.override_wiki_db_path or (self.state_dir or self.root) / ".wiki_index.duckdb"
 
     @property
     def embeddings_cache_path(self) -> Path:
-        return self.override_embeddings_cache_path or self.root / ".embeddings_cache.duckdb"
+        return (
+            self.override_embeddings_cache_path
+            or (self.state_dir or self.root) / ".embeddings_cache.duckdb"
+        )
 
     @property
     def code_index_path(self) -> Path:
-        return self.override_code_index_path or self.root / ".code_index.duckdb"
+        return self.override_code_index_path or (self.state_dir or self.root) / ".code_index.duckdb"
 
     @property
     def cache_dir(self) -> Path:
-        return self.root / ".cache"
+        return self.state_dir / "cache" if self.state_dir else self.root / ".cache"
 
     @property
     def lesson_vec_cache(self) -> Path:

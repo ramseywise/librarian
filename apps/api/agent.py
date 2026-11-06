@@ -4,7 +4,7 @@ import asyncio
 import json
 import re
 import time
-from collections.abc import AsyncGenerator, Sequence
+from collections.abc import AsyncGenerator, Callable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
@@ -242,6 +242,20 @@ def _log_answer(**fields: object) -> None:
         log.warning("agent.telemetry_failed", error=str(e))
 
 
+def _usage_tokens(response: object) -> tuple[int, int]:
+    """(input, output) tokens a turn billed. Cache reads and writes count as input, at full rate."""
+    usage = getattr(response, "usage", None)
+    if usage is None:
+        return 0, 0
+
+    def n(name: str) -> int:
+        value = getattr(usage, name, 0)
+        return value if isinstance(value, int) else 0
+
+    inputs = n("input_tokens") + n("cache_creation_input_tokens") + n("cache_read_input_tokens")
+    return inputs, n("output_tokens")
+
+
 async def run_agent_stream(
     query: str,
     history: Sequence[dict[str, str]] | None = None,
@@ -249,6 +263,7 @@ async def run_agent_stream(
     client: anthropic.AsyncAnthropic | None = None,
     model: str | None = None,
     source: str = "chat",
+    on_usage: Callable[[int, int], None] | None = None,
 ) -> AsyncGenerator[dict[str, Any], None]:
     """Run the tool-use loop and yield SSE-ready events.
 
@@ -257,6 +272,8 @@ async def run_agent_stream(
     (validated at the API boundary, trimmed here). `client` is injectable so tests and
     the eval harness can drive the loop without the env.
     `source` tags the telemetry line so eval traffic can be filtered from chat.
+    `on_usage(input_tokens, output_tokens)` is called after each model turn, so a spend cap
+    sees the cost of a stream that is later cut off.
     """
     model = model or default_model()
     started = time.monotonic()
@@ -292,6 +309,9 @@ async def run_agent_stream(
                             answer_parts.append(event.delta.text)
                             yield {"type": "token", "content": event.delta.text}
                     response = await stream.get_final_message()
+
+                if on_usage is not None:
+                    on_usage(*_usage_tokens(response))
 
                 stop_reason = response.stop_reason
                 if response.stop_reason == "refusal":

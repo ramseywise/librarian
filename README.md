@@ -225,6 +225,18 @@ make ui    # Vite dev server on :5173
 
 The backend caches embeddings and UMAP layout in DuckDB — only recomputed when wiki pages change.
 
+### Deploy (one image, one port)
+
+```bash
+docker compose up --build   # API + built UI on :8000; reads .env if present
+```
+
+`data/` is mounted read-only (the private wiki and course trees are masked with empty tmpfs mounts);
+indexes, caches, logs and flashcard results go to the `librarian-var` volume (`LIBRARIAN_STATE_DIR`).
+Set `LIBRARIAN_API_TOKEN` in `.env`: every `/api` route and `/ws` then need `Authorization: Bearer <token>`,
+and the web UI asks for the token once and keeps it in localStorage. `/healthz` and `/readyz` stay open.
+Chat is limited per process (`LIBRARIAN_CHAT_RATE_LIMIT`, `LIBRARIAN_CHAT_DAILY_BUDGET_USD`); see `.env.example`.
+
 ### Courses
 
 The **Courses** tab (`#/courses`) is a learning UI over `data/courses/`: a course catalog,

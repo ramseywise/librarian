@@ -68,6 +68,11 @@ def get_model() -> SentenceTransformer:
     return _model
 
 
+def embeddings_ready() -> bool:
+    """True when the semantic rerank is off, or the model is loaded (the API's `/readyz`)."""
+    return not HAS_EMBEDDINGS or _model is not None
+
+
 def encode(texts: list[str]) -> np.ndarray:
     """Unit-length vectors for `texts`, one row each (the only call site of `model.encode`)."""
     with _encode_lock:

@@ -60,3 +60,18 @@ jobs:
       - run: npm run lint -- --max-warnings 0
       - run: npm test
       - run: npm run build
+
+  docker:
+    # The deployable image: web build, API install, embedding model. Built, not pushed.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: false
+          tags: librarian:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
