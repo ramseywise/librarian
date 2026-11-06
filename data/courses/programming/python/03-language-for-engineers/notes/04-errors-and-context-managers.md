@@ -1,5 +1,4 @@
 ---
-imported_hash: 2502c868761fd0f3
 title: 4 — Errors and context managers
 summary: 'class SchemaError(PipelineError): def init(self, column: str, problem: str): super().init(f"{column}: {problem}") self.column = column'
 order: 15

@@ -1,5 +1,4 @@
 ---
-imported_hash: 045e99947f0d3bb5
 title: Merge K Sorted Linked Lists
 summary: ''
 order: 191

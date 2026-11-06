@@ -1,5 +1,4 @@
 ---
-imported_hash: 6ed6666b08256dcf
 title: Recruiter Screen — Question Bank
 summary: 10–12 questions across the categories a recruiter will hit.
 order: 58

@@ -1,5 +1,4 @@
 ---
-imported_hash: 1c4a9106cf982691
 title: Binary Tree And Binary Search Tree
 summary: Trees are hierarchical data structures with a root node and child relationships.
 order: 220

@@ -1,5 +1,4 @@
 ---
-imported_hash: 575032dca66f67ec
 title: 'Lab: a context budgeter (Python)'
 summary: The Python twin of the TypeScript lab. Same scenario, budgets and packing rules, same report.
 order: 17

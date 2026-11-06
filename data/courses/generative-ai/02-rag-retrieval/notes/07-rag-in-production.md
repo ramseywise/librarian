@@ -1,5 +1,4 @@
 ---
-imported_hash: 549447dcf9abc235
 title: 7 — RAG in production
 summary: On a Tuesday, Tallybook's support bot tells a customer about the manual refund override, a procedure in an internal runbook that says never to share it.
 order: 8
@@ -38,6 +37,10 @@ On a Tuesday, Tallybook's support bot tells a customer about the manual refund o
 Code checks are cheap and run on everything; LLM judges cover what code can't; humans calibrate both. Note [01 § measure each stage](01-rag-pipeline.md#measure-each-stage) gives the house checklist; [06-observability](../../06-observability/readme.md) covers the tooling across all LLM systems.
 
 ARES formalises the "humans calibrate both" sentence. It fine-tunes lightweight judges on synthetic data for three scores (context relevance, answer faithfulness and answer relevance), then uses prediction-powered inference with a small human-labelled set to correct the judges' errors. The authors found about 150 annotated datapoints to be the minimum in their setup. Across eight tasks from KILT, SuperGLUE and AIS, it beat RAGAS by 59.3 and 14.4 percentage points on average at context-relevance and answer-relevance evaluation accuracy on the KILT and SuperGLUE sets, and came within 2.5 points of the true average answer hallucination rate on AIS ([arXiv:2311.09476](https://arxiv.org/abs/2311.09476), Saad-Falcon et al., NAACL 2024). The authors built these comparisons from mock RAG systems made by sampling known-good and known-bad outputs, so read the gap as evidence for the method more than as a forecast for your system. The practical lesson is cheap to copy: don't trust an unaudited judge's number, and keep a labelled sample to calibrate it against.
+
+For the retriever alone, the "labelled relevance judgements" cell above is a weaker yardstick than it looks. eRAG feeds each retrieved document to the generator by itself and scores the answer against the task's ground truth, so the generator's own result becomes that document's relevance label. On KILT tasks with a T5-small Fusion-in-Decoder reader and 50 BM25 passages, Kendall's tau against end-to-end performance was about 0.30 to 0.64 for eRAG on NQ, TriviaQA, HotpotQA and FEVER with BM25 or Contriever (the range spans metrics), against 0.01 to 0.22 for KILT's human provenance labels on the same four. Having Mistral-7B label each document for relevance gave roughly zero (-0.04 to 0.19). eRAG also needed 1.2 to 3.3 times less runtime and 7 to 48 times less GPU memory than running the full pipeline ([arXiv:2404.13781](https://arxiv.org/abs/2404.13781), Salemi & Zamani, SIGIR 2024). The setup is small (60M-parameter reader, Wikipedia corpus, tasks with short answers), and correlation fell as more documents were retrieved. Treat it as a reason to check that your retrieval metric tracks answer quality, not as a replacement for recall@k.
+
+RAGEval shows the same gap from the generation side. On its generated DragonBall set (finance, law and medical documents in Chinese and English, 50 questions per scenario and language, nine generators, BGE-M3 retrieval, top-5 chunks of 512 tokens), word-overlap scores and keypoint scores disagreed: Baichuan-2-7B-chat had the best ROUGE-L (38.30) and BLEU (21.55) in Chinese but a Completeness (share of the reference answer's 3-5 keypoints covered) of only 60.25, while GPT-4o had 79.13 Completeness and ROUGE-L 21.30. An LLM scoring keypoints differed from three human annotators by 1.67 points (Fleiss' kappa 0.77 across the annotators, on 210 questions answered by one 7B model). Retrieval recall and answer completeness moved together but not in lockstep: raising top-K from 2 to 5 lifted Completeness from 55.04 to 70.38 in Chinese, while going on to 8 added about 2 more points (72.32) though recall kept rising. The best chunk size and top-K varied with question type in the finance English slice, so a single setting tuned on average questions hides a loser. The data is synthetic, the tables show single runs with no variance, and the human check covered one 7B model's answers ([arXiv:2408.01262](https://arxiv.org/abs/2408.01262), Zhu et al., 2024, preprint).
 
 ---
 
@@ -321,6 +324,14 @@ Output tokens stay in the bill however small the prompt gets, which is why the p
 | Parallelism | Spark or Dask for ingestion; shard the index across nodes so each searches its part (*Building AI Agents*, ch. 6) |
 | LLM router with fallbacks | Route each prompt to a suitable model, and fall back to another when an API errors (*Building AI Agents*, ch. 6) |
 
+The router row has a quality case as well as a speed case. RAGate trains a gate that decides per conversation turn whether to retrieve at all. On KETOD, a task-oriented dialogue set, with a GPT-2 generator and the top three snippets from a BERT ranker, retrieving on every turn (4,964 test turns) raised BLEU from 9.38 to 16.08 but cut the model's token-level confidence by 10.4%. A multi-head-attention gate that retrieved on 787 turns reached BLEU 12.14 and lost 0.36% confidence, against 1.65% for retrieving on 787 random turns. The gate itself was weak, with F1 at most 0.43 against human "needs knowledge" labels, only 12% of turns were positive, and there was no human review of the answers ([arXiv:2407.21712](https://arxiv.org/abs/2407.21712), Wang et al., 2024, preprint). It supports measuring what an always-on retrieval step costs, and does not show a gate recovers the always-on quality.
+
+A gate can also act after retrieval fails, and pick the fix. The gate idea predates RAGate: Adaptive-RAG (Jeong et al., NAACL 2024) routes by predicted query complexity, and Probing-RAG (Baek et al., 2025) reads the model's hidden states with small probes instead of asking it. Skill-RAG keeps Probing-RAG's probes and, when an answer still looks wrong after retrieval, an LLM router chooses one of four moves: rewrite the query, decompose it, focus on the evidence already retrieved, or stop. With 7–9B open models, BM25 and probes trained on NQ, TriviaQA and HotpotQA, it beat Probing-RAG by up to **13.6 accuracy points on 2WikiMultiHopQA** (Gemma2-9B, 500 questions), but gained under 1.1 points in-domain, and on HotpotQA exact match it trailed DRAGIN (23.1 against 31.9, Llama3-8B). On 2,660 hard cases the stop move saved about 1.4 retrieval rounds per stopped query for 0.5–0.6 points of accuracy. The probes need white-box hidden states and labelled in-domain data, so they cannot gate a hosted API model. The paper counts rounds but reports no latency and does not cost the router call. Its claim that failures come in four types rests on t-SNE plots, and it never tests the router without the probes ([arXiv:2604.15771](https://arxiv.org/abs/2604.15771), Wei et al., 2026-04, preprint). The part that carries over to an API model is the routing. When retrieval misses, rewriting, decomposing and stopping each fix a different kind of failure, so log which kind each miss was before adding another round.
+
+For reasoning models the question becomes when in the chain to retrieve. ReaLM-Retrieve scores each reasoning step from its output text alone: the model's stated confidence, how spread out the entity mentions are, and agreement across three resampled continuations. A trained policy then decides whether to retrieve at that step, against IRCoT's fixed retrieve-after-every-sentence schedule. On MuSiQue with DeepSeek-R1-Distill-Qwen-32B and ColBERTv2, it reached **71.2 F1 with 1.8 retrieval calls against IRCoT's 65.4 with 3.4**. Retrieving at random steps with the same 1.8 calls scored 62.7, so the timing carries the gain and not the reduced count. The gap widened from 3.2 points on 2-hop questions to 8.4 on 4-hop. Single retrieve-then-read still won on 12% of questions, mostly simple 2-hop ones, so the authors suggest routing by complexity first. The test sets are Wikipedia multi-hop only, and end-to-end latency was 14.1 s on 8 A100s, which the authors scope to asynchronous work. For API models without open weights, a learned proxy replaces stated confidence and drops its AUROC from 0.83 to 0.71. The policy took 2,400 GPU-hours to train ([arXiv:2604.26649](https://arxiv.org/abs/2604.26649), Guo et al., SIGIR 2026).
+
+Verification against retrieved text buys accuracy at a steep token price. RARE runs a tree search over reasoning steps with extra retrieval actions, then scores each candidate path by the share of its statements that retrieved passages support. With LLaMA 3.1 8B on 250 MedQA questions, accuracy went from 70.0 for the search without retrieval to 74.8 with retrieval actions and the scorer, and a 70B model scored 87.43 against GPT-4o's 85.55 on MedQA. It used about 119.9k tokens per example against about 400 for chain-of-thought, averaged over three commonsense tasks, and the paper gives no latency or dollar figures. These are mostly multiple-choice benchmarks, the tables show means with no variance, and the scorer is the generator's own model ([arXiv:2412.02830](https://arxiv.org/abs/2412.02830), Tran et al., 2024, preprint). Price a verifier in tokens per answer before adding it.
+
 Add up the budget for one request before removing anything. The three component figures are the course's estimates above, and the generation time is an assumed placeholder, since generation is what "most of the latency" refers to:
 
 ```python
@@ -340,6 +351,8 @@ total             2550 ms
 ```
 
 The reranker is the cheapest item here and often the one people cut first. Removing a component only makes sense once you have its effect on your metrics next to its cost.
+
+That 50 ms assumes a cross-encoder. A listwise LLM reranker costs more calls but can be distilled: RankZephyr, an open 7B model distilled from RankGPT, matched RankGPT4 on TREC DL19/DL20 (nDCG@10 0.7816 and 0.8159 vs 0.7464 and 0.7076; SPLADE++ ED top 100, window 20) and trailed it on DL22 (0.6692 vs 0.7175). On DL19 shuffling the candidates cost it 0.015 nDCG@10 against 0.15 for GPT-3.5 listwise. English passage ranking, no latency reported ([arXiv:2312.02724](https://arxiv.org/abs/2312.02724), Pradeep et al., 2023-12, preprint).
 
 ---
 
@@ -463,9 +476,51 @@ Huyen's version of the first row uses CLIP: embed all texts and images with CLIP
 | **Ground everything in one modality** | Convert to the main one: image descriptions, audio transcripts | No new models, but conversion is costly and loses nuance |
 | **Separate retrieval per modality** | One embedder and one store per modality, retrieve from each | Needs a multimodal reranker to merge the results |
 
+The shared space has a measured bias, and the separate-stores design can avoid the merge by routing first. In UniversalRAG's tests, unified encoders retrieved almost only text whatever the question needed (VLM2Vec-V2 picked the right modality 25.00% of the time, with R@5 of 4.12). A Qwen3-VL-2B router trained to pick one of seven corpora (none, paragraph, document, table, image, clip, video) chose correctly 95.28% of the time and lifted R@5 to 44.82. With a Qwen3-VL-8B generator, the routed system averaged **42.40 across ten benchmarks, against 42.45 for an oracle router, 37.26 for the best single corpus and 34.07 for retrieving from all of them**, so querying every store loses to choosing one. Out of domain, the trained router's accuracy fell to 71.29% against 77.38% for a prompted GPT-5, and a confidence ensemble of the two reached 80.71%. Router labels were assigned per benchmark, which likely flatters in-domain accuracy, the average mixes incompatible metrics, the corpora are small, the latency-at-scale claim is a model plus one plot, and the router call is not costed ([arXiv:2504.20734](https://arxiv.org/abs/2504.20734), Yeo et al., v5 2026-06, preprint; arXiv comments say ACL 2026).
+
 The parse-or-don't decision for PDFs, and the production parsers, are in note [12 — managed RAG](12-managed-rag.md) and [01 § chunking](01-rag-pipeline.md#chunking).
 
 ---
+
+## Keeping a live index in sync
+
+The [idempotent `sync`](01-rag-pipeline.md#keeping-the-index-in-sync) in chapter 1 makes re-runs safe. A live system also has to decide when to run, how to find what changed, and what its store does on delete.
+
+**Batch first.** The Handbook's advice is to start with a scheduled batch pipeline and move to streaming only when freshness demands it. A batch run every minute is fine for thousands of records (*LLM Engineer's Handbook*, ch. 4). To find what changed, it lists the *change data capture* (CDC) options:
+
+| CDC method | How | Catch |
+|---|---|---|
+| Naive full pull | Re-read everything each run | Fine at thousands to tens of thousands of records |
+| Timestamp | Pull rows with `updated_at` after the last run | Misses deletes; scans the table |
+| Trigger | Database triggers write changes to an audit table | Adds write overhead to the source |
+| Log-based | Read the database's transaction log | Best fidelity and no source load, but vendor-specific and needs a queue |
+
+LangChain's indexing API is the production form. A `RecordManager` stores a hash of each document's content and metadata, its write time and its source ID. On re-run it skips unchanged documents and, depending on `cleanup`, deletes stale ones (*Learning LangChain*, ch. 2):
+
+```python
+# illustrative: needs a Postgres database for the record manager and a vector store
+from langchain.indexes import SQLRecordManager, index
+
+record_manager = SQLRecordManager("pgvector/my_docs", db_url=DB_URL)
+record_manager.create_schema()
+
+# cleanup=None: only add; "incremental": also delete old versions of the sources in this batch;
+# "full": also delete every source NOT in this batch (pass the whole corpus, or lose data)
+index(docs, record_manager, vectorstore, cleanup="incremental", source_id_key="<redacted>")
+```
+
+The book uses the 2025 `langchain` / `langchain_community` import paths. Check current docs before copying.
+
+**Bulk deletes can be asynchronous.** Rothman's dual-RAG build clears a Pinecone namespace with `delete_all` and upserts straight after. Pinecone performs the delete in the background, so it can sweep away vectors written after the call returned. The fix is to poll the index stats until the namespace is empty before writing (*Context Engineering for MAS*, ch. 3):
+
+```python
+# illustrative: needs a Pinecone account and an existing index
+index.delete(delete_all=True, namespace=ns)
+while index.describe_index_stats().namespaces.get(ns, {"vector_count": 0})["vector_count"] > 0:
+    time.sleep(2)      # the delete is async: wait, or later upserts may be wiped
+```
+
+The Handbook also stores two snapshots of each document in its feature store: one cleaned (for fine-tuning) and one chunked and embedded (for RAG). Then a new chunking or embedding choice doesn't mean re-crawling.
 
 ## Monitoring: metrics and checklist
 

@@ -1,5 +1,4 @@
 ---
-imported_hash: 7fe3b195f9198971
 title: LC 199 — Binary Tree Right Side View
 summary: Given the root of a binary tree, imagine standing to its right; return the values of the nodes visible from top to bottom, i.e.
 order: 64

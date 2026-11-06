@@ -1,5 +1,4 @@
 ---
-imported_hash: 43635ba89cf1808f
 title: Retrieval Improvement Research
 summary: 'Status: Research — evaluating options after initial ablation run (2026-05-09)'
 order: 6

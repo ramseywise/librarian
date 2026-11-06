@@ -1,5 +1,4 @@
 ---
-imported_hash: b335b7cc45eb8f9a
 title: 14 — Calibrating Judges with Checks and Critiques
 summary: Note 15's calibration tells you how often a judge is wrong.
 order: 15

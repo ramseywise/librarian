@@ -1,5 +1,4 @@
 ---
-imported_hash: 1adea02989fc9210
 title: Visualisation and storytelling
 summary: How to choose a chart, draw it well in Python and JavaScript, and use it to get a decision made.
 order: 1

@@ -1,5 +1,4 @@
 ---
-imported_hash: 287a5b6c6a26bc66
 title: LC 123 — Best Time to Buy and Sell Stock III
 summary: Given an array prices where prices[i] is a stock's price on day i, find the maximum profit achievable with at most two transactions.
 order: 53

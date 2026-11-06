@@ -1,5 +1,4 @@
 ---
-imported_hash: da8216e2094b1f8b
 title: Number of Islands — First-Principles Thinking Guide
 summary: There's no simpler approach than DFS/BFS for connected components.
 order: 158

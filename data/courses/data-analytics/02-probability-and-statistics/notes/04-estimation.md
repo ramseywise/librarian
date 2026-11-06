@@ -1,5 +1,4 @@
 ---
-imported_hash: a141744eb5b77d68
 title: 4 — Estimation
 summary: Larkspur's finance lead asks for revenue per user from a sample of 4,000 users.
 order: 5

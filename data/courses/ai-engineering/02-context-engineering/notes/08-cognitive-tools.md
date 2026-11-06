@@ -1,5 +1,4 @@
 ---
-imported_hash: c210900a34756368
 title: 8 — Cognitive Tools and Prompt Programs
 summary: The key design choice is that each tool runs in its own context.
 order: 9

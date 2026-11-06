@@ -1,5 +1,4 @@
 ---
-imported_hash: 845ee971fbfda41a
 title: LC 41 — First Missing Positive
 summary: Given an unsorted integer array nums, return the smallest positive integer (starting from 1) that does not appear in it.
 order: 24

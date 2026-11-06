@@ -289,3 +289,57 @@ def test_cli_dispatch(capsys: pytest.CaptureFixture[str]) -> None:
     assert "smoke-labs" in capsys.readouterr().out
     assert cli(["courses", "check", "nope"]) == 2
     assert cli(["courses", "review", "nope"]) == 2
+
+
+# --- concept homes --------------------------------------------------------------------------------
+
+
+def _concept_registry(tmp_path: Path) -> Path:
+    registry = {
+        "concepts": {
+            "softmax": {
+                "pattern": "\\bsoftmax\\b",
+                "homes": [
+                    "generative-ai/01-a/notes/01-home.md#softmax",
+                    "data-science/01-b/notes/09-deep.md",
+                ],
+            }
+        }
+    }
+    return write(tmp_path / "concept_homes.json", json.dumps(registry))
+
+
+def _concept_issues(courses: Path, registry: Path) -> list[dict]:
+    issues = curriculum_map.build(courses, None, registry)["issues"]
+    return [i for i in issues if i["kind"] == "concept_unlinked"]
+
+
+def test_concept_homes_report_only_the_unlinked_use(courses: Path, tmp_path: Path) -> None:
+    write(
+        courses / "generative-ai/01-a/notes/01-home.md",
+        note("# Home\n\n## Softmax\n\nSoftmax lives here.\n"),
+    )
+    write(
+        courses / "generative-ai/01-a/notes/02-linked.md",
+        note("A [softmax](01-home.md#softmax) again.\n"),
+    )
+    write(
+        courses / "generative-ai/01-a/notes/03-unlinked.md",
+        note("intro\n\nThe Softmax of the scores.\n"),
+    )
+    write(courses / "generative-ai/01-a/notes/04-fenced.md", note("```\nsoftmax(x)\n```\n"))
+    write(
+        courses / "generative-ai/01-a/notes/05-deeper.md",
+        note("softmax, see [deep](../../../data-science/01-b/notes/09-deep.md).\n"),
+    )
+    write(courses / "data-science/01-b/notes/09-deep.md", note("softmax in depth\n"))
+    found = _concept_issues(courses, _concept_registry(tmp_path))
+    assert [i["path"] for i in found] == ["generative-ai/01-a/notes/03-unlinked.md"]
+    assert "line 6" in found[0]["detail"]
+    assert "generative-ai/01-a/notes/01-home.md#softmax" in found[0]["detail"]
+    assert "concept_unlinked" in curriculum_map.INFO_KINDS
+
+
+def test_concept_homes_without_a_registry_report_nothing(courses: Path, tmp_path: Path) -> None:
+    write(courses / "generative-ai/01-a/notes/03-unlinked.md", note("The softmax.\n"))
+    assert _concept_issues(courses, tmp_path / "missing.json") == []

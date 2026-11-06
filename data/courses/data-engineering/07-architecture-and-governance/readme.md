@@ -1,5 +1,4 @@
 ---
-imported_hash: 67321c7a057c21d4
 title: 07 Architecture and Governance
 summary: 'Everything else: references.md.'
 order: 1

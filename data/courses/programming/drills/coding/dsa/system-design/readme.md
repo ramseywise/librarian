@@ -1,5 +1,4 @@
 ---
-imported_hash: a67985a10cd41087
 title: System Design
 summary: ''
 order: 212

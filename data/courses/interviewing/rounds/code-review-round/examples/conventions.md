@@ -1,5 +1,4 @@
 ---
-imported_hash: 775b7a5a80080f91
 title: Conventions & Tunables
 summary: Based on the real SANYI drill from the librarian wiki.
 order: 20

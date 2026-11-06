@@ -1,5 +1,4 @@
 ---
-imported_hash: 3b535887863af13f
 title: Create a 2D NumPy array with a diagonal of ones, and zeros everywhere else
 summary: x = np.array([[1, 2, 3], [4, 5, 6]]) print("x:\n{}".format(x))
 order: 22

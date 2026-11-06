@@ -1,5 +1,4 @@
 ---
-imported_hash: 29b20906ad79875a
 title: '13 · Case Study: Evaluating a Multi-Agent Support System'
 summary: The notes teach the method. This note shows where the method bends when it meets a real backlog, a small calibration sample and a grader that was being fed the wrong input.
 order: 14

@@ -1,5 +1,4 @@
 ---
-imported_hash: ae32f9c5cf46e974
 title: Neural network basics
 summary: The sklearn MLPClassifier in supervised learning hides all of this.
 order: 2
@@ -50,6 +49,8 @@ Why a non-linear $g$ at all: a stack of linear layers multiplies out to one line
 Backpropagation is the chain rule applied from the loss back through each layer, reusing what the forward pass computed ([doi:10.1038/323533a0](https://doi.org/10.1038/323533a0) (Rumelhart, Hinton and Williams, Nature 1986)). For cross-entropy with a sigmoid output, $dZ^{[L]} = A^{[L]} - Y$. Then for each layer:
 
 $$dW^{[l]} = \tfrac{1}{m} dZ^{[l]} A^{[l-1]\top}, \quad db^{[l]} = \tfrac{1}{m}\textstyle\sum dZ^{[l]}, \quad dA^{[l-1]} = W^{[l]\top} dZ^{[l]}, \quad dZ^{[l-1]} = dA^{[l-1]} \odot g'(Z^{[l-1]})$$
+
+Here `dW` is shorthand for $\partial L / \partial W$, the gradient of the loss with respect to that layer's weights; [Vectors, matrix products and the gradient](../../01-classical-ml/notes/02-supervised-learning.md#vectors-matrix-products-and-the-gradient) builds it up for one linear layer.
 
 **Building your Deep Neural Network: Step by Step** (course 1, week 4) structures this as cached forward and backward functions. Here they are, cut down to the three the rest depend on:
 
@@ -336,7 +337,9 @@ The text notebooks' TF status (Sarkar Ch10a fixed; the condensed NLP course was 
 
 ## Is deep learning a different kind of model?
 
-A network with 4,810 parameters on 1,257 training digits has more parameters than rows, and by the counting logic of [bias and variance](../../01-classical-ml/notes/01-statistical-foundations.md) it should overfit badly. It does not, which is often offered as proof that deep learning breaks the old rules. Wilson argues it doesn't ([arXiv:2503.02113](https://arxiv.org/abs/2503.02113) (Wilson, ICML 2025)). Benign overfitting and double descent can be reproduced with plain linear models and described by long-standing frameworks such as PAC-Bayes and countable hypothesis bounds. The unifying idea is a soft inductive bias: keep a very flexible hypothesis space and prefer simpler solutions in it, rather than restrict the space. A high-order polynomial with order-dependent regularisation does the same thing, and parameter counting was always a poor proxy for complexity. What the paper does treat as distinctive is representation learning: most model classes fit weights over fixed basis functions, while a network learns the basis as well.
+A network with 4,810 parameters on 1,257 training digits has more parameters than rows, and by the counting logic of [bias and variance](../../01-classical-ml/notes/01-statistical-foundations.md) it should overfit badly. It does not, which is often offered as proof that deep learning breaks the old rules. Wilson argues it doesn't ([arXiv:2503.02113](https://arxiv.org/abs/2503.02113) (Wilson, ICML 2025)). Benign overfitting and double descent can be reproduced with plain linear models and described by long-standing frameworks such as PAC-Bayes and countable hypothesis bounds. Double descent itself dates to Opper et al. (1989), and the paper's own demonstrations are toy ones (a 150th-order polynomial, a Gaussian process on CIFAR-10 with noisy labels); the large-network evidence is cited from Lotfi et al. (2022), who bound a CIFAR-10 classifier's test error at 16.6% with at least 95% probability. The unifying idea is a soft inductive bias: keep a very flexible hypothesis space and prefer simpler solutions in it, rather than restrict the space. A high-order polynomial with order-dependent regularisation does the same thing, and parameter counting was always a poor proxy for complexity. What the paper does treat as distinctive is representation learning: most model classes fit weights over fixed basis functions, while a network learns the basis as well.
+
+A standard network still fixes one thing, the activation function. Kolmogorov-Arnold Networks learn it in place of weights, as a spline on each edge ([arXiv:2404.19756](https://arxiv.org/abs/2404.19756) (Liu et al., ICLR 2025)). Their authors limit the claim to small-scale science problems and test no KAN on images or text. On 27 Feynman equations, with width-5 networks of depth 2 to 6, taking the best over 3 seeds and the depths, they find the two "behave comparably on average". In their admittedly unoptimised code KANs train about 10× slower at the same parameter count. On DeepMind's knot-invariant task, where a 200-parameter KAN reached 81.6% against 78% for a 300,000-parameter MLP, they report another lab's unpublished MLP reaching 80% with 60 parameters.
 
 The practical reading is that train and test curves stay your instruments, as in classical ML, and a network's parameter count alone tells you little about whether it will overfit. If reading those curves is new, [training and tuning](../../01-classical-ml/notes/09-training-and-tuning.md#reading-performance-during-training) is the place to learn it.
 

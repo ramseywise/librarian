@@ -1,5 +1,4 @@
 ---
-imported_hash: 84750bfa9acc036e
 title: 3 — Experimentation at Scale
 summary: Larkspur now runs fifty experiments at once, and the same three messages arrive every week.
 order: 4

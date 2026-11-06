@@ -1,5 +1,4 @@
 ---
-imported_hash: 796158f6297e0e4c
 title: Sources — Leadership Rounds
 summary: These rounds are deliberately open-ended — any topic may surface.
 order: 47

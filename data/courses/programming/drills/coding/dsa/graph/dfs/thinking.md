@@ -1,5 +1,4 @@
 ---
-imported_hash: 3118c87a36a9ec5e
 title: DFS Graph Traversal — First-Principles Thinking Guide
 summary: DFS uses implicit recursion (or explicit stack).
 order: 156

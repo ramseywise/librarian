@@ -1,5 +1,4 @@
 ---
-imported_hash: 4daa529cec0caac4
 title: 1 — Regular Expressions
 summary: 're.search(r"^From: ", line) # a Match or None: is the pattern anywhere?'
 order: 7

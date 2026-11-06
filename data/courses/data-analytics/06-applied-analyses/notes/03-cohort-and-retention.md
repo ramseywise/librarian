@@ -1,5 +1,4 @@
 ---
-imported_hash: 840d147250644c4a
 title: 'Cohort and retention: did we lose customers, or buy worse ones?'
 summary: Fernhill's chief marketing officer has the 2025 numbers.
 order: 4

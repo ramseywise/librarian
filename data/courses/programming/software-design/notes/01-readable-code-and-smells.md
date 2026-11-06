@@ -1,5 +1,4 @@
 ---
-imported_hash: f6c79f24f58c01e5
 title: 1 — Readable code and smells
 summary: Use that as the test for every rule in this chapter.
 order: 2

@@ -10,13 +10,11 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-import yaml
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from apps.api.routers import courses as courses_routes
 from librarian.courses import catalog as courses
-from librarian.courses import importer as ic
 from librarian.courses import overlay, sources
 from librarian.wiki.course_leaks import scan_public_lessons
 
@@ -169,15 +167,6 @@ def test_private_overlay_module_is_not_marked_private(client: TestClient) -> Non
     assert "private" not in mod
 
 
-def test_split_readings_keeps_urls_public() -> None:
-    items = [
-        {"title": "a", "source": "x/sources/a.pdf"},
-        {"title": "b", "source": "https://arxiv.org/abs/1"},
-    ]
-    public, private = overlay.split_readings(items)
-    assert [r["title"] for r in public] == ["b"] and [r["title"] for r in private] == ["a"]
-
-
 # ── Sources links: COURSE_SOURCES_DIR, served locally ────────────────────────
 
 
@@ -287,88 +276,14 @@ def test_config_defaults_and_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     assert s.course_sources_dir == tmp_path and not s.serve_course_sources
 
 
-# ── Importer: figures and readings go to the mirror ───────────────────────────
-
-
-@pytest.fixture
-def sibling(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
-    source = tmp_path / "lae"
-    mod = source / "generative-ai" / "01-llm-fundamentals"
-    write(mod / "sources" / "images" / "fig.png", b"\x89PNG")
-    write(mod / "img" / "plain.png", b"\x89PNG")
-    write(mod / "sources" / "book.pdf", b"%PDF")
-    write(mod / "sources" / "paper.pdf", b"%PDF")
-    write(
-        mod / "01-intro.md",
-        "# Intro\n\n![f](sources/images/fig.png) ![p](img/plain.png)\n\n[b](sources/book.pdf)\n",
-    )
-    write(source / "generative-ai" / "README.md", "# Gen AI\n")
-    dest = tmp_path / "courses"
-    monkeypatch.setattr(ic, "COURSES_DIR", dest)
-    return source, dest
-
-
-def _sync(source: Path) -> dict[str, int]:
-    return ic.apply(ic.build_plan(source, ["generative-ai"]), ["generative-ai"], dry_run=False)
-
-
-def test_import_sends_figures_to_the_mirror_and_keeps_the_link(sibling: tuple[Path, Path]) -> None:
-    source, dest = sibling
-    _sync(source)
-    mod = "generative-ai/01-llm-fundamentals"
-    assert (dest / "private" / mod / "assets" / "sources" / "images" / "fig.png").is_file()
-    assert not list((dest / "generative-ai").rglob("sources/images"))
-    assert any((dest / mod / "assets").rglob("plain.png"))  # ordinary figures stay public
-    body = next((dest / mod).glob("*intro*.md")).read_text()
-    assert "![f](assets/sources/images/fig.png)" in body  # same public link
-    assert ic._recorded_hash(body)
-
-
-def test_import_sends_readings_to_the_mirror(sibling: tuple[Path, Path]) -> None:
-    source, dest = sibling
-    _sync(source)
-    mod = "generative-ai/01-llm-fundamentals"
-    public = yaml.safe_load((dest / mod / "_module.md").read_text().split("---\n")[1])
-    assert "readings" not in public and public["readings_count"] == 2
-    private = yaml.safe_load((dest / "private" / mod / "_module.md").read_text().split("---\n")[1])
-    assert set(private) == {"imported_hash", "readings"}
-    assert {r["source"] for r in private["readings"]} == {
-        "generative-ai/01-llm-fundamentals/sources/book.pdf",
-        "generative-ai/01-llm-fundamentals/sources/paper.pdf",
-    }
-
-
-def test_reimport_is_idempotent_with_the_mirror(sibling: tuple[Path, Path]) -> None:
-    source, _ = sibling
-    _sync(source)
-    stats = _sync(source)
-    assert stats["created"] == stats["updated"] == stats["removed"] == stats["assets"] == 0
-    assert stats["kept_local_edit"] == 0
-
-
-def test_import_keeps_url_readings_public(tmp_path: Path) -> None:
-    public, private = overlay.split_readings(
-        [{"title": "w", "source": "http://x.org/a"}, {"title": "p", "source": "m/sources/a.pdf"}]
-    )
-    assert len(public) == 1 and len(private) == 1
-
-
-def test_import_never_recreates_the_deleted_orphan_asset_dirs(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    source = tmp_path / "lae"
-    # Last-sync layout: a module dir named like a deleted orphan, with an image beside a note.
-    mod = source / "data-science" / "ng-s-deep-learning-nbks"
-    write(mod / "img" / "a.png", b"\x89PNG")
-    write(mod / "01-note.md", "# Note\n\n![a](img/a.png)\n")
-    write(source / "data-science" / "README.md", "# DS\n")
-    dest = tmp_path / "courses"
-    monkeypatch.setattr(ic, "COURSES_DIR", dest)
-    ic.apply(ic.build_plan(source, ["data-science"]), ["data-science"], dry_run=False)
-    assert not list(dest.rglob("a.png"))
-    assert not (dest / "private" / "data-science" / "ng-s-deep-learning-nbks").exists()
-    for name in ic.DELETED_ASSET_MODULES:
-        assert not list(dest.rglob(f"{name}/assets"))
+# Orphan asset directories of retired practice courses (third-party images, deleted 2026-11-06).
+DELETED_ASSET_MODULES = (
+    "ng-s-deep-learning-nbks",
+    "datatalks-mlops",
+    "datatalks-data-engineering",
+    "intro-to-machine-learning-in-python",
+    "text-analytics-with-python",
+)
 
 
 def test_repo_has_no_tracked_or_public_source_figures() -> None:
@@ -382,5 +297,5 @@ def test_repo_has_no_tracked_or_public_source_figures() -> None:
         and overlay.is_sources_asset(p.relative_to(courses_dir).parts)
     ]
     assert public == []
-    for name in ic.DELETED_ASSET_MODULES:
+    for name in DELETED_ASSET_MODULES:
         assert not any(courses_dir.glob(f"*/{name}"))

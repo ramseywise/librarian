@@ -1,5 +1,4 @@
 ---
-imported_hash: 1585db358f25c7c8
 title: 5 — Hallucination and base versus assistant
 summary: Our ticket assistant tells a customer that refunds take fourteen days.
 order: 6

@@ -1,5 +1,4 @@
 ---
-imported_hash: fc40dbd6d1792acf
 title: 'Lab: a loop with a scorekeeper'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
 order: 12

@@ -1,5 +1,4 @@
 ---
-imported_hash: e2379e11f1734822
 title: BFS Graph Traversal — First-Principles Thinking Guide
 summary: BFS uses a FIFO queue. Enqueue the source, then repeatedly dequeue a node, process it, and enqueue its unvisited neighbors.
 order: 152

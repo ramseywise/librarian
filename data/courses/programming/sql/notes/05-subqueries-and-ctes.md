@@ -1,5 +1,4 @@
 ---
-imported_hash: 711a5584ce6871ae
 title: 5 — Subqueries and CTEs
 summary: Planners often rewrite these as joins. When they can't, a correlated subquery over a large table is slow.
 order: 6

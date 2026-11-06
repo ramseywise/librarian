@@ -1,5 +1,4 @@
 ---
-imported_hash: ce9d1402501cc15a
 title: LC 37 — Sudoku Solver
 summary: Given a 9x9 Sudoku board with some cells filled with digits 1-9 and the rest marked .
 order: 23

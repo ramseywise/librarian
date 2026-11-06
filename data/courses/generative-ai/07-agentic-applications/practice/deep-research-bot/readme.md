@@ -1,5 +1,4 @@
 ---
-imported_hash: 4f6805c070befb6a
 title: London Fully Connected 2025 Workshop
 summary: This repo contains the material for the "Building Agents from Scratch" workshop.
 order: 11

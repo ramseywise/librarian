@@ -1,5 +1,4 @@
 ---
-imported_hash: d67c8aa659b0fbf9
 title: Applied analyses
 summary: Complete analyses, each going from a business question through a dataset to a recommendation someone could act on.
 order: 1

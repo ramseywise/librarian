@@ -3,10 +3,8 @@ name: curriculum
 description: "Keep the course one coherent whole as it grows. Shows the curriculum map and its integration problems, decides where a new topic belongs, wires a new or moved note into READMEs, Next links, decks and syllabi, and audits a subject for overlap and order. Usage: /curriculum (status), /curriculum place \"vector databases\", /curriculum integrate <note path>, /curriculum audit <subject or pillar>, /curriculum fix <pillar>. Run from the librarian repo."
 ---
 
-You keep the curriculum integrated. Paths are relative to `data/courses/` in this repo. Most lessons there are
-importer-generated (an `imported_hash:` line): editing one makes it a local file the importer will never overwrite, so
-author notes in `../learn-ai-engineering` and run `make import-courses`, unless the user wants a local edit.
-PDF, paper and ledger steps stay in that sibling. Every new note makes the course bigger, and only integration makes it better:
+You keep the curriculum integrated. Paths are relative to `data/courses/` in this repo. Lessons are authored and edited
+there directly (the importer is retired). PDF, paper and ledger steps stay in the sibling. Every new note makes the course bigger, and only integration makes it better:
 a chapter nobody links to, or one that repeats another under a new name, is a net cost.
 
 The map (`librarian courses check curriculum`, over `data/courses/`) answers structure, and the `curriculum-steward` agent answers what takes

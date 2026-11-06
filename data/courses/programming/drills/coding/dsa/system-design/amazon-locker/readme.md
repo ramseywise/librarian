@@ -1,5 +1,4 @@
 ---
-imported_hash: 4204190c824f63cc
 title: Design Amazon Locker
 summary: Design a secure, scalable, and efficient system for an Amazon Locker service.
 order: 213

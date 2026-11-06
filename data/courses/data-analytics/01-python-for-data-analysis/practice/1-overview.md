@@ -1,5 +1,4 @@
 ---
-imported_hash: d77de9a131dd5160
 title: 1    | Introduction to Python
 summary: 'gen = squares() for x in gen: print(x, end='' '')'
 order: 9

@@ -1,5 +1,4 @@
 ---
-imported_hash: a8c1adc0053b86d4
 title: Unsupervised Learning
 summary: Blocks run top to bottom from this notes/ folder.
 order: 6
@@ -149,7 +148,7 @@ PCA   ARI of 10 clusters on the 2-D picture vs true digit: 0.39
 t-SNE ARI of 10 clusters on the 2-D picture vs true digit: 0.89
 ```
 
-On the 8×8 digits, PCA's 2-D projection overlaps most classes; t-SNE separates nearly all ten without seeing labels ([JMLR 2008](https://www.jmlr.org/papers/v9/vandermaaten08a.html), van der Maaten and Hinton). Rules for reading a t-SNE plot: cluster sizes and distances between clusters mean little; run more than one `perplexity`; never use it as features for a model. UMAP is the faster alternative with a claim to preserve more global structure, and it can map new points ([arXiv:1802.03426](https://arxiv.org/abs/1802.03426), McInnes et al., preprint). [NLP embeddings](../../03-nlp/notes/04-embeddings-and-similarity.md) uses t-SNE to plot word vectors.
+On the 8×8 digits, PCA's 2-D projection overlaps most classes; t-SNE separates nearly all ten without seeing labels ([JMLR 2008](https://www.jmlr.org/papers/v9/vandermaaten08a.html), van der Maaten and Hinton). Rules for reading a t-SNE plot: cluster sizes and distances between clusters mean little; run more than one `perplexity`; never use it as features for a model. UMAP is from the same family of neighbour-graph methods and usually faster ([arXiv:1802.03426](https://arxiv.org/abs/1802.03426), McInnes et al., preprint). In the authors' laptop timings, with one figure per cell and no spread, a single-core UMAP took 87 seconds on MNIST against 292 for multi-core FIt-SNE and 1,450 for Barnes-Hut t-SNE, though on these same 8×8 digits it was 9 against 17 for Barnes-Hut. On GoogleNews subsamples they find its scaling with sample count comparable to FIt-SNE's. The authors present UMAP as usable beyond plots, for later clustering or anomaly detection, which the paper does not evaluate; the rule above about not using an embedding as features is this note's caution for t-SNE. Its global-structure claim is hedged: the paper says "arguably", credits the Laplacian Eigenmaps initialisation and the cross-entropy objective, and notes that t-SNE started the same way can match UMAP on one measure. It treats mapping new points as future work, with no method or evaluation. [NLP embeddings](../../03-nlp/notes/04-embeddings-and-similarity.md) uses t-SNE to plot word vectors.
 
 ---
 
@@ -422,7 +421,7 @@ for i in range(301):
 300 34128
 ```
 
-Ex8 checks the gradient numerically, adds a new user's ratings, **mean-normalises** each movie's ratings (otherwise a user with no ratings gets predicted 0 for everything), and optimises with `scipy.optimize.fmin_cg`. This is low-rank matrix factorisation: the same idea as PCA and NMF, fitted only on observed entries. It is the ancestor of the embedding models in [NLP embeddings](../../03-nlp/notes/04-embeddings-and-similarity.md): $x^{(i)}$ is a learned movie embedding.
+Ex8 checks the [gradient](02-supervised-learning.md#vectors-matrix-products-and-the-gradient) numerically, adds a new user's ratings, **mean-normalises** each movie's ratings (otherwise a user with no ratings gets predicted 0 for everything), and optimises with `scipy.optimize.fmin_cg`. This is low-rank matrix factorisation: the same idea as PCA and NMF, fitted only on observed entries. It is the ancestor of the embedding models in [NLP embeddings](../../03-nlp/notes/04-embeddings-and-similarity.md): $x^{(i)}$ is a learned movie embedding.
 
 ---
 
@@ -634,4 +633,4 @@ An AUC of 0.870 means a random member outranks a random non-member 87% of the ti
 
 ## Next
 
-[Clustering categorical and mixed data](05b-clustering-categorical-and-mixed-data.md): what to feed these methods when the columns aren't all numbers, and how to tell if the groups mean anything. After that, [Ensembles](06-ensembles.md) combines many trees through bagging, random forests and gradient boosting.
+[Clustering categorical and mixed data](05b-clustering-categorical-and-mixed-data.md): what to feed these methods when the columns aren't all numbers, and how to tell if the groups mean anything.

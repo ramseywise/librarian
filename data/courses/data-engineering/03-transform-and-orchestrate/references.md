@@ -1,5 +1,4 @@
 ---
-imported_hash: cd662c8c63556214
 title: References
 summary: No research paper changes a claim in this pillar.
 order: 7

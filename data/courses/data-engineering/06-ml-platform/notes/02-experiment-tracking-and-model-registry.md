@@ -1,5 +1,4 @@
 ---
-imported_hash: a48bd75c13f68efd
 title: Experiment tracking and the model registry
 summary: Six months after a model ships, someone asks why it predicted what it did, and the honest answer is that nobody knows which data it was trained on, which parameters it used, or which of a dozen files in a bucket is the one in production.
 order: 3

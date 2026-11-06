@@ -10,7 +10,6 @@ torch, fastapi) load only for the verbs that need them.
     librarian ingest triage|lint-raw                   gate a raw source, validate raw filenames
     librarian ingest notion|linear|pdf                 pull a source into data/raw/
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
-    librarian courses import                           sync coursework into data/courses/
     librarian courses check chapters|curriculum|links|drills|manifest|crosswalk|smoke-labs
     librarian courses review findings|signals|score-eval
     librarian mcp [--rebuild]                          the wiki MCP server (stdio)
@@ -77,9 +76,6 @@ GROUPS: dict[str, dict[str, Verb]] = {
         "bookmarks": Verb("librarian.ingest.scrape_bookmarks:main", help="saved web pages"),
     },
     "courses": {
-        "import": Verb(
-            "librarian.courses.importer:main", help="sync coursework into data/courses/"
-        ),
         "check": Verb("librarian.cli:_run_check", help="chapters|curriculum|links|drills|..."),
         "review": Verb("librarian.cli:_run_review", help="findings|signals|score-eval"),
     },

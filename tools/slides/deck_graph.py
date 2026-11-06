@@ -71,7 +71,7 @@ def lecture_from(spec_path: Path, data: dict, root: Path = ROOT) -> Lecture:
 
 
 def readme_of(pillar: Path) -> Path | None:
-    """The module's readme. The importer writes `readme.md`; test fixtures and new modules may not."""
+    """The module's readme. Modules use `readme.md`; test fixtures and new modules may not."""
     for name in ("readme.md", "README.md"):
         if (pillar / name).is_file():
             return pillar / name

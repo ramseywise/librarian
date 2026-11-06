@@ -1,5 +1,4 @@
 ---
-imported_hash: 8eeb18687855f114
 title: 01 — Prompt Engineering
 summary: Prompt engineering is the craft of writing instructions and examples that consistently elicit desired outputs from language models.
 order: 1

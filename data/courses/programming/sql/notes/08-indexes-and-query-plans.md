@@ -1,5 +1,4 @@
 ---
-imported_hash: da1f87aae208716f
 title: 8 — Indexes and Query Plans
 summary: 'Most databases use a B-tree: a balanced, sorted tree of keys.'
 order: 9

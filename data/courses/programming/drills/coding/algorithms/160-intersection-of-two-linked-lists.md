@@ -1,5 +1,4 @@
 ---
-imported_hash: 77b11bf8d0c0972a
 title: LC 160 — Intersection of Two Linked Lists
 summary: Given the heads of two singly linked lists headA and headB, return the node where they first intersect (share the same node by reference, so the two lists merge into one tail from there).
 order: 63

@@ -1,5 +1,4 @@
 ---
-imported_hash: 234df99515adf541
 title: Self-attention forward pass
 summary: Implement a single self-attention forward pass (scaled dot-product attention) in NumPy.
 order: 242

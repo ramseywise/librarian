@@ -1,5 +1,4 @@
 ---
-imported_hash: a926807bfb1af003
 title: stats
 summary: An advanced statistics library with an awesome documentation.
 order: 13

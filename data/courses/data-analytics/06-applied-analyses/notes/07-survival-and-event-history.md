@@ -1,5 +1,4 @@
 ---
-imported_hash: 347485baec9921aa
 title: 'Survival and event history: when will a customer leave?'
 summary: Fernhill now sells a monthly subscription box, and new subscribers sometimes get a welcome call.
 order: 8

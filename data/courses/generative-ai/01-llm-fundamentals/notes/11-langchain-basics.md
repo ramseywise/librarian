@@ -1,5 +1,4 @@
 ---
-imported_hash: d0b2f0de88ffc722
 title: 11 — LangChain basics
 summary: By now the ticket assistant has a prompt template, a parser, a retry and a model call, all held together by hand.
 order: 12

@@ -1,5 +1,4 @@
 ---
-imported_hash: 6a7cff20ef7ba29e
 title: Jump Game
 summary: Given an integer array nums, you are initially positioned at the first index of the array.
 order: 162

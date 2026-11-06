@@ -1,5 +1,4 @@
 ---
-imported_hash: 34ea05b0b90df034
 title: 4 — A Langfuse MCP Server
 summary: The judge pipeline of chapter 3 runs weekly and answers questions someone already thought of.
 order: 5

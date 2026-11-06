@@ -1,5 +1,4 @@
 ---
-imported_hash: a2d097887698ecb1
 title: 07 — Inference Engineering
 summary: 'Inference engineering is the discipline of making a model answer fast enough and cheaply enough to ship: how requests are batched and scheduled, where the KV cache lives, how prefill and decode are split across hardware, and what the GPU is…'
 order: 1

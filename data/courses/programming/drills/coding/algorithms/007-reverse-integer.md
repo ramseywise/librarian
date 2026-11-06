@@ -1,5 +1,4 @@
 ---
-imported_hash: 1950d53b39f2c7ec
 title: LC 7 — Reverse Integer
 summary: Given a signed 32-bit integer x, return x with its digits reversed, keeping the sign.
 order: 9

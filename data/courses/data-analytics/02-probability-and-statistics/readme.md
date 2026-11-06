@@ -1,5 +1,4 @@
 ---
-imported_hash: ac44bf666570f2b4
 title: 02 — Probability and Statistics
 summary: 'The statistics an analyst uses in practice: looking at data before summarising it, the rules of probability, the distributions behind common metrics, estimates with intervals, hypothesis tests, and regression as an estimate with a standard…'
 order: 1

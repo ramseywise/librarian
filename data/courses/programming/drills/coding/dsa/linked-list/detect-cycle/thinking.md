@@ -1,5 +1,4 @@
 ---
-imported_hash: 8f70e0724bfa9f27
 title: Detect Cycle in Linked List — First-Principles Thinking Guide
 summary: 'Use two pointers: slow (moves 1 step) and fast (moves 2 steps).'
 order: 175

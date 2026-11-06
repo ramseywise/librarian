@@ -1,5 +1,4 @@
 ---
-imported_hash: b3ac02ebde39214a
 title: Maximum Of Subarrays
 summary: ''
 order: 116

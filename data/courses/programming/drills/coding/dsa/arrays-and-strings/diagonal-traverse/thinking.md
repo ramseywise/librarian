@@ -1,5 +1,4 @@
 ---
-imported_hash: af42e3c8cbc93931
 title: Diagonal Traverse — First-Principles Thinking Guide
 summary: ''
 order: 103

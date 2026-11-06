@@ -1,5 +1,4 @@
 ---
-imported_hash: ad3cdc6e47600d69
 title: Recruiter / HR Screen
 summary: Communication and enthusiasm are scored. Your story is pattern-matched against the req.
 order: 57

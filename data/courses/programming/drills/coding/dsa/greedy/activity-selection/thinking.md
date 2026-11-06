@@ -1,5 +1,4 @@
 ---
-imported_hash: 6323e074de054f84
 title: Activity Selection — First-Principles Thinking Guide
 summary: This is optimal — any algorithm must examine all intervals, and sorting is a known lower bound for comparison-based approaches.
 order: 161

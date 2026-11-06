@@ -1,5 +1,4 @@
 ---
-imported_hash: 8d644a94ff64ef68
 title: 01 — Storage and compute foundations
 summary: 'The logic that the rest of data engineering rests on: what a data system promises, how data is encoded and laid out, what happens when two writers meet, how data is split and copied across machines, what goes wrong there, how machines agree…'
 order: 1

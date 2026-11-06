@@ -1,5 +1,4 @@
 ---
-imported_hash: 037dd59649d7eed6
 title: System Design Round — Study Guide
 summary: The method for the highest-weight technical round.
 order: 65

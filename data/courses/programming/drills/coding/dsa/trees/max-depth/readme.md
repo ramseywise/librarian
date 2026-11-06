@@ -1,5 +1,4 @@
 ---
-imported_hash: b536930cea92e5d6
 title: Maximum Depth of Binary Tree
 summary: Given the root of a binary tree, return its maximum depth — the number of nodes along the longest path from root to leaf.
 order: 225

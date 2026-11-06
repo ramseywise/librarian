@@ -1,5 +1,4 @@
 ---
-imported_hash: ea9fe819d6f13a07
 title: Subarray Average of Size K — First-Principles Thinking Guide
 summary: 'Same pattern as Maximum Average Subarray: slide a window of size K across the array.'
 order: 206

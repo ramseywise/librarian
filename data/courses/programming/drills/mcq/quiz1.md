@@ -1,5 +1,4 @@
 ---
-imported_hash: 8326d699d500a363
 title: Quiz1
 summary: Question 1 of 15 Incorrect What is the primary purpose of a database index?
 order: 258

@@ -1,5 +1,4 @@
 ---
-imported_hash: 2a17f892110724fc
 title: References
 summary: ★ marks a paper whose text changed a claim in the notes.
 order: 12

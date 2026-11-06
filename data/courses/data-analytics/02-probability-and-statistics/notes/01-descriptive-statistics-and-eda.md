@@ -1,5 +1,4 @@
 ---
-imported_hash: 02be972836e564e3
 title: 1 — Descriptive Statistics and EDA
 summary: Someone hands you an extract and asks what the average customer spends.
 order: 2

@@ -1,5 +1,4 @@
 ---
-imported_hash: 4b593b3e87fdc112
 title: 3 — Data Vault and One Big Table
 summary: The star from the last chapter sits in the middle of a range.
 order: 4

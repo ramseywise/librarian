@@ -1,5 +1,4 @@
 ---
-imported_hash: a23b8163a987435e
 title: 02 — Ingest and modelling
 summary: How data enters a platform you control, and what shape it takes once it is there.
 order: 1

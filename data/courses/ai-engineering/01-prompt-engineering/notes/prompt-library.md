@@ -1,5 +1,4 @@
 ---
-imported_hash: 335a98082d994aab
 title: Prompt Library
 summary: When you have a task and a blank prompt, you need the shape that works for that task and the lesson behind it, not a theory.
 order: 13

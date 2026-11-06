@@ -1,5 +1,4 @@
 ---
-imported_hash: 85f680d8b2db8fe8
 title: 6 — Time Series
 summary: '"How did we do last month?" sounds like a groupby, and it nearly is.'
 order: 7

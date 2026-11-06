@@ -10,8 +10,8 @@ Checks:
 - every tracked .py file parses (seeded-bug and stub files are meant to fail when run, so nothing is run);
 - every tracked .sql seed loads into an in-memory SQLite database.
 
-The importer turns a drill's `concepts` into `wiki` links and keeps `units`, so neither is required here. Only .md
-files are imported, so in practice the .py and .sql checks find nothing in data/courses/; they run on a --root that
+A drill's `concepts` become `wiki` links and `units` is optional, so neither is required here. Only .md
+files are lessons, so in practice the .py and .sql checks find nothing in data/courses/; they run on a --root that
 holds the sources.
 
 Whether the answer is right is a judgement for the drill-reviewer agent, not this script.

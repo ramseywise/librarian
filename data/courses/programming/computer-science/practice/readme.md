@@ -1,5 +1,4 @@
 ---
-imported_hash: 614dde67e3cb7005
 title: 'Lab: build the structures you''ve been trusting'
 summary: None of this is code you'd ship, since Python's own versions are faster and better tested.
 order: 8

@@ -1,5 +1,4 @@
 ---
-imported_hash: d5e0d713120b8c35
 title: Credits expiry system
 summary: Build a credits management system (reported at OpenAI).
 order: 233

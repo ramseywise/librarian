@@ -1,5 +1,4 @@
 ---
-imported_hash: a1e0f3a549c9747d
 title: LC 148 — Sort List
 summary: Given the head of a singly linked list, sort it in ascending order and return the new head.
 order: 61

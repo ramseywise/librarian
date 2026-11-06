@@ -1,5 +1,4 @@
 ---
-imported_hash: 9b7fae45f7a51b4c
 title: LC 147 — Insertion Sort List
 summary: Given the head of a singly linked list, sort it in ascending order and return the new head.
 order: 60

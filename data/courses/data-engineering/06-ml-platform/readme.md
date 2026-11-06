@@ -1,5 +1,4 @@
 ---
-imported_hash: be4ce3c0370245e9
 title: 06 ML platform
 summary: 'Everything else: references.md.'
 order: 1

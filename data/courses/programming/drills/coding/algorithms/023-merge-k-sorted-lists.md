@@ -1,5 +1,4 @@
 ---
-imported_hash: f1054f29e4aecd4d
 title: LC 23 — Merge k Sorted Lists
 summary: Given an array of k linked lists, each already sorted in ascending order, merge them into a single sorted linked list and return its head.
 order: 17

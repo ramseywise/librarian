@@ -1,5 +1,4 @@
 ---
-imported_hash: 6d9894bc0f20ba0a
 title: 5 — Testing strategy
 summary: 'Fowler gives a good test of sufficiency: you have enough tests if bugs rarely escape to production and you''re rarely hesitant to change code for fear of causing them.'
 order: 6

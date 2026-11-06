@@ -1,5 +1,4 @@
 ---
-imported_hash: 70b1540a05fc9cb3
 title: Variational Autoencoder
 summary: In this assignment, you will build Variational Autoencoder, train it on the MNIST dataset, and play with its architecture and hyperparameters.
 order: 13

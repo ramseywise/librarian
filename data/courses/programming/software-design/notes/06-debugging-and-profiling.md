@@ -1,5 +1,4 @@
 ---
-imported_hash: 039f53a9f0db3af6
 title: 6 — Debugging and profiling
 summary: 'Google''s SRE book frames troubleshooting as the hypothetico-deductive method: from observations and an understanding of the system, propose causes, then test them, either by comparing state against the theory or by changing the system in a…'
 order: 7

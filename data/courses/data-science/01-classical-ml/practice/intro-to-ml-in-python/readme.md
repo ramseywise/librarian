@@ -1,5 +1,4 @@
 ---
-imported_hash: 67f65f545ae50205
 title: Introduction to Machine Learning with Python
 summary: This repository holds the code for the forthcoming book "Introduction to Machine Learning with Python" by Andreas Mueller and Sarah Guido.
 order: 21

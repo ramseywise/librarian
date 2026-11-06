@@ -1,5 +1,4 @@
 ---
-imported_hash: 85db1fd8e83f1b1d
 title: 4 — Durable Execution and Interrupts
 summary: An agent asks for approval on Friday, the process restarts over the weekend, and on Monday there is nothing to approve because the run lived on the call stack.
 order: 5

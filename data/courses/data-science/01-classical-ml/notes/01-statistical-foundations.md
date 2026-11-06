@@ -1,5 +1,4 @@
 ---
-imported_hash: e2e8bd2d48ac56a9
 title: Statistical Foundations
 summary: Code blocks in this pillar run top to bottom within a note, as in a notebook, from the note's own notes/ folder (uv run --with scikit-learn --with pandas --with matplotlib python).
 order: 2
@@ -20,7 +19,7 @@ Code blocks in this pillar run top to bottom within a note, as in a notebook, fr
 
 ## Why a readings layer comes first
 
-Classical machine learning is applied statistics with a compute budget. Every technique in notes 02–10 answers the same question, *how do I estimate a function from samples so that it holds on samples I haven't seen?*, and every failure is a failure to answer it: overfitting, leakage, a metric that rewards the wrong thing, a test set you peeked at.
+Classical machine learning is applied statistics with a compute budget. Every technique in this pillar answers the same question, *how do I estimate a function from samples so that it holds on samples I haven't seen?*, and every failure is a failure to answer it: overfitting, leakage, a metric that rewards the wrong thing, a test set you peeked at.
 
 This layer is mostly reading. The serious code starts in [02](02-supervised-learning.md). What this note does is fix the terms, demonstrate the bias-variance trade-off once, show the one API shape you will use everywhere, and say which book chapter to read alongside which later note.
 
@@ -203,7 +202,7 @@ print(knn.score(X_test, y_test))           # 4. score: accuracy for classifiers,
 0.9736842105263158
 ```
 
-That uniformity is a design decision. The scikit-learn paper names it as a goal of the library: a consistent, simple interface over many algorithms, written for non-specialists ([arXiv:1201.0490](https://arxiv.org/abs/1201.0490), Pedregosa et al., JMLR 2011).
+That uniformity is a design decision. The scikit-learn paper names it as a goal of the library: "API consistency" over many algorithms, for non-specialists, by code convention rather than inheritance, so that anything with a `fit` method can join in ([arXiv:1201.0490](https://arxiv.org/abs/1201.0490), Pedregosa et al., JMLR 2011). Consistency is a design claim there: the paper reports no usability study, and its one benchmark table measures time on a single dataset.
 
 Before fitting, **look at the data**. A scatter matrix (`pd.plotting.scatter_matrix(df, c=y_train)`) shows whether the classes separate on the raw features at all, and catches unit errors and outliers before they cost you a day.
 
@@ -225,28 +224,7 @@ Because every estimator has this shape, you can chain them ([03 — pipelines](0
 
 ## The shape of this pillar
 
-Classical ML is a tree, not a line: after supervised learning you can go to evaluation or to unsupervised learning in either order. Ensembles, boosting and interpretability build on the running example from [03](03-feature-engineering-and-pipelines.md).
-
-```text
-01 Statistical foundations
- ├── 02 Supervised ── 03 Features and pipelines ── 04 Evaluation
- ├── 05 Unsupervised             (independent of 04)
- └── 06 Ensembles ── 07 Boosting in practice ── 08 Interpretability
-           09 Training and tuning ── 10 Imbalance, errors and drift  (after 04 and 07)
-           then 02-deep-learning  (after 02 and 04)
-```
-
-| Layer | Notes | Depends on |
-|---|---|---|
-| Foundations | 01 | none |
-| Supervised | 02, 03 | 01 |
-| Evaluation | 04 | 02 |
-| Unsupervised | 05 | 01 (02 helps) |
-| Ensembles | 06, 07 | 02, 03, 04 |
-| Explaining a model | 08 | 04, 07 |
-| Training and trust | 09, 10 | 04, 07 |
-| Neural networks | [02-deep-learning](../../02-deep-learning/readme.md) | 02, 04 |
-| Bayesian methods | [data-analytics](../../../data-analytics/04-bayesian-analysis/readme.md) | 01 |
+The pillar runs as a line of six sections, and the [syllabus in the README](../readme.md#syllabus) gives the order. It opens with an overview of which problem each family answers. Note numbers are stable ids, not the reading order: the unsupervised notes 05 and 05b come after note 08, because they use the metrics, forests and SHAP taught before them. Neural networks follow in [deep learning](../../02-deep-learning/readme.md), and Bayesian methods are in [data analytics](../../../data-analytics/04-bayesian-analysis/readme.md).
 
 ## Reading map
 

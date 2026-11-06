@@ -1,5 +1,4 @@
 ---
-imported_hash: 0a869cd1d3d4c407
 title: 1 — The Threat Model
 summary: A customer writes to a support agent asking why a refund is late, and the agent looks up the order, searches the help centre, reads the customer's last few tickets, and drafts an email.
 order: 2

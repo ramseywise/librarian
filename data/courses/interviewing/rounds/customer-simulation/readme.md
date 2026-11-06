@@ -1,5 +1,4 @@
 ---
-imported_hash: 23b3049e0034a398
 title: Customer / Stakeholder Simulation
 summary: ~60% of candidates who pass coding fail this round.
 order: 37

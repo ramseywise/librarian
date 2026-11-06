@@ -1,5 +1,4 @@
 ---
-imported_hash: 6100c918ef76c8eb
 title: 7 — Concurrency
 summary: The GIL lets only one thread run Python bytecode at a time.
 order: 18

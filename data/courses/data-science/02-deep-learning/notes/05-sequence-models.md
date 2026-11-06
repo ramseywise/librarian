@@ -1,8 +1,7 @@
 ---
-imported_hash: 4d45a3f92160a689
 title: Sequence models
 summary: 'def sigmoid(z): return 1 / (1 + np.exp(-z))'
-order: 6
+order: 7
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/02-deep-learning/notes/05-sequence-models.md
@@ -460,7 +459,7 @@ the velocity model again, untuned large trees    0.353  [0.275, 0.421]
 GRU with each test window's order scrambled      0.149
 ```
 
-These are PR-AUC with 90% bootstrap intervals. Order clearly matters: totals can't see it, and scrambling the windows breaks the GRU. But gaps and the last three events are order written by hand, and they beat the GRU by 0.061 (interval 0.025 to 0.098), and they lead on all three generated datasets, by 0.021 and 0.009 on the other two. The GRU got one architecture and no search, and the pattern fits in a short window, so this isn't a verdict on GRUs. The last row is the warning: our first boosting settings overfit the few positives and handed the GRU a win it hadn't earned. Compare models that have each had a fair chance.
+These are PR-AUC with 90% bootstrap intervals. Order clearly matters: totals can't see it, and scrambling the windows breaks the GRU. But gaps and the last three events are order written by hand, and they beat the GRU by 0.061 (interval 0.025 to 0.098), and they lead on all three generated datasets, by 0.021 and 0.009 on the other two. The GRU got one architecture and no search, and the pattern fits in a short window, so this isn't a verdict on GRUs. The large-tree row is the warning: our first boosting settings overfit the few positives and handed the GRU a win it hadn't earned. Compare models that have each had a fair chance.
 
 PR-AUC, the cost rule and PSI are in [DS 01/10](../../01-classical-ml/notes/10-imbalance-errors-and-drift.md), and the lab applies them to events, with late chargebacks and a pattern that changes. There, every model fell below 0.01 while PSI stayed at 0.002 or less, as [concept shift is silent to PSI](../../01-classical-ml/notes/10-imbalance-errors-and-drift.md#drift-when-the-world-moves).
 
@@ -526,7 +525,7 @@ All the numbers on digits, memory, names and dates came from running the code sh
 
    <details><summary>Answer</summary>
 
-   Only the second, and only for boosting: 0.528 PR-AUC on days 360 to 420, against 0.006 for the mature-labels rule and 0.030 for the GRU. Mature labels hold none of the new pattern, since it's younger than 75 days, while everything reported holds 61 such frauds. Waiting for mature labels stops unreported fraud counting as clean, and it blinds you to change. These numbers describe this generator and one run.
+   Only the second, and for both families: on days 360 to 420, boosting reaches 0.528 PR-AUC and the GRU 0.491, against 0.006 and 0.005 on the mature-labels rule. What decides it is what the labels hold, not the model. Mature labels hold none of the new pattern, since it's younger than 75 days, while everything reported holds 61 such frauds, of which the GRU trains on 54 after holding out a random tenth to checkpoint on. Waiting for mature labels stops unreported fraud counting as clean, and it blinds you to change. These numbers describe this generator and one run, so don't read the gap between 0.528 and 0.491 as a ranking.
 
    </details>
 

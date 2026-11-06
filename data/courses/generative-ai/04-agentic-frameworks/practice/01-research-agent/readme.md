@@ -1,5 +1,4 @@
 ---
-imported_hash: 914e90595d901f8c
 title: 'Lab: one research agent, built several ways'
 summary: The pillar's running example. One agent answers "Why do framework agents get stuck in loops, and what stops them?" over a six-document corpus, and it is built with no framework, in LangGraph and in Google ADK.
 order: 9

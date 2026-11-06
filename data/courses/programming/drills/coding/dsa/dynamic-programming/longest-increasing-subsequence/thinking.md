@@ -1,5 +1,4 @@
 ---
-imported_hash: 9116edd7f0588d5e
 title: Longest Increasing Subsequence — First-Principles Thinking Guide
 summary: 'i=1 (9): no j where nums[j]<9 in valid range except none → dp[1]=1 i=2 (2): no j where nums[j]<2 → dp[2]=1 i=3 (5): j=2: nums[2]=2<5 → dp[3]=max(1, 1+1)=2 i=4 (3): j=2: nums[2]=2<3 → dp[4]=max(1, 1+1)=2 i=5 (7): j=2: 2<7→dp=2, j=3: 5<7→dp=m…'
 order: 149

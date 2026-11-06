@@ -1,5 +1,4 @@
 ---
-imported_hash: 8f0710d69eb3415c
 title: 'Drills: the gym'
 summary: Practice by language and topic, not a sequence.
 order: 1
@@ -15,8 +14,8 @@ material lives in the [curriculum](../../README.md); interview format and round 
 practice links to chapters, chapters never depend on practice. [`practice/CROSSWALK.md`](../../practice/CROSSWALK.md)
 maps each curriculum unit to the drills and guides that test it.
 
-librarian imports this folder as the **drills** module of its Programming course
-(`make import-courses`): every tracked `.md` here becomes a lesson, each track folder a section. A
+This folder is the **drills** module of the Programming course: every tracked `.md` here is a
+lesson, each track folder a section. A
 file with `track:` in its frontmatter feeds Practice mode. Notebooks, `.sql`, `.ts` and `.py` files
 stay here and are linked, not imported.
 

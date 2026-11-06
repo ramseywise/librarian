@@ -1,5 +1,4 @@
 ---
-imported_hash: 6c13108b1d36e48b
 title: Stacks
 summary: A stack is a LIFO (Last In, First Out) data structure.
 order: 207

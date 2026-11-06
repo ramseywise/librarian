@@ -1,5 +1,4 @@
 ---
-imported_hash: 489f0eb027a4b6ea
 title: Min Stack
 summary: Design a stack that supports push, pop, top, and retrieving the minimum element in constant time O(1).
 order: 208

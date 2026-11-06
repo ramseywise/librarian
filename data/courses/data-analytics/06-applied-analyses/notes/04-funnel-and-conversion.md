@@ -1,5 +1,4 @@
 ---
-imported_hash: d46625da1f406dd6
 title: 'Funnel and conversion: why a flat headline can hide a broken page'
 summary: Fernhill shipped a new mobile checkout page on 15 September 2025.
 order: 5

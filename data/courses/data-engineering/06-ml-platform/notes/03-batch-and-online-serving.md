@@ -1,5 +1,4 @@
 ---
-imported_hash: 2914c6330e886fad
 title: Batch and online serving
 summary: Wilson tells a story in Machine Learning Engineering in Action (Manning, 2022) about a hotel-deals model whose predictions were precomputed in batches.
 order: 4

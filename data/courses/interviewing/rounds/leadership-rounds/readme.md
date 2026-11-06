@@ -1,5 +1,4 @@
 ---
-imported_hash: a20393ba7a413ddb
 title: Leadership Rounds (CTO · Head of Product · Founder) + Reverse Interview
 summary: 'The signal they''re reading: do you have considered views, do you update on new information, do you ask good questions?'
 order: 45

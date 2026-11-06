@@ -1,5 +1,4 @@
 ---
-imported_hash: fbc64ab35c73d2d4
 title: 5    | Basic Plotting and Visualization
 summary: plot(randn(30).cumsum(), color='k', linestyle='dashed', marker='o')
 order: 13

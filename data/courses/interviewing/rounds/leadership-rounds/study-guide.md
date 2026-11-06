@@ -1,5 +1,4 @@
 ---
-imported_hash: 7511b355c0c83786
 title: Study Guide — Leadership Rounds
 summary: 'The CTO is asking: "Would I hire this person to make technical decisions I''d stand behind without supervising them?"'
 order: 48

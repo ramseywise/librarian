@@ -1,5 +1,4 @@
 ---
-imported_hash: 5fd22c65e56a498b
 title: Sources
 summary: ''
 order: 106

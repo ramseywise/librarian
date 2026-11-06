@@ -1,5 +1,4 @@
 ---
-imported_hash: a050549eb29d7c99
 title: 4 — Load balancing and rate limiting
 summary: A balancer takes one address and spreads requests over many servers, removing dead ones.
 order: 5
@@ -328,7 +327,7 @@ Reading across each row:
 
 | Algorithm | State per key | Boundary burst | Note |
 |---|---|---|---|
-| Fixed window | 1 counter | Twice the limit | Simple, but it let through 200 in about a second |
+| Fixed window | 1 counter | Twice the limit | Simple, but it let through 200 in about two seconds |
 | Sliding log | One timestamp per request | None | Exact, and [expensive at scale](https://blog.cloudflare.com/counting-things-a-lot-of-different-things/) |
 | Sliding counter | 2 counters | Slight | A good default for "N per minute" |
 | Token bucket | Tokens + time | A chosen burst | Separates the sustained rate from the allowed burst |

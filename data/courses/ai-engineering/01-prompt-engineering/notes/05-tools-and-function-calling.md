@@ -1,5 +1,4 @@
 ---
-imported_hash: 4a44ed6c2bdf26ba
 title: 5 — Tools and Function Calling
 summary: A chat model cannot look up today's weather or change a thermostat, so without tools it invents the answer or restates your plan.
 order: 6

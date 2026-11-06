@@ -1,5 +1,4 @@
 ---
-imported_hash: e7f628d81450c083
 title: Climbing Stairs
 summary: You are climbing a staircase with n steps.
 order: 144

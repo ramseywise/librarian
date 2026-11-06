@@ -1,5 +1,4 @@
 ---
-imported_hash: c26ce02ecb4a458b
 title: LC 87 — Scramble String
 summary: A scramble of a string is formed by recursively splitting it into two non-empty substrings and optionally swapping the two halves at each node.
 order: 45

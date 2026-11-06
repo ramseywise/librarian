@@ -1,5 +1,4 @@
 ---
-imported_hash: 3cf79bf7f807e776
 title: 13 — Putting It Together
 summary: Full prior text passes a 32k window between sections 10 and 20, where a capped summary stays under 3k.
 order: 14

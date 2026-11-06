@@ -1,5 +1,4 @@
 ---
-imported_hash: 2fec92fd644e7556
 title: Number of Islands
 summary: Given an m x n 2D binary grid representing a map of '1's (land) and '0's (water), return the number of islands.
 order: 157

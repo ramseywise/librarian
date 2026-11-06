@@ -26,7 +26,7 @@ Checks, one line per problem, exit 1 on any:
 - every tracked practice example (the first path component under practice/) has an entry;
 - a pillar with tracked examples has a manifest.
 
-Where manifests live: the importer copies Markdown lessons only, so no `manifest.yaml` is in data/courses/ and the
+Where manifests live: only Markdown lessons live in data/courses/, so no `manifest.yaml` is in data/courses/ and the
 labs they describe are not either. By default a pillar with no manifest is therefore not a problem; `--require`
 restores the sibling's rule (every pillar with tracked practice examples needs a manifest). To validate the real
 manifests, point `--root` at the learn-ai-engineering checkout, whose layout is the same relative to the root.

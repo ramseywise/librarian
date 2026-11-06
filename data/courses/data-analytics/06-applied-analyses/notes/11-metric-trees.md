@@ -1,5 +1,4 @@
 ---
-imported_hash: 1cce2d42b1d91aca
 title: 'Metric trees and defining metrics: what to run on, and what catches it lying'
 summary: In 2025 Fernhill's revenue rose 2.1%, active customers rose 33.9% and new customers rose 33.0%.
 order: 12

@@ -1,5 +1,4 @@
 ---
-imported_hash: 35114dcd4110d6fe
 title: Conclusion
 summary: 'class MyTransformer(BaseEstimator, TransformerMixin): def init(self, first_paramter=1, second_parameter=2): # all parameters must be specified in the init function self.first_paramter = 1 self.second_parameter = 2'
 order: 29

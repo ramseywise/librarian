@@ -9,8 +9,8 @@ sentence. Read `.claude/skills/pillar/references/pillar-layout.md` ("notes/" and
 or `/papers`, not this skill.
 
 Checks run here over `data/courses/` (`make chapter-check`, `make link-check`, `librarian courses check curriculum`);
-the ledger, PDFs and `scripts/papers/` stay in `../learn-ai-engineering`, and a new note is authored there and
-brought in with `make import-courses` (an edited imported file becomes a local one the importer never overwrites).
+the ledger, PDFs and `scripts/papers/` stay in `../learn-ai-engineering`, but lessons are authored and edited in
+`data/courses/` directly (the importer is retired).
 
 ## Step 1 — Place it
 

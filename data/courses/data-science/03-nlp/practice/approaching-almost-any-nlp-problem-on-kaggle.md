@@ -1,5 +1,4 @@
 ---
-imported_hash: 716d05f8019de29e
 title: Approaching (Almost) Any NLP Problem on Kaggle
 summary: In this post I'll talk about approaching natural language processing problems on Kaggle.
 order: 9

@@ -1,8 +1,6 @@
 """Ask git which files under a subject directory are ignored.
 
-Shared by the course importer (the publication allowlist for fail-closed subjects) and the
-repo scraper (it honours the same allowlist for `practice/`). It lives in `ingest/` so the
-dependency between the two sub-packages runs one way: `courses` imports `ingest`.
+Used by the repo scraper, which honours a source repo's `.gitignore` as the allowlist for `practice/`.
 """
 
 from __future__ import annotations

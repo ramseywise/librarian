@@ -1,5 +1,4 @@
 ---
-imported_hash: 69fff78a12e1b0a3
 title: '9 — Vector databases: reference and trade-offs'
 summary: Tallybook has 18 help articles and a Postgres database.
 order: 10

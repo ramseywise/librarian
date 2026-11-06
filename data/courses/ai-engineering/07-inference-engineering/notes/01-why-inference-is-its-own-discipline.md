@@ -1,5 +1,4 @@
 ---
-imported_hash: 6c3484ada3460eed
 title: 1 — Why Inference Is Its Own Discipline
 summary: A team that budgets from its training run and watches one GPU-utilization chart can read 95% on a fleet that is badly underused, buy more compute when decode is short of memory bandwidth, and report a mean TTFT that describes no real reques…
 order: 2

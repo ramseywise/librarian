@@ -1,5 +1,4 @@
 ---
-imported_hash: d21624f1d33ef6ae
 title: System Design Round — Worked Examples
 summary: Each file walks through a full system design using the five-step process from the study guide.
 order: 66

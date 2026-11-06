@@ -1,5 +1,4 @@
 ---
-imported_hash: a3c63c9841fc967b
 title: ESLint — Reading & Fixing Findings (TS/React)
 summary: 'A finding reads: line:col error/warning <message> <rule-name>.'
 order: 273

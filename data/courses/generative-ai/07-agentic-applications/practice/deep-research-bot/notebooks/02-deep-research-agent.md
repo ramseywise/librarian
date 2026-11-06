@@ -1,5 +1,4 @@
 ---
-imported_hash: 370d3621cd5ca2d5
 title: Building a Deep Research Agent
 summary: This script will walk you through building on top of our simple tool calling agent to evolve it to a full Deep Research Agent.
 order: 15

@@ -1,5 +1,4 @@
 ---
-imported_hash: 6e165cefa2ee09ae
 title: LC 56 — Merge Intervals
 summary: Given an array of intervals where intervals[i] = [start, end], merge all overlapping intervals and return the resulting non-overlapping intervals covering the same ranges.
 order: 33

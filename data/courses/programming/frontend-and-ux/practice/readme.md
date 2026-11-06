@@ -1,5 +1,4 @@
 ---
-imported_hash: 56e703d50094a163
 title: 'Lab: a streaming chat that tells the truth about itself'
 summary: The mock server is the point. It needs no API key, no model runs, and its answers are scripted, so every failure can be repeated on purpose.
 order: 7

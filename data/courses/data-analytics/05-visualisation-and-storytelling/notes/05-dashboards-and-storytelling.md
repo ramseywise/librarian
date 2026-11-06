@@ -1,5 +1,4 @@
 ---
-imported_hash: 75567723acfa7633
 title: Dashboards and storytelling with data
 summary: Fernhill's marketing team has had a revenue dashboard for three years.
 order: 6

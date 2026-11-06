@@ -1,5 +1,4 @@
 ---
-imported_hash: 67c0abc830e03cb4
 title: 8 — Harness Maturity and Failure Modes
 summary: Teams rarely know how mature their harness is, and "we have evals" often means one notebook run by hand.
 order: 9
@@ -65,7 +64,7 @@ A common category error: treating these as an evolutionary ladder. They are **ch
 
 | | **Pipelines** | **Agents** | **Self-improvers** |
 |---|---|---|---|
-| Who orchestrates | Code orchestrates LLM calls | LLM orchestrates tool calls | Agent modifies its own prompts from evals |
+| Who orchestrates | Code orchestrates LLM calls | LLM orchestrates tool calls | Agent modifies its own prompts or harness code from evals |
 | Strength | Observability, cost control, determinism | Handles unpredictable task shapes | Compounds without human tuning |
 | Cost | Lowest | Higher | Highest |
 | Precondition | Known task shape | Task shape varies | **Binary evals** + team accepts unreadable prompts |
@@ -91,6 +90,8 @@ When an agent fails, audit:
 3. **Model** — last, and rarely the answer
 
 *"The model itself is rarely the bottleneck in mature setups."* Reaching for a model upgrade before auditing tool descriptions is the field's most expensive reflex.
+
+The same symptom can need either fix, so attribute before you repair. Raj et al. ([arXiv:2607.28802](https://arxiv.org/abs/2607.28802) (Raj et al., 2026-07, preprint, Scale AI)) give the case: an agent ignores an earlier user instruction because the harness's compaction removed it, or because it was still in context and the model didn't follow it. "The observed behavior is the same, but the first case requires a harness-level fix." Their taxonomy labels each failure by the interaction where it starts (tool to model, for example) and by the side whose repair is needed. A tool wrapper that swallows an error is a tool fault, and a model that ignores a returned error is a model fault. With cascades, they label "the earliest failure from which execution does not recover". On 40 worked examples, four frontier-model judges matched one human annotator's category label with Cohen's kappa 0.70 to 0.76. The paper is descriptive: it doesn't estimate how often each failure occurs, and its 36-of-41 model-side modes follow from its rule that blames the model whenever a stronger model could have recovered, so it says nothing about how often the model is the bottleneck.
 
 ### Sequence accuracy before cost
 
@@ -203,6 +204,8 @@ It does three jobs. A fresh session reads it and **fixes the lowest grade first.
 
 Failure 1 is the meta-failure — it hides the other four. The honest test is not *"do we have verification?"* but *"can I point to the code that runs it, on every task, without a human remembering to?"*
 
+Adoption data shows why a gate on structure matters, not only on tests passing. Agarwal et al. ([arXiv:2601.13597](https://arxiv.org/abs/2601.13597) (Agarwal et al., MSR 2026)) matched open-source GitHub repos (at least 10 stars) before and after their first agent pull request, with a staggered difference-in-differences design. Repos with no earlier AI tool gained +36.3% commits and +76.6% lines added; repos that already used an AI IDE gained +3.1% and -6.3%. In both groups static-analysis warnings rose about 18% and cognitive complexity about 39%, and in agent-first repos the complexity rise grew to about +49% by month five. Intent-to-treat, observational, with some significant pre-trends, and the study does not look at harness or prompt differences between repos.
+
 ---
 
 ## Iterative simplification
@@ -228,6 +231,8 @@ This requires the binary eval from failure mode 5. Without it, subtraction is un
 
 Note the direction of travel: harness complexity **shifts rather than shrinks.** Removing anxiety-mitigation scaffolding frees budget for constraints on newly-unlocked failure modes.
 
+There is a first, small measurement of why more structure can hurt. Wang et al. ([arXiv:2605.21516](https://arxiv.org/abs/2605.21516) (Wang et al., 2026-05, preprint)) had a planner write a workflow of k steps, for k from 1 to 10, for a GLM-5 solver on 32 Terminal-Bench 2 tasks (chosen after the fact, dropping four tasks that scored zero at every k). **Pass rate rose and then fell, peaking at six steps.** That was one attempt per task and step count, with no confidence intervals. In a synthetic task, stronger agents peaked at fewer steps. Their rule is to "keep extending the harness only while the next scaffolded stage saves more residual risk than it introduces". The claim that a partial workflow can beat a full one rests on a single task, so treat it as a hypothesis for your own ablations, not a result.
+
 Two independent corroborations are worth having, because this is the practice teams most doubt:
 
 - **A component can be worth removing before any model upgrade.** PRINCE deleted its LLM SQL-reviewer for false positives ([note 05](05-verification-loops.md#when-a-verifier-is-worth-deleting)) — not because the model got better, but because the component never paid for itself. Subtraction has two triggers: capability arrived, or the component was always a net negative. The second is more common and less often checked.
@@ -240,7 +245,7 @@ Two independent corroborations are worth having, because this is the practice te
 Three unsolved problems, named consistently across sources:
 
 1. **Orchestrating hundreds of parallel agents on a shared codebase** — merge conflict resolution and coordination at a scale current tooling doesn't reach.
-2. **Agents analyzing their own traces to identify and fix harness-level failure modes** — automating the ratchet. LangChain's Trace Analyzer Skill ([note 05](05-verification-loops.md#trace-driven-improvement)) is an early instance.
+2. **Agents analyzing their own traces to identify and fix harness-level failure modes** — automating the ratchet. LangChain's Trace Analyzer Skill ([note 05](05-verification-loops.md#trace-driven-improvement)) is an early instance, and two research systems have [measured results](#automating-the-ratchet-two-measured-runs).
 3. **Just-in-time harness assembly** — dynamically composing the right tools and context per task instead of pre-configuring everything.
 
 The third points somewhere interesting:
@@ -263,6 +268,22 @@ Reported gain: up to **+15.79 points absolute** over the base harness. The findi
 - **Keep discovery and evaluation sets separate.** A harness evolved and scored on the same tasks overfits to them, just as a model does.
 
 The subtraction protocol above still applies, now per subclass: a component that never helps any task class gets deleted from the base.
+
+### Automating the ratchet: two measured runs
+
+Two 2026 systems run the second frontier as an outer loop: a coding agent reads the evidence from earlier runs, edits the harness and has the result scored. The model never changes. Both are preprints with no confidence intervals or results from repeated campaigns, and on their coding benchmark both selected on the tasks they report, which breaks the separation rule above. The authors say so for Meta-Harness and treat it as a discovery problem. Read those coding scores as an upper bound.
+
+**Meta-Harness** ([arXiv:2603.28052](https://arxiv.org/abs/2603.28052) (Lee et al., 2026-03, preprint)) gives its proposer (Claude Code on Opus 4.6) a filesystem holding every earlier candidate's source, traces and scores. A typical run evaluates about 60 single-file harnesses over 20 iterations in a few hours. On held-out test sets from three text-classification datasets, the highest-accuracy variant on its Pareto frontier reached 48.6%, against 40.9% for ACE and 40.0% for MCE, while using less context (11.4K tokens vs. 50.8K and 28.5K). The paper doesn't say whether "highest-accuracy" means search or test scores. ACE still beat that variant on one of the three datasets. On Terminal-Bench 2 (89 tasks) with Opus 4.6 it reached 76.4%, against a leaderboard 74.7% for Terminus-KIRA, the harness it started from. On Haiku 4.5 it reached 37.6%, against a leaderboard 35.5% for the next-best harness.
+
+**Agentic Harness Engineering** ([arXiv:2604.25850](https://arxiv.org/abs/2604.25850) (Lin et al., 2026-04, preprint)) starts from a bash-only seed and edits tools, middleware, memory, prompts and more. One campaign of ten iterations, about 32 hours on GPT-5.4 high, moved Terminal-Bench 2 from 69.7% to 77.0%, past Codex at 71.9%, though Codex stayed ahead on the 30 hard tasks (56.7% vs. 53.3%). Frozen and moved to SWE-bench Verified (500 tasks), the harness matched the seed on success (75.6% vs. 75.2%) and used 12% fewer tokens. No human-designed harness was in that comparison.
+
+**A later re-run tested transfer.** Wang et al. ([arXiv:2607.12227](https://arxiv.org/abs/2607.12227) (Wang et al., 2026-07, preprint)) re-ran AHE, with its step that fetches outside harnesses turned off, on Terminal-Bench 2.1, split into 45 search, 10 validation and 34 held-out tasks. **The evolved harness changed held-out pass@1 by +1.2, 0.0 and −1.4 points** on Claude Opus 4.6, GPT-5.4 and GPT-5.4 mini: flat on average, and the authors read it as overfitting to the search tasks. That is one re-run on a different benchmark version, also a preprint, but it is the number to set beside the 69.7% to 77.0% above. [Measuring the evolve loop itself](../../04-loop-engineering/notes/08-self-improving-loops.md#measuring-the-evolve-loop-itself) has the comparison with plain retries.
+
+Three findings bear on running this yourself:
+
+- **Prompts were the weakest place to edit.** Swapped into the seed alone, the evolved system prompt lowered the score from 69.7% to 67.4%, while evolved memory raised it to 75.3%. The comparison covers the four layers the paper calls evolved. Skills and sub-agents, also among its listed component types, get no row.
+- **Components interfere.** The three positive single-component gains summed to +11.1 points and the full set gained +7.3. On the hard tasks, memory alone beat the full harness (63.3% vs. 53.3%), which the authors attribute to redundant verification checks using up turns. "Disable one and re-run" finds a component that does nothing. It won't show you that two good components interfere, so re-test the combination.
+- **An agent can predict fixes much better than breakage.** Each AHE edit declared what it would fix and what it might break, and the next round scored those claims over nine rounds. Fix predictions had 33.7% precision and 51.4% recall, against 6.5% and 10.6% for random. Regression predictions had 11.8% and 11.1%, against 5.6% and 5.4% (means across rounds). Cumulatively, of 43 predicted regressions 5 happened, and 40 unforeseen ones also occurred. Keep the prediction for attribution, but rely on a regression suite to catch what breaks.
 
 ---
 

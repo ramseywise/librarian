@@ -1,5 +1,4 @@
 ---
-imported_hash: 0d31425c617db9e0
 title: Imbalance, Errors and Drift
 summary: 'The data is Default of Credit Card Clients: 30,000 card customers in Taiwan in 2005, CC BY 4.0, with six months of repayment status, bills and payments, and one label: did they default next month.'
 order: 12
@@ -14,7 +13,7 @@ source: learn-ai-engineering/data-science/01-classical-ml/notes/10-imbalance-err
 
 **In plain words.** A lender wants to spot the few borrowers who won't pay back. Think of a smoke alarm in a house that almost never has a fire: an alarm that never rings is right nearly every day and useless on the one day that counts, while one that rings at every slice of toast gets switched off. You choose how sensitive to make it by weighing a missed fire against a ruined dinner. This chapter does that for loans, checks whether popular tricks for rare events really help, makes sure "5% risk" really means 5 in 100, and watches for the day the world stops looking like the data the model learned from.
 
-[Credit scoring](../../../data-analytics/06-applied-analyses/notes/02-credit-scoring.md) stopped at a scorecard on South German Credit: 1,000 rows, 30% bad. This chapter picks up there with far more data, a much rarer outcome and a boosted model that gets trained, calibrated and monitored. It follows [training and tuning](09-training-and-tuning.md) and keeps that note's discipline: train, validation and test are separate, and everything is chosen on validation. Blocks run top to bottom from this `notes/` folder with `uv run --python 3.12 --with scikit-learn --with imbalanced-learn --with pandas --with xlrd --with matplotlib --with scipy`. The heavy runs live in the [lab](../practice/credit-default-lab/readme.md) and are cached, so run it first or expect a few minutes on the first pass.
+[Credit scoring](../../../data-analytics/06-applied-analyses/notes/02-credit-scoring.md) stopped at a scorecard on South German Credit: 1,000 rows, 30% bad. This chapter picks up there with far more data, a much rarer outcome and a boosted model that gets trained, calibrated and monitored. It builds on [training and tuning](09-training-and-tuning.md) and keeps that note's discipline: train, validation and test are separate, and everything is chosen on validation. Blocks run top to bottom from this `notes/` folder with `uv run --python 3.12 --with scikit-learn --with imbalanced-learn --with pandas --with xlrd --with matplotlib --with scipy`. The heavy runs live in the [lab](../practice/credit-default-lab/readme.md) and are cached, so run it first or expect a few minutes on the first pass.
 
 ## The data, and a choice we made
 

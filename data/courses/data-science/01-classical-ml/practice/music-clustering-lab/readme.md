@@ -1,5 +1,4 @@
 ---
-imported_hash: 4e7c9a6ea9b72bdc
 title: Music clustering lab
 summary: 'Clusters a real music library and puts a light reranker on top: why scaling and feature choice decide what the clusters mean, k-means against a Gaussian mixture with soft assignments, choosing k with BIC and silhouette, whether clusters sur…'
 order: 30

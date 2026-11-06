@@ -1,5 +1,4 @@
 ---
-imported_hash: ee6e335d4f694ddc
 title: LC 99 — Recover Binary Search Tree
 summary: You are given the root of a binary search tree in which exactly two nodes had their values swapped by mistake.
 order: 49

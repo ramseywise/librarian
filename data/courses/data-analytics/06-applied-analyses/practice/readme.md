@@ -1,5 +1,4 @@
 ---
-imported_hash: 3ce76b317efdee49
 title: 'Practice: applied analyses'
 summary: Run everything from this folder, data-analytics/06-applied-analyses/practice/.
 order: 14

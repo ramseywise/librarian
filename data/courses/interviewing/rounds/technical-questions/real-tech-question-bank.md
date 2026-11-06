@@ -1,5 +1,4 @@
 ---
-imported_hash: b40448a72e5aec0a
 title: Real Tech Interview Question Bank
 summary: This bank contains 23 questions organized into 9 themes.
 order: 76

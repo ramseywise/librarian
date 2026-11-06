@@ -1,5 +1,4 @@
 ---
-imported_hash: ac9aceb8f47e1cd4
 title: Semantic analysis and named entity recognition
 summary: Vectors tell you that two documents are alike, but not who did what, where, or to whom.
 order: 6

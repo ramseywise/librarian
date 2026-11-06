@@ -1,5 +1,4 @@
 ---
-imported_hash: bd7cc2c45b797ed1
 title: 04 Warehouse, lakehouse and streaming
 summary: 'Everything else: references.md.'
 order: 1

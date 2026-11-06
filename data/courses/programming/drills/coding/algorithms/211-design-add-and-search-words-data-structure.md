@@ -1,5 +1,4 @@
 ---
-imported_hash: ab79661e96a75d4b
 title: LC 211 — Design Add and Search Words Data Structure
 summary: 'Design a WordDictionary supporting two operations: addWord(word) stores a word, and search(word) returns true if any stored word matches.'
 order: 69

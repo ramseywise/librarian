@@ -1,5 +1,4 @@
 ---
-imported_hash: 43ee5bb51cc1fea5
 title: String Compression — First-Principles Thinking Guide
 summary: Use a read pointer to count consecutive characters and a write pointer to write the compressed form back into the same array.
 order: 131

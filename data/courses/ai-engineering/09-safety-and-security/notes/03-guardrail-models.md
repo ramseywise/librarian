@@ -1,5 +1,4 @@
 ---
-imported_hash: 37c4cc36d06f2a83
 title: 3 — Guardrail Models
 summary: Harbour has been in production for a month.
 order: 4

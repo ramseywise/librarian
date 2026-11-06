@@ -1,5 +1,4 @@
 ---
-imported_hash: 34de2bd8f73324ea
 title: 2 | Working with Text Data Files
 summary: 'This notebook covers specific text file topics: - Loading and writing text files - Parsing texts'
 order: 10

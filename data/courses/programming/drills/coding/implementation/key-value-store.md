@@ -1,5 +1,4 @@
 ---
-imported_hash: 39fbb01a38315cd8
 title: Key-value store
 summary: 'Build an in-memory key-value store. Level 1: SET, GET, DELETE.'
 order: 235

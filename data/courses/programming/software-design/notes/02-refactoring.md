@@ -1,5 +1,4 @@
 ---
-imported_hash: 684550ab7e73bf83
 title: 2 — Refactoring
 summary: Most people use the word more loosely. In Kim et al.'s survey of 328 Microsoft engineers, 78% defined it as a transformation that improves things like readability, maintainability or performance, and 46% did not mention preserving behaviour…
 order: 3

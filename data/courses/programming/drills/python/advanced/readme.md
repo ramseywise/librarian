@@ -1,5 +1,4 @@
 ---
-imported_hash: d0d425aaa090763b
 title: Advanced Python — senior-interview concepts
 summary: '54 concepts that senior Python screens probe beyond syntax: concurrency, memory, the data model, metaprogramming.'
 order: 260

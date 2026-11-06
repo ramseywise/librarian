@@ -1,5 +1,4 @@
 ---
-imported_hash: 44165e11200b7014
 title: LC 200 — Number of Islands
 summary: Given an m x n grid of '1' (land) and '0' (water) characters, return the number of islands.
 order: 65

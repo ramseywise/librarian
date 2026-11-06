@@ -1,5 +1,4 @@
 ---
-imported_hash: fa4b11fb785e367e
 title: 'Lab: a prompt eval harness (Python)'
 summary: The Python twin of the TypeScript lab. Both read the same cases.json, use the same variants and stub rules, and print the same report, so you can compare them file by file.
 order: 15

@@ -1,5 +1,4 @@
 ---
-imported_hash: c3b0dd3c665c689e
 title: 10 — Evals in CI
 summary: An eval that someone has to remember to run stops being run, and one that fails the build on every wobble gets muted.
 order: 11

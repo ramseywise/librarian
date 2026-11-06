@@ -1,5 +1,4 @@
 ---
-imported_hash: 023629ff67a1283f
 title: 1 — An internet search agent in LangGraph
 summary: An agent that searches the web is the simplest application worth studying, because every later design in this pillar answers a question this one raises.
 order: 2

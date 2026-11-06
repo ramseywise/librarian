@@ -1,5 +1,4 @@
 ---
-imported_hash: 3b92b6b004cf2168
 title: Catalog, semantic layer and data contracts
 summary: The mobility team wants to store fares in cents, and asks who that will hurt.
 order: 4

@@ -1,5 +1,4 @@
 ---
-imported_hash: 78e5d1ce7730b238
 title: Comp 2
 summary: Look at check_shot(). What are the three possible return values, and under what conditions does each one occur?
 order: 95

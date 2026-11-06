@@ -1,5 +1,4 @@
 ---
-imported_hash: 954741d55adcb081
 title: 2 — Dimensional modelling
 summary: Two analysts bring the same metric to the same meeting with two different numbers, and the rest of the hour is spent finding out why.
 order: 3

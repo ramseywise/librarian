@@ -1,5 +1,4 @@
 ---
-imported_hash: 129aa58ac01308e9
 title: LC 68 — Text Justification
 summary: Given an array of words and an integer maxWidth, format the text so each line is exactly maxWidth characters and fully (left and right) justified.
 order: 35

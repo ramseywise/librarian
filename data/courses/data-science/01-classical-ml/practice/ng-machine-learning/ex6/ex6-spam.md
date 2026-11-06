@@ -1,5 +1,4 @@
 ---
-imported_hash: c028a8639ea40709
 title: This is one possible porter stemmer
 summary: vocab_dict = getVocabDict() email_contents = open( 'data/emailSample1.txt', 'r' ).read() test_fv = email2FeatureVector( email_contents, vocab_dict )
 order: 37

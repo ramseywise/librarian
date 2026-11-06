@@ -1,5 +1,4 @@
 ---
-imported_hash: 1f54cdf706a14e52
 title: References
 summary: 'Pillar reference lists: 01 · 02 · 03 · 04 · 05 · 06 · 07'
 order: 2

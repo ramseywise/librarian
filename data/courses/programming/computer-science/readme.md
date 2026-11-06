@@ -1,5 +1,4 @@
 ---
-imported_hash: fa4bf4b9bf223f6c
 title: Computer science foundations
 summary: Python hides the machine well enough that you can work for years without a model of it, until a job takes all night, a dict doubles your memory, a total comes out wrong by a cent, or a service stalls with an idle CPU.
 order: 1
@@ -39,7 +38,7 @@ The notes follow the [full chapter standard](../../.claude/skills/pillar/referen
 
 | # | Note | You can… |
 |---|---|---|
-| 04 | [Numbers and memory](notes/04-numbers-and-memory.md) | Predict float error, sum accurately, read bits, and explain why data layout changes speed by orders of magnitude |
+| 04 | [Numbers and memory](notes/04-numbers-and-memory.md) | Predict float error, sum accurately, read bits, compare fp32/fp16/bf16/fp8 range and precision, write a stable softmax with log-sum-exp, and explain why data layout changes speed by orders of magnitude |
 | 05 | [Processes, threads and I/O](notes/05-processes-threads-and-io.md) | Price a process, thread and system call, prevent races and deadlocks, keep an event loop moving, and size a queue |
 | 06 | [Networks](notes/06-networks.md) | Frame a TCP stream, count the round trips in a cold request, read a DNS packet, and retry safely |
 

@@ -1,5 +1,4 @@
 ---
-imported_hash: e2556989fd3f048c
 title: Leaders in an Array — First-Principles Thinking Guide
 summary: 'For i from n-2 down to 0: If arr[i] > max_from_right: leaders.append(arr[i]) max_from_right = arr[i]'
 order: 111

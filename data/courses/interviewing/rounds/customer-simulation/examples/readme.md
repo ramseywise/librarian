@@ -1,5 +1,4 @@
 ---
-imported_hash: d13518d08bb3d41a
 title: Customer Simulation — Worked Examples
 summary: Three fully annotated scenario dialogues.
 order: 41

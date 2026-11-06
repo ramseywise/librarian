@@ -1,5 +1,4 @@
 ---
-imported_hash: 8032b03ed46f1484
 title: 'Example: Finding Interchangeable Industrial Parts'
 summary: '"Industrial companies each keep their own parts catalogue, full of duplicates and of parts from different makers that would do the same job.'
 order: 69

@@ -1,5 +1,4 @@
 ---
-imported_hash: 5e9db90dbc4d7417
 title: 2 — Loading and Cleaning
 summary: The first chapter's frame was typed in by hand, so every value was what it looked like.
 order: 3

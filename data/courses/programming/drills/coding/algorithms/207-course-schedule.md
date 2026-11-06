@@ -1,5 +1,4 @@
 ---
-imported_hash: 98987eae0f4c9d0f
 title: LC 207 — Course Schedule
 summary: You must take numCourses courses labeled 0 to numCourses - 1.
 order: 68

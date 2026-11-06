@@ -1,8 +1,7 @@
 ---
-imported_hash: 838e87747c6e3d28
 title: 7 — Guardrails and autonomy
 summary: The restock agent has one tool that spends money.
-order: 8
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/03-agentic-foundations/notes/07-guardrails-and-autonomy.md

@@ -1,5 +1,4 @@
 ---
-imported_hash: bd61f618fd321519
 title: The MLOps maturity model and engineering best practices
 summary: The previous four chapters each added a tool, and nobody should adopt all of them at once.
 order: 6
@@ -47,6 +46,8 @@ flowchart LR
 ### Treat the maturity label with care
 
 A level is a description, not a measure. Amershi and colleagues built the most careful version I know of, in their [ICSE-SEIP 2019 study at Microsoft](https://doi.org/10.1109/ICSE-SEIP.2019.00042): they asked 551 respondents to rate each workflow stage on six dimensions, from having defined goals to continuous improvement. The resulting index correlated with self-assessed effectiveness, with Spearman coefficients from 0.4982 to 0.7627, but all of it is self-reported, descriptive, and without an objective baseline. Read that as evidence that the habits travel together, not that climbing a level causes success.
+
+The setup is narrower than the 551 suggests: 14 interviews first, then a questionnaire sent to 4,195 members of Microsoft's internal AI and ML mailing lists, a 13.6% response rate, and the authors call their maturity model a first attempt with no defined levels. Paleyes, Urma and Lawrence's [survey of deployment case studies (ACM Computing Surveys, 2022)](https://arxiv.org/abs/2011.09926) points the same way from the other side: it finds challenges at every stage of a four-stage workflow (data management, model learning, model verification, model deployment), says it does not rank them, and offers no levels or measured effect of any practice. Both are literature or self-report, so use them as checklists of where to look, not as scores.
 
 The same study names three ways ML differs from other software: data is harder to version than code, customising a model needs ML skills, and modularity is hard because models entangle and errors do not compose monotonically. [Shankar and colleagues' interviews](https://arxiv.org/abs/2209.09125) add a warning about where effort goes: most changes happen at the top of the stack, such as configuration and runs, and changes deeper down are rarer and costlier. Anti-patterns they saw include tribal knowledge held by one person, and a "pipeline jungle" that nobody dares change. So look at what your team actually changes every week, and automate that first.
 

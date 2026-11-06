@@ -1,5 +1,4 @@
 ---
-imported_hash: 06dced04a759c726
 title: 3 — Long-Term Memory with LangGraph
 summary: Ask the research agent from note 02 the same question on a new thread and it pays for every search and every read again, because a checkpointer remembers a thread and nothing else.
 order: 4

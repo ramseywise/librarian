@@ -1,5 +1,4 @@
 ---
-imported_hash: 32206b87b3ea0c61
 title: Correctness & Interfaces
 summary: 'try: result = await self.execute_tool(tool_call) - state.messages.append({"role": "tool", "content": result}) except Exception as e: - state.messages.append({"role": "tool", "content": f"Error: {e}"}) - state.error_count += 1 - if state.err…'
 order: 21

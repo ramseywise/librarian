@@ -1,5 +1,4 @@
 ---
-imported_hash: fd44e74f7f3e4f3e
 title: 6 — Incident Response
 summary: 'On a Tuesday, a customer writes to Harbour support: "Why did your assistant email my order details to an address I don''t know?" Nobody has an alert for it.'
 order: 7

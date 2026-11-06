@@ -1,5 +1,4 @@
 ---
-imported_hash: d2a16fdd4930e8aa
 title: System Design Round — Questions & Model Answers
 summary: System design questions are deliberately vague — the first thing you do is clarify, not design.
 order: 63

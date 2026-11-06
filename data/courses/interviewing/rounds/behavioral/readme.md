@@ -1,5 +1,4 @@
 ---
-imported_hash: 57e42beab2f90850
 title: Behavioral Round
 summary: 'Evidence of how you actually operate: collaboration, conflict handling, ownership, adaptability, self-awareness.'
 order: 1

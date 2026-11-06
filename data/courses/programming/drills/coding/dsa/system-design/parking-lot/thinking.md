@@ -1,5 +1,4 @@
 ---
-imported_hash: 2d5186dcde61ed5d
 title: Designing a Parking Lot — First-Principles Thinking Guide
 summary: ''
 order: 219

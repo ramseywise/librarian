@@ -1,5 +1,4 @@
 ---
-imported_hash: 4668b7835f96eebf
 title: loadfiles returns a bunch, containing training texts and training labels
 summary: 'reviews_train = load_files("data/aclImdb/train/") # load_files returns a bunch, containing training texts and training labels text_train, y_train = reviews_train.data, reviews_train.target print("type of text_train: {}".format(type(text_tra…'
 order: 28

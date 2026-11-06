@@ -1,5 +1,4 @@
 ---
-imported_hash: 5f5acc2b4f97c24c
 title: 8 — Tracing and Observability
 summary: A nightly eval says grounding fell, and the team can't say which request, prompt version or retrieval caused it, because they logged only the final reply.
 order: 9

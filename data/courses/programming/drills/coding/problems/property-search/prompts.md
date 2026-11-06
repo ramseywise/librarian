@@ -1,5 +1,4 @@
 ---
-imported_hash: 78c056d50aac3068
 title: property-search — env1 drill (60 min)
 summary: 'Semantic search over 50 real-estate listings: FastAPI + sentence-transformers (all-MiniLM-L6-v2) + a FAISS inner-product index.'
 order: 253

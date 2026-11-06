@@ -1,5 +1,4 @@
 ---
-imported_hash: 45fcadaf3e2102ba
 title: Subarray Average Size K
 summary: ''
 order: 205

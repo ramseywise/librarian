@@ -1,5 +1,4 @@
 ---
-imported_hash: 3a4280c84bf9f926
 title: 'Practice: the Tallybook retrieval kit'
 summary: Everything here runs offline with no API key.
 order: 14

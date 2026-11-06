@@ -1,5 +1,4 @@
 ---
-imported_hash: 2534f4db66e9969a
 title: 'Lab: an eval suite in CI (Python)'
 summary: The Python twin of the TypeScript lab. It reads that folder's cases.jsonl, kb.json and variants.json, and it produces a byte-identical baseline.json and report.
 order: 18

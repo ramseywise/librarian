@@ -1,5 +1,4 @@
 ---
-imported_hash: b6573c42e3e191ad
 title: LC 152 — Maximum Product Subarray
 summary: Given an integer array nums, find the contiguous non-empty subarray with the largest product and return that product.
 order: 62

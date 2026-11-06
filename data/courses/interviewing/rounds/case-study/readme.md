@@ -1,5 +1,4 @@
 ---
-imported_hash: a2cb3ae61e66815f
 title: Case Study Round (live · code test · take-home · Work Trial · presentation/defense)
 summary: The 1h timed code test is emerging, not canonical — evidenced in CoderPad/CodeSignal pilots, not confirmed as a standard round at major AIE employers.
 order: 5

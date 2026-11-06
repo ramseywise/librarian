@@ -1,5 +1,4 @@
 ---
-imported_hash: 659c776b4fe07951
 title: 1 — HTML, CSS and the DOM
 summary: 'You send bytes. The browser parses them into two trees: the DOM (Document Object Model) from the HTML and the CSSOM, its equivalent for CSS, from the stylesheets.'
 order: 2

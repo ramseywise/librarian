@@ -1,5 +1,4 @@
 ---
-imported_hash: 6d4092f8e1cd8fcd
 title: References
 summary: ★ marks a reading that changed a claim in the notes.
 order: 5

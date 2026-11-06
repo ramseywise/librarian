@@ -1,5 +1,4 @@
 ---
-imported_hash: c494f105ce105a16
 title: Comms
 summary: Communication How to narrate your process, manage the dual conversation with AI and interviewer, and recover when stuck.
 order: 249

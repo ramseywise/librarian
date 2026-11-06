@@ -1,5 +1,4 @@
 ---
-imported_hash: 68157d03a5f4f123
 title: Advanced Python Interview Reference
 summary: These are specialized dictionaries from the weakref module.
 order: 264

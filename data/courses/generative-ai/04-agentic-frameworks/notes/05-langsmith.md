@@ -1,5 +1,4 @@
 ---
-imported_hash: 056629b41585449b
 title: '5 — LangSmith: tracing the research agent'
 summary: The stuck run in note 01 ended with one line, GraphRecursionError, and that line tells you the agent ran out of budget without telling you why.
 order: 6

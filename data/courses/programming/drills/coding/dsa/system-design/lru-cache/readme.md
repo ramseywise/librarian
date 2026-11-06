@@ -1,5 +1,4 @@
 ---
-imported_hash: fd37c61d6e99f0a7
 title: Design an LRU Cache
 summary: Design a data structure for a Least Recently Used (LRU) cache.
 order: 215

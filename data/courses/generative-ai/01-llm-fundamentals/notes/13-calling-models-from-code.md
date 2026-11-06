@@ -1,5 +1,4 @@
 ---
-imported_hash: 08e818e276cd0b18
 title: 13 — Calling models from code
 summary: The ticket assistant has been a stand-in so far.
 order: 14

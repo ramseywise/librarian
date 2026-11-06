@@ -1,5 +1,4 @@
 ---
-imported_hash: 1325139c675f1a29
 title: 'Worked Example: Bad News Delivery'
 summary: ''
 order: 42

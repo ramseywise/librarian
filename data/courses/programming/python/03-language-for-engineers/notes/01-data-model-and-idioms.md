@@ -1,5 +1,4 @@
 ---
-imported_hash: 32a4b82de4d1e7f1
 title: 1 — The data model and idioms
 summary: b = a a ───┐ ├──► [1, 2, 3] one object, two names b ───┘
 order: 12

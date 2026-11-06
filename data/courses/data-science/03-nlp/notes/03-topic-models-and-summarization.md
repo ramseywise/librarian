@@ -1,5 +1,4 @@
 ---
-imported_hash: 033ab6096eeaa62a
 title: Topic models, keyphrases and summarisation
 summary: A colleague hands you ten thousand support tickets and asks what people are complaining about.
 order: 4
@@ -117,7 +116,7 @@ A topic is a distribution over words, and a document is a mixture of topics. All
 
 | Method | Factorisation | Input | Output weights | Library |
 |---|---|---|---|---|
-| LSI / LSA | Truncated SVD | TF-IDF or counts | Signed: hard to read | `TruncatedSVD`, `gensim.LsiModel` |
+| LSI / LSA | [Truncated SVD](../../01-classical-ml/notes/05-unsupervised-learning.md#principal-component-analysis) | TF-IDF or counts | Signed: hard to read | `TruncatedSVD`, `gensim.LsiModel` |
 | LDA | Bayesian generative model with Dirichlet priors, fit by variational Bayes or Gibbs sampling | **Counts** (not TF-IDF) | Probabilities | `LatentDirichletAllocation`, `gensim.LdaModel`, MALLET |
 | NMF | Non-negative factorisation ([unsupervised learning](../../01-classical-ml/notes/05-unsupervised-learning.md#non-negative-matrix-factorisation)) | TF-IDF | Non-negative: readable parts | `sklearn.decomposition.NMF` |
 
@@ -237,13 +236,13 @@ k=20  c_v=0.318  log perplexity bound=-8.44
 k=40  c_v=0.325  log perplexity bound=-8.74
 ```
 
-On this corpus `c_v` barely moves, from 0.347 at five topics to 0.325 at forty, so there is no clean knee. This seed dips at twenty and recovers at forty, but that wiggle is noise: over three seeds the mean falls from 0.352 to 0.322 and the seeds sit about 0.01 apart. The log perplexity bound falls steadily and would select nothing useful either. That is common on short text, and the answer is to read topics at a couple of settings rather than obey a curve. Sarkar picks the knee of the coherence curve, around 20 topics on the NIPS papers, and finds MALLET's Gibbs-sampled LDA more coherent than gensim's variational LDA. He then labels each paper with its **dominant topic**, lists the most representative papers per topic, and predicts topics for unseen NIPS 2016 papers with `lda.transform`.
+On this corpus `c_v` barely moves, from 0.347 at five topics to 0.325 at forty, so there is no clean knee. This seed dips at twenty and recovers at forty, but that wiggle is noise: over three seeds the mean falls from 0.352 to 0.322 and the seeds sit about 0.01 apart. The log perplexity bound falls steadily and would select nothing useful either. (This is the topic model's held-out likelihood bound, a different quantity from a language model's [perplexity](../../../generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity), though both come from log-probabilities.) That is common on short text, and the answer is to read topics at a couple of settings rather than obey a curve. Sarkar picks the knee of the coherence curve, around 20 topics on the NIPS papers, and finds MALLET's Gibbs-sampled LDA more coherent than gensim's variational LDA. He then labels each paper with its **dominant topic**, lists the most representative papers per topic, and predicts topics for unseen NIPS 2016 papers with `lda.transform`.
 
 ### Visualising
 
 `pyLDAvis` (Ch06d) plots topics as circles in a 2-D projection of inter-topic distance, sized by prevalence, with a relevance slider ($\lambda$) that trades a word's topic-specific probability against its overall frequency. The notebook uses `pyLDAvis.sklearn`, renamed `pyLDAvis.lda_model` in pyLDAvis 3.4.
 
-For short texts, or for anything where LDA's bag of words hurts, the modern route is to embed documents, reduce with UMAP, cluster with HDBSCAN and describe clusters with class-based TF-IDF. That is BERTopic, and [LLM embeddings as features](07-llm-embeddings-as-features.md) builds its pieces.
+Where LDA's bag of words hurts, a modern route is to embed documents, reduce with UMAP, cluster with HDBSCAN and describe clusters with class-based TF-IDF. That is BERTopic ([arXiv:2203.05794](https://arxiv.org/abs/2203.05794), Grootendorst, 2022, preprint), and [LLM embeddings as features](07-llm-embeddings-as-features.md) builds its pieces. Its evidence for short text is one dataset. On Trump's tweets it led on NPMI coherence, at 0.066 against 0.009 for NMF and -0.011 for LDA (MPNet embeddings, 3 runs at each of 10 to 50 topics, baselines at default settings). With Doc2Vec embeddings it fell to -0.088, and those tweets are also the paper's only lightly preprocessed set, so length isn't isolated. Top2Vec with Doc2Vec beat it on both news datasets, and the author warns that NPMI may not track human judgement for neural models. BERTopic also gives up what defines LDA: it assumes one topic per document, and its topic words are still bags of words.
 
 ## Document clustering (Sarkar ch. 7c)
 
@@ -476,7 +475,7 @@ On this article the effect is small: TextRank's picks average 18.1 words against
 | Extractive or abstractive? | Extractive copies real sentences and cannot invent. Abstractive generates, reads well and can hallucinate. |
 | How does TextRank work? | PageRank on a graph of sentences linked by similarity. Central sentences win. |
 | How do you evaluate without labels? | Read topics and members, check stability across seeds, and test usefulness as features in a downstream task. |
-| When would you use BERTopic instead? | Short texts or where word order and meaning matter: embed, reduce, cluster, then describe with class-based TF-IDF. |
+| When would you use BERTopic instead? | When embeddings group your documents better than word counts and one topic per document is acceptable: embed, reduce, cluster, then describe with class-based TF-IDF. |
 
 ## Next
 

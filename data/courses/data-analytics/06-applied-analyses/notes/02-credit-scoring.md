@@ -1,5 +1,4 @@
 ---
-imported_hash: 3a8697c13f7906af
 title: 'Credit scoring: which applications should a bank approve?'
 summary: A loan is an unusual product, because you find out whether the sale was a good one years after making it.
 order: 3

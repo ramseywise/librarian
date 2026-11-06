@@ -1,5 +1,4 @@
 ---
-imported_hash: a80371dc7f0333f5
 title: 10 — Choosing a store
 summary: A team needs to keep some data and someone says "let's use a document database" or "we need a vector store".
 order: 11

@@ -1,5 +1,4 @@
 ---
-imported_hash: a2d45ad0410f90c2
 title: Embeddings and similarity
 summary: To a TF-IDF model, "hotel" and "motel" are exactly as far apart as "hotel" and "banana", because each word is its own axis.
 order: 5
@@ -288,7 +287,7 @@ Trained for one task, the vectors organise by that task. In the projector the IM
 | TF-IDF-weighted average | Weight each word vector by its TF-IDF | Often better: downweights common words |
 | Doc2Vec | Learn a paragraph vector alongside word vectors | Better than averaging; needs training |
 | Topic proportions | LDA/NMF ([topic models](03-topic-models-and-summarization.md)) | Interpretable, coarse |
-| Sentence encoders | Universal Sentence Encoder ([neural text models](../../02-deep-learning/notes/06-neural-text-models.md)), Sentence-BERT, modern embedding APIs | Current practice |
+| Sentence encoders | Universal Sentence Encoder ([neural text models](../../02-deep-learning/notes/06-neural-text-models.md)), [Sentence-BERT](https://arxiv.org/abs/1908.10084) (Reimers and Gurevych, EMNLP 2019), modern embedding APIs | Current practice |
 
 We can compare the first two with pretrained GloVe on the same genre task.
 

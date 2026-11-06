@@ -1,5 +1,4 @@
 ---
-imported_hash: 9bbedcc88c9c099e
 title: TypeScript (with HTML/CSS)
 summary: 'HTML/CSS is folded into this track: it only comes up next to TypeScript, so drills for it sit here as a web/ topic.'
 order: 272

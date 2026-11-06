@@ -1,5 +1,4 @@
 ---
-imported_hash: c122da91dd23ce11
 title: 'Operations and supply chain: stock, queues and a plan'
 summary: A forecast of 1,120 units is not an order of 1,120 units, and a queue that a textbook says will wait 3.9 minutes doesn't wait 3.9 minutes when the shift starts with nobody in it.
 order: 11

@@ -1,5 +1,4 @@
 ---
-imported_hash: 335b70654159fd58
 title: 2 — Networks and HTTP
 summary: py4e starts with a raw socket to show that nothing is magic.
 order: 8

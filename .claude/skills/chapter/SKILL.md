@@ -117,7 +117,7 @@ from `.claude/skills/pillar/references/pillar-layout.md`.
 
 ```bash
 python3 scripts/papers/potw.py mark integrated <key>
-make link-check   # sibling's script; after `make import-courses`, `make link-check` here checks the imported copy
+make link-check   # checks data/courses/ (the sibling's script checks only the sibling)
 ```
 
 `mark integrated` refuses a key with no citation in the home's notes or `references.md`, and sets the row's `note` to
@@ -133,4 +133,4 @@ user reviews the diff.
 
 ## Chapter standard and subject homes
 
-A note you touch must still meet the chapter section of `.claude/skills/pillar/references/pillar-layout.md`. Run `make chapter-check PILLAR=<pillar>` after editing (in the sibling; here, after `make import-courses`, it checks the imported copy under `data/courses/`). In the four subject areas, notes live in `<subject>/<NN-pillar>/notes/` and PDFs stay in `<subject>/sources/`. Add the row to the `references.md` of the pillar whose note it maps to.
+A note you touch must still meet the chapter section of `.claude/skills/pillar/references/pillar-layout.md`. Run `make chapter-check PILLAR=<pillar>` after editing (here it checks `data/courses/`; edit lessons there). In the four subject areas, notes live in `<subject>/<NN-pillar>/notes/` and PDFs stay in `<subject>/sources/`. Add the row to the `references.md` of the pillar whose note it maps to.

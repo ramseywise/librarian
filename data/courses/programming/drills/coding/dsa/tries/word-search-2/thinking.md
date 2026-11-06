@@ -1,5 +1,4 @@
 ---
-imported_hash: 4a45b95005627ab6
 title: Word Search II — First-Principles Thinking Guide
 summary: 'Without Trie: Check each word independently → redundant traversals.'
 order: 231

@@ -1,5 +1,4 @@
 ---
-imported_hash: d97ee2b718200692
 title: K-means in NumPy
 summary: Implement k-means clustering from scratch in NumPy (Lloyd's algorithm).
 order: 240

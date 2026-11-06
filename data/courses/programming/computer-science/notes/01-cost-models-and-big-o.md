@@ -1,5 +1,4 @@
 ---
-imported_hash: 5705c8f0bb080171
 title: 1 — Cost models and Big-O
 summary: A cost model is a decision about what counts as one step.
 order: 2

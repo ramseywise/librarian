@@ -1,5 +1,4 @@
 ---
-imported_hash: d4296cae5089cba1
 title: 'makemore: part 3'
 summary: 'def build_dataset(words): X, Y = [], []'
 order: 8

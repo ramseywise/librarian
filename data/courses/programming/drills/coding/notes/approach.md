@@ -1,5 +1,4 @@
 ---
-imported_hash: 35f480cb70246e83
 title: Approach
 summary: Planning Your Approach How to decompose the problem and form a plan before you ever open the AI chat.
 order: 245

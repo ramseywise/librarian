@@ -1,5 +1,4 @@
 ---
-imported_hash: f9dbe858f681e68b
 title: '2 — The Hardware: GPUs, Memory Hierarchy, Interconnect'
 summary: A model can fit in addressable memory and still be unusably slow.
 order: 3
@@ -41,7 +40,7 @@ Fregly (*AISPE*, ch. 2) lists what changed from Hopper:
 
 - **Two dies, one GPU.** Each die has 104B transistors. NV-HBI joins them at 10 TB/s, so software sees one device.
 - **Memory.** 192 GB HBM3e at ~8 TB/s, against H100's 80 GB at 3.35 TB/s. That is 2.4× capacity and 2.4× bandwidth. For decode, which is bandwidth-bound, bandwidth is the number that moves tokens per second.
-- **L2 cache.** 126 MB, against Hopper's 50 MB. A bigger L2 means more of the working set (activations, a hot KV page, a GEMM tile wave) stays on-chip between kernels.
+- **L2 cache.** 126 MB, against Hopper's 50 MB. A bigger L2 means more of the working set (activations, a hot KV page, a [GEMM](../../../generative-ai/01-llm-fundamentals/notes/02-attention-and-the-transformer-block.md#matrix-products-transpose-and-rank) tile wave) stays on-chip between kernels.
 - **Precision.** Hopper added FP8 tensor cores; Blackwell adds **NVFP4**, a 4-bit float with per-block scales. Each halving of bytes per value roughly doubles both bytes-per-second and FLOPs-per-second at the tensor cores. Note 04 covers what that does to arithmetic intensity ([04](04-kernels.md#raise-arithmetic-intensity)).
 - **Decompression Engine.** Hardware LZ4, Snappy and Deflate, for data that arrives compressed. It matters for data loading more than for serving.
 
@@ -124,6 +123,8 @@ kernel<<<grid, block, 0, stream>>>(buf);
 ```
 
 For inference, prefer explicit placement: weights and the active KV cache in HBM, and Grace memory only for tiers you choose to page from ([07](07-prefill-decode-kv-cache.md#sizing-the-cache)). Use **Compute Sanitizer** (`compute-sanitizer --tool memcheck`) whenever you hand-write memory movement; out-of-bounds writes on a GPU fail silently far more often than on a CPU.
+
+The hierarchy goes one tier further down on devices whose DRAM cannot hold the weights. Apple's LLM in a Flash keeps the model in flash and loads only the feed-forward neurons a small low-rank predictor says will fire. It reuses those from the last few tokens (windowing) and reads each neuron's up-projection column and down-projection row as one chunk (bundling). With about half of the model fitting in DRAM, batch size 1, a 128-token prompt and 256 generated tokens, OPT 6.7B ran up to 4× faster on CPU and 20× faster on an RTX 4090 than naive loading. Per-token latency went from 3,182 to 669 ms on CPU and from 2,218 to 84 ms on the GPU. The baseline is credited with its best theoretical I/O. The method needs ReLU-style sparsity: OPT is 97% sparse, while Falcon and Llama 2 rely on ReLU-converted versions fine-tuned in earlier work (95% and 90% sparse). It covers single-batch decode only ([arXiv:2312.11514](https://arxiv.org/abs/2312.11514) (Alizadeh et al., 2023-12, preprint)).
 
 ---
 

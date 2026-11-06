@@ -1,5 +1,4 @@
 ---
-imported_hash: f8ad3c571a798e4b
 title: LC 79 — Subsets
 summary: Given an integer array nums of unique elements, return all possible subsets (the power set).
 order: 39

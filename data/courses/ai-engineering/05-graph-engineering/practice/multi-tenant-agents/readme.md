@@ -1,5 +1,4 @@
 ---
-imported_hash: 266f4bfc2d4b7c4d
 title: 'Lab: one agent core, many tenants (Python)'
 summary: 'The scenario is a fictional support-agent SaaS with four clients: Larkspur Clinic (healthcare), Tallow Legal (legal), Pinwheel (retail) and Ferrous Freight (logistics).'
 order: 20

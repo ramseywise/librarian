@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build obsidian api ui import-courses mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
+.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
 
 app:
 	docker compose up
@@ -15,11 +15,6 @@ obsidian:
 
 api:
 	uv run --extra api librarian api --reload --port 8000
-
-# Sync coursework from ../learn-ai-engineering (including practice/: drills, interviewing)
-# into data/courses/ (idempotent; local edits are kept). Pass ARGS="--dry-run" or ARGS="--subject generative-ai".
-import-courses:
-	uv run librarian courses import $(ARGS)
 
 mcp:
 	uv run librarian mcp
@@ -163,7 +158,6 @@ help:
 	@echo "api              — start FastAPI backend directly (port 8000)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
 	@echo "flashcards       — build each module's _flashcards.md from its local deck specs"
-	@echo "import-courses   — sync ../learn-ai-engineering coursework into data/courses/"
 	@echo "install-ui       — npm install for apps/web/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"

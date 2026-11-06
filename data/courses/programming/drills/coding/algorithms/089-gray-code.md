@@ -1,5 +1,4 @@
 ---
-imported_hash: 28ebc719550cbc08
 title: LC 89 — Gray Code
 summary: 'Given an integer n, return any valid n-bit Gray code sequence: a list of the 2^n integers from 0 to 2^n - 1 where every consecutive pair (and the first and last) differ in exactly one bit.'
 order: 46

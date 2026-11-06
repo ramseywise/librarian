@@ -1,5 +1,4 @@
 ---
-imported_hash: 3d4a1bdc4796631c
 title: 8b — Serving Encoders and Vision Models
 summary: The numbers come from practice/serving_encoders_vlm_lab.py, on an M4 Pro with 24 GB using its GPU, in one process with no server.
 order: 10

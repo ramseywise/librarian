@@ -1,5 +1,4 @@
 ---
-imported_hash: 2f8e33d791d711b0
 title: 3 — Indexing and Selection
 summary: 'Nearly everything you do to a frame starts with saying which part of it you mean: January''s orders, the revenue column, the top row of each product.'
 order: 4

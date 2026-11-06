@@ -1,5 +1,4 @@
 ---
-imported_hash: 74fce90bc1749719
 title: 4 — Google ADK
 summary: Google's Agent Development Kit answers the same question as LangGraph with a different first noun.
 order: 5

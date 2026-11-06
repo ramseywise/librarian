@@ -1,5 +1,4 @@
 ---
-imported_hash: 1e5ed803f76639c8
 title: 4 — Correlation, Confounding and Causation
 summary: 'Larkspur''s marketing team has good news: customers who opted in to the loyalty email placed 1.21 more orders this year than those who did not.'
 order: 5

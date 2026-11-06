@@ -1,5 +1,4 @@
 ---
-imported_hash: c698826cb9112e38
 title: Programming
 summary: A self-paced course in the three languages an AI or data engineer writes every day, and in how to keep that code cheap to change.
 order: 1

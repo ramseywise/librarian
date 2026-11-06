@@ -1,5 +1,4 @@
 ---
-imported_hash: 878c43567fbd6eb4
 title: Supervised Learning
 summary: Blocks run top to bottom from this notes/ folder, on the breast-cancer data that ships with scikit-learn, so the numbers below are this split's.
 order: 3
@@ -158,6 +157,48 @@ The knob is **`C`, the inverse of regularisation strength**: high `C` fits each 
 | Fails on | Low-dimensional data with non-linear boundaries, unless you add features ([03](03-feature-engineering-and-pipelines.md)) |
 | Caution | Coefficients of correlated features can flip sign; don't over-read them |
 
+### Vectors, matrix products and the gradient
+
+Stack the $n$ rows of features into a matrix $X$ of shape $(n \times d)$ and the weights into a column $w$ of shape $(d \times 1)$. One matrix product gives every prediction at once: $\hat y = Xw$, shape $(n \times 1)$. The inner dimensions must match and vanish; the outer ones remain. The **transpose** $X^\top$ flips rows and columns to $(d \times n)$, so with the residual $r = Xw - y$ (one error per row), $X^\top r$ turns it into one number per feature. That is why $X^\top$ appears in the gradient below and in the normal equation, the closed-form solution in [Ng's exercises](#the-same-models-from-scratch-ngs-exercises).
+
+A **derivative** is a slope: how much the loss $L$ changes per unit nudge of a weight. You can measure it by nudging: $(L(w+\epsilon) - L(w-\epsilon)) / 2\epsilon$. With several weights, a **partial derivative** $\partial L / \partial w_j$ nudges one weight and holds the rest fixed. Collect all $d$ of them and you have the **gradient** $\nabla L$, a vector that points uphill. **Gradient descent** steps the other way, $w \leftarrow w - \eta \nabla L$, where the **learning rate** $\eta$ sets the step length. For mean squared error the slope works out to $\nabla L = \frac{2}{n} X^\top (Xw - y)$. Too small an $\eta$ crawls. Too large overshoots the valley and the loss grows each step, as the second run below shows.
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(0)
+n, d = 100, 3
+X = rng.normal(size=(n, d))                      # (n, d)
+w_true = np.array([2.0, -1.0, 0.5])
+y = X @ w_true + 0.1 * rng.normal(size=n)        # (n,)
+
+def loss(w):
+    return np.mean((X @ w - y) ** 2)             # (n,d)(d,) -> (n,)
+
+def grad(w):
+    return (2 / n) * X.T @ (X @ w - y)           # (d,n)(n,) -> (d,)
+
+w = np.zeros(d)
+eps, e0 = 1e-6, np.array([1.0, 0, 0])
+print("analytic    dL/dw0:", round(grad(w)[0], 4))
+print("finite-diff dL/dw0:", round((loss(w + eps * e0) - loss(w - eps * e0)) / (2 * eps), 4))
+
+for eta in (0.1, 1.1):
+    w = np.zeros(d)
+    for _ in range(20):
+        w = w - eta * grad(w)
+    print(f"eta={eta}: loss after 20 steps {loss(w):.4g}, w={w.round(2)}")
+```
+
+```text
+analytic    dL/dw0: -4.7218
+finite-diff dL/dw0: -4.7218
+eta=0.1: loss after 20 steps 0.008627, w=[ 1.99 -1.    0.47]
+eta=1.1: loss after 20 steps 1.429e+09, w=[-34085.75  -5248.68  -1718.19]
+```
+
+Setup: seed 0, 100 rows, 3 standard-normal features, true weights $(2, -1, 0.5)$, noise sd 0.1, start at $w = 0$. The analytic and finite-difference slopes agree to four decimals, so the formula is right; use the same check on any gradient you derive by hand. With $\eta = 0.1$ twenty steps recover the weights; with $\eta = 1.1$ the loss explodes. The cutoff depends on the data: for this $X$ any $\eta$ above 0.83 diverges, which is 2 divided by the largest [eigenvalue](05-unsupervised-learning.md#principal-component-analysis) (2.40) of $\frac{2}{n} X^\top X$. When the loss depends on the weights through several layers, the chain rule multiplies the slopes of the stages: see [Backpropagation](../../02-deep-learning/notes/01-neural-networks-fundamentals.md#backpropagation) and, for the numeric version, [Derivatives, numerically](../../../generative-ai/09-llms-from-scratch/notes/01-micrograd.md#derivatives-numerically). Those notes write `dW` for $\partial L / \partial W$, the same object for a matrix of weights.
+
 ---
 
 ## Naive Bayes
@@ -214,7 +255,7 @@ A linear model in a richer feature space. Adding $x_1^2$ as a feature turns a cu
 | Polynomial | All products of features up to a degree |
 | RBF (Gaussian) | Infinite-dimensional; similarity decays with distance: $k(x, x') = \exp(-\gamma \lVert x - x' \rVert^2)$ |
 
-Only the training points on the margin, the **support vectors**, define the boundary. The soft-margin formulation, where `C` prices each margin violation so that non-separable data still has a solution, is the contribution of the original paper, which combined ten degree-4 polynomial classifiers to reach 1.1% test error on the NIST digit benchmark ([doi:10.1007/bf00994018](https://doi.org/10.1007/bf00994018), Cortes and Vapnik, Machine Learning 1995).
+Only the training points on or inside the margin, the **support vectors**, define the boundary. The soft-margin formulation, where `C` prices each margin violation so that non-separable data still has a solution, is the contribution of the original paper, which combined ten degree-4 polynomial classifiers to reach 1.1% test error on the NIST digit benchmark, 60,000 training images and 10,000 test images with no pre-processing ([doi:10.1007/bf00994018](https://doi.org/10.1007/bf00994018), Cortes and Vapnik, Machine Learning 1995). That ties the purpose-built LeNet4 rather than beating it, while using nothing about image geometry. On the smaller USPS digits (7,300 training and 2,000 test images, centred, de-slanted and smoothed), polynomial degrees 2 to 7 all reach 4.2 to 4.7% error against 12.0% for linear, while the implicit feature space grows from about 33,000 to about $10^{16}$ dimensions. The authors read that as no over-fitting, from one dataset with no error bars. The paper runs polynomial kernels only, penalises the square of the total slack in its experiments rather than the linear penalty `SVC` uses, and reports no value of `C`, so the tuning advice below doesn't rest on it.
 
 ```python
 from sklearn.svm import SVC
@@ -340,7 +381,7 @@ A probability is only as good as the model's **calibration**: an overfit model r
 | Kernel SVM | `C`, `gamma` | Yes | Medium data, similar-scale features | Large n |
 | MLP | layers, `alpha` | Yes | Large data, time to tune | Small tabular data |
 
-M&G's advice when faced with a new dataset: start with a simple model (linear, naive Bayes or kNN) to learn what the data is like, then move to random forests, gradient boosting, SVMs or neural networks. All of them sit behind the same API, which is the reason a sweep across families costs a few lines ([arXiv:1201.0490](https://arxiv.org/abs/1201.0490), Pedregosa et al., JMLR 2011).
+M&G's advice when faced with a new dataset: start with a simple model (linear, naive Bayes or kNN) to learn what the data is like, then move to random forests, gradient boosting, SVMs or neural networks. All of them sit behind the same API, which is the reason a sweep across families costs a few lines. The scikit-learn paper makes that its case, a "consistent, task-oriented interface" that enables "easy comparison of methods" ([arXiv:1201.0490](https://arxiv.org/abs/1201.0490), Pedregosa et al., JMLR 2011), though it asserts this rather than measuring it.
 
 ---
 

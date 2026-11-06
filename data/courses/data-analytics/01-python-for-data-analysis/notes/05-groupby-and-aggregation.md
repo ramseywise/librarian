@@ -1,5 +1,4 @@
 ---
-imported_hash: f699d4700e7d97bc
 title: 5 — Groupby and Aggregation
 summary: 'Ask a shop owner what they want to know and almost every answer has the word "per" in it: revenue per region, orders per customer, average basket per month.'
 order: 6

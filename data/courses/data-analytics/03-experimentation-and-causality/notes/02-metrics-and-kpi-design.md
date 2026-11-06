@@ -1,5 +1,4 @@
 ---
-imported_hash: f8ba67bde1c9490e
 title: 2 — Metrics and KPI Design
 summary: Microsoft once moved a page module higher up, and its click-through rate per user fell by 40%.
 order: 3

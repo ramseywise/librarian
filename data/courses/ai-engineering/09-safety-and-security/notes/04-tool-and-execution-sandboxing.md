@@ -1,5 +1,4 @@
 ---
-imported_hash: c69db82e57389df0
 title: 4 — Tool and Execution Sandboxing
 summary: 'Harbour''s team adds one more tool: a small code runner, so the agent can total a customer''s refunds across orders from a CSV export.'
 order: 5

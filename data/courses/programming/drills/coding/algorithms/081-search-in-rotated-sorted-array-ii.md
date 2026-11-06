@@ -1,5 +1,4 @@
 ---
-imported_hash: 8266da6b24ae1c24
 title: LC 81 — Search in Rotated Sorted Array II
 summary: Given an integer array nums that was sorted in non-decreasing order (and may contain duplicates) then rotated at some unknown pivot, plus a target, return true if target is present and false otherwise.
 order: 40

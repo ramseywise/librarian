@@ -1,5 +1,4 @@
 ---
-imported_hash: 00651150c0ecd727
 title: 10 — An AI system reference architecture
 summary: This chapter is a map. Inference, retrieval, harnesses and observability each have their own notes in this course, and they go much deeper than a backend chapter should.
 order: 11

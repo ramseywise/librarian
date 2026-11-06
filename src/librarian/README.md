@@ -12,7 +12,7 @@ src/librarian/
   cli.py         `librarian <group> <verb>`: thin dispatchers to each module's main(argv)
   wiki/          parser, health, telemetry, graph, rename, relinker, common
   retrieval/     index, ranking, search/read API, embeddings (the `api` extra adds the model)
-  courses/       catalog, curriculum, leitner, glossary, importer
+  courses/       catalog, curriculum, leitner, glossary
   ingest/        scrapers, ingest gate, manifest, sensitive scans, raw lint
 ```
 
@@ -57,7 +57,6 @@ and whether to compile, strip or route to private, using the scans in `ingest/se
 | `librarian scrape repos` | Local git repos listed in `data/raw/repos/repos.txt` | `data/raw/repos/` | none |
 | `librarian scrape docs` | `.claude/` folders and `docs/` from all workspace projects | `data/raw/claude-docs/` | none |
 | `librarian scrape sessions` | Claude Code and Codex session JSONL | `data/raw/sessions/` | none |
-| `librarian courses import` | Coursework from `learn-ai-engineering` (`make import-courses`) | `data/courses/` | `pyyaml` |
 
 Most scrapers accept `--dry-run`. Check `--help` for script-specific flags. Every verb also runs as
 `python -m librarian.<package>.<module>`.
@@ -106,5 +105,4 @@ Embeddings: the index embeds the whole file, while the graph, relinker and cours
   keys are relied upon by wiki compilation skills.
 - Wiki compilation stays in Claude Code skills; this package is ETL and read-side logic only.
 - `courses` imports `ingest`, never the reverse. The git-ignore helpers both sides need live in
-  `ingest/gitignore.py` (they used to sit in `courses/importer.py`, which made `ingest.scrape_repos`
-  import `courses`). `retrieval` sits between them (`courses` -> `retrieval` -> `wiki` -> `ingest`), with the upward edges recorded in `pyproject.toml`; `import-linter` enforces the sub-package layering; see `pyproject.toml`.
+  `ingest/gitignore.py`. `retrieval` sits between them (`courses` -> `retrieval` -> `wiki` -> `ingest`), with the upward edges recorded in `pyproject.toml`; `import-linter` enforces the sub-package layering; see `pyproject.toml`.

@@ -1,5 +1,4 @@
 ---
-imported_hash: 6a888743750b874d
 title: 'Learning from Corrections: What People Teach a Model, and What They Can''t'
 summary: Most of it runs on the generated invoices from note 13, because a simulation is the only place where we know the truth about invoices nobody checked.
 order: 16

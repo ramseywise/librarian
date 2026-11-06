@@ -1,5 +1,4 @@
 ---
-imported_hash: dbf2052c26aeac46
 title: Schema and data migrations
 summary: 'A migration is a change to a live system while it runs: the table has new code and old code reading it, and neither stops while you work.'
 order: 5
@@ -125,7 +124,7 @@ ALTER TABLE orders RENAME COLUMN note TO note2     AccessExclusiveLock
 ALTER TABLE orders DROP COLUMN note                AccessExclusiveLock
 ```
 
-There are three groups worth remembering:
+There are four locks worth remembering:
 
 | Lock | Blocks | Taken by |
 |---|---|---|

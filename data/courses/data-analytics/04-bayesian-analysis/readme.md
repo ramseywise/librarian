@@ -1,5 +1,4 @@
 ---
-imported_hash: 5e3872c41e477041
 title: 04 — Bayesian Analysis
 summary: 'Bayesian analysis writes down how the data could have been generated, puts a prior on the unknowns, and computes the posterior: what is plausible once the data is in.'
 order: 1

@@ -1,5 +1,4 @@
 ---
-imported_hash: 707a3bd3afca52b3
 title: LC 102 — Binary Tree Level Order Traversal
 summary: 'Given the root of a binary tree, return its level-order traversal: a list of lists where each inner list holds the node values at one depth, read left to right, ordered from the root level downward.'
 order: 50

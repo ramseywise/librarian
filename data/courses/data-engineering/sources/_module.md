@@ -1,5 +1,4 @@
 ---
-imported_hash: 102047d8a0531dea
 title: Sources
 summary: ''
 order: 107

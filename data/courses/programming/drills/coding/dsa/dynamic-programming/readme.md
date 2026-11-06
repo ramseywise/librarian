@@ -1,5 +1,4 @@
 ---
-imported_hash: bd77388ed94383e9
 title: Dynamic Programming
 summary: Dynamic programming solves complex problems by breaking them into overlapping subproblems.
 order: 143

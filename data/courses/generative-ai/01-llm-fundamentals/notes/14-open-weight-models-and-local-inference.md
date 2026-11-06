@@ -1,5 +1,4 @@
 ---
-imported_hash: 9cb0368eede0e763
 title: 14 — Open-weight models and local inference
 summary: 'Legal reads the ticket assistant''s design and asks one question: do customer messages leave our network?'
 order: 15

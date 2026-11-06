@@ -1,5 +1,4 @@
 ---
-imported_hash: 5b722daffe0b7795
 title: Overview
 summary: A course on neural networks that starts all the way at the basics.
 order: 5

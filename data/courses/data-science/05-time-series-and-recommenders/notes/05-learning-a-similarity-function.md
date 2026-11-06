@@ -1,5 +1,4 @@
 ---
-imported_hash: 6a1f121b3693b914
 title: Learning a similarity function
 summary: A pretrained sentence encoder, asked to find other records of the same part in a catalogue of short part descriptions, found 13.4% of them.
 order: 6

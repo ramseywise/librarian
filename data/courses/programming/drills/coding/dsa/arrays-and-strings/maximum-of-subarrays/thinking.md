@@ -1,5 +1,4 @@
 ---
-imported_hash: 08d23d0c0218cee0
 title: Maximum of All Subarrays of Size K — First-Principles Thinking Guide
 summary: Use a deque that stores indices in decreasing order of their values.
 order: 117

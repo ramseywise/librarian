@@ -1,5 +1,4 @@
 ---
-imported_hash: b8e07f2f85f9f138
 title: This creates a three-dimensional matrix A whose first two indices
 summary: '""" Fucntion to plot the data and color it accordingly.'
 order: 38

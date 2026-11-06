@@ -1,5 +1,4 @@
 ---
-imported_hash: dbd7882db19f286e
 title: Ai
 summary: Driving the AI How to direct AI tools effectively during the coding phase, and what to do when they fail.
 order: 244

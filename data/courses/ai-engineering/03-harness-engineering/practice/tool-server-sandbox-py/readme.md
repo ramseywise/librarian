@@ -1,5 +1,4 @@
 ---
-imported_hash: e83d2853e64ce6d1
 title: 'Lab: a tool server with sandboxing (Python)'
 summary: The Python twin of the TypeScript lab. It serves the same workspace/ from that folder, with the same tools, policy and scripted plan.
 order: 13

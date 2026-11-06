@@ -209,7 +209,7 @@ class TestRemainingReferences:
         courses = wiki.parent / "courses"
         courses.mkdir()
         linked = courses / "a.md"
-        linked.write_text("---\nimported_hash: x\n---\nSee [[Old Page]].\n")
+        linked.write_text("---\ntitle: x\n---\nSee [[Old Page]].\n")
         (courses / "b.md").write_text("---\nwiki: [old-page]\n---\nBody.\n")
         (courses / "c.md").write_text("---\nwiki: [other]\n---\nBody.\n")
         before = linked.read_text()

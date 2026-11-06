@@ -1,5 +1,4 @@
 ---
-imported_hash: 750e69eeeb1bcfb1
 title: 1 — Series and DataFrame
 summary: 'Most of the data an analyst touches arrives as a table: a row per order, a column per fact about the order.'
 order: 2

@@ -1,5 +1,4 @@
 ---
-imported_hash: 07964c1d4f97b4bb
 title: LC 2 — Add Two Numbers
 summary: You're given two non-empty singly linked lists representing two non-negative integers, with the digits stored in reverse order (least-significant digit first) and one digit per node.
 order: 4

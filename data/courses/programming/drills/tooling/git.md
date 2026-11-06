@@ -1,5 +1,4 @@
 ---
-imported_hash: bcc51755520e2276
 title: Git — Workflow Reference
 summary: Branch management, PR review, and stash patterns.
 order: 271

@@ -1,5 +1,4 @@
 ---
-imported_hash: 9a76bf06a611b891
 title: References
 summary: ★ = changed a claim in the notes. ⚑ = preprint only.
 order: 9

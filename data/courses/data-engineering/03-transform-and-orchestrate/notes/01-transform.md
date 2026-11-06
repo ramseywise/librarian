@@ -1,5 +1,4 @@
 ---
-imported_hash: 6ed6c2a7836284e5
 title: 1 — Transform
 summary: Ingest hands you tables in which every column is a string, the names belong to the source system, and a retried load has written some rows twice.
 order: 2

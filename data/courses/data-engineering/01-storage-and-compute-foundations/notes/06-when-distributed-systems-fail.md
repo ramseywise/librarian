@@ -1,5 +1,4 @@
 ---
-imported_hash: a2b4f5c7068cf2f2
 title: 6 — When distributed systems fail
 summary: A worker sends a write and hears nothing back.
 order: 7

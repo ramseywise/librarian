@@ -1,5 +1,4 @@
 ---
-imported_hash: 62453cb8fb1e90e0
 title: First Missing Positive — First-Principles Thinking Guide
 summary: The answer must be in range [1, n+1]. We can use the array itself as a hash map by placing each number i at index i-1.
 order: 107

@@ -1,5 +1,4 @@
 ---
-imported_hash: 7f1d1e957eee3ab5
 title: 05 — RL & Alignment
 summary: Reinforcement learning is how a pretrained model becomes an assistant.
 order: 1

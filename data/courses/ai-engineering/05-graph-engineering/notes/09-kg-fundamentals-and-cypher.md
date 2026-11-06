@@ -1,5 +1,4 @@
 ---
-imported_hash: 0842b028120768c7
 title: 9 — KG Fundamentals and Cypher
 summary: An agent can recite that a drug treats a disease and still have no way to show which source said so, or which of two things named "type 1 diabetes" it meant.
 order: 10

@@ -1,5 +1,4 @@
 ---
-imported_hash: 89cc038b23ccef64
 title: Design Circular Queue
 summary: ''
 order: 187

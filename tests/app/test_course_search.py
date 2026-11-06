@@ -34,7 +34,6 @@ updated: 2026-11-04
 """
 
 LESSON = """---
-imported_hash: 0000000000000000
 title: {title}
 summary: {title} summary
 order: 1

@@ -1,5 +1,4 @@
 ---
-imported_hash: ffeea0a77715a296
 title: 05 — Graph Engineering
 summary: 'Graph engineering is the discipline of designing the topology of a multi-agent system: which nodes exist (agents, deterministic functions, routers, human checkpoints), which transitions between them are permitted, and how the runtime work g…'
 order: 1

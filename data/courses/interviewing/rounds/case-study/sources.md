@@ -1,5 +1,4 @@
 ---
-imported_hash: bcca6097fd6b2bc2
 title: Sources — Case Study Round
 summary: The README format table, the study guide's clock, dial and taxonomy, and examples/aie-track/one-hour-code-test.md come from format research kept outside this repo, so nothing here cites it.
 order: 7

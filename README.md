@@ -179,7 +179,7 @@ The `contracts` review dimension (via `uv run --project ~/workspace/guacamayo re
 | `data/wiki/` | LLM-compiled knowledge — one `.md` per concept, pattern, or decision; structured frontmatter, wikilinks |
 | `data/wiki/private/` | Company-specific pages, gitignored — same format, local only |
 | `CLAUDE.md` | Compiler contract — schema rules, ingest checklist, conflict policy, domain taxonomy |
-| `src/librarian/` | The Python package behind the `librarian` CLI: `wiki/` (parser, telemetry, graph, rename, relinker), `ingest/` (scrapers, gate, raw lint), `courses/` (catalog, importer, curriculum), `retrieval/` (embeddings), `config.py` (paths and settings, `LIBRARIAN_ROOT`). Run `uv run librarian --help` |
+| `src/librarian/` | The Python package behind the `librarian` CLI: `wiki/` (parser, telemetry, graph, rename, relinker), `ingest/` (scrapers, gate, raw lint), `courses/` (catalog, curriculum), `retrieval/` (embeddings), `config.py` (paths and settings, `LIBRARIAN_ROOT`). Run `uv run librarian --help` |
 | `apps/mcp/` | FastMCP wrappers over `librarian.retrieval`: `search_wiki`, `read_page`, `list_domain`, `list_pages`, `get_domain_briefing`, plus the codemap tools |
 | `apps/api/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Anthropic chat agent |
 | `apps/web/` | React + Vite graph UI — React Flow (`@xyflow/react`) force-directed graph, chat panel, live wiki watch |
@@ -235,19 +235,8 @@ wiki titles — so "Concepts in the graph" jumps to the node in the graph, and a
 node's detail panel lists the lessons that cover it. Progress is per-browser (localStorage).
 
 Content is plain markdown, laid out `<course>/<module>/[section dirs/]<lesson>.md` with
-`_course.md` / `_module.md` frontmatter (`title`, `summary`, `order`). Seed or refresh it
-from learn-ai-engineering with:
-
-```bash
-make import-courses                     # all subjects
-make import-courses ARGS="--dry-run"    # report only
-```
-
-The importer converts MDX (Nextra components) and notebooks (outputs dropped) to
-markdown, copies images into module `assets/`, and lists vendored repo snapshots and
-PDFs on the module instead of importing them. It is idempotent: each generated file
-carries an `imported_hash`, so a file you edit in librarian — or author from scratch —
-is never overwritten or deleted by a later import.
+`_course.md` / `_module.md` frontmatter (`title`, `summary`, `order`). Lessons are authored
+here, directly in `data/courses/`.
 
 Lecture decks for every course are built here from `data/courses/<course>/<module>/slides/deck.yaml`
 and the module's `assets/`: `make slides PILLAR=<course>/<module> [PREVIEW=1] [PDF=1]`, or

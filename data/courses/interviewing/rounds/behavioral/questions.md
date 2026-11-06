@@ -1,5 +1,4 @@
 ---
-imported_hash: bb4e92b3759ce235
 title: Behavioral Round — Questions & Model Answers
 summary: Each question is a probe for a specific failure mode.
 order: 2

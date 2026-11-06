@@ -1,5 +1,4 @@
 ---
-imported_hash: 582453c390eb0c4b
 title: 'Final project: Finding the suspect'
 summary: In this project we will try to implement an app for crating facial composite that will be able to construct desired faces without explicitly providing databases of templates.
 order: 10

@@ -1,5 +1,4 @@
 ---
-imported_hash: 13caddbe6f0eab5c
 title: Binary Search Tree
 summary: ''
 order: 221

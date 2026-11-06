@@ -1,5 +1,4 @@
 ---
-imported_hash: b46356506a43a15c
 title: Add Two Numbers
 summary: ''
 order: 170

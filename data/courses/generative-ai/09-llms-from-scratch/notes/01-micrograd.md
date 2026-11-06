@@ -1,5 +1,4 @@
 ---
-imported_hash: 025e041b941c3e32
 title: 'micrograd: backpropagation from scratch'
 summary: Every network you have trained so far ended with loss.backward(), and something filled in millions of gradients.
 order: 2

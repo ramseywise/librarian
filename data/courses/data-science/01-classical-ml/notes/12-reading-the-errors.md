@@ -1,5 +1,4 @@
 ---
-imported_hash: fa44acf406ebd525
 title: 'Reading the Errors: What a Model Finds and What It Misses'
 summary: The model is the credit lab's boosted model, with the same features and the same 5:1 cost ratio, so its decline threshold is still $1/6$.
 order: 14

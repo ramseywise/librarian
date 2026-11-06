@@ -1,5 +1,4 @@
 ---
-imported_hash: 9c9d37e3364f9916
 title: 'Lab: a LangGraph support-triage graph (Python)'
 summary: Pillar 05 says to start with a loop and add a node only when a signal forces it.
 order: 18

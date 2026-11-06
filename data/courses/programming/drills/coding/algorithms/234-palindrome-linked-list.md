@@ -1,5 +1,4 @@
 ---
-imported_hash: a25b8a6f5747a9b9
 title: LC 234 — Palindrome Linked List
 summary: Given the head of a singly linked list, return true if the sequence of values reads the same forward and backward, false otherwise.
 order: 72

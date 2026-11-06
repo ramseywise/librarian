@@ -1,5 +1,4 @@
 ---
-imported_hash: 3a6c97af4e84e55a
 title: 8 — Panel data and fixed effects
 summary: Larkspur sells through 100 garden-centre concessions, and head office wants to know whether deeper discounts sell more.
 order: 9

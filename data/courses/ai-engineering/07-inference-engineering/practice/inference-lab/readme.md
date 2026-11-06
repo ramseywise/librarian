@@ -1,5 +1,4 @@
 ---
-imported_hash: 30587c8f2b0d6aa8
 title: 'Lab: inference by simulation (Python)'
 summary: Pillar 07 explains why a server's scheduler can matter more than its chip.
 order: 12

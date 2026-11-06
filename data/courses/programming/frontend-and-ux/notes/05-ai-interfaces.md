@@ -1,5 +1,4 @@
 ---
-imported_hash: 624a8f99aed69192
 title: 5 — AI interfaces
 summary: Everything from chapters 1 to 4 still applies.
 order: 6

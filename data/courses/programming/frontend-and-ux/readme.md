@@ -1,5 +1,4 @@
 ---
-imported_hash: 5c432376575cf194
 title: Frontend and UX
 summary: A good model behind a bad interface still gives a bad product.
 order: 1

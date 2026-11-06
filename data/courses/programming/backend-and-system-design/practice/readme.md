@@ -1,5 +1,4 @@
 ---
-imported_hash: 92dbe94275fb02d6
 title: 'Lab: backend parts you can test without a data centre'
 summary: Each module goes with a chapter, so do it after reading that one.
 order: 12

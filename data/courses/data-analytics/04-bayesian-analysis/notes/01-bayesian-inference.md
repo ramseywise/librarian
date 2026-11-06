@@ -1,5 +1,4 @@
 ---
-imported_hash: ac727b7b71b8fdca
 title: 1 — Bayesian Inference
 summary: Larkspur's checkout test ended with a lift of 0.64 points and a p-value of 0.00003 (A/B testing).
 order: 2

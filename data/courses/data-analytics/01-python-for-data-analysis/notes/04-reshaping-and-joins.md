@@ -1,5 +1,4 @@
 ---
-imported_hash: 41adace77e0e3130
 title: 4 — Reshaping and Joins
 summary: The shop's orders say that dev bought a kettle.
 order: 5

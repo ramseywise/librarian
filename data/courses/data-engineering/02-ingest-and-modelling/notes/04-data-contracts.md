@@ -1,5 +1,4 @@
 ---
-imported_hash: 8f9dbebe2d117a4a
 title: 4 — Data contracts
 summary: On Monday a backend engineer changes fare from dollars to cents, because the payments team asked, and the application works perfectly.
 order: 5

@@ -1,5 +1,4 @@
 ---
-imported_hash: 5e0d7be9920c3d28
 title: Data-analysis-agent lab
 summary: 'An analysis agent over real datasets: read-only SQL and pandas tools, profiling, a validator that recomputes each claim, and charts.'
 order: 10

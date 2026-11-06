@@ -1,5 +1,4 @@
 ---
-imported_hash: 8a0056fbe35503e3
 title: Data Engineering
 summary: 'Position in the path: after programming (Python, SQL); data analytics is recommended, not required.'
 order: 1

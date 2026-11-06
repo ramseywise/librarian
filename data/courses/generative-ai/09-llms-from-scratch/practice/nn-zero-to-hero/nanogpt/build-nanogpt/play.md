@@ -1,5 +1,4 @@
 ---
-imported_hash: c94fb8c455831a0e
 title: let's instead sample manually
 summary: 'for k, v in sd_hf.items(): print(k, v.shape)'
 order: 15

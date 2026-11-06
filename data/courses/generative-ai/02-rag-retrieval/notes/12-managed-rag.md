@@ -1,5 +1,4 @@
 ---
-imported_hash: d5ee0ddde0069f41
 title: '12 — Managed RAG: Bedrock, Vertex, and building your own'
 summary: Tallybook's team has spent eleven chapters learning how to chunk, embed, fuse, rerank and evaluate.
 order: 13

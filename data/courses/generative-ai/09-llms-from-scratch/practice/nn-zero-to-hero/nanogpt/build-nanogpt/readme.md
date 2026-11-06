@@ -1,5 +1,4 @@
 ---
-imported_hash: dcb94952a8cc88fc
 title: build nanoGPT
 summary: This repo holds the from-scratch reproduction of nanoGPT.
 order: 14

@@ -1,5 +1,4 @@
 ---
-imported_hash: 52ef07d3add755f7
 title: nanogpt-lecture
 summary: 'Code created in the Neural Networks: Zero To Hero video lecture series, specifically on the first lecture on nanoGPT.'
 order: 13

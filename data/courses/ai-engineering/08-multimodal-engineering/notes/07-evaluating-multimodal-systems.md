@@ -1,5 +1,4 @@
 ---
-imported_hash: 516c2e03dc5a220c
 title: 7 — Evaluating Multimodal Systems
 summary: The invoice assistant passes its benchmark at 90%, and users complain anyway.
 order: 9
@@ -34,6 +33,8 @@ flowchart LR
 ```
 
 For invoices, take a real invoice and edit one field: change the amount, remove the stamp, shift the due date. The model must get both versions right. A blind guess or a language prior gets at most one of the pair right, unless the two answers happen to be the same.
+
+The scorer can also hand out free points. In benchmarks that pick between a true caption and a false one by comparing scores, a tie resolves to the first option, and the true caption is often listed first. Bordes et al. note that a model whose weights are all zero could score 100% on such sets, and recommend adding a tiny random number or tracking when both captions get the same probability ([arXiv:2405.17247](https://arxiv.org/abs/2405.17247) (Bordes et al., 2024-05, preprint), §4.1.6). They also report that VQA exact-match accuracy underestimates generative models, because answer phrasing decides the score.
 
 ## Three test designs against three shortcuts
 

@@ -1,5 +1,4 @@
 ---
-imported_hash: c9074ee13cb7fb3d
 title: LC 33 — Search in Rotated Sorted Array
 summary: An ascending sorted array of distinct integers has been rotated at some unknown pivot (e.g.
 order: 21

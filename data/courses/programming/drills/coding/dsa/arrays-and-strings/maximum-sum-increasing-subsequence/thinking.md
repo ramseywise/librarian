@@ -1,5 +1,4 @@
 ---
-imported_hash: ad56250565e3be9f
 title: Maximum Sum Increasing Subsequence — First-Principles Thinking Guide
 summary: Similar to LIS but instead of counting length, track sum.
 order: 119

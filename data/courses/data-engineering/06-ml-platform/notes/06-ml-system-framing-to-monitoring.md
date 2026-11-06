@@ -1,5 +1,4 @@
 ---
-imported_hash: 72b862d657242aee
 title: An ML system from framing to monitoring
 summary: 'Tallybook''s finance lead sends one line: "Can we use AI to read supplier invoices, so nobody has to type them?" Nothing in that line says what must be right, what a mistake costs, who will know when one happens, or whether a model is needed…'
 order: 7

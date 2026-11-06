@@ -1,5 +1,4 @@
 ---
-imported_hash: 81a0c0dda3f6cad2
 title: 4 — Idempotency and backfills
 summary: Every pipeline gets run twice eventually.
 order: 5

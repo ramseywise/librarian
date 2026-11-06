@@ -1,5 +1,4 @@
 ---
-imported_hash: b15b57fed0a4a7fd
 title: 7 — Continued pretraining and supervised fine-tuning
 summary: The ticket assistant now has a base model, which continues text and answers nothing.
 order: 8
@@ -41,7 +40,7 @@ SFT continues training on curated examples of the behaviour you want. The exampl
 |---|---|---|
 | Change to the model | Replace the output head with a small one (e.g. 2 classes); usually train only the last block(s) and the head | None; keep the language-model head |
 | Data | Labeled examples (spam / not spam) | Instruction–response pairs in a fixed template (Alpaca-style) |
-| Loss | Cross-entropy on the last token's class logits | Next-token loss on the response; padding and usually the prompt tokens are masked out |
+| Loss | [Cross-entropy](06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) on the last token's class logits | Next-token loss on the response; padding and usually the prompt tokens are masked out |
 | Evaluation | Accuracy | Hard; Raschka scores responses with a larger LLM as judge |
 
 *Building AI Agents* (ch. 2) shows the classification route on a small decoder, with a linear head on the last token's hidden state; it is the same pattern as *LLMs from Scratch* ch. 6.

@@ -1,5 +1,4 @@
 ---
-imported_hash: b343322cef47588b
 title: 5 — Partitioning and replication
 summary: Once data lives on many machines, two questions come up and they are easy to confuse.
 order: 6

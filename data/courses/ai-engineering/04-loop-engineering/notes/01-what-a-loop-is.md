@@ -1,5 +1,4 @@
 ---
-imported_hash: 001343aef52d3e5b
 title: 1 — What a Loop Is
 summary: 'Most agent work still stalls on a person: someone reads the output, decides what is next and types the next prompt.'
 order: 2

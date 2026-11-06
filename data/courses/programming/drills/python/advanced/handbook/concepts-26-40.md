@@ -1,5 +1,4 @@
 ---
-imported_hash: 8a08330237fd035f
 title: Advanced Python Interview Reference
 summary: Fixtures are how you prepare and clean up test environments in pytest.
 order: 263

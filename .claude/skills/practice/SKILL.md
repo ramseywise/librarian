@@ -4,9 +4,8 @@ description: "Author and wire one piece of practice material: a drill in program
 ---
 
 You add one piece of practice material and leave it wired in, checked and reviewed. The checks and the reviewer
-run here over `data/courses/` (paths below are relative to it). Licence and allowlist files (`THIRD_PARTY.md`,
-`practice/.gitignore`) and the import of new files live in `../learn-ai-engineering`: author there, then
-`make import-courses` here. Private drills (`data/courses/private/`) are never checked or named. Practice tests what the notes
+run here over `data/courses/` (paths below are relative to it). Drills and rounds are authored in `data/courses/` directly; licence files
+(`THIRD_PARTY.md`) remain in `../learn-ai-engineering`. Private drills (`data/courses/private/`) are never checked or named. Practice tests what the notes
 teach, so a new file never becomes the only home of a topic.
 
 `$ARGUMENTS` is a path to wire, or `drill <track> <topic> "<idea>"`, or `round <round> "<idea>"`.
@@ -41,7 +40,7 @@ Name a note rather than a pillar when one note covers it. `concepts` on a drill 
 
 ## Step 4 — Clear the licence and allowlist
 
-In the sibling, `practice/.gitignore` fails closed, and the root `.gitignore` names the drill folders that stay local. Before a
+Here, the root `.gitignore` names the drill folders that stay local. Before a
 `practice/` file gets a line in the allowlist:
 
 1. **Licence.** Written here, or copied from an upstream with a licence that allows it, recorded in `THIRD_PARTY.md`.

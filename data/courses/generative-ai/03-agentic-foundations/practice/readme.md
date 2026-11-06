@@ -1,8 +1,7 @@
 ---
-imported_hash: 297253043f35c114
 title: 'Practice: agentic foundations'
 summary: Run everything from this folder, generative-ai/03-agentic-foundations/practice/.
-order: 9
+order: 13
 kind: reading
 section: Practice
 source: learn-ai-engineering/generative-ai/03-agentic-foundations/practice/README.md

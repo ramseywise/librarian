@@ -1,5 +1,4 @@
 ---
-imported_hash: 1972cab6048940ad
 title: Tooling
 summary: Drills follow the schema in ../README.md.
 order: 270

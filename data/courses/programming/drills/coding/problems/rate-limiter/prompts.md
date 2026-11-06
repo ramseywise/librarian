@@ -1,5 +1,4 @@
 ---
-imported_hash: aa03e8e4013c9d34
 title: rate-limiter — env1 drill (45 min, no AI)
 summary: Object-oriented design under time. No starter code — you design the interface as well as the implementation.
 order: 255

@@ -1,5 +1,4 @@
 ---
-imported_hash: ced7e4dee4c1adfd
 title: The file has no headers naming the columns, so we pass header=None
 summary: ct = ColumnTransformer( [("scaling", StandardScaler(), ['age', 'hours-per-week']), ("onehot", OneHotEncoder(sparse_output=False), ['workclass', 'education', 'gender', 'occupation'])])
 order: 25

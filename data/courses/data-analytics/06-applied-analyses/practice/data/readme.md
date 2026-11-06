@@ -1,5 +1,4 @@
 ---
-imported_hash: d6842c0d896369f2
 title: South German Credit
 summary: 'SouthGermanCredit.asc and codetable.txt are the data and code table from the UCI Machine Learning Repository: South German Credit (UPDATE), licence CC BY 4.0.'
 order: 15

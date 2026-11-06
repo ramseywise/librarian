@@ -1,5 +1,4 @@
 ---
-imported_hash: d3a55738dd75a7b3
 title: LC 52 — N-Queens II
 summary: Given an integer n, return the number of distinct ways to place n queens on an n x n chessboard so that no two attack each other (no shared row, column, or diagonal).
 order: 30

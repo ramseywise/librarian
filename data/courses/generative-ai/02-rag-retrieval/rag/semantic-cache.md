@@ -1,5 +1,4 @@
 ---
-imported_hash: ad97545e88ec9c0c
 title: Semantic Cache for Support Agents
 summary: 'For Tier 1: after planner classifies intent as answerable, a new cache_lookup node embeds the query and does a cosine nearest-neighbour search over the pre-built embeddings from semantic_cache_seed.jsonl.'
 order: 7

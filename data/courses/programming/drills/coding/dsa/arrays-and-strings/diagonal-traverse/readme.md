@@ -1,5 +1,4 @@
 ---
-imported_hash: 8742bbb2b8d20cd6
 title: Diagonal Traverse
 summary: Given a matrix of M x N elements (M rows, N columns), return all elements of the matrix in diagonal order as shown in the below image.
 order: 102

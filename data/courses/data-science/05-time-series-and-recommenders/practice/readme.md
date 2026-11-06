@@ -1,5 +1,4 @@
 ---
-imported_hash: b967cf2f64535f83
 title: 'Practice: time series and recommenders'
 summary: Run everything from the pillar folder, data-science/05-time-series-and-recommenders/.
 order: 7

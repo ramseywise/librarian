@@ -1,5 +1,4 @@
 ---
-imported_hash: 9f3fdd765345f874
 title: 1 — JavaScript for Python Developers
 summary: There are no runtime types. x as User checks nothing, and an interface produces no code.
 order: 2

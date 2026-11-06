@@ -1,5 +1,4 @@
 ---
-imported_hash: b88e2dfe01523752
 title: 5 — Hypothesis Testing
 summary: Larkspur's analyst slices a flat experiment by twenty segments and reports that the new checkout works in one of them, at p = 0.04.
 order: 6

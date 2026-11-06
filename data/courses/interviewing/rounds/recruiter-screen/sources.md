@@ -1,5 +1,4 @@
 ---
-imported_hash: a6078fe721403cea
 title: Sources — Recruiter Screen
 summary: This is the one round where external prep materials matter less than internal rehearsal.
 order: 59

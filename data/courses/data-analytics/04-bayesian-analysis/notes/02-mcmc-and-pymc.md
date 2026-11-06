@@ -1,5 +1,4 @@
 ---
-imported_hash: c4b57da2d9f81d79
 title: 2 — MCMC and PyMC
 summary: The Challenger model in chapter 1 has two parameters and the sampler returned an answer in a second.
 order: 3
@@ -115,7 +114,7 @@ The gap between iterations and **effective sample size** (ESS) is the core diagn
 | CategoricalGibbsMetropolis | `pm.CategoricalGibbsMetropolis()` | Categorical assignments (replaced `ElemwiseCategorical`) |
 | Compound | `step=[step1, step2]` | NUTS or Metropolis for continuous, a discrete sampler for the rest |
 
-Random-walk Metropolis struggles because it proposes blindly, and in high dimensions almost every direction leads downhill. Hamiltonian Monte Carlo uses the gradient to simulate a particle gliding across the surface, so a proposal can land far away and still be accepted. Its catch is sensitivity to two settings, the step size ε and the number of leapfrog steps L. The **No-U-Turn Sampler** removes both by hand: it keeps doubling the trajectory until it starts to turn back on itself, and it tunes ε during warm-up by dual averaging ([Hoffman and Gelman, JMLR, 2014](https://arxiv.org/abs/1111.4246)). The paper's aim was a sampler that runs without user tuning, and that is why `pm.sample()` works unattended for continuous models.
+Random-walk Metropolis struggles because it proposes blindly, and in high dimensions almost every direction leads downhill. Hamiltonian Monte Carlo uses the gradient to simulate a particle gliding across the surface, so a proposal can land far away and still be accepted. Its catch is sensitivity to two settings, the step size ε and the number of leapfrog steps L. The **No-U-Turn Sampler** removes both by hand: it keeps doubling the trajectory until it starts to turn back on itself, and it tunes ε during warm-up by dual averaging ([Hoffman and Gelman, JMLR, 2014](https://arxiv.org/abs/1111.4246)). The paper's aim was a sampler that runs without user tuning, and that is why `pm.sample()` works unattended for continuous models. The paper's evidence is modest and specific: on four targets (a 250-dimensional normal, two logistic regressions and a 3,001-parameter stochastic volatility model) NUTS with target acceptance 0.6 beat the best HMC setting (over ten trajectory lengths and eight acceptance targets) by about a factor of three in effective samples per gradient evaluation on the normal and stochastic volatility models, and matched it on the logistic regressions. The best HMC length itself varied about 100-fold across the four, from 0.17 to 17.62. It compared NUTS only with basic HMC, with an identity mass matrix, and counted gradient evaluations rather than wall-clock time (the arXiv v1 preprint, 2011; the note cites the 2014 JMLR version).
 
 The same data under different samplers and scalings makes the case. This is Challenger again:
 
@@ -148,7 +147,7 @@ NUTS, standardised   beta ess_bulk   2591  r_hat 1.00  leapfrog steps/draw   3.1
 
 Metropolis on raw Fahrenheit has an ESS of 5 and an R-hat above 2 after 4,000 draws, which is why BMH runs it for 120,000. NUTS copes, but spends 19 gradient steps per draw on a long narrow ridge, because the intercept and slope are almost perfectly correlated when the temperature is far from zero. Standardising removes the ridge: three steps per draw, and about 2,600 effective samples. Scale your inputs before reaching for more draws.
 
-Other approximations to MCMC exist. The **Laplace approximation** fits a Normal at the MAP, and **variational inference** (`pm.fit(method="advi")`) fits a simple distribution by optimisation. Both are faster and less exact, and [chapter 6](06-bayesian-machine-learning.md) measures how much less.
+Other approximations to MCMC exist. The **Laplace approximation** fits a Normal at the MAP, and **variational inference** (`pm.fit(method="advi")`) fits a simple distribution by optimisation. Both are faster and less exact, and [chapter 6](06-bayesian-machine-learning.md) measures how much less. [Blei, Kucukelbir and McAuliffe (JASA, 2017)](https://arxiv.org/abs/1601.00670) illustrate the choice with two scenarios, not experiments: MCMC for a small, expensive dataset where you trust the model and need precise inferences, VI for a text model on a billion documents. Size isn't the only factor. For mixture models where Gibbs sampling is not an option, they note VI may do better than Hamiltonian Monte Carlo even on small data.
 
 ## Worked example: a two-cluster mixture
 

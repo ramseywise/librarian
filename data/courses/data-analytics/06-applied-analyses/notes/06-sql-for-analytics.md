@@ -1,5 +1,4 @@
 ---
-imported_hash: d451d936b5532405
 title: 'SQL for analytics: the revenue bridge, and the patterns behind it'
 summary: Fernhill's 2025 board pack is due on Friday.
 order: 7

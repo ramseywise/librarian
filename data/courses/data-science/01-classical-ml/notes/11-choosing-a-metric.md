@@ -1,5 +1,4 @@
 ---
-imported_hash: 411e9636bbd60afc
 title: 'Choosing a Metric: Start from the Target'
 summary: 'Earlier chapters define most of these metrics where they first came up: DS 01/04 for classification and regression, DS 01/10 for costs on a rare class, DS 05/01 for forecasts, DS 05/02 and 05/03 for ranking.'
 order: 13
@@ -136,7 +135,7 @@ The first row is theirs: accuracy looks excellent, and MCC reports that the clas
 
 ### ROC holds roughly still, and PR moves
 
-[Saito and Rehmsmeier](https://doi.org/10.1371/journal.pone.0118432) (PLoS ONE 2015) title their paper for this: the PR plot is more informative than ROC on imbalanced data. Their evidence is about reading, not about information, since each ROC point maps to one PR point. The defect they name is "an intuitive but wrong interpretation of specificity". With 1,000 positives and 10,000 negatives, 500 true positives with 1,600 false positives gives the same ROC point as 500 and 160 with 1,000 negatives, but precision of 25% against 75%. Here is the same effect with one fitted model scored at two base rates:
+[Saito and Rehmsmeier](https://doi.org/10.1371/journal.pone.0118432) (PLoS ONE 2015) title their paper for this: the PR plot is more informative than ROC on imbalanced data. Their evidence is about reading, not about information, since on a given dataset each ROC point maps to one PR point, as long as recall isn't zero ([Davis and Goadrich](https://doi.org/10.1145/1143844.1143874), ICML 2006, Theorem 3.1). The defect they name is "an intuitive but wrong interpretation of specificity". With 1,000 positives and 10,000 negatives, 500 true positives with 1,600 false positives gives the same ROC point as 500 and 160 with 1,000 negatives, but precision of 25% against 75%. Here is the same effect with one fitted model scored at two base rates:
 
 ```text
 --- one model, trained at 22.1%, scored on the natural test set and on a 3% subset of it ---

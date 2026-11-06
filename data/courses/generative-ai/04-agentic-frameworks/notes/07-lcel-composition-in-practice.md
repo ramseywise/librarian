@@ -1,5 +1,4 @@
 ---
-imported_hash: df163d979a647676
 title: 7 — LCEL Composition in Practice
 summary: Inside the research agent's model node there is usually more than one model call.
 order: 8

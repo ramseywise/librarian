@@ -1,5 +1,4 @@
 ---
-imported_hash: f95f68d7c2a6a945
 title: 'States and sequences: Markov chains and optimal matching'
 summary: Fernhill's finance lead wants one number for what a new customer is worth, and the growth lead wants to know which journeys end in a second order.
 order: 9

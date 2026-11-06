@@ -1,8 +1,7 @@
 ---
-imported_hash: b45e8917948e4c4c
 title: 'Deep Learning Starter : Simple LSTM'
 summary: This notebook leverages the time series structure of the data.
-order: 9
+order: 10
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-science/02-deep-learning/practice/deep-learning-starter-simple-lstm.ipynb

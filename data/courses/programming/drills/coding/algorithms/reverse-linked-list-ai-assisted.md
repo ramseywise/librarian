@@ -1,5 +1,4 @@
 ---
-imported_hash: d58886461f798d38
 title: Reverse a linked list
 summary: 'Reverse a singly linked list in place. This was reported in an AI-assisted coding round (Microsoft Applied AI/ML): you may use an LLM, but the interviewer modifies the constraints mid-problem and watches how you re-prompt and verify.'
 order: 90

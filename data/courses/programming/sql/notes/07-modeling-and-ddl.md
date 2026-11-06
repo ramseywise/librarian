@@ -1,5 +1,4 @@
 ---
-imported_hash: 79319a75fd275e2e
 title: 7 — Designing Tables and Changing Data
 summary: Breaking rule 3 on purpose, by denormalising, is a legitimate choice for analytics tables built by a pipeline.
 order: 8

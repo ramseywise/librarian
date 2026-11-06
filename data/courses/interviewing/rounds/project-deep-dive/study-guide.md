@@ -1,5 +1,4 @@
 ---
-imported_hash: 5e336262a2b2df4f
 title: Study Guide — Project Deep-Dive
 summary: Every project answer must exist at three altitudes.
 order: 56

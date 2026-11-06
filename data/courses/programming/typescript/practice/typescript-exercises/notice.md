@@ -1,5 +1,4 @@
 ---
-imported_hash: 4b4623309f74f371
 title: typescript-exercises (vendored)
 summary: Exercises 1–15 from mdevils/typescript-exercises by Marat Dulin, MIT (see LICENSE).
 order: 11

@@ -1,5 +1,4 @@
 ---
-imported_hash: 4fc96640278510cc
 title: Advanced Python Interview Reference
 summary: This one actually threw me off in a real interview.
 order: 261

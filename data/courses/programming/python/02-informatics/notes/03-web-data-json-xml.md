@@ -1,5 +1,4 @@
 ---
-imported_hash: 2ce8d1fb60c2fbb2
 title: '3 — Web Data: JSON, XML and APIs'
 summary: 'data = json.loads(''{"name": "Ada", "langs": ["py", "ts"], "active": true, "manager": null}'') data["langs"][0] # ''py'' json.dumps(data, indent=2) # back to text with open("out.json", "w", encoding="utf-8") as fh: json.dump(data, fh)'
 order: 9

@@ -1,5 +1,4 @@
 ---
-imported_hash: d2e4a79d23742d1b
 title: Question Bank — Technical / ML/LLM Breadth Round
 summary: Not questions — a coverage checklist. Say each aloud in 60 seconds; anything you stall on is a gap to take back to the guides.
 order: 75

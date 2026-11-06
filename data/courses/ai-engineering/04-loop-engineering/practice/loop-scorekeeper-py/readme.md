@@ -1,5 +1,4 @@
 ---
-imported_hash: 830037eeb787436e
 title: 'Lab: a loop with a scorekeeper (Python)'
 summary: The Python twin of the TypeScript lab. Same eight checks, same five scripted makers and the same six stop reasons, so the iteration tables compare directly.
 order: 13

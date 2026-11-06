@@ -1,5 +1,4 @@
 ---
-imported_hash: a98b0fe485dd71f5
 title: Interviewing
 summary: Interview prep for AI, ML, data science, analytics, data engineering and forward-deployed roles.
 order: 1
@@ -99,5 +98,5 @@ round.
   for anything personal.
 - Strip the preamble on ingest: content starts at the `#`. Anything the model said *about* the notes goes in `sources:`,
   and so does scraped page chrome.
-- Librarian imports this folder as the `interviewing` course with `make import-courses`, so keep links relative and
+- This folder is the `interviewing` course in librarian's Courses tab, so keep links relative and
   keep these files self-contained.

@@ -1,5 +1,4 @@
 ---
-imported_hash: 02e7f6cb4031c1b3
 title: Run the SVM training (with C = 1) using SVM software.
 summary: u, v = np.meshgrid( xvals, yvals ) mycontour = plt.contour( xvals, yvals, zvals, [0]) plt.title("Decision Boundary")
 order: 36

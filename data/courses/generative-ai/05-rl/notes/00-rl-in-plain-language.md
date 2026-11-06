@@ -1,5 +1,4 @@
 ---
-imported_hash: 94a2465799299df8
 title: 0 — Reinforcement Learning in Plain Language
 summary: Picture a text adventure with hidden rules.
 order: 2

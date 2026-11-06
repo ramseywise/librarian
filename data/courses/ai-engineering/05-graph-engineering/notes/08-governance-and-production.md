@@ -1,5 +1,4 @@
 ---
-imported_hash: 675be471c21fe1c5
 title: 8 — Governance and Production
 summary: '"The graph did it" is not an answer when the bill triples or a tool breaks production.'
 order: 9

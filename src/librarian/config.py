@@ -150,6 +150,11 @@ class Settings(BaseSettings):
         return self.data_dir / "glossary.yaml"
 
     @property
+    def concept_homes_file(self) -> Path:
+        """Maths concepts and the lessons that teach them, read by `courses check curriculum`."""
+        return self.data_dir / "concept_homes.json"
+
+    @property
     def logs_dir(self) -> Path:
         return self.override_logs_dir or self.root / "logs"
 

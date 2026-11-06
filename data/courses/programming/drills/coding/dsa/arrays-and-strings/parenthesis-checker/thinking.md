@@ -1,5 +1,4 @@
 ---
-imported_hash: 2a72a7e8bdd29247
 title: Parenthesis Checker — First-Principles Thinking Guide
 summary: Opening brackets push onto a stack. Closing brackets must match the most recent opening bracket (stack top).
 order: 127

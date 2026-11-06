@@ -1,5 +1,4 @@
 ---
-imported_hash: 75bb709622283e5c
 title: Connect Intensive - Machine Learning Nanodegree
 summary: In this notebook, we will do some visualization on the Iris dataset.
 order: 18

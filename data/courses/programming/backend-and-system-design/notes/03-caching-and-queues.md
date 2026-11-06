@@ -1,5 +1,4 @@
 ---
-imported_hash: 3cb16e2a7ed9f148
 title: 3 — Caching and queues
 summary: Put a small fast store in front of a large slow one, and you win to the extent that requests repeat.
 order: 4

@@ -1,5 +1,4 @@
 ---
-imported_hash: 9b1c547305daa50e
 title: feed-ranker — env2 drill (30 min, AI allowed)
 summary: Existing code in src/ — store.py is the data layer (do not rewrite it), ranker.py is the stub you implement.
 order: 252

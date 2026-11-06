@@ -1,5 +1,4 @@
 ---
-imported_hash: 7a06652588a957fd
 title: LC 236 — Lowest Common Ancestor of a Binary Tree
 summary: 'Given the root of a binary tree (not necessarily a BST) and two nodes p and q present in it, return their lowest common ancestor: the deepest node having both p and q as descendants, where a node may be a descendant of itself.'
 order: 74

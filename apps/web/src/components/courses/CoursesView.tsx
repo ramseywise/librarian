@@ -37,7 +37,7 @@ export function CoursesView({ route, navigate, onOpenConcept, onAsk }: Props) {
   }
   if (!courses) return <Centered>Loading courses…</Centered>;
   if (!courses.length) {
-    return <Centered>No courses yet. Run <code>make import-courses</code> or add files under data/courses/.</Centered>;
+    return <Centered>No courses yet. Add files under data/courses/.</Centered>;
   }
 
   if (!route || !course) {

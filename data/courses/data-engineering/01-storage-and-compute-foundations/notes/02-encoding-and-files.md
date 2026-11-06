@@ -1,5 +1,4 @@
 ---
-imported_hash: a2944e51001f28e5
 title: 2 — Encoding and files
 summary: A data pipeline is a chain of programs that never meet.
 order: 3

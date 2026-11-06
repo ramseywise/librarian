@@ -1,5 +1,4 @@
 ---
-imported_hash: ee5bd535cf09223d
 title: Sort 0s, 1s, and 2s (Dutch National Flag) — First-Principles Thinking Guide
 summary: 'Use three pointers: low, mid, high.'
 order: 129

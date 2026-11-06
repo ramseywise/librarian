@@ -1,5 +1,4 @@
 ---
-imported_hash: a4f6e5861e7725f8
 title: Designing an LRU Cache — First-Principles Thinking Guide
 summary: ''
 order: 216

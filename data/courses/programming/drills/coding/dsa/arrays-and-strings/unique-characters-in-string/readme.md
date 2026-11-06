@@ -1,5 +1,4 @@
 ---
-imported_hash: 9cc2ae8a51773cfc
 title: Unique Characters In String
 summary: Implement an algorithm to determine if a string has all unique characters.
 order: 134

@@ -1,5 +1,4 @@
 ---
-imported_hash: dbec34b7bb9ce413
 title: Text representation
 summary: A model cannot read. Before any classifier, topic model or neural network sees a film review, somebody has decided how that text becomes numbers, and those decisions quietly set what the model is able to learn.
 order: 2

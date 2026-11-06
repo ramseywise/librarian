@@ -1,5 +1,4 @@
 ---
-imported_hash: f9bf68010ce30895
 title: LC 3 — Longest Substring Without Repeating Characters
 summary: Given a string s, return the length of the longest contiguous substring that contains no repeated characters.
 order: 5

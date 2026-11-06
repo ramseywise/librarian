@@ -1,5 +1,4 @@
 ---
-imported_hash: 9a610b991dd144cf
 title: 2 — Everyday Types
 summary: 'type Point = { x: number; y: number }; type ID = number | string; // only type can name unions, tuples and primitives'
 order: 3

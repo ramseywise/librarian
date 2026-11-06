@@ -1,5 +1,4 @@
 ---
-imported_hash: edffcd12f91b69ec
 title: Subarray With Given Sum — First-Principles Thinking Guide
 summary: Since all elements are non-negative, adding an element increases the sum and removing from the left decreases it — perfect for a sliding window.
 order: 133

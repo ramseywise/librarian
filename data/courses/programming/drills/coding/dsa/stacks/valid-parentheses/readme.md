@@ -1,5 +1,4 @@
 ---
-imported_hash: 23af92436050740d
 title: Valid Parentheses
 summary: Given a string s containing just the characters (, ), {, }, [, ], determine if the input string is valid.
 order: 210

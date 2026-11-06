@@ -1,5 +1,4 @@
 ---
-imported_hash: 80a417b131b6592c
 title: References
 summary: Everything the Python, SQL and TypeScript tracks are built from, with how each source is used.
 order: 2

@@ -1,5 +1,4 @@
 ---
-imported_hash: 79ac67edbe548ddd
 title: 5 — Loss Functions and Bayesian Decisions
 summary: Larkspur now has a posterior for the checkout lift, and a posterior is not a decision.
 order: 6

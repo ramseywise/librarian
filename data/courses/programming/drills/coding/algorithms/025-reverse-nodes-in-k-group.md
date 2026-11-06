@@ -1,5 +1,4 @@
 ---
-imported_hash: 7799d1470c1f8623
 title: LC 25 — Reverse Nodes in k-Group
 summary: Given the head of a linked list, reverse the nodes k at a time and return the modified list.
 order: 18

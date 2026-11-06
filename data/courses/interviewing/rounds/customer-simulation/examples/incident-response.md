@@ -1,5 +1,4 @@
 ---
-imported_hash: a1f0482c7ee8012f
 title: 'Worked Example: Incident Response'
 summary: ''
 order: 43

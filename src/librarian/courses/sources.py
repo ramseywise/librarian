@@ -20,7 +20,7 @@ _settings = get_settings()
 SOURCES_DIR = _settings.course_sources_dir
 SERVE_SOURCES = _settings.serve_course_sources
 
-# The importer put a subject's root files in `00-start-here`; in the sources repo they sit
+# A subject's root files sit in `00-start-here`; in the sources repo they sit
 # at the course root, so their relative links start one level higher.
 ROOT_MODULE = "00-start-here"
 

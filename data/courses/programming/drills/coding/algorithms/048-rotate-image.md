@@ -1,5 +1,4 @@
 ---
-imported_hash: 02add9c3be90efa3
 title: LC 48 — Rotate Image
 summary: Given an n x n 2D matrix representing an image, rotate it by 90 degrees clockwise.
 order: 27

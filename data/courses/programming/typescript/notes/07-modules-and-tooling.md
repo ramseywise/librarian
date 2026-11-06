@@ -1,5 +1,4 @@
 ---
-imported_hash: 58205ca04608e009
 title: 7 — Modules, tsconfig and Tooling
 summary: '// main.ts import Calculator, { add } from ''./math.ts''; import type { Shape } from ''./shapes.ts''; // type-only: erased completely import  as path from ''node:path''; // the node: prefix for built-ins'
 order: 8

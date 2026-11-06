@@ -1,5 +1,4 @@
 ---
-imported_hash: 31183129787b4bb2
 title: Coding-agent lab
 summary: A small coding agent with a read, edit, test loop and sandbox limits, run end to end against a toy repo.
 order: 9

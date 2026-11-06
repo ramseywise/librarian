@@ -1,5 +1,4 @@
 ---
-imported_hash: 1c18ebc00fc339c1
 title: LC 295 — Find Median from Data Stream
 summary: 'Design a MedianFinder that supports two operations on a growing stream of numbers: addNum(x) inserts x, and findMedian() returns the median of all values seen so far.'
 order: 78

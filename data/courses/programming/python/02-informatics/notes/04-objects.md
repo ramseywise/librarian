@@ -1,5 +1,4 @@
 ---
-imported_hash: 4564c40d9e0b3502
 title: 4 — Objects
 summary: 'def party(self) -> int: self.x += 1 return self.x'
 order: 10

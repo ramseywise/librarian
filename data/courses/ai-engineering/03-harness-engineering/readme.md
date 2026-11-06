@@ -1,5 +1,4 @@
 ---
-imported_hash: 19a2f0d746c491ef
 title: 03 — Harness Engineering
 summary: 'Harness engineering is the scaffolding discipline: building the infrastructure that makes agent loops deployable, reliable, observable, and safe.'
 order: 1

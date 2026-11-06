@@ -1,5 +1,4 @@
 ---
-imported_hash: 8342aed9d71c6e93
 title: Implement Stack Using Queues
 summary: Implement a LIFO stack using only queue operations (enqueue, dequeue, peek, empty).
 order: 189

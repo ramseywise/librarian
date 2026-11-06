@@ -1,5 +1,4 @@
 ---
-imported_hash: a5dbad1f38a0a7be
 title: 3 — Preference Optimization Algorithms
 summary: The three-stage pipeline in 02 holds four models in memory and stakes everything on a reward model that the policy learns to cheat.
 order: 5
@@ -79,7 +78,7 @@ and old policy, and `A_t` is the advantage estimate from the value function.
 L_total = L_PPO + β · KL[π_θ || π_SFT] + γ · L_pretrain
 ```
 
-The KL term prevents policy collapse away from the SFT initialization. The pretrain
+The KL term ([defined](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity)) prevents policy collapse away from the SFT initialization. The pretrain
 term (optional) preserves general capability.
 
 **What PPO requires:**
@@ -148,7 +147,7 @@ L_DPO(θ) = -E[(x, y_w, y_l) ~ D] [
 ]
 ```
 
-The model is trained to assign higher log-probability to preferred responses relative to
+The model is trained to assign higher log-probability ([what that is](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity)) to preferred responses relative to
 the reference model, and lower log-probability to rejected responses — without ever
 explicitly scoring either.
 
@@ -487,6 +486,13 @@ right, so they cannot supply them directly. d1
 estimates them with a mean-field decomposition and a single unmasking pass under a random
 prompt mask. On LLaDA-8B-Instruct, this diffu-GRPO beat SFT in all 12 task and length setups.
 SFT followed by RL took Countdown from 20.7% to 42.2%.
+diffu-GRPO still scores every denoising step with the one final reward, and it trains on states
+the model never produced. Back on Track (PAPO) ([arXiv:2606.08501](https://arxiv.org/abs/2606.08501) (Shao et al., 2026-06, preprint))
+fixes both. Each step is rewarded by scoring its one-step denoised guess, and the update replays
+states from the real rollout, chosen by entropy. With no SFT on LLaDA-8B-Instruct,
+**Countdown at length 256 reached 65.6% against 31.3% for diffu-GRPO and 19.5% for the base**,
+while GSM8K and MATH500 moved little and sometimes trailed other baselines. The best checkpoint
+was picked on the evaluation sets, one seed, LoRA only.
 
 **When to use GRPO:** Reasoning tasks with verifiable outcomes (math, code, logic).
 Not appropriate for general instruction following or alignment training.

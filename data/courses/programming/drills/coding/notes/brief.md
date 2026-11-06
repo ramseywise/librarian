@@ -1,5 +1,4 @@
 ---
-imported_hash: 00fbacc4e4ea6e0c
 title: 45-Minute Coding Challenge — Prep Brief
 summary: One attempt, no retake, timer starts on click.
 order: 248

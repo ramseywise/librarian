@@ -1,5 +1,4 @@
 ---
-imported_hash: 2ba8bfa4907d7ffe
 title: Jump Game — First-Principles Thinking Guide
 summary: 'For each index i from 0 to n-1: If i > farthest: return False ← Can''t reach this index farthest = max(farthest, i + nums[i]) If farthest >= n - 1: return True ← Early exit'
 order: 163

@@ -1,5 +1,4 @@
 ---
-imported_hash: 73c2f0bb399706cb
 title: 'Practice: the support agent''s fortnight'
 summary: Everything the six chapters print comes from this folder.
 order: 8

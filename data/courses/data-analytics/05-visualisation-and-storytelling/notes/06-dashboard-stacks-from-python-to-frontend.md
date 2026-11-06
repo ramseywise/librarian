@@ -1,5 +1,4 @@
 ---
-imported_hash: bf06942ec791687f
 title: 'Dashboard stacks: from Python results to a browser'
 summary: Fernhill's analysts have given every customer a segment, and the CRM team wants to see them on a dashboard by Friday.
 order: 7

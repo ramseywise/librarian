@@ -1,5 +1,4 @@
 ---
-imported_hash: e5367be5c40eeb2b
 title: 'Lab: a prompt eval harness'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
 order: 14

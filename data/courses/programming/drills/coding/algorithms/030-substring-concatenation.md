@@ -1,5 +1,4 @@
 ---
-imported_hash: 78b9f5473b4e9501
 title: LC 30 — Substring with Concatenation of All Words
 summary: Given a string s and an array words of strings that all have the same length, return the starting indices of every substring of s that is a concatenation of all the words in words exactly once, in any order and with no characters in between.
 order: 19

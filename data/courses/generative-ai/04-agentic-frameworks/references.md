@@ -1,5 +1,4 @@
 ---
-imported_hash: e1afce280455cc02
 title: References
 summary: 'Papers routed here by the weekly DAIR sync: Zhou et al.'
 order: 10
@@ -51,6 +50,11 @@ source: learn-ai-engineering/generative-ai/04-agentic-frameworks/references.md
 ## AI Papers of the Week
 
 Papers routed here by the weekly [DAIR](https://github.com/dair-ai/AI-Papers-of-the-Week) sync: Zhou et al. (week of 2023-09-11) and Dibia et al. (week of 2024-08-26). Both are in the table above.
+
+| | Paper | Read for | Notes |
+|---|---|---|---|
+| | Dibia et al., [*AutoGen Studio*](https://aclanthology.org/2024.emnlp-demo.8/) (EMNLP 2024 System Demonstrations). [PDF](sources/dibia-2024-autogen-studio.pdf) | Over 200K installs in 5 months and over 135 issues are its only evidence; no user study or benchmark; "not production ready" | [06](notes/06-framework-selection.md) |
+| | Zhou et al., [*Agents: An Open-source Framework for Autonomous Language Agents*](https://arxiv.org/abs/2309.07870) (⚑ preprint, 2023). [PDF](sources/zhou-2023-agents.pdf) | Symbolic state-graph control flow claimed more stable, never measured; self-scored feature table | [06](notes/06-framework-selection.md#the-dimensions) |
 
 ## Framework and library docs
 

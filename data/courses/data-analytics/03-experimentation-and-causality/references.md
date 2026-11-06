@@ -1,5 +1,4 @@
 ---
-imported_hash: 984100ce408a24a8
 title: References
 summary: ''
 order: 8

@@ -1,5 +1,4 @@
 ---
-imported_hash: d17a38f2d00a8352
 title: 'Lab: inference by simulation (TypeScript)'
 summary: The TypeScript twin of the Python lab. It reads that folder's params.json, draws the same random numbers from the same generator, and prints the same report.
 order: 13

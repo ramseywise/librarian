@@ -1,5 +1,4 @@
 ---
-imported_hash: af88091cc74acf60
 title: 11 — Applications
 summary: Ask a model for a thousand training stories and you get a thousand near-duplicates, even at high temperature.
 order: 12

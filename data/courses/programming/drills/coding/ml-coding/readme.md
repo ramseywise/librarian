@@ -1,5 +1,4 @@
 ---
-imported_hash: 82af3661b4e43e4e
 title: ML coding drills
 summary: Implement the maths an AI-engineering round asks for from scratch in NumPy — no sklearn, no torch.
 order: 237

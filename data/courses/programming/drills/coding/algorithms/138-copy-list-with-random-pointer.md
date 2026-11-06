@@ -1,5 +1,4 @@
 ---
-imported_hash: 5ae2d8d887e06687
 title: LC 138 — Copy List with Random Pointer
 summary: Given a linked list where each node has a next pointer and a random pointer that may point to any node in the list or be null, return a deep copy.
 order: 57

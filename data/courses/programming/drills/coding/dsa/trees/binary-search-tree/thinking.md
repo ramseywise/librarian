@@ -1,5 +1,4 @@
 ---
-imported_hash: 27e8b9cc5c82169b
 title: Binary Search Tree — First-Principles Thinking Guide
 summary: 'BST invariant: for every node, all left descendants < node < all right descendants.'
 order: 222

@@ -1,5 +1,4 @@
 ---
-imported_hash: ecdd9fb143f24d46
 title: Data Analytics
 summary: 'Position in the path: programming/python modules 01 to 03 come first, and SQL helps alongside.'
 order: 1

@@ -1,5 +1,4 @@
 ---
-imported_hash: f7598d40d4e2ce0d
 title: 5 — Type hints and dataclasses
 summary: 'def top(scores: Mapping[str, float], n: int = 3) -> list[tuple[str, float]]: ...'
 order: 16

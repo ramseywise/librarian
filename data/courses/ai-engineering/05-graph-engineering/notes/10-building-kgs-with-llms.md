@@ -1,5 +1,4 @@
 ---
-imported_hash: 658b23368c1278f6
 title: '10 — Building KGs with LLMs: Extraction and Resolution'
 summary: An LLM will turn any document into triples that look right, and that is the danger.
 order: 11

@@ -1,5 +1,4 @@
 ---
-imported_hash: 3f507f13734d93bf
 title: Code Review Round — Questions & Model Answers
 summary: In a code review interview, the "question" is usually the code itself — you're handed a diff/PR and asked to review it.
 order: 15

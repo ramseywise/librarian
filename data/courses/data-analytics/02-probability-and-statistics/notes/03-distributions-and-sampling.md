@@ -1,5 +1,4 @@
 ---
-imported_hash: 561edfde7432608f
 title: 3 — Distributions and Sampling
 summary: A foundation gives a pile of money to small schools because the top of the league table is full of them.
 order: 4

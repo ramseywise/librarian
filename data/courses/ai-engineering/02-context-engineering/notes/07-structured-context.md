@@ -1,5 +1,4 @@
 ---
-imported_hash: ff90e5baae6f9b52
 title: 7 — Structured Context and Schemas
 summary: 'A model reading unstructured context has to infer the role of each span: whether it''s an instruction or data, a fact or an example, current or stale.'
 order: 8
@@ -104,6 +103,13 @@ State that persists (task progress, decisions, user facts) should be **structure
 ```
 
 This is the compaction target ([05](05-compression-compaction.md)) and the memory format ([06](06-memory.md)). MEM1's finding generalises here: a constant-size, overwritten state beats an ever-growing transcript for long-horizon tasks.
+
+SKILL.state takes this to its limit. On each step the model sees only the task spec, a JSON state and the latest observation, and its reasoning is discarded once a validated patch updates the state ([arXiv:2608.26263](https://arxiv.org/abs/2608.26263) (Badhe et al., Google, Purdue, 2026-08, accepted at EMNLP per its arXiv comment)). On the authors' own 100-step warehouse task with Gemini-3-Flash, **it scored 0.94 on 65K tokens, against 0.91 on 1.06M for a stateful transcript agent**. Given the same budget, a truncated transcript scored 0.18, a capped summary 0.52 and LLMLingua compression 0.22. Caveats:
+- The design assumes the state is a sufficient statistic of the past.
+- It was tested on single agents only.
+- The main benchmark is the authors' own, with one main model.
+- Smaller open models broke it by overwriting state too early (Gemma-4-31B scored 0.42 at 100 steps).
+- Under injected noise, the memory and transcript baselines held up as well as SKILL.state did.
 
 ### 3. Output schemas — what comes back
 

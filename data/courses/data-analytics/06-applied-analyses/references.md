@@ -1,5 +1,4 @@
 ---
-imported_hash: fb6a004a8fbaadb8
 title: References
 summary: Reading for this pillar. ★ marks a reading that changed a claim in the notes.
 order: 16

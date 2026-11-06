@@ -1,5 +1,4 @@
 ---
-imported_hash: a0f1537369edca94
 title: LC 85 — Maximal Rectangle
 summary: Given a rows x cols binary matrix filled with '0' and '1' characters, find the largest rectangle containing only '1's and return its area.
 order: 44

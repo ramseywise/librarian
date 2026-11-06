@@ -1,5 +1,4 @@
 ---
-imported_hash: 06b67b643087c5ff
 title: SQL
 summary: SQL's teaching lives in programming/sql/.
 order: 266

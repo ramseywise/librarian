@@ -1,5 +1,4 @@
 ---
-imported_hash: 5c0106b88958272a
 title: Python
 summary: Python's teaching lives in programming/python/, and the seeded-bug problems and coding prompts are written in it.
 order: 259

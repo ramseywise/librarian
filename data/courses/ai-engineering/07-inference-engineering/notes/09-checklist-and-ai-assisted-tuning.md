@@ -1,5 +1,4 @@
 ---
-imported_hash: 40c9ee2be80bfd6a
 title: 9 — Checklist and AI-Assisted Tuning
 summary: By this point there are dozens of settings, and applying them in the order you happened to read them gives results you can't interpret.
 order: 11

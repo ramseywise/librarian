@@ -1,5 +1,4 @@
 ---
-imported_hash: e123ee907eafcdb9
 title: 2 — Orchestrate
 summary: A cron line that runs a shell script works until the first morning it doesn't, and then you discover what it left out.
 order: 3

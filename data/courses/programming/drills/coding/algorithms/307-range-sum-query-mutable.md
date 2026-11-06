@@ -1,5 +1,4 @@
 ---
-imported_hash: aac4489555e3b858
 title: LC 307 — Range Sum Query - Mutable
 summary: 'Design a NumArray initialized from an integer array nums that supports two operations, both efficiently under interleaving: update(i, val) sets nums[i] to val, and sumRange(l, r) returns the sum of the inclusive range nums[l..r].'
 order: 80

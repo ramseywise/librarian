@@ -1,5 +1,4 @@
 ---
-imported_hash: 0fc885f8d8da89de
 title: 5 — Matching and Weighting
 summary: Fernhill Home opened a loyalty club on 1 July 2024, and customers chose whether to join.
 order: 6

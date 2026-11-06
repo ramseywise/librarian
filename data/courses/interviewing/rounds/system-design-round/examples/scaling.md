@@ -1,5 +1,4 @@
 ---
-imported_hash: fe8e0c0d1e854074
 title: 'Example: Scaling a RAG System 100x'
 summary: '"Your RAG-based customer support system handles 1K queries/day.'
 order: 71

@@ -161,7 +161,7 @@ A pillar is **done** when all five hold:
    deleted and its row moves to [Removed snapshots](../../../../THIRD_PARTY.md#removed-snapshots).
 3. **Runnable or labelled**: each notebook or practice lab runs offline, or says what it
    needs (API key, GPU, service).
-4. **Imports cleanly**: `make import-courses` in librarian brings it in with no broken
+4. **Links resolve**: `make link-check` in librarian finds no broken
    relative links.
 5. **Cross-linked**: points to the [interviewing role map](../../../../practice/interviewing/README.md) that maps its checklists and, once they exist, to the
    drills that practise it (drills name their `concepts`).

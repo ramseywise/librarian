@@ -1,5 +1,4 @@
 ---
-imported_hash: fdf2deec5d3e69b2
 title: Two Sum — First-Principles Thinking Guide
 summary: 'For each index i, value num: complement = target - num If complement in seen: return [seen[complement], i] seen[num] = i'
 order: 168

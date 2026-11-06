@@ -1,5 +1,4 @@
 ---
-imported_hash: b0b4af2b29da0214
 title: 1 — Tracing with Langfuse
 summary: On a Monday in October a customer of Acme Books writes in to say the support assistant told them something that turned out to be false, and the invoice page took half a minute to load an answer on Friday.
 order: 2

@@ -1,5 +1,4 @@
 ---
-imported_hash: 3f0266c91c42fcbf
 title: 7 — Consistency and consensus
 summary: Two orchestrator schedulers must not both launch the nightly job.
 order: 8

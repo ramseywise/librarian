@@ -1,5 +1,4 @@
 ---
-imported_hash: 51f3da50df0a2bd4
 title: Technical Questions — ML/LLM Breadth Round
 summary: 'Rapid-fire conceptual fluency: can you explain core mechanisms in 60 seconds with one level of depth in reserve?'
 order: 73

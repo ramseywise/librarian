@@ -1,5 +1,4 @@
 ---
-imported_hash: a2f0f44d7ae5134b
 title: 3 — Priors and Bandits
 summary: The first complaint anyone makes about Bayesian analysis is that the prior is subjective.
 order: 4

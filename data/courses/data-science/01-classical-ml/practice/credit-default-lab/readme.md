@@ -1,5 +1,4 @@
 ---
-imported_hash: 22636da89549fb2c
 title: Credit default lab
 summary: Predicts credit card default when defaulters are rare, and measures what each way of handling the imbalance costs.
 order: 20

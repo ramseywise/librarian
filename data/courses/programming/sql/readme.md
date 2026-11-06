@@ -1,5 +1,4 @@
 ---
-imported_hash: 3d89b04d03e69745
 title: SQL
 summary: Worked answers are in practice/solutions/.
 order: 1

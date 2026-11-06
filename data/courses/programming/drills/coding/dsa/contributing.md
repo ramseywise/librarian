@@ -1,5 +1,4 @@
 ---
-imported_hash: e6d09eb3cacd8856
 title: Contributing to Hello, Interview!
 summary: Thank you for your interest in contributing to Hello, Interview!
 order: 100

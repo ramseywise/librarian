@@ -1,5 +1,4 @@
 ---
-imported_hash: 48f732d7732c8d02
 title: Logistic regression in NumPy
 summary: Implement logistic regression from scratch in NumPy.
 order: 241

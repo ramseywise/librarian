@@ -1,5 +1,4 @@
 ---
-imported_hash: a107997a67ced1c0
 title: 2 — Defining "Correct"
 summary: A team builds a grader for "helpfulness", the score sits at 0.8 for months, and users keep complaining about wrong menu paths that the grader never looks at.
 order: 3
@@ -132,6 +131,8 @@ Rules for a usable taxonomy:
 - **One label points to one fix.** If a label could be fixed by changing retrieval *or* the prompt, split it.
 - **Ordered by pipeline stage.** A failure upstream masks everything downstream, so label the earliest one.
 - **Include the eval's own failures.** `context_missing` (the grader got no passage text) is a label too. It stops eval bugs being counted as system bugs ([12](12-failure-modes.md#eval-bugs-look-like-agent-bugs)).
+
+DEFT, a taxonomy for deep-research agents ([arXiv:2512.01948](https://arxiv.org/abs/2512.01948) (Zhang et al., 2025-12, preprint)), shows the build at scale. The authors coded deep-research agents' reports on 100 research tasks bottom-up, building the codebook from nine agents' records over three rounds checked for inter-coder reliability, then confirmed on two held-out agents that no new categories appeared. The 14 categories are ordered by stage: reasoning, retrieval, generation. Comparing the LLM coder against four experts on the two held-out agents, Krippendorff's α ran 0.74 to 0.92 per core category. **Generation held 38.76% of the coded failures, and the largest single label was strategic content fabrication (18.95%), plausible text with nothing behind it**. Not fetching enough evidence came next (16.30%). The paper does not say which set of its roughly 1,000 reports the shares are computed over, the coding is LLM-assisted with a human check on two agents only, and the paper's introduction gives slightly different totals than its body.
 
 A worked example from a RAG support agent ([case study](13-case-study-support-agent.md#failure-taxonomy)), grouped by stage:
 

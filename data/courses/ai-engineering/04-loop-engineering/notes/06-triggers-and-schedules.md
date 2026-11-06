@@ -1,5 +1,4 @@
 ---
-imported_hash: ba05cfea9afd2b21
 title: 6 — Triggers and Schedules
 summary: Once nobody is pressing go, the trigger becomes the most expensive line in the system.
 order: 7

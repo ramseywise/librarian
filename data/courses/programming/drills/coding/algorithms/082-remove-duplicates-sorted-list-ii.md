@@ -1,5 +1,4 @@
 ---
-imported_hash: 471d1cc0e6e7a13a
 title: LC 82 — Remove Duplicates from Sorted List II
 summary: Given the head of a sorted linked list, delete every node that has a duplicate value, leaving only values that appear exactly once, and return the head of the modified list.
 order: 41

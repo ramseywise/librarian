@@ -1,5 +1,4 @@
 ---
-imported_hash: 962bdd1a2322ae08
 title: Merge K Sorted Linked Lists — First-Principles Thinking Guide
 summary: Maintain a min-heap of size k containing one node from each list.
 order: 192

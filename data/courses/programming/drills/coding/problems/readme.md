@@ -1,5 +1,4 @@
 ---
-imported_hash: edce30c64a5a1e0d
 title: Drill problems
 summary: 'Cold-attempt material. Unlike dsa/, these ship without solutions: the answer gets written at drill time, into solutions/<phase>.md.'
 order: 251

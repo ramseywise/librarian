@@ -1,5 +1,4 @@
 ---
-imported_hash: 70926ba810692d63
 title: 6 — Networks
 summary: 'def pair(): listener = socket.create_server(("127.0.0.1", 0)) client = socket.create_connection(listener.getsockname()) server,  = listener.accept() listener.close() return client, server'
 order: 7

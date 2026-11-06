@@ -1,5 +1,4 @@
 ---
-imported_hash: 2b99e10fce58e5ee
 title: '13 — Learning on Graphs: Tasks and Features'
 summary: Standard classifiers assume independent rows, and a node's label depends on its neighbours.
 order: 16

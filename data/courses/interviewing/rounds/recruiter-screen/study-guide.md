@@ -1,5 +1,4 @@
 ---
-imported_hash: f8fb3673960457ee
 title: Study Guide — Recruiter Screen
 summary: This round is not studied — it's rehearsed.
 order: 60

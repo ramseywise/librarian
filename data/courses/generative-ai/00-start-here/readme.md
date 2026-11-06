@@ -1,5 +1,4 @@
 ---
-imported_hash: 57ea5298d5e2b722
 title: Generative AI
 summary: A course in building with large language models, from what a model is to a complete agent you can trust.
 order: 1

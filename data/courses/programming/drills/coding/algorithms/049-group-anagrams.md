@@ -1,5 +1,4 @@
 ---
-imported_hash: 0d30581484604edd
 title: LC 49 — Group Anagrams
 summary: Given an array of strings strs, group together the strings that are anagrams of one another (same letters rearranged) and return the groups in any order.
 order: 28

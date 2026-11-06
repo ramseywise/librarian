@@ -1,5 +1,4 @@
 ---
-imported_hash: 50dec903a6023b1f
 title: ✨ News
 summary: '+ [17 Nov 2025] 🚀 New Achievements & Dataset Release: - We are thrilled to announce that Thinkdepth.ai has achieved 1st place on the RACE evaluation, showcasing exceptional performance in research report generation quality!'
 order: 18

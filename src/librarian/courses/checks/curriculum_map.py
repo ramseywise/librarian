@@ -23,6 +23,8 @@ Issue kinds, most actionable first:
     duplicate_number     two lessons in a module share a number
     number_gap           a module's lesson numbers skip a value
     no_inbound           no other lesson links here (information: a first lesson often has none)
+    concept_unlinked     the lesson uses a maths concept from data/concept_homes.json and links none of its
+                         homes (information: passing mentions are fine, a first use that needs the idea is not)
     no_cross_links       the module readme has neither a Builds on nor a Feeds into table
 """
 
@@ -52,7 +54,7 @@ SUBJECTS = (
     "ai-engineering",
 )
 SKIP_PARTS = {"practice", "sources", "slides", "checkpoints", "__pycache__", ".ipynb_checkpoints"}
-INFO_KINDS = {"no_inbound"}
+INFO_KINDS = {"no_inbound", "concept_unlinked"}
 
 FENCE = re.compile(r"^```.*?^```", re.S | re.M)
 LINK = re.compile(r"\[[^\]]*\]\(([^)\s#]+)(?:#[^)]*)?\)")
@@ -145,14 +147,14 @@ def read_note(path: Path, root: Path) -> dict:
 
 
 def _readme(folder: Path) -> Path:
-    """The folder's readme: `readme.md` (what the importer writes) or `README.md`."""
+    """The folder's readme: `readme.md` or `README.md`."""
     for name in ("readme.md", "README.md"):
         if (folder / name).is_file():
             return (folder / name).resolve()
     return (folder / "readme.md").resolve()
 
 
-def build(root: Path, ledger: Path | None = None) -> dict:
+def build(root: Path, ledger: Path | None = None, concepts: Path | None = None) -> dict:
     root = root.resolve()
     notes = {}
     for path in find_notes(root):
@@ -294,7 +296,39 @@ def build(root: Path, ledger: Path | None = None) -> dict:
         if not note["inbound"]:
             add("no_inbound", note["path"], "no other note links here")
 
+    if concepts is not None:
+        for path, detail in unlinked_concepts(notes, root, concepts):
+            add("concept_unlinked", path, detail)
+
     return {"notes": notes, "pillars": pillars, "issues": issues}
+
+
+def unlinked_concepts(notes: dict, root: Path, registry: Path) -> list[tuple[str, str]]:
+    """(lesson, detail) for each lesson that uses a registered concept and links none of its homes."""
+    if not registry.is_file():
+        return []
+    concepts = json.loads(registry.read_text(encoding="utf-8"))["concepts"]
+    found = []
+    for path, note in sorted(notes.items()):
+        text = (root / path).read_text(encoding="utf-8")
+        _, body = split_front(text)
+        prose = FENCE.sub(lambda m: "\n" * m.group(0).count("\n"), body)  # keep line numbers
+        offset = text.count("\n") - body.count("\n")
+        for name, concept in concepts.items():
+            homes = [h.split("#")[0] for h in concept["homes"]]
+            if path in homes or set(note["links"]) & set(homes):
+                continue
+            match = re.search(concept["pattern"], prose, re.I)
+            if match:
+                line = offset + prose.count("\n", 0, match.start()) + 1
+                found.append(
+                    (
+                        path,
+                        f"uses {name} ('{match.group(0)}', line {line}) "
+                        f"with no link to {concept['homes'][0]}",
+                    )
+                )
+    return found
 
 
 def tokens(text: str) -> set[str]:
@@ -403,7 +437,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     root = (args.root or default_root()).resolve()
     settings = get_settings()
     ledger = args.ledger or settings.course_sources_dir / "scripts" / "papers" / "ledger.jsonl"
-    curriculum = build(root, ledger)
+    curriculum = build(root, ledger, settings.concept_homes_file)
 
     if args.command == "build":
         out = args.out or settings.curriculum_map_file

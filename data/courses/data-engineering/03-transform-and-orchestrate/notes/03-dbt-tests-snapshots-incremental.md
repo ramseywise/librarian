@@ -1,5 +1,4 @@
 ---
-imported_hash: e131ec6829208706
 title: 3 — dbt tests, snapshots and incremental models
 summary: The dbt project from the transform chapter rebuilds everything on every run, tests only the shape of each column, and forgets history whenever a source overwrites a row.
 order: 4

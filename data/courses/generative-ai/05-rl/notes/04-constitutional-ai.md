@@ -1,5 +1,4 @@
 ---
-imported_hash: d354506912fd7b62
 title: 4 — Constitutional AI and RLAIF
 summary: If the reward is the product, whoever writes the reward decides what the model becomes.
 order: 6

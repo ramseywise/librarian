@@ -1,5 +1,4 @@
 ---
-imported_hash: 125ae60a1e5a489c
 title: 'Practice: safety and security'
 summary: Run everything from this folder, ai-engineering/09-safety-and-security/practice/.
 order: 9

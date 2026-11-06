@@ -1,5 +1,4 @@
 ---
-imported_hash: 4415960f5ba4ff4a
 title: 05 — Time series and recommenders
 summary: Time series ML turns a history into a forecast using feature tables, gradient boosting and sequence models, tested with backtests.
 order: 1

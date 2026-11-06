@@ -1,5 +1,4 @@
 ---
-imported_hash: b83fd1efa50dd3a1
 title: 7 — Plotting
 summary: A table of a year's daily revenues tells you almost nothing, and one line chart of the same numbers shows the trend, the weekly ripple, the outage and the December jump in a second.
 order: 8

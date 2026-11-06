@@ -1,5 +1,4 @@
 ---
-imported_hash: 5be2e45f97dab363
 title: References
 summary: Each URL was checked to load on 2026-11-02, and the costs are as the platform listed them.
 order: 2

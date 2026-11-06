@@ -1,5 +1,4 @@
 ---
-imported_hash: 3a966923e7dc4e9d
 title: 'Example: Document-QA for a Legal Firm'
 summary: '"Design a document-QA system for a legal firm.'
 order: 70

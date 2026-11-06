@@ -1,5 +1,4 @@
 ---
-imported_hash: ad45c24ec1d9f748
 title: Advanced Python Interview Reference
 summary: Multiprocessing is how you get true parallelism in Python.
 order: 262

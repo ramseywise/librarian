@@ -1,5 +1,4 @@
 ---
-imported_hash: 12b3ee1f25b0a6ba
 title: Lakehouse against warehouse
 summary: In 2021 four authors from Databricks predicted that the data warehouse as we know it would wane.
 order: 5

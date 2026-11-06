@@ -1,5 +1,4 @@
 ---
-imported_hash: d34c0109a3dc45c9
 title: Maximum Average Subarray I — First-Principles Thinking Guide
 summary: 'Compute the sum of the first k elements. Slide the window: add the next element, subtract the element leaving the window.'
 order: 202

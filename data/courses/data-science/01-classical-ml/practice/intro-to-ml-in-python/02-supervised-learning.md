@@ -1,5 +1,4 @@
 ---
-imported_hash: 02d9755d5ba184c1
 title: generate dataset
 summary: X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 order: 23

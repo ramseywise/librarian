@@ -1,5 +1,4 @@
 ---
-imported_hash: 343f263c591e9f95
 title: '99 — Appendix: The Speculative Field Track'
 summary: Treat every claim below as hypothesis or metaphor unless it's tied to a paper.
 order: 15

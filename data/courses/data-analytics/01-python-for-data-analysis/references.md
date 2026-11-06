@@ -1,5 +1,4 @@
 ---
-imported_hash: 87b22ce7cac7bd97
 title: References
 summary: Every source behind the notes in this pillar.
 order: 23

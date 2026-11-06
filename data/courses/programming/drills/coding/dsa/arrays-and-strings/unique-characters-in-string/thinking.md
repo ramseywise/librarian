@@ -1,5 +1,4 @@
 ---
-imported_hash: 43d3c9e5d2eb0b03
 title: Unique Characters in String — First-Principles Thinking Guide
 summary: ''
 order: 135

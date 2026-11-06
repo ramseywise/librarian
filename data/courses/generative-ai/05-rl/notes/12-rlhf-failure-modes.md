@@ -1,5 +1,4 @@
 ---
-imported_hash: 68c4c86626808555
 title: 12 — RLHF Failure Modes
 summary: The pipeline in 02 ends with a policy maximizing a reward model, and that reward model is a learned guess at what people want.
 order: 14

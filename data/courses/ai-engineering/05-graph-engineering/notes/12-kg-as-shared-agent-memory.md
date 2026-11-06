@@ -1,5 +1,4 @@
 ---
-imported_hash: 5281af7298e9caa0
 title: 12 — KG as Shared Agent Memory
 summary: A fan-out of ten agents with no shared record derives the same findings ten times.
 order: 15

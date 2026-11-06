@@ -1,5 +1,4 @@
 ---
-imported_hash: 5e20b762c0294059
 title: create a synthetic dataset
 summary: iris = load_iris() logreg = LogisticRegression(max_iter=1000)
 order: 26

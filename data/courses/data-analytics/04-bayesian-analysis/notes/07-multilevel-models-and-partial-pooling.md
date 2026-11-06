@@ -1,5 +1,4 @@
 ---
-imported_hash: a3449d6979513619
 title: 7 — Multilevel Models and Partial Pooling
 summary: Suppose Larkspur runs its checkout test in 24 markets, and the dashboard shows one market with a lift three times the average.
 order: 8

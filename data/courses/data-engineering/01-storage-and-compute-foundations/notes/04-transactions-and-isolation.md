@@ -1,5 +1,4 @@
 ---
-imported_hash: 2382016b0c704aa9
 title: 4 — Transactions and isolation
 summary: A rider pays for a trip and three balances change.
 order: 5

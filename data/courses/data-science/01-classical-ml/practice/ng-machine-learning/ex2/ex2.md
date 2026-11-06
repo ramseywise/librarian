@@ -1,5 +1,4 @@
 ---
-imported_hash: 51e75d02aad4123e
 title: Ex2
 summary: 'def optimizeTheta(mytheta,myX,myy,mylambda=0.): result = optimize.fmin(computeCost, x0=mytheta, args=(myX, myy, mylambda), maxiter=400, full_output=True) return result[0], result[1]'
 order: 32

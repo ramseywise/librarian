@@ -1,5 +1,4 @@
 ---
-imported_hash: 852f6b46064eb9af
 title: Questions — Case Study Round
 summary: 12 questions spanning live cases, take-homes, LLM cases, ML cases, defense rounds, and FDE customer-problem formats.
 order: 6

@@ -72,7 +72,6 @@ def test_deck_slides_become_cards(courses: Path) -> None:
     fc.build(courses)
     target = courses / "data-analytics" / "02-statistics" / "_flashcards.md"
     meta = _front(target)
-    assert "imported_hash" not in target.read_text()
     assert meta["generated_by"] == fc.GENERATED_BY
     assert meta["decks"] == ["data-analytics/02-statistics/slides/deck.yaml"]
     lesson = "data-analytics/02-statistics/notes/01-estimation"
@@ -136,12 +135,12 @@ def test_only_generated_files_are_deleted(courses: Path) -> None:
     assert not (mod / "_flashcards.md").exists()
 
     other = courses / "data-analytics" / "03-hand-written"
-    imported = _write(
+    hand_written = _write(
         other / "_flashcards.md",
-        "---\nimported_hash: abc123\ncards:\n- {front: Q, back: A}\n---\n",
+        "---\ntitle: hand written\ncards:\n- {front: Q, back: A}\n---\n",
     )
     assert fc.build(courses)["removed"] == 0
-    assert imported.exists()
+    assert hand_written.exists()
 
 
 def test_nested_track_decks_attach_relative_to_their_own_folder(tmp_path: Path) -> None:

@@ -1,5 +1,4 @@
 ---
-imported_hash: 17e8a0f7812141a1
 title: 10 — Scope and Done
 summary: 'The acceptance baseline from note 01, made concrete for a coding agent: a feature list in the repo that defines the work, gates completion, and carries state between sessions.'
 order: 11

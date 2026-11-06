@@ -9,7 +9,7 @@ shortfall. --strict exits 1 on any. Lessons marked `status: skeleton` in frontma
 skeletons, not failed, but their metadata is checked. A module whose readme has neither a Builds on nor a
 Feeds into table gets a warning line. A warning never counts as a shortfall.
 
-Imported lessons carry only the importer's frontmatter (title, summary, order, kind, section, source), so
+Lessons carry only title, summary, order, kind, section and source in their frontmatter, so
 `origin` and `sources` are checked when a lesson has them and are not required unless --require-origin is
 given. The rules that read the body always apply.
 

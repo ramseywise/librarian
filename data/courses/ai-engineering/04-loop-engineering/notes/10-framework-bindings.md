@@ -1,5 +1,4 @@
 ---
-imported_hash: 804c87f39f5fee9d
 title: 10 — Framework Bindings
 summary: 'Frameworks name the same loop parts differently, and they differ on the one that causes most trouble: who stops the loop.'
 order: 11

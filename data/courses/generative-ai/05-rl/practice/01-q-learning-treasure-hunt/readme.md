@@ -1,5 +1,4 @@
 ---
-imported_hash: 06b85403c7b215b7
 title: Lab 1 — Q-learning on a treasure hunt
 summary: 'The optimal path is 11 moves. Rewards are sparse: −0.5 per move, small bonuses for picking up key items or crafting, and +100 for the treasure.'
 order: 16

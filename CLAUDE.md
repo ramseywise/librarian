@@ -65,7 +65,7 @@ tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki to
 - `src/librarian/` — the library, installed as the `librarian` package: `config.py` (every path and
   setting; `LIBRARIAN_ROOT` or a `pyproject.toml` above the package locates the repo), `log_config.py`,
   `cli.py`, `wiki/` (parser, health, telemetry, graph, rename, relinker, common), `retrieval/`
-  (index, ranking, search/read API, embeddings), `courses/` (catalog, curriculum, leitner, glossary, importer) and `ingest/`
+  (index, ranking, search/read API, embeddings), `courses/` (catalog, curriculum, leitner, glossary) and `ingest/`
   (scrapers, ingest gate, manifest, raw lint).
 - `apps/api` (FastAPI, `librarian api`), `apps/mcp` (FastMCP, `librarian mcp`), `apps/web` (React/Vite).
   Apps import the library (`apps/mcp/server.py` and `apps/api/agent.py` use only the public names of `librarian.retrieval`); the library never imports `apps/`, so route functions live in
@@ -73,7 +73,7 @@ tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki to
 - `tools/` — cartographer, codemap, presenter, slides. They import the library, never the reverse.
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
   `librarian ingest triage|lint-raw|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
-  `librarian courses import`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
+  `librarian courses check|review`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
   module's `main(argv)`, and `python -m librarian.<module>` works too.
 
 ---
@@ -196,47 +196,40 @@ Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so t
   `order`, optional `section`, `kind` (`reading` | `notebook`), and `wiki: [page-id, …]`
   to link concepts explicitly. Inline `[[Wiki Page]]` links work too. Images go in the
   module's `assets/` and are referenced relatively.
-- Seeded from `../learn-ai-engineering` by `make import-courses` (`librarian.courses.importer`).
-  The `interviewing` course comes from its top-level `practice/interviewing` — see
-  `SUBJECT_SOURCES`. That tree's `.gitignore` is the publication allowlist. Drills are the `drills`
-  module of the Programming course (`programming/drills`), kept apart from local files by the
-  root `.gitignore`. For both (`FAIL_CLOSED_SUBJECTS`) gitignored files never import, not even
-  as references, and the importer refuses to run outside a git checkout. A full import removes
-  the generated files of the old `drills` course (`RETIRED_SUBJECTS`). Never import from
-  sisyphus (private; `jobs/` is personal PII).
-  Drill files (frontmatter with a `track`, schema in `programming/drills/README.md`) import as
+- Lessons are authored here; the one-off import from `../learn-ai-engineering` ended 2026-11-06 and
+  the importer is gone. Edit `data/courses/` directly. Drills are the `drills` module of the
+  Programming course (`programming/drills`); the root `.gitignore` keeps local files out of it. Never copy
+  from sisyphus (private; `jobs/` is personal PII).
+  Drill files (frontmatter with a `track`, schema in `programming/drills/README.md`) are
   `kind: drill` with `track`/`topic`/`difficulty`/`timebox_min`/`units`, and their `concepts` become
   `wiki` links. They feed Practice mode: `GET /api/courses/practice` and the `#/practice` tab.
   Concepts with no wiki page show as plain `drill.tags`. Attempt counts come from sisyphus
   `drills/coding/drill-log.md`, read live at request time (`SISYPHUS_DIR`) and never written
   into `data/` — this repo is public and the log is personal history.
   `make flashcards` (`tools/slides/flashcards.py`) turns the local `slides/deck.yaml` and
-  `slides/lectures/*.yaml` of each module into its `_flashcards.md`. The importer neither writes nor
-  removes it, and the tool only deletes files carrying its own `generated_by` line. Frontmatter
+  `slides/lectures/*.yaml` of each module into its `_flashcards.md`. The tool only deletes files carrying its own `generated_by` line. Frontmatter
   `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
-  lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). `src/librarian/courses/leitner.py` computes due dates from that log; it stores no schedule of its own. Gitignored files and the course folders in
-  `PRACTICE_REFERENCE_ONLY` do not become lessons.
-  Files with an `imported_hash:` line are importer-generated; editing one turns it into a
-  local file the importer will never overwrite or delete. Files without the line are
-  hand-authored and are never touched. Do not hand-edit the `imported_hash` value.
+  lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). `src/librarian/courses/leitner.py` computes due dates from that log; it stores no schedule of its own.
 - Private and tombstoned wiki pages are never linked from lessons.
 - **`data/courses/private/`** (gitignored, mirrors the layout: `private/<course>/<module>/...`) holds
   what must not be public: solutions to site problems (`leetcode/`, `hackerrank/`), `coding/scratch/`,
   interview prep. It is the publication gate: anything there stays on this machine. The catalog serves
   it to the local UI as part of its course with `private: true`, but it never reaches the search index,
   MCP, the curriculum snapshot, the gap list or a public lesson's prev/next. Nothing public links into it.
-  Two kinds of file live only in the mirror, with the public lessons unchanged
+  Two kinds of file live only in the mirror, maintained by hand, with the public lessons unchanged
   (`librarian.courses.overlay`): book and paper figures (`<module>/assets/sources/...`; the asset
   route falls back to the mirror, the UI hides a figure that is in neither tree) and each module's
   `readings:` list (`private/<course>/<module>/_module.md`, merged by the catalog; the public
-  `_module.md` keeps `readings_count`). The importer writes both there. Lessons' `sources/` links
+  `_module.md` keeps `readings_count`). Lessons' `sources/` links
   are resolved at render time through `COURSE_SOURCES_DIR` (default `../learn-ai-engineering`) and
   served by `GET /api/courses/sources/<path>`, local only (`SERVE_COURSE_SOURCES=false` turns it off).
+  The sibling supplies nothing else: only those `sources/` PDFs.
+  `data/concept_homes.json` (hand-edited) lists the maths concepts and the lessons that teach them, for `courses check curriculum`.
 - **Media is built here, for every course.** Deck specs are `<course>/<module>/slides/deck.yaml`
   or `slides/lectures/NN-slug.yaml`, images are in the module's `assets/`, and `tools/slides/`
   renders them: `make slides PILLAR=<course>/<module> [PREVIEW=1] [PDF=1]`, `make slides-all`,
   `make deck-check`, `make deck-graph`. Authoring steps are in the `/slides` skill. Built `.pptx`
-  and `.pdf` files are gitignored. The importer does not touch specs. `tools/presenter/` is a
+  and `.pdf` files are gitignored. `tools/presenter/` is a
   separate LLM-driven tool for one-off talks, not course media.
 
 ---

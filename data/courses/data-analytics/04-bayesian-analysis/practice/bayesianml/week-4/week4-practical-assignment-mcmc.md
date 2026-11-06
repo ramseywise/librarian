@@ -1,5 +1,4 @@
 ---
-imported_hash: e5b1d1ee3996ef81
 title: Using PyMC3
 summary: In this assignment, we will learn how to use a library for probabilistic programming and inference called <a href="http://docs.pymc.io/">PyMC3</a>.
 order: 12

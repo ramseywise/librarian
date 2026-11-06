@@ -1,5 +1,4 @@
 ---
-imported_hash: b2d23a2686cae6fc
 title: 2 — Missing Data, Dates and Strings
 summary: The same applies to NOT IN. If the subquery returns even one NULL, x NOT IN (…) is never true, so the query returns nothing.
 order: 3

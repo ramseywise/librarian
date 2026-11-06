@@ -1,5 +1,4 @@
 ---
-imported_hash: b722ad17b43e0f55
 title: transform data
 summary: X_train, X_test, y_train, y_test = train_test_split(cancer.data, cancer.target, random_state=1) print(X_train.shape) print(X_test.shape)
 order: 24

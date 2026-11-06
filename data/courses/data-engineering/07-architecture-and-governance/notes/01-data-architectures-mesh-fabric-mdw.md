@@ -1,5 +1,4 @@
 ---
-imported_hash: 1830563373a065c8
 title: 'Data architectures: modern data warehouse, data fabric, data mesh'
 summary: A finance team joins trips to tax rates, gets a clean result and files it.
 order: 2

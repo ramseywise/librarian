@@ -1,5 +1,4 @@
 ---
-imported_hash: f378e060c8a6cba3
 title: 1 — Ingest
 summary: Every number your company reports begins with someone copying rows out of a system that was not built to be copied from.
 order: 2

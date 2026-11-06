@@ -1,5 +1,4 @@
 ---
-imported_hash: 5d9b4bd136c4a272
 title: Minimum Platforms
 summary: ''
 order: 122

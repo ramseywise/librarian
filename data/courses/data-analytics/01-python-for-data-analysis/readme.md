@@ -1,5 +1,4 @@
 ---
-imported_hash: bf400337ace604da
 title: Python for data analysis
 summary: The working pandas, NumPy, matplotlib and seaborn you need to do analysis in Python.
 order: 1

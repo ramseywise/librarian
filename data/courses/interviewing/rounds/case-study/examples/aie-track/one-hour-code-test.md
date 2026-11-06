@@ -1,5 +1,4 @@
 ---
-imported_hash: 2b8ae4f7ca72b3e4
 title: 'Worked Example: 1-Hour Timed Code Test (AIE track)'
 summary: This example walks the 60-minute clock end to end.
 order: 10

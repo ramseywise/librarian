@@ -1,5 +1,4 @@
 ---
-imported_hash: 73a37f37a7a2f720
 title: 4 — Controlling Output
 summary: Your code has to do something with the completion, and a reply that is 90% right can still crash the parser.
 order: 5
@@ -114,6 +113,8 @@ flowchart LR
 
 A schema guarantees **shape, not truth**: a valid JSON object can still hold hallucinated values. Validate the content as well ([09](09-evaluating-prompts.md)).
 
+Rung 5 works by masking: at each step the decoder sets the probability of every token that would break a regex or grammar to zero, then samples. The naive version scans the whole vocabulary each step. Outlines precomputes, for each state of the regex's state machine, which tokens are allowed, so the per-step lookup is O(1) on average instead of O(N) in vocabulary size (about 50k for GPT-2). The paper's one timing test (GPT-2, one regex, one sample per length, against one library) shows the other library's runtime growing with generated length while Outlines stays flat. It measures no accuracy effect of masking, and its own GPT-2-medium demo returned a valid but wrong yes/no answer ("Is 1+1=2? Always"), which is the shape-not-truth point again ([arXiv:2307.09702](https://arxiv.org/abs/2307.09702) (Willard & Louf, 2023, preprint)).
+
 At rungs 1–3, write the parser for what actually comes back, not what you asked for. Phoenix & Taylor's list of what comes back (*Prompt Engineering for Generative AI*, ch. 1, 3):
 
 - **Counts aren't guaranteed.** Ask for 10 headings and you may get 8. Check the count, or make the code accept any length.
@@ -142,7 +143,7 @@ Reading the numbers: the chosen token usually sits between −2 and 0, single-di
 
     ![Prefix collision: North 55% vs. Europe 44%, then -East 76% vs. America 23%](../assets/sources/images/berryman-prompt-engineering-for-llms-fig7-5.png)
     *Image Source: Berryman & Ziegler (2024), Fig. 7-5*
-  - **Calibration:** the model's 50% isn't your threshold. In the book's example, an app blocks emails the model judges unprofessional, and it blocks too many. Shift per-label logprobs by constants (add 0.3 to "Yes" before comparing with "No", so the model must be clearly surer of "No" to block). Find the constants by experiment or by minimizing cross-entropy on labeled data, as in logistic regression. **Logit bias** applies the same shift at generation time where available.
+  - **Calibration:** the model's 50% isn't your threshold. In the book's example, an app blocks emails the model judges unprofessional, and it blocks too many. Shift per-label logprobs by constants (add 0.3 to "Yes" before comparing with "No", so the model must be clearly surer of "No" to block). Find the constants by experiment or by minimizing [cross-entropy](../../../generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) on labeled data, as in logistic regression. **Logit bias** applies the same shift at generation time where available.
 - **Prompt debugging.** With `echo=true` (where supported), logprobs on the *prompt* flag surprising tokens, even with zero completion tokens requested. In the book's test, the typo "complution" tokenized as `compl` + `ution` and dipped below −13. The same signal marks passages of high information density, which you can point the app's or the user's attention to.
 
 ---

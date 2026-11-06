@@ -1,5 +1,4 @@
 ---
-imported_hash: 6feb85a47463aeaf
 title: Equilibrium Point — First-Principles Thinking Guide
 summary: 'For each index i: right_sum = total - left_sum - arr[i] If left_sum == right_sum: return i left_sum += arr[i]'
 order: 105

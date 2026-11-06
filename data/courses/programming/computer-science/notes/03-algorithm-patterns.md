@@ -1,5 +1,4 @@
 ---
-imported_hash: 3aadcc4513eac9bb
 title: 3 — Algorithm patterns
 summary: Start by asking what's being thrown away.
 order: 4

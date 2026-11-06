@@ -1,5 +1,4 @@
 ---
-imported_hash: 8ef0cf123d9bd8bc
 title: 4 — Strings and Files
 summary: Strings are immutable. s[0] = "B" is an error.
 order: 5

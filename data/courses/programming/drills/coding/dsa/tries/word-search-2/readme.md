@@ -1,5 +1,4 @@
 ---
-imported_hash: 2f6caaf7b31d3b7e
 title: Word Search II
 summary: Given a board of characters and a list of words, find all words that can be formed by traversing adjacent cells (no cell reuse per word).
 order: 230

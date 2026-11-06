@@ -1,5 +1,4 @@
 ---
-imported_hash: be8e194a1c4d43c9
 title: 06 — Observability
 summary: 'Observability for LLM applications means you can see what happened inside a run: which tools were called, what the model received and returned, how long each step took and what it cost, and whether the output was any good.'
 order: 1

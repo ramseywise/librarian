@@ -1,5 +1,4 @@
 ---
-imported_hash: 2faa560530ff55c6
 title: Leadership Round Worked Examples
 summary: Three worked examples covering the most common high-stakes moments in leadership rounds.
 order: 49

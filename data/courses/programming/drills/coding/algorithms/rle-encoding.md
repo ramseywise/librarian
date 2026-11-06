@@ -1,5 +1,4 @@
 ---
-imported_hash: 5136295e50c31990
 title: Run-length encoding
 summary: 'Implement run-length encoding (RLE): compress a string by replacing each run of identical consecutive characters with the character followed by its count (e.g.'
 order: 91

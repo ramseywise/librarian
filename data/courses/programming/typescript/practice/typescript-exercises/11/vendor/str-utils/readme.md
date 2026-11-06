@@ -1,5 +1,4 @@
 ---
-imported_hash: 9751153279274af5
 title: str-utils
 summary: Professional string decoration functions.
 order: 12

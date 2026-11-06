@@ -1,5 +1,4 @@
 ---
-imported_hash: ddd6ce5570312d3a
 title: 3 | Arrays and Vectorization (NumPy)
 summary: 'Some basic topics we cover here include: - Array indexing, slicing - Boolean array - Array operations'
 order: 11

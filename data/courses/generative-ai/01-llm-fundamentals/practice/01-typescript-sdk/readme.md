@@ -1,5 +1,4 @@
 ---
-imported_hash: 230f3915b207aacb
 title: Lab 1 — Calling Claude from TypeScript
 summary: Runnable TypeScript examples using the Anthropic SDK.
 order: 17

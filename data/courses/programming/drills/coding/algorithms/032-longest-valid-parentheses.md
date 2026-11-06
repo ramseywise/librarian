@@ -1,5 +1,4 @@
 ---
-imported_hash: 4b3e7bb9ca4639e1
 title: LC 32 — Longest Valid Parentheses
 summary: Given a string s containing only ( and ), return the length of the longest contiguous substring that is well-formed (properly matched) parentheses.
 order: 20

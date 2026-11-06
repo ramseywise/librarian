@@ -1,5 +1,4 @@
 ---
-imported_hash: 8cb04b52ed577736
 title: Kafka and stream semantics
 summary: A rider finishes a trip in a tunnel. The phone sends the event ninety seconds later, the broker acknowledges it, the acknowledgement is lost, the phone resends it, and the consumer crashes after writing to its database but before saving its…
 order: 6

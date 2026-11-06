@@ -1,5 +1,4 @@
 ---
-imported_hash: 57099b1ebb0273d1
 title: 'Lab: a context budgeter'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
 order: 16

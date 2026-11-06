@@ -1,5 +1,4 @@
 ---
-imported_hash: 476e654ea36c6288
 title: Customer segments lab
 summary: Sort synthetic business customers into cohorts from their transactions, test whether the cohorts deserve trust, then forecast each cohort's cash flow and compare that with one global model.
 order: 8

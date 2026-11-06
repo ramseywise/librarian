@@ -1,5 +1,4 @@
 ---
-imported_hash: f7f8631c903bc078
 title: '4 — Retrieval Strategies: Pre-Computed vs. Just-in-Time'
 summary: 'The RAG-era assumption was: retrieve before inference.'
 order: 10

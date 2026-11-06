@@ -1,5 +1,4 @@
 ---
-imported_hash: fe2f57eb4e6258d0
 title: Coding-drill starter files
 summary: One file per question. Each carries the prompt as a module docstring, the clarifications the interviewer would give if asked, signatures stubbed with NotImplementedError, and a single happy-path smoke assert.
 order: 257

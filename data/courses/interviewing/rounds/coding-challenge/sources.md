@@ -1,5 +1,4 @@
 ---
-imported_hash: e505d73069559fcc
 title: Coding Challenge — Sources
 summary: Load these before any coding challenge prep session.
 order: 26

@@ -1,5 +1,4 @@
 ---
-imported_hash: 74bd8771b21e699b
 title: 9 — Test-Time Search Instead of Training
 summary: Training costs a GPU cluster and weeks. Sampling costs an API call.
 order: 11

@@ -44,8 +44,7 @@ export function PracticeView({ onOpenLesson, onOpenConcept }: Props) {
         {!drills && !error && <div className="practice-status">Loading drills…</div>}
         {drills && !drills.length && (
           <div className="practice-status">
-            No drills yet. Add files following the schema in learn-ai-engineering <code>programming/drills/README.md</code>, then run{" "}
-            <code>make import-courses</code>.
+            No drills yet. Add files under <code>data/courses/programming/drills/</code> following the schema in its <code>README.md</code>.
           </div>
         )}
         {drills && drills.length > 0 && (

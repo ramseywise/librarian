@@ -1,5 +1,4 @@
 ---
-imported_hash: 990ccd0b201ed2bb
 title: Project Deep-Dive / Experience Review
 summary: Expect drilling until the interviewer hits the boundary of your ownership.
 order: 53

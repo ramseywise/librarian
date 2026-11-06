@@ -1,5 +1,4 @@
 ---
-imported_hash: aedd1618ee231bf9
 title: Meet in the Middle
 summary: The meet-in-the-middle technique splits a problem in half, solves each half independently, and combines results.
 order: 180

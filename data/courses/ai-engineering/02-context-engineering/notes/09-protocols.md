@@ -1,5 +1,4 @@
 ---
-imported_hash: 6ff74bf7ad73b8a1
 title: '9 — Protocols: Context Engineering Without Code'
 summary: '"Protocol" here means a prompt pattern. Wire protocols that carry context between programs, such as the Model Context Protocol (MCP), are in 10.'
 order: 10

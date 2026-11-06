@@ -1,5 +1,4 @@
 ---
-imported_hash: da1f1c9845c53c50
 title: '7 — The data generating process: fit, specification and generalisation'
 summary: Larkspur sends a coupon that we know lifts spend by 22%, because we wrote the simulation that says so.
 order: 8

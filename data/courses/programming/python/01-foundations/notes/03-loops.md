@@ -1,5 +1,4 @@
 ---
-imported_hash: 82341712cf42779e
 title: 3 — Loops and Loop Patterns
 summary: 'for word in ["a", "b"]: # a definite loop: runs once per item print(word)'
 order: 4

@@ -1,5 +1,4 @@
 ---
-imported_hash: 3e57c62078f8cfcc
 title: 'Env 1 — No AI, 45 min: comprehension, critical bugs, optimization'
 summary: 'Solo, proctored, one attempt. This is the battleship format widened: read code you didn''t write, find what''s wrong with it (including security and data-handling), and improve it.'
 order: 246

@@ -1,5 +1,4 @@
 ---
-imported_hash: e2f2cc242915b5f0
 title: 'Lab: a tool server with sandboxing'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
 order: 12

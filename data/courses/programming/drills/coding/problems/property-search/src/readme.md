@@ -1,5 +1,4 @@
 ---
-imported_hash: 4d1935b7124f5164
 title: AI Property Search
 summary: A semantic search system for real estate properties using FastAPI, FAISS, and sentence transformers.
 order: 254

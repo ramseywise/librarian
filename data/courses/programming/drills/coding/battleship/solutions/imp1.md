@@ -1,5 +1,4 @@
 ---
-imported_hash: 4beca21cb4727e68
 title: Imp1
 summary: Implement solve() in solver.py. It should fire shots at the board until all ships are sunk.
 order: 97

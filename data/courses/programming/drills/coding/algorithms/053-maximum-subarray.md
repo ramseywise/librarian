@@ -1,5 +1,4 @@
 ---
-imported_hash: d0276e10d4e219c8
 title: LC 53 — Maximum Subarray
 summary: Given an integer array nums, find the contiguous subarray (at least one element) with the largest sum and return that sum.
 order: 31

@@ -1,5 +1,4 @@
 ---
-imported_hash: dcff154bb86604cc
 title: Feature stores
 summary: A taxi-duration model scores an RMSE of 2.79 minutes offline and 5.48 in production, and nothing in the code is broken.
 order: 2

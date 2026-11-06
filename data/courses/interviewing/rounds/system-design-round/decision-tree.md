@@ -1,5 +1,4 @@
 ---
-imported_hash: c65e931b9677db57
 title: System Design — Decision Tree
 summary: 'The middle layer between the 5-step process (too abstract under pressure: "design the components") and the pillar notes (too deep when you have 40 seconds).'
 order: 62

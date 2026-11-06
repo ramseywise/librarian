@@ -1,5 +1,4 @@
-"""Course API — serves data/courses/ (lessons imported by librarian courses import or
-hand-authored) to the React course view, and ties lessons to wiki graph nodes.
+"""Course API — serves data/courses/ (hand-authored lessons) to the React course view, and ties lessons to wiki graph nodes.
 
 Layout: data/courses/<course>/_course.md, <course>/<module>/_module.md, and lesson
 .md files anywhere below a module. Ordering and titles come from frontmatter. Flashcards live

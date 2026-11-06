@@ -1,5 +1,4 @@
 ---
-imported_hash: 905550110834993a
 title: Review a web stack before it ships
 summary: 'A teammate opens a PR with web-stack.tf: a security group, a Postgres RDS instance and an uploads bucket.'
 order: 269

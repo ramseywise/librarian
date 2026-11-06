@@ -2,7 +2,7 @@
 title: learn-ai-engineering Project
 tags: [foundations, project]
 summary: "The self-paced AI and data engineering curriculum repo — six subjects (programming, data analytics, data engineering, data science, generative AI, AI engineering), three learning paths, a depth/summary/reference layering with exam-prep guides kept in a separate repo, a five-criterion definition of done, and a structural freeze as of 2026-10-28."
-updated: 2026-10-30
+updated: 2026-11-06
 sources:
   - data/raw/repos/learn-ai-engineering/README.md
   - data/raw/repos/learn-ai-engineering/CURRICULUM.md
@@ -27,8 +27,8 @@ sources:
 # learn-ai-engineering Project
 
 A self-paced curriculum repo for AI and data engineering: notes, notebooks, exercises and
-course material. Its courses are imported into this wiki's Courses tab by
-`make import-courses`. The structural model of the two AI waves is covered in
+course material. Its courses were imported into this wiki's Courses tab, and since 2026-11-06 they are
+authored in librarian's `data/courses/`; the repo now supplies only the `sources/` PDFs. The structural model of the two AI waves is covered in
 [[AI Engineering Curriculum Structure]]; this page is the repo-level map.
 
 ## Six subjects

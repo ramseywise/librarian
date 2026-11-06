@@ -1,8 +1,7 @@
 ---
-imported_hash: 88b69cadf5bac383
 title: References
 summary: ★ = changed a claim in the notes. ⚑ = preprint only.
-order: 10
+order: 11
 kind: reading
 section: References
 source: learn-ai-engineering/data-science/02-deep-learning/references.md
@@ -28,9 +27,10 @@ source: learn-ai-engineering/data-science/02-deep-learning/references.md
 |---|---|---|---|
 | Rumelhart, Hinton and Williams, [*Learning representations by back-propagating errors*](https://doi.org/10.1038/323533a0) (Nature 1986) | The method every framework automates | Link only | 01, 05 |
 | ★ Wilson, [*Deep Learning is Not So Mysterious or Different*](https://arxiv.org/abs/2503.02113) (ICML 2025) | Soft inductive biases, and why overparameterised fits aren't unique to neural networks | [PDF](../sources/wilson-2025-deep-learning-not-so-mysterious.pdf) | 01 |
+| Liu et al., [*KAN: Kolmogorov-Arnold Networks*](https://arxiv.org/abs/2404.19756) (ICLR 2025) | Learned spline activations on edges. Comparable to MLPs on average on 27 Feynman equations, about 10× slower to train at equal parameters, small science problems only. Read in full | [PDF](../sources/liu-2024-kan.pdf) | 01 |
 | Glorot and Bengio, [*Understanding the difficulty of training deep feedforward neural networks*](https://proceedings.mlr.press/v9/glorot10a.html) (AISTATS 2010) | Why initialisation scale matters | Link only | 02 |
 | He et al., [*Delving Deep into Rectifiers*](https://arxiv.org/abs/1502.01852) (ICCV 2015) | The ReLU initialisation | Link only | 02 |
-| ★ Ioffe and Szegedy, [*Batch Normalization*](https://arxiv.org/abs/1502.03167) (ICML 2015) | The layer, and its train and eval modes | [PDF](../sources/ioffe-2015-batch-normalization.pdf) | 02 |
+| ★ Ioffe and Szegedy, [*Batch Normalization*](https://arxiv.org/abs/1502.03167) (ICML 2015) | The layer, and its train and eval modes. Alone it halves the steps to 72.2% on Inception; the 14× comes with seven other changes, and 4.9% is a 6-network, 144-crop ensemble. Read in full | [PDF](../sources/ioffe-2015-batch-normalization.pdf) | 02 |
 | ★ Wu and Johnson, [*Rethinking "Batch" in BatchNorm*](https://arxiv.org/abs/2105.07576) (2021) ⚑ | Batch dependence, precise statistics, and when BatchNorm misleads | [PDF](../sources/wu-2021-rethinking-batch-batchnorm.pdf) | 02 |
 | Brock et al., [*High-Performance Large-Scale Image Recognition Without Normalization* (NFNets)](https://arxiv.org/abs/2102.06171) (ICML 2021) | Normalizer-free architecture plus adaptive gradient clipping replaces batch norm in ConvNets: NFNet-F1 matches EfficientNet-B7 (84.7%) with 8.7× faster training steps; needs heavy regularisation | [PDF](../../ai-engineering/08-multimodal-engineering/sources/brock-2021-high-performance-large-scale-image.pdf) | 02 |
 | Chen et al., [*Stronger Normalization-Free Transformers*](https://arxiv.org/abs/2512.10938) (2025) ⚑ | Derf; tested on an MLP in the chapter, where it loses | [PDF](../sources/chen-2025-stronger-normalization-free-transformers.pdf) | 02 |
@@ -46,7 +46,7 @@ source: learn-ai-engineering/data-science/02-deep-learning/references.md
 | LeCun et al., [*Gradient-Based Learning Applied to Document Recognition*](https://doi.org/10.1109/5.726791) (Proc. IEEE 1998) | LeNet-5 and MNIST | [PDF](../../generative-ai/01-llm-fundamentals/sources/lecun-1998-gradient-based-learning-applied-document.pdf) | 04 |
 | He et al., [*Deep Residual Learning for Image Recognition*](https://arxiv.org/abs/1512.03385) (CVPR 2016) | The degradation problem and skip connections | Link only | 04 |
 | Huang et al., [*Deep Networks with Stochastic Depth*](https://arxiv.org/abs/1603.09382) (ECCV 2016) | Drop whole residual blocks in training: CIFAR-10 6.41 → 5.25% on ResNet-110, 25% faster; no gain on ImageNet | [PDF](../../ai-engineering/08-multimodal-engineering/sources/huang-2016-deep-networks-stochastic-depth.pdf) | 04 |
-| Woo et al., [*ConvNeXt V2*](https://arxiv.org/abs/2301.00808) (CVPR 2023) | Where ConvNets went next | [PDF](../sources/woo-2023-convnext-v2.pdf) | 04 |
+| Woo et al., [*ConvNeXt V2*](https://arxiv.org/abs/2301.00808) (CVPR 2023) | Where ConvNets went next: on ConvNeXt-Base, FCMAE alone matched supervised training (83.7 against 83.8) and GRN lifted it to 84.6; the 88.9% needs ImageNet-22K labels and 512 px. Fine-tuning only. Read in full | [PDF](../sources/woo-2023-convnext-v2.pdf) | 04 |
 | Bao et al., [*BEiT: BERT Pre-Training of Image Transformers*](https://arxiv.org/abs/2106.08254) (ICLR 2022) | Masked image modelling: predict DALL-E dVAE codes for ~40% block-masked patches. ViT-B 83.2% IN-1K top-1 (800 ep, IN-1K only); pixel regression instead 81.04 vs 82.86 (300 ep). BEiT-B linear probe 56.7 (BEiT-L 73.5) vs DINO-B 78.2 | [PDF](../../ai-engineering/08-multimodal-engineering/sources/bao-2021-beit.pdf) | 04 |
 | He et al., [*Masked Autoencoders Are Scalable Vision Learners*](https://arxiv.org/abs/2111.06377) (CVPR 2022) | Mask 75%, encode only the visible patches (3.3× less compute); ViT-H 87.8% on ImageNet-1K after fine-tuning at 448 px, but weak frozen features | [PDF](../../ai-engineering/08-multimodal-engineering/sources/he-2022-masked-autoencoders-scalable-vision-learners.pdf) | 04 |
 | Redmon and Farhadi, [*YOLO9000*](https://arxiv.org/abs/1612.08242) (CVPR 2017) | The detector in the notebook | Link only | 04 |
@@ -71,11 +71,11 @@ source: learn-ai-engineering/data-science/02-deep-learning/references.md
 | ★ Vincent, Larochelle, Bengio and Manzagol, [*Extracting and Composing Robust Features with Denoising Autoencoders*](https://www.cs.toronto.edu/~larocheh/publications/icml-2008-denoising-autoencoders.pdf) (ICML 2008) | Corruption in place of a bottleneck. Read in full | Link only | [05](notes/05-sequence-models.md#autoencoders-the-bottleneck-on-its-own) |
 | Kim, [*Convolutional Neural Networks for Sentence Classification*](https://arxiv.org/abs/1408.5882) (EMNLP 2014) | Filters as n-gram detectors | Link only | 06 |
 | Cer et al., [*Universal Sentence Encoder*](https://arxiv.org/abs/1803.11175) (2018) ⚑ | The encoder in Sarkar's comparison | Link only | 06 |
-| Reimers and Gurevych, [*Sentence-BERT*](https://arxiv.org/abs/1908.10084) (EMNLP 2019) | The encoder family behind `all-MiniLM-L6-v2` | Link only | 06 |
+| Reimers and Gurevych, [*Sentence-BERT*](https://arxiv.org/abs/1908.10084) (EMNLP 2019) | The paper behind the `sentence-transformers` library that serves `all-MiniLM-L6-v2`, a later model it doesn't test. Frozen vectors do well in its transfer table, yet its authors prefer fine-tuning. Read in full | [PDF](../sources/reimers-2019-sentence-bert.pdf) | 06 |
 | Devlin et al., [*BERT*](https://arxiv.org/abs/1810.04805) (NAACL 2019) | Most of the pipelines' encoders | Link only | 06 |
 | Sanh et al., [*DistilBERT*](https://arxiv.org/abs/1910.01108) (2019) ⚑ | A smaller distilled encoder | Link only | 06 |
 | ★ Vaswani et al., [*Attention Is All You Need*](https://arxiv.org/abs/1706.03762) (NeurIPS 2017) | The block, position functions, Table 1 complexity. Read in full | Link only | 05b, 06 |
-| ★ Dosovitskiy et al., [*An Image is Worth 16x16 Words*](https://arxiv.org/abs/2010.11929) (ICLR 2021) | What a CNN assumes and an encoder doesn't; pre-training size, Table 5. Text read in full, figures not viewed | Link only | 05b |
+| ★ Dosovitskiy et al., [*An Image is Worth 16x16 Words*](https://arxiv.org/abs/2010.11929) (ICLR 2021) | What a CNN assumes and an encoder doesn't; pre-training size, Table 5. Text read in full, figures not viewed. §4.3's data-size crossover, and Eq. 1 to 4 built in [`practice/vit_from_paper.py`](practice/vit_from_paper.py) | Link only | 05b, 04b |
 | Touvron et al., [*Training Data-Efficient Image Transformers*](https://arxiv.org/abs/2012.12877) (ICML 2021) | The recipe changes the data requirement. Read in full | Link only | 05b |
 | ★ Xiong et al., [*On Layer Normalization in the Transformer Architecture*](https://arxiv.org/abs/2002.04745) (ICML 2020) | Pre-norm, post-norm and warm-up. Read in full, proofs for their statements | Link only | 05b |
 | ★ Zeng et al., [*Are Transformers Effective for Time Series Forecasting?*](https://arxiv.org/abs/2205.13504) (AAAI 2023) | Linear models beat earlier forecasting Transformers. arXiv version, text read in full | Link only | 05b |
@@ -94,4 +94,6 @@ source: learn-ai-engineering/data-science/02-deep-learning/references.md
 | [fast.ai, Practical Deep Learning for Coders](https://course.fast.ai/) | Free | 03, 06 | The top-down view of training, transfer learning and NLP |
 | [Karpathy, Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) | YouTube, free | 01, 05, 06 | micrograd and makemore lectures, which [the LLMs from scratch pillar](../../generative-ai/09-llms-from-scratch/readme.md) builds on |
 | [PyTorch tutorials, Learn the Basics](https://pytorch.org/tutorials/beginner/basics/intro.html) | Free docs | 01 | Tensors to the training loop |
+| torchvision 0.29 docs, [transforms](https://docs.pytorch.org/vision/stable/transforms.html) and [models](https://docs.pytorch.org/vision/stable/models.html) | Free docs | 04b | Why v2 replaces v1, and the preprocessing preset, accuracy and parameter count that ship with each set of weights |
+| Bourke, [Zero to Mastery: Learn PyTorch for Deep Learning](https://www.learnpytorch.io/) ([code](https://github.com/mrdbourke/pytorch-deep-learning), MIT) | Free book and notebooks; first 25 h of video free on YouTube, the rest paid (Zero to Mastery, Udemy) | 01, 02, 04, 04b | 00 to 02, tensors to a classification loop → 01, 02. 03 to 04, computer vision and custom `Dataset`s → 04, 04b. 05 to 08, going modular, transfer learning on images, experiment tracking and replicating ViT from its paper → [04b](notes/04b-vision-in-practice.md), which reruns his scratch, frozen and fine-tuned ladder with 3 seeds. The "three most common errors" page (shape, device, dtype) → [04b](notes/04b-vision-in-practice.md#shape-device-and-dtype-errors). 09, deployment, has no note here. Pages undated; they print torch 1.12 and 2.0.1, before the v2 transforms |
 | [Hugging Face, LLM Course](https://huggingface.co/learn/llm-course) | Free | 06 | Chapter 1, the source of the pipeline examples |

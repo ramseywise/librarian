@@ -1,5 +1,4 @@
 ---
-imported_hash: 9bce30dd62e229fc
 title: '3 — The Platform: OS, Containers, Kubernetes, Storage, Networking'
 summary: Kernel tuning that gains 20% is wasted on a host where NCCL has quietly fallen back to TCP or where a rank allocates across NUMA nodes.
 order: 4

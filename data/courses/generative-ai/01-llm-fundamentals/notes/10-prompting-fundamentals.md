@@ -1,5 +1,4 @@
 ---
-imported_hash: c2d587dd77133fd0
 title: 10 — Prompting fundamentals
 summary: 'The ticket assistant is due to go live on Monday, and its prompt is one line: "Classify this ticket." Sometimes it returns billing, sometimes a paragraph explaining what billing is, and once it returned Billing issue (likely).'
 order: 11

@@ -1,5 +1,4 @@
 ---
-imported_hash: 6e73bba6ac3e7cad
 title: Primes from 0 to 100
 summary: Print all prime numbers between 0 and 100 (reported warm-up in a GenAI engineer interview).
 order: 89

@@ -1,5 +1,4 @@
 ---
-imported_hash: 928e7bdf8304e019
 title: Python
 summary: Functions to work with different collections
 order: 184

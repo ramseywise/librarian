@@ -1,5 +1,4 @@
 ---
-imported_hash: d2b6a84736588d81
 title: Code Review Round
 summary: 'Reviewing unfamiliar code under observation: do you have a method, or just an eye?'
 order: 14
