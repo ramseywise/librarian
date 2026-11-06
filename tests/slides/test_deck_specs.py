@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from librarian.courses import overlay
 from tools.slides import deck_graph
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -39,8 +40,14 @@ def test_images_resolve_inside_the_module(spec: Path) -> None:
     module = spec.parents[2 if spec.parent.name == "lectures" else 1]
     for image in _images(yaml.safe_load(spec.read_text(encoding="utf-8"))):
         target = (spec.parent / image).resolve()
-        assert target.is_file(), image
         assert target.is_relative_to(module / "assets"), image
+        if overlay.is_sources_asset(target.relative_to(COURSES).parts):
+            # Book and paper figures live only in data/courses/private/, so a public checkout
+            # cannot verify them; where the mirror exists they must resolve.
+            if (COURSES / overlay.PRIVATE).is_dir():
+                assert overlay.resolve_asset(target, COURSES) is not None, image
+            continue
+        assert target.is_file(), image
 
 
 def test_deck_graph_has_no_problems() -> None:

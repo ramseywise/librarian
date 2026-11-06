@@ -323,18 +323,18 @@ async def run_agent_stream(
                     arg = str(args.get(arg_name, ""))
                     tool_calls.append({"tool": block.name, "arg": arg})
                     if block.name == "search_wiki":
-                        result = _search_wiki(args.get("query", ""))
+                        result = await asyncio.to_thread(_search_wiki, args.get("query", ""))
                         for m in re.finditer(r"\(id: `([^`]+)`\)", result):
                             referenced_pages.add(m.group(1))
                     elif block.name == "read_page":
                         page_id = args.get("page_id", "")
-                        result = _read_page(page_id)
+                        result = await asyncio.to_thread(_read_page, page_id)
                         if not result.startswith(("Page not found:", "Multiple pages match")):
                             referenced_pages.add(page_id)
                             if page_id not in pages_read:
                                 pages_read.append(page_id)
                     elif block.name == "get_domain_briefing":
-                        result = _domain_briefing(args.get("domain", ""))
+                        result = await asyncio.to_thread(_domain_briefing, args.get("domain", ""))
                     else:
                         result = "Unknown tool."
 

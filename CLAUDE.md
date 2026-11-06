@@ -220,6 +220,18 @@ Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so t
   local file the importer will never overwrite or delete. Files without the line are
   hand-authored and are never touched. Do not hand-edit the `imported_hash` value.
 - Private and tombstoned wiki pages are never linked from lessons.
+- **`data/courses/private/`** (gitignored, mirrors the layout: `private/<course>/<module>/...`) holds
+  what must not be public: solutions to site problems (`leetcode/`, `hackerrank/`), `coding/scratch/`,
+  interview prep. It is the publication gate: anything there stays on this machine. The catalog serves
+  it to the local UI as part of its course with `private: true`, but it never reaches the search index,
+  MCP, the curriculum snapshot, the gap list or a public lesson's prev/next. Nothing public links into it.
+  Two kinds of file live only in the mirror, with the public lessons unchanged
+  (`librarian.courses.overlay`): book and paper figures (`<module>/assets/sources/...`; the asset
+  route falls back to the mirror, the UI hides a figure that is in neither tree) and each module's
+  `readings:` list (`private/<course>/<module>/_module.md`, merged by the catalog; the public
+  `_module.md` keeps `readings_count`). The importer writes both there. Lessons' `sources/` links
+  are resolved at render time through `COURSE_SOURCES_DIR` (default `../learn-ai-engineering`) and
+  served by `GET /api/courses/sources/<path>`, local only (`SERVE_COURSE_SOURCES=false` turns it off).
 - **Media is built here, for every course.** Deck specs are `<course>/<module>/slides/deck.yaml`
   or `slides/lectures/NN-slug.yaml`, images are in the module's `assets/`, and `tools/slides/`
   renders them: `make slides PILLAR=<course>/<module> [PREVIEW=1] [PDF=1]`, `make slides-all`,
@@ -375,7 +387,7 @@ Run lint to find health issues. Check each of the following:
 - **Unrecognized link types** — typed-syntax annotations whose type is not canonical (WARN)
 - **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain links (NOTE)
 - **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
-- **Private leak** — a page outside `private/` has a wikilink resolving into `private/` (`make wiki-check`, exit 1; a 3+ word private title in public text is a WARN). Reports name the public file and line, never the private page
+- **Private leak** — a page outside `private/` has a wikilink resolving into `private/` (`make wiki-check`, exit 1; a 3+ word private title in public text is a WARN). A lesson outside `data/courses/private/` that links, embeds or lists a lesson id into it, or names a private wiki page (`[[...]]` or `wiki:`), also blocks, and so does a git-tracked file under either `private/` tree (pre-commit runs `wiki check --tracked-only`). Reports name the public file and line, never the private page
 
 Output a prioritised list: BLOCKER (conflicts, dead links, private leak) → WARN (orphans, stale, untyped) → NOTE (missing coverage, bridge gaps, stale suggestions).
 

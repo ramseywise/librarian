@@ -42,7 +42,7 @@ source (Notion / Linear / web / PDFs / repos / sessions / ...)
 `librarian wiki relink` runs after compilation to discover missing semantic links.
 `librarian ingest triage` triages each raw file before compiling it: unchanged or duplicate,
 and whether to compile, strip or route to private, using the scans in `ingest/sensitive.py`.
-`librarian wiki stats|snapshot|check|gaps` compute the health numbers and run the private-leak check.
+`librarian wiki stats|snapshot|check|gaps` compute the health numbers and run the private-leak check, which also covers `data/courses/private/` (`check --tracked-only` is the pre-commit guard against a tracked private file).
 
 ## Commands
 
@@ -77,6 +77,7 @@ The session tooling that used to live beside these (`cron`, `enrich`, `migrate`)
 | `wiki/relinker.py` | Post-ingest semantic relinking pass. Suggest-only; imports `retrieval.embeddings` (needs the `api` extra). |
 | `wiki/common.py` | Shared wikilink regexes, `slugify`, alias lookup and canonical link types. |
 | `wiki/telemetry.py` | Wiki health numbers, operation log, private-leak check and gaps list. Writes to `data/telemetry/`. |
+| `wiki/course_leaks.py` | The course half of the leak check: tracked files under either `private/` tree, and public lessons that link into `data/courses/private/` or name a private wiki page. |
 | `wiki/graph.py` | Hubs, bridges and consensus clusters of the link graph (`make wiki-graph`). Needs `networkx` and `scikit-learn` (the `api` extra). |
 | `wiki/rename.py` | Renames a wiki page and rewrites every inbound link. Dry run by default. |
 | `wiki/parser.py`, `wiki/health.py` | The graph payload the API serves, and the latest telemetry row. |
@@ -87,7 +88,7 @@ The session tooling that used to live beside these (`cron`, `enrich`, `migrate`)
 
 | Module | Purpose |
 |--------|---------|
-| `retrieval/corpus.py` | Locations (wiki, courses, index, logs), domain derivation, the private-page rule, retrieval telemetry. |
+| `retrieval/corpus.py` | Locations (wiki, courses, index, logs), domain derivation, the private-page rule (both `private/` trees), retrieval telemetry. |
 | `retrieval/index.py` | DuckDB index: full rebuild, content-hash incremental update, open and rebuild. |
 | `retrieval/ranking.py` | BM25 (fts) with a tokenized-LIKE fallback, the semantic rerank, the 50/50 blend, typed-edge expansion, and `disabled()` for the evals. |
 | `retrieval/format.py`, `retrieval/pages.py` | Search results as text; read, list and brief pages and lessons. |

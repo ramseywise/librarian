@@ -52,7 +52,7 @@ def course_domains() -> list[str]:
     """`course` plus one `course/<subject>` per directory under data/courses/."""
     if not COURSES_DIR.is_dir():
         return []
-    subjects = sorted(d.name for d in COURSES_DIR.iterdir() if d.is_dir())
+    subjects = sorted(d.name for d in COURSES_DIR.iterdir() if d.is_dir() and d.name != "private")
     return [COURSE_DOMAIN, *(f"{COURSE_DOMAIN}/{s}" for s in subjects)]
 
 
@@ -78,9 +78,15 @@ def is_under_private(path: Path | str, private_dir: Path) -> bool:
     return resolved == root or root in resolved.parents
 
 
+def courses_private_dir() -> Path:
+    """data/courses/private/, beside whichever COURSES_DIR is current."""
+    return COURSES_DIR / "private"
+
+
 def is_private(path: Path | str) -> bool:
-    """is_under_private bound to this module's PRIVATE_DIR (read at call time)."""
-    return is_under_private(path, PRIVATE_DIR)
+    """is_under_private bound to the private trees: data/wiki/private/ and data/courses/private/
+    (both read at call time)."""
+    return is_under_private(path, PRIVATE_DIR) or is_under_private(path, courses_private_dir())
 
 
 def resolve_course_dir(domain: str) -> Path | None:
@@ -126,18 +132,21 @@ def course_pages(root: Path | None = None) -> list[Path]:
 
     `_course.md`, `_module.md` and `_flashcards.md` are skipped like any `_` file: the first
     two are frontmatter-only catalog metadata whose summary and titles reappear in lessons,
-    and flashcards restate deck takeaways. A symlink leaving the course root is not a lesson.
+    and flashcards restate deck takeaways. A symlink leaving the course root is not a lesson, and nothing under
+    data/courses/private/ is ever indexed.
     """
     courses_root = COURSES_DIR.resolve()
     if is_private(courses_root):
         return []
     # Runs several times per search, so resolve only files that are symlinks: rglob's `**`
     # does not descend through directory symlinks, and resolving every path is most of the cost.
+    private_root = courses_private_dir()
     return [
         p
         for p in (root or COURSES_DIR).rglob("*.md")
         if not p.name.startswith((".", "_"))
-        and (not p.is_symlink() or p.resolve().is_relative_to(courses_root))
+        and private_root not in p.parents
+        and (not p.is_symlink() or (p.resolve().is_relative_to(courses_root) and not is_private(p)))
     ]
 
 

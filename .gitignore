@@ -69,6 +69,11 @@ data/wiki/private/
 # 2026-08-02; earlier revisions in history hold curated summaries only.
 data/wiki/meta/session-log.md
 
+# data/courses/ is tracked, the same way. data/courses/private/ is the local home of what must
+# not be public: solutions to site problems, scratch code, interview prep. Served to the local
+# UI, never indexed, exported or committed. `librarian wiki check` fails on a tracked file here.
+data/courses/private/
+
 # Runtime logs — cron output (cartographer, codemap) and MCP retrieval telemetry.
 # logs/ at the repo root is the only log location; the cron scripts, both launchd
 # plists, and librarian.retrieval all write here.

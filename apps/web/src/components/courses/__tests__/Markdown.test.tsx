@@ -1,4 +1,4 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Markdown } from "../Markdown";
 
@@ -80,5 +80,42 @@ describe("Markdown raw HTML sanitising", () => {
     expect([...c.querySelectorAll("h2, h3")].map((h) => h.id)).toEqual([
       "step-2-run-it", "notes", "notes-1", "notes-1-1",
     ]);
+  });
+});
+
+describe("Markdown figures and source links", () => {
+  it("hides a figure that is not on disk instead of showing a broken image", () => {
+    const c = renderMd("before\n\n![fig](assets/sources/book/fig-1.png)\n\nafter", "course/mod/lesson");
+    const img = c.querySelector("img")!;
+    expect(img.getAttribute("src")).toBe("/api/courses/files/course/mod/assets/sources/book/fig-1.png");
+    fireEvent.error(img);
+    expect(c.querySelector("img")).toBeNull();
+    expect(c.textContent).toContain("before");
+  });
+
+  it("keeps a figure that loads", () => {
+    const c = renderMd("![fig](assets/ok.png)", "course/mod/lesson");
+    expect(c.querySelector("img")).not.toBeNull();
+  });
+
+  const renderWithSources = (body: string) =>
+    render(
+      <Markdown body={body} lessonId="c/m/lesson" onOpenLesson={vi.fn()} onOpenConcept={vi.fn()}
+        sourceLinks={{ "sources/a%20b.pdf": "c/m/sources/a b.pdf", "../sources/x.pdf": "c/sources/x.pdf" }} />,
+    ).container;
+
+  it("rewrites a served sources link to the API route and keeps the page anchor", () => {
+    const c = renderWithSources("[book](sources/a%20b.pdf#page=3) [up](../sources/x.pdf)");
+    const links = [...c.querySelectorAll("a")];
+    expect(links[0].getAttribute("href")).toBe("/api/courses/sources/c/m/sources/a%20b.pdf#page=3");
+    expect(links[1].getAttribute("href")).toBe("/api/courses/sources/c/sources/x.pdf");
+    expect(links[0].getAttribute("target")).toBe("_blank");
+  });
+
+  it("renders an unavailable sources link as plain text, not a link", () => {
+    const c = renderMd("[gone](sources/missing.pdf) and [dir](sources/)");
+    expect(c.querySelector("a")).toBeNull();
+    expect(c.querySelectorAll(".lp-deadlink").length).toBe(2);
+    expect(c.textContent).toContain("gone");
   });
 });

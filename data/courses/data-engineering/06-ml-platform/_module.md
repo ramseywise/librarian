@@ -1,12 +1,10 @@
 ---
-imported_hash: d2f9986ab2e41ed3
+imported_hash: 544e9baf331e04f6
 title: 06 ML platform
 summary: 'Everything else: references.md.'
 order: 6
 source: learn-ai-engineering/data-engineering/06-ml-platform
-readings:
-- title: Ml platform
-  source: data-engineering/06-ml-platform/slides/ml-platform.pdf
+readings_count: 1
 references:
 - title: datatalks-mlops
   source: data-engineering/06-ml-platform/practice/datatalks-mlops

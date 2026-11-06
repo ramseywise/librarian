@@ -45,7 +45,7 @@ GROUPS: dict[str, dict[str, Verb]] = {
             for v, h in {
                 "stats": "print wiki health numbers",
                 "snapshot": "stats plus one dated row in data/telemetry/metrics.jsonl",
-                "check": "private-leak check (exit 1 on a wikilink into private/)",
+                "check": "private-leak check (exit 1 on a link into private/ or a tracked private file)",
                 "gaps": "regenerate data/telemetry/gaps.md",
                 "log": "append an operations log entry",
                 "ask": "record an unanswered question",

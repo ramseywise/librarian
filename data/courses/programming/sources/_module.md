@@ -1,10 +1,8 @@
 ---
-imported_hash: a7157941cea14976
+imported_hash: 1b145ec4f113e3fd
 title: Sources
 summary: ''
 order: 106
 source: learn-ai-engineering/programming/sources
-readings:
-- title: Moseley 2006 out tar pit
-  source: programming/sources/moseley-2006-out-tar-pit.pdf
+readings_count: 1
 ---

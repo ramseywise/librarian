@@ -17,6 +17,8 @@ export interface LessonOutline {
   drill?: DrillMeta;
   /** Absent when the lesson has no flashcards. */
   flashcardCount?: number;
+  /** Present (true) only for a lesson under data/courses/private/: local, never published. */
+  private?: boolean;
 }
 
 export interface SourceRef {
@@ -31,10 +33,14 @@ export interface CourseModule {
   summary: string;
   order: number;
   readings: SourceRef[];
+  /** How many readings the module lists; the list itself is only present with the local private overlay. */
+  readingsCount?: number;
   references: SourceRef[];
   lessons: LessonOutline[];
   /** Absent when the module has no flashcards. */
   flashcardCount?: number;
+  /** True when only private lessons make up the module. */
+  private?: boolean;
 }
 
 export interface Course {
@@ -44,6 +50,8 @@ export interface Course {
   order: number;
   lessonCount: number;
   modules: CourseModule[];
+  /** True when only private modules make up the course. */
+  private?: boolean;
 }
 
 export interface ConceptRef {
@@ -59,6 +67,8 @@ export interface Lesson extends LessonOutline {
   source: string;
   body: string;
   concepts: ConceptRef[];
+  /** Sibling `sources/` links the API can serve, keyed by href as written. Empty in a deployment. */
+  sourceLinks?: Record<string, string>;
   prev: LessonOutline | null;
   next: LessonOutline | null;
 }

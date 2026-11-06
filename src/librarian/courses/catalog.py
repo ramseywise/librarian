@@ -15,6 +15,12 @@ Lesson ↔ concept links come from four places, ranked in this order:
   at most SEMANTIC_TOP_K above SEMANTIC_THRESHOLD). Needs the `api` extra; without it
   (CI) linking falls back to the first two sources.
 Private and tombstoned wiki pages are never surfaced here.
+
+data/courses/private/ (gitignored, like data/wiki/private/) mirrors the public layout:
+`private/<course>/<module>/...`. Its lessons are served to the local UI as part of the course
+they name, each marked `private: true` (a module or course only they make up is marked too).
+Public lessons never get them as prev/next. The curriculum facet, the gap list and the search
+index leave them out, so nothing derived from them reaches a tracked file or an exported one.
 """
 
 from __future__ import annotations
@@ -34,8 +40,9 @@ import frontmatter
 import yaml
 
 from librarian.config import get_settings
-from librarian.courses import leitner
+from librarian.courses import leitner, overlay, sources
 from librarian.log_config import get_logger
+from librarian.retrieval.corpus import is_under_private
 from librarian.wiki.common import WIKILINK_RE, fm, page_aliases, slugify
 
 log = get_logger(__name__)
@@ -51,6 +58,7 @@ DRILL_LOG = _settings.drill_log
 # learn-ai-engineering's scripts/review/signals.py to find cards and slides worth re-reading.
 FLASHCARD_LOG = _settings.flashcard_log
 
+PRIVATE_COURSES = "private"  # data/courses/private/, same name as data/wiki/private/
 ASSET_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
 MAX_CONCEPTS = 12
 # Semantic linking (D5). 0.55 kept after a spot check on the real courses (2026-10-30):
@@ -93,6 +101,7 @@ class LessonRec:
     concepts: list[str] = field(default_factory=list)  # wiki page ids, ranked
     drill: dict[str, Any] = field(default_factory=dict)  # DRILL_KEYS, kind == "drill" only
     flashcards: int = 0
+    private: bool = False  # under data/courses/private/: local only
 
 
 @dataclass
@@ -274,68 +283,83 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
     if not courses_dir.is_dir():
         return Catalog([], {}, wiki, {})
 
-    for course_dir in sorted(p for p in courses_dir.iterdir() if p.is_dir()):
-        cmeta = _meta(course_dir / "_course.md")
+    private_root = courses_dir / PRIVATE_COURSES
+    for course_name, course_dirs in _course_dirs(courses_dir).items():
+        cmeta = _first_meta(course_dirs, "_course.md")
         modules: list[dict[str, Any]] = []
-        for mod_dir in sorted(p for p in course_dir.iterdir() if p.is_dir()):
-            mmeta = _meta(mod_dir / "_module.md")
+        for module_name, mod_dirs in _module_dirs(course_dirs).items():
+            mmeta = _first_meta(mod_dirs, "_module.md")
+            readings = _merged_readings(mod_dirs)
+            readings_count = max(len(readings), _readings_count(mod_dirs))
             recs: list[LessonRec] = []
-            for md in mod_dir.rglob("*.md"):
-                if md.name.startswith("_") or "assets" in md.relative_to(mod_dir).parts:
-                    continue
-                post = frontmatter.load(md)
-                lid = str(md.relative_to(courses_dir).with_suffix(""))
-                embed_texts[lid] = _lesson_text(post, md.stem)
-                recs.append(
-                    LessonRec(
-                        id=lid,
-                        course=course_dir.name,
-                        module=mod_dir.name,
-                        title=str(fm(post).get("title") or md.stem),
-                        summary=str(fm(post).get("summary") or ""),
-                        order=int(fm(post).get("order") or 999),
-                        section=str(fm(post).get("section") or ""),
-                        kind=str(fm(post).get("kind") or "reading"),
-                        source=str(fm(post).get("source") or ""),
-                        body=post.content,
-                        concepts=_rank_concepts(
-                            post, wiki, slugs, matcher, by_title, compiled.get(lid, [])
-                        ),
-                        drill=_drill_meta(post, wiki, slugs, hidden)
-                        if fm(post).get("kind") == "drill"
-                        else {},
+            for mod_dir in mod_dirs:
+                for md in mod_dir.rglob("*.md"):
+                    if md.name.startswith("_") or "assets" in md.relative_to(mod_dir).parts:
+                        continue
+                    post = frontmatter.load(md)
+                    lid = str(md.relative_to(courses_dir).with_suffix(""))
+                    embed_texts[lid] = _lesson_text(post, md.stem)
+                    recs.append(
+                        LessonRec(
+                            id=lid,
+                            course=course_name,
+                            module=module_name,
+                            title=str(fm(post).get("title") or md.stem),
+                            summary=str(fm(post).get("summary") or ""),
+                            order=int(fm(post).get("order") or 999),
+                            section=str(fm(post).get("section") or ""),
+                            kind=str(fm(post).get("kind") or "reading"),
+                            source=str(fm(post).get("source") or ""),
+                            body=post.content,
+                            concepts=_rank_concepts(
+                                post, wiki, slugs, matcher, by_title, compiled.get(lid, [])
+                            ),
+                            drill=_drill_meta(post, wiki, slugs, hidden)
+                            if fm(post).get("kind") == "drill"
+                            else {},
+                            private=is_under_private(md, private_root),
+                        )
                     )
-                )
             recs.sort(key=lambda r: (r.order, r.id))
             for r in recs:
                 lessons[r.id] = r
-            if not recs and not mmeta.get("readings") and not mmeta.get("references"):
+            if not recs and not readings_count and not mmeta.get("references"):
                 continue
-            module_title = str(mmeta.get("title") or mod_dir.name)
-            cards = _load_cards(mod_dir / "_flashcards.md", {r.id: r for r in recs})
-            decks |= _build_decks(course_dir.name, mod_dir.name, module_title, cards, recs)
+            module_title = str(mmeta.get("title") or module_name)
+            cards = [
+                c
+                for d in mod_dirs
+                for c in _load_cards(d / "_flashcards.md", {r.id: r for r in recs})
+            ]
+            for i, card in enumerate(cards):
+                card["id"] = str(i)
+            decks |= _build_decks(course_name, module_name, module_title, cards, recs)
             modules.append(
                 {
-                    "id": mod_dir.name,
+                    "id": module_name,
                     "title": module_title,
                     "summary": str(mmeta.get("summary") or ""),
                     # 00-start-here is order 0, so `or 999` would sort it last.
                     "order": int(999 if mmeta.get("order") is None else mmeta["order"]),
-                    "readings": mmeta.get("readings") or [],
+                    # Public: only the count. The list itself is in the private overlay.
+                    "readings": readings,
+                    "readingsCount": readings_count,
                     "references": mmeta.get("references") or [],
                     "lessons": [_outline(r) for r in recs],
                     **({"flashcardCount": len(cards)} if cards else {}),
+                    **({"private": True} if all(r.private for r in recs) and recs else {}),
                 }
             )
         modules.sort(key=lambda m: (m["order"], m["id"]))
         courses.append(
             {
-                "id": course_dir.name,
-                "title": str(cmeta.get("title") or course_dir.name),
+                "id": course_name,
+                "title": str(cmeta.get("title") or course_name),
                 "summary": str(cmeta.get("summary") or ""),
                 "order": int(cmeta.get("order") or 999),
                 "lessonCount": sum(len(m["lessons"]) for m in modules),
                 "modules": modules,
+                **({"private": True} if modules and all(m.get("private") for m in modules) else {}),
             }
         )
     courses.sort(key=lambda c: (c["order"], c["id"]))
@@ -354,6 +378,53 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
         for cid in lesson.concepts:
             by_concept.setdefault(cid, []).append(lesson.id)
     return Catalog(courses, ordered, wiki, by_concept, decks)
+
+
+def _course_dirs(courses_dir: Path) -> dict[str, list[Path]]:
+    """Course name → its directories: the public one, then the same name under private/."""
+    found: dict[str, list[Path]] = {}
+    roots = [(courses_dir, True), (courses_dir / PRIVATE_COURSES, False)]
+    for root, is_public_root in roots:
+        if not root.is_dir():
+            continue
+        for d in sorted(p for p in root.iterdir() if p.is_dir()):
+            if is_public_root and d.name == PRIVATE_COURSES:
+                continue
+            found.setdefault(d.name, []).append(d)
+    return dict(sorted(found.items()))
+
+
+def _module_dirs(course_dirs: list[Path]) -> dict[str, list[Path]]:
+    found: dict[str, list[Path]] = {}
+    for course_dir in course_dirs:
+        for d in sorted(p for p in course_dir.iterdir() if p.is_dir()):
+            found.setdefault(d.name, []).append(d)
+    return dict(sorted(found.items()))
+
+
+def _first_meta(dirs: list[Path], name: str) -> dict[str, Any]:
+    """Frontmatter of the first of `dirs` that has `name`; public comes first, so it wins."""
+    return next((_meta(d / name) for d in dirs if (d / name).exists()), {})
+
+
+def _merged_readings(mod_dirs: list[Path]) -> list[Any]:
+    """Readings from every `_module.md` of the module (public first, then the private overlay)."""
+    seen: set[str] = set()
+    merged: list[Any] = []
+    for d in mod_dirs:
+        for r in _meta(d / "_module.md").get("readings") or []:
+            key = str(r.get("source", r)) if isinstance(r, dict) else str(r)
+            if key not in seen:
+                seen.add(key)
+                merged.append(r)
+    return merged
+
+
+def _readings_count(mod_dirs: list[Path]) -> int:
+    """`readings_count` from the public `_module.md`: what the list held before it moved."""
+    return max(
+        (int(_meta(d / "_module.md").get("readings_count") or 0) for d in mod_dirs), default=0
+    )
 
 
 def _meta(path: Path) -> dict[str, Any]:
@@ -537,6 +608,7 @@ def _outline(r: LessonRec) -> dict[str, Any]:
         "summary": r.summary,
         **({"drill": r.drill} if r.drill else {}),
         **({"flashcardCount": r.flashcards} if r.flashcards else {}),
+        **({"private": True} if r.private else {}),
     }
 
 
@@ -578,7 +650,12 @@ def lesson_detail(lesson_id: str) -> dict[str, Any] | None:
     lesson = cat.lessons.get(lesson_id)
     if not lesson:
         return None
-    ids = [i for i, r in cat.lessons.items() if r.course == lesson.course]
+    # A public lesson's neighbours are public: prev/next never leads from it into private/.
+    ids = [
+        i
+        for i, r in cat.lessons.items()
+        if r.course == lesson.course and (lesson.private or not r.private)
+    ]
     pos = ids.index(lesson_id)
     neighbour = lambda i: _outline(cat.lessons[ids[i]]) if 0 <= i < len(ids) else None  # noqa: E731
     return {
@@ -587,6 +664,7 @@ def lesson_detail(lesson_id: str) -> dict[str, Any] | None:
         "module": lesson.module,
         "source": lesson.source,
         "body": _link_wikilinks(lesson.body, cat),
+        "sourceLinks": sources.source_links(lesson_id, lesson.body),
         "concepts": [_wiki_json(cat.wiki[c]) for c in lesson.concepts if c in cat.wiki],
         "prev": neighbour(pos - 1),
         "next": neighbour(pos + 1),
@@ -783,11 +861,17 @@ def asset_path(file_path: str) -> Path | None:
     """Absolute path of an image under COURSES_DIR, or None when `file_path` is not one.
 
     Two-step guard: reject traversal syntax, then confirm the resolved path is inside the
-    courses root. Only images are served.
+    courses root. Only images are served. A missing file falls back to the same relative path
+    in the private mirror (book and paper figures live only there); a path that exists in
+    neither comes back as the public path, so the route answers 404.
     """
     if ".." in Path(file_path).parts or file_path.startswith("/"):
         return None
+    root = COURSES_DIR.resolve()
     target = (COURSES_DIR / file_path).resolve()
-    if not target.is_relative_to(COURSES_DIR.resolve()) or target.suffix.lower() not in ASSET_TYPES:
+    if not target.is_relative_to(root) or target.suffix.lower() not in ASSET_TYPES:
         return None
-    return target
+    found = overlay.resolve_asset(target, root)
+    if found is not None and not found.resolve().is_relative_to(root):
+        return None  # a symlink in the mirror pointing out of the tree
+    return found or target

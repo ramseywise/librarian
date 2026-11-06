@@ -6,7 +6,8 @@ stay reachable through `beyond`, grouped by directory.
 
 The catalog's cold build takes 6-26 s, which must not hold up the map's filter panel, so
 the facet is saved to a snapshot after each build and served from it straight away.
-`stale: true` tells the client a newer snapshot is coming. Private pages can't leak from
+`stale: true` tells the client a newer snapshot is coming. Private lessons (data/courses/private/) are
+left out of it. Private pages can't leak from
 an old snapshot: the catalog excludes them and `_present` filters against the current
 public set.
 """
@@ -45,10 +46,13 @@ def _build(cat: Catalog, signature: list[int]) -> dict[str, Any]:
     for course in cat.courses:
         modules: list[dict[str, Any]] = []
         for module in course["modules"]:
-            if module["id"] in SKIPPED_MODULES:
+            # Private lessons add nothing: the snapshot feeds the public map, and a module
+            # only they make up would put its name there.
+            public_lessons = [lesson for lesson in module["lessons"] if not lesson.get("private")]
+            if module["id"] in SKIPPED_MODULES or module.get("private"):
                 continue
             links: Counter[str] = Counter()
-            for outline in module["lessons"]:
+            for outline in public_lessons:
                 links.update(
                     pid
                     for pid in cat.lessons[outline["id"]].concepts
@@ -60,7 +64,7 @@ def _build(cat: Catalog, signature: list[int]) -> dict[str, Any]:
                 {
                     "id": module["id"],
                     "title": module["title"],
-                    "firstLesson": module["lessons"][0]["id"] if module["lessons"] else None,
+                    "firstLesson": public_lessons[0]["id"] if public_lessons else None,
                     "pageIds": [pid for pid, _ in links.most_common()],
                 }
             )

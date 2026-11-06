@@ -51,7 +51,7 @@ export function LessonView({ lesson, courseTitle, done, onToggleDone, onOpen, on
   const glossary = useGlossary(null, true);
   useEffect(() => setShowSolution(false), [lesson.id]);
   const md = (text: string) => (
-    <Markdown body={text} lessonId={lesson.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} terms={glossary?.terms} />
+    <Markdown body={text} lessonId={lesson.id} onOpenLesson={onOpen} onOpenConcept={onOpenConcept} terms={glossary?.terms} sourceLinks={lesson.sourceLinks} />
   );
 
   useEffect(() => {

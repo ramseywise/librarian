@@ -20,7 +20,8 @@ Conversions:
 Vendored upstream snapshots (`*-main`, `*-master`, hash-suffixed, nested git repos — see
 learn-ai-engineering/THIRD_PARTY.md) are NOT imported. They are listed on their module as
 references, as are the bulky course folders in PRACTICE_REFERENCE_ONLY. PDFs are listed as
-readings. Gitignored files (fetched datasets) are never imported.
+readings, written to the private mirror (public keeps `readings_count`), and book and
+paper figures (`assets/sources/`) are copied there too. Gitignored files (fetched datasets) are never imported.
 
 practice/ mixes publishable interview material with private and uncleared third-party files,
 and its .gitignore is the allowlist that separates them. programming/drills/ does the same
@@ -64,6 +65,7 @@ import structlog
 import yaml
 
 from librarian.config import get_settings
+from librarian.courses import overlay
 from librarian.ingest.gitignore import git_ignored as _git_ignored
 from librarian.ingest.gitignore import matches_ignored as _matches_ignored
 from librarian.ingest.scrape_claude_docs import WORKSPACE_DIR
@@ -153,6 +155,16 @@ PRACTICE_REFERENCE_ONLY = {
     "datatalks-mlops",
     "intro-to-nlp",
     "ng-deep-learning",
+    "text-analytics-with-python",
+}
+# Old import targets with no module behind them (practice courses that became reference-only).
+# Their images were licensed third-party material in a public repo and were deleted on 2026-11-06;
+# a re-import must not bring them back.
+DELETED_ASSET_MODULES = {
+    "ng-s-deep-learning-nbks",
+    "datatalks-mlops",
+    "datatalks-data-engineering",
+    "intro-to-machine-learning-in-python",
     "text-analytics-with-python",
 }
 SKIP_DIRS = {"node_modules", ".next", ".ipynb_checkpoints", "__pycache__", "site-packages"}
@@ -718,6 +730,8 @@ def _rewrite_body(
             return url
         if target.stat().st_size > MAX_ASSET_BYTES:
             return url
+        if lesson.dest.parts[1] in DELETED_ASSET_MODULES:
+            return url
         try:
             rel = target.relative_to(asset_root)
         except ValueError:
@@ -727,7 +741,12 @@ def _rewrite_body(
             / "assets"
             / Path(*[_dest_segment(p) for p in rel.parent.parts], target.name)
         )
-        plan.assets[dest] = target
+        # Book and paper figures are copied to the private mirror only; the link stays the
+        # public path, which the asset route resolves through the overlay.
+        copy_to = dest
+        if overlay.is_sources_asset(dest.relative_to(COURSES_DIR).parts):
+            copy_to = overlay.private_mirror(dest, COURSES_DIR) or dest
+        plan.assets[copy_to] = target
         return os.path.relpath(dest, lesson_dir).replace(" ", "%20")
 
     def link(url: str) -> str:
@@ -830,7 +849,16 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
             if mod.src_dir:
                 meta["source"] = f"{repo}/{mod.src_dir.relative_to(source)}"
             if mod.readings:
-                meta["readings"] = mod.readings
+                # The PDF catalogue is private: public keeps the URLs and a count, and the
+                # paths go to the mirror's _module.md (frontmatter `readings:` only).
+                public_readings, private_readings = overlay.split_readings(mod.readings)
+                if public_readings:
+                    meta["readings"] = public_readings
+                meta["readings_count"] = len(mod.readings)
+                if private_readings:
+                    plan.files[
+                        COURSES_DIR / overlay.PRIVATE / subject / mod.name / "_module.md"
+                    ] = render({"readings": private_readings})
             if mod.references:
                 meta["references"] = mod.references
             plan.files[COURSES_DIR / subject / mod.name / "_module.md"] = render(meta)

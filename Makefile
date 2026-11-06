@@ -183,7 +183,7 @@ help:
 	@echo "lint             — reminder: use /lint in Claude Code"
 	@echo "wiki-stats       — print wiki health numbers"
 	@echo "wiki-snapshot    — wiki-stats + one dated row in data/telemetry/metrics.jsonl"
-	@echo "wiki-check       — private-leak check (exit 1 on a wikilink into private/)"
+	@echo "wiki-check       — private-leak check (exit 1 on a link into private/ or a tracked private file)"
 	@echo "wiki-gaps        — regenerate data/telemetry/gaps.md and print the top five"
 	@echo "wiki-graph       — hubs, bridges and consensus clusters of the wiki's link graph"
 	@echo "eval             — run retrieval + answer graders over golden dataset; save baseline"

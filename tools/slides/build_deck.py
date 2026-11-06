@@ -34,6 +34,8 @@ from pptx.opc.constants import RELATIONSHIP_TYPE as RT
 from pptx.oxml.ns import qn
 from pptx.util import Inches, Pt
 
+from librarian.config import get_settings
+from librarian.courses import overlay
 from tools.slides import deck_graph, deck_stamp
 
 # ---------------------------------------------------------------------------
@@ -1072,6 +1074,8 @@ def lay_image(slide, spec, top, bottom, ctx, info):
     from PIL import Image
 
     path = (info["base"] / spec["image"]).resolve()
+    # Book and paper figures (assets/sources/) live only in data/courses/private/.
+    path = overlay.resolve_asset(path, get_settings().courses_dir.resolve()) or path
     side = spec.get("bullets")
     region_w = CONTENT_W if not side else CONTENT_W * 0.55
     cap = spec.get("caption")

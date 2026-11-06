@@ -9,6 +9,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from librarian.courses import catalog as lib
+from librarian.courses import sources
 
 router = APIRouter(prefix="/api/courses")
 
@@ -78,4 +79,14 @@ def course_file(file_path: str) -> FileResponse:
         raise HTTPException(status_code=400, detail="invalid path")
     if not target.is_file():
         raise HTTPException(status_code=404, detail="not found")
+    return FileResponse(target)
+
+
+@router.get("/sources/{file_path:path}")
+def course_source(file_path: str) -> FileResponse:
+    """A file from COURSE_SOURCES_DIR (the PDF library). Local only: 404 when serving is off,
+    the dir is missing, or the path is not a regular file inside it."""
+    target = sources.source_file(file_path)
+    if target is None:
+        raise HTTPException(status_code=404, detail="source unavailable")
     return FileResponse(target)

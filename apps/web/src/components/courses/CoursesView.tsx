@@ -170,7 +170,7 @@ function Overview({ course, done, last, onOpen }: {
                 </button>
               ))}
             </div>
-            <SourceList label="Readings" items={m.readings} />
+            <SourceList label="Readings" items={m.readings} count={m.readingsCount} />
             <SourceList label="Reference material (not imported)" items={m.references} />
           </section>
         ))}
@@ -179,8 +179,13 @@ function Overview({ course, done, last, onOpen }: {
   );
 }
 
-function SourceList({ label, items }: { label: string; items: { title: string; source: string; url?: string }[] }) {
-  if (!items?.length) return null;
+function SourceList({ label, items, count }: {
+  label: string; items: { title: string; source: string; url?: string }[]; count?: number;
+}) {
+  // Without the local private overlay only the count is public.
+  if (!items?.length) {
+    return count ? <p className="course-sources">{label}: {count} (the list is kept locally)</p> : null;
+  }
   return (
     <details className="course-sources">
       <summary>{label} ({items.length})</summary>

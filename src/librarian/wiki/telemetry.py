@@ -40,6 +40,7 @@ from librarian.ingest.sensitive import (
     scan_text,
     terms_pattern,
 )
+from librarian.wiki import course_leaks
 from librarian.wiki.common import (
     TYPED_LINK_RE,
     WIKILINK_RE,
@@ -554,10 +555,21 @@ def _embedded_private_stems(private: list[Page], public: list[Page]) -> re.Patte
     )
 
 
-def run_check(wiki_dir: Path, telemetry_dir: Path) -> LeakReport | None:
-    """Scan public text for private references. None when there is no private/ (CI)."""
+def run_check(
+    wiki_dir: Path, telemetry_dir: Path, courses_dir: Path | None = None
+) -> LeakReport | None:
+    """Scan public text for private references. None when there is no private/ (CI).
+
+    Public lessons under `courses_dir` are scanned too, with or without a wiki private/:
+    a link into data/courses/private/ is a leak whether or not that tree exists here.
+    """
     if not (wiki_dir / "private").is_dir():
-        return None
+        if courses_dir is None:
+            return None
+        blockers, scanned = course_leaks.scan_public_lessons(
+            courses_dir, lambda _raw: False, _display
+        )
+        return LeakReport(blockers, [], 0, scanned)
     private_pages = _private_pages(wiki_dir)
     public_pages = _public_pages(wiki_dir)
     private = _slug_map(private_pages)
@@ -593,6 +605,14 @@ def run_check(wiki_dir: Path, telemetry_dir: Path) -> LeakReport | None:
         for jsonl in sorted(telemetry_dir.glob("*.jsonl")):
             if jsonl.name not in UNTRACKED_TELEMETRY:
                 scan(jsonl, path_mention_blocks=True)
+    if courses_dir is not None:
+        blockers, scanned = course_leaks.scan_public_lessons(
+            courses_dir,
+            lambda raw: _links_to_private(_link_target(raw), public, private),
+            _display,
+        )
+        report.blockers.extend(blockers)
+        report.files_scanned += scanned
     return report
 
 
@@ -726,8 +746,12 @@ def _course_gaps(
     finally:
         courses._semantic_neighbours = original
 
+    # Private lessons (data/courses/private/) never count: gaps.md must not name their modules
+    # or the pages they link to.
     lesson_counts = {
-        (c["id"], m["id"]): len(m["lessons"]) for c in cat.courses for m in c["modules"]
+        (c["id"], m["id"]): sum(not lesson.get("private") for lesson in m["lessons"])
+        for c in cat.courses
+        for m in c["modules"]
     }
     modules: list[Gap] = []
     for course in built["courses"]:
@@ -740,7 +764,9 @@ def _course_gaps(
     linking: dict[str, set[str]] = defaultdict(set)
     names: dict[str, str] = {}
     withheld: set[str] = set()
-    for lesson_id in cat.lessons:
+    for lesson_id, rec in cat.lessons.items():
+        if rec.private:
+            continue
         post = frontmatter.load(courses_dir / f"{lesson_id}.md")
         targets = [str(t) for t in fm(post).get("wiki") or []]
         # Code holds things like [[1, 2]]: not links.
@@ -864,17 +890,35 @@ def _cmd_snapshot(args: argparse.Namespace) -> int:
     return 0
 
 
+def _tracked_private_blockers(repo_root: Path) -> list[str]:
+    """One blocker per private tree with tracked files, counting them and naming none."""
+    tracked = course_leaks.tracked_private_files(repo_root)
+    return [
+        f"{len(hits)} tracked file(s) under {tree}/: remove them from the index (git rm --cached)"
+        for tree in course_leaks.PRIVATE_DIRS
+        if (hits := [f for f in tracked or [] if f.startswith(f"{tree}/")])
+    ]
+
+
 def _cmd_check(args: argparse.Namespace) -> int:
-    if not (args.wiki_dir / "private").is_dir():
-        print("check: no private/ directory here, nothing to compare against")
-        return 0
-    if args.file:
+    if args.tracked_only:
+        tracked = _tracked_private_blockers(args.repo_root)
+        for line in tracked:
+            print(f"BLOCKER {line}")
+        return 1 if tracked else 0
+    if args.file:  # the post-write hook: one file's wikilinks, no git call
+        if not (args.wiki_dir / "private").is_dir():
+            print("check: no private/ directory here, nothing to compare against")
+            return 0
         blockers = check_file(args.file, args.wiki_dir)
         for line in blockers:
             print(f"BLOCKER {line}")
         return 1 if blockers else 0
-    report = run_check(args.wiki_dir, args.telemetry_dir)
-    assert report is not None  # private/ exists: checked above
+    report = run_check(args.wiki_dir, args.telemetry_dir, args.courses_dir)
+    assert report is not None  # a courses_dir is always passed
+    if not (args.wiki_dir / "private").is_dir():
+        print("check: no private/ directory here, nothing to compare against")
+    report.blockers[:0] = _tracked_private_blockers(args.repo_root)
     for line in report.blockers:
         print(f"BLOCKER {line}")
     for line in report.warnings:
@@ -938,6 +982,7 @@ def _parser() -> argparse.ArgumentParser:
     common.add_argument("--telemetry-dir", type=Path, default=TELEMETRY_DIR)
     common.add_argument("--courses-dir", type=Path, default=COURSES_DIR)
     common.add_argument("--retrieval-log", type=Path, default=RETRIEVAL_LOG)
+    common.add_argument("--repo-root", type=Path, default=REPO_ROOT)
     common.add_argument(
         "--today", type=date.fromisoformat, default=None, help="YYYY-MM-DD, for tests"
     )
@@ -951,6 +996,11 @@ def _parser() -> argparse.ArgumentParser:
     snapshot.set_defaults(func=_cmd_snapshot)
     check = commands.add_parser("check", parents=[common], help="private-leak check")
     check.add_argument("--file", type=Path, help="only this file's wikilinks (post-write hook)")
+    check.add_argument(
+        "--tracked-only",
+        action="store_true",
+        help="only fail if git tracks a file under data/wiki/private/ or data/courses/private/",
+    )
     check.set_defaults(func=_cmd_check)
     log = commands.add_parser("log", parents=[common], help="append to operations.jsonl")
     log.add_argument("op")

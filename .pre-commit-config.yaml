@@ -45,6 +45,13 @@ repos:
         files: ^apps/web/.*\.(ts|tsx|js|jsx)$
         pass_filenames: false
 
+      - id: private-not-tracked
+        name: no tracked file under a private/ tree
+        language: system
+        entry: uv run librarian wiki check --tracked-only
+        always_run: true
+        pass_filenames: false
+
       - id: wiki-frontmatter-yaml
         name: wiki frontmatter parses as YAML
         language: system

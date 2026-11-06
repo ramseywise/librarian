@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState, type ReactNode } from "react";
+import { memo, useMemo, useRef, useState, type ImgHTMLAttributes, type ReactNode } from "react";
 import ReactMarkdown, { type Components, type Options } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -19,6 +19,18 @@ interface Props {
   onOpenConcept: (pageId: string) => void;
   /** Glossary terms to define in the text; without them the text renders as written. */
   terms?: Term[];
+  /** href as written → path under the course sources dir, for links the API can serve (local only). */
+  sourceLinks?: Record<string, string>;
+}
+
+/**
+ * A figure that is not on disk (book and paper figures live only in the private overlay,
+ * absent from a public checkout) is hidden, not shown as a broken-image icon.
+ */
+function LessonImage(props: ImgHTMLAttributes<HTMLImageElement>) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return <img {...props} loading="lazy" onError={() => setFailed(true)} />;
 }
 
 const Pre = ({ children }: { children?: ReactNode }) => <CodeBlock>{children}</CodeBlock>;
@@ -74,6 +86,7 @@ function buildComponents(
   lessonId: string,
   onOpenLesson: (id: string) => void,
   onOpenConcept: (pageId: string) => void,
+  sourceLinks: Record<string, string> = {},
 ): Components {
   return {
     pre: Pre,
@@ -103,7 +116,15 @@ function buildComponents(
       if (isExternal(href)) {
         return <a href={href} target="_blank" rel="noreferrer">{children}</a>;
       }
-      const [path] = href.split("#");
+      const [path, ...frag] = href.split("#");
+      // A link into the sibling `sources/` library: served by the API when the file is there,
+      // plain text (the dead-link span below) when it is not.
+      const served = sourceLinks[path];
+      if (served) {
+        const anchor = frag.length ? `#${frag.join("#")}` : "";
+        const url = `/api/courses/sources/${served.split("/").map(encodeURIComponent).join("/")}${anchor}`;
+        return <a href={url} target="_blank" rel="noreferrer">{children}</a>;
+      }
       if (path.endsWith(".md")) {
         const target = resolveRelative(lessonId, path).replace(/\.md$/, "");
         return (
@@ -113,20 +134,20 @@ function buildComponents(
         );
       }
       // Relative link to something not imported (PDF, vendored repo, script).
-      return <span className="lp-deadlink" title={`Not imported into librarian: ${href}`}>{children}</span>;
+      return <span className="lp-deadlink" title={`Not available here: ${href}`}>{children}</span>;
     },
     // Covers markdown images and raw-HTML <img> alike (rehype-raw runs first).
     img: ({ src, alt, width, height, title }) => (
-      <img src={assetUrl(lessonId, typeof src === "string" ? src : "")} alt={alt ?? ""}
-        width={width} height={height} title={title} loading="lazy" />
+      <LessonImage src={assetUrl(lessonId, typeof src === "string" ? src : "")} alt={alt ?? ""}
+        width={width} height={height} title={title} />
     ),
   };
 }
 
-function MarkdownInner({ body, lessonId, onOpenLesson, onOpenConcept, terms }: Props) {
+function MarkdownInner({ body, lessonId, onOpenLesson, onOpenConcept, terms, sourceLinks }: Props) {
   const components = useMemo(
-    () => buildComponents(lessonId, onOpenLesson, onOpenConcept),
-    [lessonId, onOpenLesson, onOpenConcept],
+    () => buildComponents(lessonId, onOpenLesson, onOpenConcept, sourceLinks),
+    [lessonId, onOpenLesson, onOpenConcept, sourceLinks],
   );
   const plugins = useMemo<Options["rehypePlugins"]>(() => {
     if (!terms?.length) return rehypePlugins;

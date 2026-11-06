@@ -80,6 +80,14 @@ class Settings(BaseSettings):
     # The private sisyphus checkout, read live for drill attempts.
     override_sisyphus_dir: Path | None = Field(default=None, validation_alias=_env("SISYPHUS_DIR"))
 
+    # The course sources repo (PDFs and book folders), read through the sources route and never
+    # copied into data/. Default: the sibling learn-ai-engineering checkout.
+    override_course_sources_dir: Path | None = Field(
+        default=None, validation_alias=_env("COURSE_SOURCES_DIR")
+    )
+    # Local only: a deployment sets SERVE_COURSE_SOURCES=false (phase 5) and the route 404s.
+    serve_course_sources: bool = Field(default=True, validation_alias=_env("SERVE_COURSE_SOURCES"))
+
     # Models and endpoints.
     embedding_model: str = Field(
         default="all-MiniLM-L6-v2", validation_alias=_env("LIBRARIAN_EMBEDDING_MODEL")
@@ -110,6 +118,16 @@ class Settings(BaseSettings):
     @property
     def courses_dir(self) -> Path:
         return self.override_courses_dir or self.data_dir / "courses"
+
+    @property
+    def courses_private_dir(self) -> Path:
+        return self.courses_dir / "private"
+
+    @property
+    def course_sources_dir(self) -> Path:
+        return (
+            self.override_course_sources_dir or self.root.parent / "learn-ai-engineering"
+        ).expanduser()
 
     @property
     def raw_dir(self) -> Path:
