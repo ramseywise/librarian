@@ -1598,44 +1598,59 @@ def render_pngs(pptx: Path, out_dir: Path, size: int = 2400) -> list[Path]:
         print("render: qlmanage not found (macOS only) — skipping", file=sys.stderr)
         return []
     out_dir.mkdir(parents=True, exist_ok=True)
-    for old in out_dir.glob("*.png"):
-        old.unlink()
     n = len(Presentation(str(pptx)).slides)
-    with tempfile.TemporaryDirectory() as tmp:
-        singles = []
-        for i in range(n):
-            prs = Presentation(str(pptx))
-            ids = prs.slides._sldIdLst
-            for k, sld in reversed(list(enumerate(ids))):
-                if k != i:
-                    prs.part.drop_rel(sld.rId)
-                    ids.remove(sld)
-            # Quick Look hangs indefinitely on a pptx with speaker notes; the render doesn't need them.
-            for rId, rel in list(prs.slides[0].part.rels.items()):
-                if rel.reltype == RT.NOTES_SLIDE:
-                    prs.slides[0].part.drop_rel(rId)
-            p = Path(tmp) / f"slide-{i + 1:02d}.pptx"
-            prs.save(str(p))
-            singles.append(p)
-        try:
-            subprocess.run(
-                ["qlmanage", "-t", "-s", str(size), "-o", tmp, *map(str, singles)],
-                check=True,
-                capture_output=True,
-                timeout=30 + 5 * n,
-            )
-        except subprocess.TimeoutExpired:
-            print("render: qlmanage timed out — some slides may be missing", file=sys.stderr)
-        pngs = []
-        for p in singles:
-            src = Path(f"{p}.png")
-            if src.exists():
-                dst = out_dir / f"{p.stem}.png"
-                shutil.move(src, dst)
-                pngs.append(dst)
-        if len(pngs) < n:
-            print(f"render: only {len(pngs)} of {n} slides rendered", file=sys.stderr)
-    return pngs
+    # Render beside the target and swap in only on success: a failed render keeps the old PNGs.
+    stage = Path(tempfile.mkdtemp(prefix=".render-", dir=out_dir.parent))
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            singles = []
+            for i in range(n):
+                prs = Presentation(str(pptx))
+                ids = prs.slides._sldIdLst
+                for k, sld in reversed(list(enumerate(ids))):
+                    if k != i:
+                        prs.part.drop_rel(sld.rId)
+                        ids.remove(sld)
+                # Quick Look hangs indefinitely on a pptx with speaker notes; the render doesn't need them.
+                for rId, rel in list(prs.slides[0].part.rels.items()):
+                    if rel.reltype == RT.NOTES_SLIDE:
+                        prs.slides[0].part.drop_rel(rId)
+                p = Path(tmp) / f"slide-{i + 1:02d}.pptx"
+                prs.save(str(p))
+                singles.append(p)
+            try:
+                subprocess.run(
+                    ["qlmanage", "-t", "-s", str(size), "-o", tmp, *map(str, singles)],
+                    check=True,
+                    capture_output=True,
+                    timeout=30 + 5 * n,
+                )
+            except subprocess.TimeoutExpired:
+                print("render: qlmanage timed out — some slides may be missing", file=sys.stderr)
+            for p in singles:
+                src = Path(f"{p}.png")
+                if src.exists():
+                    shutil.move(src, stage / f"{p.stem}.png")
+        return _swap_in(stage, out_dir, n)
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
+
+
+def _swap_in(stage: Path, out_dir: Path, n: int) -> list[Path]:
+    """Replace `out_dir`'s PNGs with the staged ones. An empty or partial render never displaces a
+    full old set: the old PNGs stay and are returned."""
+    staged = sorted(stage.glob("*.png"))
+    old = sorted(out_dir.glob("*.png"))
+    if len(staged) < n:
+        print(f"render: only {len(staged)} of {n} slides rendered", file=sys.stderr)
+        if old:
+            print("render: keeping the existing images", file=sys.stderr)
+            return old
+        if not staged:
+            return []
+    for p in old:
+        p.unlink()
+    return [Path(shutil.move(str(p), out_dir / p.name)) for p in staged]
 
 
 def contact_sheets(pngs: list[Path], out_dir: Path) -> list[Path]:

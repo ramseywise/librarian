@@ -16,7 +16,7 @@ import hashlib
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
-from typing import Any, Literal
+from typing import Literal
 
 from librarian.courses import attempts
 from librarian.log_config import get_logger
@@ -25,7 +25,6 @@ log = get_logger(__name__)
 
 BOX_DAYS = (1, 2, 4, 8, 16)
 CARD_KEY_HASH_CHARS = 16
-GRADES = ("knew", "missed")
 SCHEDULED_KINDS = ("flashcard", "mcq")
 
 Status = Literal["new", "due", "later"]
@@ -43,9 +42,10 @@ def card_key(deck: str, front: str) -> str:
     The API's card id is the card's position in its deck, which shifts when a deck is edited,
     and old log records never had it. The module (first two segments of the deck id) and the
     front text are in every record, and a module's lesson decks share its cards, so a card keeps
-    one schedule however it was studied. Editing a card's front makes it a new card.
+    one schedule however it was studied. A `private/` prefix is ignored, so a lesson's cards
+    are the same in either tree. Editing a card's front makes it a new card.
     """
-    module = "/".join(deck.split("/")[:2])
+    module = "/".join(deck.removeprefix("private/").split("/")[:2])
     digest = hashlib.sha256(front.encode("utf-8")).hexdigest()[:CARD_KEY_HASH_CHARS]
     return f"{module}:{digest}"
 
@@ -66,23 +66,6 @@ def _timestamp(raw: object) -> datetime | None:
     return ts
 
 
-def _review(rec: object) -> tuple[datetime, str, str] | None:
-    """(when, card key, grade) from one log record, or None when a field can't be read."""
-    if not isinstance(rec, dict):
-        return None
-    ts = _timestamp(rec.get("ts"))
-    grade = rec.get("result")
-    if ts is None or grade not in GRADES:
-        return None
-    key = rec.get("card")
-    if not isinstance(key, str) or not key:
-        deck, front = rec.get("deck"), rec.get("front")
-        if not isinstance(deck, str) or not isinstance(front, str):
-            return None
-        key = card_key(deck, front)
-    return ts, key, grade
-
-
 def _next_state(state: CardState | None, grade: str, day: date) -> CardState:
     if grade == "missed":
         return CardState(1, day + timedelta(days=BOX_DAYS[0]))
@@ -100,15 +83,6 @@ def _fold(reviews: Iterable[tuple[datetime, str, str]]) -> dict[str, CardState]:
     for ts, key, grade in sorted(reviews, key=lambda r: r[0]):
         states[key] = _next_state(states.get(key), grade, ts.astimezone().date())
     return states
-
-
-def replay(records: list[Any]) -> dict[str, CardState]:
-    """States from old-format log records (ts, deck, front, result). Unreadable ones are skipped."""
-    reviews = [review for rec in records if (review := _review(rec))]
-    skipped = len(records) - len(reviews)
-    if skipped:
-        log.warning("flashcards.log_records_skipped", count=skipped)
-    return _fold(reviews)
 
 
 def states_from(rows: Iterable[attempts.Attempt]) -> dict[str, CardState]:

@@ -15,6 +15,8 @@ torch, fastapi) load only for the verbs that need them.
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
     librarian courses check chapters|curriculum|links|drills|quiz|manifest|crosswalk|smoke-labs
     librarian courses review findings|signals|score-eval
+    librarian db upgrade|import-attempts               user-state database (DATABASE_URL)
+    librarian index build [--out FILE]                 build the search index file the servers read
     librarian mcp [--rebuild]                          the wiki MCP server (stdio)
     librarian api [--port N] [--reload]                the FastAPI backend (uvicorn)
 """
@@ -91,9 +93,18 @@ GROUPS: dict[str, dict[str, Verb]] = {
         "arxiv": Verb("librarian.ingest.scrape_arxiv:main", help="arXiv papers"),
         "bookmarks": Verb("librarian.ingest.scrape_bookmarks:main", help="saved web pages"),
     },
+    "index": {
+        "build": Verb("librarian.retrieval.artifact:main", help="build a search index artifact"),
+    },
     "jobs": {
         "run": Verb("librarian.jobs.runner:main", help="run a scheduled job headless"),
         "list": Verb("librarian.jobs.runner:main", ("list",), "list the jobs"),
+    },
+    "db": {
+        "upgrade": Verb("librarian.db.cli:main", ("upgrade",), "apply the database migrations"),
+        "import-attempts": Verb(
+            "librarian.db.cli:main", ("import-attempts",), "copy var/attempts.sqlite3 in, once"
+        ),
     },
     "courses": {
         "check": Verb("librarian.cli:_run_check", help="chapters|curriculum|links|drills|quiz|..."),

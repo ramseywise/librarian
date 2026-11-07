@@ -91,8 +91,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = ap.parse_args(argv)
     if args.rebuild:
-        retrieval.rebuild_index()
+        print(retrieval.rebuild_index())
         return 0
+
+    # The same read-only handle the API serves from. With no built index (or autobuild on, the
+    # dev default) it builds one first; the stdio server has nothing to answer before it exists.
+    handle = retrieval.IndexHandle(autobuild=get_settings().index_autobuild)
+    handle.start(wait=True)
+    retrieval.set_handle(handle)
+    if handle.state != "ready":
+        log.error("mcp_index_unavailable", **handle.status(), hint="run: librarian index build")
 
     log.info(
         "starting_mcp_server",

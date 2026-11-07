@@ -4,7 +4,8 @@
 #   make app-build    (the private mountpoints must exist first: mkdir -p data/wiki/private data/courses/private)
 #
 # LIBRARIAN_API_TOKEN is required: the container binds 0.0.0.0 and the API refuses to start
-# without a token (add `--insecure` to the command to override). Set it, and ANTHROPIC_API_KEY, in .env. For UI development use `make ui` (Vite on :5173) against `make api`.
+# without a token (add `--insecure` to the command to override). Set it, ANTHROPIC_API_KEY and
+# POSTGRES_PASSWORD (URL-safe characters; the default is for a laptop) in .env. For UI development use `make ui` (Vite on :5173) against `make api`.
 services:
   # One-shot: creates the two private mountpoints on the host. Docker cannot create a tmpfs
   # mountpoint inside the read-only ./data mount below, and a clean clone has neither directory.
@@ -14,10 +15,11 @@ services:
       context: .
       dockerfile: Dockerfile
     user: "0:0"
-    entrypoint: ["mkdir", "-p", "/app/data/wiki/private", "/app/data/courses/private"]
+    entrypoint: ["mkdir", "-p", "/app/data/wiki/private", "/app/data/courses/private", "/app/content/slides"]
     command: []
     volumes:
       - ./data:/app/data
+      - ./content:/app/content
     restart: "no"
 
   # TLS and HSTS (docker/Caddyfile). LIBRARIAN_DOMAIN unset = localhost with Caddy's internal CA.
@@ -45,6 +47,8 @@ services:
     depends_on:
       prepare:
         condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
     expose:
       - "8000"
     env_file:
@@ -54,9 +58,14 @@ services:
       - SERVE_COURSE_SOURCES=false
       # Also taken from the shell, so `LIBRARIAN_API_TOKEN=... docker compose up` works without .env.
       - LIBRARIAN_API_TOKEN
+      # Prebuilt decks shipped by `make deploy-content` (content/slides/); the API never builds them.
+      - LIBRARIAN_CONTENT_DIR=/app/content
+      # User state (attempts, chat spend). POSTGRES_PASSWORD comes from .env or the shell.
+      - DATABASE_URL=postgresql://librarian:${POSTGRES_PASSWORD:-librarian-dev}@postgres:5432/librarian
     volumes:
       # Content, read-only.
       - ./data:/app/data:ro
+      - ./content:/app/content:ro
       # Writable state: indexes, caches, logs, flashcard results.
       - librarian-var:/app/var
     tmpfs:
@@ -67,7 +76,24 @@ services:
       - /app/data/courses/private
     restart: unless-stopped
 
+  # User state. Not published on the host: only the librarian service reaches it.
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: librarian
+      POSTGRES_DB: librarian
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-librarian-dev}
+    volumes:
+      - librarian-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U librarian -d librarian"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
 volumes:
   librarian-var:
+  librarian-pgdata:
   caddy-data:
   caddy-config:

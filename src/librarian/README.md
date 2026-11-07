@@ -12,7 +12,7 @@ src/librarian/
   cli.py         `librarian <group> <verb>`: thin dispatchers to each module's main(argv)
   wiki/          parser, health, telemetry, graph, rename, relinker, common
   retrieval/     index, ranking, search/read API, embeddings (the `api` extra adds the model)
-  courses/       catalog, curriculum, leitner, glossary
+  courses/       catalog (loader, linker, queries, assets), curriculum, leitner, glossary
   ingest/        scrapers, ingest gate, manifest, sensitive scans, raw lint
 ```
 
@@ -74,7 +74,8 @@ The session tooling (`cron`, `enrich`, `migrate`) is `tools/cartographer/`; run 
 | `ingest/sensitive.py` | Pattern scans for secrets, contact details and listed terms. Reports categories and lines, never values. |
 | `wiki/relinker.py` | Post-ingest semantic relinking pass. Suggest-only; imports `retrieval.embeddings` (needs the `api` extra). |
 | `wiki/common.py` | Shared wikilink regexes, `slugify`, alias lookup and canonical link types. |
-| `wiki/telemetry.py` | Wiki health numbers, operation log, private-leak check and gaps list. Writes to `data/telemetry/`. |
+| `wiki/telemetry.py` | The `librarian wiki stats\|snapshot\|check\|log\|ask\|gaps` CLI over the modules below; re-exports their names. |
+| `wiki/pages.py`, `wiki/stats.py`, `wiki/oplog.py`, `wiki/leak_check.py`, `wiki/gaps.py` | Page loading and the link index; the health numbers; the telemetry files and operation log (`data/telemetry/`); the private-leak check; the gaps list. |
 | `wiki/course_leaks.py` | The course half of the leak check: tracked files under either `private/` tree, and public lessons that link into `data/courses/private/` or name a private wiki page. |
 | `wiki/graph.py` | Hubs, bridges and consensus clusters of the link graph (`make wiki-graph`). Needs `networkx` and `scikit-learn` (the `api` extra). |
 | `wiki/rename.py` | Renames a wiki page and rewrites every inbound link. Dry run by default. |
@@ -93,7 +94,7 @@ The session tooling (`cron`, `enrich`, `migrate`) is `tools/cartographer/`; run 
 | `retrieval/graph_expansion.py` | One-hop typed-relationship neighbours. |
 | `retrieval/embeddings.py` | The one model loader, lock, `HAS_EMBEDDINGS` flag and blob helpers, plus the page-embedding and text caches. numpy and sentence-transformers load lazily. |
 
-Index ownership: DuckDB lets one read-write opener exclude every other process, even readers, and the API and the MCP server both refresh the index on open. Measured on two processes searching in a loop, the old code failed 571 to 617 opens in 25 s, and 206 more while a rebuild ran. Now `index.connect()` retries a lock error with backoff (20 ms doubling to 500 ms, with jitter) for up to 60 s, then raises `IndexBusyError`. Opens therefore queue instead of failing; the same test gives no errors. Not chosen: read-only opens (they still fail whenever a read-write holder exists, and the MCP server must refresh after an ingest), and having the MCP server call the API (it would stop working when the API is down). Index writes stay in whichever process opens first; callers must close the connection promptly.
+Index ownership: the index is a build artifact. `librarian index build` (`retrieval/artifact.py`) writes `var/index/<id>.duckdb`, where `<id>` is a hash of the schema version, the embedding model and the content of every indexable page, then repoints the symlink `var/index/current` at it (a temporary symlink renamed over `current`, so a reader never sees a missing or half-written pointer) and keeps the newest three builds. The API and the MCP server hold an `IndexHandle` (`retrieval/handle.py`): it opens `current` read-only, so any number of processes serve one build and none can write it, and `open_index()` returns a cursor on it. `POST /admin/reload` and SIGHUP reopen `current`; requests holding a cursor finish on the old build. With `LIBRARIAN_INDEX_AUTOBUILD` on (dev default) a missing index is built in a background thread (`/readyz` says `index: building`) and a changed page, found by mtime and size, triggers a rebuild; production sets it to 0 and runs the build as a job. Without a handle (tests, evals, scripts) `open_index()` keeps the old read-write file at `corpus.DB_PATH`, refreshed on open, where `connect()` retries lock errors and raises `IndexBusyError` after 60 s.
 
 Embeddings: the index embeds the whole file, while the graph, relinker and course caches embed the body, so their stores stay separate (merging them would change ranking). All of them share one model (`LIBRARIAN_EMBEDDING_MODEL`, default the same MiniLM the server hard-coded), one loader and one lock.
 

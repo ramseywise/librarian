@@ -94,3 +94,23 @@ def test_empty_private_mountpoints_at_the_destination_are_fine(src: Path, tmp_pa
     (dest / "data" / "wiki" / "private").mkdir(parents=True)
     (dest / "data" / "courses" / "private").mkdir(parents=True)
     assert _run(src, dest).returncode == 0
+
+
+def test_built_slides_are_shipped_without_private(src: Path, tmp_path: Path) -> None:
+    slides = tmp_path / "built"
+    _write(slides / "c" / "m" / "slide-01.png", "png")
+    _write(slides / "c" / "m" / "built.json", "{}")
+    _write(slides / "private" / "c" / "slide-01.png", "SECRET")
+    dest = tmp_path / "remote"
+    res = _run(src, dest, DEPLOY_SLIDES_SRC=str(slides))
+    assert res.returncode == 0, res.stderr
+    files = _all_files(dest)
+    assert "content/slides/c/m/slide-01.png" in files
+    assert "content/slides/c/m/built.json" in files
+    assert not any("private" in f for f in files)
+
+
+def test_missing_built_slides_do_not_fail_the_deploy(src: Path, tmp_path: Path) -> None:
+    res = _run(src, tmp_path / "remote", DEPLOY_SLIDES_SRC=str(tmp_path / "nope"))
+    assert res.returncode == 0, res.stderr
+    assert "skipping slides" in res.stderr

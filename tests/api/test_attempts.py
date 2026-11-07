@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import sqlite3
 from pathlib import Path
 
 import pytest
@@ -50,8 +49,8 @@ def test_the_same_event_twice_is_stored_once() -> None:
     assert len(attempts.attempts()) == 1
 
 
-def test_a_store_that_cannot_be_written_reports_false() -> None:
-    attempts.DB_PATH.parent.write_text("a file where the state dir should be")
+def test_a_store_that_cannot_be_written_reports_false(tmp_path: Path) -> None:
+    (tmp_path / "state").write_text("a file where the state dir should be")
     assert attempts.record("flashcard", "k", "c/m", "knew") is False
 
 
@@ -96,12 +95,3 @@ def test_flashcard_rows_keep_the_old_shape() -> None:
     (row,) = attempts.flashcard_rows()
     assert row["deck"] == "c/m" and row["front"] == "Q?" and row["result"] == "missed"
     assert row["source"] == "s" and row["lesson"] == "c/m/l"
-
-
-def test_unreadable_timestamp_rows_are_skipped(tmp_path: Path) -> None:
-    attempts.record("flashcard", "k", "c/m", "knew", ts=TS)
-    with sqlite3.connect(attempts.DB_PATH) as conn:
-        conn.execute(
-            "INSERT INTO attempts (ts, kind, item, scope, result) VALUES ('nope', 'flashcard', 'x', 'c/m', 'knew')"
-        )
-    assert len(attempts.attempts()) == 1

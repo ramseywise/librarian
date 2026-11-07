@@ -235,7 +235,17 @@ docker compose up --build   # API + built UI on :8000; reads .env if present
 indexes, caches, logs and flashcard results go to the `librarian-var` volume (`LIBRARIAN_STATE_DIR`).
 Set `LIBRARIAN_API_TOKEN` in `.env`: every `/api` route and `/ws` then need `Authorization: Bearer <token>`,
 and the web UI asks for the token once and keeps it in localStorage. `/healthz` and `/readyz` stay open.
-Chat is limited per process (`LIBRARIAN_CHAT_RATE_LIMIT`, `LIBRARIAN_CHAT_DAILY_BUDGET_USD`); see `.env.example`.
+Chat has a per-process burst limit (`LIBRARIAN_CHAT_RATE_LIMIT`) and a daily spend cap
+(`LIBRARIAN_CHAT_DAILY_BUDGET_USD`) kept in the database, so it holds across workers and restarts; see `.env.example`.
+
+User state (study attempts, chat spend) lives in Postgres: compose runs a `postgres` service on a
+named volume (`librarian-pgdata`), not published on the host, with the password from `POSTGRES_PASSWORD`
+(set it in `.env`; the default is for a laptop). The container runs `librarian db upgrade` at start.
+To use a managed Postgres instead, drop the `postgres` service and its `depends_on`, and set
+`DATABASE_URL=postgresql://user:password@host:5432/dbname` on the `librarian` service; the same
+upgrade runs against it. With `DATABASE_URL` unset (`make api`, tests) state goes to
+`var/librarian.sqlite3`. Bring an old `var/attempts.sqlite3` across once with `uv run librarian db import-attempts`
+(idempotent; the old file is left alone).
 
 ### Run with Docker
 

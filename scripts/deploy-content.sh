@@ -12,6 +12,10 @@
 #      one hit fails the deploy (docker's empty private mountpoints there are ignored).
 #   4. Only then `docker compose restart librarian` on the host.
 #
+# Built slides: the locally built var/slides/ (DEPLOY_SLIDES_SRC) goes to $DEPLOY_PATH/content/slides/
+# (DEPLOY_SLIDES_DEST), mounted in the container as var/content/current/slides, which the API serves.
+# The API never builds decks in production. Same exclude, dry-run guard and post-check as above.
+#
 # Test hooks: DEPLOY_LOCAL=1 treats DEPLOY_PATH as a local directory (no ssh) and skips the
 # restart; DEPLOY_SRC points at a fake repo root.
 set -euo pipefail
@@ -37,8 +41,19 @@ SOURCES=("$SRC_ROOT/data/wiki" "$SRC_ROOT/data/courses")
 
 dest_for() { echo "$DEST_ROOT/data/"; }
 
+SLIDES_SRC="${DEPLOY_SLIDES_SRC:-$SRC_ROOT/var/slides}"
+SLIDES_DEST_REL="${DEPLOY_SLIDES_DEST:-content/slides}"
+HAVE_SLIDES=0
+if [ -d "$SLIDES_SRC" ]; then HAVE_SLIDES=1; fi
+
 if [ "$LOCAL_MODE" = "1" ]; then
     mkdir -p "$DEPLOY_PATH/data"
+    if [ "$HAVE_SLIDES" = "1" ]; then mkdir -p "$DEPLOY_PATH/$SLIDES_DEST_REL"; fi
+fi
+if [ "$HAVE_SLIDES" = "0" ]; then
+    echo "note: no built slides at $SLIDES_SRC (run make slides-all PREVIEW=1 first); skipping slides" >&2
+elif [ "$LOCAL_MODE" != "1" ]; then
+    ssh "$DEPLOY_HOST" "mkdir -p '$DEPLOY_PATH/$SLIDES_DEST_REL'"
 fi
 
 # Pass 1: dry run, list every path rsync would touch.
@@ -46,6 +61,9 @@ fi
 for src in "${SOURCES[@]}"; do
     "${RSYNC[@]}" --dry-run --itemize-changes "$src" "$(dest_for "$src")" >>"$TRANSFER_LIST"
 done
+if [ "$HAVE_SLIDES" = "1" ]; then
+    "${RSYNC[@]}" --dry-run --itemize-changes "$SLIDES_SRC/" "$DEST_ROOT/$SLIDES_DEST_REL/" >>"$TRANSFER_LIST"
+fi
 
 if grep -E '(^|[[:space:]/])private(/|$)' "$TRANSFER_LIST" >/dev/null; then
     echo "ABORT: the transfer list contains a private/ path:" >&2
@@ -58,9 +76,12 @@ echo "dry run clean: $(wc -l <"$TRANSFER_LIST" | tr -d ' ') entries, none under 
 for src in "${SOURCES[@]}"; do
     "${RSYNC[@]}" "$src" "$(dest_for "$src")"
 done
+if [ "$HAVE_SLIDES" = "1" ]; then
+    "${RSYNC[@]}" "$SLIDES_SRC/" "$DEST_ROOT/$SLIDES_DEST_REL/"
+fi
 
 # Post-check: no file under any private/ directory at the destination.
-find_private='find data -path "*/private/*" -type f 2>/dev/null | head -5'
+find_private='find data content -path "*/private/*" -type f 2>/dev/null | head -5 || true'
 if [ "$LOCAL_MODE" = "1" ]; then
     leaked="$(cd "$DEPLOY_PATH" && eval "$find_private")"
 else

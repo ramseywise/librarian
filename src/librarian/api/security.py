@@ -1,7 +1,8 @@
 """Access control for the API: bearer token, chat rate limit, daily spend cap, request logs.
 
-All state is in-process, which is right for one instance serving one user. A restart resets
-the rate window and the day's spend.
+The day's spend is a row of `chat_usage` in the database, so the cap holds across workers and
+restarts. The requests-per-window limit is a per-process burst guard: it is in memory and each
+worker counts its own.
 """
 
 from __future__ import annotations
@@ -12,14 +13,17 @@ import hmac
 import re
 import time
 from collections import deque
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from fastapi import HTTPException, WebSocketException
+from sqlalchemy import Engine, select
+from sqlalchemy.exc import SQLAlchemyError
 from starlette.requests import HTTPConnection
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from librarian.config import Settings, get_settings
+from librarian.db import get_engine, tables, upsert
 from librarian.log_config import get_logger
 from librarian.pricing import PRICES, TokenUsage, cost_usd, price_for
 
@@ -72,28 +76,39 @@ async def require_token(conn: HTTPConnection) -> None:
 
 
 class ChatLimiter:
-    """Sliding-window request limit plus a per-UTC-day spend estimate for the chat route."""
+    """Per-process burst guard plus the shared per-UTC-day spend cap for the chat route.
 
-    def __init__(self) -> None:
+    `user_id` is None while there is one user; accounts will fill it in. The engine is looked up
+    on each call unless one is given, so two limiters on one database behave as two workers.
+    """
+
+    def __init__(self, engine: Engine | None = None) -> None:
+        self._engine = engine
         self._hits: deque[float] = deque()
-        self._day = ""
-        self._spent_usd = 0.0
 
-    def _roll_day(self) -> None:
-        today = datetime.now(UTC).date().isoformat()
-        if today != self._day:
-            self._day, self._spent_usd = today, 0.0
+    def _db(self) -> Engine:
+        return self._engine or get_engine()
 
-    @property
-    def spent_usd(self) -> float:
-        self._roll_day()
-        return self._spent_usd
+    @staticmethod
+    def _today() -> date:
+        return datetime.now(UTC).date()
+
+    def spent_usd(self, user_id: str | None = None) -> float:
+        """Today's estimated spend from the database; 0.0 when it cannot be read (logged)."""
+        t = tables.chat_usage
+        stmt = select(t.c.usd).where(t.c.user_key == (user_id or ""), t.c.day == self._today())
+        try:
+            with self._db().connect() as conn:
+                return float(conn.execute(stmt).scalar() or 0.0)
+        except SQLAlchemyError as e:
+            log.error("chat.spend_read_failed", error=str(e))
+            return 0.0
 
     def admit(self, settings: Settings, now: float | None = None) -> None:
         """Count one chat request, or raise 429 saying which limit was hit."""
         now = time.monotonic() if now is None else now
         budget = settings.chat_daily_budget_usd
-        if budget > 0 and self.spent_usd >= budget:
+        if budget > 0 and self.spent_usd() >= budget:
             raise HTTPException(
                 status_code=429,
                 detail=(
@@ -114,21 +129,47 @@ class ChatLimiter:
                 )
             self._hits.append(now)
 
-    def record_usage(self, settings: Settings, usage: TokenUsage) -> None:
-        """Add one model call's cost, each token class at its own rate for the configured model.
+    def record_usage(
+        self, settings: Settings, usage: TokenUsage, user_id: str | None = None
+    ) -> None:
+        """Add one model call's cost to today's row, each token class at its own rate.
 
         An unknown model is refused at startup; if one gets here anyway the dearest price in the
-        table is used, so the cap errs towards stopping early.
+        table is used, so the cap errs towards stopping early. The write is an upsert, so
+        concurrent workers do not lose adds.
         """
-        self._roll_day()
         model = settings.anthropic_model
         if price_for(model) is None:
             model = max(PRICES, key=lambda m: PRICES[m].output)
-        self._spent_usd += cost_usd(model, usage)
+        usd = cost_usd(model, usage)
+        engine, t = self._db(), tables.chat_usage
+        stmt = upsert(engine, t).values(
+            user_id=user_id,
+            user_key=user_id or "",
+            day=self._today(),
+            requests=1,
+            input_tokens=usage.input + usage.cache_read + usage.cache_write,
+            output_tokens=usage.output,
+            usd=usd,
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["user_key", "day"],
+            set_={
+                "requests": t.c.requests + stmt.excluded.requests,
+                "input_tokens": t.c.input_tokens + stmt.excluded.input_tokens,
+                "output_tokens": t.c.output_tokens + stmt.excluded.output_tokens,
+                "usd": t.c.usd + stmt.excluded.usd,
+            },
+        )
+        try:
+            with engine.begin() as conn:
+                conn.execute(stmt)
+        except SQLAlchemyError as e:
+            log.error("chat.spend_write_failed", error=str(e), usd=round(usd, 4))
 
     def reset(self) -> None:
+        """Forget the burst window. The day's spend is in the database and is not touched."""
         self._hits.clear()
-        self._day, self._spent_usd = "", 0.0
 
 
 chat_limiter = ChatLimiter()

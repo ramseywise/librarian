@@ -85,6 +85,9 @@ class Settings(BaseSettings):
     override_logs_dir: Path | None = Field(
         default=None, validation_alias=_env("LIBRARIAN_LOGS_DIR")
     )
+    # User state (attempts, chat spend): SQLAlchemy URL, e.g. postgresql://user:pw@host/db.
+    # Unset: a SQLite file in the state dir (see `database_url_or_default`).
+    database_url: str = Field(default="", validation_alias=_env("DATABASE_URL"))
     # The private sisyphus checkout, read live for drill attempts.
     override_sisyphus_dir: Path | None = Field(default=None, validation_alias=_env("SISYPHUS_DIR"))
 
@@ -95,6 +98,16 @@ class Settings(BaseSettings):
     )
     # Local only: a deployment sets SERVE_COURSE_SOURCES=false and the route 404s.
     serve_course_sources: bool = Field(default=True, validation_alias=_env("SERVE_COURSE_SOURCES"))
+
+    # Slides: the API serves prebuilt decks. Only a dev machine builds them on request
+    # (`make api` turns this on); a deployment leaves it off and ships the built decks.
+    dev_build_slides: bool = Field(
+        default=False, validation_alias=_env("LIBRARIAN_DEV_BUILD_SLIDES")
+    )
+    # Where a deployment's prebuilt content lives (`<dir>/slides/<module>/...`). Default: var/content/current.
+    override_content_dir: Path | None = Field(
+        default=None, validation_alias=_env("LIBRARIAN_CONTENT_DIR")
+    )
 
     # Public mode (the deployed container): private/ trees are never read, indexed or served,
     # whatever is on disk. Local use leaves it off. The compose tmpfs masks are the second lock.
@@ -135,6 +148,10 @@ class Settings(BaseSettings):
         default="http://localhost:8100", validation_alias=_env("CODEMAP_API_URL")
     )
     skip_warmup: bool = Field(default=False, validation_alias=_env("LIBRARIAN_SKIP_WARMUP"))
+    # Dev convenience: with no built index, the API and the MCP server build one themselves
+    # (in the background for the API) and rebuild it when the wiki changes. Production sets
+    # this to 0 and runs `librarian index build` as a separate job.
+    index_autobuild: bool = Field(default=True, validation_alias=_env("LIBRARIAN_INDEX_AUTOBUILD"))
 
     # ── derived locations ────────────────────────────────────────────────────
 
@@ -226,9 +243,29 @@ class Settings(BaseSettings):
         return self.var_dir / "attempts.sqlite3"
 
     @property
+    def database_url_or_default(self) -> str:
+        """`DATABASE_URL`, else SQLite at `var/librarian.sqlite3` (the state dir when set)."""
+        return self.database_url or f"sqlite:///{self.var_dir / 'librarian.sqlite3'}"
+
+    @property
     def slides_build_dir(self) -> Path:
         """Per-slide images and text built for the lecture viewer (not tracked)."""
         return self.var_dir / "slides"
+
+    @property
+    def content_dir(self) -> Path:
+        """The prebuilt content release the API serves from; absent on a plain dev checkout."""
+        return (self.override_content_dir or self.var_dir / "content" / "current").expanduser()
+
+    @property
+    def content_slides_dir(self) -> Path:
+        """Prebuilt decks: `<module>/` trees shaped like `slides_build_dir`."""
+        return self.content_dir / "slides"
+
+    @property
+    def index_dir(self) -> Path:
+        """Built search indexes (`<id>.duckdb`) and the `current` pointer to the live one."""
+        return self.var_dir / "index"
 
     @property
     def wiki_db_path(self) -> Path:

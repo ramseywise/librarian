@@ -49,9 +49,9 @@ def question_key(quiz_id: str, qid: str) -> str:
     """Identity of a question in the attempts store and the Leitner queue.
 
     Built from the module (first two segments of the quiz id, as card keys are), so the module
-    quiz and a lesson's quiz share one schedule.
+    quiz and a lesson's quiz share one schedule. A `private/` prefix is ignored.
     """
-    return f"{'/'.join(quiz_id.split('/')[:2])}:q:{qid}"
+    return f"{'/'.join(quiz_id.removeprefix('private/').split('/')[:2])}:q:{qid}"
 
 
 def _text(value: object) -> str:

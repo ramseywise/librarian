@@ -1,14 +1,16 @@
-"""The attempts store: one SQLite table for every graded study event.
+"""The attempts store: one table for every graded study event.
 
 A flashcard self-grade, a multiple-choice answer and a drill run are all rows of `attempts`:
 (when, kind, item id, module or lesson id, result, optional JSON payload). The Leitner schedule
 (`leitner.py`), the study home (`study.py`) and the coursework signals read it; nothing keeps a
-second copy. It is personal study history, so it lives in the state dir (`var/attempts.sqlite3`,
-gitignored) and never in `data/`: this repo is public.
+second copy. This module is a thin repository over the `attempts` table of `librarian.db`
+(Postgres via `DATABASE_URL`, else a SQLite file in the state dir). It is personal study history,
+so it never lives in `data/`: this repo is public.
 
-An earlier version appended flashcard grades to `logs/flashcards.jsonl`. The first connection
-imports that file once. The import is idempotent (a unique key on the event, so re-reading the
-same file adds nothing) and leaves the file where it is.
+An earlier version kept `var/attempts.sqlite3` (copy it in once with `librarian db
+import-attempts`) and, before that, appended flashcard grades to `logs/flashcards.jsonl`. The
+first connection imports that jsonl. The import is idempotent (a unique key on the event, so
+re-reading the same file adds nothing) and leaves the file where it is.
 
 Writes never raise: a store that cannot be written must not interrupt studying, so `record`
 reports False and the route says `logged: false`.
@@ -18,23 +20,24 @@ from __future__ import annotations
 
 import hashlib
 import json
-import sqlite3
-from collections.abc import Iterable, Iterator
-from contextlib import closing, contextmanager
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from sqlalchemy import Connection, Engine, Row, select
+from sqlalchemy.exc import SQLAlchemyError
+
 from librarian.config import get_settings
+from librarian.db import get_engine, tables, upsert
+from librarian.db.attempt_rows import add_attempt, parse_ts
 from librarian.log_config import get_logger
 
 log = get_logger(__name__)
 
-_settings = get_settings()
-# Module-level so a test can point them at a temp dir, as the catalog's paths are.
-DB_PATH = _settings.attempts_db
-LEGACY_FLASHCARD_LOG = _settings.flashcard_log
+# Module-level so a test can point it at a temp dir, as the catalog's paths are.
+LEGACY_FLASHCARD_LOG = get_settings().flashcard_log
 
 KINDS = ("flashcard", "mcq", "drill")
 # What each kind may record. `knew`/`correct`/`pass` are the good outcomes.
@@ -44,21 +47,6 @@ RESULTS: dict[str, tuple[str, ...]] = {
     "drill": ("pass", "fail", "revealed"),
 }
 GOOD = {"knew", "correct", "pass"}
-
-_SCHEMA = """
-CREATE TABLE IF NOT EXISTS attempts (
-    id      INTEGER PRIMARY KEY AUTOINCREMENT,
-    ts      TEXT NOT NULL,
-    kind    TEXT NOT NULL,
-    item    TEXT NOT NULL,
-    scope   TEXT NOT NULL,
-    result  TEXT NOT NULL,
-    payload TEXT
-);
-CREATE UNIQUE INDEX IF NOT EXISTS attempts_event ON attempts (ts, kind, item, result);
-CREATE INDEX IF NOT EXISTS attempts_item ON attempts (kind, item);
-CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
-"""
 
 
 @dataclass(frozen=True)
@@ -80,18 +68,6 @@ class Attempt:
         return "/".join(self.scope.split("/")[:2])
 
 
-@contextmanager
-def _connect() -> Iterator[sqlite3.Connection]:
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with closing(sqlite3.connect(DB_PATH, timeout=5)) as conn:
-        conn.executescript(_SCHEMA)
-        yield conn
-
-
-def _now() -> str:
-    return datetime.now(UTC).isoformat()
-
-
 def record(
     kind: str,
     item: str,
@@ -104,66 +80,58 @@ def record(
     """Store one graded event. False when the store cannot be written; ValueError on a bad kind/result."""
     if result not in RESULTS.get(kind, ()):
         raise ValueError(f"{result!r} is not a result of kind {kind!r}")
+    when = parse_ts(ts) if ts else datetime.now(UTC)
+    if when is None:
+        raise ValueError(f"unreadable timestamp {ts!r}")
     try:
-        with _connect() as conn:
-            _import_legacy(conn)
-            conn.execute(
-                "INSERT OR IGNORE INTO attempts (ts, kind, item, scope, result, payload) "
-                "VALUES (?, ?, ?, ?, ?, ?)",
-                (
-                    ts or _now(),
-                    kind,
-                    item,
-                    scope,
-                    result,
-                    json.dumps(payload, ensure_ascii=False) if payload else None,
-                ),
+        engine = get_engine()
+        with engine.begin() as conn:
+            _import_legacy(conn, engine)
+            add_attempt(
+                conn,
+                engine,
+                ts=when,
+                kind=kind,
+                item=item,
+                scope=scope,
+                result=result,
+                payload=json.dumps(payload, ensure_ascii=False) if payload else None,
             )
-            conn.commit()
-    except (sqlite3.Error, OSError) as e:
+    except (SQLAlchemyError, OSError) as e:
         log.warning("attempts.write_failed", error=str(e))
         return False
     return True
 
 
-def _parse(row: tuple[Any, ...]) -> Attempt | None:
-    ts_raw, kind, item, scope, result, payload = row
+def _parse(row: Row[Any, Any, Any, Any, Any, Any]) -> Attempt:
     try:
-        ts = datetime.fromisoformat(ts_raw)
-    except (TypeError, ValueError):
-        return None
-    try:
-        body = json.loads(payload) if payload else {}
+        body = json.loads(row.payload) if row.payload else {}
     except json.JSONDecodeError:
         body = {}
+    ts = row.ts if row.ts.tzinfo else row.ts.replace(tzinfo=UTC)  # SQLite returns naive UTC
     return Attempt(
-        ts if ts.tzinfo else ts.replace(tzinfo=UTC),
-        kind,
-        item,
-        scope,
-        result,
-        body if isinstance(body, dict) else {},
+        ts, row.kind, row.item, row.scope, row.result, body if isinstance(body, dict) else {}
     )
 
 
 def attempts(kinds: Iterable[str] | None = None) -> list[Attempt]:
     """Every stored attempt of `kinds` (default all), oldest first. [] when nothing is stored yet."""
-    if not DB_PATH.exists() and not LEGACY_FLASHCARD_LOG.exists():
-        return []
     wanted = tuple(kinds) if kinds is not None else KINDS
-    marks = ",".join("?" * len(wanted))
+    t = tables.attempts
+    stmt = (
+        select(t.c.ts, t.c.kind, t.c.item, t.c.scope, t.c.result, t.c.payload)
+        .where(t.c.kind.in_(wanted))
+        .order_by(t.c.ts, t.c.id)
+    )
     try:
-        with _connect() as conn:
-            _import_legacy(conn)
-            rows = conn.execute(
-                f"SELECT ts, kind, item, scope, result, payload FROM attempts "
-                f"WHERE kind IN ({marks}) ORDER BY ts, id",
-                wanted,
-            ).fetchall()
-    except (sqlite3.Error, OSError) as e:
+        engine = get_engine()
+        with engine.begin() as conn:
+            _import_legacy(conn, engine)
+            rows = conn.execute(stmt).all()
+    except (SQLAlchemyError, OSError) as e:
         log.warning("attempts.read_failed", error=str(e))
         return []
-    return [a for row in rows if (a := _parse(row))]
+    return [_parse(row) for row in rows]
 
 
 def flashcard_rows() -> list[dict[str, Any]]:
@@ -197,7 +165,7 @@ def _legacy_key(rec: dict[str, Any]) -> str | None:
     return None
 
 
-def import_flashcard_log(conn: sqlite3.Connection, path: Path) -> int:
+def import_flashcard_log(conn: Connection, engine: Engine, path: Path) -> int:
     """Add the grades in a flashcards.jsonl. Unreadable lines are skipped. Returns rows added."""
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
@@ -212,27 +180,25 @@ def import_flashcard_log(conn: sqlite3.Connection, path: Path) -> int:
             continue
         if not isinstance(rec, dict):
             continue
-        key, ts, result = _legacy_key(rec), rec.get("ts"), rec.get("result")
+        key, ts, result = _legacy_key(rec), parse_ts(rec.get("ts")), rec.get("result")
         deck = rec.get("deck")
-        if not key or not isinstance(ts, str) or result not in RESULTS["flashcard"]:
+        if not key or ts is None or result not in RESULTS["flashcard"]:
             continue
         payload = {k: rec[k] for k in ("front", "source", "lesson") if rec.get(k)}
-        cur = conn.execute(
-            "INSERT OR IGNORE INTO attempts (ts, kind, item, scope, result, payload) "
-            "VALUES (?, 'flashcard', ?, ?, ?, ?)",
-            (
-                ts,
-                key,
-                deck if isinstance(deck, str) else "",
-                result,
-                json.dumps(payload, ensure_ascii=False) if payload else None,
-            ),
+        added += add_attempt(
+            conn,
+            engine,
+            ts=ts,
+            kind="flashcard",
+            item=key,
+            scope=deck if isinstance(deck, str) else "",
+            result=result,
+            payload=json.dumps(payload, ensure_ascii=False) if payload else None,
         )
-        added += cur.rowcount
     return added
 
 
-def _import_legacy(conn: sqlite3.Connection) -> None:
+def _import_legacy(conn: Connection, engine: Engine) -> None:
     """Import the old log when it has changed since the last import (size and mtime are the marker)."""
     try:
         stat = LEGACY_FLASHCARD_LOG.stat()
@@ -241,11 +207,14 @@ def _import_legacy(conn: sqlite3.Connection) -> None:
     marker = hashlib.sha256(
         f"{LEGACY_FLASHCARD_LOG}:{stat.st_size}:{stat.st_mtime_ns}".encode()
     ).hexdigest()
-    seen = conn.execute("SELECT value FROM meta WHERE key = 'flashcard_log'").fetchone()
-    if seen and seen[0] == marker:
+    m = tables.meta
+    if conn.execute(select(m.c.value).where(m.c.key == "flashcard_log")).scalar() == marker:
         return
-    added = import_flashcard_log(conn, LEGACY_FLASHCARD_LOG)
-    conn.execute("INSERT OR REPLACE INTO meta (key, value) VALUES ('flashcard_log', ?)", (marker,))
-    conn.commit()
+    added = import_flashcard_log(conn, engine, LEGACY_FLASHCARD_LOG)
+    conn.execute(
+        upsert(engine, m)
+        .values(key="flashcard_log", value=marker)
+        .on_conflict_do_update(index_elements=["key"], set_={"value": marker})
+    )
     if added:
         log.info("attempts.legacy_imported", rows=added)

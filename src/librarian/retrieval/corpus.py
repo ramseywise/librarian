@@ -23,6 +23,7 @@ PRIVATE_DIR = WIKI_DIR / "private"
 COURSES_DIR = get_settings().courses_dir
 COURSE_DOMAIN = "course"
 DB_PATH = get_settings().wiki_db_path
+INDEX_DIR = get_settings().index_dir
 LOGS_DIR = get_settings().logs_dir
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
 # Past this size the log moves to `retrieval.jsonl.1` (one generation kept, the older one replaced).

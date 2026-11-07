@@ -4,6 +4,7 @@ import asyncio
 import contextlib
 import json
 import os
+import signal
 import time
 from collections.abc import AsyncIterator, Callable
 from typing import Any, Literal, Self
@@ -13,6 +14,7 @@ _PROCESS_T0 = time.perf_counter()
 
 from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, model_validator
@@ -72,23 +74,6 @@ def _in_background(fn: Callable[[], None]) -> None:
 def _run_in_order(jobs: list[Callable[[], None]]) -> None:
     for job in jobs:
         job()
-
-
-# The index state the lifespan reports: "building" until the background job has opened (and, if
-# behind the files, rebuilt) it, then "ready", or "failed". /readyz only reads this: a probe never
-# starts a rebuild. "skipped" is for runs that start no warmup (tests): the probe then checks the
-# file without building it.
-_index_state = "building"
-
-
-def _build_index() -> None:
-    global _index_state
-    try:
-        retrieval.open_index().close()
-        _index_state = "ready"
-    except Exception as exc:
-        _index_state = "failed"
-        log.error("api.startup.index_failed", error=str(exc), error_type=type(exc).__name__)
 
 
 def _warm_course_data() -> None:
@@ -156,7 +141,6 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     # encode lock in librarian/retrieval/embeddings.py are precautions, not a proven fix.
     watcher: asyncio.Task[None] | None = None
     skip_warmup = os.environ.get("LIBRARIAN_SKIP_WARMUP") == "1" or get_settings().skip_warmup
-    global _index_state
     errors, warnings = find_problems(get_settings())
     for line in warnings:
         log.warning("api.startup.config", problem=line)
@@ -165,9 +149,13 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if errors:
         # Fail before serving: a deployment that cannot work should not look up.
         raise RuntimeError("invalid configuration: " + "; ".join(errors))
-    # The index first: it is what /readyz waits for, and the model load can follow it.
-    jobs: list[Callable[[], None]] = [] if skip_warmup else [_build_index, _warm_course_data]
-    _index_state = "skipped" if skip_warmup else "building"
+    # The index is a build artifact: the handle opens `current` read-only (dev mode with none
+    # builds one in a thread, and /readyz says "building" meanwhile). No request writes to it.
+    handle = retrieval.IndexHandle(autobuild=get_settings().index_autobuild)
+    retrieval.set_handle(handle)
+    handle.start()
+    _install_reload_signal(handle)
+    jobs: list[Callable[[], None]] = [] if skip_warmup else [_warm_course_data]
     try:
         from watchfiles import awatch
 
@@ -187,7 +175,20 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     try:
         yield
     finally:
+        retrieval.set_handle(None)
         await _shutdown(watcher)
+
+
+def _install_reload_signal(handle: retrieval.IndexHandle) -> None:
+    """SIGHUP swaps in the build `current` names now. Skipped where signals can't be hooked."""
+
+    def reload() -> None:
+        log.info("api.index.sighup", **handle.reload())
+
+    try:
+        asyncio.get_running_loop().add_signal_handler(signal.SIGHUP, reload)
+    except (NotImplementedError, RuntimeError, ValueError):
+        log.debug("api.index.sighup_unavailable")
 
 
 async def _shutdown(watcher: asyncio.Task[None] | None) -> None:
@@ -359,46 +360,50 @@ def healthz() -> dict[str, str]:
     return {"status": "ok"}
 
 
-# The index probe opens the file without building it, so a passing answer is reused briefly.
-_READY_TTL_S = 30.0
-_ready_until = 0.0
+@app.exception_handler(retrieval.IndexNotReadyError)
+async def _index_not_ready(_: Request, exc: retrieval.IndexNotReadyError) -> JSONResponse:
+    return JSONResponse({"detail": str(exc)}, status_code=503, headers={"Retry-After": "5"})
 
 
 @app.get("/readyz")
 def readyz() -> JSONResponse:
-    """Readiness: the index is built and the model is loaded, or the rerank is off or failed.
+    """Readiness: a built index is loaded and the model is loaded, or the rerank is off or failed.
 
-    Never builds or refreshes the index: while the startup job is still at it the answer is 503
-    `{"index": "building"}`. A model that failed to load is `degraded`, not unready: search then
-    runs on text alone.
+    Never builds or refreshes anything. `index` is the handle's state: ready, building (dev mode,
+    first build), missing or error. A model that failed to load is `degraded`, not unready:
+    search then runs on text alone.
     """
-    global _ready_until
-    if _index_state in ("building", "failed"):
-        return JSONResponse(
-            {"status": "not_ready", "index": _index_state, "checks": {"index": False}},
-            status_code=503,
-        )
+    handle = retrieval.get_handle()
+    state = handle.state if handle else "missing"
     checks: dict[str, bool] = {}
-    if time.monotonic() < _ready_until:
-        checks["index"] = True
-    else:
-        try:
-            checks["index"] = retrieval.index_is_built()
-        except Exception as exc:
-            log.warning("api.readyz.index_failed", error=str(exc), error_type=type(exc).__name__)
-            checks["index"] = False
-        if checks["index"]:
-            _ready_until = time.monotonic() + _READY_TTL_S
+    try:
+        checks["index"] = retrieval.index_is_built()
+    except Exception as exc:
+        log.warning("api.readyz.index_failed", error=str(exc), error_type=type(exc).__name__)
+        checks["index"] = False
     unavailable = retrieval.embeddings_unavailable()
     checks["embeddings"] = unavailable or retrieval.embeddings_ready()
-    degraded = ["embeddings_unavailable"] if unavailable else []
     ready = all(checks.values())
-    body: dict[str, Any] = {"status": "ready" if ready else "not_ready", "checks": checks}
-    if not checks["index"]:
-        body["index"] = "building"
-    if degraded:
-        body["degraded"] = degraded
+    body: dict[str, Any] = {
+        "status": "ready" if ready else "not_ready",
+        "index": state,
+        "checks": checks,
+    }
+    if unavailable:
+        body["degraded"] = ["embeddings_unavailable"]
     return JSONResponse(body, status_code=200 if ready else 503)
+
+
+@app.post("/admin/reload")
+def admin_reload() -> dict[str, object]:
+    """Swap to the index build `current` names now (same as SIGHUP). Requires the API token.
+
+    Requests already running finish on the old build; later ones use the new one.
+    """
+    handle = retrieval.get_handle()
+    if handle is None:
+        raise HTTPException(status_code=503, detail="no index handle")
+    return handle.reload()
 
 
 # Last, so every route above keeps precedence. The UI routes with `#/...`, so a plain static

@@ -7,31 +7,46 @@ Callers (the MCP server, the chat agent, the eval harness) use only the names ex
     degraded_notice(reasons)              the warning line to put in front of a model
     read_page(path_or_title)              one page or lesson, private pages excluded
     list_domain(domain), list_pages(...)  listings; domain_briefing(domain) concatenates a domain
-    open_index(), rebuild_index()         index lifecycle (refresh-on-open, forced rebuild)
-    index_is_built()                      the index file is current-schema (probe; builds nothing)
+    index_is_built()                      an index is ready to read (probe; builds nothing)
     embeddings_unavailable()              the rerank cannot run: no extra, or the model failed
+    open_index()                          a connection to the index: a read-only cursor on the
+                                          installed IndexHandle, else a refreshed read-write one
+    IndexHandle, set_handle, get_handle   the process's read-only handle on a built index
+    rebuild_index()                       from-scratch build of an index artifact
     embeddings_ready()                    the model is loaded, or the rerank is off (readiness probe)
     disabled("fts", "embeddings")         switch BM25 / the semantic rerank off, for the evals
 
-Modules: `corpus` (locations, privacy, telemetry), `index` (build, refresh, open), `ranking`
+Modules: `corpus` (locations, privacy, telemetry), `index` (build, refresh, open), `artifact` (the
+index as a built file, `librarian index build`), `handle` (the read-only handle), `ranking`
 (BM25 + semantic blend, typed-edge expansion), `format` (rendering), `pages` (read and list),
 `graph_expansion` (one-hop typed neighbours), `embeddings` (the model, vectors and caches).
 """
 
+from librarian.retrieval.artifact import rebuild_index
 from librarian.retrieval.embeddings import embeddings_ready, embeddings_unavailable
 from librarian.retrieval.format import degraded_notice
 from librarian.retrieval.format import search_text as search
-from librarian.retrieval.index import IndexBusyError, index_is_built, open_index, rebuild_index
+from librarian.retrieval.handle import IndexHandle, IndexNotReadyError
+from librarian.retrieval.index import (
+    IndexBusyError,
+    get_handle,
+    index_is_built,
+    open_index,
+    set_handle,
+)
 from librarian.retrieval.pages import domain_briefing, list_domain, list_pages, read_page
 from librarian.retrieval.ranking import disabled, search_rows
 
 __all__ = [
     "IndexBusyError",
+    "IndexHandle",
+    "IndexNotReadyError",
     "degraded_notice",
     "disabled",
     "domain_briefing",
     "embeddings_ready",
     "embeddings_unavailable",
+    "get_handle",
     "index_is_built",
     "list_domain",
     "list_pages",
@@ -40,4 +55,5 @@ __all__ = [
     "rebuild_index",
     "search",
     "search_rows",
+    "set_handle",
 ]

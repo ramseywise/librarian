@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import os
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -18,6 +18,8 @@ def pytest_configure(config: pytest.Config) -> None:
     os.environ.setdefault("LIBRARIAN_SKIP_WARMUP", "1")
     # Startup validation refuses to start the API without a key while chat is enabled.
     os.environ.setdefault("ANTHROPIC_API_KEY", "test-key")
+    # ...and don't build an index of the real wiki in the background either.
+    os.environ.setdefault("LIBRARIAN_INDEX_AUTOBUILD", "0")
 
 
 @pytest.fixture(autouse=True)
@@ -55,13 +57,21 @@ def _isolate_courses(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
-def _isolate_study_state(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Keep tests off the real attempts store, the old flashcard log and the slide build dir."""
+def _isolate_study_state(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Keep tests off the real database, the old flashcard log and the slide build dir."""
     from librarian.courses import attempts, slides
+    from librarian.db import engine as db_engine
 
-    monkeypatch.setattr(attempts, "DB_PATH", tmp_path / "state" / "attempts.sqlite3")
+    url = f"sqlite:///{tmp_path / 'state' / 'librarian.sqlite3'}"
+    monkeypatch.setattr(db_engine, "database_url", lambda: url)
     monkeypatch.setattr(attempts, "LEGACY_FLASHCARD_LOG", tmp_path / "state" / "flashcards.jsonl")
     monkeypatch.setattr(slides, "BUILD_DIR", tmp_path / "state" / "slides")
+    monkeypatch.setattr(slides, "CONTENT_DIR", tmp_path / "content" / "slides")
+    monkeypatch.setattr(
+        slides, "DEV_BUILD", True
+    )  # tests of the build path; serving tests turn it off
+    yield
+    db_engine.reset_engines()
 
 
 # ---------------------------------------------------------------------------

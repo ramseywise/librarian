@@ -11,6 +11,11 @@ is the single entry point: it connects with a bounded retry on lock conflicts, s
 waits for the first one's (short) refresh or query instead of failing, then refreshes the index
 if it is behind the files. Whoever finds the index stale writes it, one at a time; the other waits
 and then finds it fresh. See src/librarian/README.md ("Index ownership").
+
+That is library mode (tests, evals, one-off scripts). The two servers instead install an
+`IndexHandle` (librarian.retrieval.handle) with `set_handle`: they serve a built artifact
+(librarian.retrieval.artifact) opened read-only, and `open_index` then returns a cursor on it
+without ever writing.
 """
 
 from __future__ import annotations
@@ -19,6 +24,7 @@ import hashlib
 import random
 import time
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import duckdb
 
@@ -32,6 +38,9 @@ from librarian.wiki.common import (
     parse_frontmatter,
     resolve_link,
 )
+
+if TYPE_CHECKING:
+    from librarian.retrieval.handle import IndexHandle
 
 log = get_logger(__name__)
 
@@ -597,18 +606,43 @@ def connect() -> duckdb.DuckDBPyConnection:
             delay = min(delay * 2, 0.5)
 
 
+_active_handle: IndexHandle | None = None
+
+
+def set_handle(handle: IndexHandle | None) -> None:
+    """Install (or, with None, remove) the handle every `open_index` call is served from."""
+    global _active_handle
+    _active_handle = handle
+
+
+def get_handle() -> IndexHandle | None:
+    return _active_handle
+
+
 def open_index() -> duckdb.DuckDBPyConnection:
-    """A connection to an up-to-date index, refreshed from disk first. The caller closes it."""
+    """A connection to the index. The caller closes it.
+
+    With a handle installed (the API, the MCP server): a cursor on its read-only connection,
+    which never writes and raises IndexNotReadyError while there is no index yet. Without one
+    (library mode): a read-write connection refreshed from disk first.
+    """
+    handle = _active_handle
+    if handle is not None:
+        return handle.cursor()
     con = connect()
     build_index(con)
     return con
 
 
 def index_is_built() -> bool:
-    """True when the index file holds a current-schema index. Never builds or refreshes it.
+    """True when an index is ready to read. Never builds or refreshes anything.
 
-    The readiness probe: `open_index` would rebuild an absent index inside a health check.
+    With a handle installed: the handle has a build loaded. Otherwise (library mode): the
+    index file holds a current-schema index.
     """
+    handle = _active_handle
+    if handle is not None:
+        return handle.state == "ready"
     if not corpus.DB_PATH.exists():
         return False
     con = connect()
@@ -619,7 +653,10 @@ def index_is_built() -> bool:
 
 
 def rebuild_index() -> None:
-    """Drop and re-embed the whole index (`librarian mcp --rebuild`, `make index-rebuild`)."""
+    """Drop and re-embed the whole read-write index at `corpus.DB_PATH` (library mode).
+
+    The API and the MCP server build artifacts instead (`artifact.rebuild_index`).
+    """
     con = connect()
     try:
         build_index(con, force=True)

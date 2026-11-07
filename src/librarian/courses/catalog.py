@@ -21,16 +21,19 @@ data/courses/private/ (gitignored, like data/wiki/private/) mirrors the public l
 they name, each marked `private: true` (a module or course only they make up is marked too).
 Public lessons never get them as prev/next. The curriculum facet, the gap list and the search
 index leave them out, so nothing derived from them reaches a tracked file or an exported one.
+
+The code is split by seam, and this module is the facade: the loaders are in `loader`, the
+concept linking in `linker`, the read-side queries in `queries` and the image guard in `assets`.
+What stays here is what tests and the API patch or flip at module level (the paths, `PUBLIC_MODE`,
+`DRILL_LOG`, `LESSON_VEC_CACHE`) and the cache state. The moved names are re-exported, so
+`from librarian.courses import catalog` keeps every name it had.
 """
 
 from __future__ import annotations
 
-import re
 import threading
 import time
 from collections import Counter
-from dataclasses import dataclass, field
-from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -39,18 +42,166 @@ import frontmatter
 import yaml
 
 from librarian.config import get_settings
-from librarian.courses import attempts, leitner, overlay, quiz, sources
+from librarian.courses import quiz
+from librarian.courses.assets import (
+    ASSET_TYPES as ASSET_TYPES,
+)
+from librarian.courses.assets import (
+    asset_path as asset_path,
+)
+from librarian.courses.assets import (
+    is_private_asset as is_private_asset,
+)
+from librarian.courses.linker import (
+    LESSON_PROSE_CHARS as LESSON_PROSE_CHARS,
+)
+from librarian.courses.linker import (
+    MAX_CONCEPTS as MAX_CONCEPTS,
+)
+from librarian.courses.linker import (
+    SEMANTIC_THRESHOLD as SEMANTIC_THRESHOLD,
+)
+from librarian.courses.linker import (
+    SEMANTIC_TOP_K as SEMANTIC_TOP_K,
+)
+from librarian.courses.linker import (
+    Neighbours as Neighbours,
+)
+from librarian.courses.linker import (
+    _concept_matcher as _concept_matcher,
+)
+from librarian.courses.linker import (
+    _drill_meta as _drill_meta,
+)
+from librarian.courses.linker import (
+    _lesson_text as _lesson_text,
+)
+from librarian.courses.linker import (
+    _link_wikilinks as _link_wikilinks,
+)
+from librarian.courses.linker import (
+    _merge_semantic as _merge_semantic,
+)
+from librarian.courses.linker import (
+    _prose as _prose,
+)
+from librarian.courses.linker import (
+    _rank_concepts as _rank_concepts,
+)
+from librarian.courses.linker import (
+    _resolve_wikilink as _resolve_wikilink,
+)
+from librarian.courses.loader import (
+    DEFAULT_ORDER as DEFAULT_ORDER,
+)
+from librarian.courses.loader import (
+    DRILL_KEYS as DRILL_KEYS,
+)
+from librarian.courses.loader import (
+    LESSON_RAW_PREFIX as LESSON_RAW_PREFIX,
+)
+from librarian.courses.loader import (
+    PRIVATE_COURSES as PRIVATE_COURSES,
+)
+from librarian.courses.loader import (
+    Catalog as Catalog,
+)
+from librarian.courses.loader import (
+    LessonRec as LessonRec,
+)
+from librarian.courses.loader import (
+    WikiRef as WikiRef,
+)
+from librarian.courses.loader import (
+    _build_decks as _build_decks,
+)
+from librarian.courses.loader import (
+    _build_quizzes as _build_quizzes,
+)
+from librarian.courses.loader import (
+    _compiled_from as _compiled_from,
+)
+from librarian.courses.loader import (
+    _course_dirs as _course_dirs,
+)
+from librarian.courses.loader import (
+    _first_meta as _first_meta,
+)
+from librarian.courses.loader import (
+    _load_cards as _load_cards,
+)
+from librarian.courses.loader import (
+    _load_wiki as _load_wiki,
+)
+from librarian.courses.loader import (
+    _merged_readings as _merged_readings,
+)
+from librarian.courses.loader import (
+    _meta as _meta,
+)
+from librarian.courses.loader import (
+    _module_dirs as _module_dirs,
+)
+from librarian.courses.loader import (
+    _order as _order,
+)
+from librarian.courses.loader import (
+    _outline as _outline,
+)
+from librarian.courses.loader import (
+    _readings_count as _readings_count,
+)
+from librarian.courses.loader import (
+    _signature as _signature,
+)
+from librarian.courses.loader import (
+    _wiki_json as _wiki_json,
+)
+from librarian.courses.loader import (
+    _wiki_slugs as _wiki_slugs,
+)
+from librarian.courses.loader import (
+    outline as outline,
+)
+from librarian.courses.queries import (
+    _drill_attempts as _drill_attempts,
+)
+from librarian.courses.queries import (
+    _scheduled_deck as _scheduled_deck,
+)
+from librarian.courses.queries import (
+    _snippet as _snippet,
+)
+from librarian.courses.queries import (
+    drill_history as drill_history,
+)
+from librarian.courses.queries import (
+    flashcards_due as flashcards_due,
+)
+from librarian.courses.queries import (
+    lesson_detail as lesson_detail,
+)
+from librarian.courses.queries import (
+    lessons_for_concept as lessons_for_concept,
+)
+from librarian.courses.queries import (
+    list_courses as list_courses,
+)
+from librarian.courses.queries import (
+    log_flashcard_result as log_flashcard_result,
+)
+from librarian.courses.queries import (
+    practice_drills as practice_drills,
+)
+from librarian.courses.queries import (
+    search_lessons as search_lessons,
+)
+from librarian.courses.queries import (
+    study_deck as study_deck,
+)
 from librarian.log_config import get_logger
 from librarian.retrieval.corpus import is_under_private
-from librarian.wiki.common import (
-    WIKILINK_RE,
-    LinkEntry,
-    LinkIndex,
-    fm,
-    page_aliases,
-    resolve_link,
-    slugify,
-)
+from librarian.wiki.common import fm
 
 log = get_logger(__name__)
 
@@ -63,78 +214,8 @@ PUBLIC_MODE = _settings.public_mode
 # Read live from the private sisyphus checkout and never copied into data/ — this repo is
 # public and the log is personal history. Absent → drills just show no attempts.
 DRILL_LOG = _settings.drill_log
-
-DEFAULT_ORDER = 999  # no (usable) `order`: sorts after every numbered entry
-PRIVATE_COURSES = "private"  # data/courses/private/, same name as data/wiki/private/
-ASSET_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
-MAX_CONCEPTS = 12
-# Semantic linking (D5). 0.55 kept after a spot check on the real courses (2026-10-30):
-# pairs >= ~0.62 are reliably on-topic, 0.55-0.62 are mostly same-area neighbours, and
-# below 0.5 MiniLM pairs lessons with pages that only share vocabulary. Raising to 0.58
-# or 0.60 cut lesson coverage from 324 to 284 / 267 of 762 without removing a clear
-# class of bad links.
-SEMANTIC_THRESHOLD = 0.55
-SEMANTIC_TOP_K = 6
-LESSON_PROSE_CHARS = 1500
-LESSON_RAW_PREFIX = "data/raw/repos/learn-ai-engineering/"
 # Lesson vectors keyed by content hash, so a warm restart re-embeds nothing (gitignored).
 LESSON_VEC_CACHE = _settings.lesson_vec_cache
-DRILL_KEYS = ("track", "topic", "difficulty", "timebox_min")  # programming/drills/README.md schema
-_FENCE_RE = re.compile(r"^\s*(```|~~~)")
-
-
-@dataclass
-class WikiRef:
-    id: str
-    title: str
-    summary: str
-    domain: str
-    sources: tuple[str, ...] = ()
-    aliases: tuple[str, ...] = ()
-
-
-@dataclass
-class LessonRec:
-    id: str  # path under COURSES_DIR without .md
-    course: str
-    module: str
-    title: str
-    summary: str
-    order: int
-    section: str
-    kind: str
-    source: str
-    body: str
-    concepts: list[str] = field(default_factory=list)  # wiki page ids, ranked
-    drill: dict[str, Any] = field(default_factory=dict)  # DRILL_KEYS, kind == "drill" only
-    flashcards: int = 0
-    questions: int = 0
-    private: bool = False  # under data/courses/private/: local only
-
-
-@dataclass
-class Catalog:
-    courses: list[dict[str, Any]]
-    lessons: dict[str, LessonRec]  # id → lesson, in course order
-    wiki: dict[str, WikiRef]
-    by_concept: dict[str, list[str]]  # wiki id → lesson ids
-    decks: dict[str, dict[str, Any]] = field(default_factory=dict)  # module or lesson id → deck
-    quizzes: dict[str, dict[str, Any]] = field(default_factory=dict)  # module or lesson id → quiz
-
-
-# ── Loading ──────────────────────────────────────────────────────────────────
-
-
-def _signature(*dirs: Path) -> tuple[int, int]:
-    """Cheap change detector: (file count, newest mtime) over the markdown trees."""
-    count, newest = 0, 0
-    for d in dirs:
-        if not d.is_dir():
-            continue
-        for p in d.rglob("*.md"):
-            count += 1
-            newest = max(newest, p.stat().st_mtime_ns)
-    return count, newest
 
 
 # One build at a time: the startup warmup and an early request would otherwise both
@@ -146,6 +227,8 @@ _LOAD_LOCK = threading.Lock()
 # signature alone, so without this a one-off failure (DuckDB lock held by an ingest, model
 # download hiccup) would pin a catalog without semantic links until some .md file changed.
 _semantic_failed_at: float | None = None
+
+
 SEMANTIC_RETRY_S = 60.0
 
 
@@ -195,84 +278,6 @@ def warm_catalog() -> None:
         with_concepts=sum(1 for r in cat.lessons.values() if r.concepts),
         seconds=round(time.perf_counter() - start, 2),
     )
-
-
-def _load_wiki(wiki_dir: Path) -> dict[str, WikiRef]:
-    refs: dict[str, WikiRef] = {}
-    if not wiki_dir.is_dir():
-        return refs
-    for md in sorted(wiki_dir.rglob("*.md")):
-        rel = md.relative_to(wiki_dir)
-        if md.name.startswith("_") or rel.parts[0] == "private":
-            continue
-        try:
-            post = frontmatter.load(md)
-        except yaml.YAMLError as e:
-            log.error("wiki_page_skipped", page=md.name, error=str(e).splitlines()[0])
-            continue
-        tags = fm(post).get("tags") or []
-        if "tombstone" in tags:
-            continue
-        refs[md.stem] = WikiRef(
-            id=md.stem,
-            title=str(fm(post).get("title") or md.stem),
-            summary=str(fm(post).get("summary") or ""),
-            domain=rel.parts[0] if len(rel.parts) > 1 else "",
-            sources=tuple(str(x) for x in fm(post).get("sources") or []),
-            aliases=tuple(page_aliases(post.metadata)),
-        )
-    return refs
-
-
-def _wiki_slugs(wiki: dict[str, WikiRef]) -> LinkIndex:
-    """The shared link resolver over the public pages, so a lesson's link to a page's old name
-    keeps resolving after a rename and means the same page it does in the graph and the index."""
-    return LinkIndex(
-        LinkEntry(key=r.id, path=r.id, stem=r.id, title=r.title, aliases=r.aliases)
-        for r in wiki.values()
-    )
-
-
-def _compiled_from(wiki: dict[str, WikiRef]) -> dict[str, list[str]]:
-    """Lesson id → the pages compiled from its raw copy."""
-    out: dict[str, list[str]] = {}
-    for ref in wiki.values():
-        for src in ref.sources:
-            if src.startswith(LESSON_RAW_PREFIX) and src.endswith(".md"):
-                lesson = src[len(LESSON_RAW_PREFIX) : -3].replace("--", "/")
-                out.setdefault(lesson, []).append(ref.id)
-    return out
-
-
-def _prose(body: str) -> str:
-    """Body with fenced code removed — concept mentions inside code are noise."""
-    out, in_fence = [], False
-    for line in body.split("\n"):
-        if _FENCE_RE.match(line):
-            in_fence = not in_fence
-            continue
-        if not in_fence:
-            out.append(line)
-    return "\n".join(out)
-
-
-def _concept_matcher(wiki: dict[str, WikiRef]) -> tuple[re.Pattern[str] | None, dict[str, str]]:
-    by_title: dict[str, str] = {}
-    for ref in wiki.values():
-        t = ref.title.strip().lower()
-        if len(t.split()) >= 2 and len(t) <= 60:
-            by_title.setdefault(t, ref.id)
-    if not by_title:
-        return None, by_title
-    alts = sorted(by_title, key=len, reverse=True)
-    pattern = re.compile(
-        r"(?<![\w-])(" + "|".join(re.escape(t) for t in alts) + r")(?![\w-])", re.I
-    )
-    return pattern, by_title
-
-
-def _resolve_wikilink(target: str, wiki: dict[str, WikiRef], slugs: LinkIndex) -> str | None:
-    return resolve_link(target, slugs)
 
 
 @lru_cache(maxsize=2)
@@ -403,191 +408,6 @@ def _load(
     return Catalog(courses, ordered, wiki, by_concept, decks, quizzes)
 
 
-def _order(value: Any, where: str) -> int:  # noqa: ANN401 - raw frontmatter value
-    """Sort order from frontmatter. 0 is a real order (00-start-here); a missing or unusable
-    value sorts last, and an unusable one is logged."""
-    if value is None:
-        return DEFAULT_ORDER
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        log.warning("order_invalid", where=where, value=repr(value))
-        return DEFAULT_ORDER
-
-
-def _course_dirs(courses_dir: Path, public: bool = False) -> dict[str, list[Path]]:
-    """Course name → its directories: the public one, then the same name under private/
-    (not at all in public mode)."""
-    found: dict[str, list[Path]] = {}
-    roots = [(courses_dir, True)]
-    if not public:
-        roots.append((courses_dir / PRIVATE_COURSES, False))
-    for root, is_public_root in roots:
-        if not root.is_dir():
-            continue
-        for d in sorted(p for p in root.iterdir() if p.is_dir()):
-            if is_public_root and d.name == PRIVATE_COURSES:
-                continue
-            found.setdefault(d.name, []).append(d)
-    return dict(sorted(found.items()))
-
-
-def _module_dirs(course_dirs: list[Path]) -> dict[str, list[Path]]:
-    found: dict[str, list[Path]] = {}
-    for course_dir in course_dirs:
-        for d in sorted(p for p in course_dir.iterdir() if p.is_dir()):
-            found.setdefault(d.name, []).append(d)
-    return dict(sorted(found.items()))
-
-
-def _first_meta(dirs: list[Path], name: str) -> dict[str, Any]:
-    """Frontmatter of the first of `dirs` that has `name`; public comes first, so it wins."""
-    return next((_meta(d / name) for d in dirs if (d / name).exists()), {})
-
-
-def _merged_readings(mod_dirs: list[Path]) -> list[Any]:
-    """Readings from every `_module.md` of the module (public first, then the private overlay)."""
-    seen: set[str] = set()
-    merged: list[Any] = []
-    for d in mod_dirs:
-        for r in _meta(d / "_module.md").get("readings") or []:
-            key = str(r.get("source", r)) if isinstance(r, dict) else str(r)
-            if key not in seen:
-                seen.add(key)
-                merged.append(r)
-    return merged
-
-
-def _readings_count(mod_dirs: list[Path]) -> int:
-    """`readings_count` from the public `_module.md`: what the list held before it moved."""
-    return max(
-        (int(_meta(d / "_module.md").get("readings_count") or 0) for d in mod_dirs), default=0
-    )
-
-
-def _meta(path: Path) -> dict[str, Any]:
-    if not path.exists():
-        return {}
-    try:
-        return frontmatter.load(path).metadata
-    except (yaml.YAMLError, OSError, UnicodeDecodeError) as e:
-        log.warning(
-            "meta_skipped", path=str(path), error=str(e).splitlines()[0] if str(e) else repr(e)
-        )
-        return {}
-
-
-def _load_cards(path: Path, recs: dict[str, LessonRec]) -> list[dict[str, Any]]:
-    """Well-formed cards from a module's _flashcards.md. A `lesson` not in this module (its
-    source was dropped, or a hand edit) falls back to the module deck."""
-    if not path.exists():
-        return []
-    raw = _meta(path).get("cards")
-    cards: list[dict[str, Any]] = []
-    for item in raw if isinstance(raw, list) else []:
-        if not isinstance(item, dict) or not item.get("front") or not item.get("back"):
-            continue
-        rec = recs.get(str(item.get("lesson")))
-        cards.append(
-            {
-                "id": str(len(cards)),
-                "front": str(item["front"]),
-                "back": str(item["back"]),
-                "lesson": rec.id if rec else None,
-                "lessonTitle": rec.title if rec else None,
-            }
-        )
-    return cards
-
-
-def _build_decks(
-    course: str, module: str, title: str, cards: list[dict[str, Any]], recs: list[LessonRec]
-) -> dict[str, dict[str, Any]]:
-    """The module's deck, plus one per lesson with cards. Sets each lesson's flashcard count."""
-    if not cards:
-        return {}
-    module_id = f"{course}/{module}"
-    decks = {module_id: {"id": module_id, "title": title, "course": course, "cards": cards}}
-    for r in recs:
-        mine = [c for c in cards if c["lesson"] == r.id]
-        r.flashcards = len(mine)
-        if mine:
-            decks[r.id] = {"id": r.id, "title": r.title, "course": course, "cards": mine}
-    return decks
-
-
-def _build_quizzes(
-    course: str, module: str, title: str, questions: list[quiz.Question], recs: list[LessonRec]
-) -> dict[str, dict[str, Any]]:
-    """The module's quiz, plus one per lesson with questions. Sets each lesson's question count."""
-    if not questions:
-        return {}
-    module_id = f"{course}/{module}"
-    quizzes = {
-        module_id: {"id": module_id, "title": title, "course": course, "questions": questions}
-    }
-    for r in recs:
-        mine = [q for q in questions if q.lesson == r.id]
-        r.questions = len(mine)
-        if mine:
-            quizzes[r.id] = {"id": r.id, "title": r.title, "course": course, "questions": mine}
-    return quizzes
-
-
-def _drill_meta(
-    post: frontmatter.Post, wiki: dict[str, WikiRef], slugs: LinkIndex, hidden: set[str]
-) -> dict[str, Any]:
-    """DRILL_KEYS, plus `tags`: declared concepts with no wiki page yet (shown as plain labels)."""
-    meta = {k: post[k] for k in DRILL_KEYS if fm(post).get(k) is not None}
-    tags = [
-        str(x)
-        for x in (fm(post).get("wiki") or [])
-        if not _resolve_wikilink(str(x), wiki, slugs) and slugify(str(x)) not in hidden
-    ]
-    return meta | ({"tags": tags} if tags else {})
-
-
-def _rank_concepts(
-    post: frontmatter.Post,
-    wiki: dict[str, WikiRef],
-    slugs: LinkIndex,
-    matcher: re.Pattern[str] | None,
-    by_title: dict[str, str],
-    compiled: list[str],
-) -> list[str]:
-    explicit = [str(x) for x in (fm(post).get("wiki") or [])]
-    explicit += [m.group(1) for m in WIKILINK_RE.finditer(post.content)]
-    ranked: list[str] = []
-    for target in explicit:
-        pid = _resolve_wikilink(target, wiki, slugs)
-        if pid and pid not in ranked:
-            ranked.append(pid)
-    ranked += [pid for pid in compiled if pid not in ranked]
-    if matcher:
-        counts: dict[str, int] = {}
-        text = f"{fm(post).get('title') or ''}\n{_prose(post.content)}"
-        for m in matcher.finditer(text):
-            pid = by_title[m.group(1).lower()]
-            counts[pid] = counts.get(pid, 0) + 1
-        for pid, _ in sorted(counts.items(), key=lambda kv: -kv[1]):
-            if pid not in ranked:
-                ranked.append(pid)
-    return ranked[:MAX_CONCEPTS]
-
-
-# ── Semantic concept linking ─────────────────────────────────────────────────
-
-# (lesson texts, eligible wiki ids) → per text, (wiki id, cosine) candidates best first,
-# or None when embeddings are unavailable. Module-level so tests can swap in a fake.
-Neighbours = list[list[tuple[str, float]]]
-
-
-def _lesson_text(post: frontmatter.Post, stem: str) -> str:
-    title = str(fm(post).get("title") or stem)
-    summary = str(fm(post).get("summary") or "")
-    return f"{title}. {summary}\n\n{_prose(post.content)[:LESSON_PROSE_CHARS]}"
-
-
 def _semantic_neighbours(texts: list[str], wiki_ids: list[str]) -> Neighbours | None:
     """Embedding neighbours among `wiki_ids` for each text, via librarian.retrieval.embeddings.
 
@@ -632,25 +452,6 @@ def _semantic_neighbours(texts: list[str], wiki_ids: list[str]) -> Neighbours | 
     return out
 
 
-def _merge_semantic(
-    ranked: list[str], candidates: list[tuple[str, float]], wiki: set[str]
-) -> list[str]:
-    """Append up to SEMANTIC_TOP_K new candidates ≥ SEMANTIC_THRESHOLD after `ranked`.
-
-    Explicit and title-mention links keep their places; `wiki` is the visible page set,
-    so a private or tombstoned id can never get in even if the embedder returns one.
-    """
-    out = list(ranked)
-    added = 0
-    for pid, score in sorted(candidates, key=lambda c: -c[1]):
-        if added >= SEMANTIC_TOP_K or len(out) >= MAX_CONCEPTS or score < SEMANTIC_THRESHOLD:
-            break
-        if pid in wiki and pid not in out:
-            out.append(pid)
-            added += 1
-    return out
-
-
 def _attach_semantic(
     lessons: dict[str, LessonRec], texts: dict[str, str], wiki: dict[str, WikiRef]
 ) -> None:
@@ -661,317 +462,3 @@ def _attach_semantic(
     visible = set(wiki)
     for lid, cands in zip(ids, neighbours, strict=True):
         lessons[lid].concepts = _merge_semantic(lessons[lid].concepts, cands, visible)
-
-
-def _outline(r: LessonRec) -> dict[str, Any]:
-    return {
-        "id": r.id,
-        "title": r.title,
-        "section": r.section,
-        "kind": r.kind,
-        "summary": r.summary,
-        **({"drill": r.drill} if r.drill else {}),
-        **({"flashcardCount": r.flashcards} if r.flashcards else {}),
-        **({"quizCount": r.questions} if r.questions else {}),
-        **({"private": True} if r.private else {}),
-    }
-
-
-def outline(r: LessonRec) -> dict[str, Any]:
-    """The sidebar row of a lesson."""
-    return _outline(r)
-
-
-def _wiki_json(ref: WikiRef) -> dict[str, str]:
-    return {"id": ref.id, "title": ref.title, "summary": ref.summary, "domain": ref.domain}
-
-
-def _link_wikilinks(body: str, cat: Catalog) -> str:
-    """[[Title|alias]] → [alias](#wiki:<id>) outside code; unresolved → plain text."""
-    slugs = _wiki_slugs(cat.wiki)
-    out, in_fence = [], False
-    for line in body.split("\n"):
-        if _FENCE_RE.match(line):
-            in_fence = not in_fence
-        elif not in_fence and "[[" in line:
-
-            def sub(m: re.Match[str]) -> str:
-                inner = m.group(0)[2:-2]
-                target, _, alias = inner.partition("|")
-                label = alias or target.split("#")[0]
-                pid = _resolve_wikilink(target.split("#")[0], cat.wiki, slugs)
-                return f"[{label}](#wiki:{pid})" if pid else label
-
-            line = re.sub(r"\[\[[^\]]+\]\]", sub, line)
-        out.append(line)
-    return "\n".join(out)
-
-
-# ── Queries the API routes call ─────────────────────────────────────────────
-
-
-def list_courses() -> list[dict[str, Any]]:
-    return catalog().courses
-
-
-def lesson_detail(lesson_id: str) -> dict[str, Any] | None:
-    """One lesson with its body, concepts and neighbours in its course; None when unknown."""
-    cat = catalog()
-    lesson = cat.lessons.get(lesson_id)
-    if not lesson:
-        return None
-    # A public lesson's neighbours are public: prev/next never leads from it into private/.
-    ids = [
-        i
-        for i, r in cat.lessons.items()
-        if r.course == lesson.course and (lesson.private or not r.private)
-    ]
-    pos = ids.index(lesson_id)
-    neighbour = lambda i: _outline(cat.lessons[ids[i]]) if 0 <= i < len(ids) else None  # noqa: E731
-    return {
-        **_outline(lesson),
-        "course": lesson.course,
-        "module": lesson.module,
-        "source": lesson.source,
-        "body": _link_wikilinks(lesson.body, cat),
-        "sourceLinks": sources.source_links(lesson_id, lesson.body),
-        "concepts": [_wiki_json(cat.wiki[c]) for c in lesson.concepts if c in cat.wiki],
-        "prev": neighbour(pos - 1),
-        "next": neighbour(pos + 1),
-    }
-
-
-_MD_NOISE_RE = re.compile(r"\[\[|\]\]|[#*_`|>]+|-{3,}|\[([^\]]*)\]\([^)]*\)")
-
-
-def _snippet(r: LessonRec, term: str) -> str:
-    """~240 chars of plain text around the first prose mention of `term`."""
-    text = " ".join(_MD_NOISE_RE.sub(lambda m: m.group(1) or " ", _prose(r.body)).split())
-    idx = text.lower().find(term)
-    if idx < 0:
-        return r.summary
-    start = max(0, idx - 80)
-    while 0 < start < idx and text[start - 1] != " ":  # don't open mid-word
-        start += 1
-    return ("…" if start else "") + text[start : idx + 160] + "…"
-
-
-def search_lessons(q: str, limit: int = 30) -> list[dict[str, Any]]:
-    terms = [t for t in q.lower().split() if len(t) > 1]
-    if not terms:
-        return []
-    hits: list[tuple[int, LessonRec, str]] = []
-    for r in catalog().lessons.values():
-        title, body = r.title.lower(), r.body.lower()
-        if not all(t in title or t in body for t in terms):
-            continue
-        score = sum(10 * title.count(t) + min(body.count(t), 20) for t in terms)
-        hits.append((score, r, _snippet(r, terms[0])))
-    hits.sort(key=lambda h: -h[0])
-    return [
-        {**_outline(r), "course": r.course, "snippet": snip}
-        for _, r, snip in hits[: max(1, min(limit, 100))]
-    ]
-
-
-def lessons_for_concept(page_id: str) -> list[dict[str, Any]]:
-    """Lessons that cover a wiki page — the graph → course direction."""
-    cat = catalog()
-    return [
-        {**_outline(cat.lessons[i]), "course": cat.lessons[i].course}
-        for i in cat.by_concept.get(page_id, [])
-    ]
-
-
-def practice_drills(
-    track: str | None = None, difficulty: str | None = None, concept: str | None = None
-) -> list[dict[str, Any]]:
-    """Drills (lessons of kind "drill"), filtered — the Practice mode list."""
-    cat = catalog()
-    history = drill_history()
-    out = []
-    for r in cat.lessons.values():
-        if r.kind != "drill":
-            continue
-        if track and r.drill.get("track") != track:
-            continue
-        if difficulty and r.drill.get("difficulty") != difficulty:
-            continue
-        if concept and concept not in r.concepts and concept not in r.drill.get("tags", []):
-            continue
-        concepts = [_wiki_json(cat.wiki[c]) for c in r.concepts if c in cat.wiki]
-        row = {**_outline(r), "course": r.course, "concepts": concepts}
-        if (hit := history.get(Path(r.id).name)) is not None:
-            row["attempts"] = hit
-        out.append(row)
-    return out
-
-
-def _scheduled_deck(
-    deck: dict[str, Any], states: dict[str, leitner.CardState], today: date
-) -> dict[str, Any]:
-    """A copy of a cached deck with each card's Leitner state and the deck's counts."""
-    cards: list[dict[str, Any]] = []
-    for card in deck["cards"]:
-        state = states.get(leitner.card_key(deck["id"], card["front"]))
-        cards.append(
-            card
-            | {
-                "box": state.box if state else None,
-                "dueOn": state.due_on.isoformat() if state else None,
-                "status": leitner.status_of(state, today),
-            }
-        )
-    counts = Counter(c["status"] for c in cards)
-    return deck | {"cards": cards, "dueCount": counts["due"], "newCount": counts["new"]}
-
-
-def study_deck(deck_id: str) -> dict[str, Any] | None:
-    """A study deck: every card in a module (`<course>/<module>`) or one lesson (lesson id)."""
-    deck = catalog().decks.get(deck_id)
-    if not deck:
-        return None
-    return _scheduled_deck(deck, leitner.load_states(), date.today())
-
-
-def flashcards_due() -> dict[str, Any]:
-    """Cards to study today across every module deck, reviewed and never-seen counted apart."""
-    states = leitner.load_states()
-    today = date.today()
-    modules: list[dict[str, Any]] = []
-    for deck_id, deck in catalog().decks.items():
-        if deck_id.count("/") != 1:
-            continue
-        counted = _scheduled_deck(deck, states, today)
-        if counted["dueCount"] or counted["newCount"]:
-            modules.append(
-                {
-                    "deck": deck_id,
-                    "title": deck["title"],
-                    "due": counted["dueCount"],
-                    "new": counted["newCount"],
-                }
-            )
-    modules.sort(key=lambda m: (-m["due"], m["deck"]))
-    return {
-        "today": today.isoformat(),
-        "due": sum(m["due"] for m in modules),
-        "new": sum(m["new"] for m in modules),
-        "modules": modules,
-    }
-
-
-def log_flashcard_result(deck_id: str, card_id: str, result: str) -> bool | None:
-    """Store one self-graded card. The text comes from the catalog, never from the caller.
-
-    None when the deck has no such card. A failed write returns False rather than raising:
-    it must not interrupt studying.
-    """
-    cat = catalog()
-    card = next(
-        (c for c in cat.decks.get(deck_id, {}).get("cards", []) if c["id"] == card_id), None
-    )
-    if card is None:
-        return None
-    rec = cat.lessons.get(card["lesson"]) if card["lesson"] else None
-    return attempts.record(
-        "flashcard",
-        leitner.card_key(deck_id, card["front"]),
-        deck_id,
-        result,
-        payload={
-            "lesson": card["lesson"],
-            "source": rec.source if rec else "",
-            "front": card["front"],
-        },
-    )
-
-
-def drill_history() -> dict[str, dict[str, Any]]:
-    """Drill slug -> {count, last, score}: the sisyphus log (read-only) plus runs recorded in the app.
-
-    An app run is keyed by its lesson id, whose last segment is the slug the log uses. `score` is the
-    latest one by date; a run recorded in the app shows as its result (pass, fail or revealed).
-    """
-    merged = _drill_attempts(DRILL_LOG)
-    for a in attempts.attempts(["drill"]):
-        slug, day = Path(a.item).name, a.ts.astimezone().date().isoformat()
-        prev = merged.get(slug)
-        if prev is None:
-            merged[slug] = {"count": 1, "last": day, "score": a.result}
-        else:
-            prev["count"] += 1
-            if day >= prev["last"]:
-                prev["last"], prev["score"] = day, a.result
-    return merged
-
-
-def _drill_attempts(log: Path) -> dict[str, dict[str, Any]]:
-    """drill slug (log QID) → {count, last, score} from the log's Markdown table.
-
-    Only those three columns are read; the free-text Note column never leaves the file.
-    """
-    try:
-        text = log.read_text()
-    except OSError:
-        return {}
-    cols: list[str] = []
-    out: dict[str, dict[str, Any]] = {}
-    for line in text.splitlines():
-        if not line.startswith("|"):
-            continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if not cols:
-            cols = [c.lower() for c in cells]
-            continue
-        row = dict(zip(cols, cells, strict=False))
-        qid, date = row.get("qid", ""), row.get("date", "")
-        if not qid or not re.match(r"\d{4}-\d{2}-\d{2}$", date):
-            continue  # the |---| separator, or a malformed row
-        prev = out.get(qid)
-        if prev is None or date >= prev["last"]:
-            out[qid] = {
-                "count": (prev or {"count": 0})["count"] + 1,
-                "last": date,
-                "score": row.get("score", ""),
-            }
-        else:
-            prev["count"] += 1
-    return out
-
-
-def is_private_asset(file_path: str) -> bool:
-    """True in public mode when `file_path` names, or resolves into, a private/ tree."""
-    if not PUBLIC_MODE:
-        return False
-    if any(p.lower() == PRIVATE_COURSES for p in Path(file_path).parts):
-        return True
-    try:
-        target = (COURSES_DIR / file_path).resolve()
-    except (OSError, ValueError, RuntimeError):
-        return True
-    return is_under_private(target, COURSES_DIR / PRIVATE_COURSES)
-
-
-def asset_path(file_path: str) -> Path | None:
-    """Absolute path of an image under COURSES_DIR, or None when `file_path` is not one.
-
-    Two-step guard: reject traversal syntax, then confirm the resolved path is inside the
-    courses root. Only images are served. A missing file falls back to the same relative path
-    in the private mirror (book and paper figures live only there); a path that exists in
-    neither comes back as the public path, so the route answers 404.
-    """
-    if ".." in Path(file_path).parts or file_path.startswith("/"):
-        return None
-    if "\0" in file_path or is_private_asset(file_path):
-        return None
-    root = COURSES_DIR.resolve()
-    target = (COURSES_DIR / file_path).resolve()
-    if not target.is_relative_to(root) or target.suffix.lower() not in ASSET_TYPES:
-        return None
-    if PUBLIC_MODE:
-        return target  # the private mirror is not consulted
-    found = overlay.resolve_asset(target, root)
-    if found is not None and not found.resolve().is_relative_to(root):
-        return None  # a symlink in the mirror pointing out of the tree
-    return found or target

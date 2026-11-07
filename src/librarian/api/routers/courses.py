@@ -127,7 +127,7 @@ def study_home() -> dict[str, Any]:
 def slide_deck(deck_id: str) -> dict[str, Any]:
     """A module's deck or one lecture: slide text, notes and image URLs.
 
-    Read-only: `stale` says a build is due; POST .../build starts it.
+    Read-only, from prebuilt files: `stale` says a dev build is due; POST .../build starts it (dev only).
     """
     found = slides.deck(deck_id)
     if found is None:
@@ -137,7 +137,13 @@ def slide_deck(deck_id: str) -> dict[str, Any]:
 
 @router.post("/slides/{deck_id:path}/build")
 def slide_deck_build(deck_id: str) -> dict[str, Any]:
-    """Start a background build if the deck is missing or stale, and answer as the GET does."""
+    """Start a background build if the deck is missing or stale, and answer as the GET does.
+
+    Dev only: 404 unless LIBRARIAN_DEV_BUILD_SLIDES is on. A deployment has no such route, rather
+    than one that refuses (403 would say the route exists and the caller lacks a right to it).
+    """
+    if not slides.build_enabled():
+        raise HTTPException(status_code=404, detail="not found")
     found = slides.build_deck(deck_id)
     if found is None:
         raise HTTPException(status_code=404, detail="no slides here")

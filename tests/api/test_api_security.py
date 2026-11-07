@@ -12,6 +12,7 @@ from structlog.testing import capture_logs
 
 import librarian.agent.loop as agent_module
 import librarian.api.main as main_module
+from librarian import retrieval
 from librarian.api.security import chat_limiter
 from librarian.config import get_settings
 from librarian.retrieval import embeddings
@@ -25,7 +26,6 @@ def _fresh(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     monkeypatch.setenv("LIBRARIAN_API_TOKEN", "")
     get_settings.cache_clear()
     chat_limiter.reset()
-    monkeypatch.setattr(main_module, "_ready_until", 0.0)
     yield
     monkeypatch.undo()
     get_settings.cache_clear()
@@ -70,13 +70,19 @@ def test_websocket_requires_the_token(secured: TestClient) -> None:
         assert ws.receive_json()["type"] == "graph_update"
 
 
+def _handle_with(monkeypatch: pytest.MonkeyPatch, state: str) -> None:
+    """Make the lifespan's index handle report `state` (no real index needed)."""
+    monkeypatch.setattr(retrieval.IndexHandle, "state", property(lambda self: state))
+
+
 def test_probes_need_no_token(secured: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
-    monkeypatch.setattr(main_module.retrieval, "index_is_built", lambda: True)
+    _handle_with(monkeypatch, "ready")
     assert secured.get("/healthz").json() == {"status": "ok"}
     resp = secured.get("/readyz")
     assert resp.status_code == 200
     assert resp.json()["checks"] == {"index": True, "embeddings": True}
+    assert resp.json()["index"] == "ready"
 
 
 def test_readyz_is_503_until_the_model_is_loaded(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -99,6 +105,16 @@ def test_readyz_is_503_when_the_index_will_not_open(monkeypatch: pytest.MonkeyPa
         resp = client.get("/readyz")
     assert resp.status_code == 503
     assert resp.json()["checks"]["index"] is False
+
+
+def test_readyz_is_503_while_the_index_is_building(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
+    _handle_with(monkeypatch, "building")
+    with TestClient(main_module.app) as client:
+        resp = client.get("/readyz")
+    assert resp.status_code == 503
+    assert resp.json()["checks"]["index"] is False
+    assert resp.json()["index"] == "building"
 
 
 def _fake_model(monkeypatch: pytest.MonkeyPatch, fake_anthropic: type) -> None:

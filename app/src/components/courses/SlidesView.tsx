@@ -50,7 +50,8 @@ export function SlidesView({ deckId }: { deckId: string }) {
     const load = (url: string, init?: RequestInit): Promise<SlideDeck> =>
       fetch(url, init).then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? "No slides here" : `HTTP ${r.status}`))));
     load(`/api/courses/slides/${deckId}`)
-      .then((d) => (d.stale ? load(`/api/courses/slides/${deckId}/build`, { method: "POST" }) : d))
+      // A deployment serves prebuilt decks and has no build route (404): keep what GET answered.
+      .then((d) => (d.stale ? load(`/api/courses/slides/${deckId}/build`, { method: "POST" }).catch(() => d) : d))
       .then((d: SlideDeck) => {
         if (cancelled) return;
         setDeck(d);

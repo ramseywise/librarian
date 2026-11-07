@@ -121,3 +121,6 @@ data/courses/**/slides/lectures/.preview/
 
 # Personal codemap repo list (copy src/librarian/tools/codemap/repos.txt)
 src/librarian/tools/codemap/repos.local.txt
+
+# Prebuilt content mounted into the container (compose ./content); built locally, never tracked.
+/content/

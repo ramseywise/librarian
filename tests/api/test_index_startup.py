@@ -20,7 +20,6 @@ PAGE = "---\ntitle: {t}\ntags: [rag, concept]\nsummary: About {t}\nupdated: 2026
 @pytest.fixture(autouse=True)
 def _fresh(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     get_settings.cache_clear()
-    monkeypatch.setattr(main_module, "_ready_until", 0.0)
     monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
     yield
     get_settings.cache_clear()
@@ -54,30 +53,32 @@ def _forbid_rebuild(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     return calls
 
 
+def _state(monkeypatch: pytest.MonkeyPatch, state: str) -> None:
+    """Make the lifespan's index handle report `state`."""
+    monkeypatch.setattr(main_module.retrieval.IndexHandle, "state", property(lambda self: state))
+
+
 def test_readyz_is_503_building_while_the_index_builds(monkeypatch: pytest.MonkeyPatch) -> None:
     calls = _forbid_rebuild(monkeypatch)
+    _state(monkeypatch, "building")
     with TestClient(main_module.app) as client:
-        monkeypatch.setattr(main_module, "_index_state", "building")
         resp = client.get("/readyz")
     assert resp.status_code == 503
     assert resp.json()["index"] == "building"
     assert calls == []
 
 
-def test_readyz_is_503_failed_when_the_startup_build_failed(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_readyz_is_503_error_when_the_build_failed(monkeypatch: pytest.MonkeyPatch) -> None:
+    _state(monkeypatch, "error")
     with TestClient(main_module.app) as client:
-        monkeypatch.setattr(main_module, "_index_state", "failed")
         resp = client.get("/readyz")
-    assert resp.status_code == 503 and resp.json()["index"] == "failed"
+    assert resp.status_code == 503 and resp.json()["index"] == "error"
 
 
-def test_readyz_is_200_once_the_index_is_ready(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    index.rebuild_index()
+def test_readyz_is_200_once_the_index_is_ready(monkeypatch: pytest.MonkeyPatch) -> None:
     calls = _forbid_rebuild(monkeypatch)
+    _state(monkeypatch, "ready")
     with TestClient(main_module.app) as client:
-        monkeypatch.setattr(main_module, "_index_state", "ready")
         resp = client.get("/readyz")
     assert resp.status_code == 200
     assert resp.json()["checks"] == {"index": True, "embeddings": True}
@@ -86,59 +87,12 @@ def test_readyz_is_200_once_the_index_is_ready(wiki: Path, monkeypatch: pytest.M
 
 def test_a_probe_never_builds_a_missing_index(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     calls = _forbid_rebuild(monkeypatch)
-    with TestClient(main_module.app) as client:
-        monkeypatch.setattr(main_module, "_index_state", "ready")
+    with TestClient(main_module.app) as client:  # autobuild is off under pytest
         resp = client.get("/readyz")
     assert resp.status_code == 503
+    assert resp.json()["index"] == "missing"
     assert not corpus.DB_PATH.exists()
     assert calls == []
-
-
-def test_the_ready_answer_is_cached(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    probes: list[int] = []
-    monkeypatch.setattr(main_module.retrieval, "index_is_built", lambda: probes.append(1) or True)
-    with TestClient(main_module.app) as client:
-        monkeypatch.setattr(main_module, "_index_state", "ready")
-        assert client.get("/readyz").status_code == 200
-        assert client.get("/readyz").status_code == 200
-    assert probes == [1]
-
-
-def test_lifespan_builds_the_index_in_the_background(
-    wiki: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.delenv("LIBRARIAN_SKIP_WARMUP", raising=False)
-    monkeypatch.setattr(main_module, "_warm_course_data", lambda: None)
-    built: list[int] = []
-    monkeypatch.setattr(main_module.retrieval, "open_index", lambda: _Closing(built))
-    get_settings.cache_clear()
-    with TestClient(main_module.app):
-        for _ in range(200):
-            if main_module._index_state == "ready":
-                break
-            import time
-
-            time.sleep(0.01)
-        assert main_module._index_state == "ready"
-    assert built == [1]
-
-
-def test_a_failed_startup_build_is_state_failed(monkeypatch: pytest.MonkeyPatch) -> None:
-    def boom() -> None:
-        raise RuntimeError("locked")
-
-    monkeypatch.setattr(main_module.retrieval, "open_index", boom)
-    monkeypatch.setattr(main_module, "_index_state", "building")
-    main_module._build_index()
-    assert main_module._index_state == "failed"
-
-
-class _Closing:
-    def __init__(self, built: list[int]) -> None:
-        built.append(1)
-
-    def close(self) -> None:
-        pass
 
 
 # -- freshness: mtime+size first, hash only on a mismatch ---------------------
@@ -274,7 +228,6 @@ def test_embeddings_unavailable_is_degraded_in_readyz(monkeypatch: pytest.Monkey
     monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", True)
     monkeypatch.setattr(embeddings, "LOAD_ERROR", "OSError: no network")
     with TestClient(main_module.app) as client:
-        monkeypatch.setattr(main_module, "_index_state", "ready")
         resp = client.get("/readyz")
     assert resp.status_code == 200
     assert resp.json()["degraded"] == ["embeddings_unavailable"]

@@ -18,10 +18,12 @@ from pathlib import Path
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from sqlalchemy import delete
 
 from librarian.api.routers import courses as courses_routes
 from librarian.courses import attempts, leitner
 from librarian.courses import catalog as courses
+from librarian.db import get_engine, tables
 
 _REAL_NEIGHBOURS = courses._semantic_neighbours
 
@@ -511,7 +513,8 @@ def test_deck_carries_each_cards_schedule_and_counts(client: TestClient) -> None
     assert (lesson["dueCount"], lesson["newCount"]) == (1, 0)
 
     # The catalog is cached: a schedule must not stick to it once the store is gone.
-    attempts.DB_PATH.unlink()
+    with get_engine().begin() as conn:
+        conn.execute(delete(tables.attempts))
     deck = client.get("/api/courses/flashcards/gen-ai/01-rag").json()
     assert {c["status"] for c in deck["cards"]} == {"new"}
 
@@ -551,13 +554,13 @@ def test_flashcard_result_rejects_unknown_cards_and_grades(client: TestClient) -
         client.post(url, json={"deck": "gen-ai/01-rag", "card": "0", "result": "maybe"}).status_code
         == 422
     )
-    assert not attempts.DB_PATH.exists()
+    assert attempts.attempts() == []
 
 
-def test_flashcard_result_survives_a_failed_write(client: TestClient) -> None:
+def test_flashcard_result_survives_a_failed_write(client: TestClient, tmp_path: Path) -> None:
     _write_cards("  - {front: Q, back: A}\n")
     courses._load.cache_clear()
-    blocker = attempts.DB_PATH.parent
+    blocker = tmp_path / "state"
     blocker.write_text("a file where the state folder should be")
     body = {"deck": "gen-ai/01-rag", "card": "0", "result": "knew"}
     assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": False}

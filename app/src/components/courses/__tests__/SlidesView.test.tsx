@@ -56,6 +56,18 @@ describe("SlidesView", () => {
     expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "POST" });
   });
 
+  it("shows the text, without spinning, when the build route is gone (a deployment)", async () => {
+    const stale = { ...deck, status: "text" as const, images: false, stale: true, slides: [{ ...deck.slides[0], image: null }] };
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) =>
+      init?.method === "POST" ? new Response("{}", { status: 404 }) : new Response(JSON.stringify(stale)),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    render(<SlidesView deckId="c1/m1" />);
+    expect(await screen.findByRole("status")).toHaveTextContent("Slide images are not available here");
+    expect(screen.queryByText(/Rendering slide images/)).toBeNull();
+    expect(screen.getByText("body one", { exact: false })).toBeInTheDocument();
+  });
+
   it("fetches the deck, shows the image as a blob and keeps the slide text in the page", async () => {
     const fetchMock = stub(deck);
     render(<SlidesView deckId="c1/m1" />);

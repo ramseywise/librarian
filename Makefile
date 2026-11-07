@@ -15,7 +15,7 @@ app-build:
 	mkdir -p data/wiki/private data/courses/private
 	$(LOCAL_COMPOSE) up --build librarian
 
-# Rsync data/wiki + data/courses to $$DEPLOY_HOST:$$DEPLOY_PATH (never private/), then restart the service.
+# Rsync data/wiki + data/courses (+ built var/slides) to $$DEPLOY_HOST:$$DEPLOY_PATH (never private/), then restart the service.
 deploy-content:
 	scripts/deploy-content.sh
 
@@ -23,7 +23,7 @@ obsidian:
 	open -a Obsidian $(PWD)/data/wiki
 
 api:
-	uv run --extra api librarian api --reload --port 8000
+	LIBRARIAN_DEV_BUILD_SLIDES=1 uv run --extra api librarian api --reload --port 8000
 
 mcp:
 	uv run librarian mcp

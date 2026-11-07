@@ -45,18 +45,18 @@ def test_token_usage_adds() -> None:
 
 def test_limiter_prices_cache_reads_below_input() -> None:
     s = Settings(_env_file=None, anthropic_model="claude-sonnet-5-5")
-    cached, fresh = ChatLimiter(), ChatLimiter()
-    cached.record_usage(s, TokenUsage(cache_read=1_000_000))
-    fresh.record_usage(s, TokenUsage(input=1_000_000))
-    assert cached._spent_usd == pytest.approx(0.20)
-    assert fresh._spent_usd == pytest.approx(2.00)
+    limiter = ChatLimiter()
+    limiter.record_usage(s, TokenUsage(cache_read=1_000_000))
+    assert limiter.spent_usd() == pytest.approx(0.20)
+    limiter.record_usage(s, TokenUsage(input=1_000_000))
+    assert limiter.spent_usd() == pytest.approx(2.20)
 
 
 def test_limiter_errs_high_for_an_unknown_model() -> None:
     s = Settings(_env_file=None, anthropic_model="claude-nope")
     limiter = ChatLimiter()
     limiter.record_usage(s, TokenUsage(output=1_000_000))
-    assert limiter._spent_usd == pytest.approx(max(p.output for p in PRICES.values()))
+    assert limiter.spent_usd() == pytest.approx(max(p.output for p in PRICES.values()))
 
 
 def test_startup_refuses_an_unknown_model_and_names_the_known_ones() -> None:

@@ -15,9 +15,16 @@ Quick Look (`qlmanage`). Without Quick Look the text and notes still build and t
 slides. Without `uv` the slides are read straight from the yaml (no generated title or divider
 slides, no images). `status` says which one the caller got, and `needs` lists what is missing.
 
-A deck is rebuilt in a background thread when its stamp no longer matches the yaml; the request that
-finds it stale answers at once with the yaml text and `status: "building"`. `build_deck.py` also
-writes the .pptx beside the yaml (gitignored), as `make slides` does.
+Production serves prebuilt files only. A deck's output is read from the content release,
+`<content dir>/slides/<deck id>/` (`settings.content_slides_dir`, default `var/content/current/slides`),
+when it holds a `built.json` for that deck, else from the state dir as above, so a dev checkout is
+unchanged. The subprocess build runs only when `settings.dev_build_slides` is on
+(`LIBRARIAN_DEV_BUILD_SLIDES`, set by `make api`). With it off, `deck` never builds and `build_deck`
+only reads.
+
+With the build on, a deck is rebuilt in a background thread when its stamp no longer matches the yaml;
+the request that finds it stale answers at once with the yaml text and `status: "building"`.
+`build_deck.py` also writes the .pptx beside the yaml (gitignored), as `make slides` does.
 """
 
 from __future__ import annotations
@@ -44,6 +51,8 @@ _settings = get_settings()
 ROOT = _settings.root
 COURSES_DIR = _settings.courses_dir
 BUILD_DIR = _settings.slides_build_dir
+CONTENT_DIR = _settings.content_slides_dir  # prebuilt decks of the content release
+DEV_BUILD = _settings.dev_build_slides  # may this process run a build at all
 
 BUILD_TIMEOUT_S = 600
 RETRY_FAILED_S = 600.0  # a failed build is retried after this, or at once when the yaml changes
@@ -178,7 +187,19 @@ def yaml_slides(spec: Path) -> list[dict[str, str]]:
 # ── the built output ───────────────────────────────────────────────────────
 
 
+def build_enabled() -> bool:
+    """True on a dev machine that may build decks on request; false when the API only serves files."""
+    return DEV_BUILD
+
+
 def _out_dir(deck_id: str) -> Path:
+    """Where a deck's built output is read: the content release if it has the deck, else the state dir."""
+    shipped = CONTENT_DIR / deck_id
+    return shipped if (shipped / "built.json").is_file() else BUILD_DIR / deck_id
+
+
+def _build_out_dir(deck_id: str) -> Path:
+    """Where a build writes: always the state dir, never the content release."""
     return BUILD_DIR / deck_id
 
 
@@ -228,7 +249,7 @@ def _run_build(spec: Path, out: Path) -> tuple[bool, str]:
 
 def _build(deck_id: str, spec: Path) -> None:
     """Thread body: build, then record what came of it in built.json."""
-    out = _out_dir(deck_id)
+    out = _build_out_dir(deck_id)
     try:
         digest = stamp(spec)
         ok, error = _run_build(spec, out)
@@ -262,6 +283,8 @@ def _needs_build(built: object, digest: str) -> bool:
 
 def _start(deck_id: str, spec: Path) -> bool:
     """Start a background build unless one is running. True when one is now running."""
+    if not DEV_BUILD:
+        return False
     with _LOCK:
         if deck_id in _RUNNING:
             return True
@@ -288,7 +311,8 @@ def image_url(deck_id: str, n: int) -> str:
 
 
 def build_deck(deck_id: str) -> dict[str, Any] | None:
-    """Start a rebuild when the deck's output is missing or stale, then answer as `deck` does."""
+    """Start a rebuild when the deck's output is missing or stale, then answer as `deck` does.
+    Does nothing but read when `build_enabled()` is false."""
     return deck(deck_id, start=True)
 
 
@@ -321,7 +345,7 @@ def deck(deck_id: str, *, start: bool = False) -> dict[str, Any] | None:
         if start:
             running = _start(canonical, spec)
         else:
-            stale = bool(shutil.which("uv"))
+            stale = DEV_BUILD and bool(shutil.which("uv"))
 
     error = ""
     if fresh and isinstance(built, dict) and built.get("ok") and isinstance(outline, list):
@@ -346,7 +370,7 @@ def deck(deck_id: str, *, start: bool = False) -> dict[str, Any] | None:
         "status": status,
         "images": has_images,
         "stale": stale,
-        "needs": needs() if status in ("text", "failed") else [],
+        "needs": needs() if DEV_BUILD and status in ("text", "failed") else [],
         "error": error,
         "decks": module_decks(f"{course}/{module}"),
         "slides": [
@@ -367,5 +391,8 @@ def image_path(deck_id: str, n: int) -> Path | None:
     found = resolve(deck_id)
     if found is None or n < 1:
         return None
-    path = _out_dir(found[0]) / f"slide-{n:02d}.png"
-    return path if path.is_file() else None
+    base = _out_dir(found[0])
+    path = base / f"slide-{n:02d}.png"
+    if not path.is_file() or not path.resolve().is_relative_to(base.resolve()):
+        return None  # missing, or a symlink pointing out of the deck's folder
+    return path
