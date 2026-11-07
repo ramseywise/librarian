@@ -2,9 +2,9 @@
 
 A compiled knowledge base for AI engineering — following the [Karpathy LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 
-Raw sources (docs, sessions, meetings, papers, books) go into `raw/` (append-only). Claude compiles them into `data/wiki/` — structured, interlinked, contradiction-flagged. A local MCP server exposes the wiki to any agent at runtime.
+Raw sources (docs, sessions, meetings, papers, books) go into `data/raw/` (append-only). Claude compiles them into `data/wiki/` — structured, interlinked, contradiction-flagged. A local MCP server exposes the wiki to any agent at runtime.
 
-**Mental model:** `raw/` = source code. Claude = compiler. `data/wiki/` = executable output.
+**Mental model:** `data/raw/` = source code. Claude = compiler. `data/wiki/` = executable output.
 
 ---
 
@@ -40,7 +40,7 @@ Meetings, PDFs, web, books, articles ──► data/raw/*/            ─┘
 ```
 
 **Key invariants:**
-- `raw/` is append-only — never edit after drop
+- `data/raw/` is append-only — never edit after drop
 - `data/wiki/` is Claude-maintained — humans correct factual errors only
 - Conflicts are flagged, never silently overwritten
 - `data/wiki/private/` is gitignored — company-specific pages live here locally
@@ -55,8 +55,8 @@ Meetings, PDFs, web, books, articles ──► data/raw/*/            ─┘
 | **Grounded Q&A** | `/query "what's our approach to agent memory?"` — answers from your own compiled experience, not generic docs |
 | **Decision records** | Ingest an ADR or meeting note → wiki auto-creates a `type: decision` page with tradeoffs and cross-links |
 | **Runtime agent knowledge** | Wire `search_wiki` + `read_page` as MCP tools in any agent — they self-brief from the KB at query time |
-| **Research synthesis** | Drop papers, book quotes, article captures into `raw/` → ingest compiles contradictions, cross-links, and concept pages |
-| **Team knowledge base** | Shared wiki with multi-user ingest; MCP server as team-wide retrieval API |
+| **Research synthesis** | Drop papers, book quotes, article captures into `data/raw/` → ingest compiles contradictions, cross-links, and concept pages |
+| **Shared retrieval API** | One compiled wiki served over MCP and the HTTP API to every agent that needs it |
 | **Codebase onboarding** | Scrape a new repo's CLAUDE.md + docs → ingest → instant grounded answers about architecture decisions |
 
 ---
@@ -175,7 +175,7 @@ The `contracts` review dimension (via `uv run --project ~/workspace/guacamayo re
 
 | Component | What it does |
 |---|---|
-| `raw/` | Append-only input drop zone — sessions, docs, meetings, PDFs, books, articles, repo scrapes |
+| `data/raw/` | Append-only input drop zone — sessions, docs, meetings, PDFs, books, articles, repo scrapes |
 | `data/wiki/` | LLM-compiled knowledge — one `.md` per concept, pattern, or decision; structured frontmatter, wikilinks |
 | `data/wiki/private/` | Company-specific pages, gitignored — same format, local only |
 | `CLAUDE.md` | Compiler contract — schema rules, ingest checklist, conflict policy, domain taxonomy |
@@ -237,6 +237,19 @@ Set `LIBRARIAN_API_TOKEN` in `.env`: every `/api` route and `/ws` then need `Aut
 and the web UI asks for the token once and keeps it in localStorage. `/healthz` and `/readyz` stay open.
 Chat is limited per process (`LIBRARIAN_CHAT_RATE_LIMIT`, `LIBRARIAN_CHAT_DAILY_BUDGET_USD`); see `.env.example`.
 
+### Run with Docker
+
+```bash
+echo 'LIBRARIAN_API_TOKEN=<a long random string>' >> .env
+make app            # creates the empty private mountpoints, then `docker compose up`
+make app-build      # same, rebuilding the image
+```
+
+- `LIBRARIAN_API_TOKEN` is required. The container binds `0.0.0.0`, and `librarian api` refuses to
+  bind a non-loopback host without a token unless you pass `--insecure` (serves unauthenticated).
+- The image sets `LIBRARIAN_PUBLIC=true`, so `private/` wiki and course trees are never read,
+  indexed or served, whatever is on disk (the compose tmpfs masks are a second lock).
+
 ### Courses
 
 The **Courses** tab (`#/courses`) is a learning UI over `data/courses/`: a course catalog,
@@ -267,7 +280,7 @@ shuffle). There is no scheduling.
 2. **Conflicts are flagged, not overwritten** — contradictions go to `data/wiki/_conflicts.md` for human review
 3. **Every page has at least one backlink** — orphan pages are a lint error
 4. **`updated:` is set on every write** — stale pages (>60 days) are surfaced by `/lint`
-5. **Sources are cited** — every wiki page lists the `raw/` files it was compiled from
+5. **Sources are cited** — every wiki page lists the `data/raw/` files it was compiled from
 6. **Private stays private** — company-specific pages go to `data/wiki/private/` (gitignored), not `data/wiki/projects/`
 
 ---
@@ -294,17 +307,17 @@ shuffle). There is no scheduling.
 
 | Directory | Source | Scraper |
 |---|---|---|
-| `raw/sessions/` | Claude Code + Codex session JSONL | `src/librarian/ingest/scrape_sessions.py` |
-| `raw/claude-docs/` | `.claude/` docs from workspace projects | `src/librarian/ingest/scrape_claude_docs.py` |
-| `raw/repos/` | CLAUDE.md, skills, docs from configured repos | `src/librarian/ingest/scrape_repos.py` + `repos.txt` |
-| `raw/notion/` | Notion pages | MCP connector |
-| `raw/gdrive/` | Google Drive docs | MCP connector |
-| `raw/linear/` | Linear issues + projects | `src/librarian/ingest/ingest_linear.py` |
-| `raw/pdfs/` | PDF text extracts | `src/librarian/ingest/ingest_pdf.py` |
-| `raw/meetings/` | Meeting transcripts | Manual drop |
-| `raw/web/` | Web article captures | Manual drop or URL mode |
-| `raw/books/` | Book quotes + notes | Manual drop (see `CLAUDE.md` for format) |
-| `raw/articles/` | Article highlights + notes | Manual drop or URL mode |
+| `data/raw/sessions/` | Claude Code + Codex session JSONL | `src/librarian/ingest/scrape_sessions.py` |
+| `data/raw/claude-docs/` | `.claude/` docs from workspace projects | `src/librarian/ingest/scrape_claude_docs.py` |
+| `data/raw/repos/` | CLAUDE.md, skills, docs from configured repos | `src/librarian/ingest/scrape_repos.py` + `repos.txt` |
+| `data/raw/notion/` | Notion pages | MCP connector |
+| `data/raw/gdrive/` | Google Drive docs | MCP connector |
+| `data/raw/linear/` | Linear issues + projects | `src/librarian/ingest/ingest_linear.py` |
+| `data/raw/pdfs/` | PDF text extracts | `src/librarian/ingest/ingest_pdf.py` |
+| `data/raw/meetings/` | Meeting transcripts | Manual drop |
+| `data/raw/web/` | Web article captures | Manual drop or URL mode |
+| `data/raw/books/` | Book quotes + notes | Manual drop (see `CLAUDE.md` for format) |
+| `data/raw/articles/` | Article highlights + notes | Manual drop or URL mode |
 
 ---
 

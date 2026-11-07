@@ -1,0 +1,4 @@
+# One Notion search query per line; lines starting with # are ignored.
+# Copy to queries.local.txt (gitignored) and replace with your own terms.
+your topic one
+your topic two

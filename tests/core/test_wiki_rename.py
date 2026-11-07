@@ -16,7 +16,7 @@ from librarian.wiki import parser as wiki_parser
 from librarian.wiki.common import page_aliases, text_aliases
 from librarian.wiki.relinker import build_link_graph, load_pages
 from librarian.wiki.rename import apply_plan, build_plan, main
-from librarian.wiki.telemetry import _public_pages, _slug_map, compute_stats
+from librarian.wiki.telemetry import _link_index, _public_pages, compute_stats
 
 TODAY = date(2026, 11, 5)
 PRIVATE_TITLE = "Acme Secret Roadmap"
@@ -238,12 +238,12 @@ class TestAliasResolution:
         assert text_aliases("no frontmatter, aliases: here") == []
 
     def test_telemetry_resolves_and_no_dead_link(self, aliased: Path) -> None:
-        slugs = _slug_map(_public_pages(aliased))
-        assert slugs["former-name"].stem == "current"
+        links = _link_index(_public_pages(aliased))
+        assert links.resolve("former-name").stem == "current"
 
     def test_current_name_beats_another_pages_alias(self, aliased: Path) -> None:
         write(aliased, "rag/former-name.md", "Former Name")
-        assert _slug_map(_public_pages(aliased))["former-name"].stem == "former-name"
+        assert _link_index(_public_pages(aliased)).resolve("former-name").stem == "former-name"
 
     def test_relinker_resolves(self, aliased: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setattr("librarian.wiki.relinker.WIKI_DIR", aliased)

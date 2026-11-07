@@ -26,7 +26,15 @@ from pathlib import Path
 import frontmatter
 
 from librarian.config import get_settings
-from librarian.wiki.common import WIKILINK_RE, fm, page_aliases, page_tags, slugify
+from librarian.wiki.common import (
+    WIKILINK_RE,
+    LinkEntry,
+    LinkIndex,
+    fm,
+    page_aliases,
+    page_tags,
+    resolve_link,
+)
 
 REPO_ROOT = get_settings().root
 WIKI_DIR = get_settings().wiki_dir
@@ -96,21 +104,21 @@ def load_pages() -> dict[str, PageInfo]:
 
 
 def build_link_graph(pages: dict[str, PageInfo]) -> None:
-    slug_to_stem: dict[str, str] = {}
-    for stem, info in pages.items():
-        slug_to_stem[stem] = stem
-        slug_to_stem[slugify(info.title)] = stem
-    for stem, info in pages.items():
-        for alias in info.aliases:
-            slug_to_stem.setdefault(slugify(alias), stem)
-
+    index = LinkIndex(
+        LinkEntry(
+            key=stem,
+            path=str(info.path.relative_to(WIKI_DIR)),
+            stem=stem,
+            title=info.title,
+            aliases=tuple(info.aliases),
+        )
+        for stem, info in pages.items()
+    )
     for stem, info in pages.items():
         content = info.path.read_text()
         for match in WIKILINK_RE.finditer(content):
-            raw = match.group(1).strip()
-            target_slug = slugify(raw)
-            target_stem = slug_to_stem.get(target_slug, target_slug)
-            if target_stem in pages and target_stem != stem:
+            target_stem = resolve_link(match.group(1), index)
+            if target_stem is not None and target_stem != stem:
                 info.outgoing_links.add(target_stem)
                 pages[target_stem].incoming_links.add(stem)
 

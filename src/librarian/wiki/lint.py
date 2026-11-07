@@ -20,13 +20,12 @@ from pathlib import Path
 import frontmatter
 
 from librarian.config import get_settings
-from librarian.wiki.common import WIKILINK_RE, fm, slugify
+from librarian.wiki.common import WIKILINK_RE, fm, link_name, slugify
 from librarian.wiki.telemetry import (
     STALE_DAYS,
     _link_edges,  # pyright: ignore[reportPrivateUsage]
-    _link_target,  # pyright: ignore[reportPrivateUsage]
+    _link_index,  # pyright: ignore[reportPrivateUsage]
     _public_pages,  # pyright: ignore[reportPrivateUsage]
-    _slug_map,  # pyright: ignore[reportPrivateUsage]
 )
 
 WIKI_DIR = get_settings().wiki_dir
@@ -48,10 +47,10 @@ class Finding:
 
 def lint(wiki_dir: Path, today: date) -> list[Finding]:
     public = _public_pages(wiki_dir)
-    slugs = _slug_map(public)
+    links = _link_index(public)
     domains = {p.domain for p in public} | EXTRA_DOMAIN_TAGS
     scored = [p for p in public if p.scored]
-    _, inbound = _link_edges(scored, slugs)
+    _, inbound = _link_edges(scored, links)
     cutoff = today - timedelta(days=STALE_DAYS)
     out: list[Finding] = []
     for page in scored:
@@ -64,8 +63,10 @@ def lint(wiki_dir: Path, today: date) -> list[Finding]:
         if "conflict" in page.tags:
             out.append(Finding("BLOCKER", page.rel, "tagged conflict (unresolved)"))
         for match in WIKILINK_RE.finditer(_CODE_RE.sub("", page.body)):
-            slug, _ = _link_target(match.group(1))
-            if slug not in slugs and slugify(match.group(1)) not in slugs and slug != "private":
+            if (
+                links.resolve(match.group(1), include_tombstones=True) is None
+                and slugify(link_name(match.group(1))) != "private"
+            ):
                 out.append(Finding("BLOCKER", page.rel, f"dead wikilink: [[{match.group(1)}]]"))
         if not inbound[page.rel]:
             out.append(Finding("WARN", page.rel, "orphan (no inbound link)"))
@@ -80,6 +81,17 @@ def lint(wiki_dir: Path, today: date) -> list[Finding]:
             )
         if "see also" not in page.body.lower():
             out.append(Finding("NOTE", page.rel, "no See Also section"))
+    for clash in links.index.collisions:
+        if clash.scope == "live" and clash.kind in ("title", "alias"):
+            winner, *others = clash.keys
+            out.append(
+                Finding(
+                    "WARN",
+                    winner,
+                    f"{clash.kind} {clash.slug!r} also claimed by {', '.join(others)}: "
+                    "links resolve to this page",
+                )
+            )
     order = {"BLOCKER": 0, "WARN": 1, "NOTE": 2}
     return sorted(out, key=lambda f: (order[f.severity], f.page, f.message))
 

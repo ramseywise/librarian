@@ -21,9 +21,9 @@ from librarian.config import get_settings
 from librarian.wiki.common import slugify
 from librarian.wiki.telemetry import (
     _link_edges,  # pyright: ignore[reportPrivateUsage]
+    _link_index,  # pyright: ignore[reportPrivateUsage]
     _load_page,  # pyright: ignore[reportPrivateUsage]
     _public_pages,  # pyright: ignore[reportPrivateUsage]
-    _slug_map,  # pyright: ignore[reportPrivateUsage]
 )
 
 WIKI_DIR = get_settings().wiki_dir
@@ -66,7 +66,7 @@ def _rel(path: Path, wiki_dir: Path) -> str:
 def verify(paths: list[Path], wiki_dir: Path = WIKI_DIR) -> list[PageStatus]:
     """Inbound-link count and index membership for each page, by path."""
     pages = _public_pages(wiki_dir)
-    _, inbound = _link_edges(pages, _slug_map(pages))
+    _, inbound = _link_edges(pages, _link_index(pages))
     index = wiki_dir / "_index.md"
     listed = _index_titles(index.read_text()) if index.is_file() else set()
     out: list[PageStatus] = []

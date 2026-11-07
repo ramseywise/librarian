@@ -299,3 +299,12 @@ def test_repo_has_no_tracked_or_public_source_figures() -> None:
     assert public == []
     for name in DELETED_ASSET_MODULES:
         assert not any(courses_dir.glob(f"*/{name}"))
+
+
+def test_course_files_are_served_with_nosniff_and_a_locked_down_csp(client: TestClient) -> None:
+    r = client.get(f"/api/courses/files/{FIG}")
+    assert r.headers["x-content-type-options"] == "nosniff"
+    assert (
+        r.headers["content-security-policy"]
+        == "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+    )

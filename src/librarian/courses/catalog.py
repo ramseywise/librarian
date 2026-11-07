@@ -42,7 +42,15 @@ from librarian.config import get_settings
 from librarian.courses import attempts, leitner, overlay, quiz, sources
 from librarian.log_config import get_logger
 from librarian.retrieval.corpus import is_under_private
-from librarian.wiki.common import WIKILINK_RE, fm, page_aliases, slugify
+from librarian.wiki.common import (
+    WIKILINK_RE,
+    LinkEntry,
+    LinkIndex,
+    fm,
+    page_aliases,
+    resolve_link,
+    slugify,
+)
 
 log = get_logger(__name__)
 
@@ -216,11 +224,13 @@ def _load_wiki(wiki_dir: Path) -> dict[str, WikiRef]:
     return refs
 
 
-def _wiki_slugs(wiki: dict[str, WikiRef]) -> dict[str, str]:
-    """Link slug → page id. Stems beat titles beat aliases, so an imported lesson's link to a
-    page's old name keeps resolving after a rename."""
-    aliases = {slugify(a): r.id for r in wiki.values() for a in r.aliases}
-    return aliases | {slugify(r.title): r.id for r in wiki.values()} | {slugify(i): i for i in wiki}
+def _wiki_slugs(wiki: dict[str, WikiRef]) -> LinkIndex:
+    """The shared link resolver over the public pages, so a lesson's link to a page's old name
+    keeps resolving after a rename and means the same page it does in the graph and the index."""
+    return LinkIndex(
+        LinkEntry(key=r.id, path=r.id, stem=r.id, title=r.title, aliases=r.aliases)
+        for r in wiki.values()
+    )
 
 
 def _compiled_from(wiki: dict[str, WikiRef]) -> dict[str, list[str]]:
@@ -261,11 +271,8 @@ def _concept_matcher(wiki: dict[str, WikiRef]) -> tuple[re.Pattern[str] | None, 
     return pattern, by_title
 
 
-def _resolve_wikilink(target: str, wiki: dict[str, WikiRef], slugs: dict[str, str]) -> str | None:
-    target = target.strip()
-    if target in wiki:
-        return target
-    return slugs.get(slugify(target))
+def _resolve_wikilink(target: str, wiki: dict[str, WikiRef], slugs: LinkIndex) -> str | None:
+    return resolve_link(target, slugs)
 
 
 @lru_cache(maxsize=2)
@@ -528,7 +535,7 @@ def _build_quizzes(
 
 
 def _drill_meta(
-    post: frontmatter.Post, wiki: dict[str, WikiRef], slugs: dict[str, str], hidden: set[str]
+    post: frontmatter.Post, wiki: dict[str, WikiRef], slugs: LinkIndex, hidden: set[str]
 ) -> dict[str, Any]:
     """DRILL_KEYS, plus `tags`: declared concepts with no wiki page yet (shown as plain labels)."""
     meta = {k: post[k] for k in DRILL_KEYS if fm(post).get(k) is not None}
@@ -543,7 +550,7 @@ def _drill_meta(
 def _rank_concepts(
     post: frontmatter.Post,
     wiki: dict[str, WikiRef],
-    slugs: dict[str, str],
+    slugs: LinkIndex,
     matcher: re.Pattern[str] | None,
     by_title: dict[str, str],
     compiled: list[str],

@@ -22,7 +22,7 @@ import json
 import re
 import subprocess
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
@@ -37,11 +37,11 @@ from librarian.wiki.telemetry import (
     WIKI_DIR,
     Page,
     _link_edges,
+    _link_index,
     _names_private_page,
     _private_name_pattern,
     _private_pages,
     _public_pages,
-    _slug_map,
 )
 
 REPO_ROOT = get_settings().root
@@ -98,7 +98,7 @@ def _yaml_scalar(text: str) -> str:
     return json.dumps(text, ensure_ascii=False) if _YAML_SPECIAL_RE.search(text) else text
 
 
-def _rewrite_links(text: str, resolves: dict[str, Page], plan: Plan) -> tuple[str, int]:
+def _rewrite_links(text: str, resolve: Callable[[str], Page | None], plan: Plan) -> tuple[str, int]:
     """Point every link that resolves to the page at its new name, in the form it was written."""
     count = 0
 
@@ -109,8 +109,10 @@ def _rewrite_links(text: str, resolves: dict[str, Page], plan: Plan) -> tuple[st
         prefix = prefix_match.group(1) if prefix_match else ""
         target = raw[len(prefix) :]
         folder, slash, name = target.strip().rpartition("/")
-        if resolves.get(slugify(name)) is not plan.page:
+        if resolve(target.strip()) is not plan.page:
             return match.group(0)
+        if resolve(name) is not plan.page:  # a title that holds a slash ("A/B Testing")
+            folder, slash, name = "", "", target.strip()
         replacement = plan.new_stem if name == plan.page.stem else plan.new_title
         if replacement == name:
             return match.group(0)
@@ -256,8 +258,8 @@ def build_plan(
 ) -> Plan:
     public = _public_pages(wiki_dir)
     private = _private_pages(wiki_dir)
-    public_map = _slug_map(public)
-    page = public_map.get(slugify(old))
+    public_links = _link_index(public)
+    page = public_links.resolve(old)
     if page is None:
         raise RenameError(f"no public page is named {old!r}")
     if "tombstone" in page.tags:
@@ -274,7 +276,7 @@ def build_plan(
     plan = Plan(page, new_title, new_stem, new_path, alias, note)
 
     # Inside private/, a private page of the same name is what its links mean.
-    private_map = _slug_map([*private, *public])
+    private_links = _link_index([*private, *public])
     for other in [*public, *private]:
         if other is page:
             continue
@@ -286,8 +288,14 @@ def build_plan(
             else:
                 plan.skipped.append(other.rel)
             continue
-        resolves = private_map if other.rel.startswith("private/") else public_map
-        text, count = _rewrite_links(original, resolves, plan)
+        if other.rel.startswith("private/"):
+
+            def resolve(raw: str) -> Page | None:
+                return private_links.resolve(raw, include_private=True, private_first=True)
+
+        else:
+            resolve = public_links.resolve
+        text, count = _rewrite_links(original, resolve, plan)
         if new_stem != page.stem:
             text = _rewrite_paths(text, page.stem, new_stem)
         if text == original:
@@ -301,7 +309,7 @@ def build_plan(
         original = _read_utf8(page.path)
     except UnicodeDecodeError:
         raise RenameError(f"{page.rel} is not UTF-8: refusing to rewrite it") from None
-    self_linked, _ = _rewrite_links(original, public_map, plan)
+    self_linked, _ = _rewrite_links(original, public_links.resolve, plan)
     earlier = page_aliases(frontmatter.loads(original).metadata)
     kept = [a for a in earlier if slugify(a) != new_stem]
     if alias and slugify(alias) not in {slugify(a) for a in kept}:
@@ -337,7 +345,7 @@ def apply_plan(plan: Plan) -> None:
 def inbound_links(rel: str, wiki_dir: Path) -> int:
     public = _public_pages(wiki_dir)
     pages = [p for p in public if p.scored]
-    _, inbound = _link_edges(pages, _slug_map(public))
+    _, inbound = _link_edges(pages, _link_index(public))
     return len(inbound.get(rel, ()))
 
 

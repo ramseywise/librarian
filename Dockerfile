@@ -54,8 +54,14 @@ ENV LIBRARIAN_ROOT=/app \
     LIBRARIAN_PUBLIC=true \
     PYTHONUNBUFFERED=1
 
+COPY --chmod=755 docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+
 USER librarian
 EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"
+# Readiness, not liveness: healthy means the index is built and the model loaded. The first start
+# builds the index on the first /readyz probe, so the start period covers that build.
+# /readyz is public (no bearer token) and caches a pass for 30 s, so a probe does not reopen it.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=300s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=8)"
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["librarian", "api", "--host", "0.0.0.0", "--port", "8000"]

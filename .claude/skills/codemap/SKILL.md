@@ -19,6 +19,9 @@ this skill.
 - `semantic <query>` → fuzzy/conceptual symbol search via `semantic_find_symbol`
   (only works if the Codemap API was started with `sentence-transformers` installed)
 
+Change tracking lives only in the DB: a file is skipped when its hash equals `files.content_hash`.
+There is no manifest file to keep or delete; to force a full reparse, rebuild the index DB.
+
 ## Step 1 — Check configuration (reindex mode)
 
 Confirm `src/librarian/tools/codemap/repos.txt` has at least one uncommented repo path. If it's

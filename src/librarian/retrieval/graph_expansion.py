@@ -25,9 +25,16 @@ approaches, which is noise when the caller asked about one thing.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 
-from librarian.wiki.common import TYPED_LINK_RE, slugify, text_aliases
+from librarian.wiki.common import (
+    TYPED_LINK_RE,
+    LinkEntry,
+    LinkIndex,
+    resolve_link,
+    text_aliases,
+)
 
 # The two relationship types that express "you need this to understand that".
 EXPANSION_RELATIONSHIPS = frozenset({"prerequisite-for", "extends"})
@@ -41,6 +48,24 @@ INVERSE_LABEL = {
 }
 
 
+def build_link_index(pages: Iterable[tuple[str, str, str]]) -> LinkIndex:
+    """The shared link resolver over indexed pages, keyed by path.
+
+    Args:
+        pages: (path, title, content) triples for every indexed (public, live) page.
+    """
+    return LinkIndex(
+        LinkEntry(
+            key=path,
+            path=path,
+            stem=Path(path).stem,
+            title=title,
+            aliases=tuple(text_aliases(content)),
+        )
+        for path, title, content in pages
+    )
+
+
 def build_typed_edges(pages: list[tuple[str, str, str]]) -> list[tuple[str, str, str]]:
     """Extract typed relationship edges from page bodies.
 
@@ -52,19 +77,13 @@ def build_typed_edges(pages: list[tuple[str, str, str]]) -> list[tuple[str, str,
         resolve to an indexed page are dropped — a dead wikilink is a lint
         error, not something retrieval should try to follow.
     """
-    slug_to_path: dict[str, str] = {}
-    for path, title, _ in pages:
-        slug_to_path[slugify(title)] = path
-        slug_to_path[slugify(Path(path).stem)] = path
-    for path, _, content in pages:
-        for alias in text_aliases(content):
-            slug_to_path.setdefault(slugify(alias), path)
+    link_index = build_link_index(pages)
 
     edges: list[tuple[str, str, str]] = []
     seen: set[tuple[str, str, str]] = set()
     for path, _, content in pages:
         for match in TYPED_LINK_RE.finditer(content):
-            target = slug_to_path.get(slugify(match.group(1).strip()))
+            target = resolve_link(match.group(1), link_index)
             if not target or target == path:
                 continue
             edge = (path, target, match.group(2))

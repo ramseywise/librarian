@@ -26,7 +26,7 @@ import networkx as nx
 from networkx.algorithms.community import louvain_communities
 from sklearn.metrics import normalized_mutual_info_score
 
-from librarian.wiki.telemetry import WIKI_DIR, _link_edges, _public_pages, _slug_map
+from librarian.wiki.telemetry import WIKI_DIR, _link_edges, _link_index, _public_pages
 
 TOP_HUBS = 10
 TOP_BRIDGES = 10
@@ -93,7 +93,7 @@ def load_graph(wiki_dir: Path) -> nx.Graph:
     """The undirected link graph, with each page's directory, tags and link counts on its node."""
     public = _public_pages(wiki_dir)
     pages = [p for p in public if p.scored]
-    outbound, inbound = _link_edges(pages, _slug_map(public))
+    outbound, inbound = _link_edges(pages, _link_index(public))
     graph = nx.Graph()
     for page in pages:
         graph.add_node(

@@ -11,10 +11,12 @@ from librarian.wiki.common import (
     CANONICAL_LINK_TYPES,
     TYPED_LINK_RE,
     WIKILINK_RE,
+    LinkEntry,
+    LinkIndex,
     fm,
     page_aliases,
     page_tags,
-    slugify,
+    resolve_link,
 )
 
 log = get_logger(__name__)
@@ -94,8 +96,7 @@ def parse_wiki_uncached() -> dict:
     """
     nodes: list[dict] = []
     edges: list[dict] = []
-    page_slugs: dict[str, str] = {}  # slug -> title
-    aliases_to_id: dict[str, str] = {}  # slug of a former name -> current page id
+    entries: list[LinkEntry] = []
 
     # First pass: collect all pages
     pages = _public_pages()
@@ -114,10 +115,15 @@ def parse_wiki_uncached() -> dict:
         if "tombstone" in tags:
             continue
 
-        page_slugs[page_id] = title
-        # also register by title slug so wikilinks resolve
-        page_slugs[slugify(title)] = title
-        aliases_to_id.update({slugify(alias): page_id for alias in page_aliases(post.metadata)})
+        entries.append(
+            LinkEntry(
+                key=page_id,
+                path=str(md_file.relative_to(WIKI_DIR)),
+                stem=page_id,
+                title=str(title),
+                aliases=tuple(page_aliases(post.metadata)),
+            )
+        )
 
         domain = [md_file.parent.name]
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
@@ -141,6 +147,7 @@ def parse_wiki_uncached() -> dict:
         )
 
     node_ids = {n["id"] for n in nodes}
+    link_index = LinkIndex(entries)
 
     # Second pass: extract wikilinks → edges (with optional relationship types)
     seen_edges: set[tuple[str, str]] = set()
@@ -153,22 +160,20 @@ def parse_wiki_uncached() -> dict:
         # Extract typed relationships from See Also sections
         typed_links: dict[str, str] = {}
         for match in TYPED_LINK_RE.finditer(content):
-            link_target = slugify(match.group(1).strip())
-            typed_links[link_target] = match.group(2)
+            if (typed_id := resolve_link(match.group(1), link_index)) is not None:
+                typed_links[typed_id] = match.group(2)
 
         for match in WIKILINK_RE.finditer(content):
-            raw = match.group(1).strip()
-            target_slug = slugify(raw)
-            target_id = target_slug if target_slug in node_ids else aliases_to_id.get(target_slug)
-            if target_id is None or target_id not in node_ids or target_id == source_id:
+            target_id = resolve_link(match.group(1), link_index)
+            if target_id is None or target_id == source_id:
                 continue
             key = (source_id, target_id)
             if key in seen_edges:
                 continue
             seen_edges.add(key)
             edge_data: dict = {"edgeType": "wikilink"}
-            if target_slug in typed_links:
-                edge_data["relationship"] = typed_links[target_slug]
+            if target_id in typed_links:
+                edge_data["relationship"] = typed_links[target_id]
             edges.append(
                 {
                     "id": f"wl:{source_id}->{target_id}",

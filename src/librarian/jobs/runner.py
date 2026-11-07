@@ -34,9 +34,67 @@ READ_TOOLS = [
     "mcp__librarian__search_wiki",
     "mcp__librarian__read_page",
 ]
-WRITE_TOOLS = ["Write", "Edit"]
-LIBRARIAN_CLI = ["Bash(uv run librarian:*)"]
+
+
+def _cli(*verbs: str) -> list[str]:
+    """Allow rules for exact `librarian` verbs (prefix match, so arguments are free)."""
+    return [f"Bash(uv run librarian {verb}:*)" for verb in verbs]
+
+
+# Per job, only the verbs it needs. Never `scrape`, `ingest notion|linear|pdf`, `wiki rename` or
+# anything else that fetches or rewrites existing pages.
+WIKI_WEEKLY_CLI = _cli(
+    "wiki stats", "wiki snapshot", "wiki check", "wiki graph", "wiki gaps", "wiki log weekly"
+)
+WEEKLY_CLI = _cli("wiki stats", "wiki check", "courses check")
+# Ingest of the fetched queue files: triage, compile, verify, mark. The scrapers are the job's
+# own `commands`, not the agent's.
+FEEDS_INGEST_CLI = _cli(
+    "ingest triage",
+    "ingest status",
+    "ingest mark",
+    "ingest lint-raw",
+    "wiki stats",
+    "wiki check",
+    "wiki index-add",
+    "wiki verify",
+    "wiki relink",
+    "wiki log ingest",
+)
+WEEKLY_MAKE = ["Bash(make review-findings)", "Bash(make signals)", "Bash(make deck-check)"]
+# The agent compiles into the wiki and nowhere else; the manifest is written by `ingest mark`.
+FEEDS_INGEST_WRITE = ["Write(data/wiki/**)", "Edit(data/wiki/**)"]
 GIT_STAGE_ONLY = ["Bash(git status:*)", "Bash(git diff:*)", "Bash(git add:*)"]
+
+# No job may change these: `data/raw/` is append-only (the scrapers, run as the job's `commands`,
+# are its only writer), and the skills, git state and secrets are not the agent's to edit.
+NO_WRITE_PATHS = ["data/raw/**", "**/private/**", ".claude/**", ".git/**", ".env", ".env.*"]
+# No job may read these: private pages never leave the machine.
+NO_READ_PATHS = ["**/private/**", ".env", ".env.*"]
+# Commands that change files behind a path rule's back (the rules guard the file tools, not the
+# shell). None is on an allow list; the deny keeps it so if an allow rule is ever widened.
+SHELL_BYPASSES = [
+    "mv",
+    "cp",
+    "rm",
+    "ln",
+    "rsync",
+    "tee",
+    "dd",
+    "sed",
+    "truncate",
+    "install",
+    "git restore",
+    "git checkout",
+    "git switch",
+    "git clean",
+    "git rm",
+    "git mv",
+    "git apply",
+    "git revert",
+    "git cherry-pick",
+    "git config",
+]
 # Denied for every job, whatever the skill asks for. Deny rules win over allow rules.
 ALWAYS_DENIED = [
     "Bash(git commit:*)",
@@ -45,9 +103,10 @@ ALWAYS_DENIED = [
     "Bash(git stash:*)",
     "Bash(git rebase:*)",
     "Bash(git merge:*)",
-    "Bash(git checkout:*)",
     "Bash(gh pr:*)",
-    "Bash(rm:*)",
+    *(f"Bash({command}:*)" for command in SHELL_BYPASSES),
+    *(f"Read({path})" for path in NO_READ_PATHS),
+    *(f"{tool}({path})" for path in NO_WRITE_PATHS for tool in ("Write", "Edit")),
     "WebFetch",
     "WebSearch",
 ]
@@ -71,19 +130,19 @@ JOBS: dict[str, Job] = {
             ("uv", "run", "librarian", "scrape", "arxiv"),
         ),
         prompt="/learn",
-        allowed_tools=[*READ_TOOLS, *WRITE_TOOLS, *LIBRARIAN_CLI, *GIT_STAGE_ONLY],
+        allowed_tools=[*READ_TOOLS, *FEEDS_INGEST_WRITE, *FEEDS_INGEST_CLI, *GIT_STAGE_ONLY],
         max_turns=150,
         max_budget_usd=10.0,
     ),
     "wiki-weekly": Job(
         description="the wiki's weekly review (/wiki-weekly); read-only, prints the report",
         prompt="/wiki-weekly",
-        allowed_tools=[*READ_TOOLS, *LIBRARIAN_CLI],
+        allowed_tools=[*READ_TOOLS, *WIKI_WEEKLY_CLI],
     ),
     "weekly": Job(
         description="the course's weekly health report (/weekly); read-only, prints the report",
         prompt="/weekly",
-        allowed_tools=[*READ_TOOLS, *LIBRARIAN_CLI, "Bash(uv run pytest:*)", "Bash(make:*)"],
+        allowed_tools=[*READ_TOOLS, *WEEKLY_CLI, *WEEKLY_MAKE, "Bash(uv run pytest:*)"],
     ),
     "codemap": Job(
         description="reindex the configured repos (no model involved)",

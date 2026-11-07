@@ -22,14 +22,23 @@ the judgement and the order; anything a script can decide is a `librarian` verb 
 
 ## Course (author and review `data/courses/`)
 
-`curriculum`, `pillar`, `practice`, `review`, `slides`, `weekly`, `write-chapter`, and the
-learn-ai-engineering ones: `chapter`, `papers`, `readings` (they say "Run from the
-learn-ai-engineering repo"). Verbs: `courses check ...`, `courses review ...`.
+`curriculum`, `pillar`, `practice`, `review`, `slides`, `weekly`, `write-chapter`. Verbs: `courses check ...`,
+`courses review ...`.
+
+Reading-queue skills `chapter`, `papers`, `readings` live here but drive the `scripts/papers/` tooling
+(`potw.py`, ledger, inbox), which exists only in the learn-ai-engineering repo, not in this one. They
+say "Run from the learn-ai-engineering repo" and that is still true; the notes they edit are in
+`data/courses/` here.
 
 ## Build (agent projects, outside the wiki)
 
-`adk-context`, `harness-audit`, `evals-bootstrap`, `new-agent`, `fog`, `review-defense`,
-`codemap` (`codemap` entry point and the MCP code-index tools).
+`adk-context`, `harness-audit`, `evals-bootstrap`, `codemap` (`codemap` entry point and the MCP
+code-index tools).
+
+## Provided elsewhere
+
+`new-agent`, `fog` and `review-defense` show up in the skill list but are not in this repo's
+`.claude/skills/`; they come from the global config or plugins.
 
 ## Unattended runs
 

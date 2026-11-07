@@ -69,6 +69,39 @@ describe("createSseParser", () => {
   });
 });
 
+describe("createSseParser malformed frames", () => {
+  it("warns with the event type and a truncated payload, then keeps parsing", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const events: Record<string, unknown>[] = [];
+    const p = createSseParser((e) => events.push(e));
+    p.push(`event: token\ndata: {${"x".repeat(500)}\n\n`);
+    p.push('data: {"type":"done"}\n\n');
+    expect(events).toEqual([{ type: "done" }]);
+    expect(warn).toHaveBeenCalledTimes(1);
+    const msg = String(warn.mock.calls[0][0]);
+    expect(msg).toContain("event: token");
+    expect(msg.length).toBeLessThan(300);
+    warn.mockRestore();
+  });
+});
+
+describe("toHistory cap", () => {
+  it("sends at most the last 20 messages, leaving the input intact", () => {
+    const msgs: ChatMessage[] = [];
+    for (let i = 0; i < 15; i++) {
+      msgs.push(
+        { id: `u${i}`, role: "user", content: `q${i}`, streaming: false },
+        { id: `a${i}`, role: "assistant", content: `r${i}`, streaming: false },
+      );
+    }
+    const h = toHistory(msgs);
+    expect(h).toHaveLength(20);
+    expect(h[0]).toEqual({ role: "user", content: "q5" });
+    expect(h[19]).toEqual({ role: "assistant", content: "r14" });
+    expect(msgs).toHaveLength(30);
+  });
+});
+
 describe("toHistory", () => {
   const msg = (role: "user" | "assistant", content: string, extra: Partial<ChatMessage> = {}) =>
     ({ id: Math.random().toString(), role, content, streaming: false, ...extra }) as ChatMessage;

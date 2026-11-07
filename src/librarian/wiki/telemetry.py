@@ -44,9 +44,13 @@ from librarian.wiki import course_leaks
 from librarian.wiki.common import (
     TYPED_LINK_RE,
     WIKILINK_RE,
+    LinkEntry,
+    LinkIndex,
     fm,
+    link_name,
     page_aliases,
     page_tags,
+    resolve_link,
     slugify,
 )
 
@@ -95,7 +99,6 @@ ASKED_FLOOR_NOTE = (
 
 _SEE_ALSO_RE = re.compile(r"^(#{1,6})\s+see also\b", re.IGNORECASE)
 _HEADING_RE = re.compile(r"^(#{1,6})\s")
-_SEE_ALSO_PREFIX_RE = re.compile(r"^see also:\s*", re.IGNORECASE)
 _STATUS_RE = re.compile(r"^\*\*Status:\*\*\s*(\S+)", re.MULTILINE)
 _OP_RE = re.compile(r"^[a-z][a-z0-9-]*$")
 _GAP_LINE_RE = re.compile(r"^- (.+) \| first seen (\d{4}-\d{2}-\d{2}) \| count \d+$", re.MULTILINE)
@@ -181,36 +184,49 @@ def _public_pages(wiki_dir: Path) -> list[Page]:
     return [_load_page(f, wiki_dir) for f in _public_files(wiki_dir)]
 
 
-def _slug_map(pages: Iterable[Page]) -> dict[str, Page]:
-    """Link slug → page. Stems beat titles beat aliases, the same resolution as relinker.py."""
-    pages = [p for p in pages if not p.stem.startswith("_")]
-    slugs: dict[str, Page] = {}
-    for page in pages:
-        slugs.setdefault(slugify(page.stem), page)
-    for page in pages:
-        slugs.setdefault(slugify(page.title), page)
-    for page in pages:
-        for alias in page.aliases:
-            slugs.setdefault(slugify(alias), page)
-    return slugs
+class PageLinks:
+    """`LinkIndex` over `Page`s: the one way health stats, lint, gaps, graph and rename resolve a link."""
+
+    def __init__(self, pages: Iterable[Page]) -> None:
+        self.by_rel = {p.rel: p for p in pages}
+        self.index = LinkIndex(
+            LinkEntry(
+                key=p.rel,
+                path=p.rel,
+                stem=p.stem,
+                title=p.title,
+                aliases=p.aliases,
+                tombstone="tombstone" in p.tags,
+                private=p.rel.split("/", 1)[0] == "private",
+            )
+            for p in self.by_rel.values()
+        )
+
+    def resolve(self, raw: str, **options: bool) -> Page | None:
+        """The page `[[raw]]` names (see `resolve_link` for the options), or None."""
+        key = resolve_link(raw, self.index, **options)
+        return None if key is None else self.by_rel[key]
 
 
-def _link_target(raw: str) -> tuple[str, bool]:
-    """A wikilink's slug, and whether the link spells out a path through private/."""
-    target = _SEE_ALSO_PREFIX_RE.sub("", raw.strip())
-    if "/" not in target:
-        return slugify(target), False
-    segments = target.split("/")
-    return slugify(segments[-1].removesuffix(".md")), "private" in segments
+def _link_index(pages: Iterable[Page]) -> PageLinks:
+    return PageLinks(pages)
 
 
-def _links_to_private(
-    target: tuple[str, bool], public: dict[str, Page], private: dict[str, Page]
-) -> bool:
-    slug, via_private_path = target
-    if slug not in private:
+def _via_private_path(raw: str) -> bool:
+    """Whether a link spells out a path through private/ (`private/some-page`)."""
+    target = link_name(raw)
+    return "/" in target and "private" in target.split("/")[:-1]
+
+
+def _links_to_private(raw: str, public: PageLinks, private: PageLinks) -> bool:
+    """Whether `[[raw]]` in a public file resolves to a private page.
+
+    `private` holds only private pages. A name that a public page also answers to is that
+    page's link, unless the link spells out the private/ path.
+    """
+    if private.resolve(raw, only_private=True) is None:
         return False
-    return via_private_path or slug not in public
+    return _via_private_path(raw) or public.resolve(raw, include_tombstones=True) is None
 
 
 # ── Stats ────────────────────────────────────────────────────────────────────
@@ -277,14 +293,14 @@ def _band_status(healthy: bool, broken: bool) -> str:
 
 
 def _link_edges(
-    pages: list[Page], slugs: dict[str, Page]
+    pages: list[Page], links: PageLinks
 ) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
     """Distinct (outbound, inbound) links between scored pages, keyed by rel. No self-links."""
     outbound: dict[str, set[str]] = {p.rel: set() for p in pages}
     inbound: dict[str, set[str]] = {p.rel: set() for p in pages}
     for page in pages:
         for match in WIKILINK_RE.finditer(page.body):
-            target = slugs.get(_link_target(match.group(1))[0])
+            target = links.resolve(match.group(1))
             if target is not None and target.scored and target.rel != page.rel:
                 outbound[page.rel].add(target.rel)
                 inbound[target.rel].add(page.rel)
@@ -300,10 +316,10 @@ def compute_stats(wiki_dir: Path, today: date) -> dict[str, Any]:
     """
     public = _public_pages(wiki_dir)
     pages = [p for p in public if p.scored]
-    slugs = _slug_map(public)
+    links = _link_index(public)
     total = len(pages)
 
-    outbound, inbound = _link_edges(pages, slugs)
+    outbound, inbound = _link_edges(pages, links)
     see_also = typed = stale = undated = stubs = 0
     cutoff = today - timedelta(days=STALE_DAYS)
     for page in pages:
@@ -572,8 +588,8 @@ def run_check(
         return LeakReport(blockers, [], 0, scanned)
     private_pages = _private_pages(wiki_dir)
     public_pages = _public_pages(wiki_dir)
-    private = _slug_map(private_pages)
-    public = _slug_map(public_pages)
+    private = _link_index(private_pages)
+    public = _link_index(public_pages)
     titles = _title_leak_pattern(private_pages, public_pages)
     paths = _private_path_pattern(private_pages)
     terms = terms_pattern(load_terms(wiki_dir))
@@ -589,8 +605,7 @@ def run_check(
             report.blockers.extend(blockers)
             report.warnings.extend(warnings)
             if any(
-                _links_to_private(_link_target(m.group(1)), public, private)
-                for m in WIKILINK_RE.finditer(line)
+                _links_to_private(m.group(1), public, private) for m in WIKILINK_RE.finditer(line)
             ):
                 report.blockers.append(f"{where} wikilink resolves to a private page")
             elif paths and paths.search(line):
@@ -608,7 +623,7 @@ def run_check(
     if courses_dir is not None:
         blockers, scanned = course_leaks.scan_public_lessons(
             courses_dir,
-            lambda raw: _links_to_private(_link_target(raw), public, private),
+            lambda raw: _links_to_private(raw, public, private),
             _display,
         )
         report.blockers.extend(blockers)
@@ -625,20 +640,19 @@ def check_file(path: Path, wiki_dir: Path) -> list[str]:
     if not path.is_file():
         return []
     private_pages = _private_pages(wiki_dir)
-    private = _slug_map(private_pages)
+    private = _link_index(private_pages)
     terms = terms_pattern(load_terms(wiki_dir))
     embedded = embedded_names_pattern(private_names(wiki_dir) & {p.stem for p in private_pages})
     issues: list[str] = []
-    hits: list[tuple[int, tuple[str, bool]]] = []
+    hits: list[tuple[int, str]] = []
     for number, line in enumerate(path.read_text(errors="replace").splitlines(), start=1):
         blockers, _ = _sensitive_issues(line, f"{_display(path)}:{number}", terms, embedded)
         issues.extend(blockers)
         for match in WIKILINK_RE.finditer(line):
-            target = _link_target(match.group(1))
-            if target[0] in private:
-                hits.append((number, target))
+            if private.resolve(match.group(1), only_private=True) is not None:
+                hits.append((number, match.group(1)))
     if hits:
-        public = _slug_map(_public_pages(wiki_dir))
+        public = _link_index(_public_pages(wiki_dir))
         lines = sorted({number for number, t in hits if _links_to_private(t, public, private)})
         issues.extend(f"{_display(path)}:{n} wikilink resolves to a private page" for n in lines)
     return issues
@@ -664,7 +678,7 @@ class AskedGaps:
 def _asked_gaps(
     telemetry_dir: Path,
     retrieval_log: Path,
-    public: dict[str, Page],
+    public: PageLinks,
     private_names: re.Pattern[str] | None,
 ) -> AskedGaps:
     seen: dict[str, dict[str, Any]] = {}
@@ -704,7 +718,7 @@ def _asked_gaps(
     for key, entry in seen.items():
         if _names_private_page(entry["name"], private_names):
             withheld += 1
-        elif (page := public.get(slugify(key))) is None or not page.scored:
+        elif (page := public.resolve(key, include_tombstones=True)) is None or not page.scored:
             gaps.append(Gap(entry["name"], entry["first"], entry["count"]))
     return AskedGaps(gaps, withheld, degraded_skipped)
 
@@ -718,7 +732,7 @@ class CourseGaps:
 
 
 def _course_gaps(
-    courses_dir: Path, wiki_dir: Path, public: dict[str, Page], private: dict[str, Page]
+    courses_dir: Path, wiki_dir: Path, public: PageLinks, private: PageLinks
 ) -> CourseGaps:
     """Empty curriculum modules and lesson links with no page.
 
@@ -773,13 +787,13 @@ def _course_gaps(
         prose = _INLINE_CODE_RE.sub("", courses._prose(post.content))
         targets += [m.group(1) for m in WIKILINK_RE.finditer(prose)]
         for target in targets:
-            slug = _link_target(target)[0]
+            slug = slugify(link_name(target))
             if not re.search(r"[a-z]", slug):
                 continue
-            if (page := public.get(slug)) is not None:
+            if (page := public.resolve(target, include_tombstones=True)) is not None:
                 if not page.scored:
                     withheld.add(slug)
-            elif slug in private:
+            elif private.resolve(target, only_private=True) is not None:
                 withheld.add(slug)
             else:
                 linking[slug].add(lesson_id)
@@ -809,8 +823,8 @@ def regenerate_gaps(
     """Write gaps.md; returns its top five lines, real demand (asked) ranked first."""
     public_pages = _public_pages(wiki_dir)
     private_pages = _private_pages(wiki_dir)
-    public = _slug_map(public_pages)
-    private = _slug_map(private_pages)
+    public = _link_index(public_pages)
+    private = _link_index(private_pages)
     path = telemetry_dir / GAPS_FILE
     previous = dict(_GAP_LINE_RE.findall(path.read_text())) if path.is_file() else {}
 

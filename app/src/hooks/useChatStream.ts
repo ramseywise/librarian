@@ -28,7 +28,10 @@ interface HistoryTurn {
 // Prior turns sent with each query. Only completed user→assistant pairs go out: an
 // errored, stopped or empty reply drops its pair, so the transcript alternates and ends
 // on "assistant" — the shape POST /api/chat/stream validates. The backend trims to its
-// own turn/char bounds, so no cap is applied here.
+// own turn/char bounds; the client also caps at MAX_HISTORY_MESSAGES so a long session does
+// not resend its whole transcript (display history is untouched).
+export const MAX_HISTORY_MESSAGES = 20;
+
 export function toHistory(messages: ChatMessage[]): HistoryTurn[] {
   const turns: HistoryTurn[] = [];
   for (let i = 0; i + 1 < messages.length; i++) {
@@ -39,7 +42,7 @@ export function toHistory(messages: ChatMessage[]): HistoryTurn[] {
     turns.push({ role: "user", content: u.content }, { role: "assistant", content: a.content });
     i++;
   }
-  return turns;
+  return turns.slice(-MAX_HISTORY_MESSAGES);
 }
 
 /**
@@ -50,15 +53,24 @@ export function toHistory(messages: ChatMessage[]): HistoryTurn[] {
 export function createSseParser(onEvent: (event: Record<string, unknown>) => void) {
   let buffer = "";
 
+  let eventType: string | undefined;
+
   function handleLine(raw: string) {
     const line = raw.endsWith("\r") ? raw.slice(0, -1) : raw;
+    if (line.startsWith("event:")) {
+      eventType = line.slice(6).trim();
+      return;
+    }
     if (!line.startsWith("data:")) return;
     const payload = line.slice(line.startsWith("data: ") ? 6 : 5);
     let event: unknown;
     try {
       event = JSON.parse(payload);
     } catch {
-      return; // malformed frame
+      console.warn(
+        `chat stream: malformed SSE frame${eventType ? ` (event: ${eventType})` : ""}: ${payload.slice(0, 200)}`,
+      );
+      return;
     }
     if (event && typeof event === "object") onEvent(event as Record<string, unknown>);
   }

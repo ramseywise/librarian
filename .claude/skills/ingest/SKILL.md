@@ -29,9 +29,8 @@ Parse `$ARGUMENTS`:
 
 Use the `mcp__claude_ai_Notion__notion-search`, `mcp__claude_ai_Notion__notion-fetch`, and `mcp__claude_ai_Notion__notion-query-meeting-notes` tools.
 
-**Step 1 — Search for recent AI/agent content** (run these searches in parallel):
-- `notion-search(query="agent AI LangGraph eval", filters={created_date_range: {start_date: 90 days ago}}, page_size=10, max_highlight_length=0)`
-- `notion-search(query="RAG evaluation grounding pipeline", filters={created_date_range: {start_date: 90 days ago}}, page_size=10, max_highlight_length=0)`
+**Step 1 — Search for recent content** (run the searches in parallel). Read the search terms, one query per line, from `.claude/skills/ingest/queries.local.txt` (gitignored, personal). If it does not exist, copy `queries.example.txt` to it and tell the user to edit it before continuing. For each line:
+- `notion-search(query="<line>", filters={created_date_range: {start_date: 90 days ago}}, page_size=10, max_highlight_length=0)`
 
 **Step 2 — Fetch recent meeting notes**:
 - `notion-query-meeting-notes` with a `created_time` filter for the last 30 days

@@ -17,16 +17,14 @@ jobs:
     # so main as of 2026-11-07. Move it deliberately; Dependabot does not bump reusable workflows.
     uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@86705a49b18d7e721b6fe729d7599203c49afbb2 # main as of 2026-11-07
     with:
-      # Makefile's `lint:` is a stub that defers to Claude, so it defines no
-      # paths. These are the real top-level Python dirs; raw/ data/wiki/ logs/
+      # Makefile's `lint:` runs ruff, import-linter and pyright; the
+      # paths below are the real top-level Python dirs; raw/ data/wiki/ logs/
       # are artifacts (naming.md data-layer rule) and stay unlinted.
       lint-paths: "src tests"
       # Lint gates from day one — the single RUF059 error was fixed 2026-07-19
       # (src/librarian/tools/codemap/indexer.py), so `ruff check src tests` is clean.
-      # The plan expected 14 failures here; the unit suite is in fact green
-      # (92 passed, 2 skipped, verified 2026-07-19). The 9 known-failing e2e
-      # tests need a live server on :5173 and live in tests/e2e/, so
-      # tests stay blocking.
+      # The e2e tests need a live server on :5173 and live in tests/e2e/, so they
+      # are ignored; the rest of tests stay blocking.
       test-command: "uv run pytest tests/ --ignore=tests/e2e -q"
 
   architecture:
@@ -60,7 +58,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint -- --max-warnings 0
-      - run: npm test
+      - run: npm run test:coverage
       - run: npm run build
 
   docker:

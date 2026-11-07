@@ -115,3 +115,6 @@ data/courses/**/slides/lectures/.preview/
 
 # Agent worktrees (Claude Code isolation)
 .claude/worktrees/
+
+# Personal Notion search terms for /ingest (copy queries.example.txt)
+.claude/skills/ingest/queries.local.txt

@@ -145,7 +145,10 @@ ingest: scrape-docs scrape-sessions scrape-repos
 	@echo "Done — run /ingest in Claude Code to compile all changed sources into wiki"
 
 lint:
-	@echo "Run /lint via Claude Code"
+	uv run ruff check src tests
+	uv run ruff format --check src tests
+	uv run lint-imports
+	uv run --all-extras pyright  # pyright resolves imports from every extra, as CI does
 
 # Architecture contracts (pyproject.toml [tool.importlinter]): library core never imports api/mcp/tools, etc.
 lint-imports:

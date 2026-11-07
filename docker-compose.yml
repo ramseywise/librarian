@@ -5,10 +5,28 @@
 # LIBRARIAN_API_TOKEN is required: the container binds 0.0.0.0 and the API refuses to start
 # without a token (add `--insecure` to the command to override). Set it, and ANTHROPIC_API_KEY, in .env. For UI development use `make ui` (Vite on :5173) against `make api`.
 services:
-  librarian:
+  # One-shot: creates the two private mountpoints on the host. Docker cannot create a tmpfs
+  # mountpoint inside the read-only ./data mount below, and a clean clone has neither directory.
+  prepare:
+    image: librarian:local
     build:
       context: .
       dockerfile: Dockerfile
+    user: "0:0"
+    entrypoint: ["mkdir", "-p", "/app/data/wiki/private", "/app/data/courses/private"]
+    command: []
+    volumes:
+      - ./data:/app/data
+    restart: "no"
+
+  librarian:
+    image: librarian:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      prepare:
+        condition: service_completed_successfully
     ports:
       - "${LIBRARIAN_PORT:-8000}:8000"
     env_file:

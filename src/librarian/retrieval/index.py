@@ -24,14 +24,13 @@ import duckdb
 
 from librarian.log_config import get_logger
 from librarian.retrieval import corpus, embeddings
-from librarian.retrieval.graph_expansion import build_typed_edges
+from librarian.retrieval.graph_expansion import build_link_index, build_typed_edges
 from librarian.wiki.common import (
     ANY_TYPED_LINK_RE,
     CANONICAL_LINK_TYPES,
     WIKILINK_RE,
     parse_frontmatter,
-    slugify,
-    text_aliases,
+    resolve_link,
 )
 
 log = get_logger(__name__)
@@ -143,24 +142,12 @@ def has_deleted_pages(con: duckdb.DuckDBPyConnection) -> bool:
 
 def compute_backlinks(pages: list[tuple]) -> dict[str, int]:
     """Count inbound wikilinks for each page slug."""
-    slug_to_path: dict[str, str] = {}
-    for path, title, *_ in pages:
-        slug = slugify(title)
-        slug_to_path[slug] = path
-        # also register by stem
-        stem = Path(path).stem
-        slug_to_path[stem] = path
-    for row in pages:
-        for alias in text_aliases(row[5]):
-            slug_to_path.setdefault(slugify(alias), row[0])
-
+    link_index = build_link_index((row[0], row[1], row[5]) for row in pages)
     counts: dict[str, int] = {p[0]: 0 for p in pages}
     for row in pages:
         path, content = row[0], row[5]
         for match in WIKILINK_RE.finditer(content):
-            raw = match.group(1).strip()
-            slug = slugify(raw)
-            target = slug_to_path.get(slug)
+            target = resolve_link(match.group(1), link_index)
             if target and target != path and target in counts:
                 counts[target] += 1
     return counts

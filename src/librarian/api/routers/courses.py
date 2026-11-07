@@ -13,6 +13,11 @@ from librarian.courses import slides, sources, study
 
 router = APIRouter(prefix="/api/courses")
 
+# Files are served same-origin. An SVG carrying script would run if opened directly, so image
+# responses get a CSP that forbids script and sandboxes the document; <img> use is unaffected.
+_NOSNIFF = {"X-Content-Type-Options": "nosniff"}
+_ASSET_CSP = "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+
 
 @router.get("")
 def list_courses() -> list[dict[str, Any]]:
@@ -144,7 +149,7 @@ def slide_image(deck_id: str, n: int) -> FileResponse:
     target = slides.image_path(deck_id, n)
     if target is None:
         raise HTTPException(status_code=404, detail="no such slide image")
-    return FileResponse(target, media_type="image/png")
+    return FileResponse(target, media_type="image/png", headers=_NOSNIFF)
 
 
 @router.get("/files/{file_path:path}")
@@ -156,7 +161,7 @@ def course_file(file_path: str) -> FileResponse:
         raise HTTPException(status_code=400, detail="invalid path")
     if not target.is_file():
         raise HTTPException(status_code=404, detail="not found")
-    return FileResponse(target)
+    return FileResponse(target, headers={**_NOSNIFF, "Content-Security-Policy": _ASSET_CSP})
 
 
 @router.get("/sources/{file_path:path}")
@@ -166,4 +171,4 @@ def course_source(file_path: str) -> FileResponse:
     target = sources.source_file(file_path)
     if target is None:
         raise HTTPException(status_code=404, detail="source unavailable")
-    return FileResponse(target)
+    return FileResponse(target, headers=_NOSNIFF)
