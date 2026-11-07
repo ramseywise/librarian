@@ -1,13 +1,20 @@
 ---
 name: readings
-description: "Work the readings backlog: show what is in the scripts/papers/inbox/ inbox and the ledger (queued, downloaded, integrated by home), route triaged PDFs to their home's sources/, triage anything new, and recommend the next /chapter or /papers run. Usage: /readings, /readings route, /readings triage, /readings discover <home>, /readings sweep <programming|interview>. Run from the learn-ai-engineering repo."
+description: "Work the readings backlog: show what is in the scripts/papers/inbox/ inbox and the ledger (queued, downloaded, integrated by home), route triaged PDFs to their home's sources/, triage anything new, and recommend the next /chapter or /papers run. Usage: /readings, /readings route, /readings triage, /readings discover <home>, /readings sweep <programming|interview>. Run from the librarian repo; its pipeline commands run in `../learn-ai-engineering`."
 ---
+<!-- Generated from .claude/skills/_shared/readings.md in the librarian repo (uv run python -m librarian.tools.skillsync sync). Edit the template, not this file. -->
 
 You are keeping the reading backlog moving. `scripts/papers/README.md` describes
 the system. In short, every reading (DAIR AI Papers of the Week and every PDF dropped into
 the repo) is one row in `scripts/papers/ledger.jsonl`. Triage gives each row a
 home, a note and a relevance score. Route moves its PDF to the home's `sources/`. Then
 `/papers` (single papers) or `/chapter` (book chapters) fold it into the notes.
+
+## Where commands run
+
+Every command in this skill is the reading pipeline, and the pipeline exists only in the sibling
+`learn-ai-engineering` repo (`../learn-ai-engineering`): `cd ../learn-ai-engineering` before running any of them.
+`/papers` and `/chapter` then write the findings into the notes in this repo's `data/courses/`.
 
 Nothing leaves the repo. A reading with no home stays in the ledger as `parked` (worth
 knowing: interest 2–3) or `skipped` (not for this course). If `status --list parked` shows a
@@ -27,6 +34,7 @@ standards, vendor documentation or current facts, dispatch `web-researcher`, and
 python3 scripts/papers/potw.py status
 python3 scripts/papers/potw.py status --list queued | python3 -c "import sys,json,collections; c=collections.Counter((r['pillar'], 'chapter' if '/ch' in (r.get('pdf') or '') or '/appendix-' in (r.get('pdf') or '') else 'paper') for r in map(json.loads,sys.stdin)); [print(f'{n:4} {h:18} {k}') for (h,k),n in sorted(c.items())]"
 find scripts/papers/inbox -name '*.pdf' -newer scripts/papers/ledger.jsonl
+python3 scripts/papers/extract.py status | tail -2
 ```
 
 The last command lists PDFs added since the ledger was last written. They need a scan and
@@ -84,5 +92,6 @@ Recommend one concrete next command, then one or two alternatives:
 - Otherwise prefer the home with the most queued relevance-3 rows: `/papers <home>`.
 - Prefer homes whose notes are thin (few notes, or no references.md) over well-covered ones.
 - When a pillar's notes changed a lot since its deck was built, suggest `/slides <pillar>`.
+- When nothing is queued, or a home is fully integrated but its extractions lag, suggest `/extract <home>` (run it in the sibling: `/extract` is not in this repo).
 
 Report the counts as a short table, what you routed, and the recommendation. Do not commit.

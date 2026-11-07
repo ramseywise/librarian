@@ -1,6 +1,7 @@
 """Codemap indexer — orchestrates repo walk → content-hash check → parse → upsert.
 
-Reads src/librarian/tools/codemap/repos.txt, for each configured repo walks source files
+Reads the repo list (``default_repos_file()``: your gitignored repos.local.txt, else the
+tracked repos.txt), for each configured repo walks source files
 matching a registered language (see librarian.tools.codemap.parser.LANGUAGES), skips files
 whose hash equals ``files.content_hash`` in the DB (the DB is the only change-tracking state, so
 a deleted or rebuilt DB is always repopulated), parses changed files with
@@ -19,12 +20,29 @@ from pathlib import Path
 import duckdb
 import structlog
 
+from librarian.config import discover_root
 from librarian.tools.codemap import db, manifest, parser, symbol_embeddings
 
 log = structlog.get_logger()
 
 CODEMAP_DIR = Path(__file__).parent
-DEFAULT_REPOS_FILE = CODEMAP_DIR / "repos.txt"
+SHARED_REPOS_FILE = CODEMAP_DIR / "repos.txt"
+LOCAL_REPOS_FILE = CODEMAP_DIR / "repos.local.txt"
+
+
+def default_repos_file() -> Path:
+    """`$CODEMAP_REPOS_FILE`, else the gitignored `repos.local.txt`, else the tracked `repos.txt`."""
+    env = os.environ.get("CODEMAP_REPOS_FILE")
+    if env:
+        return Path(env).expanduser()
+    return LOCAL_REPOS_FILE if LOCAL_REPOS_FILE.is_file() else SHARED_REPOS_FILE
+
+
+def _repo_path(raw: str) -> Path:
+    """`~` is the user's home; a relative path is relative to the librarian checkout."""
+    path = Path(raw).expanduser()
+    return path if path.is_absolute() else (discover_root() / path).resolve()
+
 
 _EXCLUDE_DIRS = {".venv", "venv", "node_modules", "__pycache__", ".git", "dist", "build"}
 
@@ -35,7 +53,8 @@ class RepoConfig:
     root_path: Path
 
 
-def load_repos(repos_file: Path = DEFAULT_REPOS_FILE) -> list[RepoConfig]:
+def load_repos(repos_file: Path | None = None) -> list[RepoConfig]:
+    repos_file = repos_file or default_repos_file()
     if not repos_file.exists():
         return []
     repos: list[RepoConfig] = []
@@ -44,7 +63,7 @@ def load_repos(repos_file: Path = DEFAULT_REPOS_FILE) -> list[RepoConfig]:
         if not line or line.startswith("#"):
             continue
         parts = line.split()
-        root_path = Path(parts[0]).expanduser()
+        root_path = _repo_path(parts[0])
         repo_id = parts[1] if len(parts) > 1 else root_path.name
         repos.append(RepoConfig(repo_id=repo_id, root_path=root_path))
     return repos
@@ -324,10 +343,11 @@ def _resolve_call_edges(con: duckdb.DuckDBPyConnection) -> None:
 
 
 def run(
-    repos_file: Path = DEFAULT_REPOS_FILE,
+    repos_file: Path | None = None,
     only_repo: str | None = None,
     dry_run: bool = False,
 ) -> dict:
+    repos_file = repos_file or default_repos_file()
     repos = load_repos(repos_file)
     if only_repo:
         repos = [r for r in repos if r.repo_id == only_repo]

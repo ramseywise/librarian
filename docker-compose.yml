@@ -1,6 +1,7 @@
-# One service, one port: the API serves the built web UI too. http://localhost:8000
-#
-#   make app-build    (or: mkdir -p data/wiki/private data/courses/private && docker compose up --build)
+# Caddy terminates TLS on 80/443 and proxies to the API; the API publishes no host port.
+#   docker compose up -d --build     https://$LIBRARIAN_DOMAIN (default https://localhost)
+# Single-user local flow, no TLS: `make app` adds docker-compose.local.yml (API on 127.0.0.1:8000).
+#   make app-build    (the private mountpoints must exist first: mkdir -p data/wiki/private data/courses/private)
 #
 # LIBRARIAN_API_TOKEN is required: the container binds 0.0.0.0 and the API refuses to start
 # without a token (add `--insecure` to the command to override). Set it, and ANTHROPIC_API_KEY, in .env. For UI development use `make ui` (Vite on :5173) against `make api`.
@@ -19,6 +20,23 @@ services:
       - ./data:/app/data
     restart: "no"
 
+  # TLS and HSTS (docker/Caddyfile). LIBRARIAN_DOMAIN unset = localhost with Caddy's internal CA.
+  caddy:
+    image: caddy:2.10.2-alpine
+    depends_on:
+      librarian:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - LIBRARIAN_DOMAIN=${LIBRARIAN_DOMAIN:-localhost}
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    restart: unless-stopped
+
   librarian:
     image: librarian:local
     build:
@@ -27,8 +45,8 @@ services:
     depends_on:
       prepare:
         condition: service_completed_successfully
-    ports:
-      - "${LIBRARIAN_PORT:-8000}:8000"
+    expose:
+      - "8000"
     env_file:
       - path: .env
         required: false
@@ -51,3 +69,5 @@ services:
 
 volumes:
   librarian-var:
+  caddy-data:
+  caddy-config:

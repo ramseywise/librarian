@@ -1,7 +1,8 @@
 ---
 name: papers
-description: "Integrate queued or downloaded papers (DAIR AI Papers of the Week and PDFs already in the repo) into the course: read each PDF in its home's sources/, add a row to that home's references.md, write the finding into the note it maps to, and pull the key figure into sources/images/. Works for ai-engineering and generative-ai pillars and the subject homes (data-analytics, data-science, data-engineering, programming). Optional filter: /papers loop, /papers rag, /papers rag tier:1, /papers 2610.28577, /papers cited (audit papers the notes already cite), /papers filed. Run from the learn-ai-engineering repo."
+description: "Integrate queued or downloaded papers (DAIR AI Papers of the Week and PDFs already in the repo) into the course: read each PDF in its home's sources/, add a row to that home's references.md, write the finding into the note it maps to, and pull the key figure into sources/images/. Works for ai-engineering and generative-ai pillars and the subject homes (data-analytics, data-science, data-engineering, programming). Optional filter: /papers loop, /papers rag, /papers rag tier:1, /papers 2610.28577, /papers cited (audit papers the notes already cite), /papers filed. Run from the librarian repo; its pipeline commands run in `../learn-ai-engineering`."
 ---
+<!-- Generated from .claude/skills/_shared/papers.md in the librarian repo (uv run python -m librarian.tools.skillsync sync). Edit the template, not this file. -->
 
 You are integrating research papers into the AI-engineering course notes. The weekly job
 (`scripts/papers/potw.py run`, launchd `com.wiseer.potw`) has already fetched DAIR's AI
@@ -13,6 +14,28 @@ inbox) are triaged the same way and moved home by `potw.py route`. Homes are the
 `post-training`, …) and two subject homes, `classical-ml` (`data-science/`) and
 `ml-systems` (`data-engineering/`), which have notes like any other home. Book chapters go through `/chapter`, not this skill. Your job is the part that needs judgement: turn the
 paper into citations and findings in the notes.
+
+## Where commands run
+
+This skill spans two checkouts. The reading pipeline exists only in the sibling `learn-ai-engineering` repo
+(`../learn-ai-engineering`, the same checkout as `COURSE_SOURCES_DIR`): `scripts/papers/` (`potw.py`, the ledger,
+`extract.py`, `figures.py`, `citegraph.py`), the PDFs under `<home>/sources/` and the extractions. The notes are
+authored here. Paths below are written as the ledger gives them, relative to the sibling.
+
+- **In the sibling** (`cd ../learn-ai-engineering` first): every `scripts/papers/` command, every `make papers*`,
+  `ledger-check` and `extract-*` target, and every `sources/` path.
+- **In this repo:** the notes. A ledger `note` such as `ai-engineering/02-context-engineering/notes/05-x.md` is
+  `data/courses/ai-engineering/02-context-engineering/notes/05-x.md` here, and so are the home's `references.md`
+  and `README.md`. Lessons are authored in `data/courses/` only (the importer is retired): never edit the sibling's
+  copy of a note. `make chapter-check`, `make link-check` and `/curriculum` run here.
+- **`mark integrated`** runs in the sibling and looks for the citation in the sibling's copy of the note and
+  `references.md`, which edits made here do not change. If it refuses for that reason, check that the citation is in
+  the `data/courses/` note and `references.md`, then rerun with `--no-citation "authored in librarian data/courses"`.
+  The user sees every such exception.
+- **The `source-reader` agent** in this repo is read-only and writes no extraction. The reader that writes
+  `scripts/papers/extractions/<key>.json` is the sibling's (it has the Write tool). Where a step below says the reader
+  writes or checks an extraction, run that step in a session started in the sibling, or note in the report that the
+  extraction is missing and the key needs `/extract <key>` there.
 
 The notes are the product. A paper earns a place by changing, sharpening, or evidencing a
 claim a note makes. It never earns a "Recent papers" list bolted onto the end.
@@ -60,7 +83,7 @@ Before reading, check whether the notes already cite the paper. The ledger lags:
 can be written into a note by an earlier session while its row still says `queued`.
 
 ```bash
-grep -rn --include='*.md' '<arxiv-id>' ai-engineering generative-ai data-analytics data-science data-engineering programming
+grep -rn --include='*.md' '<arxiv-id>' data/courses
 ```
 
 Also grep a distinctive title phrase for rows without an arXiv id. A hit does **not**
@@ -74,9 +97,13 @@ home that cites it; a paper cited in a second home may need its point made there
 
 For each paper:
 1. Dispatch one `source-reader` per paper with the PDF path and the target note, at most 3 at a time. It reads the
-   whole PDF and returns claims, numbers, setups, verbatim quotes, limits and figure candidates. You keep the judgement
-   and the writing, so the raw PDF stays out of this session. Check `COVERAGE` in its report: a partial read is not a
-   read. If the agent is unavailable, or a quote looks wrong, extract the text yourself
+   whole PDF, writes the paper's extraction to `scripts/papers/extractions/<key>.json` (question, hypothesis, method
+   in numbers, results, limits, lineage) and returns claims, numbers, setups, verbatim quotes, limits and figure
+   candidates. You keep the judgement and the writing, so the raw PDF stays out of this session. Check `COVERAGE` in
+   its report: a partial read is not a read. `COVERAGE: reused extraction` is fine: a full read made that file, and
+   the reader reported from it instead of reading the PDF again. Check its `EXTRACTION` line says the check passed; if it did not, or the
+   agent ran without writing one, send it back to finish the extraction before you write the note. The extraction's
+   `lineage` and `method` are there when the note needs a training detail or an origin. If the agent is unavailable, or a quote looks wrong, extract the text yourself
    (poppler isn't installed, so the Read tool can't render PDFs):
    ```bash
    uv run -q --with pypdf python -c "import sys,pypdf; r=pypdf.PdfReader(sys.argv[1]); print(len(r.pages),'pages'); print('\n'.join(p.extract_text() for p in r.pages[:int(sys.argv[2])]))" <pdf> 5
@@ -151,17 +178,24 @@ Use **★** only for papers that change a claim (contradicts / strong extends).
   ```
   Use `crop --clip x0,y0,x1,y1` for vector figures (no xref); render the page with `page`
   first and look at it with Read to choose the box. Look at the saved PNG before embedding
-  it. Caption it the way the notes already do:
+  it.
+  Then copy a kept PNG to `data/courses/<home>/assets/sources/images/` in this repo's private mirror
+  (`data/courses/private/...`, no licence to share) and embed it as `../assets/sources/images/<file>`.
+  Caption it the way the notes already do:
   `*Image Source: <Author>, [<Title>](https://...) (<year>), Fig. <N>*`, plus the licence when there is one.
   At most one figure per paper; none is fine.
 
 ## Step 5 — Close out
 
 ```bash
+python3 scripts/papers/extract.py check <key> [<key> ...]          # every paper you read has a passing extraction
 python3 scripts/papers/potw.py mark integrated <key> [<key> ...]
 python3 scripts/papers/citegraph.py refs --home <home> --write   # refresh "Where the ideas come from"
-make link-check   # checks data/courses/ (the sibling's script checks only the sibling)
+make link-check   # run here: checks data/courses/ (the sibling's own script checks only the sibling)
 ```
+
+`mark integrated` warns about a key with no full extraction. Do not leave one behind: a paper read without an
+extraction has to be read again later.
 
 `mark integrated` refuses a key with no citation in the home's notes or `references.md`, and sets the row's `note` to
 the citing file. A refusal means the citation was not written: write it, then mark again. `--no-citation "<why>"` is for

@@ -324,3 +324,43 @@ def test_api_returns_503_when_index_missing(temp_repo: Path) -> None:
     with pytest.raises(HTTPException) as exc:
         api._con()
     assert exc.value.status_code == 503
+
+
+def test_repo_paths_expand_home_and_resolve_relative_to_checkout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from librarian.tools.codemap import indexer
+
+    checkout = tmp_path / "checkout"
+    checkout.mkdir()
+    monkeypatch.setattr(indexer, "discover_root", lambda: checkout)
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    repos_file = tmp_path / "repos.txt"
+    repos_file.write_text("# comment\n. self\n~/code/other\n/abs/path abs\n")
+
+    repos = indexer.load_repos(repos_file)
+
+    assert [(r.repo_id, r.root_path) for r in repos] == [
+        ("self", checkout.resolve()),
+        ("other", tmp_path / "home" / "code" / "other"),
+        ("abs", Path("/abs/path")),
+    ]
+
+
+def test_local_repos_file_wins_and_env_overrides_both(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from librarian.tools.codemap import indexer
+
+    shared, local = tmp_path / "repos.txt", tmp_path / "repos.local.txt"
+    shared.write_text(". librarian\n")
+    monkeypatch.setattr(indexer, "SHARED_REPOS_FILE", shared)
+    monkeypatch.setattr(indexer, "LOCAL_REPOS_FILE", local)
+    monkeypatch.delenv("CODEMAP_REPOS_FILE", raising=False)
+    assert indexer.default_repos_file() == shared
+
+    local.write_text("~/mine\n")
+    assert indexer.default_repos_file() == local
+
+    monkeypatch.setenv("CODEMAP_REPOS_FILE", str(tmp_path / "elsewhere.txt"))
+    assert indexer.default_repos_file() == tmp_path / "elsewhere.txt"

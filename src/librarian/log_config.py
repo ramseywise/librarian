@@ -23,6 +23,8 @@ from typing import Any, TextIO, cast
 
 import structlog
 
+from librarian.config import get_release
+
 REDACTED = "***REDACTED***"
 
 # A field whose NAME matches this is a secret regardless of its value.
@@ -89,6 +91,16 @@ def redact_secrets(
     return _redact_mapping(dict(event_dict))
 
 
+def add_release(
+    _logger: object,
+    _method_name: str,
+    event_dict: structlog.types.EventDict,
+) -> structlog.types.EventDict:
+    """structlog processor: stamp every line with the build's `release`."""
+    event_dict.setdefault("release", get_release())
+    return event_dict
+
+
 class _CurrentStderr:
     """File-like that writes to whatever `sys.stderr` is at call time.
 
@@ -119,6 +131,7 @@ def configure_logging(*, render_json: bool | None = None) -> None:
         processors=[
             structlog.processors.add_log_level,
             structlog.processors.TimeStamper(fmt="iso"),
+            add_release,
             redact_secrets,  # must run before any renderer
             renderer,
         ],

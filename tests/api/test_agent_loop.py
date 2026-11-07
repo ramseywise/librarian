@@ -71,11 +71,11 @@ def _agent_log() -> list[dict[str, Any]]:
 
 
 @pytest.mark.unit
-def test_default_model_is_opus_5_5(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_default_model_is_sonnet_5_5(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
     # _env_file=None: a developer's .env must not decide the default.
     monkeypatch.setattr(agent, "get_settings", lambda: Settings(_env_file=None))
-    assert agent.default_model() == "claude-opus-5-5"
+    assert agent.default_model() == "claude-sonnet-5-5"
 
 
 @pytest.mark.unit

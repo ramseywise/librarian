@@ -22,13 +22,30 @@ the judgement and the order; anything a script can decide is a `librarian` verb 
 
 ## Course (author and review `data/courses/`)
 
-`curriculum`, `pillar`, `practice`, `review`, `slides`, `weekly`, `write-chapter`. Verbs: `courses check ...`,
+`curriculum` (shared, below), `pillar`, `practice`, `review`, `slides`, `weekly`, `write-chapter`. Verbs: `courses check ...`,
 `courses review ...`.
 
-Reading-queue skills `chapter`, `papers`, `readings` live here but drive the `scripts/papers/` tooling
-(`potw.py`, ledger, inbox), which exists only in the learn-ai-engineering repo, not in this one. They
-say "Run from the learn-ai-engineering repo" and that is still true; the notes they edit are in
-`data/courses/` here.
+## Shared with learn-ai-engineering
+
+`chapter`, `papers`, `readings` and `curriculum` are installed in both this repo and the sibling
+`learn-ai-engineering` ("lae"). They are generated, not hand-kept: the one canonical copy is the template
+`.claude/skills/_shared/<skill>.md` here (Claude Code ignores that folder, since it loads only `<name>/SKILL.md`),
+rendered once per repo by `src/librarian/tools/skillsync.py`. The per-repo differences are a small table (`VARS` in
+that file: layout-doc path, curriculum command, `concept_homes.json` location, practice folder, link-check note)
+plus `{{#librarian}}` / `{{#lae}}` blocks, chiefly the "Where commands run" section. Everything else is one text.
+
+- **Edit** the template, never a `SKILL.md`. Then `make skills-sync` (writes both repos; `SIBLING=<path>` overrides
+  `../learn-ai-engineering`, also read from `COURSE_SOURCES_DIR`). It refuses a lae skill with uncommitted
+  hand edits (one not yet generated) and runs no git writes: review and commit each repo yourself.
+- **Check** with `make skills-check` (also `tests/skills/test_shared_skills.py`): fails when a copy differs from its
+  render. With no sibling checkout (CI) it prints `SKIP lae` and checks this repo only.
+- **Where steps run.** The reading pipeline (`scripts/papers/`: `potw.py`, ledger, `extract.py`, `figures.py`,
+  `citegraph.py`, the `sources/` PDFs) exists only in lae, so the librarian copies say plainly to
+  `cd ../learn-ai-engineering` for those commands. Note edits, `references.md`, `make chapter-check` and
+  `make link-check` run here against `data/courses/`.
+- **`extract` stays lae-only.** It only drives `scripts/papers/extract.py` and the extractions directory, so a copy
+  here could not run; the shared `readings` points at it in the sibling. The `source-reader` agent that writes
+  extractions is likewise lae's (this repo's is read-only); agents are not covered by this sync.
 
 ## Build (agent projects, outside the wiki)
 

@@ -1,7 +1,8 @@
 ---
 name: chapter
-description: "Fold one book chapter (a PDF under some home's sources/<book-slug>/chNN-*.pdf) into the notes it belongs to: prose, code and figures merged into existing sections, a Books row in references.md that maps chapters to notes, and the ledger row marked integrated. Never writes a chapter-summary note. Usage: /chapter ai-systems-performance-engineering ch05, /chapter huyen-ai-engineering, or /chapter with no argument to take the next queued chapter. Run from the learn-ai-engineering repo."
+description: "Fold one book chapter (a PDF under some home's sources/<book-slug>/chNN-*.pdf) into the notes it belongs to: prose, code and figures merged into existing sections, a Books row in references.md that maps chapters to notes, and the ledger row marked integrated. Never writes a chapter-summary note. Usage: /chapter ai-systems-performance-engineering ch05, /chapter huyen-ai-engineering, or /chapter with no argument to take the next queued chapter. Run from the librarian repo; its pipeline commands run in `../learn-ai-engineering`."
 ---
+<!-- Generated from .claude/skills/_shared/chapter.md in the librarian repo (uv run python -m librarian.tools.skillsync sync). Edit the template, not this file. -->
 
 You are folding a book chapter into the course notes. The notes are the product. A
 chapter earns its place by sharpening, extending or evidencing what the notes already
@@ -10,6 +11,28 @@ called "Chapter 5 summary". A chapter usually spreads across two or three notes.
 
 Read `.claude/skills/pillar/references/pillar-layout.md` first. It defines where things live and the house
 style for notes, figures and references.
+
+## Where commands run
+
+This skill spans two checkouts. The reading pipeline exists only in the sibling `learn-ai-engineering` repo
+(`../learn-ai-engineering`, the same checkout as `COURSE_SOURCES_DIR`): `scripts/papers/` (`potw.py`, the ledger,
+`extract.py`, `figures.py`, `citegraph.py`), the PDFs under `<home>/sources/` and the extractions. The notes are
+authored here. Paths below are written as the ledger gives them, relative to the sibling.
+
+- **In the sibling** (`cd ../learn-ai-engineering` first): every `scripts/papers/` command, every `make papers*`,
+  `ledger-check` and `extract-*` target, and every `sources/` path.
+- **In this repo:** the notes. A ledger `note` such as `ai-engineering/02-context-engineering/notes/05-x.md` is
+  `data/courses/ai-engineering/02-context-engineering/notes/05-x.md` here, and so are the home's `references.md`
+  and `README.md`. Lessons are authored in `data/courses/` only (the importer is retired): never edit the sibling's
+  copy of a note. `make chapter-check`, `make link-check` and `/curriculum` run here.
+- **`mark integrated`** runs in the sibling and looks for the citation in the sibling's copy of the note and
+  `references.md`, which edits made here do not change. If it refuses for that reason, check that the citation is in
+  the `data/courses/` note and `references.md`, then rerun with `--no-citation "authored in librarian data/courses"`.
+  The user sees every such exception.
+- **The `source-reader` agent** in this repo is read-only and writes no extraction. The reader that writes
+  `scripts/papers/extractions/<key>.json` is the sibling's (it has the Write tool). Where a step below says the reader
+  writes or checks an extraction, run that step in a session started in the sibling, or note in the report that the
+  extraction is missing and the key needs `/extract <key>` there.
 
 ---
 
@@ -39,9 +62,10 @@ carry the chapter, the verdict is **verified**. Mark it `integrated` either way.
 
 ## Step 2 — Read the chapter
 
-Dispatch one `source-reader` with the chapter PDF and the triage's `note`. It reads the whole chapter and returns claims,
-numbers, setups, verbatim quotes, code and figure candidates, so the raw chapter stays out of this session. Check `COVERAGE`
-in its report. If the agent is unavailable, or a quote looks wrong, extract the text yourself. Chapter PDFs saved from the
+Dispatch one `source-reader` with the chapter PDF and the triage's `note`. It reads the whole chapter, writes the
+chapter's extraction to `scripts/papers/extractions/<key>.json` (type `book-chapter`; a method block only if the chapter
+runs an experiment) and returns claims, numbers, setups, verbatim quotes, code and figure candidates, so the raw chapter
+stays out of this session. Check `COVERAGE` in its report (`reused extraction` means a full read already made the file), and that its `EXTRACTION` line says the check passed. If the agent is unavailable, or a quote looks wrong, extract the text yourself. Chapter PDFs saved from the
 O'Reilly reader are often one very tall page, so read by character range, not by page:
 
 ```bash
@@ -95,6 +119,8 @@ adds nothing. Note that in its references row, run
   uv run -q --with pymupdf python scripts/papers/figures.py crop <pdf> --page P --clip x0,y0,x1,y1 \
       --out <home>/sources/images/<book-slug>-fig<N-M>.png
   ```
+  Then copy each PNG you keep to `data/courses/<home>/assets/sources/images/` in this repo's private mirror
+  (`data/courses/private/...`, no licence to share) and embed it as `../assets/sources/images/<file>`.
   Look at every saved PNG with Read before embedding it. Caption it:
   `*Image Source: <Author>, *<Book>* (<Publisher>, <year>), Fig. N-M*`
 - **Inline citations.** Cite as `(*<Short title>*, ch. N)`. Do not link the PDF from a note.
@@ -116,8 +142,9 @@ from `.claude/skills/pillar/references/pillar-layout.md`.
 ## Step 6 — Close out
 
 ```bash
+python3 scripts/papers/extract.py check <key>
 python3 scripts/papers/potw.py mark integrated <key>
-make link-check   # checks data/courses/ (the sibling's script checks only the sibling)
+make link-check   # run here: checks data/courses/ (the sibling's own script checks only the sibling)
 ```
 
 `mark integrated` refuses a key with no citation in the home's notes or `references.md`, and sets the row's `note` to

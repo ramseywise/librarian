@@ -14,6 +14,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import duckdb
+import numpy as np
 import pytest
 
 from librarian.retrieval import corpus, embeddings, index, ranking
@@ -120,9 +121,9 @@ def test_changed_page_encode_called_once(wiki: Path, monkeypatch: pytest.MonkeyP
     encode_inputs: list[list[str]] = []
 
     class _FakeModel:
-        def encode(self, texts: list[str], **kwargs: object) -> list[list[float]]:
+        def encode(self, texts: list[str], **kwargs: object) -> np.ndarray:
             encode_inputs.append(list(texts))
-            return [[0.1] * 384 for _ in texts]
+            return np.full((len(texts), 384), 0.1, dtype=np.float32)
 
     fake_model = _FakeModel()
     monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", True)

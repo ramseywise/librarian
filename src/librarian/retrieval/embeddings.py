@@ -5,11 +5,13 @@ Everything that turns text into a vector goes through `encode`: the search index
 semantic edges and the course catalog. One model name (`Settings.embedding_model`), one
 loader behind one lock, one blob format.
 
-Two caches remain, because they hold different vectors and key them differently, so they cannot
-share rows without changing ranking: the DuckDB search index stores a vector per page embedded
-from the *whole file text* (frontmatter included, first 600 characters), keyed by path and
-content hash. The caches here (`compute_embeddings`, `encode_texts_cached`) embed `title.
-summary` plus the *body*, for the graph and the catalog.
+Two stores remain, because they embed different text and key it differently, so they cannot share
+rows without changing ranking: the DuckDB search index keeps a vector per page embedded from the
+*whole file text* (frontmatter included, first 600 characters), keyed by path and content hash,
+with the model name and dimension in its `meta`. The caches here (`compute_embeddings`,
+`encode_texts_cached`) embed `title. summary` plus the *body*, for the graph and the catalog.
+Embedding the body in the index was measured on 2026-11-07 and lowered the retrieval eval gate
+(sem MRR 0.863 to 0.843, under its 0.85 floor), so the two still disagree on purpose.
 
 numpy and sentence-transformers are optional (the `api` extra): `import` of this module needs
 neither, so the MCP server runs without them and search falls back to text-only ranking.
@@ -30,6 +32,7 @@ import duckdb
 import frontmatter
 
 from librarian.config import get_settings
+from librarian.log_config import get_logger
 from librarian.retrieval.corpus import is_under_private
 from librarian.wiki.common import fm
 
@@ -41,6 +44,8 @@ if TYPE_CHECKING:
 # Checked, not imported: importing sentence_transformers pulls in torch, which took 4-13 s of
 # API startup. Tests and the eval harness flip this to force the text-only path.
 HAS_EMBEDDINGS = importlib.util.find_spec("sentence_transformers") is not None
+
+log = get_logger(__name__)
 
 WIKI_DIR = get_settings().wiki_dir
 CACHE_DB = get_settings().embeddings_cache_path
@@ -58,6 +63,10 @@ _cache_lock = threading.Lock()
 # established, in a segfault seen in torch's MPS copy path on Apple silicon.
 _encode_lock = threading.Lock()
 
+# The last failure to load the model or encode, or "" while there is none. Search then runs on
+# text alone, and /readyz and the retrieval `degraded` list say so.
+LOAD_ERROR = ""
+
 
 def get_model() -> SentenceTransformer:
     global _model
@@ -66,8 +75,22 @@ def get_model() -> SentenceTransformer:
             if _model is None:
                 from sentence_transformers import SentenceTransformer
 
-                _model = SentenceTransformer(MODEL_NAME)
+                try:
+                    _model = SentenceTransformer(MODEL_NAME)
+                except Exception as exc:
+                    record_load_error(exc)
+                    raise
     return _model
+
+
+def record_load_error(exc: BaseException) -> None:
+    global LOAD_ERROR
+    LOAD_ERROR = f"{type(exc).__name__}: {exc}"
+
+
+def embeddings_unavailable() -> bool:
+    """True when the semantic rerank cannot run: the extra is missing or the model failed."""
+    return not HAS_EMBEDDINGS or bool(LOAD_ERROR)
 
 
 def embeddings_ready() -> bool:
@@ -82,7 +105,12 @@ def encode(texts: list[str]) -> np.ndarray:
 
 
 def warmup() -> None:
-    encode(["warmup"])
+    """Load the model now. A failure is recorded (see `LOAD_ERROR`), not raised."""
+    try:
+        encode(["warmup"])
+    except Exception as exc:
+        record_load_error(exc)
+        log.error("embeddings.warmup.failed", error=LOAD_ERROR)
 
 
 def _wiki_files() -> list[Path]:
@@ -103,11 +131,15 @@ def _tombstone(md_file: Path) -> bool:
     return "tombstone" in tags
 
 
+def page_text(title: str, summary: str, body: str) -> str:
+    """The text the graph and the catalog embed a page as: title, summary, start of the body."""
+    return f"{title}. {summary}\n\n{body[:600]}"
+
+
 def _page_text(md_file: Path) -> str:
     post = frontmatter.load(md_file)
-    title = post.get("title") or md_file.stem
-    summary = post.get("summary") or ""
-    return f"{title}. {summary}\n\n{post.content[:600]}"
+    title = str(post.get("title") or md_file.stem)
+    return page_text(title, str(post.get("summary") or ""), post.content)
 
 
 def _content_hash(md_file: Path) -> str:

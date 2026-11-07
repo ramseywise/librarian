@@ -27,7 +27,7 @@ RUN pip install --no-cache-dir uv \
 ENV VIRTUAL_ENV=/app/.venv PATH="/app/.venv/bin:$PATH" UV_HTTP_TIMEOUT=300 UV_CONCURRENT_DOWNLOADS=4
 COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv uv venv /app/.venv \
-    && uv export --frozen --extra api --no-dev --no-emit-project --no-hashes -o /tmp/req.txt \
+    && uv export --frozen --extra api --extra observability --no-dev --no-emit-project --no-hashes -o /tmp/req.txt \
     && TORCH_VERSION=$(sed -n 's/^torch==\([0-9.]*\).*/\1/p' /tmp/req.txt) \
     && grep -Ev '^(torch|triton|nvidia-|cuda-)' /tmp/req.txt > /tmp/req-nocuda.txt \
     && uv pip install --no-deps -r /tmp/req-nocuda.txt \
@@ -48,7 +48,11 @@ COPY --from=web /web/dist ./app/dist
 # /app/var is created owned by the app user so a fresh named volume inherits that.
 RUN mkdir -p /app/var /app/data && chown librarian:librarian /app/var
 
-ENV LIBRARIAN_ROOT=/app \
+# The image has no .git: pass the release at build time
+# (docker build --build-arg LIBRARIAN_RELEASE=<short sha> ...).
+ARG LIBRARIAN_RELEASE=dev
+ENV LIBRARIAN_RELEASE=${LIBRARIAN_RELEASE} \
+    LIBRARIAN_ROOT=/app \
     LIBRARIAN_STATE_DIR=/app/var \
     SERVE_COURSE_SOURCES=false \
     LIBRARIAN_PUBLIC=true \

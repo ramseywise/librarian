@@ -26,7 +26,10 @@ from librarian.api.routers.wiki_health import router as wiki_health_router
 from librarian.api.security import (
     WS_SUBPROTOCOL,
     RequestLogMiddleware,
+    SecurityHeadersMiddleware,
+    build_csp,
     chat_limiter,
+    inline_script_hashes,
     require_token,
 )
 from librarian.api.startup import find_problems
@@ -34,6 +37,8 @@ from librarian.config import get_settings
 from librarian.courses.catalog import warm_catalog
 from librarian.courses.curriculum import write_snapshot
 from librarian.log_config import configure_logging, get_logger
+from librarian.observability import setup as setup_observability
+from librarian.pricing import TokenUsage
 from librarian.wiki.parser import parse_wiki, public_page_ids, tag_shared_edges
 
 # At import, not in a main(): uvicorn imports this module as an ASGI app and never
@@ -67,6 +72,23 @@ def _in_background(fn: Callable[[], None]) -> None:
 def _run_in_order(jobs: list[Callable[[], None]]) -> None:
     for job in jobs:
         job()
+
+
+# The index state the lifespan reports: "building" until the background job has opened (and, if
+# behind the files, rebuilt) it, then "ready", or "failed". /readyz only reads this: a probe never
+# starts a rebuild. "skipped" is for runs that start no warmup (tests): the probe then checks the
+# file without building it.
+_index_state = "building"
+
+
+def _build_index() -> None:
+    global _index_state
+    try:
+        retrieval.open_index().close()
+        _index_state = "ready"
+    except Exception as exc:
+        _index_state = "failed"
+        log.error("api.startup.index_failed", error=str(exc), error_type=type(exc).__name__)
 
 
 def _warm_course_data() -> None:
@@ -134,7 +156,18 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     # encode lock in librarian/retrieval/embeddings.py are precautions, not a proven fix.
     watcher: asyncio.Task[None] | None = None
     skip_warmup = os.environ.get("LIBRARIAN_SKIP_WARMUP") == "1" or get_settings().skip_warmup
-    jobs: list[Callable[[], None]] = [] if skip_warmup else [_warm_course_data]
+    global _index_state
+    errors, warnings = find_problems(get_settings())
+    for line in warnings:
+        log.warning("api.startup.config", problem=line)
+    for line in errors:
+        log.error("api.startup.config", problem=line)
+    if errors:
+        # Fail before serving: a deployment that cannot work should not look up.
+        raise RuntimeError("invalid configuration: " + "; ".join(errors))
+    # The index first: it is what /readyz waits for, and the model load can follow it.
+    jobs: list[Callable[[], None]] = [] if skip_warmup else [_build_index, _warm_course_data]
+    _index_state = "skipped" if skip_warmup else "building"
     try:
         from watchfiles import awatch
 
@@ -150,11 +183,6 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         watcher.add_done_callback(_background_tasks.discard)
     if jobs:
         _in_background(lambda: _run_in_order(jobs))
-    errors, warnings = find_problems(get_settings())
-    for line in warnings:
-        log.warning("api.startup.config", problem=line)
-    for line in errors:
-        log.error("api.startup.config", problem=line)
     log.info("api.startup.ready", seconds=round(time.perf_counter() - _PROCESS_T0, 2))
     try:
         yield
@@ -190,12 +218,18 @@ app = FastAPI(
     redoc_url="/redoc" if _docs else None,
     openapi_url="/openapi.json" if _docs else None,
 )
+# Sentry and OTel, each only when its env var is set (librarian/observability.py).
+setup_observability(app)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().cors_origin_list,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+app.add_middleware(
+    SecurityHeadersMiddleware,
+    csp=build_csp(inline_script_hashes(get_settings().web_dir / "index.html")),
 )
 app.add_middleware(RequestLogMiddleware)
 app.include_router(courses_router)
@@ -300,11 +334,13 @@ class ChatRequest(BaseModel):
 @app.post("/api/chat/stream")
 async def chat_stream(req: ChatRequest) -> StreamingResponse:
     settings = get_settings()
+    if not settings.chat_enabled:
+        raise HTTPException(status_code=404, detail="chat is disabled")
     chat_limiter.admit(settings)  # 429 before any model call
     history = [t.model_dump() for t in req.history]
 
-    def on_usage(input_tokens: int, output_tokens: int) -> None:
-        chat_limiter.record_usage(settings, input_tokens, output_tokens)
+    def on_usage(usage: TokenUsage) -> None:
+        chat_limiter.record_usage(settings, usage)
 
     async def generate() -> AsyncIterator[str]:
         async for event in run_agent_stream(req.query, history, on_usage=on_usage):
@@ -323,32 +359,46 @@ def healthz() -> dict[str, str]:
     return {"status": "ok"}
 
 
-# The index check opens (and refreshes) the DuckDB index, so a passing answer is reused.
+# The index probe opens the file without building it, so a passing answer is reused briefly.
 _READY_TTL_S = 30.0
 _ready_until = 0.0
 
 
 @app.get("/readyz")
 def readyz() -> JSONResponse:
-    """Readiness: the search index opens and, if semantic rerank is on, the model is loaded."""
+    """Readiness: the index is built and the model is loaded, or the rerank is off or failed.
+
+    Never builds or refreshes the index: while the startup job is still at it the answer is 503
+    `{"index": "building"}`. A model that failed to load is `degraded`, not unready: search then
+    runs on text alone.
+    """
     global _ready_until
+    if _index_state in ("building", "failed"):
+        return JSONResponse(
+            {"status": "not_ready", "index": _index_state, "checks": {"index": False}},
+            status_code=503,
+        )
     checks: dict[str, bool] = {}
     if time.monotonic() < _ready_until:
         checks["index"] = True
     else:
         try:
-            retrieval.open_index().close()
-            checks["index"] = True
-            _ready_until = time.monotonic() + _READY_TTL_S
+            checks["index"] = retrieval.index_is_built()
         except Exception as exc:
             log.warning("api.readyz.index_failed", error=str(exc), error_type=type(exc).__name__)
             checks["index"] = False
-    checks["embeddings"] = retrieval.embeddings_ready()
+        if checks["index"]:
+            _ready_until = time.monotonic() + _READY_TTL_S
+    unavailable = retrieval.embeddings_unavailable()
+    checks["embeddings"] = unavailable or retrieval.embeddings_ready()
+    degraded = ["embeddings_unavailable"] if unavailable else []
     ready = all(checks.values())
-    return JSONResponse(
-        {"status": "ready" if ready else "not_ready", "checks": checks},
-        status_code=200 if ready else 503,
-    )
+    body: dict[str, Any] = {"status": "ready" if ready else "not_ready", "checks": checks}
+    if not checks["index"]:
+        body["index"] = "building"
+    if degraded:
+        body["degraded"] = degraded
+    return JSONResponse(body, status_code=200 if ready else 503)
 
 
 # Last, so every route above keeps precedence. The UI routes with `#/...`, so a plain static

@@ -33,7 +33,7 @@ def test_api_refuses_a_public_bind_without_a_token(
     settings_env: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     settings_env.setenv("LIBRARIAN_API_TOKEN", "")
-    assert cli.main(["api", "--host", "0.0.0.0"]) == 2
+    assert cli.main(["api", "--host", "0.0.0.0"]) == 1
     assert "--insecure" in capsys.readouterr().err
 
 
@@ -73,15 +73,15 @@ def test_find_problems_names_each_problem(tmp_path: Path) -> None:
     s = Settings(
         override_wiki_dir=tmp_path / "nowiki",
         override_courses_dir=tmp_path,
-        chat_input_usd_per_mtok=0,
-        chat_output_usd_per_mtok=-1,
+        anthropic_model="claude-nope",
         anthropic_api_key="",
     )
     errors, warnings = find_problems(s)
     assert len(errors) == 3
     assert any("wiki directory" in e for e in errors)
-    assert any("INPUT" in e for e in errors) and any("OUTPUT" in e for e in errors)
-    assert len(warnings) == 1 and "ANTHROPIC_API_KEY" in warnings[0]
+    assert any("claude-nope" in e and "price table" in e for e in errors)
+    assert any("ANTHROPIC_API_KEY" in e for e in errors)
+    assert warnings == []
 
 
 def test_api_check_exits_1_on_errors_and_0_when_clean(

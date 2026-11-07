@@ -1,8 +1,9 @@
 # Repos to index → .code_index.duckdb
-# One absolute path per line, optionally followed by a slug (else derived
-# from the directory name). Use # for comments.
+# One path per line, optionally followed by a slug (else derived from the directory name).
+# `~` is your home directory; a relative path is relative to this checkout. Use # for comments.
+# To index your own repos, copy this file to repos.local.txt (gitignored), which takes
+# precedence; $CODEMAP_REPOS_FILE overrides both.
 # Run: uv run codemap  (or: make codemap-reindex)
 
-/Users/ramsey-wise/workspace/librarian librarian
-/Users/ramsey-wise/workspace/diskoe diskoe
-/Users/ramsey-wise/workspace/dssg/nonprofit-success-ai nsai
+. librarian
+# ~/workspace/other-repo other-repo

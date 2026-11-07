@@ -17,6 +17,8 @@ _DEGRADED_NOTES = {
     "substring match and ranking is less reliable",
     "stale_index": "the search index is behind the files on disk, so results may "
     "omit or misquote recent edits",
+    "embeddings_unavailable": "the embedding model failed to load, so ranking uses text "
+    "matching only",
 }
 
 

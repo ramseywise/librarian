@@ -13,6 +13,14 @@ import anthropic
 from librarian.agent.tools import CHAT, INVALID_ARGS_PREFIX, Tool, ToolContext, tools_for
 from librarian.config import get_settings
 from librarian.log_config import get_logger
+from librarian.observability import (
+    NoopSpan,
+    end_span,
+    start_span,
+    timed,
+    trace_content_enabled,
+)
+from librarian.pricing import TokenUsage
 from librarian.retrieval import corpus
 
 log = get_logger(__name__)
@@ -140,13 +148,23 @@ def _log_answer(**fields: object) -> None:
 
 
 async def _run_tool(
-    tool: Tool | None, name: str, args: dict[str, Any], ctx: ToolContext
+    tool: Tool | None, name: str, args: dict[str, Any], ctx: ToolContext, parent: object = None
 ) -> tuple[str, bool]:
-    """Run one tool call; returns (result text, is_error).
+    """Run one tool call; returns (result text, is_error). Traced as an `agent.tool` span.
 
     A failing tool must not end the answer: the error goes back as an `is_error` tool_result
     so the model can recover (retry, try another tool, or say so).
     """
+    with timed("agent.tool", parent=parent, **{"gen_ai.tool.name": name}) as sp:
+        result, is_error = await _call_tool(tool, name, args, ctx)
+        sp.set_attribute("result_size", len(result))
+        sp.set_attribute("is_error", is_error)
+    return result, is_error
+
+
+async def _call_tool(
+    tool: Tool | None, name: str, args: dict[str, Any], ctx: ToolContext
+) -> tuple[str, bool]:
     if tool is None:
         return "Unknown tool.", True
     try:
@@ -157,18 +175,22 @@ async def _run_tool(
     return result, result.startswith(INVALID_ARGS_PREFIX)
 
 
-def _usage_tokens(response: object) -> tuple[int, int]:
-    """(input, output) tokens a turn billed. Cache reads and writes count as input, at full rate."""
+def _usage_tokens(response: object) -> TokenUsage:
+    """Tokens a turn billed, split by rate: uncached input, output, cache read, cache write."""
     usage = getattr(response, "usage", None)
     if usage is None:
-        return 0, 0
+        return TokenUsage()
 
     def n(name: str) -> int:
         value = getattr(usage, name, 0)
         return value if isinstance(value, int) else 0
 
-    inputs = n("input_tokens") + n("cache_creation_input_tokens") + n("cache_read_input_tokens")
-    return inputs, n("output_tokens")
+    return TokenUsage(
+        input=n("input_tokens"),
+        output=n("output_tokens"),
+        cache_read=n("cache_read_input_tokens"),
+        cache_write=n("cache_creation_input_tokens"),
+    )
 
 
 async def run_agent_stream(
@@ -178,7 +200,7 @@ async def run_agent_stream(
     client: anthropic.AsyncAnthropic | None = None,
     model: str | None = None,
     source: str = "chat",
-    on_usage: Callable[[int, int], None] | None = None,
+    on_usage: Callable[[TokenUsage], None] | None = None,
     tool_names: Sequence[str] | None = None,
     context: ToolContext | None = None,
 ) -> AsyncGenerator[dict[str, Any], None]:
@@ -189,8 +211,9 @@ async def run_agent_stream(
     (validated at the API boundary, trimmed here). `client` is injectable so tests and
     the eval harness can drive the loop without the env.
     `source` tags the telemetry line so eval traffic can be filtered from chat.
-    `on_usage(input_tokens, output_tokens)` is called after each model turn, so a spend cap
-    sees the cost of a stream that is later cut off.
+    `on_usage(TokenUsage)` is called after each model turn, so a spend cap sees the cost of a
+    stream that is later cut off. Each turn is an `agent.turn` span holding a model-call span and
+    one `agent.tool` span per tool call (`librarian.observability`; no-ops unless tracing is on).
     `tool_names` picks the registry tools offered to the model (default: every chat tool).
     `context` is handed to each tool call; it is the seam for request context (the lesson a
     user has open), and nothing reads it yet.
@@ -212,6 +235,10 @@ async def run_agent_stream(
     turns = 0
     stop_reason: str | None = None
     error = False
+    # Spans stay open across the yields below, so they are started, not made current (a context
+    # attached in one resume of this generator could detach in another). `end_span` is idempotent.
+    turn_span: Any = NoopSpan()  # replaced each turn; whatever is open is ended in `finally`
+    model_span: Any = turn_span
 
     def grounding() -> dict[str, Any]:
         cited = extract_citations("".join(answer_parts))
@@ -228,6 +255,27 @@ async def run_agent_stream(
             async with asyncio.timeout(300):  # 5-minute wall-clock bound (#33)
                 for _ in range(MAX_TURNS):
                     turns += 1
+                    end_span(model_span)
+                    end_span(turn_span)
+                    turn_span = start_span(
+                        "agent.turn",
+                        turn=turns,
+                        source=source,
+                        **{"gen_ai.request.model": model},
+                    )
+                    if turns == 1 and trace_content_enabled():
+                        turn_span.set_attribute("gen_ai.prompt", query)
+                    model_span = start_span(
+                        "gen_ai.chat",
+                        parent=turn_span,
+                        **{
+                            "gen_ai.operation.name": "chat",
+                            "gen_ai.system": "anthropic",
+                            "gen_ai.request.model": model,
+                            "gen_ai.request.max_tokens": MAX_TOKENS,
+                        },
+                    )
+                    model_started = time.monotonic()
                     # Stream every turn: unlike Gemini, tool_use arrives as its own block
                     # type, so text deltas are never ambiguous with a pending call. Text on
                     # a tool-calling turn is preamble and is streamed as it comes.
@@ -249,8 +297,25 @@ async def run_agent_stream(
                                 yield {"type": "token", "content": event.delta.text}
                         response = await stream.get_final_message()
 
+                    usage = _usage_tokens(response)
+                    model_span.set_attributes(
+                        {
+                            "gen_ai.usage.input_tokens": usage.input,
+                            "gen_ai.usage.output_tokens": usage.output,
+                            "gen_ai.usage.cache_read.input_tokens": usage.cache_read,
+                            "gen_ai.usage.cache_creation.input_tokens": usage.cache_write,
+                            "latency_ms": round((time.monotonic() - model_started) * 1000),
+                        }
+                    )
+                    if isinstance(response.stop_reason, str):
+                        model_span.set_attribute(
+                            "gen_ai.response.finish_reasons", [response.stop_reason]
+                        )
+                    if isinstance(getattr(response, "model", None), str):
+                        model_span.set_attribute("gen_ai.response.model", response.model)
+                    end_span(model_span)
                     if on_usage is not None:
-                        on_usage(*_usage_tokens(response))
+                        on_usage(usage)
 
                     stop_reason = response.stop_reason
                     if response.stop_reason == "refusal":
@@ -279,7 +344,7 @@ async def run_agent_stream(
                     # follow block order, so they stay deterministic.
                     parsed = [(b, dict(b.input or {}), tools.get(b.name)) for b in tool_uses]
                     outcomes = await asyncio.gather(
-                        *(_run_tool(tool, b.name, args, ctx) for b, args, tool in parsed)
+                        *(_run_tool(tool, b.name, args, ctx, turn_span) for b, args, tool in parsed)
                     )
                     tool_results: list[dict[str, Any]] = []
                     for (block, args, tool), (result, is_error) in zip(
@@ -310,11 +375,14 @@ async def run_agent_stream(
         except TimeoutError:
             stop_reason = "timeout"
             error = True
+            turn_span.set_attribute("is_error", True)
             log.error("agent.stream.timeout", turns=turns)
             yield {"type": "token", "content": "\n\n[The request timed out. Please try again.]"}
         except Exception as exc:
             stop_reason = "error"
             error = True
+            turn_span.set_attribute("is_error", True)
+            model_span.record_exception(exc)
             log.error("agent.stream.failed", error=str(exc), error_type=type(exc).__name__)
             yield {"type": "token", "content": "\n\n[An error occurred. Please try again.]"}
         answered = True
@@ -337,6 +405,11 @@ async def run_agent_stream(
         raise
     finally:
         # Runs on normal end, error and client disconnect alike, so every answer is logged once.
+        turn_span.set_attribute("stop_reason", stop_reason or "")
+        if trace_content_enabled():
+            turn_span.set_attribute("gen_ai.completion", "".join(answer_parts))
+        end_span(model_span)
+        end_span(turn_span)
         checked = grounding()
         _log_answer(
             source=source,

@@ -151,10 +151,6 @@ def _run_mcp(argv: list[str]) -> int:
     return int(_resolve("librarian.mcp.server:main")(argv) or 0)
 
 
-def _is_loopback(host: str) -> bool:
-    return host in {"localhost", "::1"} or host.startswith("127.")
-
-
 def _run_api(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="librarian api", description="FastAPI backend (uvicorn).")
     ap.add_argument("--host", default="127.0.0.1")
@@ -171,28 +167,21 @@ def _run_api(argv: list[str]) -> int:
     args = ap.parse_args(argv)
     import uvicorn
 
-    from librarian.api.startup import find_problems
+    from librarian.api.startup import find_problems, is_loopback
     from librarian.config import get_settings
     from librarian.log_config import configure_logging, get_logger
 
     settings = get_settings()
-    errors, warnings = find_problems(settings)
+    errors, warnings = find_problems(settings, host=args.host, insecure=args.insecure)
     for line in warnings:
         print(f"librarian api: warning: {line}", file=sys.stderr)
     for line in errors:
         print(f"librarian api: error: {line}", file=sys.stderr)
-    if args.check:
-        return 1 if errors else 0
     if errors:
         return 1
-    if not settings.api_token and not _is_loopback(args.host):
-        if not args.insecure:
-            print(
-                f"librarian api: refusing to bind {args.host} with no LIBRARIAN_API_TOKEN "
-                "(set it, or pass --insecure to serve unauthenticated)",
-                file=sys.stderr,
-            )
-            return 2
+    if args.check:
+        return 0
+    if not settings.api_token and not is_loopback(args.host):
         configure_logging()
         get_logger(__name__).warning("api.auth.open", host=args.host, hint="--insecure")
     # The app logs one structured line per request; uvicorn's access log would repeat it

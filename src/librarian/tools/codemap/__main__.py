@@ -26,7 +26,8 @@ def main() -> None:
 
     if not totals:
         print(
-            "No repos configured — add one to src/librarian/tools/codemap/repos.txt",
+            "No repos configured — add one to src/librarian/tools/codemap/repos.local.txt "
+            "(copy repos.txt)",
             file=sys.stderr,
         )
         sys.exit(1)

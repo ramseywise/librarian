@@ -72,6 +72,7 @@ def test_websocket_requires_the_token(secured: TestClient) -> None:
 
 def test_probes_need_no_token(secured: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
+    monkeypatch.setattr(main_module.retrieval, "index_is_built", lambda: True)
     assert secured.get("/healthz").json() == {"status": "ok"}
     resp = secured.get("/readyz")
     assert resp.status_code == 200
@@ -79,6 +80,7 @@ def test_probes_need_no_token(secured: TestClient, monkeypatch: pytest.MonkeyPat
 
 
 def test_readyz_is_503_until_the_model_is_loaded(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(main_module.retrieval, "index_is_built", lambda: True)
     monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", True)
     monkeypatch.setattr(embeddings, "_model", None)
     with TestClient(main_module.app) as client:
@@ -88,11 +90,11 @@ def test_readyz_is_503_until_the_model_is_loaded(monkeypatch: pytest.MonkeyPatch
 
 
 def test_readyz_is_503_when_the_index_will_not_open(monkeypatch: pytest.MonkeyPatch) -> None:
-    def boom() -> None:
+    def boom() -> bool:
         raise RuntimeError("locked")
 
     monkeypatch.setattr(embeddings, "HAS_EMBEDDINGS", False)
-    monkeypatch.setattr(main_module.retrieval, "open_index", boom)
+    monkeypatch.setattr(main_module.retrieval, "index_is_built", boom)
     with TestClient(main_module.app) as client:
         resp = client.get("/readyz")
     assert resp.status_code == 503
@@ -141,8 +143,9 @@ def test_chat_is_rate_limited_with_429(
 def test_chat_stops_at_the_daily_budget(
     monkeypatch: pytest.MonkeyPatch, fake_anthropic: type
 ) -> None:
-    # One reply bills 1000 in + 1000 out = $0.03 at the default prices.
-    monkeypatch.setenv("LIBRARIAN_CHAT_DAILY_BUDGET_USD", "0.02")
+    # One reply bills 1000 in + 1000 out = $0.012 on Sonnet 5.5 ($2 / $10 per MTok).
+    monkeypatch.setenv("ANTHROPIC_MODEL", "claude-sonnet-5-5")
+    monkeypatch.setenv("LIBRARIAN_CHAT_DAILY_BUDGET_USD", "0.01")
     get_settings.cache_clear()
     _fake_model(monkeypatch, fake_anthropic)
     with TestClient(main_module.app) as client:

@@ -1,0 +1,7 @@
+# Single-user local flow (`make app`): publishes the API on loopback, no TLS, no Caddy.
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up librarian
+# Open http://localhost:8000. Loopback only, so the port is not reachable from the network.
+services:
+  librarian:
+    ports:
+      - "127.0.0.1:${LIBRARIAN_PORT:-8000}:8000"

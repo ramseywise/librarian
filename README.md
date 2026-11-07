@@ -241,9 +241,26 @@ Chat is limited per process (`LIBRARIAN_CHAT_RATE_LIMIT`, `LIBRARIAN_CHAT_DAILY_
 
 ```bash
 echo 'LIBRARIAN_API_TOKEN=<a long random string>' >> .env
-make app            # creates the empty private mountpoints, then `docker compose up`
+make app            # local, single user: API only, http://localhost:8000 (loopback, no TLS)
 make app-build      # same, rebuilding the image
+
+mkdir -p data/wiki/private data/courses/private
+LIBRARIAN_DOMAIN=librarian.example.com docker compose up -d --build   # Caddy + TLS on 80/443
 ```
+
+- `make app` adds `docker-compose.local.yml`, which publishes the API on `127.0.0.1:${LIBRARIAN_PORT:-8000}`.
+  Plain `docker compose up` publishes no API port: only the `caddy` service (pinned `caddy:2.10.2-alpine`,
+  `docker/Caddyfile`) is reachable, on 80 and 443, and proxies to `librarian:8000`.
+- `LIBRARIAN_DOMAIN` is the public host name. A real domain gets a Let's Encrypt certificate (80 and 443 must
+  reach the host) and an HSTS header. Unset or `localhost` uses Caddy's internal CA: `https://localhost` works with a
+  one-time browser warning, and no HSTS is sent. Certificates live in the `caddy-data` volume.
+- The API sets the CSP (`script-src` hashes the inline theme script in `index.html`), `frame-ancestors 'none'`,
+  `Referrer-Policy`, `Permissions-Policy` and `nosniff` itself (`api/security.py`), so a route's own CSP (course assets) is kept.
+  `/ws` and the `/api/chat/stream` SSE pass through Caddy (SSE unbuffered, uncompressed).
+- `make deploy-content DEPLOY_HOST=user@host DEPLOY_PATH=/srv/librarian` rsyncs `data/wiki` and `data/courses` to
+  `$DEPLOY_PATH/data/` (`scripts/deploy-content.sh`). It refuses to run without `DEPLOY_HOST` and `DEPLOY_PATH`,
+  excludes `private/`, aborts if the dry run lists any `private/` path, fails if any file under a `private/` directory
+  exists at the destination afterwards, then runs `docker compose restart librarian` over ssh.
 
 - `LIBRARIAN_API_TOKEN` is required. The container binds `0.0.0.0`, and `librarian api` refuses to
   bind a non-loopback host without a token unless you pass `--insecure` (serves unauthenticated).

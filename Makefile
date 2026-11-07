@@ -2,16 +2,22 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate e2e-container
+.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build deploy-content obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate e2e-container
 
 # The private tmpfs masks need their mountpoints on the host: the data mount is read-only.
+LOCAL_COMPOSE = docker compose -f docker-compose.yml -f docker-compose.local.yml
+
 app:
 	mkdir -p data/wiki/private data/courses/private
-	docker compose up
+	$(LOCAL_COMPOSE) up librarian
 
 app-build:
 	mkdir -p data/wiki/private data/courses/private
-	docker compose up --build
+	$(LOCAL_COMPOSE) up --build librarian
+
+# Rsync data/wiki + data/courses to $$DEPLOY_HOST:$$DEPLOY_PATH (never private/), then restart the service.
+deploy-content:
+	scripts/deploy-content.sh
 
 obsidian:
 	open -a Obsidian $(PWD)/data/wiki
@@ -93,7 +99,7 @@ eval-gate:
 	uv run python -m evals.run_eval --live --arm course --verbose
 
 .PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps wiki-graph
-.PHONY: chapter-check chapter-check-all link-check curriculum crosswalk crosswalk-check manifest-check drill-check review-findings signals smoke-labs
+.PHONY: skills-check skills-sync chapter-check chapter-check-all link-check curriculum crosswalk crosswalk-check manifest-check drill-check review-findings signals smoke-labs
 
 wiki-stats:
 	uv run librarian wiki stats
@@ -171,7 +177,7 @@ help:
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"
 	@echo "install-presenter — uv sync --extra presenter"
-	@echo "codemap-reindex  — reindex repos in src/librarian/tools/codemap/repos.txt → .code_index.duckdb"
+	@echo "codemap-reindex  — reindex repos in codemap repos.local.txt (else repos.txt) → .code_index.duckdb"
 	@echo "codemap-api      — start Codemap Query API (port 8100)"
 	@echo "setup-ollama     — pull the configured Ollama model"
 	@echo "test             — run unit tests (no servers needed)"
@@ -204,6 +210,12 @@ chapter-check-all:  ## Hold the pillared courses to the chapter standard and pro
 chapter-check:  ## Check notes against the chapter standard: make chapter-check PILLAR=data-analytics/06-applied-analyses [STRICT=1]
 	@test -n "$(PILLAR)" || { echo "usage: make chapter-check PILLAR=<course>/<module> [STRICT=1]"; exit 1; }
 	uv run librarian courses check chapters $(PILLAR) $(if $(STRICT),--strict)
+
+skills-check:  ## Fail if a skill shared with learn-ai-engineering (chapter, papers, readings, curriculum) differs from its template; skips the sibling when absent
+	uv run python -m librarian.tools.skillsync check
+
+skills-sync:  ## Render .claude/_shared templates into both repos' shared skills (SIBLING=path to override ../learn-ai-engineering)
+	uv run python -m librarian.tools.skillsync sync $(if $(SIBLING),--sibling $(SIBLING))
 
 link-check:  ## Verify relative links in the public lessons resolve
 	uv run librarian courses check links

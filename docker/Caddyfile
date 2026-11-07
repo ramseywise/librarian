@@ -1,0 +1,33 @@
+# TLS reverse proxy in front of the API (the only service that publishes ports).
+#
+# LIBRARIAN_DOMAIN is the public host name. Unset or `localhost` gives Caddy's internal CA
+# (a self-signed certificate: works with no domain, the browser warns once). A real domain
+# gets a Let's Encrypt certificate, so ports 80 and 443 must reach this host.
+#
+# Security headers other than HSTS are set by the API itself (api/security.py): the CSP needs
+# the hashes of the inline scripts in the built index.html, and the course asset routes set
+# their own stricter CSP, which a proxy-level header would overwrite.
+{
+	admin off
+}
+
+{$LIBRARIAN_DOMAIN:localhost} {
+	# Real domains only: a pinned HSTS on localhost would follow the browser to every other
+	# local service on that name, and the internal certificate is not trusted anyway.
+	@public_host expression `'{$LIBRARIAN_DOMAIN:localhost}' != 'localhost'`
+	header @public_host Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	header -Server
+
+	# SSE: send each event as it is written; never buffer or compress the stream.
+	handle /api/chat/stream {
+		reverse_proxy librarian:8000 {
+			flush_interval -1
+		}
+	}
+
+	# Everything else, including the /ws WebSocket: Caddy upgrades and tunnels it unchanged.
+	handle {
+		encode zstd gzip
+		reverse_proxy librarian:8000
+	}
+}

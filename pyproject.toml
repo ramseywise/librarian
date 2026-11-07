@@ -68,6 +68,14 @@ presenter = [
     # accident, via a transitive PyYAML — nothing here had declared it.
     "pyyaml>=6.0.2",
 ]
+# Traces (OTLP, e.g. Langfuse Cloud) and Sentry; both inert until their env vars are set
+# (src/librarian/observability.py).
+observability = [
+    "opentelemetry-exporter-otlp-proto-http>=1.45.2",
+    "opentelemetry-instrumentation-fastapi>=0.66b2",
+    "opentelemetry-sdk>=1.45.2",
+    "sentry-sdk[fastapi]>=2.74.0",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -105,6 +113,10 @@ dev = [
     "scikit-learn>=1.9.1",
     "import-linter>=2.0",
     "pyright>=1.1.380",
+    # tests/api/test_observability.py; also in the `observability` extra (CI installs no extras).
+    "opentelemetry-sdk>=1.45.2",
+    "opentelemetry-instrumentation-fastapi>=0.66b2",
+    "sentry-sdk[fastapi]>=2.74.0",
 ]
 
 [tool.ruff]

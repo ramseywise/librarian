@@ -118,3 +118,6 @@ data/courses/**/slides/lectures/.preview/
 
 # Personal Notion search terms for /ingest (copy queries.example.txt)
 .claude/skills/ingest/queries.local.txt
+
+# Personal codemap repo list (copy src/librarian/tools/codemap/repos.txt)
+src/librarian/tools/codemap/repos.local.txt

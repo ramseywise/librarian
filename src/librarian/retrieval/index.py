@@ -36,7 +36,9 @@ from librarian.wiki.common import (
 log = get_logger(__name__)
 
 # 6→7: adds content_hash for incremental indexing (LIB-124). 7→8: adds course_pages.
-SCHEMA_VERSION = "8"
+# 8→9: mtime_ns and size per row (the freshness check hashes only on a mismatch), `meta`
+# embedding_model and embedding_dim.
+SCHEMA_VERSION = "9"
 
 # How long a connection waits for another process's lock. A refresh of a few pages takes well
 # under a second and a full rebuild about twenty, so this outlasts both.
@@ -99,26 +101,58 @@ def _is_unindexed(path: Path) -> bool:
 
 
 def stale_pages(con: duckdb.DuckDBPyConnection) -> list[Path]:
-    """Return paths of wiki pages and lessons whose content hash differs from the indexed hash.
+    """Return paths of wiki pages and lessons whose content differs from the indexed content.
 
     Returns an empty list when the index is fully fresh and no pages have been deleted.
+    A file whose mtime and size match the indexed row is fresh without being read. Only a
+    mismatch is hashed: unchanged content (a checkout that touched the file) is fresh, and its
+    stored mtime and size are updated so the next pass skips it too.
     A tombstone with no index row is correct, not stale: read_pages never indexes one. One that
     still has a row was retired since the last build, so it stays stale until _update_pages prunes it.
     """
     try:
-        indexed: dict[str, str] = {
-            row[0]: row[1]
+        indexed: dict[str, tuple[str, int | None, int | None]] = {
+            row[0]: (row[1], row[2], row[3])
             for table in ("pages", "course_pages")
-            for row in con.execute(f"SELECT path, content_hash FROM {table}").fetchall()
+            for row in con.execute(
+                f"SELECT path, content_hash, mtime_ns, size FROM {table}"
+            ).fetchall()
         }
     except Exception:
         return corpus.wiki_pages() + corpus.course_pages()
 
-    return [
-        p
-        for p in corpus.wiki_pages() + corpus.course_pages()
-        if indexed.get(str(p)) != _content_hash(p) and (str(p) in indexed or not _is_unindexed(p))
-    ]
+    stale: list[Path] = []
+    touched: list[Path] = []
+    for p in corpus.wiki_pages() + corpus.course_pages():
+        row = indexed.get(str(p))
+        if row is not None and _stat_sig(p) == (row[1], row[2]):
+            continue
+        if row is not None and row[0] == _content_hash(p):
+            touched.append(p)
+        elif row is not None or not _is_unindexed(p):
+            stale.append(p)
+    if touched:
+        _record_signatures(con, touched)
+    return stale
+
+
+def _stat_sig(path: Path) -> tuple[int, int] | None:
+    try:
+        st = path.stat()
+    except OSError:
+        return None
+    return st.st_mtime_ns, st.st_size
+
+
+def _record_signatures(con: duckdb.DuckDBPyConnection, paths: list[Path]) -> None:
+    """Store the current mtime and size of pages whose content hash was confirmed unchanged."""
+    for table in ("pages", "course_pages"):
+        for p in paths:
+            sig = _stat_sig(p)
+            if sig is not None:
+                con.execute(
+                    f"UPDATE {table} SET mtime_ns = ?, size = ? WHERE path = ?", [*sig, str(p)]
+                )
 
 
 def has_deleted_pages(con: duckdb.DuckDBPyConnection) -> bool:
@@ -156,11 +190,13 @@ def compute_backlinks(pages: list[tuple]) -> dict[str, int]:
 def read_pages(paths: list[Path]) -> list[tuple]:
     """Parse frontmatter + text for the given pages.
 
-    Returns tuples of (path_str, title, tags, summary, updated, content, content_hash).
+    Returns tuples of (path_str, title, tags, summary, updated, content, content_hash, mtime_ns,
+    size). The stat is taken before the read, so a file edited in between reads as stale later.
     Tombstone pages and pages with unparseable frontmatter are excluded.
     """
     raw: list[tuple] = []
     for page in paths:
+        sig = _stat_sig(page) or (0, 0)
         text = page.read_text(encoding="utf-8", errors="ignore")
         meta = parse_frontmatter(text)
         if not meta:
@@ -180,6 +216,7 @@ def read_pages(paths: list[Path]) -> list[tuple]:
                 meta.get("updated", ""),
                 text,
                 chash,
+                *sig,
             )
         )
     return raw
@@ -188,7 +225,10 @@ def read_pages(paths: list[Path]) -> list[tuple]:
 def _embed_pages(raw: list[tuple]) -> dict[str, bytes]:
     """Vector blobs by path for `read_pages` tuples; {} when embeddings are unavailable or fail.
 
-    Embeds `title. summary` plus the first 600 characters of the whole file text.
+    Embeds `title. summary` plus the first 600 characters of the whole file text, frontmatter
+    included. The graph and the catalog embed the body instead (`embeddings.page_text`). Switching
+    this to the body was measured on 2026-11-07 and lowered `make eval-gate` (sem MRR 0.863 to
+    0.843, below its 0.85 floor; course MRR 0.839 to 0.805), so the index keeps the file text.
     """
     if not embeddings.HAS_EMBEDDINGS:
         return {}
@@ -243,7 +283,9 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
                 content      TEXT,
                 backlinks    INTEGER DEFAULT 0,
                 embedding    BLOB,
-                content_hash TEXT
+                content_hash TEXT,
+                mtime_ns     BIGINT,
+                size         BIGINT
             )
         """)
     con.execute("CREATE INDEX IF NOT EXISTS pages_path ON pages (path)")
@@ -274,12 +316,22 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
     vectors = _embed_pages(raw_pages)
 
     rows = [
-        (path, title, tags, summary, updated, content, backlinks.get(path, 0), vectors.get(path), h)
-        for path, title, tags, summary, updated, content, h in raw_pages
+        (
+            path,
+            title,
+            tags,
+            summary,
+            updated,
+            content,
+            backlinks.get(path, 0),
+            vectors.get(path),
+            *rest,
+        )
+        for path, title, tags, summary, updated, content, *rest in raw_pages
     ]
 
     con.executemany(
-        "INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         rows,
     )
 
@@ -290,6 +342,7 @@ def _full_rebuild(con: duckdb.DuckDBPyConnection) -> None:
 
     con.execute("INSERT INTO meta VALUES ('schema_version', ?)", [SCHEMA_VERSION])
     con.execute("INSERT INTO meta VALUES ('built_at', ?)", [str(time.time())])
+    _write_embedding_meta(con)
 
     log.info(
         "index_built",
@@ -311,10 +364,10 @@ def _upsert_lessons(con: duckdb.DuckDBPyConnection, lessons: list[Path]) -> int:
     vectors = _embed_pages(raw) if raw else {}
     if raw:
         con.executemany(
-            "INSERT OR REPLACE INTO course_pages VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)",
+            "INSERT OR REPLACE INTO course_pages VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?)",
             [
-                (path, title, tags, summary, updated, content, vectors.get(path), chash)
-                for path, title, tags, summary, updated, content, chash in raw
+                (path, title, tags, summary, updated, content, vectors.get(path), *rest)
+                for path, title, tags, summary, updated, content, *rest in raw
             ],
         )
 
@@ -373,11 +426,13 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
                 content,
                 backlinks.get(path, 0),
                 vectors.get(path),
-                h,
+                *rest,
             )
-            for path, title, tags, summary, updated, content, h in raw_pages
+            for path, title, tags, summary, updated, content, *rest in raw_pages
         ]
-        con.executemany("INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+        con.executemany(
+            "INSERT OR REPLACE INTO pages VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows
+        )
 
     # Update backlink counts for ALL pages whose count changed — handles the case
     # where an edited page removed a link to another page (R3 mitigation).
@@ -414,6 +469,86 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
     log.info("incremental_index_update", stale_count=len(pages))
 
 
+def _set_meta(con: duckdb.DuckDBPyConnection, key: str, val: str) -> None:
+    con.execute("DELETE FROM meta WHERE key = ?", [key])
+    con.execute("INSERT INTO meta VALUES (?, ?)", [key, val])
+
+
+def _get_meta(con: duckdb.DuckDBPyConnection, key: str) -> str | None:
+    row = con.execute("SELECT val FROM meta WHERE key = ?", [key]).fetchone()
+    return row[0] if row else None
+
+
+def _sample_dim(con: duckdb.DuckDBPyConnection) -> int | None:
+    """Vector length of any stored embedding, or None when no row has one."""
+    for table in ("pages", "course_pages"):
+        row = con.execute(
+            f"SELECT octet_length(embedding) // 4 FROM {table} WHERE embedding IS NOT NULL LIMIT 1"
+        ).fetchone()
+        if row:
+            return int(row[0])
+    return None
+
+
+def _write_embedding_meta(con: duckdb.DuckDBPyConnection) -> None:
+    """Record the model and vector length the stored embeddings came from ('' when none)."""
+    dim = _sample_dim(con)
+    _set_meta(con, "embedding_model", embeddings.MODEL_NAME if dim else "")
+    _set_meta(con, "embedding_dim", str(dim or 0))
+
+
+def _embeddings_mismatch(con: duckdb.DuckDBPyConnection) -> bool:
+    """True when stored vectors came from another model or have another length than recorded."""
+    model = _get_meta(con, "embedding_model")
+    if not model:
+        return False  # none stored: the NULL pass fills them
+    if model != embeddings.MODEL_NAME:
+        return True
+    dim = _sample_dim(con)
+    return dim is not None and str(dim) != _get_meta(con, "embedding_dim")
+
+
+def _reembed_missing(con: duckdb.DuckDBPyConnection) -> int:
+    """Embed the rows that have no vector (an index built without the model); returns the count."""
+    done = 0
+    for table in ("pages", "course_pages"):
+        rows = con.execute(
+            f"SELECT path, title, summary, content FROM {table} WHERE embedding IS NULL"
+        ).fetchall()
+        if not rows:
+            continue
+        raw = [(path, title, "", summary, "", content) for path, title, summary, content in rows]
+        vectors = _embed_pages(raw)
+        for path, blob in vectors.items():
+            con.execute(f"UPDATE {table} SET embedding = ? WHERE path = ?", [blob, path])
+        done += len(vectors)
+    if done:
+        _write_embedding_meta(con)
+        log.info("embeddings_filled", count=done)
+    return done
+
+
+def _refresh_embeddings(con: duckdb.DuckDBPyConnection) -> bool:
+    """Make the stored vectors match the configured model; True when it rebuilt everything.
+
+    A model or dimension mismatch re-embeds the whole corpus (`_full_rebuild`); rows with no
+    vector are embedded in place. Skipped when the model is off or failed to load.
+    """
+    if not embeddings.HAS_EMBEDDINGS or embeddings.LOAD_ERROR:
+        return False
+    if _embeddings_mismatch(con):
+        log.info("embeddings_model_changed", model=embeddings.MODEL_NAME)
+        _full_rebuild(con)
+        return True
+    pending = 0
+    for table in ("pages", "course_pages"):
+        row = con.execute(f"SELECT count(*) FROM {table} WHERE embedding IS NULL").fetchone()
+        pending += row[0] if row else 0
+    if pending:
+        _reembed_missing(con)
+    return False
+
+
 def build_index(con: duckdb.DuckDBPyConnection, force: bool = False) -> None:
     """Build or incrementally update the DuckDB index over data/wiki/ and data/courses/.
 
@@ -424,10 +559,9 @@ def build_index(con: duckdb.DuckDBPyConnection, force: bool = False) -> None:
         return
 
     stale = stale_pages(con)
-    if not stale and not has_deleted_pages(con):
-        return  # index is fresh — nothing to do
-
-    _update_pages(con, stale)
+    if stale or has_deleted_pages(con):
+        _update_pages(con, stale)
+    _refresh_embeddings(con)
 
 
 # ---------------------------------------------------------------------------
@@ -468,6 +602,20 @@ def open_index() -> duckdb.DuckDBPyConnection:
     con = connect()
     build_index(con)
     return con
+
+
+def index_is_built() -> bool:
+    """True when the index file holds a current-schema index. Never builds or refreshes it.
+
+    The readiness probe: `open_index` would rebuild an absent index inside a health check.
+    """
+    if not corpus.DB_PATH.exists():
+        return False
+    con = connect()
+    try:
+        return not needs_rebuild(con)
+    finally:
+        con.close()
 
 
 def rebuild_index() -> None:

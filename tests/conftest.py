@@ -16,6 +16,8 @@ def pytest_configure(config: pytest.Config) -> None:
     # TestClient-as-context-manager runs the app lifespan; don't build the real course
     # catalog or load the embedding model there.
     os.environ.setdefault("LIBRARIAN_SKIP_WARMUP", "1")
+    # Startup validation refuses to start the API without a key while chat is enabled.
+    os.environ.setdefault("ANTHROPIC_API_KEY", "test-key")
 
 
 @pytest.fixture(autouse=True)
@@ -30,6 +32,14 @@ def _isolate_retrieval_log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> N
 
     monkeypatch.setattr(corpus, "LOGS_DIR", tmp_path / "logs")
     monkeypatch.setattr(corpus, "RETRIEVAL_LOG", tmp_path / "logs" / "retrieval.jsonl")
+
+
+@pytest.fixture(autouse=True)
+def _reset_embedding_state(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A model-load failure is process state; one test's must not degrade the next."""
+    from librarian.retrieval import embeddings
+
+    monkeypatch.setattr(embeddings, "LOAD_ERROR", "")
 
 
 @pytest.fixture(autouse=True)

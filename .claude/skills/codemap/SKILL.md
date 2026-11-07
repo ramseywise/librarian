@@ -12,7 +12,7 @@ this skill.
 ## Input
 
 `$ARGUMENTS`:
-- Empty → reindex all repos in `src/librarian/tools/codemap/repos.txt`
+- Empty → reindex all configured repos (see Step 1)
 - `query <term>` → look up a symbol by name via the `find_symbol` MCP tool
 - `map <repo>` → structural overview of one repo via the `repo_map` MCP tool
 - `callers <symbol>` → who calls a given symbol, via the `find_callers` MCP tool
@@ -24,8 +24,11 @@ There is no manifest file to keep or delete; to force a full reparse, rebuild th
 
 ## Step 1 — Check configuration (reindex mode)
 
-Confirm `src/librarian/tools/codemap/repos.txt` has at least one uncommented repo path. If it's
-empty, tell the user to add a repo path and stop — do not invent a repo to index.
+The repo list is `src/librarian/tools/codemap/repos.local.txt` (gitignored, the user's own repos)
+if it exists, else the tracked `repos.txt` (this checkout only); `$CODEMAP_REPOS_FILE` overrides both.
+Paths may use `~` or be relative to the librarian checkout. Confirm the list has at least one
+uncommented repo path. If it's empty, tell the user to add one to `repos.local.txt` and stop —
+do not invent a repo to index.
 
 ## Step 2 — Reindex
 

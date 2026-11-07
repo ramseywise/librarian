@@ -13,6 +13,7 @@ from contextlib import contextmanager
 import duckdb
 
 from librarian.log_config import get_logger
+from librarian.observability import timed
 from librarian.retrieval import corpus, embeddings, index
 from librarian.retrieval.graph_expansion import expand_one_hop
 
@@ -153,19 +154,25 @@ def rerank(query: str, rows: list[tuple], limit: int) -> list[tuple]:
 # ---------------------------------------------------------------------------
 
 
-def degradation_reasons(con: duckdb.DuckDBPyConnection, *, has_fts: bool) -> list[str]:
+def degradation_reasons(
+    con: duckdb.DuckDBPyConnection, *, has_fts: bool, check_stale: bool = True
+) -> list[str]:
     """Names of the retrieval capabilities currently missing, best-effort.
 
     `index.open_index()` refreshes the index, so a stale one normally self-heals before
     any search. It stays stale only when that refresh failed (unreadable page,
     write error) — which is exactly the case worth surfacing, because results
-    are then served from content that no longer matches disk.
+    are then served from content that no longer matches disk. `check_stale=False` skips that
+    probe for a caller that has just refreshed the index: one freshness pass per request.
+    `embeddings_unavailable` means the model failed to load, so ranking is text only.
     """
     reasons: list[str] = []
     if not has_fts:
         reasons.append("no_fts")
+    if embeddings.LOAD_ERROR:
+        reasons.append("embeddings_unavailable")
     try:
-        if index.stale_pages(con) or index.has_deleted_pages(con):
+        if check_stale and (index.stale_pages(con) or index.has_deleted_pages(con)):
             reasons.append("stale_index")
     except Exception as e:  # never let a health probe break retrieval
         log.warning("degradation_probe_failed", error=str(e))
@@ -174,6 +181,22 @@ def degradation_reasons(con: duckdb.DuckDBPyConnection, *, has_fts: bool) -> lis
 
 def search_rows(
     query: str, domain: str = "", limit: int = 10, tool: str = "search_wiki", expand: bool = False
+) -> tuple[list[tuple], list[str]]:
+    """Ranked search (see `_search_rows`), inside a `search` span.
+
+    The span records the query's length, never its text.
+    """
+    with timed(
+        "search", **{"search.query_length": len(query), "search.limit": limit, "search.tool": tool}
+    ) as sp:
+        rows, degraded = _search_rows(query, domain, limit, tool, expand)
+        sp.set_attribute("search.result_count", len(rows))
+        sp.set_attribute("search.degraded", ",".join(degraded))
+        return rows, degraded
+
+
+def _search_rows(
+    query: str, domain: str, limit: int, tool: str, expand: bool
 ) -> tuple[list[tuple], list[str]]:
     """Ranked search returning raw rows — the single search core.
 
@@ -214,7 +237,7 @@ def search_rows(
     try:
         rows: list[tuple] = []
         fts_ok = index.ensure_fts(con)
-        degraded = degradation_reasons(con, has_fts=fts_ok)
+        degraded = degradation_reasons(con, has_fts=fts_ok, check_stale=False)
         if fts_ok:
             # A subquery, not an alias in WHERE: duckdb 2.0 rejects that form because
             # match_bm25 has side effects.
@@ -286,7 +309,7 @@ def _expand_rows(ranked: list[tuple], limit: int) -> tuple[list[tuple], list[tup
     rows plus the fired edges as (seed, neighbour, relationship) triples.
     """
     seed_scores = {r[0]: r[6] for r in ranked}
-    con = index.open_index()
+    con = index.connect()  # the search just refreshed the index; one freshness pass per request
     try:
         edges = con.execute("SELECT source_path, target_path, relationship FROM edges").fetchall()
         neighbours = expand_one_hop(list(seed_scores), edges, max_expansions=limit)

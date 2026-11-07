@@ -24,6 +24,8 @@ from pathlib import Path
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from librarian.pricing import DEFAULT_CHAT_MODEL
+
 
 def _walk_up_to_pyproject(start: Path) -> Path | None:
     for candidate in (start, *start.parents):
@@ -114,24 +116,19 @@ class Settings(BaseSettings):
     chat_rate_window_s: int = Field(
         default=60, validation_alias=_env("LIBRARIAN_CHAT_RATE_WINDOW_S")
     )
+    # Off: the chat route answers 404 and the API key is not required at startup.
+    chat_enabled: bool = Field(default=True, validation_alias=_env("LIBRARIAN_CHAT_ENABLED"))
     chat_daily_budget_usd: float = Field(
         default=5.0, validation_alias=_env("LIBRARIAN_CHAT_DAILY_BUDGET_USD")
     )
-    # USD per million tokens, used only to estimate the daily spend. Set to the configured model's
-    # list price; the cap is an estimate, not a bill.
-    chat_input_usd_per_mtok: float = Field(
-        default=5.0, validation_alias=_env("LIBRARIAN_CHAT_INPUT_USD_PER_MTOK")
-    )
-    chat_output_usd_per_mtok: float = Field(
-        default=25.0, validation_alias=_env("LIBRARIAN_CHAT_OUTPUT_USD_PER_MTOK")
-    )
+    # The daily spend is estimated from the price table in librarian.pricing, keyed by model id.
 
     # Models and endpoints.
     embedding_model: str = Field(
         default="all-MiniLM-L6-v2", validation_alias=_env("LIBRARIAN_EMBEDDING_MODEL")
     )
     anthropic_model: str = Field(
-        default="claude-opus-5-5", validation_alias=_env("ANTHROPIC_MODEL")
+        default=DEFAULT_CHAT_MODEL, validation_alias=_env("ANTHROPIC_MODEL")
     )
     anthropic_api_key: str = Field(default="", validation_alias=_env("ANTHROPIC_API_KEY"))
     codemap_api_url: str = Field(
@@ -295,3 +292,30 @@ class Settings(BaseSettings):
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
     return Settings()
+
+
+@lru_cache(maxsize=1)
+def get_release() -> str:
+    """The build identifier: `$LIBRARIAN_RELEASE`, else the git short sha, else `dev`.
+
+    The Docker image has no `.git`, so it takes the value as the `LIBRARIAN_RELEASE` build arg.
+    Logs, traces and Sentry all read this one value.
+    """
+    env = os.environ.get("LIBRARIAN_RELEASE", "").strip()
+    if env:
+        return env
+    import subprocess
+
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=discover_root(),
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "dev"
+    sha = out.stdout.strip()
+    return sha if out.returncode == 0 and sha else "dev"
