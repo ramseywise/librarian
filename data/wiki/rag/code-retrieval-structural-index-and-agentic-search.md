@@ -2,7 +2,7 @@
 title: "Code Retrieval: Structural Index and Agentic Search"
 tags: [rag, infra, concept]
 summary: Live code wants a different retrieval stack than prose knowledge — AST/symbol-level chunking (tree-sitter, cAST), a lightweight symbol reference graph (Aider-style PageRank) instead of a graph database, grep-first agentic search with embeddings as fuzzy fallback, and Merkle/content-hash incremental re-indexing.
-updated: 2026-10-17
+updated: 2026-11-07
 sources:
   - data/raw/claude-docs/guacamayo/docs/state/research_agentic_kb_for_code.md
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-20_tencentdb-memory_parity.md
@@ -70,7 +70,7 @@ first** and falls back to embeddings for fuzzy, conceptual queries.
 
 ## 6. Implementation notes: librarian's codemap
 
-librarian built a small-team version of section 5 as `src/librarian/codemap/` (2026-07). It uses
+librarian built a small-team version of section 5 as `src/librarian/tools/codemap/` (2026-07). It uses
 tree-sitter to extract symbols plus import and call edges into `.code_index.duckdb`, with
 content-hash manifest skips for incremental reindexing. Decisions worth reusing:
 

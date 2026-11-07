@@ -1,4 +1,4 @@
-"""Tests for the ANTHROPIC_API_KEY guard in librarian.api.agent (GH #54)."""
+"""Tests for the ANTHROPIC_API_KEY guard in librarian.agent.loop (GH #54)."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ def test_missing_anthropic_api_key_raises_runtime_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """_get_client() must raise RuntimeError (not KeyError) when the key is absent."""
-    import librarian.api.agent as agent_module
+    import librarian.agent.loop as agent_module
 
     # Reset the cached client so the factory runs again
     monkeypatch.setattr(agent_module, "_client", None)
@@ -37,7 +37,7 @@ def test_present_anthropic_api_key_does_not_raise(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """When ANTHROPIC_API_KEY is set, _get_client() must not raise."""
-    import librarian.api.agent as agent_module
+    import librarian.agent.loop as agent_module
 
     monkeypatch.setattr(agent_module, "_client", None)
     monkeypatch.setenv("ANTHROPIC_API_KEY", "fake-key-for-test")

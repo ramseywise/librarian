@@ -23,14 +23,14 @@ from pathlib import Path
 
 import pytest
 
-from tools.cartographer.dashboard import (
+from librarian.tools.cartographer.dashboard import (
     inject_regions,
     render_friction_regroup_card,
     render_input_tokens_card,
     render_skill_economics_card,
     render_tool_trends_card,
 )
-from tools.cartographer.factstore import upsert
+from librarian.tools.cartographer.factstore import upsert
 
 JULY_DATE = "2026-07-18"
 REGIME = "session-hygiene-v1"
@@ -199,7 +199,7 @@ def test_roundtrip_inject_card_renderers(
     tmp_path: Path, region_name: str, renderer_name: str
 ) -> None:
     """Each of the four card renderers' output injects cleanly via inject_regions."""
-    import tools.cartographer.dashboard as dashboard_mod
+    import librarian.tools.cartographer.dashboard as dashboard_mod
 
     store = tmp_path / "facts.db"
     upsert(

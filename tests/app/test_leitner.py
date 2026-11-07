@@ -1,13 +1,12 @@
-"""Leitner scheduling replayed from the flashcard self-grade log (librarian/courses/leitner.py)."""
+"""Leitner scheduling replayed from graded attempts (librarian/courses/leitner.py)."""
 
 from __future__ import annotations
 
-import json
 from datetime import date, datetime, timedelta
-from pathlib import Path
 
 import pytest
 
+from librarian.courses import attempts
 from librarian.courses.leitner import BOX_DAYS, CardState, card_key, load_states, replay, status_of
 
 DECK = "programming/drills"
@@ -105,15 +104,18 @@ def test_naive_timestamp_is_read_as_utc() -> None:
     assert replay([rec])[KEY].box == 2
 
 
-def test_load_states_missing_empty_and_corrupt_logs(tmp_path: Path) -> None:
-    log_path = tmp_path / "flashcards.jsonl"
-    assert load_states(log_path) == {}
-    log_path.write_text("")
-    assert load_states(log_path) == {}
-    log_path.write_text("{broken\n\n" + json.dumps(_rec(date(2026, 1, 1), "knew")) + "\n")
-    assert load_states(log_path)[KEY].box == 2
-    log_path.write_bytes(b"\xff\xfe\xff")
-    assert load_states(log_path) == {}
+def test_load_states_reads_the_attempts_store() -> None:
+    assert load_states() == {}
+    when = datetime(2026, 1, 1, 12).astimezone().isoformat()
+    attempts.record("flashcard", KEY, DECK, "knew", ts=when)
+    assert load_states()[KEY].box == 2
+    # A wrong multiple-choice answer is a miss, in the same queue.
+    attempts.record("mcq", "programming/drills:q:abc", DECK, "correct", ts=when)
+    attempts.record("mcq", "programming/drills:q:abc", DECK, "wrong", ts=when)
+    assert load_states()["programming/drills:q:abc"].box == 1
+    # Drill runs are not scheduled.
+    attempts.record("drill", "programming/drills/x", "programming/drills/x", "fail", ts=when)
+    assert set(load_states()) == {KEY, "programming/drills:q:abc"}
 
 
 def test_status_of_is_new_due_or_later() -> None:

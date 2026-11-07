@@ -1,7 +1,7 @@
 """Browser checks for the search key, both themes, reading type, definitions, health and study.
 
 Needs the same servers as test_ui_smoke.py. Grades are intercepted, so nothing here writes to
-logs/flashcards.jsonl; never sends a chat message.
+the attempts store; never sends a chat message.
 """
 
 from __future__ import annotations

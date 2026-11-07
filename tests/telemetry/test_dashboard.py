@@ -15,7 +15,7 @@ from typing import Any
 
 import pytest
 
-from tools.cartographer.dashboard import (
+from librarian.tools.cartographer.dashboard import (
     JULY_BOUNDARY,
     LEDGER_METRIC_MAPPING,
     RATE_METRICS,
@@ -37,7 +37,7 @@ from tools.cartographer.dashboard import (
     render_hook_activity_card,
     warn_unmapped_experiments,
 )
-from tools.cartographer.factstore import ERA_JSONL, ERA_NOTE, upsert
+from librarian.tools.cartographer.factstore import ERA_JSONL, ERA_NOTE, upsert
 
 
 def _row(session_id: str, date: str, regime: str, **overrides: object) -> dict[str, Any]:
@@ -334,7 +334,7 @@ def test_experiment_panel_renders(two_regime_store: Path) -> None:
 
 def test_experiment_grouping() -> None:
     """Confirmed sorts before failed before inconclusive."""
-    from tools.cartographer.dashboard import _render_experiments
+    from librarian.tools.cartographer.dashboard import _render_experiments
 
     experiments = [
         Experiment(name="z-last", metric="m", status="hypothesis", date="d"),
@@ -364,7 +364,7 @@ def test_verdict_trajectories_empty_state_when_no_verdict_store(two_regime_store
 
 
 def test_verdict_trajectories_render_ordered_sequence(two_regime_store: Path) -> None:
-    from tools.cartographer.factstore import append_verdicts
+    from librarian.tools.cartographer.factstore import append_verdicts
 
     append_verdicts(
         [
@@ -403,7 +403,7 @@ def test_verdict_trajectories_render_ordered_sequence(two_regime_store: Path) ->
 
 
 def test_render_verdict_trajectories_region_matches_dashboard_section() -> None:
-    from tools.cartographer.dashboard import render_verdict_trajectories_region
+    from librarian.tools.cartographer.dashboard import render_verdict_trajectories_region
 
     rows = [
         {
@@ -421,7 +421,7 @@ def test_render_verdict_trajectories_region_matches_dashboard_section() -> None:
 
 
 def test_render_verdict_trajectories_region_empty_state() -> None:
-    from tools.cartographer.dashboard import render_verdict_trajectories_region
+    from librarian.tools.cartographer.dashboard import render_verdict_trajectories_region
 
     assert "No scored verdicts yet" in render_verdict_trajectories_region(None)
 
@@ -575,7 +575,7 @@ def test_render_dashboard_surf_view_divs_present(tmp_path: Path) -> None:
 
 def test_distinct_surfaces_returns_observed_values(tmp_path: Path) -> None:
     """_distinct_surfaces returns the surfaces actually present in the store."""
-    from tools.cartographer.dashboard import _distinct_surfaces
+    from librarian.tools.cartographer.dashboard import _distinct_surfaces
 
     store = _two_surface_store(tmp_path)
     surfaces = _distinct_surfaces(store)
@@ -610,7 +610,7 @@ _MARKED_PAGE = (
 
 
 def test_render_review_card_counts_and_rows() -> None:
-    from tools.cartographer.dashboard import render_review_card
+    from librarian.tools.cartographer.dashboard import render_review_card
 
     findings = [
         _FINDING,
@@ -626,14 +626,14 @@ def test_render_review_card_counts_and_rows() -> None:
 
 
 def test_render_review_card_empty_state() -> None:
-    from tools.cartographer.dashboard import render_review_card
+    from librarian.tools.cartographer.dashboard import render_review_card
 
     card = render_review_card([])
     assert "No review findings yet" in card
 
 
 def test_render_review_card_orders_by_severity() -> None:
-    from tools.cartographer.dashboard import render_review_card
+    from librarian.tools.cartographer.dashboard import render_review_card
 
     findings = [
         {**_FINDING, "severity": "nit", "title": "a nit"},
@@ -644,7 +644,7 @@ def test_render_review_card_orders_by_severity() -> None:
 
 
 def test_patch_review_findings_replaces_marked_region(tmp_path: Path) -> None:
-    from tools.cartographer.dashboard import patch_review_findings
+    from librarian.tools.cartographer.dashboard import patch_review_findings
 
     page = tmp_path / "context-dashboard.html"
     page.write_text(_MARKED_PAGE, encoding="utf-8")
@@ -660,7 +660,7 @@ def test_patch_review_findings_replaces_marked_region(tmp_path: Path) -> None:
 
 
 def test_patch_review_findings_is_idempotent(tmp_path: Path) -> None:
-    from tools.cartographer.dashboard import patch_review_findings
+    from librarian.tools.cartographer.dashboard import patch_review_findings
 
     page = tmp_path / "context-dashboard.html"
     page.write_text(_MARKED_PAGE, encoding="utf-8")
@@ -671,7 +671,7 @@ def test_patch_review_findings_is_idempotent(tmp_path: Path) -> None:
 
 
 def test_patch_review_findings_missing_markers_leaves_file_untouched(tmp_path: Path) -> None:
-    from tools.cartographer.dashboard import patch_review_findings
+    from librarian.tools.cartographer.dashboard import patch_review_findings
 
     page = tmp_path / "context-dashboard.html"
     original = "<section>no markers here</section>\n"
@@ -681,7 +681,7 @@ def test_patch_review_findings_missing_markers_leaves_file_untouched(tmp_path: P
 
 
 def test_patch_review_findings_missing_file(tmp_path: Path) -> None:
-    from tools.cartographer.dashboard import patch_review_findings
+    from librarian.tools.cartographer.dashboard import patch_review_findings
 
     assert patch_review_findings(tmp_path / "absent.html", [_FINDING]) is False
 
@@ -693,7 +693,7 @@ def test_patch_review_findings_missing_file(tmp_path: Path) -> None:
 
 def test_input_tokens_p50_series_populated(tmp_path: Path) -> None:
     """input_tokens_p50 series is July-only and correctly computes median."""
-    from tools.cartographer.dashboard import build_series
+    from librarian.tools.cartographer.dashboard import build_series
 
     store = tmp_path / "facts.db"
     upsert(
@@ -722,7 +722,7 @@ def test_build_skill_economics_aggregates_correctly(tmp_path: Path) -> None:
     """build_skill_economics sums cost and counts sessions per skill."""
     import json
 
-    from tools.cartographer.dashboard import build_skill_economics
+    from librarian.tools.cartographer.dashboard import build_skill_economics
 
     store = tmp_path / "facts.db"
     upsert(
@@ -768,7 +768,7 @@ def test_build_skill_economics_aggregates_correctly(tmp_path: Path) -> None:
 
 def test_cost_bucket_pct_over150k_metric(tmp_path: Path) -> None:
     """cost_bucket_pct_over150k returns share of cost in >150k sessions."""
-    from tools.cartographer.dashboard import build_series
+    from librarian.tools.cartographer.dashboard import build_series
 
     store = tmp_path / "facts.db"
     upsert(
@@ -792,7 +792,7 @@ def test_cost_bucket_pct_over150k_metric(tmp_path: Path) -> None:
 
 def test_parse_ledger_active_rows(tmp_path: Path) -> None:
     """parse_ledger reads active tooling-ledger.md rows into Experiment objects."""
-    from tools.cartographer.dashboard import parse_ledger
+    from librarian.tools.cartographer.dashboard import parse_ledger
 
     ledger = tmp_path / "tooling-ledger.md"
     ledger.write_text(
@@ -812,7 +812,7 @@ def test_parse_ledger_active_rows(tmp_path: Path) -> None:
 
 def test_parse_ledger_malformed_row_skipped(tmp_path: Path) -> None:
     """A row without a change cell is skipped; parse never crashes."""
-    from tools.cartographer.dashboard import parse_ledger
+    from librarian.tools.cartographer.dashboard import parse_ledger
 
     ledger = tmp_path / "tooling-ledger.md"
     ledger.write_text(
@@ -829,7 +829,7 @@ def test_parse_ledger_malformed_row_skipped(tmp_path: Path) -> None:
 
 def test_parse_ledger_with_log(tmp_path: Path) -> None:
     """parse_ledger reads archived rows from the log file too."""
-    from tools.cartographer.dashboard import parse_ledger
+    from librarian.tools.cartographer.dashboard import parse_ledger
 
     ledger = tmp_path / "tooling-ledger.md"
     ledger.write_text(
@@ -858,7 +858,7 @@ def test_parse_ledger_with_log(tmp_path: Path) -> None:
 
 def test_render_review_card_groups_by_repo(tmp_path: Path) -> None:
     """render_review_card groups findings by repo, most-recent repo first."""
-    from tools.cartographer.dashboard import render_review_card
+    from librarian.tools.cartographer.dashboard import render_review_card
 
     findings = [
         {**_FINDING, "repo": "atlas", "date": "2026-07-20", "title": "atlas finding"},
@@ -875,7 +875,7 @@ def test_render_review_card_groups_by_repo(tmp_path: Path) -> None:
 
 def test_render_review_card_source_field_consumed(tmp_path: Path) -> None:
     """When findings carry a source field, it appears in the repo group header."""
-    from tools.cartographer.dashboard import render_review_card
+    from librarian.tools.cartographer.dashboard import render_review_card
 
     findings = [
         {**_FINDING, "source": "akira-scan", "title": "akira finding"},
@@ -886,7 +886,7 @@ def test_render_review_card_source_field_consumed(tmp_path: Path) -> None:
 
 def test_render_review_card_missing_source_tolerated(tmp_path: Path) -> None:
     """Old rows without source field still render without error."""
-    from tools.cartographer.dashboard import render_review_card
+    from librarian.tools.cartographer.dashboard import render_review_card
 
     findings = [{**_FINDING}]  # _FINDING has no 'source'
     card = render_review_card(findings)

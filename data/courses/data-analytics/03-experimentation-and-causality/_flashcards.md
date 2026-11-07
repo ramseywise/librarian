@@ -1,5 +1,5 @@
 ---
-generated_by: src/librarian/slides/flashcards.py
+generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - data-analytics/03-experimentation-and-causality/slides/deck.yaml
 cards:

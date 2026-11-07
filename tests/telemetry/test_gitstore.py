@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.cartographer.gitstore import (
+from librarian.tools.cartographer.gitstore import (
     _NON_SOURCE,
     collect_commits,
     read_git_activity,

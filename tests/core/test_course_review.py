@@ -101,14 +101,7 @@ def test_score_eval(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
 def test_signals_reads_logs_and_never_the_drill_note(tmp_path: Path) -> None:
     courses = tmp_path / "courses"
     (courses / "programming" / "drills").mkdir(parents=True)
-    cards = tmp_path / "cards.jsonl"
-    cards.write_text(
-        "\n".join(
-            json.dumps({"deck": "d", "front": "Q?", "result": "missed", "source": "s"})
-            for _ in range(3)
-        )
-        + "\nnot json\n"
-    )
+    cards = [{"deck": "d", "front": "Q?", "result": "missed", "source": "s"} for _ in range(3)]
     search = tmp_path / "retrieval.jsonl"
     search.write_text(json.dumps({"tool": "search_wiki", "query": "zzz", "n_results": 0}) + "\n")
     drill_log = tmp_path / "drill-log.md"
@@ -125,7 +118,7 @@ def test_signals_reads_logs_and_never_the_drill_note(tmp_path: Path) -> None:
 
 def test_signals_without_any_logs_still_builds(tmp_path: Path) -> None:
     missing = tmp_path / "missing"
-    assert "Coursework signals" in sg.build(tmp_path, missing, missing, missing, missing)
+    assert "Coursework signals" in sg.build(tmp_path, [], missing, missing, missing)
 
 
 def test_review_real_tree_completes(capsys: pytest.CaptureFixture[str]) -> None:

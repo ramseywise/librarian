@@ -20,9 +20,9 @@ dependencies = [
 
 [project.scripts]
 librarian = "librarian.cli:main"
-cartographer = "tools.cartographer.__main__:main"
-codemap = "librarian.codemap.__main__:main"
-presenter = "librarian.presenter.__main__:main"
+codemap = "librarian.tools.codemap.__main__:main"
+presenter = "librarian.tools.presenter.__main__:main"
+cartographer = "librarian.tools.cartographer.__main__:main"
 
 [project.optional-dependencies]
 api = [
@@ -47,6 +47,10 @@ api = [
     "numba>=0.68.1",
     "llvmlite>=0.50.0",
 ]
+# Unattended jobs: `librarian jobs run <name>` drives the skills through the Agent SDK.
+jobs = [
+    "claude-agent-sdk>=0.1.0",
+]
 codemap = [
     "tree-sitter>=0.24.0",
     "tree-sitter-python>=0.23.0",
@@ -70,9 +74,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-# tools/ is cartographer only, until it moves to its own repo.
 # The React app (app/) is built by Vite inside the Dockerfile, not shipped in the wheel.
-packages = ["src/librarian", "tools"]
+packages = ["src/librarian"]
 
 [tool.uv]
 package = true
@@ -122,37 +125,34 @@ ignore = ["E501", "RUF001", "RUF002", "RUF003", "N803", "N806"]
 # load_dotenv() must run before app modules import (they read env at import time)
 "src/librarian/api/main.py" = ["E402"]
 # Ported whole from the course repo's deck builder; annotating it adds nothing yet.
-"src/librarian/slides/*" = ["ANN"]
+"src/librarian/tools/slides/*" = ["ANN"]
 "tests/slides/*" = ["ANN"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+# `evals/` is a top-level package; it was importable only because the editable install of the old
+# top-level `tools` package put the repo root on sys.path.
+pythonpath = ["."]
 
 [tool.pyright]
 typeCheckingMode = "basic"
 pythonVersion = "3.12"
 venvPath = "."
 venv = ".venv"
-include = ["src", "tools"]
+include = ["src"]
 exclude = ["**/node_modules", "**/__pycache__"]
 # Diagnostics suppressed (file still analysed for others' imports): python-pptx's stubs type
 # placeholders and fills as base classes with no `text`/`text_frame`/`_solidFill`, and lxml
 # ships no `etree` stub, so renderer.py's 11 errors are all stub gaps, not logic. Remove this
 # when the renderer moves to typed wrappers.
-ignore = ["src/librarian/presenter/renderer.py"]
+ignore = ["src/librarian/tools/presenter/renderer.py"]
 
 [tool.importlinter]
-root_packages = ["librarian", "tools"]
+root_packages = ["librarian"]
 include_external_packages = false
 
-[[tool.importlinter.contracts]]
-name = "librarian does not import tools (cartographer)"
-type = "forbidden"
-source_modules = ["librarian"]
-forbidden_modules = ["tools"]
-
-# The core (courses, retrieval, wiki, ingest) sits below every entry point and tool.
+# The core (courses, retrieval, wiki, ingest) sits below every entry point and tool (librarian.tools).
 [[tool.importlinter.contracts]]
 name = "The core does not import its callers"
 type = "forbidden"
@@ -165,9 +165,7 @@ source_modules = [
 forbidden_modules = [
     "librarian.api",
     "librarian.mcp",
-    "librarian.slides",
-    "librarian.presenter",
-    "librarian.codemap",
+    "librarian.tools",
 ]
 
 [[tool.importlinter.contracts]]
@@ -176,7 +174,7 @@ type = "independence"
 modules = ["librarian.api", "librarian.mcp"]
 
 # Dependencies run downwards: entry points (api, mcp; independent of each other, see above) ->
-# tools (slides, presenter, codemap) -> courses -> retrieval -> wiki -> ingest. retrieval (the
+# agent (tool registry and chat loop, imported only by api and mcp) -> tools (librarian.tools: slides, presenter, codemap, cartographer) -> courses -> retrieval -> wiki -> ingest. retrieval (the
 # index, ranking and the public search API) reads wiki pages through librarian.wiki.common, so it
 # sits above wiki. Two known upward edges are recorded here instead of hidden: wiki.telemetry's
 # course-gap report imports courses.catalog/curriculum inside a function (the gap list needs the
@@ -188,7 +186,8 @@ name = "librarian sub-packages are layered"
 type = "layers"
 layers = [
     "librarian.api | librarian.mcp",
-    "librarian.slides | librarian.presenter | librarian.codemap",
+    "librarian.agent",
+    "librarian.tools",
     "librarian.courses",
     "librarian.retrieval",
     "librarian.wiki",

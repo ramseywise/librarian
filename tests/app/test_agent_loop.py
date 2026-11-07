@@ -15,7 +15,8 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from librarian.api import agent
+from librarian.agent import loop as agent
+from librarian.agent import tools
 from librarian.api import main as main_module
 from librarian.config import Settings, get_settings
 from librarian.retrieval import corpus, embeddings
@@ -386,7 +387,7 @@ def test_chat_rejects_bad_requests(api: tuple[TestClient, list[Any]], body: dict
 
 @pytest.mark.unit
 def test_domain_briefing_outlines_pages_with_readable_ids(wiki: Path) -> None:
-    briefing = agent._domain_briefing("rag")
+    briefing = tools.chat_domain_briefing("rag")
 
     assert "(id: `chunking`)" in briefing
     assert "How to chunk" in briefing
@@ -400,7 +401,7 @@ def test_domain_briefing_refuses_private(wiki: Path) -> None:
         PAGE.format(title="Client", summary="Secret", body="Secret.")
     )
 
-    briefing = agent._domain_briefing("private")
+    briefing = tools.chat_domain_briefing("private")
 
     assert "Unknown domain" in briefing
     assert "Secret" not in briefing
@@ -410,9 +411,9 @@ def test_domain_briefing_refuses_private(wiki: Path) -> None:
 def test_domain_briefing_cuts_long_listing_at_a_page(
     wiki: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr(agent, "MAX_BRIEFING_CHARS", 200)
+    monkeypatch.setattr(tools, "MAX_BRIEFING_CHARS", 200)
 
-    briefing = agent._domain_briefing("rag")
+    briefing = tools.chat_domain_briefing("rag")
 
     assert briefing.endswith("[Listing cut to its best-linked pages.]")
     assert briefing.count("- **") == 1

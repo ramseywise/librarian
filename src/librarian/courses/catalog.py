@@ -2,7 +2,8 @@
 
 Layout: data/courses/<course>/_course.md, <course>/<module>/_module.md, and lesson
 .md files anywhere below a module. Ordering and titles come from frontmatter. Flashcards live
-in <course>/<module>/_flashcards.md, frontmatter `cards: [{front, back, lesson?}, ...]`.
+in <course>/<module>/_flashcards.md, frontmatter `cards: [{front, back, lesson?}, ...]`; multiple-choice
+questions in <course>/<module>/_quiz.md (see quiz.py).
 
 Lesson ↔ concept links come from four places, ranked in this order:
 - explicit: `wiki: [page-id, ...]` in lesson frontmatter, or inline [[Wiki Title]]
@@ -24,13 +25,12 @@ index leave them out, so nothing derived from them reaches a tracked file or an 
 
 from __future__ import annotations
 
-import json
 import re
 import threading
 import time
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import UTC, date, datetime
+from datetime import date
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -39,7 +39,7 @@ import frontmatter
 import yaml
 
 from librarian.config import get_settings
-from librarian.courses import leitner, overlay, sources
+from librarian.courses import attempts, leitner, overlay, quiz, sources
 from librarian.log_config import get_logger
 from librarian.retrieval.corpus import is_under_private
 from librarian.wiki.common import WIKILINK_RE, fm, page_aliases, slugify
@@ -53,9 +53,6 @@ WIKI_DIR = _settings.wiki_dir
 # Read live from the private sisyphus checkout and never copied into data/ — this repo is
 # public and the log is personal history. Absent → drills just show no attempts.
 DRILL_LOG = _settings.drill_log
-# Personal study history: logs/*.jsonl is gitignored and this repo is public. Read by
-# learn-ai-engineering's scripts/review/signals.py to find cards and slides worth re-reading.
-FLASHCARD_LOG = _settings.flashcard_log
 
 PRIVATE_COURSES = "private"  # data/courses/private/, same name as data/wiki/private/
 ASSET_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
@@ -100,6 +97,7 @@ class LessonRec:
     concepts: list[str] = field(default_factory=list)  # wiki page ids, ranked
     drill: dict[str, Any] = field(default_factory=dict)  # DRILL_KEYS, kind == "drill" only
     flashcards: int = 0
+    questions: int = 0
     private: bool = False  # under data/courses/private/: local only
 
 
@@ -110,6 +108,7 @@ class Catalog:
     wiki: dict[str, WikiRef]
     by_concept: dict[str, list[str]]  # wiki id → lesson ids
     decks: dict[str, dict[str, Any]] = field(default_factory=dict)  # module or lesson id → deck
+    quizzes: dict[str, dict[str, Any]] = field(default_factory=dict)  # module or lesson id → quiz
 
 
 # ── Loading ──────────────────────────────────────────────────────────────────
@@ -278,6 +277,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
     courses: list[dict[str, Any]] = []
     lessons: dict[str, LessonRec] = {}
     decks: dict[str, dict[str, Any]] = {}
+    quizzes: dict[str, dict[str, Any]] = {}
     embed_texts: dict[str, str] = {}  # lesson id → text to embed
     if not courses_dir.is_dir():
         return Catalog([], {}, wiki, {})
@@ -333,6 +333,10 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
             for i, card in enumerate(cards):
                 card["id"] = str(i)
             decks |= _build_decks(course_name, module_name, module_title, cards, recs)
+            questions = [
+                q for d in mod_dirs for q in quiz.load(d / quiz.QUIZ_FILE, {r.id for r in recs})
+            ]
+            quizzes |= _build_quizzes(course_name, module_name, module_title, questions, recs)
             modules.append(
                 {
                     "id": module_name,
@@ -346,6 +350,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                     "references": mmeta.get("references") or [],
                     "lessons": [_outline(r) for r in recs],
                     **({"flashcardCount": len(cards)} if cards else {}),
+                    **({"quizCount": len(questions)} if questions else {}),
                     **({"private": True} if all(r.private for r in recs) and recs else {}),
                 }
             )
@@ -376,7 +381,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
     for lesson in ordered.values():
         for cid in lesson.concepts:
             by_concept.setdefault(cid, []).append(lesson.id)
-    return Catalog(courses, ordered, wiki, by_concept, decks)
+    return Catalog(courses, ordered, wiki, by_concept, decks, quizzes)
 
 
 def _course_dirs(courses_dir: Path) -> dict[str, list[Path]]:
@@ -467,6 +472,24 @@ def _build_decks(
         if mine:
             decks[r.id] = {"id": r.id, "title": r.title, "course": course, "cards": mine}
     return decks
+
+
+def _build_quizzes(
+    course: str, module: str, title: str, questions: list[quiz.Question], recs: list[LessonRec]
+) -> dict[str, dict[str, Any]]:
+    """The module's quiz, plus one per lesson with questions. Sets each lesson's question count."""
+    if not questions:
+        return {}
+    module_id = f"{course}/{module}"
+    quizzes = {
+        module_id: {"id": module_id, "title": title, "course": course, "questions": questions}
+    }
+    for r in recs:
+        mine = [q for q in questions if q.lesson == r.id]
+        r.questions = len(mine)
+        if mine:
+            quizzes[r.id] = {"id": r.id, "title": r.title, "course": course, "questions": mine}
+    return quizzes
 
 
 def _drill_meta(
@@ -607,8 +630,14 @@ def _outline(r: LessonRec) -> dict[str, Any]:
         "summary": r.summary,
         **({"drill": r.drill} if r.drill else {}),
         **({"flashcardCount": r.flashcards} if r.flashcards else {}),
+        **({"quizCount": r.questions} if r.questions else {}),
         **({"private": True} if r.private else {}),
     }
+
+
+def outline(r: LessonRec) -> dict[str, Any]:
+    """The sidebar row of a lesson."""
+    return _outline(r)
 
 
 def _wiki_json(ref: WikiRef) -> dict[str, str]:
@@ -717,7 +746,7 @@ def practice_drills(
 ) -> list[dict[str, Any]]:
     """Drills (lessons of kind "drill"), filtered — the Practice mode list."""
     cat = catalog()
-    attempts = _drill_attempts(DRILL_LOG)
+    history = drill_history()
     out = []
     for r in cat.lessons.values():
         if r.kind != "drill":
@@ -730,7 +759,7 @@ def practice_drills(
             continue
         concepts = [_wiki_json(cat.wiki[c]) for c in r.concepts if c in cat.wiki]
         row = {**_outline(r), "course": r.course, "concepts": concepts}
-        if (hit := attempts.get(Path(r.id).name)) is not None:
+        if (hit := history.get(Path(r.id).name)) is not None:
             row["attempts"] = hit
         out.append(row)
     return out
@@ -760,12 +789,12 @@ def study_deck(deck_id: str) -> dict[str, Any] | None:
     deck = catalog().decks.get(deck_id)
     if not deck:
         return None
-    return _scheduled_deck(deck, leitner.load_states(FLASHCARD_LOG), date.today())
+    return _scheduled_deck(deck, leitner.load_states(), date.today())
 
 
 def flashcards_due() -> dict[str, Any]:
     """Cards to study today across every module deck, reviewed and never-seen counted apart."""
-    states = leitner.load_states(FLASHCARD_LOG)
+    states = leitner.load_states()
     today = date.today()
     modules: list[dict[str, Any]] = []
     for deck_id, deck in catalog().decks.items():
@@ -791,7 +820,7 @@ def flashcards_due() -> dict[str, Any]:
 
 
 def log_flashcard_result(deck_id: str, card_id: str, result: str) -> bool | None:
-    """Log one self-graded card. The text comes from the catalog, never from the caller.
+    """Store one self-graded card. The text comes from the catalog, never from the caller.
 
     None when the deck has no such card. A failed write returns False rather than raising:
     it must not interrupt studying.
@@ -803,23 +832,36 @@ def log_flashcard_result(deck_id: str, card_id: str, result: str) -> bool | None
     if card is None:
         return None
     rec = cat.lessons.get(card["lesson"]) if card["lesson"] else None
-    entry = {
-        "ts": datetime.now(UTC).isoformat(),
-        "deck": deck_id,
-        "card": leitner.card_key(deck_id, card["front"]),
-        "lesson": card["lesson"],
-        "source": rec.source if rec else "",
-        "front": card["front"],
-        "result": result,
-    }
-    try:
-        FLASHCARD_LOG.parent.mkdir(exist_ok=True)
-        with FLASHCARD_LOG.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-    except OSError as e:
-        log.warning("flashcard_log_failed", error=str(e))
-        return False
-    return True
+    return attempts.record(
+        "flashcard",
+        leitner.card_key(deck_id, card["front"]),
+        deck_id,
+        result,
+        payload={
+            "lesson": card["lesson"],
+            "source": rec.source if rec else "",
+            "front": card["front"],
+        },
+    )
+
+
+def drill_history() -> dict[str, dict[str, Any]]:
+    """Drill slug -> {count, last, score}: the sisyphus log (read-only) plus runs recorded in the app.
+
+    An app run is keyed by its lesson id, whose last segment is the slug the log uses. `score` is the
+    latest one by date; a run recorded in the app shows as its result (pass, fail or revealed).
+    """
+    merged = _drill_attempts(DRILL_LOG)
+    for a in attempts.attempts(["drill"]):
+        slug, day = Path(a.item).name, a.ts.astimezone().date().isoformat()
+        prev = merged.get(slug)
+        if prev is None:
+            merged[slug] = {"count": 1, "last": day, "score": a.result}
+        else:
+            prev["count"] += 1
+            if day >= prev["last"]:
+                prev["last"], prev["score"] = day, a.result
+    return merged
 
 
 def _drill_attempts(log: Path) -> dict[str, dict[str, Any]]:

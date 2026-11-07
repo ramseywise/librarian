@@ -44,6 +44,16 @@ def _isolate_courses(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(corpus, "COURSES_DIR", tmp_path / "no-courses")
 
 
+@pytest.fixture(autouse=True)
+def _isolate_study_state(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep tests off the real attempts store, the old flashcard log and the slide build dir."""
+    from librarian.courses import attempts, slides
+
+    monkeypatch.setattr(attempts, "DB_PATH", tmp_path / "state" / "attempts.sqlite3")
+    monkeypatch.setattr(attempts, "LEGACY_FLASHCARD_LOG", tmp_path / "state" / "flashcards.jsonl")
+    monkeypatch.setattr(slides, "BUILD_DIR", tmp_path / "state" / "slides")
+
+
 # ---------------------------------------------------------------------------
 # Fake Anthropic client — drives the agent loop and the judge with no network.
 # ---------------------------------------------------------------------------

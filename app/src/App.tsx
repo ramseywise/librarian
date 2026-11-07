@@ -24,6 +24,15 @@ const CoursesView = lazy(() =>
 const FlashcardsView = lazy(() =>
   import("./components/courses/FlashcardsView").then((m) => ({ default: m.FlashcardsView }))
 );
+const SlidesView = lazy(() =>
+  import("./components/courses/SlidesView").then((m) => ({ default: m.SlidesView }))
+);
+const QuizView = lazy(() =>
+  import("./components/courses/QuizView").then((m) => ({ default: m.QuizView }))
+);
+const StudyHome = lazy(() =>
+  import("./components/courses/StudyHome").then((m) => ({ default: m.StudyHome }))
+);
 const PracticeView = lazy(() =>
   import("./components/courses/PracticeView").then((m) => ({ default: m.PracticeView }))
 );
@@ -41,7 +50,11 @@ export default function App() {
   useSlashSearch();
   const inPractice = route === "/practice";
   const inFlashcards = route.startsWith("/flashcards/");
-  const inCourses = route === "/courses" || route.startsWith("/courses/") || inPractice || inFlashcards;
+  const inStudy = route === "/study";
+  const inSlides = route.startsWith("/slides/");
+  const inQuiz = route.startsWith("/quiz/");
+  const inCourses =
+    route === "/courses" || route.startsWith("/courses/") || inPractice || inFlashcards || inStudy || inSlides || inQuiz;
   const courseRoute = route.replace(/^\/courses\/?/, "");
   // Course views set their own titles; the graph's is set here.
   useDocumentTitle(inCourses ? null : pageTitle("Graph"));
@@ -151,9 +164,12 @@ export default function App() {
           <button
             onClick={() => navigate("/courses")}
             className="tab"
-            aria-current={inCourses && !inPractice ? "page" : undefined}
+            aria-current={inCourses && !inPractice && !inStudy ? "page" : undefined}
           >
             Courses
+          </button>
+          <button onClick={() => navigate("/study")} className="tab" aria-current={inStudy ? "page" : undefined}>
+            Study
           </button>
           <button onClick={() => navigate("/practice")} className="tab" aria-current={inPractice ? "page" : undefined}>
             Practice
@@ -183,7 +199,13 @@ export default function App() {
           {inCourses && (
             <div className="app-course-layer">
               <Suspense fallback={<div className="app-loading">Loading…</div>}>
-                {inPractice ? (
+                {inStudy ? (
+                  <StudyHome />
+                ) : inSlides ? (
+                  <SlidesView deckId={route.slice("/slides/".length)} />
+                ) : inQuiz ? (
+                  <QuizView quizId={route.slice("/quiz/".length)} />
+                ) : inPractice ? (
                   <PracticeView onOpenLesson={openLesson} onOpenConcept={openConcept} />
                 ) : inFlashcards ? (
                   <FlashcardsView deckId={route.slice("/flashcards/".length)} />

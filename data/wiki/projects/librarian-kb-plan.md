@@ -2,7 +2,7 @@
 title: Librarian KB — Build Plan
 tags: [llm, infra, mcp, langgraph, rag, project]
 summary: Phased build plan for the Librarian KB — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phase 9 MCP server shipped with hybrid and typed-edge search; as of 2026-10 the repo also carries a Courses/Practice UI, a code index and a compaction ritual.
-updated: 2026-10-30
+updated: 2026-11-07
 sources:
   - data/raw/claude-docs/playground/docs/archived/obsidian-kb-plan.md
   - data/raw/claude-docs/playground/docs/archived/obsidian-kb-research.md
@@ -118,7 +118,7 @@ for history.
 - Expose to playground agents — inject wiki context into ADK/LangGraph builds
 
 ### Additions outside the phase plan (2026-07 → 2026-10)
-- **Code index** — `src/librarian/codemap/`, a tree-sitter index of symbols and import edges over
+- **Code index** — `src/librarian/tools/codemap/`, a tree-sitter index of symbols and import edges over
   source repos, exposed as MCP tools beside the wiki tools.
 - **Compaction** — `/compact-wiki`, run by hand about monthly: merge, retire (tombstone)
   or compress, driven by age, size, similarity and retrieval telemetry; dry-run first.

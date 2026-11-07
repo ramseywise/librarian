@@ -36,7 +36,6 @@ RUN --mount=type=cache,target=/root/.cache/uv uv venv /app/.venv \
 # hatchling needs the packages listed under [tool.hatch.build.targets.wheel] to exist when the
 # project installs.
 COPY src ./src
-COPY tools ./tools
 RUN uv pip install --no-deps -e .
 
 # The embedding model, so the container does not download it on first start (readiness waits for it).

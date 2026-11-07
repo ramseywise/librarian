@@ -23,7 +23,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, model_validator
 
 from librarian import retrieval
-from librarian.api.agent import run_agent_stream
+from librarian.agent import run_agent_stream
 from librarian.api.routers.courses import router as courses_router
 from librarian.api.routers.curriculum import router as curriculum_router
 from librarian.api.routers.glossary import router as glossary_router

@@ -1,6 +1,6 @@
 # Deck spec — `slides/deck.yaml` and `slides/lectures/*.yaml`
 
-`src/librarian/slides/build_deck.py` renders one YAML file into a 16:9 `.pptx` in the course's
+`src/librarian/tools/slides/build_deck.py` renders one YAML file into a 16:9 `.pptx` in the course's
 house style (navy title bar with an orange edge, breadcrumb strip, white cards with
 coloured stripes, tinted takeaway strip). Specs live in `data/courses/<course>/<module>/slides/`,
 and a spec's `source:` and `covers:` paths are relative to that module or to `data/courses/`.

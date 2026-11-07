@@ -5,7 +5,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from librarian.codemap import db as codemap_db
+from librarian.tools.codemap import db as codemap_db
 
 
 def _build_v1_schema(con: duckdb.DuckDBPyConnection) -> None:

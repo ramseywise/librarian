@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from tools.cartographer.factstore import (
+from librarian.tools.cartographer.factstore import (
     ERA_JSONL,
     ERA_NOTE,
     ERROR_CATEGORY_CODE,

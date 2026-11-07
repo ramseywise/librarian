@@ -1,7 +1,7 @@
 """Codemap MCP tools — thin HTTP client over the Codemap Query API.
 
 These tools never open the code-index DuckDB file directly: indexing runs
-as a separate, centrally-owned process (see src/librarian/codemap/), and this
+as a separate, centrally-owned process (see src/librarian/tools/codemap/), and this
 module only queries it over HTTP. That split is what lets the index be
 indexed centrally and queried by any number of MCP clients without each
 one needing repo credentials or local write access.
@@ -217,7 +217,7 @@ def register_codemap_tools(mcp: FastMCP) -> None:
             return _api_down_message()
         if not results:
             return (
-                "No repos indexed yet. Configure src/librarian/codemap/repos.txt and run: "
+                "No repos indexed yet. Configure src/librarian/tools/codemap/repos.txt and run: "
                 "make codemap-reindex"
             )
 

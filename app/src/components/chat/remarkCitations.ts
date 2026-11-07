@@ -1,6 +1,6 @@
 import type { Root, Parent, PhrasingContent, Text } from "mdast";
 
-// Same grammar as CITATION_RE in src/librarian/api/agent.py, so the chips match exactly the
+// Same grammar as CITATION_RE in src/librarian/agent/loop.py, so the chips match exactly the
 // ids the backend's grounding check extracts.
 export const CITATION_RE = /\[page:\s*([A-Za-z0-9][A-Za-z0-9_-]*)\s*\]/g;
 

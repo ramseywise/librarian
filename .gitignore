@@ -111,3 +111,6 @@ data/courses/**/slides/lectures/.preview/
 
 # Deployment state (indexes, caches, logs); path from LIBRARIAN_STATE_DIR
 /var/
+
+# Agent worktrees (Claude Code isolation)
+.claude/worktrees/

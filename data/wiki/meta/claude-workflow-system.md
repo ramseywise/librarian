@@ -2,7 +2,7 @@
 title: Claude Workflow System
 tags: [context-management, llm, pattern]
 summary: Personal Claude Code harness — global skills, PreCompact hook, phase checkpoints, and session notes — that automates context management across multi-phase engineering workflows.
-updated: 2026-10-30
+updated: 2026-11-07
 sources:
   - data/raw/claude-docs/playground/skills/workflow-review/SKILL.md
   - data/raw/claude-docs/playground/skills/planning/linear-spike/SKILL.md
@@ -136,7 +136,7 @@ code-review      →  /compact "phase: review → done"
 All session notes are centralised here — not project-relative. Sources:
 - PreCompact hook (every compact)
 - `/compact-session` (explicit end-of-session)
-- `uv run python -m tools.cartographer --migrate` (batch migrate JSONL → skeleton notes)
+- `uv run cartographer --migrate` (batch migrate JSONL → skeleton notes)
 
 **`/compact-session` — operational detail.** Detects mid-session (steps 1–4, then `/compact` with a seed prompt) vs. end-of-session (steps 1–5, then stop) from context. Step 0 classifies the session into three front-matter fields before writing the note: `work_type` (one of `debug`/`feature`/`refactor`/`review`/`planning`/`research`/`config`/`chat`), `output_type` (`pr`/`plan_doc`/`code_change`/`decision`/`wiki_page`/`analysis`/`config_change`/`none`), and `key_output` (one short phrase — a file path, PR title, or decision made). The note itself is a YAML-fronted markdown file with Position/Metadata/Gotchas/Friction signals/Attribution notes/Open questions/Skill candidates/Session insights/Next session prompt sections — the "Next session prompt" is deliberately 3–5 sentences so a cold session can resume without re-reading `PLAN.md`. **Memory-write gate** (end of session only): save a memory entry only if the fact is non-obvious and would change future behavior — the test is "would a cold session make a worse decision without this?" — split into `user` (role/preferences), `project` (non-obvious decisions/constraints not in code or git), and `reference` (pointers to external system locations) types; code patterns, git history, debugging solutions, and anything already in `CLAUDE.md` are explicitly excluded. **Branch/commit rule:** commit to the current branch if already on a feature/fix branch; if on `main`/`master`/`cord`, create `session/{YYYY-MM-DD}-{slug}` first. A PR is opened only at end-of-session, and is skipped outright if tests are failing, if `skill_candidates > 2` (skill generation still pending), if the user declines, or for any mid-session checkpoint (checkpoints never open a PR).
 

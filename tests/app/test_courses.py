@@ -11,7 +11,6 @@ inject a fake neighbour function. The real MiniLM model is never loaded here.
 
 from __future__ import annotations
 
-import json
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -21,8 +20,8 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from librarian.api.routers import courses as courses_routes
+from librarian.courses import attempts, leitner
 from librarian.courses import catalog as courses
-from librarian.courses import leitner
 
 _REAL_NEIGHBOURS = courses._semantic_neighbours
 
@@ -87,9 +86,6 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     monkeypatch.setattr(courses, "WIKI_DIR", wiki)
     monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "no-drill-log.md")  # never the real one
     monkeypatch.setattr(courses, "LESSON_VEC_CACHE", tmp_path / "cache" / "lessons.npz")
-    monkeypatch.setattr(
-        courses, "FLASHCARD_LOG", tmp_path / "logs" / "flashcards.jsonl"
-    )  # never the real one
     monkeypatch.setattr(courses, "_semantic_neighbours", lambda texts, ids: None)
     courses._load.cache_clear()
     app = FastAPI()
@@ -458,21 +454,25 @@ def test_flashcard_result_logs_catalog_text_with_its_lesson(client: TestClient) 
     assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
     body = {"deck": "gen-ai/01-rag", "card": "1", "result": "knew"}
     assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
-    first, second = [json.loads(x) for x in courses.FLASHCARD_LOG.read_text().splitlines()]
-    assert (first["front"], first["lesson"], first["result"]) == (
+    first, second = attempts.attempts(["flashcard"])
+    assert (first.payload["front"], first.payload["lesson"], first.result) == (
         "Why hybrid?",
         "gen-ai/01-rag/intro",
         "missed",
     )
-    assert (second["front"], second["lesson"], second["source"]) == ("Loose", None, "")
+    assert (second.payload["front"], second.payload["lesson"], second.payload["source"]) == (
+        "Loose",
+        None,
+        "",
+    )
 
 
-def _log_review(front: str, deck: str, result: str, days_ago: int, **extra: object) -> None:
+def _log_review(front: str, deck: str, result: str, days_ago: int) -> None:
     ts = datetime.now(UTC) - timedelta(days=days_ago)
-    courses.FLASHCARD_LOG.parent.mkdir(exist_ok=True)
-    with courses.FLASHCARD_LOG.open("a") as f:
-        rec = {"ts": ts.isoformat(), "deck": deck, "front": front, "result": result}
-        f.write(json.dumps(rec | extra) + "\n")
+    key = leitner.card_key(deck, front)
+    assert attempts.record(
+        "flashcard", key, deck, result, payload={"front": front}, ts=ts.isoformat()
+    )
 
 
 def test_flashcard_result_logs_a_stable_card_key(client: TestClient) -> None:
@@ -480,9 +480,9 @@ def test_flashcard_result_logs_a_stable_card_key(client: TestClient) -> None:
     for deck in ("gen-ai/01-rag", "gen-ai/01-rag/intro"):
         body = {"deck": deck, "card": "0", "result": "knew"}
         assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
-    first, second = [json.loads(x) for x in courses.FLASHCARD_LOG.read_text().splitlines()]
-    assert first["card"] == second["card"] == leitner.card_key("gen-ai/01-rag", "Why hybrid?")
-    assert {"ts", "deck", "lesson", "source", "front", "result"} <= set(first)
+    first, second = attempts.attempts(["flashcard"])
+    assert first.item == second.item == leitner.card_key("gen-ai/01-rag", "Why hybrid?")
+    assert {"lesson", "source", "front"} <= set(first.payload)
 
 
 def test_deck_carries_each_cards_schedule_and_counts(client: TestClient) -> None:
@@ -493,7 +493,7 @@ def test_deck_carries_each_cards_schedule_and_counts(client: TestClient) -> None
         "  - {front: Missed yesterday, back: B}\n"
     )
     _log_review("Reviewed today", "gen-ai/01-rag", "knew", 0)
-    # Old-format record from the lesson deck: no card field.
+    # Graded from the lesson deck: the same card as in the module deck.
     _log_review("Overdue", "gen-ai/01-rag/intro", "knew", 5)
     _log_review("Missed yesterday", "gen-ai/01-rag", "missed", 1)
 
@@ -510,8 +510,8 @@ def test_deck_carries_each_cards_schedule_and_counts(client: TestClient) -> None
     lesson = client.get("/api/courses/flashcards/gen-ai/01-rag/intro").json()
     assert (lesson["dueCount"], lesson["newCount"]) == (1, 0)
 
-    # The catalog is cached: a schedule must not stick to it once the log is gone.
-    courses.FLASHCARD_LOG.unlink()
+    # The catalog is cached: a schedule must not stick to it once the store is gone.
+    attempts.DB_PATH.unlink()
     deck = client.get("/api/courses/flashcards/gen-ai/01-rag").json()
     assert {c["status"] for c in deck["cards"]} == {"new"}
 
@@ -524,10 +524,9 @@ def test_flashcards_due_counts_module_decks_only(client: TestClient) -> None:
     )
     _log_review("Overdue", "gen-ai/01-rag", "knew", 5)
     _log_review("Reviewed today", "gen-ai/01-rag", "knew", 0)
-    # A card no deck holds any more, and a line the log can't parse, must not count.
+    # A card no deck holds any more, and a line the old log can't parse, must not count.
     _log_review("Deleted card", "gen-ai/01-rag", "knew", 9)
-    with courses.FLASHCARD_LOG.open("a") as f:
-        f.write("{broken\n")
+    attempts.LEGACY_FLASHCARD_LOG.write_text("{broken\n")
 
     body = client.get("/api/courses/flashcards-due").json()
     assert (body["due"], body["new"]) == (1, 1)
@@ -552,14 +551,14 @@ def test_flashcard_result_rejects_unknown_cards_and_grades(client: TestClient) -
         client.post(url, json={"deck": "gen-ai/01-rag", "card": "0", "result": "maybe"}).status_code
         == 422
     )
-    assert not courses.FLASHCARD_LOG.exists()
+    assert not attempts.DB_PATH.exists()
 
 
 def test_flashcard_result_survives_a_failed_write(client: TestClient) -> None:
     _write_cards("  - {front: Q, back: A}\n")
     courses._load.cache_clear()
-    blocker = courses.FLASHCARD_LOG.parent
-    blocker.write_text("a file where the logs folder should be")
+    blocker = attempts.DB_PATH.parent
+    blocker.write_text("a file where the state folder should be")
     body = {"deck": "gen-ai/01-rag", "card": "0", "result": "knew"}
     assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": False}
 

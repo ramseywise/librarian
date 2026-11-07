@@ -213,6 +213,21 @@ class Settings(BaseSettings):
         return self.logs_dir / "flashcards.jsonl"
 
     @property
+    def var_dir(self) -> Path:
+        """Where per-learner state lives: the state dir, else `var/` (gitignored)."""
+        return self.state_dir or self.root / "var"
+
+    @property
+    def attempts_db(self) -> Path:
+        """Every graded study event (cards, questions, drill runs). Personal history: never tracked."""
+        return self.var_dir / "attempts.sqlite3"
+
+    @property
+    def slides_build_dir(self) -> Path:
+        """Per-slide images and text built for the lecture viewer (not tracked)."""
+        return self.var_dir / "slides"
+
+    @property
     def wiki_db_path(self) -> Path:
         return self.override_wiki_db_path or (self.state_dir or self.root) / ".wiki_index.duckdb"
 

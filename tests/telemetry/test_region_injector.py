@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.cartographer.dashboard import (
+from librarian.tools.cartographer.dashboard import (
     Experiment,
     inject_regions,
     render_experiments_region,

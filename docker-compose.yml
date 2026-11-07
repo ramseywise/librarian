@@ -1,6 +1,6 @@
 # One service, one port: the API serves the built web UI too. http://localhost:8000
 #
-#   docker compose up --build
+#   make app-build    (or: mkdir -p data/wiki/private data/courses/private && docker compose up --build)
 #
 # Set LIBRARIAN_API_TOKEN (and ANTHROPIC_API_KEY) in .env before exposing the port beyond
 # this machine. For UI development use `make ui` (Vite on :5173) against `make api`.
@@ -25,6 +25,8 @@ services:
       - librarian-var:/app/var
     tmpfs:
       # Private content stays on the host: these empty mounts hide it from the container.
+      # Docker cannot create their mountpoints inside the read-only ./data mount, so both
+      # directories must exist on the host first (make app does that).
       - /app/data/wiki/private
       - /app/data/courses/private
     restart: unless-stopped

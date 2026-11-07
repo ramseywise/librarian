@@ -7,10 +7,13 @@ torch, fastapi) load only for the verbs that need them.
 
     librarian wiki stats|snapshot|check|gaps|log|ask   wiki health telemetry
     librarian wiki graph|rename|relink                 link graph, safe rename, link suggestions
+    librarian wiki lint|verify|index-add               lint findings, orphan/index check and index insert for new pages
+    librarian ingest mark|status                       manifest: record compiled files, show pending
+    librarian jobs run <name>|list                     unattended jobs through the Agent SDK
     librarian ingest triage|lint-raw                   gate a raw source, validate raw filenames
     librarian ingest notion|linear|pdf                 pull a source into data/raw/
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
-    librarian courses check chapters|curriculum|links|drills|manifest|crosswalk|smoke-labs
+    librarian courses check chapters|curriculum|links|drills|quiz|manifest|crosswalk|smoke-labs
     librarian courses review findings|signals|score-eval
     librarian mcp [--rebuild]                          the wiki MCP server (stdio)
     librarian api [--port N] [--reload]                the FastAPI backend (uvicorn)
@@ -55,9 +58,22 @@ GROUPS: dict[str, dict[str, Verb]] = {
         "graph": Verb("librarian.wiki.graph:main", help="hubs, bridges and clusters"),
         "rename": Verb("librarian.wiki.rename:main", help="rename a page and rewrite links"),
         "relink": Verb("librarian.wiki.relinker:main", help="suggest semantic links"),
+        "lint": Verb(
+            "librarian.wiki.lint:main", help="dead links, frontmatter, orphans, stale (ranked)"
+        ),
+        "verify": Verb(
+            "librarian.wiki.landing:main", ("verify",), "orphan and index check for new pages"
+        ),
+        "index-add": Verb("librarian.wiki.landing:main", ("index-add",), "add pages to _index.md"),
     },
     "ingest": {
         "triage": Verb("librarian.ingest.ingest_gate:main", ("triage",), "gate raw sources"),
+        "mark": Verb(
+            "librarian.ingest.manifest:main", ("mark",), "record compiled files in the manifest"
+        ),
+        "status": Verb(
+            "librarian.ingest.manifest:main", ("status",), "manifest counts and pending files"
+        ),
         "lint-raw": Verb("librarian.ingest.lint_raw:main", help="validate data/raw/ filenames"),
         "notion": Verb("librarian.ingest.ingest_notion:main", help="Notion page export"),
         "linear": Verb("librarian.ingest.ingest_linear:main", help="Linear issues"),
@@ -75,8 +91,12 @@ GROUPS: dict[str, dict[str, Verb]] = {
         "arxiv": Verb("librarian.ingest.scrape_arxiv:main", help="arXiv papers"),
         "bookmarks": Verb("librarian.ingest.scrape_bookmarks:main", help="saved web pages"),
     },
+    "jobs": {
+        "run": Verb("librarian.jobs.runner:main", help="run a scheduled job headless"),
+        "list": Verb("librarian.jobs.runner:main", ("list",), "list the jobs"),
+    },
     "courses": {
-        "check": Verb("librarian.cli:_run_check", help="chapters|curriculum|links|drills|..."),
+        "check": Verb("librarian.cli:_run_check", help="chapters|curriculum|links|drills|quiz|..."),
         "review": Verb("librarian.cli:_run_review", help="findings|signals|score-eval"),
     },
 }
@@ -87,6 +107,7 @@ _CHECKS: dict[str, str] = {
     "curriculum": "librarian.courses.checks.curriculum_map:main",
     "links": "librarian.courses.checks.link_check:main",
     "drills": "librarian.courses.checks.check_drills:main",
+    "quiz": "librarian.courses.checks.check_quiz:main",
     "manifest": "librarian.courses.checks.check_manifest:main",
     "crosswalk": "librarian.courses.checks.crosswalk:main",
     "smoke-labs": "librarian.courses.checks.smoke_labs:main",

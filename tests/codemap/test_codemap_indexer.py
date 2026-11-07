@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from librarian.codemap import db as codemap_db
-from librarian.codemap import manifest as codemap_manifest
-from librarian.codemap.indexer import (
+from librarian.tools.codemap import db as codemap_db
+from librarian.tools.codemap import manifest as codemap_manifest
+from librarian.tools.codemap.indexer import (
     RepoConfig,
     _resolve_call_edges,
     _resolve_import_edges,

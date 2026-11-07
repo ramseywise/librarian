@@ -31,28 +31,25 @@ Report what the script returns; never compute or estimate a rate yourself. If it
 
 ### Checks (run all, unless --quick)
 
-#### BLOCKER — must fix before trusting the wiki
+The deterministic checks are one verb. Run it and report its lines under the severities it gives:
 
-- **Private leak** — run `uv run librarian wiki check`; a failure is a BLOCKER. Report the public file and line the script gives, never the private title
-- **Unresolved conflicts** — pages tagged `conflict` in frontmatter; also check `data/wiki/_conflicts.md` for open entries
-- **Dead wikilinks** — `[[Page Name]]` references that don't match any file in `data/wiki/`
-- **Missing frontmatter fields** — any page missing `title`, `tags`, `summary`, or `updated`
+```bash
+uv run librarian wiki lint            # --quick <page paths> limits it to those pages; --json for parsing
+uv run librarian wiki check           # Private leak: a failure is a BLOCKER; report the public file and line, never the private title
+```
 
-#### WARN — degrades wiki quality
+`wiki lint` covers: BLOCKER dead wikilinks, missing `title`/`tags`/`summary`/`updated`, `conflict`-tagged pages; WARN orphans, stale pages (older than 60 days), no domain tag; NOTE short summaries (under 8 words), no See Also. It exits 1 on a blocker.
 
-- **Orphan pages** — pages with no incoming `[[wikilinks]]` from any other wiki page
-- **Stale pages** — `updated` date older than 60 days
-- **Missing domain tag** — no domain tag from the canonical list in CLAUDE.md
-- **Uncovered raw files** — files in `data/raw/` that have no coverage in any wiki page `sources:` list
-- **Untyped links** — pages where >50% of `## See Also` entries lack a `— type` annotation
+`wiki check` is the **Private leak** check (BLOCKER).
 
-#### NOTE — good to fix when time allows
+What the verb does not cover is yours to check, with Read/Grep:
 
-- **Missing See Also section** — pages with no cross-references at all
-- **Short summaries** — `summary:` field is fewer than 8 words
-- **Empty sections** — wiki sections with only a comment placeholder
-- **Bridge gaps** — domain pairs with >5 pages each but <3 cross-domain wikilinks (check `data/wiki/_bridge_suggestions.md` if it exists)
-- **Stale suggestions** — `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
+- **Open entries in `data/wiki/_conflicts.md`** (BLOCKER)
+- **Uncovered raw files** (WARN): files in `data/raw/` with no coverage in any wiki page `sources:` list
+- **Untyped links** (WARN): pages where >50% of `## See Also` entries lack a `— type` annotation (the rate is in `wiki stats`)
+- **Empty sections** (NOTE): sections holding only a comment placeholder
+- **Bridge gaps** (NOTE): domain pairs with >5 pages each but <3 cross-domain wikilinks (see `data/wiki/_bridge_suggestions.md`)
+- **Stale suggestions** (NOTE): `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 
 ### Fixed or proposed
 
@@ -77,7 +74,7 @@ Fixed (mechanical, --fix only):
 
 Proposed (semantic):
 [BLOCKER] data/wiki/concepts/foo.md — dead wikilink: [[Bar Baz]] (no matching file)
-[BLOCKER] data/wiki/concepts/qux.md:12 — private leak (see wiki_telemetry.py check)
+[BLOCKER] data/wiki/concepts/qux.md:12 — private leak (see librarian wiki check)
 [WARN]    data/wiki/agents/my-page.md — orphan (no incoming backlinks)
 [NOTE]    data/wiki/concepts/bar.md — summary too short (4 words)
 

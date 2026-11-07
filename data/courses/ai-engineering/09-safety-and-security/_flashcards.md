@@ -1,5 +1,5 @@
 ---
-generated_by: src/librarian/slides/flashcards.py
+generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - ai-engineering/09-safety-and-security/slides/deck.yaml
 cards:

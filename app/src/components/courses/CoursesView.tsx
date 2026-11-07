@@ -160,6 +160,11 @@ function Overview({ course, done, last, onOpen }: {
                 Study {m.flashcardCount} flashcards
               </a>
             )}
+            {!!m.quizCount && (
+              <a href={`#/quiz/${course.id}/${m.id}`} className="flashcard-link">
+                Take the {m.quizCount}-question quiz
+              </a>
+            )}
             <div className="course-module-list">
               {m.lessons.map((l) => (
                 <button key={l.id} onClick={() => onOpen(l.id)} className="course-nav-item course-row">

@@ -159,10 +159,37 @@ def summary() -> dict:
     }
 
 
-if __name__ == "__main__":
+def main(argv: list[str] | None = None) -> int:
+    """`librarian ingest mark <files> --pages <page>...` records ingests; no args shows status."""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Ingest manifest: mark compiled files, show status."
+    )
+    commands = parser.add_subparsers(dest="command")
+    mk = commands.add_parser("mark", help="record files as compiled into the given wiki pages")
+    mk.add_argument("files", nargs="+", type=Path)
+    mk.add_argument("--pages", nargs="*", default=[], help="data/wiki/... paths they produced")
+    commands.add_parser("status", help="counts and the first pending raw files")
+    args = parser.parse_args(argv)
+    if args.command == "mark":
+        missing = [str(f) for f in args.files if not f.is_file()]
+        if missing:
+            print(f"mark: not found: {' '.join(missing)}")
+            return 2
+        with ManifestSession() as ms:
+            for f in args.files:
+                ms.mark(f, list(args.pages))
+        print(f"mark: {len(args.files)} file(s) recorded")
+        return 0
     s = summary()
     print(
         f"Ingested: {s['ingested']}  Pending: {s['pending']}  Wiki pages touched: {s['total_wiki_pages_touched']}"
     )
     for gap in coverage_gaps()[:20]:
         print(f"  PENDING  {gap['path']}  ({gap['size_kb']} KB)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

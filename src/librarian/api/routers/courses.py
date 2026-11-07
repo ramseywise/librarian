@@ -1,4 +1,4 @@
-"""/api/courses: the course catalog, lessons, search, practice drills and flashcards."""
+"""/api/courses: the course catalog, lessons, search, practice drills, flashcards, quizzes and slides."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from librarian.courses import catalog as lib
-from librarian.courses import sources
+from librarian.courses import slides, sources, study
 
 router = APIRouter(prefix="/api/courses")
 
@@ -70,6 +70,69 @@ def flashcard_result(body: CardResult) -> dict[str, bool]:
     if logged is None:
         raise HTTPException(status_code=404, detail="no such card")
     return {"logged": logged}
+
+
+@router.get("/quiz/{quiz_id:path}")
+def quiz_deck(quiz_id: str) -> dict[str, Any]:
+    """A module's or lesson's multiple-choice questions, without the answers."""
+    found = study.quiz_deck(quiz_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="no quiz here")
+    return found
+
+
+class QuizAnswer(BaseModel):
+    quiz: str
+    question: str
+    choice: str
+
+
+@router.post("/quiz-results")
+def quiz_result(body: QuizAnswer) -> dict[str, Any]:
+    """Grade one answer on the server. A failed write returns logged=false, never an error."""
+    try:
+        graded = study.answer_question(body.quiz, body.question, body.choice)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+    if graded is None:
+        raise HTTPException(status_code=404, detail="no such question")
+    return graded
+
+
+class DrillResult(BaseModel):
+    drill: str
+    result: Literal["pass", "fail", "revealed"]
+
+
+@router.post("/drill-results")
+def drill_result(body: DrillResult) -> dict[str, bool]:
+    logged = study.record_drill(body.drill, body.result)
+    if logged is None:
+        raise HTTPException(status_code=404, detail="no such drill")
+    return {"logged": logged}
+
+
+@router.get("/study")
+def study_home() -> dict[str, Any]:
+    """The study queue: cards and questions due, the next drill, the current module's lecture."""
+    return study.home()
+
+
+@router.get("/slides/{deck_id:path}")
+def slide_deck(deck_id: str) -> dict[str, Any]:
+    """A module's deck or one lecture: slide text, notes and image URLs. Starts a build if stale."""
+    found = slides.deck(deck_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="no slides here")
+    return found
+
+
+@router.get("/slide-image/{deck_id:path}/{n}")
+def slide_image(deck_id: str, n: int) -> FileResponse:
+    target = slides.image_path(deck_id, n)
+    if target is None:
+        raise HTTPException(status_code=404, detail="no such slide image")
+    return FileResponse(target, media_type="image/png")
 
 
 @router.get("/files/{file_path:path}")

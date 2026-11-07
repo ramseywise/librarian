@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from tools.cartographer.verdicts import (
+from librarian.tools.cartographer.verdicts import (
     VERDICT_CONFIRMED,
     VERDICT_FAILED,
     VERDICT_INCONCLUSIVE,

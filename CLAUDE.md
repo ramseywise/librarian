@@ -27,36 +27,23 @@ generic documentation.
 Analysis community plugin for cosine-similarity edges between pages. Do NOT use the
 Streamlit visualizer — it was deprecated and the script has since been removed.
 
-**Agent layer:** `src/librarian/api/agent.py` — an Anthropic-based chat agent (#96) with its own wiki-search
-tool, streamed via SSE (`POST /api/chat/stream`) to the React graph UI's chat panel. No
+**Agent layer:** `src/librarian/agent/` — `tools.py` is the one registry of read-only tools (typed
+params, schema, implementation) that both the chat agent and the MCP server build from, and `loop.py`
+is the Anthropic-based chat agent (#96) tool loop, streamed via SSE (`POST /api/chat/stream`) to the React graph UI's chat panel. No
 write-back route or tool exists; the UI is read-only over the wiki.
 
-**Map filter panel (2026-11):** the graph UI's left panel follows the curriculum
-(`src/librarian/courses/curriculum.py`, `GET /api/graph/curriculum`; cards take their main course's
-colour). It is an overlay: `data/wiki/` directories remain the canonical domains for tags,
-MCP and `/lint`. Pages no lesson links appear under "Beyond the curriculum" by directory.
-Private pages never appear. An empty module means the wiki has no page on that topic.
+**Feature notes:** the map filter panel, the atlas and glossary, the skill verbs, the retrieval eval
+gate and the code index (`src/librarian/tools/codemap/`, MCP `find_symbol`/`repo_map`) are described in the wiki page
+[Librarian Repo Feature Notes](data/wiki/projects/librarian-repo-feature-notes.md). Rules that survive from them:
 
-**Atlas and glossary (2026-11):** above 1,000 pages the graph opens on an aggregate ring
-(`app/src/components/atlas/`, drawn on canvas); choosing a sector opens a capped React
-Flow view of it. `data/glossary.yaml` (hand-edited, served by `src/librarian/courses/glossary.py`) supplies
-a toggleable layer of term nodes and the hover definitions in lessons. The map's health strip
-reads the latest telemetry row through `GET /api/wiki/health`.
+- The graph UI's map panel is an overlay: `data/wiki/` directories stay the canonical domains for tags, MCP and `/lint`. Private pages never appear in it.
+- Every wiki verb/skill (`/quiz`, `/gaps`, `/challenge`, `/wiki-weekly`, `/harness-audit`, `/evals-bootstrap`, `/wiki-graph`, `/write`) skips private pages. `/wiki-weekly` is the wiki's report; `/weekly` is the course's. `/wiki-rename` (`librarian.wiki.rename`) rewrites links in `private/` too, reporting those only as a count.
+- A ranking change must clear all four `make eval-gate` arms (`sem`, `nofts`, `uniform`, `course`). Backlinks are deliberately not a ranking signal; never judge ranking on `sem` alone.
 
-**Verbs (2026-11):** `/quiz`, `/gaps`, `/challenge`, `/wiki-weekly`, `/harness-audit`,
-`/evals-bootstrap`, `/wiki-graph` (hubs, bridges and consensus clusters, from `make wiki-graph`),
-`/write` (a cited outline from the wiki; `/write-chapter` is for course chapters), plus the
-`ingest-reviewer` agent, which checks what an ingest wrote against its raw source.
-`/wiki-weekly` is the wiki's report; `/weekly` is the course's. All eight skip private pages.
-`/wiki-rename` (`librarian.wiki.rename`) renames a page and rewrites its links, in `private/` too,
-reporting those only as a count.
-
-**Retrieval evals (2026-11):** `make eval-gate` runs four gated arms, and a ranking change must clear all of them: `sem` (hand-picked questions whose answers are mostly hub pages), `nofts` (the degraded path), `uniform` (questions on uniformly sampled wiki pages) and `course` (lesson search). Search blends BM25 and similarity equally. Backlinks are deliberately not a ranking signal; `sem` alone rewards them, so never judge ranking on it alone.
-
-**Code index (2026-07):** `src/librarian/codemap/` — tree-sitter-based structural index (symbols,
-import edges) over source repos, separate from the wiki-compile pipeline. Exposed via MCP
-tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki tools. See
-`.claude/docs/plans/codemap-code-index.md`.
+**Skills and unattended jobs:** skills live flat in `.claude/skills/<name>/SKILL.md` and are grouped by product in
+`.claude/skills/README.md` (wiki, course, build). A skill keeps the judgement and the order; mechanical steps are
+`librarian` verbs. Scheduled work runs headless with `librarian jobs run <name>` (Agent SDK, restricted tools, never
+commits). See `.claude/skills/README.md`.
 
 ---
 
@@ -70,11 +57,11 @@ tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki to
 - Also inside the `librarian` package, in three layers (enforced by import-linter, `make lint-imports`):
   entry points `api/` (FastAPI, `librarian api`; routers in `api/routers/`, logic in the core) and `mcp/`
   (FastMCP, `librarian mcp`), independent of each other and using only the public names of
-  `librarian.retrieval`; tools `slides/`, `presenter/`, `codemap/` (they must not import api/mcp; `mcp`
+  `librarian.retrieval`; `agent/` (the tool registry and chat loop they share); `tools/` (`slides`, `presenter`, `codemap`, `cartographer`: what builds the media and content; they must not import api/mcp; `mcp`
   imports codemap's tools); and the core below (`courses`, `retrieval`, `wiki`, `ingest`), which imports none of them.
 - `app/` — the React/Vite frontend only (`app/src/`, built to `app/dist/`, served by the API). The single
   `Dockerfile` at the repo root builds it and the API into one image.
-- `tools/cartographer/` — the one thing left outside the package; `librarian` never imports it.
+- Cartographer (`src/librarian/tools/cartographer/`: session facts, dashboard, weekly sweep) runs as `uv run cartographer`.
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
   `librarian ingest triage|lint-raw|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
   `librarian courses check|review`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
@@ -210,10 +197,11 @@ Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so t
   Concepts with no wiki page show as plain `drill.tags`. Attempt counts come from sisyphus
   `drills/coding/drill-log.md`, read live at request time (`SISYPHUS_DIR`) and never written
   into `data/` — this repo is public and the log is personal history.
-  `make flashcards` (`src/librarian/slides/flashcards.py`) turns the local `slides/deck.yaml` and
+  `make flashcards` (`src/librarian/tools/slides/flashcards.py`) turns the local `slides/deck.yaml` and
   `slides/lectures/*.yaml` of each module into its `_flashcards.md`. The tool only deletes files carrying its own `generated_by` line. Frontmatter
   `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
-  lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). `src/librarian/courses/leitner.py` computes due dates from that log; it stores no schedule of its own.
+  lesson id>`, studied at `#/flashcards/<id>`; self-grades go via `POST /api/courses/flashcard-results` to the attempts store, and `src/librarian/courses/leitner.py` computes due dates from it; it stores no schedule of its own.
+  **Attempts store:** `var/attempts.sqlite3` in the state dir (gitignored; `src/librarian/courses/attempts.py`) holds every graded event: flashcards, quiz answers and drill runs (`POST /api/courses/drill-results`). An old `logs/flashcards.jsonl` is imported once and left alone; the sisyphus drill log is still read live and merged. **Quizzes:** `<module>/_quiz.md` (frontmatter `questions: [{prompt, options, answer, explanation?, lesson?, id?}]`), checked by `librarian courses check quiz`, served without answers by `GET /api/courses/quiz/<id>` and graded by `POST /api/courses/quiz-results`; a wrong answer is due tomorrow like a missed card. Never seed one from `private/`. **Slides viewer:** `#/slides/<module>[/<lecture>]`; `GET /api/courses/slides/<id>` rebuilds a stale deck in the background into `var/slides/` (images need `uv` and macOS Quick Look; without them the viewer shows the slide text). **Study home:** `#/study`, from `GET /api/courses/study`: cards and questions due, the next drill for the weakest track, the module's lecture.
 - Private and tombstoned wiki pages are never linked from lessons.
 - **`data/courses/private/`** (gitignored, mirrors the layout: `private/<course>/<module>/...`) holds
   what must not be public: solutions to site problems (`leetcode/`, `hackerrank/`), `coding/scratch/`,
@@ -230,10 +218,10 @@ Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so t
   The sibling supplies nothing else: only those `sources/` PDFs.
   `data/concept_homes.json` (hand-edited) lists the maths concepts and the lessons that teach them, for `courses check curriculum`.
 - **Media is built here, for every course.** Deck specs are `<course>/<module>/slides/deck.yaml`
-  or `slides/lectures/NN-slug.yaml`, images are in the module's `assets/`, and `src/librarian/slides/`
+  or `slides/lectures/NN-slug.yaml`, images are in the module's `assets/`, and `src/librarian/tools/slides/`
   renders them: `make slides PILLAR=<course>/<module> [PREVIEW=1] [PDF=1]`, `make slides-all`,
   `make deck-check`, `make deck-graph`. Authoring steps are in the `/slides` skill. Built `.pptx`
-  and `.pdf` files are gitignored. `src/librarian/presenter/` is a
+  and `.pdf` files are gitignored. `src/librarian/tools/presenter/` is a
   separate LLM-driven tool for one-off talks, not course media.
 
 ---
@@ -347,8 +335,8 @@ Run this checklist for **every** new raw source, without exception. Log one line
 5. **Scan for contradictions:** if the source disagrees with an existing wiki claim, do NOT silently overwrite. Go to step 6.
 6. **Handle contradictions:** add an entry to `data/wiki/_conflicts.md`, tag the affected page with `conflict`, and note both claims with source citations. Do not resolve — flag for human review.
 7. **Add cross-references (bidirectional):** after updating pages, scan for opportunities to add `[[wikilinks]]` to related pages. Prefer linking atomic concept pages from within broader topic pages — this is how graph edges form. Every atomic concept page should appear as an inline `[[wikilink]]` inside at least one coarser page. **Additionally:** for each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships where the type is clear.
-8. **Update `data/wiki/_index.md`:** add any new pages to the appropriate section.
-9. **Check for orphans (blocking):** any new page MUST have at least one incoming backlink from another wiki page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
+8. **Update `data/wiki/_index.md`:** add any new pages to the appropriate section (`uv run librarian wiki index-add <pages>`).
+9. **Check for orphans (blocking):** any new page MUST have at least one incoming backlink from another wiki page (`uv run librarian wiki verify <pages>` checks this and the index entry; exit 1 on failure). If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
 10. **Relink pass:** after all pages are created/updated for this ingest cycle, run `uv run librarian wiki relink` to discover additional semantic links. The relinker is **suggest-only** — it never modifies a wiki page. Review `data/wiki/_relink_suggestions.md` and add the worthwhile candidates **manually, with typed relationships** (`- [[Page]] — extends`); delete the entries you dismiss. Adding untyped links is what the graph already has too many of (see `data/wiki/meta/wiki-graph-engineering.md`).
 11. **Accumulator ceiling:** pages that receive per-session appended rows (e.g.
     `meta/session-log.md`) keep the last ~30 entries in full; when an append pushes

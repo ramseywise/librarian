@@ -4,7 +4,7 @@
     librarian courses review signals --write     # also write logs/signals/<date>.md (gitignored)
 
 Reads, and never changes:
-- logs/flashcards.jsonl: self-graded cards
+- the attempts store (var/attempts.sqlite3; it imports the old logs/flashcards.jsonl): self-graded cards
 - logs/retrieval.jsonl: real wiki searches that found nothing. Eval and sweep rows are ignored
 - sisyphus's drills/coding/drill-log.md ($SISYPHUS_DIR): the Date, QID, Aid and Score columns, never the Note
 - logs/review/findings.jsonl: open decisions and recurring faults
@@ -26,6 +26,7 @@ from datetime import date
 from pathlib import Path
 
 from librarian.config import get_settings
+from librarian.courses import attempts as attempt_store
 from librarian.courses.checks.common import is_private, public_files
 from librarian.courses.review import findings as fl
 
@@ -153,7 +154,7 @@ def search_section(rows: list[dict]) -> list[str]:
 
 
 def build(
-    root: Path, flashcards: Path, retrieval: Path, drill_log: Path, findings_log: Path
+    root: Path, flashcards: list[dict], retrieval: Path, drill_log: Path, findings_log: Path
 ) -> str:
     drills = parse_drill_log(drill_log.read_text(encoding="utf-8")) if drill_log.exists() else []
     parts = [
@@ -163,7 +164,7 @@ def build(
         "having learned the topic yet.",
         "",
         "## Flashcards",
-        *flashcard_section(read_jsonl(flashcards), root),
+        *flashcard_section(flashcards, root),
         "",
         "## Drills",
         *drill_section(drills, drill_files(root)),
@@ -189,7 +190,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     cfg = get_settings()
     text = build(
         cfg.courses_dir,
-        cfg.flashcard_log,
+        attempt_store.flashcard_rows(),
         cfg.retrieval_log,
         cfg.drill_log,
         cfg.review_findings_log,

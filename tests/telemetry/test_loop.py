@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.cartographer import loop
+from librarian.tools.cartographer import loop
 
 
 def _write(tmp_path: Path, name: str, body: str) -> Path:

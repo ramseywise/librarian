@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 from structlog.testing import capture_logs
 
-import librarian.api.agent as agent_module
+import librarian.agent.loop as agent_module
 import librarian.api.main as main_module
 from librarian.api.security import chat_limiter
 from librarian.config import get_settings

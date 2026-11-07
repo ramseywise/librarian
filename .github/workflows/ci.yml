@@ -13,14 +13,16 @@ concurrency:
 
 jobs:
   ci:
-    uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@main
+    # Pinned to a commit: the repo has no release tags (its two tags are archive/preserve markers),
+    # so main as of 2026-11-07. Move it deliberately; Dependabot does not bump reusable workflows.
+    uses: ramseywise/ai-project-template/.github/workflows/python-ci.yml@86705a49b18d7e721b6fe729d7599203c49afbb2 # main as of 2026-11-07
     with:
       # Makefile's `lint:` is a stub that defers to Claude, so it defines no
       # paths. These are the real top-level Python dirs; raw/ data/wiki/ logs/
       # are artifacts (naming.md data-layer rule) and stay unlinted.
-      lint-paths: "src tools tests"
+      lint-paths: "src tests"
       # Lint gates from day one — the single RUF059 error was fixed 2026-07-19
-      # (src/librarian/codemap/indexer.py), so `ruff check src tools tests` is clean.
+      # (src/librarian/tools/codemap/indexer.py), so `ruff check src tests` is clean.
       # The plan expected 14 failures here; the unit suite is in fact green
       # (92 passed, 2 skipped, verified 2026-07-19). The 9 known-failing e2e
       # tests need a live server on :5173 and live in tests/e2e/, so
@@ -75,3 +77,31 @@ jobs:
           tags: librarian:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  e2e-container:
+    # The built image, from outside: 401 without the token, 200 with it, the UI at /, and two
+    # Playwright smoke tests. Same script as `make e2e-container`. The first start builds the
+    # search index (~150 s locally), so the readiness wait is generous.
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v4
+      # Same cache scope as the `docker` job, so one of the two builds from cache.
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile
+          load: true
+          tags: librarian:e2e
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - run: uv sync --group dev
+      - run: uv run playwright install --with-deps chromium
+      - run: tests/e2e/run_container.sh
+        env:
+          SKIP_BUILD: "1"
+          READY_TIMEOUT: "1200"

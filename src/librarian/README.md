@@ -16,7 +16,7 @@ src/librarian/
   ingest/        scrapers, ingest gate, manifest, sensitive scans, raw lint
 ```
 
-Import direction: `api`, `mcp`, `slides`, `presenter` and `codemap` sit above the core (`courses`, `retrieval`, `wiki`, `ingest`); the core never imports them, and nothing here imports `tools/` (cartographer).
+Import direction: `api`, `mcp`, `agent` and `tools/` (`slides`, `presenter`, `codemap`, `cartographer`) sit above the core (`courses`, `retrieval`, `wiki`, `ingest`); the core never imports them.
 
 ## Settings
 
@@ -61,8 +61,7 @@ and whether to compile, strip or route to private, using the scans in `ingest/se
 Most scrapers accept `--dry-run`. Check `--help` for script-specific flags. Every verb also runs as
 `python -m librarian.<package>.<module>`.
 
-The session tooling that used to live beside these (`cron`, `enrich`, `migrate`) now belongs to
-`tools/cartographer/`; run it with `uv run cartographer --cron`.
+The session tooling (`cron`, `enrich`, `migrate`) is `tools/cartographer/`; run it with `uv run cartographer --cron`.
 
 ## Modules
 

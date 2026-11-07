@@ -11,7 +11,7 @@ withheld from the public tree and live only in that mirror:
 - a module's `readings:` list (the PDF catalogue). A mirror `_module.md` carries only that
   list; the catalog merges it in, and the public `_module.md` keeps a `readings_count`.
 
-Library code only: no web framework here, so the catalog and `src/librarian/slides` can
+Library code only: no web framework here, so the catalog and `src/librarian/tools/slides` can
 all use it.
 """
 

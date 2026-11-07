@@ -1,7 +1,7 @@
 """Evidence for Buyi "data/wiki/private/ never leaves the machine", clause (b) — agent side.
 
 tests/app/test_private_exclusion.py covers the MCP server. The chat agent in
-src/librarian/api/agent.py used to reach the same pages through its own rglob walk; since
+src/librarian/agent/loop.py used to reach the same pages through its own rglob walk; since
 the S7 collapse it delegates to ranking.search_rows/_read_page_text, so these tests
 now prove the delegation preserves the exclusion end-to-end from the agent's entry
 points (the SSE chat panel's tool handlers).
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from librarian.api import agent
+from librarian.agent import tools
 from librarian.retrieval import corpus, embeddings
 
 PAGE = """---
@@ -58,37 +58,37 @@ def wiki(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 
 def test_search_wiki_never_returns_private_content(wiki: Path) -> None:
-    result = agent._search_wiki("ACME_SECRET_MARKER client billing")
+    result = tools.chat_search_wiki("ACME_SECRET_MARKER client billing")
     assert "client billing detail" not in result
     assert "acme-engagement" not in result
 
 
 def test_search_wiki_still_returns_public_pages(wiki: Path) -> None:
-    result = agent._search_wiki("chunking")
+    result = tools.chat_search_wiki("chunking")
     assert "Chunking" in result
 
 
 def test_search_wiki_excerpt_skips_frontmatter(wiki: Path) -> None:
     """Excerpts show page body, not the YAML block the index stores with it."""
-    result = agent._search_wiki("chunking")
+    result = tools.chat_search_wiki("chunking")
     assert "Public chunking notes." in result
     assert "updated: 2026-07-20" not in result
 
 
 def test_read_page_refuses_private_by_id(wiki: Path) -> None:
-    result = agent._read_page("acme-engagement")
+    result = tools.chat_read_page("acme-engagement")
     assert "ACME_SECRET_MARKER" not in result
     assert "not found" in result.lower()
 
 
 def test_read_page_refuses_private_by_title(wiki: Path) -> None:
     """The title fallback must not become the way around the ID check."""
-    result = agent._read_page("Acme Engagement")
+    result = tools.chat_read_page("Acme Engagement")
     assert "ACME_SECRET_MARKER" not in result
 
 
 def test_read_page_still_serves_public_pages(wiki: Path) -> None:
-    result = agent._read_page("chunking")
+    result = tools.chat_read_page("chunking")
     assert "Public chunking notes." in result
 
 

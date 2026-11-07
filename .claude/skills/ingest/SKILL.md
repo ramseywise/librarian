@@ -208,7 +208,7 @@ Public vendors and authors a page is about aren't sensitive. The test is whether
 
 When a run has clients or colleagues the terms list doesn't have, add them to `data/wiki/private/_sensitive-terms.txt` (gitignored). `terms: NONE LISTED` in the output means names were not checked at all, so say that in the report.
 
-After writing, `wiki_telemetry.py check` blocks on secrets, listed terms and private names in public pages. Resolve its BLOCKERs before updating the manifest.
+After writing, `librarian wiki check` blocks on secrets, listed terms and private names in public pages. Resolve its BLOCKERs before updating the manifest.
 
 ---
 
@@ -226,8 +226,11 @@ Follow `CLAUDE.md` exactly for each file triage did not skip.
    - Tags: at least one domain tag + one type tag (see `CLAUDE.md`).
 5. **Contradiction check:** if source disagrees with existing wiki claim → add entry to `data/wiki/_conflicts.md`, tag page with `conflict`. Do NOT silently overwrite. Consider source `confidence` level when evaluating contradictions (see CLAUDE.md § Source Confidence).
 6. **Cross-references (bidirectional):** add `[[wikilinks]]` to related pages in both directions. For each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships (`— extends`, `— prerequisite-for`, etc.) where the relationship type is clear.
-7. **Update `data/wiki/_index.md`:** add any new pages under the right section. Do NOT add `data/wiki/private/` pages to `_index.md`.
-8. **Orphan check (blocking):** every new page MUST have at least one incoming backlink from another page. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until this is resolved.
+7. **Update `data/wiki/_index.md`** with the verb, never by hand (it skips `private/` pages and keeps the count and the order):
+    ```bash
+    uv run librarian wiki index-add <new page paths>
+    ```
+8. **Orphan check (blocking):** run `uv run librarian wiki verify <new page paths>` after the backlinks of step 6. It prints `FAIL` and exits 1 for a page with no inbound link or no index line. If you cannot identify an existing page to backlink to the new page, STOP and report the issue. Do not mark the file as ingested in the manifest until `verify` passes.
 9. **Update manifest** (see Step 9 below).
 10. **Relink pass:** after all files in this cycle are ingested, run the relinker to discover additional semantic links:
     ```bash
@@ -251,14 +254,13 @@ For `data/raw/books/` and `data/raw/articles/` sources, apply the same ingest pr
 
 ### Step 9 — Update Manifest
 
-After ingesting each file:
+After `verify` passes, for each raw file (or several files that produced the same pages):
 
 ```bash
-sha256sum data/raw/path/to/file.md
-echo '{"path": "data/raw/path/to/file.md", "hash": "sha256:<first16chars>", "ingested_at": "YYYY-MM-DD", "wiki_pages": ["data/wiki/...", "data/wiki/..."]}' >> data/raw/manifest.jsonl
+uv run librarian ingest mark data/raw/path/to/file.md --pages data/wiki/a/x.md data/wiki/b/y.md
 ```
 
-If updating an existing entry, replace the line (sed or temp file pattern).
+It hashes the file and replaces any earlier entry for that path. `uv run librarian ingest status` shows what is still pending.
 
 ---
 
@@ -272,7 +274,8 @@ Run this once, after the last file, not once per file. Skip it if triage skipped
    uv run librarian wiki log ingest "data/raw/web/x.md -> 2 new, 3 updated, 9 links, 0 conflicts"
    ```
    `data/telemetry/operations.jsonl` is committed and `data/raw/` is not, so the detail is the source and the four counts, nothing else. Never name a private page. If the run wrote to `data/wiki/private/`, or the filename carries an organisation or person name, log the directory (`data/raw/notion/`) instead of the file.
-3. **Call the `ingest-reviewer` agent once**, unless `--no-review` was passed. Give it the raw source path (or paths) and the list of pages written, new and updated. It returns PASS or a numbered defect list. Print the verdict as it came. Do not fix the defects in the same run: they are for the human.
+3. **Accumulator ceiling:** if the run appended a row to a per-session accumulator page (such as `meta/session-log.md`), keep its last ~30 rows in full and roll older ones into month-range summary rows. (`operations.jsonl` is rolled by `wiki log` itself.)
+4. **Call the `ingest-reviewer` agent once**, unless `--no-review` was passed. Give it the raw source path (or paths) and the list of pages written, new and updated. It returns PASS or a numbered defect list. Print the verdict as it came. Do not fix the defects in the same run: they are for the human.
 
 ## Output format
 
@@ -310,7 +313,7 @@ Repos remaining:      N repos with no changes scraped since last run
 Manifest updated:     ✓
 ```
 
-`/ingest resolve` prints this instead, and logs `resolve -> <n> resolved, <n> left` with `wiki_telemetry.py log ingest`. It does not call the reviewer, which checks pages against a raw source.
+`/ingest resolve` prints this instead, and logs `resolve -> <n> resolved, <n> left` with `librarian wiki log ingest`. It does not call the reviewer, which checks pages against a raw source.
 
 ```
 Conflicts resolved:  <n>  [[A]]

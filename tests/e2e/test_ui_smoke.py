@@ -1,6 +1,7 @@
 """Browser smoke test per UI tab: graph, courses, practice, chat.
 
-Needs `make app` (API on :8000, UI on :5173; E2E_API_URL and E2E_UI_URL point elsewhere);
+Needs `make app` (API on :8000, UI on :5173; E2E_API_URL and E2E_UI_URL point elsewhere, and
+E2E_TOKEN is the API token of a server that requires one: `make e2e-container` sets all three);
 skipped otherwise by tests/e2e/conftest.py.
 Never sends a chat message — the agent calls the Anthropic API, which bills.
 """
@@ -21,13 +22,19 @@ from playwright.sync_api import Page, expect, sync_playwright
 
 UI_URL = os.environ.get("E2E_UI_URL", "http://localhost:5173")
 API = os.environ.get("E2E_API_URL", "http://localhost:8000")
+# Set when the server under test has LIBRARIAN_API_TOKEN (the container): sent on API calls and
+# seeded into localStorage, where the UI keeps it, so the page never stops at the token prompt.
+TOKEN = os.environ.get("E2E_TOKEN", "")
 AXE_JS = Path(__file__).parents[2] / "app/node_modules/axe-core/axe.min.js"
 
 pytestmark = pytest.mark.e2e
 
 
 def _get(path: str) -> Any:  # noqa: ANN401 — JSON
-    with urllib.request.urlopen(API + path, timeout=30) as r:
+    req = urllib.request.Request(API + path)
+    if TOKEN:
+        req.add_header("Authorization", f"Bearer {TOKEN}")
+    with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
 
 
@@ -36,6 +43,10 @@ def page() -> Iterator[Page]:
     with sync_playwright() as p:
         browser = p.chromium.launch()
         pg = browser.new_page(viewport={"width": 1400, "height": 900})
+        if TOKEN:
+            pg.add_init_script(
+                f"window.localStorage.setItem('librarian.apiToken', {json.dumps(TOKEN)})"
+            )
         errors: list[str] = []
         pg.on("pageerror", lambda e: errors.append(str(e)))
         yield pg

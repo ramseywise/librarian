@@ -31,9 +31,9 @@ from typing import Any
 
 import pytest
 
-from tools.cartographer import __main__ as cli
-from tools.cartographer import cron
-from tools.cartographer import session_parser as parser_module
+from librarian.tools.cartographer import __main__ as cli
+from librarian.tools.cartographer import cron
+from librarian.tools.cartographer import session_parser as parser_module
 
 # The exact sentinel that used to be written to disk at exit 0.
 PLACEHOLDER = "No session data available for analysis."

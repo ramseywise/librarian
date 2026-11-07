@@ -2,12 +2,15 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate
+.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate e2e-container
 
+# The private tmpfs masks need their mountpoints on the host: the data mount is read-only.
 app:
+	mkdir -p data/wiki/private data/courses/private
 	docker compose up
 
 app-build:
+	mkdir -p data/wiki/private data/courses/private
 	docker compose up --build
 
 obsidian:
@@ -43,51 +46,51 @@ SLIDES_DIR = data/courses/$(PILLAR)
 
 slides:  ## Build a deck: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]
 	@test -n "$(PILLAR)" || { echo "usage: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]"; exit 1; }
-	@uv run -q --with python-pptx --with pillow --with resvg-py python -m librarian.slides.build_deck \
+	@uv run -q --with python-pptx --with pillow --with resvg-py python -m librarian.tools.slides.build_deck \
 		$(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/$(LECTURE).yaml,deck.yaml) \
 		$(if $(PREVIEW),--preview $(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/.preview/$(LECTURE),.preview)) $(if $(PDF),--pdf) $(if $(STRICT),--strict) $(if $(LEVEL),--level $(LEVEL))
 
 flashcards:  ## Build every module's _flashcards.md from its local deck specs [CHECK=1 to only check]
-	@uv run -q python src/librarian/slides/flashcards.py $(if $(CHECK),--check)
+	@uv run -q python src/librarian/tools/slides/flashcards.py $(if $(CHECK),--check)
 
 slides-all:  ## Build every deck in every course [PDF=1]
-	@find data/courses -path '*/slides/deck.yaml' -o -path '*/slides/lectures/*.yaml' | sort | xargs -n1 -I{} uv run -q --with python-pptx --with pillow --with resvg-py python -m librarian.slides.build_deck {} $(if $(PDF),--pdf)
+	@find data/courses -path '*/slides/deck.yaml' -o -path '*/slides/lectures/*.yaml' | sort | xargs -n1 -I{} uv run -q --with python-pptx --with pillow --with resvg-py python -m librarian.tools.slides.build_deck {} $(if $(PDF),--pdf)
 
 deck-graph:  ## Regenerate data/courses/_decks.md, the map of every module and lecture
-	@uv run -q python src/librarian/slides/deck_graph.py build
+	@uv run -q python src/librarian/tools/slides/deck_graph.py build
 
 deck-graph-check:  ## Fail if a lecture's covers or edges name a missing note, or two lectures claim one note
-	@uv run -q python src/librarian/slides/deck_graph.py check
+	@uv run -q python src/librarian/tools/slides/deck_graph.py check
 
 deck-check:  ## Fail if a built deck no longer matches its yaml; decks not built yet are reported only
-	@python3 src/librarian/slides/deck_stamp.py
+	@python3 src/librarian/tools/slides/deck_stamp.py
 
 codemap-reindex:
 	uv run codemap
 
 codemap-api:
-	uv run uvicorn librarian.codemap.api:app --reload --host $${CODEMAP_API_HOST:-127.0.0.1} --port $${CODEMAP_API_PORT:-8100}
+	uv run uvicorn librarian.tools.codemap.api:app --reload --host $${CODEMAP_API_HOST:-127.0.0.1} --port $${CODEMAP_API_PORT:-8100}
 
 setup-ollama:
 	ollama pull $${OLLAMA_MODEL:-llama3.2}
 
 eval:
-	uv run python evals/run_eval.py --verbose --save-baseline
+	uv run python -m evals.run_eval --verbose --save-baseline
 
 eval-live:
-	uv run python evals/run_eval.py --live --verbose --save-baseline
+	uv run python -m evals.run_eval --live --verbose --save-baseline
 
 eval-nofts:
-	uv run python evals/run_eval.py --live --arm nofts --verbose --save-baseline
+	uv run python -m evals.run_eval --live --arm nofts --verbose --save-baseline
 
 # Every gated live arm: healthy pipeline, degraded fallback, uniformly sampled wiki
 # pages, and lesson search. A ranking change must clear all of them, not trade one
 # for another.
 eval-gate:
-	uv run python evals/run_eval.py --live --arm sem --verbose
-	uv run python evals/run_eval.py --live --arm nofts --verbose
-	uv run python evals/run_eval.py --live --arm uniform --verbose
-	uv run python evals/run_eval.py --live --arm course --verbose
+	uv run python -m evals.run_eval --live --arm sem --verbose
+	uv run python -m evals.run_eval --live --arm nofts --verbose
+	uv run python -m evals.run_eval --live --arm uniform --verbose
+	uv run python -m evals.run_eval --live --arm course --verbose
 
 .PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps wiki-graph
 .PHONY: chapter-check chapter-check-all link-check curriculum crosswalk crosswalk-check manifest-check drill-check review-findings signals smoke-labs
@@ -117,6 +120,9 @@ test-watch:
 test-e2e:
 	uv run pytest tests/e2e/ -v -m e2e
 
+e2e-container:  ## Build the image, run it with a test token and run the e2e set against it (SKIP_BUILD=1, KEEP=1, E2E_PORT)
+	tests/e2e/run_container.sh
+
 install-browsers:
 	uv run playwright install chromium
 
@@ -145,7 +151,7 @@ lint:
 lint-imports:
 	uv run lint-imports
 
-# pyright, basic mode, over src tools (pyproject.toml [tool.pyright]).
+# pyright, basic mode, over src (pyproject.toml [tool.pyright]).
 typecheck:
 	uv run pyright
 
@@ -162,7 +168,7 @@ help:
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"
 	@echo "install-presenter — uv sync --extra presenter"
-	@echo "codemap-reindex  — reindex repos in src/librarian/codemap/repos.txt → .code_index.duckdb"
+	@echo "codemap-reindex  — reindex repos in src/librarian/tools/codemap/repos.txt → .code_index.duckdb"
 	@echo "codemap-api      — start Codemap Query API (port 8100)"
 	@echo "setup-ollama     — pull the configured Ollama model"
 	@echo "test             — run unit tests (no servers needed)"
@@ -184,6 +190,7 @@ help:
 	@echo "eval             — run retrieval + answer graders over golden dataset; save baseline"
 	@echo "eval-live        — eval the live sem arm (gated against its baseline); save live baseline"
 	@echo "eval-nofts       — eval the degraded no-fts arm (gated); save nofts baseline"
+	@echo "e2e-container    — build the image, run it with a token, e2e against it (tests/e2e/run_container.sh)"
 	@echo "eval-gate        — run every gated live arm (sem, nofts, uniform, course); no baseline written"
 
 # Course checks: stdlib ports of the learn-ai-engineering scripts, run over data/courses/.

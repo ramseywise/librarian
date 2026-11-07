@@ -12,7 +12,7 @@ this skill.
 ## Input
 
 `$ARGUMENTS`:
-- Empty → reindex all repos in `src/librarian/codemap/repos.txt`
+- Empty → reindex all repos in `src/librarian/tools/codemap/repos.txt`
 - `query <term>` → look up a symbol by name via the `find_symbol` MCP tool
 - `map <repo>` → structural overview of one repo via the `repo_map` MCP tool
 - `callers <symbol>` → who calls a given symbol, via the `find_callers` MCP tool
@@ -21,7 +21,7 @@ this skill.
 
 ## Step 1 — Check configuration (reindex mode)
 
-Confirm `src/librarian/codemap/repos.txt` has at least one uncommented repo path. If it's
+Confirm `src/librarian/tools/codemap/repos.txt` has at least one uncommented repo path. If it's
 empty, tell the user to add a repo path and stop — do not invent a repo to index.
 
 ## Step 2 — Reindex
@@ -61,28 +61,7 @@ for readability (symbol name, kind, signature, file:line, docstring).
 
 ## Centralized indexing (manual setup, not installed by this skill)
 
-`src/librarian/codemap/codemap-cron.sh` exists for unattended reindexing but is **not
-registered anywhere** — same reasoning as `tools/cartographer/cartographer-cron.sh`:
-scheduling is an environment/hosting decision, not something to do silently from a
-skill run. To actually enable it:
-
-**Crontab** (any machine):
-```bash
-crontab -e
-# add:
-*/30 * * * * /absolute/path/to/repo/src/librarian/codemap/codemap-cron.sh
-```
-
-**launchd** (macOS alternative): write a
-`~/Library/LaunchAgents/com.librarian.codemap.plist` with `ProgramArguments` pointing
-at the script's absolute path and a `StartInterval` (seconds), then
-`launchctl load ~/Library/LaunchAgents/com.librarian.codemap.plist`. Not created by
-this skill — write and load it by hand.
-
-**Pointing a querier at a centrally-hosted index**: on the host running the indexer +
-API, set `CODEMAP_API_HOST`/`CODEMAP_API_PORT` if binding beyond `127.0.0.1` (e.g.
-`CODEMAP_API_HOST=0.0.0.0 make codemap-api`, or `uv run python -m librarian.codemap.api`
-which reads the same env vars). On every machine that only queries, set
-`CODEMAP_API_URL=http://<host>:<port>` before starting Claude Code / the MCP server —
-no other config changes needed, since `codemap_tools.py`'s MCP tools are already thin
-HTTP clients with no direct DB access.
+Unattended reindexing is `uv run librarian jobs run codemap` (it replaces the old
+`codemap-cron.sh`). It is **not registered anywhere**: scheduling is an environment/hosting
+decision, not something to do silently from a skill run. The crontab line and launchd plist
+are in `.claude/skills/README.md`; write and load them by hand.

@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**1245 pages** across 17 domains.
+**1246 pages** across 17 domains.
 
 ## Foundations
 
@@ -1303,6 +1303,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 - [[Atlas Project]] — Time-series forecasting and customer-segmentation agent system — Planner/Forecaster/Evaluator/Learner loop over ARIMA and Chronos models, an HDBSCAN-with-KMeans-fallback segmentation pipeline, and a Neo4j knowledge graph linking customers to segments and merchants.
 - [[Change-Contracts Rollout]] — 2026-07-17 decision record — SANYI promoted to the global skills reservoir, SANYI.md contracts drafted for playground/librarian/atlas, contract checks wired into review skills, template seeds contracts at scaffold time; akira rollout blocked on hardcoded scan paths.
+- [[Librarian Repo Feature Notes]] — Dated notes on how the librarian repo's UI panels, skill verbs, retrieval eval gate and code index work and why they are built that way, moved out of CLAUDE.md so it loads lighter each session.
 - [[NYC-DSSG Project]] — NYC Data Science for Social Good — platform engineering for a nonprofit serving 600+ nonprofits via 300 volunteers; building knowledge base, project templates, and PM agent.
 - [[Librarian Graph Explorer]] — Local React Flow wiki graph explorer — multi-dimensional edge types (wikilink/semantic/tag-shared), UMAP semantic layout, and agent chat with graph highlighting and wikilink write-back. Addresses the gap where Obsidian cannot do multi-edge toggling or embedding-based spatial layout.
 - [[Librarian KB — Build Plan]] — Phased build plan for the Librarian KB — Phases 1–5 complete, Phase 6 (connectors) active, Phase 8A+B (React Flow UI) done, Phases 9–15 future.

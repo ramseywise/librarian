@@ -24,6 +24,8 @@ def test_state_dir_holds_every_writable_path(
         s.logs_dir,
         s.cache_dir,
         s.flashcard_log,
+        s.attempts_db,
+        s.slides_build_dir,
         s.retrieval_log,
         s.curriculum_snapshot,
         s.lesson_vec_cache,

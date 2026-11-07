@@ -1,5 +1,5 @@
 ---
-generated_by: src/librarian/slides/flashcards.py
+generated_by: src/librarian/tools/slides/flashcards.py
 decks:
 - programming/python/01-foundations/slides/deck.yaml
 - programming/python/02-informatics/slides/deck.yaml

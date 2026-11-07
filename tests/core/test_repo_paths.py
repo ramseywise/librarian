@@ -17,11 +17,15 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 CASES = [
-    ("tools.cartographer.cron", "_REPO_ROOT", REPO_ROOT),
-    ("tools.cartographer.cron", "LIBRARIAN_RAW_SESSIONS", REPO_ROOT / "data" / "raw" / "sessions"),
-    ("tools.cartographer.cron", "LIBRARIAN_WIKI_DIR", REPO_ROOT / "data" / "wiki"),
+    ("librarian.tools.cartographer.cron", "_REPO_ROOT", REPO_ROOT),
     (
-        "tools.cartographer.enrich",
+        "librarian.tools.cartographer.cron",
+        "LIBRARIAN_RAW_SESSIONS",
+        REPO_ROOT / "data" / "raw" / "sessions",
+    ),
+    ("librarian.tools.cartographer.cron", "LIBRARIAN_WIKI_DIR", REPO_ROOT / "data" / "wiki"),
+    (
+        "librarian.tools.cartographer.enrich",
         "LIBRARIAN_RAW_SESSIONS",
         REPO_ROOT / "data" / "raw" / "sessions",
     ),

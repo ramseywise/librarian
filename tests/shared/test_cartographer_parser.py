@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.cartographer.session_parser import (
+from librarian.tools.cartographer.session_parser import (
     _REQUIRED_SECTION_IDS,
     _SECTION_ID_LIST,
     _SYSTEM_PROMPT,
@@ -282,7 +282,7 @@ def test_parse_session_splits_cost_by_model(tmp_path: Path) -> None:
 @pytest.mark.unit
 def test_subagent_costs_roll_up_to_parent(tmp_path: Path) -> None:
     """Subagent spend is charged to the parent, split by agent name and model."""
-    from tools.cartographer.factstore import UNATTRIBUTED_AGENT, _subagent_costs_by_parent
+    from librarian.tools.cartographer.factstore import UNATTRIBUTED_AGENT, _subagent_costs_by_parent
 
     _write_jsonl(
         tmp_path / "proj" / "sess-1" / "subagents" / "agent-a.jsonl",
@@ -314,7 +314,7 @@ def test_subagent_costs_roll_up_to_parent(tmp_path: Path) -> None:
 def test_from_jsonl_leaves_subagent_costs_null_without_subagents(tmp_path: Path) -> None:
     """A parent that spawned nothing stores NULL, not an empty object -- absence of
     subagent use must stay distinguishable from a zero-cost subagent."""
-    from tools.cartographer.factstore import from_jsonl
+    from librarian.tools.cartographer.factstore import from_jsonl
 
     _write_jsonl(
         tmp_path / "proj" / "sess-1.jsonl",
@@ -553,7 +553,7 @@ def test_generate_report_html_all_nine_present_no_retry() -> None:
     """When the first response has all nine ids, call_claude is invoked exactly once."""
     full_html = _html_with_ids(*_REQUIRED_SECTION_IDS)
     with patch(
-        "tools.cartographer.session_parser.call_claude", return_value=full_html
+        "librarian.tools.cartographer.session_parser.call_claude", return_value=full_html
     ) as mock_call:
         result = generate_report_html("fake-key", "prompt", "fake-model")
     assert result == full_html
@@ -566,7 +566,7 @@ def test_generate_report_html_missing_id_triggers_one_retry() -> None:
     incomplete_html = _html_with_ids(*_REQUIRED_SECTION_IDS[:-1])
     full_html = _html_with_ids(*_REQUIRED_SECTION_IDS)
     with patch(
-        "tools.cartographer.session_parser.call_claude",
+        "librarian.tools.cartographer.session_parser.call_claude",
         side_effect=[incomplete_html, full_html],
     ) as mock_call:
         result = generate_report_html("fake-key", "prompt", "fake-model")
@@ -584,7 +584,7 @@ def test_generate_report_html_still_missing_after_retry_raises() -> None:
     still_incomplete_html = _html_with_ids(*_REQUIRED_SECTION_IDS[:-1])
     with (
         patch(
-            "tools.cartographer.session_parser.call_claude",
+            "librarian.tools.cartographer.session_parser.call_claude",
             side_effect=[incomplete_html, still_incomplete_html],
         ) as mock_call,
         pytest.raises(SectionContractError) as exc_info,
@@ -918,7 +918,7 @@ def test_tool_sequence_extraction(tmp_path: Path) -> None:
     assert session is not None
     assert session["tool_sequence"] == ["Read", "Glob", "Bash", "Edit", "Bash"]
 
-    from tools.cartographer.factstore import from_jsonl
+    from librarian.tools.cartographer.factstore import from_jsonl
 
     rows = from_jsonl(tmp_path)
     assert len(rows) == 1
@@ -938,7 +938,7 @@ def test_tool_sequence_null_for_sessions_without_tool_calls(tmp_path: Path) -> N
     # Parser returns [] for no tool calls -- never None
     assert session["tool_sequence"] == []
 
-    from tools.cartographer.factstore import from_jsonl
+    from librarian.tools.cartographer.factstore import from_jsonl
 
     rows = from_jsonl(tmp_path)
     assert len(rows) == 1
@@ -951,7 +951,7 @@ def test_tool_sequence_null_for_sessions_without_tool_calls(tmp_path: Path) -> N
 def test_tool_sequence_migration_idempotency(tmp_path: Path) -> None:
     """Calling _connect (the migration path) twice on the same DB is a no-op."""
 
-    from tools.cartographer.factstore import _connect
+    from librarian.tools.cartographer.factstore import _connect
 
     store = tmp_path / "sessions.db"
     # First call creates the table and adds tool_sequence
