@@ -1,4 +1,4 @@
-"""Wiki-change bursts coalesce into one course-catalog rebuild (apps/api/main.py)."""
+"""Wiki-change bursts coalesce into one course-catalog rebuild (src/librarian/api/main.py)."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import asyncio
 
 import pytest
 
-from apps.api import main
+from librarian.api import main
 
 
 def test_rewarm_is_debounced(monkeypatch: pytest.MonkeyPatch) -> None:

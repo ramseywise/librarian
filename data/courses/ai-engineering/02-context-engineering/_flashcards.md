@@ -1,5 +1,5 @@
 ---
-generated_by: tools/slides/flashcards.py
+generated_by: src/librarian/slides/flashcards.py
 decks:
 - ai-engineering/02-context-engineering/slides/deck.yaml
 cards:

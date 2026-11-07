@@ -101,7 +101,7 @@ class Settings(BaseSettings):
     cors_origins: str = Field(
         default="http://localhost:5173", validation_alias=_env("LIBRARIAN_CORS_ORIGINS")
     )
-    # The built web UI (`npm run build` in apps/web), served by the API at "/" when it exists.
+    # The built web UI (`npm run build` in app), served by the API at "/" when it exists.
     override_web_dir: Path | None = Field(default=None, validation_alias=_env("LIBRARIAN_WEB_DIR"))
     # POST /api/chat/stream limits, per process. 0 turns a limit off.
     chat_rate_limit: int = Field(default=20, validation_alias=_env("LIBRARIAN_CHAT_RATE_LIMIT"))
@@ -188,7 +188,7 @@ class Settings(BaseSettings):
 
     @property
     def web_dir(self) -> Path:
-        return self.override_web_dir or self.root / "apps" / "web" / "dist"
+        return self.override_web_dir or self.root / "app" / "dist"
 
     @property
     def state_dir(self) -> Path | None:

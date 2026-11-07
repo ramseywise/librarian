@@ -180,9 +180,9 @@ The `contracts` review dimension (via `uv run --project ~/workspace/guacamayo re
 | `data/wiki/private/` | Company-specific pages, gitignored — same format, local only |
 | `CLAUDE.md` | Compiler contract — schema rules, ingest checklist, conflict policy, domain taxonomy |
 | `src/librarian/` | The Python package behind the `librarian` CLI: `wiki/` (parser, telemetry, graph, rename, relinker), `ingest/` (scrapers, gate, raw lint), `courses/` (catalog, curriculum), `retrieval/` (embeddings), `config.py` (paths and settings, `LIBRARIAN_ROOT`). Run `uv run librarian --help` |
-| `apps/mcp/` | FastMCP wrappers over `librarian.retrieval`: `search_wiki`, `read_page`, `list_domain`, `list_pages`, `get_domain_briefing`, plus the codemap tools |
-| `apps/api/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Anthropic chat agent |
-| `apps/web/` | React + Vite graph UI — React Flow (`@xyflow/react`) force-directed graph, chat panel, live wiki watch |
+| `src/librarian/mcp/` | FastMCP wrappers over `librarian.retrieval`: `search_wiki`, `read_page`, `list_domain`, `list_pages`, `get_domain_briefing`, plus the codemap tools |
+| `src/librarian/api/` | FastAPI — wiki graph API, DuckDB-cached embeddings + UMAP layout, streaming Anthropic chat agent |
+| `app/` | React + Vite graph UI — React Flow (`@xyflow/react`) force-directed graph, chat panel, live wiki watch |
 | `.claude/skills/` | `/ingest`, `/query`, `/lint`, `/adk-context`, `/seed-kb` — Claude Code slash commands |
 
 ---

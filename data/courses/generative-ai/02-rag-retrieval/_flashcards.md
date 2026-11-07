@@ -1,5 +1,5 @@
 ---
-generated_by: tools/slides/flashcards.py
+generated_by: src/librarian/slides/flashcards.py
 decks:
 - generative-ai/02-rag-retrieval/slides/deck.yaml
 cards:

@@ -6,7 +6,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from tools.codemap import symbol_embeddings
+from librarian.codemap import symbol_embeddings
 
 
 @pytest.fixture()

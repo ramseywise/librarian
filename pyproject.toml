@@ -21,8 +21,8 @@ dependencies = [
 [project.scripts]
 librarian = "librarian.cli:main"
 cartographer = "tools.cartographer.__main__:main"
-codemap = "tools.codemap.__main__:main"
-presenter = "tools.presenter.__main__:main"
+codemap = "librarian.codemap.__main__:main"
+presenter = "librarian.presenter.__main__:main"
 
 [project.optional-dependencies]
 api = [
@@ -41,7 +41,7 @@ api = [
     # librarian/wiki/graph.py (librarian wiki graph): Louvain clusters. Was only in `viz`.
     "networkx>=3.7",
     "ollama>=0.6.3",
-    # /api/layout/umap (apps/api/umap_layout.py). Was only in `viz`, so an
+    # /api/layout/umap (src/librarian/api/umap_layout.py). Was only in `viz`, so an
     # `--extra api` install served 503 and the graph fell back to the dagre layout.
     "umap-learn>=0.5.6",
     "numba>=0.68.1",
@@ -70,9 +70,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/librarian", "tools", "apps"]
-# The React app is built by Vite and shipped by its own Dockerfile, not inside the wheel.
-exclude = ["apps/web"]
+# tools/ is cartographer only, until it moves to its own repo.
+# The React app (app/) is built by Vite inside the Dockerfile, not shipped in the wheel.
+packages = ["src/librarian", "tools"]
 
 [tool.uv]
 package = true
@@ -120,9 +120,9 @@ ignore = ["E501", "RUF001", "RUF002", "RUF003", "N803", "N806"]
 
 [tool.ruff.lint.per-file-ignores]
 # load_dotenv() must run before app modules import (they read env at import time)
-"apps/api/main.py" = ["E402"]
+"src/librarian/api/main.py" = ["E402"]
 # Ported whole from the course repo's deck builder; annotating it adds nothing yet.
-"tools/slides/*" = ["ANN"]
+"src/librarian/slides/*" = ["ANN"]
 "tests/slides/*" = ["ANN"]
 
 [tool.pytest.ini_options]
@@ -134,45 +134,61 @@ typeCheckingMode = "basic"
 pythonVersion = "3.12"
 venvPath = "."
 venv = ".venv"
-include = ["src", "apps", "tools"]
-exclude = ["apps/web", "**/node_modules", "**/__pycache__"]
+include = ["src", "tools"]
+exclude = ["**/node_modules", "**/__pycache__"]
 # Diagnostics suppressed (file still analysed for others' imports): python-pptx's stubs type
 # placeholders and fills as base classes with no `text`/`text_frame`/`_solidFill`, and lxml
 # ships no `etree` stub, so renderer.py's 11 errors are all stub gaps, not logic. Remove this
 # when the renderer moves to typed wrappers.
-ignore = ["tools/presenter/renderer.py"]
+ignore = ["src/librarian/presenter/renderer.py"]
 
 [tool.importlinter]
-root_packages = ["librarian", "apps", "tools"]
+root_packages = ["librarian", "tools"]
 include_external_packages = false
 
 [[tool.importlinter.contracts]]
-name = "The library does not import its callers"
+name = "librarian does not import tools (cartographer)"
 type = "forbidden"
 source_modules = ["librarian"]
-forbidden_modules = ["apps", "tools"]
-
-[[tool.importlinter.contracts]]
-name = "The apps do not import tools"
-type = "forbidden"
-source_modules = ["apps"]
 forbidden_modules = ["tools"]
 
+# The core (courses, retrieval, wiki, ingest) sits below every entry point and tool.
 [[tool.importlinter.contracts]]
-name = "apps.api and apps.mcp are independent"
-type = "independence"
-modules = ["apps.api", "apps.mcp"]
+name = "The core does not import its callers"
+type = "forbidden"
+source_modules = [
+    "librarian.courses",
+    "librarian.retrieval",
+    "librarian.wiki",
+    "librarian.ingest",
+]
+forbidden_modules = [
+    "librarian.api",
+    "librarian.mcp",
+    "librarian.slides",
+    "librarian.presenter",
+    "librarian.codemap",
+]
 
-# Dependencies run downwards: courses -> retrieval -> wiki -> ingest. retrieval (the index, ranking
-# and the public search API) reads wiki pages through librarian.wiki.common, so it sits above wiki.
-# Two known upward edges are recorded here instead of hidden: wiki.telemetry's course-gap report
-# imports courses.catalog/curriculum inside a function (the gap list needs the catalog), and
-# wiki.relinker uses retrieval.embeddings for its suggestions (embeddings is the shared model
-# loader and cache, which imports none of the wiki). config/log_config are leaves any layer may use.
+[[tool.importlinter.contracts]]
+name = "librarian.api and librarian.mcp are independent"
+type = "independence"
+modules = ["librarian.api", "librarian.mcp"]
+
+# Dependencies run downwards: entry points (api, mcp; independent of each other, see above) ->
+# tools (slides, presenter, codemap) -> courses -> retrieval -> wiki -> ingest. retrieval (the
+# index, ranking and the public search API) reads wiki pages through librarian.wiki.common, so it
+# sits above wiki. Two known upward edges are recorded here instead of hidden: wiki.telemetry's
+# course-gap report imports courses.catalog/curriculum inside a function (the gap list needs the
+# catalog), and wiki.relinker uses retrieval.embeddings for its suggestions (embeddings is the
+# shared model loader and cache, which imports none of the wiki). config/log_config are leaves any
+# layer may use.
 [[tool.importlinter.contracts]]
 name = "librarian sub-packages are layered"
 type = "layers"
 layers = [
+    "librarian.api | librarian.mcp",
+    "librarian.slides | librarian.presenter | librarian.codemap",
     "librarian.courses",
     "librarian.retrieval",
     "librarian.wiki",

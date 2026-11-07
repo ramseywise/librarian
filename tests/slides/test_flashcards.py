@@ -1,11 +1,11 @@
-"""tools/slides/flashcards.py: module flashcards built from local deck and lecture specs."""
+"""src/librarian/slides/flashcards.py: module flashcards built from local deck and lecture specs."""
 
 from pathlib import Path
 
 import pytest
 import yaml
 
-from tools.slides import flashcards as fc
+from librarian.slides import flashcards as fc
 
 DECK = """
 deck: {title: Stats}

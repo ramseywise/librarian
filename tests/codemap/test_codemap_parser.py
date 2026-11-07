@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from tools.codemap.parser import parse_source
+from librarian.codemap.parser import parse_source
 
 FIXTURE = b'''\
 """Module docstring, not a symbol."""

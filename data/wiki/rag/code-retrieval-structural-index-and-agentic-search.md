@@ -70,7 +70,7 @@ first** and falls back to embeddings for fuzzy, conceptual queries.
 
 ## 6. Implementation notes: librarian's codemap
 
-librarian built a small-team version of section 5 as `tools/codemap/` (2026-07). It uses
+librarian built a small-team version of section 5 as `src/librarian/codemap/` (2026-07). It uses
 tree-sitter to extract symbols plus import and call edges into `.code_index.duckdb`, with
 content-hash manifest skips for incremental reindexing. Decisions worth reusing:
 

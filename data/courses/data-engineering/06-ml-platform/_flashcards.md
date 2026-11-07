@@ -1,5 +1,5 @@
 ---
-generated_by: tools/slides/flashcards.py
+generated_by: src/librarian/slides/flashcards.py
 decks:
 - data-engineering/06-ml-platform/slides/deck.yaml
 cards:

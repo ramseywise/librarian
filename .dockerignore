@@ -8,7 +8,7 @@
 **/__pycache__
 **/node_modules
 **/dist
-apps/web/coverage
+app/coverage
 *.duckdb
 *.duckdb.wal
 logs

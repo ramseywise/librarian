@@ -1,5 +1,5 @@
 ---
-generated_by: tools/slides/flashcards.py
+generated_by: src/librarian/slides/flashcards.py
 decks:
 - data-engineering/03-transform-and-orchestrate/slides/deck.yaml
 cards:

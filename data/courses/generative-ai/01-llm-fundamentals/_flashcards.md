@@ -1,5 +1,5 @@
 ---
-generated_by: tools/slides/flashcards.py
+generated_by: src/librarian/slides/flashcards.py
 decks:
 - generative-ai/01-llm-fundamentals/slides/deck.yaml
 cards:

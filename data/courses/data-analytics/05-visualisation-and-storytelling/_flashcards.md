@@ -1,5 +1,5 @@
 ---
-generated_by: tools/slides/flashcards.py
+generated_by: src/librarian/slides/flashcards.py
 decks:
 - data-analytics/05-visualisation-and-storytelling/slides/deck.yaml
 cards:

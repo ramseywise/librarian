@@ -13,8 +13,8 @@ There is no hand-maintained domain list anywhere in the graph pipeline. The **di
 - `librarian/wiki/wiki_parser.py` — `_domain_tag_set()` derives the set from disk; `parse_wiki()` sends it to the UI as the payload's sorted `domains` field (graph_update over `/ws` and `GET /api/graph`). `tag_shared_edges()` uses it for `GET /api/graph?edges=all`.
 - `src/librarian/retrieval/corpus.py` — `wiki_domains()`, same derivation, for MCP domain filters.
 - `librarian/courses/catalog.py` — `_load_wiki()` takes each page's domain from its first path component (private and tombstoned pages skipped).
-- `apps/web/src/theme/domains.ts` — maps a domain **name to a colour only**. `KNOWN` holds fixed colours for established domains; any other domain gets a deterministic colour from `PALETTE` via `domainColor()`. Nodes, detail panel and minimap take their domain list from the payload and their colours from this module. The filter panel shows payload domains only until the curriculum loads; after that it follows `GET /api/graph/curriculum` (`librarian/courses/curriculum.py`), an overlay whose "Beyond the curriculum" group is still derived from directories, and pages a lesson links take `courseColor()` from `COURSE_COLORS`. Course colours are not domain drift.
-- `apps/web/src/utils/tagEdges.ts` — derives tag-shared edges client-side with the same rule as `tag_shared_edges()` in wiki_parser.py.
+- `app/src/theme/domains.ts` — maps a domain **name to a colour only**. `KNOWN` holds fixed colours for established domains; any other domain gets a deterministic colour from `PALETTE` via `domainColor()`. Nodes, detail panel and minimap take their domain list from the payload and their colours from this module. The filter panel shows payload domains only until the curriculum loads; after that it follows `GET /api/graph/curriculum` (`librarian/courses/curriculum.py`), an overlay whose "Beyond the curriculum" group is still derived from directories, and pages a lesson links take `courseColor()` from `COURSE_COLORS`. Course colours are not domain drift.
+- `app/src/utils/tagEdges.ts` — derives tag-shared edges client-side with the same rule as `tag_shared_edges()` in wiki_parser.py.
 
 So a new wiki directory needs **no code change** to appear, be filterable and be coloured. What can still drift is listed in Step 3.
 
@@ -40,7 +40,7 @@ uv run python -c "import sys; sys.path.insert(0, 'app'); from backend.wiki_parse
 
 ## Step 2 — Read what the code holds
 
-### `apps/web/src/theme/domains.ts`
+### `app/src/theme/domains.ts`
 Extract the keys of `const KNOWN: Record<string, string> = {...}` and the `PALETTE` values. (`private` is a KNOWN key on purpose: private pages are shown locally with a badge, decision D1.)
 
 ### Derivation functions (confirm they still derive, not list)
@@ -53,8 +53,8 @@ Extract the keys of `const KNOWN: Record<string, string> = {...}` and the `PALET
 - Regression sweep — no other domain list should exist in the frontend:
   ```bash
   P='"(rag|langgraph|adk|infra|memory)"|^\s*(rag|langgraph|adk|infra|memory)\s*:'
-  grep -cE "$P" apps/web/src/theme/domains.ts   # positive control: must be > 0
-  grep -rnE "$P" apps/web/src --include='*.ts' --include='*.tsx' \
+  grep -cE "$P" app/src/theme/domains.ts   # positive control: must be > 0
+  grep -rnE "$P" app/src --include='*.ts' --include='*.tsx' \
     | grep -v -e theme/domains.ts -e __tests__
   ```
   The pattern catches both quoted array entries and unquoted record keys. Any array or record naming three or more domains outside `theme/domains.ts` is **DRIFT** (a list was reintroduced).
@@ -114,7 +114,7 @@ All clear — domains derive from disk everywhere; no drift.
 ### If --fix was passed
 
 After the report, apply the mechanical fixes:
-- Add `KNOWN` colours for missing domains in `apps/web/src/theme/domains.ts` (optional; only where the report suggested it).
+- Add `KNOWN` colours for missing domains in `app/src/theme/domains.ts` (optional; only where the report suggested it).
 
 Do NOT auto-remove ghost entries or rewrite a reintroduced hardcoded list — list them and ask the user. Re-run Step 2 and confirm. Report what was fixed.
 

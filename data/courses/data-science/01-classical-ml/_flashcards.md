@@ -1,5 +1,5 @@
 ---
-generated_by: tools/slides/flashcards.py
+generated_by: src/librarian/slides/flashcards.py
 decks:
 - data-science/01-classical-ml/slides/deck.yaml
 - data-science/01-classical-ml/slides/lectures/00-overview.yaml

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from tools.codemap import parser
+from librarian.codemap import parser
 
 
 @pytest.mark.unit

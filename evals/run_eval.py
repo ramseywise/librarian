@@ -25,7 +25,7 @@ gated so a ranking change cannot improve one arm at the other's expense.  The
 `lex` and `graph` ablations remain report-only.
 
 *Agent* (`--agent`, BILLABLE): runs each query through the real chat agent
-(`apps.api.agent.run_agent_stream`, the path the UI uses) and grades the run with
+(`librarian.api.agent.run_agent_stream`, the path the UI uses) and grades the run with
 `AgentGrader` — expected source-page recall over pages read and pages cited, plus
 citation grounding. `--judge` adds `LLMJudgeGrader` (one more billable call per entry)
 scoring the answer against `expected_answer`. `--limit N` caps the entries run.
@@ -275,7 +275,7 @@ async def collect_agent_run(
     Consumes the same SSE events the UI does, so the eval measures the shipped path.
     Telemetry lines are tagged source="eval" so they can be filtered from chat traffic.
     """
-    from apps.api import agent
+    from librarian.api import agent
 
     tokens: list[str] = []
     grounding: dict[str, list[str]] = {"pages_read": [], "cited": [], "ungrounded": []}
@@ -379,7 +379,7 @@ def _main_agent(args: argparse.Namespace) -> None:
     import anthropic
     from dotenv import load_dotenv
 
-    from apps.api import agent
+    from librarian.api import agent
 
     load_dotenv(Path(__file__).parent.parent / ".env")
     entries = load_golden_dataset(args.dataset)

@@ -15,8 +15,8 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from apps.api import agent
-from apps.api import main as main_module
+from librarian.api import agent
+from librarian.api import main as main_module
 from librarian.config import Settings, get_settings
 from librarian.retrieval import corpus, embeddings
 

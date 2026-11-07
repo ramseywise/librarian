@@ -1,5 +1,5 @@
 ---
-generated_by: tools/slides/flashcards.py
+generated_by: src/librarian/slides/flashcards.py
 decks:
 - generative-ai/03-agentic-foundations/slides/deck.yaml
 cards:

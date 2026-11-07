@@ -183,7 +183,7 @@ def _node(nid: str, directory: str, tags: list[str]) -> dict:
 
 @pytest.mark.unit
 def test_tag_shared_rule_matches_frontend_tag_edges() -> None:
-    """Same cases as apps/web/src/utils/__tests__/tagEdges.test.ts — the Python rule
+    """Same cases as app/src/utils/__tests__/tagEdges.test.ts — the Python rule
     (used by /api/graph?edges=all) and the client-side one must stay identical."""
     from librarian.wiki.parser import tag_shared_edges
 
@@ -243,7 +243,7 @@ def test_api_graph_edges_all_adds_tag_shared(
     """GET /api/graph defaults to the slim payload; ?edges=all restores tag-shared edges."""
     from fastapi.testclient import TestClient
 
-    import apps.api.main as main_module
+    import librarian.api.main as main_module
     import librarian.wiki.parser as app_wp
 
     _write_page(tmp_path, "rag", "a-page", "A Page", ["rag", "concept"], "S", "[[B Page]]")

@@ -1,13 +1,13 @@
 ---
 name: slides
-description: "Build a lecture deck (.pptx) for any module of any course (ai-engineering, generative-ai, data-analytics, data-science, data-engineering, programming, interviewing) from its notes, in the course's house style (the LangGraph deck look). Writes data/courses/<pillar>/slides/deck.yaml, renders it with tools/slides/build_deck.py, previews every slide and fixes overflow. Usage: /slides 02-context-engineering, /slides generative-ai/02-rag-retrieval, /slides data-analytics/06-applied-analyses, /slides programming/python/01-foundations. Run from the librarian repo: media is built here, not in learn-ai-engineering."
+description: "Build a lecture deck (.pptx) for any module of any course (ai-engineering, generative-ai, data-analytics, data-science, data-engineering, programming, interviewing) from its notes, in the course's house style (the LangGraph deck look). Writes data/courses/<pillar>/slides/deck.yaml, renders it with src/librarian/slides/build_deck.py, previews every slide and fixes overflow. Usage: /slides 02-context-engineering, /slides generative-ai/02-rag-retrieval, /slides data-analytics/06-applied-analyses, /slides programming/python/01-foundations. Run from the librarian repo: media is built here, not in learn-ai-engineering."
 ---
 
 You are turning one pillar's notes into a lecture deck. The notes are the source of truth.
 The deck is a talk built on them: one idea per slide, with the evidence kept in. It is not
 the notes reflowed onto slides.
 
-The rendering is deterministic. You write a YAML spec, and `tools/slides/build_deck.py`
+The rendering is deterministic. You write a YAML spec, and `src/librarian/slides/build_deck.py`
 draws it. Never hand-edit the `.pptx`. Edit the YAML and rebuild.
 
 Read `references/deck-spec.md` before writing the spec. It has the schema, the layout
@@ -112,7 +112,7 @@ per sheet, in `<pillar>/slides/.preview/`. That folder is gitignored.
 
 ## When the builder is the problem
 
-If a layout can't express the content, or renders it badly, fix `tools/slides/build_deck.py`.
+If a layout can't express the content, or renders it badly, fix `src/librarian/slides/build_deck.py`.
 Don't contort the content to fit. Keep layouts generic, since every pillar uses them.
 Document any new layout or key in `references/deck-spec.md`. Rebuild
 `01-prompt-engineering` afterwards to check that the change didn't break the existing deck.

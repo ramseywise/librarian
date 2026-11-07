@@ -21,7 +21,7 @@ from playwright.sync_api import Page, expect, sync_playwright
 
 UI_URL = os.environ.get("E2E_UI_URL", "http://localhost:5173")
 API = os.environ.get("E2E_API_URL", "http://localhost:8000")
-AXE_JS = Path(__file__).parents[2] / "apps/web/node_modules/axe-core/axe.min.js"
+AXE_JS = Path(__file__).parents[2] / "app/node_modules/axe-core/axe.min.js"
 
 pytestmark = pytest.mark.e2e
 
@@ -243,7 +243,7 @@ def test_no_serious_axe_violations(page: Page, route: str, ready: str) -> None:
     """axe-core per view: no serious/critical WCAG violations (contrast, landmarks,
     nested interactive controls, links told apart by colour alone)."""
     if not AXE_JS.exists():
-        pytest.skip("axe-core not installed (npm install in apps/web)")
+        pytest.skip("axe-core not installed (npm install in app)")
     if route == "lesson":
         route = f"/#/courses/{_get('/api/courses')[0]['modules'][0]['lessons'][0]['id']}"
     page.goto(UI_URL + route, timeout=15_000)

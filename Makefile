@@ -24,10 +24,10 @@ index-rebuild:
 	uv run librarian mcp --rebuild
 
 ui:
-	cd apps/web && npm run dev
+	cd app && npm run dev
 
 install-ui:
-	cd apps/web && npm install
+	cd app && npm install
 
 install-api:
 	uv sync --extra api
@@ -43,30 +43,30 @@ SLIDES_DIR = data/courses/$(PILLAR)
 
 slides:  ## Build a deck: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]
 	@test -n "$(PILLAR)" || { echo "usage: make slides PILLAR=<course>/<module> [LECTURE=<NN-slug>] [PREVIEW=1] [PDF=1] [STRICT=1] [LEVEL=core|practice|deep]"; exit 1; }
-	@uv run -q --with python-pptx --with pillow --with resvg-py python -m tools.slides.build_deck \
+	@uv run -q --with python-pptx --with pillow --with resvg-py python -m librarian.slides.build_deck \
 		$(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/$(LECTURE).yaml,deck.yaml) \
 		$(if $(PREVIEW),--preview $(SLIDES_DIR)/slides/$(if $(LECTURE),lectures/.preview/$(LECTURE),.preview)) $(if $(PDF),--pdf) $(if $(STRICT),--strict) $(if $(LEVEL),--level $(LEVEL))
 
 flashcards:  ## Build every module's _flashcards.md from its local deck specs [CHECK=1 to only check]
-	@uv run -q python tools/slides/flashcards.py $(if $(CHECK),--check)
+	@uv run -q python src/librarian/slides/flashcards.py $(if $(CHECK),--check)
 
 slides-all:  ## Build every deck in every course [PDF=1]
-	@find data/courses -path '*/slides/deck.yaml' -o -path '*/slides/lectures/*.yaml' | sort | xargs -n1 -I{} uv run -q --with python-pptx --with pillow --with resvg-py python -m tools.slides.build_deck {} $(if $(PDF),--pdf)
+	@find data/courses -path '*/slides/deck.yaml' -o -path '*/slides/lectures/*.yaml' | sort | xargs -n1 -I{} uv run -q --with python-pptx --with pillow --with resvg-py python -m librarian.slides.build_deck {} $(if $(PDF),--pdf)
 
 deck-graph:  ## Regenerate data/courses/_decks.md, the map of every module and lecture
-	@uv run -q python tools/slides/deck_graph.py build
+	@uv run -q python src/librarian/slides/deck_graph.py build
 
 deck-graph-check:  ## Fail if a lecture's covers or edges name a missing note, or two lectures claim one note
-	@uv run -q python tools/slides/deck_graph.py check
+	@uv run -q python src/librarian/slides/deck_graph.py check
 
 deck-check:  ## Fail if a built deck no longer matches its yaml; decks not built yet are reported only
-	@python3 tools/slides/deck_stamp.py
+	@python3 src/librarian/slides/deck_stamp.py
 
 codemap-reindex:
 	uv run codemap
 
 codemap-api:
-	uv run uvicorn tools.codemap.api:app --reload --host $${CODEMAP_API_HOST:-127.0.0.1} --port $${CODEMAP_API_PORT:-8100}
+	uv run uvicorn librarian.codemap.api:app --reload --host $${CODEMAP_API_HOST:-127.0.0.1} --port $${CODEMAP_API_PORT:-8100}
 
 setup-ollama:
 	ollama pull $${OLLAMA_MODEL:-llama3.2}
@@ -141,11 +141,11 @@ ingest: scrape-docs scrape-sessions scrape-repos
 lint:
 	@echo "Run /lint via Claude Code"
 
-# Architecture contracts (pyproject.toml [tool.importlinter]): library never imports apps/tools, etc.
+# Architecture contracts (pyproject.toml [tool.importlinter]): library core never imports api/mcp/tools, etc.
 lint-imports:
 	uv run lint-imports
 
-# pyright, basic mode, over src apps tools (pyproject.toml [tool.pyright]).
+# pyright, basic mode, over src tools (pyproject.toml [tool.pyright]).
 typecheck:
 	uv run pyright
 
@@ -158,11 +158,11 @@ help:
 	@echo "api              — start FastAPI backend directly (port 8000)"
 	@echo "ui               — start Vite dev server directly (port 5173)"
 	@echo "flashcards       — build each module's _flashcards.md from its local deck specs"
-	@echo "install-ui       — npm install for apps/web/"
+	@echo "install-ui       — npm install for app/"
 	@echo "install-api      — uv sync --extra api"
 	@echo "install-codemap  — uv sync --extra codemap"
 	@echo "install-presenter — uv sync --extra presenter"
-	@echo "codemap-reindex  — reindex repos in tools/codemap/repos.txt → .code_index.duckdb"
+	@echo "codemap-reindex  — reindex repos in src/librarian/codemap/repos.txt → .code_index.duckdb"
 	@echo "codemap-api      — start Codemap Query API (port 8100)"
 	@echo "setup-ollama     — pull the configured Ollama model"
 	@echo "test             — run unit tests (no servers needed)"

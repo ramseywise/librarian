@@ -87,6 +87,7 @@ logs/signals/
 
 # Local caches (lesson embedding vectors for course concept linking)
 .cache/
+.import_linter_cache/
 
 explain-skill/
 second-brain-os/

@@ -1,7 +1,7 @@
 """Evidence for Buyi "data/wiki/private/ never leaves the machine", clause (b) — agent side.
 
 tests/app/test_private_exclusion.py covers the MCP server. The chat agent in
-apps/api/agent.py used to reach the same pages through its own rglob walk; since
+src/librarian/api/agent.py used to reach the same pages through its own rglob walk; since
 the S7 collapse it delegates to ranking.search_rows/_read_page_text, so these tests
 now prove the delegation preserves the exclusion end-to-end from the agent's entry
 points (the SSE chat panel's tool handlers).
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from apps.api import agent
+from librarian.api import agent
 from librarian.retrieval import corpus, embeddings
 
 PAGE = """---

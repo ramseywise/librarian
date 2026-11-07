@@ -7,7 +7,7 @@ import pytest
 import yaml
 
 from librarian.courses import overlay
-from tools.slides import deck_graph
+from librarian.slides import deck_graph
 
 ROOT = Path(__file__).resolve().parents[2]
 

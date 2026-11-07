@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_importing_the_api_loads_no_heavy_ml_libraries() -> None:
     code = (
-        "import sys; import apps.api.main; "
+        "import sys; import librarian.api.main; "
         "print([m for m in ('torch', 'sentence_transformers', 'sklearn', 'umap', 'numba') "
         "if m in sys.modules])"
     )

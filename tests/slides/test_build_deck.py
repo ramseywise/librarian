@@ -20,9 +20,9 @@ import yaml
 pytest.importorskip("pptx")
 from pptx import Presentation
 
-HERE = Path(__file__).resolve().parents[2] / "tools" / "slides"
-from tools.slides import build_deck as bd  # noqa: E402
-from tools.slides import deck_stamp as ds  # noqa: E402
+HERE = Path(__file__).resolve().parents[2] / "src" / "librarian" / "slides"
+from librarian.slides import build_deck as bd  # noqa: E402
+from librarian.slides import deck_stamp as ds  # noqa: E402
 
 
 def slide(title, **over):
@@ -317,14 +317,14 @@ class TestMakeLevel(unittest.TestCase):
     def test_make_passes_level_through(self):
         out = subprocess.run(
             ["make", "-n", "slides", "PILLAR=a/b", "LEVEL=core"],
-            cwd=HERE.parents[1],
+            cwd=HERE.parents[2],
             capture_output=True,
             text=True,
         )
         self.assertIn("--level core", out.stdout)
         out = subprocess.run(
             ["make", "-n", "slides", "PILLAR=a/b"],
-            cwd=HERE.parents[1],
+            cwd=HERE.parents[2],
             capture_output=True,
             text=True,
         )

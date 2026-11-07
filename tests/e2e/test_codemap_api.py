@@ -38,7 +38,7 @@ def test_callers_endpoint_finds_known_caller() -> None:
     r = httpx.get(f"{BASE}/api/callers", params={"symbol_name": "index_repo"}, timeout=10)
     assert r.status_code == 200
     callers = r.json()
-    assert any(c["rel_path"] == "tools/codemap/indexer.py" for c in callers)
+    assert any(c["rel_path"] == "src/librarian/codemap/indexer.py" for c in callers)
 
 
 @pytest.mark.e2e

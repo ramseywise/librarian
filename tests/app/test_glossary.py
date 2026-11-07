@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
-from apps.api.routers import glossary as glossary_routes
+from librarian.api.routers import glossary as glossary_routes
 from librarian.courses import glossary
 from librarian.wiki import parser as wiki_parser
 

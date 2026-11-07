@@ -27,7 +27,7 @@ generic documentation.
 Analysis community plugin for cosine-similarity edges between pages. Do NOT use the
 Streamlit visualizer — it was deprecated and the script has since been removed.
 
-**Agent layer:** `apps/api/agent.py` — an Anthropic-based chat agent (#96) with its own wiki-search
+**Agent layer:** `src/librarian/api/agent.py` — an Anthropic-based chat agent (#96) with its own wiki-search
 tool, streamed via SSE (`POST /api/chat/stream`) to the React graph UI's chat panel. No
 write-back route or tool exists; the UI is read-only over the wiki.
 
@@ -38,7 +38,7 @@ MCP and `/lint`. Pages no lesson links appear under "Beyond the curriculum" by d
 Private pages never appear. An empty module means the wiki has no page on that topic.
 
 **Atlas and glossary (2026-11):** above 1,000 pages the graph opens on an aggregate ring
-(`apps/web/src/components/atlas/`, drawn on canvas); choosing a sector opens a capped React
+(`app/src/components/atlas/`, drawn on canvas); choosing a sector opens a capped React
 Flow view of it. `data/glossary.yaml` (hand-edited, served by `src/librarian/courses/glossary.py`) supplies
 a toggleable layer of term nodes and the hover definitions in lessons. The map's health strip
 reads the latest telemetry row through `GET /api/wiki/health`.
@@ -53,7 +53,7 @@ reporting those only as a count.
 
 **Retrieval evals (2026-11):** `make eval-gate` runs four gated arms, and a ranking change must clear all of them: `sem` (hand-picked questions whose answers are mostly hub pages), `nofts` (the degraded path), `uniform` (questions on uniformly sampled wiki pages) and `course` (lesson search). Search blends BM25 and similarity equally. Backlinks are deliberately not a ranking signal; `sem` alone rewards them, so never judge ranking on it alone.
 
-**Code index (2026-07):** `tools/codemap/` — tree-sitter-based structural index (symbols,
+**Code index (2026-07):** `src/librarian/codemap/` — tree-sitter-based structural index (symbols,
 import edges) over source repos, separate from the wiki-compile pipeline. Exposed via MCP
 tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki tools. See
 `.claude/docs/plans/codemap-code-index.md`.
@@ -67,10 +67,14 @@ tools (`find_symbol`, `repo_map`, `find_references`, etc.) alongside the wiki to
   `cli.py`, `wiki/` (parser, health, telemetry, graph, rename, relinker, common), `retrieval/`
   (index, ranking, search/read API, embeddings), `courses/` (catalog, curriculum, leitner, glossary) and `ingest/`
   (scrapers, ingest gate, manifest, raw lint).
-- `apps/api` (FastAPI, `librarian api`), `apps/mcp` (FastMCP, `librarian mcp`), `apps/web` (React/Vite).
-  Apps import the library (`apps/mcp/server.py` and `apps/api/agent.py` use only the public names of `librarian.retrieval`); the library never imports `apps/`, so route functions live in
-  `apps/api/routers/` and the logic they call in `src/librarian/`.
-- `tools/` — cartographer, codemap, presenter, slides. They import the library, never the reverse.
+- Also inside the `librarian` package, in three layers (enforced by import-linter, `make lint-imports`):
+  entry points `api/` (FastAPI, `librarian api`; routers in `api/routers/`, logic in the core) and `mcp/`
+  (FastMCP, `librarian mcp`), independent of each other and using only the public names of
+  `librarian.retrieval`; tools `slides/`, `presenter/`, `codemap/` (they must not import api/mcp; `mcp`
+  imports codemap's tools); and the core below (`courses`, `retrieval`, `wiki`, `ingest`), which imports none of them.
+- `app/` — the React/Vite frontend only (`app/src/`, built to `app/dist/`, served by the API). The single
+  `Dockerfile` at the repo root builds it and the API into one image.
+- `tools/cartographer/` — the one thing left outside the package; `librarian` never imports it.
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
   `librarian ingest triage|lint-raw|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
   `librarian courses check|review`, `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
@@ -206,7 +210,7 @@ Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so t
   Concepts with no wiki page show as plain `drill.tags`. Attempt counts come from sisyphus
   `drills/coding/drill-log.md`, read live at request time (`SISYPHUS_DIR`) and never written
   into `data/` — this repo is public and the log is personal history.
-  `make flashcards` (`tools/slides/flashcards.py`) turns the local `slides/deck.yaml` and
+  `make flashcards` (`src/librarian/slides/flashcards.py`) turns the local `slides/deck.yaml` and
   `slides/lectures/*.yaml` of each module into its `_flashcards.md`. The tool only deletes files carrying its own `generated_by` line. Frontmatter
   `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
   lesson id>`, studied at `#/flashcards/<id>`; self-grades append to gitignored `logs/flashcards.jsonl` via `POST /api/courses/flashcard-results`). `src/librarian/courses/leitner.py` computes due dates from that log; it stores no schedule of its own.
@@ -226,10 +230,10 @@ Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so t
   The sibling supplies nothing else: only those `sources/` PDFs.
   `data/concept_homes.json` (hand-edited) lists the maths concepts and the lessons that teach them, for `courses check curriculum`.
 - **Media is built here, for every course.** Deck specs are `<course>/<module>/slides/deck.yaml`
-  or `slides/lectures/NN-slug.yaml`, images are in the module's `assets/`, and `tools/slides/`
+  or `slides/lectures/NN-slug.yaml`, images are in the module's `assets/`, and `src/librarian/slides/`
   renders them: `make slides PILLAR=<course>/<module> [PREVIEW=1] [PDF=1]`, `make slides-all`,
   `make deck-check`, `make deck-graph`. Authoring steps are in the `/slides` skill. Built `.pptx`
-  and `.pdf` files are gitignored. `tools/presenter/` is a
+  and `.pdf` files are gitignored. `src/librarian/presenter/` is a
   separate LLM-driven tool for one-off talks, not course media.
 
 ---

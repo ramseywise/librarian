@@ -5,9 +5,14 @@ from pathlib import Path
 
 import pytest
 
-from tools.codemap import db as codemap_db
-from tools.codemap import manifest as codemap_manifest
-from tools.codemap.indexer import RepoConfig, _resolve_call_edges, _resolve_import_edges, index_repo
+from librarian.codemap import db as codemap_db
+from librarian.codemap import manifest as codemap_manifest
+from librarian.codemap.indexer import (
+    RepoConfig,
+    _resolve_call_edges,
+    _resolve_import_edges,
+    index_repo,
+)
 
 FIXTURE_SRC = '''\
 def hello(name: str) -> str:

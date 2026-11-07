@@ -9,7 +9,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from apps.api.routers import wiki_health as wiki_health_routes
+from librarian.api.routers import wiki_health as wiki_health_routes
 from librarian.wiki import health as wiki_health
 
 ROW = {

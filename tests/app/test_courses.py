@@ -20,7 +20,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from apps.api.routers import courses as courses_routes
+from librarian.api.routers import courses as courses_routes
 from librarian.courses import catalog as courses
 from librarian.courses import leitner
 

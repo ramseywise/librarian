@@ -6,31 +6,31 @@ from typing import Any
 
 import pytest
 
-from tools.presenter._client import parse_json_response
+from librarian.presenter._client import parse_json_response
 
-# Every module under tools/presenter/. presenter was copied in from a repo with a
+# Every module under src/librarian/presenter/. presenter was copied in from a repo with a
 # core/ package that has never existed here (see _settings.py / _client.py), so a
 # plain import is a real regression guard, not a formality.
 PRESENTER_MODULES = [
-    "tools.presenter",
-    "tools.presenter.__main__",
-    "tools.presenter._client",
-    "tools.presenter._settings",
-    "tools.presenter.image_fetcher",
-    "tools.presenter.intake",
-    "tools.presenter.models",
-    "tools.presenter.outline",
-    "tools.presenter.providers",
-    "tools.presenter.renderer",
-    "tools.presenter.slide_writer",
-    "tools.presenter.viz_classifier",
+    "librarian.presenter",
+    "librarian.presenter.__main__",
+    "librarian.presenter._client",
+    "librarian.presenter._settings",
+    "librarian.presenter.image_fetcher",
+    "librarian.presenter.intake",
+    "librarian.presenter.models",
+    "librarian.presenter.outline",
+    "librarian.presenter.providers",
+    "librarian.presenter.renderer",
+    "librarian.presenter.slide_writer",
+    "librarian.presenter.viz_classifier",
 ]
 
 
 @pytest.mark.unit
 @pytest.mark.parametrize("module_name", PRESENTER_MODULES)
 def test_presenter_module_imports(module_name: str) -> None:
-    if module_name == "tools.presenter.renderer":
+    if module_name == "librarian.presenter.renderer":
         # python-pptx ships in the opt-in `presenter` extra, which bare `uv run`
         # does not install. Run `make install-presenter` to cover this module.
         pytest.importorskip("pptx", reason="needs the presenter extra (make install-presenter)")
@@ -42,7 +42,7 @@ def test_presenter_module_imports(module_name: str) -> None:
 @pytest.mark.unit
 def test_cli_parser_builds() -> None:
     """main() builds its parser before doing any work — --help must not need an API key."""
-    from tools.presenter.__main__ import main
+    from librarian.presenter.__main__ import main
 
     with pytest.raises(SystemExit) as exc:
         main(["--help"])
@@ -51,7 +51,7 @@ def test_cli_parser_builds() -> None:
 
 @pytest.mark.unit
 def test_cli_parser_rejects_unknown_provider() -> None:
-    from tools.presenter.__main__ import main
+    from librarian.presenter.__main__ import main
 
     with pytest.raises(SystemExit) as exc:
         main(["--provider", "midjourney"])

@@ -127,7 +127,7 @@ def _run_review(argv: list[str]) -> int:
 
 
 def _run_mcp(argv: list[str]) -> int:
-    return int(_resolve("apps.mcp.server:main")(argv) or 0)
+    return int(_resolve("librarian.mcp.server:main")(argv) or 0)
 
 
 def _is_loopback(host: str) -> bool:
@@ -153,7 +153,7 @@ def _run_api(argv: list[str]) -> int:
     # The app logs one structured line per request; uvicorn's access log would repeat it
     # with the query string.
     uvicorn.run(
-        "apps.api.main:app",
+        "librarian.api.main:app",
         host=args.host,
         port=args.port,
         reload=args.reload,

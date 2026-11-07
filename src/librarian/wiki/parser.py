@@ -82,7 +82,7 @@ def parse_wiki_uncached() -> dict:
     """Graph payload for /ws `graph_update` and GET /api/graph: {nodes, edges, domains}.
 
     `edges` are wikilink edges only. Tag-shared edges (~42k pairs, ~10 MB of JSON on the
-    real wiki) are derived client-side by apps/web/src/utils/tagEdges.ts from each
+    real wiki) are derived client-side by app/src/utils/tagEdges.ts from each
     node's `data.tags` and `domains`; tag_shared_edges() below is the same rule, used by
     `/api/graph?edges=all`. `domains` is the disk-derived domain list, sorted, without
     `private`.
@@ -184,7 +184,7 @@ def parse_wiki_uncached() -> dict:
 def tag_shared_edges(nodes: list[dict], domains: list[str] | set[str]) -> list[dict]:
     """Edges between pages in different directories that share >= 1 domain tag.
 
-    Mirrors apps/web/src/utils/tagEdges.ts exactly (keep the two in agreement): the
+    Mirrors app/src/utils/tagEdges.ts exactly (keep the two in agreement): the
     directory is `data.domain[0]`, only tags in `domains` count, ids are `ts:<a>-><b>`
     with a < b, `sharedTags` is sorted. Same-directory pairs are skipped — intra-domain
     proximity is already captured by UMAP clustering. Grouped by tag, so the cost is the

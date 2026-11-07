@@ -16,7 +16,7 @@ src/librarian/
   ingest/        scrapers, ingest gate, manifest, sensitive scans, raw lint
 ```
 
-Import direction: `apps/` and `tools/` import `librarian`; `librarian` never imports them.
+Import direction: `api`, `mcp`, `slides`, `presenter` and `codemap` sit above the core (`courses`, `retrieval`, `wiki`, `ingest`); the core never imports them, and nothing here imports `tools/` (cartographer).
 
 ## Settings
 

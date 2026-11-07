@@ -9,7 +9,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from apps.api.routers import curriculum as curriculum_routes
+from librarian.api.routers import curriculum as curriculum_routes
 from librarian.courses import curriculum
 from librarian.courses.catalog import Catalog, LessonRec, WikiRef
 

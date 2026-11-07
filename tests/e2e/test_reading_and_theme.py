@@ -20,7 +20,7 @@ from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 UI_URL = os.environ.get("E2E_UI_URL", "http://localhost:5173")
 API = os.environ.get("E2E_API_URL", "http://localhost:8000")
-AXE_JS = Path(__file__).parents[2] / "apps/web/node_modules/axe-core/axe.min.js"
+AXE_JS = Path(__file__).parents[2] / "app/node_modules/axe-core/axe.min.js"
 THEME_KEY = "librarian.theme"
 
 pytestmark = pytest.mark.e2e
@@ -232,7 +232,7 @@ def test_health_strip_clears_the_controls_around_it(page: Page, route: str) -> N
 
 def test_due_filter_is_readable_in_dark(page: Page) -> None:
     if not AXE_JS.exists():
-        pytest.skip("axe-core not installed (npm install in apps/web)")
+        pytest.skip("axe-core not installed (npm install in app)")
     page.goto(f"{UI_URL}/#/flashcards/{_scheduled_deck()}", timeout=15_000)
     page.wait_for_selector(".flashcard-filter", timeout=20_000)
     page.add_script_tag(path=str(AXE_JS))
@@ -256,7 +256,7 @@ def test_light_theme_has_no_serious_axe_violations(
     light_page: Page, route: str, ready: str
 ) -> None:
     if not AXE_JS.exists():
-        pytest.skip("axe-core not installed (npm install in apps/web)")
+        pytest.skip("axe-core not installed (npm install in app)")
     page = light_page
     if route == "lesson":
         route = f"/#/courses/{next(_lessons())}"
