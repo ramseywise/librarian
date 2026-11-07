@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/raw-immutable.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/raw-immutable.sh",
             "timeout": 10,
             "statusMessage": "Checking raw/ immutability..."
           }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/raw_immutable_bash.py",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/raw_immutable_bash.py",
             "timeout": 10,
             "statusMessage": "Checking raw/ immutability (Bash)..."
           }
@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/wiki-lint.sh",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/wiki-lint.sh",
             "timeout": 10,
             "statusMessage": "Checking wiki page..."
           }

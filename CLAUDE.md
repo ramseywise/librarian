@@ -217,8 +217,8 @@ Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so t
   it to the local UI as part of its course with `private: true`, but it never reaches the search index,
   MCP, the curriculum snapshot, the gap list or a public lesson's prev/next. Nothing public links into it.
   Two kinds of file live only in the mirror, maintained by hand, with the public lessons unchanged
-  (`librarian.courses.overlay`): book and paper figures (`<module>/assets/sources/...`; the asset
-  route falls back to the mirror, the UI hides a figure that is in neither tree) and each module's
+  (`librarian.courses.overlay`): book and paper figures with no licence to share (all of `<module>/assets/sources/...`
+  and named figures elsewhere in `assets/`; the asset route and deck builder fall back to the mirror, the UI hides a figure that is in neither tree) and each module's
   `readings:` list (`private/<course>/<module>/_module.md`, merged by the catalog; the public
   `_module.md` keeps `readings_count`). Lessons' `sources/` links
   are resolved at render time through `COURSE_SOURCES_DIR` (default `../learn-ai-engineering`) and

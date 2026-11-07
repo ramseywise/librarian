@@ -3,9 +3,11 @@
 `data/courses/private/<course>/<module>/...` mirrors the public layout. Two kinds of file are
 withheld from the public tree and live only in that mirror:
 
-- figures cropped from books and papers, `<module>/assets/sources/...`. Public lessons keep
-  their relative image links; the asset route falls back to the mirror when the public file is
-  missing, and the frontend hides the image when neither exists.
+- figures cropped from books and papers with no licence to redistribute them: everything under
+  `<module>/assets/sources/...`, plus individual figures elsewhere in `assets/` (the Müller &
+  Guido and Sarkar figures). Public lessons and decks keep their relative image links; the asset
+  route and the deck builder fall back to the mirror for any asset path, and the frontend hides
+  the image when neither exists.
 - a module's `readings:` list (the PDF catalogue). A mirror `_module.md` carries only that
   list; the catalog merges it in, and the public `_module.md` keeps a `readings_count`.
 

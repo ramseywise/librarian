@@ -16,6 +16,8 @@ services:
         required: false
     environment:
       - SERVE_COURSE_SOURCES=false
+      # Also taken from the shell, so `LIBRARIAN_API_TOKEN=... docker compose up` works without .env.
+      - LIBRARIAN_API_TOKEN
     volumes:
       # Content, read-only.
       - ./data:/app/data:ro

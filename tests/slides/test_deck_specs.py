@@ -41,13 +41,12 @@ def test_images_resolve_inside_the_module(spec: Path) -> None:
     for image in _images(yaml.safe_load(spec.read_text(encoding="utf-8"))):
         target = (spec.parent / image).resolve()
         assert target.is_relative_to(module / "assets"), image
-        if overlay.is_sources_asset(target.relative_to(COURSES).parts):
-            # Book and paper figures live only in data/courses/private/, so a public checkout
-            # cannot verify them; where the mirror exists they must resolve.
-            if (COURSES / overlay.PRIVATE).is_dir():
-                assert overlay.resolve_asset(target, COURSES) is not None, image
+        if target.is_file():
             continue
-        assert target.is_file(), image
+        # Third-party book and paper figures live only in data/courses/private/, so a public
+        # checkout cannot verify them; where the mirror exists every image must resolve.
+        if (COURSES / overlay.PRIVATE).is_dir():
+            assert overlay.resolve_asset(target, COURSES) is not None, image
 
 
 def test_deck_graph_has_no_problems() -> None:
