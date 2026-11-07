@@ -1,4 +1,4 @@
-import type { Flashcard, QuizQuestion } from "../../courses/types";
+import type { Flashcard, QuizQuestion } from "./types";
 
 /** Questions to go through: only those due or never seen when `dueOnly`, otherwise all in file order. */
 export function quizOrder(questions: QuizQuestion[], dueOnly: boolean): QuizQuestion[] {

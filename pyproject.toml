@@ -96,7 +96,7 @@ dev = [
     "playwright>=1.64.1",
     "tree-sitter-python>=0.25.0",
     "tree-sitter>=0.26.0",
-    # tests/app import fastapi.testclient. Also in the
+    # tests/api import fastapi.testclient. Also in the
     # `api` extra, but extras are not installed by `uv sync --group dev`.
     "fastapi>=0.162.0",
     # librarian/wiki/graph.py (tests/core/test_wiki_graph.py, and /wiki-graph via bare `uv run`).

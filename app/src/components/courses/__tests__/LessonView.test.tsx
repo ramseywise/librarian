@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Lesson } from "../../../courses/types";
+import type { Lesson } from "../types";
 import { LessonView } from "../LessonView";
 
 const drill: Lesson = {

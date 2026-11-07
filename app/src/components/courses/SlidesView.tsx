@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { SlideDeck } from "../../courses/types";
+import type { SlideDeck } from "./types";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 

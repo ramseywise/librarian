@@ -1,7 +1,7 @@
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Course, Lesson } from "../../../courses/types";
+import type { Course, Lesson } from "../types";
 import { resetProgressStoreForTests } from "../../../hooks/useCourseProgress";
 import { resetCourseCachesForTests } from "../../../hooks/useCourses";
 import { CoursesView } from "../CoursesView";

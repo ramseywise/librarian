@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Flashcard, FlashcardDeck } from "../../courses/types";
+import type { Flashcard, FlashcardDeck } from "./types";
 import { StudyFilter } from "./StudyFilter";
 import { studyOrder, type StudyMode } from "./studyQueue";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";

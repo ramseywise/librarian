@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Course, Lesson, LessonOutline, SearchHit } from "../../courses/types";
+import type { Course, Lesson, LessonOutline, SearchHit } from "./types";
 import { useCourseProgress } from "../../hooks/useCourseProgress";
 import { useCourses } from "../../hooks/useCourses";
 import { LessonView, type TocEntry } from "./LessonView";

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { FlashcardsDueSummary } from "../../courses/types";
+import type { FlashcardsDueSummary } from "./types";
 
 /** Modules listed; the total still counts every one. */
 const MAX_MODULES = 6;

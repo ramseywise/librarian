@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Quiz, QuizAnswerResult, QuizQuestion } from "../../courses/types";
+import type { Quiz, QuizAnswerResult, QuizQuestion } from "./types";
 import { InlineMarkup } from "./FlashcardsView";
 import { quizOrder } from "./studyQueue";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";

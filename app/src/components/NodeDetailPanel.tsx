@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { WikiNodeData } from "../types";
-import type { LessonOutline } from "../courses/types";
+import type { LessonOutline } from "./courses/types";
 import { useTheme } from "../hooks/useTheme";
 import { domainColor, tagColor } from "../theme/domains";
 

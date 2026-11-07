@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Lesson } from "../../courses/types";
+import type { Lesson } from "./types";
 import { useGlossary } from "../../hooks/useGlossary";
 import { DrillTimer } from "./DrillTimer";
 import { Markdown } from "./Markdown";

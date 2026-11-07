@@ -56,7 +56,7 @@ last-audit: 2026-07-20
   build_index, _index_needs_rebuild, read_page, list_pages, and
   _resolve_domain_dir (which blocks list_domain + get_domain_briefing from
   addressing private as a domain); read_page returns the not-found message so a
-  denial cannot confirm the page exists. tests/app/test_private_exclusion.py
+  denial cannot confirm the page exists. tests/api/test_private_exclusion.py
   covers all six paths incl. ../ traversal; verified against the live wiki
   2026-07-20 — 130 pages indexed, 0 private, 5 private pages on disk.
   Chat agent — app/backend/agent.py#_is_private gates both wiki tools the Gemini
@@ -68,7 +68,7 @@ last-audit: 2026-07-20
   their own private root: the server anchors on a relative Path("data/wiki"),
   which under `make api` (cwd=app/) resolves to a nonexistent app/data/wiki/private, so
   binding the agent to the server's own PRIVATE_DIR would read as correct and
-  exclude nothing. tests/app/test_agent_private_exclusion.py covers both tools,
+  exclude nothing. tests/api/test_agent_private_exclusion.py covers both tools,
   the title fallback, and that cwd-independence as a regression test; its four
   leak cases fail against the pre-cure agent (cured 2026-07-20).
 

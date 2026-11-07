@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Course, PracticeDrill } from "../courses/types";
+import type { Course, PracticeDrill } from "../components/courses/types";
 
 interface Resource<T> {
   data: T | null;

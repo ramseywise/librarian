@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { FlashcardDeck } from "../../../courses/types";
+import type { FlashcardDeck } from "../types";
 import { FlashcardsDue } from "../FlashcardsDue";
 import { FlashcardsView, InlineMarkup } from "../FlashcardsView";
 

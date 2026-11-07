@@ -24,7 +24,7 @@ def _isolate_retrieval_log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> N
 
     logs/retrieval.jsonl feeds /compact-wiki's evidence pass — pytest queries
     polluting it skew which pages look retrieval-hot. Per-test patches in
-    tests/app/ remain but are now redundant.
+    tests/api/ remain but are now redundant.
     """
     from librarian.retrieval import corpus
 

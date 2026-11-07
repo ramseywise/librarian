@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { StudyHomeData } from "../../courses/types";
+import type { StudyHomeData } from "./types";
 import { pageTitle, useDocumentTitle } from "./useDocumentTitle";
 import "./courses.css";
 

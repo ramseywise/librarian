@@ -1,7 +1,7 @@
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { SlideDeck } from "../../../courses/types";
+import type { SlideDeck } from "../types";
 import { SlidesView } from "../SlidesView";
 
 const deck: SlideDeck = {

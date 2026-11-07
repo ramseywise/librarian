@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { StudyHomeData } from "../../../courses/types";
+import type { StudyHomeData } from "../types";
 import { StudyHome } from "../StudyHome";
 
 const home: StudyHomeData = {

@@ -1,4 +1,4 @@
-import type { Flashcard } from "../../courses/types";
+import type { Flashcard } from "./types";
 import { isToStudy, type StudyMode } from "./studyQueue";
 
 /** All cards, or today's. Renders nothing for a deck with no schedule. */
