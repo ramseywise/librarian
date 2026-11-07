@@ -102,6 +102,12 @@ def test_parse_feed_unknown_root_returns_empty() -> None:
     assert parse_feed('<?xml version="1.0"?><rss-ish><body/></rss-ish>', TIER1) == []
 
 
+def _logged(capsys: pytest.CaptureFixture[str]) -> str:
+    """Log output: stderr once configure_logging has run, stdout from structlog's default."""
+    captured = capsys.readouterr()
+    return captured.out + captured.err
+
+
 @pytest.mark.parametrize(
     "html",
     [
@@ -121,7 +127,7 @@ def test_parse_feed_reports_html_page_as_wrong_url(
     # to nothing is not enough — it must say WHY, or it reads as "feed is just quiet".
     assert parse_feed(html, TIER1) == []
 
-    out = capsys.readouterr().out
+    out = _logged(capsys)
     assert "feeds.html_not_feed" in out
     assert TIER1.url in out
 
@@ -132,7 +138,7 @@ def test_parse_feed_reports_genuine_malformed_xml_as_parse_error(
     # Truncated feed XML is a different failure than a wrong URL — keep them distinct.
     assert parse_feed("<rss><channel><item>", TIER1) == []
 
-    out = capsys.readouterr().out
+    out = _logged(capsys)
     assert "feeds.parse_error" in out
     assert "feeds.html_not_feed" not in out
 

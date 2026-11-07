@@ -93,9 +93,10 @@ def _content_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
 
 
-def _is_tombstone(path: Path) -> bool:
+def _is_unindexed(path: Path) -> bool:
+    """True for a page `read_pages` never indexes: a tombstone or unparseable frontmatter."""
     meta = parse_frontmatter(path.read_text(encoding="utf-8", errors="ignore"))
-    return "tombstone" in meta.get("tags", [])
+    return not meta or "tombstone" in meta.get("tags", [])
 
 
 def stale_pages(con: duckdb.DuckDBPyConnection) -> list[Path]:
@@ -117,7 +118,7 @@ def stale_pages(con: duckdb.DuckDBPyConnection) -> list[Path]:
     return [
         p
         for p in corpus.wiki_pages() + corpus.course_pages()
-        if indexed.get(str(p)) != _content_hash(p) and (str(p) in indexed or not _is_tombstone(p))
+        if indexed.get(str(p)) != _content_hash(p) and (str(p) in indexed or not _is_unindexed(p))
     ]
 
 
@@ -169,12 +170,17 @@ def read_pages(paths: list[Path]) -> list[tuple]:
     """Parse frontmatter + text for the given pages.
 
     Returns tuples of (path_str, title, tags, summary, updated, content, content_hash).
-    Tombstone pages are excluded (same rule as _full_rebuild).
+    Tombstone pages and pages with unparseable frontmatter are excluded.
     """
     raw: list[tuple] = []
     for page in paths:
         text = page.read_text(encoding="utf-8", errors="ignore")
         meta = parse_frontmatter(text)
+        if not meta:
+            # Unparseable frontmatter (already warned): it may be a broken tombstone, so do not
+            # index it as a live page.
+            log.warning("page_skipped_bad_frontmatter", path=str(page))
+            continue
         if "tombstone" in meta.get("tags", []):
             continue
         chash = _content_hash(page)
@@ -412,8 +418,9 @@ def _update_pages(con: duckdb.DuckDBPyConnection, pages: list[Path]) -> None:
             con.execute("DELETE FROM edges WHERE source_path = ? OR target_path = ?", [p, p])
         log.info("index_pruned", removed_count=len(removed))
 
-    # Rebuild the FTS index (see _create_fts_index).
-    if HAS_FTS:
+    # Rebuild the FTS index (see _create_fts_index). HAS_FTS is per process: a fresh one has
+    # not loaded the extension yet, so load it here rather than trust the global.
+    if ensure_fts(con):
         _create_fts_index(con, "pages")
 
     con.execute("UPDATE meta SET val = ? WHERE key = 'built_at'", [str(time.time())])

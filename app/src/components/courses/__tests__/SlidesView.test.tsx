@@ -42,6 +42,20 @@ afterEach(() => {
 });
 
 describe("SlidesView", () => {
+  it("asks for a build with POST when the deck is stale, and never triggers one with GET", async () => {
+    const stale = { ...deck, status: "text" as const, images: false, stale: true };
+    const building = { ...deck, status: "building" as const, images: false, stale: false };
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) =>
+      new Response(JSON.stringify(init?.method === "POST" ? building : stale)),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    render(<SlidesView deckId="c1/m1" />);
+    expect(await screen.findByRole("status")).toHaveTextContent("Rendering slide images");
+    expect(fetchMock.mock.calls[0][0]).toBe("/api/courses/slides/c1/m1");
+    expect(fetchMock.mock.calls[1][0]).toBe("/api/courses/slides/c1/m1/build");
+    expect(fetchMock.mock.calls[1][1]).toMatchObject({ method: "POST" });
+  });
+
   it("fetches the deck, shows the image as a blob and keeps the slide text in the page", async () => {
     const fetchMock = stub(deck);
     render(<SlidesView deckId="c1/m1" />);

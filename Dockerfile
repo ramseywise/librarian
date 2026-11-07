@@ -51,6 +51,7 @@ RUN mkdir -p /app/var /app/data && chown librarian:librarian /app/var
 ENV LIBRARIAN_ROOT=/app \
     LIBRARIAN_STATE_DIR=/app/var \
     SERVE_COURSE_SOURCES=false \
+    LIBRARIAN_PUBLIC=true \
     PYTHONUNBUFFERED=1
 
 USER librarian

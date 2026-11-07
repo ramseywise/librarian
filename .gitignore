@@ -79,6 +79,7 @@ data/courses/private/
 # plists, and librarian.retrieval all write here.
 logs/*.log
 logs/*.jsonl
+logs/*.jsonl.[0-9]*
 logs/*.err
 logs/*.bak-*
 # Course reviewer working data (findings log, eval results) and the signals report: personal history

@@ -17,6 +17,7 @@ Produces:
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
@@ -77,6 +78,8 @@ def load_pages() -> dict[str, PageInfo]:
         post = frontmatter.load(md_file)
         title = fm(post).get("title") or md_file.stem
         tags = page_tags(fm(post))
+        if "tombstone" in tags:  # retired: its successor carries the content
+            continue
         domain = md_file.parent.name
         type_tag = next((t for t in tags if t in TYPE_TAGS), "concept")
 
@@ -253,7 +256,40 @@ def detect_bridge_gaps(pages: dict[str, PageInfo]) -> list[tuple[str, str, int]]
     return gaps
 
 
+_ENTRY_RE = re.compile(
+    r"^- \[\[(.+?)\]\] → \[\[(.+?)\]\].*?(?:first seen (\d{4}-\d{2}-\d{2}))?\s*$"
+)
+_UPDATED_RE = re.compile(r"^updated: (\d{4}-\d{2}-\d{2})\s*$", re.MULTILINE)
+
+
+def _first_seen(path: Path) -> dict[tuple[str, str], str]:
+    """(source title, target title) -> date the pair first appeared in the existing file.
+
+    Entries written before dates were recorded take the file's own `updated:` date, the
+    earliest evidence there is. A missing or unreadable file gives `{}`.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return {}
+    fallback = m.group(1) if (m := _UPDATED_RE.search(text)) else date.today().isoformat()
+    seen: dict[tuple[str, str], str] = {}
+    for line in text.splitlines():
+        if m := _ENTRY_RE.match(line):
+            seen.setdefault((m.group(1), m.group(2)), m.group(3) or fallback)
+    return seen
+
+
 def write_suggestions(report: RelinkReport, pages: dict[str, PageInfo]) -> None:
+    """Rewrite `_relink_suggestions.md`, keeping each surviving pair's first-seen date.
+
+    The stale-suggestion lint (CLAUDE.md, 14 days) reads those dates. A pair the user deleted
+    is not remembered: it comes back as new on the next run if it still scores above threshold.
+    """
+    target_file = WIKI_DIR / "_relink_suggestions.md"
+    seen = _first_seen(target_file)
+    today = date.today().isoformat()
+
     def _title(stem: str) -> str:
         return pages[stem].title if stem in pages else stem
 
@@ -269,8 +305,11 @@ def write_suggestions(report: RelinkReport, pages: dict[str, PageInfo]) -> None:
         out = [f"## {heading}", ""]
         out.extend(blurb)
         for source, target, score in sorted(entries, key=lambda x: -x[2]):
+            src_title, tgt_title = _title(source), _title(target)
+            first = seen.get((src_title, tgt_title), today)
             out.append(
-                f"- [[{_title(source)}]] → [[{_title(target)}]] ({score_label}: {score:.3f})"
+                f"- [[{src_title}]] → [[{tgt_title}]] ({score_label}: {score:.3f})"
+                f" · first seen {first}"
             )
         out.append("")
         return out
@@ -322,7 +361,7 @@ def write_suggestions(report: RelinkReport, pages: dict[str, PageInfo]) -> None:
         )
     )
 
-    (WIKI_DIR / "_relink_suggestions.md").write_text("\n".join(lines))
+    target_file.write_text("\n".join(lines))
 
 
 def write_bridge_suggestions(gaps: list[tuple[str, str, int]], pages: dict[str, PageInfo]) -> None:

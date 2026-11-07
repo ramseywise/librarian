@@ -139,6 +139,8 @@ export interface SlideDeck {
   /** ready: images built; building: text shown while a build runs; text: this machine cannot render
    * images; failed: the last build failed (see `error`). */
   status: "ready" | "building" | "text" | "failed";
+  /** A build is due and none is running: POST .../build starts it. */
+  stale?: boolean;
   images: boolean;
   /** What rendering needs and the machine lacks. */
   needs: string[];

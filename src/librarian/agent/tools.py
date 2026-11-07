@@ -38,6 +38,11 @@ MCP: Final = "mcp"
 MAX_BRIEFING_CHARS = 40_000
 
 
+# Start of the text `Tool.run` returns for arguments that fail validation; the chat loop keys
+# its `is_error` tool_result on it.
+INVALID_ARGS_PREFIX = "Invalid arguments"
+
+
 @dataclass(frozen=True)
 class ToolContext:
     """What a request knows that a tool might need. Empty today; see the module docstring."""
@@ -78,7 +83,7 @@ class Tool:
             params = self.params.model_validate(dict(args))
         except ValidationError as exc:
             fields = ", ".join(str(e["loc"][0]) for e in exc.errors() if e["loc"])
-            return f"Invalid arguments for {self.name}: {fields}."
+            return f"{INVALID_ARGS_PREFIX} for {self.name}: {fields}."
         return self.fn(params, ctx or ToolContext())
 
 
@@ -172,7 +177,7 @@ class _McpSearch(BaseModel):
         default="",
         description="Optional domain to scope the search — any directory under\n    data/wiki/ (e.g. 'rag', 'langgraph', 'patterns') or a domain tag.\n    'course' searches all course lessons, 'course/<subject>' one course\n    (e.g. 'course/ai-engineering'). Omitted: results are ranked wiki pages,\n    followed by a short separate list of the best-matching lessons.",
     )
-    limit: int = Field(default=10, description="Max results (default 10)")
+    limit: int = Field(default=10, ge=1, le=50, description="Max results (default 10, max 50)")
     expand: bool = Field(
         default=False,
         description='SPIKE — also return pages one typed relationship hop from the\n    results (`prerequisite-for` / `extends`). Answers "what else do\n    I need to understand these hits?" Off by default.',

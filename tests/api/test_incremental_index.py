@@ -373,3 +373,39 @@ def test_page_retired_after_build_leaves_the_index(wiki: Path) -> None:
     assert str(alpha) not in paths
     assert str(wiki / "notes" / "beta.md") in paths
     con.close()
+
+
+# ---------------------------------------------------------------------------
+# Fresh process after an edit: the BM25 index must be rebuilt (review F1)
+# ---------------------------------------------------------------------------
+
+
+def test_edit_then_restart_rebuilds_bm25(wiki: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A new process has HAS_FTS False; a wiki-only edit must still refresh the FTS index.
+
+    A stale BM25 index keeps matching text the page no longer contains (new text is rescued
+    by the LIKE fallback, so only the removed term shows the bug).
+    """
+    alpha = wiki / "notes" / "alpha.md"
+    alpha.write_text(
+        PAGE_TEMPLATE.format(
+            title="Alpha", tags="test", summary="Summary of Alpha", body="Quokka habitat notes."
+        )
+    )
+    index.open_index().close()
+    rows, _ = ranking.search_rows("quokka", domain="", limit=5, tool="test")
+    assert rows, "precondition: the term is searchable before the edit"
+
+    alpha.write_text(
+        PAGE_TEMPLATE.format(
+            title="Alpha", tags="test", summary="Summary of Alpha", body="Zebrafish genome notes."
+        )
+    )
+    monkeypatch.setattr(index, "HAS_FTS", False)  # simulate a fresh process
+
+    rows, _ = ranking.search_rows("quokka", domain="", limit=5, tool="test")
+    assert not rows, "BM25 served the stale index: removed text still matches"
+    rows, degraded = ranking.search_rows("zebrafish", domain="", limit=5, tool="test")
+    assert rows
+    assert rows[0][0].endswith("alpha.md")
+    assert not degraded

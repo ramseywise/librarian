@@ -62,9 +62,40 @@ def test_mcp_server_registers_the_registry_tools() -> None:
     out = subprocess.run(
         [sys.executable, "-c", code], capture_output=True, text=True, check=True
     ).stdout
-    served = set(json.loads(out.strip().splitlines()[-1]))
+    served = set(json.loads(out))  # stdout is the payload alone: logging goes to stderr
     assert {t.name for t in tools_for(MCP)} <= served
     assert {t.name for t in tools_for(CHAT)} & {t.name for t in tools_for(MCP)} <= served
+
+
+def test_mcp_stdio_stdout_is_only_json_rpc() -> None:
+    """A log line on stdout would corrupt the protocol: every stdout line must be JSON-RPC."""
+    requests = [
+        {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {},
+                "clientInfo": {"name": "test", "version": "0"},
+            },
+        },
+        {"jsonrpc": "2.0", "method": "notifications/initialized"},
+        {"jsonrpc": "2.0", "id": 2, "method": "tools/list"},
+    ]
+    proc = subprocess.run(
+        [sys.executable, "-m", "librarian.mcp.server"],
+        input="".join(json.dumps(r) + "\n" for r in requests),
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    lines = [line for line in proc.stdout.splitlines() if line.strip()]
+    assert lines, proc.stderr
+    for line in lines:
+        assert json.loads(line)["jsonrpc"] == "2.0", line
+    assert "starting_mcp_server" in proc.stderr
 
 
 def test_tools_for_rejects_unknown_names() -> None:

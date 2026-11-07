@@ -11,12 +11,7 @@ from typing import Any, Literal, Self
 # Before the heavy imports below, so the startup log covers them too.
 _PROCESS_T0 = time.perf_counter()
 
-from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
-
-from librarian.config import get_settings
-
-load_dotenv(get_settings().dotenv_file)
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -34,6 +29,8 @@ from librarian.api.security import (
     chat_limiter,
     require_token,
 )
+from librarian.api.startup import find_problems
+from librarian.config import get_settings
 from librarian.courses.catalog import warm_catalog
 from librarian.courses.curriculum import write_snapshot
 from librarian.log_config import configure_logging, get_logger
@@ -56,6 +53,8 @@ _background_tasks: set[asyncio.Future[Any]] = set()
 # in bursts; each rebuild takes seconds under the catalog lock, so coalesce them.
 CATALOG_REWARM_DELAY_S = 10.0
 _rewarm_handle: asyncio.TimerHandle | None = None
+# Seconds before the wiki watcher restarts after the watch itself raised.
+WATCHER_RESTART_DELAY_S = 5.0
 
 
 def _in_background(fn: Callable[[], None]) -> None:
@@ -75,21 +74,37 @@ def _warm_course_data() -> None:
     write_snapshot()
 
 
+async def _broadcast_graph() -> None:
+    graph = await asyncio.to_thread(parse_wiki)
+    dead = []
+    for ws in list(_ws_clients):
+        try:
+            await ws.send_json({"type": "graph_update", "data": graph})
+        except Exception:
+            dead.append(ws)
+    for ws in dead:
+        with contextlib.suppress(ValueError):
+            _ws_clients.remove(ws)
+    # A wiki change invalidates the course catalog (lesson <-> concept links); rebuild
+    # it once the burst of changes settles rather than on the next request.
+    _schedule_catalog_rewarm()
+
+
 async def _watch_and_broadcast(awatch: Callable[[str], AsyncIterator[object]]) -> None:
-    async for _ in awatch(str(WIKI_DIR)):
-        graph = await asyncio.to_thread(parse_wiki)
-        dead = []
-        for ws in list(_ws_clients):
-            try:
-                await ws.send_json({"type": "graph_update", "data": graph})
-            except Exception:
-                dead.append(ws)
-        for ws in dead:
-            with contextlib.suppress(ValueError):
-                _ws_clients.remove(ws)
-        # A wiki change invalidates the course catalog (lesson ↔ concept links); rebuild
-        # it once the burst of changes settles rather than on the next request.
-        _schedule_catalog_rewarm()
+    """Push a graph update per wiki change. A failure is logged and the watch goes on."""
+    while True:
+        try:
+            async for _ in awatch(str(WIKI_DIR)):
+                try:
+                    await _broadcast_graph()
+                except Exception:
+                    log.exception("api.watcher.broadcast_failed")
+            return  # the watch ended cleanly
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            log.exception("api.watcher.failed", retry_in_s=WATCHER_RESTART_DELAY_S)
+            await asyncio.sleep(WATCHER_RESTART_DELAY_S)
 
 
 def _schedule_catalog_rewarm() -> None:
@@ -135,6 +150,11 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         watcher.add_done_callback(_background_tasks.discard)
     if jobs:
         _in_background(lambda: _run_in_order(jobs))
+    errors, warnings = find_problems(get_settings())
+    for line in warnings:
+        log.warning("api.startup.config", problem=line)
+    for line in errors:
+        log.error("api.startup.config", problem=line)
     log.info("api.startup.ready", seconds=round(time.perf_counter() - _PROCESS_T0, 2))
     try:
         yield
@@ -160,7 +180,16 @@ async def _shutdown(watcher: asyncio.Task[None] | None) -> None:
 
 
 # Every route needs the token when one is set, /healthz and /readyz and the static UI excepted.
-app = FastAPI(title="Librarian Graph API", lifespan=lifespan, dependencies=[Depends(require_token)])
+# The interactive docs and schema list every route, so they are off unless EXPOSE_DOCS is set.
+_docs = get_settings().expose_docs
+app = FastAPI(
+    title="Librarian Graph API",
+    lifespan=lifespan,
+    dependencies=[Depends(require_token)],
+    docs_url="/docs" if _docs else None,
+    redoc_url="/redoc" if _docs else None,
+    openapi_url="/openapi.json" if _docs else None,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -188,6 +217,8 @@ async def ws_endpoint(ws: WebSocket) -> None:
         while True:
             await ws.receive_text()
     except WebSocketDisconnect:
+        pass
+    finally:
         with contextlib.suppress(ValueError):
             _ws_clients.remove(ws)
 

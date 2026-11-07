@@ -50,7 +50,8 @@ COURSES_DIR = get_settings().courses_dir
 _LINK_RE = re.compile(r"\[\[([^\]|#]+)((?:[|#][^\]]*)?)\]\]")
 _SEE_ALSO_PREFIX_RE = re.compile(r"^(\s*see also:\s*)", re.IGNORECASE)
 _FM_BLOCK_RE = re.compile(r"\A---\n.*?\n---\n", re.DOTALL)
-_ALIASES_RE = re.compile(r"^aliases:.*\n(?:[ \t]+- .*\n)*", re.MULTILINE)
+# YAML allows a block list at the key's own indent, so items need no leading whitespace.
+_ALIASES_RE = re.compile(r"^aliases:.*\n(?:[ \t]*- .*\n)*", re.MULTILINE)
 _UPDATED_RE = re.compile(r"^updated:.*$", re.MULTILINE)
 _TITLE_RE = re.compile(r"^title:.*$", re.MULTILINE)
 _YAML_SPECIAL_RE = re.compile(r"[:#\[\]{}&*!|>'\"%@`]|^[-?\s]|\s$")
@@ -74,6 +75,23 @@ class Plan:
     private_pages: int = 0
     course_files: int = 0
     other_references: list[str] = field(default_factory=list)
+    skipped: list[str] = field(default_factory=list)  # public pages not UTF-8: left unrewritten
+    skipped_private: int = 0
+
+
+def _read_utf8(path: Path) -> str:
+    """Page text with line endings normalised to LF; raises UnicodeDecodeError if not UTF-8.
+
+    `errors="replace"` here would turn bad bytes into U+FFFD, and writing that back corrupts
+    the file.
+    """
+    return path.read_text(encoding="utf-8")
+
+
+def _write_like(path: Path, text: str, style: Path) -> None:
+    """Write `text` keeping the line endings `style` has on disk (CRLF stays CRLF)."""
+    crlf = style.exists() and b"\r\n" in style.read_bytes()
+    path.write_text(text, encoding="utf-8", newline="\r\n" if crlf else "\n")
 
 
 def _yaml_scalar(text: str) -> str:
@@ -260,7 +278,14 @@ def build_plan(
     for other in [*public, *private]:
         if other is page:
             continue
-        original = other.path.read_text(errors="replace")
+        try:
+            original = _read_utf8(other.path)
+        except UnicodeDecodeError:
+            if other.rel.startswith("private/"):
+                plan.skipped_private += 1
+            else:
+                plan.skipped.append(other.rel)
+            continue
         resolves = private_map if other.rel.startswith("private/") else public_map
         text, count = _rewrite_links(original, resolves, plan)
         if new_stem != page.stem:
@@ -272,7 +297,10 @@ def build_plan(
         plan.linking_pages += 1
         plan.private_pages += other.rel.startswith("private/")
 
-    original = page.path.read_text(errors="replace")
+    try:
+        original = _read_utf8(page.path)
+    except UnicodeDecodeError:
+        raise RenameError(f"{page.rel} is not UTF-8: refusing to rewrite it") from None
     self_linked, _ = _rewrite_links(original, public_map, plan)
     earlier = page_aliases(frontmatter.loads(original).metadata)
     kept = [a for a in earlier if slugify(a) != new_stem]
@@ -289,20 +317,20 @@ def build_plan(
 def apply_plan(plan: Plan) -> None:
     """Write every file or none: the first failure restores what was already written."""
     old_path = plan.page.path
-    backups: dict[Path, str | None] = {}
+    backups: dict[Path, bytes | None] = {}  # bytes, so a restore is exact
     try:
         for path, text in plan.contents.items():
-            backups[path] = path.read_text(errors="replace") if path.exists() else None
-            path.write_text(text)
+            backups[path] = path.read_bytes() if path.exists() else None
+            _write_like(path, text, old_path if path == plan.new_path else path)
         if plan.new_path != old_path:
-            backups[old_path] = old_path.read_text(errors="replace")
+            backups[old_path] = old_path.read_bytes()
             old_path.unlink()
     except OSError:
-        for path, text in backups.items():
-            if text is None:
+        for path, data in backups.items():
+            if data is None:
                 path.unlink(missing_ok=True)
             else:
-                path.write_text(text)
+                path.write_bytes(data)
         raise
 
 
@@ -328,6 +356,11 @@ def render(plan: Plan, applied: bool, inbound: tuple[int, int] | None = None) ->
     remaining = list(plan.other_references)
     if plan.course_files:
         remaining.append(f"{plan.course_files} course files (fix in the course source)")
+    if plan.skipped or plan.skipped_private:
+        lines.append("Skipped, not UTF-8 (links unchanged, fix by hand):")
+        lines += [f"  {rel}" for rel in plan.skipped]
+        if plan.skipped_private:
+            lines.append(f"  {plan.skipped_private} private pages")
     lines.append("Remaining references:" + ("" if remaining else " none"))
     lines += [f"  {item}" for item in remaining]
     if not applied:

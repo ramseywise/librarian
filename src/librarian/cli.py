@@ -160,17 +160,41 @@ def _run_api(argv: list[str]) -> int:
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8000)
     ap.add_argument("--reload", action="store_true", help="restart on code changes")
+    ap.add_argument(
+        "--insecure",
+        action="store_true",
+        help="allow a non-loopback host with no LIBRARIAN_API_TOKEN",
+    )
+    ap.add_argument(
+        "--check", action="store_true", help="validate the configuration and exit (1 on errors)"
+    )
     args = ap.parse_args(argv)
     import uvicorn
 
+    from librarian.api.startup import find_problems
     from librarian.config import get_settings
     from librarian.log_config import configure_logging, get_logger
 
-    if not get_settings().api_token and not _is_loopback(args.host):
+    settings = get_settings()
+    errors, warnings = find_problems(settings)
+    for line in warnings:
+        print(f"librarian api: warning: {line}", file=sys.stderr)
+    for line in errors:
+        print(f"librarian api: error: {line}", file=sys.stderr)
+    if args.check:
+        return 1 if errors else 0
+    if errors:
+        return 1
+    if not settings.api_token and not _is_loopback(args.host):
+        if not args.insecure:
+            print(
+                f"librarian api: refusing to bind {args.host} with no LIBRARIAN_API_TOKEN "
+                "(set it, or pass --insecure to serve unauthenticated)",
+                file=sys.stderr,
+            )
+            return 2
         configure_logging()
-        get_logger(__name__).warning(
-            "api.auth.open", host=args.host, hint="set LIBRARIAN_API_TOKEN"
-        )
+        get_logger(__name__).warning("api.auth.open", host=args.host, hint="--insecure")
     # The app logs one structured line per request; uvicorn's access log would repeat it
     # with the query string.
     uvicorn.run(
@@ -189,7 +213,7 @@ def _usage() -> str:
         lines.append(f"  {group}: " + ", ".join(verbs))
     lines += [
         "  mcp [--rebuild]",
-        "  api [--host H] [--port N] [--reload]",
+        "  api [--host H] [--port N] [--reload] [--insecure] [--check]",
         "",
         "Run a verb with --help for its options.",
     ]

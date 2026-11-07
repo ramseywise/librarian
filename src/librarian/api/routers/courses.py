@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
@@ -28,7 +28,7 @@ def get_lesson(lesson_id: str) -> dict[str, Any]:
 
 
 @router.get("/search")
-def search(q: str, limit: int = 30) -> list[dict[str, Any]]:
+def search(q: str, limit: int = Query(30, ge=1, le=50)) -> list[dict[str, Any]]:
     return lib.search_lessons(q, limit)
 
 
@@ -120,8 +120,20 @@ def study_home() -> dict[str, Any]:
 
 @router.get("/slides/{deck_id:path}")
 def slide_deck(deck_id: str) -> dict[str, Any]:
-    """A module's deck or one lecture: slide text, notes and image URLs. Starts a build if stale."""
+    """A module's deck or one lecture: slide text, notes and image URLs.
+
+    Read-only: `stale` says a build is due; POST .../build starts it.
+    """
     found = slides.deck(deck_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="no slides here")
+    return found
+
+
+@router.post("/slides/{deck_id:path}/build")
+def slide_deck_build(deck_id: str) -> dict[str, Any]:
+    """Start a background build if the deck is missing or stale, and answer as the GET does."""
+    found = slides.build_deck(deck_id)
     if found is None:
         raise HTTPException(status_code=404, detail="no slides here")
     return found
@@ -137,6 +149,8 @@ def slide_image(deck_id: str, n: int) -> FileResponse:
 
 @router.get("/files/{file_path:path}")
 def course_file(file_path: str) -> FileResponse:
+    if lib.is_private_asset(file_path):
+        raise HTTPException(status_code=404, detail="not found")
     target = lib.asset_path(file_path)
     if target is None:
         raise HTTPException(status_code=400, detail="invalid path")

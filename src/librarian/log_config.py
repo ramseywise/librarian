@@ -18,7 +18,8 @@ Usage (per ~/.claude/refs/logging.md):
 from __future__ import annotations
 
 import re
-from typing import Any
+import sys
+from typing import Any, TextIO, cast
 
 import structlog
 
@@ -88,8 +89,29 @@ def redact_secrets(
     return _redact_mapping(dict(event_dict))
 
 
-def configure_logging(*, render_json: bool = False) -> None:
-    """Configure structlog once, at process entry point."""
+class _CurrentStderr:
+    """File-like that writes to whatever `sys.stderr` is at call time.
+
+    Binding `sys.stderr` itself at configure time would keep a stream that a test runner (or
+    a redirect) later closes; loggers are cached for the life of the process.
+    """
+
+    def write(self, text: str) -> int:
+        return sys.stderr.write(text)
+
+    def flush(self) -> None:
+        sys.stderr.flush()
+
+
+def configure_logging(*, render_json: bool | None = None) -> None:
+    """Configure structlog once, at process entry point.
+
+    Logs go to stderr, never stdout: the MCP server speaks JSON-RPC on stdout and the CLI
+    verbs print their results there. `render_json=None` picks JSON when stderr is not a
+    terminal (containers, pipes) and the console renderer when it is.
+    """
+    if render_json is None:
+        render_json = not sys.stderr.isatty()
     renderer = (
         structlog.processors.JSONRenderer() if render_json else structlog.dev.ConsoleRenderer()
     )
@@ -102,7 +124,7 @@ def configure_logging(*, render_json: bool = False) -> None:
         ],
         wrapper_class=structlog.BoundLogger,
         context_class=dict,
-        logger_factory=structlog.PrintLoggerFactory(),
+        logger_factory=structlog.PrintLoggerFactory(file=cast("TextIO", _CurrentStderr())),
         cache_logger_on_first_use=True,
     )
 

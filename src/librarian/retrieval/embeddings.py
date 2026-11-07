@@ -30,6 +30,8 @@ import duckdb
 import frontmatter
 
 from librarian.config import get_settings
+from librarian.retrieval.corpus import is_under_private
+from librarian.wiki.common import fm
 
 # Imported where used: torch and sklearn cost seconds, and a warm restart needs neither.
 if TYPE_CHECKING:
@@ -84,7 +86,21 @@ def warmup() -> None:
 
 
 def _wiki_files() -> list[Path]:
-    return sorted(f for f in WIKI_DIR.rglob("*.md") if not f.name.startswith("_"))
+    """Public, live pages only: no `private/` tree (any mode) and no tombstones."""
+    private = WIKI_DIR / "private"
+    return sorted(
+        f
+        for f in WIKI_DIR.rglob("*.md")
+        if not f.name.startswith("_") and not is_under_private(f, private) and not _tombstone(f)
+    )
+
+
+def _tombstone(md_file: Path) -> bool:
+    try:
+        tags = fm(frontmatter.load(md_file)).get("tags") or []
+    except Exception:  # unreadable page: leave it out of the embeddings
+        return True
+    return "tombstone" in tags
 
 
 def _page_text(md_file: Path) -> str:

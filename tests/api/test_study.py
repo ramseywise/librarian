@@ -189,7 +189,11 @@ def fake_build(monkeypatch: pytest.MonkeyPatch) -> list[Path]:
 def test_a_stale_deck_answers_with_yaml_text_then_serves_the_build(
     client: TestClient, fake_build: list[Path]
 ) -> None:
-    first = client.get(f"/api/courses/slides/{MOD}").json()
+    read = client.get(f"/api/courses/slides/{MOD}").json()
+    assert (
+        read["stale"] is True and read["status"] == "text" and not fake_build
+    )  # GET builds nothing
+    first = client.post(f"/api/courses/slides/{MOD}/build").json()
     assert first["status"] in ("building", "ready")
     assert [s["title"] for s in first["slides"][:1]] in (["First slide"], ["T1"])
     slides.wait(MOD, 5)
@@ -205,11 +209,11 @@ def test_a_stale_deck_answers_with_yaml_text_then_serves_the_build(
 
 
 def test_changing_the_yaml_rebuilds(client: TestClient, fake_build: list[Path]) -> None:
-    client.get(f"/api/courses/slides/{MOD}")
+    client.post(f"/api/courses/slides/{MOD}/build")
     slides.wait(MOD, 5)
     spec = courses.COURSES_DIR / "gen-ai" / "01-rag" / "slides" / "deck.yaml"
     spec.write_text(DECK_YAML + "      - title: Third\n")
-    client.get(f"/api/courses/slides/{MOD}")
+    client.post(f"/api/courses/slides/{MOD}/build")
     slides.wait(MOD, 5)
     assert len(fake_build) == 2
 
@@ -230,7 +234,7 @@ def test_a_failed_build_is_reported_with_the_text(
 ) -> None:
     monkeypatch.setattr(slides, "_run_build", lambda spec, out: (False, "boom"))
     monkeypatch.setattr(slides.shutil, "which", lambda name: f"/bin/{name}")
-    client.get(f"/api/courses/slides/{MOD}")
+    client.post(f"/api/courses/slides/{MOD}/build")
     slides.wait(MOD, 5)
     body = client.get(f"/api/courses/slides/{MOD}").json()
     assert body["status"] == "failed" and body["error"] == "boom" and body["slides"]
@@ -258,7 +262,7 @@ def test_built_without_images_is_text_status(
     monkeypatch.setattr(
         slides.shutil, "which", lambda name: f"/bin/{name}" if name == "uv" else None
     )
-    client.get(f"/api/courses/slides/{MOD}")
+    client.post(f"/api/courses/slides/{MOD}/build")
     slides.wait(MOD, 5)
     body = client.get(f"/api/courses/slides/{MOD}").json()
     assert body["status"] == "text" and body["slides"][0]["title"] == "T"
@@ -322,3 +326,12 @@ def test_home_with_no_courses_is_empty(client: TestClient, monkeypatch: pytest.M
     body = client.get("/api/courses/study").json()
     assert (body["due"], body["new"], body["modules"]) == (0, 0, [])
     assert body["nextDrill"] is None and body["lecture"] is None
+
+
+def test_build_of_an_unknown_deck_is_404(client: TestClient) -> None:
+    assert client.post("/api/courses/slides/nope/none/build").status_code == 404
+
+
+def test_search_limit_is_bounded(client: TestClient) -> None:
+    assert client.get("/api/courses/search", params={"q": "x", "limit": 51}).status_code == 422
+    assert client.get("/api/courses/search", params={"q": "x", "limit": 0}).status_code == 422

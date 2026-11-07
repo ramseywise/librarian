@@ -94,9 +94,15 @@ class Settings(BaseSettings):
     # Local only: a deployment sets SERVE_COURSE_SOURCES=false and the route 404s.
     serve_course_sources: bool = Field(default=True, validation_alias=_env("SERVE_COURSE_SOURCES"))
 
+    # Public mode (the deployed container): private/ trees are never read, indexed or served,
+    # whatever is on disk. Local use leaves it off. The compose tmpfs masks are the second lock.
+    public_mode: bool = Field(default=False, validation_alias=_env("LIBRARIAN_PUBLIC"))
+
     # API access. With no token the API is open (local dev); with one, every /api route and the
     # websocket require `Authorization: Bearer <token>`. /healthz and /readyz are always open.
     api_token: str = Field(default="", validation_alias=_env("LIBRARIAN_API_TOKEN"))
+    # Serve /docs, /redoc and /openapi.json (still behind the token when one is set).
+    expose_docs: bool = Field(default=False, validation_alias=_env("LIBRARIAN_EXPOSE_DOCS"))
     # Comma-separated browser origins allowed by CORS. The Vite dev server by default.
     cors_origins: str = Field(
         default="http://localhost:5173", validation_alias=_env("LIBRARIAN_CORS_ORIGINS")

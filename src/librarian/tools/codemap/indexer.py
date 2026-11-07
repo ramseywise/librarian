@@ -1,14 +1,16 @@
-"""Codemap indexer — orchestrates repo walk → manifest check → parse → upsert.
+"""Codemap indexer — orchestrates repo walk → content-hash check → parse → upsert.
 
 Reads src/librarian/tools/codemap/repos.txt, for each configured repo walks source files
-matching a registered language (see librarian.tools.codemap.parser.LANGUAGES), skips
-unchanged files via manifest.check(), parses changed files with
-librarian.tools.codemap.parser, and upserts symbols/files/edges into .code_index.duckdb.
-Removed files are pruned from both the DB and the manifest.
+matching a registered language (see librarian.tools.codemap.parser.LANGUAGES), skips files
+whose hash equals ``files.content_hash`` in the DB (the DB is the only change-tracking state, so
+a deleted or rebuilt DB is always repopulated), parses changed files with
+librarian.tools.codemap.parser, and upserts symbols/files/edges into .code_index.duckdb,
+one transaction per file. Removed files are pruned from the DB along with edges into them.
 """
 
 from __future__ import annotations
 
+import os
 from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import date
@@ -49,12 +51,22 @@ def load_repos(repos_file: Path = DEFAULT_REPOS_FILE) -> list[RepoConfig]:
 
 
 def _iter_source_files(root: Path) -> Iterator[Path]:
-    for path in sorted(root.rglob("*")):
-        if path.suffix not in parser.LANGUAGES:
-            continue
-        if any(part in _EXCLUDE_DIRS for part in path.parts):
-            continue
-        yield path
+    """Yield indexable files under root, never descending into excluded directories.
+
+    Exclusion is tested on directory names below ``root`` only, so a repo that itself
+    lives under a directory called ``build`` is still indexed.
+    """
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if d not in _EXCLUDE_DIRS)
+        for name in sorted(filenames):
+            path = Path(dirpath) / name
+            if path.suffix in parser.LANGUAGES:
+                yield path
+
+
+def _insert_many(con: duckdb.DuckDBPyConnection, sql: str, rows: list[list]) -> None:
+    if rows:  # DuckDB's executemany rejects an empty parameter list
+        con.executemany(sql, rows)
 
 
 def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool = False) -> dict:
@@ -66,6 +78,11 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
     counts = {"parsed": 0, "skipped": 0, "removed": 0, "errors": 0}
     seen_file_ids: set[str] = set()
     first_language: str | None = None
+    known_hashes: dict[str, str] = dict(
+        con.execute(
+            "SELECT file_id, content_hash FROM files WHERE repo_id = ?", [repo.repo_id]
+        ).fetchall()
+    )
 
     for path in _iter_source_files(repo.root_path):
         rel_path = str(path.relative_to(repo.root_path))
@@ -74,8 +91,8 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
         lang_name = parser.LANGUAGES[path.suffix].name
         first_language = first_language or lang_name
 
-        needs_parse, _reason = manifest.check(file_id, path)
-        if not needs_parse:
+        content_hash = manifest.file_hash(path)
+        if known_hashes.get(file_id) == content_hash:
             counts["skipped"] += 1
             continue
 
@@ -90,30 +107,30 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
             counts["errors"] += 1
             continue
 
-        con.execute("DELETE FROM symbols WHERE file_id = ?", [file_id])
-        con.execute("DELETE FROM edges WHERE src_file_id = ?", [file_id])
-
         loc = path.read_text(errors="replace").count("\n") + 1
-        con.execute(
-            """
-            INSERT OR REPLACE INTO files
-            (file_id, repo_id, rel_path, language, content_hash, loc, indexed_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            [
-                file_id,
-                repo.repo_id,
-                rel_path,
-                lang_name,
-                manifest.file_hash(path),
-                loc,
-                date.today().isoformat(),
-            ],
-        )
-
-        for sym in result.symbols:
-            symbol_id = f"{file_id}:{sym.start_byte}"
+        con.begin()
+        try:
+            _reset_inbound_call_edges(con, file_id)
+            con.execute("DELETE FROM symbols WHERE file_id = ?", [file_id])
+            con.execute("DELETE FROM edges WHERE src_file_id = ?", [file_id])
             con.execute(
+                """
+                INSERT OR REPLACE INTO files
+                (file_id, repo_id, rel_path, language, content_hash, loc, indexed_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    file_id,
+                    repo.repo_id,
+                    rel_path,
+                    lang_name,
+                    content_hash,
+                    loc,
+                    date.today().isoformat(),
+                ],
+            )
+            _insert_many(
+                con,
                 """
                 INSERT OR REPLACE INTO symbols
                 (symbol_id, file_id, repo_id, name, kind, signature, docstring,
@@ -121,52 +138,61 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 [
-                    symbol_id,
-                    file_id,
-                    repo.repo_id,
-                    sym.name,
-                    sym.kind,
-                    sym.signature,
-                    sym.docstring,
-                    sym.parent_scope,
-                    sym.start_line,
-                    sym.end_line,
-                    sym.start_byte,
-                    sym.end_byte,
+                    [
+                        f"{file_id}:{sym.start_byte}",
+                        file_id,
+                        repo.repo_id,
+                        sym.name,
+                        sym.kind,
+                        sym.signature,
+                        sym.docstring,
+                        sym.parent_scope,
+                        sym.start_line,
+                        sym.end_line,
+                        sym.start_byte,
+                        sym.end_byte,
+                    ]
+                    for sym in result.symbols
                 ],
             )
-
-        for imp in result.imports:
-            con.execute(
+            _insert_many(
+                con,
                 """
                 INSERT INTO edges (src_file_id, dst_file_id, dst_symbol, edge_type, weight)
                 VALUES (?, NULL, ?, 'import', 1)
                 """,
-                [file_id, imp.target],
+                [[file_id, imp.target] for imp in result.imports],
             )
-
-        for call in result.calls:
-            src_symbol_id = (
-                f"{file_id}:{call.caller_symbol_start_byte}"
-                if call.caller_symbol_start_byte is not None
-                else None
-            )
-            con.execute(
+            _insert_many(
+                con,
                 """
                 INSERT INTO edges
                 (src_file_id, dst_file_id, dst_symbol, dst_symbol_id, src_symbol_id,
                  edge_type, weight)
                 VALUES (?, NULL, ?, NULL, ?, 'call', 1)
                 """,
-                [file_id, call.callee_name, src_symbol_id],
+                [
+                    [
+                        file_id,
+                        call.callee_name,
+                        f"{file_id}:{call.caller_symbol_start_byte}"
+                        if call.caller_symbol_start_byte is not None
+                        else None,
+                    ]
+                    for call in result.calls
+                ],
             )
+            con.commit()
+        except Exception as e:
+            con.rollback()
+            log.warning("codemap.write_failed", file_id=file_id, error=str(e))
+            counts["errors"] += 1
+            continue
 
-        manifest.mark(file_id, path)
         counts["parsed"] += 1
 
     if not dry_run:
-        _prune_removed_files(con, repo.repo_id, seen_file_ids)
-        counts["removed"] = _prune_stale_manifest_entries(repo.repo_id, seen_file_ids)
+        counts["removed"] = _prune_removed_files(con, repo.repo_id, seen_file_ids)
 
         con.execute(
             "INSERT OR REPLACE INTO repos VALUES (?, ?, ?, ?)",
@@ -176,23 +202,65 @@ def index_repo(con: duckdb.DuckDBPyConnection, repo: RepoConfig, dry_run: bool =
     return counts
 
 
+def _reset_inbound_call_edges(con: duckdb.DuckDBPyConnection, file_id: str) -> None:
+    """Make call edges that resolved into ``file_id`` pending again.
+
+    Symbol ids are ``file:start_byte``, so replacing a file's symbols invalidates every
+    ``dst_symbol_id`` that pointed into it, and ambiguous names may have fanned out to
+    several rows. Each affected (caller, callee name) group is collapsed back to one
+    unresolved row so ``_resolve_call_edges`` can resolve it afresh. Import edges that
+    pointed at the file are un-resolved too (a removed file must not dangle).
+    """
+    groups = con.execute(
+        """
+        SELECT DISTINCT src_file_id, src_symbol_id, dst_symbol FROM edges
+        WHERE edge_type = 'call' AND dst_file_id = ? AND src_file_id <> ?
+        """,
+        [file_id, file_id],
+    ).fetchall()
+    for src_file_id, src_symbol_id, dst_symbol in groups:
+        con.execute(
+            """
+            DELETE FROM edges WHERE edge_type = 'call' AND src_file_id = ?
+              AND src_symbol_id IS NOT DISTINCT FROM ? AND dst_symbol = ?
+            """,
+            [src_file_id, src_symbol_id, dst_symbol],
+        )
+        con.execute(
+            """
+            INSERT INTO edges
+            (src_file_id, dst_file_id, dst_symbol, dst_symbol_id, src_symbol_id,
+             edge_type, weight)
+            VALUES (?, NULL, ?, NULL, ?, 'call', 1)
+            """,
+            [src_file_id, dst_symbol, src_symbol_id],
+        )
+    con.execute(
+        "UPDATE edges SET dst_file_id = NULL WHERE edge_type = 'import' AND dst_file_id = ?",
+        [file_id],
+    )
+
+
 def _prune_removed_files(
     con: duckdb.DuckDBPyConnection, repo_id: str, seen_file_ids: set[str]
-) -> None:
+) -> int:
+    """Delete files that left the repo, with their symbols and edges in both directions."""
     existing = con.execute("SELECT file_id FROM files WHERE repo_id = ?", [repo_id]).fetchall()
+    removed = 0
     for (file_id,) in existing:
-        if file_id not in seen_file_ids:
+        if file_id in seen_file_ids:
+            continue
+        con.begin()
+        try:
+            _reset_inbound_call_edges(con, file_id)
             con.execute("DELETE FROM files WHERE file_id = ?", [file_id])
             con.execute("DELETE FROM symbols WHERE file_id = ?", [file_id])
             con.execute("DELETE FROM edges WHERE src_file_id = ?", [file_id])
-
-
-def _prune_stale_manifest_entries(repo_id: str, seen_file_ids: set[str]) -> int:
-    removed = 0
-    for file_id in manifest.known_file_ids():
-        if file_id.startswith(f"{repo_id}:") and file_id not in seen_file_ids:
-            manifest.remove(file_id)
-            removed += 1
+            con.commit()
+        except Exception:
+            con.rollback()
+            raise
+        removed += 1
     return removed
 
 

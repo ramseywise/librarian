@@ -81,7 +81,9 @@ def test_end_to_end_rendered_output_has_no_key(capsys: pytest.CaptureFixture[str
     log = structlog.get_logger("test")
     log.info("etl.auth", api_key=FAKE_ANTHROPIC, note=f"used {FAKE_NOTION}")
 
-    out = capsys.readouterr().out
+    captured = capsys.readouterr()
+    out = captured.err  # logs go to stderr; stdout stays free for protocols and results
+    assert captured.out == ""
     assert FAKE_ANTHROPIC not in out
     assert FAKE_NOTION not in out
     assert REDACTED in out

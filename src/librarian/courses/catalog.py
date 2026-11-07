@@ -50,10 +50,13 @@ _settings = get_settings()
 ROOT = _settings.root
 COURSES_DIR = _settings.courses_dir
 WIKI_DIR = _settings.wiki_dir
+# Deployed container: the private/ course tree is not read at all. Module-level so a test can flip it.
+PUBLIC_MODE = _settings.public_mode
 # Read live from the private sisyphus checkout and never copied into data/ — this repo is
 # public and the log is personal history. Absent → drills just show no attempts.
 DRILL_LOG = _settings.drill_log
 
+DEFAULT_ORDER = 999  # no (usable) `order`: sorts after every numbered entry
 PRIVATE_COURSES = "private"  # data/courses/private/, same name as data/wiki/private/
 ASSET_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
 MAX_CONCEPTS = 12
@@ -160,7 +163,7 @@ def catalog() -> Catalog:
         ):
             _semantic_failed_at = None
             _load.cache_clear()
-        _current = _load(COURSES_DIR, WIKI_DIR, sig)
+        _current = _load(COURSES_DIR, WIKI_DIR, sig, PUBLIC_MODE)
         return _current
     finally:
         _LOAD_LOCK.release()
@@ -266,7 +269,9 @@ def _resolve_wikilink(target: str, wiki: dict[str, WikiRef], slugs: dict[str, st
 
 
 @lru_cache(maxsize=2)
-def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
+def _load(
+    courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int], public: bool = False
+) -> Catalog:
     wiki = _load_wiki(wiki_dir)
     slugs = _wiki_slugs(wiki)
     matcher, by_title = _concept_matcher(wiki)
@@ -283,7 +288,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
         return Catalog([], {}, wiki, {})
 
     private_root = courses_dir / PRIVATE_COURSES
-    for course_name, course_dirs in _course_dirs(courses_dir).items():
+    for course_name, course_dirs in _course_dirs(courses_dir, public).items():
         cmeta = _first_meta(course_dirs, "_course.md")
         modules: list[dict[str, Any]] = []
         for module_name, mod_dirs in _module_dirs(course_dirs).items():
@@ -295,7 +300,15 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                 for md in mod_dir.rglob("*.md"):
                     if md.name.startswith("_") or "assets" in md.relative_to(mod_dir).parts:
                         continue
-                    post = frontmatter.load(md)
+                    try:
+                        post = frontmatter.load(md)
+                    except (yaml.YAMLError, OSError, UnicodeDecodeError) as e:
+                        log.warning(
+                            "lesson_skipped",
+                            path=str(md),
+                            error=str(e).splitlines()[0] if str(e) else repr(e),
+                        )
+                        continue
                     lid = str(md.relative_to(courses_dir).with_suffix(""))
                     embed_texts[lid] = _lesson_text(post, md.stem)
                     recs.append(
@@ -305,7 +318,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                             module=module_name,
                             title=str(fm(post).get("title") or md.stem),
                             summary=str(fm(post).get("summary") or ""),
-                            order=int(fm(post).get("order") or 999),
+                            order=_order(fm(post).get("order"), str(md)),
                             section=str(fm(post).get("section") or ""),
                             kind=str(fm(post).get("kind") or "reading"),
                             source=str(fm(post).get("source") or ""),
@@ -342,8 +355,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                     "id": module_name,
                     "title": module_title,
                     "summary": str(mmeta.get("summary") or ""),
-                    # 00-start-here is order 0, so `or 999` would sort it last.
-                    "order": int(999 if mmeta.get("order") is None else mmeta["order"]),
+                    "order": _order(mmeta.get("order"), module_name),
                     # Public: only the count. The list itself is in the private overlay.
                     "readings": readings,
                     "readingsCount": readings_count,
@@ -360,7 +372,7 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
                 "id": course_name,
                 "title": str(cmeta.get("title") or course_name),
                 "summary": str(cmeta.get("summary") or ""),
-                "order": int(cmeta.get("order") or 999),
+                "order": _order(cmeta.get("order"), course_name),
                 "lessonCount": sum(len(m["lessons"]) for m in modules),
                 "modules": modules,
                 **({"private": True} if modules and all(m.get("private") for m in modules) else {}),
@@ -384,10 +396,25 @@ def _load(courses_dir: Path, wiki_dir: Path, _sig: tuple[int, int]) -> Catalog:
     return Catalog(courses, ordered, wiki, by_concept, decks, quizzes)
 
 
-def _course_dirs(courses_dir: Path) -> dict[str, list[Path]]:
-    """Course name → its directories: the public one, then the same name under private/."""
+def _order(value: Any, where: str) -> int:  # noqa: ANN401 - raw frontmatter value
+    """Sort order from frontmatter. 0 is a real order (00-start-here); a missing or unusable
+    value sorts last, and an unusable one is logged."""
+    if value is None:
+        return DEFAULT_ORDER
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        log.warning("order_invalid", where=where, value=repr(value))
+        return DEFAULT_ORDER
+
+
+def _course_dirs(courses_dir: Path, public: bool = False) -> dict[str, list[Path]]:
+    """Course name → its directories: the public one, then the same name under private/
+    (not at all in public mode)."""
     found: dict[str, list[Path]] = {}
-    roots = [(courses_dir, True), (courses_dir / PRIVATE_COURSES, False)]
+    roots = [(courses_dir, True)]
+    if not public:
+        roots.append((courses_dir / PRIVATE_COURSES, False))
     for root, is_public_root in roots:
         if not root.is_dir():
             continue
@@ -432,7 +459,15 @@ def _readings_count(mod_dirs: list[Path]) -> int:
 
 
 def _meta(path: Path) -> dict[str, Any]:
-    return frontmatter.load(path).metadata if path.exists() else {}
+    if not path.exists():
+        return {}
+    try:
+        return frontmatter.load(path).metadata
+    except (yaml.YAMLError, OSError, UnicodeDecodeError) as e:
+        log.warning(
+            "meta_skipped", path=str(path), error=str(e).splitlines()[0] if str(e) else repr(e)
+        )
+        return {}
 
 
 def _load_cards(path: Path, recs: dict[str, LessonRec]) -> list[dict[str, Any]]:
@@ -898,6 +933,19 @@ def _drill_attempts(log: Path) -> dict[str, dict[str, Any]]:
     return out
 
 
+def is_private_asset(file_path: str) -> bool:
+    """True in public mode when `file_path` names, or resolves into, a private/ tree."""
+    if not PUBLIC_MODE:
+        return False
+    if any(p.lower() == PRIVATE_COURSES for p in Path(file_path).parts):
+        return True
+    try:
+        target = (COURSES_DIR / file_path).resolve()
+    except (OSError, ValueError, RuntimeError):
+        return True
+    return is_under_private(target, COURSES_DIR / PRIVATE_COURSES)
+
+
 def asset_path(file_path: str) -> Path | None:
     """Absolute path of an image under COURSES_DIR, or None when `file_path` is not one.
 
@@ -908,10 +956,14 @@ def asset_path(file_path: str) -> Path | None:
     """
     if ".." in Path(file_path).parts or file_path.startswith("/"):
         return None
+    if "\0" in file_path or is_private_asset(file_path):
+        return None
     root = COURSES_DIR.resolve()
     target = (COURSES_DIR / file_path).resolve()
     if not target.is_relative_to(root) or target.suffix.lower() not in ASSET_TYPES:
         return None
+    if PUBLIC_MODE:
+        return target  # the private mirror is not consulted
     found = overlay.resolve_asset(target, root)
     if found is not None and not found.resolve().is_relative_to(root):
         return None  # a symlink in the mirror pointing out of the tree

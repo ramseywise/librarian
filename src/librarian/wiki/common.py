@@ -8,11 +8,15 @@ identical or link resolution diverges between the index and the UI.
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from typing import Any
 
 import frontmatter
 import yaml
+
+from librarian.log_config import get_logger
+
+log = get_logger(__name__)
 
 
 def fm(post: frontmatter.Post) -> dict[str, Any]:
@@ -44,7 +48,9 @@ def parse_frontmatter(text: str) -> dict[str, Any]:
     """
     try:
         meta = dict(fm(frontmatter.loads(text)))
-    except Exception:
+    except Exception as exc:
+        # `{}` has no `tags` key, unlike a page with no frontmatter: callers that index can tell.
+        log.warning("frontmatter_unparseable", error=str(exc))
         return {}
     meta["tags"] = page_tags(meta)
     for key, val in meta.items():
@@ -53,7 +59,32 @@ def parse_frontmatter(text: str) -> dict[str, Any]:
     return meta
 
 
-WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
+_FENCE_RE = re.compile(r"^[ \t]*(```|~~~).*?(?:^[ \t]*\1[^\n]*$|\Z)", re.MULTILINE | re.DOTALL)
+_BARE_WIKILINK_RE = re.compile(r"(?<!!)\[\[([^\]|#]+)(?:[|#][^\]]+)?\]\]")
+
+
+def _blank_fences(text: str) -> str:
+    """`text` with fenced code blocks blanked to spaces; offsets and line numbers are unchanged."""
+    return _FENCE_RE.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
+
+
+class _WikilinkPattern:
+    """`[[Page]]` links outside fenced code blocks and not `![[embeds]]`.
+
+    Quacks like the compiled pattern for the two methods callers use (`finditer`, `search`);
+    match offsets refer to the original text.
+    """
+
+    def finditer(self, text: str) -> Iterator[re.Match[str]]:
+        return _BARE_WIKILINK_RE.finditer(
+            _blank_fences(text) if "```" in text or "~~~" in text else text
+        )
+
+    def search(self, text: str) -> re.Match[str] | None:
+        return next(self.finditer(text), None)
+
+
+WIKILINK_RE = _WikilinkPattern()
 # `- [[X]] — type` describes X relative to the page it is written on: "X is a
 # prerequisite for this page", "X extends this page". `related` is the weak,
 # undirected type: a real edge, but not one retrieval expansion walks.

@@ -19,6 +19,7 @@ from librarian.config import get_settings
 _settings = get_settings()
 SOURCES_DIR = _settings.course_sources_dir
 SERVE_SOURCES = _settings.serve_course_sources
+PUBLIC_MODE = _settings.public_mode
 
 # A subject's root files sit in `00-start-here`; in the sources repo they sit
 # at the course root, so their relative links start one level higher.
@@ -54,6 +55,8 @@ def source_file(rel: str) -> Path | None:
     parts = Path(rel).parts
     if ".." in parts or any(p.startswith(".") for p in parts):
         return None
+    if PUBLIC_MODE and any(p.lower() == "private" for p in parts):
+        return None
     try:
         target = (root / rel).resolve()
     except (OSError, ValueError):
@@ -62,8 +65,11 @@ def source_file(rel: str) -> Path | None:
         return None
     # Only the PDF library: the sibling repo also holds drills, ledgers and scripts, which
     # this route has no reason to serve. Same rule as resolve_link.
-    if "sources" not in target.relative_to(root).parts[:-1]:
+    resolved_parts = target.relative_to(root).parts
+    if "sources" not in resolved_parts[:-1]:
         return None
+    if PUBLIC_MODE and any(p.lower() == "private" for p in resolved_parts):
+        return None  # a symlink into a private/ tree
     return target
 
 

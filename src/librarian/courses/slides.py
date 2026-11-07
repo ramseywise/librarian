@@ -287,8 +287,16 @@ def image_url(deck_id: str, n: int) -> str:
     return f"/api/courses/slide-image/{deck_id}/{n}"
 
 
-def deck(deck_id: str) -> dict[str, Any] | None:
-    """One deck for the viewer, starting a rebuild when its output is missing or stale.
+def build_deck(deck_id: str) -> dict[str, Any] | None:
+    """Start a rebuild when the deck's output is missing or stale, then answer as `deck` does."""
+    return deck(deck_id, start=True)
+
+
+def deck(deck_id: str, *, start: bool = False) -> dict[str, Any] | None:
+    """One deck for the viewer. Read-only unless `start`, which begins a rebuild when needed.
+
+    `stale` is true when a build is needed, none is running and one could start: the client
+    then asks for it with `build_deck`.
 
     status: "ready" (images and text from the built deck), "building" (a build is running; the
     slides are the yaml's text), "text" (built, but this machine cannot render images) or
@@ -307,11 +315,13 @@ def deck(deck_id: str) -> dict[str, Any] | None:
     outline = _read_json(out / "slides.json")
     fresh = isinstance(built, dict) and built.get("stamp") == digest
 
-    running = False
-    if _needs_build(built, digest):
-        running = _start(canonical, spec)
-    elif canonical in _RUNNING:
-        running = True
+    running = canonical in _RUNNING
+    stale = False
+    if _needs_build(built, digest) and not running:
+        if start:
+            running = _start(canonical, spec)
+        else:
+            stale = bool(shutil.which("uv"))
 
     error = ""
     if fresh and isinstance(built, dict) and built.get("ok") and isinstance(outline, list):
@@ -335,6 +345,7 @@ def deck(deck_id: str) -> dict[str, Any] | None:
         "module": f"{course}/{module}",
         "status": status,
         "images": has_images,
+        "stale": stale,
         "needs": needs() if status in ("text", "failed") else [],
         "error": error,
         "decks": module_decks(f"{course}/{module}"),

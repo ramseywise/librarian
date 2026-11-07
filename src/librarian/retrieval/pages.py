@@ -6,6 +6,7 @@ serves page text excludes `data/wiki/private/` here, once, for the MCP tools and
 
 from __future__ import annotations
 
+import glob
 from pathlib import Path
 
 from librarian.retrieval import corpus, index
@@ -64,7 +65,7 @@ def read_page(path_or_title: str) -> str:
 
     wiki_dir = corpus.WIKI_DIR
     candidate = Path(path_or_title)
-    if candidate.exists():
+    if candidate.is_file():
         resolved = candidate.resolve()
         if resolved.is_relative_to(corpus.COURSES_DIR.resolve()):
             ref = (
@@ -82,7 +83,7 @@ def read_page(path_or_title: str) -> str:
         return candidate.read_text(encoding="utf-8")
 
     wiki_candidate = wiki_dir / path_or_title
-    if wiki_candidate.exists():
+    if wiki_candidate.is_file():
         if not wiki_candidate.resolve().is_relative_to(wiki_dir.resolve()):
             corpus.log_retrieval(
                 "read_page", path=str(wiki_candidate), found=False, outside_wiki=True
@@ -95,13 +96,20 @@ def read_page(path_or_title: str) -> str:
         return wiki_candidate.read_text(encoding="utf-8")
 
     slug = slugify(path_or_title)
-    matches = [p for p in wiki_dir.rglob(f"*{slug}*.md") if not corpus.is_private(p)]
+    # An empty slug (a title of only punctuation) would make the pattern `**.md`, which rglob rejects.
+    matches = (
+        [p for p in wiki_dir.rglob(f"*{glob.escape(slug)}*.md") if not corpus.is_private(p)]
+        if slug
+        else []
+    )
     if not matches:
         matches = _pages_formerly_named(slug)
     if not matches:
         words = path_or_title.lower().split()
         for word in words:
-            matches = [p for p in wiki_dir.rglob(f"*{word}*.md") if not corpus.is_private(p)]
+            matches = [
+                p for p in wiki_dir.rglob(f"*{glob.escape(word)}*.md") if not corpus.is_private(p)
+            ]
             if matches:
                 break
 

@@ -25,6 +25,8 @@ COURSE_DOMAIN = "course"
 DB_PATH = get_settings().wiki_db_path
 LOGS_DIR = get_settings().logs_dir
 RETRIEVAL_LOG = LOGS_DIR / "retrieval.jsonl"
+# Past this size the log moves to `retrieval.jsonl.1` (one generation kept, the older one replaced).
+RETRIEVAL_LOG_MAX_BYTES = 5_000_000
 
 
 def wiki_domains() -> list[str]:
@@ -153,11 +155,14 @@ def course_pages(root: Path | None = None) -> list[Path]:
 def log_retrieval(tool: str, **fields: object) -> None:
     """Append one JSON line of retrieval telemetry to logs/retrieval.jsonl.
 
-    Never raises — telemetry must not break retrieval. Consumed by /compact-wiki
+    Never raises — telemetry must not break retrieval. Rotates by size; concurrent writers are
+    not locked (a lost line at rotation is acceptable for telemetry). Consumed by /compact-wiki
     as merge/retire evidence (see .claude/docs/plans/2026-07-17-knowledge-compaction.md).
     """
     try:
         LOGS_DIR.mkdir(exist_ok=True)
+        if RETRIEVAL_LOG.exists() and RETRIEVAL_LOG.stat().st_size > RETRIEVAL_LOG_MAX_BYTES:
+            RETRIEVAL_LOG.replace(RETRIEVAL_LOG.with_name(RETRIEVAL_LOG.name + ".1"))
         entry = {"ts": datetime.now(UTC).isoformat(), "tool": tool, **fields}
         with RETRIEVAL_LOG.open("a", encoding="utf-8") as f:
             f.write(json.dumps(entry) + "\n")

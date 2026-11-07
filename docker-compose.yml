@@ -2,8 +2,8 @@
 #
 #   make app-build    (or: mkdir -p data/wiki/private data/courses/private && docker compose up --build)
 #
-# Set LIBRARIAN_API_TOKEN (and ANTHROPIC_API_KEY) in .env before exposing the port beyond
-# this machine. For UI development use `make ui` (Vite on :5173) against `make api`.
+# LIBRARIAN_API_TOKEN is required: the container binds 0.0.0.0 and the API refuses to start
+# without a token (add `--insecure` to the command to override). Set it, and ANTHROPIC_API_KEY, in .env. For UI development use `make ui` (Vite on :5173) against `make api`.
 services:
   librarian:
     build:

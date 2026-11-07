@@ -14,8 +14,10 @@ For non-localhost hosting, set CODEMAP_API_HOST/CODEMAP_API_PORT and run:
 from __future__ import annotations
 
 import os
+import time
 
 import duckdb
+import structlog
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 
@@ -25,11 +27,36 @@ load_dotenv(get_settings().dotenv_file)
 
 from librarian.tools.codemap import db, symbol_embeddings  # noqa: E402
 
+log = structlog.get_logger()
+
 app = FastAPI(title="Codemap Query API")
 
 
+_OPEN_ATTEMPTS = 3
+_OPEN_BACKOFF_S = 0.2
+
+
 def _con() -> duckdb.DuckDBPyConnection:
-    return db.get_con(read_only=True)
+    """Open the index read-only, retrying briefly while the indexer holds the write lock.
+
+    DuckDB refuses a read-only open while another process has the file open for writing
+    (and when the file does not exist yet). Surface that as a 503 with a clear message
+    instead of an unhandled 500.
+    """
+    last: duckdb.Error | None = None
+    for attempt in range(_OPEN_ATTEMPTS):
+        try:
+            return db.get_con(read_only=True)
+        except (duckdb.IOException, duckdb.ConnectionException) as e:
+            last = e
+            log.warning("codemap.api.open_failed", attempt=attempt + 1, error=str(e))
+            if attempt + 1 < _OPEN_ATTEMPTS:
+                time.sleep(_OPEN_BACKOFF_S)
+    raise HTTPException(
+        status_code=503,
+        detail=f"code index unavailable (being rebuilt or not built yet): {last}",
+        headers={"Retry-After": "5"},
+    )
 
 
 @app.get("/api/repos")
