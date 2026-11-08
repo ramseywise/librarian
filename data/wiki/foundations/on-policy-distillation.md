@@ -2,7 +2,7 @@
 title: On-Policy Distillation
 tags: [foundations, llm, concept]
 summary: "The student generates its own trajectories and a teacher scores every token by its full next-token distribution (minimise KL) — RL's on-policy data with SFT's dense signal, matching RL on math in about a tenth of the steps; self-distillation (OPSD) gets the same signal from the model itself given privileged context."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
 ---
@@ -57,3 +57,5 @@ model plays both roles; only the context differs.
 - [[Rejection Sampling Fine-Tuning]] — alternative-to (pass/fail filtering instead of per-token KL)
 - [[RLHF Pipeline]] — alternative-to (sparse reward plus KL anchor)
 - [[Agent Status Bar]] — extends (the inference-time version of dense guidance)
+- [[AgentArk Multi-Agent Distillation]] — related (distilling debate into one model)
+- [[Chain-of-Agents AFM Distillation]] — related (multi-agent trajectories into one model)

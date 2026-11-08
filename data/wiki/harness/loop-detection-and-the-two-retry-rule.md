@@ -80,3 +80,5 @@ See [[Gate Pass Rate Measures Effort, Not Readiness]].
 - [[Gate Pass Rate Measures Effort, Not Readiness]] — related (the retry counter as a non-signal)
 - [[Deep Agents Framework]] — instance-of (loop-detection middleware)
 - [[Trajectory Over Outcome]] — instance-of (the stopping-point decision, mechanically)
+- [[Budget Tracker and BATS]] — related (budget awareness as a stopping signal)
+- [[OpenDev Terminal Coding Agent]] — related (doom-loop fingerprint)

@@ -57,3 +57,4 @@ enforce it continuously."
 - [[Verification Loops]] — extends
 - [[Agent Retry Taxonomy]] — prerequisite-for (an actionable error is what makes a retry a re-plan)
 - [[Harness Engineering]] — instance-of (the ratchet applied to review)
+- [[Play2Prompt]] — related (tool instructions as an optimisation target)

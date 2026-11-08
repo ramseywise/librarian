@@ -2,11 +2,15 @@
 title: Protocol-Driven Multi-Agent Collaboration
 tags: [agents, infra, pattern]
 summary: "Why multi-agent coordination has to be a protocol rather than a conversation — the nine failure modes conversational handoff produces, the six things a protocol must define, and the three foundations: communication protocol, task graph, and isolation boundary."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agents-design.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-design.md
+  - data/raw/papers/2026-11-06-dochkina-2026-drop-hierarchy-roles.md
+  - data/raw/papers/2026-11-06-li-2026-scaling-behavior-single-llm-driven.md
+  - data/raw/papers/2026-11-06-riedl-2025-emergent-coordination-multi-agent-language.md
+  - data/raw/papers/2026-11-06-kostka-2026-evaluating-theory-mind-internal-beliefs.md
 ---
 
 # Protocol-Driven Multi-Agent Collaboration
@@ -122,6 +126,13 @@ acts on them; with excess budget it keeps going. **The three are one constraint 
 from three angles**, and scoping one while leaving the others open leaves the failure
 available.
 
+## Measured protocol effects (2025-2026 preprints, self-reported)
+
+- **Information type per protocol** (Dochkina, arXiv 2603.28990, single-author preprint, synthetic tasks, LLM judge, data not yet released): with 16 agents on hard tasks and 120 tasks per model, a fixed-order sequential protocol beat a coordinator protocol by 14.1% with Claude Sonnet 4.6 (0.875 for sequential, 0.767 for coordinator), 12.4% (DeepSeek v3.2) and 12.2% (GLM-5), all p<0.001; in a separate 8-agent pilot with a weaker model and a different judge the sequential protocol beat a fully shared protocol by 44%. The author's explanation is the kind of information each agent sees; the paper does not ablate it. Quality was flat from 8 to 64 agents (0.954 to 0.949) and from 64 to 256 on easy tasks near ceiling, at 4.6 times the cost. Free-form roles beat a fixed structure by 3.5% for one strong model and lost by 9.6% for a weaker one. The extraction notes the 14% and 44% headlines come from different models, team sizes and judges.
+- **Scaling shape** (Li et al., arXiv 2606.00655): with agents from one base model in a sequential chain, MMLU accuracy rose, peaked and fell as agents were added (n from 1 to 8; 17 questions per subject, 3 repeats). 7B and 8B models never benefited. Llama-3.1-70B on formal logic fell from 58.82% to 25.49% at 8 agents. Padding the history to fixed length still gave the inverted U, which the authors read as coordination overhead. A fully connected group-chat topology raised the peak slightly and delayed the decline. A table of structured designs on hard maths is cited from another paper, not rerun. The extraction notes the "scaling law" framing exceeds the evidence and that the main text and appendix disagree on one task-type figure (27.45 against 33.33).
+- **Prompted steering without messages** (Riedl, ICLR 2026, arXiv 2510.05174): 10 GPT-4.1 agents guessing a number with only group feedback, 200 groups per condition. Success did not differ between plain, persona and persona-plus-"think about what others might do" prompts, yet only the last showed significant triplet mutual information (p=3.5e-14). Performance rose only when synergy and redundancy were both present (interaction 0.24, p=0.014); the mediation is marginal (p=0.053). Each extra group member cut success odds to 0.92 times. The authors state the single task, pairwise measures and no team-over-solo claim as limits.
+- **Theory-of-mind scaffolds** (Kostka and Chudziak, arXiv 2603.00142): three role agents allocating resources over four districts, with theory-of-mind predictions and an internal-belief section checked by a logic solver. For GPT-4o the median final health stayed within about one point of base (69.44 to 70.56); Claude 3.5 Sonnet fell 5 points with predictions alone and rose 2.2 with both; Llama 3.1 8B fell from 35.00 to 26.34 with beliefs alone; GPT-3.5-Turbo rose 27.50 to 33.34 with both. Model choice (about 27 to 71) outweighed any configuration. No trial count or significance tests are given, and the cognitive-load explanations are untested.
+
 ## See Also
 - [[Harness Orchestration]] <!-- auto-linked -->
 - [[Agent Interoperability Protocol Stack]] <!-- auto-linked -->
@@ -134,3 +145,8 @@ available.
 - [[Execution Boundaries and Guardrails]] — related (the isolation boundary, mechanically)
 - [[Production Reliability Primitives]] — extends (durable messaging, idempotency, explicit state in production)
 - [[Provenance-Tracked Agent Beliefs]] — extends (belief provenance and peer models in the message layer)
+- [[Delegation Ceiling and Posterior Distortion]] — related (an information account of relay loss)
+- [[Coordination Network Measurement in Multi-Agent Coding]] — related
+- [[Diversity Collapse in Multi-Agent Ideation]] — related
+- [[BigToM Model-Generated Benchmark]] — related (a theory-of-mind benchmark)
+- [[CAID Centralized Asynchronous Isolated Delegation]] — related

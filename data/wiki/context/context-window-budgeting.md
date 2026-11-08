@@ -97,3 +97,4 @@ overhead a harness adds is in [[Measuring Fixed Context Overhead]].
 - [[Measuring Fixed Context Overhead]] — extends
 - [[Context-Aware Compression]] — extends
 - [[Multi-Agent Context]] — extends
+- [[Budget Tracker and BATS]] — instance-of (a plug-in budget counter and a budget-gated agent loop)

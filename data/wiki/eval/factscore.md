@@ -40,3 +40,4 @@ Precision only: the score has no recall term, so abstaining or writing fewer fac
 - [[Tool-Augmented Factuality Checking]] — alternative-to (verifies claims with search or code tools)
 - [[FACTS Leaderboard]] — alternative-to (a four-part factuality suite averaged into one score)
 - [[Summary Factual Consistency Metrics]] — alternative-to (checks a summary against its own source document, not a knowledge base)
+- [[Generative Search Engine Verifiability Audit]] — related (judges citation support, not fact truth)

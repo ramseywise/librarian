@@ -66,3 +66,4 @@ RL trained on 32K sequences but was evaluated at 256K. Costs are estimated from 
 - [[Compression Strips the Epistemic Frame]] — related (what a summary loses)
 - [[Context Failure Modes]] — related
 - [[Context-Aware Compression]] — alternative-to
+- [[Agentic Context Management (ACM)]] — alternative-to

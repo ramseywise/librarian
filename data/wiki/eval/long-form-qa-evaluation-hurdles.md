@@ -42,3 +42,4 @@ In interviews, the volunteer annotators said each pair took them around two minu
 - [[Output Length Confounds Reference Metrics]] — related (the same length effect on n-gram scores)
 - [[RAG Evaluation]] — related (checking that the generator uses what was retrieved)
 - [[Text Metrics Beyond N-gram Overlap]] — related (learned and embedding alternatives to ROUGE and BLEU)
+- [[Generative Search Engine Verifiability Audit]] — instance-of (human audit of cited answers)

@@ -2,7 +2,7 @@
 title: Agent Deployment Anti-Patterns
 tags: [agents, infra, reference]
 summary: "Eight recurring agent-deployment failures that present as model limitations but are engineering-constraint failures — with the reframe that a rule written in documentation is a hope, while a rule enforced by a hook is a constraint."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--agents-guardrails.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--agents-guardrails.md
@@ -109,3 +109,4 @@ are misattributed to the model. There is nothing else in the system to blame.
 - [[SKILL.md Pattern]] — related (the knowledge-out-of-prompt fix for #1)
 - [[Tool Design as Harness Surface]] — related (namespacing and tool consolidation for #2)
 - [[Verification Loops]] — related (acceptance criteria for #3)
+- [[Model or Harness Failure Taxonomy]] — related

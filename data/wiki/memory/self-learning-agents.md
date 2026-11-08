@@ -118,3 +118,5 @@ See [[Copilot Learning Loop]] for the full operational process.
 - [[Eval Harness]]
 - [[Atlas Project]] — instance-of
 - [[Agent Plasticity]] — related (a metric for how efficiently such agents improve)
+- [[Memory Intelligence Agent]] — instance-of (a trained memory manager)
+- [[MemCollab Contrastive Cross-Model Memory]] — instance-of

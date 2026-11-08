@@ -72,3 +72,4 @@ index time and *adds* context to chunks; compression runs at query time and *rem
 - [[Contextual Retrieval]] — alternative-to (index-time addition vs query-time removal)
 - [[Context Window Budgeting]] — related
 - [[Learned Proactive Compaction]] — alternative-to (the agent decides when and what to keep, by training)
+- [[Soft Context Compression for RAG (CLaRa and REFRAG)]] — alternative-to (compresses retrieved text into embeddings)

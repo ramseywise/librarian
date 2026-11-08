@@ -94,3 +94,4 @@ Practitioner notes are leads rather than evidence, with no audited method behind
 - [[Structured Output]] — prerequisite-for (shape is not truth)
 - [[Three-Band Confidence Routing]] — related (the wider decision layer around a score)
 - [[JEV-as-a-Judge Cascade]] — extends (a preprint that tests it as the first stage of a judge cascade)
+- [[Jev-Mem System-One Memory Control]] — instance-of

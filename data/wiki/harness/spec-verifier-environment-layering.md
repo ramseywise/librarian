@@ -2,10 +2,11 @@
 title: Spec, Verifier, Environment Layering
 tags: [harness, llm, concept]
 summary: "A practitioner framing of working with coding agents as three layers that all transmit your understanding — a spec (the goal, not the task, in small agile slices), a verifier (criteria before work, a second model as critic, an external ground-truth signal), and an environment (operating contract, knowledge base, skills, and hooks for what must never happen)."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--karpathy-method.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--karpathy-method.md
+  - data/raw/papers/2026-11-06-kushnir-2026-design-docs-all-you-need.md
 ---
 
 # Spec, Verifier, Environment Layering
@@ -76,9 +77,19 @@ All three layers carry the same input: *your* understanding of the goal, of what
 like, and of what must never happen. Better layers cannot make up for that input being
 missing.
 
+## An extreme case: design docs as the only source (Kushnir et al., 2026 preprint)
+
+SMART, a Google performance-modeling library for TPUs, keeps almost no code on its main branch: what it holds is a DAG made of 50 design docs, roughly 9,000 lines of prose (self-reported), from which coding sub-agents rebuild the implementation using only those docs. Humans edit only the docs. Dependency edges are found by read-only agents, while an orchestrator traverses the DAG in topological order and records any prose the sub-agents misread, showing humans which docs are unclear. Worked examples (step-by-step traces of intermediate values) serve as in-context demonstrations, and each doc that contains numbers closes with a reconciliation anchor: one preset whose outputs are spelled out in full and checked by tests that get generated. Regenerating everything from a clean slate takes between 1.5 and 3 hours and costs about 100 USD with Claude Code (self-reported; the model, run count and variance are not given). The abstract states that the regenerated code agrees with reference models audited by hand down to round-off precision; no table supports this.
+
+## Limits
+
+- The paper is a system description with no experiments: no baseline of incremental development, no ablation of worked examples, and no measurement of debt or doc-edit effort. Its claim that debt falls to zero holds by the definition of full regeneration and says nothing about quality.
+- The domain is narrow and symbolic, and results can be checked numerically, so outputs can be reconciled exactly; the authors only say it should generalize where specs change faster than software absorbs them. People build the tests and reference models by hand, which leaves verification with humans.
+
 ## See Also
 - [[Harness Engineering]] — extends (the same harness described from the operator's chair)
 - [[Verification Loops]] — prerequisite-for (depth on the verifier layer)
 - [[Execution Boundaries and Guardrails]] — extends (never-do as hook-enforced rules)
 - [[Scope-POC Design Interview]] — instance-of (goal extraction by interview)
 - [[Karpathy LLM Wiki Pattern]] — instance-of (the knowledge-base component of the environment)
+- [[Paper-Replication Completion Gate]] — related (checks outside the agent decide done)

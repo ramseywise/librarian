@@ -2,7 +2,7 @@
 title: Post-Training for Agents
 tags: [foundations, llm, concept]
 summary: "How SFT, RL and distillation divide the work of training an agent — SFT writes form and protocol, RL learns transferable strategy, on-policy distillation gives RL's on-policy data with SFT's dense signal — and why the environment, data and reward shape matter more than the choice of algorithm."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--README.md
@@ -216,3 +216,11 @@ on a sample? Reuse benchmark *environments* for training, never benchmark *items
 - [[Self-Learning Agents]] — alternative-to (improvement without touching weights)
 - [[Real-Time Multimodal Agents]] — extends (voice SFT and robot-policy RL in practice)
 - [[Training-Agent Disaggregation]] — extends
+- [[Role Anchor and Role Drift]] — extends
+- [[AgentArk Multi-Agent Distillation]] — extends
+- [[Chain-of-Agents AFM Distillation]] — extends
+- [[FrogNano Online Task Synthesis]] — instance-of
+- [[Composer 2 Training Recipe]] — instance-of
+- [[Salesforce Koa]] — instance-of (RL post-training of a tool-use model in spec-driven environments)
+- [[SkillGym]] — instance-of (SFT on verified skill-dependent trajectories)
+- [[APIGen]] — instance-of (verified function-calling data for fine-tuning)

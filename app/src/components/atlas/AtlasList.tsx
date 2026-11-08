@@ -37,17 +37,11 @@ function SectorRows({ sector, grouping, titleOf, matches }: { sector: AtlasSecto
 
 /** The whole atlas as plain links: what the ring shows, reachable without the canvas. */
 export function AtlasList({ sectors, grouping, titleOf, matches }: Props) {
-  const [open, setOpen] = useState(false);
   return (
-    <details className="atlas-list" onToggle={(e) => setOpen(e.currentTarget.open)}>
-      <summary>Browse as a list</summary>
-      {open && (
-        <div className="atlas-list-body">
-          {sectors.map((s) => (
-            <SectorRows key={s.id} sector={s} grouping={grouping} titleOf={titleOf} matches={matches} />
-          ))}
-        </div>
-      )}
-    </details>
+    <div className="atlas-list">
+      {sectors.map((s) => (
+        <SectorRows key={s.id} sector={s} grouping={grouping} titleOf={titleOf} matches={matches} />
+      ))}
+    </div>
   );
 }

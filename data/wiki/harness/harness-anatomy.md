@@ -2,10 +2,12 @@
 title: Harness Anatomy
 tags: [llm, agents, infra, concept]
 summary: "The nine harness components and the five subsystems they serve, why the filesystem is the foundational primitive (including state for sessionless agents), code as a meta-capability, the layered mental model, and the causal build order."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--02-harness-anatomy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--02-harness-anatomy.md
+  - data/raw/papers/2026-11-06-jin-2024-llms-llm-based-agents-software.md
+  - data/raw/papers/2026-11-06-ning-2026-code-as-agent-harness.md
 ---
 
 # Harness Anatomy
@@ -210,6 +212,16 @@ Cutting the inventory to what a first real harness needs:
 
 Six items. Everything else here is elaboration on those.
 
+## Survey views of what a harness and an agent are (self-reported counts from the surveys)
+
+- **Code as Agent Harness (Ning et al., a May 2026 literature survey):** defines a harness as the software layer around a model that contains the tools, APIs, sandboxes, memory, validators and permission boundaries, along with the execution loops and feedback channels. It says the bottleneck of autonomy is the harness as well as the model, and splits the system into model-internal capability, system-provided infrastructure and agent-written code artifacts, calling the third underexplored. Its plan-execute-verify loop uses three permission tiers (read-only, sandbox-edit, full access with human approval for the last), and it says critique should interpret deterministic sensor output and not replace it. It notes that end-task success conflates model and harness, and cites studies reporting 14 to 53% best step-level failure attribution accuracy. Figures it quotes from other work are second-hand: 98%+ precision and recall for simulated execution on MBPP, and 16.9% of in-house issues resolved autonomously (43.3% with manual intervention) for one production agent.
+- **LLM-based agents for software engineering (Jin et al., a 2024-2025 preprint survey):** proposes six criteria for calling a system an agent (a model as central reasoner, planning, autonomous tool use, choosing among candidate results, multi-turn context, autonomous learning), of which the first four are the basic level. It collected 139 papers from late 2023 to before December 2024, with 40.3% on arXiv. Its own analysis concedes that for test generation alone a plain model is enough and cheaper than an agent framework. It reports no experiments, and the results it cites are 2024-era (for example SWE-agent at 12.5% pass@1 on SWE-bench).
+
+## Limits
+
+- Neither survey runs a controlled experiment; "same model, different harness" appears in Ning et al. only as a qualitative remark, and the authors say reported planning gains may not reflect real improvement.
+- Jin et al. internal inconsistencies: the text says 139 papers while Section X-A says 110; the topic figure sums to 153 instances because papers count in several topics; the year-trend figure sums to about 138. The agent criteria are a judgment call, and the extraction notes doubtful background claims (for example parameter counts for GPT-4) that should not be cited.
+
 ## See Also
 - [[Skill Authoring Discipline]] <!-- auto-linked -->
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
@@ -220,3 +232,8 @@ Six items. Everything else here is elaboration on those.
 - [[Harness Subsystem Attribution]] — extends (the five-subsystem diagnostic cut)
 - [[Coding-Agent Search and Edit Schemes]] — extends (the minimal coding kit's search and edit tools)
 - [[Realtime Is UI Sync, Not the Event Bus]] — related (a realtime channel is not the event bus)
+- [[DeepCode Information-Flow Management]] — related
+- [[Natural-Language Agent Harnesses]] — extends
+- [[Harness Effect on Token Economics]] — related
+- [[Prime Agent State Hierarchy]] — related
+- [[OpenDev Terminal Coding Agent]] — related

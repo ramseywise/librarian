@@ -2,7 +2,7 @@
 title: DAPO
 tags: [foundations, llm, concept]
 summary: "Four changes to PPO/GRPO-style RL — Clip-Higher, token-level loss, dynamic sampling and overlong reward shaping — each aimed at stopping the policy from collapsing early onto a single strategy; the reported state-of-the-art recipe for verifiable-reward math RL."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
@@ -39,3 +39,5 @@ instead of discarding them, and agentic self-instruct changes the task distribut
 - [[Post-Training for Agents]] — instance-of (the RL-for-tool-calling recipe)
 - [[RLVP — Verifiable Path Penalties]] — alternative-to (restore variance rather than drop the group)
 - [[RL Training Frameworks for LLMs]] — prerequisite-for (the backbones that ship the DAPO recipe)
+- [[FrogNano Online Task Synthesis]] — related
+- [[Composer 2 Training Recipe]] — related

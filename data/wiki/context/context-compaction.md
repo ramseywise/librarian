@@ -215,3 +215,12 @@ gone. The same pruning was implemented in both the Python and the TypeScript age
 - [[Agent Status Bar]] — alternative-to (adds distilled state instead of replacing history)
 - [[Context Window Budgeting]] — prerequisite-for
 - [[Learned Proactive Compaction]] — extends (the agent learns when to call compact())
+- [[Agent Cognitive Compressor]] — alternative-to (a bounded schema-governed state in place of a summary)
+- [[Offline Recurrence Sleep for Language Models]] — alternative-to (consolidate into fast weights before eviction)
+- [[OCR-Memory Optical Context Retrieval]] — alternative-to (keep history as images, retrieve verbatim text)
+- [[SKILL.state]] — alternative-to (structured state instead of summarising history)
+- [[PRO-LONG Programmatic Memory]] — alternative-to
+- [[Scroll Event Log and Eviction Index]] — alternative-to
+- [[LongHarness Evidence State]] — alternative-to
+- [[Gist Tokens]] — alternative-to
+- [[Doc-to-LoRA]] — alternative-to

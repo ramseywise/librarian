@@ -2,9 +2,10 @@
 title: Dynamic Tool Discovery
 tags: [llm, agents, mcp, pattern]
 summary: "Eagerly loading every tool schema can spend ~30% of a window before the first message — three lighter alternatives (retrieval pre-filter, proactive discovery via a tool_search meta-tool, skills as a greppable catalog) and the KV-cache rule for where a newly loaded schema goes."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
+  - data/raw/papers/2026-11-06-lumer-2025-tool-agent-retrieval.md
 ---
 
 # Dynamic Tool Discovery
@@ -48,9 +49,23 @@ The cost: weaker models handle schemas that appear mid-trajectory poorly. See
 The same "append at the end, never mutate the prefix" rule governs the environment status
 bar in [[Harness Anatomy]].
 
+## Joint Tool and Agent Index (Tool-to-Agent Retrieval)
+
+When tools belong to agents or MCP servers, retrieving tools alone drops what the owner holds (authentication, parameter inference, access policy), and routing to agents first hides fine-grained tools. Tool-to-Agent Retrieval (Lumer et al., 2025) indexes tools together with their owning agents, retrieves the top N entries with BM25 plus dense search, maps each tool hit to its owner through metadata, and deduplicates until K unique agents are found. Queries are decomposed into steps and retrieved per step. All numbers are the authors' (self-reported), on LiveMCPBench (70 servers, 527 tools, 95 questions), retrieving the correct agent:
+
+- Recall@5 0.83 against 0.70 for MCP-Zero, 0.74 for ScaleMCP, 0.56 for a query-retrieval baseline and 0.20 for BM25; nDCG@5 0.46 against 0.41, 0.40, 0.32 and 0.14.
+- Across eight embedding models Recall@5 ran 0.80 to 0.87 against 0.65 to 0.74 for MCP-Zero; 39.13% of top-K items came from the agent corpus.
+
+Limits: one benchmark, no intervals, no ablation of tool-only against agent-only against joint, and no end-to-end task success, latency or token saving, though token cost motivates the work. Its per-model table compares against MCP-Zero only, and its Recall@5 column averages about 0.85 against Table 1's 0.83 (the extraction's computation, unexplained by the paper). The abstract and the contributions list assign the 19.4% and 17.7% gains to opposite metrics. The authors also wrote ScaleMCP, so some baselines are their own.
+
 ## See Also
 - [[Tool Design as Harness Surface]] — extends (tool discovery at scale)
 - [[MCP Protocol]] — related (runtime discovery at the protocol level)
 - [[Prefix Caching]] — prerequisite-for
 - [[Skill Authoring Discipline]] — related
 - [[Tool Design as Context Engineering]] — related
+- [[SkillWeaver Compositional Skill Routing]] — instance-of (routing over a skill library)
+- [[AnyTool]] — instance-of (hierarchical retrieval over a large API pool)
+- [[Alita]] — related (creating a tool when none is found)
+- [[UPRISE Universal Prompt Retrieval]] — related (retrieving demonstrations, not tools, with a trained retriever)
+- [[OpenDev Terminal Coding Agent]] — related (lazy MCP discovery)

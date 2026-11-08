@@ -2,7 +2,7 @@
 title: "Tuning an Embedding Model from Match Labels"
 tags: [foundations, pattern]
 summary: "A frozen pretrained encoder scored below a character n-gram baseline on code-heavy records; about 1,000 labelled pairs with in-batch softmax lifted recall@10 from 0.134 to 0.908, but a held-out product family dropped it to 0.715, so measure frozen, tuned and held-out against a character baseline."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--05-learning-a-similarity-function.md
 ---
@@ -49,3 +49,6 @@ Temperature acts as soft mining: recall 0.913 at 0.05, 0.848 at 0.20, 0.776 at 1
 - [[Entity-Disjoint Splits and Group Scores for Pair Matchers]] — prerequisite-for
 - [[Similar vs Interchangeable in Matching]] — related
 - [[Two-Tower Retrieval with logQ Correction]] — prerequisite-for
+- [[GritLM (Generative Representational Instruction Tuning)]] — related (one model trained for both embedding and generation)
+- [[Llama2Vec Unsupervised LLM Adaptation for Dense Retrieval]] — related (unsupervised adaptation of a decoder LLM into an embedder)
+- [[Syntriever Synthetic Retriever Training]] — alternative-to (synthetic data from an LLM instead of match labels)

@@ -2,7 +2,7 @@
 title: Harness Subsystem Attribution
 tags: [llm, agents, infra, pattern]
 summary: "Diagnose a failing agent by attributing the failure to one of five subsystems — instructions, tools, environment, state, feedback — fix only that one on a fixed model, and use ablation to learn which subsystems are load-bearing."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--01-what-a-harness-is.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--02-harness-anatomy.md
@@ -78,3 +78,4 @@ strips anything.
 - [[Verification Loops]] — extends (the gulf of evaluation is the common failure)
 - [[Harness Orchestration]] — related
 - [[Runtime vs Process Observability]] — prerequisite-for
+- [[Model or Harness Failure Taxonomy]] — extends

@@ -42,3 +42,4 @@ Because agents are online they could find public oracle solutions, though the au
 - [[Eval Contamination Defenses]] — related (canary string, public tasks)
 - [[AutoLab]] — extends (reuses its harness and agent for long-horizon optimisation tasks)
 - [[DataSpace]] — related (the agent harness moved accuracy with the backbone fixed)
+- [[SkillGym]] — related (used as a held-out benchmark for skill-trained agents)

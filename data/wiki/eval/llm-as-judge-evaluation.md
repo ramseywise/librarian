@@ -145,6 +145,7 @@ Gu et al. (arXiv 2411.15594, a survey) frame a judge as E <- P_LLM(x (+) C) and 
 Judges that score by token probability instead of a generated verdict are [[GPTScore]]; prompted translation scoring is [[GEMBA Translation Quality Prompting]]. Trained open judges are [[PandaLM]], [[Self-Taught Evaluators]] and [[TIR-Judge]] (a judge that runs code). Running a judge in production is [[Judge Lifecycle with RART and a Drift Band]], and the calibration for order flips is [[Position Bias Calibration (MEC, BPC, HITLC)]].
 
 ## See Also
+- [[Generative Search Engine Verifiability Audit]] — related (human audit of citation support)
 - [[PaperBench]] — related (a judge validated against human leaf labels)
 - [[DataSpace]] — related (a model-free table comparison used instead of a judge)
 - [[FINDER and DEFT (Deep Research Agent Failures)]] — related (judge and reference report from the same vendor)

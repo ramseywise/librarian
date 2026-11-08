@@ -156,3 +156,8 @@ this is R3 and R8 with an egress path attached.
 - [[Harness Engineering]] — instance-of (authoring the skill layer of the harness)
 - [[Skill Lift Evaluation]] — related (measured lift of authored skills)
 - [[Harness-IF]] — related (instruction placement across surfaces)
+- [[Skill Verification Levels and the Biconditional Check]] — related (trust levels for skills)
+- [[ContinualSkillBench]] — related (agents that write their own SKILL.md files)
+- [[PreAct]] — related
+- [[Natural-Language Agent Harnesses]] — related
+- [[AGENTS.md Context File Evaluation]] — related

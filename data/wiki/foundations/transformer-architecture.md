@@ -2,7 +2,7 @@
 title: Transformer Architecture
 tags: [foundations, llm, concept]
 summary: The Transformer model architecture (Vaswani et al., 2017) — encoder-decoder stacks of self-attention and feed-forward layers that replaced RNNs/CNNs for sequence transduction, enabling parallelized training and constant-length dependency paths.
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
 ---
@@ -93,3 +93,5 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - [[Pre-Norm vs Post-Norm and Warm-Up]] — extends
 - [[LSTM Forget-Gate Bias and Vanishing Gradients]] — related (the recurrent models it replaced)
 - [[Encoder Tokens, Position and Attention Scaling]] — extends
+- [[Recurrent Memory Transformer (RMT)]] — instance-of
+- [[Gist Tokens]] — instance-of

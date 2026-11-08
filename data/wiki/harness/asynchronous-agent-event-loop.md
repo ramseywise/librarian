@@ -86,3 +86,4 @@ in one of four modes — **sync, async (task ID + later event), streaming, multi
 - [[Prompt Injection]] — related (structured events separate commands from data)
 - [[Long-Horizon Execution]] — related
 - [[Python Concurrency Models]] — prerequisite-for (asyncio primitives; never block the loop)
+- [[AsyncThink Fork-Join Organizer]] — related (fork and join inside one model's reasoning)

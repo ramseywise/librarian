@@ -29,8 +29,12 @@ interface Props {
   onBrief?: (domain: string) => void;
   /** Layer toggles and layout; none on the atlas, which draws neither. */
   layers?: ReactNode;
-  /** The canvas minimap; none on the atlas. */
+  /** The canvas minimap, or a placeholder holding its room on the atlas. */
   minimap?: ReactNode;
+  /** Every sector and page as plain links. */
+  list?: ReactNode;
+  /** The wiki's latest health snapshot. */
+  health?: ReactNode;
 }
 
 function Section({ title, children, defaultOpen = true }: { title: string; children: ReactNode; defaultOpen?: boolean }) {
@@ -179,6 +183,8 @@ export function GraphSidebar({
   onBrief,
   layers,
   minimap,
+  list,
+  health,
 }: Props) {
   const toggle = (tag: string) => {
     const next = new Set(activeTags);
@@ -230,6 +236,12 @@ export function GraphSidebar({
           <div className="side-minimap">{minimap}</div>
         </Section>
       )}
+      {list && (
+        <Section title="Browse as a list" defaultOpen={false}>
+          {list}
+        </Section>
+      )}
+      {health && <Section title="Wiki health">{health}</Section>}
     </aside>
   );
 }

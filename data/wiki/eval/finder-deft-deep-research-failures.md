@@ -47,3 +47,4 @@ An appendix case shows a verification failure: an agent listed references with i
 - [[MedBrowseComp]] — related
 - [[LLM-as-Judge Evaluation]] — related (a same-vendor judge and reference)
 - [[GAIA General-Assistant Benchmark]] — related
+- [[Deep Research Agent Systems]] — related (the systems whose reports were coded)

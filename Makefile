@@ -41,6 +41,7 @@ dev:
 	@if lsof -nP -iTCP:8000 -sTCP:LISTEN >/dev/null 2>&1; then \
 		echo "port 8000 is in use (make app still running? docker compose stop librarian)"; exit 1; fi
 	@[ -d app/node_modules ] || $(MAKE) install-ui
+	@echo "open http://localhost:5173 (live UI; :8000 serves the last npm run build)"
 	@trap 'kill 0' INT TERM EXIT; LIBRARIAN_API_TOKEN= $(MAKE) api & $(MAKE) ui & wait
 
 install-ui:

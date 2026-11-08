@@ -255,3 +255,6 @@ discipline — see [[Canary Testing for Permission Boundaries]].
 - [[Protocol-Driven Multi-Agent Collaboration]] — instance-of (the isolation boundary, mechanically)
 - [[Extract-and-Evaluate Monitoring]] — related (a transcript monitor feeding the guardrail layer)
 - [[Extreme-Risk Model Evaluation]] — related (the evaluation results that feed deployment and security decisions)
+- [[Skill Verification Levels and the Biconditional Check]] — instance-of (trust levels and approval for irreversible skill calls)
+- [[Tool Poisoning and Protocol-Level Attacks on Agents]] — instance-of (attacks through tool descriptions and agent-to-agent channels)
+- [[AIOS]] — related (an access manager at the kernel layer)

@@ -2,7 +2,7 @@
 title: Agentic RAG — Advanced Patterns
 tags: [rag, pattern]
 summary: Self-RAG vs CRAG distinction, Adaptive RAG complexity tiers, GraphRAG for relationship traversal, HyDE for lexical gap, Multi-Query RAG-Fusion, agentic latency budgets, A2A protocol mapping to LangGraph, and the production-readiness gate.
-updated: 2026-11-02
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/research/rag/agentic-rag-patterns.md
   - data/raw/agent-skills/advanced-rag-patterns/SKILL.md
@@ -11,6 +11,10 @@ sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--02-rag-retrieval--rag.md
   - data/raw/claude-docs/playground/docs/archived/agentic-rag-copilot-research.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--rag.md
+  - data/raw/papers/2026-11-06-guo-2026-when-retrieve-during-reasoning.md
+  - data/raw/papers/2026-11-06-dong-2025-talk-before-you-retrieve.md
+  - data/raw/papers/2026-11-06-he-2022-rethinking-retrieval.md
+  - data/raw/papers/2026-11-06-jiao-2025-hirag.md
 ---
 
 # Agentic RAG — Advanced Patterns
@@ -195,6 +199,23 @@ a system users do not trust has not shipped, regardless of its offline scores. I
 the metric that degrades first when an agent's failures are *unpredictable* rather than
 merely frequent — users can route around a known weakness, but not around an unreliable one.
 
+## Paper evidence: when to retrieve, and what to do before and after (2022-2026)
+
+All figures are self-reported by the papers, each on its own setup.
+
+- **Adaptive retrieval during reasoning (ReaLM-Retrieve, SIGIR 2026).** Retrieval fires only at reasoning steps where an uncertainty score is high. Setup: DeepSeek-R1-Distill-Qwen-32B, ColBERTv2, k=5, MuSiQue, HotpotQA and 2Wiki, 3 seeds. On MuSiQue it scored 71.2 F1 using 1.8 retrieval calls on average, while a fixed-interval baseline (IRCoT) scored 65.4 F1 using 3.4. Random triggering at the same call count scored 62.7. The gain over IRCoT grew with hops (+3.2, +5.8, +8.4 F1 for 2, 3 and 4 hops). It lost to single retrieve-then-read on 12% of questions, mostly simple 2-hop ones, which the authors read as a case for complexity routing.
+- **Pre-retrieval discussion (Discuss-RAG).** A recruiter assembles expert agents who discuss what knowledge the question needs (told not to answer it); a verifier distils the summary, which guides retrieval, and a post-retrieval decision agent accepts the chunks or triggers a fallback. Setup: MedRAG baseline, MedCPT retriever, gpt-3.5-turbo-0125, one number per cell. Accuracy rose on MMLU-Med 71.53 to 77.23, MedQA-US 62.45 to 66.85, BioASQ 58.61 to 75.28, PubMedQA 35.60 to 47.80.
+- **Rethinking with Retrieval (2022).** Sample several chain-of-thought paths, retrieve evidence per reasoning step, and pick the prediction best supported. No training. Setup: GPT-3 text-davinci-002, 10 samples. StrategyQA 77.73 against 73.36 for self-consistency (229 dev examples); per-step retrieval beat retrieving with the original question, and BM25 (77.73) beat DPR (58.52) for the Wikipedia step.
+- **Hierarchical-thought instruction tuning (HIRAG).** Train in three stages (filter, combine, RAG-specific reasoning), each with its own chain-of-thought format. Llama3-8B scored 66.6 on PopQA, 49.2 on HotpotQA and 27.8 on MuSiQue, zero-shot with fixed documents; a 1:2:2 data ratio lifted RGB-int from 48.0 (1:0:0) to 66.0 while RGB-noise stayed flat. It does not beat the large models everywhere (GPT-4o-mini scored 54.2 on HotpotQA).
+- **A-RAG** (three retrieval tools for an agent) and the finding that graph and workflow baselines did not consistently beat plain chunk RAG: see [[Graph-R1 Agentic GraphRAG]].
+
+## Limits
+
+- ReaLM-Retrieve's own method is tuned on its evaluation setup. Removing its efficiency components changes F1 by just 0.2 to 0.4 points (the extraction's reading of Table 6). The abstract's 10.1% is an absolute F1 figure, and the paper gives 47% fewer calls in one place and 57% in another; an o1 comparison is unverified and its table citation is wrong.
+- Discuss-RAG gives no seeds or significance test, and the motivating study is three hand-picked questions.
+- RR's Table 3 labels a column "Tabular" where the text says temporal; its temporal set has 169 examples, and a 2022 model was used.
+- HIRAG compares against public weights and prompts, with fixed documents per dataset.
+
 ## See Also
 - [[LangGraph BaseStore]] <!-- auto-linked -->
 - [[Librarian RAG Architecture]] <!-- auto-linked -->
@@ -207,3 +228,6 @@ merely frequent — users can route around a known weakness, but not around an u
 - [[RAG Interview Study Guide]] — prerequisite-for
 - [[RL for Retrieval Policies]] — extends (Self-RAG as a learned retrieval policy, alongside online RL and per-subtask modules)
 - [[RAG Architecture Selection]] — related (part of; the nine-architecture selection space these patterns sit inside, plus Fusion RAG)
+- [[Graph-R1 Agentic GraphRAG]] — instance-of (agentic retrieval over a graph, trained with RL)
+- [[FRAMES Benchmark]] — instance-of (a multi-step retrieval-planning benchmark)
+- [[Sufficient Context Autorater]] — related (a gate on whether retrieved context is enough)

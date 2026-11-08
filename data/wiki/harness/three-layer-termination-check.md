@@ -2,7 +2,7 @@
 title: Three-Layer Termination Check
 tags: [llm, agents, eval, pattern]
 summary: "A floor under 'verify' — static, runtime, and system checks run in order with each gating the next — because unit tests are blind by design to boundary defects and an agent left alone runs the fastest test and declares victory."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--05-verification-loops.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--01-what-a-harness-is.md
@@ -61,3 +61,7 @@ style**, and refactor only after the core behaviour passes all required layers.
 - [[Artifact Is Not Evidence: Push and Probe]] — related (layer 3 verifies behaviour, not the artifact)
 - [[Execution Boundaries and Guardrails]] — related
 - [[Long-Horizon Execution]] — related
+- [[TestGen-LLM Filter Cascade]] — related
+- [[AlphaCodium Flow Engineering]] — related
+- [[InfCode Adversarial Test-Patch Refinement]] — related
+- [[Paper-Replication Completion Gate]] — related

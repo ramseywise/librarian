@@ -2,9 +2,10 @@
 title: Graph Machine Learning and GNNs
 tags: [graph, foundations, concept]
 summary: "Graph ML predicts the edges and labels a knowledge graph doesn't have — node classification, link prediction, community detection, graph classification — and since nodes aren't i.i.d., domain-informed features often beat generic embeddings; a predicted edge is a claim, written with confidence and kept out of default traversals."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--13-graph-ml-and-gnns.md
+  - data/raw/papers/2026-11-06-guo-2025-node-as-agent.md
 ---
 
 # Graph Machine Learning and GNNs
@@ -99,8 +100,13 @@ evaluate on held-out edges and watch the false-positive rate — a false link, l
 gets followed confidently by every later traversal. See
 [[Knowledge Graph as Shared Agent Memory]].
 
+## Node-as-agent classification (one preprint, self-reported)
+
+ReaGAN (Guo et al., arXiv 2508.00429 v5) treats each node as an agent with memory and a frozen LLM planner (Qwen2.5-14B-Instruct). Per layer, the planner picks local aggregation over neighbours, global aggregation by retrieval over a structure-free text index, both, or no action, and predicts once after at most three layers. On 60/20/20 splits it scored 84.95 on Cora (GCN 84.71), 60.25 on Citeseer (GraphSAGE 78.24, MLP-2 76.25) and 43.80 on Chameleon (GPRGNN 67.48), so it matches supervised networks on one of three graphs. Showing label names hurt accuracy and the final design anonymises them; retrieval when fewer than two local examples exist helped on sparse Citeseer; cost was about 3.10 s per iteration. The extraction notes the baselines look weakly tuned, the few-shot setup is not matched to the supervised training split, only one LLM was run, no numeric ablations are given in the text, and Cora and Citeseer contamination is not discussed.
+
 ## See Also
 - [[Knowledge Graph Fundamentals and Cypher]] — extends
 - [[Knowledge Graph Entity Resolution]] — extends
 - [[Knowledge Graph as Shared Agent Memory]] — prerequisite-for
 - [[Knowledge Graph Retrieval]] — extends
+- [[Multi-Agent Topology Patterns]] — related (nodes acting as agents)

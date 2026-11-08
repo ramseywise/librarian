@@ -2,7 +2,7 @@
 title: Reward Hacking and Overoptimization
 tags: [foundations, llm, eval, concept]
 summary: "The three failure modes of optimizing against a learned reward proxy — reward hacking, the inverse-U overoptimization curve against KL distance, and the ~15% alignment tax on academic NLP benchmarks."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
@@ -100,3 +100,4 @@ and the most commonly missed).
 - [[Constitutional AI and RLAIF]] — extends (an explicit constitution makes the alignment target auditable)
 - [[Outcome vs Process Reward Models]] — extends (the same proxy problem at step level, and why verifiable outcomes reduce it)
 - [[RLVP — Verifiable Path Penalties]] — extends (penalizing verifier gaming in agent RL)
+- [[Role Anchor and Role Drift]] — related (modules drifting under final-answer rewards)

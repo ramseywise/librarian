@@ -2,7 +2,7 @@
 title: Proposer-Reviewer and Sidecar Gating
 tags: [llm, agents, infra, comparison]
 summary: "Two shapes for putting a second model in front of risky tool calls when no human can be in the loop — a serial proposer–reviewer that sees intent, and a parallel sidecar that sees only structured call fields — plus the design rules both need."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
@@ -54,3 +54,6 @@ can write down; a reviewer covers the judgement calls you cannot.
 - [[Lethal Triad]] — related
 - [[Verification Loops]] — alternative-to (output review vs action review)
 - [[Canary Testing for Permission Boundaries]] — related (test that the gate fires)
+- [[PreAct]] — related (a verify-before-store gate on a compiled routine)
+- [[InfCode Adversarial Test-Patch Refinement]] — related
+- [[TestGen-LLM Filter Cascade]] — related

@@ -2,7 +2,7 @@
 title: RAG Retrieval Strategies
 tags: [rag, concept]
 summary: Comprehensive reference for chunking, embedding, vector store, and hybrid search strategies — component choices, tradeoffs, and swap paths used in the Librarian pipeline.
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/articles/2026-07-19-rag-deeplearning.md
   - data/raw/claude-docs/playground/docs/archived/rag-tradeoffs.md
@@ -298,6 +298,11 @@ conn.execute("""
 This avoids pre-ingesting all artists upfront and handles the corpus freshness gap naturally.
 
 ## See Also
+- [[RAG Survey Taxonomies]] — related (phase and loop-type vocabulary)
+- [[Pairwise Ranking Prompting (PRP)]] — instance-of (LLM reranking by pairwise comparison)
+- [[RankZephyr Listwise Reranker Distillation]] — instance-of (an open listwise reranker)
+- [[AgentIR Reasoning-Aware Retrieval]] — instance-of (retrieval conditioned on an agent's reasoning)
+- [[STAIR ToC-Constrained Generation Retrieval]] — instance-of (generation constrained by a table of contents)
 - [[RAG Knowledge Preparation]] <!-- backfill -->
 - [[LangGraph CRAG Pipeline]]
 - [[RAG Reranking]]
@@ -320,3 +325,7 @@ This avoids pre-ingesting all artists upfront and handles the corpus freshness g
 - [[Contextual Retrieval]] — extends (index-time chunk prefixes for both BM25 and dense paths)
 - [[Index-Time Distillation]] — extends (aggregation and rule-induction questions chunk retrieval cannot answer)
 - [[Sentence Embeddings as Features for Classical ML]] — related (dense encoders as features, cost and model-retirement trade-offs)
+- [[Cache-Augmented Generation]] — alternative-to (preloading a small corpus instead of retrieving)
+- [[LongRAG Long Retrieval Units]] — instance-of (long retrieval units that shift work from the retriever to the reader)
+- [[RA-DIT Dual Instruction Tuning]] — instance-of (tuning the retriever and the generator separately)
+- [[RAG vs Long Context: Evaluation Evidence]] — related (when retrieval beats or loses to a long window)

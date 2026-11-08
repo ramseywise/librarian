@@ -101,3 +101,5 @@ exclusion rule fails open, and it fails silently.
 - [[Webhook Handler Idempotency]] — alternative-to (inbound HTTP surface with the same authenticate-the-caller obligation)
 - [[Curl-Bridge Context Injection]] — alternative-to (proxy-side allowlist + identity overwrite instead of tools)
 - [[Lethal Triad]] — related (MCP supply-chain risks and the structural defence)
+- [[Tool Poisoning and Protocol-Level Attacks on Agents]] — instance-of (tool-description poisoning and chained calls)
+- [[MCP Server Architecture Patterns]] — related

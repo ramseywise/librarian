@@ -78,3 +78,4 @@ assuming them.
 - [[Harness Engineering]] — related (single-agent control versus cross-boundary standards)
 - [[Multi-Agent Orchestration Patterns]] — instance-of (A2UI applied in a working system)
 - [[A2UI Protocol]] — extends (A2UI message model, versions and failure modes in depth)
+- [[Agent Communication Protocol Taxonomy]] — related (a nine-protocol classification and layered-stack forecast)

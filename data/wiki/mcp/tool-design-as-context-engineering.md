@@ -124,3 +124,4 @@ the authors concede scores across tools are not comparable. The models predate n
 - [[Tool Design as Harness Surface]] — related (same tools seen as a harness contract rather than a context cost)
 - [[Curl-Bridge Context Injection]] — alternative-to (instructions to curl instead of tool definitions)
 - [[Dynamic Tool Discovery]] — extends
+- [[MCP Server Architecture Patterns]] — related (tool-count study)

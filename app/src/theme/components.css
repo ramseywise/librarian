@@ -126,6 +126,13 @@
 /* React Flow's panels are absolutely placed on its canvas; this one sits in the column. */
 .side-minimap .react-flow__panel { position: static; margin: 0; transform: none; }
 .side-minimap .graph-minimap { background: var(--surface); border: 1px solid var(--border-strong); border-radius: 5px; overflow: hidden; }
+.side-minimap-empty {
+  width: 240px; height: 150px; display: grid; place-items: center; padding: var(--space-3);
+  text-align: center; font-size: var(--fs-sm); color: var(--text-muted);
+  border: 1px dashed var(--border-strong); border-radius: 5px;
+}
+.side-layers { border: 0; margin: 0; padding: 0; min-width: 0; display: contents; }
+.side-layers:disabled > * { opacity: 0.5; }
 .graph-status {
   position: absolute;
   top: var(--space-5);

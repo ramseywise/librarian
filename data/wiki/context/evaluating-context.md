@@ -2,7 +2,7 @@
 title: Evaluating Context
 tags: [context, eval, concept]
 summary: "Context evals ask whether the right material reached the window and was used — instrument the failure chain (exists → retrieved → survived → used), measure each lever with its own metric, sweep length and position to find the effective window, and set the budget by component ablation; tokens per successful task is a quality metric."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--12-evaluating-context.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--06-memory.md
@@ -100,3 +100,4 @@ accuracy: a pipeline that matches quality with half the context is better.
 - [[Context Failure Modes]] — extends (diagnose qualitatively, then measure)
 - [[Paired Eval Comparison]] — prerequisite-for
 - [[Memory Store Operations]] — extends (memory hit rate in production)
+- [[SummHay Benchmark]] — instance-of

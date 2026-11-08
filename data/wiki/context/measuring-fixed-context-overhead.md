@@ -2,7 +2,7 @@
 title: Measuring Fixed Context Overhead
 tags: [context-management, context, reference]
 summary: "The fixed token cost of a coding-agent session can be read directly from its transcript: cache_creation_input_tokens on the first assistant turn of a cold session (cache_read == 0). Comparing that figure with the byte count of the repo-controlled prefix splits overhead into a configurable part and a harness floor. In one measurement the declared content was only about half the observed figure."
-updated: 2026-10-17
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/guacamayo/docs/plans/GUA-44-research.md
   - data/raw/repos/guacamayo/.claude--docs--plans--GUA-44-research.md
@@ -59,3 +59,4 @@ ever becomes live is a nullable column on the session fact store.
 - [[Prefix Caching]] — prerequisite-for (the cache-write and cache-read usage fields this reads)
 - [[Why Context Is Finite]] — related (the fixed prefix is budget unavailable to the task)
 - [[Rate Metrics Measure the Logger]] — related (the same session-fact dashboard and its regime caveats)
+- [[Catastrophic Remembering in Context Files]] — related (growth of the fixed layer in real repositories)

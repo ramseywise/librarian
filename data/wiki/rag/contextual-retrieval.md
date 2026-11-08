@@ -2,7 +2,7 @@
 title: Contextual Retrieval
 tags: [rag, context, pattern]
 summary: "Have an LLM write a short situating prefix for every chunk at index time and index prefix + chunk — it repairs the context chunking cut away for both BM25 and embeddings (reported top-20 failures −49%, −67% with a reranker), and prompt caching of the parent document makes indexing cheap."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--04-retrieval.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--06-memory.md
@@ -58,3 +58,4 @@ It is an ingestion-side fix, consistent with *ingestion sets the ceiling*
 - [[Context-Aware Compression]] — alternative-to
 - [[Index-Time Distillation]] — alternative-to
 - [[BM25 and the Lexical Gap]] — prerequisite-for
+- [[LongRAG Long Retrieval Units]] — alternative-to (enlarges the retrieval unit instead of adding context to small chunks)

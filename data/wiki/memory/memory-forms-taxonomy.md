@@ -2,7 +2,7 @@
 title: Memory Forms Taxonomy
 tags: [memory, llm, reference]
 summary: "The Forms/Functions/Dynamics survey framing — memory as token, parametric, or latent substrate; factual, experiential, or working purpose — and why almost all agent memory work occupies one cell of a much larger space."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
@@ -108,3 +108,8 @@ choose how much of them to hand the model.
 - [[Memory-Augmented Conversational RAG]] — related (the retrieval-timing decision)
 - [[Self-Learning Agents]] — instance-of (experiential memory, approximated by reflection)
 - [[Prefix Caching]] — instance-of (latent memory reuse, in production for cost)
+- [[ChatDB SQL Symbolic Memory]] — instance-of (symbolic memory in SQL tables)
+- [[MeMo Memory as a Model]] — instance-of (memory held in a model's parameters)
+- [[Jev-Mem System-One Memory Control]] — instance-of (a fast controller over memory operations)
+- [[Delta-Mem Fixed-Size State Memory]] — instance-of (latent state memory beside a frozen model)
+- [[Offline Recurrence Sleep for Language Models]] — instance-of (latent memory consolidated offline)

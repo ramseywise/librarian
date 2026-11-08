@@ -65,6 +65,7 @@ import {
 import { useTheme } from "../hooks/useTheme";
 import { domainColor } from "../theme/domains";
 import { HealthStrip } from "./HealthStrip";
+import { AtlasList } from "./atlas/AtlasList";
 import "../theme/atlas.css";
 import type { EdgeVisibility, LayoutMode, SelectedNode, WikiNodeData } from "../types";
 
@@ -692,8 +693,10 @@ function WikiGraphInner({
     </div>
   );
 
-  const layers = !onAtlas && (
-    <>
+  // Layers and the minimap act on the page canvas, not the atlas. They stay in the sidebar on the
+  // atlas (disabled, with the minimap's room held) so opening a domain doesn't reflow the panel.
+  const layers = (
+    <fieldset className="side-layers" disabled={onAtlas} title={onAtlas ? "Open a domain or course to use layers" : undefined}>
       <EdgeTogglePanel
         visibility={edgeVis}
         onChange={setEdgeVis}
@@ -706,11 +709,13 @@ function WikiGraphInner({
         loadingUmap={loadingUmap}
         umapUnavailable={layout === "umap-semantic" && umapFailed}
       />
-    </>
+    </fieldset>
   );
   // Outside <ReactFlow>, inside its provider: it reads the same store. The theme's colours are
   // passed in because its CSS variables are scoped to the canvas.
-  const minimap = !onAtlas && !curriculumPending && (
+  const minimap = onAtlas || curriculumPending ? (
+    <div className="side-minimap-empty">Open a domain or course to see the minimap</div>
+  ) : (
     <MiniMap
       nodeColor={miniMapColor}
       className="graph-minimap"
@@ -741,12 +746,22 @@ function WikiGraphInner({
         activeTags={activeTags}
         onChange={onActiveTagsChange}
         onBrief={onBrief}
-        layers={layers || undefined}
-        minimap={minimap || undefined}
+        layers={layers}
+        minimap={minimap}
+        list={
+          hasNodes ? (
+            <AtlasList
+              sectors={sectors.filter((s) => s.pageIds.length > 0)}
+              grouping={curriculumPending ? "domain" : grouping}
+              titleOf={(id) => pageInfo.get(id)?.title ?? id}
+              matches={atlasLit ?? atlasMatches}
+            />
+          ) : undefined
+        }
+        health={<HealthStrip />}
       />
 
       <div className="graph-canvas">
-        <HealthStrip />
         {/* Connection status, and how much of the wiki is on the canvas */}
         <div className={`graph-status ${ready ? "graph-status--live" : "graph-status--offline"}`}>
           {statusText}

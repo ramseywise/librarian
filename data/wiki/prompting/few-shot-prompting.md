@@ -2,7 +2,7 @@
 title: Few-Shot Prompting
 tags: [prompting, llm, concept]
 summary: Providing worked examples before the task — the most reliable lever for steering output format, tone and structure without fine-tuning, but examples teach more than intended (distribution, order, range), so use them only for what is genuinely non-obvious.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
@@ -109,3 +109,6 @@ intermediate steps and an eval shows they help.
 - [[DSPy]] — extends (automated example selection and ordering)
 - [[Prompting Technique Selection]] — extends
 - [[Evaluating Prompts]] — contradicts (zero-shot CoT beat few-shot CoT)
+- [[LongICLBench and Many-Shot ICL Scaling]] — extends
+- [[Mixtures of In-Context Learners]] — extends
+- [[Implicit Weight-Patch Theory of In-Context Learning]] — related

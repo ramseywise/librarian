@@ -88,3 +88,4 @@ selectively injected is the same pattern as structured memory ([[Memory as Conte
 - [[Context Compaction]] — prerequisite-for (state schemas are the compaction target)
 - [[Agent Status Bar]] — instance-of
 - [[Protocol Shells]] — extends (an input schema with the process made explicit)
+- [[SKILL.state]] — instance-of (schema-checked state carried between skill steps)

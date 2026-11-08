@@ -2,8 +2,9 @@
 title: Context Anatomy
 tags: [context, llm, agents, concept]
 summary: What goes in the window and in what order — system-prompt altitude, the five layers organized by stability rather than topic, and stable-before-dynamic ordering for cache prefix matching.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
+  - data/raw/papers/2026-11-06-hua-2025-context-engineering-2-0.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--02-context-anatomy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--02-context-anatomy.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--context-management.md
@@ -137,6 +138,8 @@ string: `C = A(c_instr, c_know, c_tools, c_mem, c_state, c_query)` — instructi
 retrieved knowledge, tool definitions, persistent memory, dynamic state, the query. **Context
 engineering is designing `A`** (selection, ordering, formatting) under a token budget
 ([[Context Window Budgeting]]), not writing any single component.
+
+A 2025 position paper (Hua et al., "Context Engineering 2.0") frames context as the union of characterisations of the entities relevant to an interaction, and context engineering as reducing the entropy of human intent into forms machines can use. It proposes a minimal-sufficiency principle (store only what a task needs, since value lies in sufficiency, not volume). It reports no experiments, and the few figures it quotes (such as degraded coding performance past about half-full windows) are second-hand from blogs with no setup given, so treat it as framing only.
 
 ### Examples: How Many, Which Ones
 - **Two to five** examples capture most of the gain; measure before adding more.

@@ -2,7 +2,7 @@
 title: Lethal Triad
 tags: [llm, agents, infra, concept]
 summary: "Private data plus untrusted content plus an external communication channel makes prompt injection an exfiltration path — persistent memory is a fourth amplifier — and the reliable defence is to cut a leg deterministically in the sandbox, not to filter the injection."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
@@ -62,3 +62,5 @@ Skills combined with network access are a specific instance — see
 - [[Proposer-Reviewer and Sidecar Gating]] — related
 - [[MCP Server Security Patterns]] — related (the server-author side of the same boundary)
 - [[Agent Credential Ceiling]] — related
+- [[Bad Memory File-Based Prompt Injection]] — instance-of (memory as the injection channel)
+- [[Tool Poisoning and Protocol-Level Attacks on Agents]] — instance-of (poisoned tool descriptions and retrieved documents)

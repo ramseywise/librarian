@@ -2,7 +2,7 @@
 title: Knowledge Graph Retrieval
 tags: [rag, llm, concept]
 summary: "Vector search finds things that sound like your question; graphs find things that are connected to your answer — but traversal depth compounds error, which makes entity resolution the load-bearing sub-problem."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/articles/2026-07-19-knowledge-graphs-for-rag.md
   - data/raw/claude-docs/playground/docs/support-agents/accounting-knowledge.md
@@ -11,6 +11,8 @@ sources:
   - data/raw/claude-docs/project-g/docs/support-agents/accounting-knowledge.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--11-kg-rag-and-text-to-cypher.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--graph-engineering.md
+  - data/raw/papers/2026-11-06-klein-2025-ark-v1.md
+  - data/raw/papers/2026-11-06-dong-2026-wfm.md
 ---
 
 # Knowledge Graph Retrieval
@@ -165,6 +167,19 @@ From a knowledge-graphs-for-RAG short course:
   summaries, local questions from entity neighbourhoods — the synthesis-across-many-entities
   case flat vector search cannot serve.
 
+## Paper evidence: agents and learned retrievers over graphs (2025-2026)
+
+All figures are self-reported by preprints.
+
+- **ARK-V1, a non-fine-tuned graph agent.** It loops through choosing an anchor entity, choosing an outgoing relation, retrieving triples and reasoning, then summarises and resets its context so only the system prompt, the query and the running summary remain. Setup: the CoLoTa set of 200 binary tasks, with Qwen3-30B sampled at temperature 0.7 over 30 runs: answer rate 76.98%, conditional accuracy 91.22%, overall 70.20%. The o1 chain-of-thought baselines (65 to 68% overall) are figures reported externally, so the comparison is not like for like. Small backbones abstain heavily (Qwen3-8B answer rate 57.67%, overall 48.42%).
+- **WFM, a graph foundation model used as a retriever.** A text-augmented graph with dense passage nodes and a GAT-style encoder. Setup: 1,000 held-out questions per set, DeepSeek V4 Flash generator, DeepSeek V4 Pro judge. Accuracy in open and reject mode was 89.6 and 84.3 on HotpotQA, 90.2 and 82.4 on 2Wiki, and 69.8 and 52.6 on MuSiQue, ahead of Youtu-GraphRAG by 2.8 to 5.1 points. Replacing the passage-node graph with an entity-only graph cost 7.48 points of recall.
+- **Prompt-only GraphRAG against plain RAG.** A-RAG and Graph-R1 both report graph methods that rely on prompting underperforming or not consistently beating chunk RAG; see [[Graph-R1 Agentic GraphRAG]].
+
+## Limits of the paper evidence
+
+- WFM: the authors flag the new table cells and diagnostic sweeps as planning values they built, to be validated later, so the headline numbers are unverified. In its memory table the RHELM zero-shot full-context baseline (46.8) beats every retrieval method except WFM, and WFM without reflection (48.90) leads it by only 2.1. The ACM template is unfilled.
+- ARK-V1: one dataset with binary tasks; large-backbone rows are single runs at temperature 0 with no variance.
+
 ## See Also
 - [[Graph Engineering]] — extends
 - [[Knowledge Graph as Shared Agent Memory]] — prerequisite-for (the same structure used as write-path memory)
@@ -175,3 +190,7 @@ From a knowledge-graphs-for-RAG short course:
 - [[Knowledge Graph Entity Resolution]] — extends (the load-bearing sub-problem)
 - [[Knowledge Graph Fundamentals and Cypher]] — extends
 - [[Compiled-Prose KB vs Graph-Native Store]] — alternative-to
+- [[Graph-R1 Agentic GraphRAG]] — instance-of (an RL-trained agent over a hypergraph)
+- [[CorpusMap Entity Navigation for Agentic Search]] — alternative-to (entity navigation for an agent instead of a graph query)
+- [[STAIR ToC-Constrained Generation Retrieval]] — alternative-to (a document's table of contents as the retrieval structure)
+- [[GraphReader]] — instance-of

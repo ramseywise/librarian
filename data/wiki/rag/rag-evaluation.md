@@ -282,3 +282,6 @@ This is especially important for edge cases — judge prompts optimized on avera
 - [[Evaluating Context]] — extends (metrics per context lever, ablation and length/position sweeps beyond retrieval)
 - [[Experiment Tracking Schemas]] — instance-of (per-stage config capture is what makes component gates diffable)
 - [[Long-Form QA Evaluation Hurdles]] — related (controls showing a generator ignoring its retrievals)
+- [[SummHay Benchmark]] — instance-of (summarisation over a haystack with insight coverage and citation scoring)
+- [[Sufficient Context Autorater]] — instance-of (labelling whether retrieved context suffices to answer)
+- [[FRAMES Benchmark]] — instance-of (multi-hop factual questions scoring retrieval and reasoning together)

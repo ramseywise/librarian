@@ -304,6 +304,10 @@ afterward.
 - [[Recursive Self-Improvement]] — extends (the write boundary enforces generator/evaluator separation structurally)
 - [[Knowledge Graph as Shared Agent Memory]] — extends (isolated verifier context as the structural fix for self-agreement bias)
 - [[Graph Engineering]] — related (generate-then-verify is the highest-yield first graph)
+- [[TestGen-LLM Filter Cascade]] — instance-of
+- [[AlphaCodium Flow Engineering]] — instance-of
+- [[Paper-Replication Completion Gate]] — instance-of
+- [[InfCode Adversarial Test-Patch Refinement]] — instance-of
 - [[Scan-Floor Guard Against Silent No-Op Checks]] — extends (a verifier must prove it exercised something)
 - [[Artifact Is Not Evidence: Push and Probe]] — extends (verify the behaviour, not the artifact)
 - [[Build the Checker Before the Generator]] — prerequisite-for
@@ -320,3 +324,6 @@ afterward.
 - [[LLM-as-a-Verifier]] — related (a learned verifier used to pick the best of N candidates)
 - [[InterCode]] — related
 - [[MINT Multi-Turn Benchmark]] — related
+- [[Delegation Ceiling and Posterior Distortion]] — related
+- [[PreAct]] — instance-of (a verify-before-store gate on compiled replay programs)
+- [[Budget Tracker and BATS]] — instance-of (a verifier that returns SUCCESS, CONTINUE or PIVOT)

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Atlas } from "../Atlas";
+import { AtlasList } from "../AtlasList";
 import { layoutRing, sectorsOf, type AtlasPage } from "../../../utils/atlas";
 
 afterEach(() => {
@@ -82,12 +83,19 @@ describe("Atlas", () => {
     expect(onOpenSector).toHaveBeenCalledWith("rag");
   });
 
-  it("offers everything as plain links without the canvas", () => {
+  it("zooms in and resets from its buttons", () => {
     setup();
-    const list = screen.getByText("Browse as a list").closest("details")!;
-    list.open = true;
-    fireEvent(list, new Event("toggle"));
-    const sector = within(list).getByText("eval").closest("details")!;
+    const out = screen.getByRole("button", { name: "Zoom out" });
+    expect(out).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    expect(out).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "Reset" }));
+    expect(out).toBeDisabled();
+  });
+
+  it("offers everything as plain links without the canvas", () => {
+    render(<AtlasList sectors={sectors} grouping="domain" titleOf={(id) => info.get(id)?.title ?? id} matches={null} />);
+    const sector = screen.getByText("eval").closest("details")!;
     sector.open = true;
     fireEvent(sector, new Event("toggle"));
     expect(within(sector).getByRole("link", { name: "Title eval-0" })).toHaveAttribute(

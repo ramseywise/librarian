@@ -141,3 +141,9 @@ store.get(namespace=("agent", agent_name, user_id), key="history")
 - [[LangGraph BaseStore]]
 - [[Summarization Node]]
 - [[HistoryCondenser]]
+- [[MemWalker Summary-Tree Navigation]] — instance-of
+- [[Scroll Event Log and Eviction Index]] — instance-of
+- [[PRO-LONG Programmatic Memory]] — instance-of
+- [[Agent Cognitive Compressor]] — related (bounded schema-governed working state)
+- [[OCR-Memory Optical Context Retrieval]] — related (episodic history retrieved from rendered images)
+- [[LM2 Large Memory Models]] — related (memory bank inside the model)

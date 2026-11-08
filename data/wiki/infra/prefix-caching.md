@@ -2,7 +2,7 @@
 title: Prefix Caching
 tags: [llm, context-management, infra, concept]
 summary: Claude's automatic KV cache reuse for repeated prompt prefixes — cuts latency and cost by 90% for static system prompts and long tool schemas.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
@@ -113,3 +113,5 @@ tokens, so nothing was ever cached.
 - [[Fixture Eval Blind to the Swapped Component]] — related (the gate that could not detect a regression from the prompt reorder)
 - [[Measuring Fixed Context Overhead]] — extends (first-turn cache write as a fixed-overhead proxy)
 - [[Cache-Stable Context Layout]] — extends (cache breakers and boundary ordering at the context-assembly layer)
+- [[LazyLLM Dynamic Token Pruning]] — related (changes which tokens are kept per layer, a different lever from cache reuse)
+- [[Cache-Augmented Generation]] — instance-of (a preloaded corpus whose key-value cache is reused across queries)

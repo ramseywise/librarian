@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { Glossary, GlossaryTerm } from "../types";
 import { apiFetch } from "../utils/api";
+import { useRevisionFetch } from "./useRevisionFetch";
 
 /**
  * The glossary and where each term is mentioned; null until both answer. `revision` changes with
@@ -12,31 +13,24 @@ export function useGlossary(revision: unknown, enabled: boolean): Glossary | nul
   const [glossary, setGlossary] = useState<Glossary | null>(null);
   const lastBody = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (!enabled) return;
-    let cancelled = false;
-    async function load() {
-      try {
-        const [terms, mentions] = await Promise.all([apiFetch("/api/glossary"), apiFetch("/api/glossary/mentions")]);
-        if (!terms.ok || !mentions.ok) return;
-        const [termsText, mentionsText] = await Promise.all([terms.text(), mentions.text()]);
-        if (cancelled) return;
-        const body = termsText + mentionsText;
-        if (body === lastBody.current) return;
-        lastBody.current = body;
-        setGlossary({
-          terms: (JSON.parse(termsText) as { terms: GlossaryTerm[] }).terms,
-          mentions: JSON.parse(mentionsText) as Record<string, string[]>,
-        });
-      } catch {
-        // Keep what we have; the next graph payload retries.
-      }
+  const load = useCallback(async (alive: () => boolean): Promise<void> => {
+    try {
+      const [terms, mentions] = await Promise.all([apiFetch("/api/glossary"), apiFetch("/api/glossary/mentions")]);
+      if (!terms.ok || !mentions.ok) return;
+      const [termsText, mentionsText] = await Promise.all([terms.text(), mentions.text()]);
+      if (!alive()) return;
+      const body = termsText + mentionsText;
+      if (body === lastBody.current) return;
+      lastBody.current = body;
+      setGlossary({
+        terms: (JSON.parse(termsText) as { terms: GlossaryTerm[] }).terms,
+        mentions: JSON.parse(mentionsText) as Record<string, string[]>,
+      });
+    } catch {
+      // Keep what we have; the next graph payload retries.
     }
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [revision, enabled]);
+  }, []);
+  useRevisionFetch(load, revision, enabled);
 
   return glossary;
 }

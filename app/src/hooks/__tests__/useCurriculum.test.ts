@@ -39,6 +39,22 @@ describe("useCurriculum", () => {
     expect(result.current).toBe(first);
   });
 
+  it("keeps a slow answer when the revision changes mid-request, then fetches once more", async () => {
+    let release!: () => void;
+    const gate = new Promise<void>((r) => (release = r));
+    const fetchMock = vi.fn(async () => {
+      await gate;
+      return new Response(body(false));
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const { result, rerender } = renderHook(({ rev }) => useCurriculum(rev, true), { initialProps: { rev: 1 } });
+    rerender({ rev: 2 });
+    rerender({ rev: 3 });
+    release();
+    await waitFor(() => expect(result.current).not.toBeNull());
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+  });
+
   it("keeps the last answer when a refetch fails", async () => {
     stubFetch(body(false), null);
     const { result, rerender } = renderHook(({ rev }) => useCurriculum(rev, true), { initialProps: { rev: 1 } });

@@ -2,7 +2,7 @@
 title: Coding-Agent Search and Edit Schemes
 tags: [llm, agents, comparison]
 summary: "The coarse-to-fine search ladder (glob, grep, semantic index, LSP) and five file-editing schemes compared — old→new string as the predictable default, start/end anchors as the economical compromise, and why line ranges fail without a live line map."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--02-harness-anatomy.md
@@ -50,3 +50,5 @@ contain them fail invisibly. See parameter fidelity in [[Tool Design as Harness 
 - [[Tool Design as Harness Surface]] — instance-of
 - [[ACI (Agent-Computer Interface)]] — instance-of (edit-tool design as interface design)
 - [[Harness Anatomy]] — related (part of; bash and the minimal coding kit)
+- [[OpenDev Terminal Coding Agent]] — related (nine-pass edit matcher)
+- [[DeepCode Information-Flow Management]] — related

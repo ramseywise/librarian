@@ -2,7 +2,7 @@
 title: Tool Design as Harness Surface
 tags: [llm, agents, mcp, concept]
 summary: "Tools are designed for a reader with no docs and no follow-up question — capability form and granularity, the five-section contract whose negative sections do the work, parameter fidelity, output discipline, and the four gating questions that decide confirmation, retry, and serialization."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--03-tool-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
@@ -254,3 +254,8 @@ task ID `get_status` / `cancel` verbs, and give event-trigger tools precise filt
 - [[Lethal Triad]] — related (MCP supply-chain risk)
 - [[Tool Definitions as Prompts]] — prerequisite-for (how a single definition is rendered into and read from the prompt)
 - [[Agent Deployment Anti-Patterns]] — instance-of (namespacing and tool consolidation for #2)
+- [[Play2Prompt]] — instance-of (tool instructions improved by self-play)
+- [[Trace-Free+ Tool Description Rewriting]] — instance-of (description rewriting without traces)
+- [[APIGen]] — related (verified function-calling training data)
+- [[Harness-1 State-Externalizing Search Agent]] — related (tool surface for a search agent)
+- [[AutoHarness Synthesized Code Harness]] — related

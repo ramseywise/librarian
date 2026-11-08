@@ -293,6 +293,7 @@ Atomic pages: [[Harness Subsystem Attribution]] · [[Dynamic Tool Discovery]] ·
 [[Quality Document]] · [[Deep Agent Pillars]]
 
 ## See Also
+- [[Deep Research Agent Systems]] — instance-of (search agents as a harness class)
 - [[Spec, Verifier, Environment Layering]] — extends (a practitioner framing of the same harness as spec + verifier + workshop)
 - [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->
 - [[Prompt Engineering]] <!-- auto-linked -->
@@ -307,3 +308,20 @@ Atomic pages: [[Harness Subsystem Attribution]] · [[Dynamic Tool Discovery]] ·
 - [[Harness Subsystem Attribution]] — extends (the skill-issue reframe as a diagnostic procedure)
 - [[Deep Agent Pillars]] — related (the architecture-level view of the same system)
 - [[Harness-IF]] — related (instruction following by surface)
+- [[LongHarness Evidence State]] — instance-of (persistent evidence and conclusion state outside the history)
+- [[Play2Prompt]] — instance-of (tool instructions as an optimisation target)
+- [[Trace-Free+ Tool Description Rewriting]] — instance-of
+- [[AIOS]] — related (a kernel under agent frameworks)
+- [[AutoHarness Synthesized Code Harness]] — instance-of
+- [[Harness Continual Learning]] — instance-of
+- [[Harness Updating vs Harness Benefit]] — instance-of
+- [[Natural-Language Agent Harnesses]] — instance-of
+- [[Harness Effect on Token Economics]] — instance-of
+- [[Model or Harness Failure Taxonomy]] — instance-of
+- [[AGENTS.md Context File Evaluation]] — instance-of
+- [[HERMES Dev-Primitives]] — instance-of
+- [[Prime Agent State Hierarchy]] — instance-of
+- [[JAZ Invoke Loop]] — instance-of
+- [[OpenDev Terminal Coding Agent]] — instance-of
+- [[CORAL LLM-Native Recommender Harness]] — instance-of
+- [[DeepCode Information-Flow Management]] — instance-of

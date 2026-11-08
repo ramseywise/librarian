@@ -2,7 +2,7 @@
 title: Harness Maturity and Failure Modes
 tags: [llm, agents, infra, reference]
 summary: "A five-stage maturity ladder, the six-stage per-task pipeline, and the five ways teams fool themselves — the first of which hides the other four — plus the two records a mature harness keeps and the silent builder gotchas of harness runtimes."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--08-maturity-and-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--08-maturity-and-failure-modes.md
@@ -244,3 +244,5 @@ calcifying** — see [[Iterative Harness Simplification]].
 - [[Runtime vs Process Observability]] — extends
 - [[Quality Document]] — extends
 - [[Harness Subsystem Attribution]] — related (diagnosing which subsystem a failure belongs to)
+- [[CORAL LLM-Native Recommender Harness]] — related
+- [[Harness Updating vs Harness Benefit]] — related

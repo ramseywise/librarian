@@ -188,3 +188,6 @@ See Hypernova MCP for the full production deployment of this pattern.
 - [[REST-First, MCP as Adapter]] — extends (MCP servers as thin adapters over versioned REST)
 - [[Dynamic Tool Discovery]] — extends (loading tool schemas on demand once servers multiply)
 - [[LiveMCP-101]] — related (a benchmark of agents using live MCP tools)
+- [[MCP Server Architecture Patterns]] — instance-of (five server patterns and a tool-count budget)
+- [[Alita]] — related (generated tool scripts packaged as MCPs)
+- [[Agent Communication Protocol Taxonomy]] — related

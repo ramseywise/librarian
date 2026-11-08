@@ -2,7 +2,7 @@
 title: CRAG Retry Logic
 tags: [rag, langgraph, concept]
 summary: The confidence-gated conditional back-edge in a CRAG pipeline that re-enters retrieval when the reranker's top score falls below threshold — preventing low-confidence answers from reaching the user.
-updated: 2026-10-17
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
@@ -69,3 +69,4 @@ Each retry adds: ~100ms Haiku reformulation + ~150ms retrieval + ~300ms rerankin
 - [[Prompted Reflection vs Graph-Gated CRAG]] — extends (prompted tool loop vs explicit gates, and what the loop measurably buys)
 - [[Borderline-Band Sufficiency Probe]] — extends (hybrid score + LLM sufficiency routing)
 - [[Hedging Belongs in the Gate, Not the Answer]] — related
+- [[Sufficient Context Autorater]] — alternative-to (labels sufficiency and abstains rather than retrying)

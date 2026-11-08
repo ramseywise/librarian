@@ -38,3 +38,5 @@ Answers go stale between maintainer updates, and only Google Search, one query p
 - [[TruthfulQA]] — alternative-to (a factuality benchmark built around imitative falsehoods rather than currency)
 - [[FACTS Leaderboard]] — alternative-to (a four-part factuality suite that includes a search sub-benchmark)
 - [[UQ Unsolved Questions Benchmark]] — related (a versioning rule for a semi-live question set)
+- [[Sufficient Context Autorater]] — related (one of the benchmarks its sufficiency labels were applied to)
+- [[FRAMES Benchmark]] — related (a later date-anchored multi-hop benchmark)

@@ -2,7 +2,7 @@
 title: Multi-Agent Topology Patterns
 tags: [graph, langgraph, agents, comparison]
 summary: "The five recurring graph shapes (generate-then-verify, supervisor, fan-out/fan-in, subgraph, handoff), what each costs and how each fails, plus the two design questions underneath them: is context shared, and who decides what runs next."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--05-topology-patterns.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--03-state-and-reducers.md
@@ -163,3 +163,9 @@ bytes**, so every interface needs a contract the receiver can check.
 - [[Harness Orchestration]] — extends
 - [[Send API Fan-out]] — instance-of
 - [[n8n AI Workflow Builder]] — instance-of
+- [[Coordination Network Measurement in Multi-Agent Coding]] — extends
+- [[Aegean Stability-Horizon Consensus]] — instance-of
+- [[Conductor Learned Orchestration]] — instance-of
+- [[SAT Self-Organizing Agent Teams]] — instance-of
+- [[Agent Primitives Latent Composition]] — instance-of
+- [[CAID Centralized Asynchronous Isolated Delegation]] — instance-of

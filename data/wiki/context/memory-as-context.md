@@ -2,7 +2,7 @@
 title: Memory as Context
 tags: [context, memory, llm, agents, concept]
 summary: Memory is not a sibling pillar of context engineering but the mechanism by which context outlives a window — every memory decision is a decision about what occupies a future context window.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--06-memory.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--05-memory-as-context.md
@@ -245,3 +245,7 @@ answer traces to the memory that caused it. See [[Evaluating Context]].
 - [[Memory Lifecycle]] — extends
 - [[Contextual Retrieval]] — extends (the retrieved tier of two-tier memory)
 - [[Memory-Augmented Conversational RAG]] — extends
+- [[Agent Cognitive Compressor]] — instance-of (one bounded state rewritten each turn)
+- [[Memory Curse Expanded Recall]] — related
+- [[Scroll Event Log and Eviction Index]] — instance-of
+- [[PRO-LONG Programmatic Memory]] — instance-of

@@ -2,13 +2,14 @@
 title: RAG Knowledge Preparation
 tags: [rag, infra, concept]
 summary: The process of transforming human-readable documentation into machine-retrievable knowledge units — chunking, metadata tagging, rewriting for self-containment, and enforcing consistency.
-updated: 2026-10-17
+updated: 2026-11-08
 sources:
   - data/raw/meetings/2026-06-26-final-checkin.md
   - data/raw/meetings/2026-06-23-onboarding-bedrock-data-sources.md
   - data/raw/claude-docs/chat-agent/docs/kb-analysis/intercom_kb_analysis.md
   - data/raw/notion/2026-04-07-support-knowledge-agent.md
   - data/raw/notion/2026-04-13-rag-pipeline-requirements.md
+  - data/raw/papers/2026-11-06-chan-2025-retrieval-augmented-reasoning-lean-language.md
 ---
 
 # RAG Knowledge Preparation
@@ -122,6 +123,14 @@ Defects found in the first EDA of a web-crawled managed KB for a support assista
   cite a source URL, URL-level grounding covers a small slice, and instructing the model to
   cite in the prompt is not enough — a delivery-time gate (retrieval score threshold or a
   citation-presence check) is the safeguard.
+
+## Paper evidence: indexing summaries instead of pages
+
+A technical report on a medical-advice RAG (Qwen2.5-32B summaries, all-mpnet-base-v2 and Chroma, 1,000 synthetic queries, 989 condition pages) found that indexing LLM-written summaries retrieved better than indexing full pages: p@1 0.51 against 0.47, p@5 0.76 against 0.68 (self-reported). The summarizer was told to retain just symptoms and next steps, which suits the query type, and the authors advise indexing full pages for a more general system. Retrieval capped accuracy: with k=5 the ceiling is the 76% precision at 5. Summaries also cut the average reasoning-training example from 74,641 tokens to 7,544.
+
+## Limits of the paper evidence
+
+- One domain and one query type. A 32B model fine-tuned on reasoning traces scored 0.56 against 0.54 with retrieval alone, within about 2 standard deviations (the extraction's caution), so most of the gain came from retrieval.
 
 ## See Also
 - [[Librarian RAG Architecture]] <!-- auto-linked -->

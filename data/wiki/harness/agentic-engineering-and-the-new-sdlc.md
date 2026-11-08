@@ -2,10 +2,12 @@
 title: Agentic Engineering and the New SDLC
 tags: [llm, agents, infra, concept]
 summary: "The vibe-coding-to-agentic-engineering stakes spectrum, how each SDLC phase shifts when agents do the implementation, the conductor/orchestrator role split, the 80% problem, and the TCO argument for investing in the harness."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agents-google-adk.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-google-adk.md
+  - data/raw/papers/2026-11-06-agarwal-2026-ai-ides-or-autonomous-agents.md
+  - data/raw/papers/2026-11-06-huang-2025-professional-software-developers-don-t.md
 ---
 
 # Agentic Engineering and the New SDLC
@@ -139,6 +141,17 @@ Vibe coding minimizes CapEx. Agentic engineering spends more upfront on specs, e
 guardrails, and harness, and buys down OpEx. Which is correct depends entirely on how long
 the artifact lives and what it costs when it breaks — which is why the stakes spectrum, not
 a methodology preference, is the right frame for the decision.
+
+## Measured effects of coding agents on repositories and on developers (2025-2026 preprints, self-reported)
+
+- **Repository study (Agarwal, He and Vasilescu, MSR 2026 short paper):** staggered difference-in-differences with propensity-matched controls on open-source GitHub repositories with at least 10 stars and 10 agentic pull requests, monthly panel, intent-to-treat. For 401 repositories whose first observable AI tool was an agent, commits rose 36.25% and lines added 76.59%; for 117 repositories that already used an AI IDE, commits rose 3.06% and lines added fell 6.34%, neither significant. The agent-first gain was front-loaded (about +111% commits at the adoption month) and stayed above baseline through month 6, while the IDE-first bump turned negative by month 6.
+- **Quality side (same study):** static-analysis warnings rose 17.73% (agent-first) and 19.00% (IDE-first, not significant), and cognitive complexity rose 34.85% and 42.87%, both significant. Duplication changes were small and not significant. The authors read this as agent-induced complexity debt; that reading, and their prescriptions (complexity-aware review, routine refactoring, tests), are not tested.
+- **Developer study (Huang et al., preprint):** 13 experienced developers observed for one 45-minute session each, plus a survey of 99 respondents out of 249 replies. Nine of 13 reviewed every change; the median was 1.8 plan steps executed per prompt; eight of 13 said the agent did more than asked. In survey mentions, following a well-defined plan was judged suitable 28 to 2, writing tests 19 to 2, while generating code in one shot with no edits or checks was 5 to 23. No respondent called agents suitable for fully autonomous operation. All figures are hand-coded counts, and no agent accuracy was measured.
+
+## Limits
+
+- Agarwal et al. concede some significant pre-treatment coefficients for warnings and complexity, intent-to-treat estimates that cannot measure usage intensity, attribution errors that probably attenuate effects, a small IDE-first sample (so the IDE-first warnings result is weak), non-random assignment between the two groups, and a single 6-month horizon. They treat "agent" as a bundle of about 12 tools. Internal inconsistency: the adoption window is May to July 2025 in the Figure 1 caption but April to June in the body.
+- Huang et al.: the survey sample was recruited from AI-tool repositories (6% response, about 97 of 99 male), the observation sample is small, themes were hand-coded without inter-rater reliability, and the authors concede agents have improved since 2025. Nothing in the study demonstrates better outcomes from keeping control or reviewing.
 
 ## See Also
 - [[Task Decomposition Patterns]] <!-- auto-linked -->

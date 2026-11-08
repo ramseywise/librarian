@@ -2,7 +2,7 @@
 title: Positional Encoding
 tags: [foundations, llm, concept]
 summary: Sinusoidal or learned position signals injected into Transformer input embeddings — required because self-attention is permutation-invariant and has no inherent notion of sequence order.
-updated: 2026-07-19
+updated: 2026-11-08
 sources:
   - data/raw/pdfs/2017-06-12-attention-is-all-you-need.md
 ---
@@ -38,3 +38,4 @@ An alternative where position embeddings are learned parameters. Vaswani et al. 
 - [[Transformer Architecture]] — prerequisite-for
 - [[Self-Attention Mechanism]] — extends
 - [[LLM Fundamentals Interview Study Guide]] — instance-of
+- [[Position Interpolation]] — instance-of

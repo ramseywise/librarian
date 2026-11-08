@@ -2,7 +2,7 @@
 title: Context Engineering
 tags: [context, llm, agents, concept]
 summary: "The discipline of assembling the context window — a minimization problem, not a filling problem: find the smallest set of high-signal tokens that maximizes the likelihood of the desired outcome."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/articles/2026-07-19-context-engineering-karpathy.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--context-engineering.md
@@ -125,3 +125,15 @@ added context source is added attack surface*. See [[Prompt Injection]] and
 - [[Context System Maturity Ladder]] — extends
 - [[Cognitive Tools]] — extends
 - [[Structured Context and Schemas]] — extends
+- [[Coding Agents as Long-Context Processors]] — instance-of
+- [[PRO-LONG Programmatic Memory]] — instance-of
+- [[Scroll Event Log and Eviction Index]] — instance-of
+- [[Agentic Context Management (ACM)]] — instance-of
+- [[LongHarness Evidence State]] — instance-of
+- [[ParSer Parallel Chunk Reading]] — instance-of
+- [[Progressive Disclosure and Skill Packs at Library Scale]] — instance-of
+- [[IN2 Training and VAL Probes]] — instance-of
+- [[Catastrophic Remembering in Context Files]] — instance-of (growth of agent instruction files)
+- [[SKILL.state]] — instance-of (structured state in place of a growing transcript)
+- [[MCP Server Architecture Patterns]] — related (tool-count study)
+- [[AGENTS.md Context File Evaluation]] — instance-of (measured effect of repository context files)

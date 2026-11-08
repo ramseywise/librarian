@@ -34,3 +34,6 @@ Only the final answer is scored, not the trace or plan. The GPT-4 plugin score i
 - [[MedBrowseComp]] — related (browsing-based factual questions)
 - [[Eval Contamination Defenses]] — related (held-out answers behind a leaderboard)
 - [[AgentBench]] — alternative-to (closed-environment agent evaluation)
+- [[Alita]] — related (a generalist agent reporting GAIA validation results)
+- [[Deep Research Agent Systems]] — related (search agents that report GAIA scores)
+- [[WebThinker Deep Research Agent]] — related (reports GAIA results)

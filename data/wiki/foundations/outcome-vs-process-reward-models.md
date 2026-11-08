@@ -2,7 +2,7 @@
 title: Outcome vs Process Reward Models
 tags: [foundations, llm, comparison]
 summary: "An outcome reward model scores the whole rollout and a process reward model scores each reasoning step. ORM is cheap but cannot tell a lucky guess from sound reasoning. PRM assigns credit better but needs step-level data, and in 2025 practice swung back to ORM with a light PRM used only for verification."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
@@ -69,3 +69,5 @@ and adds deterministic penalties for path violations, without a learned step sco
 - [[RL Training Frameworks for LLMs]] — related (where these reward models are wired into training)
 - [[RLVP — Verifiable Path Penalties]] — alternative-to (outcome reward plus deterministic path penalties)
 - [[Post-Training for Agents]] — extends (reward forms for agent RL)
+- [[FrogNano Online Task Synthesis]] — related
+- [[Role Anchor and Role Drift]] — related (module drift under final-answer rewards)

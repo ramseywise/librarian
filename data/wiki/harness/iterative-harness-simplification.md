@@ -2,7 +2,7 @@
 title: Iterative Harness Simplification
 tags: [llm, agents, infra, pattern]
 summary: "Every harness component encodes an assumption about what the model can't do — when models improve those assumptions expire, so strip load-bearing components one at a time and re-run the eval."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--08-maturity-and-failure-modes.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--08-maturity-and-failure-modes.md
@@ -79,3 +79,6 @@ The harness doesn't get smaller. **It gets re-aimed.**
 - [[Harness Anatomy]] — related
 - [[Evolve Loop]] — related (both optimize within a frame and neither can interrogate the frame)
 - [[Runtime vs Process Observability]] — prerequisite-for
+- [[AutoHarness Synthesized Code Harness]] — related
+- [[Harness Continual Learning]] — related
+- [[Harness Updating vs Harness Benefit]] — related

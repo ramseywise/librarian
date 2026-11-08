@@ -2,7 +2,7 @@
 title: Context Retrieval Strategies
 tags: [context, rag, llm, agents, concept]
 summary: The shift from pre-computed retrieval (decide relevance before inference) to just-in-time context (agent loads what it needs during inference) — with the hybrid default and the pre-retrieval pipeline ordering.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--04-retrieval.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--03-retrieval-strategies.md
@@ -283,3 +283,7 @@ let the model resolve conflicts.
 - [[Index-Time Distillation]] — extends
 - [[Knowledge Graph Retrieval]] — extends
 - [[Evaluating Context]] — prerequisite-for
+- [[RAG vs Long Context: Evaluation Evidence]] — related (when retrieval beats stuffing the window)
+- [[Coding Agents as Long-Context Processors]] — instance-of (file-system search in place of a retriever)
+- [[Progressive Disclosure and Skill Packs at Library Scale]] — instance-of
+- [[ParSer Parallel Chunk Reading]] — instance-of

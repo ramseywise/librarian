@@ -2,7 +2,7 @@
 title: Multi-Agent Context
 tags: [context, context-management, llm, agents, concept]
 summary: Sub-agent isolation is the highest-cost context lever — a sub-agent burns 100k tokens and returns 2k, and the discarding of its window is the feature, not a side effect.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--10-tools-and-multi-agent.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
@@ -146,3 +146,5 @@ share no context make conflicting decisions — **pass the decisions, not just t
 - [[Context Window Budgeting]] — related
 - [[Task Decomposition Patterns]] — instance-of (spatial isolation via worktrees)
 - [[Protocol-Driven Multi-Agent Collaboration]] — instance-of (externalized plan state and isolation)
+- [[Agent Primitives Latent Composition]] — related (KV-cache messages between agents)
+- [[Diversity Collapse in Multi-Agent Ideation]] — related

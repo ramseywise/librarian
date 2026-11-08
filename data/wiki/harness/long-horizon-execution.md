@@ -151,3 +151,9 @@ See [[Harness Orchestration]] for when decomposition is worth its cost, and
 - [[Three-Layer Termination Check]] — prerequisite-for
 - [[Skill Authoring Discipline]] — instance-of (checkpointing for skills that run long)
 - [[Learned Proactive Compaction]] — related (a trained trigger for the compaction step)
+- [[Harness-1 State-Externalizing Search Agent]] — related (external state for long search runs)
+- [[Prime Agent State Hierarchy]] — related
+- [[JAZ Invoke Loop]] — related
+- [[DeepCode Information-Flow Management]] — related
+- [[AlphaCodium Flow Engineering]] — related
+- [[Paper-Replication Completion Gate]] — related

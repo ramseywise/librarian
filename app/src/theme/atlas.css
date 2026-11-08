@@ -1,6 +1,17 @@
 /* The map's atlas and its focused levels. All UI colours are tokens, so a theme switch carries. */
 
 .atlas { position: absolute; inset: 0; overflow: hidden; }
+.atlas-world { position: absolute; inset: 0; transform-origin: 0 0; }
+.atlas.is-zoomed .atlas-canvas--hot { cursor: grab; }
+.atlas.is-zoomed .atlas-canvas--hot:active { cursor: grabbing; }
+.atlas-zoom {
+  position: absolute;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: var(--z-panel);
+  display: flex;
+  gap: var(--space-1);
+}
 .atlas-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .atlas-canvas--hot { outline-offset: -3px; touch-action: manipulation; }
 .atlas-canvas--hot:focus { outline: none; }
@@ -36,14 +47,11 @@
   overflow: hidden;
   transition: opacity 160ms;
 }
-.atlas-card--below {
-  left: var(--space-5);
-  right: var(--space-5);
-  bottom: 44px;
-  background: var(--surface-raised);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-}
+.atlas-card--compact { gap: 1px; padding: var(--space-1); }
+.atlas-card--compact .atlas-card-total { font-size: 18px; }
+.atlas-card--compact .atlas-card-legend,
+.atlas-card--compact .atlas-card-summary,
+.atlas-card--compact .atlas-card-sector { display: none; }
 .atlas-card-total { font-size: 26px; color: var(--text-strong); font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
 .atlas-card-note { font-size: var(--fs-sm); color: var(--text-muted); }
 .atlas-card-legend { font-size: var(--fs-xs); color: var(--text-muted); margin-top: var(--space-3); max-width: 15em; line-height: 1.35; }
@@ -78,20 +86,7 @@
 .atlas-tip-summary { font-size: var(--fs-md); color: var(--text-dim); line-height: 1.35; }
 .atlas-tip-meta { font-size: var(--fs-xs); color: var(--text-muted); margin-top: var(--space-2); }
 
-.atlas-list {
-  position: absolute;
-  right: var(--space-5);
-  bottom: var(--space-5);
-  z-index: var(--z-panel);
-  max-width: 320px;
-  background: var(--surface-raised);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  font-size: var(--fs-md);
-  color: var(--text-soft);
-}
-.atlas-list > summary { padding: var(--space-2) var(--space-5); cursor: pointer; }
-.atlas-list-body { max-height: 55vh; overflow-y: auto; padding: 0 var(--space-5) var(--space-3); width: 290px; }
+.atlas-list { font-size: var(--fs-md); color: var(--text-soft); }
 .atlas-list-sector summary { cursor: pointer; padding: 3px 0; }
 .atlas-list-sector ul { list-style: none; margin: 0 0 var(--space-3); padding: 0 0 0 var(--space-5); }
 .atlas-list-sector li { padding: 2px 0; }
@@ -249,29 +244,15 @@
   .map-bar { top: 44px; left: var(--space-5); right: var(--space-5); transform: none; width: auto; max-width: none; justify-content: flex-start; }
   .map-search-input { width: 150px; }
   .map-search-list { right: auto; left: 0; width: min(320px, calc(100vw - 48px)); }
-  .atlas-list { right: var(--space-5); bottom: var(--space-3); }
 }
 
 /* ---- Wiki health strip ------------------------------------------------------- */
 .health-strip {
-  position: absolute;
-  /* Clear of React Flow's zoom controls on the left and the atlas's list button on the right. */
-  left: 60px;
-  right: var(--space-5);
-  width: fit-content;
-  margin-inline: auto;
-  bottom: var(--space-3);
-  z-index: var(--z-panel);
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 2px var(--space-3);
-  padding: 2px var(--space-4);
   font-size: var(--fs-xs);
   color: var(--text-secondary);
-  background: var(--surface-raised);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-pill);
 }
 .health-note { white-space: nowrap; }
 .health-chip { white-space: nowrap; }
@@ -279,9 +260,4 @@
 .health-chip--healthy strong { color: var(--success); }
 .health-chip--watch strong { color: var(--warn); }
 .health-chip--broken strong { color: var(--danger); }
-/* No minimap on the atlas: only the list button to clear. */
-.graph-root:has(.atlas-canvas) .health-strip { right: 150px; }
-@media (max-width: 759px) {
-  .graph-root:has(.atlas-canvas) .health-strip,
-  .health-strip { left: var(--space-3); right: var(--space-3); bottom: 2px; }
 }

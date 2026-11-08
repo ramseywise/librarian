@@ -2,11 +2,12 @@
 title: Memory-Augmented Conversational RAG
 tags: [rag, memory, llm, pattern]
 summary: "Multi-turn retrieval breaks because the query is under-specified — the fixes are query rewriting against history, a when-to-retrieve policy, and asking a clarifying question instead of retrieving on an ambiguous turn."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--06-memory.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--memory.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--memory.md
+  - data/raw/papers/2026-11-06-hu-2026-beyond-rag-agent-memory.md
 ---
 
 # Memory-Augmented Conversational RAG
@@ -86,6 +87,14 @@ benchmarks:
 Note that **InSCIt exists specifically to score clarification behavior** — evidence that
 asking-instead-of-guessing is treated as a measurable capability, not a UX preference. If
 you build fix #3, that is the benchmark shape to evaluate it against.
+
+## Paper evidence: retrieving over decoupled memory units
+
+xMemory (preprint, 2026) retrieves over a hierarchy of decoupled memory units rather than flat chunks. Setup: LoCoMo (four answerable categories), text-embedding-3-small, greedy decoding, same backbone for construction and answering. With Qwen3-8B it scored 34.48 BLEU and 43.98 F1 at 4,711 tokens per query against 31.44 and 40.88 at 7,755 for the best listed baseline (Nemori), with its largest gains on multi-hop and temporal questions (self-reported). In the ablation memory structure alone beat chunk RAG (F1 40.77 against 36.48), and freezing split and merge of the structure lowered results.
+
+## Limits of the paper evidence
+
+- On PerLTQA, some baselines (LightMem, A-Mem on Llama) used fewer tokens than xMemory, so "fewest tokens" does not hold everywhere. Stage I alone lowered F1 slightly while cutting tokens.
 
 ## See Also
 - [[Memory Lifecycle]] — extends (stage C in the multi-turn case)

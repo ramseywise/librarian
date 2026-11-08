@@ -32,7 +32,6 @@ import {
   type RingFrame,
   type SpikeFrame,
 } from "./atlasCanvas";
-import { AtlasList } from "./AtlasList";
 
 export interface AtlasPageInfo {
   title: string;
@@ -65,6 +64,8 @@ const PAGE_ZOOM = 4.5;
 const TOOLTIP_W = 300;
 const BAND_LABEL_MIN = 14;
 const WIDE_QUERY = "(min-width: 760px)";
+const MAX_VIEW_ZOOM = 5;
+const DRAG_SLOP = 4;
 
 const reducedMotion = () =>
   typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -73,7 +74,8 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
 
 function insetsFor(wide: boolean, grouping: Grouping): RingInsets {
   return wide
-    ? { left: 260, top: 76, bottom: 10, labelWidth: grouping === "course" ? 138 : 104 }
+    ? // The sidebar is its own column now, not a panel over the canvas: nothing to reserve on the left.
+      { left: 0, top: 76, bottom: 10, labelWidth: grouping === "course" ? 138 : 104 }
     : { left: 0, top: 96, bottom: 150, labelWidth: 84 };
 }
 
@@ -164,6 +166,50 @@ export function Atlas({
     rectTop: 0,
   });
 
+  // Free zoom and pan: a CSS transform on the layer holding the canvases, labels and card. The
+  // ring is still drawn in its own coordinates, so hit tests map the pointer back through it.
+  const worldRef = useRef<HTMLDivElement>(null);
+  const view = useRef({ k: 1, x: 0, y: 0 });
+  const [viewZoomed, setViewZoomed] = useState(false);
+  const dragRef = useRef<{ x: number; y: number; vx: number; vy: number; moved: boolean } | null>(null);
+  const suppressClick = useRef(false);
+
+  const applyView = useCallback(() => {
+    const v = view.current;
+    const { width, height } = draw.current.g;
+    v.k = Math.min(MAX_VIEW_ZOOM, Math.max(1, v.k));
+    v.x = Math.min(0, Math.max(width * (1 - v.k), v.x));
+    v.y = Math.min(0, Math.max(height * (1 - v.k), v.y));
+    if (worldRef.current) worldRef.current.style.transform = `translate(${v.x}px, ${v.y}px) scale(${v.k})`;
+    setViewZoomed(v.k > 1);
+  }, []);
+
+  /** Zoom by `factor` about a point in stage coordinates (the centre by default). */
+  const zoomView = useCallback(
+    (factor: number, at?: { x: number; y: number }) => {
+      const v = view.current;
+      const { width, height } = draw.current.g;
+      const px = at?.x ?? width / 2;
+      const py = at?.y ?? height / 2;
+      const k = Math.min(MAX_VIEW_ZOOM, Math.max(1, v.k * factor));
+      v.x = px - ((px - v.x) * k) / v.k;
+      v.y = py - ((py - v.y) * k) / v.k;
+      v.k = k;
+      applyView();
+    },
+    [applyView],
+  );
+
+  const resetView = useCallback(() => {
+    view.current = { k: 1, x: 0, y: 0 };
+    applyView();
+  }, [applyView]);
+
+  const toRing = (x: number, y: number) => {
+    const v = view.current;
+    return { x: (x - v.x) / v.k, y: (y - v.y) / v.k };
+  };
+
   const paintBase = useCallback((freshPalette: boolean) => {
     const d = draw.current;
     const ctx = baseRef.current?.getContext("2d");
@@ -225,6 +271,23 @@ export function Atlas({
     ro.observe(stage);
     return () => ro.disconnect();
   }, []);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const onWheel = (e: WheelEvent) => {
+      const d = draw.current;
+      if (d.raf || d.cam) return;
+      e.preventDefault();
+      const r = stage.getBoundingClientRect();
+      zoomView(Math.exp(-e.deltaY * 0.0015), { x: e.clientX - r.left, y: e.clientY - r.top });
+    };
+    stage.addEventListener("wheel", onWheel, { passive: false });
+    return () => stage.removeEventListener("wheel", onWheel);
+  }, [zoomView]);
+
+  // A new size is a new ring geometry: start from the whole ring again.
+  useEffect(() => resetView(), [size, resetView]);
 
   useLayoutEffect(() => {
     const dpr = window.devicePixelRatio || 1;
@@ -426,12 +489,13 @@ export function Atlas({
         open();
         return;
       }
+      resetView();
       setZooming(true);
       setHoverSector(null);
       hideTip(tipRef.current);
       runCamera(homeCamera(draw.current.g), cameraTarget(sector, spike), 1, ZOOMED_ALPHA, open);
     },
-    [ring, onOpenPage, onOpenSector, runCamera, cameraTarget],
+    [ring, onOpenPage, onOpenSector, runCamera, cameraTarget, resetView],
   );
 
   // On arrival from a focused view, once the ring has its real size.
@@ -466,7 +530,8 @@ export function Atlas({
     d.moveRaf = 0;
     const at = d.pendingMove;
     if (!at || d.raf || d.cam) return;
-    const hit = hitTest(d.ring, d.g, at.x, at.y);
+    const p = toRing(at.x, at.y);
+    const hit = hitTest(d.ring, d.g, p.x, p.y);
     const spike = hit?.kind === "spike" ? hit.spike : null;
     const sector = hit?.kind === "sector" ? hit.sector : null;
     const tip = tipRef.current;
@@ -488,10 +553,27 @@ export function Atlas({
     (e: React.PointerEvent) => {
       if (e.pointerType === "touch") return;
       const d = draw.current;
+      const drag = dragRef.current;
+      if (drag && e.buttons & 1) {
+        const dx = e.clientX - drag.x;
+        const dy = e.clientY - drag.y;
+        if (!drag.moved && Math.hypot(dx, dy) < DRAG_SLOP) return;
+        if (!drag.moved) {
+          drag.moved = true;
+          d.hover = null;
+          d.hoverSector = null;
+          paintHot();
+          hideTip(tipRef.current);
+        }
+        view.current.x = drag.vx + dx;
+        view.current.y = drag.vy + dy;
+        applyView();
+        return;
+      }
       d.pendingMove = { x: e.clientX - d.rectLeft, y: e.clientY - d.rectTop };
       if (!d.moveRaf) d.moveRaf = requestAnimationFrame(applyHover);
     },
-    [applyHover],
+    [applyHover, applyView, paintHot],
   );
 
   const onPointerLeave = useCallback(() => {
@@ -511,13 +593,28 @@ export function Atlas({
       draw.current.rectLeft = stage.left;
       draw.current.rectTop = stage.top;
     }
+    // Dragging pans once zoomed; a press that doesn't move is still a click.
+    dragRef.current =
+      e.button === 0 && e.pointerType !== "touch" && view.current.k > 1
+        ? { x: e.clientX, y: e.clientY, vx: view.current.x, vy: view.current.y, moved: false }
+        : null;
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    suppressClick.current = dragRef.current?.moved ?? false;
+    dragRef.current = null;
   }, []);
 
   const onClick = useCallback(
     (e: React.MouseEvent) => {
       const d = draw.current;
+      if (suppressClick.current) {
+        suppressClick.current = false;
+        return;
+      }
       if (d.raf || d.cam) return;
-      const hit = hitTest(d.ring, d.g, e.clientX - d.rectLeft, e.clientY - d.rectTop);
+      const p = toRing(e.clientX - d.rectLeft, e.clientY - d.rectTop);
+      const hit = hitTest(d.ring, d.g, p.x, p.y);
       if (!hit) {
         setCursor(null);
         return;
@@ -602,13 +699,13 @@ export function Atlas({
   const pageTotal = ring.spikes.length;
   const titleOf = useCallback((id: string) => info.get(id)?.title ?? id, [info]);
 
+  // Always in the hole; a small ring drops the card's secondary lines instead of moving it out.
   const cardSize = g.inner * 1.72;
-  const cardStyle = g.cardInside
-    ? { left: g.cx - cardSize / 2, top: g.cy - cardSize / 2, width: cardSize, height: cardSize }
-    : undefined;
+  const cardStyle = { left: g.cx - cardSize / 2, top: g.cy - cardSize / 2, width: cardSize, height: cardSize };
 
   return (
-    <div ref={stageRef} className={`atlas${moving || zooming ? " is-moving" : ""}`}>
+    <div ref={stageRef} className={`atlas${moving || zooming ? " is-moving" : ""}${viewZoomed ? " is-zoomed" : ""}`}>
+      <div ref={worldRef} className="atlas-world">
       <canvas ref={baseRef} className="atlas-canvas" aria-hidden="true" />
       <canvas
         ref={hotRef}
@@ -619,6 +716,7 @@ export function Atlas({
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
         onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
         onClick={onClick}
         onKeyDown={onKeyDown}
       />
@@ -671,7 +769,7 @@ export function Atlas({
         })}
       </svg>
 
-      <div className={`atlas-card${g.cardInside ? "" : " atlas-card--below"}`} style={cardStyle}>
+      <div className={`atlas-card${g.cardInside ? "" : " atlas-card--compact"}`} style={cardStyle}>
         {selSector ? (
           <>
             <div className="atlas-card-sector">
@@ -723,11 +821,24 @@ export function Atlas({
         )}
       </div>
 
+      </div>
+
+      <div className="atlas-zoom" role="group" aria-label="Zoom the atlas">
+        <button type="button" className="pill-btn" aria-label="Zoom in" onClick={() => zoomView(1.5)}>
+          +
+        </button>
+        <button type="button" className="pill-btn" aria-label="Zoom out" disabled={!viewZoomed} onClick={() => zoomView(1 / 1.5)}>
+          −
+        </button>
+        <button type="button" className="pill-btn" disabled={!viewZoomed} onClick={resetView}>
+          Reset
+        </button>
+      </div>
+
       <div ref={tipRef} className="atlas-tip" style={{ width: TOOLTIP_W }} hidden aria-hidden="true" />
       <div className="sr-only" aria-live="polite">
         {announcement}
       </div>
-      <AtlasList sectors={ring.sectors} grouping={grouping} titleOf={titleOf} matches={lit ?? matches} />
     </div>
   );
 }

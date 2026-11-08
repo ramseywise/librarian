@@ -2,7 +2,7 @@
 title: Why Context Is Finite
 tags: [context, llm, agents, concept]
 summary: Attention divides a fixed budget across n² token pairs, so added tokens thin attention rather than expanding capacity — the marginal return curve turns negative, not merely flat.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--01-why-context-is-finite.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--01-why-context-is-finite.md
@@ -90,3 +90,6 @@ sub-agent isolation — all exist to keep the window on the left side of that cu
 - [[Context Failure Modes]] — related (causes)
 - [[Context Anatomy]] — related (mitigated by)
 - [[Context Window Budgeting]] — prerequisite-for
+- [[Position Interpolation]] — instance-of
+- [[Artificial Hippocampus Networks]] — instance-of
+- [[IN2 Training and VAL Probes]] — related

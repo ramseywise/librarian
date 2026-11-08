@@ -69,3 +69,7 @@ documents belong there at all — retrieval, ranking, token budgeting — is
 - [[Prompt Assembly as Snippet Packing]] — extends
 - [[Prompts as Document Completion]] — prerequisite-for
 - [[Output Length Confounds Reference Metrics]] — related (L-Eval: scoring long-context answers fairly)
+- [[Cache-Augmented Generation]] — instance-of (preloading a small corpus into the window's cache instead of retrieving)
+- [[RAG vs Long Context: Evaluation Evidence]] — related (head-to-head evaluations)
+- [[LongRAG Long Retrieval Units]] — related (a long-context reader over long retrieval units)
+- [[LongICLBench and Many-Shot ICL Scaling]] — instance-of

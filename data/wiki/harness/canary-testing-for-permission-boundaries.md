@@ -68,3 +68,4 @@ the pattern never mentions.
 - [[Execution Boundaries and Guardrails]] — related (part of)
 - [[Read-Only by Default with Explicit Authorization]] — related
 - [[Harness Engineering]] — instance-of
+- [[Skill Verification Levels and the Biconditional Check]] — related

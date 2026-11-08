@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { Curriculum } from "../types";
 import { apiFetch } from "../utils/api";
+import { useRevisionFetch } from "./useRevisionFetch";
 
 const POLL_MS = 5000;
 const MAX_POLLS = 12;
@@ -15,36 +16,30 @@ const MAX_POLLS = 12;
 export function useCurriculum(revision: unknown, enabled: boolean): Curriculum | null {
   const [curriculum, setCurriculum] = useState<Curriculum | null>(null);
   const lastBody = useRef<string | null>(null);
+  const polls = useRef(0);
 
-  useEffect(() => {
-    if (!enabled) return;
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    let polls = 0;
-
-    async function load() {
-      try {
-        const res = await apiFetch("/api/graph/curriculum");
-        if (!res.ok) return;
-        const text = await res.text();
-        if (cancelled) return;
-        const body = JSON.parse(text) as Curriculum;
-        if (text !== lastBody.current) {
-          lastBody.current = text;
-          setCurriculum(body);
-        }
-        if (body.stale && polls++ < MAX_POLLS) timer = setTimeout(() => void load(), POLL_MS);
-      } catch {
-        // Keep what we have; the next graph payload retries.
+  const load = useCallback(async (alive: () => boolean): Promise<void> => {
+    try {
+      const res = await apiFetch("/api/graph/curriculum");
+      if (!res.ok) return;
+      const text = await res.text();
+      if (!alive()) return;
+      const body = JSON.parse(text) as Curriculum;
+      if (text !== lastBody.current) {
+        lastBody.current = text;
+        setCurriculum(body);
       }
+      if (!body.stale) polls.current = 0;
+      else if (polls.current++ < MAX_POLLS) {
+        setTimeout(() => {
+          if (alive()) void load(alive);
+        }, POLL_MS);
+      }
+    } catch {
+      // Keep what we have; the next graph payload retries.
     }
-    void load();
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [revision, enabled]);
+  }, []);
+  useRevisionFetch(load, revision, enabled);
 
   return curriculum;
 }

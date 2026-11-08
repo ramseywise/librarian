@@ -2,7 +2,7 @@
 title: LLM Inference Economics
 tags: [infra, llm, concept]
 summary: Why prompt tokens and output tokens have different unit costs — the prefill/decode split — and the four levers (quantization, distillation, speculative decoding, output-length discipline) that move serving cost and latency.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--guides--2-llm-fundamentals--interview-guide.md
   - data/raw/repos/sisyphus/interviewing--guides--2-llm-fundamentals--interview-guide.md
@@ -72,3 +72,4 @@ mitigations follow from mechanism rather than from a list.
 - [[LLM Fundamentals Interview Study Guide]] — instance-of (where this is examined)
 - [[Two AI Cost Economies: Durable Once, Contextual On Demand]] — extends (splitting spend by durability of the output)
 - [[Right-Sizing a Document-to-LLM Pipeline]] — instance-of (input-token depth dominating a real pipeline's bill)
+- [[LazyLLM Dynamic Token Pruning]] — instance-of
