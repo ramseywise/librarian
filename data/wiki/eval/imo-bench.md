@@ -73,3 +73,4 @@ human-graded as a percentage of total points; queries from July to September 202
 - [[LLM-as-Judge Evaluation]] — related (the autograders are judges validated against humans)
 - [[Eval Contamination Defenses]] — related (altering problems and novel problems)
 - [[GHOSTS Benchmark]] — related (an earlier expert-graded maths benchmark with error codes)
+- [[UQ Unsolved Questions Benchmark]] — related (a hard-question set with validators instead of gold answers)

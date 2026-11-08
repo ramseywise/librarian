@@ -90,3 +90,4 @@ sampling ([[Eval Error Bars and Sample Size]]).
 - [[Holistic Agent Leaderboard (HAL)]] — related (mostly single runs without noise estimates)
 - [[Price Reversal in Reasoning-Model Costs]] — related (per-query cost also varies between runs)
 - [[E-Commerce Operation Benchmarks]] — related (MerchantBench uses 3 runs per configuration)
+- [[Forecasting Rare Model Behaviours]] — related (forecasts a rare behaviour from per-query elicitation probabilities)

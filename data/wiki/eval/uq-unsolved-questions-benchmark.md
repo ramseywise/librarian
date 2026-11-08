@@ -9,11 +9,11 @@ sources:
 
 # UQ Unsolved Questions Benchmark
 
-UQ (Nie, Liu et al., Stanford and collaborators, arXiv 2508.17580, 2025 preprint) argues that a
-benchmark can be both difficult and realistic if it uses real questions that remain unanswered
-after a long time. Such questions have no gold answers, so a validator pre-screens candidate
-answers and humans verify the survivors. The authors say the validators are often wrong and cannot
-produce a leaderboard on their own.
+UQ (Nie, Liu et al., Stanford and collaborators, arXiv 2508.17580, 2025 preprint) proposes
+a benchmark made of real questions that have stayed unanswered for years, which the authors see as
+a way to be hard and realistic together. With no gold answers available, a validator first screens
+candidate answers and people then check the ones that survive. The authors state that validators
+err often and cannot yield a leaderboard by themselves.
 
 ## Building the question set
 
@@ -47,23 +47,22 @@ repeated three times with a unanimous vote.
   81.65 / 30.99 / 34.38 and with five iterations 81.50 / 26.23 / 25.40; o3 with a vanilla prompt gets
   58.12 / 20.73 / 78.46.
 - **Self and sibling bias.** The authors report that frontier validators over-rate themselves and
-  models from the same developer (Gemini favours itself, Claude over-rates all models, o-series
-  over-rate o-series); the o3 three-iteration pipeline largely removes the bias.
-- **Rankings flip.** Across six validators and five answer models, every answer model takes first place
-  under at least one validator, and the ranking converges to ground truth only at the strongest
-  validator.
-- **Generator vs validator.** Without pipeline validation, o3 is a weaker answer model but a
-  stronger validator than Gemini 2.5 Pro.
+  models from the same developer (Gemini favours itself, Claude over-rates every model, and the o-series
+  models over-rate other o-series models); the o3 three-iteration pipeline largely removes the bias.
+- **Rankings flip.** Across six validators and five answer models, each answer model comes first under at least one validator, and only the strongest
+  validator brings the ranking in line with ground truth.
+- **Generator vs validator.** When no pipeline-based validation is applied, o3 answers worse than
+  Gemini 2.5 Pro yet validates better.
 
 ## Results on the 500 questions (self-reported, 2025-08-26)
 
-With the o3 three-iteration pipeline as validator, validator passes were o3-pro 75/500 (15.0%), o3
-44 (8.8%), Gemini 2.5 Pro 25 (5.0%), o4-mini 25 (5.0%), DeepSeek-R1 11, Claude Opus 4 7, Claude
-Sonnet 3.7 6 and GPT-4o 0; 144 unique questions (28.8%) passed. Humans checked 91 of those 144 and
+Using the o3 three-iteration pipeline as the validator, the number of answers passed per model was:
+o3-pro 75 of 500 (15.0%), o3 44 (8.8%), Gemini 2.5 Pro 25 (5.0%), o4-mini also 25 (5.0%), then DeepSeek-R1 with 11,
+Claude Opus 4 7, Claude Sonnet 3.7 6, GPT-4o 0; 144 unique questions (28.8%) passed. Humans checked 91 of those 144 and
 found 10 correct (o3-pro 4 of 46); on the diamond subset 4 passed and none of the 3 checked were correct.
 The authors report a common failure the validator missed: citations to references that do not exist.
-Agreement with humans was checked on 25 questions: for Gemini 2.5 Pro, validator pass 12% and human
-pass 4%, agreement 92%, Cohen's kappa 0.468 (undefined for the other three models, where everything
+Agreement with humans was checked on 25 questions: for Gemini 2.5 Pro the validator passed 12% and humans 4%,
+with 92% agreement and Cohen's kappa of 0.468 (undefined for the other three models, where everything
 was judged wrong).
 
 ## Retiring solved rows
@@ -73,16 +72,17 @@ solved by qualified experts; solved questions may be removed and replaced.
 
 ## Limits
 
-- The authors say questions may be unsolved from lack of attention rather than difficulty, the human
-  review budget is modest, the source is Stack Exchange only with a STEM skew (science 395 of 500;
-  MathOverflow 200, Mathematics 108), and the set is not claimed representative of unsolved questions
-  in the wild.
+- The authors concede that a question may be open because nobody looked at it, not because it is hard;
+  that the human review budget is small; and that all questions come from Stack Exchange with a STEM
+  tilt (science 395 of 500;
+  MathOverflow 200, Mathematics 108), and that the set is not claimed to be representative of unsolved questions
+  in general.
 - Validator quality is measured on the HLE surrogate, which may not match UQ's distribution. The
   extraction notes that about 13-16% of answers there are correct, which caps precision, and that
   no precision on UQ itself is reported.
 - Human verification is partial, and the authors say the checked answers lean toward wrong ones
   because wrongness is easier to prove. Models solve almost nothing, so ranking power is thin.
-- Difficulty is defined partly by the models being tested (GPT-4o answers, o4-mini judges). The
+- Part of the difficulty definition depends on the very models under test (GPT-4o as answerer, o4-mini as judge). The
   extraction notes there are no intervals, validators ran at temperature 0 on one run, and the
   25-item agreement check does not measure validator accuracy on UQ.
 - The model set is from mid-2025 and results will move as questions are solved.

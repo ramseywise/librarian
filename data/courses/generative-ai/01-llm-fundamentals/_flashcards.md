@@ -12,6 +12,12 @@ cards:
 - front: When do dot product, cosine and L2 distance rank neighbours the same way?
   back: Scale embeddings to length 1 and dot product, cosine and L2 distance pick the same neighbours.
   lesson: generative-ai/01-llm-fundamentals/notes/01-tokens-and-embeddings
+- front: Which position schemes act inside attention, and which act on the input?
+  back: Learned and sinusoidal positions go on the input; relative, RoPE and ALiBi act on the query-key score.
+  lesson: generative-ai/01-llm-fundamentals/notes/01b-position-encodings-and-context-extension
+- front: What happens to a RoPE model run past its training length, and what fixes it without retraining?
+  back: Rescale positions (interpolation, NTK, YaRN) so long inputs map back into the trained range, then test your own task at the length you will use.
+  lesson: generative-ai/01-llm-fundamentals/notes/01b-position-encodings-and-context-extension
 - front: How do you test that a causal mask works?
   back: Attention weights tokens by relevance, and the causal mask makes one pass train every position honestly.
   lesson: generative-ai/01-llm-fundamentals/notes/02-attention-and-the-transformer-block
@@ -24,12 +30,24 @@ cards:
 - front: What do the residual and the LayerNorm each contribute?
   back: 'A GPT is one block repeated: attention and an MLP, with residuals and LayerNorm to keep deep stacks trainable.'
   lesson: generative-ai/01-llm-fundamentals/notes/02-attention-and-the-transformer-block
+- front: Is an attention weight an explanation of the model's answer?
+  back: Use attention as a place to look, not as the reason for an answer.
+  lesson: generative-ai/01-llm-fundamentals/notes/02b-what-trained-attention-does
+- front: What is an attention sink?
+  back: A head that sits on the first token is probably a no-op, so dropping that token can break a model that was trained with it.
+  lesson: generative-ai/01-llm-fundamentals/notes/02b-what-trained-attention-does
 - front: How do you estimate the memory for a model's weights?
   back: Size a model as parameters times bytes before you download it, and treat the count as memory rather than ability.
   lesson: generative-ai/01-llm-fundamentals/notes/03-scale-and-the-model-zoo
 - front: Why might an operator train past 20 tokens per parameter?
   back: Chinchilla says scale data and parameters together, yet operators train past 20 tokens per parameter to cut inference cost.
   lesson: generative-ai/01-llm-fundamentals/notes/03-scale-and-the-model-zoo
+- front: What are the three ways to avoid attention's quadratic cost?
+  back: Fixed-size state makes long sequences cheap and loses what does not fit, so the field's answer is hybrids with a few attention layers.
+  lesson: generative-ai/01-llm-fundamentals/notes/03b-beyond-the-transformer
+- front: Why is generation cheap in a linear-attention model?
+  back: Causal linear attention is a recurrence over a fixed-size state, so a token costs the same at position 10,000 as at position 10.
+  lesson: generative-ai/01-llm-fundamentals/notes/03b-beyond-the-transformer
 - front: What does the KV cache store, and what does it cost?
   back: Prefill reads in parallel and decode writes serially, and the KV cache trades growing memory for that speed.
   lesson: generative-ai/01-llm-fundamentals/notes/04-decoding-and-inference-behaviour
@@ -57,6 +75,12 @@ cards:
 - front: What does a widening gap between training and validation loss show?
   back: On little data a model memorises, so continue pretraining or fine-tune rather than pretraining on company data.
   lesson: generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives
+- front: How does a raw crawl become a training stream?
+  back: More tokens are not better tokens; filtering and mixture move scores as much as architecture does.
+  lesson: generative-ai/01-llm-fundamentals/notes/06b-pretraining-data
+- front: What did phi-3-mini's heavy filtering keep and give up?
+  back: A data mixture sets what the model is good at, so check what a filter drops before trusting it.
+  lesson: generative-ai/01-llm-fundamentals/notes/06b-pretraining-data
 - front: What share of Llama 2's training data would five years of support tickets be?
   back: Do the multiplication first. Even generous ticket volumes are a fraction of a percent of Llama 2's data, so continue pretraining or fine-tune.
   lesson: generative-ai/01-llm-fundamentals/notes/15-pretraining-runs-cost-and-scale

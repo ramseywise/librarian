@@ -74,3 +74,7 @@ logical reasoning; they state it as a hypothesis.
 - [[Eval Error Bars and Sample Size]] — related (a spread and a baseline of 100 questions)
 - [[GHOSTS Benchmark]] — related (expert-graded maths prompts from 2023, before automated robustness sets)
 - [[XYEval]] — related (cites injected distractors as prior work)
+- [[Counterfactual Task Variants]] — alternative-to (changes the task's world rather than names, numbers and clauses)
+- [[Compositionality Gap]] — alternative-to (chains two GSM8K questions instead of perturbing one)
+- [[REST Multi-Problem Stress Testing]] — alternative-to (stacks several questions in one prompt)
+- [[Embers of Autoregression]] — related (a reasoning model tested for the same kind of limitation)

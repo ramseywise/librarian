@@ -1,4 +1,4 @@
-# imported_hash: 68934a091aae6fa2
+# imported_hash: 99ff7cddc276eb46
 # Prompt Engineering lecture deck. Covers notes 01-11 and prompt-library.md.
 # Build: make slides PILLAR=01-prompt-engineering STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
@@ -661,7 +661,7 @@ parts:
         takeaway: Shape the document first, then keep guarantees in code and prove every change with an eval.
         source: notes/09-prompt-optimization.md
         notes: >-
-          If you keep one sentence from today, it is this: when a prompt fails, change the document, its order, its contents and its shape, before you change the wording. The manual optimization checklist in note eight is the long form of these cards.
+          If you keep one sentence from today, it is this: when a prompt fails, change the document, its order, its contents and its shape, before you change the wording. The manual optimization checklist in note nine is the long form of these cards.
 
       - layout: bullets
         title: Where to go next

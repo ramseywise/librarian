@@ -9,52 +9,57 @@ sources:
 
 # REST Multi-Problem Stress Testing
 
-REST (Pan et al., Tsinghua and Shanghai AI Laboratory, arXiv 2507.10541, 2025 preprint) is a way to
-make a near-ceiling benchmark harder without writing new questions. s consecutive questions are
-concatenated into a single prompt (cyclic indexing, so the prompt set stays the same size N); s is the
-**stress level**. The authors report that accuracy then drops sharply for many reasoning models, and
-that models that tie on single-question scores separate. Their abstract challenges the assumption that
-LLMs are multi-problem solvers.
+REST (Pan et al., Tsinghua and Shanghai AI Laboratory, arXiv 2507.10541, 2025 preprint) makes a
+benchmark that is close to saturated harder without any new questions being written. A prompt joins s
+successive questions together (indexing wraps around, so the number of prompts stays N); s is called the
+**stress level**. The authors report sharp accuracy losses for many reasoning models, and say that models
+with equal single-question scores come apart under stress. The abstract questions the idea that LLMs
+are able to solve several problems at once.
 
 ## Setup
 
-All headline numbers come from one table: 34 reasoning models from 1.5B to 671B parameters, 32K
-maximum output tokens, OpenCompass with rule-based `\boxed{}` answer extraction. "Stress" is the mean
-accuracy over stress levels above 1; AIME24, AIME25 and AMC23 are averaged over 8 sampling runs.
+The headline figures come from Tab. 1, covering 34 reasoning models (1.5B to 671B parameters),
+with a 32K output-token cap, OpenCompass, and rule-based `\boxed{}` answer extraction. The "stress" score is
+the mean accuracy across stress levels greater than 1; for AIME24, AIME25 and AMC23 each score averages 8 sampling runs.
 
 ## Results (self-reported)
 
-- **Drops.** DeepSeek-R1 on AIME24 goes from 81.66 single to 52.49 stress (levels 2 to 5); the text
-  gives the drop as 29.17%. On AIME25 the drop is 31.58% (68.75 to 37.17).
-- **Discrimination.** On MATH500 (levels 3, 5, 7, 9), R1-Distill-Qwen-7B scores 93.0 single and 66.75
-  stress, and R1-Distill-Qwen-32B 94.6 and 88.97: a 1.6-point gap becomes 22.22 points.
-- **Post-training does not carry over.** On MATH500 AReaL-boba-RL-7B scores 95.0 single and 60.77 stress
-  and OpenThinker2-7B 93.8 and 83.30, against 93.0 and 66.75 for its R1-7B base; Light-R1-7B-DS (61.73) and
-  AReaL both fall below the base. At s=9 they get 38.07 and 39.11 against 49.42 for R1-7B.
-- **Ranking flip.** On MATH500, R1-Distill-Qwen-1.5B beats Qwen2.5-Math-1.5B-Instruct single (83.40 vs
-  73.00) and loses under stress (42.47 vs 53.94).
-- **Shorter reasoning helps.** Efficient-R1-7B (alpha 0.2) has lower single accuracy than R1-7B (88.20
-  vs 93.00) but reaches 66.02 vs 49.42 at s=9 on MATH500, a 16.60 margin; L1-Qwen-1.5B-Max beats R1-1.5B by
-  44.71 points at s=9.
-- **Easy tasks barely move.** GSM8K drops are 0.43% for R1-7B and 0.04% for R1-32B, and raising the output
-  limit from 32K to 128K changes almost nothing (R1-7B AIME24 16.53 to 16.17).
-- **Error analysis (AIME24).** Question omission plus reasoning error account for 42.00% of
-  DeepSeek-R1's degradation; endless repetition plus output truncation account for 48.90% of
-  Light-R1-7B's. No format violations occurred for the four models analysed. Accuracy falls with the
-  question's position in the prompt, easy-first ordering beats hard-first, and models that do well use fewer
-  reasoning tokens on the first question.
+- **Drops.** DeepSeek-R1 on AIME24 falls from 81.66 (single question) to 52.49 (stress, levels 2 to 5),
+  which the text reports as a 29.17% drop; that figure equals the fall in accuracy points, not a relative
+  drop. For AIME25 the fall is 68.75 to 37.17, reported as 31.58% and again equal to the point difference.
+- **Discrimination.** MATH500 at levels 3, 5, 7 and 9: R1-Distill-Qwen-7B moves from 93.0 to 66.75,
+  while R1-Distill-Qwen-32B moves from 94.6 to 88.97. The single-question gap of 1.6 points widens to 22.22.
+- **Post-training does not carry over.** The R1-7B base scores 93.0 single and 66.75 stress on MATH500.
+  AReaL-boba-RL-7B starts higher (95.0) but lands at 60.77 under stress; OpenThinker2-7B goes 93.8 to 83.30.
+  Both AReaL and Light-R1-7B-DS (stress 61.73) finish below that base. Looking at s=9 alone,
+  those two get 38.07 and 39.11 while R1-7B gets 49.42.
+- **Ranking flip.** On MATH500 with a single question, R1-Distill-Qwen-1.5B (83.40) is ahead of
+  Qwen2.5-Math-1.5B-Instruct (73.00); under stress the order reverses (42.47 against 53.94).
+- **Shorter reasoning helps.** At s=9 on MATH500, Efficient-R1-7B (alpha 0.2) reaches 66.02 where R1-7B
+  reaches 49.42, despite lower single-question accuracy (88.20 against 93.00), a margin of 16.60.
+  L1-Qwen-1.5B-Max is 44.71 points ahead of R1-1.5B at s=9.
+- **Easy tasks barely move.** On GSM8K the losses are 0.43% (R1-7B) and 0.04% (R1-32B), stated in the
+  text. In a separate run (Tab. 5), lifting the output cap from 32K to 128K makes almost no difference
+  (R1-7B on AIME24: 16.53 then 16.17).
+- **Error analysis (AIME24, Fig. 5; ordering and token results from Figs. 6 to 8).** For DeepSeek-R1, omitted questions and reasoning errors together explain
+  42.00% of the degradation; for Light-R1-7B, endless repetition and truncated output together explain
+  48.90%. The four models analysed had no format violations. Accuracy declines the later a question
+  sits in the prompt, putting easy questions first beats hard first, and the strong models spend fewer
+  reasoning tokens on the opening question.
 
 ## Limits
 
-- The authors concede higher evaluation cost (longer reasoning) and that newer models may be missing.
-- Only reasoning models were run on math, GPQA and LiveCodeBench; non-reasoning models appear only as
-  comparisons.
-- It does not show that stress scores predict real multi-issue deployment quality; the tutoring and support
-  cases are motivation only. The abstract cites contamination, but there is no contamination experiment.
-- Position and difficulty effects are confounded (difficulty order uses R1-7B's fail rate as the proxy).
-- Rule-based extraction understates accuracy: R1-7B on MATH500 is 66.75 rule-based against 70.59 with a
-  gemma-3-27b-it extractor.
-- Stress levels were chosen per benchmark, so scores are not comparable across benchmarks. The models date
+- The paper's dates disagree: the arXiv v2 listing says 16 July 2025 and its footer 15 July 2025.
+- The authors acknowledge the extra evaluation cost from longer reasoning, and that recent models may be absent.
+- Math, GPQA and LiveCodeBench runs used reasoning models only; models without reasoning appear just as
+  reference points.
+- Nothing here shows that a stress score tracks quality in real deployments with several issues at
+  once; the tutoring and support scenarios serve only as motivation. The abstract mentions contamination,
+  yet no experiment on it is run.
+- Question position and difficulty are entangled, since the difficulty ordering takes R1-7B's failure rate as its proxy.
+- Rule-based answer extraction undercounts: for R1-7B on MATH500 it gives 66.75, whereas an extractor
+  built on gemma-3-27b-it gives 70.59.
+- Each benchmark got its own stress levels, so scores cannot be compared across benchmarks. The models are
   from early to mid 2025.
 
 ## See Also

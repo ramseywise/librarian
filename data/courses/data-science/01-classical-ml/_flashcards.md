@@ -80,8 +80,14 @@ cards:
 - front: How do you fit a density anomaly detector and choose its cut-off?
   back: Fit on unlabelled normal data, choose the cut on a small labelled set, and score with F1.
   lesson: data-science/01-classical-ml/notes/05-unsupervised-learning
+- front: Why does k-means on one-hot columns ignore the categories?
+  back: Check how each column type is weighted in the distance, since the weighting decides which columns get heard.
+  lesson: data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data
 - front: What can validate a customer segmentation?
   back: Run every method against a shuffled-column control, and judge segments on an outcome that wasn't used to fit them.
+  lesson: data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data
+- front: How do you use silhouette, CH and DB on mixed-data clusters?
+  back: Read the gap to a shuffled-column control and not the peak, because stability and surrogate accuracy don't validate segments either.
   lesson: data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data
 - front: With no labels, how do you test whether clusters are useful?
   back: 'Test them on a later task: added to one music ranker, cluster features did not raise AUC.'
@@ -101,6 +107,15 @@ cards:
 - front: Which kind of drift stays invisible to PSI?
   back: Concept shift looks like no change at all, so monitor inputs as well as the score and get labels when you can.
   lesson: data-science/01-classical-ml/notes/10-imbalance-errors-and-drift
+- front: What do you do with a finding from reading errors?
+  back: Every finding from reading errors is a hypothesis until it holds on rows you did not read.
+  lesson: data-science/01-classical-ml/notes/12-reading-the-errors
+- front: What should you do when errors look identical to correct rows?
+  back: Look for missing information, bad labels and the wrong threshold before you change the model.
+  lesson: data-science/01-classical-ml/notes/12-reading-the-errors
+- front: Why must a slice you found by reading be re-tested on unread rows?
+  back: A slice is real when it survives rows you did not read, and the model is right about it when its score matches the default rate.
+  lesson: data-science/01-classical-ml/notes/12-reading-the-errors
 - front: How do you tell a real gain from one that reading the errors produced?
   back: Read errors on one set and score the fix on rows you did not read, because reading selects on noise.
   lesson: data-science/01-classical-ml/notes/12-reading-the-errors
@@ -128,8 +143,17 @@ cards:
 - front: Why is the human correction rate a weak metric?
   back: A falling correction rate can mean a better model, a worse model or a clerk who stopped looking, so seed known problems.
   lesson: data-science/01-classical-ml/notes/14-learning-from-corrections
+- front: Why can a low impact ratio come from more than the model?
+  back: A low ratio can come from the model, the label or the world before anyone applied, so say which before you blame the model.
+  lesson: data-science/01-classical-ml/notes/15-fairness-in-automated-scoring
+- front: Why doesn't deleting the sensitive column remove its effect?
+  back: Predict the group from your features, then ask which of the helpful ones have a job-related reason to be there.
+  lesson: data-science/01-classical-ml/notes/15-fairness-in-automated-scoring
 - front: When base rates differ, can one model equalise PPV, FPR and FNR across groups?
   back: With unequal base rates and imperfect prediction, equal PPV and FNR force unequal FPR, so someone has to choose which gap to close and own it.
+  lesson: data-science/01-classical-ml/notes/15-fairness-in-automated-scoring
+- front: What must an audit report state besides the ratio?
+  back: An audit reports counts, intervals and what is not established, so C's 0.806 reads as unsettled and not as a pass.
   lesson: data-science/01-classical-ml/notes/15-fairness-in-automated-scoring
 - front: Where are most of classical ML's failures?
   back: Most of classical ML's failures are in the measurement, not in the model.

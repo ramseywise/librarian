@@ -84,7 +84,7 @@ For skills whose correct answer changes with live data, Tamhane et al. (arXiv 26
 
 On 53 comparable cases of 55 for one in-house skill on a synthetic database, with Claude Code and Claude Sonnet 4.6 as both skill model and judge, judge-to-human agreement (MCC) was 0.427 for code-as-reference, 0.331 for a natural-language reference and −0.379 for a judge given no reference (self-reported; one run per configuration, no intervals). Token cost per case fell 16% against the natural-language reference. Human labels came from three annotators (Gwet's AC2 0.931 at factoid level).
 
-Limits: the same model plays skill and judge; the method assumes the code is correct and complete; writing the code takes more expert effort than a text reference; and the scope is tasks answerable from accessible data APIs. The extraction notes that recall was 1.000 with precision 0.568, so the judge passes every case humans passed and many they failed; that annotators saw the ground truth; that the benchmark's reference function retrieves a stored specification, so recomputation against changing data is asserted, not tested; and that precision differed by only 0.568 against 0.561, too little to support the paper's claim that the text reference depressed precision.
+Limits: the same model plays skill and judge; the method takes the reference code to be correct and complete; writing the code takes more expert effort than a text reference; and the scope is tasks answerable from accessible data APIs. The extraction notes that recall was 1.000 with precision 0.568, so the judge passes every case humans passed and many they failed; that annotators saw the ground truth; that the benchmark's reference function retrieves a stored specification, so recomputation against changing data is asserted, not tested; and that precision differed by only 0.568 against 0.561, too little to support the paper's claim that the text reference depressed precision.
 
 ## See Also
 - [[Eval Harness Anatomy]] <!-- auto-linked -->
@@ -95,6 +95,6 @@ Limits: the same model plays skill and judge; the method assumes the code is cor
 - [[LLM Grader Calibration Insights]]
 - [[Grounding Claim Methodology]]
 - [[Skill Discovery Failure Modes]] — extends (trigger evals for the description, beside output-quality evals)
-- [[Skill Lift Evaluation]] — instance-of (published studies of the with/without-skill comparison)
+- [[Skill Lift Evaluation]] — related (published studies of the with/without-skill comparison)
 - [[Verification Thins Where Blast Radius Widens]] — extends (what happens when only the trigger evals run)
 - [[De-Dupe Before You Normalize]] — related (classify skill copies before rolling the eval norm out)

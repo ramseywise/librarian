@@ -35,15 +35,15 @@ Reference label: the majority of three annotators, who were the authors; 80 ques
 - Evidence-first prompting with a single sample lifted ChatGPT from 44.4% to 52.6%.
 - Sending 20% of examples to humans: GPT-4 reached 73.8% (kappa 0.56); ChatGPT reached 71.3%, which the authors match to the human average of 71.7% (kappa 0.54), with annotation cost cut from $30 to $18.3 (39%).
 - Switching ChatGPT from the scoring to the comparing template moved vanilla accuracy from 44.4% to 50.2% (conflict rates 82.5% and 50.0%); with MEC plus BPC the two gave 58.8% and 60.0%.
-- Gains from MEC plateaued beyond k=3 for ChatGPT (values read from a figure); temperatures of 0.6 and 1.0 worked and 0.2 and 1.4 did not.
+- Gains from MEC plateaued beyond k=3 for ChatGPT (values read from a figure); temperatures of 0.6 and 1.0 worked and the authors call 0.2 and 1.4 sub-optimal.
 
 ## Limits
 
 The authors did not investigate the causes of the bias. One benchmark, one model pair for human labels, and two judges only. The reference is a vote among three authors. Each annotator's accuracy is scored against that vote, and HITLC reuses the vote as its human correction, which makes the HITLC figures optimistic. Single annotators land between 68.8 and 76.3% accuracy, above the best calibrated judge working alone (62.5%). There are no significance tests or intervals, and with 80 questions one example moves a score by 1.25 points. Models are unversioned 2023 API snapshots.
 
 ## See Also
-- [[LLM Judge Biases]] — instance-of (position bias, measured and calibrated)
-- [[LLM-as-Judge Evaluation]] — extends (a calibration for the pairwise judge)
+- [[LLM Judge Biases]] — prerequisite-for (position bias, measured and calibrated)
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (a calibration for the pairwise judge)
 - [[J1 Reinforcement-Learned Judge]] — alternative-to (a training-time consistency reward against order flips)
 - [[Judge Calibration (TPR, TNR and Corrected Pass Rate)]] — related (accuracy against human labels, a different calibration)
 - [[Self-Consistency]] — related (sampling several judgments and aggregating)

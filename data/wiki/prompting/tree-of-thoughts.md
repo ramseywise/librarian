@@ -2,7 +2,7 @@
 title: Tree of Thoughts
 tags: [prompting, llm, concept]
 summary: Generalizes chain-of-thought into search — a propose prompt generates candidate intermediate steps, a value prompt rates each (sure/maybe/impossible), and a code controller runs BFS/DFS with backtracking; GPT-4 went from 4% (CoT) to 74% on Game of 24.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
 ---
@@ -35,3 +35,4 @@ model or self-consistency is cheaper ([[Prompting Reasoning Models]]).
 - [[Self-Consistency]] — extends
 - [[Prompting Technique Selection]] — instance-of
 - [[LLM Fundamentals Interview Study Guide]] — prerequisite-for
+- [[Self-Ask Prompting]] — alternative-to (another structured reasoning scaffold)

@@ -1,5 +1,5 @@
-# imported_hash: 517cef0418cafb26
-# Lecture deck for generative-ai/08-eval, notes 01-15.
+# imported_hash: 8aa95d90280854f3
+# Lecture deck for generative-ai/08-eval: all 19 notes, 01-15 plus 03b, 05b, 06b and 06c.
 # Build: make slides PILLAR=generative-ai/08-eval STRICT=1 PREVIEW=1
 # Running example: a customer-support agent that answers from help-centre articles and can issue
 # refunds. Version B scores 85% against version A's 84%. The talk earns the answer: do not ship.
@@ -7,7 +7,7 @@ deck:
   title: Eval Engineering
   subtitle: "Version B scores one point higher. Do you ship it?"
   tagline: "Define correct, trust no grader you have not checked, and put an error bar on every number"
-  reference: "Notes: generative-ai/08-eval/notes/01-15"
+  reference: "Notes: generative-ai/08-eval/notes (01-15, with 03b, 05b, 06b, 06c)"
   output: eval-engineering.pptx
   notes: >-
     This talk follows one decision from start to finish. A support agent has two versions, B scores
@@ -30,7 +30,7 @@ parts:
         attribution: "You cannot answer until better is written down so a machine can check it."
         takeaway: "An eval is the definition of better for your system, written down so a machine can check it."
         recall: "What does an eval give you that reading ten good outputs does not?"
-        source: notes/09-reading-results.md
+        source: notes/01-what-an-eval-is.md
         notes: >-
           Here is the running example for the whole talk. Our support agent answers from help-centre
           articles and can issue refunds. Someone changed the prompt and the score moved from 84 to 85.
@@ -193,8 +193,8 @@ parts:
           - [Temporal freshness, SWE-bench-Live, "Keep adding tasks created after the training cutoff"]
           - [Canaries, "BIG-bench, Terminal-Bench", "A unique GUID in the data; if a model can produce it, the set has leaked"]
           - [Closed test set, "HLE, SHADE-Arena", "Keep some of it unpublished; SHADE-Arena published 5 of its 17 environments"]
-        takeaway: "A public benchmark protects its answers by design, because a canary only catches leaks and a public set cannot be both open and closed."
-        recall: "Name three tactics a public benchmark uses against memorization."
+        takeaway: "Five tactics: unique answers, parameterized templates, fresh tasks, canaries and a closed test set. A canary only catches a leak and prevents nothing."
+        recall: "Name the five tactics a public benchmark uses against memorization."
         source: notes/03b-splits-contamination-and-public-benchmarks.md
         notes: >-
           Contamination is why a public score can overstate what you will see on your own traffic. Each tactic
@@ -686,7 +686,7 @@ parts:
           the question for our decision is not whether 85 beats 84, but how many tasks stand behind each.
       - layout: table
         kicker: Sizing the error bar
-        title: Halving the error bar takes four times the tasks
+        title: The error bar shrinks with the square root of the tasks
         lead: "SE = √(p(1 − p) / n). The 95% CI is p ± 1.96·SE. To detect 10 points, paired: 100–200 tasks. 5 points: 400–800. 2 points: 2,500+."
         header: [Tasks, SE at p = 0.80, 95% CI]
         rows:
@@ -947,7 +947,7 @@ parts:
         header: [Grader, Δ, "Cohen's d", Verdict]
         widths: [5, 2, 2, 3]
         rows:
-          - ["**Custom answer_relevancy v3**", "**+0.214**", "0.75", "Strong: gate on it once calibrated"]
+          - ["**Custom answer_relevancy v3**", "**+0.214**", "0.75", "Strongest; confirm on 100–200 labels before gating"]
           - [DeepEval answer_relevancy, "+0.086", "0.25", Weak]
           - [Custom completeness, "+0.030", "0.07", Marginal]
           - [DeepEval completeness, "−0.042", "—", "**Inverted**"]

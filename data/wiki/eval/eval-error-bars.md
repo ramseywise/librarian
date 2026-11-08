@@ -107,3 +107,4 @@ sampling alone gives at 100 questions per set, by the extraction's estimate.
 - [[Private Variant Testing on Arena Leaderboards]] — related (identical checkpoints scoring 17 points apart)
 - [[Live Multi-Market Trading Benchmark]] — related (single-run cells, no intervals)
 - [[Live Penetration Testing of Agents and Professionals]] — related (one run per agent, no hypothesis tests)
+- [[GPQA]] — related (the authors state the effect size needed for 80% power at 448 questions)

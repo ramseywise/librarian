@@ -21,6 +21,9 @@ cards:
 - front: How do you make a switch exhaustive?
   back: Give each member a literal `kind` and assign the `default` branch to `never`, so a new member becomes a compile error.
   lesson: programming/typescript/notes/03-unions-and-narrowing
+- front: What does `p is Admin` let `filter` return, and who checks the body?
+  back: '`p is Admin` makes `filter` return `Admin[]`, but the checker never verifies the body, so a wrong predicate fails at runtime.'
+  lesson: programming/typescript/notes/03-unions-and-narrowing
 - front: How do you type a safe property getter?
   back: '`keyof T` is the union of keys and `T[K]` is that property''s type. A type parameter should appear at least twice.'
   lesson: programming/typescript/notes/04-generics
@@ -39,6 +42,9 @@ cards:
 - front: How do you run two async calls in parallel?
   back: A promise starts when created, so `Promise.all` runs calls in parallel. It fails fast, and `allSettled` doesn't.
   lesson: programming/typescript/notes/06-async
+- front: How do you cancel a request on demand?
+  back: Create an `AbortController` to cancel on demand, and pass its `signal` down through your own async functions.
+  lesson: programming/typescript/notes/06-async
 - front: What goes wrong with `forEach` and `race` in async code, and what do you use instead?
   back: '`forEach` doesn''t await its callbacks and `race` doesn''t cancel the loser, so use `for…of` and `AbortSignal`.'
   lesson: programming/typescript/notes/06-async
@@ -53,6 +59,9 @@ cards:
   lesson: programming/typescript/notes/09-typescript-for-ai-apps
 - front: Why must you never assume content[0] is text?
   back: Content is a discriminated union of blocks, and with thinking on the first often isn't text, so narrow on `type`.
+  lesson: programming/typescript/notes/09-typescript-for-ai-apps
+- front: What must you still check after asking for structured output?
+  back: Structured output constrains the reply to your schema. Still check `parsed_output` for `null` and for a refusal, because the model produced it.
   lesson: programming/typescript/notes/09-typescript-for-ai-apps
 - front: How do you treat `strict`, `any`, unions and outside data?
   back: Turn on `strict`, avoid `any` and `as`, make unions exhaustive, and parse outside data once at the edge.

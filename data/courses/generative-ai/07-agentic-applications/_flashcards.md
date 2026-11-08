@@ -30,6 +30,12 @@ cards:
 - front: What arc did SWE-agent's trajectories show, and why is reproducing first valuable?
   back: Reproducing first gives the agent a verdict, and interface choices move results a lot on the same model.
   lesson: generative-ai/07-agentic-applications/notes/04-coding-agent
+- front: What is the agent-computer interface, and how much did it matter in SWE-agent?
+  back: The agent-computer interface, meaning the commands the model can issue and what comes back, is a design decision worth several points on the same model.
+  lesson: generative-ai/07-agentic-applications/notes/04-coding-agent
+- front: What should stop a coding agent's loop, and what counts as success?
+  back: Count only evidence as done, cap the budget because runs that fail, fail slowly, and halt repeats by fingerprinting the call together with the state of the files.
+  lesson: generative-ai/07-agentic-applications/notes/04-coding-agent
 - front: Which lab layer stops an agent from editing tests to pass them, and what does no file-tool check stop?
   back: A file-tool check is a promise about the tool and a process limit a promise about the code, so state what each misses.
   lesson: generative-ai/07-agentic-applications/notes/04-coding-agent
@@ -54,7 +60,7 @@ cards:
 - front: What differs between chatbot, collaborative and ambient patterns, and what is hardest in each?
   back: The patterns differ in concurrency and get harder in that order, and each has one problem to solve first.
   lesson: generative-ai/07-agentic-applications/notes/06-application-patterns
-- front: What did DIET find about large pretrained models, and when is a small intent model still sensible?
+- front: When is a small intent-and-slot model in front of the agent still sensible?
   back: With few known intents, a small router or workflow graph can beat an LLM on cost and testability.
   lesson: generative-ai/07-agentic-applications/notes/06-application-patterns
 - front: What did Bansal et al. find about explanations, and what should a confirmation show instead?
@@ -74,6 +80,9 @@ cards:
   lesson: generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product
 - front: In the worked example, why measure how often people use the draft before working on the model bill?
   back: At a 14% uplift a 30% miss on use moves value by $9,549 a month, over four times the $2,204 model bill, so measure use first.
+  lesson: generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product
+- front: When does building an AI feature beat buying it, in the note's hypothetical?
+  back: Buy when the task is common, build when the eval set or workflow is your advantage or the vendor is ruled out, and keep the eval set yourself either way.
   lesson: generative-ai/07-agentic-applications/notes/07-scoping-an-ai-product
 - front: What are the rules of thumb for agentic applications?
   back: For every agent, decide who owns the path and what limits are enforced, and name the check that could prove it wrong.

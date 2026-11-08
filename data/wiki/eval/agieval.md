@@ -69,3 +69,5 @@ five demonstrations.
 - [[Eval Contamination Defenses]] — related
 - [[Benchmark Prompt Format Sensitivity]] — related
 - [[Eval Error Bars and Sample Size]] — related
+- [[GPQA]] — alternative-to (expert-written questions in place of exam questions)
+- [[BIG-bench]] — alternative-to (a community-built task set of the same period)

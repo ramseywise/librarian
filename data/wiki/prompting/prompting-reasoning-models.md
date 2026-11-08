@@ -2,7 +2,7 @@
 title: Prompting Reasoning Models
 tags: [prompting, llm, pattern]
 summary: Reasoning models do chain-of-thought natively, so prompts shift from how to think to what to achieve — state goals and constraints, drop manual CoT (it can degrade instruction-following), escalate effort gradually against an eval, and never treat the visible thinking as a faithful audit trail.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--07-prompting-reasoning-models.md
 ---
@@ -82,3 +82,6 @@ build your own eval.
 - [[Sampling Parameters]] — extends
 - [[Evaluating Prompts]] — prerequisite-for
 - [[Prompts as Document Completion]] — extends
+- [[REST Multi-Problem Stress Testing]] — related (reasoning models under several questions in one prompt)
+- [[Embers of Autoregression]] — related (o1-preview tested for next-word-prediction effects)
+- [[Knowledge Index and Information Gain]] — related (step-level scores for distilled and RL-trained reasoners)

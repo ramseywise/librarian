@@ -1,5 +1,5 @@
-# imported_hash: c003ffec7b1bbe61
-# Agentic Applications lecture deck. Covers notes 01-07.
+# imported_hash: 53a126dd7baeb7a7
+# Agentic Applications lecture deck. Covers notes 01-07 (all seven cited).
 # Build: make slides PILLAR=generative-ai/07-agentic-applications STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
 # Running question: what would prove this answer wrong, and who checks?
@@ -235,6 +235,56 @@ parts:
           The SWE-agent ablations are one model and one benchmark, changing one thing at a time. Showing more of a file made
           it worse. A good interface is a limit on what the model has to deal with.
 
+      - layout: compare
+        title: Designing the interface beats handing the model a shell
+        recall: What is the agent-computer interface, and how much did it matter in SWE-agent?
+        lead: Same model (GPT-4 Turbo), same $4 budget per instance, SWE-bench Lite.
+        emphasis: right
+        left:
+          title: A plain shell
+          bullets:
+            - "**11.0%** of issues solved"
+            - "A RAG baseline with no loop: **2.67%**"
+          tag: Hope for the best
+        right:
+          title: A designed interface
+          bullets:
+            - "**18.0%** of issues solved"
+            - "Simple, compact actions"
+            - "Concise feedback, guardrails on edits"
+            - "Viewer of 30 lines: 14.3%. Full file: 12.7%."
+          tag: The ACI
+        takeaway: The agent-computer interface, meaning the commands the model can issue and what comes back, is a design decision worth several points on the same model.
+        source: notes/04-coding-agent.md
+        notes: >-
+          SWE-agent names this the agent-computer interface. Its four principles are actions simple to understand, compact so one
+          step does useful work, informative but concise feedback, and guardrails that stop errors propagating. Both directions of
+          the file viewer lose: thirty lines hides the context needed to edit, and the full file floods the context. These are the
+          context-budget arguments from note 02's compaction, with a number attached. OpenDev sets the same idea out as defaults,
+          and reports tool output as 70 to 80% of the context in a typical session, which is experience from one system, not a
+          controlled measurement.
+
+      - layout: cards
+        title: Only one way for the loop to end should count as success
+        recall: What should stop a coding agent's loop, and what counts as success?
+        cards:
+          - title: Evidence
+            accent: "D4621A"
+            body: "`finish` is refused unless the tests have passed since the last edit. Stopping without it is `stopped_without_finish`, a failed run."
+          - title: Budget
+            body: "SWE-agent's successful runs: median **$1.21** and **12 steps**. Unsuccessful ones: **$2.52** and **21 steps**."
+          - title: Repeats
+            body: "Hash tool name, arguments and file state. **Warn at three** repeats, then halt. Re-running tests after an edit is progress."
+        takeaway: Count only evidence as done, cap the budget because runs that fail, fail slowly, and halt repeats by fingerprinting the call together with the state of the files.
+        source: notes/04-coding-agent.md
+        notes: >-
+          A model that merely stops talking is not finished. SWE-agent's runs succeed fast and fail slow, and 93.0% of resolved issues
+          were submitted before the budget ran out against 69.0% of runs overall, so a tight step budget costs fewer solved issues
+          than its size suggests. OpenDev warns at three repeats and then pauses for approval, on the reasoning that a model can
+          ignore injected text but cannot get past a halt in execution. For coding the fingerprint must include the file state,
+          or running the tests after each edit would trip it. The general rules are in the harness and loop pillars of
+          ai-engineering.
+
       - layout: table
         title: Say what each sandbox layer stops, and what it does not
         recall: Which lab layer stops an agent from editing tests to pass them, and what does no file-tool check stop?
@@ -423,8 +473,9 @@ parts:
           A voice agent's fast and slow pair is a kind of concurrency too.
 
       - layout: steps
-        title: A small intent router still earns its place
+        title: A small intent classifier still earns its place
         recall: When is a small intent-and-slot model in front of the agent still sensible?
+        lead: This is the chatbot's front door, not note 01's router node, which only decides whether to search.
         steps:
           - {title: "Known intents", text: "A small intent-and-slot model is a cheap, testable front door."}
           - {title: "Known workflow", text: "Write the plan as a state machine and let the LLM handle each state with a short prompt (Park et al., 2025)."}
@@ -571,6 +622,35 @@ parts:
           313 hours a month, or 1.0 agent of 40. Released time is not money until hiring, backlog or volume changes. On build or
           buy, at an invented $150 a seat buying wins by $293,000 over three years at 40 agents, and building matches it at about
           126. Keep the eval set yourself either way, and keep shadow mode, since $2,204 is cheap for a look at real tokens.
+
+      - layout: compare
+        title: Buying wins at 40 agents, and building needs about 126
+        recall: When does building an AI feature beat buying it, in the note's hypothetical?
+        lead: Invented prices for a hypothetical team of 40 agents. Not a quote.
+        emphasis: none
+        left:
+          title: Buy
+          bullets:
+            - "**$6,000** a month after **$20,000** integration"
+            - "36 months: **$236,000**"
+            - "$150 a seat, an invented price"
+          tag: Fee grows with agents
+        right:
+          title: Build
+          bullets:
+            - "**$9,704** a month after **$180,000** to build"
+            - "36 months: **$529,346**"
+            - "Matches buying at about **126** agents"
+          tag: Engineering is fixed
+        takeaway: Buy when the task is common, build when the eval set or workflow is your advantage or the vendor is ruled out, and keep the eval set yourself either way.
+        source: notes/07-scoping-an-ai-product.md
+        notes: >-
+          Huyen sets self-hosting against an API on seven axes: privacy, lineage, performance, functionality, cost, control and on-device.
+          At 40 agents buying wins by $293,000 over three years, unless the vendor cannot do what you need. Building matches it at
+          about 126 agents because the engineering is fixed and the seat fee grows. Self-hosting is not near: it would need about
+          12.5 times this volume before a hypothetical $27,500 a month beats the API. Money seldom settles it alone. Build when the
+          evaluation set, the integration or the workflow is your advantage, or contract terms and data handling rule the vendor out.
+          Keep the eval set, since it is what lets you switch later.
 
   - title: Closing
     agenda: false

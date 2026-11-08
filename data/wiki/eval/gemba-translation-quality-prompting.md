@@ -13,7 +13,7 @@ Kocmi and Federmann (arXiv 2302.14520, 2023) ask whether LLMs can assess machine
 
 ## Results (self-reported)
 
-Setup unless stated: the WMT22 MQM 2022 test set, covering three language pairs (en-de, en-ru, zh-en), 54 systems and 106k segments, with no few-shot examples.
+Setup unless stated: the WMT22 MQM 2022 test set, with 54 systems and 106k segments over three language pairs (en-de, en-ru, zh-en), with no few-shot examples.
 
 - Reference-based GPT-4 with the DA prompt tops all WMT22 metrics at system level; the variant without a reference also outscores every other metric, including those that use references. BLEU is the weakest at system level.
 - With GPT-4 the stars prompt reached the highest system-level accuracy among DA, SQM and stars (tied with classes, no reference).
@@ -27,5 +27,5 @@ Setup unless stated: the WMT22 MQM 2022 test set, covering three language pairs 
 Only three language pairs; the authors expect weaker results for under-resourced languages. The state-of-the-art result is at system level only, and they want more analysis before it becomes the main tool for judging translation quality. Test data could have been in OpenAI's training data (training cutoff September 2021, test set released December 2022), which they cannot exclude. Prompts were zero-shot; few-shot, fine-tuning, MQM error prompts and document-level context were not tried. Single run with re-prompting randomness, no significance test; GPT-4 details are undisclosed and the API models are deprecated. The 60.6% against 60.5% figure is an internal inconsistency in the paper.
 
 ## See Also
-- [[LLM-as-Judge Evaluation]] — instance-of (an LLM scoring translations)
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (an LLM scoring translations)
 - [[GPTScore]] — alternative-to (scoring by token probability instead of a prompted score)

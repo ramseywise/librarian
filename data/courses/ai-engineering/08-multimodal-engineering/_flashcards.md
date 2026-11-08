@@ -78,6 +78,15 @@ cards:
 - front: When do you find out that an image's record is incomplete, if you did not plan for it?
   back: When someone later asks for a variation, it is too late to find out the record is incomplete.
   lesson: ai-engineering/08-multimodal-engineering/notes/06-generating-images-and-video
+- front: How do you choose between a mask, a control image and img2img to fix a generated image?
+  back: Edit with a mask when one region changes, a control image to fix structure, and img2img to restyle.
+  lesson: ai-engineering/08-multimodal-engineering/notes/06b-editing-and-customizing-images
+- front: Why can't training a ControlNet damage the base model?
+  back: Zero-initialised connections leave the base model's output unchanged at step 0, so training the control copy can't damage it.
+  lesson: ai-engineering/08-multimodal-engineering/notes/06b-editing-and-customizing-images
+- front: When is a customized model worth training, and which method fits?
+  back: Try a reference image or a control image first, then train one concept per model and record the base and adapter hashes.
+  lesson: ai-engineering/08-multimodal-engineering/notes/06b-editing-and-customizing-images
 - front: Which negatives make a good test for a vision model on invoices?
   back: A random negative tests very little, so choose absent objects that a real invoice could have.
   lesson: ai-engineering/08-multimodal-engineering/notes/07-evaluating-multimodal-systems
@@ -90,7 +99,7 @@ cards:
 - front: Almost nothing in a multimodal system raises an error, so what must every stage have?
   back: Almost nothing here raises an error, so every chapter ends with a check you must add.
   lesson: ai-engineering/08-multimodal-engineering/notes/07-evaluating-multimodal-systems
-- front: Where next
+- front: What do we take up after multimodal engineering?
   back: Next we treat every one of these inputs as something an attacker can write.
   lesson: ai-engineering/08-multimodal-engineering/notes/07-evaluating-multimodal-systems
 ---

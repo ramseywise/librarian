@@ -9,6 +9,8 @@ import { Chip, TagFilterPanel } from "./TagFilterPanel";
 const TYPE_TAGS = new Set(["concept", "pattern", "decision", "project", "comparison", "reference", "conflict"]);
 /** Terms listed before a search narrows them: the most mentioned. */
 const TERM_LIMIT = 12;
+/** Topic tags listed before "more", so layers and the minimap stay in view. */
+const TOPIC_LIMIT = 12;
 
 interface Props {
   id: string;
@@ -43,6 +45,7 @@ function TagsSection({ facets, glossary, activeTags, onToggle }: {
 }) {
   const theme = useTheme();
   const [query, setQuery] = useState("");
+  const [allTopics, setAllTopics] = useState(false);
   const { topic, type } = useMemo(() => {
     const rows = [...facets]
       .filter(([id]) => id.startsWith("tag:") && id !== "tag:tombstone")
@@ -79,7 +82,14 @@ function TagsSection({ facets, glossary, activeTags, onToggle }: {
 
   return (
     <>
-      <div className="cur-chips" role="group" aria-label="Topic tags">{topic.map(chip)}</div>
+      <div className="cur-chips" role="group" aria-label="Topic tags">
+        {(allTopics ? topic : topic.filter((r, i) => i < TOPIC_LIMIT || activeTags.has(r.id))).map(chip)}
+        {topic.length > TOPIC_LIMIT && (
+          <button type="button" className="side-more" aria-expanded={allTopics} onClick={() => setAllTopics((o) => !o)}>
+            {allTopics ? "fewer" : `+${topic.length - TOPIC_LIMIT} more`}
+          </button>
+        )}
+      </div>
       <div className="panel-label side-sublabel">Type</div>
       <div className="cur-chips" role="group" aria-label="Type tags">{type.map(chip)}</div>
       {glossary && (

@@ -59,3 +59,4 @@ rules, with separate warning codes such as hallucination.
 - [[IMO-Bench]] — related (proof grading by experts, later and harder)
 - [[Eval Error Bars and Sample Size]] — related
 - [[Eval Contamination Defenses]] — related
+- [[Counterfactual Task Variants]] — related (a later test of general reasoning against default conditions)

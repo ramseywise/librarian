@@ -212,7 +212,7 @@ def test_health_strip_clears_the_controls_around_it(page: Page, route: str) -> N
     page.wait_for_selector(".atlas-label, .react-flow__node", timeout=20_000)
     box = strip.bounding_box()
     assert box
-    others = page.locator(".graph-filter-panel, .graph-minimap, .react-flow__controls")
+    others = page.locator(".graph-sidebar, .react-flow__controls")
     for other in others.all():
         o = other.bounding_box()
         if not o:

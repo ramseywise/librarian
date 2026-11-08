@@ -13,7 +13,7 @@ Fu et al. (arXiv 2302.04166, 2023) ask whether the probability a pre-trained lan
 
 ## Method
 
-The score is a weighted sum, with equal weights, of the log-probabilities of each hypothesis token, given a prompt that combines a task description, an aspect definition and, optionally, demonstrations. Backbones from the GPT2, OPT, FLAN-T5 and GPT3 families were scored by Spearman correlation with human ratings, next to the metrics ROUGE, BERTScore, MoverScore, PRISM, BARTScore, FED and DynaEval. The study covers 19 backbones (80M to 175B parameters), 4 tasks, 22 aspects and 37 datasets.
+The score is a weighted sum, with equal weights, of the log-probabilities of each hypothesis token, given a prompt that combines a task description, an aspect definition and, optionally, demonstrations. Backbones from the GPT2, OPT, FLAN-T5 and GPT3 families were scored by Spearman correlation with human ratings, next to ROUGE, BERTScore and MoverScore, plus PRISM, BARTScore, FED and DynaEval. The study covers 19 backbones (80M to 175B parameters), 4 tasks, 22 aspects and 37 datasets.
 
 ## Results (self-reported)
 
@@ -26,7 +26,7 @@ The score is a weighted sum, with equal weights, of the log-probabilities of eac
 
 ## Limits
 
-The evaluation sets are random subsets, drawn to limit GPT3 API cost, and their sizes for SummEval, RealSumm, NEWSROOM and MQM are not given. English only. Apart from a bootstrap test there are no repeated runs or variance, and the demonstrations and K behind the main tables are not stated. Prompt engineering is deferred. It needs token log-probabilities, and the text-davinci and ada-curie models used are retired. The paper's text and tables disagree in places.
+The evaluation sets are random subsets, drawn to limit GPT3 API cost, and their sizes for SummEval, RealSumm, NEWSROOM and MQM are not given. English only. Apart from a bootstrap test there are no repeated runs or variance, and the demonstrations and K behind the main tables go unstated. Prompt engineering is deferred. It needs token log-probabilities, and the text-davinci and ada-curie models used are retired. The paper's text and tables disagree in places.
 
 ## See Also
 - [[LLM-as-Judge Evaluation]] — alternative-to (a probability score instead of a generated verdict)

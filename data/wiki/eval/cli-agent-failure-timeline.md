@@ -51,4 +51,4 @@ systems completed were kept, timeouts are excluded, and it covers one benchmark.
 - [[Loop Detection and the Two-Retry Rule]] — related
 - [[Repository-Level Coding Benchmarks]] — related
 - [[Extract-and-Evaluate Monitoring]] — related (another transcript monitor)
-- [[Terminal-Bench]] — related (the benchmark whose failed runs it studies)
+- [[Terminal-Bench]] — prerequisite-for (the benchmark whose failed runs it studies)

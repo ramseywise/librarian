@@ -396,17 +396,17 @@ def test_links_follow_renamed_folders_and_point_unmirrored_files_at_github(
     examples.mkdir()
     (examples / "1.select.py").write_text("print(1)\n")
     (source / "DECKS.md").write_text("# Decks\n")
-    (source / "programming" / "python" / "notes.md").write_text(
-        "# Notes\n\n[Week](../drills/sql/Week_1/) [CSV](../drills/sql/Week_1/data.csv) "
-        "[Case](../drills/sql/Week_1/case%20%28study%29.md) [Decks](../../DECKS.md) "
-        "[Examples](../drills/sql/examples/)\n"
+    (source / "programming" / "drills" / "python" / "notes.md").write_text(
+        "# Notes\n\n[Week](../sql/Week_1/) [CSV](../sql/Week_1/data.csv) "
+        "[Case](../sql/Week_1/case%20%28study%29.md) [Decks](../../../DECKS.md) "
+        "[Examples](../sql/examples/)\n"
     )
     _git(source, "add", "DECKS.md", "programming/")
     ic.apply(ic.build_plan(source, ["programming"]), ["programming"], dry_run=False)
-    notes = (dest / "programming" / "python" / "notes.md").read_text()
-    assert "(../drills/sql/week-1)" in notes
-    assert "(../drills/sql/week-1/data.csv)" in notes
-    assert "(../drills/sql/week-1/case-study.md)" in notes
+    notes = (dest / "programming" / "drills" / "python" / "notes.md").read_text()
+    assert "(../sql/week-1)" in notes
+    assert "(../sql/week-1/data.csv)" in notes
+    assert "(../sql/week-1/case-study.md)" in notes
     assert f"({ic.SIBLING_URL}/blob/main/DECKS.md)" in notes
     # a folder with no lesson in it has no copy here
     assert f"({ic.SIBLING_URL}/tree/main/programming/drills/sql/examples)" in notes

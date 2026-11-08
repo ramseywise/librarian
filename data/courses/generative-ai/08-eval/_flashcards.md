@@ -7,7 +7,7 @@ cards:
   back: An eval runs tasks through k trials, captures what happened, grades each dimension and aggregates with an error bar.
   lesson: generative-ai/08-eval/notes/01-what-an-eval-is
 - front: What is the difference between a trajectory and an outcome?
-  back: The trajectory is the record of one attempt (every step and tool call), and the outcome is its end state. They fail independently, so an agent eval grades both.
+  back: Task, trial, trajectory, outcome, grader and suite are the six parts; Inspect keeps dataset, solver and scorer swappable.
   lesson: generative-ai/08-eval/notes/01-what-an-eval-is
 - front: Which behaviour belongs in a unit test and which in an eval, and why?
   back: 'Never assert an exact LLM string in a unit test: it flakes, then gets loosened until it checks nothing.'
@@ -24,8 +24,8 @@ cards:
 - front: What failure does a suite of only positive cases hide?
   back: Without negative cases, a change that calls tools more often looks like better recall while precision quietly breaks.
   lesson: generative-ai/08-eval/notes/02-defining-correct
-- front: Name three tactics a public benchmark uses against memorization.
-  back: 'Unique answers, parameterised templates, temporal freshness, canaries and a closed test set. A canary only detects a leak, and a public set cannot be both open and closed.'
+- front: Name the five tactics a public benchmark uses against memorization.
+  back: 'Five tactics: unique answers, parameterized templates, fresh tasks, canaries and a closed test set. A canary only catches a leak and prevents nothing.'
   lesson: generative-ai/08-eval/notes/03b-splits-contamination-and-public-benchmarks
 - front: Why does a row carry labels and eligibility as well as a reference?
   back: A golden row carries a reference, labels for slicing, eligibility per gate, provenance and the graders that apply to it.
@@ -88,7 +88,7 @@ cards:
   back: 'Size the suite for the smallest change that matters: a 50-task golden set is a smoke detector, not an instrument for a 3-point tweak.'
   lesson: generative-ai/08-eval/notes/09-reading-results
 - front: Under McNemar, which tasks count, and why is 15 to 5 evidence when 14 to 6 is not settled?
-  back: Only the discordant tasks, the ones that flip between versions. At 15 wins to 5 losses the exact p is 0.041, evidence. At 14 to 6 it is 0.115, not settled.
+  back: Run both versions on identical tasks and analyse per-task differences, since only the tasks that flip carry evidence.
   lesson: generative-ai/08-eval/notes/09-reading-results
 - front: What did the +1 overall hide in the worked example?
   back: An overall gain of one point can ship a change that breaks one group of users, so slice before concluding and show n per slice.

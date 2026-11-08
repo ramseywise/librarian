@@ -9,56 +9,63 @@ sources:
 
 # Forecasting Rare Model Behaviours
 
-Jones, Tong et al. (Anthropic, Mila and UC Berkeley, arXiv 2502.16797, 2025 preprint) note that a single
-evaluation output is binary, but each query has a continuous **elicitation probability**: the chance that
-one sampled output shows the target behaviour. Their claim is that the largest values of that
-distribution follow a power law in the number of queries (a Gumbel-tail fit), so a small eval set can
-forecast deployment-scale worst-case risk up to about three orders of magnitude larger.
+Jones, Tong et al. (Anthropic, Mila and UC Berkeley, arXiv 2502.16797, 2025 preprint) observe that one
+evaluation output is a yes/no event, whereas every query carries a continuous **elicitation
+probability**, meaning the likelihood that a single sampled output exhibits the target behaviour. They
+claim that the largest of these probabilities scale as a power law of the query count (fitted
+with a Gumbel tail), which would let a small eval set forecast worst-case risk at deployment
+scale, up to roughly three orders of magnitude beyond the eval size.
 
 ## Method
 
-Each query's elicitation probability p is turned into the score psi = -log(-log p), and ordinary
-least squares is fitted on the ten highest scores of the eval set. The fit is then used to forecast
-the worst-case risk at a larger deployment size n (up to 90,000 to 500,000 in the experiments). The
-baseline is a log-normal fit.
+The elicitation probability p of each query is converted to the score psi = -log(-log p), and an ordinary
+least squares line is fitted to the ten top scores in the eval set. That fit then forecasts worst-case
+risk for a bigger deployment size n (in the experiments n reaches somewhere between 90,000 and 500,000).
+A log-normal fit serves as the baseline.
 
 ## Results (self-reported; Gumbel-tail unless noted)
 
-1. **Misuse worst-query risk.** Claude 3.5 Sonnet (new), Claude 3 Haiku and their two base models, eval size
-   m of 100, 500 or 1,000, deployment size n of 10,000 to 90,000. Mean absolute log10 error 1.7 against 2.4
-   for log-normal. Forecasts fall within one order of magnitude 72% of the time; the Gumbel-tail method
-   underestimates 34% of the time against 72% for log-normal (an unbiased method would be 50%).
-2. **Behaviour frequency.** 19 substances (10 chemical, 9 biological), 1,000 random eval sets each,
-   thresholds 0.1 to 0.9, m of 100 to 1,000. Individual-forecast log error 0.84 (m=100) to 0.76 (m=1,000)
-   against 3.31 to 4.04 for log-normal.
-3. **Aggregate risk.** m=1,000, n of 10,000 to 500,000, 10 rollouts per setting, forecasting the probability
-   of one specific target output: mean log error 1.3 against 2.5 (table averages 1.286 and 2.523).
-4. **Misaligned actions.** Claude 3.5 Sonnet (new) only, synthetic two-choice questions on power-seeking,
-   self-preservation and self-exfiltration with 100,000 generated system prompts. Worst-query risk: absolute
-   error 0.05 and log error 0.06, against 0.12 and 0.12 for log-normal.
-5. **Red-team compute allocation.** Claude 3.5 Sonnet (new) against Claude 3.5 Haiku as query generators,
-   Sonnet costing 10x to 100x more, 223 settings: the forecast picks the right model 63% of the time against 54%
-   for the majority baseline and 50% for chance, and 79% when the true gap exceeds two orders of magnitude.
-6. **Correctness extension.** Claude 3.5 Haiku with 100 sampled outputs per query (500 where needed), 10,000
-   queries: worst-query absolute error 0.172, log error 0.17, and max p above 0.5 predicted correctly 75% of
-   the time.
+1. **Misuse worst-query risk.** Four models: Claude 3.5 Sonnet (new) and Claude 3 Haiku, plus the base
+   model of each. Eval size m was 100, 500 or 1,000 and deployment size n ran from 10,000 to 90,000. Mean
+   absolute log10 error is 1.7, compared with 2.4 for log-normal. In 72% of cases the forecast lands inside
+   one order of magnitude. The Gumbel-tail fit underestimates in 34% of cases, versus 72% for log-normal
+   (a method without bias would be at 50%).
+2. **Behaviour frequency.** Nineteen substances (10 chemical, 9 biological), with 1,000 random eval sets
+   for each, thresholds between 0.1 and 0.9 and m from 100 to 1,000. The log error of an individual
+   forecast is 0.84 at m=100 and 0.76 at m=1,000; log-normal gives 3.31 to 4.04.
+3. **Aggregate risk.** With m=1,000 and n from 10,000 to 500,000, using 10 rollouts per setting to forecast
+   the probability of a single specific target output, mean log error is 1.3 versus 2.5 for log-normal
+   (the table averages are 1.286 and 2.523).
+4. **Misaligned actions.** Only Claude 3.5 Sonnet (new) was used, on synthetic two-choice questions about
+   power-seeking, self-preservation and self-exfiltration, built from 100,000 generated system prompts. For
+   worst-query risk the absolute error is 0.05 and the log error 0.06; log-normal scores 0.12 and 0.12.
+5. **Red-team compute allocation.** Claude 3.5 Sonnet (new) and Claude 3.5 Haiku act as query generators,
+   with Sonnet costing 10 to 100 times as much. Over 223 settings the forecast identifies the better
+   generator 63% of the time, whereas the majority baseline manages 54% and chance 50%; accuracy is 79%
+   when the real difference exceeds two orders of magnitude.
+6. **Correctness extension.** Claude 3.5 Haiku, 100 sampled outputs per query (500 when required) over
+   10,000 queries: worst-query risk has an absolute error of 0.172 with a log error of 0.17, and a maximum p over 0.5
+   is called correctly 75% of the time.
 
 ## Limits
 
-- Forecasts are sensitive to the ten highest points of the specific eval set and to stochastic ground truth;
-  there are no uncertainty intervals, and the choice of Gumbel as the extreme-value family is not tested.
-- Both methods are biased: Gumbel-tail underestimates 34% of the time (23.9% on the misaligned-action
-  tasks), and in red-teaming the forecasts overestimate, more so for longer forecasts.
-- "Deployment" is simulated: ground truth is at most three orders of magnitude above the eval, with queries
-  resampled from the same pool, so larger scales are asserted, not tested. Eval and deployment queries are
-  assumed to come from one distribution; the authors say they study only changes in query count, not distribution shift, and
-  adaptive adversaries are untested.
-- Most misuse results use proxies (log-probability of a specific output or keyword); only the small Haiku run
-  checks correctness. The misaligned-action tests use synthetic multiple-choice questions on one model.
-  Repeated sampling is costly; the authors only propose adaptive stopping and importance sampling.
-- All models and query generators are Anthropic's Claude models.
-- The intro states that 86% of misuse forecasts are within one order of magnitude (900 samples to 90,000); the
-  extraction notes the paper does not say which of the three metrics that covers, so it is left out above.
+- The forecast depends heavily on the ten highest points in the particular eval set and on noisy ground
+  truth; no uncertainty intervals are given, and the use of Gumbel as the extreme-value family is not
+  checked against alternatives.
+- Neither method is unbiased: the Gumbel-tail fit underestimates 34% of the time (23.9% for the
+  misaligned-action tasks), and in red-teaming the forecasts overshoot, increasingly so for longer-range forecasts.
+- The "deployment" is a simulation: ground truth sits at most three orders of magnitude above the eval,
+  with queries resampled from the same pool, so larger scales are claimed but not tested. Eval and
+  deployment queries are taken to share one distribution; the authors say they vary only the number of
+  queries rather than distribution shift, and adaptive adversaries were not tried.
+- The majority of misuse results rely on proxies (the log-probability of a particular output, or a keyword);
+  only the small Haiku run checks whether outputs are correct. Misaligned-action tests are synthetic
+  multiple-choice questions on a single model. Sampling many times is expensive, and the authors only suggest
+  adaptive stopping and importance sampling as remedies.
+- Every model and query generator is a Claude model from Anthropic.
+- INTERNAL INCONSISTENCIES: the introduction says 86% of misuse forecasts fall within one order of
+  magnitude (900 to 90,000 samples), but the extraction notes the paper never names which of its three
+  metrics that covers, so the figure is left out of the results above.
 
 ## See Also
 - [[Extreme-Risk Model Evaluation]] — related (dangerous-capability and propensity evals; this paper forecasts misuse and misaligned-action behaviours)

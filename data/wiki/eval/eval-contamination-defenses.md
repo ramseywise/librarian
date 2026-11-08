@@ -119,3 +119,5 @@ verbatim; scores drop on paraphrased versions.
 - [[Extreme-Risk Model Evaluation]] — related (training on the evaluations removes their value as a risk indicator)
 - [[Holistic Agent Leaderboard (HAL)]] — related (leaked few-shot examples and gold-answer lookup found in logs)
 - [[Live Multi-Market Trading Benchmark]] — related (live data as a way around leakage, untested in the paper)
+- [[BIG-bench]] — instance-of (a canary GUID in every task file)
+- [[Counterfactual Task Variants]] — related (default against counterfactual task conditions)

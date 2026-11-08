@@ -1,5 +1,5 @@
-# imported_hash: e888893a556e1582
-# Lecture deck for ai-engineering/03-harness-engineering, notes 01-10.
+# imported_hash: 504236dc80508a5f
+# Lecture deck for ai-engineering/03-harness-engineering, notes 01-10, including 03b and 05b.
 # Build: make slides PILLAR=03-harness-engineering STRICT=1 PREVIEW=1
 # Running example: a refund agent (notes/01) growing from a demo into a production harness;
 # long-horizon parts use the published long-run experiments the notes cite.
@@ -197,7 +197,7 @@ parts:
           Each of the next parts opens up one row here, beginning with the tools.
 
   - title: What it may touch
-    summary: Tools written for an agent · Requests vs. rules · Test the gate
+    summary: Tools written for an agent · MCP, writes and async tools · Requests vs. rules · Test the gate
     divider: true
     agenda: true
     notes: >-
@@ -323,7 +323,73 @@ parts:
         notes: >-
           Only the name and description sit in the window, and the body loads on demand. So the description is
           routing logic, and detail goes in the body where it costs nothing until used. So far we have helped the
-          agent choose well. Now for what happens when it chooses badly.
+          agent choose well. Next, tools that cross a process boundary, write to the world or take minutes.
+      - layout: table
+        kicker: Beyond one call
+        title: A third-party MCP server is code you didn't write
+        lead: Its tool descriptions sit in the model's context, so they steer it.
+        header: [Risk, What happens, Mitigation]
+        widths: [2.2, 4.4, 3.4]
+        highlight: [0]
+        rows:
+          - [Description poisoning, "Instructions hidden in a description steer the model", Review descriptions as code and diff them on every update]
+          - [Compromised server, A trusted server ships a bad version, "Pin versions; don't auto-update"]
+          - [Tool shadowing, A tool's name or description hijacks another server's tool, Namespace tools per server]
+          - [Credential exposure, The server holds broad tokens, Least-privilege credentials per server]
+        takeaway: Treat a tool description as untrusted code, and break the lethal triad (private data, untrusted content, an exfiltration channel).
+        recall: How do you defend against a poisoned MCP tool description?
+        source: notes/03b-mcp-write-safety-and-async-tools.md
+        notes: >-
+          Default to an in-process tool and promote to MCP only when several callers need it, a security boundary
+          must be crossed, it deploys independently, discovery matters or it holds its own state. Once a server is
+          third-party, its descriptions are text you did not write sitting in the window. The structural defence is
+          to break the lethal triad and gate risky calls, as the execution-boundaries note shows.
+      - layout: steps
+        kicker: Write safety
+        title: A tool that writes needs four things before it runs
+        steps:
+          - {title: Declare the side effect, text: "The description says it mutates, sends or spends."}
+          - {title: Confirm first, text: "A confirmation step precedes anything irreversible."}
+          - {title: Key the call, text: "The caller supplies an idempotency key, so a retry is safe.", accent: "D4621A"}
+          - {title: Validate inputs, text: "Check model-generated inputs against the schema before executing."}
+        takeaway: A tool with no idempotency key must never be auto-retried, because one timeout can become three charged invoices.
+        recall: Why must a write tool without an idempotency key never be auto-retried?
+        source: notes/03b-mcp-write-safety-and-async-tools.md
+        notes: >-
+          With no key from the downstream API there are two patterns. Query before mutate: check whether the first
+          attempt already landed. Or a two-phase call, where prepare returns a preview and a short-lived confirm
+          token and commit accepts the token once, so a retry with a spent token is rejected. For a live data store,
+          register narrow operations rather than a raw execute_sql, and log every call.
+      - layout: compare
+        kicker: Asynchronous tools
+        title: Name the initiation, not the completion
+        emphasis: right
+        left:
+          title: Implies the work is done
+          accent: "94A3B8"
+          code: |-
+            phone_call(number)
+            # returns... when?
+          tag: The model assumes the call has ended
+        right:
+          title: Says what really happens
+          code: |-
+            initiate_phone_call(number)
+            # -> task_id + status, at once
+            get_status(task_id)
+            cancel(task_id)
+            # events: phone_call_connected,
+            #         phone_call_ended
+          tag: Asynchrony lives in the interface
+        takeaway: Name a slow tool for its initiation, return a task ID at once, and deliver completion later as an event.
+        recall: How should you design a tool call that takes minutes?
+        source: notes/03b-mcp-write-safety-and-async-tools.md
+        notes: >-
+          Models are trained on the assumption that a call is followed by its result. Rather than fight that, put
+          the asynchrony in the interface. Say so in the description, and give the task ID verbs. Event-trigger
+          tools such as timers and shell monitors need precise trigger conditions and enough context in the payload
+          that the agent needs no extra query on waking. How the harness merges those events into the trajectory is
+          an orchestration question, covered later. First, what happens when the agent chooses badly.
       - layout: table
         kicker: Enforcement
         title: Match the enforcement to the cost of being wrong

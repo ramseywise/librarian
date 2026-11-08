@@ -32,6 +32,6 @@ Search ranges follow common practice, so the true optimum may lie outside them. 
 
 ## See Also
 - [[Prometheus 2 Evaluator Models]] — alternative-to (another open evaluator trained for judging)
-- [[LLM-as-Judge Evaluation]] — extends (a trained open judge)
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (a trained open judge)
 - [[LLM Judge Biases]] — related (its swap-and-tie rule for position bias)
 - [[Self-Taught Evaluators]] — alternative-to (a judge trained on synthetic labels instead of GPT-3.5 distillation)

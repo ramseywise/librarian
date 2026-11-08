@@ -167,13 +167,46 @@ cards:
 - front: How should you retry a failed call?
   back: Back off exponentially with jitter, and retry only errors that can succeed next time, such as timeouts, 429 and 5xx.
   lesson: programming/python/03-language-for-engineers/notes/07-concurrency
+- front: Why can tenant B read tenant A's message?
+  back: Per-instance state belongs in `__init__`, never in a mutable class attribute. In a service, the shared list is a data leak.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: A subclass overrides `put` and `put_many` to count writes. Why does `put_many` of two items count 4, and what avoids it?
+  back: A subclass depends on which parent methods call which others, and the parent never promised that. Compose by default, and inherit when the parent was designed for it.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
 - front: In `class ProdClient(Retrying, Logged)`, with both parents inheriting `BaseClient`, what does `super()` inside `Retrying` reach, and why?
   back: 'It reaches `Logged`: `super()` continues from the entry after the current class in the MRO of the instance''s type, so it can reach a sibling, not only a parent.'
   lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: In what order does obj.x look for x?
+  back: A data descriptor beats the instance dict and a non-data one loses to it. So a method can be shadowed and a property can't.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: How do you validate the same field on many classes?
+  back: A descriptor reuses attribute logic across fields. Store the value on the instance, and measure before you worry about its cost.
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: Which class-customisation tool should you try first, and what does a metaclass cost?
+  back: 'Pick the first tool that works. A needless metaclass invites `TypeError: metaclass conflict` when someone combines your class with another library''s.'
+  lesson: programming/python/03-language-for-engineers/notes/08-objects-inheritance-and-mro
+- front: Which record shape costs the most and the least in bytes, and why can't `sys.getsizeof` compare them?
+  back: A dict is the heaviest record, and `sys.getsizeof` is shallow, so it can't compare shapes. Count with `tracemalloc`.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: What frees an object, and what frees a cycle?
+  back: Refcounting frees most objects at once and a separate collector frees cycles. Use `with` for anything that must be released on time.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
 - front: What is a memory leak in Python, and how do you find it?
   back: A Python leak is an object something can still reach, so diff two `tracemalloc` snapshots after warm-up, and don't trust RSS alone.
   lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: Why does lru_cache on a method keep objects alive?
+  back: '`lru_cache` stores `self` in a class-level key, so instances live until evicted. `cached_property` stores on the instance and dies with it.'
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: What does __slots__ buy, and what does it cost?
+  back: Use `@dataclass(slots=True)` only for many instances of one small class, after measuring. Otherwise the plain class is the better default.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: Is self.total += n one operation?
+  back: '`dis` shows that `x += 1` is several instructions, so it isn''t atomic. Don''t build tools on specific opcodes.'
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
+- front: Does removing the GIL make code thread-safe, and what did 4 CPU-bound threads gain?
+  back: CPU-bound threads scale only with the GIL off, and removing it doesn't make code thread-safe. Check `sys._is_gil_enabled()`, not the binary's name.
+  lesson: programming/python/03-language-for-engineers/notes/09-memory-and-the-runtime
 - front: What are the engineering rules?
-  back: Treat names as labels, fail narrowly, validate at edges, and choose concurrency by what you are waiting on.
+  back: Treat names as labels, fail narrowly, validate at edges, choose concurrency by what you wait on, and compose before you inherit.
   lesson: programming/python/03-language-for-engineers/notes/01-data-model-and-idioms
 ---

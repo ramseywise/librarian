@@ -9,57 +9,61 @@ sources:
 
 # Knowledge Index and Information Gain
 
-Wu et al. (UC Santa Cruz and Stanford, arXiv 2506.02126, 2025 preprint, marked "under review") argue
-that final-answer accuracy hides two separable things, and that training methods and domains affect them
-differently. Their paper's stated position is that knowledge and reasoning should be two distinct
-evaluation aspects.
+Wu et al. (UC Santa Cruz and Stanford, arXiv 2506.02126, 2025 preprint, marked "under review") say
+that accuracy on the final answer conflates two separable things, and that training methods and domains
+act on them differently. The position the paper takes is that evaluation should treat knowledge and
+reasoning as two separate aspects.
 
 ## The two scores
 
-GPT-4o splits each chain of thought into steps. Then:
+GPT-4o first cuts each chain of thought into steps. Two scores follow:
 
-- **Knowledge Index (KI)** is the fraction of steps that GPT-4o judges consistent with retrieved reference
-  facts.
-- **Information Gain (InfoGain)** is the mean per-step drop in the perplexity of the gold answer, scored
-  by an untrained Qwen2.5-7B.
+- **Knowledge Index (KI)** is the proportion of steps that GPT-4o rates as agreeing with reference
+  facts it has retrieved.
+- **Information Gain (InfoGain)** is the average, per step, of how much the perplexity of the gold answer
+  falls; the perplexity comes from an untrained Qwen2.5-7B.
 
-KI is computed for medical benchmarks only, since there is no knowledge base for math; math has
-InfoGain only. The authors use a separate model for the perplexity so a model does not score its own
-reasoning (they cite self-preference bias).
+KI exists for the medical benchmarks only, because maths has no knowledge base; maths is scored with
+InfoGain alone.
 
 ## Results (self-reported, Qwen2.5-7B family; no n, seeds or intervals reported)
 
-- **Table 1, medical, five benchmarks averaged.** SFT only: Qwen-Base accuracy 52.79% against 38.07% for Qwen-R1
-  (DeepSeek-R1-Distill-Qwen-7B); with SFT+RL: 60.02% against 31.48%. Average KI 63.40 against 56.49 (SFT only)
-  and 64.23 against 54.29 (SFT+RL). Average InfoGain is near-equal (2.347 vs 2.249; 2.348 vs 2.309).
-- **KI tracks accuracy.** Across the five medical benchmarks the average correlation of KI with accuracy is
-  0.998, which the authors give as 0.3 higher than that of reasoning. On PubMedQA, KI correlates 0.897 and
-  InfoGain 0.465; MedQA and MedXpert are above 0.9 for both.
-- **SFT vs the untrained base (Fig. 6b).** Medical InfoGain 0.39 to 0.22 and math 0.13 to 0.09.
-- **RL and knowledge (medical, Qwen-Base).** KI is 49.71 for the base, 60.24 RL-ed and 63.40 SFT-ed; RL
-  on the base raises KI by 12.4 points on average and by 2.2 points when added after SFT.
-- **Accuracy by domain (Fig. 6a).** Medical: SFT-ed 49.8%, RL-ed 49.8%, base 48.2%. Math: RL-ed 61.7%,
-  SFT-ed 51.9%, base 40.5%.
-- **Older step metrics.** In the appendix, the ROSCOE semantic-alignment metrics stay flat across base, SFT
-  and RL models (Faithfulness-Step average 0.781 for all three), while KI and InfoGain move; the authors use
-  this to argue older step metrics cannot discriminate.
+- **Table 1, medical, mean of five benchmarks.** With SFT only, accuracy is 52.79% for Qwen-Base and
+  38.07% for Qwen-R1 (DeepSeek-R1-Distill-Qwen-7B); with SFT+RL it is 60.02% and 31.48%. Mean KI: 63.40
+  and 56.49 (SFT only), 64.23 and 54.29 (SFT+RL). Mean InfoGain is almost equal between the two
+  (2.347 against 2.249, and 2.348 against 2.309).
+- **KI tracks accuracy.** Over the five medical benchmarks, KI correlates with accuracy at 0.998 on
+  average, a figure the authors put 0.3 above the reasoning counterpart. For PubMedQA the KI correlation is
+  0.897 and the InfoGain one 0.465; for MedQA and MedXpert both exceed 0.9.
+- **SFT compared with the untrained base (Fig. 6b).** InfoGain falls from 0.39 to 0.22 in medicine and from
+  0.13 to 0.09 in maths.
+- **RL and knowledge (medical, Qwen-Base).** KI values are 49.71 (base), 60.24 (RL-ed) and 63.40
+  (SFT-ed). Applying RL to the base adds 12.4 KI points on average, but only 2.2 when applied after SFT.
+- **Accuracy by domain (Fig. 6a).** In medicine: 49.8% SFT-ed, 49.8% RL-ed, 48.2% base. In maths: 61.7%
+  RL-ed, 51.9% SFT-ed, 40.5% base.
+- **Older step metrics.** The appendix reports that the ROSCOE semantic-alignment metrics do not move
+  across the base, SFT and RL models (Faithfulness-Step mean 0.781 in all three), whereas KI and
+  InfoGain do; the authors take this as evidence that older step metrics cannot tell the models apart.
 
 ## Limits
 
-- **Internal inconsistencies in the paper.** The text says "54.06% vs. 31.48%" for the SFT+RL gap but
-  Table 1 gives 60.02%; a "22.6% increase" cannot be reconciled with Table 1; the InfoGain drop on SFT is
-  37.1% in the text but 38.9% in the abstract and intro; the intro's "6.2% average KI increase" for SFT
-  appears as an accuracy gain in Sec. 4.2; the text's "4.6% and 6.2%" medical accuracy gains do not match
-  the Fig. 6a values above; and Table 1 InfoGain looks like scaled raw units (MedMCQA about 9) while Fig. 6 uses
-  0 to 1 values, with the scaling unexplained. Treat every number above as subject to these.
-- Only Qwen 7B models and only math and medicine were tested.
-- GPT-4o does the step splitting, knowledge extraction and consistency judging, with no human validation or
-  judge-agreement figure; the InfoGain judge is an untrained Qwen2.5-7B, so the metric depends on that model.
-- No seeds, variance or significance tests; gaps such as KI 64.2 against 63.4 are small and untested.
-- The causal story is conjecture: the claim that RL prunes wrong knowledge rests on one case study, and the
-  R1-conflict explanation is stated as "may stem from".
-- The correlations are over five benchmark points. The KI reference source is described only vaguely, and the RL
-  setup is PPO with a sparse +1/0 verifier reward.
+- **Internal inconsistencies in the paper.** For the SFT+RL gap the text says "54.06% vs. 31.48%", yet
+  Table 1 shows 60.02%. A "22.6% increase" cannot be matched to Table 1. The InfoGain drop on SFT is
+  37.1% in the body but 38.9% in the abstract and introduction. The introduction's "6.2% average KI
+  increase" for SFT shows up as an accuracy gain in Sec. 4.2. The "4.6% and 6.2%" medical accuracy gains in
+  the text disagree with the Fig. 6a values given above. InfoGain in Table 1 seems to be in scaled raw units
+  (about 9 for MedMCQA) while Fig. 6 shows values from 0 to 1, with no explanation of the scaling. Every number
+  above is subject to these.
+- Only Qwen 7B models were tested, and only in maths and medicine.
+- GPT-4o does all of the step splitting, extraction of knowledge and consistency judging; there is no
+  human validation and no judge-agreement figure; the InfoGain scorer is an untrained Qwen2.5-7B, so the
+  metric is tied to that model.
+- There are no seeds, variance estimates or significance tests, so small gaps (such as KI of 64.2 against
+  63.4) are untested.
+- The causal account is conjecture: the claim that RL removes wrong knowledge relies on a single case
+  study, and the explanation for the R1 conflict is worded "may stem from".
+- Correlations are computed over only five benchmark points. The source of the KI references is
+  described only loosely, and the RL stage is PPO whose reward is a sparse +1/0 signal from a verifier.
 
 ## See Also
 - [[LLM-as-Judge Evaluation]] — related (an LLM judges each step and no judge validation is reported)

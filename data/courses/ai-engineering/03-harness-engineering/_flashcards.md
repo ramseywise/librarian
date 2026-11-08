@@ -42,6 +42,15 @@ cards:
 - front: Why should a skill description read like a routing rule rather than a summary?
   back: Only a skill's name and description stay resident, so the description's job is deciding when the skill fires.
   lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
+- front: How do you defend against a poisoned MCP tool description?
+  back: Treat a tool description as untrusted code, and break the lethal triad (private data, untrusted content, an exfiltration channel).
+  lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
+- front: Why must a write tool without an idempotency key never be auto-retried?
+  back: A tool with no idempotency key must never be auto-retried, because one timeout can become three charged invoices.
+  lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
+- front: How should you design a tool call that takes minutes?
+  back: Name a slow tool for its initiation, return a task ID at once, and deliver completion later as an event.
+  lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
 - front: What decides whether a constraint belongs in AGENTS.md, a permission gate or a hook?
   back: An instruction is a request and a hook is a rule, so anything that must hold every time belongs in a hook or a permission.
   lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries

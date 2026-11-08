@@ -12,15 +12,14 @@ sources:
 GPQA (Rein et al., 2023 preprint) is a
 multiple-choice benchmark built as a testbed for scalable oversight: reliably getting truthful
 information from a model on questions whose answers people cannot produce or check themselves.
-The authors want questions that domain experts answer reliably but that are
-**Google-proof**, meaning highly skilled non-experts with unrestricted web access (and no LLM
-assistants) still answer with low accuracy.
+The aim is questions that domain experts answer reliably but that are **Google-proof**: skilled
+non-experts who may browse the web freely, though not use LLM assistants, still mostly get them wrong.
 
 ## How the questions are made
 
 61 Upwork contractors who hold or are pursuing PhDs write the questions. Each question goes
-through a first expert validation, a revision by the writer, a second expert validation, and
-three skilled non-expert validators with web access. Payment is incentivised, mostly through
+through an expert validation, a revision by the writer, a second expert validation, and then
+three skilled non-experts who may search the web. Payment is incentivised, mostly through
 quality-conditional bonuses. Questions are then sorted into three nested sets:
 
 | Set | Size | Rule |
@@ -32,14 +31,12 @@ quality-conditional bonuses. Questions are then sorted into three nested sets:
 ## Results (self-reported)
 
 - **Experts vs non-experts.** On the extended set, expert validators (second validation, 4-way
-  multiple choice, chance 25%) reach 65%, or 74% when clear mistakes identified in retrospect are
-  discounted. The non-expert validators, who spent 37 minutes on average per question (median 30,
+  multiple choice, chance 25%) reach 65%, rising to 74% if clear mistakes that they recognised in hindsight are not counted. The non-expert validators, who spent 37 minutes on average per question (median 30,
   15-minute minimum), reach 34%.
 - **Baselines on the extended set.** GPT-4 with 5-shot chain of thought scored 38.7%. GPT-4 with a
   search tool built on [[Self-Ask Prompting]], falling back to few-shot chain of thought when it
   abstains, scored 39.4%. On the main set it abstained on 37.2% of questions against 4.0%
-  for few-shot chain of thought. Llama-2-70B-chat and GPT-3.5-turbo-16k were near chance with
-  few-shot chain of thought.
+  for few-shot chain of thought. Under the same few-shot setup, GPT-3.5-turbo-16k stayed close to chance, as did Llama-2-70B-chat.
 - **Objectivity.** The authors estimate that 74% of questions are objective (73.6% excluding clear
   expert mistakes, 76.4% also counting demonstrated understanding). Of 191 second-expert mistakes, 46%
   were followed by feedback saying the question was correct and 28.3% were judged bad questions.
@@ -48,24 +45,24 @@ quality-conditional bonuses. Questions are then sorted into three nested sets:
   on biology, 37.0% on physics and 31.8% on chemistry.
 - **Shortcut check.** Answer-only classifiers (T5 and CBOW), trained on an 80/20 split, did not beat
   chance, which the authors take to suggest there are no easy spurious features.
-- **Diamond.** Experts score 81.3% and non-experts 22.1%, but both are skewed because the same
-  validators' answers were used for the filtering.
+- **Diamond.** Experts score 81.3% against 22.1% for non-experts; both figures are skewed, since the
+  filtering used these same validators' answers.
 
 ## Limits
 
 - At 448 questions the set has little statistical power: the authors say detecting a difference
   takes a large effect, such as 50% against 60% accuracy for over 80% power, and it is not suited to
   model training.
-- The non-experts are highly skilled PhD-level people, so their accuracy is an upper bound on what
-  an unskilled overseer would reach. Some may have had nearby expertise.
-- Main and Diamond validator accuracies are biased by selection; the true values lie between the
-  extended-set and subset values.
-- The objectivity estimate rests on a subjective manual classification of expert feedback. About a
-  quarter of expert errors came from questions judged bad.
-- The expert pool came from Upwork with no regional or demographic balance, and the wording has
+- The non-experts are PhD-level people with strong skills, so their accuracy is an upper bound, and the authors say
+  later oversight studies need to measure it separately; some may also have had adjacent expertise.
+- Selection biases the validator accuracies on the main and Diamond sets; the true values sit between the
+  extended-set figure and the subset figure.
+- The objectivity estimate rests on a subjective manual classification of expert feedback. Roughly a quarter
+  of the expert errors traced to questions classed as bad.
+- The experts were recruited on Upwork without regional or demographic balancing, and the wording has
   noted biases (masculine pronouns); the questions are not a representative sample of science.
-- The search baseline is weak (37.2% abstention, an unnamed search tool), and the authors cannot
-  rule out that prompt changes would raise its accuracy a lot. The model baselines report no seeds,
+- The search baseline is weak (37.2% abstention, an unnamed search tool), and the authors say they
+  cannot exclude a large accuracy gain from changed prompts. The model baselines report no seeds,
   temperature or repeated runs, and the 2023 models have since been surpassed.
 - It is an imperfect proxy for supervising superhuman systems.
 

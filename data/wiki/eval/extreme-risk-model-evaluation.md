@@ -69,3 +69,4 @@ catastrophe this century comparable to a full nuclear war.
 - [[Execution Boundaries and Guardrails]] — related (deployment and security decisions the results feed)
 - [[Live Penetration Testing of Agents and Professionals]] — related (a cyber-offense capability measured in a live setting)
 - [[Trajectory Over Outcome]] — related
+- [[Forecasting Rare Model Behaviours]] — related (forecasting worst-case misuse and misaligned-action risk from a small eval)

@@ -13,11 +13,11 @@ Es et al. (arXiv 2309.15217, 2023, preprint) ask how a retrieval-augmented gener
 
 ## Method
 
-The three metrics are computed by prompting gpt-3.5-turbo-16k, with ada-002 embeddings added for answer relevance. They are validated on WikiEval (50 Wikipedia pages on post-2022 events) by pairwise agreement with human annotators, against two prompting baselines, GPT Score and GPT Ranking.
+Each metric comes from prompts to gpt-3.5-turbo-16k, and answer relevance also uses ada-002 embeddings. Validation uses WikiEval, built from 50 Wikipedia pages about events after 2022: a metric is scored by how often its pairwise choice matches the human annotators', alongside two prompting baselines, GPT Score and GPT Ranking.
 
 ## Results (self-reported)
 
-Setup for all rows: WikiEval, pairwise comparison of two answers or two contexts, agreement with human annotators, metrics computed with gpt-3.5-turbo-16k.
+Setup for every row: WikiEval, a pairwise choice between two answers or two contexts, scored as agreement with human annotators, all metrics run on gpt-3.5-turbo-16k.
 
 | Aspect | Ragas | GPT Score | GPT Ranking |
 |---|---|---|---|
@@ -25,14 +25,14 @@ Setup for all rows: WikiEval, pairwise comparison of two answers or two contexts
 | Answer relevance | 0.78 | 0.52 | 0.40 |
 | Context relevance | 0.70 | 0.63 | 0.52 |
 
-Context relevance is the weakest dimension; the authors observe that ChatGPT struggles to pick the crucial sentences, especially from longer contexts. Two annotators agreed on about 95% of cases for faithfulness and context relevance and about 90% for answer relevance, before discussion.
+Context relevance is the weakest dimension; the authors observe that ChatGPT struggles to pick the crucial sentences, especially from longer contexts. Before discussion, two annotators agreed on roughly 95% of faithfulness and context-relevance cases and roughly 90% of answer-relevance cases.
 
 ## Limits
 
-Only 50 questions from Wikipedia, and the task is a pairwise choice against deliberately degraded alternatives, not absolute scoring. The judge is a single closed model with no variance, seeds or significance reported. Answer relevance ignores factuality by design. The paper defines no context recall or context precision, and later Ragas versions differ from it, so the metric definitions on [[RAG Eval Metrics Suite]] are not these.
+Only 50 questions from Wikipedia, and the task is a pairwise choice against deliberately degraded alternatives, not absolute scoring. The judge is a single closed model with no variance, seeds or significance reported. Answer relevance ignores factuality by design. Context recall and context precision are not defined in the paper, and later Ragas versions differ from it, so metric definitions elsewhere (such as on [[RAG Eval Metrics Suite]]) should not be read as these.
 
 ## See Also
 - [[RAG Eval Metrics Suite]] — alternative-to (a different metric set for the same pipeline)
 - [[RAGChecker]] — alternative-to (a claim-level metric set that also reports Ragas metrics, in its own setup)
 - [[GPTScore]] — related (another prompted metric; the paper's GPT Score baseline is a different, direct ChatGPT scoring)
-- [[LLM-as-Judge Evaluation]] — extends (reference-free judging for RAG)
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (reference-free judging for RAG)

@@ -1,5 +1,5 @@
-# imported_hash: c9bc8cc7eb4573a8
-# Multimodal Engineering lecture deck. Covers notes 01-07.
+# imported_hash: ed73b92f069ee032
+# Multimodal Engineering lecture deck. Covers notes 01-07, including 02b and 06b.
 # Build: make slides PILLAR=ai-engineering/08-multimodal-engineering STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
 # Running example: an invoice assistant that meets photos, PDFs, charts, phone calls and generated
@@ -455,7 +455,7 @@ parts:
         source: notes/04-speech-and-voice-agents.md
 
   - title: The picture nobody can reproduce
-    summary: Undoing noise · Samplers · Other families · Controls · Provenance
+    summary: Undoing noise · Samplers · Other families · Controls · Provenance · Editing · Customizing
     notes: >-
       Marketing wants illustrations for the help pages. The same prompt gives a different image each time,
       and nobody can make the one they liked with a small change.
@@ -534,6 +534,65 @@ parts:
           - "Check at store time, not at request time"
         takeaway: When someone later asks for a variation, it is too late to find out the record is incomplete.
         source: notes/06-generating-images-and-video.md
+
+      - layout: table
+        title: Mask, control image or img2img?
+        recall: "How do you choose between a mask, a control image and img2img to fix a generated image?"
+        kicker: Editing
+        lead: "Re-rolling the prompt changes everything. Change only what you mean to."
+        header: [Tool, Use when, Setting to start with]
+        widths: [2.4, 4, 3.6]
+        highlight: [0]
+        rows:
+          - [Mask (inpainting), One region is wrong, "Denoising **0.2 to 0.4**; inpaint area Whole picture"]
+          - [Control image, "Structure such as pose or layout must hold", Match the preprocessor to the ControlNet model]
+          - [img2img, Restyle while keeping the composition, Low denoising strength]
+        takeaway: Edit with a mask when one region changes, a control image to fix structure, and img2img to restyle.
+        source: notes/06b-editing-and-customizing-images.md
+        notes: >-
+          The invoice assistant's illustrator has a picture that is nearly right. Text-to-image controls style well
+          and composition badly. For inpainting, describe the whole image in the prompt but change the subject to what
+          should appear in the mask, and fix one artifact per pass. Above about 0.4 denoising, globally inconsistent
+          elements and hallucinations start to appear. The preprocessor and the ControlNet model must match each other,
+          and the model must match the base model's version. Segment Anything produces the masks from one to three
+          clicked points.
+      - layout: image
+        title: A ControlNet can't damage the model it steers
+        recall: "Why can't training a ControlNet damage the base model?"
+        kicker: Zhang et al., 2023
+        image: ../assets/sources/images/zhang-controlnet-fig2.png
+        caption: "The original block is locked; a trainable copy receives the condition, through zero-initialised convolutions. Zhang et al. (2023), Fig. 2."
+        bullets:
+          - "Locks Stable Diffusion and trains a **copy** of its encoder on the map"
+          - "Zero convolutions start at zero, so step 0 leaves the base output unchanged"
+          - "Canny for detailed scenes, depth for layout, OpenPose for a pose"
+        takeaway: Zero-initialised connections leave the base model's output unchanged at step 0, so training the control copy can't damage it.
+        source: notes/06b-editing-and-customizing-images.md
+        notes: >-
+          The model ignores the map, then follows it abruptly, usually within 10K steps. Control weight acts like a
+          prompt weight for the map, and start and end control steps limit when it applies. Boxes are a lighter
+          control: GLIGEN uses the same freeze-and-add idea with a gated attention layer whose gate is initialised
+          to zero.
+      - layout: table
+        title: Customize a model only when prompting can't name the subject
+        recall: "When is a customized model worth training, and which method fits?"
+        kicker: Customizing
+        header: [Method, What it trains, Output]
+        widths: [2.6, 5, 2.4]
+        highlight: [0]
+        rows:
+          - [DreamBooth, All U-Net weights on one subject bound to a rare token, "A full checkpoint (~2 GB at fp16 for SD 1.5)"]
+          - [Textual Inversion, "A new token embedding; the model is frozen", A few KB]
+          - [LoRA, Low-rank update matrices on the frozen attention weights, Tens to hundreds of MB]
+        takeaway: Try a reference image or a control image first, then train one concept per model and record the base and adapter hashes.
+        source: notes/06b-editing-and-customizing-images.md
+        notes: >-
+          Training a base model is out of reach, so customization starts from one. DreamBooth is the most common
+          method in the book, and in the paper's comparison raters preferred it to Textual Inversion 68% to 22%.
+          LoRA has since become the usual way to share a style or subject fine-tune. It learns a low-rank update that
+          can be merged back into the weights. Use a trigger token that means nothing and a class prompt for the prior
+          preservation images; the class noun matters more than the token. Record the base model hash, the adapter
+          hash, the trigger token, the class prompt and the training images.
 
   - title: The score that rewarded guessing
     summary: Shortcuts · Paired images · CircularEval · POPE · Scorecard
@@ -630,6 +689,7 @@ parts:
         source: notes/07-evaluating-multimodal-systems.md
       - layout: bullets
         title: Where next
+        recall: "What do we take up after multimodal engineering?"
         kicker: Next
         bullets:
           - "**Safety and security:** images, documents and voices as attack channels, in pillar 09"

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef, lazy, Suspense } from "react";
 import { WikiGraph } from "./components/WikiGraph";
 import { ChatPanel } from "./components/ChatPanel";
 import { NodeDetailPanel } from "./components/NodeDetailPanel";
@@ -10,6 +10,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { UserMenu } from "./components/account/UserMenu";
 import { useAuthConfig, useMe } from "./hooks/useAuth";
 import type { SelectedNode } from "./types";
+import { tagFacet } from "./utils/curriculum";
 import "./theme/tokens.css";
 import "./theme/components.css";
 
@@ -73,13 +74,19 @@ export default function App() {
   // Course views set their own titles; the graph's is set here.
   useDocumentTitle(inCourses ? null : pageTitle("Graph"));
 
+  // A tag on the page panel is the same filter as its chip in the map sidebar.
   const handleTagClick = useCallback((tag: string) => {
+    const id = tagFacet(tag);
     setActiveTags((prev) => {
       const next = new Set(prev);
-      if (next.has(tag)) next.delete(tag); else next.add(tag);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   }, []);
+  const activePageTags = useMemo(
+    () => new Set([...activeTags].filter((t) => t.startsWith("tag:")).map((t) => t.slice("tag:".length))),
+    [activeTags],
+  );
 
   const handleHighlight = useCallback((pages: string[]) => {
     setHighlightedPages(new Set(pages));
@@ -257,7 +264,7 @@ export default function App() {
                 lastQuery={lastQueryRef.current}
                 onClose={() => setSelectedNode(null)}
                 onTagClick={handleTagClick}
-                activeTags={activeTags}
+                activeTags={activePageTags}
                 onOpenLesson={openLesson}
               />
             )}

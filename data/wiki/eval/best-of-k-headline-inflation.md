@@ -58,3 +58,4 @@ the selected run only. The models in both are 2024 vintage.
 - [[LLM-as-a-Verifier]] — related (best-of-N selection against single-run leaderboard entries, compute not matched)
 - [[Private Variant Testing on Arena Leaderboards]] — instance-of (a provider picks the best of many private variants)
 - [[PaperBench]] — instance-of (the human baseline takes the best of three attempts)
+- [[Forecasting Rare Model Behaviours]] — related (forecasting the worst query as the number of queries grows)

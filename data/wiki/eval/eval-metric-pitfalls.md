@@ -81,3 +81,4 @@ Optimize the target; test several doses, not just on/off, to see the dose–resp
 - [[Validated Concept vs Unmeasured System]] — related (a number quoted beyond what it measured)
 - [[VLM Benchmark Shortcuts]] — instance-of (tie-breaking, language priors and strict string match in VLM benchmarks)
 - [[Output Length Confounds Reference Metrics]] — instance-of (answer length moves n-gram and judge scores)
+- [[Knowledge Index and Information Gain]] — related (final-answer accuracy hiding what moved)

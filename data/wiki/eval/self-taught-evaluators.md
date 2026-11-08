@@ -32,7 +32,7 @@ Wang et al. (arXiv 2408.02666, 2024) ask whether a pairwise judge can get better
 The authors note that generative judges produce longer outputs and cost more to run than score-only reward models. Only the 70B size was tested, and it needs a capable, already-aligned seed. Pairwise only. Only accuracy is reported, not compute cost, from a single training run per configuration with no confidence intervals. The targets are preference benchmarks rather than domain human labels, with no kappa or per-class error rates. Whether code, weights and data are released is not stated. Single-order numbers are not comparable across papers, since order alone shifts RewardBench by 5.6 points. The extraction's limits line gives the MT-Bench seed gain as 77.8 to 79.0 while its results give 79.5 with majority vote.
 
 ## See Also
-- [[LLM-as-Judge Evaluation]] — extends (a judge trained without human labels)
+- [[LLM-as-Judge Evaluation]] — prerequisite-for (a judge trained without human labels)
 - [[J1 Reinforcement-Learned Judge]] — alternative-to (reinforcement learning on synthetic pairs instead of rejection-sampled fine-tuning)
 - [[PandaLM]] — alternative-to (judge trained on distilled GPT-3.5 labels)
 - [[Prometheus 2 Evaluator Models]] — alternative-to (another trained evaluator model)

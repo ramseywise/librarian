@@ -32,6 +32,22 @@ function renderSidebar(activeTags = new Set<string>(), onChange = vi.fn()) {
 }
 
 describe("GraphSidebar", () => {
+  it("lists the top topic tags, the rest behind more, and an active one always", () => {
+    const many: Facets = new Map(
+      Array.from({ length: 15 }, (_, i) => [`tag:t${i}`, new Set(Array.from({ length: 20 - i }, (_, j) => `p${j}`))]),
+    );
+    render(
+      <GraphSidebar id="s" open={false} domains={[]} curriculum={null} glossary={null}
+        facets={many} activeTags={new Set(["tag:t14"])} onChange={vi.fn()} />,
+    );
+    const topic = screen.getByRole("group", { name: "Topic tags" });
+    expect(within(topic).queryByRole("button", { name: /^t13/ })).toBeNull();
+    expect(within(topic).getByRole("button", { name: /^t14/ })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(within(topic).getByRole("button", { name: "+3 more" }));
+    expect(within(topic).getByRole("button", { name: /^t13/ })).toBeInTheDocument();
+  });
+
+
   it("splits topic and type tags, and a tag chip filters by `tag:`", () => {
     const onChange = renderSidebar();
     const topic = screen.getByRole("group", { name: "Topic tags" });

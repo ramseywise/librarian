@@ -77,6 +77,11 @@ flowchart LR
   generative_ai_08_eval --> ai_engineering_04_loop_engineering
   data_analytics_04_bayesian_analysis --> ai_engineering_04_loop_engineering
   generative_ai_05_rl --> ai_engineering_04_loop_engineering
+  generative_ai_04_agentic_frameworks --> ai_engineering_05_graph_engineering
+  generative_ai_03_agentic_foundations --> ai_engineering_05_graph_engineering
+  generative_ai_02_rag_retrieval --> ai_engineering_05_graph_engineering
+  data_science_01_classical_ml --> ai_engineering_05_graph_engineering
+  data_science_02_deep_learning --> ai_engineering_05_graph_engineering
   data_science_03_nlp --> ai_engineering_05_graph_engineering
   generative_ai_08_eval --> ai_engineering_05_graph_engineering
   data_science_02_deep_learning --> ai_engineering_07_inference_engineering
@@ -128,7 +133,7 @@ flowchart LR
   data_analytics_02_probability_and_statistics --> data_science_01_classical_ml
   data_analytics_03_experimentation_and_causality --> data_science_01_classical_ml
   data_analytics_06_applied_analyses --> data_science_01_classical_ml
-  generative_ai_08_eval --> data_science_01_classical_ml
+  data_analytics_04_bayesian_analysis --> data_science_01_classical_ml
   data_science_01_classical_ml --> data_science_02_deep_learning
   data_analytics_04_bayesian_analysis --> data_science_03_nlp
   data_analytics_06_applied_analyses --> data_science_03_nlp
@@ -149,7 +154,9 @@ flowchart LR
   data_analytics_06_applied_analyses --> data_engineering_07_architecture_and_governance
   programming_computer_science --> programming_backend_and_system_design
   data_engineering_01_storage_and_compute_foundations --> programming_backend_and_system_design
+  data_engineering_04_warehouse_lakehouse_streaming --> programming_backend_and_system_design
   data_engineering_05_quality_and_observability --> programming_backend_and_system_design
+  programming_software_design --> programming_backend_and_system_design
   programming_typescript --> programming_frontend_and_ux
   programming_computer_science --> programming_frontend_and_ux
   programming_software_design --> programming_frontend_and_ux
@@ -159,40 +166,40 @@ flowchart LR
 
 | Pillar | Lectures written | Notes | Pillar deck |
 |---|---|---|---|
-| [ai-engineering/01-prompt-engineering](ai-engineering/01-prompt-engineering/readme.md) | 0 of 13 | 12 | yes |
-| [ai-engineering/02-context-engineering](ai-engineering/02-context-engineering/readme.md) | 0 of 15 | 14 | yes |
-| [ai-engineering/03-harness-engineering](ai-engineering/03-harness-engineering/readme.md) | 0 of 11 | 10 | yes |
-| [ai-engineering/04-loop-engineering](ai-engineering/04-loop-engineering/readme.md) | 0 of 11 | 10 | yes |
-| [ai-engineering/05-graph-engineering](ai-engineering/05-graph-engineering/readme.md) | 0 of 17 | 16 | yes |
-| [ai-engineering/07-inference-engineering](ai-engineering/07-inference-engineering/readme.md) | 0 of 11 | 10 | yes |
-| [ai-engineering/08-multimodal-engineering](ai-engineering/08-multimodal-engineering/readme.md) | 0 of 9 | 8 | yes |
+| [ai-engineering/01-prompt-engineering](ai-engineering/01-prompt-engineering/readme.md) | 0 of 16 | 15 | yes |
+| [ai-engineering/02-context-engineering](ai-engineering/02-context-engineering/readme.md) | 0 of 16 | 15 | yes |
+| [ai-engineering/03-harness-engineering](ai-engineering/03-harness-engineering/readme.md) | 0 of 13 | 12 | yes |
+| [ai-engineering/04-loop-engineering](ai-engineering/04-loop-engineering/readme.md) | 0 of 12 | 11 | yes |
+| [ai-engineering/05-graph-engineering](ai-engineering/05-graph-engineering/readme.md) | 0 of 19 | 18 | yes |
+| [ai-engineering/07-inference-engineering](ai-engineering/07-inference-engineering/readme.md) | 0 of 12 | 11 | yes |
+| [ai-engineering/08-multimodal-engineering](ai-engineering/08-multimodal-engineering/readme.md) | 0 of 10 | 9 | yes |
 | [ai-engineering/09-safety-and-security](ai-engineering/09-safety-and-security/readme.md) | 0 of 8 | 7 | yes |
-| [generative-ai/01-llm-fundamentals](generative-ai/01-llm-fundamentals/readme.md) | 0 of 16 | 15 | yes |
-| [generative-ai/02-rag-retrieval](generative-ai/02-rag-retrieval/readme.md) | 0 of 13 | 12 | yes |
-| [generative-ai/03-agentic-foundations](generative-ai/03-agentic-foundations/readme.md) | 0 of 8 | 7 | yes |
+| [generative-ai/01-llm-fundamentals](generative-ai/01-llm-fundamentals/readme.md) | 0 of 20 | 19 | yes |
+| [generative-ai/02-rag-retrieval](generative-ai/02-rag-retrieval/readme.md) | 0 of 21 | 20 | yes |
+| [generative-ai/03-agentic-foundations](generative-ai/03-agentic-foundations/readme.md) | 0 of 16 | 15 | yes |
 | [generative-ai/04-agentic-frameworks](generative-ai/04-agentic-frameworks/readme.md) | 0 of 8 | 7 | yes |
-| [generative-ai/05-rl](generative-ai/05-rl/readme.md) | 0 of 15 | 14 | yes |
+| [generative-ai/05-rl](generative-ai/05-rl/readme.md) | 0 of 21 | 20 | yes |
 | [generative-ai/06-observability](generative-ai/06-observability/readme.md) | 0 of 7 | 6 | yes |
 | [generative-ai/07-agentic-applications](generative-ai/07-agentic-applications/readme.md) | 0 of 8 | 7 | yes |
-| [generative-ai/08-eval](generative-ai/08-eval/readme.md) | 0 of 16 | 15 | yes |
+| [generative-ai/08-eval](generative-ai/08-eval/readme.md) | 0 of 20 | 19 | yes |
 | [generative-ai/09-llms-from-scratch](generative-ai/09-llms-from-scratch/readme.md) | 0 of 4 | 3 | yes |
 | [data-analytics/01-python-for-data-analysis](data-analytics/01-python-for-data-analysis/readme.md) | 0 of 8 | 7 | yes |
-| [data-analytics/02-probability-and-statistics](data-analytics/02-probability-and-statistics/readme.md) | 0 of 9 | 8 | yes |
+| [data-analytics/02-probability-and-statistics](data-analytics/02-probability-and-statistics/readme.md) | 0 of 10 | 9 | yes |
 | [data-analytics/03-experimentation-and-causality](data-analytics/03-experimentation-and-causality/readme.md) | 0 of 6 | 5 | yes |
-| [data-analytics/04-bayesian-analysis](data-analytics/04-bayesian-analysis/readme.md) | 0 of 8 | 7 | yes |
-| [data-analytics/05-visualisation-and-storytelling](data-analytics/05-visualisation-and-storytelling/readme.md) | 0 of 7 | 6 | yes |
-| [data-analytics/06-applied-analyses](data-analytics/06-applied-analyses/readme.md) | 0 of 13 | 12 | yes |
-| [data-science/01-classical-ml](data-science/01-classical-ml/readme.md) | 2 of 17 | 16 | yes |
-| [data-science/02-deep-learning](data-science/02-deep-learning/readme.md) | 0 of 8 | 7 | yes |
+| [data-analytics/04-bayesian-analysis](data-analytics/04-bayesian-analysis/readme.md) | 0 of 11 | 10 | yes |
+| [data-analytics/05-visualisation-and-storytelling](data-analytics/05-visualisation-and-storytelling/readme.md) | 0 of 8 | 7 | yes |
+| [data-analytics/06-applied-analyses](data-analytics/06-applied-analyses/readme.md) | 0 of 16 | 15 | yes |
+| [data-science/01-classical-ml](data-science/01-classical-ml/readme.md) | 2 of 18 | 17 | yes |
+| [data-science/02-deep-learning](data-science/02-deep-learning/readme.md) | 0 of 9 | 8 | yes |
 | [data-science/03-nlp](data-science/03-nlp/readme.md) | 0 of 8 | 7 | yes |
 | [data-science/05-time-series-and-recommenders](data-science/05-time-series-and-recommenders/readme.md) | 0 of 6 | 5 | yes |
 | [data-engineering/01-storage-and-compute-foundations](data-engineering/01-storage-and-compute-foundations/readme.md) | 0 of 11 | 10 | yes |
-| [data-engineering/02-ingest-and-modelling](data-engineering/02-ingest-and-modelling/readme.md) | 0 of 5 | 4 | yes |
+| [data-engineering/02-ingest-and-modelling](data-engineering/02-ingest-and-modelling/readme.md) | 0 of 6 | 5 | yes |
 | [data-engineering/03-transform-and-orchestrate](data-engineering/03-transform-and-orchestrate/readme.md) | 0 of 6 | 5 | yes |
 | [data-engineering/04-warehouse-lakehouse-streaming](data-engineering/04-warehouse-lakehouse-streaming/readme.md) | 0 of 7 | 6 | yes |
 | [data-engineering/05-quality-and-observability](data-engineering/05-quality-and-observability/readme.md) | 0 of 7 | 6 | yes |
 | [data-engineering/06-ml-platform](data-engineering/06-ml-platform/readme.md) | 0 of 7 | 6 | yes |
-| [data-engineering/07-architecture-and-governance](data-engineering/07-architecture-and-governance/readme.md) | 0 of 4 | 3 | yes |
+| [data-engineering/07-architecture-and-governance](data-engineering/07-architecture-and-governance/readme.md) | 0 of 6 | 5 | yes |
 | [programming/backend-and-system-design](programming/backend-and-system-design/readme.md) | 0 of 11 | 10 | yes |
 | [programming/computer-science](programming/computer-science/readme.md) | 0 of 7 | 6 | yes |
 | [programming/frontend-and-ux](programming/frontend-and-ux/readme.md) | 0 of 6 | 5 | yes |

@@ -798,7 +798,9 @@ def _sibling_url(target: Path, plan: Plan) -> str | None:
     except ValueError:
         return None
     mirrored = _mirror_path(target, plan.source, plan.renamed_dirs)
-    held = mirrored is not None and not (target.is_dir() and not mirrored.is_dir())
+    held = mirrored is not None and (
+        not target.is_dir() or mirrored.is_dir() or mirrored in plan.lesson_dirs
+    )
     if held and not set(rel.split("/")) & PRACTICE_REFERENCE_ONLY:
         return None
     if rel in plan.tracked:
@@ -898,6 +900,7 @@ class Plan:
     new_dirs: set[str] = field(default_factory=set)  # practice folders with no copy here yet
     renamed_dirs: dict[Path, Path] = field(default_factory=dict)  # see _renamed_dirs
     tracked: set[str] = field(default_factory=set)  # the sibling's committed files, for links
+    lesson_dirs: set[Path] = field(default_factory=set)  # mirror folders a lesson lands in
 
 
 def _hash(text: str) -> str:
@@ -949,6 +952,7 @@ def build_plan(source: Path, subjects: list[str]) -> Plan:
         for lesson in mod.lessons
     }
     plan.renamed_dirs = _renamed_dirs(src_to_dest)
+    plan.lesson_dirs = {p for d in src_to_dest.values() for p in (COURSES_DIR / d).parents}
     plan.tracked = set(_git_lines(source, "ls-files") or ())
     for subject in subjects:
         repo, rel = SUBJECT_SOURCES.get(subject, (LAE, subject))

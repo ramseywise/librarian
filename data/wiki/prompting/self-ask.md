@@ -24,28 +24,28 @@ changing the prompt.
 - **2WikiMultiHopQA** (dev subset of 1.2k questions, exact match): self-ask with search 40.1%, self-ask
   30.0%, chain of thought 29.8%.
 - **Musique** (dev, 1,252 2-hop questions, exact match): self-ask with search 15.2%, self-ask 13.8%.
-- **Answer form.** On Bamboogle, 40% of chain-of-thought final answers are not short form, against 17% for
-  self-ask and 3% for self-ask with search.
+- **Answer form.** On Bamboogle, chain of thought gives a final answer that is not short-form 40% of the time; plain self-ask does so 17% of the time,
+  and self-ask with search only 3%.
 - **Against least-to-most** (a later davinci-002 deployment than the other tables): self-ask ran more than 30%
   faster on average generated tokens, and the extraction lists 2Wiki accuracy of 35.5 for one method against
-  29.0 for the other, and Musique accuracy of 16.3 against 16.8 (self-ask slightly lower, 663 vs 1020
-  tokens); it does not say which figure belongs to which method in the 2Wiki pair.
-- **On Compositional Celebrities**, zero-shot "Let's think step by step" scores 45.7% with Davinci-002 and
-  1.1% with Davinci, against 79.6% and 54.2% for self-ask. Self-ask narrows and sometimes closes the
-  [[Compositionality Gap]] there (1-shot prompt); chain of thought comes within 1% of it (stated in a figure
+  29.0 for the other, and Musique accuracy of 16.3 against 16.8 (self-ask a little lower, at 663 tokens
+  against 1020); the extraction does not say which figure belongs to which method in the 2Wiki pair.
+- **On Compositional Celebrities**, the zero-shot "Let's think step by step" prompt reaches 45.7% on Davinci-002 and
+  just 1.1% on Davinci; self-ask reaches 79.6% and 54.2% respectively. With a 1-shot prompt on CC, self-ask shrinks the
+  [[Compositionality Gap]] and in some cases removes it; chain of thought comes within 1% of it (stated in a figure
   caption, no table value).
 
 ## Limits
 
-- Only GPT-3 models up to 175B were tested, and only English 2-hop QA; other task types were tried in
-  limited manual experiments.
+- The models tested were GPT-3 variants of at most 175B parameters, on English 2-hop QA; other task
+  types got only small manual trials.
 - No temperature, decoding or max-token settings are reported; one run, no significance tests.
-- Bamboogle is judged by the authors and has only 125 questions. The least-to-most table uses a later
+- The authors themselves graded Bamboogle, which holds just 125 questions. The least-to-most table uses a later
   davinci-002 deployment than the first table, so numbers do not compare across tables.
 - The prompt format was tuned on Musique train, and the extraction infers that the davinci-002
   deployments have since been retired.
 
 ## See Also
-- [[Chain of Thought]] — extends (the method it is compared against and builds on)
+- [[Chain of Thought]] — prerequisite-for (the method it is compared against and builds on)
 - [[Tree of Thoughts]] — alternative-to (another structured reasoning scaffold)
 - [[FreshQA]] — related (uses a Self-Ask baseline in its comparison)

@@ -15,6 +15,18 @@ cards:
 - front: When should you use a workflow rather than an autonomous agent?
   back: Prefer plain code, then a workflow, and use an autonomous agent only when the path depends on what it finds along the way.
   lesson: generative-ai/03-agentic-foundations/notes/01-agent-fundamentals
+- front: Why does an agent run cost more than its step count suggests?
+  back: Each step pays for the whole history again, so total input grows roughly with the square of the steps, and step caps and bounded history are the first levers.
+  lesson: generative-ai/03-agentic-foundations/notes/01b-what-an-agent-costs
+- front: What is cost-of-pass?
+  back: Cost-of-pass is the cost of one attempt divided by the success rate, and it shows that the most accurate backbone cost 3.6 times more per solved task than the runner-up.
+  lesson: generative-ai/03-agentic-foundations/notes/01b-what-an-agent-costs
+- front: In what three ways does an agent learn?
+  back: An agent learns in context for one task, in auditable external artifacts across tasks, or in its weights permanently, and editing its own prompts or skills is the riskiest write.
+  lesson: generative-ai/03-agentic-foundations/notes/01c-model-as-agent-and-how-agents-learn
+- front: Why train an agent on its own successful rollouts?
+  back: Keeping only an agent's successful rollouts beat cloning on 2.4 times as many expert trajectories on three tasks, but the gain came from task breadth and lost on SciWorld.
+  lesson: generative-ai/03-agentic-foundations/notes/01c-model-as-agent-and-how-agents-learn
 - front: What are the four steps of a tool call?
   back: Advertise, decide, execute and observe repeat until the model answers without a call or a step budget ends the run.
   lesson: generative-ai/03-agentic-foundations/notes/02-tool-use-and-react
@@ -24,6 +36,12 @@ cards:
 - front: Which failures does chain of thought not fix?
   back: Reasoning helps a model apply a rule it knows, but missing facts and exact arithmetic need tools, so more thinking will not fix them.
   lesson: generative-ai/03-agentic-foundations/notes/02-tool-use-and-react
+- front: Why put tool names in a plan?
+  back: Where the process is known, write the steps and the tool for each in the prompt, because wrong tool choice is the main failure and distractor routines cost GPT-4o about 20 points.
+  lesson: generative-ai/03-agentic-foundations/notes/02b-planning-and-tool-use
+- front: When does a plan DAG pay?
+  back: A dependency graph lets the harness run independent calls together, which buys latency and smaller contexts, but showed no reliable accuracy gain over the strongest sequential baseline.
+  lesson: generative-ai/03-agentic-foundations/notes/02b-planning-and-tool-use
 - front: Name four rules for reliable tool calls.
   back: Keep each tool to one job, validate arguments at the boundary, inject known values in code and return errors the model can act on.
   lesson: generative-ai/03-agentic-foundations/notes/02c-mcp-code-and-safe-tool-calls
@@ -36,6 +54,12 @@ cards:
 - front: What does a self-editing memory do when core memory is full?
   back: A small core plus a searchable archive works only if the agent knows the archive exists, is told when to search, and can phrase the search well.
   lesson: generative-ai/03-agentic-foundations/notes/03-memory-as-an-operating-system
+- front: Do skill libraries beat keeping the history in context?
+  back: Keeping experience across tasks helped, but skills added nothing over plain history on average, so write a skill for fixed-output procedures and rely on context for judgement calls.
+  lesson: generative-ai/03-agentic-foundations/notes/03b-learning-from-experience
+- front: What transfers across tasks, trajectories or insights?
+  back: Pass@3 rose as memories got more abstract, and raw trajectories hurt where a command that worked in one environment broke in another, so keep the raw record and distil an insight layer on top.
+  lesson: generative-ai/03-agentic-foundations/notes/03b-learning-from-experience
 - front: Does agent-curated memory beat a verbatim store?
   back: Keep the verbatim record and curate only the index on top, because in Zhou et al. summarizing lost facts that a plain store kept.
   lesson: generative-ai/03-agentic-foundations/notes/03c-designing-a-memory-agent
@@ -45,6 +69,12 @@ cards:
 - front: What three stops does a multi-agent conversation need?
   back: End a multi-agent conversation with a semantic stop, a turn cap that escalates and an independent verifier, and restrict who may speak after whom.
   lesson: generative-ai/03-agentic-foundations/notes/04-multi-agent-design-patterns
+- front: Does self-critique beat sampling at equal compute?
+  back: At equal tokens a majority vote over independent samples beat self-critique in every comparison, so any design that adds roles should be compared with it first.
+  lesson: generative-ai/03-agentic-foundations/notes/04b-when-more-agents-pay
+- front: When has a team beaten the vote?
+  back: A team beat the vote only with different models and a learned interaction protocol, and the gap was near zero on a knowledge suite, so say what differs between the agents before adding them.
+  lesson: generative-ai/03-agentic-foundations/notes/04b-when-more-agents-pay
 - front: How does Tree of Thoughts cost scale?
   back: Tree of Thoughts lifted Game of 24 from 4% to 74% with GPT-4, but its calls multiply with depth and width, so try cheaper options first.
   lesson: generative-ai/03-agentic-foundations/notes/04c-planning-architectures-and-failure

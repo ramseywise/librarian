@@ -12,6 +12,12 @@ cards:
 - front: How does Self-Route decide when to use the full context?
   back: Long context can win on quality with frontier models, but retrieval stays cheaper and is the only option for large corpora.
   lesson: generative-ai/02-rag-retrieval/notes/02-why-rag-and-the-augmented-prompt
+- front: What are the five ways to train the two halves of a RAG system?
+  back: There are five ways to train the pair (training-free, independent, retriever first, LLM first, joint), and most production RAG stays training-free because joint training forces both to be retrained together.
+  lesson: generative-ai/02-rag-retrieval/notes/02b-training-the-retriever-and-the-reader
+- front: What goes wrong when you train a retriever and reader together?
+  back: Keep the index fresh while a retriever trains, read language-modelling multipliers as such, and leave near-duplicates of the answer out of the prompt.
+  lesson: generative-ai/02-rag-retrieval/notes/02b-training-the-retriever-and-the-reader
 - front: Name Gao's three RAG paradigms.
   back: Naive, advanced and modular name how much machinery surrounds retrieval, so start naive and add what the eval justifies.
   lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
@@ -102,6 +108,12 @@ cards:
 - front: Why is a paired test tighter?
   back: Before you believe a gain on a small eval set, run a paired bootstrap on per-query differences and read the interval.
   lesson: generative-ai/02-rag-retrieval/notes/11-retrieval-improvements
+- front: Why can 32 queries and 5 configs never give 200 DPO pairs?
+  back: More annotated queries unblock DPO, not more configs, because pairs from one question are not independent examples.
+  lesson: generative-ai/02-rag-retrieval/notes/11b-training-the-pieces-and-the-pipeline-eval
+- front: What did trained retrievers, filters and loops gain over prompting?
+  back: Training a retriever, filter, trigger or loop can help, but retrieval itself is most of the gain and each result is one run, so measure on your own queries first.
+  lesson: generative-ai/02-rag-retrieval/notes/11b-training-the-pieces-and-the-pipeline-eval
 - front: What can't a managed RAG service do for you?
   back: A managed backend takes the index off your hands, while the eval and the decision about what goes in stay yours.
   lesson: generative-ai/02-rag-retrieval/notes/12-managed-rag

@@ -65,16 +65,16 @@ cards:
   lesson: ai-engineering/01-prompt-engineering/notes/07b-reasoning-model-failure-modes
 - front: What are the main paths for offline prompt evaluation, and how do you source samples?
   back: Start offline with cheap exact checks, escalate to judges only where needed, and watch acceptance online as a guardrail.
-  lesson: ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts
+  lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
 - front: What makes a good LLM judge rubric, and why does the rubric go before the content?
   back: Ask judges a specific, ordinal, multi-aspect question, and calibrate their scores against several human annotators.
-  lesson: ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts
+  lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
 - front: What does the prompt modification case study show about F1, template adherence and methodology?
   back: Prompt wording can move F1 by 26 points and trade against format adherence, so change one thing and re-score.
-  lesson: ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts
+  lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
 - front: What does the prompt optimization loop look like, and what automated tools can propose changes?
   back: Version the template with its model and score, and keep a new version only when it beats the old on the eval.
-  lesson: ai-engineering/01-prompt-engineering/notes/08-prompt-optimization
+  lesson: ai-engineering/01-prompt-engineering/notes/09-prompt-optimization
 - front: How should a model rank instructions from different sources, and which defenses are strongest?
   back: Layer defenses from prompt warnings up to quarantined architectures, and treat all model output as untrusted.
   lesson: ai-engineering/01-prompt-engineering/notes/10-adversarial-prompting
@@ -86,7 +86,7 @@ cards:
   lesson: ai-engineering/01-prompt-engineering/notes/prompt-library
 - front: What do you shape first, where do guarantees live, and how do you prove a change?
   back: Shape the document first, then keep guarantees in code and prove every change with an eval.
-  lesson: ai-engineering/01-prompt-engineering/notes/08-prompt-optimization
+  lesson: ai-engineering/01-prompt-engineering/notes/09-prompt-optimization
 - front: Which pillars and readings come after prompt engineering?
   back: Prompting sets what the model is asked; the next pillar decides what else sits in the window with it.
   lesson: ai-engineering/01-prompt-engineering/notes/02-prompt-anatomy

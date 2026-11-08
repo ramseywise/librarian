@@ -6,13 +6,13 @@ cards:
 - front: Why does the Airflow-style DAG model break when you apply it to agents?
   back: Graph engineering for agents means cyclic graphs, because retrying and revising need a way back.
   lesson: ai-engineering/05-graph-engineering/notes/01-graph-vs-loop
-- front: Which five signals can justify adding a node to a loop?
+- front: Is moving from a loop to a graph a maturity level you graduate to?
   back: Escalating to a graph is a cost you justify with a specific signal, and not a maturity level you graduate to.
   lesson: ai-engineering/05-graph-engineering/notes/01-graph-vs-loop
 - front: What should you try before adding nodes when a loop keeps passing bad work?
   back: The most common "we need a graph" is really an overloaded verifier, which you can split inside the existing loop.
   lesson: ai-engineering/05-graph-engineering/notes/06-when-not-to-build-a-graph
-- front: In Kim et al., what separated the benchmark that gained from the one that lost?
+- front: What was the mean multi-agent gain across Kim et al.'s 260 controlled configurations, and what decides it?
   back: Across 260 controlled configurations the mean multi-agent gain was −0.3%, so the task shape decides.
   lesson: ai-engineering/05-graph-engineering/notes/06-when-not-to-build-a-graph
 - front: When does a fan-out graph fail to pay for its extra tokens?
@@ -24,7 +24,7 @@ cards:
 - front: How do you decide the kind of each node in a graph?
   back: Use code where you can, one LLM call where you must, and an agent only where the path is unknown.
   lesson: ai-engineering/05-graph-engineering/notes/02-graph-primitives
-- front: What does a router return, and what do nodes return?
+- front: What is a graph program made of?
   back: A graph program is nodes that return changed keys, plus routers that are ordinary code choosing the next node.
   lesson: ai-engineering/05-graph-engineering/notes/02-graph-primitives
 - front: What must the verifier not see, and what limits the cycle?
@@ -45,34 +45,43 @@ cards:
 - front: Where must a side effect sit relative to interrupt(), and why?
   back: On resume a node reruns from its first line, so any side effect belongs after the interrupt.
   lesson: ai-engineering/05-graph-engineering/notes/04-durable-execution-and-interrupts
-- front: Which four places in a graph deserve a human approval gate?
+- front: Why not put a human approval gate on every node?
   back: A gate on every node trains people to approve without reading, so gate only where consequence concentrates.
   lesson: ai-engineering/05-graph-engineering/notes/04-durable-execution-and-interrupts
-- front: Name the five recurring topologies and how the supervisor pattern fails.
+- front: Why does choosing a topology also choose what to watch?
   back: Five shapes cover most graphs, and each has a named failure, so choosing a shape also chooses what to watch.
   lesson: ai-engineering/05-graph-engineering/notes/05-topology-patterns
 - front: What rule of thumb chooses between shared and isolated context?
   back: Isolate contexts if the cumulative trajectory would pass about half the window; share if no information can be lost.
   lesson: ai-engineering/05-graph-engineering/notes/05-topology-patterns
-- front: What did screenshot feedback do in WebGen-Agent, and why did debate not do the same?
+- front: When does a second agent, such as a reviewer, earn its node?
   back: A reviewer that only rereads text is the same model a second time; it earns a node when it can run something.
   lesson: ai-engineering/05-graph-engineering/notes/05-topology-patterns
-- front: How do you detect and fix a deadlock in a graph?
+- front: Where does the operating-system analogy for a multi-agent runtime break?
+  back: Treat the runtime like an OS, but because agents pass meaning and a message can be misread, every interface needs a contract the receiver can check.
+  lesson: ai-engineering/05-graph-engineering/notes/05b-running-multi-agent-systems
+- front: Why should a manager pass file paths between agents instead of file contents?
+  back: A message carries paths and a task ID, not contents, so a manager can coordinate many workers without holding every file.
+  lesson: ai-engineering/05-graph-engineering/notes/05b-running-multi-agent-systems
+- front: How does a manager track and stop many parallel agents?
+  back: Have agents write their own status to an append-only log, and settle termination races with a lock or idempotent writes.
+  lesson: ai-engineering/05-graph-engineering/notes/05b-running-multi-agent-systems
+- front: How do you handle cycles, deadlocks and races in a graph?
   back: Wiring failures such as cycles, deadlocks and races have mechanical detectors and fixes, if you let the framework report them.
   lesson: ai-engineering/05-graph-engineering/notes/07-failure-modes-at-scale
 - front: Which three bounds does the pre-flight check require on a graph's wiring?
   back: Before running unattended, give every back-edge a counter, every Send a cap, and recursion_limit a chosen value.
   lesson: ai-engineering/05-graph-engineering/notes/07-failure-modes-at-scale
-- front: Why don't timeouts and retries catch most agent failures?
+- front: What do most multi-agent failures turn out to be, and what do you fix before rewording prompts?
   back: Most multi-agent failures are structural, so fix topology and verification before you reword prompts.
   lesson: ai-engineering/05-graph-engineering/notes/07-failure-modes-at-scale
 - front: What is an anchor, and what happens to a graph that has none?
   back: Without an anchor the graph can't edit, it stays perfectly self-consistent while drifting far from reality.
   lesson: ai-engineering/05-graph-engineering/notes/07-failure-modes-at-scale
-- front: At which three levels do you budget a graph, and which ID makes the first possible?
+- front: How do you attribute and budget cost in a graph?
   back: Carry graph, run and node IDs on every call, and budget per node, per run and per tenant.
   lesson: ai-engineering/05-graph-engineering/notes/08-governance-and-production
-- front: Where does n8n's builder place its single approval gate, and why there?
+- front: What is n8n's reported design for bounding a workflow builder?
   back: 'n8n''s reported design: per-node bounds, one gate after planning, and a 30K cap on the artifact under construction.'
   lesson: ai-engineering/05-graph-engineering/notes/08-governance-and-production
 - front: What are nodes and edges in an agent graph, and in a knowledge graph?
@@ -87,19 +96,25 @@ cards:
 - front: Why is entity resolution the load-bearing step in building a knowledge graph?
   back: Errors compound per hop, so 85% per hop gives 44% over five, which makes entity resolution the load-bearing step.
   lesson: ai-engineering/05-graph-engineering/notes/10-building-kgs-with-llms
-- front: Why is a high compression ratio a misleading resolution metric?
+- front: Why store mentions and resolution evidence separately?
   back: Storing mentions and resolution evidence separately keeps merges reversible, and a false merge corrupts every path through it.
   lesson: ai-engineering/05-graph-engineering/notes/10-building-kgs-with-llms
 - front: What does each of the extract, enhance and expand stages add to the SEC graph?
   back: Start with a minimum viable graph, add document structure, then fuse structured data onto the same entities.
   lesson: ai-engineering/05-graph-engineering/notes/10b-assembling-and-maintaining-kgs
-- front: What did the GraphRAG paper's evaluation measure, and who judged it?
+- front: What did the GraphRAG evaluation actually show?
   back: Going global helps whole-corpus questions; the graph mostly makes it cheaper. That falls short of showing that graphs beat vectors.
   lesson: ai-engineering/05-graph-engineering/notes/11-kg-rag-and-text-to-cypher
 - front: What is the default order for adding retrieval modes over a knowledge graph?
   back: Default to vector, then canned traversals, then text-to-Cypher with a validator for the long tail.
   lesson: ai-engineering/05-graph-engineering/notes/11-kg-rag-and-text-to-cypher
-- front: What verifies the generated Cypher in the QA agent, and what's still missing?
+- front: When does a graph question need no model, and which indexes answer it?
+  back: Answer a fixed question shape with a canned query by name or place, and keep the model for the long tail.
+  lesson: ai-engineering/05-graph-engineering/notes/11a-structured-lookups-and-text-to-cypher
+- front: What schema should a text-to-Cypher prompt show, and how should it handle a question it can't answer?
+  back: 'Show the model an annotated, filtered schema, and let it return `success: false` instead of inventing a plausible query.'
+  lesson: ai-engineering/05-graph-engineering/notes/11a-structured-lookups-and-text-to-cypher
+- front: How is text-to-Cypher made reliable in the QA agent?
   back: Text-to-Cypher is a bounded generate-then-verify loop, and listing relationships first reduces invented relationship types.
   lesson: ai-engineering/05-graph-engineering/notes/11b-text-to-cypher-qa-agent
 - front: What does each of loop, swarm and graph move out of the agent?
@@ -108,10 +123,10 @@ cards:
 - front: Why do workers submit a GraphUpdate and not write to the graph directly?
   back: Workers submit updates to a validator instead of writing directly, which is the reducer idea at database scale.
   lesson: ai-engineering/05-graph-engineering/notes/12-kg-as-shared-agent-memory
-- front: What three properties must a shared agent graph never give up?
+- front: How should a shared agent graph treat each agent's writes?
   back: A shared graph stores claims with provenance and keeps contradictions, because no agent's write counts as truth.
   lesson: ai-engineering/05-graph-engineering/notes/12-kg-as-shared-agent-memory
-- front: Why should predicted edges stay out of default traversals?
+- front: What is the graph ML bottleneck, and what does a false predicted link do?
   back: Features are the graph ML bottleneck, and a false predicted link does what a false merge does to every later traversal.
   lesson: ai-engineering/05-graph-engineering/notes/13-graph-ml-and-gnns
 - front: What do matrix factorisation, Node2Vec and a GNN have in common?
