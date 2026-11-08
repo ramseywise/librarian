@@ -1,4 +1,5 @@
 ---
+imported_hash: c8999a517f0a4928
 title: Valid Parentheses — First-Principles Thinking Guide
 summary: 'For each char: If closing bracket: If stack empty or top doesn''t match → False Pop the stack Else (opening bracket): Push to stack'
 order: 211

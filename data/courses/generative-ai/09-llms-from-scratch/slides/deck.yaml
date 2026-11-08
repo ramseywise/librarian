@@ -1,3 +1,4 @@
+# imported_hash: c9b02b9aafb6baee
 # LLMs from scratch lecture deck. Covers notes/01-micrograd.md, notes/02-makemore.md, notes/03-nanogpt.md.
 # Build: make slides PILLAR=generative-ai/09-llms-from-scratch STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md

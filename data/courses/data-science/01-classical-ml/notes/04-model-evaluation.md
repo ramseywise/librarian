@@ -1,4 +1,5 @@
 ---
+imported_hash: c4d854a67ea9c448
 title: Model Evaluation
 summary: 'This is the layer interviews probe hardest: metric interpretation, train/test discipline and leakage are the most common failure modes.'
 order: 5
@@ -48,16 +49,25 @@ What CV buys:
 
 What it doesn't do: return a model. `cross_val_score` evaluates a *procedure*; refit on all the data for the final model.
 
+**How many folds, and what CV is good for.** ISLP's advice is $k=5$ or 10, because leave-one-out has the least bias but averages $n$ highly correlated fits and so has high variance, while a single validation split is both noisy and trained on less data (*ISLP*, ch. 5). The noise is concrete: on the Auto data (392 cars, `mpg` on polynomials of `horsepower`, one 196/196 split) the linear, quadratic and cubic validation MSEs are 23.62, 18.76 and 18.80 at one seed and 20.76, 16.95 and 16.97 at another, so the level moves by about three MSE units with the split while the ranking holds. Leave-one-out and 10-fold agree closely there (degree 1 to 5: 24.23, 19.25, 19.34, 19.42, 19.03 against 24.21, 19.19, 19.28, 19.48, 19.14), and for least squares leave-one-out is free, since $\mathrm{CV}_{(n)} = \frac1n\sum_i\big((y_i-\hat y_i)/(1-h_i)\big)^2$ needs one fit and the leverages $h_i$ (*ISLP*, ch. 5, lab). A model-based penalty such as $C_p$ or SURE corrects the training error without refits, and warns that CV estimates the average error of the procedure more than that of one fitted rule ([01](01-statistical-foundations.md#correcting-the-training-error-cross-validation-and-covariance-penalties), *Computer Age*, ch. 12).
+
+The same ladder on one small table shows why each rung exists. A 1-nearest-neighbour classifier on iris (150 flowers) scores 1.0 on the rows it was fitted on, since it stores them; 0.907 on a 50/50 holdout; 0.96 and 0.907 when the two halves swap roles; 0.967, 0.967, 0.933, 0.933 and 1.0 over five folds (mean 0.96); and 0.96 under leave-one-out (150 fits). The book prints the last mean as an "error rate", but it is accuracy (*Python Data Science Handbook*, ch. 5).
+
+![Training, test and 10-fold CV error for logistic regression with polynomial terms (left) and KNN (right) on simulated two-class data](../assets/sources/images/islp-fig5-8.png)
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 5.8*
+
+The figure shows what to trust CV for. The training error (blue) keeps falling with flexibility, the true test error (brown) is U-shaped, and the 10-fold CV curve (black) tracks the test curve's shape and puts its minimum within a step of the true one: for the polynomial logistic fits CV picks order 4 where the test minimum is at order 3, and the true test error is about the same for orders 3 to 6 (0.201, 0.197, 0.160, 0.162 for orders 1 to 4, against a Bayes error of 0.133). Read the plot and the CV curve sits below the test curve in both panels, so use it to choose the hyperparameter, not to quote the level (*ISLP*, ch. 5, simulated data, one run).
+
 ### Splitters
 
 | Splitter | When | Note |
 |---|---|---|
-| `KFold(n_splits, shuffle=True)` | Regression; data in random order | Without `shuffle`, ordered data (iris is sorted by class) gives 0% folds |
+| `KFold(n_splits, shuffle=True)` | Regression; data in random order | Without `shuffle`, ordered data (iris is sorted by class) gives 0% folds; M&G's `KFold(3)` on iris scores 0 in every fold, `shuffle=True, random_state=0` gives 0.90/0.96/0.96, and leave-one-out (150 fits) gives 0.95 (*Introduction to ML with Python*, ch. 5) |
 | `StratifiedKFold` | Classification (the default for classifiers) | Keeps class proportions in each fold |
 | `LeaveOneOut` | Very small data | $n$ fits; high-variance estimate |
 | `ShuffleSplit`, `StratifiedShuffleSplit` | Control train/test sizes and repeats independently; subsample large data | |
 | `GroupKFold` | Several rows per subject (patient, user, speaker) | The same group is never in train and test; otherwise you measure memorisation of the person |
-| `TimeSeriesSplit` | Temporal data | Always train on the past, test on the future |
+| `TimeSeriesSplit` | Temporal data | Always train on the past, test on the future. For a single holdout, cut at a date: train on rows up to it and test on rows after, then assert the two sizes add up to the source's (*ML Engineering in Action*, ch. 6) |
 | `RepeatedStratifiedKFold` | Small data; want a tighter estimate | |
 
 **The groups rule generalises:** the split must mirror how the model meets new data in production. New users → split by user. Next month → split by time.
@@ -70,10 +80,10 @@ What it doesn't do: return a model. `cross_val_score` evaluates a *procedure*; r
 
 Hyperparameters (`C`, `gamma`, `max_depth`) are not learned by `fit`. Search them, but the score you used to pick them is no longer an honest estimate.
 
-![Overview of the parameter selection and model evaluation process with GridSearchCV](../assets/mueller-guido-gridsearch-overview.png)
+![Overview of the parameter selection and model evaluation process with GridSearchCV](../assets/sources/images/mueller-guido-gridsearch-overview.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, companion repo `images/`*
 
-The three-way split from [01](01-statistical-foundations.md): pick parameters on validation, report on test once.
+The three-way split from [01](01-statistical-foundations.md): pick parameters on validation, report on test once. The cost of skipping it is visible in M&G's iris run (6 × 6 grid over `C` and `gamma` for an `SVC`): scoring the winning grid point on the data it was tuned on reports 0.97, while a proper train/validation/test split (84/28/38 rows) scores 0.92 on the untouched test rows (*Introduction to ML with Python*, ch. 5, "Overfitting the validation set"). With `GridSearchCV(cv=5)` the 36-point grid costs 36 × 5 = 180 fits plus one refit; the same grid under nested 5 × 5 CV is 900.
 
 ```python
 from sklearn.model_selection import GridSearchCV, train_test_split
@@ -133,7 +143,7 @@ print(round(scores.mean(), 3))   # an estimate of how well "grid search over SVC
 0.98
 ```
 
-5 × 5 × 36 = 900 fits. It evaluates the model *selection procedure*, not one model. `n_jobs=-1` parallelises.
+5 × 5 × 36 = 900 fits (the book's iris run gives mean accuracy 0.98 for the procedure; *Introduction to ML with Python*, ch. 5, "Nested cross-validation"). It evaluates the model *selection procedure*, not one model. `n_jobs=-1` parallelises.
 
 Why bother: Varma and Simon built "null" datasets of 40 samples with no signal, so the true error of any classifier was 50%, and tuned two classifiers by minimising CV error. The minimum CV error averaged 37.8% for shrunken centroids and 41.7% for an SVM, and on more than one-fifth of datasets the optimism exceeded 20 points. Nested CV gave an almost unbiased estimate, with a slight pessimism from training on 39 samples rather than 40 ([doi:10.1186/1471-2105-7-91](https://doi.org/10.1186/1471-2105-7-91), BMC Bioinformatics 2006). The setup was 6,000 Gaussian features per dataset, the shrunken-centroid parameter tuned by 10-fold CV and the SVM by leave-one-out CV; nested CV averaged 54.2% against the true 50.0% on the null data, and 35.3% against 32.0% for an SVM on data with 10 informative features. The paper tests only these two classifiers on synthetic data with far more features than samples, and gives no cost for the nested loop. Keeping the best of many tries is the [multiple comparisons](../../../data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing.md#multiple-comparisons) problem from data analytics.
 
@@ -185,9 +195,13 @@ Only the last is clearly useful.
 
 Always compare against a dummy. If accuracy barely beats it, accuracy is the wrong metric.
 
+The same collapse appears inside a fitted model. In Bruce and Bruce's loan data 5.0% of loans default, and a logistic regression trained on all of them flags only 0.39% as defaults (log-odds above 0), under a twelfth of the expected number. Giving each defaulted loan weight $1/p$ (about 20, with $p$ the default rate) and paid-off loans weight 1 lifts the flagged share to 43%. The two fits differ in more than the weights (the first used a training split, the second all loans), so read the jump as an order of magnitude, not a controlled effect (*Practical Statistics*, ch. 5).
+
 [Imbalance, errors and drift](10-imbalance-errors-and-drift.md#imbalance-what-each-remedy-does) tests what class weights, resampling and threshold moving each do when the positive class is rare.
 
 ### Confusion matrix, precision, recall, F1
+
+The book's 9-versus-rest numbers make the point on one split (403 not-nine, 47 nine in the test set): majority-class dummy accuracy 0.90, a depth-2 tree 0.92, logistic regression 0.98, so accuracy barely separates the first two. F1 on the "nine" class does: 0.00 for the majority dummy, 0.10 for a random-proportion dummy, 0.55 for the tree and 0.89 for logistic regression (precision 0.95, recall 0.83; *Introduction to ML with Python*, ch. 5, "Metrics for binary classification").
 
 ```python
 from sklearn.metrics import confusion_matrix, classification_report
@@ -251,159 +265,7 @@ This table comes back with new labels. In a [RAG pipeline](../../../generative-a
 
 ## Threshold, precision–recall and ROC
 
-`predict` thresholds `decision_function` at 0 or `predict_proba` at 0.5 ([02](02-supervised-learning.md#uncertainty-estimates)). Moving the threshold trades precision for recall without retraining.
-
-```python
-from sklearn.metrics import precision_score, recall_score
-
-svc = SVC(gamma=0.001).fit(X_train, y_train)
-for t in [0, -0.8]:                      # a lower threshold catches more positives
-    p = svc.decision_function(X_test) > t
-    print(t, "precision", round(precision_score(y_test, p), 3), "recall", round(recall_score(y_test, p), 3))
-```
-
-```text
-0 precision 0.978 recall 0.936
--0.8 precision 0.758 recall 1.0
-```
-
-**Never pick the threshold on the test set.** Use a validation set or CV; `TunedThresholdClassifierCV` (scikit-learn 1.5) does this for you.
-
-### Precision–recall curve
-
-```python
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import precision_recall_curve, average_precision_score
-
-rf = RandomForestClassifier(n_estimators=100, random_state=0).fit(X_train, y_train)
-precision, recall, thresholds = precision_recall_curve(y_test, svc.decision_function(X_test))
-print(len(thresholds), "thresholds on the curve")
-print("AP svc", round(average_precision_score(y_test, svc.decision_function(X_test)), 3),
-      "rf", round(average_precision_score(y_test, rf.predict_proba(X_test)[:, 1]), 3))   # area under the PR curve
-```
-
-```text
-450 thresholds on the curve
-AP svc 0.997 rf 0.979
-```
-
-The closer the curve hugs the top right, the better. Average precision summarises it; with heavy imbalance it is more informative than ROC AUC, because it ignores the large pool of true negatives. Davis and Goadrich prove the two spaces are linked: for a fixed number of positives and negatives, one curve dominates another in ROC exactly when it dominates in PR. Once curves cross, that link gives no ranking, and optimising AUC-ROC doesn't guarantee the area under the PR curve. On a constructed example with 20 positives and 2,000 negatives, **AUC-ROC prefers one curve (0.875 against 0.813) and AUC-PR prefers the other (0.514 against 0.038)**, because PR area comes mostly from high precision at low recall. Straight-line interpolation between PR points is also a mistake, because precision need not change linearly with recall: from a single point at recall 0.02, with 433 positives and 56,164 negatives, a line gives an area of 0.50 where their interpolation gives 0.031 ([doi:10.1145/1143844.1143874](https://doi.org/10.1145/1143844.1143874), ICML 2006). These examples show that it can happen, not how often, and the paper treats the area under the PR curve, not average precision. Never draw a PR curve by connecting a handful of points with lines.
-
-### ROC curve and AUC
-
-```python
-from sklearn.metrics import roc_curve, roc_auc_score
-
-fpr, tpr, thresholds = roc_curve(y_test, svc.decision_function(X_test))
-print("AUC svc", round(roc_auc_score(y_test, svc.decision_function(X_test)), 3),
-      "rf", round(roc_auc_score(y_test, rf.predict_proba(X_test)[:, 1]), 3))
-```
-
-```text
-AUC svc 1.0 rf 0.995
-```
-
-ROC plots TPR against FPR over all thresholds. **AUC** is the probability that a random positive gets a higher score than a random negative: 0.5 is chance, 1.0 is perfect ranking. A random predictor always scores 0.5 regardless of class balance, which makes AUC a better model-selection metric than accuracy on imbalanced data.
-
-On M&G's digits "is it a 9?" example, SVMs with `gamma` 1, 0.1 and 0.01 all have accuracy 0.90 (the dummy rate), but AUC 0.50, 0.90 and 1.00. The model with `gamma=0.01` ranks perfectly; only the default threshold is wrong.
-
-### The running example: adult census
-
-The same questions on the pillar's table, using a one-hot logistic regression as the first honest model. Who is flagged as a high earner, and what does that cost?
-
-```python
-import numpy as np
-import pandas as pd
-from sklearn.compose import make_column_selector, make_column_transformer
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-
-cols = ["age", "workclass", "fnlwgt", "education", "education-num", "marital-status",
-        "occupation", "relationship", "race", "gender", "capital-gain", "capital-loss",
-        "hours-per-week", "native-country", "income"]
-adult = pd.read_csv("../practice/intro-to-ml-in-python/data/adult.data", header=None, names=cols,
-                    skipinitialspace=True, na_values="?").drop(columns=["fnlwgt", "education"])
-ya = (adult.pop("income") == ">50K").astype(int)
-Xa_dev, Xa_test, ya_dev, ya_test = train_test_split(adult, ya, stratify=ya, test_size=0.2, random_state=0)
-Xa_tr, Xa_val, ya_tr, ya_val = train_test_split(Xa_dev, ya_dev, stratify=ya_dev, test_size=0.25, random_state=0)
-
-prep = make_column_transformer(
-    (StandardScaler(), make_column_selector(dtype_include="number")),
-    (OneHotEncoder(handle_unknown="ignore"), make_column_selector(dtype_exclude="number")))
-adult_clf = make_pipeline(prep, LogisticRegression(max_iter=2000)).fit(Xa_tr, ya_tr)
-
-base = ya_test.mean()
-s_val, s_test = adult_clf.predict_proba(Xa_val)[:, 1], adult_clf.predict_proba(Xa_test)[:, 1]
-print("dummy accuracy", round(1 - base, 3), "| model accuracy", round(adult_clf.score(Xa_test, ya_test), 3))
-print("AUC", round(roc_auc_score(ya_test, s_test), 3), "| AP", round(average_precision_score(ya_test, s_test), 3),
-      "(AP of a random ranker is the base rate,", round(base, 3), ")")
-
-# Business rule: of those we flag, at least 80% must really be high earners.
-# Pick the threshold on validation, then report on test once.
-p, r, t = precision_recall_curve(ya_val, s_val)
-thr = t[np.argmax(p[:-1] >= 0.80)]
-for name, yy, ss in [("default 0.5", ya_test, s_test >= 0.5), (f"tuned {thr:.2f}", ya_test, s_test >= thr)]:
-    print(name, "precision", round(precision_score(yy, ss), 3), "recall", round(recall_score(yy, ss), 3))
-```
-
-```text
-dummy accuracy 0.759 | model accuracy 0.847
-AUC 0.901 | AP 0.754 (AP of a random ranker is the base rate, 0.241 )
-default 0.5 precision 0.725 recall 0.584
-tuned 0.61 precision 0.783 recall 0.484
-```
-
-Accuracy says the model is about nine points better than always answering "low earner". AUC and AP say the ranking is strong. The threshold lines say what that means for a decision: holding the flagged group to about 80% precision costs about a tenth of recall, and the validation target of 0.80 came out at 0.783 on test, because a threshold picked on one sample is itself an estimate. See [the bootstrap](../../../data-analytics/02-probability-and-statistics/notes/04-estimation.md#the-bootstrap) in data analytics for putting an interval on an estimate like this one.
-
-| Curve | Axes | Use when |
-|---|---|---|
-| Precision–recall | P vs R | Positive class rare; you care about the flagged set |
-| ROC | TPR vs FPR | Ranking quality overall; balanced-ish data |
-
-### Calibration: is a 0.8 really 80%?
-
-Thresholds and expected-cost decisions assume `predict_proba` means what it says. Check with a reliability diagram and fix with a held-out recalibration:
-
-```python
-from sklearn.calibration import CalibratedClassifierCV, calibration_curve
-from sklearn.metrics import brier_score_loss
-from sklearn.naive_bayes import GaussianNB
-
-Xn_tr, Xn_te = prep.fit_transform(Xa_dev).toarray(), prep.transform(Xa_test).toarray()
-nb = GaussianNB().fit(Xn_tr, ya_dev)
-cal = CalibratedClassifierCV(GaussianNB(), method="isotonic", cv=5).fit(Xn_tr, ya_dev)   # "sigmoid" is Platt, for less data
-for name, m in [("naive Bayes", nb), ("recalibrated", cal)]:
-    prob = m.predict_proba(Xn_te)[:, 1]
-    frac, mean = calibration_curve(ya_test, prob, n_bins=5)     # the numbers a reliability diagram plots
-    print(name, "Brier", round(brier_score_loss(ya_test, prob), 3), "| predicted", mean.round(2), "| actual", frac.round(2))
-```
-
-```text
-naive Bayes Brier 0.45 | predicted [0.   0.31 0.48 0.7  1.  ] | actual [0.03 0.04 0.   0.   0.34]
-recalibrated Brier 0.143 | predicted [0.06 0.3  0.43] | actual [0.05 0.13 0.49]
-```
-
-Gaussian naive Bayes on a one-hot table is a deliberately bad case: its scores pile up at 0 and 1, and only a third of the 1.0 bin is positive. Recalibration brings the Brier score down from 0.45 to 0.143 and the predicted probabilities much nearer to what happens, without touching how the model ranks in any large way. Niculescu-Mizil and Caruana established the shape of the table below by comparing ten learners' probabilities ([doi:10.1145/1102351.1102430](https://doi.org/10.1145/1102351.1102430), ICML 2005).
-
-| Model | Typical miscalibration |
-|---|---|
-| Logistic regression | Usually well calibrated |
-| Naive Bayes | Pushed towards 0 and 1 |
-| SVM (`decision_function`), boosted trees | Sigmoid-shaped distortion |
-| Random forest | Pulled away from 0 and 1 |
-| Deep networks | Often overconfident; temperature scaling (one scalar on the logits) removes the average bias, not the rest (Guo; Minderer, below) |
-
-Deep networks made calibration a live research question. Guo et al. found modern deep nets overconfident ([arXiv:1706.04599](https://arxiv.org/abs/1706.04599), ICML 2017). On CIFAR-100 a 5-layer LeNet's confidence matched its accuracy, while a 110-layer ResNet was more accurate but much more confident than it was right. Depth, width, weight decay and batch norm all moved calibration. Of the post-hoc fixes they tested, temperature scaling (a one-parameter Platt scaling) worked best on most datasets. Minderer et al. revisit this on recent ImageNet classifiers, and release measurements for 180 models from 16 families ([arXiv:2106.07998](https://arxiv.org/abs/2106.07998), NeurIPS 2021). On ImageNet validation, scored by top-label expected calibration error (ECE, the average gap between confidence and accuracy, here in 100 equal-mass bins), their results suggest no general trend for recent or highly accurate networks to be poorly calibrated compared with older or less accurate ones, though within most families the larger, more accurate members have slightly higher ECE. Recent non-convolutional families (vision transformers, MLP-Mixer) are among the best calibrated, more clearly after temperature scaling, since BiT, a ConvNet, overlaps them before it. Size and pretraining don't fully explain the gap, though the pretraining test used BiT alone. The authors speculate that architecture, in particular its spatial inductive bias, plays an important role, and their abstract says the results suggest it is a major determinant.
-
-Three points are easy to miss:
-
-- **What temperature scaling removes.** It leaves accuracy alone and corrects average over- or underconfidence. Differences between families remain after it.
-- **Shift.** They fit the temperature on clean ImageNet and tested on corrupted ImageNet. Calibration error still grew with corruption for every family, though more slowly for MLP-Mixer and ViT. Our reading is that a temperature fitted before shift doesn't fully carry over; the authors stress the other side, that some recent families' calibration decays so slowly under shift that the decay in accuracy is likely more relevant in practice.
-- **Which number to choose on.** In the one cost model they tested, abstaining on the least confident predictions, the more accurate of two BiT models cost less at abstention rates up to 70%. Its gap was 0.08 in error against 0.009 in ECE. That gap is lopsided, but the more accurate model also won in most practical cost settings in a cross-family pair with gaps of 0.03 on both (ResNeXt-WSL against ViT-B/32). The bin count can also flip the sign of the link between ECE and accuracy (temperature-scaled BiT on ImageNet, 15 to 5,000 bins), so compare the two together.
-
-These are 2021 image classifiers, so don't carry the ranking to other domains or later models.
-
-[Imbalance, errors and drift](10-imbalance-errors-and-drift.md#calibration-the-bridge-from-score-to-price) shows why it matters to a lender, who has to turn a score into a price.
+This section, with the adult-census running example and the calibration subsection, moved to [Thresholds, precision–recall, ROC and calibration](04b-thresholds-pr-roc-and-calibration.md): how to move a threshold, read a precision–recall or ROC curve, and check that a 0.8 really is 80%.
 
 ---
 
@@ -411,13 +273,15 @@ These are 2021 image classifiers, so don't carry the ranking to other domains or
 
 **Multiclass.** The confusion matrix is $K \times K$; read the off-diagonals for which classes are confused. F1 per class, averaged:
 
+On the ten-class digits task with logistic regression (450 test images) the book gets accuracy 0.953, micro-F1 0.953 and macro-F1 0.954, with 8 and 3 the hardest classes (*Introduction to ML with Python*, ch. 5, "Multiclass classification"). Micro-F1 equals accuracy here, as the table says.
+
 | Average | Weights | Use when |
 |---|---|---|
 | `macro` | Every class equally | Small classes matter as much as large |
 | `weighted` | By class support | Default in `classification_report` |
 | `micro` | Every sample equally (= accuracy for single-label) | Each sample matters equally |
 
-**Regression.** $R^2$ (default `score`) is fine for model comparison. For reporting, use a unit the business understands: MAE (robust to outliers), RMSE (penalises big misses), MAPE (relative error; undefined at zero).
+**Regression.** $R^2$ (default `score`) is fine for model comparison. For reporting, use a unit the business understands: MAE (robust to outliers), RMSE (penalises big misses), MAPE (relative error; undefined at zero). MAPE is not in scikit-learn's core scorers in the book's edition, so Wilson writes it as `np.mean(np.abs((y_true - y_pred) / y_true)) * 100`, and returns every agreed metric from one function (MAE, MAPE, MSE, RMSE, explained variance, $R^2$) so that nobody has to choose a metric before the experiments run (*ML Engineering in Action*, ch. 6).
 
 ---
 
@@ -441,7 +305,7 @@ roc_auc {'gamma': 0.01} test AUC 1.0
 58 scorers, e.g. ['neg_mean_absolute_error', 'neg_mean_absolute_percentage_error']
 ```
 
-The two scorers pick different winners, as they do on M&G's split (test AUC 0.92 against 1.00 there). Choose the scorer before you search.
+The two scorers pick different winners, as they do on M&G's split (test AUC 0.992 against 1.000 there; test accuracy 0.973 against 1.000, *Introduction to ML with Python*, ch. 5, "Using evaluation metrics in model selection"). Choose the scorer before you search.
 
 Error metrics are negated (`neg_mean_absolute_error`) because scikit-learn always maximises.
 
@@ -449,7 +313,7 @@ Error metrics are negated (`neg_mean_absolute_error`) because scikit-learn alway
 
 ## Learning curves and bias-variance diagnosis
 
-Ng's ex5 makes the diagnosis from [01](01-statistical-foundations.md#bias-variance-and-model-complexity) operational. Fit regularised linear regression on the water-level/dam-outflow data with an increasing number of training examples; plot training error and cross-validation error against $m$.
+Ng's ex5 makes the diagnosis from [01](01-statistical-foundations.md#bias-variance-and-model-complexity) operational. Fit regularised linear regression on the water-level/dam-outflow data with an increasing number of training examples; plot training error and cross-validation error against $m$. The best complexity also moves with the data: on VanderPlas's noisy polynomial data the validation curve peaks at degree 3 with 40 points, and at about degree 6 with 200, where even degree 20 is not seriously overfit (*Python Data Science Handbook*, ch. 5).
 
 ```python
 # Ng ex5, vectorised: regularised linear regression cost and learning curve
@@ -516,6 +380,13 @@ print(sizes, train_scores.mean(axis=1).round(2), val_scores.mean(axis=1).round(2
 
 [Training and tuning](09-training-and-tuning.md#reading-performance-during-training) reads these curves on the adult census, with more rows and then with more training on the x-axis.
 
+**When the features outnumber the rows, training scores stop meaning anything.** ISLP adds pure-noise features to a 20-row least-squares fit one at a time: $R^2$ climbs to 1 and training MSE falls to 0, while the test MSE explodes by orders of magnitude (the plot's axis is logarithmic).
+
+![R squared rising to 1, training MSE falling to 0 and test MSE exploding as unrelated features are added to a 20-observation least-squares fit](../assets/sources/images/islp-fig6-23.png)
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 6.23*
+
+With $p \ge n$ a perfect fit is guaranteed whatever the features contain, so report a held-out or cross-validated error only, never training error, $R^2$ or in-sample p-values (*ISLP*, ch. 6, simulated, $n=20$, one run). A lasso with 20 true signals and $n=100$ sees its test MSE nearly double as $p$ grows from 20 to 2,000, so adding features is not free even when the penalty is tuned.
+
 ---
 
 ## Rules
@@ -580,26 +451,21 @@ Where the fixes landed:
 |---|---|---|
 | Accuracy on imbalanced data | A model at 90% accuracy has F1 near zero on the class you care about | Compare to `DummyClassifier`; use F1, AP or AUC |
 | Reporting `best_score_` as the result | The published number is above what the test set or production gives | Report on untouched test data, or use nested CV |
-| Picking the threshold on the test set | Test precision is exactly on target, then drifts in production | Tune on validation or with `TunedThresholdClassifierCV` |
 | Random split with repeat subjects or time order | CV is excellent and production is poor | `GroupKFold`, `TimeSeriesSplit`; mirror how the model meets new data |
 | Best grid value on the edge of the range | Heatmap's highest cell sits on a border | Extend the range before trusting it |
-| ROC AUC on heavy imbalance | AUC looks high but the flagged set is mostly false positives | Read precision–recall as well |
-| Taking probabilities at face value | Decile of 0.8 scores contains 60% positives | Plot a reliability diagram and recalibrate on held-out data |
 | Tuning on a metric nobody uses | The model improves and the business number does not | Choose the scorer from the error costs first |
 
 ## Try it
 
-1. On the adult block, change the business rule to "catch 80% of high earners" and read the threshold and precision from the validation curve.
-2. Run `cross_val_score` on iris with `KFold(n_splits=3)` and no shuffle. Explain the scores.
-3. In the digits block, search `SVC` hyperparameters with `scoring="average_precision"` and compare with the `roc_auc` winner.
-4. Run ex5's polynomial case: expand `Xe` to degree 8, normalise, and call `ng_learning_curve` with `lam=0` and `lam=3`. Worked solution in [`ex5.ipynb`](../practice/ng-machine-learning/ex5/ex5.md).
+1. Run `cross_val_score` on iris with `KFold(n_splits=3)` and no shuffle. Explain the scores.
+2. In the digits block, search `SVC` hyperparameters with `scoring="average_precision"` and compare with the `roc_auc` winner.
+3. Run ex5's polynomial case: expand `Xe` to degree 8, normalise, and call `ng_learning_curve` with `lam=0` and `lam=3`. Worked solution in [`ex5.ipynb`](../practice/ng-machine-learning/ex5/ex5.md).
 
 <details>
 <summary>Answers</summary>
 
-1. Take the last index where `r[:-1] >= 0.80`, since recall falls as the threshold rises. Precision is well below the 80% of the block above: the two targets pull against each other, which is the trade-off a business has to settle.
-2. All zero. Iris is sorted by class, so each fold holds a class the training folds never saw. `shuffle=True` or stratification fixes it.
-3. Both pick `gamma=0.01` on this split. They can differ when the positive class is rarer, and AP is the one that reflects the flagged set.
+1. All zero. Iris is sorted by class, so each fold holds a class the training folds never saw. `shuffle=True` or stratification fixes it.
+2. Both pick `gamma=0.01` on this split. They can differ when the positive class is rarer, and AP is the one that reflects the flagged set.
 
 </details>
 
@@ -611,14 +477,10 @@ Where the fixes landed:
 | What does nested CV estimate? | The generalisation of the whole selection procedure, not of one model |
 | Precision vs recall? | Of those flagged, how many are real; of the real ones, how many were caught |
 | When is accuracy misleading? | Imbalanced classes or asymmetric costs, where a dummy can score high |
-| What does AUC mean? | The probability a random positive ranks above a random negative |
-| ROC or PR on imbalance? | PR: it ignores the large pool of true negatives |
-| How do you pick a threshold? | From the cost of each error, on validation data, then report on test once |
-| What is calibration, and how do you fix it? | Whether scores match frequencies. Reliability diagram; Platt, isotonic, or temperature scaling |
 | How do you read a learning curve? | High and converged means bias, so more data will not help. A large gap means variance, so more data will help |
 | How do you split for grouped or temporal data? | So production's situation holds: by subject, or past-to-future |
 | Recall or specificity? | Recall is $TP/(TP+FN)$, the share of real positives caught. Specificity is $TN/(TN+FP)$, the share of negatives left alone. The first counts misses and the second counts false alarms. |
 
 ## Next
 
-[Ensembles](06-ensembles.md): you can now score a model honestly, so build the strongest one for a table, through bagging, random forests and gradient boosting.
+[Thresholds, precision–recall, ROC and calibration](04b-thresholds-pr-roc-and-calibration.md) turns a score into a decision. After that, [Ensembles](06-ensembles.md): you can now score a model honestly, so build the strongest one for a table, through bagging, random forests and gradient boosting.

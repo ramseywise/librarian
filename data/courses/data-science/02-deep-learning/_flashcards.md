@@ -48,6 +48,12 @@ cards:
 - front: What do embeddings need to pay off, which a small toy run lacks?
   back: Embeddings need many identities and strong augmentation, so the toy shows the mechanics and the papers the payoff.
   lesson: data-science/02-deep-learning/notes/04-convolutional-networks
+- front: At what data size did the scratch CNN draw level with the frozen ResNet-18, and which arm stayed ahead?
+  back: Frozen features win with a handful of labels, fine-tuning from a few hundred, and scratch only draws level with plenty of data.
+  lesson: data-science/02-deep-learning/notes/04b-vision-in-practice
+- front: Why does a frozen backbone still change during training, and what fixes it?
+  back: Predict through the same transform you tested with, and keep a frozen backbone in eval mode.
+  lesson: data-science/02-deep-learning/notes/04b-vision-in-practice
 - front: What sets how much gradient reaches the first step of an LSTM?
   back: Ten orders of magnitude separate these lines at the first step, set entirely by initialisation.
   lesson: data-science/02-deep-learning/notes/05-sequence-models

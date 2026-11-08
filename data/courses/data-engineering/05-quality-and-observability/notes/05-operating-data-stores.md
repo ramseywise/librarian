@@ -1,4 +1,5 @@
 ---
+imported_hash: 75192592c635949b
 title: Operating data stores
 summary: On 31 January 2017 an engineer at GitLab wiped the data directory of the wrong server.
 order: 6

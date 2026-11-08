@@ -1,4 +1,5 @@
 ---
+imported_hash: 8ba32ad4725b4568
 title: Tries
 summary: A Trie (prefix tree) is a tree-like data structure that stores strings character by character.
 order: 227

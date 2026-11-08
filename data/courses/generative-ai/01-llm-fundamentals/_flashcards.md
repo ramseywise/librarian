@@ -9,8 +9,14 @@ cards:
 - front: Why can a model fail to reverse a string that it reads correctly?
   back: Tokens make any text encodable, but they set the bill and hide the letters, so measure in tokens.
   lesson: generative-ai/01-llm-fundamentals/notes/01-tokens-and-embeddings
+- front: When do dot product, cosine and L2 distance rank neighbours the same way?
+  back: Scale embeddings to length 1 and dot product, cosine and L2 distance pick the same neighbours.
+  lesson: generative-ai/01-llm-fundamentals/notes/01-tokens-and-embeddings
 - front: How do you test that a causal mask works?
   back: Attention weights tokens by relevance, and the causal mask makes one pass train every position honestly.
+  lesson: generative-ai/01-llm-fundamentals/notes/02-attention-and-the-transformer-block
+- front: What does Q Kᵀ cost, and why is K transposed?
+  back: Inner sizes must match and drop out, a product costs 2·m·n·k FLOPs, and a low-rank matrix stores as two thin factors, which is LoRA.
   lesson: generative-ai/01-llm-fundamentals/notes/02-attention-and-the-transformer-block
 - front: Why divide by the square root of d_k?
   back: Attention is a masked, scaled softmax over dot products, and its T by T matrix is what makes context expensive.
@@ -44,6 +50,9 @@ cards:
   lesson: generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives
 - front: What should the loss be before training, and why?
   back: Pretraining is next-token cross-entropy, parallel through teacher forcing, and step-0 loss near ln(vocab) checks the wiring.
+  lesson: generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives
+- front: Why does minimising cross-entropy also minimise KL divergence?
+  back: The data's entropy does not depend on the model, so minimising cross-entropy minimises KL, and perplexity is exp of the loss.
   lesson: generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives
 - front: What does a widening gap between training and validation loss show?
   back: On little data a model memorises, so continue pretraining or fine-tune rather than pretraining on company data.

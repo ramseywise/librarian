@@ -1,7 +1,8 @@
 ---
+imported_hash: db9fec8f07f3b3ab
 title: 'Lab: a loop with a scorekeeper'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
-order: 12
+order: 13
 kind: reading
 section: Practice / Loop scorekeeper
 source: learn-ai-engineering/ai-engineering/04-loop-engineering/practice/loop-scorekeeper/README.md

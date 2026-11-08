@@ -1,7 +1,8 @@
 ---
+imported_hash: d6c31b5cc31344c4
 title: Tooling
 summary: Drills follow the schema in ../README.md.
-order: 270
+order: 273
 kind: reading
 section: Tooling
 source: learn-ai-engineering/programming/drills/tooling/README.md

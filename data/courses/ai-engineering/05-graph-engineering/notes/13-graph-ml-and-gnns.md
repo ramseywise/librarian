@@ -1,7 +1,8 @@
 ---
+imported_hash: 174b6d1d3904c455
 title: '13 — Learning on Graphs: Tasks and Features'
 summary: Standard classifiers assume independent rows, and a node's label depends on its neighbours.
-order: 16
+order: 18
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/13-graph-ml-and-gnns.md
@@ -204,7 +205,7 @@ DWPC scores are comparable only within one metapath and one damping exponent *w*
 
 ### LLMs help with manual features
 
-Because manual features rest on well-known algorithms, an LLM can reason about them. Ch. 10 gives it three jobs: translating metapath descriptions into Cypher, suggesting patterns a human might miss, and writing the code that runs the queries and collects the results. The prompt that produced per-metapath PC and DWPC queries contained four things: the schema (from `apoc.meta.schema()`), one worked query for CbGaD, the list of target metapaths, and sample node names to test with. Treat the output as a draft, the same way [note 11](11-kg-rag-and-text-to-cypher.md#text-to-cypher) treats text-to-Cypher; the book itself calls it a prompting pattern, not a pipeline (ch. 10).
+Because manual features rest on well-known algorithms, an LLM can reason about them. Ch. 10 gives it three jobs: translating metapath descriptions into Cypher, suggesting patterns a human might miss, and writing the code that runs the queries and collects the results. The prompt that produced per-metapath PC and DWPC queries contained four things: the schema (from `apoc.meta.schema()`), one worked query for CbGaD, the list of target metapaths, and sample node names to test with. Treat the output as a draft, the same way [note 11a](11a-structured-lookups-and-text-to-cypher.md#text-to-cypher) treats text-to-Cypher; the book itself calls it a prompting pattern, not a pipeline (ch. 10).
 
 ### Semiautomated: ReFeX
 

@@ -1,4 +1,5 @@
 ---
+imported_hash: a9722a32b0592a3d
 title: 4 — Correlation, Confounding and Causation
 summary: 'Larkspur''s marketing team has good news: customers who opted in to the loyalty email placed 1.21 more orders this year than those who did not.'
 order: 5
@@ -69,6 +70,8 @@ IV  mean y 7.50  r 0.817  line y = 3.00 + 0.500 x
 ```
 
 Plotted, they are a noisy line, a clean curve, a straight line with one outlier, and a vertical stack with one far-off point that creates the whole correlation. So plot before you correlate. `sns.heatmap(df.corr(), annot=True, center=0)` is the quickest overview of a feature table, and [chapter 1 of the statistics pillar](../../02-probability-and-statistics/notes/01-descriptive-statistics-and-eda.md) shows how to read one, but treat a heatmap as a list of things to investigate.
+
+*Think Stats* gives the same warnings in textbook form (ch. 9). Pearson's ρ measures linear association only: a clear curve can give ρ = 0, and ρ says nothing about slope, since a flat-looking and a steep line can share ρ = 1. It is not robust to outliers, which Anscombe's quartet shows, and the remedies are Spearman's rank correlation or a transform such as the log of lognormal data. For evidence of cause Downey lists time order, randomisation (an RCT is "the most reliable" way), natural experiments, and holding a confounder fixed by stratifying. His worked case compares NSFG birth weight of first babies and others within groups of mother's age, because age relates to both birth order and weight. The sections below turn each of these into estimators.
 
 ## Confounding
 
@@ -260,7 +263,21 @@ severe        0.3      0.500
 
 Treatment is better for mild patients and for severe patients, and worse overall, because treatment went mostly to severe cases. Arithmetic can't say which table to trust; only the causal story can. Severity affects both who was treated and who recovered, so it is a confounder and you stratify. If the subgroup had been something the treatment changed, the pooled table would be the right one. That was the deeplink case in [the metrics chapter](02-metrics-and-kpi-design.md).
 
-The classic real case is graduate admissions at Berkeley in 1973. Women were admitted less often overall, but when [Bickel, Hammel and O'Connell (Science, 1975)](https://doi.org/10.1126/science.187.4175.398) looked department by department they found little sign of bias against women, because women had applied more often to departments that were harder to get into.
+The classic real case is graduate admissions at Berkeley in 1973. Women were admitted less often overall, but when [Bickel, Hammel and O'Connell (Science, 1975)](https://doi.org/10.1126/science.187.4175.398) looked department by department they found little sign of bias against women, because women had applied more often to departments that were harder to get into. Reinhart's account of the same case gives the margins: of 12,763 applications, 44% of men and 35% of women were accepted, yet of 101 departments only 4 showed a significant bias against women and 6 against men (*Statistics Done Wrong*, ch. 8; as he reports it, and he adds that the often-told lawsuit never happened).
+
+McElreath refits the same data in its six-department extract (12 rows, 4,526 applications; a narrower slice than Reinhart's 101 departments) and shows the reversal as a regression coefficient. With gender alone the male coefficient is +0.61 on the log-odds scale, odds multiplied by 1.84, a male advantage of about 14% in admission probability. Add a separate intercept for each department and it falls to -0.10 (SD 0.08, 89% interval -0.23 to 0.03), odds about 0.90. The department intercepts run from 0.68 down to -2.62, which is the whole story: women applied to the departments that admit few. Only departments C and E show women below men. Department-only and department-plus-gender models tie on WAIC (5200.9 against 5201.4), both far below the gender-only 5954.9, so gender adds nothing once department is in. The point is that the pooled posterior looked clean and never hinted at the problem: "inspecting the posterior distribution alone would never have revealed that fact" (*Statistical Rethinking*, ch. 10). The cause came from outside the data table, from asking where applicants went. The same model is fitted in code, with the posterior-validation plot, in [the Bayesian machine learning note](../../04-bayesian-analysis/notes/06-bayesian-machine-learning.md).
+
+![Pooled model: predicted admission rates for men and women against the observed rates in each of the six departments](../assets/sources/images/statistical-rethinking-fig10-5.png)
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 10.5*
+
+His second case has the numbers in one table. In a 1986 non-randomised review of kidney-stone surgery, percutaneous nephrolithotomy had the better overall success rate, 83% against 78% for open surgery, and the worse rate in both size groups:
+
+| Success rate | Stone under 2 cm | Stone 2 cm or larger | Overall |
+|---|---|---|---|
+| Open surgery | 93% | 73% | 78% |
+| Percutaneous nephrolithotomy | 87% | 69% | 83% |
+
+Surgeons gave the new procedure to the easy small stones and kept open surgery for the hard ones, so stone size is the confounder and the stratified rows are the fair comparison (*Statistics Done Wrong*, ch. 8, Table 8-1). A meningitis record review has the same shape: penicillin looked helpful overall (448 children) and harmful among those who saw a GP first, because the sickest went straight to hospital. The remedy is randomisation; observational evidence that omega-3 prevents heart attacks was not borne out by a five-year placebo-controlled trial (ch. 8, as reported).
 
 It also appears in A/B tests, when allocation shifts during a test and days differ. Suppose a ramp ran A heavy on a strong day and B heavy on a weak one:
 

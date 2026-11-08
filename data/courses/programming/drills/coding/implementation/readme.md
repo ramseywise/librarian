@@ -1,4 +1,5 @@
 ---
+imported_hash: 0d69e202bdaaead4
 title: Implementation drills
 summary: 'Multi-level build rounds (45–90 min): each level extends the last, so the grade is whether your level-1 design absorbs levels 2 and 3 without a rewrite.'
 order: 232

@@ -1,4 +1,5 @@
 ---
+imported_hash: 52e2a4a95236ea9f
 title: 'Worked Example: 90-Day Sketch — Joining an AI Startup as Staff AI Engineer'
 summary: 'Company: Series B AI startup building an AI-native CRM for sales teams.'
 order: 50

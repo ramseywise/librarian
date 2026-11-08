@@ -1,4 +1,5 @@
 ---
+imported_hash: 0d7785c69713265c
 title: LC 8 — String to Integer (atoi)
 summary: 'Implement atoi: convert a string s to a 32-bit signed integer.'
 order: 10

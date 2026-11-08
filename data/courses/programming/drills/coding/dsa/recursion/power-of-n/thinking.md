@@ -1,4 +1,5 @@
 ---
+imported_hash: bb48425b4b3b926e
 title: Pow(x, n) — First-Principles Thinking Guide
 summary: 'fast_pow(base, exp): If exp == 0: return 1 half = fast_pow(base, exp // 2) If exp is even: return half  half If exp is odd: return half  half  base'
 order: 199

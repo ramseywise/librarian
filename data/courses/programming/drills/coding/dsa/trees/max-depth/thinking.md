@@ -1,4 +1,5 @@
 ---
+imported_hash: 847db8e7084cc778
 title: Maximum Depth of Binary Tree — First-Principles Thinking Guide
 summary: 'maxDepth(3): 1 + max(maxDepth(9), maxDepth(20)) maxDepth(9): 1 + max(0, 0) = 1 maxDepth(20): 1 + max(maxDepth(15), maxDepth(7)) maxDepth(15): 1 + max(0, 0) = 1 maxDepth(7): 1 + max(0, 0) = 1 maxDepth(20): 1 + max(1, 1) = 2 maxDepth(3): 1 +…'
 order: 226

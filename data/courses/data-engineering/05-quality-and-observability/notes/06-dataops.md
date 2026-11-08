@@ -1,4 +1,5 @@
 ---
+imported_hash: 7cfddc01d5c41173
 title: DataOps
 summary: 'A data team can write correct models and still ship wrong numbers: a change goes straight to production, a password sits in a repository, someone resizes a warehouse in the console and nobody knows, and the first alert is a message from fin…'
 order: 7

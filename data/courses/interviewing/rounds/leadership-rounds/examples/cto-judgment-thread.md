@@ -1,4 +1,5 @@
 ---
+imported_hash: c44682e96d170b2c
 title: 'Worked Example: CTO Judgment Thread — Build vs Buy on Model Serving'
 summary: 'Company: Series A AI startup, ~30 engineers, building a B2B document intelligence product.'
 order: 51

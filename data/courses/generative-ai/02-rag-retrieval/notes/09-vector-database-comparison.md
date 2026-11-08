@@ -1,7 +1,8 @@
 ---
+imported_hash: 0a7f91914aee1205
 title: '9 — Vector databases: reference and trade-offs'
 summary: Tallybook has 18 help articles and a Postgres database.
-order: 10
+order: 17
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/09-vector-database-comparison.md
@@ -59,6 +60,11 @@ flowchart TD
 | **Streaming ingest** | COPY or INSERT | `upsert()` | psycopg batch insert | Bulk API | Bulk API | upsert API | Data source sync |
 
 The "Hybrid search" row means what you get from one query with no extra work. Reading it as "cannot do hybrid" is a mistake: you can always run two searches and fuse them with RRF, as in the DuckDB example below. Pinecone's row is a correction to an earlier version of this table: its [hybrid search guide](https://docs.pinecone.io/guides/search/hybrid-search) describes dense and sparse vectors in one index, separate indexes, and client-side fusion.
+
+**Do you need a dedicated store at all?** Lin et al. argue that a search engine you already run is enough. Lucene 9.5.0's HNSW (through Anserini) over OpenAI ada2 embeddings (1,536 dimensions) on MS MARCO passages (8.8M) matched the best listed dense model on dev recall@1000 (0.984, tied with ColBERT-v2). Its dev RR@10 was 0.343 against 0.184 for BM25 and 0.397 for ColBERT-v2, and nDCG@10 was 0.704 on TREC DL19 and 0.676 on DL20 against 0.731 and 0.720 for SPLADE++ ED. Serving ran at 9.8 queries per second (16 threads, 1,000 hits per query, efSearch 1000, two 2017-era Xeon Platinum 8160s), and indexing took about three hours at M=16, efC=100. The authors concede Lucene is slower than Faiss (about half the throughput, a figure they cite from Ma et al., not measured). The paper benchmarks no dedicated vector store, so it is a cost-benefit argument, not a head-to-head. Its 1,536-dimension vectors needed a patched Lucene because the release then capped vectors at 1,024 dimensions, which has since dated ([arXiv:2308.14963](https://arxiv.org/abs/2308.14963), Lin et al., 2023-08, preprint).
+
+![Standard bi-encoder retrieval architecture: a document encoder builds the index, a query encoder embeds the query, and top-k retrieval returns a ranked list](../assets/sources/images/lin-vector-search-openai-fig1.png)
+*Image Source: Lin et al., [Vector Search with OpenAI Embeddings: Lucene Is All You Need](https://arxiv.org/abs/2308.14963) (2023), Fig. 1*
 
 ---
 
@@ -209,7 +215,7 @@ can I get my money back
 
 Two things to read in the output. On the error code, BM25 returns the one document that holds it and nothing else, which is why you keep a keyword path. On the refund question, BM25 has only the word "back" to go on, so it returns kb-03 for "Back off for that long". RRF then puts kb-03 on top. It is first in the keyword list and fifth in the dense list, which the printout's `dense(q, 3)` hides, so it scores 1/61 + 1/65 against kb-04's 1/61. Fusion is not magic: a weak keyword match with one hit counts as much as a strong semantic one. A reranker or a stricter keyword query fixes this.
 
-Keep the permissions predicate in both queries, as [note 07](07-rag-in-production.md#permissions-belong-in-retrieval) argues. The internal runbook kb-18 never appears here, and it would have appeared for the refund question without that `WHERE`.
+Keep the permissions predicate in both queries, as [note 07](07b-security-changing-text-multimodal-and-live-indexes.md#permissions-belong-in-retrieval) argues. The internal runbook kb-18 never appears here, and it would have appeared for the refund question without that `WHERE`.
 
 ### ChromaDB
 Optional backend in the pipeline (`pip install chromadb` or `uv sync --extra chroma`). Its index class uses `PersistentClient` with HNSW cosine distance.
@@ -360,7 +366,7 @@ The gap grows with the corpus, and the rebuild is the mild case: it also means h
 <summary>Answers</summary>
 
 1. 1,000,000 × 384 × 4 bytes is 1.54 GB, so it fits, and the scan should take about five times the 200,000 row, around 20 ms. It is a fine plan for one user and a poor one under load, because each query holds a core for that long.
-2. The refund question now returns kb-18 in second place, the internal runbook, ahead of kb-05. That is the leak from [note 07](07-rag-in-production.md), and it takes one missing clause.
+2. The refund question now returns kb-18 in second place, the internal runbook, ahead of kb-05. That is the leak from [note 07b](07b-security-changing-text-multimodal-and-live-indexes.md), and it takes one missing clause.
 3. `vector` with HNSW, since 1,536 is under the 2,000 limit. At 3,072 you must move to `halfvec`, shorten the embedding if the model supports it, or search exactly, and you re-embed the corpus in any case.
 
 </details>

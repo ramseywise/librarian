@@ -1,7 +1,8 @@
 ---
+imported_hash: f14615898f6674d2
 title: 5    | Statistical Analysis
 summary: np.random.seed(42) plt.rcParams['figure.figsize'] = (10, 4)
-order: 10
+order: 11
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-analytics/02-probability-and-statistics/practice/5_Statistical_Analysis.ipynb

@@ -1,4 +1,5 @@
 ---
+imported_hash: f875742099d450a7
 title: LC 84 — Largest Rectangle in Histogram
 summary: Given an array heights where each element is the height of a bar of width 1 in a histogram, return the area of the largest rectangle that fits entirely within the histogram.
 order: 43

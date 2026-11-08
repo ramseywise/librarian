@@ -1,4 +1,5 @@
 ---
+imported_hash: 76c5389069b16d20
 title: Pow(x, n)
 summary: Implement pow(x, n), which calculates x raised to the power n.
 order: 198

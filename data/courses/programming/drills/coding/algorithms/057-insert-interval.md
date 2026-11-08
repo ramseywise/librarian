@@ -1,4 +1,5 @@
 ---
+imported_hash: 2314005ce68c924c
 title: LC 57 — Insert Interval
 summary: Given a list of sorted, non-overlapping intervals ([start, end]) and a newInterval, insert the new interval so the result stays sorted and non-overlapping, merging any intervals it overlaps.
 order: 34

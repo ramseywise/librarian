@@ -1,4 +1,5 @@
 ---
+imported_hash: f720ff3167114311
 title: 5 — Dagster and Airflow
 summary: Two orchestrators can run the same four steps on the same schedule and still disagree about what the pipeline is.
 order: 6

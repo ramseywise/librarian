@@ -1,4 +1,5 @@
 ---
+imported_hash: f44abab9bb850336
 title: Course Schedule
 summary: Given numCourses and a list of prerequisites pairs, determine if it is possible to finish all courses.
 order: 153

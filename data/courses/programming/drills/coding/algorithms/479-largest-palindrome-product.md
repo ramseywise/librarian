@@ -1,4 +1,5 @@
 ---
+imported_hash: 82e7d9d527d4f537
 title: LC 479 — Largest Palindrome Product
 summary: Given an integer n, find the largest integer palindrome that can be written as a product of two n-digit numbers, and return it modulo 1337.
 order: 83

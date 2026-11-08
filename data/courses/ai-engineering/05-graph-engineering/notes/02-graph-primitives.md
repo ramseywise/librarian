@@ -1,4 +1,5 @@
 ---
+imported_hash: 584ce72e418e2ea0
 title: 2 — Graph Primitives
 summary: Most graphs waste their first decision. A step that could be a function call becomes an agent, and the team pays tokens and variance for a parse.
 order: 3

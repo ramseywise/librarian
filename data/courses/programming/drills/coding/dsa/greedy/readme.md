@@ -1,4 +1,5 @@
 ---
+imported_hash: 2e9f34276d0c0238
 title: Greedy
 summary: A greedy algorithm makes the locally optimal choice at each step, hoping to find the global optimum.
 order: 159

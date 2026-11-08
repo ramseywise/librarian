@@ -1,7 +1,8 @@
 ---
+imported_hash: 0df874a731824159
 title: 10 — Multi-Agent Context and Tool Design
 summary: Your agent's window is full at 100k tokens, so you split the work among sub-agents and the orchestrator now holds 2k.
-order: 11
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/10-tools-and-multi-agent.md
@@ -153,7 +154,7 @@ Most production agents are conditional loops with occasional parallel batches. P
 
 ## MCP: a protocol for moving context
 
-The Model Context Protocol standardises how context from outside the agent reaches the window. Harness 03 is the authoritative note. It covers [when to choose MCP over an in-process tool](../../03-harness-engineering/notes/03-tool-design.md#mcp-vs-in-process), [the protocol itself](../../03-harness-engineering/notes/03-tool-design.md#the-protocol), its supply-chain risks, and the cost of loading every server's definitions eagerly ([tool discovery at scale](../../03-harness-engineering/notes/03-tool-design.md#tool-discovery-at-scale)). This section reads the protocol as context plumbing: who decides what enters the window, and what each hop costs.
+The Model Context Protocol standardises how context from outside the agent reaches the window. Harness 03 is the authoritative note. It covers [when to choose MCP over an in-process tool](../../03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools.md#mcp-vs-in-process), [the protocol itself](../../03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools.md#the-protocol), its supply-chain risks, and the cost of loading every server's definitions eagerly ([tool discovery at scale](../../03-harness-engineering/notes/03-tool-design.md#tool-discovery-at-scale)). This section reads the protocol as context plumbing: who decides what enters the window, and what each hop costs.
 
 **Why a protocol.** The idea is borrowed from the Language Server Protocol. Without a shared interface, M models and N tools need M×N connectors; with one, M+N. Three models and four tools is 12 integrations without MCP and 7 with it (*AI Agents with MCP*, ch. 1).
 
@@ -169,7 +170,7 @@ The book's ch. 2 calls prompts application-controlled. Its own ch. 5 and the spe
 
 **MCP is the context-facing kind of protocol.** A taxonomy of nine open agent protocols, built from the authors' reading of the specs with no experiments, separates protocols whose counterparty is context from those whose counterparty is another agent, with one protocol (LMOS) classed as hybrid ([arXiv:2606.19135](https://arxiv.org/abs/2606.19135) (Sander et al., TUM, 2026-06, preprint)). MCP is the context kind. It is stateless, and its discovery is static: a client can list a server's tools at run time, but it must know the server's address first. The seven protocols that support agent-to-agent communication, A2A among them, all keep session state. That makes the context-engineering split concrete. With MCP, whatever must persist between calls is the host's job, so it lands in the window or in [memory](06-memory.md). The paper classifies mid-2025 specs.
 
-Everything else about the protocol is in [harness 03](../../03-harness-engineering/notes/03-tool-design.md#the-protocol): the architecture, server-initiated requests, transports and a minimal server.
+Everything else about the protocol is in [harness 03](../../03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools.md#the-protocol): the architecture, server-initiated requests, transports and a minimal server.
 
 ### Designing MCP servers for the window
 
@@ -212,7 +213,7 @@ Every hand-off is a prompt someone else will read. Give messages a schema (task,
 
 The book's ch. 2 calls its envelope `{protocol_version, sender, content, metadata}` "MCP". It is a homemade dict checked by key, not the Model Context Protocol ([above](#mcp-a-protocol-for-moving-context)).
 
-**Make plan dependencies explicit.** In the same book's engine, the planner emits a JSON plan whose steps refer to earlier outputs by placeholder (`$$STEP_1_OUTPUT$$`). The executor resolves the placeholders, and the trace logs both the **planned** input and the **resolved** one. A bad step can then be traced either to the plan or to the data it received. The engine also keeps its instructions (style and structure "blueprints") in a separate vector namespace and retrieves them by intent. That is [procedural memory](06-memory.md#episodic-semantic-procedural) retrieved like documents (*Context Engineering for Multi-Agent Systems*, appendix A).
+**Make plan dependencies explicit.** In the same book's engine, the planner emits a JSON plan whose steps refer to earlier outputs by placeholder (`$$STEP_1_OUTPUT$$`). The executor resolves the placeholders, and the trace logs both the **planned** input and the **resolved** one. A bad step can then be traced either to the plan or to the data it received. The engine also keeps its instructions (style and structure "blueprints") in a separate vector namespace and retrieves them by intent. That is [procedural memory](06b-memory-architectures.md#episodic-semantic-procedural) retrieved like documents (*Context Engineering for Multi-Agent Systems*, appendix A).
 
 **Hand-offs without text.** LatentMAS passes the hand-off as the previous agent's layer-wise KV cache instead of a message: each agent runs a tuned number of auto-regressive steps (swept 0 to 80; accuracy peaks around 40 to 80) on its last-layer hidden states, a one-off linear map keeps those states in the input-embedding range, and only the last agent decodes text ([arXiv:2511.20639](https://arxiv.org/abs/2511.20639) (Zou et al., ICML 2026)). Across 9 benchmarks, five open backbones (Qwen3 4B to 14B, Llama3 3B and 8B) and sequential and hierarchical set-ups (mean of 3 runs), it used 59.4 to 87.9% fewer output tokens than a text multi-agent baseline and ran 2.6 to 7 times faster than that baseline on vLLM. **Most of the gain is cost, not accuracy**: it averaged 2.8 and 4.6 points above text agents but tied or lost on some cells (Qwen3-4B GSM8K 88.2 vs 89.8; Qwen3-8B HumanEval+ 80.5 vs 80.5). Passing the cache without latent reasoning, or latent reasoning with the last 128 text tokens passed on, each scored lower than the full method (GSM8K 90.1 and 85.5 vs 93.8, Qwen3-8B). The price is that it needs white-box access and identical model shapes across agents, so it cannot join API-only models, and the messages are unreadable. A debug mode that decodes a text probe per agent was right about the answer's correctness in 96.2% of 80 correct and 90.0% of 20 wrong cases (100 GSM8K cases, Qwen3-14B). Nothing was tested beyond 3 to 4 agents, 14B models or tool use.
 

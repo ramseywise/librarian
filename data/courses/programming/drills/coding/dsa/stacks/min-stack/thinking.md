@@ -1,4 +1,5 @@
 ---
+imported_hash: 614d80f3a133e8d1
 title: Min Stack — First-Principles Thinking Guide
 summary: 'pop(): stack.pop() min_stack.pop()'
 order: 209

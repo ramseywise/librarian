@@ -1,4 +1,5 @@
 ---
+imported_hash: 8e147989193e987e
 title: SQL
 summary: Worked answers are in practice/solutions/.
 order: 107

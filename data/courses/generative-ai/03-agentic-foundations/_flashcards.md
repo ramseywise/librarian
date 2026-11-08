@@ -26,10 +26,10 @@ cards:
   lesson: generative-ai/03-agentic-foundations/notes/02-tool-use-and-react
 - front: Name four rules for reliable tool calls.
   back: Keep each tool to one job, validate arguments at the boundary, inject known values in code and return errors the model can act on.
-  lesson: generative-ai/03-agentic-foundations/notes/02-tool-use-and-react
+  lesson: generative-ai/03-agentic-foundations/notes/02c-mcp-code-and-safe-tool-calls
 - front: What are the six prompt-injection design patterns?
   back: A tool result can carry an attacker's instructions, so choose the weakest design pattern that blocks the attack paths your tools open.
-  lesson: generative-ai/03-agentic-foundations/notes/02-tool-use-and-react
+  lesson: generative-ai/03-agentic-foundations/notes/02c-mcp-code-and-safe-tool-calls
 - front: How does MemGPT treat the context window?
   back: MemGPT treats the context window like an OS treats RAM, so the agent pages facts in and out of larger stores with its own tool calls.
   lesson: generative-ai/03-agentic-foundations/notes/03-memory-as-an-operating-system
@@ -38,22 +38,22 @@ cards:
   lesson: generative-ai/03-agentic-foundations/notes/03-memory-as-an-operating-system
 - front: Does agent-curated memory beat a verbatim store?
   back: Keep the verbatim record and curate only the index on top, because in Zhou et al. summarizing lost facts that a plain store kept.
-  lesson: generative-ai/03-agentic-foundations/notes/03-memory-as-an-operating-system
+  lesson: generative-ai/03-agentic-foundations/notes/03c-designing-a-memory-agent
 - front: What four things do you control in a memory agent?
   back: You control a memory agent through its prompts, tools, management policy and starting content, and any saved memory needs a recorded origin.
-  lesson: generative-ai/03-agentic-foundations/notes/03-memory-as-an-operating-system
+  lesson: generative-ai/03-agentic-foundations/notes/03c-designing-a-memory-agent
 - front: What three stops does a multi-agent conversation need?
   back: End a multi-agent conversation with a semantic stop, a turn cap that escalates and an independent verifier, and restrict who may speak after whom.
   lesson: generative-ai/03-agentic-foundations/notes/04-multi-agent-design-patterns
 - front: How does Tree of Thoughts cost scale?
   back: Tree of Thoughts lifted Game of 24 from 4% to 74% with GPT-4, but its calls multiply with depth and width, so try cheaper options first.
-  lesson: generative-ai/03-agentic-foundations/notes/04-multi-agent-design-patterns
+  lesson: generative-ai/03-agentic-foundations/notes/04c-planning-architectures-and-failure
 - front: Which multi-agent topologies are common?
   back: Fewer speakers and restricted edges make a multi-agent system easier to reason about, and handoffs should pass a filtered summary rather than full history.
-  lesson: generative-ai/03-agentic-foundations/notes/04-multi-agent-design-patterns
+  lesson: generative-ai/03-agentic-foundations/notes/04c-planning-architectures-and-failure
 - front: When does a single agent match a multi-agent workflow?
   back: When every role uses one model, a single agent role-playing the steps can keep accuracy at lower cost, so make it the baseline to beat.
-  lesson: generative-ai/03-agentic-foundations/notes/04-multi-agent-design-patterns
+  lesson: generative-ai/03-agentic-foundations/notes/04c-planning-architectures-and-failure
 - front: How do agent frameworks differ?
   back: Frameworks differ in their unit of programming, so write down your control flow first and pick the one that matches, or none if it is a straight line.
   lesson: generative-ai/03-agentic-foundations/notes/05-framework-survey

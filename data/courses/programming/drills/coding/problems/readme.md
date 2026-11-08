@@ -1,7 +1,8 @@
 ---
+imported_hash: 859f33c602ba99ce
 title: Drill problems
 summary: 'Cold-attempt material. Unlike dsa/, these ship without solutions: the answer gets written at drill time, into solutions/<phase>.md.'
-order: 251
+order: 254
 kind: reading
 section: Coding / Problems
 source: learn-ai-engineering/programming/drills/coding/problems/README.md

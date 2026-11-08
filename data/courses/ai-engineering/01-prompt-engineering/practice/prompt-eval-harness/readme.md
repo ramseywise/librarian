@@ -1,7 +1,8 @@
 ---
+imported_hash: 90533d3563e7fb6b
 title: 'Lab: a prompt eval harness'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
-order: 14
+order: 17
 kind: reading
 section: Practice / Prompt eval harness
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/practice/prompt-eval-harness/README.md

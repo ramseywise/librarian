@@ -1,7 +1,8 @@
 ---
+imported_hash: 0a87f29246f55fef
 title: 11 — LangChain basics
 summary: By now the ticket assistant has a prompt template, a parser, a retry and a model call, all held together by hand.
-order: 12
+order: 16
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/01-llm-fundamentals/notes/11-langchain-basics.md

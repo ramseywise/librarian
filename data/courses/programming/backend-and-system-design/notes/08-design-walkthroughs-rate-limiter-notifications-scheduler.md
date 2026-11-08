@@ -1,4 +1,5 @@
 ---
+imported_hash: 3f5ca8476d7bae0b
 title: '8 — Design walkthroughs: rate limiter, notifications, job scheduler'
 summary: Step 5 is where designs differ. For the rate limiter it's the race; for notifications it's fairness between kinds of traffic; for the scheduler it's two workers believing they own one job.
 order: 9

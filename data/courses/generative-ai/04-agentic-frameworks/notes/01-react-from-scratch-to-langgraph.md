@@ -1,4 +1,5 @@
 ---
+imported_hash: e82281d034a0aedd
 title: 1 — ReAct from Scratch, then in LangGraph
 summary: An agent framework is a set of decisions someone else made about a loop you could write yourself.
 order: 2
@@ -67,7 +68,7 @@ Logic control caused more than a third of the agent failures studied, with task 
 
 ReAct ([Yao et al., 2022, preprint](https://arxiv.org/abs/2210.03629)) is the name for interleaving reasoning and acting in one transcript. Everything else in this pillar is a framework that owns some part of the right-hand column.
 
-That third row deserves more attention than its size suggests. In the largest empirical study of agent frameworks to date, [Wang et al. (2025, preprint)](https://arxiv.org/abs/2512.01939) classified discussions from 1,575 GitHub agent projects and put logic control behind more than a third of reported failures, with task termination alone at 21.63%. Their worked example of the pattern is a research agent and an analyst looping forever. Those shares come from LLM-assisted classification with expert review of GitHub threads, so read them as what developers complain about, not as a failure rate. Even so, the lesson for a first agent is that the stop condition is real design work and not a detail.
+That third row deserves more attention than its size suggests. In an empirical study of 1,575 GitHub agent projects, [Wang et al. (2025, preprint)](https://arxiv.org/abs/2512.01939) classified 8,710 developer discussions and put logic control behind more than a third of reported failures (34.83% in its Fig. 6), with task termination alone at 21.63%. Their illustration of the pattern is a schematic, not a logged case: a research agent and an analyst passing a financial-risk review back and forth until the system crashes. The shares come from GPT-4-family summarisation of GitHub threads with 500 summaries reviewed by hand and no agreement figure reported, so read them as what developers complain about, not as a failure rate. Even so, the lesson for a first agent is that the stop condition is real design work and not a detail.
 
 ---
 
@@ -427,7 +428,7 @@ Check the current [LangGraph docs](https://docs.langchain.com/oss/python/langgra
 
 | Pitfall | What you see | Fix |
 |---|---|---|
-| Treating "no tool call" as "done" | The agent stops early with a confident, unsupported answer | Validate the answer before accepting it. See the termination evidence in [note 06](06-framework-selection.md#what-the-evidence-says) |
+| Treating "no tool call" as "done" | The agent stops early with a confident, unsupported answer | Validate the answer before accepting it. See the termination evidence in [note 06](06-framework-selection.md#what-the-research-says-about-how-frameworks-fail) |
 | No loop guard, or one you never test | A stuck run burns tokens until something external kills it | Set `recursion_limit` deliberately and catch `GraphRecursionError`. Test with a stubborn stub, as above |
 | Reading `recursion_limit` as model calls | The limit trips at half the rounds you expected | It counts graph steps. Each round is at least two |
 | A node that returns the whole list with `operator.add` | The transcript doubles each step | Return only the new messages. The reducer merges |

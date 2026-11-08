@@ -1,4 +1,5 @@
 ---
+imported_hash: e2100a0d240ac13a
 title: Merge Two Sorted Lists
 summary: Merge two sorted linked lists into a single sorted linked list by splicing together existing nodes.
 order: 176

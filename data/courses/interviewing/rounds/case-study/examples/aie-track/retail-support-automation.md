@@ -1,4 +1,5 @@
 ---
+imported_hash: 888438f8f642aea5
 title: 'Worked Example: Retail Support Automation (Live Case)'
 summary: ''
 order: 12

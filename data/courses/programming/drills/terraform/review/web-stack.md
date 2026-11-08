@@ -1,7 +1,8 @@
 ---
+imported_hash: 4e95d872b816f602
 title: Review a web stack before it ships
 summary: 'A teammate opens a PR with web-stack.tf: a security group, a Postgres RDS instance and an uploads bucket.'
-order: 269
+order: 272
 kind: drill
 section: Terraform / Review
 track: terraform

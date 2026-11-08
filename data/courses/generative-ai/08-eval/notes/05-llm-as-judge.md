@@ -1,7 +1,8 @@
 ---
+imported_hash: 6ebd83c0c5f25ce6
 title: 5 — LLM as Judge
 summary: 'A judge is the tool for qualities no code check can express, and it is easy to get wrong: one that checks "quality" silently switches criteria from row to row, and every shape of judge carries biases that have been measured.'
-order: 6
+order: 7
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/08-eval/notes/05-llm-as-judge.md
@@ -11,7 +12,7 @@ source: learn-ai-engineering/generative-ai/08-eval/notes/05-llm-as-judge.md
 
 > A judge is a model making a measurement. Until you've checked it against human labels, you don't know what it measures. Write a narrow rubric, mitigate the known biases, and calibrate before you gate on it.
 
-A judge is the tool for qualities no code check can express, and it is easy to get wrong: one that checks "quality" silently switches criteria from row to row, and every shape of judge carries biases that have been measured. This chapter covers when to use a judge, how to write its prompt, which biases to test for, and how to turn pairwise votes into a ranking. [Note 15](15-calibration-against-human-labels.md) then compares the judge with human labels, which is what gives its number a meaning.
+A judge is the tool for qualities no code check can express, and it is easy to get wrong: one that checks "quality" silently switches criteria from row to row, and every shape of judge carries biases that have been measured. This chapter covers when to use a judge, how to write its prompt, which biases to test for, and what a pairwise judge needs (ranking votes is in [05b](05b-pairwise-ranking-elo-and-bradley-terry.md)). [Note 15](15-calibration-against-human-labels.md) then compares the judge with human labels, which is what gives its number a meaning.
 
 ---
 
@@ -58,7 +59,11 @@ If the judge model exposes token probabilities, the clumping has a direct fix: s
 
 ### Structure that works
 
-1. **Role and task.** Frame it as grading a third party's work. Never tell the model it's grading its own output. Berryman & Ziegler report that judges get a bit less accurate when told the work is the user's and much worse when told it is their own, because the model is pulled between conflicting habits: forum-style text that rarely self-criticizes fairly, and RLHF that makes it recant at any hint of doubt (*Prompt Engineering for LLMs*, ch. 10; [01/09](../../../ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md#llm-as-judge)). This is about framing, and it is separate from self-preference (below), which applies even when the judge doesn't know whose output it is. Even without that framing, a model has a harder time grading its own samples. Kadavath et al. had Anthropic's pretrained models (up to 52B) give P(True) that their own sampled answer was right. **Zero-shot, P(True) was poorly calibrated, usually close to 50%** ("zero-shot" here still meant a fixed six-example prompt, and on arithmetic almost every sample scored above 0.5). With 20 examples in the prompt (plus five of its own samples) it became well calibrated, and answers rated above 0.5 were right far more often than the base rate. Showing it five of its own samples for comparison also helped, less so on long code and maths answers. The authors suggest two reasons: a model's own samples lie near its decision boundary, and it can't tell tokens it wrote from tokens it was given ([arXiv:2207.05221](https://arxiv.org/abs/2207.05221) (Kadavath et al., 2022, preprint)). They also warn that RLHF-tuned models are less well calibrated than the pretrained ones they measured, though for their 52B RLHF policy a single temperature (T = 2.5) largely fixed it on three tasks.
+1. **Role and task.** Frame it as grading a third party's work. Never tell the model it's grading its own output. Berryman & Ziegler report that judges get a bit less accurate when told the work is the user's and much worse when told it is their own, because the model is pulled between conflicting habits: forum-style text that rarely self-criticizes fairly, and RLHF that makes it recant at any hint of doubt (*Prompt Engineering for LLMs*, ch. 10; [01/09](../../../ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md#llm-as-judge)). This is about framing, and it is separate from self-preference (below), which applies even when the judge doesn't know whose output it is. Even without that framing, a model has a harder time grading its own samples. Kadavath et al. had Anthropic's pretrained models (up to 52B) give P(True) that their own sampled answer was right. **Zero-shot, P(True) was poorly calibrated, usually close to 50%** ("zero-shot" here still meant a fixed six-example prompt, and on arithmetic almost every sample scored above 0.5). With 20 examples in the prompt (plus five of its own samples) it became well calibrated, and answers rated above 0.5 were right far more often than the base rate. Showing it five of its own samples for comparison also helped, less so on long code and maths answers. The authors suggest two reasons: a model's own samples lie near its decision boundary, and it can't tell tokens it wrote from tokens it was given ([arXiv:2207.05221](https://arxiv.org/abs/2207.05221) (Kadavath et al., 2022, preprint)). They also warn that RLHF-tuned models are less well calibrated than the pretrained ones they measured, though for their 52B RLHF policy a single temperature (T = 2.5) largely fixed it on three tasks. The fix for a score that is not a probability is old: Platt (preprint 1999, *Advances in Large Margin Classifiers*, MIT Press, 2000) fitted **P(y=1|f) = 1/(1 + exp(Af + B))** to a linear SVM's raw scores, by minimising cross-entropy on held-out scores from 3-fold cross-validation, because scores on the training set are biased (margin examples sit at exactly |f| = 1). On Adult with a linear SVM (Table 1: 32,562 training and 16,282 test examples) the fitted curve follows the binned empirical posterior closely, including beyond the margins. This is the origin of post-hoc calibration, and it needs labelled data held apart from fitting, as a judge does ([15](15-calibration-against-human-labels.md#the-procedure)). The paper reports error counts and negative log-likelihood on five SVM tasks, with no reliability diagram, and says nothing of LLMs. Temperature scaling, the one-parameter version, comes later.
+
+![A sigmoid fitted to a linear SVM's raw scores, drawn against the binned empirical probability of the positive class.](../assets/sources/images/platt-probabilistic-outputs-fig2.png)
+*Image Source: Platt, [Probabilistic Outputs for Support Vector Machines](https://openalex.org/W1618905105) (1999), Fig. 2. x: raw SVM score; y: P(positive). Plus marks: bins of width 0.1; line: fitted sigmoid.*
+
 2. **The criterion**, with a precise definition of PASS and FAIL. State it before the content: the judge reads once, front to back, so it should read the output already knowing what to look for.
 3. **Few-shot examples**: 2–4 labeled cases, including a tricky PASS and a tricky FAIL near the boundary. Take them from your human-labeled data, never from the test split.
 4. **The inputs**, clearly delimited: question, output, reference or context.
@@ -161,6 +166,9 @@ Decomposing can also mean showing the judge less. Arike et al. tested monitors t
 
 An earlier design skipped the verdict altogether. GPTScore scores a text by the log-probability a model assigns to it, conditioned on an instruction that describes the task and defines the aspect ("Generate a coherent summary for the following text"). It carries BARTScore's generation-probability idea to 19 models from 80M to 175B parameters, across 4 tasks and 22 aspects ([arXiv:2302.04166](https://arxiv.org/abs/2302.04166) (Fu et al., NAACL 2024)). **The instruction helped, but only a little**: averaged over the 19 models, Spearman with humans on SummEval coherence went from 38.0 to 40.2 (×100), and other summary aspects gained about 1–2 points. The RLHF-tuned text-davinci-003 correlated worse than the older davinci-001 in most settings (dialogue-level FED, 13.5 against 54.3), but better on summarisation. Most correlations sat around 0.25–0.47, with outliers both ways (about 0.1–0.16 on MT fluency, 0.6–0.74 on NEWSROOM). The method also needs log-probabilities for a given text, which hosted chat APIs don't generally return, so treat it as background, not a judge to build.
 
+![GPTScore framework: task specification and aspect definition fill a template, demonstrated samples are added, and the model scores the text by the probability of the evaluation sample](../assets/sources/images/fu-2023-gptscore-fig2.png)
+*Image Source: Fu et al., [GPTScore: Evaluate as You Desire](https://arxiv.org/abs/2302.04166) (2023), Fig. 2*
+
 ---
 
 ## Known biases
@@ -188,126 +196,22 @@ One answer is to give the judge tools, so that it runs the code, queries the sys
 The master-key row comes from Zhao et al., who tested judges that grade reasoning answers against a gold answer (five math and general-reasoning benchmarks, temperature 0). **Content-free responses passed**: "punctuation-only responses (e.g., “:”) can induce errors in GPT-4o with up to 35% FPRs", and `Thought process:` reached 60–90% false positives on LLaMA3-70B-Instruct and Qwen2.5-72B-Instruct. Averaged over all their attack strings, the false-positive rate was 6.0% for o1, 12.4% for Claude 4 Sonnet and 14.6% for GPT-4o. Chain-of-thought with majority voting did not reliably help and sometimes made it worse. Two things did help: removing the question from the judge prompt, and fine-tuning a verifier on truncated "first sentence only" answers labeled wrong ([arXiv:2507.08794](https://arxiv.org/abs/2507.08794) (Zhao et al., 2025-07)). Their setting is RL reward models, where the policy finds such strings by itself. An agent optimized against your judge can do the same ([12](12-failure-modes.md#goodhart-the-eval-becomes-the-target)).
 
 
-Training a judge does not remove position bias. J1 fine-tuned judges with reinforcement learning on 22K synthetic pairs ([arXiv:2505.10320](https://arxiv.org/abs/2505.10320) (Whitehouse et al., ICLR 2026; numbers from the arXiv version)). On PPE Correctness (12.7K pairs, greedy decoding), **its 70B pairwise judge still flipped its verdict on 21.9% of pairs when the answer order was swapped**: 72.9% accurate in one order, 61.2% when a pair counts only if both orders agree. The untrained Llama-3.1-8B base flipped on 44.1%. Training on both orders left that at 36.8%, and a reward for agreeing across orders cut it to 28.7%. A pointwise judge cannot flip, but the 70B one tied on 13.7% of pairs. The paper measures no other bias and reports no agreement with human raters, so run both orders on a trained judge as you would on a prompted one.
+A judge can also be trained with no human preference labels at all. [arXiv:2408.02666](https://arxiv.org/abs/2408.02666) (Wang et al., Meta FAIR, 2024-08, preprint) builds a good and a worse answer to each of 20,582 WildChat prompts, samples judgments from the current judge, keeps only those that pick the known-good answer, fine-tunes, and repeats. **Llama-3-70B-Instruct went from 75.4 to 88.3 on RewardBench after 5 iterations** (pairwise, no majority vote; GPT-4-0125 scores 84.3 there), with the gain concentrated in Chat Hard (58.9 to 84.2). Two cautions for reading it. Presenting the same pair in the other order moved RewardBench accuracy by 5.6 points (85.5 against 91.1), so report both orders averaged. And the gain over the seed on MT-Bench agreement with humans is small (77.8 to 79.5 with a 32-sample vote, single training run each, no confidence intervals). It validates against public preference sets only; it does not calibrate against a team's own labels, so [15](15-calibration-against-human-labels.md) still applies.
+
+![Self-Taught Evaluator loop: generate a good answer and a worse answer, sample judgments, keep the correct verdicts, fine-tune, repeat](../assets/sources/images/wang-2024-self-taught-evaluators-fig1.png)
+*Image Source: Wang et al., [Self-Taught Evaluators](https://arxiv.org/abs/2408.02666) (2024), Fig. 1*
+
+Training a judge does not remove position bias. J1 fine-tuned judges with reinforcement learning on 22K synthetic pairs ([arXiv:2505.10320](https://arxiv.org/abs/2505.10320) (Whitehouse et al., ICLR 2026; numbers from the arXiv version)). On PPE Correctness (12.7K pairs, greedy decoding), **its 70B pairwise judge still flipped its verdict on 21.9% of pairs when the answer order was swapped**: 72.9% accurate in one order, 61.2% when a pair counts only if both orders agree. The untrained 8B base flipped on 44.1%. Training on both orders left that at 36.8%, and a reward for agreeing across orders cut it to 28.7%. A pointwise judge cannot flip, but the 70B one tied on 13.7%. It measures no other bias and no human agreement, so run both orders on a trained judge too.
+
+Explanations can also hurt: on LLMEval2 (2,633 position items, temperature 0) GPT-3.5-turbo's position consistency fell from 68.78% to 48.97% ([arXiv:2411.15594](https://arxiv.org/abs/2411.15594) (Gu et al., 2024-11, preprint)).
+
+Position bias was measured directly in the paper that named it a fairness problem. On 80 Vicuna-bench questions, GPT-4 judging Vicuna-13B against ChatGPT gave Vicuna a **51.3% win rate when its answer was shown first and 23.8% when second**; ChatGPT as judge went from 2.5% to 82.5% for the same pair, enough to flip which model won (Vicuna ahead in 66 of 80 under one order). Sampling multiple judgments under both orders and averaging (multiple evidence calibration plus balanced position calibration, k = 3 each) lifted ChatGPT's agreement with human labels from 44.4% to 58.8% ([doi:10.18653/v1/2024.acl-long.511](https://doi.org/10.18653/v1/2024.acl-long.511) (Wang et al., ACL 2024)). The sample is small (n = 80, one pair), so read the swing, not the exact percentages.
+
+Judges can match teachers on open-ended text. Rating GPT-2 versus human stories on four attributes, davinci and ChatGPT preferred the human-written stories the way English teachers did, at about US$5 or less per run against about US$140 for each teacher ([arXiv:2305.01937](https://arxiv.org/abs/2305.01937) (Chiang & Lee, ACL 2023)). Their explanations also change how people judge: on tweets where an earlier label and ChatGPT disagreed, lay raters' mean hatefulness score (scale -1 to 1) was -0.41 for the post alone and -0.52 with ChatGPT's explanation attached (t(316) = -13.75), against +0.29 with the human-written explanation; ChatGPT's explanations also scored higher on clarity, 5.39 against 4.68 (1-7 scale, 100 tweets) ([arXiv:2302.07736](https://arxiv.org/abs/2302.07736) (Huang et al., WWW Companion 2023)). A fluent rationale is persuasive whether or not the label is right, which is one more reason to calibrate against labels ([15](15-calibration-against-human-labels.md)) rather than read the explanations.
 
 ---
 
-## Pairwise ranking: Elo and Bradley–Terry
-
-![Elo Rating and Pairwise Comparison Ranking](../assets/sources/images/li-ai-agents-in-depth-fig7-6.svg)
-*Image Source: Li, [AI Agents in Depth](https://github.com/bojieli/ai-agent-book/blob/main/book-en/chapter7.md) (2026), Fig. 7-6 (Apache-2.0)*
-
-When there's no absolute standard, ask "which is better, A or B?" and turn many such votes into a ranking.
-
-- **Bradley–Terry** gives each system a latent strength. P(A beats B) depends only on the difference in strengths.
-- **Elo** is the online-update form of that model. Everyone starts at 1000. After each match, the winner gains points in proportion to how surprising the win was. A 1200-rated model is expected to beat a 1000-rated one about 76% of the time, and an upset moves both ratings more.
-- **Chatbot Arena** ranks models this way from millions of blind human votes. The catch: the ranking reflects what users happened to ask. A flood of coding questions lifts coding models.
-
-Huyen adds numbers to the Arena caveats (*AI Engineering*, ch. 3, figures from 2023–24):
-
-- **It switched from Elo to Bradley–Terry**, then rescales BT scores to look like Elo. Elo depends on the order of matches, as the worked example below shows.
-- **Coverage is thin.** In January 2024, 57 models and 244,000 comparisons averaged only 153 comparisons per model pair (1,596 pairs).
-- **The prompts aren't your traffic.** Of 33,000 published prompts, 180 were "hello" or "hi", and one brainteaser was asked 44 times.
-- **Preference isn't capability.** "B beats A" fits B good and A bad, both bad, or both good. If A resolves 70% of support tickets, a 51% win rate for B says nothing about how many B would resolve, so you can't weigh it against B costing twice as much.
-
-A later audit adds a selection effect. [arXiv:2504.20879](https://arxiv.org/abs/2504.20879) (Singh et al., NeurIPS 2025 Datasets and Benchmarks; numbers from arXiv v2) argues that **a provider can test many private variants and publish only the best, which lifts the score without lifting quality**. In the authors' scrape of 5,864 battles from January to March 2025, Meta had 27 private variants on the main leaderboard and Google 10. Their own test on the vision leaderboard gave two identical Aya-Vision-8B checkpoints 1052 and 1069, with four models ranked between them, and their simulation puts best-of-20 selection at about +50 points. Read it as a mechanism, not a measured inflation: the real-world evidence is two pairs of the authors' own models with overlapping intervals, no other provider's private scores were observed, and most of the authors work at Cohere, which competes on the Arena.
-
-The update in two lines, with K setting how far one match moves a rating:
-
-```
-expected  E_A = 1 / (1 + 10^((R_B − R_A) / 400))     # 1200 vs 1000 → 0.76
-update    R_A ← R_A + K · (S_A − E_A)                # S_A = 1 win, ½ tie, 0 loss
-```
-
-With an LLM judge doing the voting, **swap the order** on every pair and count a win only if it holds both ways, as in the position-bias row above. Bradley–Terry also assumes preferences are transitive (A > B > C ⇒ A > C). Judges and humans often violate that, so check for cycles before trusting a ranking.
-
-The same "compare candidates to each other" idea drives GRPO in post-training ([gen-AI 05-RL](../../05-rl/readme.md)).
-
-The swap check, condensed from the lab's judge. `ask` is your model client: it sends one prompt and returns the text.
-
-```python
-def judge_once(ask, question, first, second) -> str:
-    verdict = ask(f"Question:\n{question}\n\nAnswer A:\n{first}\n\nAnswer B:\n{second}\n\n"
-                  "Which answer is better? Output only A, B or tie.").strip().lower()
-    if verdict not in ("a", "b", "tie"):
-        raise ValueError(f"unparseable verdict: {verdict!r}")   # a grader error, not a result
-    return {"a": "A", "b": "B", "tie": "tie"}[verdict]
-
-def judge_pair(ask, question, a, b) -> str:
-    first = judge_once(ask, question, a, b)         # "A" | "B" | "tie"
-    second = judge_once(ask, question, b, a)        # same pair, order swapped
-    second = {"A": "B", "B": "A"}.get(second, second)   # map back to the real answers
-    return first if first == second else "tie"      # a win must survive the swap
-```
-
-### Worked example: online Elo vs. a Bradley–Terry fit
-
-These snippets are trimmed from Li's Elo leaderboard lab (link below). Both methods read the same battle table: one row per vote, with `model_a`, `model_b` and `winner` ∈ {`model_a`, `model_b`, `tie`}.
-
-**Elo** walks the votes in order and nudges two ratings per vote:
-
-```python
-def expected(r_a, r_b):                       # P(A beats B) from the rating gap
-    return 1 / (1 + 10 ** ((r_b - r_a) / 400))
-
-def update(ratings, a, b, winner, k=4, init=1000):
-    r_a, r_b = ratings.get(a, init), ratings.get(b, init)
-    e_a = expected(r_a, r_b)
-    s_a = {"model_a": 1.0, "model_b": 0.0}.get(winner, 0.5)   # a tie is half a win
-    ratings[a] = r_a + k * (s_a - e_a)        # surprise × K
-    ratings[b] = r_b + k * ((1 - s_a) - (1 - e_a))
-```
-
-**Bradley–Terry** ignores order. It counts wins per pair, then fits every strength at once with a logistic regression, which is how Chatbot Arena computes its leaderboard:
-
-```python
-import numpy as np
-import pandas as pd
-from sklearn.linear_model import LogisticRegression
-
-models = sorted(set(df.model_a) | set(df.model_b))
-def pivot(rows):                              # counts per (a, b), on the full square
-    return (pd.pivot_table(rows, index="model_a", columns="model_b",
-                           aggfunc="size", fill_value=0)
-              .reindex(index=models, columns=models, fill_value=0))
-
-a_win = pivot(df[df.winner == "model_a"])
-b_win = pivot(df[df.winner == "model_b"])
-tie   = pivot(df[df.winner.str.startswith("tie")])
-tie   = tie + tie.T                           # a tie counts for both directions
-wins  = 2 * a_win + 2 * b_win.T + tie         # wins weigh 2, a tie 1 each way
-
-X, y, w = [], [], []
-for i, m_a in enumerate(models):
-    for j, m_b in enumerate(models):
-        if i == j: continue
-        x = np.zeros(len(models)); x[i], x[j] = np.log(10), -np.log(10)
-        X += [x, x]; y += [1, 0]              # the same pair, once as a win, once as a loss
-        w += [wins.loc[m_a, m_b], wins.loc[m_b, m_a]]
-
-lr = LogisticRegression(fit_intercept=False, penalty=None).fit(X, y, sample_weight=w)
-ratings = pd.Series(400 * lr.coef_[0] + 1000, index=models)
-```
-
-Two details are easy to get wrong:
-
-- **Ties.** Count a tie as half a win for each side, in both methods. Drop ties and two models that keep drawing drift apart on noise.
-- **The pivot.** Reindex every pivot to the full model × model square *before* you add the transpose. Small samples give pivots with different rows and columns, and pandas aligns on labels, so `tie + tie.T` on a ragged pivot fills cells with NaN or zeroes them. The ties then vanish from the fit without an error.
-
-Why run both? **Elo depends on the order of the votes. Bradley–Terry is a global fit, so it doesn't.** Here is the lab's offline simulator: 3,000 battles between eight models with known skills, 10% ties. Elo (K = 4) was run on five shuffles of the same battles:
-
-```text
-                true     BT   Elo min  Elo max
-gpt-4           1250   1116     1114     1133
-claude-3-opus   1225   1114     1100     1110
-gemini-1.5-pro  1180   1058     1051     1068
-mixtral-8x7b    1075    974      955      988
-vicuna-13b       935    876      862      887
-```
-
-Both recover the true order, and the gaps between models match. The absolute level differs because each method anchors its own mean. Elo moved up to 34 points depending only on the order of the votes. At K = 32 the spread reached 148 points, enough to swap the top two. Use Elo for a live, streaming leaderboard. Use Bradley–Terry, with bootstrap confidence intervals, for any ranking you publish or gate on.
-
-**Run the full lab:** [ai-agent-book/chapter7/elo-leaderboard](https://github.com/bojieli/ai-agent-book/tree/main/chapter7/elo-leaderboard) (Li, ch. 7 Elo leaderboard lab, formerly 6-6; Apache-2.0). Inside it, run `pip install -r requirements.txt && python quickstart.py` for an offline demo. `python cli.py --help` lists the simulate → Elo → leaderboard pipeline.
+Turning pairwise votes into a ranking (Bradley–Terry, Elo, the Chatbot Arena caveats and a worked comparison) is in [05b](05b-pairwise-ranking-elo-and-bradley-terry.md).
 
 ---
 
@@ -325,6 +229,8 @@ Know the multiplier. Using GPT-4 to generate and to judge one criterion doubles 
 
 The cascade is the reject option from classification (Chow, 1970, whom the authors cite for cost-based thresholds), applied to judges. [arXiv:2609.26550](https://arxiv.org/abs/2609.26550) (Li et al., 2026-09, preprint) froze one before testing it: a cheap decision-only judge (JEV) answers, and GPT-6 takes every pair where JEV's confidence is under 0.9, a threshold chosen on 96 pilot pairs. On 1,610 held-out preference pairs **the cascade scored 93.4% against 92.5% for GPT-6 alone, at 41.4% of the fee**. The saving depends on how good the cheap judge already is: 26.7% of the fee on RewardBench, 66.8% on JudgeBench, and 75.5% on two new workloads, where thresholds re-chosen per workload by the lower-bound rule (0.95 and 0.99) escalated 74.2% of pairs. The frozen 0.9 would have cost 61.9% there and lost 0.5 points. Two rules come with it. Set the threshold on the lower confidence bound of the accuracy loss, not the point estimate, which cut the risk of losing more than 2 points from 40–50% to about 5% with 96 labels. And check that confidence finds the errors on your data: on reference-free prose its AUROC was 0.498, so no threshold helped. Fees outside the live run are simulated, the cheap judge is one proprietary model, and only pairwise preference was tested, not rubric scores.
 
+A small open judge can be tuned to GPT-4 level on agreement. PandaLM-70B matched human annotators at 0.6687 against GPT-4's 0.6647 on a test set of about 1,000 human-labelled pairs from five instruction-tuned 7B models, while the 7B model reached 0.5926 ([arXiv:2306.05087](https://arxiv.org/abs/2306.05087) (Wang et al., ICLR 2024)). It is trained on 300K GPT-3.5-distilled comparisons and tested on a set the authors labelled, so check the judge on your own split. A related route trains a small model on synthetic labels: a T5-11B student fine-tuned on FLAN-PaLM 540B labels mixed with ANLI reached an average ROC-AUC of 87.8 on the five TRUE summarization datasets, above its 540B teacher's 84.9 ([arXiv:2305.11171](https://arxiv.org/abs/2305.11171) (Gekhman et al., EMNLP 2023)).
+
 ---
 
 ## Checklist
@@ -338,24 +244,15 @@ The cascade is the reject option from classification (Chow, 1970, whom the autho
 
 - **One judge for "quality".** Symptom: verdicts switch criteria from row to row, and disagreements can't be diagnosed. Fix: one judge per criterion, with written PASS and FAIL definitions, and decomposition for grounding and completeness.
 - **Counting a parse failure as FAIL.** Symptom: pass rates drop after a model update because the output format changed. Fix: parse the verdict strictly, and count anything else as a grader error. Give the judge a `CANNOT_GRADE` escape as well, or it will guess.
-- **Trusting a pairwise verdict from one order.** Symptom: the first-shown answer keeps winning. Fix: run both orders and count a win only if it holds both ways, as `judge_pair` does.
-- **Publishing an Elo ranking.** Symptom: the same votes in a different order give a different rating, by up to 148 points at K = 32 in the worked example. Fix: use Elo for a live leaderboard, and Bradley–Terry with bootstrap confidence intervals for any ranking you publish or gate on.
+- **Trusting a pairwise verdict from one order.** Symptom: the first-shown answer keeps winning. Fix: run both orders and count a win only if it holds both ways, as [`judge_pair`](05b-pairwise-ranking-elo-and-bradley-terry.md#pairwise-ranking-elo-and-bradleyterry) does.
 
 ## Try it
 
-1. Two systems start at 1000 and 1200, with K = 32, and the weaker one wins. By how much do the ratings move?
+1. Write a position-bias check for a pairwise judge, then decide what to do with these three pairs. Pair 1: A wins in both orders. Pair 2: the first-shown answer wins both times. Pair 3: the judge says tie, then A.
 
    <details><summary>Answer</summary>
 
-   The weaker side's expected score is 1 / (1 + 10^(200/400)) = 0.24, so it gains 32 × (1 − 0.24) = **24.3** points and the stronger side loses the same. A win by the favourite (E = 0.76) moves only 7.7 points.
-
-   </details>
-
-2. Write a position-bias check for a pairwise judge, then decide what to do with these three pairs. Pair 1: A wins in both orders. Pair 2: the first-shown answer wins both times. Pair 3: the judge says tie, then A.
-
-   <details><summary>Answer</summary>
-
-   Run each pair in both orders and count a win only if it holds both ways, as `judge_pair` above does. Pair 1 is a win for A. Pair 2 is a tie, and it's the bias itself. Pair 3 is a tie too, because the win did not hold in both orders. To measure the bias over a set, compute |P(A wins) − 0.5| over both orders, the measure Norman et al. report (0.002 to 0.192 across 21 judges).
+   Run each pair in both orders and count a win only if it holds both ways, as [`judge_pair`](05b-pairwise-ranking-elo-and-bradley-terry.md#pairwise-ranking-elo-and-bradleyterry) does. Pair 1 is a win for A. Pair 2 is a tie, and it's the bias itself. Pair 3 is a tie too, because the win did not hold in both orders. To measure the bias over a set, compute |P(A wins) − 0.5| over both orders, the measure Norman et al. report (0.002 to 0.192 across 21 judges).
 
    </details>
 
@@ -365,9 +262,7 @@ The cascade is the reject option from classification (Chow, 1970, whom the autho
 |---|---|
 | Name the biases you'd test for, and the fix for each. | Position: run both orders. Self-preference: use a different family. Leniency: binary criteria with tricky-FAIL examples. Master keys: put empty and opener-only answers in the calibration set. Verbosity was below 0.011 for all 21 judges under one 2026 rubric, so test it instead of assuming it. |
 | How do you judge at low cost? | Run code first and skip the judge on failed rows, use a cost-capped deterministic sample, swap in a smaller model once it calibrates as well on test, and cache by output hash and judge version. Remember that one generate plus three judges quadruples the calls. |
-| Why did Chatbot Arena move from Elo to Bradley–Terry? | Elo depends on the order of the matches, and Bradley–Terry is a global fit that doesn't. Its coverage is still thin: 153 comparisons per pair in January 2024. |
-| What can break a Bradley–Terry ranking from an LLM judge? | Position bias and cycles. Swap the order on every pair and count a win only if it holds both ways. The model also assumes preferences are transitive, which judges and humans often violate, so check for cycles before trusting the ranking. |
 
 ## Next
 
-[15-calibration-against-human-labels.md](15-calibration-against-human-labels.md): check the judge against human labels before it gates anything.
+[05b-pairwise-ranking-elo-and-bradley-terry.md](05b-pairwise-ranking-elo-and-bradley-terry.md): turn pairwise judge votes into a ranking. Then [15-calibration-against-human-labels.md](15-calibration-against-human-labels.md): check the judge against human labels before it gates anything.

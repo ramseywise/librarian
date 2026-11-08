@@ -1,4 +1,5 @@
 ---
+imported_hash: 587317f6ba4009fc
 title: LC 460 — LFU Cache
 summary: Design a Least Frequently Used (LFU) cache with a fixed capacity.
 order: 82

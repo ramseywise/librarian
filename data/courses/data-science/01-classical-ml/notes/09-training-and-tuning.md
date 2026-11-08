@@ -1,7 +1,8 @@
 ---
+imported_hash: fd2747a79790d944
 title: Training and Tuning
 summary: Blocks run top to bottom from this notes/ folder.
-order: 11
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/09-training-and-tuning.md
@@ -11,7 +12,7 @@ source: learn-ai-engineering/data-science/01-classical-ml/notes/09-training-and-
 
 > You know the model families. This note is what you do with one: split the data, beat a baseline, read the curves that say what is wrong, use folds to separate real differences from luck, regularise, stop at the right round, search at a sensible budget, and report one number you can defend. Adult census runs through all of it.
 
-**In plain words.** Think of a student preparing for an exam. Practice questions are for learning. A mock exam tells the student how the learning is going and whether to change how they study. The real exam happens once, and its result is what counts. A student who memorises the practice answers aces the practice and fails the real thing, so a good teacher makes them learn the method. Training a model is the same job: practice rows, mock rows, exam rows, and habits that make the model learn the method and not the answers.
+**In plain words.** Think of a student preparing for an exam. Practice questions are for learning. A mock exam shows how the learning is going. The real exam happens once, and its result is what counts. A student who memorises the practice answers aces the practice and fails the exam. Training a model is the same job: practice rows, mock rows, exam rows, and habits that make the model learn the method and not the answers.
 
 Blocks run top to bottom from this `notes/` folder. The whole note takes about 5 minutes, nearly all of it in the search, and needs `optuna`, `torch` and `scipy` on top of the usual packages.
 
@@ -94,7 +95,7 @@ boosting  train acc 0.888  val acc 0.868  train AUC 0.949  val AUC 0.925
 
 The dummy always predicts "under 50K" and gets 0.759 accuracy, the share of people under 50K. Its AUC of 0.500 says it ranks no better than a coin.
 
-Logistic regression's validation AUC here is 0.906. [Note 04](04-model-evaluation.md#the-running-example-adult-census) reports 0.901 for the same model on the test rows. Those are different rows, and a gap of 0.005 is within the range the folds below will show.
+Logistic regression's validation AUC here is 0.906. [Note 04](04b-thresholds-pr-roc-and-calibration.md#the-running-example-adult-census) reports 0.901 for the same model on the test rows. Those are different rows, and a gap of 0.005 is within the range the folds below will show.
 
 ## Reading performance during training
 
@@ -134,7 +135,7 @@ unlimited tree  n=250: train 1.000 val 0.701 | n=16000: train 0.999 val 0.760 ga
 boosting        n=250: train 0.992 val 0.861 | n=16000: train 0.953 val 0.927 gap 0.027
 ```
 
-![Learning curves: depth-2 tree underfits, unlimited tree overfits, boosting is healthy.](../assets/training-tuning-learning-curves-adult.png)
+![Learning curves: depth-2 tree underfits, unlimited tree overfits, boosting is healthy.](../assets/sources/images/training-tuning-learning-curves-adult.png)
 
 The three panels are the three patterns you will keep seeing.
 
@@ -169,7 +170,7 @@ fig.tight_layout(); fig.savefig(IMG + "training-tuning-iteration-curve-adult.png
 best round 17: val loss 0.2900; round 300: val loss 0.4524, train loss 0.0640
 ```
 
-![Log loss by boosting round: validation bottoms out at round 17, then climbs.](../assets/training-tuning-iteration-curve-adult.png)
+![Log loss by boosting round: validation bottoms out at round 17, then climbs.](../assets/sources/images/training-tuning-iteration-curve-adult.png)
 
 Train loss falls to 0.0640 while validation loss hits its best of 0.2900 at round 17 and rises to 0.4524.
 
@@ -220,9 +221,9 @@ n= 2000, 13 independent samples: mean CV AUC 0.8960; true sd of the CV mean 0.00
 
 **Compare models fold by fold.** Boosting beats logistic by 0.0197 and won all five folds. The fold-by-fold differences have a standard deviation of 0.0025, smaller than either model's 0.0041 or 0.0043, because a fold of easy rows is easy for both models. Pairing removes that shared luck.
 
-**The fold spread is not a clean standard error.** It is tempting to divide it by $\sqrt{5}$. The last two lines test that by running 5-fold on separate, non-overlapping samples and measuring how much the CV mean truly varies. At 500 rows the true standard deviation is 0.0252 and the naive formula averages 0.0147, too confident by about 40%. At 2,000 rows they roughly agree on average, 0.0066 and 0.0069, but one run's naive figure ranges from 0.0042 to 0.0116. These are 20 and 13 samples, so treat them as rough.
+**The fold spread is not a clean standard error.** It is tempting to divide it by $\sqrt{5}$. The last two lines test that by running 5-fold on separate, non-overlapping samples and measuring how much the CV mean truly varies. At 500 rows the true standard deviation is 0.0252 and the naive formula averages 0.0147, too confident by about 40%. At 2,000 rows they roughly agree on average, 0.0066 and 0.0069, but one run's naive figure ranges from 0.0042 to 0.0116. These are 20 and 13 samples: rough.
 
-Bengio and Grandvalet, [*No Unbiased Estimator of the Variance of K-Fold Cross-Validation*](https://jmlr.org/papers/volume5/grandvalet04a/grandvalet04a.pdf) (JMLR 2004), prove that no universal unbiased estimator of this variance exists. Folds share training rows, so their scores are correlated, and the part a naive estimate captures was 50 to 70% of the total in their experiments. Use the spread as a rough guide to noise, and paired differences to compare.
+Bengio and Grandvalet, [*No Unbiased Estimator of the Variance of K-Fold Cross-Validation*](https://jmlr.org/papers/volume5/grandvalet04a/grandvalet04a.pdf) (JMLR 2004), prove that no universal unbiased estimator of this variance exists. Folds share training rows, so their scores are correlated. On Letter (trees, 10 folds) the single-example variance was only 50 to 70% of the total, so using it alone runs low. Treat the spread as rough; compare with paired differences.
 
 ### When to change the folds
 
@@ -279,7 +280,7 @@ A training set is signal plus noise. Fitting noise takes extreme behaviour: a le
 
 $$\text{minimise} \quad \text{training loss} + \lambda \times \text{complexity}$$
 
-This works because the costs are lopsided. Signal repeats across many rows, so the data pays for it easily. Noise does not repeat, so a small price removes much of it. You accept a little bias to remove more variance. [Note 01](01-statistical-foundations.md#bias-variance-and-model-complexity) has the decomposition. Some families get an explicit penalty term and others a limit on what the model may do. Either way you set it with a validation curve.
+This works because the costs are lopsided. Signal repeats across many rows, so the data pays for it easily. Noise does not repeat, so a small price removes much of it. You accept a little bias to remove more variance. [Note 01](01-statistical-foundations.md#bias-variance-and-model-complexity) has the decomposition. Either way, a penalty or a limit on the model, you set it with a validation curve.
 
 | Family | Knob | What it limits |
 |---|---|---|
@@ -353,7 +354,7 @@ boosting: subsample             1  0.973  0.903  <- best
   100          71   0.893           83   0.894
 ```
 
-L1 and L2 reach nearly the same best validation score, 0.901 and 0.902, but L1 at `C=1` uses 29 non-zero weights where L2 keeps all 83, so L1 is the choice when a shorter model is worth something. The full lasso story is in [note 02](02-supervised-learning.md#regression-ols-ridge-lasso). Subsampling did not help: full rows won at 0.903 and a tenth of the rows fell to 0.815. That is one seed on a small sample, and sampling is common advice, but a knob is a hypothesis until a validation curve agrees.
+L1 and L2 reach nearly the same best validation score, 0.901 and 0.902, but L1 at `C=1` uses 29 non-zero weights where L2 keeps all 83, so L1 is the choice when a shorter model is worth something. See [note 02](02-supervised-learning.md#regression-ols-ridge-lasso) for lasso. Subsampling did not help: full rows won at 0.903 and a tenth of the rows fell to 0.815. That is one seed on a small sample, but a knob is a hypothesis until a validation curve agrees.
 
 Now a small network, averaged over three seeds. The mechanics live in the [deep learning note](../../02-deep-learning/notes/02-optimisation-and-regularisation.md#regularisation), which measures both knobs on digits.
 
@@ -432,11 +433,11 @@ for ax in axes[:, 0]: ax.set_ylabel("AUC, 1,500 training rows")
 fig.tight_layout(); fig.savefig(IMG + "training-tuning-regularisation-knobs-adult.png", dpi=150)
 ```
 
-![Six validation curves: most knobs peak in the middle; subsampling is best with all rows.](../assets/training-tuning-regularisation-knobs-adult.png)
+![Six validation curves: most knobs peak in the middle; subsampling is best with all rows.](../assets/sources/images/training-tuning-regularisation-knobs-adult.png)
 
 The circle marks the best validation score. Across panels the shape repeats: too little capacity, a peak, then train climbing while validation falls. A depth of 6 scores 0.879 and a depth of 24 scores 0.740 while its train AUC reaches 0.999. A learning rate of 0.03 scores 0.908 and a rate of 1 scores 0.853.
 
-The network shows the far side of the hump. With no regularisation it has train 0.999 and validation 0.860. Weight decay of 10 lifts validation to 0.904, a gain of 0.044, and a decay of 100 kills the network outright at 0.500, off the bottom of the panel. Dropout follows the same path: 0.860 with none, a peak of 0.900 at 0.95, and 0.888 at 0.98. AdamW multiplies the decay by the learning rate at every step, so with a rate of 1e-3 the useful values look huge. Do not copy a good value between setups with different learning rates.
+The network shows the far side of the hump. With no regularisation it has train 0.999 and validation 0.860. Weight decay of 10 lifts validation to 0.904; a decay of 100 kills the network at 0.500, below the panel. Dropout follows the same path: 0.860 with none, a peak of 0.900 at 0.95, and 0.888 at 0.98. AdamW multiplies the decay by the learning rate, so useful values look huge; do not copy one between setups with different learning rates.
 
 ## Early stopping is regularisation too
 
@@ -470,7 +471,7 @@ L2 C=10        |w|   9.27  AUC 0.8978
 L2 C=1000      |w|  19.37  AUC 0.8912
 ```
 
-The two lists trace one path, with $|w|$ the size of the weights. Gradient descent at step 1,000 has size 3.88 and AUC 0.9013. The L2 fit at `C=1` has size 4.88 and AUC 0.9016. Both lose ground as the weights grow. Training time and penalty strength are two handles on one thing. Prechelt, [*Early Stopping, But When?*](https://page.mi.fu-berlin.de/prechelt/Biblio/stop_tricks1997.pdf) (Neural Networks: Tricks of the Trade, 1998), says the same of networks: stopping works by limiting the effective size of each dimension, as weight decay does.
+The two lists trace one path, with $|w|$ the size of the weights. Gradient descent at step 1,000 has size 3.88 and AUC 0.9013. The L2 fit at `C=1` has size 4.88 and AUC 0.9016. Training time and penalty strength are two handles on one thing. Prechelt, [*Early Stopping, But When?*](https://page.mi.fu-berlin.de/prechelt/Biblio/stop_tricks1997.pdf) (Neural Networks: Tricks of the Trade, 1998), says the same of networks: stopping works by limiting the effective size of each dimension, as weight decay does.
 
 The practical knob is **patience**, the rounds without improvement to wait before giving up. It exists because real validation curves wobble. Prechelt shows one with 16 local minima before overfitting truly starts, and across 1,296 runs on 12 problems, slower stopping rules bought about 4% lower test error for about four times the training.
 
@@ -500,15 +501,18 @@ The rows that decide when to stop have been used, so they cannot also give your 
 
 ## Hyperparameter search
 
-A **hyperparameter** is a setting you choose and the model does not learn. Knobs interact, so one validation curve per knob is not enough. You search, and the budget is the number of models you can afford to fit.
+A **hyperparameter** is a setting you choose and the model does not learn. Knobs interact, so you search, and the budget is the number of models you can afford to fit.
 
 **Grid search** tries every combination, so four values on five knobs costs 4⁵ = 1,024 fits. To fit a budget you must drop values or knobs.
 
-**Random search** draws every knob at random from a range. Bergstra and Bengio, [*Random Search for Hyper-Parameter Optimization*](https://jmlr.org/papers/v13/bergstra12a.html) (JMLR 2012), explain why that beats a grid. Usually only a few knobs matter, and you do not know which in advance. Nine grid trials test the important knob at 3 values, and nine random trials test it at 9. They found between one and four knobs mattered in a 7-knob network problem, with the learning rate always among them. With 8 trials it matched or beat grids averaging 100. Trials are also independent, so you can stop at any time or add more.
+**Random search** draws every knob at random from a range. Bergstra and Bengio, [*Random Search for Hyper-Parameter Optimization*](https://jmlr.org/papers/v13/bergstra12a.html) (JMLR 2012), explain why that beats a grid. Usually few knobs matter, and you cannot know which. Nine grid trials test the important knob at 3 values, and nine random trials test it at 9. In a 7-knob network problem one to four knobs mattered, the learning rate always among them, and 8 random trials matched or beat grids averaging 100. Trials are independent, so you can stop or add more at any time. (*ML Engineering in Action*, ch. 7) 8 knobs with 4 values is 4⁸ = 32,768 fits, about 1.9 days at an assumed 5 s each.
 
-**Bayesian search** uses earlier trials to choose the next. The Tree-structured Parzen Estimator of Bergstra et al., [*Algorithms for Hyper-Parameter Optimization*](https://papers.nips.cc/paper_files/paper/2011/file/86e8f7ab32cfd12577bc2619bc635690-Paper.pdf) (NeurIPS 2011), splits past trials into good and bad, models each group's settings as $l(x)$ and $g(x)$, and next tries the $x$ with the highest $l(x)/g(x)$. On their 32-dimensional network problem at up to 200 trials it reached 14.13% test error against 18.97% for random. [Optuna](https://arxiv.org/abs/1907.10902) (Akiba et al., KDD 2019) makes this the default, with the search space written in ordinary code through `trial.suggest_*`.
+**Bayesian search** uses earlier trials to choose the next. The Tree-structured Parzen Estimator of Bergstra et al., [*Algorithms for Hyper-Parameter Optimization*](https://papers.nips.cc/paper_files/paper/2011/file/86e8f7ab32cfd12577bc2619bc635690-Paper.pdf) (NeurIPS 2011), splits past trials into good and bad, models each group's settings as $l(x)$ and $g(x)$, and next tries the $x$ with the highest $l(x)/g(x)$. On their 32-knob network search (convex, 200 trials) it reached 14.13% test error against 18.97% for random. [Optuna](https://arxiv.org/abs/1907.10902) (Akiba et al., KDD 2019) makes this the default, with the search space in ordinary code through `trial.suggest_*`. The same chapter warns that TPE is sequential, so at high concurrency it sees few finished trials and degrades toward random search. His 400 iterations took 3 h 34 min on one core; 600 iterations at parallelism 8 on four Spark nodes took under 30 min (not like for like).
 
-Below, each method gets 32 fits and five seeds. The validation pile is cut in half: the **search rows** choose the winner and the **report rows** then score it, so no method can flatter itself with luck on its own rows. The first grid spreads two values over all five knobs. The second puts four values on the knobs people trust most.
+![Test error against elapsed time: pruned searches reach low error in about 30 minutes, unpruned ones take hours](../assets/sources/images/akiba-optuna-fig11a.png)
+*Image Source: Akiba et al., *Optuna: A Next-generation Hyperparameter Optimization Framework* (KDD 2019), Fig. 11a*
+
+Below, each method gets 32 fits and five seeds. The validation pile is cut in half: the **search rows** choose the winner and the **report rows** then score it, so no method flatters itself on its own rows. The first grid spreads two values over all five knobs. The second puts four values on the knobs people trust most.
 
 ```python
 import time, itertools, optuna
@@ -601,11 +605,11 @@ ax.set_xscale("log"); ax.set_xlabel("learning_rate"); ax.set_ylabel("search-rows
 fig.tight_layout(); fig.savefig(IMG + "training-tuning-search-comparison-adult.png", dpi=150)
 ```
 
-![Best AUC by trials for four searches, and trials by learning rate for random and grid.](../assets/training-tuning-search-comparison-adult.png)
+![Best AUC by trials for four searches, and trials by learning rate for random and grid.](../assets/sources/images/training-tuning-search-comparison-adult.png)
 
-The honest result: on this data, at this budget, they tie. All four finish within 0.0003 on search rows and 0.0016 on report rows, close to the seed-to-seed spread of 0.0005 to 0.0008, and each beats the default settings' report score by 0.0025 to 0.0041. Much of what a search buys is avoiding bad settings: the worst trials average 0.8995 to 0.9118.
+The honest result: on this data, at this budget, they tie. All four finish within 0.0003 on search rows and 0.0016 on report rows, close to the seed-to-seed spread of 0.0005 to 0.0008, and each beats the default settings' report score by 0.0025 to 0.0041. Much of what a search buys is avoiding bad settings.
 
-Three things explain the tie. The plateau is wide, with little to find once the learning rate is sensible, and the learning rate carries about 0.61 of the importance (fANOVA over the random searches, a rough estimate from 32 trials). The grid's values came from knowing what good boosting settings look like, which a new problem will not give you. And TPE's first 10 trials are random by default, leaving it 22 to exploit. The right panel still shows Bergstra and Bengio's geometry: the grid tried 2 learning rates and random tried 32.
+Three things explain the tie. The plateau is wide once the learning rate is sensible, and the learning rate carries about 0.61 of the importance (fANOVA over the random searches, a rough estimate from 32 trials). The grid's values came from prior knowledge of good boosting settings, which a new problem will not give you. And TPE's first 10 trials are random by default, leaving it 22 to exploit. The right panel shows Bergstra and Bengio's geometry: the grid tried 2 learning rates, random tried 32.
 
 | Situation | Use |
 |---|---|
@@ -614,11 +618,11 @@ Three things explain the tie. The plateau is wide, with little to find once the 
 | Each fit is expensive, or many knobs | TPE through Optuna, plus pruning |
 | Rounds of boosting | Early stopping, not search |
 
-**Pruning** is where Optuna changes the budget itself. A trial reports its score as it trains and is stopped if it trails the others. In Akiba et al.'s four-hour network test, TPE ran 35.8 trials without pruning and 1,278.6 with it.
+**Pruning** changes the budget itself: a trial reports its score as it trains and is stopped if it trails the others. In Akiba et al.'s four-hour network test, TPE ran 35.8 trials without pruning and 1,278.6 with it.
 
 ## The honest final number
 
-The winner of any search looks better than it is, because you chose it partly for its luck on those rows. Cawley and Talbot, [*On Over-fitting in Model Selection*](https://jmlr.org/papers/volume11/cawley10a/cawley10a.pdf) (JMLR 2010), show that the variance of the selection score can pick a worse model, and that the resulting bias is often as large as the differences between algorithms. To measure it, take the 32 random configurations, choose a winner on some rows, and score that winner on the rest.
+The winner of any search looks better than it is, because you chose it partly for its luck on those rows. Cawley and Talbot, [*On Over-fitting in Model Selection*](https://jmlr.org/papers/volume11/cawley10a/cawley10a.pdf) (JMLR 2010), show that the variance of the selection score can pick a worse model, and that on kernel machines the bias was often as large as the differences between algorithms. To measure it, take the 32 random configurations, choose a winner on some rows, and score that winner on the rest.
 
 ```python
 q = np.array([t[3] for t in runs["random"][0]])    # 32 configurations' scores on every validation row
@@ -707,16 +711,16 @@ Nested CV gives 0.9274, close to the hold-out test score of 0.9272, at a cost of
 
 | Step | What to do | On adult |
 |---|---|---|
-| 1. Split | Train, validation, test. Choose a splitter that mimics how new data arrives. Lock the test rows away | 19,536, 6,512, 6,513 |
+| 1. Split | Train, validation, test. Mimic how new data arrives. Lock the test rows away | 19,536, 6,512, 6,513 |
 | 2. Baseline | Fit a dummy, then a simple model | 0.759 accuracy, then AUC 0.906 on validation |
 | 3. Fit a strong default | Usually boosting on a table | Validation AUC 0.925 |
-| 4. Read the curves | Train against validation, by rows and by rounds. Name the problem before you touch a knob | Gap 0.027, healthy |
-| 5. Cross-validate | Compare candidates fold by fold, and judge differences against the spread | Boosting +0.0197, sd 0.0025 |
+| 4. Read the curves | Train against validation, by rows and rounds. Name the problem before touching a knob | Gap 0.027, healthy |
+| 5. Cross-validate | Compare candidates fold by fold, against the spread | Boosting +0.0197, sd 0.0025 |
 | 6. Regularise | Validation curve for the knob the diagnosis points to | Learning rate 0.03 on 1,500 rows |
 | 7. Stop early | Set patience, keep the best round, not the last | Round 16, loss 0.2918 |
-| 8. Search | Random or TPE, on a fixed budget, with rows set aside to check the winner | +0.0025 to 0.0041 on report rows |
+| 8. Search | Random or TPE, fixed budget, rows set aside to check the winner | +0.0025 to 0.0041 on report rows |
 | 9. Final number | Refit on train plus validation, read the test rows once, give an interval | 0.9272, 95% 0.9209 to 0.9337 |
-| 10. Stop | If a later step moves less than the spread, ship it. [Note 10](10-imbalance-errors-and-drift.md) asks what this number hides | |
+| 10. Stop | If a step moves less than the spread, ship. [Note 10](10-imbalance-errors-and-drift.md) asks what this number hides | |
 
 ---
 
@@ -724,12 +728,12 @@ Nested CV gives 0.9274, close to the hold-out test score of 0.9272, at a cost of
 
 | Pitfall | Symptom | Fix |
 |---|---|---|
-| Reading the test pile while still deciding | The test score was fine, and live is lower | One read, at the end. If you must iterate, cut a new test pile |
-| Tuning on too few rows | A big gain vanishes on fresh rows | Measured above: optimism of 0.0085 at 100 rows. Use more rows or fewer tries |
+| Reading the test pile while still deciding | Test fine, live lower | One read, at the end. To iterate, cut a new test pile |
+| Tuning on too few rows | Gain vanishes on fresh rows | Measured above: optimism of 0.0085 at 100 rows. More rows or fewer tries |
 | Shuffling rows that have time or group structure | Great CV, weak live | `TimeSeriesSplit` or `GroupKFold`. Measured above: R² 0.648 against 0.590 |
-| Patience without rollback | More patience gives a worse model | Cut back to the best round. Measured above: 0.3561 against 0.2918 |
-| The winner sits at the edge of its range | The search looks finished but is not | Use log ranges, and widen at a bound |
-| Spending the week on tuning | A gain of 0.0009 | Family and features first |
+| Patience without rollback | More patience, worse model | Cut back to the best round. Measured above: 0.3561 against 0.2918 |
+| The winner sits at the edge of its range | Search looks finished but is not | Use log ranges, and widen at a bound |
+| Week spent tuning | Gain of 0.0009 | Family and features first |
 
 ---
 

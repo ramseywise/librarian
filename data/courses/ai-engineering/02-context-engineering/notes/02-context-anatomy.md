@@ -1,4 +1,5 @@
 ---
+imported_hash: bd323fba211e1268
 title: 2 — The Anatomy of Effective Context
 summary: An agent can have the right facts and still fail because they sit in the wrong place.
 order: 3

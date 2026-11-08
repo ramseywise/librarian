@@ -1,7 +1,8 @@
 ---
+imported_hash: be0fd59abd6fa195
 title: 4 — Execution Boundaries and Guardrails
 summary: A tool call is untrusted input, because retrieved text can talk the model into almost anything and a model can reason its way around a rule written in prose.
-order: 5
+order: 6
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/04-execution-boundaries.md
@@ -316,7 +317,7 @@ A common enumeration of agentic risks lists sixteen, in five groups. Each group 
 
 | Group | Risks | Harness control |
 |---|---|---|
-| **Agent behaviour** | Deception, goal manipulation, tool misuse, memory poisoning, cascading hallucination | Tool schemas and write-op gates ([03](03-tool-design.md#write-operation-safety)), editable memory ([rollback](#rollback)), verification ([05](05-verification-loops.md)) |
+| **Agent behaviour** | Deception, goal manipulation, tool misuse, memory poisoning, cascading hallucination | Tool schemas and write-op gates ([03](03b-mcp-write-safety-and-async-tools.md#write-operation-safety)), editable memory ([rollback](#rollback)), verification ([05](05-verification-loops.md)) |
 | **Security** | Privilege compromise, identity spoofing, unexpected RCE | Sandbox, least-privilege credentials, trust zones above |
 | **Operational resilience** | Resource overload, repudiation and untraceability | [Cost envelope](#cost-envelope), traces ([08](08-maturity-and-failure-modes.md#runtime-vs-process-observability)) |
 | **Multi-agent collusion** | Rogue agents, communication poisoning, human attacks on the system | Context firewalls and labelled handoffs ([07](07-orchestration.md#handoff-design)) |
@@ -340,7 +341,7 @@ An agent that can act but not be undone forces a human gate on every action, whi
 
 ## Cost envelope
 
-A boundary in the same family as permissions: **per-task budget ceilings that prevent runaway spend.** A loop with no cost ceiling will find a way to spend without bound — doom loops ([note 05](05-verification-loops.md#loop-detection)) are expensive precisely because nothing stops them.
+A boundary in the same family as permissions: **per-task budget ceilings that prevent runaway spend.** A loop with no cost ceiling will find a way to spend without bound — doom loops ([note 05](05b-recovery-and-termination.md#loop-detection)) are expensive precisely because nothing stops them.
 
 Instrument token spend per run, set a ceiling, and fail closed with a partial result rather than silently continuing.
 

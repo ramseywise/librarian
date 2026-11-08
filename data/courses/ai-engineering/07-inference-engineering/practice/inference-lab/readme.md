@@ -1,7 +1,8 @@
 ---
+imported_hash: d9d39d9b3eadeb49
 title: 'Lab: inference by simulation (Python)'
 summary: Pillar 07 explains why a server's scheduler can matter more than its chip.
-order: 12
+order: 13
 kind: reading
 section: Practice / Inference lab
 source: learn-ai-engineering/ai-engineering/07-inference-engineering/practice/inference-lab/README.md

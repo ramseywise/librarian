@@ -1,7 +1,8 @@
 ---
+imported_hash: 5d491789d43b2eb2
 title: 12 — Build a tiny GPT
 summary: You have read about tokens, attention and sampling, and you could probably pass a quiz on them.
-order: 13
+order: 17
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/01-llm-fundamentals/notes/12-build-a-tiny-gpt.md

@@ -1,3 +1,4 @@
+# imported_hash: f9857b51d31fdca9
 # Lecture deck for ai-engineering/05-graph-engineering, notes 01-13.
 # Build: make slides PILLAR=05-graph-engineering STRICT=1 PREVIEW=1
 # Running examples: one review graph (thread review-42) for parts 1-3, the SEC filings graph

@@ -1,4 +1,5 @@
 ---
+imported_hash: 6c2fe8d6e5a9c617
 title: Generate Parentheses — First-Principles Thinking Guide
 summary: At each position, we can add ( if we haven't used all n, and ) if the count of ) is less than (.
 order: 138

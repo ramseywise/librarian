@@ -1,4 +1,5 @@
 ---
+imported_hash: d06162ed5a8ad2c7
 title: 8 — Runtime Validation with Zod
 summary: 'as is an assertion: "trust me". The fix is a schema that validates at runtime and produces the static type, so the two can''t drift apart.'
 order: 9

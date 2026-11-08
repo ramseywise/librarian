@@ -1,7 +1,8 @@
 ---
+imported_hash: 1c02989875e77dde
 title: 6 — Generation for RAG
 summary: Tallybook's retriever now returns the refund page, and the bot still tells a customer they have 45 days.
-order: 7
+order: 11
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/06-generation-for-rag.md
@@ -11,7 +12,7 @@ source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/06-generation-
 
 Tallybook's retriever now returns the refund page, and the bot still tells a customer they have 45 days. The document says 30. Nothing in the retrieval metrics moved, because retrieval worked, and the mistake happened in the last step: a model given the right text can ignore it, blend it with what it remembers, or cite a page it never used. This chapter is about that last step, the settings and prompts that keep an answer tied to its evidence and the checks that catch it when it comes loose.
 
-> The LLM half of RAG: how a decoder-only transformer turns the augmented prompt into tokens, which sampling knobs control that, how to choose a model, how to write prompts that keep answers grounded and cited, how to measure faithfulness with RAGAS, and when to split one LLM call into an agentic workflow. RAG adds knowledge; fine-tuning changes behaviour.
+> The LLM half of RAG, part one: how a decoder-only transformer turns the augmented prompt into tokens, which sampling knobs control that, how to choose a model, and how to write and size prompts that keep answers grounded and cited. Hallucinations, citation checks, RAGAS, agentic workflows and RAG against fine-tuning are in [06b](06b-hallucinations-evaluation-and-fine-tuning.md).
 
 ---
 
@@ -28,8 +29,18 @@ An LLM is a decoder-only transformer. For each new token it runs the whole conte
 
 RAG works because attention lets every generated token look at the retrieved documents. Three consequences:
 
-- The model **may still ignore the context** if its weights pull harder. Prompting (below) and evaluation (RAGAS) are how you catch that.
+- The model **may still ignore the context** if its weights pull harder. Prompting (below) and evaluation ([RAGAS, in 06b](06b-hallucinations-evaluation-and-fine-tuning.md#evaluating-the-generator-ragas)) are how you catch that.
 - **What else is in the context matters.** On NQ-open with small open models (Llama2-7B, Falcon-7B, MPT-7B and Phi-2 at 2.7B, all 4-bit), retrieved passages that score high but lack the answer pulled accuracy down more than unrelated passages did. Adding a single such distractor to the gold passage cost up to 25%, and picking distractors with a retriever trained on hard negatives made it worse, not better. Adding *random* documents sometimes raised accuracy: +35% relative for Llama2-7B with four retrieved passages (about 0.19 → 0.25). Placing the gold passage next to the question also helped ([arXiv:2401.14887](https://arxiv.org/abs/2401.14887), Cuconasu et al., 2024-01). For the random-document effect the authors offer only a tentative lead (attention entropy rose about 3× with noise added) and say they can't explain it yet, so don't pad prompts with noise. The two findings to use: near-miss distractors are the real threat, and the best evidence goes closest to the question.
+  Wu et al. report a second, partial instance of the effect ([arXiv:2408.13533](https://arxiv.org/abs/2408.13533), Wu et al., 2024-08, preprint). Their setup: zero-shot four-option multiple choice, five documents with the gold one in the middle, up to 500 items from each of seven QA datasets (RGB 300, Bamboogle 125, TempQA 186), one run per cell. Adding *synthetic* noise to the gold passage beat gold alone on the weighted average: random-vocabulary "illegal sentences" lifted Llama3-8B-Instruct from 86.57 to 89.89 and Qwen2-7B-Instruct from 86.46 to 88.11. On RGB (eight models) the ISN gain held at about +7 to +9 points as the orthographic-noise ratio rose from 0 to 0.8, while absolute accuracy fell. Counterfactual passages cost 41 (Llama3-8B) to 52 points (Qwen2-7B). Many single cells fell below gold-only, and the paper does not discuss them. Its explanation (clearer reasoning, firmer trust in the gold passage) rests on a manual check of 100 samples per dataset, with no controlled test. **This conflicts with Leto et al.**, who found real nearest-neighbour passages never beat gold-only (see [11](11-retrieval-improvements.md): ASQA, two 7B readers, one run). The setups differ: Wu's noise is synthetic and multiple-choice, Leto's is retrieved and free-form. Read it as "noise can sometimes steady a reader", not a reason to pad prompts.
+
+![Beneficial noise: a counterfactual passage is retrieved next to the golden context, and the model answers wrongly with the noise alone but correctly once the beneficial noise is added](../assets/sources/images/wu-role-rag-noise-fig1.png)
+*Image Source: Wu et al., [Pandora's Box or Aladdin's Lamp: A Comprehensive Analysis Revealing the Role of RAG Noise in Large Language Models](https://arxiv.org/abs/2408.13533) (2024), Fig. 1*
+
+- **Inside the model, context displaces memory.** With a context-only prompt ("not prior knowledge") on 50 factual prompts, causal tracing in Llama-2 7B showed MLP use at the subject token drop about 5x (indirect effect 0.2 to 0.0375), and blocking attention from the query subject changed the answer probability under 5%, against 95% (Llama-2; about 60% for Phi-2) without context. The attribute token inside the context mattered more (20% for Llama-2, 25% for Phi-2). This is a synthetic five-segment context on two small base models, so it does not show how instruction-tuned models treat noisy retrieval ([arXiv:2406.12824](https://arxiv.org/abs/2406.12824), Wadhwa et al., 2024-06, preprint).
+
+![Heatmaps of the average indirect effect of MLP layers in Llama and Phi, by layer and token position (first, middle and last subject token, and later tokens), from causal tracing](../assets/sources/images/wadhwa-rag-rich-parameters-fig2.png)
+*Image Source: Wadhwa et al., [From RAGs to Rich Parameters: Probing How Language Models Utilize External Knowledge Over Parametric Information for Factual Queries](https://arxiv.org/abs/2406.12824) (2024), Fig. 2*
+
 - **Most of the cost is in the transformer.** Longer contexts mean more compute per token. This is the latency argument in note [07](07-rag-in-production.md).
 
 ---
@@ -209,9 +220,15 @@ print(edges_first([f"rank{i}" for i in range(1, 8)]))
 
 How many passages to pass depends on whether the reader can combine them. Fusion-in-Decoder (FiD) encodes each retrieved passage separately, with the question prepended, and lets the decoder attend over all of them at once, so encoder cost grows linearly with the number of passages. With a fine-tuned T5-base reader, trained and tested at each passage count on DPR-retrieved passages, going from 10 to 100 passages raised exact match by about 3.5 on Natural Questions and 6 on TriviaQA (validation sets; the paper writes these as %). The authors cite earlier work in which extractive readers peaked at 10–20 passages. FiD-large (770M) reached 51.4 EM on the NQ test set with DPR and 100 passages, against 44.5 for RAG and 36.6 for closed-book T5 at 11B. Even with BM25 retrieval it scored 44.1 ([arXiv:2007.01282](https://arxiv.org/abs/2007.01282), Izacard & Grave, EACL 2021). The result holds for a reader trained to fuse, on short factoid answers. The paper never tests passage order and never measures how cost scales with passage count (it reports only 147 against 425 training GPU-hours for two schedules), so it says nothing about how a prompted LLM handles 100 chunks.
 
+![Fusion-in-Decoder: each question and passage pair is encoded separately, the encoded vectors are concatenated, and the decoder attends over all of them to produce the answer](../assets/sources/images/izacard-leveraging-passage-retrieval-fig2.png)
+*Image Source: Izacard and Grave, [Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering](https://arxiv.org/abs/2007.01282) (2021), Fig. 2*
+
 Long answers need more evidence than short ones, and a short context runs out first. ELI5 asks for explanations averaging 130 words. Its support document is the 15 passages most TF-IDF-similar to the question, taken from the top 100 Common Crawl pages and averaging 858 words. On 500 sampled training questions it contained the answer 65% of the time. An extractive oracle picking the best sentences from it reached 27.4 ROUGE-1, against 54.8 from all 100 pages. When the authors rebuilt the document from 500 passages for 1,000 questions, under 9% of the oracle's sentences came from the 20 top-ranked ones. The evidence a long answer needs is spread deep in the ranking. The abstractive model wrote more relevant answers than the extractive one (84% vs 68%), but only 19% of its answers were fully accurate against the support document, against 40% (100 answers rated by the authors) ([arXiv:1907.09190](https://arxiv.org/abs/1907.09190), Fan et al., ACL 2019). These are 2019 models trained from scratch and scored with ROUGE, which the authors concede can't compare extractive and abstractive systems.
 
 A reader that only concatenates behaves the opposite way to FiD: extra text costs it quality even when the right sentence is there. On Wizard of Wikipedia the retrieved knowledge averaged 61 sentences and 1,626 tokens per turn, more than GPT-2's 1,024-token window, and plain truncation cut the gold sentence in 53% of test examples. With the gold sentence forced in, growing GPT-2's input limit from 128 to 1,024 tokens took unigram F1 from 30.9 to 19.7 (seen topics), as the gold sentence's share of the input fell from 62% to 4%. Letting the model's selector keep two or three sentences instead of one also lowered F1 while it improved perplexity ([what perplexity measures](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity)). A BERT selector that passed GPT-2 just one sentence, trained without knowledge labels, scored 22.0 F1 against 18.7 for truncation ([EMNLP 2020](https://doi.org/10.18653/v1/2020.emnlp-main.272), Zhao et al., KnowledGPT). This is a 117M GPT-2 scored by word overlap against one human reply, and the forced-gold sweep is an oracle no real system has. Still, the pattern matches the noise results above: pass less, better-selected text.
+
+![Knowledge-grounded dialogue model: a sequential knowledge selector picks passages, a context-aware knowledge encoder reads them, and a GPT-2 decoder generates the response from knowledge, context and response segments](../assets/sources/images/zhao-knowledge-grounded-dialogue-fig1.png)
+*Image Source: Zhao et al., [Knowledge-Grounded Dialogue Generation with Pre-trained Language Models](https://doi.org/10.18653/v1/2020.emnlp-main.272) (2020), Fig. 1*
 
 When the retrieved text is too long, compress it before generation (*Building AI Agents*, ch. 6):
 
@@ -222,7 +239,13 @@ When the retrieved text is too long, compress it before generation (*Building AI
 | LongLLMLingua | Question-aware version: compresses and reorders documents using both context and query |
 | AutoCompressors | Fine-tune the model to summarise long text into summary vectors used as soft prompts |
 
-The last row has grown into its own line of work: compress each retrieved chunk into a few vectors once, offline, and have a trained reader consume those vectors in place of the chunk's tokens. AutoCompressors (Chevalier et al., EMNLP 2023) and CEPE (Yen et al., ACL 2024) came first. REFRAG encodes each 16-token chunk with RoBERTa-large and feeds one projected vector per chunk to LLaMA-2-7B. A small RL policy picks the few chunks to keep as raw tokens. At 16x compression and a 16,384-token context, time to first token fell **16.53x with the chunk embeddings precomputed and 8.59x without**, against 2.01x and 1.04x for CEPE, on one A100 at batch size 1. Per-token decoding sped up only about 3x. On 16 RAG tasks with 400M passages it matched the fine-tuned LLaMA at 10 passages with a 5.26x faster first token, and at equal latency (8 passages against 1) gained 1.22% on average. Perplexity came close to full context only at 8x (at or below it in some of its tables, not stated as a finding), and getting there took 20B tokens of continued pretraining, then fine-tuning and the RL policy ([arXiv:2509.01092](https://arxiv.org/abs/2509.01092), Lin et al. (Meta), 2025-09, preprint). CLaRa trains the reranker through the same compressed vectors with a straight-through top-k, so the generator's next-token loss is the only relevance label. With Mistral-7B, BGE's top 20 cut to 5, and Wikipedia QA, 16x compression averaged 40.30 F1 against 41.96 for DRO, a jointly trained raw-text system whose numbers are copied from its paper, so comparable, not better. Decoding took about 40% of the raw-text time on one H100, with compression done offline and not counted ([arXiv:2511.18659](https://arxiv.org/abs/2511.18659), He et al. (Apple), 2025-11, v3 2026-02, preprint). Both need open weights and a training run, so neither applies to a hosted model. Both store vectors whose size is not reported and must be recomputed when the compressor changes. What carries over is the measurement. Most of a RAG prompt is passages that barely attend to one another, so first-token latency is where context compression pays.
+![LLMLingua: a budget controller, distribution alignment and iterative token-level compression by a small model turn a 2,366-token prompt into a 117-token compressed prompt for a black-box LLM](../assets/sources/images/jiang-llmlingua-compressing-prompts-fig1.png)
+*Image Source: Jiang et al., [LLMLingua: Compressing Prompts for Accelerated Inference of Large Language Models](https://arxiv.org/abs/2310.05736) (2023), Fig. 1*
+
+The last row has grown into its own line of work: compress each retrieved chunk into a few vectors once, offline, and have a trained reader consume those vectors in place of the chunk's tokens. AutoCompressors (Chevalier et al., EMNLP 2023) and CEPE (Yen et al., ACL 2024) came first. REFRAG encodes each 16-token chunk with RoBERTa-large and feeds one projected vector per chunk to LLaMA-2-7B. A small RL policy picks the few chunks to keep as raw tokens. At 16x compression and a 16,384-token context, time to first token fell **16.53x with the chunk embeddings precomputed and 8.59x without**, against 2.01x and 1.04x for CEPE, on one A100 at batch size 1. Per-token decoding sped up only about 3x. On 16 RAG tasks with 400M passages it matched the fine-tuned LLaMA at 10 passages with a 5.26x faster first token, and at equal latency (8 passages against 1) gained 1.22% on average. Perplexity came close to full context only at 8x (at or below it in some of its tables, not stated as a finding), and getting there took 20B tokens of continued pretraining, then fine-tuning and the RL policy ([arXiv:2509.01092](https://arxiv.org/abs/2509.01092), Lin et al. (Meta), 2025-09, preprint). CLaRa trains the reranker through the same compressed vectors with a straight-through top-k, so the generator's next-token loss is the only relevance label. With Mistral-7B, BGE's top 20 cut to 5, and Wikipedia QA, 16x compression averaged 40.30 F1 against 41.96 for DRO, a jointly trained raw-text system whose numbers are copied from its paper, so comparable, not better. Decoding took about 40% of the raw-text time on one H100, with compression done offline and not counted ([arXiv:2511.18659](https://arxiv.org/abs/2511.18659), He et al. (Apple), 2025-11, v3 2026-02, preprint). COCOM compresses each of five passages into 4 to 128 embeddings with the same Mistral-7B as compressor and decoder (LoRA, 493K fine-tuning examples). Averaged over NQ, TriviaQA, HotpotQA, ASQA and PopQA, exact match was 0.585 at 4 embeddings per passage and 0.540 at 128, against 0.623 uncompressed. Decoding on NQ took 187 ms at 128 embeddings against 1,064 ms uncompressed (5.69x, one A100, batch 16), and the 24M-passage index was 6.06 TB at 4 embeddings per passage and 0.19 TB at 128. Freezing the decoder cost about 10 points of NQ EM at 128 (0.519 to 0.421). The frozen-decoder baselines saw only one passage or a truncated concatenation, so method and tuning are confounded; 7B only, one run ([arXiv:2407.09252](https://arxiv.org/abs/2407.09252), Rau et al., 2024-07, preprint). Both need open weights and a training run, so neither applies to a hosted model. Both store vectors whose size is not reported and must be recomputed when the compressor changes. What carries over is the measurement. Most of a RAG prompt is passages that barely attend to one another, so first-token latency is where context compression pays.
+
+![Performance against decoding time for COCOM at compression rates 4, 16 and 128, against RAG without compression, a no-context LLM, xRAG and ICAE](../assets/sources/images/rau-context-embeddings-efficient-fig1.png)
+*Image Source: Rau et al., [Context Embeddings for Efficient Answer Generation in RAG](https://arxiv.org/abs/2407.09252) (2024), Fig. 1*
 
 And when one call over all chunks is the wrong shape, a response synthesizer makes several (*Building AI Agents*, ch. 6):
 
@@ -293,225 +316,6 @@ The "old-fashioned way" in the lab (a smart-home prompt listing every device ID 
 
 ---
 
-## Hallucinations and citations
-
-The course's example: a support bot asked "Do you offer student discounts?" invents one, because a discount is the probable answer.
-
-| Defence | How | Cost / limit |
-|---|---|---|
-| Self-consistency | Sample several answers; distrust disagreement | Multiplies cost |
-| Grounding via system prompt | "Answer only from the documents; say if you don't know" | Cheap; not a guarantee |
-| **Citations** | Number documents, require `[1]`, `[2]` after claims | Citations themselves can be hallucinated |
-| ContextCite | Attributes each statement to the context spans that caused it | Research tool; extra compute |
-| ALCE benchmark | Scores citation quality, correctness and fluency; an NLI model (T5-11B) checks that each sentence's cited passages entail it | Mainly for evaluating systems. Its own best-of-4 rerank used the scorer at generation time and raised ChatGPT's ASQA citation recall from 73.6 to 84.8 (one seed). Human raters saw a smaller gain, 74.7 to 79.3, because the scorer was grading its own pick. Cost: 4 generations plus the NLI pass |
-
-The grounding prompt is weakest exactly when retrieval misses. In a banking-QA study (GPT-4, GPT-3.5 and Llama-2, two document sets, 800 queries each), the models kept answering when the gold passage was absent, with loosely related context or with invention. The authors call this *pseudo-helpfulness*. Nine prompt variants (verbose, quote-first, citation-required) made no salient difference to answer quality ([Zhao et al., NAACL 2024 Industry](https://aclanthology.org/2024.naacl-industry.23/), 2024-06). Catch missing evidence upstream, in the retriever and in evaluation, rather than with more prompt wording.
-
-**Copied numbers are reliable; inferences from them are not.** In DataGemma, a fine-tuned Gemma 2 (9B or 27B) writes Data Commons queries, and the retrieved tables go to Gemini 1.5 Pro. On the authors' synthetic query set those tables averaged 38K tokens per prompt. Statistical claims copied from the tables were 98.6–98.9% accurate. Claims *inferred* from them were right only 71.9–76.4% of the time, wrong 6–20% of the time (a country missing from a top 5) and unsubstantiated 4–22% of the time ("a median age of 35 indicates many young families"). The base model without retrieval made statistical claims on 9% of 101 queries, and only 39% of them were accurate. Two other caveats apply. Data Commons had an answer for only 24–29% of queries, and the authors' own team graded most of the 101 hand-written queries ([arXiv:2409.13741](https://arxiv.org/abs/2409.13741) (Radhakrishnan et al., 2024-09)). So check derived claims (rankings, comparisons, interpretations) separately from quoted ones. A citation to the table doesn't make the conclusion drawn from it correct.
-Joren et al. call this *sufficient context*: whether the context can answer the question, labelled by an autorater without the gold answer. At 6,000 tokens only 44.6% (Musique) to 77.4% (FreshQA) of contexts were sufficient. Models hallucinated even with sufficient context (3.2% Claude 3.5 Sonnet to 25.4% Gemma 27B) yet were right 35 to 62% of the time without it. Abstaining on low sufficiency plus confidence raised accuracy on answered questions 2 to 10%; QA only ([arXiv:2411.06037](https://arxiv.org/abs/2411.06037), Joren et al., ICLR 2025).
-
-**Context against the model's prior.** A second failure runs the other way: the evidence is there and the model overrides it. Raieli and Iuculano summarise Wu et al. ([arXiv:2404.10198](https://arxiv.org/abs/2404.10198)) with a dosage example. The model learned 20 µg as a drug's maximum dose. Given a context that says 30, it answers 30; given one that says 100, it falls back to 20. The further the context departs from the prior, the more the model trusts itself (*Building AI Agents*, ch. 6). The book adds that larger models do so more than smaller ones, but the paper itself reports no such size effect; its measured numbers are in [02](02-why-rag-and-the-augmented-prompt.md#what-rag-buys-you). Prompt strength shifts the balance. In the paper's comparison of a standard, a loose and a strict prompt, the strict one, which tells the model to rely on the context, pushes the model toward the context and the loose one toward its prior. Whether you want that depends on how far you trust your corpus over the model. The same chapter names *negative rejection* as the matching retrieval failure: when nothing relevant is found, the model answers anyway. Its other causes of hallucination are training that rewards long outputs, which makes models verbose, and high sampling temperature (*Building AI Agents*, ch. 5).
-
-Training can install the same failure. Cao et al. trained a two-module pipeline (query generator, then a Qwen2.5-3B reader over a fixed term-matching retriever) end to end with REINFORCE on final-answer reward only. On 176 HotpotQA yes/no questions, accuracy rose while the share of answers that followed a swapped-in passage fell **from 0.86 to 0.54, close to the 0.506 of a reader that ignores passages**. Given an unrelated passage, the trained reader still answered 0.19 correctly from memory, against 0.03 for one trained with their Role Anchor penalty, which holds the module's role-prompt preference near its pre-training value. The anchor cost 0.067 accuracy (0.447 against 0.380). This is one small study (models of 0.5–7B, 3 seeds, no real corpus update), and the anchor needs log-probabilities and trainable weights, so it does not apply to an API model ([arXiv:2607.21627](https://arxiv.org/abs/2607.21627), Cao et al., 2026-07, preprint). The test carries over without the training, though: swap in a passage that implies the opposite answer and check that the answer flips.
-
-Mitigations come in layers. A survey of over thirty techniques sorts them by when they act: before generation (retrieval, clarifying questions), during it (sentence-level verification, since one hallucinated sentence raises the odds of the next), after it (post-editing against retrieved evidence, as RARR does), and in training (refusal-aware tuning such as R-Tuning). It names Context-Aware Decoding, which contrasts output probabilities with and without the context, as a training-free counter to the prior-overrides-context failure above. The survey runs no experiments of its own and reports almost no numbers, so read it as a map and take any figure from the method's own paper, and it stops at late 2023 ([arXiv:2401.01313](https://arxiv.org/abs/2401.01313), Tonmoy et al., 2024-01, preprint).
-
-**Citations are only as honest as their plumbing.** Rothman's research agent builds citations the robust way, with a weak spot (*Context Engineering for MAS*, ch. 7):
-
-1. Every chunk is upserted with `"source": doc_name` in its metadata, so each retrieved chunk knows its file.
-2. After generation, the agent appends a `**Sources:**` list programmatically from the retrieved chunks' metadata, instead of trusting the LLM to name them.
-
-The weak spot is in the book's own trace. Asked about the Juno mission, the answer cites `[1]` and lists both `juno_mission_overview.txt` and `perseverance_rover_tools.txt`. The Perseverance file was retrieved but contributed nothing. Appending every retrieved source records what the model saw, not what it used. Citation is not attribution. ALCE measured the gap: ChatGPT answering closed-book and attaching citations afterwards scored 26.7 citation recall on ASQA, against 73.6 when it wrote from the retrieved passages. Its answers were about as correct (38.3 vs 40.4 exact-match recall) but rarely matched any passage. Even then, about half of ChatGPT's and GPT-4's ELI5 answers were not fully supported by what they cited ([arXiv:2305.14627](https://arxiv.org/abs/2305.14627), Gao et al., EMNLP 2023; 2023 models, top-5 passages). For attribution you need per-claim matching, such as ContextCite above or the fuzzy citation matching Raieli and Iuculano describe, which matches the response against the chunks with n-gram TF-IDF (*Building AI Agents*, ch. 6).
-
-The gap is measured in production-style products too. Human annotators audited four commercial generative search engines (Bing Chat, NeevaAI, perplexity.ai, YouChat; 1,450 queries each, early 2023). Averaged over the four, only **51.5% of sentences were fully supported by their citations (recall) and 74.5% of citations supported their sentence (precision)**. Recall ranged from 68.7 (perplexity.ai) to 11.1 (YouChat), and precision correlated with perceived utility at r = -0.96, across only four systems, so treat that as a hint: the authors suspect systems that copy their cited page earn precision but answer less. Verifiability is not factuality; a supported sentence can still be false ([arXiv:2304.09848](https://arxiv.org/abs/2304.09848), Liu et al., Findings of EMNLP 2023).
-
-Granularity and the single pass matter too. LongCite asked models to answer and cite in one pass over a long context (LongBench-Cite, GPT-4o as judge). GPT-4o's citations averaged 220 tokens, about six sentences, and proprietary models reached citation F1 of only about 0.5 on two datasets. In-context citing cut answer correctness to 88% of the no-citation level for GPT-4o. The paper's CoF pipeline (post-hoc: answer first, then retrieve and extract sentence-level citations), run with GLM-4, kept correctness at 100% with F1 65.8; simpler post-hoc variants scored 57 to 63. Fine-tuning Llama-3.1-8B and GLM-4-9B on 44.6k such examples gave F1 72.0 and 69.2 at citation lengths of 85 and 91 tokens, and correctness rose to 107% and 109%. Synthetic data, a GPT-4o judge and 128k-token contexts, not retrieval ([arXiv:2409.02897](https://arxiv.org/abs/2409.02897), Zhang et al., 2024-09, preprint).
-
-Three of these checks cost no model call, so run them on every answer. Does each `[DOC n]` exist? Does each claim have one? Does every number in the answer appear in the cited text? The answers below stand in for model output, and the third has the error from this chapter's opening:
-
-```python
-import re
-from ragkit import DOC_BY_ID
-
-docs = [DOC_BY_ID["kb-04"], DOC_BY_ID["kb-06"]]         # [DOC 1], [DOC 2]
-
-def check_answer(answer, docs):
-    problems = []
-    for sentence in re.split(r"(?<=[.\]])\s+(?!\[)", answer.strip()):
-        cited = [int(n) for n in re.findall(r"\[DOC (\d+)\]", sentence)]
-        if not cited:
-            problems.append(f"no citation: {sentence!r}")
-        for n in cited:
-            if n > len(docs):
-                problems.append(f"no such document: [DOC {n}]")
-        text = " ".join(docs[n - 1].full for n in cited if n <= len(docs))
-        for number in re.findall(r"\d+", re.sub(r"\[DOC \d+\]", "", sentence)):
-            if cited and number not in text:
-                problems.append(f"number {number} not in cited text")
-    return problems or ["ok"]
-
-print(check_answer("Annual plans are refundable within 30 days. [DOC 1]", docs))
-print(check_answer("Annual plans are refundable within 30 days. [DOC 7]", docs))
-print(check_answer("Annual plans are refundable within 45 days. [DOC 1]", docs))
-print(check_answer("Refunds are usually quick.", docs))
-```
-
-```text
-['ok']
-['no such document: [DOC 7]', 'number 30 not in cited text']
-['number 45 not in cited text']
-["no citation: 'Refunds are usually quick.'"]
-```
-
-Each check covers one failure and misses others. It can't tell that a sentence reasons badly from a correct number, which is DataGemma's inferred-claim problem, so an LLM judge still has a job to do.
-
-To get closer to attribution without another LLM call, match each answer sentence to the chunk it most resembles. This is a small version of the fuzzy matching Raieli and Iuculano describe, with character n-gram TF-IDF. Two documents were retrieved and the answer used one:
-
-```python
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from ragkit import DOC_BY_ID
-
-retrieved = ["kb-04", "kb-02"]
-answer = ["Annual plans can be refunded within 30 days of payment.",
-          "The money reaches the original card in 5 to 10 working days."]
-
-vectorizer = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5))
-matrix = vectorizer.fit_transform([DOC_BY_ID[i].full for i in retrieved] + answer)
-scores = cosine_similarity(matrix[len(retrieved):], matrix[:len(retrieved)])
-
-for sentence, row in zip(answer, scores):
-    print(f"{retrieved[row.argmax()]}  {row.max():.2f}  {sentence}")
-print("appended by a naive Sources list:", retrieved)
-print("actually matched:", sorted({retrieved[row.argmax()] for row in scores}))
-```
-
-```text
-kb-04  0.57  Annual plans can be refunded within 30 days of payment.
-kb-04  0.37  The money reaches the original card in 5 to 10 working days.
-appended by a naive Sources list: ['kb-04', 'kb-02']
-actually matched: ['kb-04']
-```
-
-Rothman's negative-result test is worth copying. With only Juno and Perseverance documents loaded, ask for a story about the Apollo 11 landing. A grounded system replies that the provided documents do not contain this information, rather than writing the story from the model's memory. Keep a few such out-of-corpus questions in every regression set.
-
----
-
-## Evaluating the generator: RAGAS
-
-| Metric | How it is computed | What it misses |
-|---|---|---|
-| **Response relevancy** | An evaluator LLM writes several prompts that *could* have produced the response; embed them and the real prompt; average cosine | Does not check facts |
-| **Faithfulness** | An LLM extracts every factual claim in the response, then checks each against the retrieved docs; share supported | Depends on judge quality |
-| Others | Noise sensitivity, citation metrics, context precision/recall | All lean on LLM-as-judge |
-
-Raieli and Iuculano add a few metrics in the same family (*Building AI Agents*, ch. 5). **Context entities recall** is the share of entities in the ground-truth answer that appear in the retrieved context; it suits fact-heavy domains. **Summarization score** asks whether the answer keeps the context's important information. **Fluency** scores individual sentences and **coherence** the response as a whole.
-
-Long answers can also be scored without an LLM judge. ASQA's questions are ambiguous ("who ruled France in 1830?"), and a good answer covers every reading. Its DR score runs a SQuAD v2-trained RoBERTa reader over the answer to see which disambiguated questions it can answer (Disambig-F1), then takes the geometric mean with ROUGE-L, so pasting a long passage or writing fluent filler can't max it alone. On 45 dev questions DR tracked the authors' own pairwise judgments at 95.0 Pearson, against 86.4 for ROUGE-L alone and 92.9 for Disambig-F1 alone (not a significant difference). A T5-large reader on 5 JPR passages scored 32.1 DR, against 40.6 for humans who searched Wikipedia themselves and 61.8 for humans handed the disambiguations (the paper's upper bound). Its Disambig-F1 also fell further behind the passages it read as K grew, so the generator lost information it had been given ([arXiv:2204.06092](https://arxiv.org/abs/2204.06092), Stelmakh et al., EMNLP 2022). Its Disambig-F1 half measures recall only: an answer that adds a hallucinated reading keeps its Disambig-F1 and is penalised only indirectly, through ROUGE-L and a confused reader. The correlation rests on six systems.
-
-ALCE's fluency column is MAUVE, which scores a whole set of outputs, not one answer. It embeds the model's texts and human texts with GPT-2 large, clusters them together with k-means, and measures how far apart the two cluster histograms are. On open-ended web-text continuation by eight GPT-2 settings, it rank-correlated 0.952 with crowdworkers' judgments of which text was more human-like, against 0.810 for generation perplexity ([arXiv:2102.01454](https://arxiv.org/abs/2102.01454), Pillutla et al., NeurIPS 2021). Only the ranking is stable. The absolute value moves with the number of clusters, the embedding model and the sample size, and small samples inflate it. It never checks facts. ALCE's own shortcut test shows the gap: answering with the first two sentences of the top retrieved passage scored 67.2 MAUVE on ASQA (and 98.7 citation recall), against 66.6 for ChatGPT reading five passages, at 18.9 exact-match recall instead of 40.4 ([arXiv:2305.14627](https://arxiv.org/abs/2305.14627), Gao et al., EMNLP 2023, Table 11). ALCE's authors use MAUVE mainly as a sanity check, because it is sensitive to output length and style.
-
-Measure indirectly too: thumbs up/down and A/B tests that change only the LLM, so you capture its effect alone. The RAGAS paper is in `sources/` (arXiv 2309.15217); see [references](../references.md).
-
----
-
-## Agentic RAG
-
-One LLM call can be split into several specialised ones. The course's support-bot flowchart:
-
-| Step | Model | Job |
-|---|---|---|
-| Router | Small | Does this prompt need retrieval at all? |
-| Retriever | — | Fetch candidates |
-| Evaluator | Small | Are these documents relevant? |
-| Generator | Large | Write the answer from the augmented prompt |
-| Citation | Specialised | Attach sources |
-
-| Workflow shape | Pattern |
-|---|---|
-| Sequential | parser → rewriter → retriever → generator → citation |
-| Conditional | Router picks one branch |
-| Iterative | Writer and evaluator loop N times |
-| Parallel | Orchestrator fans out; synthesiser merges |
-
-Build simple ones by hand; reach for a framework as they grow. These are Anthropic's *Building Effective Agents* shapes; the house treatment is [ai-engineering 05 — graph vs loop](../../../ai-engineering/05-graph-engineering/notes/01-graph-vs-loop.md) and [01 § agentic vs single-pass](01-rag-pipeline.md#agentic-vs-single-pass-li-experiment-3-9).
-
-Assignment 4 builds exactly this for a clothing store ("Fashion Forward Hub"):
-
-```python
-# illustrative: needs the assignment's helpers, a Together API key and embedded Weaviate
-def answer_query(query: str) -> dict:
-    label = check_if_faq_or_product(query)          # router, max_tokens=1, temperature=0
-    if label not in ("FAQ", "Product"):             # router failed: answer from history
-        return {"role": "assistant",
-                "prompt": f"User provided a question that does not fit FAQ or Product "
-                          f"related questions. Answer it based on the context you already "
-                          f"have so far. Query provided by the user: {query}"}
-    if label == "FAQ":
-        return query_on_faq(query)                  # FAQ pairs in the prompt
-    try:
-        # decide_task_nature → get_params_for_task (technical 0.3/0.7, creative 1.0/0.9)
-        # → LLM extracts metadata (gender, articleType, baseColour, season, usage, price)
-        # → Weaviate filters on it → product prompt
-        return query_on_products(query)
-    except Exception:
-        return {"role": "assistant", "prompt": "…Instruct them to rephrase it…"}
-```
-
-The metadata step is query parsing (note [05](05-chunking-query-parsing-and-reranking.md)) done with structured output: the LLM sees the allowed values for each field and returns JSON that becomes a Weaviate filter.
-
-The control flow matters more than the model, and it runs without one. Here is a router for Tallybook that sends questions to the retriever or to smalltalk and treats a bad label as an event, with a stand-in for the small classifier:
-
-```python
-from ragkit import Retriever
-
-retriever = Retriever()
-ALLOWED = {"HELP", "SMALLTALK"}
-
-def classify(query):                     # stand-in for a one-token LLM call
-    if "weather" in query:
-        return "Sure! I think"           # what a small model can really return
-    return "SMALLTALK" if query.lower().startswith(("hi", "thanks")) else "HELP"
-
-def answer_query(query):
-    label = classify(query).strip()
-    if label not in ALLOWED:             # never let a bad label pick a branch
-        return {"route": "fallback", "docs": []}
-    if label == "SMALLTALK":
-        return {"route": "smalltalk", "docs": []}
-    return {"route": "retrieval", "docs": retriever.hybrid(query, k=2)}
-
-for q in ["thanks, that fixed it", "how do I rotate an API key", "what's the weather"]:
-    print(f"{q:<30}", answer_query(q))
-```
-
-```text
-thanks, that fixed it          {'route': 'smalltalk', 'docs': []}
-how do I rotate an API key     {'route': 'retrieval', 'docs': ['kb-01', 'kb-02']}
-what's the weather             {'route': 'fallback', 'docs': []}
-```
-
----
-
-## RAG vs fine-tuning
-
-| | RAG | Fine-tuning |
-|---|---|---|
-| Changes | The prompt | The weights |
-| Good for | **Knowledge**: facts, private data, freshness | **Behaviour**: domain style, format, tone, task skill |
-| Update cost | Re-index documents | Retrain |
-| Citations | Natural | None |
-
-Fine-tuning changes how the model talks, not reliably what it knows. Microsoft's agriculture study is the measured version. On 273 expert-curated Washington-state farming questions, graded by GPT-4 against a rubric, LoRA fine-tuning GPT-4 on generated Q&A raised accuracy from 75% to 81%, and RAG added 5 points on top (86%). But fine-tuning Llama2-13B base dropped it below the off-the-shelf chat model (68% vs 76%), and RAG did more for fully correct answers than fine-tuning did (GPT-4: 36% → 60% with RAG, 45% fine-tuned) ([arXiv:2401.08406](https://arxiv.org/abs/2401.08406), Balaguer et al., 2024-01). Use RAG for knowledge, fine-tuning for domain adaptation, and both when you need both. "Both" can also mean fine-tuning with the retrieved documents in the prompt and masked from the loss, so the model learns to reason over them. RARE did this with reasoning traces distilled from QwQ-32B. Llama-3.1-8B reached 84.1% on MedQA, against 83.0% for the same model fine-tuned and then given RAG at inference, and 73.5% with RAG alone ([arXiv:2503.23513](https://arxiv.org/abs/2503.23513), Wang et al., KDD 2026).
-
-The recipe both build on is RAFT's. It trains with one golden document among four distractors and a chain-of-thought answer that quotes the golden one. That took LLaMA2-7B to 74.0 on HuggingFace APIBench, where the same model fine-tuned without documents fell from 61.1 to 42.6 once documents were added at test time ([arXiv:2403.10131](https://arxiv.org/abs/2403.10131), Zhang et al., 2024-03, preprint). HIRAG asks which reading skill the training data teaches. It trains on three tasks in order, each with its own thought format: filtering (quote and cite the passage that answers), combining (relate several passages) and reasoning (chain facts across them, with the model's own knowledge where documents fall short). With total data held constant on Llama3-8B, the filtering-only mix scored 48.0 on RGB's information-integration test. Adding combination data raised it to 58.0, and the chosen 1:2:2 mix reached 66.0, while noise robustness stayed at 94–97 throughout. **Distractor training teaches the model to ignore noise, and only combination and reasoning data teach it to merge sources.** The tuned 8B scored 66.6 on PopQA against 67.2 for Llama3-70B-Instruct, but stayed behind GPT-4o-mini on MuSiQue (27.8 against 37.7). About 120K examples were synthesised by GPT-4-class models, and training took about 32 hours on 8 A100s. The authors fixed errors in RGB and share the corrected set only on request, every number is a single run, and the cited quotes are never scored for accuracy. They also concede the model does worse when documents help without containing the answer ([arXiv:2507.05714](https://arxiv.org/abs/2507.05714), Jiao et al. (AntGroup), 2025-07, v3 2025-09, preprint).
-
-Model size decides how much the tuning adds. The Turing Institute's t0 models follow the s1 recipe (Muennighoff et al., 2025): fine-tune on about 2,000 DeepSeek-R1 reasoning traces written over the top 5 retrieved documents. On 1,000 synthetic NHS symptom queries over 989 condition pages, Qwen2.5-32B-Instruct named the right condition 0.38 of the time without retrieval and 0.54 with it. The tuned 32B reached 0.56, level with GPT-4o and DeepSeek-R1, so at 32B **retrieval supplied almost all of the gain and the tuning about 2 points**, around two standard deviations. Smaller tuned models held the level (0.53 at 1.5B, 0.56 at 3B). The authors credit the reasoning training for most of that, but the untuned small models with retrieval appear only in a figure. Retrieval set the ceiling: with 5 documents, the right page was in the context for only 76% of queries. Indexing LLM-written summaries instead of full pages raised precision@5 from 0.68 to 0.76 and cut training examples from 74,641 to 7,544 tokens. The queries were written by GPT-4o, and only some were reviewed by a clinician. Hallucination and faithfulness are never measured ([arXiv:2508.11386](https://arxiv.org/abs/2508.11386), Chan et al. (Alan Turing Institute), 2025-08, preprint).
-
-Raieli and Iuculano's examples by task (*Building AI Agents*, ch. 5). Specialised summarization depends on understanding the domain, so fine-tune. Question answering needs transparency and low hallucination more than customisation, so use RAG. Code generation needs both a changing codebase and close task adaptation, so use both. "Both" can also mean fine-tuning the embedder rather than the LLM. That is far cheaper than training an embedder, and when labelled pairs are scarce, an LLM can generate synthetic (query, positive, negative) data for it ([03 § how embedders are trained](03-keyword-semantic-and-hybrid-search.md#how-embedders-are-trained-and-where-cosine-misleads)). Fine-tuning in depth: [01-llm-fundamentals](../../01-llm-fundamentals/readme.md) (training and adapting) and [05-RL](../../05-rl/readme.md) (preference tuning).
-
----
-
 ## Rules of thumb
 
 | Rule | Why |
@@ -520,8 +324,8 @@ Raieli and Iuculano's examples by task (*Building AI Agents*, ch. 5). Specialise
 | Classifier calls: `max_tokens` 1–2, validate the label | Can't ramble, failures are explicit |
 | Use the schema parameter for JSON | Parsing never fails |
 | Tell the model to cite and to say "not in the documents" | Cheapest hallucination defence |
-| Measure faithfulness, not only relevancy | A relevant answer can still be invented |
-| Small models for routers and evaluators | They run on every request |
+| Put the strongest chunks at the edges or next to the question | Lost in the middle; near-miss distractors hurt |
+| Pass fewer, better-selected passages to a reader that only concatenates | Extra text dilutes the gold sentence |
 
 ---
 
@@ -530,18 +334,14 @@ Raieli and Iuculano's examples by task (*Building AI Agents*, ch. 5). Specialise
 | Lab | Label |
 |---|---|
 | M4 Lab 4.1 (sampling parameters), Lab 4.2 (classification, params by task, structured output) ([upstream](https://github.com/MohammadWasiq0786/Deeplearning.ai-RAG)) | needs an API key (Together.ai); not copied |
-| M4 Assignment 4 (Fashion Forward Hub chatbot) | needs Together API key + embedded Weaviate; not copied |
 
 ---
 
 ## Pitfalls
 
-- **Assuming a grounding prompt handles missing evidence.** Symptom: confident answers to questions the corpus can't answer. Zhao et al.'s nine prompt variants made no salient difference, so test with out-of-corpus questions and handle them upstream.
-- **Treating citations as attribution.** Symptom: every answer lists sources, and some contributed nothing (Rothman's Juno trace). Match claims to chunks if you need to know what was used.
-- **Trusting a number because it has a citation.** Symptom: rankings and comparisons are wrong while quotes are right. DataGemma's inferred claims ran 71.9–76.4% against 98.6–98.9% for copied ones. Check derived claims separately.
+- **Expecting sampling to fix a wrong answer.** Symptom: lowering temperature makes the answer consistent and still wrong. Sampling chooses among what the model already believes; fix the context instead.
 - **High temperature on factual answers.** Symptom: the same question gets a different number on reruns. Use near-zero temperature and a low top-p.
-- **Unvalidated router output.** Symptom: a stray label sends a query down the wrong branch silently. Validate against an allowed set and have an explicit fallback.
-- **Fine-tuning to teach facts.** Symptom: costly retraining and stale answers. Fine-tune for behaviour and use RAG for knowledge. Balaguer et al. saw fine-tuning Llama2-13B land below the off-the-shelf chat model.
+- **Sending every retrieved chunk to a concatenating reader.** Symptom: answers get worse as top-k grows, even when the right passage is in the set. KnowledGPT saw F1 fall from 30.9 to 19.7 as GPT-2's input grew with the gold sentence forced in. Select or compress before generation.
 - **Padding the prompt because one paper saw noise help.** Cuconasu et al.'s random-document effect has no agreed explanation. Use the safe findings: near-miss distractors hurt, and best evidence goes next to the question.
 
 ---
@@ -549,15 +349,15 @@ Raieli and Iuculano's examples by task (*Building AI Agents*, ch. 5). Specialise
 ## Try it
 
 1. In the sampling block, set the logits to `[1.2, 1.0, 1.0, 0.9, 0.8]`. How many tokens does `top_p=0.85` keep, and what does that mean about asking this model a factual question?
-2. Add `"Annual plans are refundable within 30 days, which is the longest in the industry. [DOC 1]"` to `check_answer`. What does it report, and is that right?
-3. A hallucination appears in 3% of answers, and your faithfulness score says 0.97. List two cheaper checks you'd run before adding a second LLM judge.
+2. Call `edges_first` on four ranks. Where does rank 2 land, and why is that the right place for it?
+3. Pass `build_messages` a history of six messages with the default `keep_turns=4`. How many user turns reach the model, and what does the name `keep_turns` hide?
 
 <details>
 <summary>Answers</summary>
 
 1. All five, since the distribution is nearly flat and the cumulative total is still 0.834 at the fourth token. The model has no firm belief. Sampling settings can make it consistent and can't make it right, so the fix is better context.
-2. It reports `['ok']`, and that's wrong. "Longest in the industry" is an unsupported claim attached to a correct number and a real citation. Regex checks catch mechanical failures only, which is why claim-level judging exists.
-3. Citation existence and number containment, as in the block above, plus a regression set of out-of-corpus questions that must return "not in the documents". They catch whole classes of failure on every request at almost no cost.
+2. `['rank1', 'rank3', 'rank4', 'rank2']`. Rank 2 goes last, at the far edge, which lost-in-the-middle says models read better than the middle. With four chunks the effect is small; it matters with a wide top-k.
+3. The slice keeps the last four *messages*, so two user turns and their two replies. The parameter counts messages, not turns, and a tool call or system note in the history would take a slot too. Name it for what it counts, or prune by turn.
 
 </details>
 
@@ -569,18 +369,14 @@ Raieli and Iuculano's examples by task (*Building AI Agents*, ch. 5). Specialise
 |---|---|
 | Temperature vs top-p? | Temperature reshapes the distribution. top-p restricts which tokens are eligible, keeping the smallest set whose cumulative probability reaches p, so it adapts to the model's confidence. |
 | Settings for factual RAG? | Temperature near 0 and a low top-p, with an "only from the documents, cite, say if absent" prompt. |
-| Why can a model still ignore good context? | Its weights can pull harder than the context. Wu et al. show that the further a context departs from the model's prior, the more it trusts itself. |
-| What is pseudo-helpfulness? | Zhao et al.'s term for models answering when the gold passage is absent, using loosely related context or invention. Nine prompt variants made no salient difference. |
 | Which retrieved passages hurt most? | High-scoring ones that lack the answer. Cuconasu et al. saw up to a 25% drop from a single such distractor added to the gold passage. |
 | How would you order the context? | Put the strongest chunks at the edges (lost in the middle), or nearest the question (Cuconasu et al.). It matters most with a wide top-k. |
-| Are citations proof of attribution? | No. Appending all retrieved sources records what the model saw. Per-claim matching such as ContextCite records what it used. |
-| What do RAGAS relevancy and faithfulness measure? | Relevancy: generate prompts that could have produced the answer and compare with the real prompt. Faithfulness: the share of extracted claims supported by the documents. Both lean on an LLM judge. |
+| Why does RAG work at all? | Attention lets every generated token look at the retrieved documents, so the context can change the output without changing the weights. |
+| How many passages should the reader get? | Depends on the reader. FiD, trained to fuse, gained from 10 to 100 passages; a reader that only concatenates loses quality as text is added, even with the gold sentence in. |
 | Why use a JSON schema over a prompt request? | The schema makes output parseable and gives you a validator. It doesn't make the content true. |
-| RAG or fine-tuning? | RAG for knowledge and freshness, fine-tuning for behaviour and format. Balaguer et al.: GPT-4 went 75% → 81% fine-tuned and 86% with RAG on top. RARE trains with retrieved documents in the prompt to get both. |
-| When do you split one call into a workflow? | When small steps such as routing and relevance checks can run on a cheap model, or the task needs branches or loops. Start simple and validate each output. |
 
 ---
 
 ## Next
 
-[07 — RAG in production](07-rag-in-production.md): the system works on a laptop. Now evaluate it with traces, cut its cost and latency, secure it, and extend it to images and PDFs.
+[06b — Hallucinations, evaluation and fine-tuning](06b-hallucinations-evaluation-and-fine-tuning.md): the prompt is grounded. Now catch the answers that drift from it anyway, measure faithfulness, split the call into a workflow, and decide when fine-tuning belongs beside retrieval.

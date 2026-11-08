@@ -1,4 +1,5 @@
 ---
+imported_hash: d1b115041f39ff93
 title: LC 45 — Jump Game II
 summary: Given a 0-indexed array nums where nums[i] is the maximum forward jump length from index i, return the minimum number of jumps needed to reach the last index.
 order: 26

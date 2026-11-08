@@ -1,7 +1,8 @@
 ---
+imported_hash: 34bb2f8fb7b2263b
 title: 11 — Multi-Agent RL and RL in RAG
 summary: 'Two support agents learn side by side: one triages, the other resolves.'
-order: 13
+order: 19
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/05-RL/notes/11-multi-agent-and-rag-rl.md
@@ -137,6 +138,13 @@ agent value functions that sum (or combine) to give the global Q-value.
 - **Self-play:** Agents are trained against copies of themselves — used for games
   (AlphaGo, AlphaStar) and increasingly for LLM red-teaming
 
+**Equilibria are a vocabulary, not a goal.** Murphy's chapter (after Albrecht et al.) makes the point with two payoff tables (*RL: A Comprehensive Overview*, ch. 5, Sec. 5.2). In Prisoner's Dilemma the only Nash equilibrium (defect, defect) returns (−3, −3), worse than the (−1, −1) of cooperating, which is not an equilibrium. In Chicken (stay/leave, payoffs 0,0 / 7,2 / 2,7 / 6,6) the mixed Nash equilibrium returns 4.66 to each agent, and a *correlated* equilibrium, where a coordinator picks (L,L), (S,L) or (L,S) with probability 1/3 each, returns 5 because it never recommends the crash (S,S). Fig. 5.4 plots every joint policy: the mixed equilibrium sits inside the Pareto frontier, and the only welfare- and fairness-optimal point, (6,6), is not an equilibrium at all. Two limits follow for MARL training: equilibria can be many and differ in value, and an ε-Nash equilibrium can be far from a true one (his 2×2 example with ε = 1 admits two very different outcomes). Self-play converges to Nash only for perfect-information zero-sum games and can cycle otherwise. His own LLM red-team self-play example (Sec. 6.2.5.4) scores both sides with a frozen reward model.
+
+![Chicken: the discretized joint-return space with Pareto-optimal points and the deterministic and mixed Nash equilibria; the mixed equilibrium is interior.](../assets/sources/images/murphy-rl-fig5-4.png)
+*Image Source: Murphy, [*Reinforcement Learning: A Comprehensive Overview*](https://arxiv.org/abs/2412.05265) (2024), Fig. 5.4, from Albrecht et al. (2024), used with permission*
+
+He also reports (from Rudolph et al., 2025, which I have not read) that PPO's weak showing on two-player zero-sum games was an untuned entropy penalty (they needed roughly 0.05–2.0, against 0–0.01 in single-agent PPO), and that tuned PPO and magnetic mirror descent reached the lowest exploitability among five deep methods on small imperfect-information games. His "policy gradient hypothesis" is the same claim. The chapter gives LLM-agent MARL only a three-sentence pointer and has nothing on RAG.
+
 ### MARL challenges
 
 - **Non-stationarity:** Partially addressed by CTDE; not fully solved
@@ -211,7 +219,7 @@ hard: [0.21 0.44 0.75] -> rewrite, then retrieve
 
 The bandit learns not to pay for retrieval on easy questions and to pay more on hard ones. Change the cost and you change the behaviour, and so the cost is a product decision.
 
-SEM ([arXiv:2505.07903](https://arxiv.org/abs/2505.07903) (Sha et al., 2025-05, preprint)) trains that decision with a gate instead of a per-call cost. The model answers once before it may search. If that answer is already right (F1 above a threshold) and it searches anyway, the reward is zero. If the answer is wrong, the post-search answer is scored. Trained with GRPO on a mix of MuSiQue (needs search) and MMLU (doesn't), **Qwen2.5-7B-Instruct searched on 1.8% of MMLU questions against 48% for naive RAG, and on 97.5% of HotpotQA questions with 35.8 EM against 18.0**. These are single runs with no ablations. The 7B ReSearch baseline almost never searched (0.08% of HotpotQA questions) while the 14B one searched on all of them, and the prose overstates the tables in places.
+SEM ([arXiv:2505.07903](https://arxiv.org/abs/2505.07903) (Sha et al., 2025-05, preprint)) trains that decision with a gate instead of a per-call cost. The model answers once before it may search. If that answer is already right (F1 above a threshold) and it searches anyway, the reward is zero. If the answer is wrong, the post-search answer is scored. Trained with GRPO on a mix of MuSiQue (needs search; [arXiv:2108.00573](https://arxiv.org/abs/2108.00573) (Trivedi et al., TACL 2022), 2 to 4 hop questions built by composing single-hop ones. Its own baseline is one fine-tuned Longformer reader trained on 20K examples per dataset, scoring 42.3 answer F1 on MuSiQue (20 given paragraphs) against 72.9 on HotpotQA (10), which do not transfer to retrieval-based EM) and MMLU (doesn't), **Qwen2.5-7B-Instruct searched on 1.8% of MMLU questions against 48% for naive RAG, and on 97.5% of HotpotQA questions with 35.8 EM against 18.0**. These are single runs with no ablations. The 7B ReSearch baseline almost never searched (0.08% of HotpotQA questions) while the 14B one searched on all of them, and the prose overstates the tables in places.
 
 ### Pattern 1 — Online RL over retrieval and tool actions
 
@@ -223,7 +231,7 @@ reward model built from human preferences.
 browser through search, click, scroll and quote actions. Humans compared two model-generated
 answers to the same question, both written with browsing, and a reward model learned from about
 16k of those comparisons. The RL loop: generate action sequence → execute in browser → the reward
-model scores the final answer → PPO update, with a per-token KL penalty toward the
+model scores the final answer → PPO update, with a per-token [KL](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) penalty toward the
 behavior-cloned model. Humans label offline; they are not in the loop. RL was not the best
 optimizer here. Sampling 64 answers and keeping the one the RM scored highest was preferred to
 the BC model 68% of the time, RL only 58%, and RL added nothing on top of best-of-n
@@ -241,6 +249,9 @@ returning three passages, trained on NQ plus HotpotQA. It averaged 0.431 exact m
 QA sets, against 0.304 for one-shot RAG and 0.348 for rejection-sampling fine-tuning on the same
 search loop. Without the mask the average fell to 0.343. GRPO converged faster but its reward
 collapsed in some runs, while PPO stayed stable.
+
+![Search-R1 training curves. (a) Train reward for PPO and GRPO: GRPO rises faster but collapses to near zero around step 240, while PPO stays stable to step 500. (b) Base against instruct model. (c) Response length falls, then rises as reward climbs. (d) Valid search calls rise as training proceeds.](../assets/sources/images/jin-search-r1-fig2.png)
+*Image Source: Jin et al., [Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning](https://arxiv.org/abs/2503.09516) (2025), Fig. 2*
 
 **Dr. Zero** ([arXiv:2601.07055](https://arxiv.org/abs/2601.07055) (Yue et al., 2026-07, preprint)) removes the question set too. A proposer and a solver start from the same Qwen2.5 search agent. The proposer reads a seed document and writes a question, and its reward peaks when exactly one of the solver's n attempts is right. Its advantages are standardised within groups of equal hop count, which needs 6 rollouts per prompt against 20 for nested GRPO. **At 3B the seven-benchmark exact-match average was 0.326 against 0.327 for supervised Search-R1; at 7B it was 0.372 against 0.384**, with Search-R1 ahead on MuSiQue and Bamboogle. Table 1 is single greedy runs with an E5 retriever over Wikipedia; the appendix adds multi-run means with standard deviations. Gains stop after two or three iterations (7B fell to 0.360 at the third). The cheaper advantage trails nested GRPO on Bamboogle (0.200 vs 0.272 at 3B) and slightly on HotpotQA and MuSiQue, though its 3B average is higher (0.326 vs 0.320).
 

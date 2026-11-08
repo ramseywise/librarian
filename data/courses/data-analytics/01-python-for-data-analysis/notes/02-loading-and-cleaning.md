@@ -1,4 +1,5 @@
 ---
+imported_hash: 7715cb192500af66
 title: 2 — Loading and Cleaning
 summary: The first chapter's frame was typed in by hand, so every value was what it looked like.
 order: 3
@@ -153,7 +154,7 @@ print()
 5 5 3
 ```
 
-The other readers follow the same pattern. Learn `read_csv` thoroughly and you already know most of `read_json`, `read_excel`, `read_parquet` and `read_sql`, since each returns a DataFrame and most share the idea of stating types and missing markers up front ([pandas IO guide](https://pandas.pydata.org/docs/user_guide/io.html)).
+McKinney's chunked example reads a 10,000-row, 5-column file in pieces of 1,000 and accumulates `value_counts` with `tot.add(piece["key"].value_counts(), fill_value=0)`, so the full file is never in memory; the `fill_value=0` handles a key absent from some chunk (*Python for Data Analysis*, ch. 6). The chapter also counts over 50 `read_csv` parameters, so when a file will not parse, go to the docs and not to memory. The other readers follow the same pattern. Learn `read_csv` thoroughly and you already know most of `read_json`, `read_excel`, `read_parquet` and `read_sql`, since each returns a DataFrame and most share the idea of stating types and missing markers up front ([pandas IO guide](https://pandas.pydata.org/docs/user_guide/io.html)).
 
 | Source | Function | Note |
 |---|---|---|
@@ -323,7 +324,7 @@ print(orders["qty"].dtype)
 int64
 ```
 
-`dropna` removes rows with gaps, optionally limited by `subset` to the columns you care about, and `ffill` carries the last known value forward. Carrying forward makes sense for a slowly changing reading, such as a price list, and makes no sense for independent orders. It is a method of its own now, because the old `fillna(method="ffill")` form was removed in pandas 3.0 ([pandas 3.0 release notes](https://pandas.pydata.org/docs/whatsnew/v3.0.0.html)).
+`dropna` removes rows with gaps, optionally limited by `subset` to the columns you care about (or by `how="all"` / `thresh=n` to tolerate some gaps per row, *Python for Data Analysis*, ch. 7), and `ffill` carries the last known value forward. Carrying forward makes sense for a slowly changing reading, such as a price list, and makes no sense for independent orders. It is a method of its own now, because the old `fillna(method="ffill")` form was removed in pandas 3.0 ([pandas 3.0 release notes](https://pandas.pydata.org/docs/whatsnew/v3.0.0.html)).
 
 ```python
 prices = pd.Series([48.0, None, None, 52.0, None])
@@ -370,9 +371,25 @@ min  1.0         6.5
 max  6.0        95.0
 ```
 
+When no business rule gives the bounds, a robust data-driven rule is the one VanderPlas applies to the CDC births data: estimate the spread from the interquartile range, `sig = 0.74 * (q3 - q1)` (the factor makes it a standard-deviation estimate for normal data), and keep values within 5 `sig` of the median, so that a few absurd counts cannot inflate the cutoff the way they inflate a standard deviation (*Python Data Science Handbook*, ch. 3). Count what it drops, as above.
+
+```python
+rng = np.random.default_rng(0)
+births = pd.Series(rng.normal(4800, 300, 1000))
+births.iloc[:5] = [99999, 0, 20000, 1, 15000]
+q1, med, q3 = births.quantile([0.25, 0.5, 0.75])
+sig = 0.74 * (q3 - q1)
+clean = births[(births > med - 5 * sig) & (births < med + 5 * sig)]
+print(len(births), len(clean))
+```
+
+```text
+1000 995
+```
+
 ## Bucketing a number
 
-Sometimes a clean numeric column needs turning into categories, such as order sizes for a report. `pd.cut` splits by the values you give it, and `pd.qcut` splits by quantiles so that each bucket holds about the same number of rows. Bins are closed on the right by default, so `(0, 20]` includes 20 but not 0.
+Sometimes a clean numeric column needs turning into categories, such as order sizes for a report. `pd.cut` splits by the values you give it, and `pd.qcut` splits by quantiles so that each bucket holds about the same number of rows. Bins are closed on the right by default, so `(0, 20]` includes 20 but not 0. McKinney's contrast: `qcut` into quartiles on 1,000 normal draws gives exactly 250 rows per bin, which `cut` with equal-width edges would not (*Python for Data Analysis*, ch. 7).
 
 ```python
 orders["revenue"] = orders["qty"] * orders["unit_price"]
@@ -414,7 +431,7 @@ datetime64[us]
 556 5266
 ```
 
-On a frame this small the Parquet file comes out larger, since its metadata outweighs the compression; the advantage in size only shows at scale. The advantage in types shows at once, as the CSV's date came back as text. Use CSV to hand data to someone else, and Parquet between steps of your own work. Use `to_pickle` only for a short-lived scratch file: McKinney advises against pickle for long-term storage, because a later library version may be unable to read the file ([McKinney, *Python for Data Analysis*, ch. 6](https://wesmckinney.com/book/accessing-data)), and pandas 3.0 did drop support for reading pickles from versions before 1.0 ([pandas 3.0 release notes](https://pandas.pydata.org/docs/whatsnew/v3.0.0.html)).
+On a frame this small the Parquet file comes out larger, since its metadata outweighs the compression; the advantage in size only shows at scale. The advantage in types shows at once, as the CSV's date came back as text. Use CSV to hand data to someone else, and Parquet between steps of your own work. The same chapter says HDF5 "is best suited for write-once, read-many datasets" and warns that concurrent writers can corrupt the file (*Python for Data Analysis*, ch. 6); it does not cover Parquet, which was still developing in 2017. Use `to_pickle` only for a short-lived scratch file: McKinney advises against pickle for long-term storage, because a later library version may be unable to read the file ([McKinney, *Python for Data Analysis*, ch. 6](https://wesmckinney.com/book/accessing-data)), and pandas 3.0 did drop support for reading pickles from versions before 1.0 ([pandas 3.0 release notes](https://pandas.pydata.org/docs/whatsnew/v3.0.0.html)).
 
 ## Put it in one function
 

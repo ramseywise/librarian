@@ -1,4 +1,5 @@
 ---
+imported_hash: faa278e102388825
 title: Moving Average from Data Stream — First-Principles Thinking Guide
 summary: 'Use a queue of size k. When a new value arrives: if full, dequeue the oldest and subtract from sum, then enqueue new and add to sum.'
 order: 194

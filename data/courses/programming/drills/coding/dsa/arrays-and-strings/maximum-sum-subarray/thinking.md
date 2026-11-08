@@ -1,4 +1,5 @@
 ---
+imported_hash: 75ec8f7ea4c77f8b
 title: Maximum Sum Subarray (Kadane's) — First-Principles Thinking Guide
 summary: 'At each position, decide: extend the current subarray or start fresh?'
 order: 121

@@ -1,4 +1,5 @@
 ---
+imported_hash: 55f4e0feb8361a51
 title: Worked Examples
 summary: 'Eight full walkthroughs with narration annotations: the text in [NARRATE: ...] blocks is what you say out loud while typing.'
 order: 28

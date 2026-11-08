@@ -1,4 +1,5 @@
 ---
+imported_hash: 12d155479ecfb5d1
 title: 4 — Load balancing and rate limiting
 summary: A balancer takes one address and spreads requests over many servers, removing dead ones.
 order: 5

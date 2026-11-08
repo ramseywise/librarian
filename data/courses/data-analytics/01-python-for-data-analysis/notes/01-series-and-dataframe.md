@@ -1,4 +1,5 @@
 ---
+imported_hash: 2254530b58052363
 title: 1 — Series and DataFrame
 summary: 'Most of the data an analyst touches arrives as a table: a row per order, a column per fact about the order.'
 order: 2
@@ -142,7 +143,7 @@ Notice the second result's dtype. Twelve and 240 were integers, but the Series c
 
 ## Alignment: the idea that makes it pandas
 
-If labels were only a lookup convenience, pandas would be a thin wrapper over NumPy. What sets it apart is that operations between two objects match values **by label, not by position**. McKinney calls this built-in data alignment and singles it out as the main enhancement over R's data frame at the time ([McKinney, SciPy 2010](https://doi.org/10.25080/Majora-92bf1922-00a)).
+If labels were only a lookup convenience, pandas would be a thin wrapper over NumPy. What sets it apart is that operations between two objects match values **by label, not by position**. McKinney calls this built-in data alignment and singles it out as the main enhancement over R's data frame at the time ([McKinney, SciPy 2010](https://doi.org/10.25080/Majora-92bf1922-00a)). The book's first chapter lists it first among the requirements he set himself at AQR Capital Management in 2008: "data structures with labeled axes supporting automatic or explicit data alignment", so that misaligned, differently indexed data cannot silently mix (*Python for Data Analysis*, ch. 1). The name "pandas" comes from "panel data", an econometrics term, and `DataFrame` from R's `data.frame` (ch. 1).
 
 Say the shop has two weeks of units sold per product, but the products do not line up. The first week sold no scales; the second week sold no grinders. And the two Series are in different orders.
 
@@ -186,7 +187,7 @@ scale       6.0
 dtype: float64
 ```
 
-Whether a gap means zero or means unknown is a question about the data and not about the code, and pandas leaves that decision with you. Chapter 2 returns to it.
+The book's own example is the same shape: `s1 + s2` over overlapping labels gives `NaN` for every label found on only one side, and `df1.add(df2, fill_value=0)` treats a missing label as 0 (*Python for Data Analysis*, ch. 5). Whether a gap means zero or means unknown is a question about the data and not about the code, and pandas leaves that decision with you. Chapter 2 returns to it.
 
 ## A DataFrame is a dictionary of aligned columns
 
@@ -352,6 +353,12 @@ orders["product"] = orders["product"].astype("str")
 category
 ['filter', 'grinder', 'kettle', 'scale']
 ```
+
+The payoff is memory and group speed. A category column stores each distinct label once and an integer code per row (`.cat.codes`). McKinney's example is a 10-million-element string Series cycling through four labels: 80,000,080 bytes as strings against 10,000,272 as `category`, about 8 times less, after a one-off 726 ms `astype` (one run, machine unstated; *Python for Data Analysis*, ch. 12). He also notes that `groupby` is faster on a categorical because it works on the integer codes, but gives no timing. A filtered categorical keeps its unused levels, so call `remove_unused_categories()` before counting. The 2017 text keeps strings as `object`, which is why the saving looked so large. Pandas 3 stores text as `str`, so measure before assuming 8 times.
+
+Dtype also decides speed, and the same book gives the other numbers worth remembering. Summing 1,000,000 integers took 3.06 ms and the same values held as `object` took 78.2 ms, about 25 times slower; a Python loop adding two 1,000,000-float arrays took 266 ms against 3.39 ms vectorised (pandas 0.18.1, `%timeit` best of 3, one unstated machine; *Python Data Science Handbook*, ch. 3). Treat the ratios as the lesson, since both machine and pandas have changed. Time short statements with `%timeit`, but use `%time` when each run changes the input: repeating `L.sort()` on one list sorts already-sorted data after the first pass, and the book's single runs show 41.5 ms unsorted against 8.24 ms presorted for 100,000 floats while `%timeit` reported 1.9 ms (ch. 1). Profile in the order `%timeit`, `%prun`, `%lprun`, `%memit`, and only once the code is correct. `DataFrame.eval` and `query` are not a speed-up to rely on: with four 100,000 x 100 float frames, `pd.eval("df1 + df2 + df3 + df4")` took 42.2 ms against 87.1 ms for the plain sum, but the author says the difference is "usually not significant" and the benefit is mainly memory (ch. 3).
+
+Handing a frame to a model library is a dtype question too. `.values` (today `to_numpy()`) on a mixed-type frame returns an `object` array, so select the numeric model columns first, as in `df.loc[:, cols].to_numpy()` (*Python for Data Analysis*, ch. 13). Keep the column names: a coefficient array carries none, and `pd.Series(coef, index=names)` puts them back. Dummy columns for a categorical are better built inside the model formula (Patsy's `C(x)`, which drops one level when there is an intercept) than by hand with `get_dummies`, because the same formula can then rebuild the identical design matrix for new data. Statistics that a transform learns, such as a mean to centre by, must come from the training data only (ch. 13: the Titanic example fills 177 missing ages with the train median for train and test alike).
 
 ## Making new columns
 

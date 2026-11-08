@@ -1,4 +1,5 @@
 ---
+imported_hash: d18c261939378f68
 title: Linked List
 summary: A linked list is a linear data structure where elements are stored in nodes, each pointing to the next.
 order: 169

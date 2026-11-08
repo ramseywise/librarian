@@ -1,7 +1,8 @@
 ---
+imported_hash: 1d615893ce731404
 title: property-search — env1 drill (60 min)
 summary: 'Semantic search over 50 real-estate listings: FastAPI + sentence-transformers (all-MiniLM-L6-v2) + a FAISS inner-product index.'
-order: 253
+order: 256
 kind: reading
 section: Coding / Problems / Property search
 source: learn-ai-engineering/programming/drills/coding/problems/property-search/prompts.md

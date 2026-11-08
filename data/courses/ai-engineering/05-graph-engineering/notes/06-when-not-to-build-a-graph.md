@@ -1,7 +1,8 @@
 ---
+imported_hash: ebc3e89135bf3236
 title: 6 — When Not to Build a Graph
 summary: 'A graph drawn over work nobody understands yet fixes the first guess in place, and then charges for it: Anthropic reports multi-agent systems at about 15× a chat turn''s tokens, with more prompts to drift and more places for a wrong answer t…'
-order: 7
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/06-when-not-to-build-a-graph.md

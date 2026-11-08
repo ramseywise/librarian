@@ -1,7 +1,8 @@
 ---
+imported_hash: 4c31af666e6a2908
 title: 'Lab: a LangGraph support-triage graph (Python)'
 summary: Pillar 05 says to start with a loop and add a node only when a signal forces it.
-order: 18
+order: 20
 kind: reading
 section: Practice / Langgraph graph
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/practice/langgraph-graph/README.md

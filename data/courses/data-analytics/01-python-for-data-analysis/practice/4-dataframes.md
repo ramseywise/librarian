@@ -1,4 +1,5 @@
 ---
+imported_hash: 2e631e666a358bc5
 title: 4 | DataFrames and Relational Data (Pandas)
 summary: 'Some basic topics covered here include: - Series vs DataFrame - Descriptive Functions - Indexing and Sorting - Slicing and Subsetting - Joining DataFrames'
 order: 12

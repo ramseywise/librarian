@@ -1,7 +1,8 @@
 ---
+imported_hash: cc3984a478f0fa2b
 title: 8 — Governance and Production
 summary: '"The graph did it" is not an answer when the bill triples or a tool breaks production.'
-order: 9
+order: 10
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/08-governance-and-production.md

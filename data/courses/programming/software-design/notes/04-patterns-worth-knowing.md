@@ -1,4 +1,5 @@
 ---
+imported_hash: f2b2b59c8c13e730
 title: 4 — Patterns worth knowing
 summary: Scored = tuple[str, float] Reranker = Callable[[str, list[Scored]], list[Scored]]
 order: 5

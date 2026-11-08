@@ -1,4 +1,5 @@
 ---
+imported_hash: 008e46c72bbbb672
 title: 9 — SQL from Python
 summary: 'with sqlite3.connect("practice/data/clubdata.db") as conn: # commits or rolls back on exit conn.row_factory = sqlite3.Row # rows behave like dicts rows = conn.execute( "SELECT surname, firstname FROM members WHERE joindate >= ?'
 order: 10

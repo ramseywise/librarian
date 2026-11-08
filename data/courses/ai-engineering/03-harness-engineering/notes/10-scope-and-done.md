@@ -1,7 +1,8 @@
 ---
+imported_hash: 2a7919f8f137bedf
 title: 10 — Scope and Done
 summary: 'The acceptance baseline from note 01, made concrete for a coding agent: a feature list in the repo that defines the work, gates completion, and carries state between sessions.'
-order: 11
+order: 13
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/10-scope-and-done.md

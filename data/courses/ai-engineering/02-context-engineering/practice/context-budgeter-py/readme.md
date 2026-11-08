@@ -1,7 +1,8 @@
 ---
+imported_hash: 4f18e4c6c25ac85f
 title: 'Lab: a context budgeter (Python)'
 summary: The Python twin of the TypeScript lab. Same scenario, budgets and packing rules, same report.
-order: 17
+order: 18
 kind: reading
 section: Practice / Context budgeter py
 source: learn-ai-engineering/ai-engineering/02-context-engineering/practice/context-budgeter-py/README.md

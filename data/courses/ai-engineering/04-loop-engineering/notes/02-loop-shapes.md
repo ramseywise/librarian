@@ -1,4 +1,5 @@
 ---
+imported_hash: cf17518e8a780cf3
 title: 2 — Loop Shapes
 summary: 'Anthropic built Claude Code around one loop (gather → act → verify → repeat), then extracted the Claude Agent SDK so teams could "build their own agents on the same machinery instead of maintaining a homegrown loop." The message: the loop i…'
 order: 3

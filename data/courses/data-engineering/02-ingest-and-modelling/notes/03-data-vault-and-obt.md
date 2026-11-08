@@ -1,7 +1,8 @@
 ---
+imported_hash: 146188acf969ee73
 title: 3 — Data Vault and One Big Table
 summary: The star from the last chapter sits in the middle of a range.
-order: 4
+order: 5
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-engineering/02-ingest-and-modelling/notes/03-data-vault-and-obt.md

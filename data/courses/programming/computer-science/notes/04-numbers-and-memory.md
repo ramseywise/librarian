@@ -1,4 +1,5 @@
 ---
+imported_hash: d063f2baf37dc098
 title: 4 — Numbers and memory
 summary: 'print(sys.int_info) for bits in (0, 1, 29, 30, 60, 61, 90, 1_000): print(f"{bits:>5} bits: {sys.getsizeof(1 << bits):>4} bytes")'
 order: 5
@@ -411,7 +412,7 @@ fp16 running sum: 4.0  fp32 accumulator: 10.004044
 
 Past 65,504 an fp16 value becomes `inf`, and anything below about 6e-8 becomes `0.0` (underflow). Values between 6e-8 and the smallest normal, 6.1e-5, survive as **subnormals**: the exponent is pinned at its minimum, so the step between neighbours stays fixed at 6e-8 however small the value gets. `1e-5` prints correctly, but its step is 0.6% of the value, against 0.1% at 1.0. A large activation or a loss of 70,000 therefore breaks fp16 training, while bf16 does not overflow there. That is why bf16 is the usual training format, and why fp16 training adds **loss scaling**: multiply the loss by a large constant before computing gradients, so small gradients land above the underflow line, then divide them back out before the weights are updated.
 
-The last line is the same trap as the `float32` running sum earlier in this chapter, one format down. Adding ten thousand copies of `0.001` in fp16 stalls at 4.0, where the true total is 10: at 4 the step between neighbouring fp16 values is about 0.004, so adding 0.001 rounds back to the same number. The fp32 accumulator gets 10.004, a little off only because `0.001` itself isn't exact in fp16. This is the reason mixed-precision training multiplies in 16 bits (or 8) but keeps three things in fp32: the running sum inside each matrix product, the per-weight running averages the optimiser keeps, and a master copy of the weights that each update is applied to. A sum of many small terms is where narrow floats fail first.
+The last line is the same trap as the `float32` running sum earlier in this chapter, one format down. Adding ten thousand copies of `0.001` in fp16 stalls at 4.0, where the true total is 10: at 4 the step between neighbouring fp16 values is about 0.004, so adding 0.001 rounds back to the same number. The fp32 accumulator gets 10.004, a little off only because `0.001` itself isn't exact in fp16. This is the reason mixed-precision training multiplies in 16 bits (or 8) but keeps three things in fp32: the running sum inside each [matrix product](../../../generative-ai/01-llm-fundamentals/notes/02-attention-and-the-transformer-block.md#matrix-products-transpose-and-rank), the per-weight running averages the optimiser keeps, and a master copy of the weights that each update is applied to. A sum of many small terms is where narrow floats fail first.
 
 ## Log-sum-exp
 
@@ -686,6 +687,16 @@ The loop column is the surprise: **NumPy is the slowest way to loop**, at 33 ns 
 The `sum` column is the win: 0.1 ns per item for `numpy.sum`, because it doesn't box anything and runs along adjacent memory. That's 19 times faster than the C-level builtin `sum` over the list, and 80 times faster than a Python loop. This is the [cost-model lesson from chapter 1](01-cost-models-and-big-o.md#how-to-optimise-the-order-that-works): big-O is equal in all of these, and the ratio between the best and worst is more than 300.
 
 So the rule of thumb is that speed comes from getting the whole operation out of the Python loop, and memory comes from getting rid of the objects. Vectorising is really about layout. The same reasoning explains [why column stores are fast](../../../data-engineering/01-storage-and-compute-foundations/notes/03-row-and-column-stores.md) and much of [what GPUs want](../../../ai-engineering/07-inference-engineering/notes/02-the-hardware.md).
+
+### Broadcasting: stretching without copying
+
+Broadcasting is how a vectorised operation lines up arrays of different shapes. VanderPlas gives three rules (*Python Data Science Handbook*, ch. 2): pad the shorter shape with 1s on the left, stretch any dimension of size 1 to match the other array, and raise an error if two sizes still disagree and neither is 1. A `(3, 2)` array plus a `(3,)` array fails the third rule (`operands could not be broadcast together with shapes (3,2) (3,)`); add `[:, np.newaxis]` to the vector and it works.
+
+![Three broadcasting cases: a scalar added to a vector, a vector added to a matrix, and a column added to a row](../assets/sources/images/vanderplas-python-data-science-handbook-fig2-4.png)
+
+*Image Source: VanderPlas, *Python Data Science Handbook* (O'Reilly, 2016), Fig. 2-4*
+
+The stretched operand is not copied; NumPy reuses the same memory with a stride of 0. The result is a real array, and an intermediate can be far larger than the inputs. His all-pairs distance, `np.sum((X[:, None, :] - X[None, :, :]) ** 2, axis=-1)`, builds an `(N, N, d)` array of differences. I measured it with NumPy 2.5.4 on one laptop, N = 2,000 points and d = 64: the input is 1,000 KiB and the intermediate is 1,953 MiB. At N = 10,000 it would be 47.7 GiB, against 0.75 GiB for the `(N, N)` answer. The expansion `|a|^2 + |b|^2 - 2 a.b` computed the same distances in 3.7 ms against 191 ms (largest difference 4e-14), but it subtracts nearly equal numbers, so [cancellation](#subtraction-is-where-precision-goes) can bite on close points. For the K nearest, `np.argpartition(dist_sq, K + 1, axis=1)` finds them without a full sort (26 ms against 134 ms for `argsort` here, with the same neighbour sets) but returns them unordered. Each point is its own nearest neighbour, which is why the book asks for K + 1. A Python double loop over 300 points took 247 ms against 4.9 ms for broadcasting plus `argpartition`. These are single-machine timings, not benchmarks.
 
 ## Pitfalls
 

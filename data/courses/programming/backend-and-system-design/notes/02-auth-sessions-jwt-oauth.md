@@ -1,4 +1,5 @@
 ---
+imported_hash: 5338546d23c90803
 title: '2 — Auth: sessions, JWT and OAuth'
 summary: '"Auth" covers three separate questions, and most bugs come from answering one and assuming the others.'
 order: 3

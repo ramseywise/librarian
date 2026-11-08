@@ -1,4 +1,5 @@
 ---
+imported_hash: 9409e5c2bca17c4c
 title: 2 — Data structures
 summary: 'A Python list holds a C array of pointers plus two numbers: the length, and how many slots are allocated.'
 order: 3

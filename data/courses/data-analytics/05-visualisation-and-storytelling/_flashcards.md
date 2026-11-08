@@ -86,22 +86,22 @@ cards:
   lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
 - front: Where do permissions, field lists and row caps belong, and why?
   back: Permissions, field lists and row caps belong on the server, where a caller cannot go around them.
-  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
 - front: Which is heavier, 50,000 customers as JSON or all of plotly.js, and what does that imply?
   back: All 50,000 customers gzip to 1,419 KB, about the same as all of plotly.js at 1,449 KB, so fix the data before choosing a library.
-  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
 - front: Why not refit the clustering when a user filters?
   back: The objection to refitting is meaning rather than speed, so publish one table and let the filter select rows from it.
-  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
 - front: When do you reach for WebGL, and when for datashader?
   back: Use WebGL from about 10,000 points, measured on one M4 Pro, and datashader past about a million or to keep the data on a server. Often you need neither.
-  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
 - front: How should you colour customer segments in Plotly?
   back: Map each segment name to a fixed colour and a second encoding, so nothing depends on order or on colour alone.
-  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
 - front: Why does Fernhill's CRM dashboard belong on the Python app route?
   back: A few internal CRM users make this a Python app job. The React version earns its code when the views reach customers.
-  lesson: data-analytics/05-visualisation-and-storytelling/notes/06-dashboard-stacks-from-python-to-frontend
+  lesson: data-analytics/05-visualisation-and-storytelling/notes/06b-dashboard-data-path-points-colour-and-worked-example
 - front: What are the rules of thumb for visualisation and storytelling?
   back: Name the question, show it honestly, remove the clutter, and state the decision you want in one sentence.
   lesson: data-analytics/05-visualisation-and-storytelling/notes/05-dashboards-and-storytelling

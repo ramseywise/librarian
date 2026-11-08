@@ -1,7 +1,8 @@
 ---
+imported_hash: a95e0340cb9029a7
 title: 'Lab: a LangGraph support-triage graph (TypeScript)'
 summary: The LangGraph.js twin of the Python lab. It reads the same tickets.json and kb.json from that folder, has the same nodes and edges, and prints the same report.
-order: 19
+order: 21
 kind: reading
 section: Practice / Langgraph graph ts
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/practice/langgraph-graph-ts/README.md

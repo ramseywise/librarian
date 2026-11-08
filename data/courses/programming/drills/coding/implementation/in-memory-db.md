@@ -1,4 +1,5 @@
 ---
+imported_hash: 1ab4f42a6722d983
 title: In-memory database
 summary: Design an in-memory SQL-like database (cf.
 order: 234

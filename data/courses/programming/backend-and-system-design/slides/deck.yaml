@@ -1,3 +1,4 @@
+# imported_hash: 614db8d8bbe3c846
 # Lecture deck for programming/backend-and-system-design. Covers notes/01-10.
 # Build: make slides PILLAR=programming/backend-and-system-design [PREVIEW=1]
 # Spec: .claude/skills/slides/references/deck-spec.md

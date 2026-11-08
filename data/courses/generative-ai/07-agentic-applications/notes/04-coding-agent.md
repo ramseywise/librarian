@@ -1,4 +1,5 @@
 ---
+imported_hash: aacaf4a45f4f39de
 title: '4 — A Coding Agent: Read, Edit, Test, Inside Limits'
 summary: A coding agent is the application where the loop from the earlier notes meets a machine that can say no.
 order: 5

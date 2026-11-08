@@ -1,7 +1,8 @@
 ---
+imported_hash: 48f46471f7530ac5
 title: Ex1
 summary: 'def computeCost(mytheta,X,y): #Cost function """ theta_start is an n- dimensional vector of initial theta guess X is matrix with n- columns and m- rows y is a matrix with m- rows and 1 column """ #note to self: .shape is (rows, columns) ret…'
-order: 31
+order: 32
 kind: notebook
 section: Practice / Ng machine learning / Ex1
 source: learn-ai-engineering/data-science/01-classical-ml/practice/ng-machine-learning/ex1/ex1.ipynb

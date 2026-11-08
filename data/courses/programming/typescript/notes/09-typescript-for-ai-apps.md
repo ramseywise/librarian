@@ -1,4 +1,5 @@
 ---
+imported_hash: 279e137ac19bd76e
 title: 9 — TypeScript for AI Apps
 summary: 'const client = new Anthropic(); // reads ANTHROPIC_API_KEY const message = await client.messages.create({ model: ''claude-opus-5-5'', max_tokens: 16000, thinking: { type: ''adaptive'' }, // the model decides how much to think messages: [{ role:…'
 order: 10

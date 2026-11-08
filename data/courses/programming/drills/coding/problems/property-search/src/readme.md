@@ -1,7 +1,8 @@
 ---
+imported_hash: fe874e6109f3a9c0
 title: AI Property Search
 summary: A semantic search system for real estate properties using FastAPI, FAISS, and sentence transformers.
-order: 254
+order: 257
 kind: reading
 section: Coding / Problems / Property search / Src
 source: learn-ai-engineering/programming/drills/coding/problems/property-search/src/README.md

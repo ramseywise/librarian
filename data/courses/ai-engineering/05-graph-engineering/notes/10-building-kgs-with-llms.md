@@ -1,7 +1,8 @@
 ---
+imported_hash: f2b86b1c35dac89c
 title: '10 — Building KGs with LLMs: Extraction and Resolution'
 summary: An LLM will turn any document into triples that look right, and that is the danger.
-order: 11
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/10-building-kgs-with-llms.md

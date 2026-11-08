@@ -1,4 +1,5 @@
 ---
+imported_hash: 061a1e795f3988d9
 title: Retry Decorator — Live Coding Walkthrough
 summary: 'def test_succeeds_on_first_try(): """No retries needed — function returns immediately.""" call_count = 0'
 order: 33

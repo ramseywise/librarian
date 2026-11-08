@@ -1,3 +1,4 @@
+# imported_hash: 150c58fb11e253b2
 # Lecture on notes/01-statistical-foundations.md, in the note's order.
 # make slides PILLAR=data-science/01-classical-ml LECTURE=01-statistical-foundations STRICT=1 PREVIEW=1
 deck:
@@ -13,7 +14,7 @@ deck:
 lecture:
   covers: [data-science/01-classical-ml/notes/01-statistical-foundations.md]
   requires:
-    - data-science/01-classical-ml/readme.md
+    - data-science/01-classical-ml/README.md
     - data-analytics/02-probability-and-statistics/notes/02-probability-foundations.md
   next: [data-science/01-classical-ml/notes/02-supervised-learning.md]
   related:
@@ -219,7 +220,7 @@ parts:
         title: More complexity first helps, then hurts
         recall: What happens to test accuracy as complexity rises?
         kicker: "Müller and Guido, ch. 2"
-        image: ../../assets/mueller-guido-overfitting-underfitting-cartoon.png
+        image: ../../assets/sources/images/mueller-guido-overfitting-underfitting-cartoon.png
         caption: "Image source: Müller and Guido, Introduction to Machine Learning with Python, ch. 2."
         bullets:
           - "**Too simple:** underfits, and both scores are low."
@@ -531,7 +532,7 @@ parts:
         title: The first application classifies iris flowers
         recall: How large are the iris data and the default split?
         kicker: "Müller and Guido, ch. 1"
-        image: ../../assets/mueller-guido-iris-petal-sepal.png
+        image: ../../assets/sources/images/mueller-guido-iris-petal-sepal.png
         caption: "Image source: Müller and Guido, Introduction to Machine Learning with Python, ch. 1."
         bullets:
           - "**150 flowers**, four measurements."
@@ -625,7 +626,7 @@ parts:
         title: Which estimators have which methods
         recall: Which estimators predict, and which transform?
         kicker: "Müller and Guido, ch. 8"
-        image: ../../assets/mueller-guido-api-table.png
+        image: ../../assets/sources/images/mueller-guido-api-table.png
         caption: "Image source: Müller and Guido, Introduction to Machine Learning with Python, ch. 8."
         takeaway: Classifiers, regressors and some clusterers predict, preprocessors and feature extractors transform, and all of them fit.
         source: notes/01-statistical-foundations.md

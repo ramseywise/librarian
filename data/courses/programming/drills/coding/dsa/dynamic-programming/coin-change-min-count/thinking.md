@@ -1,4 +1,5 @@
 ---
+imported_hash: 5f530f839339a9a6
 title: Coin Change — First-Principles Thinking Guide
 summary: ''
 order: 147

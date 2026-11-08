@@ -1,7 +1,8 @@
 ---
+imported_hash: 08842bcf81bd1534
 title: generate dataset
 summary: X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
-order: 23
+order: 24
 kind: notebook
 section: Practice / Intro to ml in python
 source: learn-ai-engineering/data-science/01-classical-ml/practice/intro-to-ml-in-python/02-supervised-learning.ipynb

@@ -1,3 +1,4 @@
+# imported_hash: 69ec49a63d221157
 # Warehouse, lakehouse and streaming lecture deck. Covers notes 01-05, including 01b.
 # Build: make slides PILLAR=data-engineering/04-warehouse-lakehouse-streaming STRICT=1 PREVIEW=1
 # Running example: one year of New York taxi trips, synthetic for the local runs.

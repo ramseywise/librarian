@@ -1,4 +1,5 @@
 ---
+imported_hash: 94005d7170b468e0
 title: 2 — Prompt Injection and Jailbreaks
 summary: A help-centre page in Harbour's index has been edited by a contractor's compromised account, and it now contains a sentence addressed to the assistant instead of the reader.
 order: 3

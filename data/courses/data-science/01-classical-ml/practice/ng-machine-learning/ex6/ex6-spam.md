@@ -1,7 +1,8 @@
 ---
+imported_hash: 714185eca8bf67db
 title: This is one possible porter stemmer
 summary: vocab_dict = getVocabDict() email_contents = open( 'data/emailSample1.txt', 'r' ).read() test_fv = email2FeatureVector( email_contents, vocab_dict )
-order: 37
+order: 38
 kind: notebook
 section: Practice / Ng machine learning / Ex6
 source: learn-ai-engineering/data-science/01-classical-ml/practice/ng-machine-learning/ex6/ex6_spam.ipynb

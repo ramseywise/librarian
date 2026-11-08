@@ -1,3 +1,4 @@
+# imported_hash: c9bc8cc7eb4573a8
 # Multimodal Engineering lecture deck. Covers notes 01-07.
 # Build: make slides PILLAR=ai-engineering/08-multimodal-engineering STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md

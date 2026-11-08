@@ -1,7 +1,8 @@
 ---
+imported_hash: f9f204cf635c647d
 title: Using theta initialized at [1; 1], and lambda = 1, you should expect to
 summary: import warnings warnings.filterwarnings('ignore')
-order: 35
+order: 36
 kind: notebook
 section: Practice / Ng machine learning / Ex5
 source: learn-ai-engineering/data-science/01-classical-ml/practice/ng-machine-learning/ex5/ex5.ipynb

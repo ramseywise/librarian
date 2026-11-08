@@ -1,4 +1,5 @@
 ---
+imported_hash: ce9a30c9e96e6495
 title: 5 — Matching and Weighting
 summary: Fernhill Home opened a loyalty club on 1 July 2024, and customers chose whether to join.
 order: 6
@@ -101,7 +102,7 @@ Estimated propensity: treated 0.024 to 0.999, control 0.012 to 0.997
 Treated above the highest control score: 29; controls with score over 0.9: 40; treated with score over 0.9: 970
 ```
 
-![Histogram of estimated log odds of joining. Non-joiners peak near minus two, joiners spread from zero to six, and few non-joiners exist above log odds of three.](../assets/causal-club-overlap.png)
+![Histogram of estimated log odds of joining. Non-joiners peak near minus two, joiners spread from zero to six, and few non-joiners exist above log odds of three.](../assets/sources/images/causal-club-overlap.png)
 
 The chart is the warning for the rest of the chapter. There are 970 joiners with a score above 0.9, and only 40 non-joiners to stand in for them. Any method that keeps all the joiners must lean hard on those 40, and any method that does not lean on them has to drop joiners, which changes the question. [Hernán and Robins (*What If*, §15.4)](https://miguelhernan.org/whatifbook) note the catch: "individuals do not come with a propensity score tattooed on their forehead", so when you restrict, use real variables such as age to say who is left.
 
@@ -208,7 +209,7 @@ Propensity weights                  3746           5710            107          
 Entropy balancing                   3746           5710            267                 0.043        0.000          0
 ```
 
-![Love plot of standardised differences for ten covariates. Before adjustment most sit far outside the 0.1 lines; after CEM, propensity matching with replacement and entropy balancing nearly all sit at zero.](../assets/causal-club-love-plot.png)
+![Love plot of standardised differences for ten covariates. Before adjustment most sit far outside the 0.1 lines; after CEM, propensity matching with replacement and entropy balancing nearly all sit at zero.](../assets/sources/images/causal-club-love-plot.png)
 
 This chart is a **Love plot**: one row per covariate and one mark per design, with the before-and-after visible at a glance. Read the table with it, because it shows the trade that the plot hides.
 
@@ -294,7 +295,7 @@ Entropy balancing (ATE)                  3.36        0.15            0.69   3.42
 Entropy balancing (ATT)                  3.59        0.30            1.36   3.82
 ```
 
-![Range and mean gap from the truth for eight ATT designs over twenty datasets. All means sit above zero at about three to four pounds, except propensity weights at about eight with a range from minus eight to plus twenty-three.](../assets/causal-club-estimates.png)
+![Range and mean gap from the truth for eight ATT designs over twenty datasets. All means sit above zero at about three to four pounds, except propensity weights at about eight with a range from minus eight to plus twenty-three.](../assets/sources/images/causal-club-estimates.png)
 
 Four things stand out.
 

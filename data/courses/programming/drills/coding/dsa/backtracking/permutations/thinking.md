@@ -1,4 +1,5 @@
 ---
+imported_hash: 438a3074202786f5
 title: Permutations — First-Principles Thinking Guide
 summary: ''
 order: 142

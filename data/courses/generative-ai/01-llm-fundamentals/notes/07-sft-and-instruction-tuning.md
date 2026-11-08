@@ -1,7 +1,8 @@
 ---
+imported_hash: 0a030c60d0d8eac7
 title: 7 — Continued pretraining and supervised fine-tuning
 summary: The ticket assistant now has a base model, which continues text and answers nothing.
-order: 8
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/01-llm-fundamentals/notes/07-sft-and-instruction-tuning.md
@@ -20,7 +21,7 @@ To add knowledge, run more pretraining: the same next-token loss on raw, unlabel
 The recipe scales to LLMs at a small fraction of the original cost:
 
 - **CodeGen** ([arXiv:2203.13474](https://arxiv.org/abs/2203.13474) (Nijkamp et al., ICLR 2023)) chained the stages. It trained models from 350M to 16.1B parameters first on the Pile (355B natural-language tokens plus 32B of code), then on 119B tokens of code in six languages, then on 72B tokens of Python only. At 16.1B, HumanEval pass@1 went from 14.2 to 18.3 to 29.3 across the three stages, level with Codex-12B (28.8). The same paper built a multi-turn benchmark of 115 problems split into at least three prompts each. Asking in turns beat one concatenated prompt (47.3 vs 38.7 pass rate at 16.1B), but not on the easiest problems, where the gain vanished at 6.1B and above.
-- **Code Llama** ([arXiv:2308.12950](https://arxiv.org/abs/2308.12950) (Rozière et al., 2023, preprint)) started from Llama 2 and trained on 500B tokens (1T for the 70B): 85% code, 8% natural language about code and 7% general text kept to limit forgetting. Starting from Llama 2 paid off. A 7B trained from scratch on the same mix ended at the loss Code Llama 7B had reached about 240B tokens earlier, and the gap was still widening. On Python, Code Llama 7B roughly matched Llama 2 70B (HumanEval 33.5 vs 30.5). A further 100B Python-heavy tokens added 4.3–8.3 points of HumanEval pass@1. Infilling training cost little: 0.6 points at 7B and 1.1 at 13B, averaged over HumanEval and MBPP pass@1/10/100. The long-context stage cost 0.52 HumanEval points and 1.9 MBPP points on short prompts (RoPE details in [chapter 01](01-tokens-and-embeddings.md#embeddings-and-position)). The evaluations are Meta's own.
+- **Code Llama** ([arXiv:2308.12950](https://arxiv.org/abs/2308.12950) (Rozière et al., 2023, preprint)) started from Llama 2 and trained on 500B tokens (1T for the 70B): 85% code, 8% natural language about code and 7% general text kept to limit forgetting. Starting from Llama 2 paid off. A 7B trained from scratch on the same mix ended at the loss Code Llama 7B had reached about 240B tokens earlier, and the gap was still widening. On Python, Code Llama 7B roughly matched Llama 2 70B (HumanEval 33.5 vs 30.5). A further 100B Python-heavy tokens added 4.3–8.3 points of HumanEval pass@1. Infilling training cost little: 0.6 points at 7B and 1.1 at 13B, averaged over HumanEval and MBPP pass@1/10/100. The long-context stage cost 0.52 HumanEval points and 1.9 MBPP points on short prompts (RoPE details in [chapter 01b](01b-position-encodings-and-context-extension.md#position-schemes-and-length-extension)). The evaluations are Meta's own.
 - **Minerva** ([arXiv:2206.14858](https://arxiv.org/abs/2206.14858) (Lewkowycz et al., NeurIPS 2022)) did the same for maths, and showed that the formatting of the domain text has to survive cleaning. It continued PaLM on 38.5B tokens: arXiv papers, and web pages picked because their HTML contained MathJax or `<math`, with the LaTeX kept rather than stripped as ordinary HTML cleaning would; 5% general text limited forgetting. **At 540B, MATH accuracy went from PaLM's 8.8% to 33.6% greedy, and to 50.3% with a majority vote over 64 samples.** Fine-tuning on MATH's training set afterwards gave the 8B model nothing (14.1% before, 12.9–13.4% after). Checked by hand on 100 MATH problems, about 8% of the 62B model's correct greedy answers had wrong reasoning, rising to 30% on the hardest level, and the authors found no sign that the test problems had been memorized. The paper has no run with the LaTeX stripped, so the value of keeping it is argued, not measured.
 - **Llemma** ([arXiv:2310.10631](https://arxiv.org/abs/2310.10631) (Azerbayev et al., ICLR 2024)) repeated Minerva's recipe on open data, starting from Code Llama. Proof-Pile-2 is 55B tokens: 29B of arXiv, 15B of maths web pages and 11B of maths code, mixed 95% with 5% general text and code. The 7B model trained on 200B tokens for about 23,000 A100-hours. **On 4-shot MATH, Llemma 7B scored 18.0% against Code Llama 7B's 4.5% and Minerva 8B's 14.1%.** At 34B it scored 25.0%, short of Minerva 62B's 27.6%, and the two were level with majority voting (43.1% vs 43.4%). A 30-gram search matched about 7% of MATH test problems in the training data, but accuracy on those problems was no higher. There is no from-scratch comparison, and the mixture was picked on short runs by perplexity on MATH's training set.
 - **ChipNeMo** ([arXiv:2311.00176](https://arxiv.org/abs/2311.00176) (Liu et al., 2023-11, preprint)) continued LLaMA 2 on 24B tokens of NVIDIA's internal chip-design documents and code, then ran SFT. For the 7B model, DAPT took 2,620 A100-hours and SFT 90, against 184,320 for the original pretraining: under 1.5% extra. ChipNeMo-70B beat GPT-4 on two of three internal tasks (an engineering-assistant chatbot and EDA script generation). DAPT through LoRA adapters left a significant accuracy gap against full-parameter DAPT. The benchmarks are NVIDIA's own and unreleased.
@@ -40,10 +41,13 @@ SFT continues training on curated examples of the behaviour you want. The exampl
 |---|---|---|
 | Change to the model | Replace the output head with a small one (e.g. 2 classes); usually train only the last block(s) and the head | None; keep the language-model head |
 | Data | Labeled examples (spam / not spam) | Instruction–response pairs in a fixed template (Alpaca-style) |
-| Loss | [Cross-entropy](06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) on the last token's class logits | Next-token loss on the response; padding and usually the prompt tokens are masked out |
+| Loss | [Cross-entropy](06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) on the last token's class logits | Next-token loss on the response; padding and usually the prompt tokens are masked out (*Foundations of LLMs*, ch. 4: log Pr(x,y) = log Pr(x) + log Pr(y|x), and SFT drops the first term) |
 | Evaluation | Accuracy | Hard; Raschka scores responses with a larger LLM as judge |
 
 *Building AI Agents* (ch. 2) shows the classification route on a small decoder, with a linear head on the last token's hidden state; it is the same pattern as *LLMs from Scratch* ch. 6.
+
+![Forward and backward pass of supervised fine-tuning on one sequence of three input tokens and two output tokens: the forward pass runs as usual, and in the backward pass the loss on the input tokens is zero while only the output tokens carry loss](../assets/sources/images/xiao-foundations-llms-fig4-2.png)
+*Image Source: Xiao & Zhu, [Foundations of Large Language Models](https://arxiv.org/abs/2501.09223) (2025), Fig. 4.2*
 
 The *LLM Engineer's Handbook* (ch. 5) adds the practical side: building an instruction dataset from your own documents, deduplication, using an LLM to generate and filter pairs, chat templates, and choosing between full fine-tuning, LoRA and QLoRA by GPU budget.
 
@@ -52,8 +56,14 @@ The *LLM Engineer's Handbook* (ch. 5) adds the practical side: building an instr
 The evidence for the rule:
 
 - **Little data, mostly format.** Flan-PaLM's instruction tuning used 1.4B tokens, 0.2% of its 780B pretraining tokens, and most of its gain came from the first 282 of 1,836 tasks. The authors' reading is that the model was learning to express knowledge it already had ([arXiv:2210.11416](https://arxiv.org/abs/2210.11416) (Chung et al., JMLR 2024)). LIMA's *Superficial Alignment Hypothesis* says the same from 1,000 examples ([arXiv:2305.11206](https://arxiv.org/abs/2305.11206) (Zhou et al., NeurIPS 2023)).
+- **How big the sets are.** Xiao & Zhu cite the FLAN collection at 1,836 tasks and 15 million samples, against LIMA's 1,000 curated examples that left a LLaMA 65B competitive with models tuned on far more. They record no benchmark numbers for LIMA (*Foundations of LLMs*, ch. 4, 4.2.3). Early open sets (over 100 NLP tasks, more than a million samples) were mostly academic tasks, which is one reason they generalised to chat less well than small curated sets.
+- **Where data comes from.** Manual routes turn existing NLP datasets into prompt templates, mine natural question–answer pages, or pay annotators. Automatic routes are self-instruct (a few seed tasks prompt a model to write new instructions, then inputs and outputs, then filter), input inversion (take good outputs and have a model write the instruction that would produce them) and evol-instruct (rewrite instructions to be harder) (*Foundations of LLMs*, ch. 4, 4.2.2).
+- **A weak teacher can still help a strong student.** Burns et al.'s weak-to-strong setup fine-tunes a strong model on labels from a weaker one. The performance gap recovered is PGR = max{0, (P_w2s − P_weak)/(P_ceiling − P_weak)}, and the book reports it near 0.8 on 22 NLP classification tasks, with GPT-2-level supervision on a GPT-4-level model. It is reported from that paper and it covers classification, not open-ended generation, and the authors say it needs more investigation (*Foundations of LLMs*, ch. 4, 4.2.5).
 - **New facts make it hallucinate.** In a controlled study on PaLM 2-S closed-book QA, examples the model didn't already know were fit far more slowly than known ones. **As they were fit, test accuracy fell linearly**, so the model got worse at using what it knew. Early stopping, or relabelling unknown answers "I don't know", avoided most of the damage ([arXiv:2405.05904](https://arxiv.org/abs/2405.05904) (Gekhman et al., EMNLP 2024)).
 - **Not much semantics is needed either.** The instruction-tuning survey ([arXiv:2308.10792](https://arxiv.org/abs/2308.10792) (Zhang et al., 2023-08, preprint)) collects the critique. In Kung and Peng (2023), models tuned on task definitions stripped of meaning, or on examples with *wrong* input–output pairs, scored close to models tuned on the real ones.
+- **Instructions help on tasks never seen.** Natural Instructions collected 61 tasks from 9 datasets, each with a definition, positive and negative examples. A fine-tuned BART-base (140M) given the full instruction scored ROUGE-L 32 on held-out tasks against 13 with none, and 8 points above un-fine-tuned GPT-3 (davinci-instruct, 24). The task definition plus the positive examples alone gave the best score (33, under the same random split). When a whole category (question generation) was held out, GPT-3 led (33 against 17) ([arXiv:2104.08773](https://arxiv.org/abs/2104.08773) (Mishra et al., ACL 2022)). Only BART-base was tuned, so the model comparison mixes size with method.
+
+In a multi-turn dialogue you do not need one pass per turn. Mask the user turns and grade every assistant turn in a single forward pass, since one causal pass already conditions each turn on all earlier ones (*Foundations of LLMs*, ch. 4, 4.2.1, Eq. 4.5–4.7). The book's remedies for forgetting are a smaller learning rate, early stopping, regularisation toward the pretrained weights and diverse data.
 
 Fine-tuning can also erase what pretraining taught. The effect shrinks with scale and can be offset by replaying old data. When PaLM-E unfroze its LLM for multimodal training, its language-generation score dropped by 87.3% (relative) at 12B but by only 3.9% at 562B ([arXiv:2303.03378](https://arxiv.org/abs/2303.03378) (Driess et al., 2023-03)). Qwen-VL mixed pure-text samples into its multimodal training and held MMLU at 50.7, against 49.9 for the LLM it started from ([arXiv:2308.12966](https://arxiv.org/abs/2308.12966) (Bai et al., 2023-08)).
 
@@ -111,6 +121,12 @@ ignore_index loss 11.6498 == loss on graded positions only 11.6498
 
 The last token graded is the end-of-text marker, which is how the model learns to stop. Without it, you get a model that answers and then carries on writing. The prompt positions cost nothing here because the gradient only comes from the graded ones.
 
+![Batching steps](../assets/sources/images/build-a-large-language-model-from-scratch-fig7-6.png)
+*Image Source: Raschka, *Build a Large Language Model (From Scratch)* (Manning, 2024), Fig. 7-6*
+
+![Masking instruction tokens](../assets/sources/images/build-a-large-language-model-from-scratch-fig7-13.png)
+*Image Source: Raschka, *Build a Large Language Model (From Scratch)* (Manning, 2024), Fig. 7-13*
+
 Classification fine-tuning has a different change: you swap the head. This is the entire difference between a language model and a two-class ticket classifier, with the sizes printed:
 
 ```python
@@ -142,6 +158,9 @@ language model, all trainable:   91,370,496
 new head only:                        1,538
 head plus last block:             7,089,410
 ```
+
+![Replacing the output layer with a two-unit classification head](../assets/sources/images/build-a-large-language-model-from-scratch-fig6-9.png)
+*Image Source: Raschka, *Build a Large Language Model (From Scratch)* (Manning, 2024), Fig. 6-9*
 
 Which of these routes you choose follows from what you are teaching:
 

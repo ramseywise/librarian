@@ -24,6 +24,9 @@ cards:
 - front: What failure does a suite of only positive cases hide?
   back: Without negative cases, a change that calls tools more often looks like better recall while precision quietly breaks.
   lesson: generative-ai/08-eval/notes/02-defining-correct
+- front: Name three tactics a public benchmark uses against memorization.
+  back: A public benchmark protects its answers by design, because a canary only catches leaks and a public set cannot be both open and closed.
+  lesson: generative-ai/08-eval/notes/03b-splits-contamination-and-public-benchmarks
 - front: Why does a row carry labels and eligibility as well as a reference?
   back: A golden row carries a reference, labels for slicing, eligibility per gate, provenance and the graders that apply to it.
   lesson: generative-ai/08-eval/notes/03-eval-datasets
@@ -42,6 +45,9 @@ cards:
 - front: Name three judge biases and the fix for each.
   back: Once biases are controlled, strong judges agree with humans about as often as humans agree with each other, over 80%.
   lesson: generative-ai/08-eval/notes/05-llm-as-judge
+- front: Why does Elo give different ratings for the same votes, and what do you publish instead?
+  back: Use Elo for a live leaderboard and a Bradley–Terry fit with bootstrap intervals for any ranking you publish or gate on.
+  lesson: generative-ai/08-eval/notes/05b-pairwise-ranking-elo-and-bradley-terry
 - front: What are the three grader states, and which ones may block a release?
   back: An uncalibrated judge never gates a release, and a threshold change without fresh evidence moves it back to experimental.
   lesson: generative-ai/08-eval/notes/15-calibration-against-human-labels
@@ -62,10 +68,13 @@ cards:
   lesson: generative-ai/08-eval/notes/06-evaluating-agents
 - front: At p = 0.75 and k = 3, what are pass@k and pass^k, and which suits a support agent?
   back: 'Report pass^k for customer-facing agents: a 75% agent passes 98% with three retries, but all three times only 42% of the time.'
-  lesson: generative-ai/08-eval/notes/06-evaluating-agents
+  lesson: generative-ai/08-eval/notes/06b-components-trials-and-cost
 - front: What did a simple retry baseline show about the HumanEval leaderboard agents?
   back: Plot accuracy against cost with simple baselines, because similar accuracy can differ by almost two orders of magnitude in cost.
-  lesson: generative-ai/08-eval/notes/06-evaluating-agents
+  lesson: generative-ai/08-eval/notes/06b-components-trials-and-cost
+- front: What do you check first when a task fails every trial across several model versions?
+  back: Reset state for every trial, keep trials isolated, and check the task before the agent when it fails every time.
+  lesson: generative-ai/08-eval/notes/06c-agent-suites-and-environment-hygiene
 - front: What does an answer that is faithful but wrong tell you?
   back: Split a RAG eval by stage, so that a retrieval miss does not get counted as a bad answer and sent to the wrong team.
   lesson: generative-ai/08-eval/notes/07-evaluating-rag-and-grounding

@@ -1,7 +1,8 @@
 ---
+imported_hash: 63731c5b5bf3b948
 title: 'Lab: a tool server with sandboxing'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
-order: 12
+order: 14
 kind: reading
 section: Practice / Tool server sandbox
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/practice/tool-server-sandbox/README.md

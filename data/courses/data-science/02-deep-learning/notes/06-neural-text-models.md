@@ -1,4 +1,5 @@
 ---
+imported_hash: 1c3d559d58004676
 title: Neural text models
 summary: 'The intro-to-nlp TensorFlow track opened with tensors: rank (0 scalar, 1 vector, 2 matrix, 3+), dtype, shape, conversion with .numpy(), tf.argmax, tf.reduce_max, and the fact that tf.constant is immutable while tf.Variable can be assigned.'
 order: 9
@@ -80,6 +81,8 @@ Choices that matter:
 ## Four models on the same reviews
 
 An RNN reads one token at a time and carries a hidden state. The state is a running summary of everything read so far, and the last state (or a pooling of all states) feeds the classifier. Training unrolls the loop and backpropagates through time, so the gradient for an early word is a product of many Jacobians, which shrinks or explodes ([sequence models](05-sequence-models.md#vanishing-gradients-and-the-forget-gate-bias) measures that). The cells, in the same form as [the NumPy versions](05-sequence-models.md#the-recurrent-cell):
+
+For scale, Buduma's ch. 7 LSTM (30,000-word vocabulary, length 500, learned 512-d embedding, one 512-unit LSTM, dropout keep 0.5) reaches about 86% on 50,000 IMDb reviews, then overfits. Its 3-gram feed-forward POS tagger on frozen 300-d Google News vectors (900 inputs) passes 96% on CoNLL-2000, though its listing builds the test set from the train file (*Fundamentals of Deep Learning*, ch. 7).
 
 ```text
 RNN   h_t = tanh(W_x x_t + W_h h_{t-1} + b)        same weights at every step
@@ -314,7 +317,7 @@ What goes wrong, and why it matters for what follows:
 | Huge output layer | Word-level vocabulary | Character or subword tokens ([makemore](../../../generative-ai/09-llms-from-scratch/notes/02-makemore.md), BPE in [nanoGPT](../../../generative-ai/09-llms-from-scratch/notes/03-nanogpt.md)) |
 | Bidirectional generator | Uses the future at training time but not at sampling | Causal (left-to-right) models only |
 
-This is the same task, next-token prediction trained with cross-entropy, that makemore and nanoGPT solve with better architectures. The notebook's own settings were `Embedding(total_words, 100)`, `Bidirectional(LSTM(150))`, `to_categorical` and 10 epochs, and the translation table above covers those layers.
+This is the same task, next-token prediction trained with [cross-entropy](../../../generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity), that makemore and nanoGPT solve with better architectures. The notebook's own settings were `Embedding(total_words, 100)`, `Bidirectional(LSTM(150))`, `to_categorical` and 10 epochs, and the translation table above covers those layers.
 
 ## LSTMs beyond text: sequence regression
 
@@ -390,7 +393,7 @@ Instead of learning embeddings from 5,000 or 25,000 reviews, start from an encod
 | NNLM (`nnlm-en-dim128`) | 128-d, a feed-forward language model's embedding | Fine-tuning adds a few points |
 | Universal Sentence Encoder (`universal-sentence-encoder/2`) | 512-d, transformer/DAN trained on many tasks | Best: ~0.86 frozen, ~0.90 fine-tuned |
 
-![Accuracy of IMDb classifiers built on different TF-Hub sentence encoders, frozen vs fine-tuned](../assets/sarkar-universal-embeddings-classification.png)
+![Accuracy of IMDb classifiers built on different TF-Hub sentence encoders, frozen vs fine-tuned](../assets/sources/images/sarkar-universal-embeddings-classification.png)
 *Image source: Sarkar, Text Analytics with Python (2nd ed.), ch. 10, from the companion notebooks*
 
 The modern equivalent needs no TF 1.x estimator: encode, then fit a linear head. It uses encoders from `sentence-transformers`, the library released with Sentence-BERT ([arXiv:1908.10084](https://arxiv.org/abs/1908.10084) (Reimers and Gurevych, EMNLP 2019)); the two models here are newer than the paper. That paper finds frozen vectors with a logistic-regression head competitive across seven tasks (average SentEval accuracy, 10-fold cross-validation: 87.69 for its large NLI model, 84.94 for averaged BERT), but its authors say transfer is not the purpose of these embeddings and prefer full fine-tuning for a new task, which the next block tries. This block runs a small encoder and a larger one against the TF-IDF baseline as the labels grow. It takes a few minutes on a laptop GPU and longer on CPU:

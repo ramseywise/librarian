@@ -1,7 +1,8 @@
 ---
+imported_hash: 36320b396e68b182
 title: 4b — When more agents pay
 summary: Self-consistency samples several reasoning chains at nonzero temperature and returns the most common answer (arXiv:2203.11171 (Wang et al., ICLR 2023)).
-order: 9
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/03-agentic-foundations/notes/04b-when-more-agents-pay.md
@@ -25,9 +26,30 @@ The cleanest test holds the samples fixed. Given the same 8 candidates, asking t
 
 ---
 
+## Debate against the vote
+
+Debate is the oldest version of a team, and the early papers compared it with a single call more often than with a vote. Du et al. had N copies of gpt-3.5-turbo answer, then each read the others' answers and updated, for R rounds ([arXiv:2305.14325](https://arxiv.org/abs/2305.14325) (Du et al., ICML 2024)). With 3 agents and 2 rounds on 100 problems per task (524 people for biographies), **debate lifted GSM8K from 77.0 to 85.0, arithmetic from 67.0 to 81.8, and biography facts (524 computer scientists, ChatGPT judging against Wikipedia) from 66.0 to 73.8**. The paper's own vote baseline, with the same three agents, scored 81.0 on GSM8K and 69.0 on arithmetic. So on GSM8K half of debate's gain over one agent is what counting votes already gives, and only on arithmetic does debate clearly pay. One agent reflecting on itself lowered GSM8K (77.0 to 75.0). The cost is not reported (several generations per agent per round), debate is not matched to the vote on tokens, and the authors note that models can affirm a wrong consensus and lose early turns in long histories.
+
+![Three rounds of debate between two agents converging on the correct total of 595 gems](../assets/sources/images/du-multiagent-debate-fig2.png)
+
+*Image Source: Du et al., [Improving Factuality and Reasoning in Language Models through Multiagent Debate](https://arxiv.org/abs/2305.14325) (2023), Fig. 2*
+
+Liang et al. assign the roles instead of copying one prompt: an affirmative and a negative debater argue in turn from the shared history, and a judge ends the debate or extracts the answer ([arXiv:2305.19118](https://arxiv.org/abs/2305.19118) (Liang et al., EMNLP 2024)). On Counter-Intuitive AR (200 questions, GPT-3.5-Turbo, temperature 0, zero-shot), **debate scored 37.0% against 28.0 for chain of thought, 29.5 for self-consistency and 27.5 for self-reflection**, still below GPT-4 at 51.0. The self-consistency sample count is not stated, so this is not an equal-compute result. Their ablations match the sections above: on translation, more than two debaters made results worse, and an LLM judge may favour its own outputs.
+
+![Chain of thought, self-reflection and multi-agent debate on a counter-intuitive question about rolling circles](../assets/sources/images/liang-multi-agent-debate-fig2.png)
+
+*Image Source: Liang et al., [Encouraging Divergent Thinking in Large Language Models through Multi-Agent Debate](https://arxiv.org/abs/2305.19118) (2024), Fig. 2*
+
+ChatEval uses debate to *judge* rather than to answer ([arXiv:2308.07201](https://arxiv.org/abs/2308.07201) (Chan et al., ICLR 2024)). On FairEval (80 questions, ChatGPT, one run at temperature 0), two debating referees with different role prompts agreed with human labels 60.0% of the time against 53.8% for a single referee; GPT-4 went from 61.3% to 63.8%. **Giving both referees the same role prompt gave 53.8%, no better than one**, and extra turns brought no significant gain. One question is 1.25 points, and the paper does not compare against sampling one referee several times and voting. That role-diversity result fits the diversity-collapse result from Chen et al. below: the ingredient is different views, not more speakers.
+
+MedAgents puts the pattern in one domain ([arXiv:2311.10537](https://arxiv.org/abs/2311.10537) (Tang et al., Findings of ACL 2024)). Role-played experts for the question and the options write analyses, vote on a summary until all agree, and a decision maker answers. Across nine medical QA sets (300 random items each, zero-shot), **GPT-4 averaged 86.7 against 83.0 for zero-shot chain of thought with 5-sample self-consistency**, and GPT-3.5 72.1 against 70.9. The cost is about $1.41 per 100 questions and 40 s each, and the vote is not matched to that spend. On MedQA with GPT-3.5, six experts from different domains scored 64.1 and six of the same domain 59.2.
+
+
+---
+
 ## Teams converge
 
-The peer-to-peer row of [04's architecture table](04-multi-agent-design-patterns.md#architectures-p23) says to use debate "when you want diverse views". Chen et al. measured whether a group keeps its views apart ([arXiv:2604.18005](https://arxiv.org/abs/2604.18005) (Chen et al., 2026-04, preprint)). Three DeepSeek-V3 agents at temperature 0.7 wrote research proposals on 20 ICLR topics, 50 sessions per topic, under five persona structures. **Hierarchy collapsed diversity.** A flat group of junior personas reached a Vendi score of 8.08 across all proposals, and an interdisciplinary group of senior experts 4.65, the lowest. The expert group's judged quality was only 0.6 points higher on a 10-point scale (8.50 vs 7.88), with the same model as generator and judge. The cause is the structure, not seniority. In a flat topology, senior personas were slightly *more* diverse than junior ones (per-topic Vendi 3.02 vs 2.89). In leader-led groups, collaborators' turns sat close to the leader's (cosine 0.63 vs 0.44 in flat groups), and they wrote less than a third as many words. The ranking held at temperatures 0.3, 0.7 and 1.0.
+The peer-to-peer row of [04's architecture table](04c-planning-architectures-and-failure.md#architectures-p23) says to use debate "when you want diverse views". Chen et al. measured whether a group keeps its views apart ([arXiv:2604.18005](https://arxiv.org/abs/2604.18005) (Chen et al., 2026-04, preprint)). Three DeepSeek-V3 agents at temperature 0.7 wrote research proposals on 20 ICLR topics, 50 sessions per topic, under five persona structures. **Hierarchy collapsed diversity.** A flat group of junior personas reached a Vendi score of 8.08 across all proposals, and an interdisciplinary group of senior experts 4.65, the lowest. The expert group's judged quality was only 0.6 points higher on a 10-point scale (8.50 vs 7.88), with the same model as generator and judge. The cause is the structure, not seniority. In a flat topology, senior personas were slightly *more* diverse than junior ones (per-topic Vendi 3.02 vs 2.89). In leader-led groups, collaborators' turns sat close to the leader's (cosine 0.63 vs 0.44 in flat groups), and they wrote less than a third as many words. The ranking held at temperatures 0.3, 0.7 and 1.0.
 
 Two fixes helped, each in one place. Writing alone before discussing, which the authors take from group psychology's Nominal Group Technique (Delbecq et al., 1986, as they cite it), raised diversity over the standard discussion protocol under the naive persona. But a protocol where each agent sees the full history and speaks in turn scored higher still in the appendix, so cite blind writing only as better than the standard protocol. Mixing models (DeepSeek-V3, GPT-4o, Claude Sonnet 4) raised per-topic diversity 34% for the expert structure and did nothing for the flat one (−4%, not significant). Adding agents had diminishing returns: per-topic diversity rose only 3.09 to 3.32 from 3 to 7 agents. The study covers one open-ended task, so it says nothing about correctness tasks, tools or cost, and all quality scores come from an LLM judge.
 
@@ -69,7 +91,7 @@ Papers that add cognitive machinery to agents often find that the choice of mode
 
 MetaCogAgent has each of three prompted GPT-4 agents score its own confidence and hand a task off when that score falls below a threshold ([arXiv:2605.17292](https://arxiv.org/abs/2605.17292) (Wang and Shu, 2026-05, preprint)). It reports 82.4% on a 700-task benchmark the authors built, against 77.1% for a three-agent majority vote and 65.3% for a single agent. It used 1,382 API calls against 2,100 for the vote and 700 for the single agent. That is the shape of a useful design: spend extra calls only on the tasks the first agent doubts. But the evidence is thin. There was a single run, no matched self-consistency baseline at about 1,400 calls, the authors scored routing against their own labels, and the code is unreleased. Removing the delegation step brought it to 77.3%, level with the vote. For the restock agent, the lesson from both papers is the same: before you add a belief model or a confidence router, try the stronger model and the vote, and keep the mechanism only if it beats both at the same cost.
 
-The field's own map says the same. A 2026 survey of multi-agent systems ([arXiv:2605.14892](https://arxiv.org/abs/2605.14892) (Qi et al., 2026-05, preprint survey)) sorts designs by role, communication, orchestration and interaction, and concludes that **"no orchestration topology is universally superior"**. It notes that current systems "do not yet learn when specialization is necessary, when redundancy is beneficial, or when additional agents simply add noise". The survey runs no experiments. For the claim that adding agents doesn't guarantee gains, it points to a 2025 study by Kim et al. that this chapter has not read. For failure taxonomies, it points to the Cemri et al. study already covered in [04](04-multi-agent-design-patterns.md#why-multi-agent-systems-fail). So use it as a map of the design space, not as evidence.
+The field's own map says the same. A 2026 survey of multi-agent systems ([arXiv:2605.14892](https://arxiv.org/abs/2605.14892) (Qi et al., 2026-05, preprint survey)) sorts designs by role, communication, orchestration and interaction, and concludes that **"no orchestration topology is universally superior"**. It notes that current systems "do not yet learn when specialization is necessary, when redundancy is beneficial, or when additional agents simply add noise". The survey runs no experiments. For the claim that adding agents doesn't guarantee gains, it points to a 2025 study by Kim et al. that this chapter has not read. For failure taxonomies, it points to the Cemri et al. study already covered in [04](04c-planning-architectures-and-failure.md#why-multi-agent-systems-fail). So use it as a map of the design space, not as evidence.
 ---
 
 ## Running the comparison yourself
@@ -188,4 +210,4 @@ With the same nine calls, the vote reaches about 90% and the critique loop falls
 
 ## Next
 
-→ [05 — framework survey](05-framework-survey.md): the same patterns in AutoGen, CrewAI, LangGraph, ADK, the OpenAI Agents SDK, smolagents and Letta, plus MCP and A2A.
+→ [04c — planning, architectures and why teams fail](04c-planning-architectures-and-failure.md): planning strategies, Letta's shared-memory agents, the architecture catalogue and the failure modes of real multi-agent runs. Then [05 — framework survey](05-framework-survey.md).

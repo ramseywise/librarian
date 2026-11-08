@@ -1,4 +1,5 @@
 ---
+imported_hash: 64019e39986f4260
 title: 6 — Modules, packaging and tooling
 summary: Commit uv.lock. It pins every transitive version, so CI and teammates get the same environment.
 order: 17

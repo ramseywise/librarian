@@ -1,4 +1,5 @@
 ---
+imported_hash: 13ed847b7ee90400
 title: 4 — Estimation
 summary: Larkspur's finance lead asks for revenue per user from a sample of 4,000 users.
 order: 5
@@ -54,6 +55,8 @@ divide by n-1: mean 3.988  bias -0.012  var 7.98  mse 7.98
 
 Dividing by n lands low on average, because deviations from the sample mean are smaller than deviations from the true mean: the sample mean has already moved toward the data. Dividing by n − 1 corrects that and is unbiased. But the divide-by-n version has the *smaller* mean squared error in this example. Unbiasedness is one property, not the goal. That trade, accepting a little bias for less variance, is what regularisation and [shrinkage](03-distributions-and-sampling.md) do, and Efron and Hastie give it a chapter of its own through the James-Stein estimator (*Computer Age Statistical Inference*, ch. 7). At n in the thousands the n versus n − 1 question has no practical effect, but the reasoning returns everywhere.
 
+Which estimator is "best" depends on the loss, and *Think Stats* shows it with two small cases (ch. 8). Six draws from N(0, 1) have mean 0.155; replace the last by −213.8 (a misplaced decimal point) and the sample mean becomes −35.12, which is why robust estimators exist. For the total of three dice, 10.5 minimises mean squared error, but if only an exact hit scores, the maximum likelihood guess of 10 or 11 wins 1 time in 8. The locomotive problem makes the same point with an unknown count N of trains, having seen one numbered i. Every estimator has the form a·i: the MLE is i (a = 1), the minimum-MSE one is a = 3N / (2N + 1), which tends to 3/2, and the unbiased one is a = 2N / (N + 1), which tends to 2 (the book prints N − 1 in the denominator; solving E[a·i] = N with E[i] = (N + 1) / 2 gives N + 1). The estimator 2i − 1 makes the population mean equal the sample mean. They disagree because they encode different losses and implicit priors, and they converge only when the data swamp the prior. A Bayesian answer needs none of that choice: after seeing train 60 with a uniform prior on 1 to 200, the 90% credible interval for N is [63, 189] (5th and 95th percentiles of the posterior), which is honestly wide for one observation. The book also warns that a frequentist 90% interval does not mean a 90% chance the parameter is inside it.
+
 ## Maximum likelihood
 
 Maximum likelihood is the default recipe for building an estimator: pick the parameter value under which the observed data are most probable. For k buyers among N users, the Bernoulli log-likelihood is k log p + (N − k) log(1 − p). Setting its derivative to zero gives p̂ = k/N, the obvious answer. A numeric optimiser finds the same thing, and that is the route you take once the model has no closed form.
@@ -92,6 +95,14 @@ SE formula sqrt(p(1-p)/N) 0.00328
 
 Curvature and the familiar formula agree to five decimals. That is no coincidence, because the formula *is* the curvature worked out by hand. The same machinery gives standard errors in logistic regression, where no simple formula exists: the summary table in [chapter 6](06-regression-and-glms.md) reads them off the Hessian.
 
+The curvature is worth reading at the observed sample, not only on average. Efron and Hastie simulate 10,000 Cauchy-location samples of size 20 and group them by the observed information 1/I(x) (*Computer Age*, ch. 4). The MLE's variance given the information runs from about 0.05 to 0.20 across the groups, while the textbook unconditional value 1/(nI) is 0.10 for all of them. The sample's own curvature is the honest accuracy statement, and the average is not.
+
+![Variance of the MLE rises with the observed information bound 1/I(x); the dashed red line is the single unconditional variance](../assets/sources/images/computer-age-statistical-inference-fig4-2.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 4.2. Cauchy samples of size 20, 10,000 draws, grouped by quantile intervals of 1/I(x).*
+
+Two cautions come with MLE as the default. First, it is dangerous with many parameters: on 6,033 gene effects, plugging in the estimate of the largest gives 5.29, almost certainly an overestimate (*Computer Age*, ch. 4; [the winner's curse](05-hypothesis-testing.md#significant-results-exaggerate)). Second, nuisance parameters never help the MLE: with a bivariate normal, knowing the second mean exactly would cut the first mean's variance from σ₁₁/n to (σ₁₁/n)(1 − ρ²), so the interval you report for an effect that needs other fitted parameters is wider than the one-parameter formula says (*Computer Age*, ch. 5, note 5).
+
 MLE fits the shape you tell it to. For the lognormal order value from chapter 1:
 
 ```python
@@ -106,7 +117,7 @@ mu 3.519 (true 3.6), sigma 1.140 (true 1.1)
 implied mean order 64.59, sample mean 59.59
 ```
 
-The parameters are recovered well, and the model's implied mean order sits within 10% of the sample mean. The gap matters: the fitted mean relies on the assumption that the tail really is lognormal, and the sample mean makes no such assumption but rests on the few largest values. Maximum likelihood is the backbone of [GLMs](06-regression-and-glms.md), and adding a prior to it gives [the MAP estimate of the Bayesian pillar](../../04-bayesian-analysis/notes/01-bayesian-inference.md).
+The parameters are recovered well, and the model's implied mean order sits within 10% of the sample mean. The gap matters: the fitted mean relies on the assumption that the tail really is lognormal, and the sample mean makes no such assumption but rests on the few largest values. Maximum likelihood is the backbone of [GLMs](06b-logistic-regression-and-poisson-glms.md), and adding a prior to it gives [the MAP estimate of the Bayesian pillar](../../04-bayesian-analysis/notes/01-bayesian-inference.md).
 
 ## Standard errors and confidence intervals
 
@@ -125,6 +136,8 @@ revenue/user 2.681, SE 0.301, 95% CI [2.091, 3.272]
 ```
 
 So: 2.68 per user, plausibly 2.09 to 3.27. That is the finance answer, and it says 2.50 is fine as a plan and 3.20 is optimistic but not ruled out.
+
+Efron and Hastie's phrasing is a good one to borrow: report 54.25 ± 0.95, and the "±" tells the reader not to trust the digits after it (the mean of 211 kidney-filtration scores; *Computer Age*, ch. 2). The standard error is the inference and the mean is the algorithm. A regression slope has one too: its variance is σ²/Σ(xᵢ − x̄)², so it is pinned down better when the x values are spread out, and the formula assumes errors with a common variance that are uncorrelated (*ISLP*, ch. 3). The same chapter names the plug-in rule (estimate the variance from the sample and divide by n), the delta method, MLE theory, the bootstrap and pivotal statistics as the five ways to get a standard error when the population is unknown. For non-smooth statistics only the bootstrap is easy: on those 211 scores it gives 0.78 for a 25% Winsorized mean and 0.87 for the median, against 0.95 for the mean (B = 1,000). A standard error also inherits the model it was computed under. In a kidney-score regression on 157 people, the linear fit's standard error at age 80 is 0.42, while a bootstrap of a lowess curve on the same points gives 0.70, and the ±2 SE bars cover about 95% only if the straight line is right (*Computer Age*, ch. 1).
 
 ### What a 95% interval means
 
@@ -258,7 +271,13 @@ percentile 95% CI [1.47  2.239]
 delta 95% CI      [1.453 2.212]
 ```
 
-Bootstrap and delta agree on the SE (0.195 against 0.193). When they disagree, suspect the data before the theory. The delta method needed a page of algebra, and the bootstrap needed three lines, and would have worked just as well for a median or a 90th percentile, where the algebra gets far harder.
+Bootstrap and delta agree on the SE (0.195 against 0.193). When they disagree, suspect the data before the theory. The delta method needed a page of algebra, and the bootstrap needed three lines, and would have worked just as well for a median or a 90th percentile, where the algebra gets far harder. The book's example is the median of Lending Club applicant income: with R = 1,000 resamples the original median is $62,000, the bootstrap standard error about $209, and the resampled medians sit about $70 below the original, a bias estimate (*Practical Statistics*, ch. 2). The same chapter adds that the bootstrap does not rescue a small sample: it describes the sampling variability of the data you have, and cannot invent data you lack.
+
+Efron and Hastie's worked example is a correlation-like statistic with no tidy formula: the ratio of the largest eigenvalue to the sum of all five, for 22 students' scores on five tests, is 0.693. B = 2,000 resamples of the students give a standard error of 0.075, and the histogram has a long left tail, so a symmetric ±1.96 SE interval is unsafe. The leave-one-out jackknife gives 0.083, a parametric bootstrap from a fitted normal gives 0.070 (the authors distrust it because the data have an outlier), and on a smooth statistic such as the age-score correlation (−0.572, n = 157) jackknife and bootstrap agree at 0.058 (*Computer Age*, ch. 10). The jackknife breaks on unsmooth statistics: it badly overstates the variability of a lowess curve at age 25. On the number of resamples, B = 200 is usually enough for a standard error, and intervals want 1,000 to 2,000, since they use the tails. Resample each group separately in a two-group comparison. The AML versus ALL median difference of 0.235 has bootstrap SE 0.074, about 3.2 standard errors above zero, with 25 and 47 patients resampled within their own groups.
+
+![Bootstrap distribution of the eigenratio, 2,000 resamples; jackknife SE 0.083 against bootstrap SE 0.075](../assets/sources/images/computer-age-statistical-inference-fig10-2.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 10.2. The black line is the observed 0.693.*
 
 ### Percentile and BCa
 
@@ -281,6 +300,14 @@ BCa        [1.941, 3.802]
 ```
 
 Both intervals are asymmetric around 2.66, as the data demand, and a symmetric ±1.96 SE is not. On this kind of data, prefer BCa and verify by simulation when the decision matters.
+
+The cleanest numbers on how much BCa buys are Efron and Hastie's Poisson case: you observe a count of 10 and want a 95% interval for the mean (*Computer Age*, ch. 11). The exact interval is (5.08, 17.82). The standard interval 10 ± 1.96√10 is (3.80, 16.20), the percentile interval is (4.18, 16.73) and BCa is (5.02, 17.96). Measured by tail area, the standard interval's lower limit leaves 0.004 above 10 where 0.025 is nominal, and BCa leaves 0.023 on both sides. On the correlation of 0.498 between two scores (n = 22), the exact interval is (0.09, 0.75), the standard one is (0.17, 0.83), and BCa from a parametric bootstrap is (0.08, 0.75); the bootstrap histogram is long-tailed to the left, as in the figure below.
+
+![Nonparametric bootstrap of a sample correlation, 2,000 resamples, with 0.025 and 0.975 quantiles 0.118 and 0.758](../assets/sources/images/computer-age-statistical-inference-fig11-3.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 11.3. Observed correlation 0.498.*
+
+BCa applies three corrections: for non-normality, for bias (the constant z₀, from the share of resamples below the estimate) and for acceleration (a, how fast the standard error moves with the parameter, estimated from jackknife values). Set a = 0 and it becomes the BC interval, set z₀ = 0 and it is the percentile interval, and if the bootstrap histogram is normal it is the standard one. The standard interval's coverage error shrinks like 1/√n, so quadrupling n only halves it, while BCa's shrinks like 1/n (Hall's second-order accuracy). Two limits: BC and BCa are dependable only while |z₀| and |a| are around 0.2 or less (at z₀ = −1.01 the BC lower limit lands at the 0.000034 quantile), so computing z₀ is a cheap bias alarm even if you never use BCa; and z₀ itself needs B in the thousands, since its standard error is about 1.25/√B, or 0.028 at B = 2,000.
 
 ### When the bootstrap fails
 
@@ -311,6 +338,16 @@ row bootstrap SE 0.0272, cluster bootstrap SE 0.0474, true SE 0.0490
 **Dependent rows.** Resampling rows breaks the structure. Here the row bootstrap reports a standard error of 0.027, when the truth is 0.049; resampling whole users gives 0.047. Resample at the unit that was independent. That is usually the user, and for time series you need a block bootstrap, as in [the time-series pillar](../../../data-science/05-time-series-and-recommenders/readme.md).
 
 **Tiny samples and heavy tails.** The resamples can only contain what the sample has. If no whale happened to be sampled, none will appear in the resamples, and the interval has no way of knowing it is missing.
+
+### Estimating after you selected
+
+Everything above treats the model as fixed in advance. If the data chose the model, the interval has to include that choice. Efron and Hastie's cholesterol example has 164 pairs of compliance and cholesterol decrease, and Cp picks the polynomial degree. They bootstrap the whole recipe, selection included: at compliance −2 the 4,000 resamples give a standard error of 5.98 for the adaptive fit against 3.97 for a cubic fixed in advance. Averaged over the compliance range the ratio is 1.43, so a ±1.96 interval from the fixed-model formula is about 43% too short. Cp chose the straight line in 19% of the resamples, and those resamples drag the estimate down by about 10 units, which is why the adaptive histogram has a heavy left shoulder. Averaging the fit over bootstrap resamples (bagging) smooths the jumps and cuts the standard error by about 12% (*Computer Age*, ch. 20).
+
+![Histograms of bootstrap estimates for the adaptive and fixed-degree fits; the adaptive one is wider with a left shoulder](../assets/sources/images/computer-age-statistical-inference-fig20-4.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 20.4. 4,000 nonparametric bootstrap replications at adjusted compliance c = −2; standard errors 5.98 (adaptive) and 3.97 (fixed degree 3).*
+
+When the question is about many coefficients picked after looking, the formula route is Scheffé's: on the diabetes data (n = 442, 10 predictors) the 95% simultaneous intervals for all linear combinations are 2.19 times wider than the single-coefficient t intervals, a multiplier of 4.30 against 1.97 (*Computer Age*, ch. 20).
 
 ## Power and sample size, the estimation view
 

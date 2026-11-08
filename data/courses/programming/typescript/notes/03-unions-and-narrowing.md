@@ -1,4 +1,5 @@
 ---
+imported_hash: 9f90cd803f8a5dfc
 title: 3 — Unions and Narrowing
 summary: 'function show(id: ID): string { return id.toUpperCase(); // error: toUpperCase doesn''t exist on number }'
 order: 4

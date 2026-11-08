@@ -1,4 +1,5 @@
 ---
+imported_hash: b915c8ecb7f8be32
 title: Coding Challenge — Question Bank
 summary: These assume a browser editor with no network and no AI assistant — stdlib only.
 order: 25

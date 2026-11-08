@@ -9,12 +9,24 @@ cards:
 - front: What happened to the bandit agent at epsilon 0, 0.1 and 0.5?
   back: Some exploration is necessary but too much is wasteful, as 0.1 beat both 0 and 0.5 in this bandit.
   lesson: generative-ai/05-rl/notes/00-rl-in-plain-language
+- front: How fast does regret grow for explore-then-commit, UCB, MOSS and Exp3?
+  back: With fixed gaps regret grows like log n, in the worst case like √n, and no policy beats √n on every instance.
+  lesson: generative-ai/05-rl/notes/01c-bandit-algorithms
+- front: Why does LinUCB beat UCB when there are many arms?
+  back: LinUCB's regret depends on the feature dimension rather than the number of arms, provided the linear model holds.
+  lesson: generative-ai/05-rl/notes/01c-bandit-algorithms
+- front: Which bandit method fits drift, rankings, recommendations and sampling from a posterior?
+  back: Match the algorithm to the goal first; a regret rate for one goal says little about another.
+  lesson: generative-ai/05-rl/notes/01c-bandit-algorithms
+- front: What does Bayesian regret hide?
+  back: Bayesian regret is an average over a prior and does not bound any single instance.
+  lesson: generative-ai/05-rl/notes/01c-bandit-algorithms
 - front: How do dynamic programming, Monte Carlo and TD differ?
   back: TD learning updates from one step plus its own estimate, trading some bias for lower variance and online learning.
   lesson: generative-ai/05-rl/notes/01-rl-foundations
 - front: Why do Q-learning and SARSA take different paths in the cliff world?
   back: Q-learning learns the greedy policy off-policy, while SARSA learns the exploring policy on-policy and so avoids the cliff.
-  lesson: generative-ai/05-rl/notes/01-rl-foundations
+  lesson: generative-ai/05-rl/notes/01b-algorithm-families-td-and-dqn
 - front: What does the PPO clip do to the objective once the ratio passes 1 + epsilon?
   back: PPO clips the objective so a batch can be reused safely, but this removes an incentive rather than enforcing a hard bound.
   lesson: generative-ai/05-rl/notes/01-rl-foundations
@@ -38,7 +50,7 @@ cards:
   lesson: generative-ai/05-rl/notes/12-rlhf-failure-modes
 - front: Which methods need a reward model, a critic or paired data?
   back: Default to DPO with preference pairs and no verifier, and use GRPO when a checker can score new outputs online.
-  lesson: generative-ai/05-rl/notes/03-preference-optimization
+  lesson: generative-ai/05-rl/notes/03b-grpo-and-gspo
 - front: Which DPO variant answers which practical problem?
   back: DPO variants each change one thing, so choose by the problem you have, whether that's unpaired feedback, collapse, budget, length or missing labels.
   lesson: generative-ai/05-rl/notes/13-preference-variants
@@ -47,10 +59,10 @@ cards:
   lesson: generative-ai/05-rl/notes/03-preference-optimization
 - front: Why does an all-correct or all-wrong group teach GRPO nothing?
   back: GRPO normalizes rewards within a group of samples, so it needs no critic but learns nothing from groups that all pass or all fail.
-  lesson: generative-ai/05-rl/notes/03-preference-optimization
+  lesson: generative-ai/05-rl/notes/03b-grpo-and-gspo
 - front: Why does GSPO use a sequence-level ratio rather than GRPO's token ratio?
   back: GSPO matches the ratio to the unit that earns the reward, using one sequence-level ratio in place of per-token ratios.
-  lesson: generative-ai/05-rl/notes/03-preference-optimization
+  lesson: generative-ai/05-rl/notes/03b-grpo-and-gspo
 - front: On math, how did offline DPO compare with semi-online DPO and GRPO in Lanchantin et al.?
   back: Going online matters more than the specific loss on reasoning, since online DPO and GRPO both beat offline DPO on math.
   lesson: generative-ai/05-rl/notes/03-preference-optimization
@@ -72,9 +84,12 @@ cards:
 - front: How does a prior that is right 70% of the time change exploration on an 11-move puzzle?
   back: A language model starts with useful priors, so its exploration is targeted, whereas a tabular agent must discover everything by chance.
   lesson: generative-ai/05-rl/notes/05-post-training-for-agents
+- front: Which post-training stage added the most for Phi-4-Mini-Reasoning?
+  back: At 3.8B, bulk distillation has to come before a small curated SFT set or RL, and the stages together beat the 7B distilled baseline's 53.3.
+  lesson: generative-ai/05-rl/notes/05b-choosing-sft-rl-or-no-training
 - front: How did quality and diversity affect LIMA's 7B fine-tune on 2,000 examples?
   back: Data quality and diversity both raise results, so start with about 50 good examples and fix the setup if they show no gain.
-  lesson: generative-ai/05-rl/notes/06-data-and-environments
+  lesson: generative-ai/05-rl/notes/06b-dataset-engineering-for-post-training
 - front: Why can a simulated environment hurt, and how do you limit that?
   back: A distorted environment teaches strategies that die on deployment, so mix simulated rollouts with real ones and recalibrate regularly.
   lesson: generative-ai/05-rl/notes/06-data-and-environments
@@ -89,7 +104,7 @@ cards:
   lesson: generative-ai/05-rl/notes/07-reward-design-and-tool-calling
 - front: Why must environment tokens be masked out of the RL loss?
   back: Mask tool output from the loss, expect RL to cost far more than SFT, and consider denser signals like distillation when one scalar is too sparse.
-  lesson: generative-ai/05-rl/notes/07-reward-design-and-tool-calling
+  lesson: generative-ai/05-rl/notes/07b-rl-for-tool-calling-and-dense-signals
 - front: What did Yue et al. find about what RLVR adds at large k?
   back: RLVR raises pass@1 by concentrating on paths the base already has, and at large k the base can solve more problems.
   lesson: generative-ai/05-rl/notes/08-reasoning-rl-deepseek-r1

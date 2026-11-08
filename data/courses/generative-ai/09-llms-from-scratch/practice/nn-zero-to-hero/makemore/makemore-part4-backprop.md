@@ -1,4 +1,5 @@
 ---
+imported_hash: 5ae15d62e3c3d0ea
 title: there no change change in the first several cells from last lecture
 summary: 'def build_dataset(words): X, Y = [], []'
 order: 9

@@ -1,3 +1,4 @@
+# imported_hash: 700c9bc5f904c9c2
 # ML platform lecture deck. Covers notes 01-06.
 # Build: make slides PILLAR=data-engineering/06-ml-platform STRICT=1 PREVIEW=1
 # Running example: one taxi trip duration model, on synthetic rides, from notebook to monitored service.

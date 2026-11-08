@@ -1,4 +1,5 @@
 ---
+imported_hash: 02f39a96ea10a7b0
 title: Comp 1
 summary: Walk through what happens when you call place_ship(Ship('Cruiser', 3), row=0, col=0, horizontal=True).
 order: 94

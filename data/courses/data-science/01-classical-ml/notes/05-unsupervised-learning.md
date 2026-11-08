@@ -1,7 +1,8 @@
 ---
+imported_hash: 48b84dba7148f2db
 title: Unsupervised Learning
 summary: Blocks run top to bottom from this notes/ folder.
-order: 6
+order: 7
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/05-unsupervised-learning.md
@@ -39,7 +40,9 @@ Blocks run top to bottom from this `notes/` folder. Figures attributed to M&G ar
 
 **Scale train and test with the same fitted scaler.** Fitting a second `MinMaxScaler` on the test set maps it to [0, 1] independently and shifts every point relative to the training data: M&G's plot shows the test points visibly displaced. `fit` on train, `transform` both, inside a pipeline ([03](03-feature-engineering-and-pipelines.md#pipelines)).
 
-Effect on a kernel SVM on breast cancer: 0.63 unscaled, 0.97 with `MinMaxScaler`, 0.96 with `StandardScaler`.
+Effect on a kernel SVM on breast cancer (`SVC(C=100)`, `random_state=0`, scaler fitted on train only): 0.63 unscaled, 0.97 with `MinMaxScaler`, 0.96 with `StandardScaler` (*Introduction to ML with Python*, ch. 3, "Applying data transformations").
+
+K-means is just as sensitive. On Bruce and Bruce's loan-default table (six variables, $k=4$, `nstart=10`), clustering the raw columns gives sizes 55, 1,218, 7,686 and 14,177, and `annual_inc` and `revol_bal` drive the split: the 55-loan cluster has a mean income of 491,522 against 42,539 in the largest. After z-scoring the sizes are 5,429, 6,396, 7,493 and 3,818, and the clusters separate on other variables too, such as `revol_util` (30.7 to 77.7). The book adds that z-scoring before PCA is the same as running PCA on the correlation matrix instead of the covariance matrix (*Practical Statistics*, ch. 7; one run, so the cluster boundaries themselves are not stable).
 
 ---
 
@@ -70,7 +73,9 @@ The 2-D projection of breast cancer separates benign and malignant well, so even
 
 ### Eigenfaces: PCA as feature extraction
 
-On Labeled Faces in the Wild (3,023 images, 87×65 px = 5,655 pixels), a 1-nearest-neighbour classifier on raw pixels scores 0.23. After `PCA(n_components=100, whiten=True)` it scores 0.31. Distances between principal-component vectors are a better measure of face similarity than distances between pixels. Reconstructing a face from 10, 50, 100, 500 components shows coarse-to-fine detail.
+On Labeled Faces in the Wild (3,023 images of 62 people, 87×65 px = 5,655 pixels; M&G keep at most 50 images per person, leaving 2,063), a 1-nearest-neighbour classifier on raw pixels scores 26.6% on a stratified split with `random_state=0`. After `PCA(n_components=100, whiten=True)` fitted on the training rows it scores 35.7%, against about 1.6% for chance over 62 people (*Introduction to ML with Python*, ch. 3, "Principal component analysis"). Distances between principal-component vectors are a better measure of face similarity than distances between pixels. Reconstructing a face from 10, 50, 100, 500 components shows coarse-to-fine detail.
+
+Scaling changes what PCA finds, not only how well. On ISLP's USArrests (50 US states, four variables with very different variances: Assault 6,945, UrbanPop 209.5, Rape 87.7, Murder 19.0), unscaled PCA puts almost all of PC1 on Assault, simply because it has the largest variance. Standardised to sd 1, PC1 explains 62.0% of the variance with roughly equal weight on the three crime variables (0.54, 0.58, 0.54) and 0.28 on urban population, PC2 explains 24.7% (87% together) and loads 0.87 on urban population, and the scree plot has its elbow after PC2 (*ISLP*, ch. 12). Each component is defined only up to sign, so compare loadings by magnitude, as the check above does.
 
 ### From scratch: Ng ex7
 
@@ -148,7 +153,10 @@ PCA   ARI of 10 clusters on the 2-D picture vs true digit: 0.39
 t-SNE ARI of 10 clusters on the 2-D picture vs true digit: 0.89
 ```
 
-On the 8×8 digits, PCA's 2-D projection overlaps most classes; t-SNE separates nearly all ten without seeing labels ([JMLR 2008](https://www.jmlr.org/papers/v9/vandermaaten08a.html), van der Maaten and Hinton). Rules for reading a t-SNE plot: cluster sizes and distances between clusters mean little; run more than one `perplexity`; never use it as features for a model. UMAP is from the same family of neighbour-graph methods and usually faster ([arXiv:1802.03426](https://arxiv.org/abs/1802.03426), McInnes et al., preprint). In the authors' laptop timings, with one figure per cell and no spread, a single-core UMAP took 87 seconds on MNIST against 292 for multi-core FIt-SNE and 1,450 for Barnes-Hut t-SNE, though on these same 8×8 digits it was 9 against 17 for Barnes-Hut. On GoogleNews subsamples they find its scaling with sample count comparable to FIt-SNE's. The authors present UMAP as usable beyond plots, for later clustering or anomaly detection, which the paper does not evaluate; the rule above about not using an embedding as features is this note's caution for t-SNE. Its global-structure claim is hedged: the paper says "arguably", credits the Laplacian Eigenmaps initialisation and the cross-entropy objective, and notes that t-SNE started the same way can match UMAP on one measure. It treats mapping new points as future work, with no method or evaluation. [NLP embeddings](../../03-nlp/notes/04-embeddings-and-similarity.md) uses t-SNE to plot word vectors.
+On the 8×8 digits, PCA's 2-D projection overlaps most classes; t-SNE separates nearly all ten without seeing labels ([JMLR 2008](https://www.jmlr.org/papers/v9/vandermaaten08a.html), van der Maaten and Hinton). Rules for reading a t-SNE plot: cluster sizes and distances between clusters mean little; run more than one `perplexity`; never use it as features for a model. How far a 2-D map bends neighbourhoods has been measured: on six single-cell RNA-seq datasets, a point's 30 nearest neighbours on a 2-D t-SNE or UMAP map and in the original space differed by a mean Jaccard distance above 0.7, and the authors advise clustering in the full space and showing the map only afterwards ([PLOS Computational Biology, 2023](https://doi.org/10.1371/journal.pcbi.1011288), Chari and Pachter). UMAP is from the same family of neighbour-graph methods and usually faster ([arXiv:1802.03426](https://arxiv.org/abs/1802.03426), McInnes et al., preprint). In the authors' laptop timings, with one figure per cell and no spread, a single-core UMAP took 87 seconds on MNIST against 292 for multi-core FIt-SNE and 1,450 for Barnes-Hut t-SNE, though on these same 8×8 digits it was 9 against 17 for Barnes-Hut. On GoogleNews subsamples they find its scaling with sample count comparable to FIt-SNE's. The authors present UMAP as usable beyond plots, for later clustering or anomaly detection, which the paper does not evaluate; the rule above about not using an embedding as features is this note's caution for t-SNE. Its global-structure claim is hedged: the paper says "arguably", credits the Laplacian Eigenmaps initialisation and the cross-entropy objective, and notes that t-SNE started the same way can match UMAP on one measure. It treats mapping new points as future work, with no method or evaluation. [NLP embeddings](../../03-nlp/notes/04-embeddings-and-similarity.md) uses t-SNE to plot word vectors.
+
+![Two-dimensional embeddings of COIL20, MNIST, Fashion-MNIST and word vectors by UMAP, t-SNE, LargeVis, Laplacian Eigenmaps and PCA](../assets/sources/images/mcinnes-umap-fig4.png)
+*Image Source: McInnes et al., [UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction](https://arxiv.org/abs/1802.03426) (2018), Fig. 4*
 
 ---
 
@@ -204,7 +212,7 @@ print(X7.shape, C.round(2).tolist(), np.bincount(idx))
 
 Ex7 then compresses a 128×128 bird photo by clustering its pixels' RGB values into 16 colours: each pixel stores a 4-bit index instead of 24 bits. That is **vector quantisation**: k-means as a decomposition where each point is represented by one component (its centre). M&G show that with many clusters (more than the input dimensions), k-means can be used as a feature expansion: 10 cluster distances make `two_moons` linearly separable.
 
-**Failure cases.** k-means assumes clusters are round, of similar size and similar density, because it only uses distance to the centre. It fails on stretched clusters, clusters of different density and non-convex shapes (`two_moons`). Results depend on initialisation, hence `n_init`.
+**Failure cases.** k-means assumes clusters are round, of similar size and similar density, because it only uses distance to the centre. It fails on stretched clusters, clusters of different density and non-convex shapes (`two_moons`). Results depend on initialisation, hence `n_init`: the objective has many local optima, and ISLP's six random starts on 150 simulated 2-D points with $K=3$ end at objective values of 235.8 (four of the six), 310.9 and 320.9. Its lab gets inertia 78.06 with `n_init=1` against 75.04 with `n_init=20` on 50 points, and the authors recommend 20 or 50 starts with a fixed `random_state` (*ISLP*, ch. 12).
 
 [Segmentation and RFM](../../../data-analytics/06-applied-analyses/notes/05-segmentation-and-rfm.md#does-clustering-do-better) puts k-means to work on a retailer's customers and asks whether its segments beat hand-drawn rules. [States and sequences](../../../data-analytics/06-applied-analyses/notes/08-states-and-sequences.md#clustering-into-journey-types) clusters customers by the order of what they did. There the input is a distance matrix and not a table of coordinates, so k-means is out and hierarchical clustering takes over.
 
@@ -219,9 +227,11 @@ Start with every point as its own cluster; repeatedly merge the two most similar
 | `complete` | Has smallest maximum pairwise distance | |
 | `single` | Has smallest minimum distance | Chains; one giant cluster |
 
+On the same pair of oil-stock returns (XOM and CVX), Bruce and Bruce find single linkage puts almost all points in one cluster and every other measure except Ward leaves a cluster of a few outliers; Ward looks most like k-means (*Practical Statistics*, ch. 7, Fig. 7-8).
+
 No `predict` for new points. The merge history is a tree, drawn as a **dendrogram**:
 
-![Dendrogram of the clustering, with lines indicating splits into two and three clusters](../assets/mueller-guido-dendrogram.png)
+![Dendrogram of the clustering, with lines indicating splits into two and three clusters](../assets/sources/images/mueller-guido-dendrogram.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, companion repo `images/`*
 
 ```python
@@ -234,6 +244,13 @@ print(linkage_array[-3:, 2].round(1))         # the last three merge distances
 ```text
 [ 12.4  51.2 144.9]
 ```
+
+A dendrogram is read on the vertical axis only. Two leaves that sit next to each other horizontally need not be similar, since the tree can be flipped at every fusion ($2^{n-1}$ orderings); closeness is the height at which two observations first join.
+
+![A complete-linkage dendrogram of nine points next to the points themselves: observation 9 joins the group of 2, 8, 5 and 7 at one height even though it is drawn next to 2](../assets/sources/images/islp-fig12-12.png)
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 12.12*
+
+In the figure observation 9 looks close to 2 but fuses with 2, 8, 5 and 7 at the same height (about 1.8), and the scatter on the right confirms it is no nearer to 2 than to the others (*ISLP*, ch. 12, nine points, Euclidean distance, complete linkage). The same chapter prefers average or complete linkage to single (more balanced trees), warns that centroid linkage can invert, uses correlation rather than Euclidean distance when the shape of a profile matters more than its volume (shoppers' purchases), and shows that standardising each variable changes which shoppers cluster. It also says clustering is not robust: re-clustering after dropping a random subset of observations often changes the result, so vary the scaling and linkage and cluster subsets before believing a partition (*ISLP*, ch. 12).
 
 Sarkar uses the same Ward dendrogram to cluster movies by their descriptions in [NLP topic models](../../03-nlp/notes/03-topic-models-and-summarization.md).
 
@@ -265,9 +282,9 @@ DBSCAN finds the number of clusters itself, handles arbitrary shapes (it solves 
 | With ground truth | Without ground truth |
 |---|---|
 | **Adjusted Rand Index** (ARI), normalised mutual information: 1 = same partition, ~0 = random. Ignore label names | **Silhouette** (−1 to 1): compactness vs separation. Favours round clusters; DBSCAN's correct `two_moons` gets a *worse* silhouette than k-means's wrong one |
-| Never use accuracy: cluster 0 vs label 0 is arbitrary | Robustness: do clusters survive noise, different parameters, subsampling? |
+| Never use accuracy: cluster 0 vs label 0 is arbitrary (M&G: the partition `[0,0,1,1,0]` against `[1,1,0,0,1]` scores accuracy 0.00 and ARI 1.00) | Robustness: do clusters survive noise, different parameters, subsampling? |
 
-In practice, the only reliable check is to inspect the clusters by hand. M&G's LFW case study runs all three algorithms on eigenfaces: DBSCAN finds one big cluster plus noise (the noise is faces with hats, open mouths, odd angles: an outlier detector); k-means with 10 clusters gives blurred "average faces" by pose and lighting; agglomerative gives similar groups with less uniform sizes. None finds identity.
+In practice, the only reliable check is to inspect the clusters by hand. M&G's LFW case study runs all three algorithms on eigenfaces: DBSCAN finds one big cluster plus noise (the noise is faces with hats, open mouths, odd angles: an outlier detector); k-means with 10 clusters gives blurred "average faces" by pose and lighting; agglomerative gives similar groups with less uniform sizes. None finds identity. The numbers, on 2,063 faces reduced to 100 whitened PCA components (*Introduction to ML with Python*, ch. 3, "Clustering"): DBSCAN at the default `eps` and `min_samples=3` labels every point noise; at `eps=15` it gives 27 noise points and one cluster of 2,036; at `eps=7` it gives 2,006 noise points and 13 clusters of 3 to 9 images. k-means (10 clusters) sizes run from 64 to 386 and agglomerative (ward) from 26 to 623. The two partitions agree at ARI 0.13, and the dendrogram shows no natural cut.
 
 | Algorithm | Specify | New points | Shapes | Noise |
 |---|---|---|---|---|
@@ -360,7 +377,7 @@ An AUC of 0.000 is the worst possible, not merely poor. The valley is near the o
 
 Liu et al. make two further claims, and both held up here.
 
-![Two panels of AUC for an isolation forest. Left: anomalies in a dense clump, where AUC falls from 1.0 at 16 sampled rows to 0.93 at 4096. Right: as irrelevant columns are added the forest falls from 0.965 to chance at 60 columns, while a per-feature Gaussian stays near 0.5 throughout](../assets/classical-iforest-limits.png)
+![Two panels of AUC for an isolation forest. Left: anomalies in a dense clump, where AUC falls from 1.0 at 16 sampled rows to 0.93 at 4096. Right: as irrelevant columns are added the forest falls from 0.965 to chance at 60 columns, while a per-feature Gaussian stays near 0.5 throughout](../assets/sources/images/classical-iforest-limits.png)
 
 ```text
 clumped anomalies inside the training data, AUC by sub-sample size
@@ -490,7 +507,7 @@ k
 shuffled columns: best BIC at k = 7 | k-means silhouette at k=2: 0.107
 ```
 
-![BIC, silhouette and seed agreement against k for k-means and a Gaussian mixture on the nine audio features, with k=8 marked](../assets/wise-music-clustering-lab-fig1.png)
+![BIC, silhouette and seed agreement against k for k-means and a Gaussian mixture on the nine audio features, with k=8 marked](../assets/sources/images/wise-music-clustering-lab-fig1.png)
 
 *Image source: this lab's run of `music_clustering_lab.py`, 10 seeds per k*
 

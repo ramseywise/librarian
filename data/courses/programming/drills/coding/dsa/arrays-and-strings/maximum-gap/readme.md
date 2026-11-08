@@ -1,4 +1,5 @@
 ---
+imported_hash: 602d9d9e49265049
 title: Maximum Gap
 summary: Given an unsorted array, find the maximum difference between the successive elements in its sorted form.
 order: 114

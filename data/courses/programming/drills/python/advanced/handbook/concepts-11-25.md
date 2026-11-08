@@ -1,7 +1,8 @@
 ---
+imported_hash: 11a7d52bf93417eb
 title: Advanced Python Interview Reference
 summary: Multiprocessing is how you get true parallelism in Python.
-order: 262
+order: 265
 kind: reading
 section: Python / Advanced / Handbook
 source: learn-ai-engineering/programming/drills/python/advanced/handbook/concepts-11-25.md

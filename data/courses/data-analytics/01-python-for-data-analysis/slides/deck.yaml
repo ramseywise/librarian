@@ -1,3 +1,4 @@
+# imported_hash: 9a9e142310209c1e
 # Python for Data Analysis lecture deck. Covers notes 01-07.
 # Build: make slides PILLAR=data-analytics/01-python-for-data-analysis STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
@@ -361,7 +362,7 @@ parts:
         title: The whole year in one line
         kicker: The problem
         recall: What can a line chart show about a time series that describe() cannot?
-        image: ../assets/da01-plotting-line.png
+        image: ../assets/sources/images/da01-plotting-line.png
         caption: Synthetic daily revenue for 2024, with trend, weekly pattern, outages and a December jump. Generated in the chapter's code.
         bullets:
           - "**Rows have an order,** so a previous value exists."
@@ -461,7 +462,7 @@ parts:
         title: The same column, three stories
         kicker: The problem
         recall: Why should you try several bin counts on a histogram?
-        image: ../assets/da01-plotting-hist.png
+        image: ../assets/sources/images/da01-plotting-hist.png
         lead: "At 5 bins a staircase, at 150 static, and at 25 a main body with a long right tail."
         caption: Daily revenue with 5, 25 and 150 bins. Generated in the chapter's code from synthetic data.
         takeaway: A histogram's shape depends on its bin count, so try several before you trust what you see.
@@ -493,7 +494,7 @@ parts:
       - layout: image
         title: Small multiples show the shape and the level at once
         recall: When do you reach for small multiples, and what kind of seaborn function draws them?
-        image: ../assets/da01-plotting-facets.png
+        image: ../assets/sources/images/da01-plotting-facets.png
         lead: "On one scale, the weekly shape holds while the level rises. Figure-level `catplot` draws this with `col=`."
         caption: Mean revenue by weekday per quarter, on a shared y axis. Generated in the chapter's code from synthetic data.
         takeaway: Small multiples on a shared scale compare a pattern across groups, and seaborn's figure-level functions draw them from tidy data.

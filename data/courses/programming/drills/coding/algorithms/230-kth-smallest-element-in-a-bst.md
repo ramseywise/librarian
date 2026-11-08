@@ -1,4 +1,5 @@
 ---
+imported_hash: 3b8c52d1518b216d
 title: LC 230 — Kth Smallest Element in a BST
 summary: Given the root of a binary search tree and an integer k (1-indexed), return the value of the k-th smallest element among all node values.
 order: 71

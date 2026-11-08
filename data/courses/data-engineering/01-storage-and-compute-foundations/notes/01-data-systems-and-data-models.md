@@ -1,4 +1,5 @@
 ---
+imported_hash: cceac8149f9918a9
 title: 1 — Data systems and data models
 summary: 'A taxi app looks like one product and is really a small crowd of storage systems: a relational database for trips, a cache in front of it, a search index for addresses, a queue for receipts and a warehouse for the finance team.'
 order: 2

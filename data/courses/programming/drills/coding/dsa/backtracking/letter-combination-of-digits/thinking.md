@@ -1,4 +1,5 @@
 ---
+imported_hash: fb16ca1b59c44aef
 title: Letter Combinations of a Phone Number — First-Principles Thinking Guide
 summary: Each digit maps to 3-4 letters. For each digit, try all its letters, then recurse for the next digit.
 order: 140

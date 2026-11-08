@@ -1,4 +1,5 @@
 ---
+imported_hash: 43fc2abb278fbf38
 title: Neural network basics
 summary: The sklearn MLPClassifier in supervised learning hides all of this.
 order: 2
@@ -42,13 +43,23 @@ The Ng DL convention stores examples as **columns**: $X$ is $(n_x, m)$, $W^{[l]}
 
 Why a non-linear $g$ at all: a stack of linear layers multiplies out to one linear layer, so depth buys nothing without it.
 
-**Logistic regression with a neural-network mindset** (course 1, week 2) is the one-layer case: flatten 64×64×3 cat images into 12,288-vectors, `sigmoid(w.T @ X + b)`, cross-entropy cost, gradient descent. Your notebook reaches about 70% test accuracy, and the point is the structure rather than the score.
+Parameters are counted per layer as inputs times outputs plus one bias per output. Buduma's MNIST network (784 inputs, two hidden layers of 30, a 10-way softmax) has $784\cdot30+30 + 30\cdot30+30 + 30\cdot10+10 = 24{,}790$ parameters, which the book rounds to "nearly 25,000" (*Fundamentals of Deep Learning*, ch. 2). It prefers tanh to sigmoid because tanh is zero-centred, and calls ReLU the "restricted linear unit" where the name is *rectified* (ch. 1). The backward recursion of the section below is its ch. 2 derivation, written for a sigmoid network with squared error: $\partial E/\partial y_i = \sum_j w_{ij}\,y_j(1-y_j)\,\partial E/\partial y_j$.
+
+*ISLP* uses a larger MNIST network (two hidden layers of 256 and 128 units, 10 outputs) and counts it the same way: $(784\cdot256+256) + (256\cdot128+128) + (128\cdot10+10) = 200{,}960 + 32{,}896 + 1{,}290 = 235{,}146$ parameters (*ISLP*, ch. 10). Multinomial logistic regression on the same pixels needs 7,065 by the book's count ($785 \times 9$, one class as reference), so the network has more than 33 times as many, and almost four times as many parameters as the 60,000 training images. The lab's own softmax regression is written with a full 784-to-10 layer, which is 7,850.
+
+![ISLP's two-hidden-layer network for MNIST: 784 inputs, hidden layers of K1 = 256 and K2 = 128 units, 10 outputs, weights W1, W2 and B.](../assets/sources/images/islp-fig10-4.png)
+
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 10.4*
+
+**Logistic regression with a neural-network mindset** (course 1, week 2) is the one-layer case: flatten 64×64×3 cat images into 12,288-vectors, `sigmoid(w.T @ X + b)`, [cross-entropy](../../../generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) cost, gradient descent. Your notebook reaches about 70% test accuracy, and the point is the structure rather than the score.
 
 ## Backpropagation
 
 Backpropagation is the chain rule applied from the loss back through each layer, reusing what the forward pass computed ([doi:10.1038/323533a0](https://doi.org/10.1038/323533a0) (Rumelhart, Hinton and Williams, Nature 1986)). For cross-entropy with a sigmoid output, $dZ^{[L]} = A^{[L]} - Y$. Then for each layer:
 
 $$dW^{[l]} = \tfrac{1}{m} dZ^{[l]} A^{[l-1]\top}, \quad db^{[l]} = \tfrac{1}{m}\textstyle\sum dZ^{[l]}, \quad dA^{[l-1]} = W^{[l]\top} dZ^{[l]}, \quad dZ^{[l-1]} = dA^{[l-1]} \odot g'(Z^{[l-1]})$$
+
+The statisticians' phrasing of the same recursion is useful when debugging: after a forward pass, each node gets an error term $\delta$ measuring its responsibility for the miss. At the output it is the residual (or a generalised residual, depending on the loss); at an inner layer it is a weighted sum of the error terms of the nodes that use its activation, and the gradient for a layer's weights is the next layer's $\delta$ times this layer's activations (*Computer Age*, ch. 18). That is the $dZ$ and $dW$ lines above in words. The same chapter notes that a one-layer autoencoder with an identity activation recovers the leading principal components, so a nonlinear autoencoder is nonlinear PCA (it needs no labels, and was once used to warm-start the weights of a supervised net).
 
 Here `dW` is shorthand for $\partial L / \partial W$, the gradient of the loss with respect to that layer's weights; [Vectors, matrix products and the gradient](../../01-classical-ml/notes/02-supervised-learning.md#vectors-matrix-products-and-the-gradient) builds it up for one linear layer.
 
@@ -335,11 +346,21 @@ Most Ng DL notebooks were written for TF 1.x and standalone Keras 2.x. Phase 1 (
 
 The text notebooks' TF status (Sarkar Ch10a fixed; the condensed NLP course was TF2-native) is in [neural text models](06-neural-text-models.md).
 
+Buduma's ch. 3 is a TF 1.x text on the same ground. Its logistic regression (784 to a 10-way softmax, SGD at 0.01, batch 100) reaches 91.9% on MNIST, an 8.1% error, which it puts as errors on about 29% of 4-digit amounts ($1-0.919^4$, our arithmetic). Its 784-256-256-10 ReLU network, initialised with standard deviation $\sqrt{2/n_{in}}$ (He et al.), reaches 98.2% after 300 epochs, a 78% cut in error, one run with no seeds (*Fundamentals of Deep Learning*, ch. 3). Dated: `tf.Session`, `tf.placeholder`, `tf.initialize_all_variables`, `tf.mul`, `tf.scalar_summary`, `tf.train.Saver` and positional `softmax_cross_entropy_with_logits(output, y)` are gone or renamed, and the printed code has bugs, so port the ideas and not the listings.
+
 ## Is deep learning a different kind of model?
 
 A network with 4,810 parameters on 1,257 training digits has more parameters than rows, and by the counting logic of [bias and variance](../../01-classical-ml/notes/01-statistical-foundations.md) it should overfit badly. It does not, which is often offered as proof that deep learning breaks the old rules. Wilson argues it doesn't ([arXiv:2503.02113](https://arxiv.org/abs/2503.02113) (Wilson, ICML 2025)). Benign overfitting and double descent can be reproduced with plain linear models and described by long-standing frameworks such as PAC-Bayes and countable hypothesis bounds. Double descent itself dates to Opper et al. (1989), and the paper's own demonstrations are toy ones (a 150th-order polynomial, a Gaussian process on CIFAR-10 with noisy labels); the large-network evidence is cited from Lotfi et al. (2022), who bound a CIFAR-10 classifier's test error at 16.6% with at least 95% probability. The unifying idea is a soft inductive bias: keep a very flexible hypothesis space and prefer simpler solutions in it, rather than restrict the space. A high-order polynomial with order-dependent regularisation does the same thing, and parameter counting was always a poor proxy for complexity. What the paper does treat as distinctive is representation learning: most model classes fit weights over fixed basis functions, while a network learns the basis as well.
 
 A standard network still fixes one thing, the activation function. Kolmogorov-Arnold Networks learn it in place of weights, as a spline on each edge ([arXiv:2404.19756](https://arxiv.org/abs/2404.19756) (Liu et al., ICLR 2025)). Their authors limit the claim to small-scale science problems and test no KAN on images or text. On 27 Feynman equations, with width-5 networks of depth 2 to 6, taking the best over 3 seeds and the depths, they find the two "behave comparably on average". In their admittedly unoptimised code KANs train about 10× slower at the same parameter count. On DeepMind's knot-invariant task, where a 200-parameter KAN reached 81.6% against 78% for a 300,000-parameter MLP, they report another lab's unpublished MLP reaching 80% with 60 parameters.
+
+![MLP against KAN, shallow and deep: fixed activations on nodes and learnable weights on edges, against learnable spline activations on edges and sums on nodes](../assets/sources/images/liu-kan-fig0-1.png)
+*Image Source: Liu et al., [KAN: Kolmogorov-Arnold Networks](https://arxiv.org/abs/2404.19756) (2025), Fig. 0.1*
+
+The strongest case for that is the chapter's own MNIST run. A network with three hidden layers (1,024, 1,024 and 2,048 units on 784 inputs, so about four million weights, 3.97 million by direct count with the 10 output units) was fitted with accelerated gradient descent, ReLU units and dropout. Its training error goes to zero within about 100 epochs and its test error keeps flat near 0.010 instead of rising again over 1,000 epochs; it ends just under 0.93%, i.e. 93 of the 10,000 test digits wrong, against 2.8% for a random forest and 7.2% for a generalised linear model (*Computer Age*, ch. 18, Fig. 18.4). Heavy regularisation, not a small model, is what keeps a four-million-weight net from overfitting. It is one run on one split, and the chapter reports no repeat.
+
+![Misclassification error against epochs on MNIST for a three-hidden-layer network: training error falls to zero, test error settles near 0.010, below the random forest's dotted line near 0.028](../assets/sources/images/casi-fig18-4.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 18.4*
 
 The practical reading is that train and test curves stay your instruments, as in classical ML, and a network's parameter count alone tells you little about whether it will overfit. If reading those curves is new, [training and tuning](../../01-classical-ml/notes/09-training-and-tuning.md#reading-performance-during-training) is the place to learn it.
 

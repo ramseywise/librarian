@@ -1,7 +1,8 @@
 ---
+imported_hash: 31d211d7851c07a0
 title: Advanced Python Interview Reference
 summary: Protocols and generics are tools from Python’s static typing system that allow you to write flexible APIs without losing type safety.
-order: 265
+order: 268
 kind: reading
 section: Python / Advanced / Handbook
 source: learn-ai-engineering/programming/drills/python/advanced/handbook/concepts-53-54.md

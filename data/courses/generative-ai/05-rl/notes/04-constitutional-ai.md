@@ -1,7 +1,8 @@
 ---
+imported_hash: 542ca0229b94a66a
 title: 4 — Constitutional AI and RLAIF
 summary: If the reward is the product, whoever writes the reward decides what the model becomes.
-order: 6
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/05-RL/notes/04-constitutional-ai.md
@@ -254,6 +255,9 @@ Helpful-only SFT model
   Claude (harmless + helpful)
 ```
 
+![Constitutional AI pipeline. A helpful RLHF model answers red-team prompts, then critiques and revises its answers to give the SL-CAI model; SL-CAI samples answer pairs, a feedback model labels them against the constitution to train a preference model, and RLAIF training with that model yields the final RL-CAI model.](../assets/sources/images/bai-constitutional-ai-fig1.png)
+*Image Source: Bai et al., [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073) (2022), Fig. 1*
+
 ---
 
 ## RLAIF — standalone and comparisons
@@ -307,6 +311,10 @@ produced "assistant-brained" models: overly cautious, refusing legitimate reques
 adding excessive caveats. Constitutional AI addresses this by training a *separate*
 helpful-only model first, then applying harmlessness training on top — rather than
 mixing helpfulness and harmlessness labels in the same RM training set.
+BeaverTails ([arXiv:2307.04657](https://arxiv.org/abs/2307.04657) (Ji et al., NeurIPS 2023 Datasets and Benchmarks)) also keeps the two axes apart, with human labels. It annotates safety as a label and helpfulness as a ranking, because crowdworkers agreed on safety labels 81.68% of the time against 62.39% on helpfulness and 60.91% on harmlessness rankings. A separate reward and cost model under PPO-Lagrangian then beat PPO on one mixed score: GPT-4-judged win rates against Alpaca-7B of 85.57% helpful and 82.57% harmless, against 65.07% and 68.64%. Setup: Alpaca-7B tuned on the 30k-pair subset, responses from Alpaca-7B only, one prompted GPT-4 judge, single runs.
+
+![Harmlessness Elo against helpfulness Elo for 52B RL runs. Helpful-only and helpful-plus-harmless RLHF runs trace a trade-off curve (harmlessness falls or stalls as helpfulness rises); the constitutional RL runs, with and without chain of thought, sit beyond that curve as a Pareto improvement.](../assets/sources/images/bai-constitutional-ai-fig2.png)
+*Image Source: Bai et al., [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073) (2022), Fig. 2*
 
 ---
 

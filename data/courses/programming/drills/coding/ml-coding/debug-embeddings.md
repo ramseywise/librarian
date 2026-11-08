@@ -1,4 +1,5 @@
 ---
+imported_hash: 976fa990f7f1f14f
 title: Debug an embeddings pipeline
 summary: Debug this embeddings-handling snippet. It's supposed to embed a batch of query strings, compare each against a matrix of stored document embeddings, and return the best-matching document per query.
 order: 239

@@ -1,4 +1,5 @@
 ---
+imported_hash: afdcbd2c1e191e53
 title: Bug2
 summary: There is a second bug in board.py. Run Test Board and get test_sunk_requires_all_cells to pass.
 order: 92

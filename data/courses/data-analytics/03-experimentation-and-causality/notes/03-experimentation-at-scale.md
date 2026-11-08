@@ -1,4 +1,5 @@
 ---
+imported_hash: 2ef4bfc062137390
 title: 3 — Experimentation at Scale
 summary: Larkspur now runs fifty experiments at once, and the same three messages arrive every week.
 order: 4
@@ -136,7 +137,7 @@ Three rules apply. Use a covariate measured strictly **before exposure**, becaus
 
 ## Looking early, safely
 
-[Chapter 1](01-ab-testing.md) showed that checking twenty times and stopping at the first p below 0.05 gives a false positive rate around 25%. Here is the shape of that curve under the null:
+[Chapter 1](01-ab-testing.md) showed that checking twenty times and stopping at the first p below 0.05 gives a false positive rate around 25%. One look is already enough to bend the rate: a 30-month experiment tested at the end with a one-sided 5% cutoff, but also stopped early if month 20 looks significant, has type I error 0.074 (*Computer Age*, ch. 3). Here is the shape of that curve under the null:
 
 ```python
 def fpr_with_looks(k, reps=4_000, n_max=10_000, seed=0, boundary=None):
@@ -235,6 +236,12 @@ The false positive rate stays below 5% with a check after every pair. The price 
 
 Which to use? If a test is planned for three weeks and reviewed weekly, group-sequential is simple and efficient. If a self-serve platform shows p-values to people who will look whenever they like, always-valid is the only safe option. Either way, keep whole weeks in the analysis. Kohavi and colleagues advise running for at least one to two whole weeks, because weekday and weekend users differ, and a sequential stop on a Tuesday does not change that ([DMKD, 2009](https://doi.org/10.1007/s10618-008-0114-1)).
 
+### When the goal is to find the best variant
+
+Peeking and sequential tests ask "is B better than A, and can I stop early?". A different question is "which of these k variants is best?", where only the final recommendation matters and exploring costs nothing during the test (a pre-launch screen of ten layouts, say). The bandit literature calls this pure exploration, and it has two stopping framings (*Bandit Algorithms*, ch. 33). With a **fixed confidence**, you stop as soon as you can recommend an arm that is optimal with probability at least 1 − δ, and the cost is the number of samples. With a **fixed budget** of n samples, you minimise the chance the recommendation is wrong. For unit-variance Gaussian arms, the sample count a fixed-confidence learner needs grows like log(1/δ) times a constant fixed by the gaps, and two arms need at least about 8 / gap² · log(1/(4δ)) samples in total.
+
+Two practical points follow. First, a policy tuned for cumulative regret, such as UCB or Thompson sampling, is a poor way to pick a winner: it plays the losers so rarely that the chance of naming the wrong arm decays only polynomially in n, and its arm means are biased low because it stops sampling an arm once it looks bad. Use a [bandit](../../04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling.md) to earn during the test and a pure-exploration design to learn from it. Second, under a fixed budget the book's sequential halving (give every arm equal samples, drop the bottom half, repeat) beats equal allocation when one arm is hard to separate and the rest are clearly worse, and loses a little when all gaps are similar; the chapter covers uniform allocation, track-and-stop and sequential halving, and the general theory is in the [RL pillar's bandit note](../../../generative-ai/05-rl/notes/01c-bandit-algorithms.md).
+
 ## Trust checks
 
 ### Sample ratio mismatch
@@ -292,6 +299,10 @@ Only Safari is short. The likely causes are now a redirect that drops a cookie o
 | Analysis | Filter that depends on treatment; wrong start date | Counts by day, and before and after each filter |
 
 Because this runs on every experiment, a platform usually alerts at a p-value far below 0.05 to avoid constant false alarms. Set the threshold based on how many tests you run and what an investigation costs.
+
+The same check applies one level down, to the users behind a metric. Dmitriev and colleagues opened MSN.com links in a new tab and saw Page Load Time rise 8.32%, but the treatment arm had 7.8% fewer homepage loads. The two arms were averaging different page loads, so the metric had a sample ratio mismatch the user counts did not show ([KDD 2017](https://doi.org/10.1145/3097983.3098024), §5.1, a single Microsoft experiment). Report the numerator and denominator counts next to every ratio metric, and run the SRM test per segment too.
+
+The reverse also happens: a result that looks too bad can be fine. Moving a module higher on the page cut its per-user click-through 40%, yet impressions rose 200% and clicks 74%, whole-page click-through was flat and revenue rose (§5.2). The same paper warns against reading "no change" from an underpowered metric: a 0.5% rise in page views per user had a confidence interval of about ±5%, so only a change of 7.8% or more was detectable at 80% power (§5.4).
 
 ### A/A tests
 
@@ -457,6 +468,10 @@ share of shipped with true effect 0    37%
 ```
 
 Selection on significance inflates each winner, as Dmitriev and colleagues note under underpowered metrics. In this simulation, the measured total is double the true total, and over a third of shipped changes do nothing. So when finance adds up every team's reported lift, the sum exceeds the actual growth. Mature platforms handle this with a long-running holdout, shrinkage (the [Bayesian pillar](../../04-bayesian-analysis/notes/03-priors-and-bandits.md) explains how a prior does this), FDR control and a second certification run. In Dmitriev and colleagues' Bing example, an OEC with p = 0.029 did not reproduce on a rerun at double the traffic.
+
+Two of those remedies have numbers behind them in Efron and Hastie. FDR control at q = 0.1 admitted 28 of 6,033 genes where Holm's family-wise rule admitted 7 ([the testing chapter](../../02-probability-and-statistics/notes/05-hypothesis-testing.md#multiple-comparisons)), the gap that matters when forty metrics or two hundred experiments are screened for a second look. It assumes the theoretical null is right. When the middle of the z histogram is wider than N(0, 1), the theoretical null flags far too many cases, as in their police-stop example (216 officers against 4 under a null fitted to the central z-values) (*Computer Age*, ch. 15). Shrinkage by Tweedie's formula, which moves each z-value toward the crowd by the slope of the fitted marginal density, removes the winner's curse in their simulation of 100 datasets of 1,000 cases: the top-20 differences, shifted about one unit right of zero uncorrected, centre on zero after correction (*Computer Age*, ch. 20).
+
+The same book gives the cleanest statement of why shrinkage is the right correction. In a prostate cancer study of 6,033 genes with x_i ~ N(θ_i, 1), the winner, gene 610, has x = 5.29. A frequentist rightly worries that the largest of 6,033 unbiased estimates is biased upward and wants 5.29 pulled down. A Bayesian does not need a separate correction for selection: whether gene 610 was named in advance or surfaced only as the winner, its posterior given all the data is the same, because selection acts on which estimate you look at and leaves the likelihood untouched. What does matter is the prior. A flat prior returns 5.29, the dangerous overestimate; the empirical Bayes prior fitted from all 6,033 values gives 4.11 (*Computer Age*, ch. 3, with the empirical Bayes calculation in ch. 15). For a platform, that is the argument for estimating the prior from the portfolio of past tests instead of treating each test as if it stood alone, and the cost the authors name is that attention shifts from choosing a good frequentist procedure to choosing a defensible prior.
 
 ## The same machinery for LLM features
 

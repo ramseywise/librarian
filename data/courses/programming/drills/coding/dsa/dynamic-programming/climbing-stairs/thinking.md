@@ -1,4 +1,5 @@
 ---
+imported_hash: b19d98116fe503d0
 title: Climbing Stairs — First-Principles Thinking Guide
 summary: Since we only need the last two values, we optimize to O(1) space.
 order: 145

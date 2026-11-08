@@ -1,10 +1,11 @@
+# imported_hash: 515022b87da40a03
 # Opening lecture of the classical ML series: which problem do you have, and where in the series is it taught?
 # make slides PILLAR=data-science/01-classical-ml LECTURE=00-overview STRICT=1 PREVIEW=1
 deck:
   title: Classical Machine Learning
   subtitle: Which model for which problem, and where this series teaches it
   tagline: "What it is · What kind of problem · The series"
-  reference: "Notes: data-science/01-classical-ml/readme.md"
+  reference: "Notes: data-science/01-classical-ml/README.md"
   output: 00-overview.pptx
   notes: >-
     This opening lecture has no model to fit. It gives you the map: what classical ML is for, how to get from a problem to
@@ -12,7 +13,7 @@ deck:
 
 lecture:
   overview: true
-  covers: [data-science/01-classical-ml/readme.md]
+  covers: [data-science/01-classical-ml/README.md]
   next: [data-science/01-classical-ml/notes/01-statistical-foundations.md]
   related:
     - data-science/05-time-series-and-recommenders/notes/01-time-series-ml.md
@@ -32,7 +33,7 @@ parts:
         kicker: "Grinsztajn et al., NeurIPS 2022"
         statement: Most business data is a table.
         takeaway: Most business data is a table, and on tables of ordinary size boosted trees remain state of the art.
-        source: readme.md
+        source: README.md
         notes: >-
           The Grinsztajn result is about tables of ordinary size, so don't stretch it to every dataset. But it is a good
           reason to learn these models well before reaching for something heavier.
@@ -48,7 +49,7 @@ parts:
           title: The data scientist
           bullets: ["Predicts next year", "Who will earn over $50k, and does that hold on new people?"]
         takeaway: An analyst describes last year, and a data scientist predicts next year and can say whether the prediction holds on new data.
-        source: readme.md
+        source: README.md
         notes: The adult census question runs through the whole series, so you will see this example many times.
 
       - layout: flow
@@ -62,7 +63,7 @@ parts:
           - {label: Boosting, sub: "AUC about **0.93**"}
         caption: Logistic regression clears the dummy on accuracy. At about 0.93 AUC, four boosting libraries tie within noise.
         takeaway: Start with a dummy, then a linear model, then boosting, because each one gives a bar for the next.
-        source: readme.md and notes/04-model-evaluation.md
+        source: README.md and notes/04-model-evaluation.md
         notes: >-
           This is the path the series follows on one running example. Accuracy and AUC aren't on one scale, so compare like
           with like. Each number gets its full setup in its own lecture.
@@ -78,7 +79,7 @@ parts:
           - {title: Metrics, body: "Choose the metric from what each error costs."}
           - {title: Calibration, accent: "D4621A", body: "A score used as a probability has to behave like one."}
         takeaway: Splits, leakage control, metric choice and calibration apply unchanged to every later neural model.
-        source: readme.md
+        source: README.md
         notes: >-
           Even if you go straight to language models after this, these are the parts you will keep using. The evaluation
           pillar in generative AI reads a judge's confusion matrix the same way we will read a classifier's.
@@ -94,7 +95,7 @@ parts:
         kicker: The rule
         statement: '"Which model is best?" has no answer until you say what the answer is for.'
         takeaway: Start from the problem, because no model is best until you say what it is for.
-        source: readme.md
+        source: README.md
         notes: >-
           The next slides walk through the problems you are likely to meet. For each one, listen for the default choice and
           the lecture that teaches it. You don't need to remember the family names yet.
@@ -112,7 +113,7 @@ parts:
           - [A rare event, Boosting plus a threshold from costs, "Tune the threshold, on the data tested", "Imbalance, errors and drift"]
           - [A count, "Poisson, negative binomial", "Loss and baseline here, model in DA 02", Choosing a metric]
         takeaway: Name what you predict first, a number, class, rare event or count, and that narrows the families to a default.
-        source: readme.md
+        source: README.md
         notes: >-
           Treat this as an index, not something to learn today. The next few slides pull out the choices that matter most.
           The count models themselves are in data analytics, and here we cover the loss, metric and baseline for them.
@@ -129,7 +130,7 @@ parts:
           title: What the loss sets
           bullets: ["Squared gives the mean", "Absolute gives the median", "Pinball gives a quantile"]
         takeaway: Default to ridge, use lasso when few features should matter, and the loss sets the target, a mean, median or quantile.
-        source: readme.md
+        source: README.md
         notes: >-
           The right side surprises people. Your loss decides what the prediction means, so a model trained on squared error
           is predicting a mean. The supervised learning and choosing a metric lectures both come back to this.
@@ -138,10 +139,10 @@ parts:
         beat: fundamentals
         title: To predict a class, data size and audience decide
         recall: Which classifier do you pick for sparse or large data, small data, fast text baselines, and explaining to people?
-        image: ../../assets/mueller-guido-classifier-comparison.png
+        image: ../../assets/sources/images/mueller-guido-classifier-comparison.png
         caption: "Each panel is one classifier's decision boundary on three toy datasets. Image source: Müller and Guido, companion repo, after scikit-learn."
         takeaway: Pick linear for sparse or large data, kNN for small data, naive Bayes for fast text baselines and a tree to explain.
-        source: readme.md
+        source: README.md
         notes: The supervised learning lecture covers each of these, along with the single knob that controls its complexity.
 
       - layout: compare
@@ -155,7 +156,7 @@ parts:
           title: Gradient boosting
           bullets: ["For the last points of accuracy", "Taught in: Boosting in practice"]
         takeaway: The forest is the first serious model on a table, and boosting is for the last points of accuracy.
-        source: readme.md
+        source: README.md
         notes: On adult census four boosting libraries tie within noise, so that lecture spends more time on the knobs than on the brand.
 
       - layout: table
@@ -170,7 +171,7 @@ parts:
           - [Groups in mixed columns, "FAMD, MCA, Gower with PAM, k-prototypes, latent class", "Column types, missing values, whether no groups is allowed", Clustering mixed data]
           - [Spot anomalies, "Density estimation, classifier, isolation forest", How many positives and how stable, Unsupervised learning]
         takeaway: With no labels you can reduce columns, find groups or spot anomalies, and t-SNE is for visualisation only.
-        source: readme.md
+        source: README.md
         notes: >-
           The mixed columns row gets its own lecture because real customer data is rarely all numbers. And a method that can
           say there are no groups is a feature worth wanting, which that lecture tests on a control.
@@ -187,7 +188,7 @@ parts:
           title: A classifier
           bullets: ["Positives are many", "They stay stable"]
         takeaway: Use density when positives are few and may look new, and a classifier when positives are many and stable.
-        source: readme.md
+        source: README.md
         notes: The unsupervised learning lecture covers both, along with an isolation forest as a third option on tabular data.
 
       - layout: steps
@@ -200,7 +201,7 @@ parts:
           - {title: PDP and ICE, text: "What is the shape of a feature's effect?"}
           - {title: SHAP or LIME, text: "Why this answer for this one row?"}
         takeaway: Use permutation importance for the whole model, PDP and ICE for a shape, and SHAP or LIME for one row.
-        source: readme.md
+        source: README.md
         notes: Explanations describe the model, not the world. That line comes back in the interpretability lecture, because it is the easy one to forget.
 
       - layout: cards
@@ -212,7 +213,7 @@ parts:
           - {title: Get or clean labels, body: "Choose the method by the shape of the noise and what you need to audit."}
           - {title: Measure group gaps, accent: "D4621A", body: "Impact ratio, parity, equalized odds and calibration can't all be closed together."}
         takeaway: With people involved you price review thresholds, choose label methods by the noise, and know group gaps can't all close together.
-        source: readme.md
+        source: README.md
         notes: >-
           These are the last three lectures of the series. They come last because each needs a calibrated, honestly evaluated
           model underneath it.
@@ -230,7 +231,7 @@ parts:
           - [Time to event, "Data analytics 06: survival"]
           - [Causal effects, "Data analytics 03: correlation and causation"]
         takeaway: Forecasting, recommenders and ranking are in data science 05, and time to event and causal effects are in data analytics.
-        source: readme.md
+        source: README.md
         notes: >-
           The common trap is reaching for a standard classifier on one of these. Time order, censoring and confounding each
           break an assumption the models in this series rely on, so each gets its own treatment.
@@ -251,7 +252,7 @@ parts:
           - {title: What the number hides, text: "Imbalance and drift, choosing a metric, reading the errors"}
           - {title: People and accountability, text: "Automate or review, learning from corrections, fairness"}
         takeaway: The series goes from models to honest scores, tables, no labels, what scores hide, and people.
-        source: readme.md
+        source: README.md
         notes: >-
           That's one lecture for each note. Each opens by showing what comes before it and closes
           by showing where it leads, so you can also jump in where you need to.
@@ -268,7 +269,7 @@ parts:
           - {label: Explain, sub: "Why this applicant?"}
           - {label: Bring in people, sub: "Who reviews, who bears errors"}
         takeaway: The lectures follow the doubts about one number, from its believability to who bears its errors.
-        source: readme.md
+        source: README.md
         notes: >-
           The sequence is driven by doubt. Each lecture exists because the previous answer raised a question. A credit case
           at a 3 percent default rate joins for the lectures on rare events. Each lecture also builds at three depths: core tells

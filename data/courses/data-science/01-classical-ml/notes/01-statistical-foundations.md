@@ -1,4 +1,5 @@
 ---
+imported_hash: dd5e072561532c4a
 title: Statistical Foundations
 summary: Code blocks in this pillar run top to bottom within a note, as in a notebook, from the note's own notes/ folder (uv run --with scikit-learn --with pandas --with matplotlib python).
 order: 2
@@ -42,10 +43,15 @@ The rest of this note is about that last sentence. [The data generating process]
 | Regression | $y$ is a real number | [02](02-supervised-learning.md) |
 | Generalisation | Performance on data not used to fit | [04](04-model-evaluation.md) |
 
+ISLP opens with three data sets that map onto the table. Wage (3,000 men in the central Atlantic region) is regression, where the wage rises with age until about 60 and then falls. Smarket (daily S&P 500 direction from the previous five days' returns) is classification with a faint signal: the previous-day return looks almost the same on up and down days, yet QDA fitted on 2001 to 2004 called 2005 correctly about 60% of the time. NCI60 (6,830 gene measurements on 64 cancer cell lines) is unsupervised with $p \gg n$, where two principal components already suggest at least four clusters among the 14 cancer types, although the labels were not used for the plot (*ISLP*, ch. 1).
+
 Two questions come before any model, and Müller & Guido open with them (*Introduction to ML with Python*, ch. 1, "Knowing your task and knowing your data"):
 
 - What question am I answering, and is the data I have able to answer it?
+  No algorithm can predict from information the data lacks: M&G's example is a last name as the only feature, which cannot predict gender (ch. 1).
 - How will I measure success, and what does a wrong answer cost?
+
+M&G's closing chapter adds three practical points (*Introduction to ML with Python*, ch. 8, "From prototype to production", "Testing production systems"). First, bound the value before building: if a perfect fraud detector would save $100 a month the project is not worth starting, while a model that automates only 10% of decisions and routes the rest to a person can already pay off. Second, offline accuracy on a collected test set is only the first check; the consequence of a model in the whole system is judged by an A/B test, a blind comparison in which some users get the new model and the rest the incumbent for a set period. The chapter gives no sample size, duration or significance test, so treat it as a pointer, not a method. Third, data-dependent preprocessing should be written as a custom estimator so it stays inside the pipeline and the cross-validation loop (see the API section below). The authors also recommend Sculley et al.'s technical-debt paper for the cost each extra pipeline step adds.
 
 Most failed projects fail here, not in model choice. [Breiman (Statistical Science, 2001)](https://doi.org/10.1214/ss/1009213726) made the measure of success the line between two cultures: one validates an assumed data model with goodness-of-fit tests and residuals, the other judges a model by its predictive accuracy. Cox's published reply goes back to the first question: "I would prefer to start with an issue, a question or a scientific hypothesis".
 
@@ -123,7 +129,7 @@ degree  bias^2  variance  test_mse
 
 The straight line is all bias. Degree 3 to 5 is the sweet spot. By degree 9 the average fit is still close to the truth but any single fit swings widely with the sample. `test_mse` is bias² + variance + 0.09, where 0.09 is the irreducible $\sigma^2$. See [Estimation](../../../data-analytics/02-probability-and-statistics/notes/04-estimation.md#estimators-bias-and-variance) in data analytics for the same split on a single estimator. [Shmueli (Statistical Science, 2010)](https://doi.org/10.1214/10-STS330) uses this decomposition to separate explaining from predicting: explanatory modelling focuses on minimising bias, predictive modelling on bias and variance together, so "the 'wrong' model can sometimes predict better than the correct one".
 
-![Training and test accuracy against model complexity: underfitting on the left, overfitting on the right, the sweet spot in between](../assets/mueller-guido-overfitting-underfitting-cartoon.png)
+![Training and test accuracy against model complexity: underfitting on the left, overfitting on the right, the sweet spot in between](../assets/sources/images/mueller-guido-overfitting-underfitting-cartoon.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, ch. 2 (companion repo `images/`)*
 
 | Symptom | Training score | Test score | Diagnosis | Fix |
@@ -131,6 +137,11 @@ The straight line is all bias. Degree 3 to 5 is the sweet spot. By degree 9 the 
 | Underfitting | Low | Low, close to train | High bias | More features, more flexible model, less regularisation |
 | Overfitting | High | Much lower | High variance | More data, simpler model, more regularisation, early stopping |
 | Good fit | High | Close to train | — | Stop tuning; check the test set once |
+
+![Squared bias, variance and test MSE against flexibility for three simulated data sets: the minimum sits at a different flexibility in each](../assets/sources/images/islp-fig2-12.png)
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 2.12*
+
+ISLP draws the same decomposition for three simulated truths, and the lesson is that the sweet spot belongs to the data, not to the method: the test-MSE minimum falls at a flexibility of roughly 6 when the truth is smooth and curved, at about 3 when it is nearly linear, and at about 10 when it is strongly non-linear. In all three, test MSE never goes below the dashed $\mathrm{Var}(\varepsilon)$ line (*ISLP*, ch. 2, Fig. 2.12). The book's working definition of overfitting is the useful one: a model overfits when a less flexible model would have given a smaller test MSE, and it is not simply "training error is much lower than test error", since training error is lower than test error for nearly every fit. It also names the failure to avoid, which is to pick the most flexible method because it has the lowest training MSE (*ISLP*, ch. 2). For the same trade-off in classification, with the Bayes error as the floor, see the KNN numbers in [02](02-supervised-learning.md).
 
 **Complexity relative to data size.** The right complexity depends on how much data you have: more varied data supports a more complex model without overfitting (*Introduction to ML with Python*, ch. 2, "Relation of model complexity to dataset size"). Collecting more data is often a better fix than a cleverer model. Ng's ex5 makes this measurable with learning curves ([04](04-model-evaluation.md#learning-curves-and-bias-variance-diagnosis)).
 
@@ -145,11 +156,13 @@ You need far less probability theory to *use* these models than the textbooks co
 | Idea | Used in | One line |
 |---|---|---|
 | Likelihood | Logistic regression, naive Bayes, language models ([makemore](../../../generative-ai/09-llms-from-scratch/notes/02-makemore.md)) | How probable the observed data is under the model's parameters; training maximises it |
-| Negative log-likelihood | Cross-entropy loss everywhere, from [02](02-supervised-learning.md) to [nanoGPT](../../../generative-ai/09-llms-from-scratch/notes/03-nanogpt.md) | $-\frac1n \sum \log p_\theta(y_i \mid x_i)$; minimising it is maximum likelihood |
+| Negative log-likelihood | [Cross-entropy](../../../generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) loss everywhere, from [02](02-supervised-learning.md) to [nanoGPT](../../../generative-ai/09-llms-from-scratch/notes/03-nanogpt.md) | $-\frac1n \sum \log p_\theta(y_i \mid x_i)$; minimising it is maximum likelihood |
 | Gaussian | Anomaly detection ([05](05-unsupervised-learning.md)), weight initialisation ([makemore](../../../generative-ai/09-llms-from-scratch/notes/02-makemore.md)) | Mean and variance describe it fully; sums of many small effects tend toward it |
 | Conditional independence | Naive Bayes ([02](02-supervised-learning.md), [NLP text classification](../../03-nlp/notes/02-text-classification.md)) | Assume features are independent given the class; wrong, but the classifier is often still good |
 
 The Bayesian reading of the same models (priors as regularisers, posteriors instead of point estimates, MCMC) lives in the data-analytics subject: [`data-analytics/04-bayesian-analysis/`](../../../data-analytics/04-bayesian-analysis/readme.md). Ridge regression is the MAP estimate under a Gaussian prior on the weights; lasso is the MAP estimate under a Laplace prior. That is the bridge between the two subjects.
+
+Efron and Hastie give the same bridge with numbers. For $N$ independent $N(\theta_i, 1)$ observations with $N \ge 4$, the James-Stein rule, which shrinks every estimate toward the grand mean, has lower total squared error than the raw estimates for every $\theta$, with no prior assumed, so the unshrunk maximum-likelihood estimate is inadmissible. Under the matching Bayes model with $N=20$ and prior variance $A=1$, the risks are 20 for the raw estimates, 11.5 for James-Stein and 10 for the true Bayes rule. The guarantee assumes the variance is known and counts total error: in the book's 1000-run baseball simulation (18 players, 90 at bats each) James-Stein wins for 14 of 18 players and loses for the four with the most extreme true averages. For ridge, a prior $\beta \sim N(0, (\sigma^2/\lambda) I)$ gives a posterior mean equal to the ridge estimate $(S + \lambda I)^{-1} S \hat\beta$. On the diabetes data (442 patients, 10 standardised predictors, $\lambda = 0.1$) ridge cuts the standard error of the `tc` coefficient from 416.2 to 43.6 and flips `ldl` from +476.7 to −70.8. The authors add that the two effects, less variance and more bias, nearly offset each other for predicting the response, so the gain is in the coefficients, not necessarily the predictions (*Computer Age*, ch. 7).
 
 ---
 
@@ -165,12 +178,23 @@ The one discipline that separates a real result from a fooled one:
 | Validation (or CV folds) | Choosing hyperparameters, features, model family | 10–20%, or k-fold over the training part |
 | Test | One final estimate of generalisation | 10–20% |
 
-`train_test_split` shuffles and holds out 25% by default. Fix `random_state` so the split is reproducible, and pass `stratify=y` for classification so the class balance matches.
+`train_test_split` shuffles and holds out 25% by default, which M&G call "a good rule of thumb" and a somewhat arbitrary size (*Introduction to ML with Python*, ch. 1, "Training and testing data"). Shuffling matters: iris is sorted by label, so its last 25% of rows would all be class 2. Fix `random_state` so the split is reproducible, and pass `stratify=y` for classification so the class balance matches.
 
 Two ways to break this, both covered in [04](04-model-evaluation.md):
 
 - **Tuning on the test set**: choosing $C$ for an SVM by test score turns the test set into a validation set, and the reported score is optimistic.
 - **Leakage**: fitting a scaler or feature selector on all the data before splitting. The model has then seen statistics of the test rows ([03](03-feature-engineering-and-pipelines.md#leakage-and-why-pipelines-exist)).
+
+### Correcting the training error: cross-validation and covariance penalties
+
+The training (apparent) error $\overline{\text{err}}$ is always optimistic, because the fit was chosen to match those rows. Efron and Hastie name the gap: the true error $\text{Err}$ of a rule exceeds $\overline{\text{err}}$ by a penalty, and there are two ways to estimate it (*Computer Age*, ch. 12). **Cross-validation** refits on subsets. On 39 supernovas (10 spectral predictors, a lasso whose $\lambda$ was picked by $C_p$, 13 random groups of 3) the apparent squared error is 0.72 and the cross-validated estimate 1.17, 62% higher, so $R^2$ falls from 0.816 to 0.701. On the spam emails (4,061 emails, 57 predictors each reduced to nonzero or zero, logistic regression) the apparent error is 0.064 (295 wrong) and 10-fold CV gives 0.069, 8% higher. A model can instead *compute* the penalty. For squared error it is $\frac{2\sigma^2}{N}\sum_i \mathrm{cov}(\hat\mu_i, y_i)$, the covariance of each fitted value with its own label. For a linear rule $\hat\mu = My$ that is Mallows' $C_p$, $\overline{\text{err}} + \frac{2\sigma^2}{N}\mathrm{tr}(M)$, and for OLS $\mathrm{tr}(M)=p$. On the supernovas ($\sigma^2=1$, known) OLS with 10 predictors gives $0.719 + 0.513 = 1.23$. The lasso with 7 nonzero coefficients has the same apparent error, 0.720, and a smaller penalty, $2\cdot 7/39 = 0.359$, so $C_p$ is 1.08. That estimate ignores that the 7 was itself chosen from the data. The same covariance defines **degrees of freedom**, $\mathrm{df}=\frac12\sum_i \mathrm{cov}(\hat\mu_i,y_i)/\sigma^2$, so a rule that is not linear still gets one. For `lowess(x, y, 1/3)` on the kidney data ($N=157$, Gaussian noise assumed) Stein's SURE, which uses $\sum_i\partial\hat\mu_i/\partial y_i$ by numerical differentiation, gives total df 6.67, and a parametric bootstrap (1,000 replications, $\sigma^2=3.28$ from a 12th-degree polynomial fit) gives 6.81, a penalty of 0.284 on an apparent error of 3.15 (about 9%). The same bootstrap prices a rule's selection step: the supernova lasso costs 6.85 df with $p=7$ fixed and 7.48 when $p$ is chosen each time, so choosing $p$ cost about 0.6 df.
+
+![Apparent and cross-validated misclassification error against degrees of freedom for a glmnet lasso sequence on the spam data](../assets/sources/images/casi-fig12-2.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 12.2*
+
+The figure shows the gap on a whole lasso sequence: the apparent error (blue) keeps falling with model size and the CV estimate (red) runs 4% to 8% above it, with the lowest CV error, 0.067, at 47 predictors. The authors call that dip too small to take seriously given the noise, and note that picking the best rule by its CV error is not itself cross-validated. They also caution that CV estimates the average error of the *algorithm* more than that of the one fitted rule. In 500 bootstrap simulations of the supernova recipe the CV estimate averaged 1.07 against a true error of 1.02, yet was negatively correlated with the true error of the individual fitted rules (Fig. 12.3 caption). Use a covariance penalty when a believable noise model exists, and CV otherwise, with $J$ about 10 groups (*Computer Age*, ch. 12; the $C_p$ and SURE numbers come from the supernova and kidney fits, one data set each).
+
+The other warning concerns the split, not the estimator. In a simulated study with 360 subjects (180 patients and 180 controls), 100 genes whose signals are transient episodes of about 30 days, and a random forest trained on 300 days, a random 60-day test set gives 15% error. Testing on the *last* 60 days gives 27%, nearly double, because the training and test days that sit close together share the same transient episodes. A validation set is more believable the further it is separated from the training set in time or place, and CV can separate folds by cutting contiguous blocks instead of random rows ([splitters](04-model-evaluation.md#splitters)) (*Computer Age*, ch. 12, simulated data).
 
 [Training and tuning](09-training-and-tuning.md) runs the full loop on real data, from the split through search to the final score.
 
@@ -180,7 +204,7 @@ Two ways to break this, both covered in [04](04-model-evaluation.md):
 
 Müller & Guido's first application, classifying iris species with k-nearest neighbours, shows the shape every estimator shares (*Introduction to ML with Python*, ch. 1, "A first application").
 
-![Iris flower with petal and sepal labelled](../assets/mueller-guido-iris-petal-sepal.png)
+![Iris flower with petal and sepal labelled](../assets/sources/images/mueller-guido-iris-petal-sepal.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, ch. 1*
 
 ```python
@@ -202,6 +226,8 @@ print(knn.score(X_test, y_test))           # 4. score: accuracy for classifiers,
 0.9736842105263158
 ```
 
+That is 37 of 38 correct on one split with one seed and `n_neighbors=1`, so it carries no interval. M&G read it as the expected accuracy on new irises only "under some mathematical assumptions" they never state (ch. 1, "Evaluating the model"). [04](04-model-evaluation.md) supplies the repeated splits that put an error bar on it.
+
 That uniformity is a design decision. The scikit-learn paper names it as a goal of the library: "API consistency" over many algorithms, for non-specialists, by code convention rather than inheritance, so that anything with a `fit` method can join in ([arXiv:1201.0490](https://arxiv.org/abs/1201.0490), Pedregosa et al., JMLR 2011). Consistency is a design claim there: the paper reports no usability study, and its one benchmark table measures time on a single dataset.
 
 Before fitting, **look at the data**. A scatter matrix (`pd.plotting.scatter_matrix(df, c=y_train)`) shows whether the classes separate on the raw features at all, and catches unit errors and outliers before they cost you a day.
@@ -215,7 +241,7 @@ Before fitting, **look at the data**. A scatter matrix (`pd.plotting.scatter_mat
 | `fit_transform(X)` | Transformers | Fit then transform, sometimes faster |
 | `score(X, y)` | Supervised models | Default metric |
 
-![scikit-learn API summary: which estimators have fit, predict, transform, score](../assets/mueller-guido-api-table.png)
+![scikit-learn API summary: which estimators have fit, predict, transform, score](../assets/sources/images/mueller-guido-api-table.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, ch. 8*
 
 Because every estimator has this shape, you can chain them ([03 — pipelines](03-feature-engineering-and-pipelines.md)) and search over them ([04 — grid search](04-model-evaluation.md)). Writing your own estimator means subclassing `BaseEstimator` (and `TransformerMixin` or `ClassifierMixin`), taking every hyperparameter in `__init__` without logic, and returning `self` from `fit` (*Introduction to ML with Python*, ch. 8).
@@ -232,11 +258,11 @@ These books live in data-analytics' [`sources/`](../../../data-analytics/sources
 
 | Book | Read with | Focus |
 |---|---|---|
-| James, Witten, Hastie, Tibshirani, Taylor, *An Introduction to Statistical Learning* (Python ed.) | ch. 2 → 01; ch. 3–4 → 02; ch. 5 → 04; ch. 6 → 03; ch. 8 → 06; ch. 10 → [deep learning](../../02-deep-learning/readme.md); ch. 12 → 05 | The canonical theory text; free at [statlearning.com](https://www.statlearning.com/) |
+| James, Witten, Hastie, Tibshirani, Taylor, *An Introduction to Statistical Learning* (Python ed.) | ch. 1–2 → 01; ch. 3–4, 6, 9 → 02; ch. 5 → 04; ch. 6–7 → 03; ch. 8 → 06, 07; ch. 10 → [deep learning](../../02-deep-learning/readme.md); ch. 12 → 05 | The canonical theory text; free at [statlearning.com](https://www.statlearning.com/) |
 | Müller & Guido, *Introduction to Machine Learning with Python* | ch. 1–6, 8 → 01–06; ch. 7 → [NLP](../../03-nlp/readme.md) | The code-first companion; notebooks in [practice](../practice/intro-to-ml-in-python) |
 | Bruce, Bruce & Gedeck, *Practical Statistics for Data Scientists* | ch. 1–3 before 04 | Working statistics, chapter-level |
 | Reinhart, *Statistics Done Wrong* | Before reading any metric in 04 | Inference pitfalls |
-| Efron & Hastie, *Computer Age Statistical Inference* | After 06 | Frequentist-to-Bayes bridge, bootstrap, boosting theory |
+| Efron & Hastie, *Computer Age Statistical Inference* | After 06; ch. 7 → 01 (James-Stein, ridge as a prior); ch. 8 → [02](02-supervised-learning.md) (spam tree) | Frequentist-to-Bayes bridge, bootstrap, boosting theory |
 | Downey, *Think Bayes*; McElreath, *Statistical Rethinking* | With the data-analytics Bayesian notes | Bayesian intuition |
 
 Return to these after each later note: a technique you have just used makes the chapter that explains it readable.

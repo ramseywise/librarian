@@ -1,4 +1,5 @@
 ---
+imported_hash: 331d303be0d55c13
 title: LC 297 — Serialize and Deserialize Binary Tree
 summary: Design a codec for an arbitrary binary tree.
 order: 79

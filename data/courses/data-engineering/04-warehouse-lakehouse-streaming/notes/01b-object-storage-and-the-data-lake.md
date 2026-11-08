@@ -1,4 +1,5 @@
 ---
+imported_hash: 375c31bb674dd70d
 title: Object storage and the data lake
 summary: Every warehouse and lakehouse in this pillar ends up reading objects from a bucket, and a bucket isn't a disk.
 order: 3

@@ -1,4 +1,5 @@
 ---
+imported_hash: 07017cabb15c602c
 title: 2 — Iterators, generators and comprehensions
 summary: 'def iter(self): # an iterator returns itself return self'
 order: 13

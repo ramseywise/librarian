@@ -1,7 +1,8 @@
 ---
+imported_hash: 6975f707a8c0e2f3
 title: 4 — Bayesian A/B Testing
 summary: 'Larkspur''s head of product wanted two things from the checkout test: how likely is it that the new checkout is better, and what do we lose if we ship it and we are wrong?'
-order: 5
+order: 7
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing.md
@@ -144,7 +145,7 @@ P(lift > 0.5pp) 0.827
 P(lift > 1.0pp) 0.011
 ```
 
-![Posterior densities of the conversion rate for checkout A and checkout B: two narrow peaks near 4.9 and 5.6 percent which barely overlap](../assets/bayes-larkspur-posteriors.png)
+![Posterior densities of the conversion rate for checkout A and checkout B: two narrow peaks near 4.9 and 5.6 percent which barely overlap](../assets/sources/images/bayes-larkspur-posteriors.png)
 *Image Source: generated for this chapter from the Larkspur counts*
 
 So here is what the head of product asked for. The new checkout is better with probability above 0.9999. If it is shipped and turns out to be worse, the expected cost is negligible, while keeping the old checkout gives up 0.645 points in expectation. The lift probably clears the half-point the team set as the minimum worth shipping (0.83), and is very unlikely to reach a full point (0.01). This last pair is what the business case uses, and the frequentist output could not state it directly.
@@ -257,6 +258,10 @@ The columns give how often each rule ships B when B has no effect, when it costs
 
 The rule is therefore: an expected-loss threshold, a minimum sample size set in advance, and full weeks. Also, don't call the test "immune to peeking" in a planning meeting, because the second row of this table says it isn't. These figures depend on this setup (effect sizes, traffic, ε), and you should rerun `simulate` with yours.
 
+Efron and Hastie give the frequentist side of this table a cleaner small case. An experiment is scheduled for 30 monthly looks and ends at Z = 1.66, just over the 1.645 cutoff. The investigators had also peeked at month 20 (Z = 0.79) and would have stopped had it been significant, so the rule they actually followed rejects a true null with probability 0.074, not 0.05 (recomputed here as one minus the joint normal CDF at 1.645 with correlation √(20/30)). The likelihood is the same whether or not the experiment might have stopped early, so the posterior is untouched, which is the likelihood principle behind "Bayesians may peek". The book's own caveat is the reason the simulation above exists: that leniency holds only for a prior that reflects real experience, and "the Bayesian's right to ignore selection bias … must then be treated with caution" under a flat default. Frequentism, in their words, replaces the choice of a prior with the choice of a method, so a prior is the price Bayes pays and the stopping rule is the price the p-value pays (*Computer Age Statistical Inference*, ch. 3). Their meter-reader fable makes the same point: a voltmeter that would have clipped at 100 volts makes the mean of 12 readings (92, range 82 to 99) biased in a frequentist's eyes, though no reading was ever clipped.
+
+McElreath's closing chapter makes the same argument from the other side: an analysis plan fixed before the data arrives (a mock analysis, registered publicly, with any later changes documented and justified) is the part of the pipeline that a researcher controls, and an analysis designed after seeing the data can overfit in ways that priors and regularisation cannot reliably repair (*Statistical Rethinking*, ch. 15). It is an essay, with no numbers of its own to test.
+
 ## Ranking with few observations
 
 The same machinery fixes a small-N trap ([sampling distributions](../../02-probability-and-statistics/notes/03-distributions-and-sampling.md) raises it for ratings). Sorting by raw upvote ratio puts a comment with 1 upvote and 0 downvotes (100%) above one with 999 and 1 (99.9%).
@@ -330,7 +335,7 @@ prompt B: raw 0.850  lower bound 0.805
 
 Prompt A looks ten points better. With 20 cases its lower bound is 0.81, about the same as prompt B on 200. A 95% on a small suite doesn't yet beat 85% on a large one.
 
-BMH ch. 6's limitation: the lower bound favours old items with many votes. Ranking by a *sample* from each item's posterior (the comment-ranking bandit in [chapter 3](03-priors-and-bandits.md)) gives new items a chance to be seen.
+BMH ch. 6's limitation: the lower bound favours old items with many votes. Ranking by a *sample* from each item's posterior (the comment-ranking bandit in [chapter 3b](03b-bandits-and-thompson-sampling.md)) gives new items a chance to be seen.
 
 A test read across many segments or markets has the same problem at a larger scale: the small segments hold the extreme numbers, and the segment that wins was picked partly for its luck. [Chapter 7](07-multilevel-models-and-partial-pooling.md) estimates all the segments together, and measures how much that shrinks the winner's exaggeration and when it doesn't help.
 

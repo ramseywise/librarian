@@ -1,4 +1,5 @@
 ---
+imported_hash: e54d8fa13dd564e9
 title: 3. Agent Reinforcement Learning - with Serverless RL
 summary: This notebook shows how to RL fine-tune a Qwen-314B model to work well in a research agent using OpenPipe's ART framework and W&B's Serverless RL.
 order: 16

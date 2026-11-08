@@ -1,7 +1,8 @@
 ---
+imported_hash: 8b545648308417e4
 title: SQL
 summary: SQL's teaching lives in programming/sql/.
-order: 266
+order: 269
 kind: reading
 section: Sql
 source: learn-ai-engineering/programming/drills/sql/README.md

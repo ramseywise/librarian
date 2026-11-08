@@ -1,7 +1,8 @@
 ---
+imported_hash: 8e2b0b77165b0dac
 title: ESLint — Reading & Fixing Findings (TS/React)
 summary: 'A finding reads: line:col error/warning <message> <rule-name>.'
-order: 273
+order: 276
 kind: reading
 section: Typescript
 source: learn-ai-engineering/programming/drills/typescript/eslint.md

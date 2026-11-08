@@ -1,3 +1,4 @@
+# imported_hash: ca0125bd149a46c4
 # Observability lecture deck. Covers notes 01-06.
 # Build: make slides PILLAR=generative-ai/06-observability STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md

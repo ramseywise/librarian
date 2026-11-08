@@ -1,4 +1,5 @@
 ---
+imported_hash: d9412765e391d2af
 title: 'Cost: bytes, slots and egress'
 summary: Our taxi dashboard refreshes every 15 minutes and costs about $36,000 a month.
 order: 7

@@ -1,4 +1,5 @@
 ---
+imported_hash: 00523509e58b6c43
 title: Cosine similarity in NumPy
 summary: Implement cosine similarity in NumPy. Start with two 1-D vectors, then generalize to computing the full pairwise similarity matrix between two batches of embeddings.
 order: 238

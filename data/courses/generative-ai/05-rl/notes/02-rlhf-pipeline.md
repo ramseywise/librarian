@@ -1,7 +1,8 @@
 ---
+imported_hash: b71ba7a3faa6bf4f
 title: 2 — RLHF Pipeline
 summary: Base GPT-3 could continue any text and would not reliably answer a question.
-order: 4
+order: 6
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/05-RL/notes/02-rlhf-pipeline.md
@@ -15,6 +16,9 @@ source: learn-ai-engineering/generative-ai/05-RL/notes/02-rlhf-pipeline.md
 > **Books:** Huyen, *AI Engineering*, ch. 7; Iusztin & Labonne, *LLM Engineer's Handbook*, ch. 5–6; Raschka, *Build an LLM from Scratch*, ch. 6–7 (see [references](../references.md#books))
 
 Base GPT-3 could continue any text and would not reliably answer a question. InstructGPT, a smaller model trained with a reward made from human rankings, was preferred by the labelers. The gap between those two is this chapter, and it is also where "the reward is the product" stopped being a metaphor: the reward model is a learned stand-in for human judgment, and PPO will exploit every flaw in it. Read this as three stages and one failure mode.
+
+![Win rate against the 175B SFT model against model size (1.3B, 6B, 175B). PPO-ptx rises from about 0.53 to 0.66 and PPO from about 0.52 to 0.63; SFT goes from 0.35 to 0.50, prompted GPT from 0.23 to 0.41 and plain GPT from 0.14 to 0.24. The 1.3B PPO models sit above the 175B GPT-3 baselines.](../assets/sources/images/ouyang-instructgpt-fig1.png)
+*Image Source: Ouyang et al., [Training language models to follow instructions with human feedback](https://arxiv.org/abs/2203.02155) (2022), Fig. 1*
 
 ---
 
@@ -192,7 +196,7 @@ optimizer state:
   more steps and trails full fine-tuning by 10+ points on some tasks (see
   [01 PEFT](../../01-llm-fundamentals/notes/09-peft-and-fine-tuning-in-practice.md#parameter-efficient-fine-tuning)).
 
-**LoRA.** Freeze W and learn a low-rank update BA, with rank r ≪ d. Hu et al. matched full
+**LoRA.** Freeze W and learn a [low-rank](../../01-llm-fundamentals/notes/02-attention-and-the-transformer-block.md#matrix-products-transpose-and-rank) update BA, with rank r ≪ d. Hu et al. matched full
 fine-tuning of GPT-3 175B on several tasks with about 4.7M trainable parameters (0.0027%). Huyen's
 rules (*AI Engineering*, ch. 7):
 
@@ -449,6 +453,32 @@ to 0.80 ([arXiv:2503.13551](https://arxiv.org/abs/2503.13551) (Wang et al., 2025
 test set is about 90 problems with no error bars). The agent version of the trade-off is in
 [07](07-reward-design-and-tool-calling.md#reward-design-for-multi-turn-agents).
 
+![Percent of MATH problems solved against the number of sampled solutions per problem (10 to 1,860, log scale). The process-supervised reward model climbs from about 68 to 78, the outcome-supervised model plateaus near 72, and majority voting plateaus near 70; the gap to the PRM widens as N grows.](../assets/sources/images/lightman-verify-step-by-step-fig3.png)
+*Image Source: Lightman et al., [Let's Verify Step by Step](https://arxiv.org/abs/2305.20050) (2023), Fig. 3*
+
+Two identities from Xiao and Zhu make "dense" precise. A process reward model is a step classifier, and a
+path's reward is the sum of its step log-probabilities, `r(x, y) = Σ_k log Pr(correct | x, y≤k)`, which
+penalises a path for every doubtful step even when the final answer is right (*Foundations of LLMs*, ch. 4,
+Eq. 4.84; Lightman's labels add a third class, "neutral"). And the PPO advantage is already a dense
+reward. Ng et al.'s potential-based shaping adds `γΦ(s′) − Φ(s)` without changing the optimal policy;
+with Φ equal to the value function, the shaped reward is `r + γV(s′) − V(s)`, the one-step TD error
+(Eq. 4.66). Turning step scores into rewards and advantages is worked through in
+[08](08-reasoning-rl-deepseek-r1.md#dense-step-rewards-from-a-process-verifier).
+
+**Ranked lists and a regulariser.** If raters order N answers instead of comparing two, the simplest
+listwise loss is the pairwise loss averaged over every ordered pair, with weight 2 / (N(N−1))
+(*Foundations of LLMs*, ch. 4, Eq. 4.57); Plackett-Luce is the proper ranking model that generalises
+Bradley-Terry. The same chapter describes a fix for an under-determined reward model, from Eisenstein
+et al. (2023, not read here): the Bradley-Terry loss sees only the *difference* `r(x, y_w) − r(x, y_l)`,
+so any constant shift fits equally well, and a penalty on the squared reward sum pins the scale:
+
+```
+L_reg = L_pair + λ · E[(r(x, y_w) + r(x, y_l))²]
+```
+
+The book prints the penalty with a minus sign (Eq. 4.63), which would reward large sums. This note
+writes it as a penalty, which is the only reading that regularises.
+
 You can fit the Bradley-Terry model itself in a few lines. Below, four answers have hidden quality scores, a simulated labeler compares random pairs, and the "reward model" is one learned number per answer, trained by gradient ascent on the log-likelihood:
 
 ```python
@@ -497,7 +527,7 @@ policy (the LLM) using **Proximal Policy Optimization (PPO)** to maximize expect
 while staying close to the SFT policy. The KL-to-reference objective is maximum-entropy RL with a
 prior, and its optimum π\* ∝ π_ref · exp(r/β) is exactly what DPO inverts
 ([01](01-rl-foundations.md#entropy-and-maximum-entropy-rl-sac)). The advantage estimator, GAE,
-blends TD targets ([01](01-rl-foundations.md#temporal-difference-learning-q-learning-vs-sarsa)).
+blends TD targets ([01](01b-algorithm-families-td-and-dqn.md#temporal-difference-learning-q-learning-vs-sarsa)).
 
 **PPO objective for language models:**
 
@@ -507,7 +537,7 @@ L_PPO(θ) = E[r_θ(x, y)] - β · KL[π_θ(y|x) || π_SFT(y|x)]
 
 where:
 - `r_θ(x, y)` is the reward model score for the generated response
-- `β · KL[...]` is the KL divergence penalty ([KL, defined](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity)) keeping the policy near SFT
+- `β · KL[...]` is the KL divergence penalty ([KL, defined](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity)) keeping the policy near SFT. Sampled along one response it is `Σ_t log π_θ(a_t|s_t) − Σ_t log π_ref(a_t|s_t)` (*Foundations of LLMs*, ch. 4, Eq. 4.52)
 - `β` is the penalty coefficient (typically 0.02–0.2)
 
 The KL term is essential. Without it, the policy learns to exploit the reward model
@@ -590,7 +620,7 @@ own authors agreed with each other only about 60% of the time on 4-way choices (
 They suggest asking labelers to *name a problem* instead of ranking, since two people who disagree on
 the worst flaw may still agree that a flaw exists. Practitioner data engineering for both SFT and
 preference sets (dedup, decontamination, synthetic data, how many examples) is in
-[06](06-data-and-environments.md#data-engineering-for-post-training).
+[06](06b-dataset-engineering-for-post-training.md#data-engineering-for-post-training).
 
 ---
 

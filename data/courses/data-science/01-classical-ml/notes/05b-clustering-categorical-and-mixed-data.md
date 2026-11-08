@@ -1,7 +1,8 @@
 ---
+imported_hash: dfc5dfa89bc69bbd
 title: Clustering categorical and mixed data
 summary: Tallybook's marketing lead wants customer segments.
-order: 7
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data.md
@@ -270,7 +271,7 @@ This is the only method here where "there are no groups" is a possible answer, a
 
 ## The benchmark
 
-![Grouped bars of ARI for seven methods in three worlds. Latent class is highest in each. FAMD with k-means is second in the both and categorical worlds and the only distance method that hears categories. One-hot and k-prototypes score near zero in the categorical world. Gower with PAM stays below 0.3 everywhere.](../assets/classical-mixed-benchmark.png)
+![Grouped bars of ARI for seven methods in three worlds. Latent class is highest in each. FAMD with k-means is second in the both and categorical worlds and the only distance method that hears categories. One-hot and k-prototypes score near zero in the categorical world. Gower with PAM stays below 0.3 everywhere.](../assets/sources/images/classical-mixed-benchmark.png)
 
 | ARI, 1,200 customers, mean (sd) of 5 seeds | `both` | `categorical` | `numeric` | `correlated` |
 |---|---:|---:|---:|---:|

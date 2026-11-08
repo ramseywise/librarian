@@ -1,4 +1,5 @@
 ---
+imported_hash: d463adc816481396
 title: LC 19 — Remove Nth Node From End of List
 summary: Given the head of a singly linked list, remove the n-th node counting from the end of the list and return the head of the modified list (n is valid, i.e.
 order: 15

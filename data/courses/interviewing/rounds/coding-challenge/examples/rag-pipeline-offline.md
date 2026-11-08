@@ -1,4 +1,5 @@
 ---
+imported_hash: cee06ba0a010cd4a
 title: 'Worked Example: Retrieval → Prompt → Structured Answer (45 min, offline)'
 summary: 'This is the highest-probability shape for an AIE practical: it touches retrieval, prompt construction, schema validation, and error handling in one 45-minute arc, and none of it needs a network.'
 order: 32

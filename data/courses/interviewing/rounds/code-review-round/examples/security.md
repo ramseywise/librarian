@@ -1,4 +1,5 @@
 ---
+imported_hash: 012b4ffb73620a89
 title: Security & Trust Boundaries
 summary: '+ @router.get("/admin/users/{user_id}/export") + async def export_user_data(user_id: int, db: Database = Depends(get_db)): + user = await db.fetch_one("SELECT  FROM users WHERE id = :id", {"id": user_id}) + return {"data": user, "exported_a…'
 order: 22

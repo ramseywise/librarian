@@ -1,15 +1,16 @@
 ---
-title: 3 — Priors and Bandits
+imported_hash: ad5a98a9f7056cd0
+title: 3 — Priors and Empirical Bayes
 summary: The first complaint anyone makes about Bayesian analysis is that the prior is subjective.
-order: 4
+order: 5
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md
 ---
 
-# 3 — Priors and Bandits
+# 3 — Priors and Empirical Bayes
 
-The first complaint anyone makes about Bayesian analysis is that the prior is subjective. The more useful complaint is that the "objective" default is often worse: a Normal(0, 100) on a logistic slope looks like modest ignorance and actually says the failure rate is almost certainly 0% or 100%. This chapter is about choosing a prior deliberately. It covers the kinds on offer, how to check one by simulating from it, when the data will overrule it, and why ridge and lasso were priors all along. Then it follows the same posterior into a different job: in a bandit, the posterior decides which option to try next, and that makes it an A/B test which stops wasting traffic as it learns.
+The first complaint anyone makes about Bayesian analysis is that the prior is subjective. The more useful complaint is that the "objective" default is often worse: a Normal(0, 100) on a logistic slope looks like modest ignorance and actually says the failure rate is almost certainly 0% or 100%. This chapter is about choosing a prior deliberately. It covers the kinds on offer, how to check one by simulating from it, when the data will overrule it, and why ridge and lasso were priors all along, then how a prior fitted across many experiments (empirical Bayes) takes back the winner's curse. The bandit half of the story, where the same posterior decides which option to try next, is in [3b](03b-bandits-and-thompson-sampling.md).
 
 ```python
 import numpy as np, pymc as pm, arviz as az
@@ -77,6 +78,22 @@ Beta(0.5, 0.5): mean 0.500, 95% of mass in [0.002, 0.998]
 
 Beta(3, 97) says "around 3%, give or take". Beta(30, 970) has the same mean and claims ten times the evidence. Beta(½, ½) is the Jeffreys prior and piles its mass at the edges.
 
+### Jeffreys: a flat prior that survives a transform
+
+Jeffreys' rule sets the prior proportional to the square root of the Fisher information, g(θ) ∝ I(θ)^½, and the result transforms correctly: reparametrise to φ = t(θ) and the rule applied to φ gives the same posterior. That removes the objection to flat priors above. For a Poisson count x with rate θ the rule gives g(θ) ∝ θ^(−½), so observing x = 10 gives a Gamma(10.5) posterior with mean 10.5, against Gamma(11) and mean 11.0 under a flat prior (recomputed here). Efron and Hastie's Fig. 13.1 shows the flat-prior posterior sitting about 0.5 to the right of the confidence density for the same data, with the Jeffreys posterior nearly on top of it (*Computer Age Statistical Inference*, ch. 13).
+
+![Posterior of the Poisson rate after observing x = 10 under a flat prior and under Jeffreys' prior, with the confidence density](../assets/sources/images/computer-age-statistical-inference-fig13-1.png)
+
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 13.1*
+
+The book's second case is a sample correlation of 0.498 from n = 22 students' mechanics and vectors scores, assuming a bivariate normal. The Jeffreys posterior gives a 95% credible interval of [0.093, 0.750], nearly the Neyman confidence interval, while the flat and a triangular shrinkage prior g(θ) = 1 − |θ| give visibly different curves (ch. 3, Fig. 3.2).
+
+![Posterior density of the correlation under flat, Jeffreys and triangular priors, with 0.093 and 0.750 marked](../assets/sources/images/computer-age-statistical-inference-fig3-2.png)
+
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 3.2*
+
+Two limits come with it. In one parameter Jeffreys tends to match frequentist coverage, but with ten normal means xᵢ ~ N(θᵢ, 1) the joint Jeffreys prior is flat and "can produce disastrous overall results" (ch. 3, pointing to ch. 13), and no single prior is uninformative for every target t(θ). The flat default is also where the winner's curse below begins: for the top gene of 6,033 in a prostate study (x = 5.29), a flat prior returns 5.29, while the empirical Bayes prior the book builds later returns 4.11 (ch. 3).
+
 ### Useful distributions for priors
 
 | Distribution | Support | Prior for |
@@ -87,7 +104,7 @@ Beta(3, 97) says "around 3%, give or take". Beta(30, 970) has the same mean and 
 | Normal(0, s) | ℝ | regression coefficients |
 | Wishart / LKJ | positive-definite matrices | covariance matrices; prefer LKJ in PyMC |
 
-**Conjugate update for a rate:** a Beta(1, 1) prior and X successes in N trials give Beta(1 + X, 1 + N − X). This one line powers the bandit below and the Bayesian A/B test in [chapter 4](04-bayesian-ab-testing.md).
+**Conjugate update for a rate:** a Beta(1, 1) prior and X successes in N trials give Beta(1 + X, 1 + N − X). This one line powers the bandit in [3b](03b-bandits-and-thompson-sampling.md) and the Bayesian A/B test in [chapter 4](04-bayesian-ab-testing.md).
 
 ## Prior predictive checks
 
@@ -144,7 +161,7 @@ Normal(0, 10)              slope      9.6   P(y=1 at largest x) 0.991752
 Cauchy(0, 2.5)             slope      3.6   P(y=1 at largest x) 0.859439
 ```
 
-The flat fit stops at a slope of 100 only because the optimiser gives up, and it claims certainty at the edge of the data. [Chapter 6 of the statistics pillar](../../02-probability-and-statistics/notes/06-regression-and-glms.md) showed the same failure as an enormous coefficient with an absurd standard error. Each prior gives a finite answer and each encodes a different belief: Normal(0, 100) still claims certainty, Normal(0, 10) gives 99%, and Gelman's default gives 86% from six observations, which is about what six observations are worth.
+The flat fit stops at a slope of 100 only because the optimiser gives up, and it claims certainty at the edge of the data. [Chapter 6 of the statistics pillar](../../02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms.md#separation) showed the same failure as an enormous coefficient with an absurd standard error. Each prior gives a finite answer and each encodes a different belief: Normal(0, 100) still claims certainty, Normal(0, 10) gives 99%, and Gelman's default gives 86% from six observations, which is about what six observations are worth.
 
 ## The prior washes out
 
@@ -170,10 +187,24 @@ N=128  flat Beta(1,1) 0.585   biased Beta(2,10) 0.550   gap 0.035
 N=500  flat Beta(1,1) 0.610   biased Beta(2,10) 0.600   gap 0.010
 ```
 
-![Four panels of posterior density for a flat prior and a Beta(2,10) prior after 0, 8, 64 and 500 observations with a vertical line at the true rate 0.6: the curves start far apart and are nearly identical by 500](../assets/bayes-prior-washout.png)
+![Four panels of posterior density for a flat prior and a Beta(2,10) prior after 0, 8, 64 and 500 observations with a vertical line at the true rate 0.6: the curves start far apart and are nearly identical by 500](../assets/sources/images/bayes-prior-washout.png)
 *Image Source: generated for this chapter, using the same setup as the code above*
 
 So the prior matters most exactly when Bayesian methods matter most: at small N. The gap in the table does not fall smoothly, because each N is one stretch of one data stream. The 32-observation row overshoots 0.6 under the flat prior: priors wash out toward what the data says, not toward the truth. A prior with zero mass at the truth never washes out at all.
+
+Downey's locomotive problem shows both halves with a count instead of a rate. With one sighting of train number 60 and a flat prior on the fleet size N, the posterior mean is 207, 333 or 552 when the prior's upper bound is 500, 1,000 or 2,000. With three sightings (30, 60, 90) the three means are 152, 164 and 171: more data pulls the priors together, but not all the way. The other fix is better background information. Firm sizes follow roughly a power law (many small firms, few large ones), so a prior proportional to N^-1 is more realistic than a flat one, and with all three sightings its means are 131, 133 and 134 for the same three bounds, with a 90% credible interval of 91 to 243 at a bound of 1,000. The power-law posterior is also nearly insensitive to the arbitrary bound, which a flat prior on an open-ended quantity is not (*Think Bayes*, ch. 3).
+
+| Prior on N | Upper bound 500 | 1,000 | 2,000 |
+|---|---|---|---|
+| Flat, train 60 only | 207 | 333 | 552 |
+| Flat, trains 30, 60, 90 | 152 | 164 | 171 |
+| Power law N^-1, trains 30, 60, 90 | 131 | 133 | 134 |
+
+Downey draws the practical rule from this: with a lot of data an informative and an uninformative prior agree, and with little data, or with a decision at stake, use the background information you have rather than pretend to know less (*Think Bayes*, ch. 3). The cells above are posterior means; I re-ran them and they match the book.
+
+The same swamping shows up on the Euro coin (140 heads in 250 spins, [chapter 1](01-bayesian-inference.md#the-coin-beta-binomial)). Downey compares a uniform prior over x = 0 to 100 with a triangular prior peaking at 50, which believes a lopsided coin less. After the 250 spins the medians (56) and the 90% credible intervals (51 to 61) are identical, and the means are 55.95 and 55.74, within 0.5% (*Think Bayes*, ch. 4; I re-ran both and the numbers match). He adds two caveats. Convergence needs the two people to agree on the model as well as the data, since a different likelihood moves the posterior however much data arrives. And a hypothesis given prior probability 0 keeps posterior probability 0 whatever is observed, which is the reasoning behind **Cromwell's rule**: never assign 0 to anything remotely possible (*Think Bayes*, ch. 4). That is the same warning as "never put zero prior mass where the truth could be" above, with a name.
+
+With little data the prior can decide the answer. In Downey's Boston Bruins series forecast, four games of scores and a prior on goals per game with sd 0.3 give the Bruins a 57% chance of the series, and the same data with a prior of sd 0.85 (the spread of pair-by-pair averages rather than team averages) give 80%. [Chapter 1](01-bayesian-inference.md#predicting-a-game-the-posterior-predictive-as-a-mixture) has the code (*Think Bayes*, ch. 7).
 
 ## Regularisation is a prior
 
@@ -185,6 +216,8 @@ BMH ch. 6 derives the link between penalised regression and Bayesian MAP estimat
 | Ridge (L2 penalty λ‖β‖²) | MAP with a Normal(0, τ) prior on each β |
 | Lasso (L1 penalty λ‖β‖₁) | MAP with a Laplace prior on each β |
 | Penalty strength λ | prior precision (tighter prior = larger λ) |
+
+James et al. state the same pairing: under independent Gaussian priors ridge is both the posterior mode and mean, and under a Laplace prior lasso is the posterior mode (*An Introduction to Statistical Learning with Applications in Python*, ch. 6, Fig. 6.11). In their orthonormal special case ridge divides each least-squares coefficient by 1 + λ, while the lasso subtracts λ/2 and clips at zero (eqs. 6.14 and 6.15, "soft thresholding"), which is the mechanism behind lasso's exact zeros.
 
 The claim is exact and easy to check. With unit noise, a Normal(0, τ) prior corresponds to a ridge penalty of 1/τ². We use 60 rows and six inputs, of which only two matter.
 
@@ -239,6 +272,26 @@ Draws exactly 0: 0 of 24000
 
 Lasso and the MAP agree on which coefficients vanish and are close on the rest, though not exact, because a gradient optimiser is working on a kink in the surface. The last two lines make BMH's point: lasso's sparsity comes from the geometry of the L1 penalty at the MAP, not from a prior belief in sparsity. The posterior mean under the same prior is not sparse, and not one of the 24,000 draws is exactly zero. If you want a Bayesian to say "this coefficient is zero", the Laplace prior is not doing it.
 
+### Priors as imagined data, and what regularising buys out of sample
+
+McElreath gives a way to read a Gaussian prior's strength: a Normal(mu, sd) prior on a mean is worth about n = 1/sd^2 observations of the outcome. On adult heights (!Kung census, n = 352), Normal(178, 0.1) equals 100 observed heights and Normal(178, 20) equals 0.0025 of one (*Statistical Rethinking*, ch. 4). The narrow prior wins: the posterior for mu stays at 177.86, against 154.61 under the weak prior, and sigma, whose prior did not change, jumps from 7.73 to 24.52 to absorb the misfit. A prior on one parameter moves the others, so sensitivity checks have to refit the whole model. With a sensible prior, the posterior over a regression line tightens as data arrive: 20 lines sampled from the posterior of the height-on-weight fit fan out at N = 10 and nearly coincide at N = 352, where the slope is 0.90 cm per kg (sd 0.04).
+
+![Twenty regression lines sampled from the posterior at N = 10, 50, 150 and 352](../assets/sources/images/statistical-rethinking-fig4-5.png)
+
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 4.5*
+
+The out-of-sample case for tight priors comes from a simulation in chapter 6. The outcome is Normal(mu, 1) with mu = 0.15 x1 - 0.4 x2, so the true model has three parameters, and models with one to five parameters are fitted to 10,000 simulated training sets and scored on fresh data from the same process. Training deviance falls with every added parameter. Test deviance is lowest at three. Normal(0, 1) on a standardised slope puts only 5% of its mass beyond 2 sd; tightening to Normal(0, 0.5) and Normal(0, 0.2) makes training deviance worse and test deviance better for the over-parameterised models. At N = 20 with Normal(0, 0.2), the four- and five-parameter models are barely worse than the true three-parameter one, and at N = 100 the data overwhelm even Normal(0, 0.2) (*Statistical Rethinking*, ch. 6). That is the ridge result from above, measured on held-out data: regularisation is the prior, and its value depends on N. McElreath calls multilevel models "adaptive regularisation", because they learn the prior's strength from the data ([chapter 7](07-multilevel-models-and-partial-pooling.md)).
+
+![Training and test deviance by number of parameters under three regularising priors](../assets/sources/images/statistical-rethinking-fig6-9.png)
+
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 6.9*
+
+The opposite problem is two near-duplicate predictors. In a simulation (N = 100, leg lengths of one person with noise sd 0.02, priors Normal(2, 10) on each leg's slope), the two slopes come out at -0.43 (sd 2.18) and 2.48 (sd 2.19), uninterpretable on their own, while their sum is 2.05, the slope the one-leg model recovers with sd 0.07. For milk fat and lactose across 29 primate species (r = -0.94), the joint model roughly doubles both standard deviations. In McElreath's sweep (100 flat-prior fits per correlation) the slope's sd rises from about 0.001 at zero correlation to about 0.007 at 0.99, most of it past 0.9, and he notes flat priors exaggerate this and informative ones slow it (*Statistical Rethinking*, ch. 5). A posterior is always proper, so "weakly identified" is the right phrase. A wide posterior is the model answering the question you asked.
+
+![Posterior sd of a slope against its predictor's correlation with another predictor](../assets/sources/images/statistical-rethinking-fig5-10.png)
+
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 5.10*
+
 ## The winner's curse: shrinkage as a prior on experiments
 
 A team that ships every significant win will overstate its gains. [Experimentation at scale](../../03-experimentation-and-causality/notes/03-experimentation-at-scale.md) measured the inflation, and a prior is how to remove it. Suppose a platform runs 2,000 experiments whose true lifts are mostly tiny, Normal(0, 0.2) points, each measured with a standard error of 0.3:
@@ -272,164 +325,28 @@ Conditioning on significance selects the experiments whose noise pointed up, so 
 
 This is empirical Bayes in the form that avoids BMH's objection. The prior comes from the whole population of 2,000, in which any one experiment's own result is a tiny share, so its data is not meaningfully counted twice. The simulation is ideal in having a known noise and a truly Normal population, and real programmes need the second checked.
 
+### Empirical Bayes without a prior family: Robbins' formula
+
+The simulation above assumed a Normal prior. Robbins' formula needs none. If x is a count drawn from Poisson(θ) with θ from an unknown prior, then E{θ | x} = (x + 1) y(x+1) / y(x), where y(x) is the number of cases that showed count x, because the observed counts already carry the prior's information. Efron and Hastie's table is one year of claims on 9,461 automobile policies: 7,840 had no claims, 1,317 had one and 239 had two. For a customer with no claims the formula gives 1 × 1,317 / 7,840 = 0.168 expected claims next year. It is erratic where counts are thin: at x = 5 it returns 6.00 (recomputed from the book's table), while a gamma prior fitted by maximum likelihood gives about 1.34 (*Computer Age Statistical Inference*, ch. 6).
+
+The same idea predicts what has not been seen yet. Corbet trapped butterflies for two years in Malaya: 118 species were caught once, 74 twice, 44 three times. Fisher's missing-species estimate of the number of new species in a further t units of trapping time (one unit being the original two years) is Ê(t) = y₁t − y₂t² + y₃t³ − …, which gives Ê(½) = 45.2 ± 11.2 new species (*Computer Age Statistical Inference*, ch. 6, Table 6.3 and Fig. 6.2). The series fails for t > 1, and the gamma-prior version gives Ê(2) = 123 as educated guessing. On Shakespeare's 884,647 words, with 14,376 words used once and 31,534 distinct, a new canon of equal size would bring 11,430 ± 178 unseen words (t = 1; re-summing the printed counts up to x = 100 gives about 11,490, the tail being unprinted).
+
+![Butterfly data: expected number of new species against additional trapping time, nonparametric with one standard deviation band and the gamma model dashed](../assets/sources/images/computer-age-statistical-inference-fig6-2.png)
+
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 6.2*
+
+Both cases estimate the marginal counts and read the prior off them, which the book later calls f-modelling. Its alternative is g-modelling: fit the prior g(θ) itself, usually a spike at zero plus a smooth slab, and deconvolve. In a 1,000-case simulation with X ~ N(θ, 1), the standard deviation of the estimated g from nonparametric f-modelling averaged more than 20 times that of the g-model at similar bias, and a parametric f-model reduced it without reaching the g-model (ch. 21, Fig. 21.11). On the 6,033-gene prostate data the g-model puts the null probability at 0.946 against 0.984 from the f-model locfdr.
+
+![Standard deviation of the estimated prior for the g-model and two f-models in the artificial example](../assets/sources/images/computer-age-statistical-inference-fig21-11.png)
+
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 21.11*
+
 ## Eliciting priors from experts
 
 - **Trial roulette:** give the expert a grid of bins and twenty chips, and have them place chips to show where they think the value lies. Fit a distribution to the chip histogram. It works with people who would never write down a Beta.
 - **BMH's stock-returns example:** expert beliefs about four stocks' daily returns become Normal priors on the means, and a Wishart prior on the covariance. Posterior means and correlations then feed a mean-variance portfolio optimiser. The warning is that finance has a very low signal-to-noise ratio, and that with N assets the covariance has N(N−1)/2 correlations to estimate, so start from the sample covariance, or drop correlations you do not need.
 
-## Bayesian bandits (Thompson sampling)
-
-The multi-armed bandit: N slot machines with unknown payout rates. Each pull earns a reward and also teaches you about that arm. Pull the best-looking arm too early and you may never discover the real best one. Keep pulling all arms equally and you waste pulls on losers. An A/B test is a bandit that explores uniformly until a fixed N and then exploits.
-
-### The algorithm
-
-For each round:
-
-1. For each arm b, draw a sample X_b from its posterior Beta(1 + wins_b, 1 + losses_b).
-2. Pull the arm with the largest sample.
-3. Observe the reward and update that arm's posterior.
-
-```mermaid
-flowchart LR
-    A["Posterior for each arm"] --> B["Draw one sample per arm"]
-    B --> C["Pull the arm with the largest draw"]
-    C --> D["Observe reward"]
-    D --> E["Update that arm's Beta"]
-    E --> A
-```
-
-Uncertain arms produce widely spread samples, so they still win the draw sometimes. Exploration happens automatically and fades as evidence accumulates. Losers are never discarded, only chosen at a decreasing rate. The rule is due to Thompson in 1933, and it spent decades in the shade until empirical work such as [Chapelle and Li (NeurIPS, 2011)](https://proceedings.neurips.cc/paper/2011/hash/e53a0a2978c28872a4505bdb51db06dc-Abstract.html) found it highly competitive and argued it should be a standard baseline.
-
-```python
-rng = np.random.default_rng(5)
-class Bandits:
-    def __init__(self, p_array):
-        self.p = np.asarray(p_array)
-    def pull(self, i):
-        return rng.random() < self.p[i]
-    def __len__(self):
-        return len(self.p)
-
-class BayesianStrategy:
-    def __init__(self, bandits):
-        self.bandits = bandits
-        self.wins = np.zeros(len(bandits))
-        self.trials = np.zeros(len(bandits))
-    def sample_bandits(self, n=1):
-        for _ in range(n):
-            draw = rng.beta(1 + self.wins, 1 + self.trials - self.wins)
-            choice = np.argmax(draw)
-            self.wins[choice] += self.bandits.pull(choice)
-            self.trials[choice] += 1
-
-strat = BayesianStrategy(Bandits([0.85, 0.60, 0.75]))
-strat.sample_bandits(1000)
-print("pulls   ", strat.trials.astype(int))
-print("post sd ", np.round(stats.beta(1 + strat.wins, 1 + strat.trials - strat.wins).std(), 3))
-```
-
-```text
-pulls    [926  26  48]
-post sd  [0.011 0.091 0.061]
-```
-
-After 1,000 pulls the 0.85 arm has 926 of them and a tight posterior. The others have wide posteriors, which is correct: the strategy has learned just enough about them to stop paying for more.
-
-### Measuring a strategy: regret
-
-```text
-R_T = Σ_{i=1..T} (w_opt − w_{B(i)})
-```
-
-Here w_opt is the best arm's true rate and w_B(i) the rate of the arm chosen in round i. Zero regret means you always picked the best arm. [Lai and Robbins (*Advances in Applied Mathematics*, 1985)](https://doi.org/10.1016/0196-8858(85)90002-8) proved that any good strategy's regret must grow at least logarithmically in T, so a strategy matching that rate has "solved" the problem in BMH's phrase. Thompson sampling was shown to be logarithmic by [Agrawal and Goyal (COLT, 2012)](https://proceedings.mlr.press/v23/agrawal12.html), and [Bayes-UCB](http://proceedings.mlr.press/v22/kaufmann12/kaufmann12.pdf) has finite-time bounds that imply asymptotic optimality for binary rewards (Kaufmann, Cappé and Garivier, AISTATS 2012).
-
-| Strategy | Rule | Expected regret |
-|---|---|---|
-| Random | pick uniformly | linear in T |
-| Max mean | pick the highest posterior mean | can lock onto a wrong arm |
-| Upper credible bound | pick the highest 95th percentile of the posterior | fixed quantile: no guarantee claimed here, measured below |
-| Bayes-UCB | pick the highest posterior quantile, with the level rising over time | logarithmic, optimal for binary rewards |
-| Thompson | sample and take the max | logarithmic |
-
-BMH estimates expected regret by repeating the simulation 500 times, the Law of Large Numbers again. Here are 300 runs on low rates more like a checkout than a slot machine:
-
-```python
-def run(rule, p, T, rng):
-    wins, trials = np.zeros(len(p)), np.zeros(len(p))
-    regret = np.empty(T)
-    for t in range(T):
-        i = rule(wins, trials, t, rng)
-        wins[i] += rng.random() < p[i]
-        trials[i] += 1
-        regret[t] = p.max() - p[i]
-    return regret.cumsum()
-
-rules = {
-    "random": lambda w, n, t, r: r.integers(len(w)),
-    "max mean": lambda w, n, t, r: np.argmax((1 + w) / (2 + n)),
-    "95% upper bound": lambda w, n, t, r: np.argmax(stats.beta.ppf(0.95, 1 + w, 1 + n - w)),
-    "Thompson": lambda w, n, t, r: np.argmax(r.beta(1 + w, 1 + n - w)),
-}
-p = np.array([0.15, 0.20, 0.10])                           # checkout-style low rates
-rng = np.random.default_rng(6)
-for name, rule in rules.items():
-    runs = np.array([run(rule, p, 2000, rng)[[99, 499, 1999]] for _ in range(300)])
-    print(f"{name:16s} regret at 100 {runs[:, 0].mean():5.1f}   500 {runs[:, 1].mean():6.1f}   2000 {runs[:, 2].mean():6.1f}")
-```
-
-```text
-random           regret at 100   5.0   500   24.9   2000  100.0
-max mean         regret at 100   2.9   500    8.8   2000   28.3
-95% upper bound  regret at 100   3.3   500    8.6   2000   14.6
-Thompson         regret at 100   3.8   500   12.4   2000   22.8
-```
-
-Random pays at a constant rate. Thompson's regret climbs from 12 to 23 while pulls quadruple. In this setup, over this horizon, the plain 95% bound beats it, at 14.6, and at 500 pulls max mean is level with the bound. Do not read this as a ranking, because the ordering depends on the gaps and the horizon, and with 300 runs the means still carry noise. Run your own simulation with your rates and horizon before you commit to a rule. Thompson's appeal is that it has no quantile to choose and extends directly to the cases below.
-
-### Extensions from BMH
-
-| Extension | Change |
-|---|---|
-| Minimise instead (prizes are bad) | take `argmin` of the samples |
-| Non-stationary arms | learning rate: `wins = rate * wins + result`, `trials = rate * trials + 1`; `rate < 1` forgets old evidence faster |
-| Non-binary rewards | sample from the posterior of each arm's expected reward; needs MCMC if not conjugate |
-| Comment ranking | treat each comment as an arm with Beta(1 + U, 1 + D); on each page load, sample a score per comment and sort. New comments still get seen, unlike ranking by the lower bound ([chapter 4](04-bayesian-ab-testing.md)) |
-
-The non-stationary row is one line of change, and it pays when the world moves. Two arms swap their rates halfway through 4,000 pulls:
-
-```python
-rng = np.random.default_rng(8)
-def forget(rate, T=4000):
-    w, n, reward = np.zeros(2), np.zeros(2), 0
-    for t in range(T):
-        p = np.array([0.20, 0.10]) if t < T // 2 else np.array([0.10, 0.20])   # arms swap
-        i = np.argmax(rng.beta(1 + w, 1 + n - w))
-        r = rng.random() < p[i]
-        w, n = rate * w, rate * n
-        w[i] += r
-        n[i] += 1
-        reward += r
-    return reward / T
-for rate in (1.0, 0.99):
-    print(f"rate {rate}: mean reward per pull {np.mean([forget(rate) for _ in range(100)]):.3f}")
-```
-
-```text
-rate 1.0: mean reward per pull 0.162
-rate 0.99: mean reward per pull 0.179
-```
-
-The forgetful strategy reacts to the swap and earns about 10% more per pull. On a stationary problem it would cost a little, because forgetting throws away evidence.
-
-### Bandit or A/B test?
-
-| Use a bandit when | Use a fixed-horizon A/B test when |
-|---|---|
-| the cost of showing a loser is high (ads, recommendations, promotions) | you need an unbiased effect estimate to report |
-| arms change over time | the decision is a one-off ship or no-ship |
-| there are many arms | you need to measure guardrail and long-term metrics |
-
-Allocation that responds to outcomes is why the left column cannot report a clean effect. The arm that looked bad early stops getting traffic, so its estimate stays noisy and tends to stay low. Larkspur would not have used a bandit for checkout: it wanted a number to report and guardrail metrics it could read at the end.
+Thompson sampling, regret, the 10-armed testbed and the bandit-or-A/B question are in [3b](03b-bandits-and-thompson-sampling.md).
 
 ## Pitfalls
 
@@ -440,8 +357,6 @@ Allocation that responds to outcomes is why the left column cannot report a clea
 | Zero mass at the truth | The posterior can never move there | Use generous supports |
 | Unscaled inputs with a default prior | Cauchy(0, 2.5) means little if the input is in pounds or milliseconds | Scale first, as Gelman et al. specify |
 | Reading lasso as a sparsity belief | The Laplace posterior is not sparse | Use MAP if you want zeros, and say that's what you did |
-| Reporting a bandit's arm means as an effect | Adaptive allocation biases them | Run a fixed split, or a holdout, for the number you report |
-| Trusting a published regret ranking | The order depends on gaps and horizon | Simulate with your own rates |
 
 ---
 
@@ -450,7 +365,6 @@ Allocation that responds to outcomes is why the left column cannot report a clea
 1. Your prior for a checkout rate is "about 5%, and I'd be surprised outside 3–8%". Find a Beta that says so.
 2. Without running anything: Normal(0, 1) or Normal(0, 10) on a slope, which gives the stronger ridge penalty, and by what factor in λ?
 3. In `washout`, would Beta(2, 10) converge to the flat prior's answer faster or slower than Beta(200, 1000)? Why?
-4. A Thompson bandit runs a week on a price test where weekend buyers convert differently. What goes wrong, and which row of the extensions table helps?
 
 <details>
 <summary>Answers</summary>
@@ -458,7 +372,6 @@ Allocation that responds to outcomes is why the left column cannot report a clea
 1. Beta(25, 475) has mean 0.05 and pseudo-count 500. Checking with `stats.beta(25, 475).ppf([.025, .975])` gives about 0.033 to 0.071. That is close to the stated range, so a slightly smaller count would widen it a little and is also defensible.
 2. Normal(0, 1), by a factor of 100, since λ = 1/τ² with unit noise.
 3. Slower for Beta(200, 1000). Its pseudo-count is 1,200 against 12, so it takes a hundred times the data to be overruled.
-4. The early arm's data comes from a different mix of days, so the posterior reflects timing as well as price, and it shifts traffic on that basis. The learning rate helps it recover, but the honest answer for a price decision is usually a fixed split across whole weeks.
 
 </details>
 
@@ -474,15 +387,12 @@ Allocation that responds to outcomes is why the left column cannot report a clea
 | How does ridge relate to Bayes? | Ridge is the MAP under Normal priors; lasso is the MAP under Laplace priors. λ is the prior precision |
 | Does a Laplace prior give sparsity? | Only at the MAP. Posterior draws are not zero |
 | What is the winner's curse? | Selecting on significance inflates reported effects. Shrinking toward a prior fit across experiments removes most of it |
-| How does Thompson sampling work? | Draw from each arm's posterior, pull the highest draw, and update. Uncertainty drives exploration |
-| What is regret, and what is the bound? | The cumulative gap to the best arm. Lai and Robbins' lower bound is logarithmic in T |
-| Why not always use a bandit? | Adaptive allocation biases effect estimates, and it is poorly suited to long-term and guardrail metrics |
 
 ---
 
 ## Further reading
 
-- BMH ch. 6 for the Jeffreys derivation, the stock example and more bandit extensions.
+- BMH ch. 6 for the Jeffreys derivation and the stock example.
 - Gelman et al. (2008), above, is short and worth reading for its section on separation.
 - [Statistical Rethinking 2023](https://www.youtube.com/playlist?list=PLDcUM9US4XdPz-KxHM4XHt7uUVGWWVSus) for prior predictive simulation throughout.
 
@@ -490,4 +400,4 @@ Allocation that responds to outcomes is why the left column cannot report a clea
 
 ## Next
 
-[Chapter 4: Bayesian A/B Testing](04-bayesian-ab-testing.md) takes the Beta posterior back to Larkspur's checkout: P(B > A), expected loss, what peeking does and does not cost, and ranking by a lower credible bound.
+[Chapter 3b: Bandits and Thompson Sampling](03b-bandits-and-thompson-sampling.md) follows the same Beta posterior into a different job: choosing the next arm to pull. Chapter 4 then takes it back to Larkspur's checkout.

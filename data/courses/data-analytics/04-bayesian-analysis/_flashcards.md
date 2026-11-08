@@ -12,6 +12,12 @@ cards:
 - front: Why can one recipe handle counts, lies, launches and serial numbers?
   back: The same recipe handles counts, lies, launches and serial numbers, because only the story changes.
   lesson: data-analytics/04-bayesian-analysis/notes/01-bayesian-inference
+- front: Why does the Bayes factor for the Belgian euro coin flip with the definition of "biased"?
+  back: A Bayes factor needs a defined alternative, and the verdict flips with the definition, so report the prior on the effect with it.
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
+- front: How does the species problem get a prior when the number of species is itself unknown?
+  back: When the number of categories is unknown, put a prior on that number too, and the posterior tells you how many you have not seen.
+  lesson: data-analytics/04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation
 - front: What wastes draws in step size, and what do you read to judge a chain?
   back: Both too small and too large waste draws, so read effective sample size and never the raw draw count.
   lesson: data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc
@@ -21,9 +27,15 @@ cards:
 - front: When do priors matter most, and where should you spend your care?
   back: Priors matter most when data is thin, so spend your care on small segments and early looks.
   lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+- front: What does a Jeffreys prior fix about flat priors, and what does it still not fix?
+  back: Jeffreys' prior is a flat prior that does not change with the parameterisation, and it still does not make high-dimensional problems safe.
+  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+- front: How does Robbins' formula estimate next year's claims without assuming a prior, and where does it fail?
+  back: With many parallel cases the counts carry the prior, but the formula is erratic where counts are thin, and a smooth fit trades that for an assumption.
+  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
 - front: How does Thompson sampling choose an arm, and where does exploration come from?
   back: Sample once from each posterior, play the highest, and exploration follows from the remaining uncertainty.
-  lesson: data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits
+  lesson: data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling
 - front: Which outputs of a Bayesian A/B test drive the decision?
   back: P(B > A) is only one of the outputs, and the lift interval and expected loss are the ones that drive the decision.
   lesson: data-analytics/04-bayesian-analysis/notes/04-bayesian-ab-testing
@@ -66,6 +78,18 @@ cards:
 - front: How well can 3 markets estimate tau, and what did a tight half-normal prior do when tau was really 2?
   back: With few groups the prior decides, so report a range of priors. As Gelman and Loken warn, inference can be sensitive to model assumptions.
   lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling
+- front: What does a varying-slopes model add to varying intercepts, and what did 20 cafes teach about the correlation?
+  back: Model the intercept and slope together so each borrows from the other, and expect the correlation itself to be poorly pinned down.
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: When does a non-centred parameterisation help, and does it cure thin data?
+  back: With plenty of data the two forms agree, and with thin data the centred model fails, so treat non-centring as one lever and not a cure.
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: How far did a noisy predictor pull the slope toward zero, and what did modelling the error recover?
+  back: A noisy predictor biases a slope toward zero, and treating the true values as parameters recovers most of it.
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
+- front: Why does a careless imputation model make the slope more confident and more wrong?
+  back: Give the imputation model the same relationships as the outcome model, or the missing rows will pull the estimate down and tighten it falsely.
+  lesson: data-analytics/04-bayesian-analysis/notes/07b-varying-slopes-measurement-error-and-missing-data
 - front: What are most Bayesian failures, and what does each one have?
   back: Most Bayesian failures are unchecked models and unpriced decisions, and each one has a check you can run.
   lesson: data-analytics/04-bayesian-analysis/notes/07-multilevel-models-and-partial-pooling

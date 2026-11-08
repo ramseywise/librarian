@@ -1,4 +1,5 @@
 ---
+imported_hash: f5f6488946469d36
 title: Merge Two Sorted Lists — First-Principles Thinking Guide
 summary: 'While both lists have nodes: If list1.val <= list2.val: current.next = list1; list1 = list1.next Else: current.next = list2; list2 = list2.next current = current.next'
 order: 177

@@ -1,7 +1,8 @@
 ---
+imported_hash: 70b4bbc133894f93
 title: 'Lab: a loop with a scorekeeper (Python)'
 summary: The Python twin of the TypeScript lab. Same eight checks, same five scripted makers and the same six stop reasons, so the iteration tables compare directly.
-order: 13
+order: 14
 kind: reading
 section: Practice / Loop scorekeeper py
 source: learn-ai-engineering/ai-engineering/04-loop-engineering/practice/loop-scorekeeper-py/README.md

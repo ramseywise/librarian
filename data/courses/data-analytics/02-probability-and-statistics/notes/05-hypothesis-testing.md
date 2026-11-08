@@ -1,4 +1,5 @@
 ---
+imported_hash: ff1c6a2eba2fbab0
 title: 5 — Hypothesis Testing
 summary: Larkspur's analyst slices a flat experiment by twenty segments and reports that the new checkout works in one of them, at p = 0.04.
 order: 6
@@ -65,7 +66,7 @@ print(f"observed diff {obs:.2f}, permutation p = {np.mean(np.abs(diffs) >= abs(o
 observed diff 15.32, permutation p = 0.007
 ```
 
-Permutation p = 0.007 and Welch p = 0.009 agree on 400 skewed observations, because the t-test is a good approximation to this procedure. That is what every classical test is: an approximation of "how surprising is this under relabelling or under the null's distribution". When you are unsure a formula applies, you can shuffle instead. And under a true null, p-values are uniform, which is what α = 0.05 means:
+Permutation p = 0.007 and Welch p = 0.009 agree on 400 skewed observations, because the t-test is a good approximation to this procedure. That is what every classical test is: an approximation of "how surprising is this under relabelling or under the null's distribution". When you are unsure a formula applies, you can shuffle instead. The book's price test shows how close the two routes sit on conversion data: price A converts 200 of 23,739 (0.8425%) and price B 182 of 22,588 (0.8057%); 1,000 permutations of a pooled urn of 382 ones and 45,945 zeros give a one-sided p = 0.308, and `prop.test` with a normal approximation gives 0.3498 (*Practical Statistics*, ch. 3). A nearly 5% relative lift is exactly what chance produces about a third of the time. On 36 session times it makes the same point for means: the difference of 21.4 seconds gives a permutation p of about 0.12 and a Welch p of 0.14. And under a true null, p-values are uniform, which is what α = 0.05 means:
 
 ```python
 rng = np.random.default_rng(18)
@@ -76,6 +77,8 @@ print("under H0, share of p in bins:", np.histogram(pv, bins=[0, .05, .25, .5, .
 ```text
 under H0, share of p in bins: [0.05057 0.19972 0.24795 0.25152 0.25024]
 ```
+
+Why resampling tests spread only after 1980 is a computing story. Efron and Hastie's map of fifteen postwar methods marks the permutation-style and bootstrap tools as computer-intensive, while Kaplan-Meier estimates "can be done by hand (and were)" and the Cox partial likelihood is "a quintessential Fisherian device" (*Computer Age*, ch. 14).
 
 ### What a p-value is not
 
@@ -103,6 +106,22 @@ lift 0.0004, z 2.98, p 2.9e-03, relative lift 0.9%
 ```
 
 Statistically clear, and 0.9% in relative terms. Whether that is worth shipping is a business question that the p-value cannot answer.
+
+A p-value also depends on what you would have done had the data come out differently. Nine right answers out of 12 true/false questions is p = 0.073 against guessing if the plan was "ask 12 questions" (binomial), and p = 0.033 if the plan was "ask until three are wrong" (negative binomial), on identical data (*Statistics Done Wrong*, ch. 1; both values recomputed here with scipy). So the stopping rule is part of the analysis plan. Reinhart's remedy is to report the interval, which answers the same question and shows the effect size; he reports that 97% of experimental psychology papers use significance tests while about 10% give confidence intervals, and that 89% of *Nature* articles report p values without intervals or effect sizes (ch. 1, as reported; the endnotes are not in the chapter PDF).
+
+Comparing two intervals by eye is the same error in another form. If two drugs have the same true effect and each trial has power B, the chance that exactly one comes out significant is 2B(1 − B), which peaks at 50% when each trial has 50% power (*Statistics Done Wrong*, ch. 5, Fig. 5-1). Reinhart's example is a serum trial in which 43% improved on the serum and 22% on control, the first called significant and the second not, though the authors conceded the difference between the groups was not (as reported). Five statin meta-analyses, three "yes" and two "inconclusive", all had a relative risk of death near 0.9 (ch. 5, Fig. 5-2). And two 95% intervals can overlap while the test of their difference still gives p < 0.05: with equal standard errors the test rejects once the estimates sit more than 2.77 standard errors apart (1.96 · √2), but the intervals only stop overlapping at 3.92 (my arithmetic, for ch. 5's point). Test the difference directly.
+
+### One worked resampling test
+
+*Think Stats* runs this recipe on the NSFG pregnancy lengths of 4,413 first babies and 4,735 others. The observed difference in mean is δ = 0.078 weeks (about 13 hours). Pool the two groups, draw a pair of samples of those sizes 1,000 times, and 166 of the 1,000 differences were at least as large in absolute value, so p ≈ 0.166. The normal approximation, N(0, 0.0032) for the difference of means under the null, gives a two-tailed p of 0.168, which is the t-test-approximates-shuffling point made above on real data (*Think Stats*, ch. 7). The effect is not significant at α = 0.05, and Downey reports it as "a difference we cannot distinguish from chance", not as a proof of none. A chi-square test on the six cells (early at week 37 or before, on time at weeks 38 to 40, late at week 41 or after, by first baby or not) gives χ² = 91.64, about 1 chance in 10,000. That shows a difference in shape that the difference in means misses, but it used the same data that suggested the question, so the book recommends confirming on a second dataset and splitting the data when you can.
+
+The same agreement shows up on a gene-expression comparison. For one gene in the leukemia data (47 ALL and 25 AML patients), 10,000 label permutations give p = 0.0026, against 0.0025 from Student's t on 70 degrees of freedom (*Computer Age*, ch. 4; the chapters print the t as 3.01 in ch. 1 and 3.13 in ch. 4, and p = 0.0036 for 3.01). The t test is the default for a reason: its statistic is a *pivot*, with a distribution that does not depend on the unknown variance, so the 0.05 cutoff 1.99 on 70 df gives size exactly 0.05 under normality (*Computer Age*, ch. 2). The Neyman-Pearson lemma then says which tests are worth considering at all. Only likelihood-ratio threshold rules can be optimal, and any other rule has some threshold rule with smaller errors of both kinds. For N(0,1) against N(0.5,1) with n = 10 observations, cutoff c = 0.4 gives α = 0.10 and β = 0.38 (power 0.62), and every other rule lies above the curve.
+
+![Neyman-Pearson alpha-beta curve for N(0,1) against N(0.5,1) with n = 10; the labelled point has alpha 0.10 and beta 0.38](../assets/sources/images/computer-age-statistical-inference-fig2-2.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 2.2. Red dots are cutoffs c = 0.8, 0.6, ..., -0.4.*
+
+Three more points sharpen the recipe. Define the effect before you test: any specific sequence of 10 coin tosses has probability 1 in 1,024, so "a pattern this unlikely" is true of every sequence (*Think Stats*, ch. 7). The false-positive rate equals α, lowering α raises false negatives, and only more data or less measurement error lowers both. And when a test finds nothing, say what it could have found: report that if the effect were as large as x, the test would reject with probability p (its power). The book offers a Bayesian reading too: with a naive alternative fixed at the observed δ and a 0.5 prior the posterior is 0.748, a figure Downey calls overstated because the same data chose the alternative, and a cross-validated version averages 0.621.
 
 ## Choosing the test
 
@@ -236,6 +255,12 @@ median diff 95% CI [-7.6 16.6]
 
 The interval includes zero, which fits the tests above, and it says more than they do: the median difference could plausibly lie anywhere from about −8 to +17.
 
+Time-to-event outcomes, where some subjects have not yet had the event, need the log-rank test, which compares survival at all time points at once. In a head-and-neck cancer trial (51 patients on chemotherapy, Arm A; 45 on chemotherapy plus radiation, Arm B), the Kaplan-Meier median survival is 324 days for B and 182 for A, but the 95% bars at any single day overlap. At each of 47 monthly death times, the test takes the 2x2 table of deaths by arm among those still at risk and compares the arm's observed deaths with the hypergeometric expectation (month 6: 32 at risk in A, 33 in B, 11 deaths, expected 5.42 in A against 7 observed). Summing observed minus expected (42 observed in total against 32.9 expected) and dividing by the root of the summed variances (16.0) gives Z = 2.27, one-sided p about 0.012, moderate evidence for B (*Computer Age*, ch. 9). Censored subjects count as at risk until they drop out. The [survival chapter](../../06-applied-analyses/notes/07-survival-and-event-history.md) builds the models.
+
+![Kaplan-Meier curves for the two arms of a head-and-neck cancer trial, with 95% bars at three times](../assets/sources/images/computer-age-statistical-inference-fig9-1.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 9.1. Arm A chemotherapy only; Arm B chemotherapy plus radiation.*
+
 ## Multiple comparisons
 
 At α = 0.05, twenty independent tests of true nulls produce at least one false positive with probability 1 − 0.95²⁰ ≈ 64%. The notebook simulates this with twenty t-tests on pairs of samples from the *same* distribution, and here is the same thing repeated many times:
@@ -257,13 +282,27 @@ P(at least one false positive in 20): 0.642
 simulated: uncorrected 0.619, Bonferroni 0.052
 ```
 
+The vast search effect is the same arithmetic in disguise. Give 20,000 people ten coin tosses each and the chance that somebody tosses ten heads is above 99%, though it is 1 in 1,000 for any named person (*Practical Statistics*, ch. 2). Note that the book's Bonferroni sentence divides alpha by the number of observations; it means the number of tests (*Practical Statistics*, ch. 3). Reinhart gives the same arithmetic for the jelly-bean cartoon: 20 true nulls give a 64% chance of at least one hit, 45 give 90% and 100 give 99% (*Statistics Done Wrong*, ch. 4). He reports that the average 1980s medical trial made 30 therapeutic comparisons, and that 241 fMRI studies used 207 distinct combinations of methods and corrections; an uncorrected voxel test on a dead salmon gave p = 0.001 in an 81 mm³ cluster (ch. 4, as reported). His caveat on the fixes: Bonferroni costs power, and Benjamini-Hochberg controls the average false discovery rate but does not remove the base-rate problem of [chapter 2](02-probability-foundations.md#the-same-mistake-in-hypothesis-testing).
+
 | Correction | Controls | Rule | When |
 |---|---|---|---|
 | Bonferroni | family-wise error rate (any false positive) | reject if p < α/m | few tests, any false positive is costly |
 | Holm | family-wise error rate | step-down Bonferroni; uniformly more powerful | always prefer over plain Bonferroni |
 | Benjamini-Hochberg | false discovery rate (share of rejections that are false) | sort p, reject p₍ᵢ₎ ≤ (i/m)·α | many tests (metrics dashboards, genes, feature screens) |
 
-The Benjamini-Hochberg procedure comes from their [1995 paper](https://doi.org/10.1111/j.2517-6161.1995.tb02031.x) (*JRSS B*). Efron and Hastie build the empirical-Bayes view of it in *Computer Age Statistical Inference*, ch. 15. Here are the methods on 100 tests, ten of which have a real effect:
+The Benjamini-Hochberg procedure comes from their [1995 paper](https://doi.org/10.1111/j.2517-6161.1995.tb02031.x) (*JRSS B*). Efron and Hastie build the empirical-Bayes view of it in *Computer Age Statistical Inference*, ch. 15, and their prostate study shows how far apart the rules sit. Of 6,033 genes (52 patients, 50 controls), Bonferroni at a one-sided 0.05 leaves only four. On the 50 largest z-values, Holm at α = 0.1 rejects 7 (z ≥ 4.14) and Benjamini-Hochberg at q = 0.1 rejects 28 (z ≥ 3.33) (*Computer Age*, ch. 15).
+
+![Ordered p-values of the 50 largest prostate z-values against the FDR line, which admits 28 genes, and Holm's line, which admits 7](../assets/sources/images/computer-age-statistical-inference-fig15-3.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 15.3. Prostate data, right tail, α = q = 0.1.*
+
+Small cases show the difference by hand. *An Introduction to Statistical Learning* (*ISLP*, ch. 13) tests whether each of 2,000 fund managers beats the market and prints the first five p-values: 0.006, 0.918, 0.012, 0.601, 0.756. At α = 0.05 Bonferroni's cutoff is 0.05/5 = 0.01, so it rejects one manager. Holm's second cutoff is 0.05/4 = 0.0125, so 0.012 passes and it rejects two. BH's second cutoff is (2/5)·0.05 = 0.02, so it also rejects two. On all 2,000, BH at an FDR of 10% rejects 146 managers, about 15 of them false by construction, while Bonferroni at a FWER of 0.1 rejects none. Strict control costs power as m grows. With 90% of the nulls true and FWER held at 0.05, power is about 60% at m = 10 and under 20% at m = 500 (*ISLP*, ch. 13). The count of tests includes post-hoc ones: picking the most extreme pair out of 5 groups is 10 comparisons, so the threshold is 0.05/10 = 0.005. The book's pair has p = 0.0349 on a two-sample t-test and 0.038 on the paired test in its lab, and neither survives. Tukey's honest-significant-difference adjustment, which accounts for choosing the extreme pair, gives 0.186.
+
+![Ordered p-values of 2,000 fund managers; the green Bonferroni line rejects almost nothing while the orange Benjamini-Hochberg line admits 146 at q = 0.1 and 279 at q = 0.3](../assets/sources/images/islp-ch13-multiple-testing-fig13-6.png)
+
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 13.6. Fund data, m = 2,000; Bonferroni and BH at levels 0.05, 0.1 and 0.3.*
+
+Benjamini-Hochberg controls the false discovery rate at π₀·q (π₀ is the share of true nulls), which is at most q, if the null p-values are independent. Rejecting by the rule is the same as rejecting when the estimated tail-area false-discovery rate of the case is at most π₀·q, and that rate reads as the posterior probability that the case is null. The 50th-largest gene (z = 2.99) has a q-value of 0.168. The *local* version, fdr, is the same probability at the gene's own z rather than for everything beyond it, so it runs higher, and the working cutoffs are Fdr ≤ 0.1 but fdr ≤ 0.2; the latter flags 27 right-tail and 25 left-tail genes, and with π₀ ≥ 0.9 it is a Bayes factor of at least 36 against the null. All of this leans on the null being right. In a study of 2,749 New York police officers' stop records, a theoretical N(0, 1) null gives 216 officers with fdr ≤ 0.2, and a null fitted to the central z-values, N(0.10, 1.40²), gives four (*Computer Age*, ch. 15). The estimated null proportion also depends on the fitting method: for the prostate genes, local-fdr software gives π₀ = 0.984 and the prior-fitting (g-modelling) approach 0.946 (*Computer Age*, ch. 21). Here are the methods on 100 tests, ten of which have a real effect:
 
 ```python
 from statsmodels.stats.multitest import multipletests
@@ -295,8 +334,19 @@ Uncorrected, 3 of 11 discoveries are false. Bonferroni and Holm reject five real
 - **Many metrics** on one A/B test. Pick one primary metric in advance; treat the rest as exploratory ([metrics design](../../03-experimentation-and-causality/notes/02-metrics-and-kpi-design.md)).
 - **Many segments** ("it worked for Android users in Germany"). Each segment is a test. Also the small-N trap from [chapter 3](03-distributions-and-sampling.md).
 - **Many looks** at the same test over time. That is [peeking](../../03-experimentation-and-causality/notes/03-experimentation-at-scale.md).
+- **Many genes, many columns.** A single gene in the leukemia data has two-sample t = 3.01, a two-sided p of 0.0036. Across all 7,128 genes, though, 400 others have t above 3.01 (about 5.6%), so the gene is nowhere near "significant at 0.0036". The histogram is also fatter than the theoretical null in the middle, so even the null needs checking. A false-discovery-rate analysis asks for t above 6.16, which only 47 of the 7,128 genes pass (*Computer Age*, ch. 1; the method is ch. 15).
+
+![Histogram of 7,128 two-sample t statistics, with the theoretical null curve much narrower than the histogram](../assets/sources/images/computer-age-statistical-inference-fig1-5.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 1.5. Leukemia data, 47 ALL and 25 AML patients; the red mark is 3.01.*
+
 - **Data dredging.** The Michigan coursework script ([practice/courses/umich_statistical_analysis.py](../practice/courses/umich_statistical_analysis.py), week 4) lists three remedies: Bonferroni, holding out data to confirm what you found, and pre-registering what you expect and why.
-- **The garden of forking paths:** choices about outliers, transforms and subsets made after seeing the data. Reinhart's fix is to write the analysis plan first (*Statistics Done Wrong*, ch. 9).
+- **The garden of forking paths:** choices about outliers, transforms and subsets made after seeing the data. Reinhart's fix is to write the analysis plan first (*Statistics Done Wrong*, ch. 9). He reports simulations in which covariate sets, exclusions and outlier rules alone move the effect size by a factor of two, and ones where trying several analyses lifts the false-positive rate above 50% for a dataset. His demonstration is a 20-student experiment in which listeners to one Beatles song came out 1.5 years younger than listeners to another (p < 0.05, controlling for father's age, a covariate chosen after looking).
+- **Repeated measures.** Ten patients measured 100 times each give 1,000 data points per arm and 10 patients; the extra rows tighten the estimate for those ten people and say nothing more about the population. Corrections for dependence usually give wider intervals and larger p-values than the naive analysis (*Statistics Done Wrong*, ch. 3). The fixes are to average within subject, use clustered standard errors or a hierarchical model ([clustered standard errors](06-regression-and-glms.md#clustered-standard-errors)), and randomise within blocks. The chapter's cautionary case is the early-1970s menstrual synchrony result: two women with 28- and 30-day cycles drift apart by two days, then four, so a chance overlap is expected, and with an average gap of seven days between period starts the 'synchrony' was an artefact of the null used (ch. 3).
+
+### The same p-value on a Bayesian scale
+
+A p-value and a Bayes factor read the same z differently, and the gap widens with n. Efron and Hastie compare Fisher's scale of evidence (coverage .99 is "strong", .999 "overwhelming") with Jeffreys' (a Bayes factor of 3 to 20 is "positive", 20 to 150 "strong"), using the BIC approximation for one added covariate. On their vasoconstriction data, z = 2.36 (coverage .982) gives a factor of 5.49: positive but not strong. Their Table 13.5 then fixes z and varies n: at z = 3.29 (p = 0.001, "overwhelming" for Fisher) the factor is 57.96 at n = 15 and 2.24 at n = 10,000, barely worthwhile (*Computer Age*, ch. 13). The alternative's prior spreads out with the square root of n while the null's stays put. The model-selection view of the same n = 10,000 row is in [the data-generating-process note](07-data-generating-process.md). [The Bayesian pillar](../../04-bayesian-analysis/notes/01b-grids-hypotheses-and-simulation.md) works the same dependence on a grid.
 
 ## Significant results exaggerate
 
@@ -322,6 +372,24 @@ share of significant results with the wrong sign 0.009
 
 The test has 17% power, and the estimates that reach significance average 2.5 times the truth, with almost 1% of them pointing the wrong way. Anyone who ships on that result and forecasts the effect from it will be disappointed later. It is why a replication or holdback often shows a smaller effect than the launch analysis, without anything having gone wrong except selection.
 
+The same selection effect appears in genomics. Of 6,033 gene-effect estimates, the largest is 5.29 (52 patients against 50 controls), and taking it at face value overestimates it: an empirical-Bayes prior fitted to all 6,033 gives 4.11 (*Computer Age*, ch. 3). Tweedie's formula, which corrects a z-value by the slope of the log of the fitted marginal density, shrinks the same gene to 4.03, and at z = 3.5 gives an expected effect of 1.96, with a local fdr of 0.15 (*Computer Age*, ch. 20). Bayesian answers are immune to selection only if the prior is genuine, and an uninformative one gives no protection.
+
+Reinhart (ch. 2, all as reported) puts field numbers on the cause: the median neuroscience study has about 20% power, fewer than 3% of *Science* and *Nature* articles compute power before starting, and more than four-fifths of negative randomised trials in major medical journals (1975 to 1990) could not have detected a 25% difference. Halving heart-attack death risk from 20% to 10% at 80% power needs 400 patients, 200 per arm; 50 would feel adequate and is far too few. At the extreme, for a true 0.3% shift in a birth sex ratio, the rare significant results overstate it at least twentyfold and 40% of them point the wrong way, against 0.9% in the 17%-power run above, because power falls toward α and the sign becomes close to a coin flip. Power can also be found by simulation: generate many datasets with the expected effect and count the share that come out significant.
+
+### Stopping early and double dipping
+
+Testing after every pair of patients from 10 to 100 per group, with no true difference, produces a p-value path that wanders across 0.05 and lets you stop on a win (*Statistics Done Wrong*, ch. 6, Fig. 6-1); the experiment pillar puts the rate at about one in four A/A tests at 20 looks ([peeking](../../03-experimentation-and-causality/notes/03-experimentation-at-scale.md)). A monthly z-statistic makes the arithmetic concrete. Observe x ~ N(μ, 1) each month for 30 months, test μ = 0 against μ > 0, and let the investigators also be willing to stop at month 20. The final z is 1.66 against the cutoff 1.645, and the rule "reject if z at month 20 or month 30 exceeds 1.645" has type I error 0.074, not 0.05, though the data are identical. A Bayesian posterior does not change, since it depends only on the likelihood, which is the usual argument for sequential monitoring in Bayesian form (*Computer Age*, ch. 3, Fig. 3.3).
+
+![Monthly z values for 30 months, ending just above the 1.645 line; red triangles mark the two planned looks](../assets/sources/images/computer-age-statistical-inference-fig3-3.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 3.3. Z-values against the null mu = 0 for months 1 through 30.*
+
+Reinhart reports that trials stopped early exaggerate effects by an average of 29% over similar trials that ran to plan, and that more than half of surveyed academic psychologists admitted deciding whether to collect more data after checking significance (ch. 6, as reported). Circularity is the other half. Choosing regions, features or cutoffs on the same data you then test inflates the effect: Reinhart reports that neuroimaging papers break the rule perhaps 40% of the time. Regression to the mean is the sibling: pick the extreme units, measure again, and they move back toward average with no treatment at all. The fixes are a stopping rule and N fixed in advance, choosing on one half of the data and testing on the other (the hold-out remedy the Michigan script lists), and randomly splitting extreme units into treatment and control.
+
+### What the published record looks like
+
+Reinhart's closing chapters collect the field evidence, all of it reported from endnotes that the chapter PDFs omit. Amgen could reproduce 6 of 53 landmark preclinical cancer studies; Nature papers carry typos or errors in their p-values about 38% of the time. Psychologists sent data for only 64 of 249 requested studies, and 15% of the papers had a significant result that was significant only through an error. Adding unpublished data erased the TP53 correlation found across 18 published studies, and Pfizer's unpublished reboxetine data, three times the published volume, showed the drug ineffective. In a review of clinical-trial registrations, more than 40% were filed after recruitment began (ch. 10 and 11). Two checks follow. If a literature's estimated effect implies each study had 20% power but 90% of published studies are significant, results are missing; that is how Francis tested Bem's 10-experiment paper, 9 of which were significant (ch. 11). And for any paper you rely on, ask the six questions in ch. 12: how the sample size was set, how variables were selected, whether the results support the conclusion, whether there are intervals and effect sizes, whether the tests and multiplicity corrections fit, and what the stopping rule was. In a review of the *New England Journal of Medicine* 2001 to 2010, 146 of 363 articles testing a standard practice (about 40%) concluded it should be abandoned; Schoenfeld and Ioannidis found 216 studies linking 40 of 50 cookbook ingredients to cancer, mostly disagreeing (ch. 12). On the practitioner's side, the checkable analysis is a script under version control, tested against known inputs (ch. 10).
+
 ---
 
 ## Pitfalls
@@ -333,6 +401,8 @@ The test has 17% power, and the estimates that reach significance average 2.5 ti
 - **Choosing the test after seeing the result.** Switching one-sided to two-sided, or trimming outliers once the p-value disappoints, voids the false-positive rate.
 - **Running a rank test and reporting a revenue conclusion.** Mann-Whitney tests a tendency toward larger values. It does not test means.
 - **Forecasting from a significant result at low power.** The winner's curse inflates the estimate.
+- **Judging by interval overlap.** Overlapping 95% intervals can still hide p < 0.05; test the difference.
+- **Choosing the stopping rule after the data.** The same 9 of 12 is p = 0.073 or 0.033 depending on the plan.
 - **Unpaired analysis of paired data.** It throws away the main benefit of the design, as the p = 0.33 versus p = 0.0004 comparison showed.
 
 ---
@@ -373,4 +443,4 @@ The test has 17% power, and the estimates that reach significance average 2.5 ti
 
 ## Next
 
-[Chapter 6: Regression and GLMs](06-regression-and-glms.md) shows that the t-test is a regression, and carries you through OLS, diagnostics, robust and clustered standard errors, and logistic and Poisson GLMs.
+[Chapter 6: Regression and GLMs](06-regression-and-glms.md) (with [6b](06b-logistic-regression-and-poisson-glms.md)) shows that the t-test is a regression, and carries you through OLS, diagnostics, robust and clustered standard errors, and logistic and Poisson GLMs.

@@ -1,4 +1,5 @@
 ---
+imported_hash: cfc31aebe54788a5
 title: '7 — Scoping an AI Product: The Arithmetic Before the Architecture'
 summary: Most AI products that disappoint their sponsors were scoped by asking what a model can do, and then costed by multiplying tokens by a price.
 order: 8

@@ -1,4 +1,5 @@
 ---
+imported_hash: 92c48b9ccff81b58
 title: LC 141 — Linked List Cycle
 summary: Given the head of a linked list, return true if the list contains a cycle (some node's next points back to an earlier node so traversal never ends), otherwise false.
 order: 59

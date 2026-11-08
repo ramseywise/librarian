@@ -1,4 +1,5 @@
 ---
+imported_hash: 231944853f3d3aab
 title: 5 — Red-Teaming Tools
 summary: Harbour's team ran twenty hand-written attacks before launch, and none of them worked.
 order: 6

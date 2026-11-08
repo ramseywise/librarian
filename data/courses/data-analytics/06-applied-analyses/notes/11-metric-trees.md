@@ -1,7 +1,8 @@
 ---
+imported_hash: 81af7fd6956e57dc
 title: 'Metric trees and defining metrics: what to run on, and what catches it lying'
 summary: In 2025 Fernhill's revenue rose 2.1%, active customers rose 33.9% and new customers rose 33.0%.
-order: 12
+order: 14
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-analytics/06-applied-analyses/notes/11-metric-trees.md
@@ -516,7 +517,7 @@ Fernhill should change the top of its scoreboard. These are the numbers:
 
 Acquisition's target should move from new customers to customers who repeat within 90 days, so cost per new customer stops being the number that gets defended. Chapter 3's recommendation on reminders and the paid social cap is the first test of the dashed edges in the tree.
 
-The limits are real. The 90-day repeat rate is a leading proxy for a long-term value nobody has measured directly in this chapter, and [marketing measurement in chapter 9](09-marketing-measurement.md) goes further on what a customer is worth. The owners are illustrative, because a synthetic shop has no organisation chart. And 365 days may not be right for this shop: a good next check is how long Fernhill's customers usually take between orders, then setting the window accordingly.
+The limits are real. The 90-day repeat rate is a leading proxy for a long-term value nobody has measured directly in this chapter, and [marketing measurement in chapter 9](09b-customer-lifetime-value.md) goes further on what a customer is worth. The owners are illustrative, because a synthetic shop has no organisation chart. And 365 days may not be right for this shop: a good next check is how long Fernhill's customers usually take between orders, then setting the window accordingly.
 
 ## Pitfalls
 

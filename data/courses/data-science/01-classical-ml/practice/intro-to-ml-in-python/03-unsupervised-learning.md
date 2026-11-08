@@ -1,7 +1,8 @@
 ---
+imported_hash: cd262ffb9c321237
 title: transform data
 summary: X_train, X_test, y_train, y_test = train_test_split(cancer.data, cancer.target, random_state=1) print(X_train.shape) print(X_test.shape)
-order: 24
+order: 25
 kind: notebook
 section: Practice / Intro to ml in python
 source: learn-ai-engineering/data-science/01-classical-ml/practice/intro-to-ml-in-python/03-unsupervised-learning.ipynb

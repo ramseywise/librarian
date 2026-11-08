@@ -1,7 +1,8 @@
 ---
+imported_hash: 4d3055dd35cae666
 title: 2 — MCMC and PyMC
 summary: The Challenger model in chapter 1 has two parameters and the sampler returned an answer in a second.
-order: 3
+order: 4
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc.md
@@ -42,6 +43,14 @@ Two consequences follow, and BMH stresses both:
 
 - **A prior of zero stays zero.** If the prior assigns no mass to a region, no amount of data can move the posterior there. Choose supports generously ([chapter 3](03-priors-and-bandits.md)).
 - **Thousands of samples, not tens.** Summaries are Monte Carlo estimates, and their error shrinks like 1/√(effective samples).
+
+### When the likelihood is costly: summaries instead of data
+
+Two cheaper routes sit between a full grid and a sampler, and both appear in Downey's height example (*Think Bayes*, ch. 10): a grid over (mean, sigma) for the BRFSS self-reported heights of 154,407 men (mean 178 cm, sd 7.7) and 254,722 women (163 cm, 7.3). Multiplying a density per datum underflows to zero by 1,000 values, so work in log-likelihood, and sum the squared deviations once instead of looping over the data; that made the exact grid about 100 times faster, under a minute for the full data.
+
+The second route is approximate Bayesian computation. Replace the data with summary statistics whose sampling distributions are known (the sample mean m ~ Normal(mu, sigma/√n) and the sample sd s ~ Normal(sigma, sigma/√(2(n−1)))) and score each grid point on those two numbers. It handled the whole dataset in about a second and matched the exact posterior to about five digits. With robust summaries (the median and the 68% inter-percentile range, num_sigmas = 1) the posterior mean coefficient of variation was 0.0410 for men and 0.0429 for women with no overlap, so women looked more variable. With num_sigmas = 2 the same code concluded, with equal confidence, that men were. The answer depended on the summary chosen, and the chapter gives no rule for choosing it. Raw CVs were 0.0433 and 0.0444. The grid range was set at four standard errors around the sample mean, which uses the data twice and is harmless only because the prior is effectively flat there.
+
+Use summaries when the exact likelihood is costly, check that two reasonable summaries agree, and treat disagreement as the result.
 
 ## What one MCMC step does
 
@@ -98,7 +107,7 @@ step 0.1    accepted 57.6%  mean 0.620  effective samples    3594 of 19000
 step 3.0    accepted  2.8%  mean 0.625  effective samples     278 of 19000
 ```
 
-![Three trace plots of the Metropolis sampler on the coin posterior: step 0.002 drifts slowly and misses the true mean, step 0.1 mixes as a dense band around it, step 3.0 shows long flat stretches between rare jumps](../assets/bayes-metropolis-step-size.png)
+![Three trace plots of the Metropolis sampler on the coin posterior: step 0.002 drifts slowly and misses the true mean, step 0.1 mixes as a dense band around it, step 3.0 shows long flat stretches between rare jumps](../assets/sources/images/bayes-metropolis-step-size.png)
 *Image Source: generated for this chapter from the code above*
 
 The small step accepts nearly every proposal and is the worst of the three: after 20,000 iterations it has about 11 effective samples, and its mean of 0.565 is wrong in the second decimal. A high acceptance rate is not a sign of health. The large step rejects 97% of proposals and sits still between rare jumps. Only the middle one looks like what a working chain should.
@@ -115,6 +124,11 @@ The gap between iterations and **effective sample size** (ESS) is the core diagn
 | Compound | `step=[step1, step2]` | NUTS or Metropolis for continuous, a discrete sampler for the rest |
 
 Random-walk Metropolis struggles because it proposes blindly, and in high dimensions almost every direction leads downhill. Hamiltonian Monte Carlo uses the gradient to simulate a particle gliding across the surface, so a proposal can land far away and still be accepted. Its catch is sensitivity to two settings, the step size ε and the number of leapfrog steps L. The **No-U-Turn Sampler** removes both by hand: it keeps doubling the trajectory until it starts to turn back on itself, and it tunes ε during warm-up by dual averaging ([Hoffman and Gelman, JMLR, 2014](https://arxiv.org/abs/1111.4246)). The paper's aim was a sampler that runs without user tuning, and that is why `pm.sample()` works unattended for continuous models. The paper's evidence is modest and specific: on four targets (a 250-dimensional normal, two logistic regressions and a 3,001-parameter stochastic volatility model) NUTS with target acceptance 0.6 beat the best HMC setting (over ten trajectory lengths and eight acceptance targets) by about a factor of three in effective samples per gradient evaluation on the normal and stochastic volatility models, and matched it on the logistic regressions. The best HMC length itself varied about 100-fold across the four, from 0.17 to 17.62. It compared NUTS only with basic HMC, with an identity mass matrix, and counted gradient evaluations rather than wall-clock time (the arXiv v1 preprint, 2011; the note cites the 2014 JMLR version).
+
+![NUTS trajectory doubling until the leftmost-to-rightmost vector and the momentum make an angle over 90 degrees](../assets/sources/images/hoffman-no-u-turn-sampler-fig2.png)
+*Image Source: Hoffman & Gelman, [The No-U-Turn Sampler](https://arxiv.org/abs/1111.4246) (2014), Fig. 2. Blue arrow: leftmost-to-rightmost vector; magenta arrow: momentum. The angle passes 90 degrees, so doubling stops; red marks are excluded nodes.*
+
+Two older samplers explain what the table's names mean. **Gibbs** sampling updates one block of unknowns at a time by drawing it from its conditional distribution given the rest, which is cheap whenever conjugacy makes that conditional a standard family. **Metropolis-Hastings** proposes a move and accepts it with a probability set so that the chain's long-run frequencies match the posterior (the detailed-balance condition), so the normalising constant is never needed. Efron and Hastie's tour of the Gibbs case is the Bayesian t-test on 39 vasoconstriction measurements (20 in one group, 19 in the other, 10,000 Gibbs draws per run), where the posterior tail probability of the effect is 0.0028 against a frequentist one-sided p of 0.0047, and the same book's population-admixture model (197 individuals at 100 SNPs, three ancestral groups, flat Dirichlet and Beta priors, 1,000 burn-in draws then 2,000) recovers the ethnic clusters without labels by alternating conjugate updates (*Computer Age Statistical Inference*, ch. 13). Their caveats match the diagnostics below: successive draws are correlated, and there is no clear rule for the burn-in length. Both examples are small, and the book gives no timings.
 
 The same data under different samplers and scalings makes the case. This is Challenger again:
 
@@ -384,6 +398,32 @@ Divergences fall from 88 to 2, and τ's ESS rises from 64 to over 2,000. The two
 
 > **The Folk Theorem of Statistical Computing, as BMH ch. 3 states it: "If you are having computational problems, probably your model is wrong."**
 
+### Flat priors with two observations
+
+McElreath's sick-chain example is two observations, y = -1 and 1, a Normal likelihood and no priors (*Statistical Rethinking*, ch. 8). Every value of the mean is equally plausible a priori, so the chain must now and then visit absurd ones, and two data points cannot pull it back. His run gives a posterior mean for the mean of 21,583,691, 7 effective samples and R-hat 1.36. The same model in PyMC, re-run with two chains of 2,000 draws:
+
+```python
+y = np.array([-1.0, 1.0])
+with pm.Model():
+    a = pm.Flat("alpha"); s = pm.HalfFlat("sigma")                  # flat: the sick chain
+    # a = pm.Normal("alpha", 1, 10); s = pm.HalfCauchy("sigma", 1)  # weak: the fix
+    pm.Normal("y", a, s, observed=y)
+    idata = pm.sample(2000, tune=1000, chains=2, random_seed=3)
+```
+
+| Priors | alpha mean | alpha ess_bulk | alpha r_hat | Divergences |
+|---|---|---|---|---|
+| Flat | 1.8e8 | 8 | 1.29 | 678 |
+| Normal(1, 10), HalfCauchy(0, 1) | 0 (sd 1.8) | 861 | 1.00 | 1 |
+
+The book's weak-prior fit gives a mean of -0.01 with 1,121 effective samples. The fix costs one line, and the prior is washed out where there is data: the weak-prior posterior for alpha is centred on the sample mean, not on the prior's centre of 1. McElreath's second case is a non-identifiable model, mu = a1 + a2 with flat priors, where only the sum is constrained: a1 wanders to about -1,195 with R-hat 2.83 and 1 effective sample, and Normal(0, 10) priors repair it (1,223 effective samples). Two things to take from the pictures: the healthy chains in the bottom row overlap into a caterpillar, and the sick ones drift and spike. R-hat is a warning, never a certificate, since a value of 1.00 can come from an invalid chain.
+
+![Trace plots of a sick chain under flat priors and healthy chains under weak priors](../assets/sources/images/statistical-rethinking-fig8-5.png)
+
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 8.5*
+
+Two further numbers from the chapter. About 200 effective samples is enough for a posterior mean, with roughly an order of magnitude more for a variance when the posterior is near Gaussian. On the ruggedness-and-GDP regression (170 nations, interaction slope), HMC and the quadratic approximation agree (0.40 against 0.39), because that posterior is almost multivariate Gaussian, and four parallel chains raised the effective sample size about fourfold over one. The chapter predates divergences and bulk and tail ESS, so use the diagnostics table above, not its R-hat alone.
+
 ## PyMC3 to current PyMC
 
 BMH's notebooks, the talk and most posts before 2022 use PyMC3 on a Theano backend. So does the BayesianML week 4 coursework, pinned at `pymc3==3.11.4 theano-pymc==1.1.2` (see [practice/BayesianML/](../practice/BayesianML)). The code in this pillar runs on PyMC 6.4 and ArviZ 1.3. There the return value is an xarray `DataTree` with the same `posterior` access as the older `InferenceData`:
@@ -464,4 +504,4 @@ DataTree ['centers', 'w', 'sds']
 
 ## Next
 
-[Chapter 3: Priors and Bandits](03-priors-and-bandits.md) takes up what the sampler has been given to work with: how to choose a prior, why it stops mattering at large N, why ridge and lasso are priors in disguise, and how Thompson sampling turns a posterior into an allocation rule.
+[Chapter 3: Priors and Empirical Bayes](03-priors-and-bandits.md) takes up what the sampler has been given to work with: how to choose a prior, why it stops mattering at large N, and why ridge and lasso are priors in disguise. [Chapter 3b](03b-bandits-and-thompson-sampling.md) then shows how Thompson sampling turns a posterior into an allocation rule.

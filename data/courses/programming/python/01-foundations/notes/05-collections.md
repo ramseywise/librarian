@@ -1,4 +1,5 @@
 ---
+imported_hash: 710abcca02aa95cb
 title: 5 — Lists, Dictionaries and Tuples
 summary: 'for word, n in counts.items(): # iterate over key/value pairs ...'
 order: 6

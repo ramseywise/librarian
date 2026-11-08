@@ -1,4 +1,5 @@
 ---
+imported_hash: 451f0faefaf3bc4c
 title: Level Order Traversal — First-Principles Thinking Guide
 summary: 'While queue is not empty: level_size = len(queue) level_values = [] For each of level_size nodes: node = queue.popleft() level_values.append(node.val) Enqueue left and right children result.append(level_values)'
 order: 224

@@ -1,4 +1,5 @@
 ---
+imported_hash: 5dd8415073a2a6e9
 title: 1 — Selecting, Sorting and Filtering
 summary: Build them with bash practice/setup.sh, then open one with sqlite3 -header -column practice/data/survey.db.
 order: 2

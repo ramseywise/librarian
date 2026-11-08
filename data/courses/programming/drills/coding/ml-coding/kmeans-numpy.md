@@ -1,7 +1,8 @@
 ---
+imported_hash: 3ff0c8e8ed2f83e3
 title: K-means in NumPy
 summary: Implement k-means clustering from scratch in NumPy (Lloyd's algorithm).
-order: 240
+order: 241
 kind: drill
 section: Coding / Ml coding
 track: coding

@@ -1,4 +1,5 @@
 ---
+imported_hash: ac723bbdd37b6e21
 title: 1 — The data model and idioms
 summary: b = a a ───┐ ├──► [1, 2, 3] one object, two names b ───┘
 order: 12
@@ -68,6 +69,8 @@ def add(item, bucket=None):    # the fix
     bucket = [] if bucket is None else bucket
     ...
 ```
+
+The ML version of this bug is a feature list. Wilson's `feature_collection=[]` default (*Machine Learning Engineering in Action*, ch. 10, Listings 10.15 to 10.18) gave two separately built models the same six features, `['a', 'b', 'c', 'd', 'e', 'f']`, because the second call appended to the list the first had already filled. His fix, `feature_collection if feature_collection else list()`, also replaces an empty list the caller passed in on purpose; test `is None` as above.
 
 ## Dunder methods: how syntax maps to methods
 

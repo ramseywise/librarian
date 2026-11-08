@@ -1,4 +1,5 @@
 ---
+imported_hash: ea09435ac81e0650
 title: Minimum Platforms — First-Principles Thinking Guide
 summary: 'Sort arrivals and departures separately. Do a merge-like scan: if next event is an arrival → need +1 platform.'
 order: 123

@@ -1,4 +1,5 @@
 ---
+imported_hash: 7bdc5399a872e2cf
 title: 3 — Functions, closures and decorators
 summary: 'Classic trap: closures capture variables, not values.'
 order: 14

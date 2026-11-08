@@ -1,4 +1,5 @@
 ---
+imported_hash: 931d24c852eeb123
 title: 9 — Memory and the runtime
 summary: Every CPython object carries a header, and containers add pointers on top.
 order: 20

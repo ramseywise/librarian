@@ -1,4 +1,5 @@
 ---
+imported_hash: c5f18df0102c71e2
 title: '4 — Kernels: Occupancy, Memory Access, Arithmetic Intensity, Pipelining'
 summary: Raising occupancy does nothing for a kernel already at peak DRAM throughput, and adding ILP does nothing for one whose math pipes are busy.
 order: 5
@@ -175,11 +176,22 @@ Two elementwise kernels write an intermediate to HBM and read it back. One fused
 
 Fusion is also what an automated search finds first. TTT-Discover runs RL on gpt-oss-120b at test time against one kernel problem, with reward set to inverse runtime and zero for kernels that fail correctness checks. On the GPUMode TriMul task its best H100 kernel ran in 1,161 µs on the official leaderboard, against 1,371 µs for the best human submission. The policy's samples moved from mixed precision to fusing all the core operations to deeper fusion over training. In the authors' ablation, the same budget gives 1,203 µs with their entropic objective, 1,986 µs with plain expected-reward RL and 5,274 µs with no reuse of earlier solutions. A run of 50 steps × 512 rollouts costs about $500 ([arXiv:2601.16175](https://arxiv.org/abs/2601.16175) (Yuksekgonul et al., 2026-01)). The search needs a fast, trustworthy correctness check, the same check you would run before shipping a hand-written kernel.
 
+The same fusion-and-recompute idea applies to the loss layer. With a 256K vocabulary the log-probability matrix is the biggest tensor in training: 89% of Gemma 2 2B's training memory, 65% for Llama 3 8B and 40% for Phi 3.5 Mini (Fig. 1 memory breakdown, 16x80GB FSDP). Cut Cross-Entropy computes the target logit with an indexed matmul and the log-sum-exp in blocks, never writing the logits to HBM, and skips backward blocks whose softmax values fall below 2^-12 (under 0.02% of entries matter). On Gemma 2 2B (8,192 tokens, A100-80GB, 5 seeds) loss plus gradient takes 1,164 MB and 145 ms against 28,000 MB and 208 ms for the baseline and 16,000 MB and 143 ms for torch.compile; without gradient filtering it is 3.4× slower. The gain shrinks as the vocabulary-to-hidden ratio falls (on Phi 3.5 Mini, 32K vocabulary, it is about 50% slower than torch.compile), and pretraining needs a slower Kahan variant without filtering on the classifier gradient. It is a Triton kernel, measured on training, with 2024 library versions ([arXiv:2411.09009](https://arxiv.org/abs/2411.09009) (Wijmans et al., ICLR 2025)).
+
+![Cut Cross-Entropy memory and time versus a baseline cross-entropy loss](../assets/sources/images/wijmans-2024-cut-cross-entropy-fig2.png)
+*Image Source: Wijmans et al., [Cut Your Losses in Large-Vocabulary Language Models](https://arxiv.org/abs/2411.09009) (ICLR 2025), Fig. 2*
+
 Related levers from ch. 9: **recompute** cheap values instead of storing them; **2:4 structured sparsity** for up to ~2× on large GEMMs on sparse tensor cores (inference-focused, needs fine-tuning after pruning, and the metadata costs bytes too); and PyTorch's SDPA, which dispatches to FlashAttention or cuDNN attention.
 
 FlashAttention is the canonical case of tiling, fusion and recompute together. It computes exact attention tile by tile in SMEM with an [online softmax](../../../programming/computer-science/notes/04-numbers-and-memory.md#log-sum-exp) and never writes the N × N score matrix to HBM, and in the backward pass it recomputes the scores instead of storing them. On GPT-2 medium (sequence 1,024, A100, forward plus backward) it does **more** FLOPs than standard attention (66.6 → 75.2 GFLOPs) but moves **9× fewer HBM bytes** (40.3 → 4.4 GB), so runtime drops from 41.7 to 7.3 ms ([arXiv:2205.14135](https://arxiv.org/abs/2205.14135) (Dao et al., NeurIPS 2022)). The price is a new hand-written CUDA kernel for every attention variant. "Exact" means mathematically equal, not bitwise equal. In BF16 an isolated FlashAttention forward pass deviates about 10× more from an FP64 reference than standard attention does. Measured on the weights over a training run, that deviation is still 2–5× smaller than the effect of training in BF16 instead of FP32 ([arXiv:2405.02803](https://arxiv.org/abs/2405.02803) (Golden et al., 2024-05, preprint)).
 
+![FlashAttention tiling and speedup over the PyTorch attention baseline](../assets/sources/images/dao-2022-flashattention-fig1.png)
+*Image Source: Dao et al., [FlashAttention](https://arxiv.org/abs/2205.14135) (NeurIPS 2022), Fig. 1*
+
 The first version still reached only 25–40% of A100 peak in the forward pass, and FlashAttention-2 showed why. Non-matmul work such as the softmax exponent, rescaling and masking runs on CUDA cores at 19.5 TFLOPs/s against 312 for FP16 matmul, so **each non-matmul FLOP costs about 16× a matmul FLOP**. FA2 cut those FLOPs, parallelized over sequence length to fill the SMs at small batch, and split Q rather than K/V across warps to remove SMEM round trips. That gave about 2× FA1, 50–73% of peak forward and 225 TFLOPs/s per A100 (72% MFU) in GPT training ([arXiv:2307.08691](https://arxiv.org/abs/2307.08691) (Dao, ICLR 2024)). The same cost is why removing the softmax pays. Sigmoid attention needs no row-wise max or sum, and its FlashSigmoid kernel is up to 17% faster than FA2 on H100, or about 8% in end-to-end inference. It matches softmax quality only with a bias of −log n and stabilized initial attention norms ([arXiv:2409.04431](https://arxiv.org/abs/2409.04431) (Ramapuram et al., ICLR 2025)).
+
+![FlashAttention-2 forward-pass speed in TFLOPs/s across sequence lengths](../assets/sources/images/dao-2023-flashattention-2-fig3.png)
+*Image Source: Dao, [FlashAttention-2](https://arxiv.org/abs/2307.08691) (ICLR 2024), Fig. 3*
 
 ### Precision
 
@@ -193,7 +205,7 @@ Fewer bytes per value raises arithmetic intensity directly, and tensor-core thro
 | MXFP8 / MXFP4 / NVFP4 | Blackwell | NVFP4: FP8 scale per 16-element block plus an FP32 per-tensor scale |
 | INT8 | tensor cores (reduced on Blackwell Ultra), DP4A on CUDA cores | TorchAO |
 
-Fregly gives B200 NVFP4 at ~10 PFLOPS dense against ~80 TFLOPS FP32 on CUDA cores. He says FP8 gives "2–3×" BF16 throughput; the dense peak ratio is exactly 2×. At batch 1, lower precision helps decode mainly by halving the weight bytes read, not by faster math. Choosing a quantization scheme is in note 08 ([08](08-adaptive-inference.md#quantization)).
+Fregly gives B200 NVFP4 at ~10 PFLOPS dense against ~80 TFLOPS FP32 on CUDA cores. He says FP8 gives "2–3×" BF16 throughput; the dense peak ratio is exactly 2×. At batch 1, lower precision helps decode mainly by halving the weight bytes read, not by faster math. Choosing a quantization scheme is in note 08 ([08c](08c-quantization-and-low-precision.md#quantization)).
 
 On Blackwell, tensor-core accumulators live in **TMEM** (256 KB per SM), written by `tcgen05.mma`, which frees registers. The book says programmers never allocate TMEM. At the PTX level `tcgen05.alloc` and `dealloc` are explicit; CUTLASS hides them. Its CUTLASS listing uses the 2.x `device::Gemm` API with `arch::Sm100`, which does not target Blackwell. Blackwell kernels use CUTLASS 3.x/4.x CuTe collectives. It also cites a `__prefetch_async` builtin that does not exist, and says cuBLAS is "built on CUTLASS", which overstates a shared lineage. Inline PTX is a last resort worth a few percent.
 
@@ -275,7 +287,7 @@ A **stream** is an in-order queue. Work in different streams may overlap if reso
 
 *Image Source: Fregly, *AI Systems Performance Engineering* (O'Reilly, 2025), Fig. 11-2*
 
-The program issues three batches, each H2D copy → kernel → D2H copy. The GPU has separate hardware queues for each direction of copy and for compute, so batch 1's upload overlaps batch 0's kernel, and batch 0's download overlaps batch 1's kernel. Nine steps finish in five time units. That needs **pinned host memory** (pageable memory hides a synchronous staging copy) and at least two copy engines (`asyncEngineCount`). The book says copy engines use only idle bandwidth; they do compete with kernels for HBM. If the SMs or HBM are already saturated, overlap only splits the time.
+The program issues three batches, each H2D copy → kernel → D2H copy. The GPU has separate hardware queues for each direction of copy and for compute, so batch 1's upload overlaps batch 0's kernel, and batch 0's download overlaps batch 1's kernel. If every stage takes the same time, the nine steps finish in five time slots instead of nine (three stages pipelined over three batches: 3 + 2). That needs **pinned host memory** (pageable memory hides a synchronous staging copy) and at least two copy engines (`asyncEngineCount`). The book says copy engines use only idle bandwidth; they do compete with kernels for HBM. If the SMs or HBM are already saturated, overlap only splits the time.
 
 Three stream rules:
 

@@ -1,4 +1,5 @@
 ---
+imported_hash: 868adcec0f3db4e9
 title: Equilibrium Point
 summary: ''
 order: 104

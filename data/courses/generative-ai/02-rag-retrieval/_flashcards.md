@@ -23,16 +23,16 @@ cards:
   lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
 - front: What is the difference between Self-RAG and FLARE?
   back: Route aggregates to SQL, add agent loops only for questions that decompose, and treat retrieval timing as a design choice.
-  lesson: generative-ai/02-rag-retrieval/notes/01-rag-pipeline
+  lesson: generative-ai/02-rag-retrieval/notes/01b-index-structures-and-agentic-rag
 - front: Which query kind does BM25 miss, and which does dense miss?
   back: BM25 misses paraphrases and dense misses exact codes, so hybrid raises recall even if it doesn't improve every metric.
   lesson: generative-ai/02-rag-retrieval/notes/03-keyword-semantic-and-hybrid-search
 - front: What does the k in RRF do?
   back: RRF combines retrievers using ranks alone, so it needs no calibration and rewards documents both lists agree on.
-  lesson: generative-ai/02-rag-retrieval/notes/03-keyword-semantic-and-hybrid-search
+  lesson: generative-ai/02-rag-retrieval/notes/03b-metadata-filters-hybrid-search-and-evaluating-a-retriever
 - front: 'MRR, MAP or nDCG: when do you use each?'
   back: Track recall first because it caps everything downstream, then pick MRR, MAP or nDCG according to your task and labels.
-  lesson: generative-ai/02-rag-retrieval/notes/03-keyword-semantic-and-hybrid-search
+  lesson: generative-ai/02-rag-retrieval/notes/03b-metadata-filters-hybrid-search-and-evaluating-a-retriever
 - front: What do M, efConstruction and ef control?
   back: HNSW walks stacked graphs to get roughly logarithmic search, giving up exact results for tunable, measurable recall.
   lesson: generative-ai/02-rag-retrieval/notes/04-vector-databases-and-ann
@@ -47,10 +47,10 @@ cards:
   lesson: generative-ai/02-rag-retrieval/notes/05-chunking-query-parsing-and-reranking
 - front: 'Which adds query latency: HyDE or hypothetical questions?'
   back: Generated text can bridge queries and documents, and doing it at index time avoids adding latency to each request.
-  lesson: generative-ai/02-rag-retrieval/notes/05-chunking-query-parsing-and-reranking
+  lesson: generative-ai/02-rag-retrieval/notes/05b-query-parsing-conversational-retrieval-and-reranking
 - front: Why rerank if recall is already fine?
   back: Over-retrieve cheaply, rerank with a cross-encoder, and pass few chunks, because a longer list can hurt the answer itself.
-  lesson: generative-ai/02-rag-retrieval/notes/05-chunking-query-parsing-and-reranking
+  lesson: generative-ai/02-rag-retrieval/notes/05b-query-parsing-conversational-retrieval-and-reranking
 - front: Why split an eval by query kind?
   back: Label queries, split them by kind, score each retriever, and change one thing at a time so you know what helped.
   lesson: generative-ai/02-rag-retrieval/notes/05-chunking-query-parsing-and-reranking
@@ -62,10 +62,10 @@ cards:
   lesson: generative-ai/02-rag-retrieval/notes/06-generation-for-rag
 - front: Which retrieved passages hurt most?
   back: A model can overrule good context or answer without any, and the worst passage scores highly while lacking the answer.
-  lesson: generative-ai/02-rag-retrieval/notes/06-generation-for-rag
+  lesson: generative-ai/02-rag-retrieval/notes/06b-hallucinations-evaluation-and-fine-tuning
 - front: On Balaguer et al.'s task, what were the three scores?
   back: Use retrieval for facts that change and fine-tuning for behaviour, and expect the two to add up rather than compete.
-  lesson: generative-ai/02-rag-retrieval/notes/06-generation-for-rag
+  lesson: generative-ai/02-rag-retrieval/notes/06b-hallucinations-evaluation-and-fine-tuning
 - front: Who calibrates code checks and LLM judges?
   back: Cross scope with evaluator so that cheap code checks run everywhere, judges cover meaning and humans calibrate both.
   lesson: generative-ai/02-rag-retrieval/notes/07-rag-in-production
@@ -77,7 +77,7 @@ cards:
   lesson: generative-ai/02-rag-retrieval/notes/07-rag-in-production
 - front: How do you stop one customer seeing another's documents?
   back: Enforce permissions at retrieval and treat the corpus as an attack surface, because instructions in prompts protect nothing.
-  lesson: generative-ai/02-rag-retrieval/notes/07-rag-in-production
+  lesson: generative-ai/02-rag-retrieval/notes/07b-security-changing-text-multimodal-and-live-indexes
 - front: Why the max across expansions, and not the sum?
   back: PRINCE narrows from millions of vectors to seven chunks by filtering first, taking max scores and reranking on the original.
   lesson: generative-ai/02-rag-retrieval/notes/08-agentic-rag-prince
@@ -86,7 +86,7 @@ cards:
   lesson: generative-ai/02-rag-retrieval/notes/08-agentic-rag-prince
 - front: When should you avoid agentic RAG?
   back: Agentic RAG pays for broad questions over messy data, and when one pass works, its extra machinery just adds latency.
-  lesson: generative-ai/02-rag-retrieval/notes/08-agentic-rag-prince
+  lesson: generative-ai/02-rag-retrieval/notes/08b-routing-sub-agents-and-evaluation
 - front: What breaks when you change embedders?
   back: Vector count, dimensions and hybrid needs pick the store, and an embedder change means re-embedding wherever you are.
   lesson: generative-ai/02-rag-retrieval/notes/09-vector-database-comparison

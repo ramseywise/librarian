@@ -1,7 +1,8 @@
 ---
+imported_hash: 09627bfa4842a478
 title: Approach
 summary: Planning Your Approach How to decompose the problem and form a plan before you ever open the AI chat.
-order: 245
+order: 248
 kind: reading
 section: Coding / Notes
 source: learn-ai-engineering/programming/drills/coding/notes/approach.md

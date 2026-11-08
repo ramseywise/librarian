@@ -1,4 +1,5 @@
 ---
+imported_hash: c877065cc07babe7
 title: 4 — UX principles
 summary: Nielsen's Usability 101 splits usability into five parts, which gives you more to say than "it feels clunky".
 order: 5

@@ -1,4 +1,5 @@
 ---
+imported_hash: e2bbf04bb1cf9d7a
 title: Permutation in String — First-Principles Thinking Guide
 summary: A permutation of s1 has the same character frequencies.
 order: 197

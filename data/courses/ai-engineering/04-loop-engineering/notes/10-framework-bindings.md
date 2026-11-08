@@ -1,7 +1,8 @@
 ---
+imported_hash: 677f40ae040617c6
 title: 10 — Framework Bindings
 summary: 'Frameworks name the same loop parts differently, and they differ on the one that causes most trouble: who stops the loop.'
-order: 11
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/04-loop-engineering/notes/10-framework-bindings.md

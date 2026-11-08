@@ -1,7 +1,8 @@
 ---
+imported_hash: 5c9841b4b1950e8c
 title: 5 — Chunking, query parsing and reranking
 summary: A Tallybook customer asks how long a refund takes.
-order: 6
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/05-chunking-query-parsing-and-reranking.md
@@ -9,9 +10,9 @@ source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/05-chunking-qu
 
 # 5 — Chunking, query parsing and reranking
 
-A Tallybook customer asks how long a refund takes. The answer is one sentence inside a 90-line page on refunds and cancellations, and the page's vector is an average of refund windows, card rules, disputes and data deletion. The search misses it, or finds it and hands the model the entire page. Even with the right chunk indexed, the question "how long will it take?" is two turns into a chat and names no subject at all, and the best match may sit at rank 14 where the model never sees it. Each of those is a different failure, and each has its own fix: what you index, what you search for, and what you keep.
+A Tallybook customer asks how long a refund takes. The answer is one sentence inside a 90-line page on refunds and cancellations, and the page's vector is an average of refund windows, card rules, disputes and data deletion. The search misses it, or finds it and hands the model the entire page. Even with the right chunk indexed, the question "how long will it take?" is two turns into a chat and names no subject at all, and the best match may sit at rank 14 where the model never sees it. Three failures, three fixes: what you index, what you search for, and what you keep.
 
-> Three production techniques around the vector database: chunking decides what one vector stands for, query parsing turns a messy prompt into a good search query, and reranking spends extra compute on the top 20–50 hits to return the best 3–10. Bi-encoders, cross-encoders and ColBERT are the three ways to score a (query, document) pair.
+> Three production techniques around the vector database: chunking decides what one vector stands for, query parsing turns a messy prompt into a good search query, and reranking spends extra compute on the top 20–50 hits to return the best 3–10. This note covers chunking and index-time structure; [5b](05b-query-parsing-conversational-retrieval-and-reranking.md) covers query parsing, conversational retrieval, the three ways to score a pair (bi-encoder, cross-encoder, ColBERT) and reranking.
 
 ---
 
@@ -60,14 +61,19 @@ Context-aware chunking is the same idea as Anthropic's *contextual retrieval* (2
 
 Their guidelines match the course: match the chunk to the query type, respect the embedder's input limit, and evaluate on your own data.
 
-**Contextual retrieval, the mechanics.** Huyen describes the index-time step behind context-aware chunking: an LLM writes a short context, typically 50–100 tokens, that situates the chunk in its document, and the context is prepended before embedding and BM25 indexing (*AI Engineering*, ch. 6). Her other augmentations: product descriptions with reviews, or the questions an article answers.
+**Contextual retrieval, the mechanics.** Huyen describes the index-time step behind context-aware chunking: an LLM writes a short context, typically 50–100 tokens, that situates the chunk in its document, and the context is prepended to the chunk, which is then indexed by the retriever (*AI Engineering*, ch. 6). Her other augmentations: product descriptions with reviews, or the questions an article answers.
 
 ![Contextual retrieval: an LLM, given the whole document and one chunk, writes a short context that is prepended to the chunk before indexing](../assets/sources/images/huyen-ai-engineering-fig6-5.png)
-*Image Source: Huyen, *AI Engineering* (O'Reilly, 2025), Fig. 6-5*
+*Image Source: Huyen, *AI Engineering* (O'Reilly, 2025), Fig. 6-5, reproducing Anthropic, "Introducing Contextual Retrieval" (2024)*
 
 **Element-based chunking** is recursive splitting taken further: a document-layout model labels each element (title, narrative text, table, list), and chunks break at element boundaries. On FinanceBench (10-K and 10-Q filings, top-10 chunks, GPT-4 generator), element-based chunking answered 53.2% of questions correctly against 48.2% for the best fixed size (512 tokens) and 35.5% for 128 tokens, on manual grading. It also indexed about half as many chunks (62,529 vs 112,155) and needed no chunk-size tuning ([arXiv:2402.05131](https://arxiv.org/abs/2402.05131), Jimeno Yepes et al., 2024-02). The setting is one domain of table-heavy, strongly structured documents, so expect less on prose.
 
 **Semantic chunking** has the weaker evidence. A Vectara study ran fixed-size, breakpoint (the threshold method in the table) and clustering chunkers over ten retrieval sets and five evidence and answer sets, with the stella-1.5B embedder and gpt-4o-mini as generator. On the four real long-document sets, fixed-size chunks retrieved the right document best (HotpotQA F1@5 90.59 vs 87.37 for breakpoint). Evidence-retrieval F1 differed by under 2 points, and answer BERTScore by at most 0.01. Breakpoint chunking won big only on synthetic documents stitched together from unrelated short ones (NQ 63.93 vs 43.79), where topic boundaries are artificially sharp. Swapping the embedder mattered more: stella beat bge-large by 7.44% average F1 ([arXiv:2410.13070](https://arxiv.org/abs/2410.13070), Qu et al., 2024-10). The authors' own caveats: sentence embeddings without context, and no chunk-level ground truth.
+
+**Keep the HTML structure, then prune.** HtmlRAG feeds the reader cleaned HTML instead of flattened text. Rule-based cleaning drops 94.07% of tokens (plain text conversion drops 96.71%, Markdown 90.32%). A block tree is then pruned twice, by embedding and by a fine-tuned generative pruner (Phi-3.5-mini, 2,635 training samples), taking 20 retrieved pages from 1.6M to 135K to 8K to 4K tokens. With Llama-3.1-8B, a 4K window and Bing-retrieved pages (400 questions per dataset), ASQA Hit@1 was 71.75 against 68.50 for BGE chunk-and-rerank. At 70B the lead mostly vanished (MuSiQue exact match 13.25 against 12.50; ASQA exact match 30.53 against 30.57, though ASQA Hit@1 was 68.50 against 68.00). Without pruning, HTML only tied plain text at a 128K window (ASQA Hit@1 58.75 against 59.75), and uncleaned HTML scored 44.00. Ablations on ASQA Hit@1 (full 68.50): no block tree 59.50, no embedding pruning 56.75, no generative pruning 62.00. Single runs, one retrieval source, and no ELI5 ROUGE or BLEU gain at 8B (15.51 against 15.87 ROUGE-L; at 70B the gain is small, 16.33 against 16.20) ([arXiv:2411.02959](https://arxiv.org/abs/2411.02959), Tan et al., WWW 2025).
+
+![HtmlRAG pipeline: HTML cleaning, block tree construction, embedding-based block pruning, then generative fine-grained block pruning before the pruned HTML goes to the LLM](../assets/sources/images/tan-htmlrag-fig2.png)
+*Image Source: Tan et al., [HtmlRAG: HTML is Better Than Plain Text for Modeling Retrieved Knowledge in RAG Systems](https://arxiv.org/abs/2411.02959) (2024), Fig. 2*
 
 ## Chunking code
 
@@ -176,7 +182,7 @@ Counting in the embedder's tokens has a cost: switch embedders and the chunks mu
 
 ## Index small, return large
 
-Three ways to separate what you match on from what you hand the LLM. The general pattern, and LangChain's `MultiVectorRetriever`, are in [01 § embed one thing, return another](01-rag-pipeline.md#embed-one-thing-return-another). Raieli and Iuculano list the variants (*Building AI Agents*, ch. 6):
+Three ways to separate what you match on from what you hand the LLM. The general pattern, and LangChain's `MultiVectorRetriever`, are in [01 § embed one thing, return another](01b-index-structures-and-agentic-rag.md#embed-one-thing-return-another). Raieli and Iuculano list the variants (*Building AI Agents*, ch. 6):
 
 | Variant | Index | Return |
 |---|---|---|
@@ -233,308 +239,9 @@ Lesson: the right size depends on the query. Broad questions want long chunks; s
 
 ---
 
-## Query parsing
+## Query parsing, conversational retrieval and reranking
 
-The prompt a user types is rarely the best search query.
-
-| Technique | What it does | Cost |
-|---|---|---|
-| **LLM query rewriting** | An LLM rewrites the prompt into a clean query | One small LLM call; "benefits easily justify costs" |
-| **Named entity recognition** | Tag people, places, dates, titles (GLiNER) to drive filters and targeted search | One small model call |
-| **HyDE** | An LLM writes a *hypothetical answer document*; embed that instead of the prompt | One or more LLM calls (the paper averages several samples) + latency |
-
-The course's rewriting prompt for a medical knowledge base:
-
-```text
-The following prompt was submitted by a user in order to query a database of
-medical articles. Rewrite it to make it better suited for querying the database
-by doing the following:
-- Clarify ambiguous phrases
-- Use medical terminology where applicable
-- Add synonyms that increase odds of finding matching documents
-- Remove unnecessary or distracting information.
-{user prompt}
-```
-
-| Before | After |
-|---|---|
-| "I was out walking my dog, a beautiful black lab named Poppy, when she raced away from me and yanked on her leash hard while I was holding it. Three days later my shoulder is still numb and my fingers are all pins and needles. What's going on?" | "Experienced a sudden, forceful pull on the shoulder, resulting in persistent shoulder numbness and finger numbness for three days. What are the potential causes or diagnoses, such as neuropathy or nerve impingement?" |
-
-HyDE changes what is being matched: normally prompt-to-document, with HyDE document-to-document, where one side is the "perfect" document generated from the prompt.
-
-GLiNER example: *"I read The Great Gatsby by F. Scott Fitzgerald last summer while visiting New York…"* → BOOK, PERSON, DATE, LOCATION. The DATE and LOCATION can become metadata filters.
-
-The HyDE paper itself averages the embeddings of several sampled answers, optionally with the query's own ([arXiv:2212.10496](https://arxiv.org/abs/2212.10496), Gao et al., ACL 2023). Averaging also means one odd generation doesn't steer the search. Raieli and Iuculano's example uses five (*Building AI Agents*, ch. 6).
-
-### Query transformations
-
-Oshin and Campos group the rewrites by how far they move from the user's words (*Learning LangChain*, ch. 3).
-
-![Query transformation strategies arranged by how much more or less abstract they make the user's question](../assets/sources/images/learning-langchain-fig3-5.png)
-*Image Source: Oshin & Campos, *Learning LangChain* (O'Reilly, 2025), Fig. 3-5*
-
-| Transformation | What it does | Cost |
-|---|---|---|
-| **Rewrite-Retrieve-Read** (Ma et al., 2023) | An LLM rewrites the question, then retrieval and answering run as usual | Two LLM calls in sequence |
-| **Multi-query** | An LLM writes several versions of the question (five, from different perspectives); retrieve for each, deduplicate the union | One extra call; k × versions retrievals |
-| **RAG-Fusion** | Multi-query, then merge the result lists with reciprocal rank fusion instead of a plain union | As multi-query |
-| **Step-back** | Generate a more general question; retrieve for it and for the original, and give both contexts to the LLM (*Building AI Agents*, ch. 6) | One extra call |
-
-```python
-def reciprocal_rank_fusion(results: list[list], k=60):
-    fused = {}
-    for docs in results:                       # one ranked list per query version
-        for rank, doc in enumerate(docs):
-            fused[doc] = fused.get(doc, 0) + 1 / (rank + k)
-    return sorted(fused, key=fused.get, reverse=True)
-```
-
-`rrf` in the practice kit is the same function. Here is why anyone pays for the extra call. BM25 on "can I get my money back" finds nothing about refunds, because no help article uses those words. The two rewrites below are written by hand and stand in for what an LLM would produce, and the same goes for the hypothetical answer in the HyDE line:
-
-```python
-from ragkit import Retriever, rrf
-
-retriever = Retriever()
-question = "can I get my money back"
-versions = [question, "refund policy", "how do I get a refund for a payment"]
-hypothetical = ("Refunds are available for a set number of days after payment "
-                "and are returned to the original card.")
-
-print("original:   ", retriever.sparse(question, k=3))
-print("multi-query:", rrf([retriever.sparse(q, k=5) for q in versions])[:3])
-print("HyDE:       ", retriever.sparse(hypothetical, k=3))
-```
-
-```text
-original:    ['kb-03']
-multi-query: ['kb-04', 'kb-18', 'kb-05']
-HyDE:        ['kb-04', 'kb-05', 'kb-11']
-```
-
-The right documents here are `kb-04` and its stale twin `kb-05`. Either rewrite gets there, and neither knows `kb-05` is out of date, so the stale copy still needs a filter ([03](03-keyword-semantic-and-hybrid-search.md)). The block also shows HyDE's hidden gamble: the hypothetical document works because it used the word "refund". An LLM that guesses the wrong vocabulary steers the search away from the answer.
-
-The same RRF is used for hybrid search ([03](03-keyword-semantic-and-hybrid-search.md#hybrid-search-and-reciprocal-rank-fusion)). The book's examples use `gpt-3.5-turbo` and `retriever.get_relevant_documents`; current LangChain spells the call `retriever.invoke`. Query expansion pulls in more marginal chunks, so pair it with a post-filter or a reranker (*Building AI Agents*, ch. 6).
-
-Two rewrites from Huyen matter in chat (*AI Engineering*, ch. 6). Identity resolution: after "Who is John Doe?", "How about his wife?" needs rewriting to name John Doe's wife before retrieval. And when the rewrite can't be resolved, the rewriter should say so rather than guess. Multi-turn rewriting is covered in [§ conversational retrieval](#conversational-retrieval).
-
-### Self-query: letting the LLM write the filter
-
-A self-query retriever has an LLM split the question into a semantic query and a metadata filter. LangChain's `SelfQueryRetriever` takes a list of `AttributeInfo(name, description, type)` describing the filterable fields, and `enable_limit=True` lets it read "Return 2 Fantasy books" as a genre filter plus a limit of 2 (*Learning LangChain*, ch. 3; *Prompt Engineering for GenAI*, ch. 5). The descriptions are part of the prompt, so they need care. Phoenix and Taylor's example indexes books but keeps the content description "Brief summary of a movie". Nothing errors; the LLM just gets a wrong description of the corpus, which is how these slips go unnoticed. The Handbook does a narrower version by hand: an LLM extracts the author's name from the query, and the search filters on it (*LLM Engineer's Handbook*, ch. 9).
-
----
-
-## Conversational retrieval
-
-In a chat, the current message often can't be searched as written: "how long will it take?" has no subject. Three families of fixes run from cheapest to most capable, and the benchmarks below measure the turns where they differ.
-
-### Query rewriting
-
-Turn the context-dependent utterance into a standalone query that drives retrieval reliably. **CONQRR** trains the rewriter with reinforcement learning against a retrieval reward, so rewriting is optimised for what the retriever returns, and it works with any off-the-shelf retriever. **CANARD** and **QReCC** are the standard rewrite datasets. The limitation, emphasised since 2023–2024: a single rewritten question loses context in long dialogues, which is why systems move toward summaries and structured memory objects.
-
-NVIDIA's [RAG blueprint](https://docs.nvidia.com/rag/latest/multiturn.html) offers two modes: **query rewriting**, recommended for accuracy, and **history concatenation** (paste the last few turns into the query), which is cheap and low-latency but drags irrelevant history into retrieval as conversations grow. That it still ships the simple mode shows how common it is.
-
-The trade-off shows up in a three-turn chat. The rewrite is written by hand, standing in for the small LLM:
-
-```python
-from ragkit import Retriever
-
-retriever = Retriever()
-history = ["How do I rotate my API keys?", "What happens to the old key?"]
-turn = "how long do I have to ask for my money back"
-
-print("this turn only:", retriever.sparse(turn, k=3))
-print("concatenated:  ", retriever.sparse(" ".join(history + [turn]), k=3))
-print("rewritten:     ", retriever.sparse("refund window in days", k=3))
-```
-
-```text
-this turn only: ['kb-03', 'kb-12']
-concatenated:   ['kb-02', 'kb-01', 'kb-03']
-rewritten:      ['kb-18', 'kb-04', 'kb-05']
-```
-
-The turn alone misses too, since "money back" isn't Tallybook's vocabulary. Concatenation returned the key articles from the earlier turns, because the topic had changed and the concatenated query hadn't. The rewrite found the refund pages.
-
-### History-aware retrieval
-
-Use the chat history plus the current turn to build a retrieval *plan*. Two lines of work:
-
-- **IR pipeline** (CAsT, ORConvQA, CORAL, mtRAG). ORConvQA shows that modelling history across *all* components (retriever, reranker, reader) improves open-retrieval conversational QA: history is a retrieval and ranking signal, not just a prompt trick.
-- **Agentic retrieval** (industrial). In [Azure AI Search agentic retrieval](https://learn.microsoft.com/en-us/azure/search/agentic-retrieval-overview), an LLM reads the whole thread, decomposes it into focused subqueries (which can include chat history), runs them in parallel with semantic reranking, and returns grounding data plus a query plan the downstream agent can use.
-
-### Dual retrieval data flow
-
-1. The query reaches the orchestration layer.
-2. **Dual retrieval**: the retrieval module (static knowledge) and the memory module (history, user context) are queried together.
-3. A reasoning step merges the two into one context.
-4. Generation is guided by both documents and memory.
-5. **Memory update**: the session summary, feedback and new facts are written back.
-6. The answer goes to the user.
-
-The memory loop diagram and the production memory designs are in [02-context 06](../../../ai-engineering/02-context-engineering/notes/06-memory.md#the-memory-loop).
-
-### Benchmarks
-
-Evaluation shifts from single-turn QA to later-turn performance, non-standalone questions, topic switching, unanswerable queries and clarification.
-
-- **CAsT** (TREC Conversational Assistance Track): conversational query understanding and retrieval/reranking. Reports large headroom between automatic systems and manually resolved "oracle" rewrites, which quantifies how much context resolution matters.
-- **QReCC**: open-domain conversational QA over a large web corpus; supports training and evaluating rewriting, retrieval and reading separately.
-- **TopiOCQA**: open-domain conversational QA with topic switching.
-- **CORAL**: conversational RAG with passage retrieval, response generation and citation labelling under topic shifts.
-- **mtRAG**: human-generated multi-turn RAG across domains, weighted toward later turns, non-standalone and unanswerable questions.
-- **InSCIt, OR-ShARC**: mixed-initiative; test the decision to ask a clarifying question instead of answering.
-
----
-
-## Three ways to score a query against a document
-
-| | Bi-encoder | Cross-encoder | ColBERT |
-|---|---|---|---|
-| Input | Query and doc embedded **separately** | Query + doc **concatenated** | Each **token** embedded separately |
-| Output | One vector each; cosine | A relevance score 0–1 | Many vectors each; MaxSim |
-| Doc vectors precomputable | Yes | **No**; every pair is a forward pass | Yes |
-| Quality | Good | Best | Nearly cross-encoder |
-| Speed | Great (ANN) | Extremely slow at scale | Decent, near real-time |
-| Storage | Minimal | Minimal | **Heavy**: one vector per token |
-| Role | Default first-stage retrieval | Reranker only | First stage or reranker; growing DB support |
-
-**ColBERT scoring (MaxSim):** for each query-token vector, find the most similar document-token vector, then sum those maxima. The course example ("Great places to eat in New York" against a NYC cuisine passage) sums to 3.6. Each query word finds its best partner, which captures interactions a single vector loses.
-
-MaxSim is four lines of NumPy once a model gives you token vectors. This runs a small real ColBERT model on the course's Canada example, and the first run downloads it:
-
-```python
-import numpy as np
-from fastembed import LateInteractionTextEmbedding
-
-docs = ["Toronto is in Canada.",
-        "Canada is the maple syrup capital of the world.",
-        "Ottawa is the capital of Canada."]
-model = LateInteractionTextEmbedding("answerdotai/answerai-colbert-small-v1")
-query = next(iter(model.query_embed(["What is the capital of Canada?"])))
-doc_vectors = list(model.embed(docs))
-
-def maxsim(q, d):
-    return float((q @ d.T).max(axis=1).sum())        # best doc token per query token, summed
-
-print("query shape:", query.shape)
-for doc, d in sorted(zip(docs, doc_vectors), key=lambda x: -maxsim(query, x[1])):
-    print(f"{maxsim(query, d):6.2f}  {d.shape}  {doc}")
-```
-
-```text
-query shape: (32, 96)
- 31.41  (9, 96)  Ottawa is the capital of Canada.
- 31.31  (12, 96)  Canada is the maple syrup capital of the world.
- 30.96  (7, 96)  Toronto is in Canada.
-```
-
-The ranking is right, and the query is padded to 32 tokens here, so the sums sit on a different scale from the course's 3.6. The shapes are the storage cost: a matrix per document in place of a single vector.
-
----
-
-## Reranking
-
-Retrieval is fast and imprecise; reranking is slow and precise. Run them in sequence:
-
-1. **Over-retrieve** 20–50 candidates with hybrid search.
-2. **Rerank** each (query, candidate) pair with a cross-encoder or an LLM scorer.
-3. **Return** the best 3–10 to the LLM.
-
-The context budget is the same as without reranking; what changes is how relevant those 5–10 documents are. A banking-QA study at JPMorgan shows why recall alone is the wrong target. With the gold passage present, answer quality fell as the list grew (top-3 > top-5 > top-20), and less so when the gold passage sat near the top. Placing the gold passage first beat placing it last. The authors conclude that retrieval can't be optimised for recall alone, so "investing in a re-ranking system ... is still necessary" ([Zhao et al., NAACL 2024 Industry](https://aclanthology.org/2024.naacl-industry.23/), 2024-06). Most of their numbers are in figures only, and they assume each answer lives in one passage. The course's toy case: "What is the capital of Canada?" retrieves "Toronto is in Canada" and "Canada is the maple syrup capital of the world" alongside "Ottawa is the capital of Canada". A bi-encoder scores them close together; the cross-encoder puts Ottawa first.
-
-Both of those can be checked with small real models. The block below scores the three sentences each way, then adds the cross-encoder to the Tallybook retriever and scores the 20 labelled questions. The first run downloads about 150 MB:
-
-```python
-import numpy as np
-from fastembed import TextEmbedding
-from fastembed.rerank.cross_encoder import TextCrossEncoder
-from ragkit import DOC_BY_ID, Retriever, evaluate
-
-query = "What is the capital of Canada?"
-docs = ["Toronto is in Canada.",
-        "Canada is the maple syrup capital of the world.",
-        "Ottawa is the capital of Canada."]
-
-bi_encoder = TextEmbedding("BAAI/bge-small-en-v1.5")
-cross_encoder = TextCrossEncoder("Xenova/ms-marco-MiniLM-L-6-v2")
-doc_vectors = np.array(list(bi_encoder.embed(docs)))
-query_vector = next(iter(bi_encoder.embed([query])))
-
-print("bi-encoder cosine:   ", (doc_vectors @ query_vector).round(2))
-print("cross-encoder score: ", np.round(list(cross_encoder.rerank(query, docs)), 2))
-
-retriever = Retriever()
-
-def rerank(q, k=3, pool=10):
-    ids = retriever.hybrid(q, k=pool, pool=18)
-    scores = list(cross_encoder.rerank(q, [DOC_BY_ID[i].full for i in ids]))
-    return [ids[i] for i in np.argsort(scores)[::-1]][:k]
-
-for name, search in [("hybrid", lambda q, k=3: retriever.hybrid(q, k=k)), ("hybrid+rerank", rerank)]:
-    print(name, {m: round(v, 3) for m, v in evaluate(search).items()})
-```
-
-```text
-bi-encoder cosine:    [0.74 0.79 0.84]
-cross-encoder score:  [-2.87  5.29  8.1 ]
-hybrid {'recall@3': 0.95, 'mrr': 0.742, 'ndcg@3': 0.789}
-hybrid+rerank {'recall@3': 0.9, 'mrr': 0.84, 'ndcg@3': 0.845}
-```
-
-The bi-encoder's three scores are close and the cross-encoder pulls them apart. On the labelled questions the reranker improves rank order, which is what it is for, and in this run it pushes one correct document out of the top 3. A general web-search model hasn't seen Tallybook's error codes, so one small corpus says little about reranking in general and a lot about why you measure on your own questions. Toy-embedder caveats from [03](03-keyword-semantic-and-hybrid-search.md) apply to the first stage.
-
-| Reranker | Quality | Cost |
-|---|---|---|
-| Cross-encoder | High | Minor added latency on 20–50 pairs |
-| LLM scoring (fine-tuned, outputs e.g. 0.95) | Highest | Costly; reranking only, never first stage |
-
-Raieli and Iuculano's fuller list (*Building AI Agents*, ch. 5–6):
-
-| Family | Examples | Trade-off |
-|---|---|---|
-| Cross-encoder | BGE reranker | The default |
-| Multi-vector (late interaction) | jina-colbert, ColBERTv2 | Cheapest; doc vectors precomputed |
-| LLM pointwise, pairwise or listwise | Prompt an LLM to score one doc, compare two, or order a list | Best quality, highest cost |
-| Fine-tuned seq2seq | RankT5 | Between the two |
-
-Two papers show what the LLM row buys. Pairwise Ranking Prompting asks an open FLAN-UL2 (20B) "which of these two passages is more relevant?" and sorts with a sliding window. Reranking BM25's top 100 on TREC-DL, unsupervised, it reached NDCG@10 of 72.65 (2019) and 70.46 (2020), against 75.59 and 70.56 for RankGPT on GPT-4, and 71.83 (2019) for the supervised monoT5-3B. It was far less sensitive to input order: with the BM25 order inverted, GPT-3.5 listwise reranking fell from 65.80 to 32.77 NDCG@10 while the exhaustive pairwise variant moved from 72.42 to 72.40. The price is calls: all-pairs is O(N²), and the paper reports no latency or cost. Only BM25 first stages and 43 and 54 queries ([arXiv:2306.17563](https://arxiv.org/abs/2306.17563), Qin et al., 2023, preprint). RankRAG goes the other way and makes the generator the reranker: one Llama3-8B tuned on about 50k ranking examples scored passages by the probability of "True" and beat dedicated rerankers on recall (NQ R@5 80.3 vs 78.0 for BGE-Rerank-v2-m3 and 77.8 for RankLLaMA-8B, reranking Dragon's top 100), and dropping the rerank step cost about 2.8 average points over nine QA sets (52.6 to 49.8). A generator tuned without ranking data did worse than the retriever it was meant to improve (NQ R@5 68.2 vs 74.9). Wikipedia and one medical corpus, private training blend, no code or model in the text; the reported extra time for N = 20 to 100 was 0.9x to 6.0x, not N-fold ([arXiv:2407.02485](https://arxiv.org/abs/2407.02485), Yu et al., 2024-07, preprint).
-
-ColBERTv2 runs as a reranker in a few lines through RAGatouille: `RAGPretrainedModel.from_pretrained("colbert-ir/colbertv2.0")`, then `.rerank(query, documents, k)`.
-
-Why rerank at all, from the Handbook: the first stage optimises for speed over a whole corpus, a reranker sees query and document together, and fewer, better chunks cut prompt cost and noise (*LLM Engineer's Handbook*, ch. 4). Oshin and Campos add that a low k is not a false economy: more documents make the app slower, and irrelevant ones push the LLM toward hallucination (*Learning LangChain*, ch. 3). Huyen notes two differences from web search. Rank position matters less, because the LLM reads all k chunks; and time is a legitimate reranking signal, for news or changing docs (*AI Engineering*, ch. 6).
-
-Cheaper post-retrieval steps (*Building AI Agents*, ch. 6):
-
-- Drop chunks below a score threshold, or without a required keyword, metadata value or date.
-- Expand a hit with its neighbouring chunks, so a fragment arrives with its context.
-
-Raieli and Iuculano cite Wang et al.'s pipeline sweep as recommending query classification, HyDE, reranking, repacking and summarization together, and they stress that reranking was the one stage whose removal hurt clearly. Wang's own Table 11 shows the HyDE step's price (see the rules of thumb below), so take the full combination as an upper bound on quality, not a default.
-
-```python
-# illustrative: needs a Weaviate collection with a reranker module, as in the lab
-from weaviate.classes.query import Rerank
-
-def semantic_search_with_reranking(query, rerank_property, collection,
-                                   rerank_query=None, top_k=5):
-    if rerank_query is None:
-        rerank_query = query                  # default: rerank on the same question
-    reranker = Rerank(query=rerank_query,     # can differ from the retrieval query
-                      prop=rerank_property)   # which property the cross-encoder reads
-    response = collection.query.near_text(query=query, limit=top_k, rerank=reranker)
-    return [x.properties for x in response.objects]
-
-# Assignment 3 (BBC news chunks): "Tell me about the conflicts in Latin America"
-semantic_search_with_reranking("Tell me about the conflicts in Latin America",
-                               rerank_property="chunk", collection=collection, top_k=2)
-# → "Spain-Argentina row over drug-use accusation",
-#   "Protests across Venezuela as election dispute goes on"
-```
-
-Assignment 3 rebuilds Assignment 1's news RAG on Weaviate: `filter_by_metadata`, `semantic_search_retrieve`, `bm25_retrieve`, `hybrid_retrieve`, `semantic_search_with_reranking`, then a `generate_final_prompt(query, top_k, retrieve_function, rerank_query, rerank_property, use_rerank, use_rag)` that takes any of them as a parameter.
-
-The house version of the reranking stage, with production numbers, is note [08 — PRINCE](08-agentic-rag-prince.md) and [11 — retrieval improvements](11-retrieval-improvements.md).
-
-**Compress after reranking, and let the compressor return nothing.** RECOMP trains a small compressor to turn the retrieved documents into the few tokens the reader needs. With Flan-UL2 20B, a Contriever top 5 of 100-word passages and a 5-shot prompt, a trained abstractive compressor (T5-large, 775M) cut the context to about 5% of the tokens for a 2 EM loss on Natural Questions (37.04 at 36 tokens against 39.39 at 660) and 3.7 on TriviaQA (58.68 against 62.37). It learns to output an empty summary when retrieval would not beat no retrieval, and on language modelling it prepended a summary to only 33% of examples. On multi-hop HotpotQA an extractive compressor did better: 11% of the tokens for 2.4 EM (30.40 against 32.80). A 110M sentence ranker trained on the reader's own likelihood reached 36.57 EM on NQ with one sentence, against 34.32 for off-the-shelf DPR and 30.06 for Contriever. More text is not always better: on WikiText-103 with GPT-2, the top-1 document gave perplexity 32.90 and the top 5 gave 35.53. Limits: each compressor is trained per dataset and reader, transfer to LLaMA-13B was partial (NQ EM 34.38 extractive and 36.32 abstractive, against 37.04 for the full top 5), and the authors' check of 30 summaries per dataset found 40% useful on HotpotQA against 50% for the teacher's. These are 2023 short-context readers ([arXiv:2310.04408](https://arxiv.org/abs/2310.04408), Xu et al., 2023-10, preprint).
+Moved to [5b — Query parsing, conversational retrieval and reranking](05b-query-parsing-conversational-retrieval-and-reranking.md): query rewriting, NER, HyDE and multi-query, self-query filters, rewriting chat turns, the three ways to score a (query, document) pair, and reranking, with the compression step after it.
 
 ---
 
@@ -542,12 +249,9 @@ The house version of the reranking stage, with production numbers, is note [08 �
 
 | Rule | Why |
 |---|---|
-| Start with fixed-size or recursive chunks; test 10–20% overlap against less | Good defaults; measure before getting clever. The overlap figure is a convention: book examples range from 1% to 20%, unmeasured. Semantic chunking did not beat fixed-size on real documents in Qu et al.; a better embedder moved results more |
+| Start with fixed-size or recursive chunks; test 10–20% overlap against less | Good defaults; measure before getting clever. The overlap figure is a convention: book examples range from 1% to 20%, unmeasured. |
 | Try context-aware chunking first when recall is low | Index-time cost only; no query latency |
 | Size `top_k` to chunk size | Many small or few large, same token budget |
-| Rewrite queries with a small LLM | Cheap, large gains on conversational prompts |
-| Over-retrieve 20–50, rerank to 3–10 | Cross-encoders are affordable on a short list |
-| Treat HyDE as an experiment | Helps on some corpora; always adds latency. In one full-pipeline sweep, adding HyDE to hybrid search moved the average score 0.477 → 0.478, raised open-domain QA EM 0.347 → 0.393, dropped medical QA 0.750 → 0.460, and took latency from 1.5 s to 11.7 s per query ([arXiv:2407.01219](https://arxiv.org/abs/2407.01219), Wang et al., 2024-07, Table 11) |
 
 ---
 
@@ -556,34 +260,26 @@ The house version of the reranking stage, with production numbers, is note [08 �
 | Lab | Label |
 |---|---|
 | M3 ungraded lab "Chunking" ([upstream](https://github.com/MohammadWasiq0786/Deeplearning.ai-RAG)) | needs embedded Weaviate + local inference server, and a Together API key for the generation step; not copied |
-| M3 Assignment 3 (Weaviate news RAG) | same; not copied |
 
 ---
 
 ## Pitfalls
 
 - **Chunking without checking what got dropped.** Symptom: tails of documents never come back. Count input and output words, and use a minimum length well below the maximum (the Handbook's 1,000/1,000 trap above).
-- **Choosing a chunker from a blog post.** Symptom: weeks on semantic chunking, little movement. Qu et al. found a better embedder moved results more on real documents. Evaluate first.
+- **Choosing a chunker from a blog post.** Symptom: weeks on semantic chunking, little movement. In Qu et al. it did not beat fixed-size on real documents, and a better embedder moved results more. Evaluate first.
 - **Chunks with no metadata.** Symptom: citations can't name a section, and you can't compare two chunkers in one index. Store source, position and strategy on each chunk.
 - **Pronouns in chunks.** Symptom: "They reach the customer" matches and the model can't tell what "they" means. Return a window, or prepend context at index time.
-- **Concatenating chat history forever.** Symptom: answers follow the previous topic as the conversation grows. Use a rewrite and let it say "can't resolve".
-- **Assuming HyDE helps.** Symptom: latency jumps and quality is flat or worse. Wang et al.'s sweep went from 1.5 s to 11.7 s per query and dropped medical QA from 0.750 to 0.460.
-- **Reranking with a model trained on a different domain.** Symptom: rank order improves on some queries and correct documents fall out of the top k. Over-retrieve, measure recall after the rerank, and consider a domain-tuned model.
 
 ---
 
 ## Try it
 
 1. In the first chunking block, set overlap to `0.5`. How many chunks does the fixed chunker make, and is that the same as without overlap? Why does the code behave that way?
-2. Add `"how do I get a refund"` to the conversational block's rewrites and compare with `"refund window in days"`. Which would you prefer for this question, and how would you decide in production?
-3. Your cross-encoder lifts MRR and lowers recall@3. Ship it or not? What would change your decision?
 
 <details>
 <summary>Answers</summary>
 
 1. The same number of chunks. The loop's stride is `chunk_size`, and overlap only reaches backward from each start, so overlap adds length and not chunks. `text_to_chunks` does the opposite: its stride is `size - overlap`, so more overlap means more chunks of the same size.
-2. Try it and look at where `kb-04` lands. A single query can't settle it. Decide on a labelled set of real conversations, using later turns and non-standalone questions in particular.
-3. Check the top-k the generator actually reads. If the lost documents are ones the model needs, raise k or the pool, or retune the reranker. If k is 3 and recall drops on a question type you care about, don't ship it. If rank matters more (one answer shown, or citations by position) and answer-level eval improves, ship it.
 
 </details>
 
@@ -598,16 +294,11 @@ The house version of the reranking stage, with production numbers, is note [08 �
 | What overlap should you use? | Start at 10–20% and test it, because it is a convention. Book examples range from 1% to 20% and none measures it. |
 | Does semantic chunking beat fixed-size? | Not on real long documents in Qu et al.: HotpotQA F1@5 was 90.59 fixed vs 87.37 breakpoint. Its big win came only on synthetic stitched documents, and the embedder mattered more. |
 | When does element-based chunking pay? | On structured, table-heavy documents. Jimeno Yepes et al. got 53.2% vs 48.2% on FinanceBench with about half the chunks. |
-| What is contextual retrieval? | An index-time LLM writes a 50–100 token context for each chunk, prepended before embedding and BM25. It adds no query latency. |
+| What is contextual retrieval? | An index-time LLM writes a 50–100 token context for each chunk, prepended before the chunk is indexed. It adds no query latency. |
 | HyDE vs hypothetical questions? | HyDE generates a fake answer at query time. Hypothetical questions are generated at index time and matched against the user's question, so they add no query latency. |
-| Multi-query vs RAG-Fusion? | Both search with several versions of the question. Multi-query unions the results and RAG-Fusion merges them with RRF. |
-| How do you make a chat turn searchable? | Rewrite it into a standalone query with a small LLM. Concatenating history is cheap, and it drags old topics into retrieval. |
-| Bi-encoder vs cross-encoder vs ColBERT? | Bi-encoder: one vector per text, precomputable and fast. Cross-encoder: scores each pair jointly, best and slowest, so reranking only. ColBERT: per-token vectors with MaxSim, near cross-encoder quality and heavy storage. |
-| Why rerank if recall is fine? | Zhao et al. found answer quality falls as the list grows even when the gold passage is present, and gold first beats gold last. Fewer and better chunks also cut cost. |
-| What is the standard reranking recipe? | Over-retrieve 20–50 with hybrid search, rerank the pairs, return the best 3–10. |
 
 ---
 
 ## Next
 
-[06 — Generation for RAG](06-generation-for-rag.md): the retriever's half is done. Now the LLM: sampling, model choice, prompts for grounded answers, citations and hallucination checks.
+[5b — Query parsing, conversational retrieval and reranking](05b-query-parsing-conversational-retrieval-and-reranking.md): what to search for and what to keep. Then [06 — Generation for RAG](06-generation-for-rag.md): the retriever's half is done. Now the LLM: sampling, model choice, prompts for grounded answers, citations and hallucination checks.

@@ -1,4 +1,5 @@
 ---
+imported_hash: 9c28bb91b556afa6
 title: 3 — Long-Term Memory with LangGraph
 summary: Ask the research agent from note 02 the same question on a new thread and it pays for every search and every read again, because a checkpointer remembers a thread and nothing else.
 order: 4
@@ -51,7 +52,7 @@ graph LR;
 | Whole graph state, every step | Explicit `put` / `search` / `get` of JSON items |
 | Lost when the thread ends | Survives across threads and sessions |
 
-[Zhou et al. (2023, preprint)](https://arxiv.org/abs/2309.07870) drew the same line early: long-term memory in a vector database, short-term memory in a scratchpad. What changed since is how the agent reaches it. [Furgale et al. (2026, preprint)](https://arxiv.org/abs/2607.20709) score frameworks on whether state belongs to the developer or the model, and record LangGraph's as developer and node state: nothing is remembered unless a graph node or a tool you gave the model says so. That is the point of this chapter's code. Memory here is ordinary program logic you can read, and it fails like program logic too.
+[Zhou et al. (2023, preprint)](https://arxiv.org/abs/2309.07870) drew the same line early: long-term memory in a vector database, short-term memory in a scratchpad. What changed since is how the agent reaches it. [Furgale et al. (2026, preprint)](https://arxiv.org/abs/2607.20709) score frameworks on whether state belongs to the developer or the model, and record LangGraph's graph state, stores, reducers and checkpointers as developer and node state: it persists, but the model sees none of it unless an opt-in middleware tool such as `write_todos` exposes it. That is the point of this chapter's code. Memory here is ordinary program logic you can read, and it fails like program logic too.
 
 ---
 
@@ -379,7 +380,7 @@ def triage_router(state: State) -> Command[Literal["response_agent", "__end__"]]
 
 `Command(goto=..., update=...)` lets a node choose its successor and write state in one return, instead of a separate conditional-edge function. The gate in [note 02](02-agentic-search-persistence-streaming.md#l5--human-in-the-loop) uses the same return shape, offline.
 
-On Claude, `with_structured_output` needs care, because a forced `tool_choice` returns a 400 on Opus 5.5, Sonnet 5.5 and Fable 5.1. See [note 07](07-lcel-composition-in-practice.md#three-routes-to-structured-output) for how langchain-anthropic handles that and which method to choose.
+On Claude, `with_structured_output` needs care, because a forced `tool_choice` returns a 400 on Opus 5.5, Sonnet 5.5 and Fable 5.1. See [note 07](07-lcel-composition-in-practice.md#three-ways-to-get-structured-output) for how langchain-anthropic handles that and which method to choose.
 
 ### Namespace map
 

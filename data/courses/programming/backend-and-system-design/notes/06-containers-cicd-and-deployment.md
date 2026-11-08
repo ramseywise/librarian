@@ -1,4 +1,5 @@
 ---
+imported_hash: a8935c81c6ee8049
 title: 6 — Containers, CI/CD and deployment
 summary: A container is an ordinary process with a restricted view of the machine.
 order: 7

@@ -1,4 +1,5 @@
 ---
+imported_hash: fa509a49d8f1fdfb
 title: 1 — The RAG pipeline
 summary: A support assistant for an invoicing product gets the question "can I get my money back?" The refund page exists, but the retriever returns an archived version with the old 14-day window, and the model repeats it with full confidence.
 order: 2
@@ -11,7 +12,7 @@ source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/01-rag-pipelin
 
 A support assistant for an invoicing product gets the question "can I get my money back?" The refund page exists, but the retriever returns an archived version with the old 14-day window, and the model repeats it with full confidence. Nothing crashed. The logs look clean, and a customer now has the wrong answer. Most RAG failures have this shape: one quiet stage upstream decides what the model can say.
 
-Retrieval-augmented generation fetches relevant documents at inference time, puts them in the prompt, and lets the model answer from them. This note is the map. It covers the **mechanics**: architectures, the pipeline stages, chunking, hybrid search, worked production pipelines, index-time structures, agentic and conversational RAG, and what to measure. Later chapters take each stage apart.
+Retrieval-augmented generation fetches relevant documents at inference time, puts them in the prompt, and lets the model answer from them. This note is the map. It covers the **mechanics**: architectures, the pipeline stages, chunking, hybrid search, worked production pipelines and what to measure. Index-time structures, agentic and conversational RAG are in [01b](01b-index-structures-and-agentic-rag.md). Later chapters take each stage apart.
 
 **The running example.** Every chapter in this pillar uses the same corpus: 18 synthetic help-centre pages and 20 labelled questions for Tallybook, a fictional invoicing product. It lives in [`practice/ragkit.py`](../practice/ragkit.py) with BM25, a toy embedder and the metrics. Blocks that start `from ragkit import ...` run from the `practice/` folder with `uv run --with numpy python your_file.py`, with no API key. The toy embedder is hand-built so it needs no download. It shows mechanics, and its scores are not evidence about real models; [03](03-keyword-semantic-and-hybrid-search.md#a-real-embedder-on-the-same-questions) runs a real one.
 
@@ -31,7 +32,7 @@ The Gao et al. survey arranges RAG as three paradigms. **Naive RAG** is index �
 ![Three RAG paradigms: Naive RAG (index, retrieve, prompt a frozen LLM); Advanced RAG with pre-retrieval and post-retrieval stages; Modular RAG with swappable modules and patterns](../assets/sources/images/gao-rag-survey-fig3.png)
 *Image Source: Gao et al. (2024), [Retrieval-Augmented Generation for Large Language Models: A Survey](https://arxiv.org/abs/2312.10997), Figure 3*
 
-All three paradigms put retrieved text into the prompt. Zhao et al. sort RAG on a second axis, by where the retrieved object enters the generator. **Query-based** RAG puts it in the input; that is the prompt-stuffing this note covers. **Latent-representation** RAG fuses retrieved encodings inside the model (FiD, RETRO's chunked cross-attention), which needs training to align the two spaces. **Logit-based** RAG blends retrieval scores into the next-token distribution at each decoding step (kNN-LM). **Speculative** RAG uses retrieval in place of generation: retrieved drafts for speculative decoding (REST), or a cached answer instead of a model call (GPTCache, [10](10-semantic-cache.md)). Only the first and last work with a model behind an API. The survey reports no experiments of its own ([arXiv:2402.19473](https://arxiv.org/abs/2402.19473) (Zhao et al., 2024-02)). The first three classes are older. Asai, Min, Zhong and Chen's ACL 2023 tutorial sorted retrieval-based LMs by the layer retrieval enters: input, intermediate or output. They added a second axis, the unit the datastore holds: a text chunk (RETRO, Atlas), a token (kNN-LM) or an entity mention ([ACL 2023 tutorial](https://doi.org/10.18653/v1/2023.acl-tutorials.6), Asai et al.). The two sources disagree on Fusion-in-Decoder readers. The tutorial files Atlas, a FiD reader, with RAG and REALM under input concatenation, where Zhao et al. put FiD under latent fusion. Since FiD encodes each passage with the question and fuses only in the decoder, either label is defensible. The tutorial is a taxonomy with no experiments, too.
+All three paradigms put retrieved text into the prompt. Zhao et al. sort RAG on a second axis, by where the retrieved object enters the generator. **Query-based** RAG puts it in the input; that is the prompt-stuffing this note covers. **Latent-representation** RAG fuses retrieved encodings inside the model (FiD, RETRO's chunked cross-attention), which needs training to align the two spaces. **Logit-based** RAG blends retrieval scores into the next-token distribution at each decoding step (kNN-LM). **Speculative** RAG uses retrieval in place of generation: retrieved drafts for speculative decoding (REST), or a cached answer instead of a model call (GPTCache, [10](10-semantic-cache.md)). How the latent and logit classes are trained is in [02b](02b-training-the-retriever-and-the-reader.md). Only the first and last work with a model behind an API. The survey reports no experiments of its own ([arXiv:2402.19473](https://arxiv.org/abs/2402.19473) (Zhao et al., 2024-02)). The first three classes are older. Asai, Min, Zhong and Chen's ACL 2023 tutorial sorted retrieval-based LMs by the layer retrieval enters: input, intermediate or output. They added a second axis, the unit the datastore holds: a text chunk (RETRO, Atlas), a token (kNN-LM) or an entity mention ([ACL 2023 tutorial](https://doi.org/10.18653/v1/2023.acl-tutorials.6), Asai et al.). The two sources disagree on Fusion-in-Decoder readers. The tutorial files Atlas, a FiD reader, with RAG and REALM under input concatenation, where Zhao et al. put FiD under latent fusion. Since FiD encodes each passage with the question and fuses only in the decoder, either label is defensible. The tutorial is a taxonomy with no experiments, too.
 
 The same progression in practice, each step adding control at the cost of latency and complexity:
 
@@ -39,9 +40,14 @@ The same progression in practice, each step adding control at the cost of latenc
 |---|---|---|
 | **Naive RAG** | Embed query → top-k → stuff into prompt | One-hop factual questions over a clean corpus |
 | **Modular RAG** | Swappable stages: query rewrite → retrieve → rerank → compress → generate | You need to tune or replace one stage without rebuilding the rest |
-| **Agentic RAG** | The model decides *whether*, *what* and *when* to retrieve, and loops until it has enough | Multi-step questions ([below](#agentic-rag)) |
+| **Agentic RAG** | The model decides *whether*, *what* and *when* to retrieve, and loops until it has enough | Multi-step questions ([01b](01b-index-structures-and-agentic-rag.md#agentic-rag)) |
 | **Graph-enhanced RAG** | Entities and relations extracted into a graph; retrieval walks edges | Multi-hop and "how is X related to Y" questions ([05-graph](../../../ai-engineering/05-graph-engineering/readme.md)) |
 | **Text-to-SQL** | Generate a query against structured data instead of searching chunks | Filtering, counting, aggregation ([below](#text-to-sql-is-a-retrieval-strategy)) |
+
+The Hu and Lu survey sorts retrieval-augmented models by how retriever and model interact: sequential single-shot (RAG, FiD), sequential multiple (FLARE-style active retrieval), and parallel interpolation of the two output distributions, $p(y|x)=\lambda p_R+(1-\lambda)p_{LM}$ as in kNN-LM. It names poor robustness, poor retrieval quality, cost and narrow applications as open problems. It reports no comparative experiments and stops at early 2024 ([arXiv:2404.19543](https://arxiv.org/abs/2404.19543), Hu & Lu, 2024-04, v2 2025-06, preprint).
+
+![Three ways retriever and language model interact: sequential single interaction, sequential multiple interactions and parallel interaction](../assets/sources/images/hu-survey-retrieval-augmented-fig2.png)
+*Image Source: Hu and Lu, [RAG and RAU: A Survey on Retrieval-Augmented Language Model in Natural Language Processing](https://arxiv.org/abs/2404.19543) (2024), Fig. 2*
 
 ### Where naive RAG fails
 
@@ -55,7 +61,7 @@ Each advanced-RAG module exists to fix one failure of the naive pipeline. Raieli
 | Collection and indexing | Data-type issues, missing content | One chunker applied to PDFs, HTML and tables alike; the answer was never indexed, or the index is stale |
 | Search | Missed top ranks | The answer chunk exists but ranks below k. Often the embedder is too small or was trained on another domain |
 | Context | Not in context | Retrieval found every relevant chunk, but too many to fit the window |
-| Generation | Failed extraction | The answer is in the prompt, but noise or conflicting chunks hide it (*contextual hallucination*, [06](06-generation-for-rag.md#hallucinations-and-citations)) |
+| Generation | Failed extraction | The answer is in the prompt, but noise or conflicting chunks hide it (*contextual hallucination*, [06](06b-hallucinations-evaluation-and-fine-tuning.md#hallucinations-and-citations)) |
 | Generation | Wrong format, incorrect specificity, incomplete | A table was asked for and prose came back; too general or too detailed; only part of a multi-part answer |
 | System | Redundancy, scale, flexibility | Near-duplicate chunks crowd out others; latency grows with volume; one component can't be swapped |
 
@@ -68,7 +74,7 @@ A popular catalogue ([Towards AI](https://pub.towardsai.net/9-rag-architectures-
 | # | Pattern | Shape | When | Production tip |
 |---|---|---|---|---|
 | 1 | **Standard** | Retrieve top-k → inject → generate | Baseline | — |
-| 2 | **Conversational** | Standard + dialogue state and query condensation | Chat | See [conversational RAG](#conversational-multi-turn-rag) |
+| 2 | **Conversational** | Standard + dialogue state and query condensation | Chat | See [conversational RAG](01b-index-structures-and-agentic-rag.md#conversational-multi-turn-rag) |
 | 3 | **Corrective (CRAG)** | Generate → extract claims → retrieve evidence → verify and rewrite | Accuracy-critical | Fewer factual errors, evidence-backed answers; higher latency and cost. Build a robust claim extractor (rules + NER) and track claim-level precision |
 | 4 | **Adaptive** | Intent classifier → pipeline. Fast path: low-k, cached or templated answers. Deep path: high-k, multi-hop or iterative retrieval | Mixed workloads (FAQs, research, creative) | Keep the intent model small and cheap; make routing rules auditable. Speed for simple queries, depth where it matters |
 | 5 | **Query generation** (the catalogue calls it "Self-RAG"; see below) | The LLM writes query expansions or keywords used for retrieval | Vague inputs; paraphrase-heavy domains | Validate or constrain generated queries so the model can't invent out-of-scope terms |
@@ -80,6 +86,12 @@ A popular catalogue ([Towards AI](https://pub.towardsai.net/9-rag-architectures-
 **Quick decision cheat-sheet:** accuracy-critical → CRAG or GraphRAG. Conversational → conversational RAG + condensation. Mixed workload → adaptive or fusion. Paraphrase-heavy or sparse docs → HyDE or query generation. Automation → agentic.
 
 The catalogue's "Self-RAG" label is wrong. **Self-RAG proper** ([arXiv:2310.11511](https://arxiv.org/abs/2310.11511), Asai et al., 2023-10) is a trained model, not a query-rewriting prompt. Llama 2 is fine-tuned on 150k examples to emit *reflection tokens*. These tokens decide whether to retrieve at all and grade each passage for relevance. They also check whether the passage supports the generated sentence and how useful the answer is. A GPT-4-distilled critic inserts the tokens offline, so no critic runs at inference. At 13B it beat retrieval-augmented Llama2-chat 13B on PopQA, TriviaQA, PubHealth, ARC and biography factuality, but not on ASQA exact match. On ASQA citation precision it beat retrieval-augmented ChatGPT (70.3 vs 65.1 at 13B). It belongs with **adaptive** (#4), except the model makes the routing decision itself. **FLARE** ([arXiv:2305.06983](https://arxiv.org/abs/2305.06983), Jiang et al., 2023-05) gets adaptive retrieval without training. It drafts the next sentence, and if any token falls below a confidence threshold, it uses the draft as the query and regenerates the sentence. On 2WikiMultihopQA with text-davinci-003 it reached 51.0 EM, against 39.4 for retrieving once and 47.8 for question decomposition. The authors report no significant gain on Wizard of Wikipedia or ELI5, where short or open-ended answers leave little to look ahead to. Every triggered retrieval also adds a generation pass.
+
+![FLARE: the model drafts the next sentence, and when the draft contains low-probability tokens it uses the sentence as a query, retrieves, and regenerates that sentence](../assets/sources/images/jiang-active-retrieval-augmented-fig1.png)
+*Image Source: Jiang et al., [Active Retrieval Augmented Generation](https://arxiv.org/abs/2305.06983) (2023), Fig. 1*
+
+![Self-RAG compared with standard RAG: the model decides whether to retrieve, generates segments in parallel over retrieved passages, and critiques each with reflection tokens before choosing the best](../assets/sources/images/asai-self-rag-fig1.png)
+*Image Source: Asai et al., [Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection](https://arxiv.org/abs/2310.11511) (2023), Fig. 1*
 
 ---
 
@@ -111,6 +123,7 @@ Stage notes:
 
 - **Metadata filtering first.** Permission checks and freshness filters are near-free compared with embedding search, and dropping candidates early makes every later stage cheaper. Push the filter *into* the vector query rather than applying it to the results (see the funnel in [PRINCE](#a-tuned-pipeline-bayers-prince)). Permission filtering here is a security control, not just an optimisation.
 - **Ranking ≠ retrieval.** Bi-encoder vector search is fast and approximate; a cross-encoder reranker is slow and accurate. Retrieve wide, rerank, send narrow: order-of-magnitude k=50→5, though real numbers are corpus-specific.
+- **Ranking, dedup and compression can be one call.** Lakshmanan and Hapke group the stages after search as *node postprocessing* (rerank, compress, drop obsolete chunks by metadata, disambiguate) and fold scoring and compression into one structured-output LLM call per chunk, which rules out a small fine-tuned reranker such as BGE for that step. The call count is what limits it: checking every pair of N chunks for conflicts costs N(N−1) calls, checking that each chunk names the same entity as the first costs N−1. On "Describe the geology of the Grand Canyon" over two old geology textbooks, top-k of 2 put a table-of-contents chunk first, top-k of 4 still answered wrongly, and compression plus reranking fixed it. That is one query with no baseline (*Generative AI Design Patterns*, ch. 4, Pattern 10).
 - **Deduplication has a trap.** A chunk retrieved by several sub-queries is often the *most* relevant one, not redundant noise. Collapse duplicates but treat multi-retrieval as a positive ranking signal.
 - **Compression is query-conditional.** Reduce each document to the part that answers the current question, not a generic summary, which discards the specific detail the query needed.
 - **Structured formatting.** Wrap in tags with source attribution so the model can cite, and so injected content stays distinguishable from instructions ([framing](../../../ai-engineering/02-context-engineering/notes/04-retrieval.md#framing-retrieved-content)).
@@ -192,9 +205,11 @@ clean parse   {'bm25': 0.0, 'dense': 1.0, 'hybrid': 1.0}
 failed parse  {'bm25': 0.0, 'dense': 0.0, 'hybrid': 0.0}
 ```
 
-Dense and hybrid search drop from 1.0 to 0.0, and no rerank stage can bring the page back. BM25 scores 0.0 in both rows for a different reason: "money back" shares no word with the page, the paraphrase gap of [03](03-keyword-semantic-and-hybrid-search.md).
+Dense and hybrid search drop from 1.0 to 0.0, and no rerank stage can bring the page back. BM25 scores 0.0 in both rows for a different reason: "money back" shares no word with the page, the paraphrase gap of [03](03-keyword-semantic-and-hybrid-search.md). Ingestion can narrow it: Lakshmanan and Hapke expand jargon with a synonym dictionary on the documents at index time or on the query, and warn that some synonyms work one way only: "An ETF is an index fund, but an index fund isn't automatically an ETF", so the dictionary must store the direction. LLM-generated expansions can also be hallucinated (*Generative AI Design Patterns*, ch. 3, Pattern 7).
 
 **Multimodal ingestion.** Non-text content (charts, PDF layout, audio) enters here, and the path sets the ceiling. **Native multimodal** keeps layout and charts but costs the most. **Extract-to-text** (OCR, transcription) is cheap and cacheable, but anything visual is lost. **Extract plus an analysis tool** (`analyze_image`, `analyze_pdf`) answers most questions from the text and goes back to the original only when needed (Li, ch. 3; lab: upstream [multimodal-agent](https://github.com/bojieli/ai-agent-book/tree/main/chapter4/multimodal-agent)).
+
+Arsanjani and Bustos draw the same fork for a scanned loan form: a pipeline (OCR service, then a text LLM) or one native multimodal call. They start with the pipeline, since it lets you swap in the best OCR and watch each step, and keep the native call for tasks that need the image and text read together (*Agentic Architectural Patterns*, ch. 9). Their code is two mocks with a fixed string and no measurement, so there is no accuracy or cost comparison to quote.
 
 ### Keeping the index in sync
 
@@ -235,7 +250,9 @@ print("chunks left:", len(index))
 chunks left: 0
 ```
 
-Scheduling, change detection, LangChain's indexing API and asynchronous deletes are in [07 § keeping a live index in sync](07-rag-in-production.md#keeping-a-live-index-in-sync).
+Two changes that sync can't absorb chunk by chunk. **An embedding-model change forces a full reindex**, because vectors from different model versions are not comparable; Lakshmanan and Hapke advise open-weights embedders partly so a vendor deprecation can't force one on you. And for content that has gone stale they give three remedies with different costs: filter at query time on metadata, prune the store (smaller index, faster retrieval, but the history is gone), or demote old chunks at rerank (*Generative AI Design Patterns*, ch. 3, Pattern 8). The chapter's example is a ChromaDB `where` prefilter on `created_at` dropping a 2024 duplicate; it measures none of the three.
+
+Scheduling, change detection, LangChain's indexing API and asynchronous deletes are in [07 § keeping a live index in sync](07b-security-changing-text-multimodal-and-live-indexes.md#keeping-a-live-index-in-sync).
 
 ---
 
@@ -261,12 +278,12 @@ The chunking code, a comparison on a Tallybook page, and the sizes and overlaps 
 
 Lexical search (BM25) finds exact terms: names, error codes, identifiers. Dense search finds paraphrases. Run both, fuse the rankings (reciprocal rank fusion is the common default), then rerank the fused top-n with a cross-encoder. That pipeline is the reasonable default for production retrieval.
 
-Huyen names the two ways to combine retrievers (*AI Engineering*, ch. 6). **In sequence**: a cheap term-based retriever narrows the corpus, then vector search or a reranker reorders the survivors. **In parallel**: both run over the whole corpus and RRF merges the lists. Sequence is cheaper; parallel keeps documents that only one retriever would find.
+Huyen names the two ways to combine retrievers (*AI Engineering*, ch. 6). **In sequence**: a cheap term-based retriever narrows the corpus, then vector search or a reranker reorders the survivors. **In parallel**: both run over the whole corpus and RRF merges the lists. Her reason for the sequence is cost: the cheap, less precise retriever runs over everything, the expensive one only over the candidates. Our inference: a parallel ensemble also keeps documents that only one retriever would find, which a cascade drops at the first stage.
 
 Each stage has its own job:
 
 - **Sparse.** BM25's `k1` saturates term frequency, so the 20th mention adds little. `b` normalises for document length. Rare terms dominate through IDF. *Learned sparse* models (SPLADE, BGE-M3's sparse head) learn the term weights and can add related terms that aren't in the text, while staying sparse and inspectable. Worked example: [BM25 from scratch](03-keyword-semantic-and-hybrid-search.md#bm25-from-scratch).
-- **Dense.** Cosine similarity compares direction, not magnitude, so length doesn't count. Contextual encoders (BERT, BGE-M3) give "bank" a different vector in each sentence; Word2Vec gave it one. The ANN index choice (HNSW for live corpora, ANNOY for static ones) is in [09 — vector database comparison](09-vector-database-comparison.md#ann-index-types-hnsw-vs-annoy). Lab: upstream [3-4 dense-embedding](https://github.com/bojieli/ai-agent-book/tree/main/chapter3/dense-embedding).
+- **Dense.** [Cosine similarity](../../01-llm-fundamentals/notes/01-tokens-and-embeddings.md#vectors-dot-products-and-cosine-similarity) compares direction, not magnitude, so length doesn't count. Contextual encoders (BERT, BGE-M3) give "bank" a different vector in each sentence; Word2Vec gave it one. The ANN index choice (HNSW for live corpora, ANNOY for static ones) is in [09 — vector database comparison](09-vector-database-comparison.md#ann-index-types-hnsw-vs-annoy). Lab: upstream [3-4 dense-embedding](https://github.com/bojieli/ai-agent-book/tree/main/chapter3/dense-embedding).
 - **Fusion.** Dense scores (roughly 0–1) and BM25 scores (0 to tens) aren't on the same scale. RRF (`Σ 1/(60 + rank)`) ignores scores and fuses ranks: robust, but it throws signal away. Normalise-and-weight keeps the scores but is hard to tune.
 - **Rerank.** A cross-encoder reads the query and the candidate *together* (the interviewer), where the bi-encoder compares two independent vectors (the résumé screen). It's too slow to run over the corpus, so it reranks the fused top 50 or so. It refines fusion; it doesn't replace it. Lab: upstream [3-6 retrieval-pipeline](https://github.com/bojieli/ai-agent-book/tree/main/chapter3/retrieval-pipeline) reports each document's rank before and after reranking.
 
@@ -328,6 +345,11 @@ Check the definition and the k before comparing numbers across sources ([Eval pi
 
 Score the generator with the right evidence as well as with what was retrieved, because the gap between the two is the upstream stages' share of the error. Wizard of Wikipedia, the knowledge-grounded dialogue benchmark, recorded which Wikipedia sentence the human expert used on each turn, so it could do this. Its end-to-end Transformer reached 35.5 unigram F1 against the human reply when handed that gold sentence and 16.9 when it had to pick from about 61 TF-IDF-retrieved candidates itself (seen topics; 32.2 vs 14.4 on unseen ones). The best standalone selector picked the expert's sentence only 25.5% of the time on seen topics, and plain IR ranking 5.8% ([arXiv:1811.01241](https://arxiv.org/abs/1811.01241), Dinan et al., ICLR 2019). These are 2018-scale models scored by word overlap, so read the size of the gap, not the absolute scores. The paper measures no hallucination rate, though its error analysis shows the knowledge-conditioned model that picks a stored human reply giving fluent wrong answers on unseen topics, such as listing places in Greece when asked about Ireland.
 
+KILT scores the answer only when the right page was also found. Its 11 datasets share one 2019 Wikipedia snapshot (5.9M articles) with page-level provenance, and a point counts only if the gold page is ranked first. For RAG, Natural Questions exact match of 44.39 falls to 32.69 as KILT-EM, HotpotQA's 26.97 to 3.21, and FEVER accuracy of 86.31 to 53.45; a BERT+DPR baseline with lower FEVER accuracy (69.68) still scored higher on the KILT version (58.58). Closed-book BART beat every retrieval system on ELI5 (ROUGE-L 20.55 against 14.05 for RAG). Provenance is page-level and annotators agreed poorly (Cohen's kappa 0.3 on NQ, 0.1 on ELI5), baselines are BART and DPR with no variance reported ([arXiv:2009.02252](https://arxiv.org/abs/2009.02252), Petroni et al., NAACL-HLT 2021). Its FEVER source shows the split at the origin: 185,445 claims over Wikipedia introductions, labelled supported, refuted or not enough info. A On the dev set, a TF-IDF top-5 documents, top-5 sentences and Decomposable Attention entailment pipeline scored 50.91% label accuracy ignoring the evidence but 31.87% when correct evidence also had to be found. Evidence retrieval had 45.89% recall and 10.79% precision, and in 961 hand-checked test errors 58.27% retrieved no correct evidence. The evidence labels are incomplete (72.36% recall against expert re-annotation), so valid new evidence counts as a precision error, and the models are 2017-era ([arXiv:1803.05355](https://arxiv.org/abs/1803.05355), Thorne et al., NAACL-HLT 2018).
+
+![Wizard of Wikipedia models: an IR system supplies knowledge, a transformer memory network attends to it, and a decoder writes the dialogue response, trained with a knowledge loss and a response loss](../assets/sources/images/dinan-wizard-wikipedia-knowledge-fig1.png)
+*Image Source: Dinan et al., [Wizard of Wikipedia: Knowledge-Powered Conversational agents](https://arxiv.org/abs/1811.01241) (2019), Fig. 1*
+
 Recall and precision at k are one [confusion matrix](../../../data-science/01-classical-ml/notes/04-model-evaluation.md#confusion-matrix-precision-recall-f1) at one cut-off: a relevant document in the top k is a true positive, an irrelevant one a false positive, and a relevant one left out a false negative. MRR and nDCG weight positions, so no single matrix gives them. [Collaborative filtering](../../../data-science/05-time-series-and-recommenders/notes/02-collaborative-filtering-and-matrix-factorisation.md#the-metric-that-matters-top-n-ranking) in data science computes recall and NDCG on recommenders, and [two-tower and evaluation](../../../data-science/05-time-series-and-recommenders/notes/03-two-tower-and-evaluation.md#offline-evaluation-sampled-metrics) shows that scoring against a sample of negatives gives a different metric. [Choosing a metric](../../../data-science/01-classical-ml/notes/11-choosing-a-metric.md#one-table-four-jobs) maps these, and [Reading the errors](../../../data-science/01-classical-ml/notes/12-reading-the-errors.md#the-same-habit-in-retrieval-judges-and-traces) reads the misses.
 
 ---
@@ -359,7 +381,7 @@ Bayer's PRINCE platform ([Martin Fowler article](https://martinfowler.com/articl
 1. **Keyword extraction and filter generation, concurrently.** One LLM pass pulls search keywords out of the question (domain terms like `piloerection`, `ataxia`); a second generates a structured metadata filter (`eq(study_id, T123456-2)`) via few-shot prompting over permutation examples.
 2. **Query expansion, n=5.** A smaller, faster model rewrites the question into five semantically similar variants, covering phrasing and terminology drift.
 3. **Metadata pre-filtering.** The generated filter is applied *inside* the vector database query, not after it, cutting the search space from millions of vectors to tens or hundreds before any similarity math runs.
-4. **Parallel hybrid search, weighted 0.7/0.3.** Each expanded query runs its own hybrid search over the filtered space: kNN vector similarity (weight **0.7**) plus keyword search (weight **0.3**). The split was found by experiment, not derived. For a new corpus the right prior is "measure it", not "use 0.7". (OpenClaw's memory search lands on the same 70/30, [02-context 06](../../../ai-engineering/02-context-engineering/notes/06-memory.md#production-memory-designs).)
+4. **Parallel hybrid search, weighted 0.7/0.3.** Each expanded query runs its own hybrid search over the filtered space: kNN vector similarity (weight **0.7**) plus keyword search (weight **0.3**). The split was found by experiment, not derived. For a new corpus the right prior is "measure it", not "use 0.7". (OpenClaw's memory search lands on the same 70/30, [02-context 06](../../../ai-engineering/02-context-engineering/notes/06b-memory-architectures.md#production-memory-designs).)
 5. **Aggregate and rank, k≈20.** Union the chunks across all five searches, score each by its *highest* weighted score across the runs, keep the top ~20.
 6. **Cross-encoder rerank, k=20 → 7.** A `bge-reranker-large` cross-encoder scores each candidate against the *original* question and keeps the top 7.
 
@@ -374,74 +396,6 @@ The funnel: **millions → hundreds (filter) → ~20 (hybrid + aggregate) → 7 
 ### Text-to-SQL is a retrieval strategy
 
 Vector search over chunks is the wrong tool for questions that need precise filtering, aggregation or comparison: "give me 50 studies done on rat", or any numerical rollup. Embedding similarity doesn't count, sum or compare. PRINCE routes these to a Text-to-SQL tool, so a retrieval layer that spans structured and unstructured data needs a **router**, not a single index. The details, with a runnable SELECT-only validator, the retrieved few-shot pattern and the five kinds of router, are in [08 § Text-to-SQL](08-agentic-rag-prince.md#text-to-sql). The same funnel at small scale (the LLM Twin) is in [08 § the LLM Twin](08-agentic-rag-prince.md#the-same-funnel-at-small-scale-the-llm-twin).
-
----
-
-## Index-time structures: RAPTOR, GraphRAG, filesystems
-
-Flat chunks fail on aggregation and rule-induction questions however good the retriever (the cats and nurse examples are in [02-context 04](../../../ai-engineering/02-context-engineering/notes/04-retrieval.md#distill-at-index-time-beyond-flat-chunks)). The fix is to spend LLM compute at index time and store structure:
-
-| Structure | How it's built | Answers | Notes |
-|---|---|---|---|
-| **RAPTOR** | Cluster leaf chunks, summarise each cluster as a parent, recurse to a root | "Drill down from a concept to the details" | Retrieval works at any level of abstraction |
-| **GraphRAG** | LLM-extracted entities and relations, then community detection and summaries | Multi-hop ("my doctor's hospital's address") and disambiguation (two Dr. Zhangs are two nodes) | Converting to triples loses meaning: "if it rains I'll cancel the beach and go to the museum" loses its condition. Use it as an index alongside natural-language text, not instead of it ([05-graph 11](../../../ai-engineering/05-graph-engineering/notes/11-kg-rag-and-text-to-cypher.md)) |
-| **Filesystem (OpenViking)** | Every resource gets L0 (~100-token abstract), L1 (~2k-token overview) and L2 (full text), with `.abstract`/`.overview` per directory | Navigation: most queries resolve at L1 | Progressive disclosure for a corpus. Needs **cross-links between files**, wiki-style, plus index pages. Weaker models append orphan files unless the writing prompt requires them to link and update the index |
-| **Knowledge discovery** | Extract a schema per case (bottom-up factor discovery), encode it, cluster into prototypes, rank the factors | "What decides outcomes here?" | The ranked factors also tell the agent which questions to ask, in order. Lab: upstream [3-13](https://github.com/bojieli/ai-agent-book/tree/main/chapter3/structured-knowledge-extraction) (Chinese legal data) |
-
-Raieli and Iuculano's *hierarchical indexing* is the two-level version of RAPTOR. Summarise each document (one or more summaries per ~10 pages or 10K tokens), search the summaries first, then search chunks only inside the documents that matched. More levels give more precise routing, but the summaries multiply and each level adds a search step. The authors warn that with too many levels the number of summaries explodes combinatorially (*Building AI Agents*, ch. 6).
-
-The structure can also be built at query time. Jiang et al. survey what they call retrieval and structuring augmented generation. The graph-retrieval line they map includes HippoRAG (Gutiérrez et al., NeurIPS 2024), which extracts triples from passages with an LLM, then runs personalized PageRank around the query's entities to find passages linked only through other passages. They also propose a loop in which each round's retrieved text is turned into a subgraph of a knowledge graph built for that one query, and the model writes its next subquery from that graph until it has enough. The loop is a proposal that was never run, and the survey reports no experiments, latency or indexing cost, so it shows the design space and not whether structure beats hybrid chunk retrieval ([arXiv:2509.10697](https://arxiv.org/abs/2509.10697), Jiang et al., KDD 2025).
-
-A document's own table of contents is a structure that costs nothing to build. STAIR puts a book's whole table of contents in the prompt and fine-tunes the model to write the title of the one leaf section that answers the query. It extends the differentiable search index (DSI, Tay et al., NeurIPS 2022), where a model learns to generate document ids. On SearchTome (18 open textbooks in 6 domains, with Mixtral-generated test questions), a LoRA-tuned Mistral-7B reached **Recall@1 of 82.6 against 76.9 for DSI on the same base model**, 68.7 for off-the-shelf NV-Embed-v2 and 59.5 for BM25. The gap over DSI was significant in each domain, and only 0.05% of its outputs named a section that is not a leaf. It is trained per book with up to 14k tokens of contents in each prompt, so a changed corpus means retraining. It was never compared with tuned chunk retrieval or a reranker, and it reports no answer quality. The authors limit it to corpora that have a global structure ([arXiv:2609.03874](https://arxiv.org/abs/2609.03874), Kumar et al. (IBM), 2026-09, v2 2026-10, preprint).
-
-Entities can be the structure an agent walks instead. GraphRAG and HippoRAG keep their graph inside the retriever. CorpusMap writes it out as files: one page per entity that appears in at least two documents, linking to those documents, for an agent searching with find, grep and cat. Across three enterprise-style benchmarks of 2.8k–6.4k documents (multi-document questions only, four GPT-5.5/5.6 models, 3 runs), it **raised overall quality by 6.4 to 11.7 points over the agent searching the raw files, with 34–57% fewer input tokens**. Other navigation layers (per-document pages, cluster pages, an LLM wiki) did not reliably beat the raw files. Adding entity-to-entity edges, as a knowledge graph would, changed document recall by −2.6 to +0.2 points and enlarged the pages by 27–52%. On one benchmark, against fixed-context retrievers with GPT-5.5, it scored 76.60 against 65.05 for dense, 64.66 for HippoRAG and 47.95 for GraphRAG, but that compares an agent with full file access to a fixed context. The authors estimate a one-time build cost of up to $4,732 with GPT-5.5, recovered after about 9,000 queries (12,400 to 26,300 for the other builders), and a map built by the cheapest model still beat the raw files for every answering model. A judge model scored all the results, and pooling content by entity can expose documents across permission levels, so the authors advise one map per permission level ([arXiv:2609.37226](https://arxiv.org/abs/2609.37226), Jeong et al. (KAIST, Microsoft), 2026-09, preprint).
-
-### Embed one thing, return another
-
-What gets embedded doesn't have to be what goes to the model. LangChain's `MultiVectorRetriever` embeds a summary of each document (for tables and images, a summary written by a vision model) and stores the full original in a separate docstore under the same `doc_id`. Search runs over the summaries; the model gets the original (*Learning LangChain*, ch. 2).
-
-![Multi-representation indexing: a full document, table or image is summarised by GPT-4V; the summary is embedded into a vector store and the original goes into a docstore; a question matches the summary and the relevant full document is returned](../assets/sources/images/learning-langchain-fig2-5.png)
-*Image Source: Oshin & Campos, *Learning LangChain* (O'Reilly, 2025), Fig. 2-5*
-
-Rothman uses the same move for *procedural* context (*Context Engineering for MAS*, ch. 3). His system keeps two namespaces in one Pinecone index:
-
-- a *KnowledgeStore* of fact chunks;
-- a *ContextLibrary* of "semantic blueprints", JSON instructions for how to write a given kind of output.
-
-For each blueprint only its one-line description is embedded (the library card), and the JSON rides along in metadata. A Librarian agent finds the blueprint for the user's intent, a Researcher retrieves and synthesises facts, and a Writer combines the two. Facts decide what to say; the blueprint decides how to say it.
-
-![Dual RAG: in phase 1, raw-text knowledge data is chunked and semantic blueprints are reduced to descriptions; both are embedded into separate KnowledgeStore and ContextLibrary namespaces in Pinecone. In phase 2, an orchestrator sends an intent query to a Librarian agent (blueprint) and a topic query to a Researcher agent (facts), and a Writer agent combines them into the final output](../assets/sources/images/context-engineering-multi-agent-systems-fig3-1.png)
-*Image Source: Rothman, *Context Engineering for Multi-Agent Systems* (Packt, 2025), Fig. 3.1*
-
-The Librarian has a gap. It queries with `top_k=1` and falls back to "generate the content neutrally" if nothing comes back. With no score threshold, nearest-neighbour search always returns *something* while the namespace holds any vector. The fallback fires only on an empty namespace, and an unrelated blueprint gets applied instead. Add a similarity floor.
-
-**When to use it:** if questions are "find the passage that says X", hybrid retrieval is enough. If they need cross-document synthesis or multi-level navigation, structured indexing is worth its large up-front LLM cost. Lab: upstream [3-8 structured-index](https://github.com/bojieli/ai-agent-book/tree/main/chapter3/structured-index) (RAPTOR vs. GraphRAG over an Intel architecture manual).
-
----
-
-## Agentic RAG
-
-Agentic RAG's loop is ReAct applied to retrieval: *assess what's missing → plan a query → retrieve → reason → check whether the question is answered*. It's the most capable design and the hardest to evaluate, because the retrieval path differs per run ([02-context 12](../../../ai-engineering/02-context-engineering/notes/12-evaluating-context.md)). It's just-in-time retrieval ([02-context 04](../../../ai-engineering/02-context-engineering/notes/04-retrieval.md#just-in-time-context)) with a search tool. Huyen frames it from the other side: RAG is a special case of an agent whose only tool is the retriever (*AI Engineering*, ch. 6). Raieli and Iuculano name three loop shapes (*Building AI Agents*, ch. 6). *Iterative* retrieval retrieves again with what the last generation produced. *Recursive* retrieval breaks the query into sub-queries. *Adaptive* retrieval lets the model decide when to retrieve, as FLARE and Self-RAG do ([above](#nine-named-patterns)). Agent-side patterns (retrieval as a tool, planners, verifiers) are in [08 — agentic RAG (PRINCE)](08-agentic-rag-prince.md).
-
-IRCoT uses each chain-of-thought sentence as the next BM25 query. With GPT-3 (code-davinci-002) on 500-question samples of four multi-hop QA sets, it raised gold-paragraph recall over one-step retrieval by 11.3–22.6 points, within a 15-paragraph cap tuned on dev. Answer F1 rose 7.1–13.2 on three of the sets and not at all on IIRC. Each CoT sentence costs one more LLM call, up to 8, and the paper never times it ([arXiv:2212.10509](https://arxiv.org/abs/2212.10509), Trivedi et al., ACL 2023). DSP's two-hop search program over frozen text-davinci-002 and ColBERTv2 reached 51.4 EM on HotPotQA dev, against 36.9 for retrieve-then-read. On single-hop Open-SQuAD a different DSP program, one retrieval of 7 passages plus 20-sample self-consistency, managed only 36.6 against 33.8. Both are 1,000-question dev samples, with no ablation and no cost reported ([arXiv:2212.14024](https://arxiv.org/abs/2212.14024), Khattab et al., 2022, preprint).
-
-### Agentic vs. single-pass: Li Experiment 3-9
-
-Li runs the two side by side on legal Q&A. A simple question ("rules on self-defense") gives the same quality either way, and the single pass is faster. A compound question (sentencing for negligent serious injury while intoxicated, with a prior theft conviction) separates them. Single-pass retrieval with the wrong first keywords misses the link. The agent searches the three sub-questions in parallel, sees that what joins them is missing (how an unrelated prior conviction affects sentencing), and runs a second, targeted round on recidivism. Use agentic RAG when questions decompose; keep the single pass for narrow ones. Lab: upstream [3-9 agentic-rag](https://github.com/bojieli/ai-agent-book/tree/main/chapter3/agentic-rag).
-
-When it pays, and the checks to run before shipping it, are in [08 § when agentic RAG pays](08-agentic-rag-prince.md#when-agentic-rag-pays).
-
----
-
-## Conversational multi-turn RAG
-
-In multi-turn settings three things change (memory-side treatment in [02-context 06](../../../ai-engineering/02-context-engineering/notes/06-memory.md#conversational-memory-the-corpus-includes-the-conversation)):
-
-1. **The corpus includes the conversation.** Systems store and retrieve prior user messages, assistant outputs, tool results and distilled memory objects, not just the knowledge base.
-2. **The challenge is continuity and intent resolution, not only relevance.** Follow-ups contain pronouns, ellipsis, references ("what about the second one?") and topic drift. Query rewriting and memory selection often matter more than the retrieval model.
-3. **The agent decides when and where to retrieve.** Retrieving every turn can be wasteful or harmful. Policies like "reuse previous evidence", "retrieve only if needed" or "ask a clarifying question first" become part of the system.
-
-The mechanics (rewriting with CONQRR, history-aware retrieval, the dual retrieval data flow and the benchmarks) are in [05 § conversational retrieval](05-chunking-query-parsing-and-reranking.md#conversational-retrieval).
 
 ---
 
@@ -500,7 +454,6 @@ Retrieval quality is only one number to watch. The metric list and the productio
 | How does RRF work? | Each list contributes `1/(k + rank)` per document, usually with k=60, and documents are sorted by the sum. It needs no score calibration, and it discards score magnitude. |
 | Why rerank against the original query after expansion? | Expansion is a recall device. The user's question remains the relevance target, and reranking against a rewrite would compound its drift. |
 | Why is Text-to-SQL a retrieval strategy? | Embedding similarity cannot count, sum or compare, so aggregation questions go to a query against structured data. Choosing that path is a routing decision. |
-| When is agentic RAG worth the cost? | When questions decompose into sub-questions or need several sources compared. For narrow questions a single pass matches it at lower latency. |
 | What is the difference between Self-RAG and FLARE? | Self-RAG is a fine-tuned model emitting reflection tokens that decide when to retrieve. FLARE needs no training: it retrieves when a drafted token falls below a confidence threshold. |
 | How do you keep an index in sync? | Start with scheduled batches and a change-detection method, and make writes idempotent with content-derived ids and source-scoped deletes. |
 
@@ -508,4 +461,4 @@ Retrieval quality is only one number to watch. The metric list and the productio
 
 ## Next
 
-[02 — Why RAG and the augmented prompt](02-why-rag-and-the-augmented-prompt.md) is a first-principles walk through the same pipeline, starting from why retrieval beats retraining.
+[01b — Index-time structures, agentic and conversational RAG](01b-index-structures-and-agentic-rag.md) goes past one pass over flat chunks: RAPTOR, GraphRAG and entity maps built at index time, retrieval that loops, and retrieval across a conversation.

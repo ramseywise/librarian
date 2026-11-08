@@ -74,13 +74,13 @@ cards:
   lesson: ai-engineering/04-loop-engineering/notes/08-self-improving-loops
 - front: What steps does a self-modification go through, and where does the release decision live?
   back: A self-edit goes through branch, patch, checks, replay and canary, with a gate outside the model deciding the release.
-  lesson: ai-engineering/04-loop-engineering/notes/08-self-improving-loops
+  lesson: ai-engineering/04-loop-engineering/notes/08b-releasing-self-edits
 - front: What did autoresearch's write boundary, fixed budget and metric produce over two days?
   back: With an objective metric and a protected evaluator, a loop with an under-3% hit rate still found 20 real improvements in 700 tries.
-  lesson: ai-engineering/04-loop-engineering/notes/08-self-improving-loops
+  lesson: ai-engineering/04-loop-engineering/notes/08b-releasing-self-edits
 - front: What did Chen et al. find about learning and forgetting across drift scenarios?
   back: Self-evolving agents tend to forget in proportion to what they learn, so replay old tasks as well as measuring the new gain.
-  lesson: ai-engineering/04-loop-engineering/notes/08-self-improving-loops
+  lesson: ai-engineering/04-loop-engineering/notes/08b-releasing-self-edits
 - front: How did a Darwin Gödel Machine agent game a hidden checker, and what does that imply?
   back: Hiding the checker is not enough, because an evolving agent can game its inputs, so those belong outside the write scope too.
   lesson: ai-engineering/04-loop-engineering/notes/08-self-improving-loops

@@ -1,4 +1,5 @@
 ---
+imported_hash: a0f602e46657725e
 title: Missing Number in Array — First-Principles Thinking Guide
 summary: Expected sum of 1..n = n(n+1)/2. Actual sum = sum of array.
 order: 125

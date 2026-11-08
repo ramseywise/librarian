@@ -1,7 +1,8 @@
 ---
+imported_hash: 491d5793d1394c7b
 title: TypeScript (with HTML/CSS)
 summary: 'HTML/CSS is folded into this track: it only comes up next to TypeScript, so drills for it sit here as a web/ topic.'
-order: 272
+order: 275
 kind: reading
 section: Typescript
 source: learn-ai-engineering/programming/drills/typescript/README.md

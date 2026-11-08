@@ -1,4 +1,5 @@
 ---
+imported_hash: e3ac441f355014ad
 title: 'Worked Example: RAG Pipeline Defense Round'
 summary: 'This example shows: (1) the original design briefly, (2) each challenge with a model response, and (3) how to adapt visibly when a challenge is valid.'
 order: 11

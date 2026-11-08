@@ -1,7 +1,8 @@
 ---
+imported_hash: 038c1b1f49ee1ec5
 title: Advanced Python Interview Reference
 summary: This one actually threw me off in a real interview.
-order: 261
+order: 264
 kind: reading
 section: Python / Advanced / Handbook
 source: learn-ai-engineering/programming/drills/python/advanced/handbook/concepts-1-10.md

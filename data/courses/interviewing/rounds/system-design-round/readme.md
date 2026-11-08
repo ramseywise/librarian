@@ -1,4 +1,5 @@
 ---
+imported_hash: 596d0a661a7784bf
 title: System Design Round (ML/LLM/Agent)
 summary: 'The highest-weight technical round in 2026 AIE/MLE loops: structured ambiguity handling — clarify, requirements, design, shortcomings, iterate — with trade-off narration as the actual graded skill.'
 order: 61

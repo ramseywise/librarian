@@ -1,4 +1,5 @@
 ---
+imported_hash: 48c6f810ac4dddfb
 title: Course Schedule — First-Principles Thinking Guide
 summary: 'DFS(node): If GRAY → cycle! return True If BLACK → already done, return False Mark GRAY For each neighbor: if DFS(neighbor) → cycle Mark BLACK return False'
 order: 154

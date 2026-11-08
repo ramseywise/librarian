@@ -1,4 +1,5 @@
 ---
+imported_hash: f4b285b2ee737831
 title: LC 139 — Word Break
 summary: Given a string s and a dictionary wordDict, return true if s can be segmented into a sequence of one or more dictionary words.
 order: 58

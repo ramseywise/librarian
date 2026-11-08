@@ -1,4 +1,5 @@
 ---
+imported_hash: ba7e1580fc594133
 title: LC 652 — Find Duplicate Subtrees
 summary: Given the root of a binary tree, return one representative root node for each group of duplicate subtrees.
 order: 85

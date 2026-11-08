@@ -1,4 +1,5 @@
 ---
+imported_hash: a91dd8eb17b63f65
 title: Activity Selection
 summary: Given a list of activities with start and end times, select the maximum number of non-overlapping activities that can be performed by a single person.
 order: 160

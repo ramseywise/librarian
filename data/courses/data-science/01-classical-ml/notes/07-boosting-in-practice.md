@@ -1,7 +1,8 @@
 ---
+imported_hash: b27d73430b843ed7
 title: Boosting in Practice
 summary: The original benchmarks agree in shape. CatBoost's authors report their library ahead of LightGBM and XGBoost on all nine of their datasets, by about 2% in log-loss on Adult (0.270 against +2.4% and +2.2%), though by their paired t-test the…
-order: 9
+order: 10
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/07-boosting-in-practice.md
@@ -38,7 +39,7 @@ uv run --python 3.12 --with scikit-learn --with xgboost --with lightgbm --with c
 Read it in this order:
 
 1. **The libraries are tied.** The AUC gap from best to worst is 0.0006, while the same model moves by about 0.003 between seeds. No conclusion about which library is better is available from this table, and a blog post claiming one from a single split is reading noise. Across the seeds no library wins every time: LightGBM has the best AUC on seed 0, CatBoost on seed 1, XGBoost on seed 3, and sklearn's classic booster on seeds 2 and 4.
-2. **Boosting beats the untuned forest by 0.03 AUC.** The forest is the fast bar to clear. Its log-loss of 0.40 is much further behind than its AUC, and log-loss punishes confident mistakes, so check [calibration](04-model-evaluation.md#calibration-is-a-08-really-80) before using its probabilities.
+2. **Boosting beats the untuned forest by 0.03 AUC.** The forest is the fast bar to clear. Its log-loss of 0.40 is much further behind than its AUC, and log-loss punishes confident mistakes, so check [calibration](04b-thresholds-pr-roc-and-calibration.md#calibration-is-a-08-really-80) before using its probabilities.
 3. **Speed varies by 30x.** The classic booster sorts every feature at every node, while the histogram libraries bin once. On a table this small it hardly matters. On 10M rows it decides what you can afford.
 
 The original benchmarks agree in shape. CatBoost's authors report their library ahead of LightGBM and XGBoost on all nine of their datasets, by about 2% in log-loss on Adult (0.270 against +2.4% and +2.2%), though by their paired t-test the wins on Appetency, Churn and Upselling aren't significant. It is their own benchmark, on one 80/20 split per dataset, with every library tuned (on Epsilon, only the number of trees) and given ordered target statistics, and only CatBoost also had ordered boosting and feature combinations. Stripped to a setting close to classic boosting, CatBoost roughly ties the others, on average 0.2% better on zero-one loss and 0.2% worse on log-loss across eight datasets ([arXiv:1706.09516](https://arxiv.org/abs/1706.09516), Prokhorenkova et al., NeurIPS 2018). Our untuned run, which gives each library its own default handling of categories, does not show that lead: the gap is inside the noise.
@@ -85,7 +86,7 @@ leaf 2 rows 528 by hand 1.1729 in the model 1.1729
 
 The same paper shows two other things worth knowing. Its sparsity-aware algorithm learns a default direction for missing values at each split, and runs more than 50 times faster than a naive version on the Allstate-10K dataset, which is sparse mainly from one-hot encoding, because it only visits non-missing entries. That figure is speed alone: the paper doesn't test default directions against imputation. And it gives a benchmark of one era's libraries: on 1M Higgs rows, 500 trees of depth 8, XGBoost took 0.68 seconds per tree where scikit-learn took 28.5, for AUCs of 0.8304 and 0.8302. The runs used all available cores and the paper's own table lists scikit-learn as not parallel, so threading may explain part of that gap, and with one run per system there is no spread to judge the AUCs against. Neither of those is a modern sklearn: that is the gap `HistGradientBoosting` closed.
 
-Boosting is also sequential by nature, not just by habit. Karbasi and Larsen show that cutting rounds below a threshold forces an exponential blow-up in training work ([arXiv:2301.09627](https://arxiv.org/abs/2301.09627), preprint). This is why every library here parallelises *inside* a tree, on split finding, and never across rounds.
+Boosting is also sequential by nature, not just by habit. Karbasi and Larsen prove a lower bound in the model where an algorithm calls a weak learner in rounds: AdaBoost needs about $\gamma^{-2}\ln m$ sequential rounds for a $\gamma$-weak learner on $m$ samples, and matching its error in a constant number of rounds takes exponentially many weak-learner calls per round, $\exp(\Omega(d\gamma^{-2}\ln m))$ for hypothesis VC-dimension $d$. Without that blow-up the rounds can fall only to $\Omega(\gamma^{-1}\ln m)$, a factor $\gamma$ below AdaBoost ([arXiv:2301.09627](https://arxiv.org/abs/2301.09627), preprint, 2023). It is a worst-case result about a constructed weak learner, with no experiments, so it explains the direction of the design, not any library's speed. This is why every library here parallelises *inside* a tree, on split finding, and never across rounds.
 
 ## Where they differ
 
@@ -224,6 +225,12 @@ On this table the whole search moves AUC by under 0.003, about the size of the s
 | 5 | Row and column sampling | 0.5 to 1.0 | Decorrelates trees and speeds fitting. In XGBoost's paper, `colsample=0.5` over 500 trees cut time per tree on both datasets, lowered AUC on Higgs-1M (0.8304 to 0.8245) and raised NDCG@10 on Yahoo LTRC (0.7892 to 0.7913), so the effect on quality depends on the data |
 | 6 | L1 and L2 on leaf weights | 0 to 10 on a log scale | Usually the smallest effect |
 
+ISLP's textbook version of the recipe agrees on its shape: a small shrinkage such as 0.01 or 0.001, rounds chosen by cross-validation, and shallow trees, where depth 1 (stumps) gives an additive model with no interactions and often works well; on its 15-class gene-expression data (349 patients, 500 genes) depth 1 slightly beat depth 2, and both beat a random forest, but with a standard error near 0.02 the gaps are not significant (*ISLP*, ch. 8).
+
+The statisticians' text agrees and adds the reason shrinkage comes first: on the ALS data a rate of 0.5 overfits within about 20 trees while 0.02 reaches a lower validation error and is less sensitive to the stopping point, and the depth that suits it is around 4 (*Computer Age*, ch. 17). The two figures are in [Gradient boosting](06-ensembles.md#gradient-boosting).
+
+Untuned XGBoost overfits visibly. On the loan-default table (46,272 rows, balanced between paid off and default), 250 rounds with defaults reach 14.6% training error but 0.3715 error on 10,000 held-out rows. (The book's prose says 36.2% for the test error; the printed output is 0.3715, so the prose is the slip.) Refitting with `lambda=1000`, `eta=0.1` and `subsample=0.63` gives 33.2% training and 0.3483 test error, so the gap nearly closes and the test error improves by about 2.3 points. Because `eta` and `subsample` changed in the same run, the gain is not attributable to the L2 penalty alone, and it is one split with no repeat (*Practical Statistics*, ch. 6).
+
 Use a random or Bayesian search over steps 3 to 6 on a coarse learning rate. Don't report the score it finds as the final one: reserve a test set, or use [nested CV](04-model-evaluation.md#nested-cross-validation).
 
 [Training and tuning](09-training-and-tuning.md#hyperparameter-search) compares the search methods side by side, and [its early-stopping section](09-training-and-tuning.md#early-stopping-is-regularisation-too) shows the trap in scikit-learn's HGB, which stops training but keeps the rounds it ran while waiting.
@@ -236,7 +243,7 @@ Use a random or Bayesian search over steps 3 to 6 on a coarse learning rate. Don
 | Early stopping on the test set | Test score is optimistic, and live score is lower | A separate validation set for stopping, then test once |
 | Target-encoding on the full training set | Train AUC near perfect, test no better or worse | Out-of-fold or ordered encoding |
 | High `num_leaves` on small data | Train far above validation after few rounds | Cap leaves, raise `min_child_samples` |
-| Trusting the out-of-the-box probabilities | Good AUC, poor log-loss or reliability | Recalibrate on held-out data ([evaluation](04-model-evaluation.md#calibration-is-a-08-really-80)) |
+| Trusting the out-of-the-box probabilities | Good AUC, poor log-loss or reliability | Recalibrate on held-out data ([evaluation](04b-thresholds-pr-roc-and-calibration.md#calibration-is-a-08-really-80)) |
 | Column dtypes that differ between train and serving | LightGBM errors, or category codes that no longer line up | Fix categories explicitly and save them with the model |
 | Grid over `n_estimators` and learning rate | Long search with a flat result | Early stopping picks the rounds |
 | `random_state` fixed once, and comparison made | A chosen seed flatters one candidate | Report mean and spread across seeds |

@@ -1,7 +1,8 @@
 ---
+imported_hash: e79c85115921e91c
 title: 9 — Test-Time Search Instead of Training
 summary: Training costs a GPU cluster and weeks. Sampling costs an API call.
-order: 11
+order: 17
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/05-RL/notes/09-test-time-search-and-training.md
@@ -47,6 +48,9 @@ Koenigstein builds the idea up in steps:
     one program per cluster, largest first, 10 in all.
   - The solve rate grew log-linearly with samples, and the system ranked in the top 54.3%
     across 10 Codeforces contests.
+
+    ![AlphaCode solve rate against sample budget (1 to 10^6) for five model sizes. (a) 10 submissions per problem, (b) unlimited. Both rise roughly log-linearly, and larger models climb faster.](../assets/sources/images/li-alphacode-fig6.png)
+    *Image Source: Li et al., [Competition-Level Code Generation with AlphaCode](https://arxiv.org/abs/2203.07814) (2022), Fig. 6*
   - Without filtering, the 10-submission solve rate stays flat as samples grow. With
     filtering and clustering it still falls well short of pass@k, so **selection, not
     generation, is the bottleneck.**
@@ -92,9 +96,25 @@ grades it, so the demo shows the mechanics, not a gain. The search is only as go
 scorer. Use a real verifier (tests, a checker) whenever you have one. A self-judge brings
 back the false-positive problem from Zhao et al.
 
+**Where the search comes from.** A rollout algorithm estimates q_π(s,a) at the current state by averaging simulated returns under a fixed rollout policy, then acts greedily. Its aim is to improve on the rollout policy (the policy improvement theorem), not to find an optimum, and the estimates are discarded after the move. Parallel trials, truncated rollouts closed by a stored evaluation function, and pruning make it cheap (*RL: An Introduction*, ch. 8, Sec. 8.10). Best-of-N with a verifier is this idea for a one-step choice. MCTS keeps a tree for the duration of the move, and each iteration has four steps: **selection** (a tree policy, ε-greedy or UCB, walks to a leaf), **expansion** (add a child), **simulation** (a cheap rollout policy plays to the end of the episode) and **backup** (the return updates the edges on the path only). The move played is the child with the largest value or the most visits (ch. 8, Sec. 8.11). The book says MCTS took computer Go from weak amateur in 2005 to 6 dan or better in 2015, without naming a source experiment.
+
+![Monte Carlo tree search. (a) Explore actions down the tree until a new leaf is reached and initialised. (b) Propagate the leaf value u back up the path to the root.](../assets/sources/images/murphy-rl-fig4-2.png)
+*Image Source: Kevin Murphy, [Reinforcement Learning: A Comprehensive Overview](https://arxiv.org/abs/2412.05265) (2024), Fig. 4.2*
+
+The case studies in chapter 16 show what a learned value adds. All numbers there are reported from other groups' work.
+- **TD-Gammon** learned afterstate values by self-play TD(λ), with 198 inputs, 40 hidden units and reward only for a win. It matched the best earlier programs after about 300,000 games. The branching factor of about 400 rules out conventional deep search, and two- and three-ply search over the learned value changed move choice without changing training. Trajectory sampling cut live error 4× to 6× at 5 to 10 s per move.
+- **Watson's Daily-Double wagering** used a value learned in simulated games against three opponent models. The simulated win rate was 61% with a heuristic, 64% with the learned value and 67% with live in-category confidence. Endgame bets used Monte-Carlo rollouts instead of the network, which improved play but was too slow to use for every decision in live time.
+- **AlphaGo** mixed a value net with rollouts at the leaf, `v(s) = (1−η)·v_θ(s) + η·G`. η = 0.5 worked best, and the value net alone beat rollouts alone. One reversal is worth remembering. The supervised policy expanded the tree better against humans than the RL policy did, while the value derived from the RL policy beat the one from the supervised policy. The authors' reason is that the RL policy is "tuned to respond to optimal moves rather than to the broader set of moves characteristic of human play".
+- **AlphaGo Zero** put search inside training. Each move ran 1,600 MCTS iterations (about 0.4 s). The network's policy head was trained toward the visit-based move probabilities π, and its value head toward the game's winner z.
+
+![AlphaGo Zero self-play: MCTS produces move probabilities pi at each position and the winner z labels the game; a two-headed network is trained to predict pi and z and then guides the next round of search.](../assets/sources/images/sutton-barto-rl-fig16-7.png)
+*Image Source: Sutton & Barto, *Reinforcement Learning: An Introduction* (MIT Press, 2018), Fig. 16.7, from Silver et al. (2017)*
+
+After 4.9 million self-play games in about 3 days it reached Elo 4,308, against 3,144 and 3,739 for the versions that beat Fan Hui and Lee Sedol, and won 100 of 100 against the Lee Sedol version. A supervised network trained on about 30 million positions from 160,000 human games started ahead and fell behind after a day. The book's summary is that "MCTS may therefore be viewed as a powerful policy improvement operator": search gives better targets than the network alone, distillation moves them in, and the next search starts from a stronger network. rStar-Math below is the LLM version. One caution from chapter 17: learning a model from data and then planning with it is still rare. Planning works best where the model is known, as in Go and chess (ch. 17, Sec. 17.5).
+
 **Search and training feed each other.** Search trajectories are rollouts, so rLLM can treat
 each tree node as a step and train the policy to search better. Search can also generate
-SFT data (keep the best leaf), which is how [distillation](06-data-and-environments.md#data-engineering-for-post-training)
+SFT data (keep the best leaf), which is how [distillation](06b-dataset-engineering-for-post-training.md#data-engineering-for-post-training)
 recipes often start.
 - **rStar-Math** runs this loop for four rounds. MCTS writes step-by-step math solutions
   whose steps are Python code, and any step whose code fails is dropped. Each step's
@@ -114,7 +134,7 @@ recipes often start.
   23.0% for GPT-4-turbo at pass@64. The 52.0% headline is cumulative across all runs, not
   a single sample budget
   ([arXiv:2405.14333](https://arxiv.org/abs/2405.14333) (Xin et al., 2024-05, preprint)).
-  V2 continues this work with RL ([03 GRPO](03-preference-optimization.md)).
+  V2 continues this work with RL ([03b GRPO](03b-grpo-and-gspo.md)).
 
 **Enough RL can absorb a hand-built search.** OpenAI compared the two on IOI 2024
 ([arXiv:2502.06807](https://arxiv.org/abs/2502.06807) (OpenAI, 2025-02, preprint)).
@@ -133,6 +153,8 @@ recipes often start.
 
 **Test-time training sits between the two.** You update weights, but only temporarily, and for
 one problem.
+
+The idea predates LLMs. Sun et al. ([arXiv:1909.13231](https://arxiv.org/abs/1909.13231) (Sun et al., ICML 2020)) trained an image classifier jointly with a rotation-prediction head, then at test time took SGD steps on the rotation loss of the single unlabelled test image (10 steps, lr 0.001, parameters reset per image) before classifying it. On CIFAR-10-C level 5 Gaussian noise (ResNet-26) error was 45.6% with the standard version and 25.8% when the parameters were kept across the test stream, against 50.5% for the baseline. Gains on natural shifts were small (CIFAR-10.1 error 15.9% against 17.4%). The gain tracked the gradient agreement between the main and auxiliary losses (correlation 0.93 across 75 test sets for the standard version, 0.89 online), a correlation and not a proof for deep nets. Vision only, with a rotation task, and each test image costs several forward and backward passes.
 
 - **TTT for few-shot tasks.** Akyürek et al. train a per-task LoRA (rank 128) on leave-one-out
   tasks built from the task's own demonstrations, with invertible augmentations
@@ -157,6 +179,8 @@ one problem.
 
 Both need a dense, trustworthy score at test time: a verifier on the demonstrations, or a
 continuous reward.
+
+**Best-of-N as [KL](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity)-regularized RL without the training.** Murphy shows that sampling from the tilted distribution π*(y|x) ∝ π_ref(y|x)·exp(R(x,y)/β) is the optimum of the KL-regularized RL objective. RL fine-tuning then amortizes that sampling into the weights (it minimizes KL(π_θ‖π*)), and test-time search does it per prompt (*RL: A Comprehensive Overview*, ch. 6, Sec. 6.2.4.11–12). He reports that best-of-N "achieves an optimal reward vs KL tradeoff" in the papers he cites, yet that performance can fall as N grows once the reward model is imperfect, which is the selection bottleneck below. Sequential Monte Carlo steering reweights partial generations with a twist function that plays the role of a value function. One caveat he gives for training instead of searching: fine-tuning cannot easily enforce a hard constraint, while decision-time search (model-predictive control in the control view) can. The chapter surveys these and runs none of them.
 
 ## Measuring the selection bottleneck
 

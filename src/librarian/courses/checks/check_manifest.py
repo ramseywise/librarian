@@ -76,6 +76,7 @@ REQUIRED = (
 OPTIONAL = ("verification_note",)
 EXEMPT = {
     "README.md",
+    "readme.md",  # the librarian mirror lower-cases README.md
     ".gitignore",
     "data",
     "fetch_data.sh",

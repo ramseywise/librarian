@@ -1,7 +1,8 @@
 ---
+imported_hash: ef861cfe94063329
 title: 10 — Semantic cache for support agents
 summary: 'Tallybook''s support bot answers "how do I get a refund on my annual plan?" dozens of times a day, in dozens of wordings, and each time it runs the whole pipeline: rewrite, retrieve, grade, generate.'
-order: 11
+order: 18
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/10-semantic-cache.md

@@ -1,7 +1,8 @@
 ---
+imported_hash: 48bf06d326319244
 title: 'Reading the Errors: What a Model Finds and What It Misses'
 summary: The model is the credit lab's boosted model, with the same features and the same 5:1 cost ratio, so its decline threshold is still $1/6$.
-order: 14
+order: 15
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/12-reading-the-errors.md
@@ -353,7 +354,7 @@ real eye    4.07  11.09 -20.00  24.67         18         10
 real bb    -1.08   6.35 -13.11   9.33         13         17
 ```
 
-![Dots for thirty seeds showing the fall in cost per 1,000 applicants for two fixes on eyeball and blackbox rows. The noise fix gains about 19 on the eyeball set and loses about 8 on the blackbox set. The mechanism fix gains about 4 on the eyeball set and loses about 1 on the blackbox set.](../assets/reading-errors-noise-fix.png)
+![Dots for thirty seeds showing the fall in cost per 1,000 applicants for two fixes on eyeball and blackbox rows. The noise fix gains about 19 on the eyeball set and loses about 8 on the blackbox set. The mechanism fix gains about 4 on the eyeball set and loses about 1 on the blackbox set.](../assets/sources/images/reading-errors-noise-fix.png)
 
 **The noise fix does what the argument predicts.** The worst noise slice costs 695.9 on the eyeball set on average, and the same slice costs 547.6 on the blackbox set, about the overall 545.7. It was bad by chance, and the badness doesn't return. About 2.5 of the 50 slices reach raw $p<.05$, exactly what chance gives, and BH let one through on just 1 seed of 30. Tuning a threshold gained 18.6 per 1,000 on the eyeball set, on all 30 seeds, because you can't fail to improve on rows you tuned on. On the blackbox set the same fix lost 8.3, and it lost on 27 of 30.
 
@@ -395,7 +396,7 @@ After 20 rounds the reused half reports a gain of 16.5 per 1,000, and the fresh 
 | Profile the cells | Missed chunks against found chunks, and distractors against useful ones ([GA 02/01](../../../generative-ai/02-rag-retrieval/notes/01-rag-pipeline.md#measure-each-stage), [GA 08/07](../../../generative-ai/08-eval/notes/07-evaluating-rag-and-grounding.md#retrieval-metrics)) |
 | Read rows | [Read the transcripts](../../../generative-ai/08-eval/notes/09-reading-results.md#read-the-transcripts), random ones before the dramatic ones |
 | Slice and count | [Slice before you conclude](../../../generative-ai/08-eval/notes/09-reading-results.md#slice-before-you-conclude), with the correction for many slices |
-| Eyeball and blackbox | [Dev and held-out eval sets](../../../generative-ai/08-eval/notes/03-eval-datasets.md#splits-versioning-contamination). A prompt rewritten from failures it was scored on is the noise fix again ([AIE 01/09](../../../ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md)) |
+| Eyeball and blackbox | [Dev and held-out eval sets](../../../generative-ai/08-eval/notes/03b-splits-contamination-and-public-benchmarks.md#splits-versioning-contamination). A prompt rewritten from failures it was scored on is the noise fix again ([AIE 01/09](../../../ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md)) |
 | Fix classes, not rows | A rule that names one failing trace in the system prompt is a row fix. Check it with [verification loops](../../../ai-engineering/03-harness-engineering/notes/05-verification-loops.md) on traces it hasn't seen |
 
 Prompts and judge instructions are especially easy to overfit, because they take no training run and because a sentence that names a failing case reads as a sensible improvement.

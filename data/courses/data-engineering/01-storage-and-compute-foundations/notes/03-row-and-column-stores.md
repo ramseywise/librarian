@@ -1,4 +1,5 @@
 ---
+imported_hash: fd4a0792fcbe78c8
 title: 3 — Row and column stores
 summary: Ask a database for one customer's record and it wants its rows together on disk.
 order: 4

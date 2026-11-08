@@ -1,7 +1,8 @@
 ---
+imported_hash: 9421a4dcfd5cd809
 title: 13 — Putting It Together
 summary: Full prior text passes a 32k window between sections 10 and 20, where a capped summary stays under 3k.
-order: 14
+order: 15
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/13-putting-it-together.md

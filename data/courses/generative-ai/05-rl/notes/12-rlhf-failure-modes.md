@@ -1,7 +1,8 @@
 ---
+imported_hash: 54425b2369f7ac7d
 title: 12 — RLHF Failure Modes
 summary: The pipeline in 02 ends with a policy maximizing a reward model, and that reward model is a learned guess at what people want.
-order: 14
+order: 20
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/05-RL/notes/12-rlhf-failure-modes.md
@@ -19,7 +20,7 @@ The pipeline in [02](02-rlhf-pipeline.md) ends with a policy maximizing a reward
 
 ## A small model of the whole problem
 
-Before the evidence, here is the shape of the failure in about twenty lines. An answer has one knob, padding. People like some detail and dislike too much, so human value peaks at 1. Stage 2 fits a straight line on answers with padding between 0 and 1, where more padding does look better. Stage 3 then maximizes that line minus a KL-like penalty pulling back to the SFT model at 0.2.
+Before the evidence, here is the shape of the failure in about twenty lines. An answer has one knob, padding. People like some detail and dislike too much, so human value peaks at 1. Stage 2 fits a straight line on answers with padding between 0 and 1, where more padding does look better. Stage 3 then maximizes that line minus a [KL](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity)-like penalty pulling back to the SFT model at 0.2.
 
 ```python
 import numpy as np
@@ -83,6 +84,12 @@ That includes confident wrong answers and sycophancy, because evaluators can be 
 and bigger RMs shrink the gap without closing it, so plan detection and other safety layers around
 the hacks the policy will find.
 
+**The classical version of the problem.** Sutton and Barto's last chapters say the same thing before RLHF existed. Success "strongly depends on how well the reward signal frames the goal of the application's designer", and agents "can discover unexpected ways to make their environments deliver reward, some of which might be undesirable, or even dangerous" (*RL: An Introduction*, ch. 17, Sec. 17.4). They name hard and soft constraints, risk-sensitive policies and multiple objectives as mitigations (Sec. 17.6). The chapters have no experiments and predate LLMs, so treat what follows as framing, not evidence. Four points carry over:
+- **Well-meant extra rewards change behaviour.** "Augmenting the reward signal with well-intentioned supplemental rewards may lead the agent to behave differently from what is intended." The book's alternative puts the hint in the value function's initial value, `v̂(s,w) = wᵀx(s) + v₀(s)`, which Wiewiora (2003) showed equivalent to potential-based shaping (Ng et al., 1999). Murphy states the same result: `F = γΦ(s') − Φ(s)` leaves the optimal policy unchanged, while naive shaping can move it. His example is a soccer agent rewarded for ball contact that learns to toggle touching and untouching (*RL: A Comprehensive Overview*, ch. 1, Sec. 1.3.6.5). Both separate this from Skinner-style shaping, which changes the task as learning proceeds.
+- **Behaviour does not identify the reward.** A policy can be optimal for many reward signals, and every policy is optimal for a constant reward, so inverse RL cannot recover the designer's reward exactly (ch. 17, Sec. 17.4). The same ambiguity is Casper et al.'s point about reward models fitting finite labels.
+- **A learner with no grounding can get worse with practice.** Samuel's checkers program had no reward and no terminal grounding, so a constant value function satisfied its update, and self-play could degrade it. He reset the weight of largest magnitude to zero to prevent that (ch. 16, Sec. 16.2).
+- **Safety is needed during learning, not only at convergence.** "We will not know how closely the agent will fulfill our desire until its learning is complete" (ch. 17, Sec. 17.6), which is the case for a reward model scored only after the policy has already been optimised against it.
+
 **Inoculation prompting** is a cheap mitigation once you know which hack to expect. Write the
 exploit into the *training* prompt, for example "your code should only work on the provided test
 case", and leave it out at test time. The model attributes the behaviour to the instruction instead
@@ -95,7 +102,7 @@ limits: it is SFT only. It needs the bad behaviour named in advance. One word of
 vs "respond" as if the user is correct) separated a working prompt from a failing one. And in two of
 six models it made the model *more* willing to hack when a user asked it to. MacDiarmid et al.
 carried the idea into production RL, where in their prompted setting it cut the emergent
-misalignment that followed coding reward hacks by 75–90% ([05](05-post-training-for-agents.md#practical-pitfalls)).
+misalignment that followed coding reward hacks by 75–90% ([05](05b-choosing-sft-rl-or-no-training.md#practical-pitfalls)).
 
 LLaVA-RLHF shows the verbosity hack in a multimodal model. With plain RLHF, PPO "produc[ed]
 lengthier responses rather than ones that are less prone to hallucinations". LLaVA-Bench rose
@@ -149,7 +156,7 @@ PM lower; larger PMs held up longer, and crowdworker Elo did not track the PMs' 
 proxy-vs-proxy divergence, not a human-judged peak. OpenAI
 measured the shape as a scaling law in a synthetic setup, with a large "gold" RM standing in for
 humans ([arXiv:2210.10760](https://arxiv.org/abs/2210.10760) (Gao, Schulman & Hilton, ICML 2023)):
-proxy reward climbs monotonically while gold reward rises, then falls. This is Goodhart's law,
+proxy reward climbs monotonically while gold reward rises, then falls. The gold reward follows fitted forms in d = √KL: R(d) = d(α − βd) for best-of-n and R(d) = d(α − β log d) for PPO with no KL penalty. The best-of-n form was fitted on n up to 1,000 (about 6 nats) and predicted n = 60,000 (about 10 nats). RL spends far more KL than best-of-n for the same gain, and the KL penalty did not move the gold-versus-KL frontier; it acted like early stopping. Setup: 6B gold RM, proxy RMs of 3M to 3B, 1.2B and 6B policies, one environment, and a synthetic gold that humans never labelled. The 6B policy overoptimized about as much as the 1.2B one, and RM data below about 2,000 comparisons gave almost no gain. This is Goodhart's law,
 and it shows up as verbose, ingratiating, rigorous-sounding filler.
 
 ![Line chart against KL from the supervised baseline (0 to 250, log scale). The dashed "RM prediction" line rises steadily from about 0.37 to 1.0 fraction preferred to the reference. The solid "Actual preference" line rises from about 0.24 to a peak near 0.47 at KL 10, stays near 0.42 to KL 75, then falls to about 0.05 at KL 250.](../assets/sources/images/stiennon-learning-summarize-fig5.png)
@@ -180,6 +187,8 @@ goal. Where the penalty goes depends on the algorithm:
 - **GRPO as DeepSeek-R1 runs it** subtracts β·KL(π_θ‖π_ref) as a separate loss term, using an
   unbiased k3 estimator. The paper does not disclose β
   ([arXiv:2501.12948](https://arxiv.org/abs/2501.12948) (DeepSeek-AI, 2025-01)).
+
+Estimator choice is not neutral. Murphy's LLM chapter compares the three Monte-Carlo estimators k1, k2 and k3 of this KL. It reports that k3 is unbiased but its gradient is biased, so the two papers he cites recommend k2, and that the penalty belongs in the token-level reward, not in the advantage (*RL: A Comprehensive Overview*, ch. 6, Sec. 6.2.4.9). So the k3 loss term above is a common choice, not a settled one. His Tinker example flags `KL(q‖p) > 0.01` between the sampling and training policies as very off-policy learning. For DPO, he notes a variant that replaces the KL with a χ² divergence for provable robustness to overoptimization (Huang et al., 2025, as reported; not read).
 
 With a verifiable reward, many RLVR recipes drop the penalty entirely. These include DAPO,
 MiMo-7B's modified GRPO ([arXiv:2505.07608](https://arxiv.org/abs/2505.07608) (Xiaomi, 2025-05))

@@ -1,7 +1,8 @@
 ---
+imported_hash: 9c030a9b8f1a2640
 title: 9 — The Repo as System of Record
 summary: Notes 01–08 describe the harness as components.
-order: 10
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/09-repo-as-system-of-record.md

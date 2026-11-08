@@ -1,4 +1,5 @@
 ---
+imported_hash: 60b4666080e3bbc5
 title: 4 — Building Blocks
 summary: Osmani and the KodeKloud course list the same six parts.
 order: 5

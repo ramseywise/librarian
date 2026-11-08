@@ -1,4 +1,5 @@
 ---
+imported_hash: feacf78faf6f9b5f
 title: LC 69 — Sqrt(x)
 summary: Given a non-negative integer x, return the integer square root of x, i.e.
 order: 36

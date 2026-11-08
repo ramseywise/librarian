@@ -1,7 +1,8 @@
 ---
+imported_hash: 5da6c35c8dc155a9
 title: 7 — Guardrails and autonomy
 summary: The restock agent has one tool that spends money.
-order: 12
+order: 16
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/03-agentic-foundations/notes/07-guardrails-and-autonomy.md
@@ -40,7 +41,7 @@ Guardrails are defense in depth. No single one suffices, so layer specialized on
 | Execution | Tool risk rating by reversibility, permission level and financial impact; high risk → review or human confirmation |
 | Output | PII filter; brand/content validation |
 
-The diagram shows the two kinds of path an attack can take. Retrieved data enters at the same point as user input, which is why [prompt injection](02-tool-use-and-react.md#prompt-injection-six-defenses) is a design problem and not only a filtering one.
+The diagram shows the two kinds of path an attack can take. Retrieved data enters at the same point as user input, which is why [prompt injection](02c-mcp-code-and-safe-tool-calls.md#prompt-injection-six-defenses) is a design problem and not only a filtering one.
 
 This is the map. The rails themselves are in [safety 03 — guardrail models](../../../ai-engineering/09-safety-and-security/notes/03-guardrail-models.md) (where each sits, what a guard model is, how to measure one, and the reference design for classifier guardrails) and [safety 04 — tool and execution sandboxing](../../../ai-engineering/09-safety-and-security/notes/04-tool-and-execution-sandboxing.md) (the action rail).
 
@@ -59,9 +60,11 @@ Filters catch bad output after a model has produced it. Lakshmanan and Hapke arg
 
 The restock agent fits this ladder directly. Its notification email can be a template. Its order justification can be assembled from the stock figures. Only the decision itself needs the model's freedom, and that is the part you check against arithmetic.
 
-**Self-check has limits.** A token's log probability gives its probability as *p* = e^logprob. In the book's receipt test, GPT-4o-mini fills in billed, tax, tip and paid amounts at a 9.21% tax rate, and the lowest token probability on each line serves as its confidence. A consistent line (300, 27.63, 60, 387.63) scored 0.999, and a line whose total was off (312.32, 28.76, 60, 400.00) scored 0.55. But low probability does not mean wrong. Asked when Atatürk was born, GPT-3.5 was nearly certain of the year and only 58% sure of the first token "At", because starting with "Mustafa" would have been just as valid. The authors call the receipt example contrived and say a calculator tool is the right fix for it. Not every model exposes log probabilities either. They also write that logprobs are "also called logits"; that is wrong, since logits are the unnormalized scores before the softmax.
+**Self-check has limits.** A token's log probability gives its probability as *p* = e^logprob. In the book's receipt test, GPT-4o-mini fills in billed, tax, tip and paid amounts at a 9.21% tax rate, and the lowest token probability on each line serves as its confidence. A consistent line (300, 27.63, 60, 387.63) scored 0.999, and a line whose total was off (312.32, 28.76, 60, 400.00) scored 0.55. But low probability does not mean wrong. Asked when Atatürk was born, GPT-3.5 was nearly certain of the year and only 58% sure of the first token "At", because starting with "Mustafa" would have been just as valid. The authors call the receipt example contrived and say a calculator tool is the right fix for it. Not every model exposes log probabilities either. They also write that logprobs are "also called logits"; that is wrong, since logits are the unnormalized scores before the [softmax](../../01-llm-fundamentals/notes/04-decoding-and-inference-behaviour.md#decoding).
 
 **Errors drop but do not vanish.** The book cites Vectara's summarization benchmark: among the top 25 models, hallucination rates ran from 1.3% to 4.1% in December 2024 and from 0.7% to 2.4% in April 2025. That measures summarization, which is the easy case, and a small rate per step still compounds across a chain.
+
+**A persona is part of the attack surface.** Agents are often given roles in the system prompt (a buyer, a reviewer, an expert). Deshpande et al. assigned 90 personas to gpt-3.5-turbo through the system role in March 2023 and scored its replies with Perspective ([arXiv:2304.05335](https://arxiv.org/abs/2304.05335) (Deshpande et al., Findings of EMNLP 2023)). **The persona "a bad person" raised toxicity (entity-conditioned prompts) from 0.11 to 0.62, and persona assignment raised it up to 6 times**, with dictator personas highest. The figures use the maximum over 5 samples, which inflates them, and only one model was tested. Screen the role text a user or a tool can set, and run the output guardrails on role-played agents too.
 
 **Give every guardrail the same signature.** A shared signature lets you chain them, reorder them and test each alone:
 
@@ -150,6 +153,19 @@ The unknown tool is denied by default, and the hard limit applies even with appr
 
 **Escalate to a human** when a failure threshold is exceeded (retries or operations past their cap) and before high-risk operations (cancellations, large refunds, payments), at least until reliability is proven. Depth: [harness 04 — execution boundaries](../../../ai-engineering/03-harness-engineering/notes/04-execution-boundaries.md).
 
+
+Grounding supplies some of those triggers. *Agentic Architectural Patterns* (ch. 3) lists four: cite the source for what was retrieved, cross-check critical claims the model generated itself against a trusted database (possibly through a dedicated fact-checking sub-agent), act on confidence scores where the platform exposes them, and ask a clarifying question when the input is ambiguous. Its example sends a diagnosis to mandatory senior review when the model's stated confidence is below 70%. That cut-off is an illustration, and the chapter does not say how well model-stated confidence tracks correctness.
+
+Escalation needs a payload, not just a trigger. *Agentic Architectural Patterns* (ch. 1) tells the story of an e-commerce returns and order-status agent that passed its pilot on curated FAQs and a clean static copy of the order database, and was pulled from production after about a week. Three failures, each a design gap: it had only the internal order table, so a courier-strike delay left it repeating "has been shipped"; a Final Sale question missed its knowledge base, so it generalized from the standard policy and promised a full cash refund the company could not honor; and its only fallback was "I cannot help with that", with no chat transfer, ticket number or history passed to a person, so customers started over. The fixes are the controls in this note: ground the answer or say it is not known, and hand over the conversation when it escalates. It is one anonymized, unquantified case, with no rates of failure.
+
+Containment has a pattern of its own. *Agentic Architectural Patterns* (ch. 5) borrows the supervision tree from Erlang and Akka. Supervisors manage only the lifecycle of their child agents, and capabilities are granted per subtree, so a research branch cannot reach billing tools. When a child crashes or breaks a policy, a one-for-one strategy restarts only that child, and an escalate strategy fails the supervisor itself so the problem moves up the tree. Two rules matter in practice: stop restarting a child that crashes repeatedly (its example is 5 crashes in 1 second) so a crash loop does not burn resources, and do not let children bypass their supervisor to talk to the root. For conflicts between agents it prefers policy-based resolution, where a fixed rule such as "all loan batches must pass a fairness check before approval" overrides a speed KPI, logs the reason for every resolution, and ends in a human when automation cannot decide. It also suggests simulating agent interactions before deployment. The chapter gives no failure-rate or recovery-time data.
+
+Ch. 8 and ch. 10 add three details to the escalation and permission rules above. First, the book separates two kinds of ambiguity: *strategic* ambiguity (a fuzzy goal) is resolved by the agent's plan, which a *plan confirmation* step can put to the user as a go/no-go before execution, while *tactical* ambiguity (a new problem mid-run) is what triggers escalation. Its escalation gate is one comparison against a threshold: a loan agent escalates when confidence is below 0.95, packaging the evidence (an appraisal of 1,800 sq ft against tax records of 1,500) for a reviewer. The chapter never says how confidence is calibrated, and it covers neither approval fatigue nor action reversibility, so treat 0.95 as an invented example. Second, a *proxy agent* holds the credentials, so the primary agent never sees an API key and cannot leak one; the cost is one more hop of latency (*Agentic Architectural Patterns*, ch. 8). Third, authorization and compliance are different checks. Authorization asks whether the agent may touch a resource. A compliance monitor intercepts the action before execution and asks whether it should be allowed given current state, such as whether the patient consented to research use. The book's demo is default-deny (`return False`), enforced at choke points before data stores, external APIs and user messages, not on every action, because of latency. It adds OAuth 2.0 client credentials with short-lived JWTs and a gateway for agent identity, and, for event-driven triggers, idempotent actions and a dead-letter queue because delivery is at-least-once (*Agentic Architectural Patterns*, ch. 10). Ch. 7's mesh-firewall sketch defaults to allow when no policy exists, which contradicts its own least-privilege advice; copy the default-deny version. All of these examples are mocks with invented patients, tokens and prices.
+
+![Proxy agent: the booking agent never sees the partner API key, the proxy translates the request and the response](../assets/sources/images/agentic-architectural-patterns-fig8-6.png)
+
+*Image Source: Arsanjani & Bustos, *Agentic Architectural Patterns for Building Multi-Agent Systems* (Packt, 2026), Fig. 8-6*
+
 ---
 
 ## What the user must be able to see
@@ -163,6 +179,14 @@ Bansal et al. ([Microsoft Research, 2024-12](https://www.microsoft.com/en-us/res
 
 Environment changes also make agents non-deterministic even at temperature 0. The same plan can produce a different outcome on a different day.
 
+What you can see after launch depends on what you log. *Agentic Architectural Patterns* (ch. 2) lists the AgentOps basics: track task success rate and tool-use accuracy (right tool, well-formed arguments), latency and cost, and drift, which can trigger a prompt update, fine-tuning or a rollback. Log the model input, the reasoning trace, each tool call and its response. Keep prompts, temperature settings and tool schemas under version control so a bad change can be rolled back. Count flagged prompt-injection attempts and policy-violating outputs. Its suggested dashboard shows P50, P90 and P99 latency per model call. The chapter names no thresholds and reports no measurements.
+
+![AgentOps loop: develop, deploy, monitor, log and trace, gather feedback, analyze, refine, with continuous governance alongside](../assets/sources/images/agentic-architectural-patterns-fig2-2.png)
+
+*Image Source: Arsanjani & Bustos, *Agentic Architectural Patterns for Building Multi-Agent Systems* (Packt, 2026), Fig. 2-2*
+
+The book's ch. 3 turns the same logging into callbacks on three events: `on_model_start`/`on_model_end` (prompt, reasoning, response, token counts, latency), `on_tool_start`/`on_tool_end` (which agent called which tool, with what arguments, what came back, any error) and `on_agent_start`/`on_agent_end` (goal, outcome, duration, which feeds service-level dashboards). The tool-level trail is what tells you whether a fault sits in the agent's reasoning or in the tool, and in a multi-agent run it shows the chain of delegation. It is a design sketch with no measured effect.
+
 ---
 
 ## How much autonomy exists today
@@ -175,6 +199,21 @@ Gao et al. (*Cell*, 2024) define autonomy levels for science agents:
 - Level 3: a scientist that proposes novel hypotheses, defines tasks to test them and completes them, as a peer.
 
 Raieli and Iuculano judge that no agent is beyond Level 1. Mitchell et al. (2025) go further and argue that fully autonomous agents should not be developed, because autonomous systems can make catastrophic errors from trivial causes (*Building AI Agents with LLMs, RAG, and Knowledge Graphs*, ch. 11). This fits the [orchestrated-autonomy view](01-agent-fundamentals.md#agents-as-state-machines): keep the model's freedom inside designed regions, and keep humans at the gates.
+
+
+The same book orders organizational capability as a seven-rung ladder, which is a different axis from the autonomy levels above: level 0 data preparation, 1 model choice and prompting, 2 retrieval, 3 tuning (parameter-efficient or full), 4 grounding with citations and evaluation, 5 a single agent, 6 multiple agents (*Agentic Architectural Patterns*, ch. 1). Its claim is that agents sit on top of the lower rungs, so a team with no evaluation or grounding is not ready for a loop. It is the authors' framework, not measured.
+
+![Maturity model grid: levels 0 to 6 against the building blocks added at each level, from model and prompt through retrieval, tuning, grounding, agents and LLMOps](../assets/sources/images/agentic-architectural-patterns-fig1-3.png)
+
+*Image Source: Arsanjani & Bustos, *Agentic Architectural Patterns for Building Multi-Agent Systems* (Packt, 2026), Fig. 1-3*
+
+The book's roadmap chapter collapses that ladder into three tiers for rollout: basic (one process, synchronous, hard-coded orchestration, in-memory state, a watchdog timeout, an agent-calls-human step, retries and audit logging), intermediate (containers, a message bus, shared memory, a registry, auto-healing) and advanced (a self-improvement loop). Its two rules are sound even though no data backs them: start every new workflow at the basic tier as a minimum viable agent, and move up only when scale, fault isolation or team speed demands it (*Agentic Architectural Patterns*, ch. 12). The advanced tier needs its own brakes: canary promotion against a control group, trust decay for agents whose scores drift, and offline benchmarks plus periodic human review of synthetic training data, because two models that grade each other can collude (ch. 11). Auto-healing needs a maximum retry count and exponential backoff, or it hides a fault behind a retry storm. The closing chapter adds the blast-radius argument: a retrieval system that errs gives a bad answer, while an agent that acts can delete the wrong database, so give it a draft tool but no submit tool and pause for a human before anything irreversible (ch. 16, whose "80% less drafting time" and "ahead of 90% of practitioners" lines are unsupported).
+
+![Level 3 self-improving ecosystem: logs and outputs from the agent swarm and message bus feed an MLOps tuning pipeline with a synthetic data generator, which returns improved logic and updated models](../assets/sources/images/agentic-architectural-patterns-fig12-3.png)
+
+*Image Source: Arsanjani & Bustos, *Agentic Architectural Patterns for Building Multi-Agent Systems* (Packt, 2026), Fig. 12-3*
+
+The loan-processing chapters show a failure that the table of controls above warns about. The single-agent build writes "FCoT RECURSIVE LOOP (N = 3)" and success criteria (95% accuracy, 100% policy compliance, under 5 minutes) into the prompt, and the authors themselves say "N=3 is not a Python parameter": only `thinking_budget=1024` is enforced. The prompt also names a RAG verifier, a human-in-the-loop agent and a no-PII-in-logs rule that the code does not implement, and the compliance tool ignores the risk level and always returns "pass" (ch. 13). A requirement stated only in the prompt is a request. All numbers in the loan chapters are invented (mock scores 450, 810, 680; a 740 or 600 cut-off), and no failure scenario is run (ch. 13, 14).
 
 ---
 

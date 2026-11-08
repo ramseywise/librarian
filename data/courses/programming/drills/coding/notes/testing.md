@@ -1,7 +1,8 @@
 ---
+imported_hash: c961a0c5d0cf4f0d
 title: Testing
 summary: Verification & Testing How to review AI output, write effective tests, and catch bugs before they compound.
-order: 250
+order: 253
 kind: reading
 section: Coding / Notes
 source: learn-ai-engineering/programming/drills/coding/notes/testing.md

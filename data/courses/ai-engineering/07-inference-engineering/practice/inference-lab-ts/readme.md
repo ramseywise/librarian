@@ -1,7 +1,8 @@
 ---
+imported_hash: adee2d23cf49d641
 title: 'Lab: inference by simulation (TypeScript)'
 summary: The TypeScript twin of the Python lab. It reads that folder's params.json, draws the same random numbers from the same generator, and prints the same report.
-order: 13
+order: 14
 kind: reading
 section: Practice / Inference lab ts
 source: learn-ai-engineering/ai-engineering/07-inference-engineering/practice/inference-lab-ts/README.md

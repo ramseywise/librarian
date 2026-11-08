@@ -1,7 +1,8 @@
 ---
+imported_hash: cf6dd16635e6305e
 title: rate-limiter — env1 drill (45 min, no AI)
 summary: Object-oriented design under time. No starter code — you design the interface as well as the implementation.
-order: 255
+order: 258
 kind: reading
 section: Coding / Problems / Rate limiter
 source: learn-ai-engineering/programming/drills/coding/problems/rate-limiter/prompts.md

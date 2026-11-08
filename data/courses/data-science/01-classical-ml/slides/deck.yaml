@@ -1,3 +1,4 @@
+# imported_hash: db9b3d8e545ad991
 # Classical ML lecture deck. Covers notes 01-15, in the README's syllabus order, opened by an overview part.
 # Levels: LEVEL=core is the talk for any audience, practice adds how it is done, and the full deck adds code and maths.
 # Build: make slides PILLAR=data-science/01-classical-ml STRICT=1 PREVIEW=1
@@ -135,7 +136,7 @@ parts:
         beat: fundamentals
         title: Too simple misses signal, too flexible fits noise
         recall: How do you tell which side of the complexity curve a model is on?
-        image: ../assets/classical-overfit-curve.png
+        image: ../assets/sources/images/classical-overfit-curve.png
         caption: "A tree on breast cancer, 20 stratified splits: depth 10 scores 1.000 on train and 0.927 on test, and test peaks at 0.931 at depth 5. Run `practice/overfit_curve.py`."
         bullets:
           - "**Underfit:** low train score and low test score."
@@ -221,6 +222,29 @@ parts:
           This is for the audience who want the maths. The data is Ng's first exercise, the profit of a food truck against
           city population. X has a leading column of ones, and the normal equation is the closed form with no learning rate. The libraries hide this loop, and the note has the logistic version next to it.
 
+      - layout: steps
+        beat: fundamentals
+        level: deep
+        title: Derive the gradient, check it, then size the step
+        recall: How do you check a hand-derived gradient before you trust it?
+        lead: "Seed 0, 100 rows, 3 features, true weights (2, -1, 0.5), mean squared error."
+        steps:
+          - {title: Shapes, text: "`X @ w` is (n × d)(d,) → one prediction per row. `X.T @ r` gives one number per feature."}
+          - {title: Gradient, text: "`(2/n) · X.T @ (X @ w - y)`, a vector that points uphill."}
+          - {title: Check it, text: "Analytic **−4.7218** against a central difference of **−4.7218**."}
+          - {title: Step, text: "η = 0.1: 20 steps recover (1.99, −1.00, 0.47), loss 0.0086."}
+          - {title: Too far, n: "!", accent: "D4621A", text: "η = 1.1: loss **1.4 × 10⁹**. Above 2 / 2.40 = **0.83** it diverges."}
+        takeaway: Check a derived gradient against a central difference, and keep the learning rate below 2 over the largest eigenvalue or the loss explodes.
+        source: notes/02-supervised-learning.md
+        notes: >-
+          The same loop as the last slide, written so the shapes show. Stack the rows into X, and one matrix product gives
+          every prediction; the transpose turns the residuals into one number per feature, which is why X transpose appears in
+          the gradient and in the normal equation. A derivative is a slope you can measure by nudging a weight both ways, so
+          compare the formula with that central difference before you trust it: here they agree to four decimals. Then the
+          learning rate. At 0.1 twenty steps recover the true weights. At 1.1 the loss explodes. For this X the cutoff is 2
+          divided by the largest eigenvalue of 2/n X transpose X, which is 2.40, so anything above 0.83 diverges. The cutoff
+          depends on the data, and that is why learning rates get tuned.
+
       - layout: table
         beat: pitfalls
         title: Five ways a first model misleads you
@@ -297,7 +321,7 @@ parts:
           # threshold 0.50: precision 0.725, recall 0.584
           # threshold 0.61, tuned on validation: precision 0.783, recall 0.484
         takeaway: Beat a dummy, report a ranking metric too, and choose the threshold on validation from what each error costs.
-        source: notes/04-model-evaluation.md
+        source: notes/04b-thresholds-pr-roc-and-calibration.md  # also: notes/04-model-evaluation.md
         notes: >-
           Three quarters of the people earn under the line, so always answering no gets 0.759. The model is about nine
           points better. AUC and average precision say the ranking is strong. That does not yet tell us what to do with it. The threshold turns a score into a decision. Precision is, of those flagged, how many are real. Recall is, of the real ones, how many were caught. Holding the flagged group to about 80 percent precision costs a tenth of recall. Note the test precision of 0.783 misses the 0.80 validation target, which is what validation being optimistic looks like at small scale.
@@ -307,7 +331,7 @@ parts:
         title: On pure noise, a leaky selection step reports R² 0.90
         recall: How do you stop a fitted step such as feature selection leaking into cross-validation?
         lead: "k-fold cross-validation: cut the rows into k parts, train on k-1, score on the part left out, and rotate."
-        image: ../assets/classical-leaky-selection.png
+        image: ../assets/sources/images/classical-leaky-selection.png
         caption: "Ten datasets of pure noise, keeping the top 5% of 10,000 columns: mean R² 0.90 leaky, -0.10 in a pipeline. Run `practice/leaky_selection.py`."
         bullets:
           - "**Select, then cross-validate:** selection saw every fold's target."
@@ -424,7 +448,7 @@ parts:
         title: Learning curves name the problem before you touch a knob
         recall: Does a small train-validation gap mean a good model?
         lead: Train and validation AUC as rows grow. Low and together is underfitting, far apart is overfitting, high with a small gap is healthy.
-        image: ../assets/training-tuning-learning-curves-adult.png
+        image: ../assets/sources/images/training-tuning-learning-curves-adult.png
         caption: "At 16,000 rows, train then validation: depth-2 tree 0.834, 0.833. Unlimited tree 0.999, 0.760. Boosting 0.953, 0.927."
         takeaway: "A small gap isn't enough: on adult census a depth-2 tree has a gap of 0.001 and sits nearly 0.1 AUC below boosting."
         source: notes/09-training-and-tuning.md
@@ -564,7 +588,7 @@ parts:
         beat: pitfalls
         title: Built-in importance credits random columns
         recall: Why does a random column get impurity credit but not permutation credit?
-        image: ../assets/classical-importance-noise.png
+        image: ../assets/sources/images/classical-importance-noise.png
         caption: "LightGBM on adult census with two planted random columns: gain share 0.028 and 0.023, permutation AUC drop 0.0002 and 0.0003. Run `practice/importance_noise.py`."
         takeaway: Gain is measured on training data and credits overfit noise, so use permutation on held-out data.
         source: notes/08-model-interpretability.md
@@ -650,7 +674,7 @@ parts:
         level: practice
         title: Each clustering recipe hears different columns
         recall: What can validate a customer segmentation?
-        image: ../assets/classical-mixed-benchmark.png
+        image: ../assets/sources/images/classical-mixed-benchmark.png
         caption: "ARI on 1,200 generated customers, mean of 5 seeds, in three worlds. Latent class has home advantage: the generator is its model."
         bullets:
           - "**One-hot, k-means:** 0.879 when numbers and categories both hold the groups, 0.003 when only categories do."
@@ -771,7 +795,7 @@ parts:
         title: The threshold matters far more than resampling
         recall: Once the threshold is tuned, how much does the choice of resampling method change the cost?
         lead: "SMOTE invents new rare-class rows. Cost per 1,000 applicants. At 5:1, SMOTE costs **176.4** with the threshold at 0.5 and **143.1** with it tuned."
-        image: ../assets/credit-lab-method-comparison.png
+        image: ../assets/sources/images/credit-lab-method-comparison.png
         caption: "Across 10 settings, SMOTE at 0.5 lost beyond noise in 8 and never won. With its own tuned threshold, it tied in all 10."
         takeaway: Tune the threshold and leave the data alone, since on the 3% credit file tuned costs span 142.4 to 144.5 per 1,000 applicants and the seed moves them by 5.9.
         source: notes/10-imbalance-errors-and-drift.md
@@ -845,7 +869,7 @@ parts:
         title: A noise fix gained 18.6 on rows read and lost 8.3 unread
         lead: Read the errors, patch the worst-looking slice, then rescore. Fall in cost per 1,000 applicants.
         recall: How do you tell a real gain from one that reading the errors produced?
-        image: ../assets/reading-errors-noise-fix.png
+        image: ../assets/sources/images/reading-errors-noise-fix.png
         caption: "Thirty seeds. The noise fix gains 18.6 per 1,000 on the rows read and loses 8.3 on the rows not read, on 27 of 30 seeds. Run `practice/reading_errors.py`."
         bullets:
           - "**Mechanism fix:** +4.1 read, -1.1 unread, so it did not work either."
@@ -879,7 +903,7 @@ parts:
         beat: fundamentals
         title: Price each route and the thresholds follow
         recall: How do you get the pay and reject thresholds?
-        image: ../assets/review-queue-three-routes.png
+        image: ../assets/sources/images/review-queue-three-routes.png
         caption: "Each route's expected cost is a straight line in the probability of a problem. Generated invoices, invented prices. Run `practice/review_queue.py`."
         bullets:
           - "**Prices:** paying a problem 150, sending back a good invoice 30, a clerk's four minutes 3."
@@ -1018,7 +1042,7 @@ parts:
         level: practice
         title: Uncertainty sampling won on invoices and lost on real credit
         recall: How do you know whether uncertainty sampling beats random labelling on your data?
-        image: ../assets/corrections-active-learning.png
+        image: ../assets/sources/images/corrections-active-learning.png
         caption: "Boosted model, 100 labels bought at a time. The credit file is real data, the invoices are generated. Run `practice/learning_from_corrections.py`."
         bullets:
           - "**Invoices at 2,000 labels:** AUC +0.020 and 0.206 euros cheaper, on all ten seeds."
@@ -1036,7 +1060,7 @@ parts:
         beat: practice
         title: Silence recovered by month 8, slowly and at a price
         recall: How should you retrain and measure once a new fraud type arrives?
-        image: ../assets/corrections-silent-acceptance.png
+        image: ../assets/sources/images/corrections-silent-acceptance.png
         caption: "Eight months, 10,000 invoices each, mean of 8 seeds, all simulated. The new fraud type arrives in month 3."
         bullets:
           - "**We expected** permanent blindness. No: at month 8 silence costs 3.905, the audit 3.890."

@@ -1,4 +1,5 @@
 ---
+imported_hash: 061162d4553ec4f3
 title: Minimum Window Substring — First-Principles Thinking Guide
 summary: Check all O(n²) substrings, validate each in O(n) → O(n³).
 order: 204

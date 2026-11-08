@@ -1,4 +1,5 @@
 ---
+imported_hash: f6191659d4c1f9a5
 title: LC 42 — Trapping Rain Water
 summary: Given n non-negative integers height representing an elevation map where each bar has width 1, compute how much rainwater is trapped between the bars after raining.
 order: 25

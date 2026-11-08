@@ -1,4 +1,5 @@
 ---
+imported_hash: de4358860638a0c7
 title: 05 — RL & Alignment
 summary: Reinforcement learning is how a pretrained model becomes an assistant.
 order: 1
@@ -34,15 +35,21 @@ New to RL? Start at 00. It assumes no notation and no data-science pillar. If yo
 | # | Chapter | Covers |
 |---|---|---|
 | 00 | [RL in plain language](notes/00-rl-in-plain-language.md) | Agent, reward, exploration, value and policy in plain words with small runnable examples; why this matters for LLMs |
-| 01 | [RL foundations](notes/01-rl-foundations.md) | MDP tuple; Bellman and TD; DQN and offline RL; policy gradients to the PPO clip; maximum entropy; exploration; how RL maps onto LLMs |
+| 01 | [RL foundations](notes/01-rl-foundations.md) | MDP tuple; return and Bellman; policy gradients to the PPO clip; maximum entropy; exploration; how RL maps onto LLMs |
+| 01b | [Algorithm families, TD and DQN](notes/01b-algorithm-families-td-and-dqn.md) | Read after the Bellman section of 01, before its policy gradients. Value, policy and actor-critic families; Dyna and planning; Monte Carlo and importance sampling; TD, SARSA, n-step and GAE; DQN and offline RL |
+| 01c | [Bandits: regret, confidence bounds and Exp3](notes/01c-bandit-algorithms.md) | Read after the exploration paragraph of 01. Regret; explore-then-commit, UCB, KL-UCB, MOSS; Exp3; lower bounds; contextual and linear bandits |
 | 02 | [RLHF pipeline](notes/02-rlhf-pipeline.md) | SFT and SFT in practice; reward-model training; PPO with a KL penalty |
 | 12 | [RLHF failure modes](notes/12-rlhf-failure-modes.md) | Read after 02. Reward hacking; overoptimization and the reverse KL; alignment tax; a toy of the whole failure |
-| 03 | [Preference optimization](notes/03-preference-optimization.md) | PPO, DPO, GRPO and GSPO; the decision framework |
+| 03 | [Preference optimization](notes/03-preference-optimization.md) | PPO and DPO; DPO in practice; the algorithm evolution; the decision framework |
+| 03b | [GRPO and GSPO](notes/03b-grpo-and-gspo.md) | Read after the DPO section of 03. Group-relative advantages, verifiable rewards and GRPO in code; the sequence-level ratio of GSPO |
 | 13 | [Preference variants](notes/13-preference-variants.md) | Read after 03. KTO, IPO, ORPO, SimPO, DiscoPOP; self-play with SPIN, SPPO, DITTO and RLHI |
 | 04 | [Constitutional AI and RLAIF](notes/04-constitutional-ai.md) | The constitution; critique and revision; RLAIF labels; red-teaming; self-improvement and scaling |
-| 05 | [Post-training for agents](notes/05-post-training-for-agents.md) | The three stages; SFT memorizes, RL generalizes; LLMs inside classic RL; learning without weights; when to pick SFT or RL |
-| 06 | [Data and environments](notes/06-data-and-environments.md) | Environments as practice fields; simulators; data quality; dataset engineering; preference data at practitioner scale |
-| 07 | [Reward design and tool calling](notes/07-reward-design-and-tool-calling.md) | Multi-turn rewards; judges as rewards; RLVP; RL for tool calling; dense signals and distillation |
+| 05 | [Post-training for agents](notes/05-post-training-for-agents.md) | The three stages; SFT memorizes, RL generalizes; LLMs inside classic RL |
+| 05b | [Choosing SFT, RL or no training](notes/05b-choosing-sft-rl-or-no-training.md) | What SFT is good for; learning without weights first; when to pick SFT or RL; practical pitfalls; labs |
+| 06 | [Data and environments](notes/06-data-and-environments.md) | Environments as practice fields; simulators; data quality; where the demonstrations came from; preference data at practitioner scale |
+| 06b | [Dataset engineering for post-training](notes/06b-dataset-engineering-for-post-training.md) | Read after 06. Quality and diversity; how much data; synthetic data and distillation; dedup and decontamination; agentic data and environment generation |
+| 07 | [Reward design and tool calling](notes/07-reward-design-and-tool-calling.md) | Multi-turn rewards; judges as rewards; RLVP |
+| 07b | [RL for tool calling and dense signals](notes/07b-rl-for-tool-calling-and-dense-signals.md) | Read after 07. RL for tool calling; on-policy distillation and self-distillation as dense signals |
 | 08 | [Reasoning RL and DeepSeek-R1](notes/08-reasoning-rl-deepseek-r1.md) | The R1 story; how little data and reward reasoning needs |
 | 09 | [Test-time search and training](notes/09-test-time-search-and-training.md) | MCTS, AB-MCTS, search instead of training; measuring the selection bottleneck |
 | 10 | [Engineering RL systems](notes/10-engineering-rl-systems.md) | Imitation and inverse RL; hierarchy and curricula; engineering an RL problem; scaling; running RL in production; what has dated |
@@ -56,7 +63,7 @@ Chapters 12 and 13 sit where the table puts them; they were split out of 02 and 
 
 | Chapter | Why |
 |---|---|
-| [DA 04/03 Priors and bandits](../../data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md) | Optional background: bandits and Thompson sampling, the case with no state |
+| [DA 04/03b Bandits and Thompson sampling](../../data-analytics/04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling.md) | Optional background: bandits and Thompson sampling, the case with no state |
 | [DA 06/08 States and sequences](../../data-analytics/06-applied-analyses/notes/08-states-and-sequences.md#markov-clv-and-what-the-pooled-chain-gets-wrong) | Optional background: a Markov chain with rewards is an MDP without actions |
 
 **Feeds into**
@@ -75,7 +82,7 @@ Chapters 12 and 13 sit where the table puts them; they were split out of 02 and 
 05-RL/
 ├── README.md
 ├── references.md           every source, mapped to notes; open gaps
-├── notes/                  00–13, read in order
+├── notes/                  00–13, read in order (01b and 01c follow 01)
 ├── slides/                 deck.yaml and rl-and-alignment.pptx
 ├── practice/
 │   └── 01-q-learning-treasure-hunt/   tabular Q-learning lab (offline, numpy)
@@ -96,7 +103,7 @@ Chapters 12 and 13 sit where the table puts them; they were split out of 02 and 
 | Learn the words first: agent, state, action, reward, policy, value, exploration. Every later paper assumes them | 00, 01 |
 | The KL penalty to the SFT model is what keeps PPO from drifting into reward hacking. Remove it and the policy finds the reward model's blind spots | 02 |
 | A reward model is a proxy. Past some point, more optimization against it lowers true quality (overoptimization) | 02 |
-| Default to DPO when you have preference pairs and no verifier. Use GRPO/PPO when you can score outputs online (code that runs, math that checks) | 03 |
+| Default to DPO when you have preference pairs and no verifier. Use GRPO/PPO when you can score outputs online (code that runs, math that checks) | 03, 03b |
 | Constitutional AI swaps human harmlessness labels for AI critiques guided by written principles. The principles become the thing you audit | 04 |
 | Fine-tuning is for form, RAG is for facts. When in doubt, don't fine-tune: try prompts, retrieval and in-context learning (Reflexion, ExpeL) first | 02, 05 |
 | Start fine-tuning with about 50 good examples. If they show no gain, fix the setup before buying more data | 06 |
@@ -105,7 +112,7 @@ Chapters 12 and 13 sit where the table puts them; they were split out of 02 and 
 | Good SFT data often removes the need for RL. Data decides how far you can go; RL decides how much higher | 05, 06 |
 | SFT memorizes the demonstrations; RL generalizes to held-out scenarios. Use SFT for format, RL for behaviour under distribution shift | 05 |
 | Reward the outcome and penalize verifiable process violations (RLVP). Do not reward a lucky path that broke a constraint | 07 |
-| Mask tool outputs out of the loss when training tool-calling agents. The model should learn to call tools, not to predict their output | 07 |
+| Mask tool outputs out of the loss when training tool-calling agents. The model should learn to call tools, not to predict their output | 07b |
 | Try search before training when pass@k already covers the task and a verifier exists. Train when you need the answer fast at one sample | 09 |
 | Check a random policy and a simple baseline before training, and compare runs across many seeds: three seeds can put two identical agents far apart | 10 |
 

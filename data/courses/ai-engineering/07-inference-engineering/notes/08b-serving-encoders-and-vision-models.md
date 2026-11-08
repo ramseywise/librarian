@@ -1,4 +1,5 @@
 ---
+imported_hash: 3d27d44ed0a3b189
 title: 8b — Serving Encoders and Vision Models
 summary: The numbers come from practice/serving_encoders_vlm_lab.py, on an M4 Pro with 24 GB using its GPU, in one process with no server.
 order: 10
@@ -68,6 +69,11 @@ Sorting gave 2.8 to 4.5× across the four runs. A token budget without sorting r
 
 Sorting has a limit online, since you can only sort what's waiting. That's why a backfill, embedding a whole catalogue offline, gets all of this gain, while a live queue gets only part of it. Our data is generated and heavily skewed on purpose, so a corpus of even lengths would gain far less. Measure your own padding share first, because it's one line of code.
 
+Sorting is only half of the fix, because the batches also have to be cut. [arXiv:2010.05680](https://arxiv.org/abs/2010.05680) (Fang et al., PPoPP 2021) sorts the queue by length and then chooses the cut points by dynamic programming, over a table of measured latency per (sequence length, batch size). For five requests of length 17, 18, 52, 63 and 77, one batch of five takes **20.62 ms** and three batches take **15.24 ms**, which is **35%** more responses per second. Fewer, bigger batches are not automatically better. On a BERT classifier on one RTX 2060 with Tensor Cores on and request lengths 5–500, padding all waiting requests together (**98** responses/s) was worse than no batching (**120**), and the dynamic-programming cut reached **144**. Sorting also moves latency around: on lengths 2–100 its average latency was higher than naive batching's at 237 and 323 requests/s (about 10.9 vs 10.1 ms and 15.4 vs 12.4 ms) and tied at 99, and the paper attributes that to long requests being delayed. At 5–500 it had the lowest latency. The cost table needs a warm-up pass over every length and batch size, and the measurements use PyTorch 1.5 and one consumer GPU, so take the shape of the result, not the numbers.
+
+![Five requests of different length served as one padded batch of five (left, 20.62 ms) or as three length-grouped batches (right, 15.24 ms)](../assets/sources/images/fang-2021-turbotransformers-fig8.png)
+*Image Source: Fang et al., [TurboTransformers: An Efficient GPU Serving System For Transformer Models](https://arxiv.org/abs/2010.05680) (2021), Fig. 8*
+
 ### How long to wait for a batch
 
 We measured one batch of the first n texts at each size (6 ms for one text, 21 ms for 32, 110 ms for 64) and simulated a single worker over those times with random arrivals. Those times aren't a clean price for batch size. The 64 includes one 256-token text, so most of its jump is the padding from the last section, and the loads below are set from that 110 ms. A batch leaves when its oldest request has waited the window, or once the worker frees up if that's later, and it takes at most 64:
@@ -87,7 +93,7 @@ Top ten kept is the share of fp32's ten nearest neighbours that each variant sti
 | On the GPU, sorted batches of 32 | Texts per second | Top ten kept, against fp32 |
 |---|---:|---:|
 | fp32 | 3,007 | 1.000 |
-| bf16 autocast | 3,284 | 0.990 |
+| [bf16](../../../programming/computer-science/notes/04-numbers-and-memory.md#smaller-floats) autocast | 3,284 | 0.990 |
 | fp16 autocast | 3,234 | 0.998 |
 
 | On the CPU, 600 texts | Texts per second | Top ten kept, against fp32 |
@@ -189,7 +195,7 @@ The API has a trap. In Transformers 5.20 the argument is `mm_encoder_outputs`, a
 
 ## Adapters at serving time
 
-An adapter here is a LoRA: a small low-rank update trained beside frozen weights ([PEFT and fine-tuning in practice](../../../generative-ai/01-llm-fundamentals/notes/09-peft-and-fine-tuning-in-practice.md)), where r is its rank. Attached means it stays separate and runs at every wrapped layer. Merged means it has been added into the weights.
+An adapter here is a LoRA: a small [low-rank](../../../generative-ai/01-llm-fundamentals/notes/02-attention-and-the-transformer-block.md#matrix-products-transpose-and-rank) update trained beside frozen weights ([PEFT and fine-tuning in practice](../../../generative-ai/01-llm-fundamentals/notes/09-peft-and-fine-tuning-in-practice.md)), where r is its rank. Attached means it stays separate and runs at every wrapped layer. Merged means it has been added into the weights.
 
 | One page, 50 tokens | Milliseconds |
 |---|---:|

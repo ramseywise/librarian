@@ -1,4 +1,5 @@
 ---
+imported_hash: 692ac694856ebfe6
 title: LC 206 — Reverse Linked List
 summary: Given the head of a singly linked list, reverse the list and return the new head.
 order: 67

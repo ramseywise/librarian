@@ -1,4 +1,5 @@
 ---
+imported_hash: 5291d825d3996d51
 title: Supervised Learning
 summary: Blocks run top to bottom from this notes/ folder, on the breast-cancer data that ships with scikit-learn, so the numbers below are this split's.
 order: 3
@@ -68,6 +69,10 @@ for k in range(1, 11):
 
 The single-neighbour model gets every training point right and is the worst on test. That is overfitting made visible.
 
+KNN also yields a score, not just a vote: the fraction of the $k$ neighbours in the positive class. In Bruce and Bruce's loan example, 14 of the 20 nearest loans to a new one defaulted, so the label is default and the propensity is $14/20 = 0.7$. That fraction is what lets you move the cutoff below 0.5 when the positive class is rare (*Practical Statistics*, ch. 6).
+
+ISLP puts numbers on the same U-shape with a known answer. On its simulated two-class data (100 points per class), the best any classifier can do is the Bayes error, 0.1304 on the test set; KNN with $K=10$ gets 0.1363, while $K=1$ and $K=100$ get 0.1695 and 0.1925 (low bias and high variance at one end, the reverse at the other). Over 200 training and 5,000 test points the test error is U-shaped in $1/K$ with its minimum near $K=10$ and the training error is 0 at $K=1$ (*ISLP*, ch. 2; the chapter prints the Bayes error as 0.133 in one place and 0.1304 in another). Against OLS, KNN pays for dimension: with 50 training points and a strongly non-linear truth it wins at one or two predictors and loses from four, and adding noise predictors up to $p=20$ multiplies its test MSE more than ten-fold (*ISLP*, ch. 3, Figs. 3.19 and 3.20, simulated data).
+
 | | |
 |---|---|
 | Knob | `n_neighbors` (and the distance metric) |
@@ -90,7 +95,7 @@ Predict with a weighted sum: $\hat y = w \cdot x + b$. For classification, thres
 | `Lasso` | $+\ \alpha \lVert w \rVert_1$ | Sets some weights exactly to 0: built-in feature selection | `alpha`; raise `max_iter` when small |
 | `ElasticNet` | Both penalties | Lasso's sparsity with ridge's stability | `alpha`, `l1_ratio` |
 
-M&G show the effect on their extended Boston data (104 features): OLS scores 0.95 on train and 0.61 on test; ridge at `alpha=1` gets 0.89 / 0.75; lasso at `alpha=0.01` uses 33 of the 104 features and generalises about as well. That dataset has since been removed from scikit-learn, so here is the same experiment on the diabetes data, expanded to squares and products of its features so that OLS has room to overfit:
+M&G show the effect on their extended Boston data (506 rows, 104 features, one split; *Introduction to ML with Python*, ch. 2, "Linear models for regression"): OLS scores 0.95 on train and 0.61 on test; ridge at `alpha=1` gets 0.89 / 0.75; lasso at `alpha=0.01` uses 33 of the 104 features and generalises about as well (test 0.77). Their default `alpha=1` lasso underfits with 4 features (train 0.29, test 0.21), and `alpha=0.0001` uses 94 and overfits again (test 0.64). Learning curves on subsets of the same data show OLS learning nothing below about 400 points while ridge does, so regularisation matters most when data is scarce. That dataset has since been removed from scikit-learn, so here is the same experiment on the diabetes data, expanded to squares and products of its features so that OLS has room to overfit:
 
 ```python
 import numpy as np
@@ -124,6 +129,25 @@ The penalties have a pedigree worth citing: the L1 penalty and its property of s
 
 **Ridge vs lasso.** Default to ridge. Use lasso when you expect only a few features to matter, or need a model you can read.
 
+![Contours of the residual sum of squares touching a diamond-shaped lasso constraint at a corner on an axis, and a circular ridge constraint away from the axes](../assets/sources/images/islp-fig6-7.png)
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 6.7*
+
+The picture says why the penalties behave differently: the first point where an RSS ellipse touches the constraint region is the estimate, and the lasso's diamond has corners on the axes where a coefficient is exactly zero, while the ridge disc has none (*ISLP*, ch. 6). When one coefficient at a time is estimated on orthonormal columns, ridge divides each least-squares coefficient by $1+\lambda$ and the lasso subtracts $\lambda/2$ and clips at zero (soft-thresholding). The lasso is the posterior mode under a Laplace prior, ridge the posterior mode and mean under a Gaussian one. Neither wins in general: on simulated data with 45 predictors and 50 rows, ridge is slightly better when all 45 matter, and the lasso is better when 2 do, and 10-fold CV on the sparse case keeps only the 2 signal variables at its minimum (*ISLP*, ch. 6). Standardise first, because the penalty skips the intercept and is not scale-equivariant. For PCR and PLS, the chapter finds PLS "often performs no better than ridge regression or PCR" and calls ridge a continuous version of PCR.
+
+**The lasso path, and how it is computed.** Exact best-subset regression tries $2^p$ subsets, which becomes prohibitive past about 40 predictors, and forward stepwise adds one variable at a time and moves every coefficient to the new least-squares fit. The lasso gives a whole family of fits, one per $\lambda$ (or per bound $t$ on $\lVert\beta\rVert_1$), and for squared error the coefficient paths are piecewise linear, so the exact path is cheap (*Computer Age*, ch. 16).
+
+![Lasso coefficient paths against training R-squared on the spam data, each curve a variable entering the model](../assets/sources/images/casi-fig16-5.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 16.5*
+
+Least-angle regression (LAR) draws that path: it moves the active coefficients toward their least-squares fit, keeping each one's correlation with the residual tied, and stops when an outside variable catches up, so a whole path costs about one least-squares fit. LAR is the lasso path only with one change, that a coefficient crossing zero is dropped from the active set, which happens mostly when predictors are highly correlated. Each LAR step spends exactly one degree of freedom, in the covariance sense of [01](01-statistical-foundations.md#correcting-the-training-error-cross-validation-and-covariance-penalties), so the active-set size is an unbiased estimate of df. Forward stepwise spends more, and unevenly: in a parametric bootstrap of 5,000 simulated data sets from the full spam fit, stepwise reached about 40 df by step 25 where the lasso had spent 25 (read off Fig. 16.8, right).
+
+![Training MSE and degrees of freedom against step for forward-stepwise regression and the lasso on the spam data](../assets/sources/images/casi-fig16-8.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 16.8*
+
+For logistic and other losses the path is no longer piecewise linear, so glmnet fits a grid instead. The largest useful penalty is $\lambda_{\max} = \max_j |\langle x_j, y\rangle|/n$ on standardised predictors (the smallest $\lambda$ with all coefficients zero), and a sensible grid is 100 values equally spaced on the log scale from $\lambda_{\max}$ down to $\epsilon\lambda_{\max}$, with $\epsilon$ such as 0.001. Path-wise coordinate descent solves each $\lambda$ by cycling over one coefficient at a time, and every update is a soft-threshold of a simple inner product with the residual, which is cheap on sparse data. Three devices make it fast: warm starts from the previous $\lambda$, iterating on a guessed active set and then confirming with one full sweep, and the *strong rule*, which admits any variable with $|\langle x_j, r\rangle| \ge 2\lambda_{k+1} - \lambda_k$ rather than only those above $\lambda_{k+1}$ and rarely errs. The elastic net shrinks correlated variables toward each other and picks them in groups, which helps because the lasso "has difficulty in choosing among the correlated cousins"; its coordinate update is the same soft-threshold, divided by $1 + (1-\alpha)\lambda$.
+
+The payoff is at scale. On the spam emails with binarised variables and all pairwise interactions (3,061 predictors after dropping degenerate ones) glmnet fits the whole lasso path in 6 s, while forward-stepwise logistic regression, which refits a GLM after every variable, takes a long time and stopped at 134 variables on convergence trouble. The lasso's minimum test error is 0.057, against 0.064 for stepwise and 0.071 for the lasso on main effects only, and its largest active set had 682 variables (*Computer Age*, ch. 16, one split, 2015 software). Choosing $\lambda$ by 10-fold CV and scoring the metric you care about, not the one the fit minimised, is the book's default. The chapter also warns that confidence intervals computed after selection ignore the selection: in an HIV drug-resistance regression the lasso kept 7 of 30 mutation sites at the CV-chosen $\lambda$ of 0.003, and after conditioning on the selection only one, s25, stayed significant.
+
 **Learning curves for ridge** show the data-size effect from [01](01-statistical-foundations.md): with enough data, regularisation matters less and OLS catches up.
 
 [Training and tuning](09-training-and-tuning.md#regularisation-is-one-idea) shows that this penalty, a tree's depth limit and a network's weight decay are one idea.
@@ -147,6 +171,15 @@ logreg 0.944 linear svm 0.944
 ```
 
 The knob is **`C`, the inverse of regularisation strength**: high `C` fits each training point harder (complex); low `C` keeps weights small (simple). Note the inversion against `alpha` above. `penalty="l1"` gives sparse coefficients, as lasso does.
+
+**Hinge vs log-loss, and the two meanings of `C`.** The linear SVM minimises hinge loss plus a ridge penalty, $\sum_i \max(0,\,1-y_i f(x_i)) + \lambda\sum_j\beta_j^2$. Hinge loss is exactly zero once a point is on the right side of the margin; log-loss never reaches zero but is tiny far from the boundary, which is why the two "often give very similar results", and the chapter's rule of thumb is SVMs when classes are well separated, logistic regression when they overlap (*ISLP*, ch. 9). Efron and Hastie say why at the population level: the hinge loss is minimised by the sign of the Bayes rule, so it learns only which side a point is on, while the binomial deviance is minimised by the logit of the class probability. On separable data ridged logistic regression converges to the SVM's direction as $\lambda \to 0$, and plain logistic regression has no finite maximum-likelihood fit there (*Computer Age*, ch. 19).
+
+![Hinge loss (SVM) and logistic loss plotted against the margin y times f(x): the hinge is a straight line that reaches zero at 1, the logistic curve decays smoothly](../assets/sources/images/islp-fig9-12.png)
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 9.12*
+
+The book's text defines $C$ as a budget on total slack (large $C$: wide margin, many support vectors, high bias), but scikit-learn's `C` is a cost on slack, so there small $C$ gives the wide margin. Read `C` from the library's side. Its lab picks `C` by 5-fold CV over `[0.001, ..., 100]` on 50 simulated points (best `C=1`, CV accuracy 0.74), and on 63 training samples with 2,308 genes uses a linear kernel, because $p \gg n$ (0 training errors, 2 of 20 test errors). Kernels are not special to SVMs: logistic regression can use them too.
+
+**Confounding in a logistic fit.** On ISLP's simulated `Default` data (10,000 customers, 3.33% default) the coefficient on `student` is +0.40 alone (4.31% default for students against 2.92% for others) and -0.65 once `balance` is in the model. Students carry higher balances, and at the same balance and income a student is less likely to default (0.058 against 0.105 at balance $1,500). Read a coefficient as "holding the others fixed", never as the marginal effect (*ISLP*, ch. 4).
 
 **Multiclass.** Linear classifiers are binary by nature. One-vs-rest trains one classifier per class and predicts the class with the highest score. `LogisticRegression` uses a true multinomial (softmax) loss by default.
 
@@ -235,12 +268,19 @@ max_depth 0.988 0.902
 features used: 10 of 30
 ```
 
-A tree grown until every leaf is pure memorises the training set. Control it with **pre-pruning**: `max_depth`, `max_leaf_nodes`, or `min_samples_leaf`. scikit-learn also has cost-complexity post-pruning (`ccp_alpha`).
+A tree grown until every leaf is pure memorises the training set. M&G's breast-cancer run shows the same: unpruned train 1.000 and test 0.937, `max_depth=4` train 0.988 and test 0.951 (*Introduction to ML with Python*, ch. 2, "Decision trees"). Control it with **pre-pruning**: `max_depth`, `max_leaf_nodes`, or `min_samples_leaf`. scikit-learn also has cost-complexity post-pruning (`ccp_alpha`).
 
 **Two quirks to remember:**
 
 - **No scaling needed.** Each split looks at one feature at a time.
 - **Trees can't extrapolate.** On the RAM-price time series (M&G ch. 2), a tree predicts the last known price forever after the training range, while a linear model on log-price continues the trend.
+
+Efron and Hastie's spam tree shows what a grown tree looks like on real data (4,601 emails, 40% spam, 57 word and character frequencies that the book standardises, so some split values are negative). Seven leaves, each labelled with its ham/spam counts, and the first split is on the proportion of `$` characters:
+
+![Regression tree on the spam data: seven leaves with ham/spam counts such as 2462/275 and 70/990, splits on char$, remove, char!, capruntot, free and hp](../assets/sources/images/casi-fig8-7.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 8.7*
+
+The leaf counts add up to the full 2,788 ham and 1,813 spam, so the error rates can be recomputed: 134 ham fall in spam-labelled leaves (4.8%) and 314 spam in ham-labelled leaves (17.3%). The caption prints 5.2% and 17.4%, so the ham rate does not match its own leaves (the text also calls this tree "Figure 8.6" when it means 8.7). Both rates are apparent, on the training emails, and the authors note trees are unstable and easy to over-interpret (*Computer Age*, ch. 8).
 
 A single tree is rarely the best model. Its value is as the building block of [06 — ensembles](06-ensembles.md), where random forests and gradient boosting fix its variance.
 
@@ -272,6 +312,20 @@ print("scaled  ", round(svc.score(scaler.transform(X_test), y_test), 3))
 unscaled 0.629
 scaled   0.972
 ```
+
+M&G report the same collapse (train 1.00, test 0.63 unscaled) and the cause: breast-cancer feature ranges span several orders of magnitude, which the kernel's single `gamma` cannot serve (*Introduction to ML with Python*, ch. 2, "Kernelized support vector machines"). They put SVMs in comfortable reach to about 10,000 samples and hard at 100,000.
+
+**What the kernel changes in the fit.** The fitted function is $f(x) = \alpha_0 + \sum_{i \in S} \alpha_i K(x, x_i)$ over the support set $S$, a sum of bumps centred on training points. The Lagrange dual uses the data only through the $n \times n$ Gram matrix of inner products, so cost grows linearly in the number of features $p$ and potentially cubically in $n$ (in practice about $O(n^2\lvert S\rvert)$), which suits wide data. Ridge regression gets the same reparametrisation, $\hat\beta = X^\top\hat\alpha$ with $\hat\alpha = (XX^\top + \lambda I)^{-1}y$, which costs $O(n^2p)$ instead of $O(np^2)$ (*Computer Age*, ch. 19). The polynomial kernel $(1 + \langle x, z\rangle)^d$ is, in the authors' words, "mainly useful as existence proofs", and the radial kernel is the usual choice. Wide data show where a margin classifier earns its place: on leukemia gene expression (3,571 genes, 72 patients, 47 ALL and 25 AML) a separating hyperplane exists and logistic regression fails, and the optimal-margin fit uses 42 of the 72 points as support vectors. Fit on a random 50 and tested on the other 22, no test point was misclassified although several fell inside the margin (one split, no repetition).
+
+![Two radial-kernel SVM fits to the same two-class data: a smooth boundary with a larger budget B, and a fragmented one with islands for single points with a smaller B](../assets/sources/images/casi-fig19-6.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 19.6*
+
+The slack budget $B$ is the overfitting knob. The left fit tolerates some margin errors and looks reasonable, while the right one, with a smaller $B$, builds a small island to capture one blue point in a sea of brown. The budget is tuned by cross-validation, and a larger one means more support points and a lower-variance fit. Kernels also reach objects that are not vectors: any similarity that behaves like an inner product defines one. For proteins, counting every 3-gram of the 20 amino-acid letters gives $20^3 = 8{,}000$ counts per protein, and the string kernel is computed from tree structures without forming those vectors. On 1,708 proteins (1,663 negative, 45 positive), 10-fold CV, with a very small $\lambda$ chosen by CV, the kernel SVM scores AUC 0.84 and kernel logistic regression 0.78. It is a single run on one data set, with no variance reported.
+
+![ROC curves for a kernel SVM (AUC 0.84) and kernel logistic regression (AUC 0.78) on protein classification, from 10-fold cross-validation](../assets/sources/images/casi-fig19-7.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 19.7*
+
+The authors add the limits: kernel methods are not immune to the curse of dimensionality, the quadratic penalty keeps every feature in the model so there is no sparsity (swap in an L1 penalty for that), and the popularity of SVMs rests on classification performance, since classifiers are less sensitive to bias-variance trade-offs than regression is (*Computer Age*, ch. 19).
 
 | Knob | Small value | Large value |
 |---|---|---|
@@ -321,12 +375,12 @@ print(round(mlp.score(StandardScaler().fit(X_train).transform(X_test), y_test), 
 
 | Knob | Effect |
 |---|---|
-| `hidden_layer_sizes` | Width and depth: capacity |
+| `hidden_layer_sizes` | Width and depth: capacity. Parameters grow fast: 100 inputs and two layers of 100 give 20,100 weights, two layers of 1,000 give 1,101,000 (*Introduction to ML with Python*, ch. 2) |
 | `alpha` | L2 penalty on weights |
 | `activation` | `relu` (default) or `tanh` |
 | `random_state` | Different seeds give visibly different boundaries on small data |
 
-The tuning recipe from M&G: first build a network big enough to overfit, then shrink it or raise `alpha` until test performance is best. Scaling to mean 0 and variance 1 is required. Neural networks need more data, more tuning and more care than the other models here; for tabular data, gradient-boosted trees usually win ([06](06-ensembles.md)). [neural network basics](../../02-deep-learning/notes/01-neural-networks-fundamentals.md) builds them from scratch.
+The tuning recipe from M&G: first build a network big enough to overfit, then shrink it or raise `alpha` until test performance is best. Scaling to mean 0 and variance 1 is required. Neural networks need more data, more tuning and more care than the other models here; for tabular data, gradient-boosted trees usually win ([06](06-ensembles.md)). ISLP's own tabular comparison agrees on the point that matters: on Hitters (263 players, 176 train and 87 test, one split) a 64-unit network with 1,345 parameters has test MAE 257.4, against 254.7 for linear regression and 252.3 for the lasso, and its authors say they spent a fair bit of time tuning the network to get there and advise Occam's razor. Their own lab run with a different network flips the order (229.5 against 259.7 and 257.2), so a few points either way on one 87-row test set is noise (*ISLP*, ch. 10). Where the network clearly wins is MNIST: the text reports 1.8% error for a dropout network against 7.2% for multinomial logistic regression, and the book's own lab run of a similar network gets 3.2% (accuracy 0.9681) against 0.9241 for the logistic baseline, so the gap is real but its size depends on the run. [neural network basics](../../02-deep-learning/notes/01-neural-networks-fundamentals.md) builds them from scratch.
 
 ---
 
@@ -361,13 +415,13 @@ print(agree.all())
 True
 ```
 
-A probability is only as good as the model's **calibration**: an overfit model reports 1.0 on points it gets wrong. You need these scores to move the decision threshold, which [04](04-model-evaluation.md#threshold-precisionrecall-and-roc) does, and [04](04-model-evaluation.md#calibration-is-a-08-really-80) shows how to check them. Niculescu-Mizil and Caruana compared ten learners' probabilities and found boosted trees and SVMs distort them in a sigmoid shape while logistic regression does not ([doi:10.1145/1102351.1102430](https://doi.org/10.1145/1102351.1102430), ICML 2005).
+A probability is only as good as the model's **calibration**: an overfit model reports 1.0 on points it gets wrong. You need these scores to move the decision threshold, which [04](04b-thresholds-pr-roc-and-calibration.md#threshold-precisionrecall-and-roc) does, and [04](04b-thresholds-pr-roc-and-calibration.md#calibration-is-a-08-really-80) shows how to check them. Niculescu-Mizil and Caruana compared ten learners' probabilities and found boosted trees and SVMs distort them in a sigmoid shape while logistic regression does not ([doi:10.1145/1102351.1102430](https://doi.org/10.1145/1102351.1102430), ICML 2005).
 
 ---
 
 ## Which model, when
 
-![Decision boundaries of ten classifiers on three toy datasets](../assets/mueller-guido-classifier-comparison.png)
+![Decision boundaries of ten classifiers on three toy datasets](../assets/sources/images/mueller-guido-classifier-comparison.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, companion repo `images/` (after scikit-learn's classifier comparison)*
 
 | Model | Knob | Scale features? | Good for | Avoid when |
@@ -381,7 +435,7 @@ A probability is only as good as the model's **calibration**: an overfit model r
 | Kernel SVM | `C`, `gamma` | Yes | Medium data, similar-scale features | Large n |
 | MLP | layers, `alpha` | Yes | Large data, time to tune | Small tabular data |
 
-M&G's advice when faced with a new dataset: start with a simple model (linear, naive Bayes or kNN) to learn what the data is like, then move to random forests, gradient boosting, SVMs or neural networks. All of them sit behind the same API, which is the reason a sweep across families costs a few lines. The scikit-learn paper makes that its case, a "consistent, task-oriented interface" that enables "easy comparison of methods" ([arXiv:1201.0490](https://arxiv.org/abs/1201.0490), Pedregosa et al., JMLR 2011), though it asserts this rather than measuring it.
+M&G's advice when faced with a new dataset (*Introduction to ML with Python*, ch. 2, "Summary and outlook"): start with a simple model (linear, naive Bayes or kNN) to learn what the data is like, then move to random forests, gradient boosting, SVMs or neural networks. All of them sit behind the same API, which is the reason a sweep across families costs a few lines. The scikit-learn paper makes that its case, a "consistent, task-oriented interface" that enables "easy comparison of methods" ([arXiv:1201.0490](https://arxiv.org/abs/1201.0490), Pedregosa et al., JMLR 2011), though it asserts this rather than measuring it.
 
 ---
 
@@ -462,7 +516,7 @@ After 1,500 iterations gradient descent has not quite reached the closed-form an
 | Reading coefficients as causes | A correlated feature flips sign between fits | Check stability across resamples; see [interpretability](08-model-interpretability.md) |
 | A convergence warning ignored | Coefficients differ with solver or seed | Scale first, or raise `max_iter` until the warning goes |
 | Trees on trending time data | Forecast flatlines at the last training value | Model the trend with a linear part, or difference the target |
-| Trusting `predict_proba` from an overfit model | Probabilities of 1.0 on wrong answers | Check calibration ([04](04-model-evaluation.md#calibration-is-a-08-really-80)) |
+| Trusting `predict_proba` from an overfit model | Probabilities of 1.0 on wrong answers | Check calibration ([04](04b-thresholds-pr-roc-and-calibration.md#calibration-is-a-08-really-80)) |
 
 ## Try it
 

@@ -1,4 +1,5 @@
 ---
+imported_hash: 1c077ab8cee937ea
 title: 6 — Framework Selection
 summary: 'You now have the same research agent three times: a hand-written loop, a LangGraph graph and an ADK agent.'
 order: 7
@@ -176,7 +177,17 @@ The control-flow row is an old design choice. [Zhou et al. (2023-12, preprint)](
 | Eval | External (LangSmith, Langfuse) | Built in: `adk eval`, trajectory and response metrics (note 04) | `pydantic-evals` | External | External / Azure AI Foundry |
 | Best when | You need explicit, durable, auditable control flow | Gemini/Vertex shop, tree-shaped agents, want eval + dev UI in the box | You want plain typed Python and minimal magic | OpenAI-centric, handoff-shaped multi-agent | .NET or Azure shop; AutoGen/Semantic Kernel migrants |
 
-Rows marked as "bring your own" are where you will write glue. Confidence is medium on everything in this table except the LangGraph and ADK columns, which the notes in this pillar work through in code. For a second opinion, [Furgale et al. (2026, preprint)](https://arxiv.org/abs/2607.20709) scored 14 frameworks from docs and source at pinned snapshots. The authors built a competing system and score it highest, so use their paper as a map of each framework's facts and not as a ranking ([note 04](04-google-adk.md)).
+Rows marked as "bring your own" are where you will write glue. Confidence is medium on everything in this table except the LangGraph and ADK columns, which the notes in this pillar work through in code. For a second opinion, [Furgale et al. (2026, preprint)](https://arxiv.org/abs/2607.20709) scored 14 frameworks and coding harnesses from docs and source at pinned snapshots taken in July 2026. The rubric is the six capabilities of the authors' own NVIDIA system, which is the only system they score strong on all six, so use their paper as a map of each framework's facts and not as a ranking ([note 04](04-google-adk.md)).
+
+### What a book's three-framework tables add
+
+*Agentic Architectural Patterns* compares ADK, CrewAI and LangGraph in three tables (*Agentic Architectural Patterns*, ch. 15), and the first two mostly agree with the table above. Control flow is planner-driven for ADK, a sequential or hierarchical process for CrewAI and explicit edges for LangGraph. State is managed by session for ADK, passed implicitly as task context for CrewAI and an explicit state object for LangGraph. Callbacks are interceptors for ADK (redact, or skip the model call), lifecycle event hooks for CrewAI (`on_task_start`, `on_task_end`) and interrupts for LangGraph. Its selection advice reads like the "Best when" row: CrewAI for fast role-shaped prototypes, LangGraph for loops, explicit state and human pauses, ADK for Google Cloud services with OpenTelemetry. Three cautions apply.
+
+- **The launch dates are unsourced, so check them.** Table 15.1 gives ADK "2024 (prototype)/2025 (public)", CrewAI 2023 and LangGraph 2024. The PyPI registry's first uploads, read on 2026-11-08, are CrewAI 0.1.0 on 2023-11-14, LangGraph 0.0.8 on 2024-01-08 and `google-adk` 0.0.1 on 2025-03-17. Those support the CrewAI and LangGraph years. For ADK they show a public package in 2025 and nothing for a 2024 prototype, so drop that part.
+- **The maturity table is the authors' scheme, with a gap.** Table 15.3 maps their six levels (prompting, RAG, tuning, grounding and evaluation, single agent, multi-agent) to tools. Levels 1 to 3 need no agent framework (a provider API, LangChain or your own code for RAG, nothing for tuning). At level 5 ADK is "the primary use case", LangGraph is a graph with agent nodes and CrewAI a "crew of one", which the book calls less common. At level 6 CrewAI's crew and LangGraph's nodes and edges are the fit, and ADK means several independently deployed agent services talking over A2A. The text then says frameworks enable "Levels 4 and 5" in one place and "Level 5 and 6" in another. Read the table rows and ignore the numbers in the prose.
+- **The level 4 feature list is vendor-feature trivia that has probably dated.** It names a CrewAI hallucination guardrail scored 0 to 10, a test CLI that runs a crew N times, `crew.train()` and Patronus support, and credits LangGraph with LangSmith traces. None is sourced or versioned, and none was run. Treat each as a name to look up in the current docs.
+
+The book's own CrewAI-versus-LangGraph loan build is confounded (a rule-based risk tool against an LLM node, temperature 0.0 against unset) and has parser bugs, with no run output printed. That analysis is in [03-agentic-foundations note 05](../../03-agentic-foundations/notes/05-framework-survey.md#the-same-workflow-in-crewai-and-langgraph) and is not repeated here. Its portable advice matches the lock-in checklist below: stable tool contracts and explicit state schemas.
 
 ---
 
@@ -199,22 +210,22 @@ Rows marked as "bring your own" are where you will write glue. Confidence is med
 
 Your own measurements cover one agent over one afternoon. Two studies cover what happens over years and across thousands of projects.
 
-[Wang et al. (preprint, Dec 2025)](https://arxiv.org/abs/2512.01939) analysed 1,575 agent projects on GitHub and 8,710 developer discussions, summarised and classified with GPT-4o and spot-checked by hand, across ten frameworks.
+[Wang et al. (preprint, Dec 2025)](https://arxiv.org/abs/2512.01939) analysed 1,575 agent projects on GitHub and 8,710 developer discussions, summarised and classified with GPT-4 and GPT-4o (the paper names both), with 500 of the summaries reviewed by hand and no agreement figure reported. A separate set of 11,910 discussions compares ten frameworks, and LangChain contributes half of it.
 
 | Finding | Number | What it means for your choice |
 |---|---|---|
 | Failures from internal logic control | More than a third | The framework does not save you from loop design. Termination and routing remain your job |
-| Task termination, within those failures | 21.63% | Test the stop condition before anything else |
+| Task termination, as a share of all failures | 21.63% | Test the stop condition before anything else |
 | API limits, permissions and missing libraries | 25.61% of issues | Tool integration is where the plain-function adapter earns its keep |
 | Memory persistence and latency | 16.03% | Check state growth on long threads |
-| Directly related to version dependencies | 23.53% of technical obstacles | Pin versions. Budget for upgrades |
-| Top-quartile projects combining several frameworks | 96% | Picking one framework forever is not what successful projects do |
+| Version problems (Fig. 6 split: framework upgrades 14.12%, other dependencies 9.41%) | 23.53% | Pin versions. Budget for upgrades |
+| Top-quartile projects combining several frameworks | 96% (sample size not given) | Picking one framework forever is not what successful projects do |
 
 Popularity was a poor guide. In the paper's Table 2 LangGraph has 20.6K stars against AutoGen's 51.4K, yet shows up in more of the sampled repositories, 26 against 22. The authors' advice is to weigh ecosystem maturity and maintenance activity above stars. They also find that AutoGen and LangChain, for all their maturity, have the highest maintenance complexity, and they report LangChain's excess abstraction as a source of development difficulty.
 
 Treat the exact percentages loosely. The paper's own text disagrees with itself: its overview gives 25.6% for termination and 14% for tool failures where the findings give 21.63% and 25.61%, and it gives LangGraph 9.6K stars in prose and 20.6K in the table. The classification is also LLM-assisted, and the sample covers only open-source projects. The ordering of the problems is more reliable than any one figure.
 
-[Liu et al. (preprint, Jan 2026)](https://arxiv.org/abs/2601.07136) looked at the frameworks themselves: eight multi-agent systems, more than 42,000 commits and 4,700 resolved issues. Perfective work led at 40.83% of commits, then corrective at 27.36% and adaptive at 24.30%. So these projects are spending more on adding and reshaping than on fixing, and your code sits on that moving surface. Median issue resolution ran from about a day for LlamaIndex to more than ten days for Semantic Kernel and Haystack, with long right tails. LangChain, AutoGen and CrewAI are in that sample. LangGraph and ADK are not, so check a candidate's issue tracker yourself: this is a ten-minute job and the study shows the differences are large.
+[Liu et al. (preprint, Jan 2026)](https://arxiv.org/abs/2601.07136) looked at the frameworks themselves: eight multi-agent systems, more than 42,000 commits and 4,700 closed issues that had a linked pull request (fewer than half of the 10,813 closed issues). Perfective work led at 40.83% of commits, then corrective at 27.36% and adaptive at 24.30%, as labelled by a fine-tuned DistilBERT commit classifier whose accuracy the paper does not report, and with LangChain supplying about a third of the pooled commits. So these projects are spending more on adding and reshaping than on fixing, and your code sits on that moving surface. The issue labels say the same: bugs (22%) and infrastructure (14%) outnumber agent-specific issues (10%), so what breaks is mostly ordinary software. Median issue resolution ran from about a day for LlamaIndex to more than ten days for Semantic Kernel and Haystack, with long right tails. LangChain, AutoGen and CrewAI are in that sample. LangGraph and ADK are not, so check a candidate's issue tracker yourself: this is a ten-minute job and the study shows the differences are large.
 
 [Dibia et al. (EMNLP 2024 System Demonstrations)](https://aclanthology.org/2024.emnlp-demo.8/) suggest one defence. AutoGen Studio treats a workflow as a declarative JSON specification that can be exported and run elsewhere. Any time your agent's definition is data, you can keep it when the runtime changes.
 
@@ -369,7 +380,7 @@ With that one adapter per framework, the same evaluators score both builds, and 
 | Choose by control flow and durability, not by demo | Those are the expensive things to change later |
 | Keep tools, prompts and eval data framework-neutral | Switching cost drops to the adapter layer |
 | Trace from day one, with framework and version in metadata | You can't compare what you didn't record |
-| Pin versions; re-check imports against current docs | Every framework here renamed APIs within a year, and version dependencies account for 23.53% of technical obstacles in [Wang et al.](https://arxiv.org/abs/2512.01939) |
+| Pin versions; re-check imports against current docs | Every framework here renamed APIs within a year, and version problems (framework upgrades plus other dependencies) are 23.53% of the classified developer discussions in [Wang et al.](https://arxiv.org/abs/2512.01939) |
 | Set the loop limit on every invocation | The defaults allow 500 to 5,004 model calls on a stuck run |
 | Judge a framework by its maintenance record, not its stars | Stars and adoption diverge in the same study |
 

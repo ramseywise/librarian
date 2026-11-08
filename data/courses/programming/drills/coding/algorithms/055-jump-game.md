@@ -1,4 +1,5 @@
 ---
+imported_hash: f6de0d953e673ca3
 title: LC 55 — Jump Game
 summary: Given an array nums where nums[i] is the maximum forward jump length from index i, determine whether you can reach the last index starting from index 0.
 order: 32

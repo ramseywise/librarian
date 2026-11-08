@@ -1,7 +1,8 @@
 ---
+imported_hash: c25aa36f0834287c
 title: Lab 1 — Calling Claude from TypeScript
 summary: Runnable TypeScript examples using the Anthropic SDK.
-order: 17
+order: 21
 kind: reading
 section: Practice / Typescript sdk
 source: learn-ai-engineering/generative-ai/01-llm-fundamentals/practice/01-typescript-sdk/README.md

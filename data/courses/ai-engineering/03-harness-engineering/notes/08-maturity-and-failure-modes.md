@@ -1,7 +1,8 @@
 ---
+imported_hash: f777093f90ef7c24
 title: 8 — Harness Maturity and Failure Modes
 summary: Teams rarely know how mature their harness is, and "we have evals" often means one notebook run by hand.
-order: 9
+order: 11
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes.md
@@ -173,7 +174,7 @@ Process artifacts are covered in [note 05](05-verification-loops.md#sprint-contr
 
 **Starting alert thresholds.** Albada's illustrative defaults (*Building Applications with AI Agents*, ch. 12): error or hallucination rate above **5% over a rolling hour**; **p99 latency above 2 s** on critical operations; **80% sustained** CPU, GPU or memory utilization; output drift (semantic similarity to expected outputs) **below 0.85**; and **any** race condition or synchronization failure in a multi-agent setup. Treat these as a first draft to tune against your own baseline. A 2 s p99 is impossible for the multi-call plans in [note 07](07-orchestration.md#the-latency-budget-of-a-sequential-plan). His point about tuning is the important one: thresholds that ignore workload peaks cause alert fatigue.
 
-**Test recovery by breaking things on purpose.** Chaos engineering applied to agents (ch. 12): inject faults such as a 500 ms latency spike on a dependency, noisy inputs or a killed plug-in, and watch whether the agent recovers. Run game days against a named hypothesis ("what if state sync fails across the swarm?") and measure recovery time and recovery point objectives. Control the blast radius: start in a sandbox, then move to production with automated rollback. This is the only way to find out whether the [recovery ladder](05-verification-loops.md#failure-recovery-and-termination) works before an outage tests it for you.
+**Test recovery by breaking things on purpose.** Chaos engineering applied to agents (ch. 12): inject faults such as a 500 ms latency spike on a dependency, noisy inputs or a killed plug-in, and watch whether the agent recovers. Run game days against a named hypothesis ("what if state sync fails across the swarm?") and measure recovery time and recovery point objectives. Control the blast radius: start in a sandbox, then move to production with automated rollback. This is the only way to find out whether the [recovery ladder](05b-recovery-and-termination.md#failure-recovery-and-termination) works before an outage tests it for you.
 
 ---
 
@@ -275,15 +276,24 @@ Two 2026 systems run the second frontier as an outer loop: a coding agent reads 
 
 **Meta-Harness** ([arXiv:2603.28052](https://arxiv.org/abs/2603.28052) (Lee et al., 2026-03, preprint)) gives its proposer (Claude Code on Opus 4.6) a filesystem holding every earlier candidate's source, traces and scores. A typical run evaluates about 60 single-file harnesses over 20 iterations in a few hours. On held-out test sets from three text-classification datasets, the highest-accuracy variant on its Pareto frontier reached 48.6%, against 40.9% for ACE and 40.0% for MCE, while using less context (11.4K tokens vs. 50.8K and 28.5K). The paper doesn't say whether "highest-accuracy" means search or test scores. ACE still beat that variant on one of the three datasets. On Terminal-Bench 2 (89 tasks) with Opus 4.6 it reached 76.4%, against a leaderboard 74.7% for Terminus-KIRA, the harness it started from. On Haiku 4.5 it reached 37.6%, against a leaderboard 35.5% for the next-best harness.
 
+![Accuracy against additional context on online text classification: Meta-Harness Pareto points reach about 48.6% at 11.4K tokens, above few-shot, MCE and ACE, which use far more context](../assets/sources/images/lee-meta-harness-fig3.png)
+*Image Source: Lee et al., [Meta-Harness](https://arxiv.org/abs/2603.28052) (2026), Fig. 3*
+
 **Agentic Harness Engineering** ([arXiv:2604.25850](https://arxiv.org/abs/2604.25850) (Lin et al., 2026-04, preprint)) starts from a bash-only seed and edits tools, middleware, memory, prompts and more. One campaign of ten iterations, about 32 hours on GPT-5.4 high, moved Terminal-Bench 2 from 69.7% to 77.0%, past Codex at 71.9%, though Codex stayed ahead on the 30 hard tasks (56.7% vs. 53.3%). Frozen and moved to SWE-bench Verified (500 tasks), the harness matched the seed on success (75.6% vs. 75.2%) and used 12% fewer tokens. No human-designed harness was in that comparison.
 
-**A later re-run tested transfer.** Wang et al. ([arXiv:2607.12227](https://arxiv.org/abs/2607.12227) (Wang et al., 2026-07, preprint)) re-ran AHE, with its step that fetches outside harnesses turned off, on Terminal-Bench 2.1, split into 45 search, 10 validation and 34 held-out tasks. **The evolved harness changed held-out pass@1 by +1.2, 0.0 and −1.4 points** on Claude Opus 4.6, GPT-5.4 and GPT-5.4 mini: flat on average, and the authors read it as overfitting to the search tasks. That is one re-run on a different benchmark version, also a preprint, but it is the number to set beside the 69.7% to 77.0% above. [Measuring the evolve loop itself](../../04-loop-engineering/notes/08-self-improving-loops.md#measuring-the-evolve-loop-itself) has the comparison with plain retries.
+![AHE on Terminal-Bench 2: best-so-far pass@1 climbs from 69.7% to 77.0% over ten iterations, above TFGRPO, Codex and ACE, with the edit behind each step labelled](../assets/sources/images/lin-agentic-harness-engineering-fig1.png)
+*Image Source: Lin et al., [Agentic Harness Engineering](https://arxiv.org/abs/2604.25850) (2026), Fig. 1*
+
+**A later re-run tested transfer.** Wang et al. ([arXiv:2607.12227](https://arxiv.org/abs/2607.12227) (Wang et al., 2026-07, preprint)) re-ran AHE, with its step that fetches outside harnesses turned off, on Terminal-Bench 2.1, split into 45 search, 10 validation and 34 held-out tasks. **The evolved harness changed held-out pass@1 by +1.2, 0.0 and −1.4 points** on Claude Opus 4.6, GPT-5.4 and GPT-5.4 mini: flat on average, and the authors read it as overfitting to the search tasks. That is one re-run on a different benchmark version, also a preprint, but it is the number to set beside the 69.7% to 77.0% above. [Measuring the evolve loop itself](../../04-loop-engineering/notes/08b-releasing-self-edits.md#measuring-the-evolve-loop-itself) has the comparison with plain retries.
 
 Three findings bear on running this yourself:
 
 - **Prompts were the weakest place to edit.** Swapped into the seed alone, the evolved system prompt lowered the score from 69.7% to 67.4%, while evolved memory raised it to 75.3%. The comparison covers the four layers the paper calls evolved. Skills and sub-agents, also among its listed component types, get no row.
 - **Components interfere.** The three positive single-component gains summed to +11.1 points and the full set gained +7.3. On the hard tasks, memory alone beat the full harness (63.3% vs. 53.3%), which the authors attribute to redundant verification checks using up turns. "Disable one and re-run" finds a component that does nothing. It won't show you that two good components interfere, so re-test the combination.
 - **An agent can predict fixes much better than breakage.** Each AHE edit declared what it would fix and what it might break, and the next round scored those claims over nine rounds. Fix predictions had 33.7% precision and 51.4% recall, against 6.5% and 10.6% for random. Regression predictions had 11.8% and 11.1%, against 5.6% and 5.4% (means across rounds). Cumulatively, of 43 predicted regressions 5 happened, and 40 unforeseen ones also occurred. Keep the prediction for attribution, but rely on a regression suite to catch what breaks.
+
+![Fix and regression predictions against a random baseline: fix precision 33.7% and recall 51.4%, regression precision 11.8% and recall 11.1%](../assets/sources/images/lin-agentic-harness-engineering-fig4.png)
+*Image Source: Lin et al., [Agentic Harness Engineering](https://arxiv.org/abs/2604.25850) (2026), Fig. 4*
 
 ---
 

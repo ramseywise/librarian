@@ -1,7 +1,8 @@
 ---
+imported_hash: 9c84e7e5c102bbd8
 title: 5 — Loss Functions and Bayesian Decisions
 summary: Larkspur now has a posterior for the checkout lift, and a posterior is not a decision.
-order: 6
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/05-loss-functions-and-decisions.md
@@ -95,7 +96,7 @@ miss if further than 0.2: best guess 9.30
 
 The best guess moves toward the mode of 10 as the width falls, and turns noisy once few samples fall in the window. That is one more reason a mode is hard to estimate from samples.
 
-![A right-skewed Gamma posterior with vertical lines at the mode 10, the median 16.8 and the mean 20, each labelled with the loss that picks it](../assets/bayes-actions-skewed-posterior.png)
+![A right-skewed Gamma posterior with vertical lines at the mode 10, the median 16.8 and the mean 20, each labelled with the loss that picks it](../assets/sources/images/bayes-actions-skewed-posterior.png)
 *Image Source: generated for this chapter, Gamma(2, scale 10) as in the code above*
 
 This is why the mean, median and MAP are the usual summaries: each is optimal for a particular loss. When your loss is none of these, none of them is your answer.
@@ -162,9 +163,28 @@ risk 150,000: bid 11,800   P(overbid) 0.013
 
 `risk` is what the contestant says an overbid costs. The answer falls from about $14,700 to $11,800 as `risk` rises, all well below the posterior mean of $20,000, and the chance of overbidding falls from 7% to about 1%. The answer sits so far below the mean because of the shape of the loss. The expected loss is spiky, since the $250 window pays out only for the rare draws inside it. BMH uses a general optimiser on it, and we search a grid, which is why the bids move in steps.
 
+The book's own run, with PyMC2 and scipy's `fmin` from a start of 15,000 (50,000 samples, 10,000 burn-in), lands in the same place: its minimum is 14,189.08 at a risk of 30,000, then 13,236.61, 12,771.73, 11,540.84 and 11,534.79 at 54,000, 78,000, 102,000 and 126,000, and 11,265.78 at 150,000 (*Bayesian Methods for Hackers*, ch. 5). Those are a few hundred dollars from the grid above, which is the Monte Carlo and optimiser tolerance, and `fmin` only finds a local minimum, so start it near the grid's answer. One slip in the chapter's prose: it says a frequentist bids the sum of the prize means as $35,000, but 3,000 + 12,000 is $15,000 (the 35,000 is the prior's mean).
+
+### Downey's version: an empirical prior and a rival
+
+*Think Bayes* works the same game from the show's records (*Think Bayes*, ch. 6). The prior is not a guessed Normal. It is a kernel density estimate over 313 past prices for the first showcase, smoothed from 2011 and 2012 data, with its main mode near $28,000 and a second near $50,000. The likelihood treats the contestant as a price-guessing instrument: the error, price minus guess, is Gaussian with mean 0 and the standard deviation of `diff = price - bid` from past episodes. That substitutes bids for guesses, which Downey admits is imperfect because bids are partly strategic. A density is a perfectly good likelihood here, since only proportionality matters once you normalise.
+
+Two results are worth keeping. First, a best guess of $20,000 moves the posterior mean to $25,096, not to $20,000: the history is a prior, and it pulls a low guess upward. Second, the payoff depends on the rival, because you win when the opponent overbids or lands further from the price than you do. Historical `diff` gives the overbid rate (25% for the first contestant, 29% for the second), and the expected gain of a bid is the posterior-weighted payoff:
+
+```python
+def gain(bid, price):                       # posterior-weighted over price gives expected gain
+    if bid > price:
+        return 0                            # overbid: nothing
+    diff = price - bid
+    prob = opponent_overbids + opponent_worse_than(diff)
+    return (2 if diff <= 250 else 1) * price * prob
+```
+
+With guesses of $20,000 and $40,000, the optimal bids are $21,000 (expected gain about $16,700, unusually above the guess) and $31,500 (about $19,400, the typical case below it) (*Think Bayes*, ch. 6). I could not re-run these: the showcase CSVs are not in the repo, so they are the book's numbers. The `risk` parameter above stands in for what Downey computes explicitly from the opponent's record. His argument for the whole exercise is the one of this chapter: the payoff is asymmetric and discontinuous, so summarising the posterior by its mean or MLE throws away what you need, and a decision needs the whole distribution (*Think Bayes*, ch. 6).
+
 ## Example: predicting stock returns with a sign-sensitive loss
 
-Squared error says predicting −0.01 and predicting +0.03 for a true return of +0.01 are equally bad. A trader disagrees, because the first loses money.
+Squared error says predicting −0.01 and predicting +0.03 for a true return of +0.01 are equally bad. A trader disagrees, because the first loses money. (The book prints the squared losses of those two guesses as 0.004 each; (0.01 − (−0.01))² and (0.01 − 0.03)² are 0.0004 and 0.0004. The point stands, since both are equal.)
 
 ```python
 def stock_loss(true_return, yhat, alpha=100.0):
@@ -231,6 +251,8 @@ BMH's last example is Tim Salimans' winning entry in Kaggle's dark-matter contes
 4. **Bayes action**: choose predictions that minimise the expected value of the contest's own metric, about 160 lines of code, over the posterior.
 
 Step 4 is the lesson: optimise for the metric you are scored on, under uncertainty, rather than for parameter accuracy.
+
+The chapter's two worked skies show the gap between a posterior mean and a random guess, and a caveat on how it was scored (*Bayesian Methods for Hackers*, ch. 5). On training sky 3, with one halo, the posterior mean landed 31.15 pixels from the true halo against 1,773.43 for one random guess, scores of 1.031 against 2.773 (lower is better; 200,000 MCMC samples, 140,000 burn-in, thin 3). On sky 215, with three halos, the first halo was 37.40 pixels off against 3,756.54, scores of 1.037 against 4.757, and the sampler "took a long time" to converge (10.5×10⁵ samples). The scoring call is given one halo, so the sky 215 score covers only the first of three, and each comparison is a single random guess on two skies, so read it as an illustration and not a benchmark.
 
 ## In analytics practice
 

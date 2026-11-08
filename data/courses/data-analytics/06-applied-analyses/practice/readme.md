@@ -1,7 +1,8 @@
 ---
+imported_hash: b8934413706d887c
 title: 'Practice: applied analyses'
 summary: Run everything from this folder, data-analytics/06-applied-analyses/practice/.
-order: 14
+order: 17
 kind: reading
 section: Practice
 source: learn-ai-engineering/data-analytics/06-applied-analyses/practice/README.md

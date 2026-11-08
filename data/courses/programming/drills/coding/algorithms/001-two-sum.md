@@ -1,4 +1,5 @@
 ---
+imported_hash: a0a0f1f86f936878
 title: LC 1 — Two Sum
 summary: Given an integer array nums and an integer target, return the indices of the two numbers that add up to target.
 order: 3

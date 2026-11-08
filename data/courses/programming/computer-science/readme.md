@@ -1,4 +1,5 @@
 ---
+imported_hash: 8a732571030acb75
 title: Computer science foundations
 summary: Python hides the machine well enough that you can work for years without a model of it, until a job takes all night, a dict doubles your memory, a total comes out wrong by a cent, or a service stalls with an idle CPU.
 order: 1
@@ -24,7 +25,7 @@ The mental model is one question asked at every layer: what's being counted, and
 
 ## Reading order
 
-The notes follow the [full chapter standard](../../.claude/skills/pillar/references/pillar-layout.md), not the shorter format of the Python modules.
+The notes follow the [full chapter standard](https://github.com/ramseywise/librarian/blob/main/.claude/skills/pillar/references/pillar-layout.md), not the shorter format of the Python modules.
 
 **Reasoning about code**
 

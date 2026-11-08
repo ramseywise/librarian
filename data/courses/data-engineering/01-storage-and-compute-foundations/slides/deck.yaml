@@ -1,3 +1,4 @@
+# imported_hash: 27ad4478c7924ea5
 # Storage and compute foundations lecture deck. Covers notes 01-10.
 # Build: make slides PILLAR=data-engineering/01-storage-and-compute-foundations STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md

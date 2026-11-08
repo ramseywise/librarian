@@ -1,4 +1,5 @@
 ---
+imported_hash: 7a81baab13794831
 title: References
 summary: Every row here was read for this track, and the "Read" column says how much.
 order: 10
@@ -29,6 +30,8 @@ These are the standard books on the subject. They weren't available to read, so 
 | Chacon and Straub, [*Pro Git*](https://git-scm.com/book/en/v2) | [Git Objects](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects) and [Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing), the perils section; [Debugging with Git](https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git), blame only | 07 |
 | Beyer et al., [*Site Reliability Engineering*, ch 12](https://sre.google/sre-book/effective-troubleshooting/), written by Chris Jones | Theory, common pitfalls, triage, examine, simplify, what touched it last | 06 |
 | Brandon Rhodes, [Python Design Patterns](https://python-patterns.guide/) | Composition Over Inheritance, Decorator, Abstract Factory, Singleton, Global Object | 04 |
+| ★ Ben Wilson, *Machine Learning Engineering in Action* (Manning, 2022). Chapter PDFs in [data-engineering/sources/ml-engineering-in-action/](../../data-engineering/sources/ml-engineering-in-action/); the book's home is [data-engineering 06](../../data-engineering/06-ml-platform/references.md) | Ch. 4 experimental code ("a little janky", never extended into the final solution) and the 4x feature-to-model code rule of thumb, ch. 9 Listing 9.4 (a unit test of a private method), ch. 10 Table 10.1 (ML code smells) and the nested-logic example (821,570 lines for eight models). Folded in as: ch. 4 → [01](notes/01-readable-code-and-smells.md#smells-that-show-up-in-ml-code), [02](notes/02-refactoring.md); ch. 9 → [05](notes/05-testing-strategy.md); ch. 10 → [01](notes/01-readable-code-and-smells.md#smells-that-show-up-in-ml-code) (Table 10.1, nested logic). Notes cite it as `(*Machine Learning Engineering in Action*, ch. N)` | 01, 02, 05 |
+| ★ Jake VanderPlas, *Python Data Science Handbook* (O'Reilly, 2016, first edition, inferred from the library versions in its output). Chapter PDFs in [data-analytics/sources/python-data-science-handbook/](../../data-analytics/sources/python-data-science-handbook/); no whole-book PDF | Ch. 1 IPython help, `%timeit` against `%time`, `%prun`, `%lprun`, `%memit`, `%mprun`, `%xmode` and `%debug`. Folded in as: ch. 1 → [06](notes/06-debugging-and-profiling.md#the-same-tools-inside-ipython). Notes cite it as `(*Python Data Science Handbook*, ch. 1)` | 06 |
 
 ## Core papers
 
@@ -37,7 +40,7 @@ These are the standard books on the subject. They weren't available to read, so 
 | Parnas, [On the Criteria To Be Used in Decomposing Systems into Modules](https://doi.org/10.1145/361598.361623), CACM 1972 | Abstract, criteria, circular-shift discussion | The origin of information hiding | 03 |
 | Liskov and Wing, [A Behavioral Notion of Subtyping](https://doi.org/10.1145/197320.197383), TOPLAS 1994 | Abstract, subtype requirement | What substitutability precisely asks | 03 |
 | Brooks, [No Silver Bullet](https://doi.org/10.1109/MC.1987.1663532), 1986 | Abstract | Essential vs accidental difficulty | 03 |
-| Moseley and Marks, [Out of the Tar Pit](https://curtclifton.net/papers/MoseleyMarks06a.pdf), 2006 | Conclusions | State as the main source of accidental complexity | 03 |
+| Moseley and Marks, [Out of the Tar Pit](https://curtclifton.net/papers/MoseleyMarks06a.pdf), 2006 ⚑ ([PDF](../sources/moseley-2006-out-tar-pit.pdf)) | Sec. 4.1.2 (state), 7 (avoid, separate), 9 (FRP, hypothetical) | State as the main source of accidental complexity; a position paper with no experiments | 03 |
 | Sjøberg, Yamashita, Anda, Mockus, Dybå, [Quantifying the Effect of Code Smells on Maintenance Effort](https://doi.org/10.1109/TSE.2012.89), IEEE TSE 2013 | Abstract and findings as cited in 01 | Evidence on how much smells matter | 01 |
 | Kim, Zimmermann, Nagappan, [A Field Study of Refactoring Challenges and Benefits](https://doi.org/10.1145/2393596.2393655), FSE 2012 | Abstract, intro, §3.1, conclusions | What practitioners mean by refactoring, and what it costs | 02 |
 | Petrović, Ivanković, Fraser, Just, [Practical Mutation Testing at Scale](https://arxiv.org/abs/2102.11378), 2021 (arXiv) | Abstract, intro, parts of §2, conclusions; not the full evaluation | Why mutation is run at diff level, not as a score | 05 |

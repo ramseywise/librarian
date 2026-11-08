@@ -1,4 +1,5 @@
 ---
+imported_hash: 4a12636817ff050f
 title: Learning a similarity function
 summary: A pretrained sentence encoder, asked to find other records of the same part in a catalogue of short part descriptions, found 13.4% of them.
 order: 6
@@ -15,7 +16,7 @@ This chapter runs that experiment. It asks when to tune an embedding model for y
 
 **In plain words.** A pretrained encoder learned what "similar" means from someone else's text. Tuning teaches it what similar means for you, by showing it pairs you know match, and letting everything else in the batch stand in as non-matches. Mining means searching for the non-matches the model currently likes best, and training on those. It's like a new clerk who has only read novels. Show them a thousand pairs of invoice lines that are the same part and they get far better. Then drill them on the pairs they keep confusing, and they stop confusing those, though they don't find any more of the real matches.
 
-We don't derive the losses here. [Triplet loss and NT-Xent](../../02-deep-learning/notes/04-convolutional-networks.md#embeddings-face-verification) are in DS 02/04, and in-batch softmax with its logQ correction is in [two-tower retrieval](03-two-tower-and-evaluation.md#training-in-batch-softmax-and-its-bias). This chapter uses in-batch softmax with no logQ term, since records here aren't drawn by popularity. The catalogue and the idea of a look-alike come from [the last chapter](04-entity-matching-and-learning-to-rank.md#similar-is-not-interchangeable).
+We don't derive the losses here. [Triplet loss and NT-Xent](../../02-deep-learning/notes/04-convolutional-networks.md#embeddings-face-verification) are in DS 02/04, and in-batch [softmax](../../02-deep-learning/notes/01-neural-networks-fundamentals.md#the-forward-pass) with its logQ correction is in [two-tower retrieval](03-two-tower-and-evaluation.md#training-in-batch-softmax-and-its-bias). This chapter uses in-batch softmax with no logQ term, since records here aren't drawn by popularity. The catalogue and the idea of a look-alike come from [the last chapter](04-entity-matching-and-learning-to-rank.md#similar-is-not-interchangeable).
 
 ## The experiment
 
@@ -94,7 +95,7 @@ That curve is from generated data, and you shouldn't carry its numbers to your o
 
 - [Peeters and Bizer](https://arxiv.org/abs/2202.02098) (WWW 2022 companion, a four-page poster) trained a supervised contrastive encoder for product matching. Against the best baseline on WDC Computers, the F1 lead was 8.84 points at about 3,000 pairs and 0.84 at about 68,000. The contrastive encoder gained most where labels are scarce, because the baselines catch up.
 - [WDC Products](https://arxiv.org/abs/2301.09521) (Peeters, Der and Bizer, EDBT 2024) grew training from 2,500 to 19,835 pairs at 80% corner cases, its hard look-alikes. On products seen in training, its contrastive matcher R-SupCon went from an F1 of 77.48 to 82.15, far above the cross-encoder Ditto at small size, 58.33. The next section shows the catch.
-- [Augmented SBERT](https://arxiv.org/abs/2010.08240) (Thakur et al., NAACL 2021) found a plain bi-encoder, which embeds each text on its own as our tuned model does, trailing a [cross-encoder](../../../generative-ai/02-rag-retrieval/notes/05-chunking-query-parsing-and-reranking.md#reranking) at 1,400 to 10,000 samples, 72.07 against 77.74 in Spearman on Spanish-STS and 74.66 against 81.23 in F1 on Quora, each the best of five seeds on the dev set. Using the cross-encoder to label extra pairs closed most of that, to 76.24 and 79.31, taking the best sampling strategy for each dataset.
+- [Augmented SBERT](https://arxiv.org/abs/2010.08240) (Thakur et al., NAACL 2021) found a plain bi-encoder, which embeds each text on its own as our tuned model does, trailing a [cross-encoder](../../../generative-ai/02-rag-retrieval/notes/05b-query-parsing-conversational-retrieval-and-reranking.md#reranking) at 1,400 to 10,000 samples, 72.07 against 77.74 in Spearman on Spanish-STS and 74.66 against 81.23 in F1 on Quora, each the best of five seeds on the dev set. Using the cross-encoder to label extra pairs closed most of that, to 76.24 and 79.31, taking the best sampling strategy for each dataset.
 
 Measure your own curve by training on 100, 300 and 1,000 pairs. It costs minutes on a laptop, and when the last step gains less than your seed noise, more labels of the same kind won't pay. Labels of a new kind may, as the next section shows.
 

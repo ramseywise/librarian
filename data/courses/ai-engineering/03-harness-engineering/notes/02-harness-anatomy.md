@@ -1,4 +1,5 @@
 ---
+imported_hash: 9deeb00f98fe020e
 title: 2 — Harness Anatomy
 summary: '"Improve the harness" is not an actionable instruction until you can name the parts.'
 order: 3

@@ -1,4 +1,5 @@
 ---
+imported_hash: a62b8014ef94f1a3
 title: Vision in practice
 summary: Daniel Bourke's free course Learn PyTorch for Deep Learning (learnpytorch.io, code MIT-licensed) teaches this path in chapters 03 to 08, on a 3-class food dataset.
 order: 6
@@ -212,7 +213,7 @@ scratch + augmentation       10% steps=2000 n=  300 trainable=   288,678 acc mea
 saved dl-vision-transfer.png (70 KB)
 ```
 
-![Test accuracy against share of training data for scratch, frozen and fine-tuned arms](../assets/dl-vision-transfer.png)
+![Test accuracy against share of training data for scratch, frozen and fine-tuned arms](../assets/sources/images/dl-vision-transfer.png)
 *Mean of 3 seeds; bars span the lowest and highest seed. From [`practice/vision_transfer.py`](../practice/vision_transfer.py).*
 
 Read it by data size. With 30 images, 5 per class, the scratch CNN is at chance and both pretrained arms are far above it. Frozen leads, 0.664 against 0.593, and fine-tuning has the widest spread of any cell, 0.520 to 0.640: my reading is that eleven million weights moving on 30 images drift from the ImageNet values that made them useful, while the frozen arm can't. With 300, fine-tuning leads at 0.939, frozen is at 0.848 and scratch at 0.359. With 3,000, scratch reaches 0.902, level with frozen at 0.898, but its seeds span 0.855 to 0.958, and fine-tuning is at 0.986. So the order depends on how much you have: frozen with a handful, fine-tuning from a few hundred, and scratch competes only when data is plentiful, and even then from behind. Per run, fine-tuning took about 25 seconds and scratch about 35 (the times printed are for 3 seeds).
@@ -241,6 +242,8 @@ The "BN in train mode" row is the same network built with `pretrained_resnet18(6
 Bourke's chapters show the same ladder on 225 training images of pizza, steak and sushi, one run each. His TinyVGG from scratch ended 5 epochs at 0.20 test accuracy, which he calls performing "pretty poorly", and 0.26 with `TrivialAugmentWide`; on a 3-class test set both are below the 0.33 that always guessing one class gets. A frozen EfficientNet-B0 at 224 pixels reached 0.856 after 5 epochs, and in chapter 07 the same set-up gave 0.774 in one run and 0.886 in another, so his single numbers carry a spread of about ten points. With 75 test images, one image is 1.3 points. He did not run full fine-tuning; it is an exercise in chapter 06.
 
 Chapter 03 ran this comparison on digits and transfer lost: pretraining an MLP on digits 0 to 4 made learning 5 to 9 from 25 rows worse ([learning from another task](03-structuring-ml-projects.md#learning-from-another-task)). The conditions it listed are what changed. ImageNet has far more images than this task, the inputs are both images built from edges and corners, even though ImageNet is photos and these are drawn shapes, and a CNN's early layers learn local features such as edges that apply to any picture. So the rule from 03 stands: measure against a scratch baseline, as this grid does. [Chapter 06](06-neural-text-models.md#transfer-learning-with-sentence-encoders) finds the same crossover in text, where frozen sentence vectors led at 500 labels and fine-tuning led from 2,000.
+
+Self-supervised pretraining is the same move without labels, and it shows the same label-fraction pattern. SimCLR pretrains a ResNet-50 (4× width, 375M parameters, 1,000 epochs) on unlabelled ImageNet with a contrastive loss between two augmented views of each image ([arXiv:2002.05709](https://arxiv.org/abs/2002.05709) (Chen et al., ICML 2020), Tables 6 and 7). Two different tests produce the numbers that circulate, and they are easy to swap. A linear classifier on the frozen features, trained on all of ImageNet's labels, scores 76.5% top-1 and 93.2% top-5 (a 1× ResNet-50 scores 69.3% / 89.0%). Fine-tuning the whole network on a class-balanced 1% of the labels (about 13 images per class, 60 epochs) or 10% (about 128 per class, 30 epochs) scores 85.8% and 92.6% **top-5**, against 48.4% and 80.4% for a supervised ResNet-50 trained on the same subsets. The top-1 for those two runs is 63.0% and 74.4% against 25.4% and 56.4% (Table B.4). Akkus et al. report 85.8 and 92.6 in prose as if they were top-1 and top-5 of one run; they are the top-5 scores at 1% and 10% of labels (*Multimodal Deep Learning*, ch. 2, section 2.2.6.4). The book's table carries 76.5 / 93.2 correctly. The pattern matches the grid above: pretrained features help most when labels are scarce, and the gap closes as labelled data grows.
 
 ### What a transformer would need
 

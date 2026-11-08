@@ -98,16 +98,16 @@ cards:
   lesson: data-analytics/06-applied-analyses/notes/09-marketing-measurement
 - front: Why does a 0.3% holdout error for BG/NBD say little here, and what value would you quote?
   back: Quote a range wider than the interval, and do not defend a channel with its LTV to CAC, which folklore wants above 3.
-  lesson: data-analytics/06-applied-analyses/notes/09-marketing-measurement
+  lesson: data-analytics/06-applied-analyses/notes/09b-customer-lifetime-value
 - front: A reorder point misses its service target in season. Do you fix the mean or buy more buffer, and why?
   back: Fix the seasonal mean before buying more buffer, because the formula's failure is in the mean and the buffer is expensive.
   lesson: data-analytics/06-applied-analyses/notes/10-operations-and-supply-chain
 - front: Why can't you read the longest wait from utilisation alone?
   back: Waiting depends on crew size as well as utilisation, so read a queue model day by day.
-  lesson: data-analytics/06-applied-analyses/notes/10-operations-and-supply-chain
+  lesson: data-analytics/06-applied-analyses/notes/10b-packers-queues-and-a-shift-plan
 - front: How should you present a staffing plan when the value of a parcel-hour is unknown?
   back: The data do not say what waiting is worth, so show the plan at each value and let the business choose.
-  lesson: data-analytics/06-applied-analyses/notes/10-operations-and-supply-chain
+  lesson: data-analytics/06-applied-analyses/notes/10b-packers-queues-and-a-shift-plan
 - front: What can you do with an identity edge in a metric tree that you can't do with a causal one?
   back: An identity attributes exactly and a causal edge needs an experiment, so read the two kinds of edge differently.
   lesson: data-analytics/06-applied-analyses/notes/11-metric-trees
@@ -116,8 +116,8 @@ cards:
   lesson: data-analytics/06-applied-analyses/notes/11-metric-trees
 - front: What does a survey's margin of error measure, and what does it leave out?
   back: Each gap has its own error and a margin only measures sampling, so name which gap you're quoting before trusting a plus-or-minus.
-  lesson: data-analytics/06-applied-analyses/notes/12-surveys-and-sampling-design
+  lesson: data-analytics/06-applied-analyses/notes/12b-weighting-the-margin-and-the-question
 - front: Why doesn't a high response rate guarantee low nonresponse bias?
   back: Bias comes from the link between answering and the answer, and rate appears only in the denominator. Report the sampling margin and what it leaves out.
-  lesson: data-analytics/06-applied-analyses/notes/12-surveys-and-sampling-design
+  lesson: data-analytics/06-applied-analyses/notes/12b-weighting-the-margin-and-the-question
 ---

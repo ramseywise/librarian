@@ -1,3 +1,4 @@
+# imported_hash: e66c0f149af24bf1
 # Software design track: lecture deck and study deck (flashcards). Covers notes/01-07.
 # Build:  make slides PILLAR=programming/software-design [PREVIEW=1] [STRICT=1] [PDF=1]
 # Spec:   .claude/skills/slides/references/deck-spec.md
@@ -513,4 +514,4 @@ parts:
           - "**Primary texts**: Software Engineering at Google, Google's review practices, Fowler, the Ousterhout and Martin debate, Rhodes, Pro Git"
         takeaway: Do the lab next, a real smelly module refactored under tests, with every step one commit that passes.
         source: notes/07-git-code-review-and-design-docs.md
-        notes: "The lab is at programming/software-design/practice/readme.md. Do it after chapter 2, and come back after chapter 5 for the mutation test."
+        notes: "The lab is at programming/software-design/practice/README.md. Do it after chapter 2, and come back after chapter 5 for the mutation test."

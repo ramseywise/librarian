@@ -1,4 +1,5 @@
 ---
+imported_hash: 2b28e725e8785607
 title: 'Worked Example: SQLite Data Pipeline → The Scaling Trap (40 min, offline)'
 summary: 'The prompt is a trap in the useful sense: the tool you''re handed is correct for the exercise and wrong for the stated scale.'
 order: 34

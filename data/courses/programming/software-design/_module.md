@@ -1,4 +1,5 @@
 ---
+imported_hash: 204b0d42c41b982c
 title: Software design
 summary: 'Most of the cost of software comes after the first version: every later change has to understand what''s there, alter it without breaking the rest, and show that it worked.'
 order: 105

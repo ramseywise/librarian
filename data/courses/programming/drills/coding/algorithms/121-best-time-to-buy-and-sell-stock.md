@@ -1,4 +1,5 @@
 ---
+imported_hash: d4ef7c23ce8cfdbb
 title: LC 121 — Best Time to Buy and Sell Stock
 summary: Given an array prices where prices[i] is a stock's price on day i, choose one day to buy and a later day to sell to maximize profit.
 order: 52

@@ -1,4 +1,5 @@
 ---
+imported_hash: 0f59165744fdf4c6
 title: Schema and data migrations
 summary: 'A migration is a change to a live system while it runs: the table has new code and old code reading it, and neither stops while you work.'
 order: 5

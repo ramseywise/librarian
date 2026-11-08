@@ -1,4 +1,5 @@
 ---
+imported_hash: f1a308d9efad9fa4
 title: 3 — Distributions and Sampling
 summary: A foundation gives a pile of money to small schools because the top of the league table is full of them.
 order: 4
@@ -106,6 +107,14 @@ The Normal draws are consistent with N(0,1). Their exponentials, which are what 
 
 A *population* is what you want to know about. A *sample* is what you have. A *statistic* is a number computed from the sample. The *sampling distribution* is what that statistic would do if you repeated the sampling, and it is the central idea of this chapter: the data have one distribution, and the statistic has another, usually much narrower and better behaved (Bruce & Bruce, 2017, ch. 2).
 
+## Checking a distribution against data
+
+Naming a family is a claim, so test it by straightening the plot. The complementary CDF, CCDF = 1 − CDF, does it for two families (*Think Stats*, ch. 4). For an exponential with rate λ the CCDF is e^(−λx), so on a log y-axis it is a line with slope −λ. For a Pareto with minimum x_m and shape α the CCDF is (x/x_m)^(−α), so on log-log axes it is a line with slope −α. Downey's exponential check uses the interarrival times of 44 births in one Brisbane hospital on 18 December 1997 (mean 32.6 minutes): the CCDF is roughly straight but not exactly, because births are not equally likely at every hour. For the normal, which has no such transformation, use a probability plot: sort the data, sort a standard-normal sample of the same size, and plot one against the other. The check is visual and has no tolerance, so read curvature as the size of the disagreement. On NSFG live-birth weights the fitted normal (μ = 116.5 oz, σ = 19.9 oz) tracks the data except below the 10th percentile, where there are more light babies than the model predicts, a mismatch that matters if the study is about preterm births.
+
+The tail is where families differ most. A Pareto with x_m = 0.5 and α = 1 has median 1 and 95th percentile 10; an exponential with the same median has a 95th percentile of about 4.3 (ln 20 / ln 2), not the 1.5 *Think Stats* prints, which is an arithmetic slip, but the contrast with 10 stands. Weights are lognormal: in the 2008 BRFSS survey (414,509 respondents, 398,484 with a recorded weight in kg) log-weight is well fitted by a normal, although the very heaviest respondents exceed the model even after the log. Remember μ and σ are parameters of the log, and the mean of a lognormal is exp(μ + σ²/2), not exp(μ).
+
+Two sampling facts from the same book. Inverse-CDF sampling draws p uniform on [0, 1) and returns the x with CDF(x) = p; for the exponential that is `x = -math.log(1 - p) / lam`, where using 1 − p keeps the log defined because `random()` can return 0 but not 1. And sampling can be size-biased: in a relay race the chance of seeing a runner is proportional to the speed gap, so an observer's distribution of speeds is distorted, the same mechanism as the class size paradox in [chapter 1](01-descriptive-statistics-and-eda.md) (*Think Stats*, ch. 3).
+
 ## Law of Large Numbers
 
 The average of N independent draws from the same distribution converges to the expected value as N grows. Two consequences from BMH ch. 4 that the rest of this course relies on:
@@ -146,7 +155,7 @@ error ≈ sqrt(Var(Z)) / sqrt(N)
 | 10,000 | 0.01 |
 | 1,000,000 | 0.001 |
 
-The error column above tracks that rule, though a single run can land on either side of it. Halving the error costs four times the data. [Experimentation at scale](../../03-experimentation-and-causality/notes/03-experimentation-at-scale.md) turns the same arithmetic into a sample-size formula.
+The error column above tracks that rule, though a single run can land on either side of it. Halving the error costs four times the data. (*Practical Statistics*, ch. 2 states the same square-root rule for the standard error.) [Experimentation at scale](../../03-experimentation-and-causality/notes/03-experimentation-at-scale.md) turns the same arithmetic into a sample-size formula.
 
 ## Central Limit Theorem
 
@@ -189,6 +198,8 @@ At n = 30 the "95%" interval covers the truth about 56% of the time. It takes te
 
 The theorem also needs independence and finite variance. Rows from the same user break the first, as [chapter 2](02-probability-foundations.md) showed. Some extreme heavy-tailed distributions break the second, and for those a mean never settles at all. For a visual treatment, see 3Blue1Brown's [central limit theorem video](https://www.youtube.com/watch?v=zeJD6dqJ5lo).
 
+*Think Stats* states the central limit theorem for sums: n independent values from one distribution with finite mean μ and standard deviation σ sum to approximately N(nμ, nσ²) (the "same distribution" condition can be relaxed). Most Pareto distributions fail the finite-variance condition. The speed of convergence depends on skewness: sums of exponentials look normal at small n and sums of lognormals do not, which is the zero-inflated lognormal result above in textbook form (*Think Stats*, ch. 6). Two companions are useful. Sample skewness g₁ = m₃ / m₂^(3/2) is sensitive to outliers, while Pearson's median skewness 3(mean − median) / σ is robust to them. And the sum of two independent exponentials with the same rate is an Erlang with k = 2, whose density λ²·z·e^(−λz) comes from convolving the two densities.
+
 ### Big is not the same as representative
 
 The CLT describes sampling error. It says nothing about bias in how you selected the rows, and having more of them does not reduce that.
@@ -209,7 +220,7 @@ survey of responders: 11.062 from 57,152 rows
 simple random sample: 3.001 from 5,000 rows
 ```
 
-Larkspur emails a spend survey to everyone and buyers are four times likelier to reply. The result has 57,000 rows and is more than three times too high. A simple random sample of 5,000 is within about 4% of the truth. Sampling error shrinks with n. Selection bias does not. ([Surveys and sampling design](../../06-applied-analyses/notes/12-surveys-and-sampling-design.md) builds the better sample.) Before admiring a large N, ask how the rows got into the table. [Meng (Annals of Applied Statistics, 2018)](https://doi.org/10.1214/18-AOAS1161SF) puts a number on it for the 2016 US election: a correlation of only about -0.005 between responding and reporting a vote for Trump leaves a sample of 1% of eligible voters, about 2.3 million people, with the same mean squared error as a simple random sample of about 400. [The data generating process](07-data-generating-process.md#big-is-not-the-same-as-representative) takes this further.
+Larkspur emails a spend survey to everyone and buyers are four times likelier to reply. The result has 57,000 rows and is more than three times too high. A simple random sample of 5,000 is within about 4% of the truth. Sampling error shrinks with n. Selection bias does not. The textbook case is the 1936 US presidential poll: the Literary Digest mailed more than 10 million ballots and called it wrongly, while Gallup's 2,000-person sample did not (*Practical Statistics*, ch. 2). ([Surveys and sampling design](../../06-applied-analyses/notes/12-surveys-and-sampling-design.md) builds the better sample.) Before admiring a large N, ask how the rows got into the table. [Meng (Annals of Applied Statistics, 2018)](https://doi.org/10.1214/18-AOAS1161SF) puts a number on it for the 2016 US election: a correlation of only about -0.005 between responding and reporting a vote for Trump leaves a sample of 1% of eligible voters, about 2.3 million people, with the same mean squared error as a simple random sample of about 400. [The data generating process](07-data-generating-process.md#big-is-not-the-same-as-representative) takes this further.
 
 ## The small-N trap
 
@@ -280,7 +291,15 @@ for t, h, r, s in zip(trials, hits, raw, shrunk):
  905/1000  raw 0.905  shrunk 0.905
 ```
 
-The 2/2 kicker drops below the 92/100 kicker, and the 905/1000 estimate does not change. The estimate moves only when N is too small to speak for itself. Efron and Hastie treat this as empirical Bayes and the James-Stein estimator (*Computer Age Statistical Inference*, ch. 6 and 7), where the amount of shrinkage is itself estimated from the data.
+The 2/2 kicker drops below the 92/100 kicker, and the 905/1000 estimate does not change. The estimate moves only when N is too small to speak for itself. Efron and Hastie treat this as empirical Bayes and the James-Stein estimator (*Computer Age Statistical Inference*, ch. 6 and 7), where the amount of shrinkage is itself estimated from the data. Empirical Bayes fits the prior to the whole collection and then reads off each case: in a study of 844 cancer surgeries, 340 patients had a raw positive-node ratio of exactly 0, yet the fitted prior puts only 12% of patients at 0.01 or below. A patient with 3 positive nodes out of 6 removed has raw ratio 0.50 and posterior mean 0.446, and the same ratio from a few nodes is far less certain than from 32 (*Computer Age*, ch. 6).
+
+Their baseball example puts a number on it. Eighteen players' batting averages over their first 90 at bats are shrunk toward the grand mean 0.254 by a data-estimated factor (B̂ = 0.34), and then scored against each player's average over the rest of the season (about 370 more at bats). Total squared error falls from 0.0425 for the raw averages to 0.0218 for James-Stein, about half, and shrinking everyone all the way to the grand mean already gets 0.0266 (*Computer Age*, ch. 7). The reason is that raw averages as a group are over-dispersed: E Σx² = N(A + 1) against E Σμ² = NA, so the spread of the estimates exceeds the spread of the truth by N in expectation, and shrinkage removes that excess. It is not free. In a simulation of 1,000 repeats, James-Stein wins for 14 of the 18 players and loses for the four most extreme ones, with the best hitter (true average 0.346) estimated worse (rms error 0.077 against 0.049).
+
+![Eighteen players: raw first-90 averages on top, James-Stein estimates in the middle, true averages at the bottom](../assets/sources/images/computer-age-statistical-inference-fig7-1.png)
+
+*Image Source: Efron & Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 7.1. Dashed lines join each player's estimates to the truth.*
+
+The same chapter's ridge regression is the shrinkage idea inside a regression: on the diabetes data (n = 442, 10 standardised predictors), ridge at λ = 0.1 cuts the standard deviation of the total-cholesterol coefficient from 416.2 to 43.6, and flips the LDL coefficient from +476.7 to −70.8. Variance falls, but bias rises, and the authors note the two nearly offset in prediction error on that data. Ridge is not scale-equivariant, so standardise the predictors and leave the intercept unpenalised.
 
 ### Where this bites in analytics
 

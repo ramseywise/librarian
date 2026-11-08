@@ -1,4 +1,5 @@
 ---
+imported_hash: 2074c3da401efd57
 title: 04 — Loop Engineering
 summary: Loop engineering is the discipline of designing the system that prompts your agent, so you don't have to.
 order: 4

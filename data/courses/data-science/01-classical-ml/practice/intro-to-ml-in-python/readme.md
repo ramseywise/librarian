@@ -1,7 +1,8 @@
 ---
+imported_hash: ec2d09aff217c73c
 title: Introduction to Machine Learning with Python
 summary: This repository holds the code for the forthcoming book "Introduction to Machine Learning with Python" by Andreas Mueller and Sarah Guido.
-order: 21
+order: 22
 kind: reading
 section: Practice / Intro to ml in python
 source: learn-ai-engineering/data-science/01-classical-ml/practice/intro-to-ml-in-python/README.md

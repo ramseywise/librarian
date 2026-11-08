@@ -1,7 +1,8 @@
 ---
+imported_hash: 99b845068d32321d
 title: load and split the data
 summary: 'svm = SVC() # learn an SVM on the scaled training data svm.fit(X_train_scaled, y_train) # scale the test data and score the scaled data X_test_scaled = scaler.transform(X_test) print("Test score: {:.2f}".format(svm.score(X_test_scaled, y_te…'
-order: 27
+order: 28
 kind: notebook
 section: Practice / Intro to ml in python
 source: learn-ai-engineering/data-science/01-classical-ml/practice/intro-to-ml-in-python/06-algorithm-chains-and-pipelines.ipynb

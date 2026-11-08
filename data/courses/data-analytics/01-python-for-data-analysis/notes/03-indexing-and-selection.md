@@ -1,4 +1,5 @@
 ---
+imported_hash: 136c03d3dd17abdb
 title: 3 — Indexing and Selection
 summary: 'Nearly everything you do to a frame starts with saying which part of it you mean: January''s orders, the revenue column, the top row of each product.'
 order: 4
@@ -56,6 +57,23 @@ print(daily * 2)                 # arithmetic is element-wise
  [10 50  0]
  [ 6 82  2]]
 ```
+
+Three NumPy behaviours carry straight into pandas and are worth fixing now (*Python for Data Analysis*, ch. 4). A **slice is a view**, so writing through it changes the source array, while **boolean and list-of-positions ("fancy") selection always copies**, even when the result equals the original. Combine masks with `&` and `|` in parentheses, never `and` and `or`. And a mask of the wrong length is not always an error, so check `len(mask) == len(arr)` when you build one by hand.
+
+```python
+arr = np.arange(10)
+view = arr[5:8]
+view[1] = 12345          # arr[6] is now 12345: the slice shares memory
+safe = arr[5:8].copy()   # an independent copy
+mask = (qty >= 2) & (qty < 3)
+print(qty[mask])
+```
+
+```text
+[2 2]
+```
+
+McKinney's own speed example shows why the loop-and-if is worth replacing: doubling a million-element array ten times took 72.4 ms in NumPy and 1.05 s as a list comprehension, about 14.5 times slower (IPython `%time`, one run, 2017 hardware and versions not stated; the book calls "10 to 100 times faster" the general case but gives no data for it beyond this example). Treat it as an order of magnitude, not a benchmark (*Python for Data Analysis*, ch. 4).
 
 `np.where` is the vectorised if-else: it takes a condition and two values, and you will use it for conditional columns later in this chapter.
 
@@ -158,7 +176,7 @@ grinder
 1      ben    3
 ```
 
-Look at the last two results. They use what appears to be the same slice, `0:2`, and return three rows and two rows. A position slice excludes its end, like all of Python. A label slice includes its end, because labels have no natural "one past the last": if you ask for `"filter":"kettle"` in a sorted index you want kettle in the result, and you may not know which label follows it.
+Look at the last two results (McKinney flags the inclusive label slice as the way pandas differs from ordinary Python slicing, *Python for Data Analysis*, ch. 5). They use what appears to be the same slice, `0:2`, and return three rows and two rows. A position slice excludes its end, like all of Python. A label slice includes its end, because labels have no natural "one past the last": if you ask for `"filter":"kettle"` in a sorted index you want kettle in the result, and you may not know which label follows it.
 
 ```text
              labels   positions         .loc[0:2]    .iloc[0:2]
@@ -296,6 +314,25 @@ orders.loc[orders["region"] == "unassigned", "region"] = "unknown"
 3      1004        east     13.0  small
 4      1005  unassigned     96.0  large
 ```
+
+NumPy has one more setting rule that bites. With repeated positions, `x[i] += 1` reads once and writes once per position, so a repeat is counted only once. `np.add.at` applies the operation unbuffered (*Python Data Science Handbook*, ch. 2).
+
+```python
+x = np.zeros(5, dtype=int)
+i = [1, 1, 1, 3]
+x[i] += 1
+print(x)
+y = np.zeros(5, dtype=int)
+np.add.at(y, i, 1)
+print(y)
+```
+
+```text
+[0 1 0 1 0]
+[0 3 0 1 0]
+```
+
+The book builds a histogram this way, `np.searchsorted(bins, x)` followed by `np.add.at(counts, i, 1)`, and times it against `np.histogram` with 20 bins on [-5, 5]: on 100 points the hand-rolled version took 19.5 µs against 97.6 µs, but on 1,000,000 points 135 ms against 68.7 ms (`%timeit` best of 3, NumPy 1.11). The faster algorithm depended on input size, so time at your real size. The same chapter's other timings are 2.91 s for a Python loop taking reciprocals of 1,000,000 integers against 4.6 ms for `1.0 / big_array`, and `sum` against `np.sum` at 104 ms against 442 µs on 1,000,000 floats. Use `np.sum`, `np.min` and the like on arrays, never the built-ins.
 
 ## Choosing an index
 

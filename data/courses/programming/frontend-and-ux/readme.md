@@ -1,4 +1,5 @@
 ---
+imported_hash: 3255c04b2b5402aa
 title: Frontend and UX
 summary: A good model behind a bad interface still gives a bad product.
 order: 1
@@ -24,7 +25,7 @@ The mental model has three questions. What state is the system really in? Can th
 
 ## Reading order
 
-The notes follow the [full chapter standard](../../.claude/skills/pillar/references/pillar-layout.md), not the shorter format of the Python modules.
+The notes follow the [full chapter standard](https://github.com/ramseywise/librarian/blob/main/.claude/skills/pillar/references/pillar-layout.md), not the shorter format of the Python modules.
 
 **The platform**
 

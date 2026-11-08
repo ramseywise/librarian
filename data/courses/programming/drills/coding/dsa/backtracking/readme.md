@@ -1,4 +1,5 @@
 ---
+imported_hash: 1c7f1618ca403e56
 title: Backtracking
 summary: Backtracking builds solutions incrementally, abandoning a path as soon as it determines that the path cannot lead to a valid solution.
 order: 136

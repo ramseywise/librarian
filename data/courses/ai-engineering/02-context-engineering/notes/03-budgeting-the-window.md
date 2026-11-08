@@ -1,4 +1,5 @@
 ---
+imported_hash: 21b5a422f8dfce18
 title: 3 — Budgeting the Window
 summary: The upstream course calls this "the budget model".
 order: 4

@@ -1,7 +1,8 @@
 ---
+imported_hash: 03497a5f199853b5
 title: Advanced Python Interview Reference
 summary: These are specialized dictionaries from the weakref module.
-order: 264
+order: 267
 kind: reading
 section: Python / Advanced / Handbook
 source: learn-ai-engineering/programming/drills/python/advanced/handbook/concepts-41-52.md

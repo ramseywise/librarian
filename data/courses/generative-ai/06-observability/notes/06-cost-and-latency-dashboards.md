@@ -1,4 +1,5 @@
 ---
+imported_hash: 9a5bfeb58c8c79b5
 title: 6 — Cost and Latency Dashboards
 summary: On 14 October the support agent's bill more than tripled, and nothing broke.
 order: 7

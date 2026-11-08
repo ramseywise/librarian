@@ -1,7 +1,8 @@
 ---
+imported_hash: ab8d8f11896d01d6
 title: 14 — Calibrating Judges with Checks and Critiques
 summary: Note 15's calibration tells you how often a judge is wrong.
-order: 15
+order: 19
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/08-eval/notes/14-calibrating-judges-with-checks-and-critiques.md

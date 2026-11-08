@@ -1,3 +1,4 @@
+# imported_hash: 945c16fcbaf58509
 # NLP lecture deck. Covers notes/01-text-representation.md, notes/02-text-classification.md,
 # notes/03-topic-models-and-summarization.md, notes/04-embeddings-and-similarity.md,
 # notes/05-semantic-analysis-and-ner.md, notes/06-sentiment-analysis.md, notes/07-llm-embeddings-as-features.md.
@@ -39,7 +40,7 @@ parts:
         title: Bag of words throws away order and keeps counts
         kicker: The first representation
         recall: What does bag of words keep from a document, and what does it lose?
-        image: ../assets/mueller-guido-bag-of-words.png
+        image: ../assets/sources/images/mueller-guido-bag-of-words.png
         caption: "Figure: Müller and Guido, Introduction to Machine Learning with Python (O'Reilly, 2016)."
         bullets:
           - Each word in the vocabulary is one column
@@ -74,7 +75,7 @@ parts:
       - layout: image
         title: Removing stopwords turned "not good" from 0.02 to 0.99
         recall: What did stopword removal cost on IMDb, and why did it flip "not good"?
-        image: ../assets/nlp-stopword-negation.png
+        image: ../assets/sources/images/nlp-stopword-negation.png
         caption: "TF-IDF logistic regression on 25,000 IMDb reviews: P(positive) for 'not good' goes from 0.02 to 0.99 with stopwords removed, and accuracy from 0.906 to 0.890. Run `practice/stopword_negation.py`."
         takeaway: Your stopword list holds "not", so check what it deletes before you trust the small accuracy change.
         source: notes/01-text-representation.md  # also: notes/06-sentiment-analysis.md
@@ -162,7 +163,7 @@ parts:
         title: Accuracy 0.532 hides a Crime F1 of 0.067
         kicker: Evaluation
         recall: What should decide your metric, and what goes wrong with accuracy on imbalanced text?
-        image: ../assets/nlp-genre-f1.png
+        image: ../assets/sources/images/nlp-genre-f1.png
         caption: "Genre from film descriptions: accuracy 0.532, macro-F1 0.423, majority class 0.315. Crime, 5.1% of films, gets F1 0.067. Run `practice/genre_f1.py`."
         bullets:
           - "**Accuracy is fine when** topics are balanced and errors cost about the same."
@@ -206,7 +207,7 @@ parts:
       - layout: image
         title: "No knee: coherence slides from 0.352 to 0.322"
         recall: Why doesn't coherence pick a number of topics here, and what do you do instead?
-        image: ../assets/nlp-topic-coherence.png
+        image: ../assets/sources/images/nlp-topic-coherence.png
         caption: "LDA on film descriptions, three seeds: mean c_v 0.352 at 5 topics and 0.322 at 40, with seeds about 0.01 apart. Run `practice/topic_coherence.py`."
         takeaway: Coherence shows no clear elbow on this corpus, so choose the topic count by reading the topics.
         source: notes/03-topic-models-and-summarization.md
@@ -255,7 +256,7 @@ parts:
       - layout: image
         title: GloVe puts car near truck at 0.92, and good near bad at 0.80
         recall: What does a pretrained vector give that a one-hot never does, and what does it get wrong?
-        image: ../assets/nlp-word-similarity.png
+        image: ../assets/sources/images/nlp-word-similarity.png
         caption: "Cosine similarity in GloVe 50-d: hotel/motel 0.78, hotel/banana 0.09, good/bad 0.80. One-hot gives 0 for every pair. Run `practice/word_similarity.py`."
         takeaway: Vectors measure shared contexts, so opposites used in the same places score as similar.
         source: notes/04-embeddings-and-similarity.md
@@ -369,7 +370,7 @@ parts:
         title: With labels, TF-IDF beats lexicons and small networks on IMDb
         kicker: Worked example
         recall: With labels, what beat both lexicons and small neural networks on review sentiment?
-        image: ../assets/nlp-sentiment-methods.png
+        image: ../assets/sources/images/nlp-sentiment-methods.png
         caption: "The same 1,500 test reviews: TF-IDF logistic 0.902, against TextBlob 0.759, AFINN 0.735, VADER 0.714 and SentiWordNet 0.658. Run `practice/sentiment_methods.py`."
         bullets:
           - "**From the note:** averaged word2vec + dense net 0.831, and pooled, CNN and LSTM on 6,000 reviews about 0.80."
@@ -436,7 +437,7 @@ parts:
         title: The gap depends on how many labels you have
         kicker: Worked example
         recall: How does the encoder's lead over TF-IDF change as labels grow?
-        image: ../assets/nlp-labels-vs-f1.png
+        image: ../assets/sources/images/nlp-labels-vs-f1.png
         caption: "Macro-F1 over five samples: MiniLM 0.261 and TF-IDF 0.144 at 60 films; 0.484 and 0.404 at all 2,877. Run `practice/labels_vs_f1.py`."
         takeaway: The encoder leads at every size, by the most below about 1,000 labels, and TF-IDF gains ground as labels grow.
         source: notes/07-llm-embeddings-as-features.md

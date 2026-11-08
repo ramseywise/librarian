@@ -1,4 +1,5 @@
 ---
+imported_hash: 12aae546cdcdb961
 title: 'Worked Example: Scope Negotiation'
 summary: ''
 order: 44

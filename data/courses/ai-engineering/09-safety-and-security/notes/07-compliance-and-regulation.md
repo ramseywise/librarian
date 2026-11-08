@@ -1,4 +1,5 @@
 ---
+imported_hash: e597cfa65f1aa6ec
 title: 7 — Compliance and Regulation
 summary: Harbour's first enterprise prospect sends a questionnaire.
 order: 8

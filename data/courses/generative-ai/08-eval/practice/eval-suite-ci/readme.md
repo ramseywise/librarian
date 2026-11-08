@@ -1,7 +1,8 @@
 ---
+imported_hash: 77e5d92e2c47bc46
 title: 'Lab: an eval suite in CI (TypeScript)'
 summary: The Python version reads the same cases.jsonl, kb.json and variants.json from this folder, and it produces a byte-identical baseline.json and report.
-order: 17
+order: 21
 kind: reading
 section: Practice / Eval suite ci
 source: learn-ai-engineering/generative-ai/08-eval/practice/eval-suite-ci/README.md

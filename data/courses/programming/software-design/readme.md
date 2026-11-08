@@ -1,4 +1,5 @@
 ---
+imported_hash: a99bc44bee894625
 title: Software design
 summary: 'Most of the cost of software comes after the first version: every later change has to understand what''s there, alter it without breaking the rest, and show that it worked.'
 order: 1
@@ -24,7 +25,7 @@ The mental model has three questions. What will have to change? What must a pers
 
 ## Reading order
 
-The notes follow the [full chapter standard](../../.claude/skills/pillar/references/pillar-layout.md), not the shorter format of the Python modules.
+The notes follow the [full chapter standard](https://github.com/ramseywise/librarian/blob/main/.claude/skills/pillar/references/pillar-layout.md), not the shorter format of the Python modules.
 
 **Writing code that can change**
 

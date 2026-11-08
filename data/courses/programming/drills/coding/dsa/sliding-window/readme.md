@@ -1,4 +1,5 @@
 ---
+imported_hash: 303434854974c4d1
 title: Sliding Window
 summary: The sliding window technique iterates over a list K elements at a time.
 order: 200

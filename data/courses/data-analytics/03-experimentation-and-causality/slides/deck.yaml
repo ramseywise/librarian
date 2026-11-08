@@ -1,3 +1,4 @@
+# imported_hash: 0c422a1063b51628
 # Experimentation and Causality lecture deck. Covers notes 01-05.
 # Build: make slides PILLAR=data-analytics/03-experimentation-and-causality STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
@@ -401,7 +402,7 @@ parts:
       - layout: image
         title: Few non-joiners stand in for the likeliest joiners
         recall: How many joiners and non-joiners scored above 0.9, and what does that do to weighting?
-        image: ../assets/causal-club-overlap.png
+        image: ../assets/sources/images/causal-club-overlap.png
         caption: Estimated probability of joining, by group.
         bullets:
           - "**970 joiners** above 0.9; **40 non-joiners**."
@@ -415,7 +416,7 @@ parts:
       - layout: image
         title: Fix the design on balance alone
         recall: What thresholds does Rubin's guideline use, and how many of the ten covariates failed them?
-        image: ../assets/causal-club-love-plot.png
+        image: ../assets/sources/images/causal-club-love-plot.png
         caption: Love plot. One row per covariate, one mark per design.
         bullets:
           - "**Before:** a full SD gap on orders (1.00) and spend (1.12)."
@@ -448,7 +449,7 @@ parts:
       - layout: image
         title: Every sound design lands high
         recall: What was the mean gap to the truth for the sound ATT designs, and what happened when engagement was added?
-        image: ../assets/causal-club-estimates.png
+        image: ../assets/sources/images/causal-club-estimates.png
         caption: Gap to the truth on 20 datasets, by design.
         bullets:
           - "**Sound ATT designs:** £3.15 to £4.31 high."

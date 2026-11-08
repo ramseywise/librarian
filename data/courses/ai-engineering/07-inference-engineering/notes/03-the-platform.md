@@ -1,4 +1,5 @@
 ---
+imported_hash: a9666becddaa1771
 title: '3 — The Platform: OS, Containers, Kubernetes, Storage, Networking'
 summary: Kernel tuning that gains 20% is wasted on a host where NCCL has quietly fallen back to TCP or where a rank allocates across NUMA nodes.
 order: 4
@@ -37,6 +38,9 @@ Fregly's host checklist (*AISPE*, ch. 3), with the condition each number was mea
 | **CPU frequency** | `performance` governor; limit deep C-states | Wake-up latency from deep sleep shows up in launch gaps | — |
 | **IRQ affinity** | Route NIC and GPU interrupts to cores near the device, away from the serving threads | Interrupt storms on a busy core delay launches | — |
 | **Allocator** | jemalloc or tcmalloc for the host process | glibc malloc fragments under many threads | — |
+
+![Eight GPUs split across two NUMA nodes, with remote access over the interconnect](../assets/sources/images/ai-systems-performance-engineering-fig3-4.png)
+*Image Source: Fregly, *AI Systems Performance Engineering* (O'Reilly, 2025), Fig. 3-4*
 
 On Grace Blackwell the NUMA story changes shape but does not go away. Each Grace CPU is close to its own two GPUs, and two superchips are separate NUMA nodes.
 

@@ -110,7 +110,7 @@ eval-gate:
 	uv run python -m evals.run_eval --live --arm multihop --verbose
 
 .PHONY: wiki-stats wiki-snapshot wiki-check wiki-gaps wiki-graph
-.PHONY: skills-check skills-sync chapter-check chapter-check-all link-check curriculum crosswalk crosswalk-check manifest-check drill-check review-findings signals smoke-labs
+.PHONY: skills-check skills-sync chapter-check chapter-check-all link-check curriculum crosswalk crosswalk-check manifest-check import-courses drill-check review-findings signals smoke-labs
 
 wiki-stats:
 	uv run librarian wiki stats
@@ -246,6 +246,9 @@ crosswalk:  ## Validate drill and round units and links, then regenerate .cache/
 
 crosswalk-check:  ## Validate drill and round units and links; fail if .cache/crosswalk.md is stale
 	uv run librarian courses check crosswalk --check
+
+import-courses:  ## Mirror learn-ai-engineering into data/courses/ (ARGS='--subject X --dry-run')
+	uv run librarian courses import $(ARGS)
 
 manifest-check:  ## Validate practice/manifest.yaml files where present (labs live in learn-ai-engineering)
 	uv run librarian courses check manifest

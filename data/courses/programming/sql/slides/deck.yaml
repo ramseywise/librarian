@@ -1,3 +1,4 @@
+# imported_hash: 7aa3aa6438b8587c
 # SQL track: study deck (flashcards). Covers notes/01-10.
 # Build:  make slides PILLAR=programming/sql [PREVIEW=1]
 # Spec:   .claude/skills/slides/references/deck-spec.md

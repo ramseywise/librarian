@@ -1,4 +1,5 @@
 ---
+imported_hash: 02d61654da107de2
 title: Maximum Gap — First-Principles Thinking Guide
 summary: ''
 order: 115

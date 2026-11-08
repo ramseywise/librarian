@@ -1,4 +1,5 @@
 ---
+imported_hash: f2efa873cd9ecf73
 title: Embeddings and similarity
 summary: To a TF-IDF model, "hotel" and "motel" are exactly as far apart as "hotel" and "banana", because each word is its own axis.
 order: 5
@@ -48,7 +49,7 @@ flowchart LR
 
 The original paper ([arXiv:1301.3781](https://arxiv.org/abs/1301.3781)) measured the two on its analogy test set (8,869 semantic and 10,675 syntactic questions). With 300-d vectors trained on 783M words, **skip-gram scored 50.0% on semantic questions against CBOW's 15.5%**, and 55.9% against 53.1% on syntactic ones. CBOW trained in about a day and skip-gram in about three. The "rare words, small corpora" rule of thumb in the table comes from the later word2vec documentation, not from this paper. The paper also shows that more data and wider vectors both help, and that each must grow with the other.
 
-The 2013 paper made the output layer cheap with a hierarchical softmax over a Huffman tree. **Negative sampling** came in the follow-up paper ([arXiv:1310.4546](https://arxiv.org/abs/1310.4546) (Mikolov et al., NIPS 2013)). It turns the expensive softmax over the vocabulary into binary classification: is this (word, context) pair real, or one of *k* random pairs? The noise words are drawn from the unigram distribution raised to the 3/4 power, and the paper suggests k = 5–20 for small corpora and 2–5 for large ones. The same paper also discards each frequent word with probability 1 − √(t/f), with t ≈ 10⁻⁵. On about 1B words of Google News (300-d skip-gram, same analogy test), negative sampling with 5 noise words scored 59% in 38 minutes, against 47% in 41 minutes for the hierarchical softmax. With subsampling added, it scored 60% in 14 minutes. The vectors also add: the nearest tokens to *Russian* + *river* are *Moscow* and *Volga River*. Phrase vectors (frequent word pairs merged into single tokens) reached 72% on a phrase-analogy set, but only with 33B training words. These are single runs on Google-internal data, with no error bars.
+The 2013 paper made the output layer cheap with a hierarchical [softmax](../../02-deep-learning/notes/01-neural-networks-fundamentals.md#the-forward-pass) over a Huffman tree. **Negative sampling** came in the follow-up paper ([arXiv:1310.4546](https://arxiv.org/abs/1310.4546) (Mikolov et al., NIPS 2013)). It turns the expensive softmax over the vocabulary into binary classification: is this (word, context) pair real, or one of *k* random pairs? The noise words are drawn from the unigram distribution raised to the 3/4 power, and the paper suggests k = 5–20 for small corpora and 2–5 for large ones. The same paper also discards each frequent word with probability 1 − √(t/f), with t ≈ 10⁻⁵. On about 1B words of Google News (300-d skip-gram, same analogy test), negative sampling with 5 noise words scored 59% in 38 minutes, against 47% in 41 minutes for the hierarchical softmax. With subsampling added, it scored 60% in 14 minutes. The vectors also add: the nearest tokens to *Russian* + *river* are *Moscow* and *Volga River*. Phrase vectors (frequent word pairs merged into single tokens) reached 72% on a phrase-analogy set, but only with 33B training words. These are single runs on Google-internal data, with no error bars.
 
 Skip-gram with negative sampling is small enough to write in Keras, as Sarkar's Ch04b does. Two embedding tables, a dot product, a sigmoid. We train it on the first part of `big.txt`, a concatenation of public-domain books that ships with his chapter 3.
 
@@ -362,6 +363,15 @@ on unit vectors, -L2 gives the same order as dot: True
 ```
 
 The raw dot product is unbounded and grows with vector length, so it favours long vectors. On GloVe the effect is modest, because norms vary little: its neighbours have slightly longer vectors and "queen" drops out of the top six. In count-based vectors the long ones are frequent, uninformative words, and it is much worse. Cosine divides the length out. **Normalise before cosine or dot product.** With L2-normalised vectors, cosine similarity is the dot product and Euclidean distance is a monotone function of it, so all three rank neighbours identically, as the last line confirms. Vector databases rely on this.
+
+### What the first edition adds (*Text Analytics with Python*, 1st ed., ch. 6)
+
+The first edition covers Hamming, Manhattan, Euclidean, Levenshtein, cosine, Hellinger-Bhattacharya and BM25, but not Jaccard, so that row comes from the second-edition notebook. Four points sharpen the table (*Text Analytics with Python*, 1st ed., ch. 6).
+
+- **What counts as a metric.** A distance must be non-negative, zero only for identical items, symmetric and satisfy the triangle inequality. KL divergence fails symmetry. Hamming, Manhattan and Euclidean raise an error on strings of different length ("Believe" is 7 characters, "Elephant" is 8), and Levenshtein does not. Levenshtein is bounded below by the length difference and above by the longer length.
+- **Cosine ignores order.** On the book's 9-document toy corpus, "The fox is definitely smarter than the dog" scores 1.0 against "The dog is smarter than the fox". "Definitely" is dropped and the order is lost.
+- **Rankers disagree.** Hellinger-Bhattacharya on TF-IDF gave 0.96 for the second animal document and a different second hit from cosine and BM25 for the Java query, yet the author calls the results quite similar. BM25 with k1=1.5 and b=0.75 scores the top animal document 7.334, in the usual ranges the note gives. No relevance judgements are used, so nothing says which ranker is better.
+- **Clustering 100 IMDb synopses.** TF-IDF with `min_df=0.24` and `max_df=0.85` gives 307 features. K-means with k=5 gives sizes 29, 5, 21, 15 and 30. Affinity propagation with defaults finds 17 clusters of 2 to 12 films, which fits the many-small-clusters behaviour in [topic models](03-topic-models-and-summarization.md). The chapter scores no clustering and warns that centroid keywords may not show a cluster's theme, so run a topic model per cluster.
 
 ## A content-based recommender (Sarkar ch. 7b)
 

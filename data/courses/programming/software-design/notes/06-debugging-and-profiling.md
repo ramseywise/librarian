@@ -1,4 +1,5 @@
 ---
+imported_hash: e4b23ca1de13a711
 title: 6 — Debugging and profiling
 summary: 'Google''s SRE book frames troubleshooting as the hypothetico-deductive method: from observations and an understanding of the system, propose causes, then test them, either by comparing state against the theory or by changing the system in a…'
 order: 7
@@ -283,6 +284,19 @@ many_calls   cProfile says  0.382 s
 ```
 
 Without the profiler, the two take about the same time. With it, the call-heavy one looks several times worse, because the cost is per call. Bear that in mind when you see a profile dominated by small helpers.
+
+### The same tools inside IPython
+
+In a notebook or an IPython session, the profilers above are one-line magics (VanderPlas, *Python Data Science Handbook*, ch. 1; his output is from an IPython 4.x session in 2016, so only the shape of the numbers carries over). The book's example, `sum_of_lists(N)`, builds five lists of N integers and sums them:
+
+| Magic | What it reports | The book's result at N = 1,000,000 unless noted |
+|---|---|---|
+| `%prun sum_of_lists(1000000)` | `cProfile`, sorted by time | 14 function calls in 0.714 s; the list comprehension took 0.599 s of it |
+| `%lprun -f sum_of_lists sum_of_lists(5000)` | Time per line (needs `line_profiler`, loaded with `%load_ext`) | The comprehension line held 95.9% of 0.009382 s |
+| `%memit sum_of_lists(1000000)` | Peak and increment of process memory (needs `memory_profiler`) | Peak 100.08 MiB, increment 61.36 MiB |
+| `%mprun` | Memory per line | The function has to live in a separate module; each list is about 25.4 MiB |
+
+`%timeit` repeats a statement and reports the best run, which is the wrong tool when the statement changes its input. VanderPlas's example is `L.sort()` on 100,000 random floats: `%timeit` reported 1.9 ms because every run after the first sorts an already-sorted list, while `%time` ran once and gave 41.5 ms for the unsorted list and 8.19 ms for the presorted one. A plain-Python check on Python 3.14.7 shows the same shape with different sizes: 8.6 ms for the first sort, 0.19 ms for the second. Time a single run of anything that mutates its input, or rebuild the input inside the timed code. The book also lists the debugging magics: `%xmode` to change traceback detail, `%debug` to open `pdb` after an exception, and `%pdb on` to do that automatically. The numbers come from one machine, and the book does not say which.
 
 ## Sampling: what the program is doing, most of the time
 

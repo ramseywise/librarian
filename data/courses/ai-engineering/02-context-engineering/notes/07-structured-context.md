@@ -1,7 +1,8 @@
 ---
+imported_hash: d13f04ccd8ff2c3c
 title: 7 — Structured Context and Schemas
 summary: 'A model reading unstructured context has to infer the role of each span: whether it''s an instruction or data, a fact or an example, current or stale.'
-order: 8
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/07-structured-context.md
@@ -87,6 +88,11 @@ memory:
 ```
 
 Writing the budget and pruning policy into the context spec, rather than leaving them implicit in code, makes them reviewable ([03](03-budgeting-the-window.md#history)).
+
+The oldest evidence that the shape of the input schema decides the result is text-to-SQL, where the database schema is the structured context. Spider ([Yu et al., EMNLP 2018](https://aclanthology.org/D18-1425/); 10,181 questions over 200 multi-table databases, with test databases never seen in training) found accuracy falls with schema complexity and unseen schemas: the best 2018 parser, TypeSQL, scored 34.3% exact match when the split was random but **9.7% on unseen databases**, and 0.3% on its extra-hard queries in that unseen-database split. Those parsers are long superseded and column names were hand-cleaned, so read it as the origin of the point, not a current number.
+
+![A database schema with tables, columns and a foreign key, above the complex question and SQL that annotators wrote against it](../assets/sources/images/yu-spider-fig1.png)
+*Image Source: Yu et al., [Spider](https://aclanthology.org/D18-1425/) (2018), Fig. 1*
 
 ### 2. State schemas — what carries across turns
 
@@ -193,7 +199,12 @@ When the evidence is relational (who reports to whom, which service calls which)
 (billing-svc) -[deployed_in]-> (eu-west-1)
 ```
 
-Triples or adjacency lists are compact and make multi-hop questions ("who owns what billing calls?") a lookup rather than an inference. Retrieving from a knowledge graph is covered in [04](04-retrieval.md) and in depth in [05-graph](../../05-graph-engineering/readme.md).
+Tables need a different kind of structure. SpreadsheetLLM ([arXiv:2407.09025](https://arxiv.org/abs/2407.09025) (Dong et al., 2024-07, preprint)) compresses a sheet before it enters the window in three steps: keep only the rows and columns near structural anchors (k=4 neighbours keeps over 97% of true table borders and drops 75% of cells), index by value to address instead of by cell, and merge runs of identical cells. On 188 test spreadsheets the full encoder cut tokens **24.79 times** (1,548,577 to 62,469) (a lossy step: the anchors are a heuristic), and fine-tuned GPT-4 table detection went from 0.520 to 0.759 F1. The merge step is the one that costs accuracy: without it F1 is 0.789, so the 25x figure and the 78.9% headline come from different configurations. On sheets over 32K tokens, plain encoding scored 0.000 and the compressed one 0.690. A two-stage "detect the table, then answer from it" run reached 0.743 against 0.466 for plain GPT-4 on 307 questions over 64 sheets, single runs.
+
+![SheetCompressor: structural-anchor extraction, inverted-index translation and data-format-aware aggregation shrink a 61,240-token sheet to 708 tokens](../assets/sources/images/dong-spreadsheetllm-fig2.png)
+*Image Source: Dong et al., [SpreadsheetLLM](https://arxiv.org/abs/2407.09025) (2024), Fig. 2*
+
+Triples or adjacency lists are compactTriples or adjacency lists are compact and make multi-hop questions ("who owns what billing calls?") a lookup rather than an inference. Retrieving from a knowledge graph is covered in [04](04-retrieval.md) and in depth in [05-graph](../../05-graph-engineering/readme.md).
 
 ---
 

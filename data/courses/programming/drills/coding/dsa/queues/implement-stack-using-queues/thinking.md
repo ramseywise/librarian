@@ -1,4 +1,5 @@
 ---
+imported_hash: 65110f4cc6280e78
 title: Implement Stack Using Queues — First-Principles Thinking Guide
 summary: 'pop(): return queue.dequeue() top(): return queue.front()'
 order: 190

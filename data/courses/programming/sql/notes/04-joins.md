@@ -1,4 +1,5 @@
 ---
+imported_hash: 3e7b64b3ea7415d3
 title: 4 — Joins
 summary: Conceptually, the database builds every pair of rows (the cross product) and keeps the pairs where the ON condition is true.
 order: 5

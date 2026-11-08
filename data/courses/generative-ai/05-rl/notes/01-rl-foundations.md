@@ -1,4 +1,5 @@
 ---
+imported_hash: 61ae569742289e99
 title: 1 — RL Foundations for LLMs
 summary: The treasure-hunt lab from 00 needs about 10,000 games to win a puzzle with an 11-move answer, and yet the same family of ideas now trains models that reason and write code.
 order: 3
@@ -11,7 +12,7 @@ source: learn-ai-engineering/generative-ai/05-RL/notes/01-rl-foundations.md
 
 The treasure-hunt lab from [00](00-rl-in-plain-language.md) needs about 10,000 games to win a puzzle with an 11-move answer, and yet the same family of ideas now trains models that reason and write code. This chapter is the bridge. It puts precise notation on agent, reward, policy and value, then follows one thread from the Q-learning table in that lab to the PPO clip used on language models, and stops to explain why each step was needed. Every piece is tied to the place LLM RL uses it.
 
-**Where the rest went.** Multi-agent RL and RL in RAG now live in [11](11-multi-agent-and-rag-rl.md#multi-agent-rl-marl); imitation learning, hierarchy, problem design and scaling live in [10](10-engineering-rl-systems.md#learning-from-experts-imitation-and-inverse-rl).
+**Where the rest went.** Bandit regret, Exp3 and contextual bandits live in [1c](01c-bandit-algorithms.md); multi-agent RL and RL in RAG now live in [11](11-multi-agent-and-rag-rl.md#multi-agent-rl-marl); imitation learning, hierarchy, problem design and scaling live in [10](10-engineering-rl-systems.md#learning-from-experts-imitation-and-inverse-rl).
 
 **For RLHF pipeline depth** (SFT → reward model → PPO, Bradley-Terry, reward hacking):
 see [02 — RLHF pipeline](02-rlhf-pipeline.md)
@@ -26,7 +27,7 @@ see [03 — Preference optimization](03-preference-optimization.md)
 Unlike supervised learning (trained on a labeled answer key) or unsupervised learning
 (finds patterns in unlabeled data), RL relies on **trial and error**. An agent learns
 to make decisions by interacting with an unknown environment, maximizing cumulative
-reward over time.
+reward over time. Sutton and Barto's definition is "learning what to do, how to map situations to actions, so as to maximize a numerical reward signal", with trial-and-error search and delayed reward as its two defining features. They list four elements: a **policy**, a **reward signal** that defines the goal, a **value function** (expected total future reward, which is what the agent actually chases: "states of highest value, not highest reward"), and an optional **model**. They call value estimation "arguably the most important thing that has been learned about reinforcement learning over the last six decades", and it is what separates RL from evolutionary search over policies, which scores whole games and ignores what happened within them (*RL: An Introduction*, ch. 1).
 
 ### Markov Decision Process (MDP)
 
@@ -53,7 +54,7 @@ window is the belief state, and context engineering is belief-state engineering.
 G_t = r_{t+1} + γ·r_{t+2} + γ²·r_{t+3} + … = r_{t+1} + γ·G_{t+1}
 ```
 
-γ near 0 makes the agent myopic and γ near 1 makes it far-sighted. The recursive form on the
+γ near 0 makes the agent myopic and γ near 1 makes it far-sighted. With a constant reward of +1 per step the discounted return is `1/(1−γ)`, and the undiscounted return of a continuing task is infinite, which is why discounting exists (*RL: An Introduction*, ch. 3). The same chapter states the **reward hypothesis**: all goals and purposes can be thought of as maximizing the expected cumulative sum of a scalar signal. Its corollary is the reward-design rule of this pillar: the reward tells the agent *what* you want, not *how*. Reward chess for winning, not for taking pieces. The recursive form on the
 right is what every algorithm below exploits. Winder's test for whether a problem needs RL at
 all comes from it: the problem has to be *sequential* and *strategic*. A recommender trained
 by supervised learning to maximize the next click learns click-bait. One trained on the return
@@ -100,7 +101,7 @@ The advantage `A` is the quantity LLM RL actually optimizes. PPO estimates it wi
 and GRPO estimates it from a group of sampled answers (see
 [policy gradients](#policy-gradients-from-reinforce-to-the-ppo-clip) below).
 
-**Three ways to estimate value** (*Reinforcement Learning*, ch. 2–3):
+**Three ways to estimate value** (*Reinforcement Learning*, ch. 2–3; *RL: An Introduction*, ch. 5–6, detailed in [01b](01b-algorithm-families-td-and-dqn.md)):
 
 | Method | Needs a model of P? | Updates from | Bias / variance |
 |---|---|---|---|
@@ -111,151 +112,22 @@ and GRPO estimates it from a group of sampled answers (see
 All three are instances of **generalized policy iteration**: evaluate the current policy,
 make it greedier against that evaluation, repeat.
 
-### Algorithm families
+Two worked examples make the table concrete. In a 5×5 gridworld with γ = 0.9, off-grid moves costing −1, and a square A that pays +10 and teleports the agent, the equiprobable random policy values A at only 8.8, below its immediate reward (B's +5 is worth 5.3), because the destination square is worth less than the one it left; values near the bottom edge go negative from bumping the wall. The optimal values rise to 24.4 for A, computed from the Bellman optimality equation (*RL: An Introduction*, ch. 3, Figs 3.2 and 3.5). In a 4×4 gridworld with −1 per step and a random policy, iterative policy evaluation yields greedy policies that are already optimal after three sweeps, so full evaluation is wasted work, and truncating it to one sweep gives **value iteration** (*RL: An Introduction*, ch. 4, Fig. 4.1 and Example 4.1). DP needs a known model and is polynomial in states and actions; direct policy search is exponential. Even so, one sweep of backgammon's more than 10^20 states at a million updates per second would take over a thousand years, which is why everything after DP samples instead (*RL: An Introduction*, ch. 4).
 
-**Value-based:** The agent estimates the expected long-term return (the "value") of
-states or state-action pairs, then acts greedily. Examples: Q-Learning, DQN (Deep Q-Networks). DQN ([arXiv:1312.5602](https://arxiv.org/abs/1312.5602), Mnih et al., 2013) learned Q-values straight from raw pixels with a CNN. Its experience replay buffer broke the correlation between consecutive frames. With one architecture and one set of hyperparameters it played seven Atari games and beat a human expert on three. Both the games and the "one agent, no per-game tuning" rule came from the **Arcade Learning Environment** ([arXiv:1207.4708](https://arxiv.org/abs/1207.4708), Bellemare et al., JAIR 2013). ALE's authors tuned on five training games and reported on 50 test games drawn at random, the train/test split applied to environments. Their own SARSA(λ) agents on hand-built features beat trivial baselines in only 40 of 55 games, and sparse-reward games such as Montezuma's Revenge defeated everything. DQN's contribution was to learn the features from pixels.
+![Gridworld with special states A and B (left) and the state-value function of the equiprobable random policy (right)](../assets/sources/images/sutton-barto-rl-fig3-2.png)
+*Image Source: Sutton and Barto, [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html) (2nd ed., 2018), Fig. 3.2*
 
-**Policy-based:** Directly optimize the policy without an explicit value function.
-Policy gradient methods compute `∇E[R]` and update `π_θ` toward higher-reward trajectories.
-They sample from a distribution rather than maximize over actions, which is why they scale to
-huge or continuous action spaces where a `max_a` is infeasible (*Reinforcement Learning*,
-ch. 9). An LLM choosing one token from a vocabulary of tens of thousands, at every step, is
-such a space.
+![Iterative policy evaluation on a 4x4 gridworld: value estimates for the random policy and the greedy policy at each iteration k](../assets/sources/images/sutton-barto-rl-fig4-1.png)
+*Image Source: Sutton and Barto, [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html) (2nd ed., 2018), Fig. 4.1*
 
-**Actor-Critic:** Hybrid approach. An "actor" decides actions (policy); a "critic"
-estimates value (how good the state is), providing a lower-variance signal for updating
-the actor. PPO ([arXiv:1707.06347](https://arxiv.org/abs/1707.06347)) became the default
-actor-critic algorithm for deep RL and for RLHF. For LLM reasoning with verifiable rewards,
-critic-free GRPO has largely taken over ([03](03-preference-optimization.md)).
+![Jack's car rental: policies pi0 to pi4 as contour maps over cars at each location, from never moving cars to the final policy, plus the 3-D value surface of pi4 (420 to 612).](../assets/sources/images/sutton-barto-rl-fig4-2.png)
+*Image Source: Sutton and Barto, [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book-2nd.html) (MIT Press, 2018), Fig. 4.2*
 
-**Model-free vs. model-based:** Model-free agents learn purely from experience.
-Model-based agents learn the transition function P(s'|s,a) and use it for planning —
-more sample-efficient but harder to learn accurate models.
+Two facts from a short tutorial summary of RL ([arXiv:2301.01379](https://arxiv.org/abs/2301.01379) (Ahilan, 2023-01, preprint)) explain why the table's methods differ beyond bias and variance. Repeated Bellman expectation backups converge because the backup is a γ-contraction in the infinity norm, which needs γ < 1 in an infinite-horizon problem. And on a fixed batch of experience, Monte Carlo converges to the value that minimises squared error on the observed returns, while TD(0) converges to the value of the maximum-likelihood Markov model of that data, so the two can disagree. The paper is a proof-sketch summary of Sutton and Barto and Silver's course, with no experiments, and stops before PPO.
 
-DreamerV3 ([arXiv:2301.04104](https://arxiv.org/abs/2301.04104) (Hafner et al., Nature 2025; numbers from arXiv v2)) shows
-the current form of the idea; its references reach back to Dyna (Sutton, 1991). It learns a world
-model from replayed experience, then trains the actor on rollouts of about 16 predicted latent
-states and the critic on those plus replayed trajectories at lower weight. It acts by sampling the
-actor with no lookahead planning. **One hyperparameter table
-held across 8 benchmark domains and over 150 tasks.** On 57 Atari games at 200M steps it reached a
-gamer-normalized median of 830%, against 693% for MuZero and 180% for PPO. Model size and replay ratio
-still change per benchmark, so "fixed" doesn't mean nothing is set. It isn't best everywhere either:
-EfficientMuZero leads at Atari100k (gamer mean 190% vs 125%, under a different protocol), and it scores 0.01
-on BSuite exploration against 0.68 for Bootstrapped DQN. In Minecraft all 10 runs found a diamond
-within 100M steps with no human data, while no PPO, IMPALA or Rainbow run did. That is a claim about
-runs: only 0.4% of episodes at the 100M budget got a diamond, on a setup the authors modified and with a protocol they
-set themselves. Every domain is a simulator or a game, and none of its experiments involve LLMs.
+### Algorithm families, temporal difference and DQN
 
-**On-policy vs. off-policy.** An *on-policy* method learns about the policy that is
-generating the data (SARSA, REINFORCE, A2C, PPO). An *off-policy* method learns about one
-policy, the *target*, from data generated by another, the *behavior* policy (Q-learning, DQN,
-DDPG, SAC). Off-policy methods can reuse old data from a replay buffer, logs or a
-demonstrator; the price is a mismatch between the two distributions that has to be corrected,
-usually by importance sampling (*Reinforcement Learning*, ch. 1, 3 and 6).
-
-> **Dated.** Winder writes that "most state-of-the-art algorithms are off-policy"
-> (*Reinforcement Learning*, ch. 1). That held for 2020 benchmarks such as Atari and MuJoCo.
-> LLM RL in 2025–26 is mostly on-policy: PPO and GRPO sample fresh completions from the current
-> policy at every step. Winder's case for off-policy learning was exploration. A pretrained
-> prior already makes on-policy samples informative, which removes much of that argument.
-
-### Temporal-difference learning: Q-learning vs. SARSA
-
-TD learning updates an estimate toward a one-step target. The gap between target and
-estimate is the **TD error** δ, the single most reused quantity in RL:
-
-```
-δ_t = r_{t+1} + γ·V(s_{t+1}) − V(s_t)          TD error
-V(s_t) ← V(s_t) + α·δ_t                         TD(0) update
-```
-
-Two control algorithms differ in one term of the target (*Reinforcement Learning*, ch. 3):
-
-```
-Q-learning (off-policy):  Q(s,a) ← Q(s,a) + α [ r + γ·max_a' Q(s',a') − Q(s,a) ]
-SARSA      (on-policy):   Q(s,a) ← Q(s,a) + α [ r + γ·Q(s',a')        − Q(s,a) ]   a' ~ π
-```
-
-```python
-def q_update(Q, s, a, r, s_next, done, alpha=0.1, gamma=0.99):
-    target = r if done else r + gamma * max(Q[s_next].values())  # SARSA: Q[s_next][a_next]
-    Q[s][a] += alpha * (target - Q[s][a])                        # alpha * TD error
-
-# One step of a corridor: moving right from cell 3 costs 0.5 and lands next to a known payoff
-Q = {3: {"left": 0.0, "right": 0.0}, 4: {"left": 0.0, "right": 10.0}}
-q_update(Q, s=3, a="right", r=-0.5, s_next=4, done=False)
-print(round(Q[3]["right"], 3))   # 0.1 * (-0.5 + 0.99 * 10.0 - 0.0)
-```
-
-```text
-0.94
-```
-
-Q-learning bootstraps from the best next action, so it learns the value of the greedy policy
-while it explores with ε-greedy. SARSA bootstraps from the action it actually takes next, so it
-learns the value of the exploring policy, random slips included. Winder's cliff world shows the
-consequence. Each step costs −1, falling off the cliff costs −100 and ends the episode, and the
-agent explores with ε-greedy:
-
-![Two grid-world policies. Q-learning walks along the row next to the cliff; SARSA climbs to the top row and walks along it, far from the cliff.](../assets/sources/images/winder-reinforcement-learning-fig3-3.png)
-*Image Source: Phil Winder, *Reinforcement Learning* (O'Reilly, 2020), Fig. 3-3*
-
-Q-learning finds the shortest path along the cliff edge, which is optimal only if the agent
-never makes a random move. SARSA learns the safe route, because its value estimates include the
-chance that an ε-greedy step kicks it over the edge. The on-policy agent optimizes the policy it
-will actually run. That is the same argument LLM RL makes for on-policy rollouts.
-
-**n-step returns and eligibility traces.** One step is the low-variance, high-bias extreme;
-the full Monte Carlo return is the other. An n-step target uses n real rewards before
-bootstrapping, and TD(λ) blends all n with weights `(1−λ)λ^(n−1)` via an eligibility trace
-(*Reinforcement Learning*, ch. 3). Multi-step targets help most when rewards are sparse or
-delayed. **GAE**, the advantage estimator inside PPO for RLHF, is exactly this λ-weighting
-applied to TD errors:
-
-```
-Â_t = Σ_{l≥0} (γλ)^l · δ_{t+l}          λ = 0 → one-step TD;  λ = 1 → Monte Carlo minus V
-```
-
-### Deep Q-networks and learning from logs
-
-DQN made Q-learning work with a neural network by fixing two sources of instability
-(*Reinforcement Learning*, ch. 4):
-
-- **Experience replay** samples past transitions at random, which breaks the correlation
-  between consecutive steps.
-- A **target network**, a lagged copy of the Q-network, computes `max_a' Q(s',a')` so the
-  target does not move with every update.
-
-DQN also uses the Huber loss, which is linear for large errors and so caps the gradient from
-outliers. The `max` in the target overestimates values whenever estimates are noisy. **Double
-Q-learning** picks the action with one network and scores it with the other. Rainbow
-combines that with prioritized replay, dueling (V + A) heads, n-step targets, noisy-net
-exploration and distributional returns.
-
-**Offline (batch) RL** learns from a fixed log with no further interaction. Winder trains a
-DQN agent on the replay buffer of another DQN agent on CartPole, with no environment access.
-Its Q-values diverge, climbing on a log scale, and its reward stays poor. The `max` keeps
-choosing actions that are not in the data, and with no way to try them nothing corrects the
-optimistic estimate. Batch-constrained Q-learning (BCQ) converges on the same buffer because
-it only considers actions a generative model says the log could contain (*Reinforcement
-Learning*, ch. 4). The lesson carries over directly to LLMs. Offline preference methods such as
-DPO ([03](03-preference-optimization.md)) are batch RL on a fixed preference set, and they
-share its limit: the policy improves only where the data has coverage. Online and on-policy
-methods keep the advantage of being able to check their own guesses.
-
-Decision Transformer removes the `max` instead of constraining it
-([arXiv:2106.01345](https://arxiv.org/abs/2106.01345) (Chen et al., NeurIPS 2021)). A small
-GPT is trained on the log as interleaved (return-to-go, state, action) tokens with a plain
-action-prediction loss, then prompted at test time with the return you want. With no learned
-value function to optimize, there is nothing for unseen actions to exploit. On nine D4RL
-locomotion logs it **averaged 74.7 against 63.9 for CQL**, the strongest pessimistic
-Q-learning baseline. When rewards were withheld until the end of the episode, CQL collapsed
-(Hopper medium-replay: 2.0) while Decision Transformer barely moved (78.5). The limits are in
-the same paper. Behavior cloning on only the top 10% of trajectories matched it on average
-(56.7 against 56.1), although picking that percentile needs environment rollouts. And it
-exceeded the best return in its data only sometimes (Seaquest). Offline RL here becomes the
-same conditional next-token problem an LLM solves.
+The value-based, policy-based and actor-critic families, model-free against model-based, on- against off-policy, Q-learning against SARSA, n-step returns with GAE, and DQN with offline RL moved to [01b](01b-algorithm-families-td-and-dqn.md). The policy-gradient sections below build on them, so read 01b first if the TD error δ or the on-policy/off-policy distinction is new.
 
 ### Policy gradients: from REINFORCE to the PPO clip
 
@@ -280,6 +152,10 @@ summary of ch. 5 is that the policy gradient algorithms differ *only* in what th
 | reward minus the mean of the other k−1 samples | RLOO | Leave-one-out baseline, no critic, whole completion is one action |
 | group-normalized reward | GRPO | Baseline from sibling samples, no critic |
 
+**Where REINFORCE comes from.** Williams ([Machine Learning, 1992](https://doi.org/10.1007/bf00992696)) named the family: for stochastic units with immediate reward, the update Δw = α·(r − b)·∂ln g/∂w moves the weights, on average, along the gradient of expected reward, and its inner product with that gradient is never negative (Thm 1). With a common α the term is an unbiased gradient estimate, provided the baseline b is conditionally independent of the unit's current output (it may depend on past rewards). The paper proves nothing about variance: it says only that the analysis gives no basis for choosing among baselines, and asserts, from extensive but unreported simulations (and Sutton, 1984), that a reinforcement-comparison baseline can greatly speed convergence. It has no returns-to-go, discounting or state values, and warns of convergence to inferior actions. The MDP form is the later theorem below.
+
+**What the theorem says exactly.** Sutton and Barto's version (ch. 13, Sec. 13.2) states that `∇J(θ) ∝ Σ_s μ(s) Σ_a q_π(s,a)·∇π(a|s,θ)`, with no derivative of the state distribution μ. The constant is the average episode length in the episodic case, and it is 1 (an equality) in the continuing case. REINFORCE is the sampled form, `θ ← θ + α·G_t·∇π(A_t|S_t)/π(A_t|S_t)`, and the book calls `∇ln π` the eligibility vector. The baseline identity behind the next paragraph is one line: `Σ_a b(s)·∇π(a|s) = b(s)·∇1 = 0`, so any `b` that does not depend on the action leaves the expected update unchanged. Their one-step actor-critic is the Ψ = δ_t row of the table (the book notes it is sometimes called A2C), and its critic adds bias even though a Monte Carlo critic would too (ch. 13, Sec. 13.5).
+
 **Why a baseline.** With raw returns, a policy that happens to fail early gets a large update
 even if it was good. In Pong every early episode scores near −21, so every action gets pushed
 down. Subtracting a baseline turns "was this good?" into "was this better than usual?". The
@@ -291,10 +167,12 @@ CartPole run:
 caption repeats Fig. 5-3's "average rewards"; the axis and the text show this is gradient
 standard deviation*
 
+The textbook shows the same gap on its short corridor (reward −1 per step, identical features in every state, actions switched in the middle state): REINFORCE with a state-value baseline (α_θ = 2⁻⁹, α_w = 2⁻⁶) learns much faster than plain REINFORCE at its best step size (2⁻¹³), averaged over 100 runs of 1,000 episodes (read from Fig. 13.2). The book adds that the value step size is easy to set, about 0.1/E[‖∇v̂‖²] for a linear critic, while the policy step size is "much less clear" (ch. 13, Sec. 13.4). The same corridor shows why a stochastic policy is worth having: the best policy goes right with probability about 0.59 for a value of about −11.6, while ε-greedy with ε = 0.1 is stuck with policies worth less than −44 (ch. 13, Ex. 13.1). The chapter has no trust region, clip or GAE; those rows rest on the other sources.
+
 Once the policy is decent, plain REINFORCE keeps making large updates that knock it about; the
 baseline version settles. That is what "variance reduction" means in the papers. GRPO's
 `(r_i − mean(r)) / std(r)` over a group of completions for the same prompt is this baseline
-computed empirically instead of learned ([03](03-preference-optimization.md)).
+computed empirically instead of learned ([03](03b-grpo-and-gspo.md)).
 
 **REINFORCE comes back once the policy is pretrained.** The variance case against REINFORCE was
 built on agents trained from random or weak initializations. Ahmadian et al.
@@ -357,6 +235,13 @@ is expensive and awkward with shared policy/value networks. A KL *penalty* with 
 simpler but β is hard to tune (*Reinforcement Learning*, ch. 6). RLHF keeps that penalty, but
 against the frozen reference model rather than the previous iterate
 ([02](02-rlhf-pipeline.md); why the penalty is *reverse* KL: [12](12-rlhf-failure-modes.md#overoptimization)).
+
+Murphy derives where the trust region comes from (*RL: A Comprehensive Overview*, ch. 3, Sec. 3.3). The new policy's return is bounded below by a surrogate minus a penalty proportional to the total-variation distance between old and new policies, scaled by 2γC/(1−γ)². A KL bound δ implies a TV bound through δ = ε²/2, so maximising the surrogate under a KL limit improves the policy monotonically in theory. The original paper ([arXiv:1502.05477](https://arxiv.org/abs/1502.05477) (Schulman et al., ICML 2015)) says the theory's penalty coefficient gives very small steps, so the algorithm uses a hard average-KL constraint with δ = 0.01 in all experiments. The monotonic-improvement guarantee holds only for the penalised form with exact advantages. On MuJoCo locomotion (five runs) single-path and vine TRPO solved every task, while natural gradient with a fixed penalty failed to produce hopping or walking; on seven Atari games (one run each, about 30 hours for 500 iterations on 16 cores) it beat the baselines only on some. TRPO expands the surrogate to first order and the KL to second order, steps along the natural gradient `F⁻¹g` with size √(2δ/vᵀFv), solves for it by conjugate gradient and backtracks until the constraint holds. The step is measured in KL, not parameter distance, because the same shift in a Gaussian's mean matters far more when its variance is small:
+
+![Two pairs of Gaussians whose means differ by the same amount: with a small shared variance the two curves overlap little, with a large shared variance they overlap a lot.](../assets/sources/images/murphy-rl-fig3-1.png)
+*Image Source: Murphy, [*Reinforcement Learning: A Comprehensive Overview*](https://arxiv.org/abs/2412.05265) (2024), Fig. 3.1 (reproduced from Honkela et al.)*
+
+The Fisher matrix F is the local KL metric, so it rescales each parameter by how much it moves the distribution. For off-policy actors, V-trace truncation at c = 1 and ρ = 1 worked best in IMPALA, one agent playing 57 Atari games (as reported in ch. 3, Sec. 3.4). The chapter runs no experiments and has no LLM method (no GRPO, DPO or KL-to-reference penalty). Its control-as-inference section shows that a KL-regularised objective with a uniform prior is maximum-entropy RL, the setting of SAC. Swapping in a reference-policy prior gives the RLHF objective form; that link is this note's, not the chapter's.
 
 **The PPO clip** replaces the trust region with a clipped surrogate:
 
@@ -433,7 +318,7 @@ J(π) = E_π[ Σ_t r_t + α·H[π(·|s_t)] ]        α = temperature
 ```
 
 **Soft actor-critic (SAC)** learns soft Q-functions off-policy from a replay buffer and fits the
-policy by minimizing the KL divergence to that softmax, using a reparameterized Gaussian for
+policy by minimizing the KL divergence to that [softmax](../../01-llm-fundamentals/notes/04-decoding-and-inference-behaviour.md#decoding), using a reparameterized Gaussian for
 continuous actions. Most implementations tune α automatically toward a target entropy, commonly
 `−|A|` for an action space with |A| dimensions (*Reinforcement Learning*, ch. 7).
 
@@ -469,14 +354,17 @@ the bridge between the value and policy families (*Reinforcement Learning*, ch. 
 > probability of unlikely tokens ([arXiv:2503.14476](https://arxiv.org/abs/2503.14476); the
 > fix is listed in [05](05-post-training-for-agents.md)).
 
+![DAPO: AIME accuracy and generation entropy with and without clip-higher](../assets/sources/images/yu-dapo-fig2.png)
+*Image Source: Yu et al., [DAPO: An Open-Source LLM Reinforcement Learning System at Scale](https://arxiv.org/abs/2503.14476) (2025), Fig. 2*
+
 ### Exploration vs. exploitation
 
 A fundamental tension: should the agent **exploit** the best action it knows (maximize
 immediate reward) or **explore** new actions that might yield higher rewards in the long
 run? Strategies:
-- **ε-greedy:** With probability ε, take a random action; otherwise exploit
+- **ε-greedy:** With probability ε, take a random action; otherwise exploit. Murphy notes it explores every action with probability at least ε/|A| forever, so it is suboptimal unless ε is annealed to 0 (*RL: A Comprehensive Overview*, ch. 1, Sec. 1.3.5). Boltzmann selection is smoother: with τ = 1, estimated rewards of 4.90 and 5.10 give about 0.45 and 0.55, where ε-greedy would give a hard 0.05/0.95 split (his Table 1.2, with ε = 0.1 and two actions; the Boltzmann values check against exp(R̂/τ))
 - **UCB (Upper Confidence Bound):** Choose actions with high uncertainty to reduce
-  uncertainty faster
+  uncertainty faster. Guarantees are in [1c](01c-bandit-algorithms.md#stochastic-bandits-and-regret) (*Bandit Algorithms*, ch. 7)
 - **Entropy regularization (SAC; optional in PPO):** Add an entropy bonus to the objective to
   encourage diverse action distributions. The PPO paper includes one for its Atari runs and
   turns it off for continuous control ([arXiv:1707.06347](https://arxiv.org/abs/1707.06347)).
@@ -503,26 +391,11 @@ and by reshaping the reward. Before reaching for them, try a denser reward, a de
 simpler problem. Exploration needs prior knowledge, which is precisely what a pretrained LLM
 brings.
 
-**Contextual bandits** are the one-step case: observe a context, pick an action, get a
-reward, with no state carried forward. It is the right model for recommendation, routing and
-prompt or model selection. See [Bayesian bandits](../../../data-analytics/04-bayesian-analysis/notes/03-priors-and-bandits.md#bayesian-bandits-thompson-sampling) in data
-analytics for the case with no context, and for Thompson sampling. Two results anchor it:
+![Winder, Fig. 9-7: three frames of a noisy television. Curiosity based on prediction error keeps rewarding the agent for staring at screens whose next frame it cannot predict.](../assets/sources/images/winder-reinforcement-learning-fig9-7.png)
+*Image Source: Phil Winder, *Reinforcement Learning* (O'Reilly, 2020), Fig. 9-7*
 
-- **LinUCB** ([arXiv:1003.0146](https://arxiv.org/abs/1003.0146), Li et al., 2010) fits a
-  ridge regression per arm and picks the arm with the highest upper confidence bound. On over
-  33M events from the Yahoo! front-page news module it got a 12.5% click lift over a
-  context-free bandit. The paper's other lasting contribution is **replay evaluation**: a
-  bandit policy can be scored offline, without bias, on logs collected under a uniformly
-  random policy.
-- **Thompson sampling with neural nets** ([arXiv:1802.09127](https://arxiv.org/abs/1802.09127),
-  Riquelme et al., 2018) benchmarked approximate Bayesian deep nets as posteriors. Many methods
-  that work in supervised learning did poorly here because their uncertainty estimates converge
-  too slowly for online decisions. The robust choice was **NeuralLinear**: a network learns a
-  representation, and an exact Bayesian linear regression on its last layer supplies the
-  uncertainty.
+**Regret and bandits.** The guarantees live in [1c](01c-bandit-algorithms.md): regret and the 10-armed testbed, explore-then-commit, UCB, KL-UCB and MOSS, Exp3 for adversarial rewards, the lower bounds, and contextual and linear bandits (LinUCB, Thompson sampling with neural nets). The one idea to carry on from here is that regret grows only logarithmically in n when the gaps are fixed, and as √n in the worst case, so exploration has to be spent early and in proportion to uncertainty. A contextual bandit is the one-step case with a context and no carried state; it is the right model for recommendation, routing and prompt or model selection.
 
-Zhou's survey ([arXiv:1508.03326](https://arxiv.org/abs/1508.03326)) covers the wider family:
-stochastic vs adversarial rewards, and UCB vs Thompson variants.
 
 ### RL applied to LLMs
 
@@ -611,4 +484,4 @@ The RLHF pipeline (SFT → reward model → PPO) and preference optimization alg
 
 ## Next
 
-[02 — RLHF pipeline](02-rlhf-pipeline.md) applies the policy-gradient half of this note to language models. [05-RL README](../readme.md) has the full reading order, and [03-agentic-foundations](../../03-agentic-foundations/readme.md) covers the agents (ReAct, Reflexion) these methods train. The depth notes on algorithms and on Constitutional AI are [03](03-preference-optimization.md) and [04](04-constitutional-ai.md).
+[01c — Bandits](01c-bandit-algorithms.md) holds the regret guarantees behind the exploration paragraph above. [01b — Algorithm families, TD and DQN](01b-algorithm-families-td-and-dqn.md) is the value-based half that this note's Bellman section leads into (read it before the policy gradients if TD or off-policy learning is new). [02 — RLHF pipeline](02-rlhf-pipeline.md) applies the policy-gradient half of this note to language models. [05-RL README](../readme.md) has the full reading order, and [03-agentic-foundations](../../03-agentic-foundations/readme.md) covers the agents (ReAct, Reflexion) these methods train. The depth notes on algorithms and on Constitutional AI are [03](03-preference-optimization.md) and [04](04-constitutional-ai.md).

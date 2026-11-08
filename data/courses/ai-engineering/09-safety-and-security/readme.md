@@ -1,4 +1,5 @@
 ---
+imported_hash: 61b8c5db78be225e
 title: 09 — Safety and Security
 summary: Safety and security engineering is keeping an LLM system from being turned against its users or its owner, and from harming either by accident.
 order: 1
@@ -33,7 +34,7 @@ ability to act outside itself (Willison's "lethal trifecta") will eventually be 
 graph ([05](../05-graph-engineering/readme.md)). This pillar is where those threats are
 modelled together and defended by design, not one prompt at a time.
 
-**Why a pillar, not a note.** Added 2026-10-31 (see the [structure decisions](../../.claude/skills/pillar/references/pillar-layout.md#structure-decisions)).
+**Why a pillar, not a note.** Added 2026-10-31 (see the [structure decisions](https://github.com/ramseywise/librarian/blob/main/.claude/skills/pillar/references/pillar-layout.md#structure-decisions)).
 The readings ledger had parked 83 safety papers as a watch topic with no home. The
 repo's security material was split across three notes:
 [01/10 adversarial prompting](../01-prompt-engineering/notes/10-adversarial-prompting.md),

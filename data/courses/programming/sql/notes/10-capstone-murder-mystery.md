@@ -1,4 +1,5 @@
 ---
+imported_hash: 887d2b7a3d62cac4
 title: '10 — Capstone: The SQL Murder Mystery'
 summary: 'Start from what you know: a murder, on 2018-01-15, in SQL City.'
 order: 11

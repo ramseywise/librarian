@@ -1,4 +1,5 @@
 ---
+imported_hash: d7b38c7f2895bd55
 title: 2 — Functions
 summary: 'weekly = compute_pay(45, 10.0) # 475.0'
 order: 3

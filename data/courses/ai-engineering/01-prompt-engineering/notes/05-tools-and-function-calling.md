@@ -1,7 +1,8 @@
 ---
+imported_hash: fd9f4487852a0f0c
 title: 5 — Tools and Function Calling
 summary: A chat model cannot look up today's weather or change a thermostat, so without tools it invents the answer or restates your plan.
-order: 6
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/notes/05-tools-and-function-calling.md
@@ -59,6 +60,11 @@ final = client.chat.completions.create(model=MODEL, messages=messages, tools=too
 Two knobs worth knowing:
 - **`tool_choice`**: `"auto"` (default) lets the model decide, `"none"` forbids calls, and `{"type": "function", "function": {"name": "get_current_weather"}}` forces that tool. Forcing is how you get structured output via a tool ([04](04-controlling-output.md#structured-output)).
 - **Parallel calls**: one reply can carry several `tool_calls` ("weather in London *and* Belmopan"). Answer every one, matched by `tool_call_id`, before calling the model again.
+
+The loop above is **synchronous**: the model stops generating while each call runs. AsyncLM, [arXiv:2412.07017](https://arxiv.org/abs/2412.07017) (Gim et al., 2024-12, preprint, under review), lets it keep going. The model emits `[CALL] job1 [HEAD] function call [END]`, the runtime executes in the background, and each finished result is injected into the stream as an interrupt `[INTR] id [HEAD] value [END]`, with `[TRAP][END]` to wait for one. On BFCL v3 multi-step parallel tasks with a local Llama-3.2-3B on an RTX 4090, end-to-end latency fell **5.4x** against synchronous calling, but synchronous *parallel* calling already gave 3.2x, so that is the baseline to beat. On simple parallel tasks it was 1.6x against 1.3x. The cost is about 20 extra tokens per task, and the gain is roughly 1 + E/G (average execution time over average generation time), so cheap calls gain little (tool times were 30 to 500 ms). The protocol has to live in the model: a fine-tuned 3B scored 65.97% under async against 57.33% under sync, but sync in the same fine-tuned format scored 66.07%, so the gain is the format and not asynchrony. GPT-4o held up from one example (59.61% against 57.84%) while few-shot GPT-4o-mini fell from 55.08% to 41.44%. Cloud numbers are emulated and the latency runs put ground-truth answers in the prompt.
+
+![Synchronous versus asynchronous function calling on a token timeline](../assets/sources/images/gim-asynclm-fig1.png)
+*Image Source: Gim et al., [Asynchronous LLM Function Calling](https://arxiv.org/abs/2412.07017) (2024), Fig. 1*
 
 In a conversational agent, wrap that in an outer user-input loop. The book's `run_conversation` does it: take input, append it as a `user` message, run the tool loop, and only return to the user once the reply has no tool calls. The **observation** (tool result) becomes context for the next step, which is ReAct with the bookkeeping done by the API ([03](03-core-techniques.md#react--reason--act)).
 
@@ -126,6 +132,8 @@ There's no fixed recipe for this; the book's answer is "evaluate, evaluate, eval
 The trade-off cuts both ways. Too much context confuses the model, can overflow the window, and costs latency and money. Too little starves it.
 
 Context selection is the subject of [02-context](../../02-context-engineering/readme.md).
+
+**A tool-using agent is not automatically more accurate.** Barkley & van der Merwe compared Llama-3.1-8B agents with Wikipedia, DuckDuckGo and a Python sandbox against the same model without tools (temperature 0.5, 3 runs, first 1,000 questions). Every agent lost: ReAct scored 60.2% against 83.5% for the control on GSM8K, 60.2% against 67.7% on TriviaQA and 61.9% against 67.0% on MMLU, and gave 397.7 wrong GSM8K answers against 165.3. In one trace the agent hit a module error calling Wikipedia from the Python tool, then claimed it had found the answer online. Putting DuckDuckGo snippets straight into the prompt raised the TriviaQA correct count by the most (676.3 against 616.7 at temperature 0.2; multi-agent debate also edged above control, at 633.7), though that run used a different 8B model from the agents, so the comparison is indicative. Only 8B models were tested, with no significance tests; the authors warn that stronger models may behave differently ([arXiv:2410.19385](https://arxiv.org/abs/2410.19385) (Barkley & van der Merwe, 2024-10, preprint)). Measure tool-use accuracy against a no-tool baseline on your own model before shipping the loop.
 
 ---
 

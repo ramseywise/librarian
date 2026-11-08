@@ -1,7 +1,8 @@
 ---
+imported_hash: e8bf409bc0b306b5
 title: Comms
 summary: Communication How to narrate your process, manage the dual conversation with AI and interviewer, and recover when stuck.
-order: 249
+order: 252
 kind: reading
 section: Coding / Notes
 source: learn-ai-engineering/programming/drills/coding/notes/comms.md

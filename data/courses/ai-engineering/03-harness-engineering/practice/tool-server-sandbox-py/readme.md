@@ -1,7 +1,8 @@
 ---
+imported_hash: a6c5c82bb3409eaf
 title: 'Lab: a tool server with sandboxing (Python)'
 summary: The Python twin of the TypeScript lab. It serves the same workspace/ from that folder, with the same tools, policy and scripted plan.
-order: 13
+order: 15
 kind: reading
 section: Practice / Tool server sandbox py
 source: learn-ai-engineering/ai-engineering/03-harness-engineering/practice/tool-server-sandbox-py/README.md

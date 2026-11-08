@@ -1,4 +1,5 @@
 ---
+imported_hash: eea9577b567a9f57
 title: Two Sum
 summary: Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
 order: 167

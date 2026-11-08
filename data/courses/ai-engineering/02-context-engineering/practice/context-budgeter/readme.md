@@ -1,7 +1,8 @@
 ---
+imported_hash: 9534f66c944a888e
 title: 'Lab: a context budgeter'
 summary: 'Language: TypeScript. The Python version does the same job on the same inputs.'
-order: 16
+order: 17
 kind: reading
 section: Practice / Context budgeter
 source: learn-ai-engineering/ai-engineering/02-context-engineering/practice/context-budgeter/README.md

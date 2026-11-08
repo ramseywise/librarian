@@ -1,7 +1,8 @@
 ---
+imported_hash: 6e1be70e8d54382b
 title: 10 — Engineering RL Systems
 summary: Most RL projects don't fail because someone picked the wrong algorithm.
-order: 12
+order: 18
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/05-RL/notes/10-engineering-rl-systems.md
@@ -120,7 +121,7 @@ later can force a change of algorithm. For massive action spaces, policy gradien
 
 **Online, offline, concurrent.** Online learning explores but needs a live or simulated
 environment. Offline learning uses logs but cannot explore and suffers distribution shift
-(see [DQN](01-rl-foundations.md#deep-q-networks-and-learning-from-logs)). Concurrent learning runs many agents in
+(see [DQN](01b-algorithm-families-td-and-dqn.md#deep-q-networks-and-learning-from-logs)). Concurrent learning runs many agents in
 parallel on one problem (ch. 9). Simulations are worth building first, but a policy that works
 perfectly in simulation can still fail in the real world (ch. 9).
 
@@ -183,6 +184,9 @@ designs bracket the space:
 | Synchronous (DD-PPO) | Every worker collects a batch, then all exchange gradients | Each update waits for the slowest worker, so stragglers are cut off preemptively. Wijmans et al. report near-linear scaling to 256 GPUs |
 | Asynchronous (IMPALA, SEED) | Actors push trajectories into a queue; the learner trains on whatever arrives | The data is slightly off-policy and needs an importance-weighted correction (V-trace) |
 
+![(a) DistBelief: replicas push gradients to a parameter server and pull parameters. (b) Gorila: separate actors fill an experience buffer, learners read from it and send gradients to the parameter server.](../assets/sources/images/winder-reinforcement-learning-fig10-1.png)
+*Image Source: Phil Winder, *Reinforcement Learning* (O'Reilly, 2020), Fig. 10-1*
+
 Throughput is the reason to accept that staleness. Espeholt et al. priced one billion frames at
 **\$236 for IMPALA against \$54 for SEED** on DeepMind Lab, and \$899 against \$369 on Google Research
 Football. LLM RL faces the same choice in a different shape. Generation is the actor and dominates
@@ -199,6 +203,9 @@ is covered in
 [inference engineering](../../../ai-engineering/07-inference-engineering/notes/07-prefill-decode-kv-cache.md#pagedattention).
 Because the trainer and the serving engine are separate programs, their log-probs ([defined](../../01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity)) can disagree,
 which is the mismatch the reports below correct for.
+
+![Parallel sampling in vLLM. Two samples share the prompt's physical KV blocks (blocks 7 and 1). When sample A1 must write its next token into the shared last block, a copy-on-write step allocates a new physical block (block 3) and the reference count of block 1 drops from 2 to 1.](../assets/sources/images/kwon-vllm-fig8.png)
+*Image Source: Kwon et al., [Efficient Memory Management for Large Language Model Serving with PagedAttention](https://arxiv.org/abs/2309.06180) (2023), Fig. 8*
 
 **Evolution strategies are the extreme of the actor–learner split.** ES perturbs the weights,
 scores each perturbed copy and averages the perturbations weighted by score. Workers exchange only
@@ -221,7 +228,7 @@ mismatch is left to correct. The results:
 The head-to-head wins over GRPO are on RWKV models at equal hardware and wall-clock.
 
 Optimizer memory is also what stops gradient-based full-weight RL from fitting, and it can be cut
-without leaving gradients behind. LoGRA keeps each weight's gradient as a low-rank sketch, lets the
+without leaving gradients behind. LoGRA keeps each weight's gradient as a [low-rank](../../01-llm-fundamentals/notes/02-attention-and-the-transformer-block.md#matrix-products-transpose-and-rank) sketch, lets the
 optimizer act on the sketch, and sets the step size from a predicted-KL budget
 ([arXiv:2610.06647](https://arxiv.org/abs/2610.06647) (Zhang et al., 2026-10, preprint)). On
 Qwen2.5-Math with PPO on one 8×H100 node, **average training memory fell 21.8% at 1.5B and 45.7% at
@@ -385,7 +392,7 @@ Winder's book predates LLM RL. The foundations hold; the defaults have moved:
 | Most state-of-the-art algorithms are off-policy (ch. 1) | PPO and GRPO are on-policy; replay buffers are rare |
 | SAC beats PPO; entropy bonuses drive exploration (ch. 7) | Discrete tokens, KL to a reference model; entropy *collapse* is the problem |
 | Behavior cloning overfits and is unpopular (ch. 8) | Pretraining plus SFT is behavior cloning, and it comes first |
-| A learned critic (A2C, PPO) is the standard baseline (ch. 5–6) | GRPO and RLOO drop the critic and use group statistics ([03](03-preference-optimization.md), and the REINFORCE paragraph in [01](01-rl-foundations.md#policy-gradients-from-reinforce-to-the-ppo-clip)) |
+| A learned critic (A2C, PPO) is the standard baseline (ch. 5–6) | GRPO and RLOO drop the critic and use group statistics ([03b](03b-grpo-and-gspo.md), and the REINFORCE paragraph in [01](01-rl-foundations.md#policy-gradients-from-reinforce-to-the-ppo-clip)) |
 | Rewards are shaped by hand or learned by IRL (ch. 8–9) | Learned reward models (RLHF) or verifiable checkers (RLVR) |
 | Tabula rasa agents are sample-inefficient (ch. 11) | A pretrained prior makes exploration targeted: in [05](05-post-training-for-agents.md)'s treasure hunt, Q-learning needs ~10,000 episodes and an LLM agent wins on the first try |
 | Offline learning is the field's biggest open challenge (ch. 11) | Partly solved for preferences (DPO); online RL is still preferred for reasoning |

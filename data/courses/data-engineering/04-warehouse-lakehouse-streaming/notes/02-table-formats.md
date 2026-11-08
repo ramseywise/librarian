@@ -1,4 +1,5 @@
 ---
+imported_hash: 0a16a8041f59ec82
 title: 'Table formats: a log over Parquet'
 summary: A nightly job rewrites June's taxi data in the lake.
 order: 4

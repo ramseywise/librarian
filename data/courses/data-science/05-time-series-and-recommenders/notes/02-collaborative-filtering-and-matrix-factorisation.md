@@ -1,4 +1,5 @@
 ---
+imported_hash: 02190aebc4303340
 title: Collaborative filtering and matrix factorisation
 summary: A recommender has to rank a large catalogue for each person from a table that is almost entirely empty, using only the traces other people left behind.
 order: 3

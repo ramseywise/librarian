@@ -1,7 +1,8 @@
 ---
+imported_hash: 6254d46e44bcb046
 title: '8 — Reasoning RL: the DeepSeek-R1 Story'
 summary: In early 2025 a lab showed a model learning to reason by being told only whether its final answer was right.
-order: 10
+order: 16
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/05-RL/notes/08-reasoning-rl-deepseek-r1.md
@@ -11,7 +12,7 @@ source: learn-ai-engineering/generative-ai/05-RL/notes/08-reasoning-rl-deepseek-
 
 In early 2025 a lab showed a model learning to reason by being told only whether its final answer was right. Nobody labeled the reasoning, and yet long traces with self-correction appeared. It looked like RL had created a new skill out of nothing, and the field split over whether that was true. Did RL create the skill, or did it find something the base model could already do and make it common? The answer changes how you budget, and this chapter walks through the evidence.
 
-> **Pillar:** [05-RL](../readme.md). **Presumes:** [03](03-preference-optimization.md#grpo--group-relative-policy-optimization).
+> **Pillar:** [05-RL](../readme.md). **Presumes:** [03](03b-grpo-and-gspo.md#grpo--group-relative-policy-optimization).
 
 ---
 
@@ -52,7 +53,7 @@ Key findings ([arXiv:2501.12948](https://arxiv.org/abs/2501.12948) (DeepSeek-AI,
 - **Full R1.** A cold start of "thousands" of long-CoT examples, then reasoning RL with a
   language-consistency reward, rejection sampling (about 600k reasoning + 200k other samples),
   and a final all-scenario RL.
-  - R1 reached 79.8% AIME 2024 and 97.3% MATH-500, against 79.2% and 96.4% for o1-1217.
+  - R1 reached 79.8% AIME 2024 and 97.3% MATH-500, against 79.2% and 96.4% for o1-1217. MATH-500 is a subset of MATH ([arXiv:2103.03874](https://arxiv.org/abs/2103.03874) (Hendrycks et al., NeurIPS 2021 Datasets and Benchmarks)): 12,500 competition problems scored by exact match on the boxed answer, where GPT-2 1.5B reached 6.9% in 2021. The 500 problems come from its test set, chosen by Lightman et al. ([arXiv:2305.20050](https://arxiv.org/abs/2305.20050), NeurIPS 2023).
   - It trails o1-1217 on GPQA Diamond (71.5 vs 75.7).
   - The o1 numbers are copied from OpenAI's reports, not rerun.
   - Process reward models and MCTS were tried and abandoned.
@@ -129,6 +130,8 @@ from a stronger teacher, unlike RLVR, did push pass@k past the base model. The p
 evaluate DeepSeek-R1-Zero itself. *This note's reading:* treat the "spontaneous"
 self-verification above as RL making existing base-model behaviour reliable at pass@1, not as
 proof of new capability.
+
+Murphy's overview agrees that the "RL creates emergent abilities" reading "has been disputed by many authors" and that the base model already carried the chain-of-thought patterns, with RL able to "expose" or "amplify" them (*RL: A Comprehensive Overview*, ch. 6, Sec. 6.2.3). It also records two details worth keeping. R1-Zero did worse on general reasoning, which is why R1 added SFT on synthetic chains of thought. And the GRPO family differs in small normalization choices. GRPO's group is often about 8 samples with advantage (R − mean)/std. Dr. GRPO drops the std divisor, which he says causes a difficulty bias. RLOO's leave-one-out baseline is identical to Dr. GRPO up to a factor J/(J−1) for group size J (his algebra, Eq. 6.27–6.28). REINFORCE++ normalizes with a global batch mean and std. DAPO's clip-higher uses ε_high = 0.28 against ε_low = 0.2 to stop entropy collapse (Sec. 6.2.4). That helps explain why several of the six algorithms in the Yue et al. comparison above behave alike: RLOO, Dr. GRPO and GRPO differ mainly in a scale and a normalizer.
 
 Xiaomi's MiMo-7B points the same way from the pretraining side
 ([arXiv:2505.07608](https://arxiv.org/abs/2505.07608) (Xiaomi, 2025-05)):
@@ -233,6 +236,9 @@ long CoT.
     problems. The gain flattens after about six "Wait"s, when the model starts to loop.
   - Selection mattered more than size. 1,000 random traces scored 36.7%. The full 59K pool
     scored 53.3% (95% CI against s1K: −13% to +20%) for 56× the GPU hours.
+
+    ![s1-32B accuracy against average thinking tokens. MATH500 rises from about 64 to 93 percent, AIME24 from about 0 to 57 percent, and GPQA Diamond from about 38 to 60 percent as thinking time grows.](../assets/sources/images/muennighoff-s1-fig1.png)
+    *Image Source: Muennighoff et al., [s1: Simple test-time scaling](https://arxiv.org/abs/2501.19393) (2025), Fig. 1*
 - **LIMO** ([arXiv:2502.03387](https://arxiv.org/abs/2502.03387) (Ye et al., COLM 2025)) took
   the same base from 16.5% to 63.3% AIME24 with about 800 traces from R1-class models. **The
   same 800 examples on Qwen1.5-32B-Chat gave 9.2%.** The knowledge has to be there from
@@ -399,12 +405,44 @@ answer added 4–5 points of pass@1. All of it is synthetic arithmetic at 100M p
 
 h1 builds the "just past the edge" data from a real model's existing problems. It chains GSM8K questions so that each one's input is the previous one's answer. Then it runs Dr. GRPO stage by stage on chains of length 1 to 5, 200 steps per stage, on Qwen2.5-3B-Instruct ([arXiv:2510.07312](https://arxiv.org/abs/2510.07312) (Motwani et al., 2025-10, preprint)). Chaining exposes skills beyond per-step accuracy. At 82.8% per question, independent errors predict 68.5% on two-question chains, but the model scored 35.1%. **Plain GSM8K RLVR left chains of two or more unchanged (39.4% at length 2). The curriculum reached 58.5% at length 2 and 9.8% at length 5 (from 3.6%), and stayed above the instruct model at pass@128 on unseen lengths 6–8.** Training on length 5 alone, or on a uniform mix of lengths, gave nothing. The paper's argument: outcome-reward signal-to-noise falls with the success rate, so long chains need a curriculum. The transfer is smaller than the abstract's "2.06×" suggests. AIME 2024 avg@32 went from 5.1% to 10.5%, MATH-500 64.2→69.2 and AIME 2025 1.8→3.0, all from one 3B run with no seeds.
 
+### Dense step rewards from a process verifier
+
+DeepSeek dropped process reward models, but if you do have a step verifier the question is how to turn
+its scores `v_t` into a training signal. Xiao and Zhu lay out three routes (*Foundations of LLMs*, ch. 6,
+Eqs. 6.19–6.27). A verifier that scores each step also turns a sparse-reward task into a dense one.
+
+- **Binary scores.** Multiply them, `R = ∏ v_t`, so one wrong step zeroes the path; or give +1 per correct
+  step and a penalty at the first wrong one, then stop.
+- **Real-valued scores: reward shaping.** Reward the *change*, `r_t = v_t − v_{t−1}` (Eq. 6.20). The sum
+  telescopes to `v_n − v_0`, so the path total is still the final step's score. The chapter's example: a
+  verifier's confidence goes 0.4 → 0.9 → 0.1, so step 2 earns +0.5 and step 3 earns −0.8. The loss weights
+  each step by its *future* return `R_t = v_n − v_{t−1}` (Eq. 6.22), not its own reward. With
+  `v_0 = 0` that gives `R_1 = +0.1`, `R_2 = −0.3`, `R_3 = −0.8` (computed here from the chapter's numbers):
+  the brilliant step 2 is still pushed down, because the path it sits on ended badly.
+- **Advantage forms (Eqs. 6.24–6.26).** Use the verifier as a critic, `A_t = r̃_t + γ·v_t − v_{t−1}`, where
+  `r̃_t` is any external reward (usually 0 mid-reasoning). Or drop the critic as GRPO does (Shao et al.,
+  [arXiv:2402.03300](https://arxiv.org/abs/2402.03300)): standardise every step score against the mean μ and
+  standard deviation σ of *all steps in the group*, `ṽ = (v − μ)/σ`, and set
+  `A_t^(i) = Σ_{k≥t} ṽ_k^(i)`. The group mean is the baseline, so no value network is needed. The gain over
+  raw returns is variance, and the chapter's loss omits the PPO/GRPO clip.
+
+Process supervision still tells the model only *where* it went wrong, not what to do instead. On-policy
+distillation gives a full next-token distribution at every student token and minimises
+`Σ_i KL(Pr_student(·|x, y_<i) ‖ Pr_teacher(·|x, y_<i))` over the student's own samples (Eq. 6.29;
+token-level because the step-level KL over multi-token steps is intractable). Case studies and cost are in
+[07](07b-rl-for-tool-calling-and-dense-signals.md#dense-signals-on-policy-distillation-and-self-distillation).
+
+On scale, the chapter reports that RL compute against reasoning performance follows an S-shaped curve
+(citing Khatri et al., 2025, and Tan et al., 2026, neither read here, and giving no numbers). A larger or
+MoE base and a longer context raise the ceiling; changes to the loss or to advantage normalisation mostly
+improve how fast you reach it. That fits the base-model-first reading above.
+
 ## Pitfalls
 
 - **Reading pass@1 alone.** It can't tell whether RL created a skill or sharpened one. Plot pass@k against k.
 - **Assuming long traces mean reasoning.** Length can grow while accuracy doesn't. Check length against correctness.
 - **Using the 2025 cheap recipes off-domain.** Most were measured on Qwen2.5 and on math. Ask what the baseline was, and whether it ran on a second model family.
-- **Trusting answer-only checkers on hard problems.** Lucky answers and bad proofs can pass. Reward quality is capped by checker quality ([03](03-preference-optimization.md#grpo--group-relative-policy-optimization)).
+- **Trusting answer-only checkers on hard problems.** Lucky answers and bad proofs can pass. Reward quality is capped by checker quality ([03](03b-grpo-and-gspo.md#grpo--group-relative-policy-optimization)).
 
 ## Try it
 

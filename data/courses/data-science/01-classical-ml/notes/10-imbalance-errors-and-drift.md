@@ -1,7 +1,8 @@
 ---
+imported_hash: 6e527cb7d164c17c
 title: Imbalance, Errors and Drift
 summary: 'The data is Default of Credit Card Clients: 30,000 card customers in Taiwan in 2005, CC BY 4.0, with six months of repayment status, bills and payments, and one label: did they default next month.'
-order: 12
+order: 13
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/10-imbalance-errors-and-drift.md
@@ -124,7 +125,7 @@ events goods
        14018    0.762   0.143
 ```
 
-![Left: the SD of a test score falls from about 0.09 with 10 defaulters to under 0.02 with 200. Right: test ROC-AUC holds near 0.76 when good customers are removed, and falls to 0.68 when defaulters are removed.](../assets/credit-lab-events.png)
+![Left: the SD of a test score falls from about 0.09 with 10 defaulters to under 0.02 with 200. Right: test ROC-AUC holds near 0.76 when good customers are removed, and falls to 0.68 when defaulters are removed.](../assets/sources/images/credit-lab-events.png)
 
 Three lessons, all measured:
 
@@ -246,7 +247,7 @@ boosted minus logistic, cost_tuned_5: -4.898 (SD 6.408)
 boosted minus logistic, cost_tuned_20: -13.616 (SD 26.840)
 ```
 
-![Cost per 1,000 applicants for each method at a threshold of 0.5 and at a tuned threshold, at ratios of 5:1 and 20:1. Tuned thresholds cluster together for all methods. At 0.5 the methods scatter, and doing nothing sits on the approve-everyone line.](../assets/credit-lab-method-comparison.png)
+![Cost per 1,000 applicants for each method at a threshold of 0.5 and at a tuned threshold, at ratios of 5:1 and 20:1. Tuned thresholds cluster together for all methods. At 0.5 the methods scatter, and doing nothing sits on the approve-everyone line.](../assets/sources/images/credit-lab-method-comparison.png)
 
 Reading it:
 
@@ -304,6 +305,9 @@ neural net, SMOTE minus nothing, roc_auc (-0.0589, 0.0204, 10, 10)
 The papers, read in full, say this:
 
 - **[Elor and Averbuch-Elor (2022)](https://arxiv.org/abs/2201.08528)**, a preprint, ran 73 datasets and 7 classifiers: "except for very weak classifiers (MLP and SVM), balancing the data and optimizing the decision threshold yield comparable prediction performance". F1 was 0.532 against 0.529 for CatBoost and 0.504 against 0.513 for LightGBM, threshold against SMOTE. Our tie agrees. They also find that a fixed threshold is where balancing helps, and that plain oversampling does as well as SMOTE for strong learners: our 20:1 column shows the same. They recommend the threshold for its simplicity and lower compute cost, with one fit serving many metrics.
+
+![Mean AUC and mean rank of seven classifiers, each with no balancing, random oversampling, SMOTE, SVM-SMOTE, ADASYN and Poly, under a-priori and validation-tuned hyperparameters: the oversamplers separate from the default only for the weak classifiers](../assets/sources/images/elor-smote-fig1.png)
+*Image Source: Elor and Averbuch-Elor, [To SMOTE, or not to SMOTE?](https://arxiv.org/abs/2201.08528) (2022), Fig. 1*
 - **They differ from our neural net.** Their MLP scored F1 0.303 tuned against 0.411 with SMOTE. Ours is one small network on one dataset by a cost metric, and we didn't test SVM or work out why the results part, so this is a data point, not a refutation.
 - **[van den Goorbergh et al. (2022)](https://doi.org/10.1093/jamia/ocac093)** tested logistic and ridge regression: "outcome imbalance is not a problem in itself". Corrected models never beat the uncorrected AUROC in their median and classified about as well as an uncorrected model with a moved threshold, with far worse calibration. On their ovarian cancer case, moving an uncorrected model's threshold to the 0.192 base rate and cutting corrected models at 0.5 landed in the same range: sensitivity 69% to 75%, specificity 74% to 78%. Our logistic row matches. Their limit was logistic only; our boosted rows extend the same pattern to one more learner.
 - **[Chawla et al. (2002)](https://arxiv.org/abs/1106.1813)** points the other way, and it's worth saying why. They tested SMOTE combined with undersampling against plain undersampling, ranked by ROC area, and won almost every comparison, usually narrowly (Mammography, 0.926 against 0.933). Their one comparison with moving a threshold, on Phoneme with C4.5, favoured SMOTE across the whole curve. They never looked at probabilities, and they report the best curve across SMOTE amounts. Our run of their recipe goes the other way: for the tree, ROC-AUC 0.0175 lower than plain undersampling (SD 0.017), lower on 17 of 20 seeds. Also see their own warning: on Adult, a mixed-type dataset like ours, SMOTE-NC did worse than undersampling.
@@ -342,7 +346,7 @@ ROC-AUC is the honest comparison here since it ignores the class mix. The leaked
 
 ## Calibration: the bridge from score to price
 
-A lender prices with a probability: expected loss = PD × LGD × exposure. Rank isn't enough. Note 04 has [reliability diagrams and the methods](04-model-evaluation.md#calibration-is-a-08-really-80); here's what resampling does to them.
+A lender prices with a probability: expected loss = PD × LGD × exposure. Rank isn't enough. Note 04 has [reliability diagrams and the methods](04b-thresholds-pr-roc-and-calibration.md#calibration-is-a-08-really-80); here's what resampling does to them.
 
 ```python
 from sklearn.calibration import CalibratedClassifierCV
@@ -405,7 +409,7 @@ oversample 1:1          -3.495      0.800
 SMOTE 1:1               -3.503      0.784
 ```
 
-![Reliability on log axes for doing nothing, undersampling and SMOTE. As trained, the resampled models sit far right of the diagonal, predicting roughly ten times the observed rate. After Platt scaling on validation, all three follow the diagonal.](../assets/credit-lab-reliability.png)
+![Reliability on log axes for doing nothing, undersampling and SMOTE. As trained, the resampled models sit far right of the diagonal, predicting roughly ten times the observed rate. After Platt scaling on validation, all three follow the diagonal.](../assets/sources/images/credit-lab-reliability.png)
 
 SMOTE as trained predicts an average PD of 30.5% on a book that defaults at 3.0%. The calibration intercept, the log-odds shift needed to make the average right, is -2.93. For scale, van den Goorbergh et al. found medians of -2.1 or lower at a 10% event rate and -4.5 or lower at 1%. Their logistic slopes fell below 1 for SMOTE, too extreme. Ours match for the logistic model, 0.784 against 1.004, but not for the boosted one, where the slope stays near 1: for trees here, the damage is the intercept.
 
@@ -462,7 +466,7 @@ month  bill_psi  status_psi_quantile  status_psi_levels  customers_at_1
 decline rate: {'no change': 0.024, 'covariate: towards low limits': 0.033, 'prior: default rate doubles': 0.029, 'concept: what predicts default changes': 0.024, 'skew: features one month stale': 0.041, 'skew: amounts in thousands': 0.02, 'skew: PAY_0 filled with 0': 0.001}
 ```
 
-![Left: PSI by scenario on a log axis, for the worst feature and for the model score. No change, prior shift and concept shift sit near 0.01; the skews and the covariate shift are well above. Right: ROC-AUC by scenario, with concept shift lowest at 0.60.](../assets/credit-lab-drift.png)
+![Left: PSI by scenario on a log axis, for the worst feature and for the model score. No change, prior shift and concept shift sit near 0.01; the skews and the covariate shift are well above. Right: ROC-AUC by scenario, with concept shift lowest at 0.60.](../assets/sources/images/credit-lab-drift.png)
 
 - **Covariate shift** is loud and harmless to the model. Worst PSI is 0.319, on credit limit. ROC-AUC is unchanged within noise at 0.759, and mean PD still matches the default rate at 0.036. Cost rises from 141 to 169 because the book got riskier. The model is right; a business decision is due.
 - **Prior shift** is nearly silent. The default rate doubles to 6% and PSI stays at the no-change 0.011, because only 3% of rows changed. Mean PD stays at 0.032. Rare classes hide from feature monitors.

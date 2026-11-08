@@ -1,7 +1,8 @@
 ---
+imported_hash: 2d44da467793c84a
 title: Connect Intensive - Machine Learning Nanodegree
 summary: In this notebook, we will do some visualization on the Iris dataset.
-order: 18
+order: 19
 kind: notebook
 section: Practice
 source: learn-ai-engineering/data-science/01-classical-ml/practice/udacity_mlnd_python_practice.ipynb

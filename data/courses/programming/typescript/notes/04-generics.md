@@ -1,4 +1,5 @@
 ---
+imported_hash: 08f1371fcd96e202
 title: 4 — Generics
 summary: T is inferred from the arguments, so you rarely write first<number>(…).
 order: 5

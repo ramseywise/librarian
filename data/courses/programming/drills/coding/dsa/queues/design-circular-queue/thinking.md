@@ -1,4 +1,5 @@
 ---
+imported_hash: 25195ac84394eb4f
 title: Design Circular Queue — First-Principles Thinking Guide
 summary: Use an array of size k with front and rear pointers.
 order: 188

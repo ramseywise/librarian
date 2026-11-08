@@ -1,4 +1,5 @@
 ---
+imported_hash: b5dc82c7bc0c0ec2
 title: 1 — Values, Expressions and Conditionals
 summary: 'Precedence follows PEMDAS. When in doubt, add parentheses: they cost nothing.'
 order: 2

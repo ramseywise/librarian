@@ -1,4 +1,5 @@
 ---
+imported_hash: 6a0255b99cec5f20
 title: 08 — Multimodal Engineering
 summary: 'Multimodal engineering is building systems whose inputs or outputs include images, documents, audio or video: sending a screenshot or a scanned invoice to a vision model, retrieving over pages that are mostly figures and tables, transcribin…'
 order: 1
@@ -28,7 +29,7 @@ vision answer can't be graded by string match.
 model that mishears a product name, hands every layer above it a wrong fact that looks like a
 right one. Prompting can't recover detail the encoder never captured.
 
-**Why a pillar, not a note.** Added 2026-10-31 (see the [structure decisions](../../.claude/skills/pillar/references/pillar-layout.md#structure-decisions)).
+**Why a pillar, not a note.** Added 2026-10-31 (see the [structure decisions](https://github.com/ramseywise/librarian/blob/main/.claude/skills/pillar/references/pillar-layout.md#structure-decisions)).
 The readings ledger had parked 205 multimodal papers as a watch topic with no home, and the
 repo's only multimodal material was the voice and computer-use note in
 [generative-ai/07](../../generative-ai/07-agentic-applications/notes/03-real-time-multimodal-agents.md).
@@ -70,6 +71,7 @@ behind it, a check that catches it, and the evidence for what to do about it.
 | 04 | [Speech and voice agents](notes/04-speech-and-voice-agents.md) | Cascade or speech-to-speech, and how do you spend the latency budget? |
 | 05 | [How image generators work](notes/05-how-image-generators-work.md) | What happens between noise and picture, and which families compete with diffusion? |
 | 06 | [Generating images and video](notes/06-generating-images-and-video.md) | Which controls do you set and record, and how do you handle provenance? |
+| 06b | [Editing and customizing images](notes/06b-editing-and-customizing-images.md) | How do you change one region of an image, or teach a model one subject, without a re-roll? |
 | 07 | [Evaluating multimodal systems](notes/07-evaluating-multimodal-systems.md) | How do you build tests in which guessing fails? |
 
 Failure modes have no chapter of their own: each chapter ends with its own pitfalls, and chapter 07 pulls

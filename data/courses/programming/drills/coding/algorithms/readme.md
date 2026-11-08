@@ -1,4 +1,5 @@
 ---
+imported_hash: 94dd88cfef5b9e87
 title: Algorithm drills
 summary: 89 LeetCode-style problems, one drill file each, grouped by pattern.
 order: 2

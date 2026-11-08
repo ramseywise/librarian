@@ -1,7 +1,8 @@
 ---
+imported_hash: 355d960ae8737122
 title: Typed groupBy
 summary: 'Implement groupBy(items, key): return an object mapping each key to the items that produced it, in input order.'
-order: 274
+order: 277
 kind: drill
 section: Typescript / Types
 track: typescript

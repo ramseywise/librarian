@@ -1,4 +1,5 @@
 ---
+imported_hash: c453d174addec000
 title: 7 — The Autonomy Ladder
 summary: 'Every loop starts with a human doing four things: approving each tool call, judging when the work is done, deciding when to start a run, and holding a session open while it runs.'
 order: 8

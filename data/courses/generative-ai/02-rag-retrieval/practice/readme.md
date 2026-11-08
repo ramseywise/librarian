@@ -1,7 +1,8 @@
 ---
+imported_hash: e6188fbaa8b75c2d
 title: 'Practice: the Tallybook retrieval kit'
 summary: Everything here runs offline with no API key.
-order: 14
+order: 22
 kind: reading
 section: Practice
 source: learn-ai-engineering/generative-ai/02-rag-retrieval/practice/README.md

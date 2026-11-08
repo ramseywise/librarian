@@ -20,19 +20,19 @@ cards:
   lesson: ai-engineering/01-prompt-engineering/notes/02-prompt-anatomy
 - front: What is the Valley of Meh, and how does the sandwich structure respond to it?
   back: Content in the early middle of a prompt is used least, so state the task early and refocus on it at the end.
-  lesson: ai-engineering/01-prompt-engineering/notes/02-prompt-anatomy
+  lesson: ai-engineering/01-prompt-engineering/notes/02b-document-types-formatting-and-templates
 - front: In Li's Tau-Bench ablation, which change to an agent's system prompt hurt most, and which barely mattered?
   back: Write agent prompts as numbered procedures with exception branches, and ablate one component at a time before rewriting.
-  lesson: ai-engineering/01-prompt-engineering/notes/02-prompt-anatomy
+  lesson: ai-engineering/01-prompt-engineering/notes/02b-document-types-formatting-and-templates
 - front: According to Min et al., what do few-shot examples actually teach, and what are their three drawbacks?
   back: Few-shot examples mostly teach format and label space, so add them only when zero-shot fails in a way you can name.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
 - front: How much did chain-of-thought improve PaLM 540B on GSM8K, and how do you keep the reasoning away from the user?
   back: Chain-of-thought spends output tokens on reasoning, and a parseable block lets the app show only the answer.
-  lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
+  lesson: ai-engineering/01-prompt-engineering/notes/03b-chain-of-thought-and-reasoning
 - front: How do Tree of Thoughts and CoT compare on Game of 24, and what does ToT need that CoT does not?
   back: Tree of Thoughts recovers from dead ends through generate, evaluate and backtrack, at the cost of a code controller.
-  lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
+  lesson: ai-engineering/01-prompt-engineering/notes/03b-chain-of-thought-and-reasoning
 - front: What does ReAct add to chain-of-thought, what are the ALFWorld results, and how does it fail?
   back: ReAct alternates reasoning with actions so answers rest on retrieved facts, and a single bad search can derail it.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
@@ -60,6 +60,9 @@ cards:
 - front: What prompting habits should you drop with reasoning models, and how do you control their cost?
   back: With reasoning models, state the goal and tune effort upward only while eval scores keep improving.
   lesson: ai-engineering/01-prompt-engineering/notes/07-prompting-reasoning-models
+- front: Which reasoning-model failures can you not catch by reading the visible chain of thought?
+  back: Judge a reasoning model by its outputs and an eval, since the visible chain of thought is neither a complete record nor a safety monitor.
+  lesson: ai-engineering/01-prompt-engineering/notes/07b-reasoning-model-failure-modes
 - front: What are the main paths for offline prompt evaluation, and how do you source samples?
   back: Start offline with cheap exact checks, escalate to judges only where needed, and watch acceptance online as a guardrail.
   lesson: ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts

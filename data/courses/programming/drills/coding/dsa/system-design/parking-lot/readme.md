@@ -1,4 +1,5 @@
 ---
+imported_hash: d7131e2cff500409
 title: Design a Parking Lot
 summary: Design a parking lot that handles different types of vehicles (Car, Bike, Van) and different types of slots (Small, Compact, Large).
 order: 217

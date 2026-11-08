@@ -1,7 +1,8 @@
 ---
+imported_hash: 00fff138da042cd3
 title: 6 — Bayesian Machine Learning
 summary: The earlier chapters of this pillar estimate a handful of parameters and make a decision.
-order: 7
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/notes/06-bayesian-machine-learning.md
@@ -295,6 +296,9 @@ The means are close. The marginal standard deviations are about 0.39 under NUTS 
 
 That check is needed because the general answer isn't known. Blei et al. write that **the relative accuracy of VI and MCMC "is still unknown"**: VI generally underestimates variance, yet it need not lose accuracy on posterior predictive densities. Their own speed result is one case. CAVI fit a 30-cluster Gaussian mixture to 10,000 images (576-dimensional colour histograms) in under a minute, "orders of magnitude" faster than the HMC-based sampler in Stan (the review cites version 2.8), with progress tracked by held-out log predictive and no hardware stated. It says nothing about intervals, and a footnote calls it "not a definitive comparison", since a collapsed Gibbs sampler might do better. Two more limits come from the same review. The ELBO is generally non-convex, so CAVI only reaches a local optimum that depends on the starting point. And picking a model by its ELBO "sometimes works in practice" but is "not justified in theory".
 
+![Exact correlated posterior against its mean-field approximation, drawn as 2-sigma ellipses](../assets/sources/images/blei-variational-inference-fig1.png)
+*Image Source: Blei, Kucukelbir & McAuliffe, [Variational Inference: A Review for Statisticians](https://arxiv.org/abs/1601.00670) (2017), Fig. 1. Ellipses are 2σ contours: the mean-field approximation misses the correlation and is too narrow.*
+
 ### The VAE
 
 A variational autoencoder ([Kingma and Welling, 2013](https://arxiv.org/abs/1312.6114)) learns both halves of the ELBO with neural networks:
@@ -365,7 +369,7 @@ mean, var = model.predict(X_new)
 # sparse GPs (inducing points) cut the O(n^3) cost for large n
 ```
 
-**Bayesian optimisation** uses the GP as a cheap surrogate for an expensive black-box function, such as a model's validation score as a function of its hyperparameters. An acquisition function picks the next point to evaluate, trading off exploration and exploitation, as the bandits in [chapter 3](03-priors-and-bandits.md) do. [Snoek, Larochelle and Adams (NeurIPS, 2012)](https://proceedings.neurips.cc/paper/2012/hash/05311655a15b75fab86956663e1819cd-Abstract.html) made this a standard approach for tuning models.
+**Bayesian optimisation** uses the GP as a cheap surrogate for an expensive black-box function, such as a model's validation score as a function of its hyperparameters. An acquisition function picks the next point to evaluate, trading off exploration and exploitation, as the bandits in [chapter 3b](03b-bandits-and-thompson-sampling.md) do. [Snoek, Larochelle and Adams (NeurIPS, 2012)](https://proceedings.neurips.cc/paper/2012/hash/05311655a15b75fab86956663e1819cd-Abstract.html) made this a standard approach for tuning models.
 
 | Acquisition | Picks the point with |
 |---|---|
@@ -373,7 +377,7 @@ mean, var = model.predict(X_new)
 | Upper confidence bound | the highest mean + κ · standard deviation |
 | Probability of improvement | the highest chance of beating the best so far (GPyOpt's `MPI`, used in week 6) |
 
-![Top panel: a Gaussian process fit through four observations with its mean and uncertainty band. Bottom panel: expected improvement over the same x range, peaking at the next point to evaluate, near 7.7](../assets/bayes-gp-expected-improvement.png)
+![Top panel: a Gaussian process fit through four observations with its mean and uncertainty band. Bottom panel: expected improvement over the same x range, peaking at the next point to evaluate, near 7.7](../assets/sources/images/bayes-gp-expected-improvement.png)
 *Image Source: generated for this chapter, a GP on four points with its expected-improvement curve*
 
 The notebook tunes XGBoost with GPyOpt, and repeats it for an SVR:
@@ -453,6 +457,100 @@ random search, mean of 5 runs:         [0.1233 0.1193 0.1164 0.112 ]
 The GP's best log loss beats the random-search average at each checkpoint, by 0.01 or so. That comparison is one Bayesian optimisation run against five random runs, on a dataset where each evaluation takes about a second, so it shows the shape of the method rather than measuring its advantage. The case for Bayesian optimisation grows as each fit gets more expensive. If a fit takes a second, random search with more fits is often simpler.
 
 The final project combines both: train a VAE on faces, then use Bayesian optimisation over its latent space, with a human rating each generated face, to converge on a target face (darkest hair, widest smile, a specific person) in a few dozen evaluations.
+
+## Likelihoods and links: maximum entropy, counts and mixtures
+
+The models above all used a Gaussian or a Bernoulli likelihood without saying why. McElreath's answer is maximum entropy: given what you know about an outcome (its support, its mean or variance), choose the distribution that can be realised in the most ways and so assumes the least more (*Statistical Rethinking*, ch. 9). Ten pebbles tossed into five buckets can make the flat arrangement (two per bucket) 113,400 ways, more than any other, and its entropy is the largest possible, log 5 = 1.609. The Gaussian has the highest entropy of any distribution on the real line with a given variance; the binomial has it for two unordered outcomes with a constant expected value; the Poisson is the binomial's large-n, small-p limit and shares the constraints. He checks the binomial claim by brute force: of 100,000 random distributions over two draws with expected value 1.4, the largest entropy found is 1.221728, against 1.221729 for the binomial with p = 0.7.
+
+![Distribution of entropies of 100,000 random distributions with expected value 1.4, with the binomial at the maximum](../assets/sources/images/statistical-rethinking-fig9-4.png)
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 9.4*
+
+Two consequences matter in practice. First, a link function (logit for probabilities, log for rates) keeps predictions in range, but then no coefficient gives a constant change on the outcome scale: a half-unit rise in log-odds from 0 moves probability by about 0.25, and further up the curve the same step moves it far less. Second, WAIC cannot compare models with different outcome distributions, because deviance includes the normalising constants (*Statistical Rethinking*, ch. 9).
+
+### Binomial regression and Simpson's paradox
+
+The UC Berkeley admissions data has 12 rows (6 departments by gender) standing for 4,526 applications; 38.8% were admitted. Re-run in PyMC:
+
+```python
+with pm.Model():                                   # department intercepts plus a gender term
+    a = pm.Normal("a", 0, 1.5, shape=6)
+    bm = pm.Normal("bm", 0, 1)
+    pm.Binomial("admit", n=applications, logit_p=a[dept] + bm * male, observed=admitted)
+```
+
+```text
+pooled (no department):  bm +0.61 (sd 0.07), odds ratio 1.84
+with department:         bm -0.10 (sd 0.08), odds ratio 0.91
+department intercepts:   [ 0.68  0.64 -0.58 -0.61 -1.06 -2.64]
+```
+
+Ignoring department, men have 1.84 times the odds of admission; within departments the sign reverses, because women applied more to the departments with low admission rates (intercepts down to -2.64). That is the book's result (his bm: +0.61, then -0.10), and the pooled model beats the intercept-only model by 91.5 WAIC points while still fitting each department badly (*Statistical Rethinking*, ch. 10). With department intercepts WAIC ties with and without gender (5200.9 and 5201.4), so the data cannot say whether gender matters within departments.
+
+![Posterior validation for the department-intercept model: observed admission proportions against predictions for the six departments](../assets/sources/images/statistical-rethinking-fig10-6.png)
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 10.6*
+
+Two warnings from the same chapter. A large coefficient need not be a large effect: a log-odds slope of 0.61 multiplies the odds by 1.84, but from an intercept of 4 it moves the probability from 0.982 to 0.990. And with near-perfect separation flat-prior `glm` returned a slope of 11.43 with a standard deviation of 2,955 and no warning, while a Normal(0, 10) prior gave 4.02 (*Statistical Rethinking*, ch. 10). Counts should never be converted to proportions first, which discards the sample size; a Poisson model for rates observed over different exposures takes log(exposure) as an offset (his monastery simulation recovers 1.61 against a true 1.5 and 0.59 against 0.5). His Oceanic tools example, ten societies with a Poisson likelihood, adds a warning about correlated parameters: contact and the contact-by-population interaction both overlap zero (correlation -0.99), yet 95.27% of posterior mass says a high-contact island at log-population 8 has more tools.
+
+### Ordered categories, zero inflation and over-dispersion
+
+An ordered logit gives K categories K-1 cutpoints on the log-cumulative-odds scale, and a linear predictor is subtracted from all of them at once. With the 9,930 trolley-problem responses (1 to 7) the intercept-only cutpoints are the logit of the cumulative proportions, so they can be checked by eye.
+
+![Re-describing the response histogram as cumulative proportions and then log-cumulative-odds](../assets/sources/images/statistical-rethinking-fig11-1.png)
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 11.1*
+
+The data is not in the repo, so the re-run simulates 9,930 responses from the book's cumulative proportions and fits `pm.OrderedLogistic("y", eta=0.0, cutpoints=c)` with an ordered transform:
+
+```text
+logit of the cumulative proportions: [-1.92 -1.27 -0.72  0.25  0.89  1.77]
+OrderedLogistic recovers:            [-1.91 -1.26 -0.73  0.23  0.87  1.74]
+```
+
+In the book's interaction model, WAIC is 36,929.4 against 37,090.3 for the additive one (difference 160.8, standard error 25.80), and the contact-by-intention slope of -1.27 is the largest (*Statistical Rethinking*, ch. 11).
+
+A zero-inflated Poisson mixes two processes: a zero comes from not working (probability p) or from working and producing none, with likelihood p + (1 - p) exp(-lambda). A simulation of 365 days with p = 0.2 and rate 1.0 is recovered closely in his run (0.1994 and 1.05). In ours, seed 11 gave 184 zero days and estimates of 0.13 (true 0.20) and 0.85 (true 1.00): the two sources of zeros are only weakly identified, so one run can miss by this much.
+
+Over-dispersed counts get a mixture too. A beta-binomial gives each row its own probability from a Beta distribution with mean pbar and concentration theta. On the Berkeley data without department, the book has theta 2.77 (sd 0.96) and our re-run gives pbar 0.41 and theta 2.77 (sd 0.95), a close reproduction. WAIC is unsafe with these models (he falls back on DIC), and an Exponential(1) prior on theta samples better than a half-Cauchy at the same inference.
+
+GLM mechanics, the link-function table and the Poisson offset belong with [regression and GLMs](../../02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms.md); the multilevel versions of these models are in [chapter 7](07-multilevel-models-and-partial-pooling.md) and [7b](07b-varying-slopes-measurement-error-and-missing-data.md).
+
+## Overfitting and information criteria
+
+Everything above fits a model and asks how well it explains the data it saw. McElreath's chapter on overfitting makes the point that this question has the wrong answer built in: fit to the sample improves with every parameter. Polynomials of degree 1 to 6 fitted to brain volume against body mass for seven hominin species reach R^2 of 0.49 at degree 1, 0.99 at degree 5 and 1.00 at degree 6, where seven parameters pass through seven points and the curve predicts a negative brain size near 58 kg (*Statistical Rethinking*, ch. 6).
+
+Deviance, minus twice the log-likelihood, makes the same point on held-out data. This is the chapter's simulation, re-run: y ~ Normal(mu, 1) with mu = 0.15 x1 - 0.4 x2, so the true model has three parameters; models with one to five parameters are fitted by least squares to a training sample and scored on a fresh one of the same size.
+
+```python
+def dev(y, mu):                       # -2 * log-likelihood, sigma fixed at 1
+    return (np.log(2 * np.pi) + (y - mu) ** 2).sum()
+
+def one_run(n, k, rng):
+    X = rng.normal(size=(2 * n, 4))
+    y = 0.15 * X[:, 0] - 0.4 * X[:, 1] + rng.normal(size=2 * n)
+    A = np.c_[np.ones(2 * n), X[:, :k - 1]]           # intercept + first k-1 predictors
+    b = np.linalg.lstsq(A[:n], y[:n], rcond=None)[0]
+    return dev(y[:n], A[:n] @ b), dev(y[n:], A[n:] @ b)   # train, test
+```
+
+```text
+N=20   params=1  train 59.3  test 61.5  gap 2.2
+N=20   params=2  train 57.5  test 62.3  gap 4.8
+N=20   params=3  train 53.7  test 60.3  gap 6.6
+N=20   params=4  train 52.8  test 61.9  gap 9.1
+N=20   params=5  train 51.8  test 63.9  gap 12.1
+N=100  params=1  train 300.3  test 303.0  gap 2.7
+N=100  params=3  train 280.9  test 286.9  gap 6.0
+N=100  params=5  train 279.1  test 289.3  gap 10.2
+```
+
+(5,000 runs per row; the book used 10,000 and prints slightly different gaps, 2, 4.1, 5.3, 7.6, 9.7 at N = 20.) Training deviance falls with every parameter, and test deviance is lowest at three, the true model. At N = 20 the two-parameter model is worse out of sample than the one-parameter one. The gap between test and train is close to twice the number of parameters, which is the idea behind AIC = D_train + 2p. AIC is reliable only with flat priors, a near-Gaussian posterior and N much larger than the parameter count. Regularising priors break the first condition, which is why [chapter 3](03-priors-and-bandits.md) pairs them with a different criterion.
+
+![Training and test deviance against number of parameters at N = 20 and N = 100](../assets/sources/images/statistical-rethinking-fig6-7.png)
+
+*Image Source: McElreath, *Statistical Rethinking* (CRC Press), Fig. 6.7*
+
+WAIC is the criterion that needs no Gaussian assumption. It is computed pointwise from the posterior draws: WAIC = -2(lppd - pWAIC), where lppd sums over observations the log of the average likelihood across draws, and pWAIC sums over observations the variance across draws of the log-likelihood. In the book's simulation with Normal(0, 100) and Normal(0, 0.5) priors on the slopes, DIC and WAIC land within about 1 deviance point of the true average test deviance in most settings, WAIC the closer. The same book's own caveats apply: the criteria assume test data come from the process that made the training data, WAIC is hard to define for dependent data such as time series, and none of them is consistent for picking the true model.
+
+Read a comparison by its difference and that difference's standard error, not by the ranking. On the primate milk data, with models fitted to the 17 species with complete cases, the model with neocortex and log body mass has WAIC -15.0 and an Akaike weight of 0.93, against -8.3 for the intercept-only model. The difference is 6.7 with a standard error of 7.26, and the chapter's own simulation of that difference puts the chance the ranking reverses at 0.18. A weight is the probability the model predicts best, conditional on the set compared. Averaging predictions across models, not parameters, barely moves the mean but widens the interval enough to include a zero slope for neocortex. The criteria answer a predictive question only: In a simulated plant experiment, the model that includes a post-treatment variable (fungus) fits better and still hides a treatment slope of 1.07 behind an estimate of -0.27 (*Statistical Rethinking*, ch. 5). The python route is `az.compare` on `InferenceData` objects that carry `log_likelihood`.
 
 ## Pitfalls
 

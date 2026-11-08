@@ -1,4 +1,5 @@
 ---
+imported_hash: 68f705a3fb78d25b
 title: Two-tower retrieval and offline and online evaluation
 summary: Once a catalogue reaches millions of items and new ones arrive every hour, an item-item matrix no longer fits and a new item has no history to work from.
 order: 4
@@ -127,7 +128,7 @@ class TwoTower(nn.Module):
 
 ## Training: in-batch softmax and its bias
 
-What should the loss be? We want the positive item to outscore everything else, and a softmax over ten million items for each example is out of the question. The standard trick is to use the other items in the batch as the negatives. A batch of 512 pairs gives a 512 by 512 score matrix whose diagonal holds the positives, and cross-entropy over each row does the rest.
+What should the loss be? We want the positive item to outscore everything else, and a [softmax](../../02-deep-learning/notes/01-neural-networks-fundamentals.md#the-forward-pass) over ten million items for each example is out of the question. The standard trick is to use the other items in the batch as the negatives. A batch of 512 pairs gives a 512 by 512 score matrix whose diagonal holds the positives, and [cross-entropy](../../../generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) over each row does the rest.
 
 There is a catch. Items enter a batch in proportion to how often they appear in the data, so popular items are also the most frequent negatives. The model learns to push them down, which it should not: a blockbuster gets penalised for being common, not for being a poor match. Yi and colleagues ([RecSys 2019](https://research.google/pubs/sampling-bias-corrected-neural-modeling-for-large-corpus-item-recommendations/)) give the correction, which comes from importance sampling. Subtract the log of each candidate's sampling probability from its logit during training:
 

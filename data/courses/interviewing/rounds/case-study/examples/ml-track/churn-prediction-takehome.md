@@ -1,4 +1,5 @@
 ---
+imported_hash: 0f7e6b15de496dfa
 title: 'Worked Example: Churn Prediction Take-Home'
 summary: This is a simulated take-home submission — both the analytical notebook and the memo writeup.
 order: 13

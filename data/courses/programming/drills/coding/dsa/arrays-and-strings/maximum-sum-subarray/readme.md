@@ -1,4 +1,5 @@
 ---
+imported_hash: d76734ab82862e7a
 title: Maximum Sum Subarray
 summary: Kadane's Algorithm for Maximum Array Subsequence
 order: 120

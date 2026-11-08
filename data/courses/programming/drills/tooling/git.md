@@ -1,7 +1,8 @@
 ---
+imported_hash: 6546eed59b337de6
 title: Git — Workflow Reference
 summary: Branch management, PR review, and stash patterns.
-order: 271
+order: 274
 kind: reading
 section: Tooling
 source: learn-ai-engineering/programming/drills/tooling/git.md

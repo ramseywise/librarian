@@ -1,3 +1,4 @@
+# imported_hash: 5c7fc7174bff0712
 # Agentic Frameworks lecture deck. Covers notes 01-07.
 # Build: make slides PILLAR=generative-ai/04-agentic-frameworks STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md

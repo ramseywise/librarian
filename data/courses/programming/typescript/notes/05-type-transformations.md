@@ -1,4 +1,5 @@
 ---
+imported_hash: bdb8d5a51a81dbe4
 title: 5 — Building Types from Types
 summary: A & B has every property of both. It is how you combine types without repeating fields.
 order: 6

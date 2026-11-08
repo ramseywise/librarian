@@ -1,4 +1,5 @@
 ---
+imported_hash: a388e4288b360988
 title: 4Sum II — First-Principles Thinking Guide
 summary: 'count = 0 For each c in nums3, d in nums4: count += sum_ab[-(c + d)]'
 order: 182

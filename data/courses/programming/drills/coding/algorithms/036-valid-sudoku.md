@@ -1,4 +1,5 @@
 ---
+imported_hash: 1a0f23352249e175
 title: LC 36 — Valid Sudoku
 summary: Given a partially filled 9x9 Sudoku board (cells hold digits 1-9 or .
 order: 22

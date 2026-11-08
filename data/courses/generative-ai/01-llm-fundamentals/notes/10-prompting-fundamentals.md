@@ -1,7 +1,8 @@
 ---
+imported_hash: 4929918ac15f336e
 title: 10 — Prompting fundamentals
 summary: 'The ticket assistant is due to go live on Monday, and its prompt is one line: "Classify this ticket." Sometimes it returns billing, sometimes a paragraph explaining what billing is, and once it returned Billing issue (likely).'
-order: 11
+order: 15
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/01-llm-fundamentals/notes/10-prompting-fundamentals.md
@@ -59,7 +60,9 @@ Say exactly what shape the output takes: a numbered list of five, JSON with thes
 | One-shot | Fixes format quickly, but the model may copy the example's content too |
 | Few-shot (3–5) | Reliable format and style. Beyond that, reliability keeps rising and variety falls |
 
-The authors' advice: try direction first, then add examples. Examples are powerful and easy to over-fit to. Vary them so the model learns the pattern, not one instance.
+The authors' advice: try direction first, then add examples. Examples are powerful and easy to over-fit to. Vary them so the model learns the pattern, not one instance. Min et al. ran 12 model variants on 26 classification and multiple-choice datasets with 16 demonstrations and found that swapping the gold labels for random ones cost only 0–5% absolute. What mattered was the label space, the distribution of the input text and the format: out-of-distribution inputs cost 3–16% for most models, and demonstrations with no labels, or labels only, scored close to or worse than none. Generation tasks were not tested ([arXiv:2202.12837](https://arxiv.org/abs/2202.12837) (Min et al., EMNLP 2022)). The survey of prompting methods notes how much the choice of examples can matter, swinging from near the state of the art to near chance, and that majority-label and recency biases can be reduced by calibrating on a content-free input such as "N/A". Both are reported from earlier work. The survey runs no experiments of its own and stops in mid-2021 ([arXiv:2107.13586](https://arxiv.org/abs/2107.13586) (Liu et al., ACM Computing Surveys 2023)).
+
+Four papers show how much wording and example choice carry. Schick & Schütze's PET recasts classification as a cloze question with a verbalizer (the pattern "It was ___." with the words terrible to great) and fine-tunes a masked language model on it. With 10 labelled Yelp examples RoBERTa-large reached 52.9 accuracy against 21.1 for ordinary fine-tuning, and with 100 MNLI examples 74.7 against 47.9 (3 seeds). It is gradient fine-tuning, not in-context prompting ([arXiv:2001.07676](https://arxiv.org/abs/2001.07676) (Schick & Schütze, EACL 2021)). Jiang et al. mined and paraphrased prompts for LAMA fact probes: an optimised ensemble raised BERT-base from 31.1% to 39.6% on T-REx, and changing "plays in" to "plays at" moved one relation by 23.2 points, so a failed probe measures the prompt as much as the model ([arXiv:1911.12543](https://arxiv.org/abs/1911.12543) (Jiang et al., TACL 2020)). Zhao et al. found the same instability in GPT-3 2.7B on 4-shot SST-2: permuting the examples moved accuracy from 54.3% to 93.4%, which they trace to majority-label, recency and common-token bias. Contextual calibration, which divides the label probabilities by those the model gives a content-free input such as "N/A", gained up to 30.0 points, and a calibrated 2.7B beat the uncalibrated 175B by up to 19.3. They tested only base GPT-2 and GPT-3 ([arXiv:2102.09690](https://arxiv.org/abs/2102.09690) (Zhao et al., ICML 2021)). Reynolds & McDonell argued that zero-shot had been underrated: on WMT14 French to English a bare "French: ... English:" prompt scored 33.3 BLEU on Curie against 22.4 for OpenAI's reported zero-shot, and adding one example lowered it to 27.6, which they put down to the model reading the example as part of the text. It is one task on two engines with no variance ([arXiv:2102.07350](https://arxiv.org/abs/2102.07350) (Reynolds & McDonell, CHI EA 2021)).
 
 ### 4. Evaluate quality
 
@@ -76,6 +79,13 @@ What to measure, once you have more than a handful of cases:
 | Similarity to a reference | BLEU/ROUGE, or embedding distance |
 | Preference between variants | Pairwise comparison by humans or an LLM judge, ranked with Elo |
 
+Reference-overlap metrics are cheap, and their limits are known. BLEU is the geometric mean of 1- to 4-gram precisions, each clipped by the n-gram's count in the references, times a brevity penalty. On 500 Chinese→English news sentences it correlated 0.99 with monolingual judges' ratings across five systems (three MT systems and two human translators, two references). Its scores depend on the references, though: one human translator scored 0.2571 against two references and 0.3468 against four ([ACL 2002](https://aclanthology.org/P02-1040/) (Papineni et al., ACL 2002)).
+
+![Scatter plot of monolingual judges' scores against BLEU score for five systems, with the regression line through them (correlation 0.99)](../assets/sources/images/papineni-bleu-fig5.png)
+*Image Source: Papineni et al., [BLEU: a Method for Automatic Evaluation of Machine Translation](https://aclanthology.org/P02-1040/) (ACL 2002), Fig. 5*
+
+ROUGE is recall-oriented, counting overlapping n-grams or longest common subsequences with reference summaries. Its system-level Pearson correlation with human coverage scores depended on the task. On 100-word single-document summaries (DUC 2001, 12 systems, one reference) ROUGE-2 scored 0.84 and ROUGE-1 0.76. On 10-word summaries (DUC 2003, 14 systems) ROUGE-2 fell to 0.75 while ROUGE-1 reached 0.96 ([ACL 2004 workshop](https://aclanthology.org/W04-1013/) (Lin, 2004)).
+
 Depth: [09 — Evaluating prompts](../../../ai-engineering/01-prompt-engineering/notes/09-evaluating-prompts.md) and [generative-ai/08-eval](../../08-eval/readme.md).
 
 ### 5. Divide labor
@@ -85,7 +95,12 @@ Split a task into steps, each with its own prompt and its own check.
 - **Chaining:** the output of one call is the input of the next (outline → draft → edit).
 - **Self-evaluation:** a second call grades or critiques the first.
 - **Reasoning before answering:** asking for step-by-step work improves multi-step problems. Chain-of-thought exemplars took PaLM 540B to state of the art on GSM8K ([arXiv:2201.11903](https://arxiv.org/abs/2201.11903), Wei et al., 2022). Even the zero-shot phrase "Let's think step by step" lifted text-davinci-002 from 17.7% to 78.7% on MultiArith ([arXiv:2205.11916](https://arxiv.org/abs/2205.11916), Kojima et al., 2022). **Self-consistency** goes one step further: sample several chains of thought and take the majority answer. It only works when the answer can be compared exactly (a number, a choice), and it multiplies cost by the number of samples. The vote, not the sampling, does the work: on MATH, Minerva 62B scored 26.5% greedy, 21.8% from a single sample, 23.8% when it kept the sample the model itself rated likeliest, and 42.0% with a majority vote over 256 samples, with 97% of that accuracy already reached at 64 ([arXiv:2206.14858](https://arxiv.org/abs/2206.14858), Lewkowycz et al., NeurIPS 2022). Gemini's MMLU score was reported this way, with 32 samples per question (*AI Engineering*, ch. 2; *Building AI Agents*, ch. 3). Modern reasoning models do the step-by-step part internally; see [07 — Prompting reasoning models](../../../ai-engineering/01-prompt-engineering/notes/07-prompting-reasoning-models.md).
+- **Decomposition, refinement, ensembling.** Xiao & Zhu organise this family as a generation step that splits the problem and a solving step per sub-problem; the solver can be a retriever, a calculator or another model call, which is why RAG and tool use are decomposition with the call made at inference time (*Foundations of LLMs*, ch. 3). Self-refinement is predict, get feedback, refine. Ensembling can vary the model, the prompt or the output, and self-consistency is the third kind. Their worked example samples three chains on a coin-flip question: two agree on 37.5% and one says 33.3%, so 37.5% wins. It is an illustration, not a measurement. The book notes diverse prompts help less with strong models.
 - **Meta-prompting:** have a model write or improve the prompt.
+- **Soft prompts.** Instead of rewording text, learn vectors: prefix tuning adds L × n × d trainable parameters (layers × prefix length × width), prompt tuning learns input embeddings only, and context distillation trains a model to behave as if a long prompt were present (*Foundations of LLMs*, ch. 3). Fine-tuning detail lives in [chapter 09](09-peft-and-fine-tuning-in-practice.md).
+
+![Four ways to use soft prompts in an LLM, with the tunable parts in blue: prefixes added inside the model, learned input embeddings, fine-tuning one layer of the model, and fine-tuning an external adaptor](../assets/sources/images/xiao-foundations-llms-fig3-8.png)
+*Image Source: Xiao & Zhu, [Foundations of Large Language Models](https://arxiv.org/abs/2501.09223) (2025), Fig. 3.8*
 - **Reason + act:** interleave thoughts with tool calls (ReAct, [arXiv:2210.03629](https://arxiv.org/abs/2210.03629)). This is where prompting turns into agents ([03-agentic-foundations](../../03-agentic-foundations/readme.md)).
 
 Depth: [06 — Chaining and workflows](../../../ai-engineering/01-prompt-engineering/notes/06-chaining-and-workflows.md).

@@ -1,4 +1,5 @@
 ---
+imported_hash: 4fbbdac42959531d
 title: LC 6 — Zigzag Conversion
 summary: A string s is written out in a zigzag pattern across a given number of rows numRows (going down the rows, then diagonally up, repeatedly), then read off row by row to produce a new string.
 order: 8

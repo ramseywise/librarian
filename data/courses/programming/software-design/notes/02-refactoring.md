@@ -1,4 +1,5 @@
 ---
+imported_hash: ac97192bcc2fa018
 title: 2 — Refactoring
 summary: Most people use the word more loosely. In Kim et al.'s survey of 328 Microsoft engineers, 78% defined it as a transformation that improves things like readability, maintainability or performance, and 46% did not mention preserving behaviour…
 order: 3
@@ -48,6 +49,8 @@ A simple decision test before starting:
 | Can I tell if I broke it? | Write characterization tests first, or leave it |
 | Can I do it in steps that each leave the system working? | Find smaller steps, or call it a rewrite and plan it as one |
 | Can I stop halfway and still be better off? | It's probably too big for now |
+
+A related rule comes from machine-learning practice. Wilson tells teams that experimental code should be "a little janky": scripted, commented out and "nigh-untestable", and that "under no circumstances should experimental code be expanded upon for the final solution" (*Machine Learning Engineering in Action*, ch. 4). It is a rewrite, not a refactor, and the decision test above gives the same answer: you cannot tell whether you broke an experiment that never had tests, and no sequence of safe steps leads from a notebook script to a tested module. Keep the experiment as the reference for behaviour, and write the production version beside it. The advice is the author's experience on project timelines, not a measured result.
 
 ## Characterization tests: pin what it does, not what it should do
 

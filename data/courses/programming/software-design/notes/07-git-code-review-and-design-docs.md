@@ -1,4 +1,5 @@
 ---
+imported_hash: f28f98b332368ee5
 title: 7 — Git, code review and design docs
 summary: Every Git transcript here came from running the block on Git 2.55.0 and Python 3.14.7, in a throwaway repository made under a temporary directory with a clean environment.
 order: 8

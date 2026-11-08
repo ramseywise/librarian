@@ -33,11 +33,17 @@ cards:
 - front: How can two different vectors have distance exactly zero?
   back: Subtracting nearly equal numbers cancels the good digits, so rearrange the formula. To threshold near-duplicates at very small distances on unit vectors, compute the Euclidean form.
   lesson: programming/computer-science/notes/04-numbers-and-memory
+- front: Why train in bf16 rather than fp16?
+  back: Exponent bits buy range and mantissa bits buy precision. bf16 keeps fp32's range, fp16 overflows past 65,504, and a long sum needs an fp32 accumulator.
+  lesson: programming/computer-science/notes/04-numbers-and-memory
 - front: What does a random read cost as the working set grows?
   back: Caches work on lines and prefetchers predict patterns, and random access defeats both. It cost 8.5 times sequential at 512 MiB on an Apple M4 Pro, with no change in big-O.
   lesson: programming/computer-science/notes/04-numbers-and-memory
 - front: Why can a NumPy loop be slower than a list loop?
   back: Iterating boxes each element into a new Python object, so a NumPy loop costs the most. Speed comes from getting the whole operation out of the Python loop, and memory from getting rid of the objects.
+  lesson: programming/computer-science/notes/04-numbers-and-memory
+- front: Why does a naive softmax return nan?
+  back: Subtract the max before exp and keep probabilities as logs. Pass raw logits to the library's cross-entropy instead of taking log(softmax(x)) yourself.
   lesson: programming/computer-science/notes/04-numbers-and-memory
 - front: Why use worker pools, not a process per request?
   back: You can start a thread per task if there's a reason to, but a process per request is a mistake at 32 ms a spawn, which is why worker pools exist.

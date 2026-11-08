@@ -1,4 +1,5 @@
 ---
+imported_hash: 2a132b5ede065c98
 title: 3 — Aggregation
 summary: WHERE runs before grouping, so it can't see aggregates.
 order: 4

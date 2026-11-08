@@ -1,7 +1,8 @@
 ---
+imported_hash: cdebb25bade0fcf4
 title: Quiz1
 summary: Question 1 of 15 Incorrect What is the primary purpose of a database index?
-order: 258
+order: 261
 kind: reading
 section: Mcq
 source: learn-ai-engineering/programming/drills/mcq/quiz1.md

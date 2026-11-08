@@ -1,4 +1,5 @@
 ---
+imported_hash: 314fe2911d9503a4
 title: 2 — Metrics and KPI Design
 summary: Microsoft once moved a page module higher up, and its click-through rate per user fell by 40%.
 order: 3
@@ -345,6 +346,9 @@ total: A 0.0380, B 0.0380
 The segment is defined by something that happens *after* assignment. The treatment moved people out of the "deep" group, and those who remain are stronger, while the people who dropped down raise the shallow group's average. This is [Simpson's paradox](04-correlation-and-causation.md) in experimental form. A segment is only safe if it is fixed before treatment, such as device or country. To check, run the SRM test within each segment: here the 4,000 vs 2,000 split fails immediately.
 
 Twyman's law, that any figure that looks interesting or different is usually wrong, is the most useful habit of all. MSN's mail button change showed +28% clicks on the button, +27% on the one next to it and no change in retention. Clicks fell daily, and the likely explanation was confusion. A Windows Store change reported +10% page views, which turned out to be empty pages.
+
+![Daily percentage difference in clicks on the MSN mail button, treatment against control, falling from about 65% on day 1 to about 10% on day 5](../assets/sources/images/dmitriev-metric-interpretation-pitfalls-fig2.png)
+*Image Source: Dmitriev et al., [A Dirty Dozen: Twelve Common Metric Interpretation Pitfalls in Online Controlled Experiments](https://doi.org/10.1145/3097983.3098024) (2017), Fig. 2. The click lift on the MSN mail button decays daily, which points to confusion rather than a lasting gain.*
 
 ## Writing a metric down
 

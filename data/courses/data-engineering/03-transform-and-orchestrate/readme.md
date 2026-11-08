@@ -1,4 +1,5 @@
 ---
+imported_hash: 2d5aae2230fb36cf
 title: 03 — Transform and orchestrate
 summary: How landed tables become tested models, and how those models get built on schedule, in the right order, for the right day.
 order: 1

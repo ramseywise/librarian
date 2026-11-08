@@ -1,4 +1,5 @@
 ---
+imported_hash: 02e60f94168aa22c
 title: Examples — Case Study Round
 summary: Worked cases covering the round's formats.
 order: 9

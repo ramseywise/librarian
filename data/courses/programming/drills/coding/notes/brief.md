@@ -1,7 +1,8 @@
 ---
+imported_hash: a7421c2edee8692a
 title: 45-Minute Coding Challenge — Prep Brief
 summary: One attempt, no retake, timer starts on click.
-order: 248
+order: 251
 kind: reading
 section: Coding / Notes
 source: learn-ai-engineering/programming/drills/coding/notes/brief.md

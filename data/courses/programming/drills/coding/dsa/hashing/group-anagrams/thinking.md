@@ -1,4 +1,5 @@
 ---
+imported_hash: 5cb3a9161c73e1cf
 title: Group Anagrams — First-Principles Thinking Guide
 summary: Both work. Sorting is simpler to implement; frequency count is slightly faster for long strings.
 order: 166

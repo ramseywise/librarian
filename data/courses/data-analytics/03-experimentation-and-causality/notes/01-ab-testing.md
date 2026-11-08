@@ -1,4 +1,5 @@
 ---
+imported_hash: f2a42e403c515ab3
 title: 1 — A/B Testing
 summary: Larkspur's designers have rebuilt the checkout, and everyone who has seen it thinks it is better.
 order: 2
@@ -143,7 +144,7 @@ same absolute lift at 20% baseline                  101,400  x3.25
 | higher baseline, same absolute lift | larger | variance p(1−p) peaks at 0.5 |
 | unequal split | larger total | see below |
 
-The inverse square is the law from [estimation](../../02-probability-and-statistics/notes/04-estimation.md): precision costs data quadratically. Most sizing arguments end here. If the plan needs 122,000 per arm and you can get 40,000, either accept that you can only detect bigger effects, or find a less noisy metric or [a variance-reduction method](03-experimentation-at-scale.md), or do not run the test. An underpowered test does not just risk missing the effect. When it does reach significance, the estimate is inflated, as the [winner's curse](../../02-probability-and-statistics/notes/05-hypothesis-testing.md) showed.
+The inverse square is the law from [estimation](../../02-probability-and-statistics/notes/04-estimation.md): precision costs data quadratically. Most sizing arguments end here. If the plan needs 122,000 per arm and you can get 40,000, either accept that you can only detect bigger effects, or find a less noisy metric or [a variance-reduction method](03-experimentation-at-scale.md), or do not run the test. An underpowered test does not just risk missing the effect. When it does reach significance, the estimate is inflated, as the [winner's curse](../../02-probability-and-statistics/notes/05-hypothesis-testing.md) showed. The book sizes rare-event tests by the count of events, not visitors: at a 1.1% click rate, 300 visitors per arm and a 10% lift is hopeless, and even a 50% lift at 2,000 per arm produced 19 against 34 clicks, which a permutation test still did not call significant (*Practical Statistics*, ch. 3).
 
 ### From users to days
 
@@ -389,6 +390,8 @@ Larkspur's interval of [+0.34, +0.95] sits in the second row. The lift is real, 
 
 A good report reads: "Treatment converts at 5.58% against 4.93%, a lift of +0.64 points, 95% CI [+0.34, +0.95], p < 0.001. Sample ratio check passes (p = 0.33)."
 
+Write the analysis down before the data arrive. McElreath's closing advice is to pre-plan the research together with the statistical analysis, document it as a mock analysis you would not be ashamed to show a colleague, register it publicly, collect the data, then analyse as planned; a change of plan is fine if it is documented and justified, and the data and scripts go online rather than "on request" (*Statistical Rethinking*, ch. 15). For a test, the mock analysis is the primary metric, the unit of randomisation, the sample size from the power calculation, the stopping rule, the guardrails and the segments you will look at, written in the experiment ticket before launch. It is what makes "it worked on iOS" a hypothesis for the next test instead of a result, and it is the cheapest defence against the segment and metric fishing in the pitfalls table.
+
 ## What calibration looks like
 
 A/A tests prove the machinery works. Split users with no change at all, and p-values should be uniform, with 5% below 0.05:
@@ -437,7 +440,7 @@ A one-in-four false-positive rate from twenty looks is more than enough to make 
 | a few planned interim looks | group-sequential design with O'Brien-Fleming or Pocock boundaries |
 | continuous monitoring | always-valid p-values / mSPRT |
 | you want a probability, not a test | [Bayesian A/B](../../04-bayesian-analysis/notes/04-bayesian-ab-testing.md) (peeking is not free there either) |
-| you want to stop sending traffic to losers | a [bandit](../../04-bayesian-analysis/notes/03-priors-and-bandits.md) |
+| you want to stop sending traffic to losers | a [bandit](../../04-bayesian-analysis/notes/03b-bandits-and-thompson-sampling.md) |
 
 ## What a test cannot tell you
 
@@ -455,10 +458,10 @@ Kohavi and colleagues list limits that are worth repeating. A test tells you whi
 | Segment fishing | "it worked on iOS" | pre-register segments; treat others as hypotheses for the next test |
 | Simpson's paradox | arm mix differs across segments | [stratify](04-correlation-and-causation.md) |
 | Variance too high | revenue tests never conclude | [CUPED](03-experimentation-at-scale.md): regress out a pre-period covariate |
-| Analysing by pageview | noise looks significant | analyse at the unit of randomisation |
+| Analysing by pageview | noise looks significant; ten patients measured 100 times are still ten patients (*Statistics Done Wrong*, ch. 3) | analyse at the unit of randomisation |
 | Ignoring SRM | a real-looking result from a broken split | check before reading outcomes, and do not reweight |
-| Reading "not significant" as "no effect" | a harmful change launches as harmless | compare the interval with the MDE |
-| Stopping at first significance | one in four A/A tests "wins" at 20 looks | fix N, or use a sequential method |
+| Reading "not significant" as "no effect" | a harmful change launches as harmless; Reinhart reports a median neuroscience power of about 20% (ch. 2) | compare the interval with the MDE |
+| Stopping at first significance | one in four A/A tests "wins" at 20 looks; stopped trials overstate effects by 29% on average (*Statistics Done Wrong*, ch. 6, as reported) | fix N, or use a sequential method |
 
 ---
 

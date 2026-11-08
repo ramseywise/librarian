@@ -1,4 +1,5 @@
 ---
+imported_hash: 20e8d85f46354102
 title: LC 20 — Valid Parentheses
 summary: 'Given a string s containing only the characters ()[]{}, determine whether it is valid: every opening bracket is closed by the matching type of bracket, and brackets are closed in the correct order.'
 order: 16

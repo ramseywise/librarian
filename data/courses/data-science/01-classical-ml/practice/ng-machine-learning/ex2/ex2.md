@@ -1,7 +1,8 @@
 ---
+imported_hash: 210548061d9c2103
 title: Ex2
 summary: 'def optimizeTheta(mytheta,myX,myy,mylambda=0.): result = optimize.fmin(computeCost, x0=mytheta, args=(myX, myy, mylambda), maxiter=400, full_output=True) return result[0], result[1]'
-order: 32
+order: 33
 kind: notebook
 section: Practice / Ng machine learning / Ex2
 source: learn-ai-engineering/data-science/01-classical-ml/practice/ng-machine-learning/ex2/ex2.ipynb

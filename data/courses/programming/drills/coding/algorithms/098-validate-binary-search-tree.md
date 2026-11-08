@@ -1,4 +1,5 @@
 ---
+imported_hash: 7a1eb50d960f47ff
 title: LC 98 — Validate Binary Search Tree
 summary: Given the root of a binary tree, return true if it is a valid binary search tree.
 order: 48

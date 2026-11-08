@@ -1,4 +1,5 @@
 ---
+imported_hash: b7dc17446fb5095e
 title: LC 235 — Lowest Common Ancestor of a Binary Search Tree
 summary: 'Given the root of a binary search tree and two nodes p and q present in it, return their lowest common ancestor: the deepest node that has both p and q as descendants (a node may be a descendant of itself).'
 order: 73

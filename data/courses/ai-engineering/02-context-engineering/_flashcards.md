@@ -59,7 +59,7 @@ cards:
   lesson: ai-engineering/02-context-engineering/notes/06-memory
 - front: What does "the writer caps every reader" mean for extraction-based memory?
   back: Extraction loses information for good, so with a strong model keep the source and make it searchable.
-  lesson: ai-engineering/02-context-engineering/notes/06-memory
+  lesson: ai-engineering/02-context-engineering/notes/06b-memory-architectures
 - front: Which format should you use for document boundaries, for prose, and for state a program reads?
   back: Use tags for boundaries, markdown for prose, and JSON for anything a program reads back.
   lesson: ai-engineering/02-context-engineering/notes/07-structured-context

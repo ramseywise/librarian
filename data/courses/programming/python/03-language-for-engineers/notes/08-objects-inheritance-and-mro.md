@@ -1,4 +1,5 @@
 ---
+imported_hash: 63821f2ea9230e89
 title: 8 — Objects, inheritance and MRO
 summary: A class statement runs its body as ordinary code, collects the names it defines into a namespace, and builds an object from them.
 order: 19

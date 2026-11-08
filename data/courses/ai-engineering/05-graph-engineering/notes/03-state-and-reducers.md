@@ -1,4 +1,5 @@
 ---
+imported_hash: 8f84a213d54049a8
 title: 3 — State and Reducers
 summary: Two workers finish at once and both write findings.
 order: 4

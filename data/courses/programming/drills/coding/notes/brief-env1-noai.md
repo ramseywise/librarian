@@ -1,7 +1,8 @@
 ---
+imported_hash: 75d2537807894766
 title: 'Env 1 — No AI, 45 min: comprehension, critical bugs, optimization'
 summary: 'Solo, proctored, one attempt. This is the battleship format widened: read code you didn''t write, find what''s wrong with it (including security and data-handling), and improve it.'
-order: 246
+order: 249
 kind: reading
 section: Coding / Notes
 source: learn-ai-engineering/programming/drills/coding/notes/brief-env1-noai.md

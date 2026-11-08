@@ -1,7 +1,8 @@
 ---
+imported_hash: cb47d24d5be31882
 title: 13 — Preference Variants
 summary: DPO needs matched pairs, a reference model and a loss that keeps pushing long after the pair is won.
-order: 15
+order: 21
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/05-RL/notes/13-preference-variants.md
@@ -182,6 +183,10 @@ tune this way. **Validation reward accuracy did not predict MT-Bench**: DiscoPOP
 accuracy of the four losses plotted. And the loss only worked near the β it was found at: on
 GPT-2 IMDb it failed to converge at β ≤ 0.01 and collapsed to NaN at β ≥ 2.5.
 
+## PRO — ranking a list, not a pair
+
+**PRO** ([arXiv:2306.17492](https://arxiv.org/abs/2306.17492) (Song et al., AAAI 2024)) trains on a ranked list of n responses. At each rank k it asks the model to prefer response k over all those below it, using the mean token log-probability as the score, and it adds an SFT term on the best response. LLaMA-7B on raw two-candidate HH-RLHF gained 6.52 reward points over SFT and 2.6 over DPO (55.35 against 48.83 and 52.75, scored by an open reward model). With ChatGPT-expanded rankings of length 3 it reached 67.97 against zero-shot ChatGPT's 68.48, while DPO was ahead on the Alpaca-expanded rankings (59.27 against 58.72). Dropping the SFT term cut BLEU from 21.54 to 9.85. Single runs, LLaMA-7B and HH-RLHF only. The GPT-4 and human comparisons were against the dataset's reference reply, not against DPO, and the human result was mostly ties (22.5 wins, 56.3 ties, 21.3 losses).
+
 ## Self-play: SPIN, SPPO, DITTO
 
 These methods build pairs from the model's own samples, round after round. They differ in what
@@ -268,4 +273,4 @@ point to the wrong step.
 
 ## Next
 
-Back to the sequence: [04 — Constitutional AI](04-constitutional-ai.md) keeps the optimizer and changes where preference labels come from. [06](06-data-and-environments.md#data-engineering-for-post-training) covers building the pairs these losses consume, and [03](03-preference-optimization.md#decision-framework) has the framework for choosing among them. Papers are indexed in [references.md](../references.md#core-papers).
+Back to the sequence: [04 — Constitutional AI](04-constitutional-ai.md) keeps the optimizer and changes where preference labels come from. [06](06b-dataset-engineering-for-post-training.md#data-engineering-for-post-training) covers building the pairs these losses consume, and [03](03-preference-optimization.md#decision-framework) has the framework for choosing among them. Papers are indexed in [references.md](../references.md#core-papers).

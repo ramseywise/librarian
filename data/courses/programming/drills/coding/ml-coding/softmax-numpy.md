@@ -1,7 +1,8 @@
 ---
+imported_hash: 7cf5b368d49c3a6f
 title: Softmax in NumPy
 summary: Implement the softmax function from scratch in NumPy so it is numerically stable and works row-wise on a 2-D batch of logits.
-order: 243
+order: 246
 kind: drill
 section: Coding / Ml coding
 track: coding

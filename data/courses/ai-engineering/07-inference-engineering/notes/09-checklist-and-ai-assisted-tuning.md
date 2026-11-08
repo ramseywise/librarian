@@ -1,7 +1,8 @@
 ---
+imported_hash: a722d6455246df62
 title: 9 — Checklist and AI-Assisted Tuning
 summary: By this point there are dozens of settings, and applying them in the order you happened to read them gives results you can't interpret.
-order: 11
+order: 12
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/07-inference-engineering/notes/09-checklist-and-ai-assisted-tuning.md
@@ -52,9 +53,9 @@ Fregly's appendix is a checklist of roughly 175–180 items in 18 categories, co
 
 ### 5. Kernels and precision
 
-20. Go to FP8 first, then validate NVFP4 or INT4 against your evals ([08](08-adaptive-inference.md#quantization)).
+20. Go to FP8 first, then validate NVFP4 or INT4 against your evals ([08c](08c-quantization-and-low-precision.md#quantization)).
 21. Add speculative decoding at low-to-moderate batch ([08](08-adaptive-inference.md#speculative-decoding)).
-22. Try 2:4 structured sparsity only where kernels support it. The appendix gives up to ~2× on the sparse matmuls, not end-to-end.
+22. Try 2:4 structured sparsity only where kernels support it. The appendix gives up to ~2× on the sparse [matmuls](../../../generative-ai/01-llm-fundamentals/notes/02-attention-and-the-transformer-block.md#matrix-products-transpose-and-rank), not end-to-end.
 23. Autotune kernels for your shapes (`max-autotune`, engine tuners). The appendix gives 20–30% on the tuned kernels.
 
 ### 6. Monitoring and power

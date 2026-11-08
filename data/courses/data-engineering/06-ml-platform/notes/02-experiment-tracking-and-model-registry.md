@@ -1,4 +1,5 @@
 ---
+imported_hash: ae390506590fd283
 title: Experiment tracking and the model registry
 summary: Six months after a model ships, someone asks why it predicted what it did, and the honest answer is that nobody knows which data it was trained on, which parameters it used, or which of a dozen files in a bucket is the one in production.
 order: 3
@@ -11,7 +12,7 @@ source: learn-ai-engineering/data-engineering/06-ml-platform/notes/02-experiment
 
 Six months after a model ships, someone asks why it predicted what it did, and the honest answer is that nobody knows which data it was trained on, which parameters it used, or which of a dozen files in a bucket is the one in production. Wilson tells this story about a model of his own in [*Machine Learning Engineering in Action* (Manning, 2022)](https://www.manning.com/books/machine-learning-engineering-in-action): an unsaved artifact he could not explain three months later. Two tools prevent it. An experiment tracker records every training run as it happens. A model registry names the few runs that matter and says which one is in use. Neither trains a better model. They make it possible to answer questions about the model you have, and to go back to the one you had.
 
-The evidence that this is an engineering need, rather than tidiness, comes from the studies of working teams. [Microsoft's study by Amershi and colleagues (ICSE-SEIP 2019)](https://doi.org/10.1109/ICSE-SEIP.2019.00042), which interviewed 14 people and surveyed 551, reports teams tagging each model with its data and model version, and each dataset with its origin and code version, and it names data as harder to version than code. [Shankar and colleagues' interviews (2022)](https://arxiv.org/abs/2209.09125) put versioning next to velocity and validation as the three things that decide whether an ML effort works in production.
+The evidence that this is an engineering need, rather than tidiness, comes from the studies of working teams. [Microsoft's study by Amershi and colleagues (ICSE-SEIP 2019)](https://doi.org/10.1109/ICSE-SEIP.2019.00042), which interviewed 14 people and surveyed 551, reports teams tagging each model with its data and model version, and each dataset with its origin and code version, and it names data as harder to version than code. [Shankar and colleagues' interviews (2022)](https://arxiv.org/abs/2209.09125) put versioning next to velocity and validation as the three things that decide whether an ML effort works in production. Raissi frames the same loop as the expensive part of the workflow: the iteration step, in which experiment tracking, dataset versioning and model management all sit, is "usually the most time and resource consuming step while often being overlooked" ([arXiv:2301.11316](https://arxiv.org/abs/2301.11316) (Raissi, 2023-01, preprint)). That is an assertion in a position paper with no measurement behind it, and its cost figures (32,400 to 43,200 GPU-hours for neural architecture search on image classification) are quoted from Pham et al. and Liu et al. (2018), not measured by Raissi.
 
 ## Tracking with MLflow
 
@@ -64,6 +65,18 @@ The tracker's vocabulary is small, and the distinction between its parts is the 
 | Artifact | `log_artifact` | Any file: the pickled vectoriser, plots |
 | Model | `mlflow.sklearn.log_model(model, name="model")` | A model in MLflow format, with a `pyfunc` loader and an environment spec |
 | Everything, automatically | `mlflow.sklearn.autolog()` / `mlflow.xgboost.autolog()` | Params, metrics, model, with no manual calls |
+
+Four rules from Wilson's experimentation chapters (experience-based advice from one author's projects, not measured results) say what to put in those calls. First, record every agreed metric on every run, so an old run can be judged again without rerunning it (*ML Engineering in Action*, ch. 5). Second, return metrics as a dictionary and log them rather than printing them, because a printed number leaves no history (*ML Engineering in Action*, ch. 6, 8). Third, when tuning runs in parallel, wrap the whole search in one parent run so each trial logs as a child; where there is no parent-child grouping, such as one model per group, custom run names and tags are the only way to search the runs later (*ML Engineering in Action*, ch. 7, 8). Fourth, lay the evaluation out once before the team splits: a chronological split with an assertion that no rows were dropped, and one function that returns all the errors.
+
+```python
+def calculate_errors(y_true, y_pred):
+    """Every metric on every run; the caller logs the dict (after Wilson, ch. 6)."""
+    e = np.asarray(y_true) - np.asarray(y_pred)
+    return {"mae": np.abs(e).mean(), "mse": (e**2).mean(), "rmse": np.sqrt((e**2).mean()),
+            "mape": 100 * np.mean(np.abs(e / np.asarray(y_true)))}
+```
+
+Tuning is where the run count explodes, which is why the logging has to be automatic. Wilson's example grid over 11 Holt-Winters hyperparameters has 2 x 2 x 4 x 2 x 4 x 4 x 4 x 2 x 2 x 2 x 2 = 32,768 combinations, about 1.9 days at 5 seconds a model (a worked example in *ML Engineering in Action*, ch. 7). He prefers Hyperopt's TPE search to a grid, and reports four airports at 400 serial iterations taking 3 hours 34 minutes on a single-core VM, and SparkTrials (600 iterations, parallelism 8, four-node cluster) taking tuning from just over 3.5 hours to just under 30 minutes (his own example, with no loss values printed to show the quality matched). Both tools have since been joined by Optuna, which he names as a successor.
 
 ```python
 train, valid = month_of_rides(1), month_of_rides(2)
@@ -213,7 +226,7 @@ requirements.txt
 
 ## The gate: passive retraining
 
-The registry's real use appears with the second model. Wilson calls the simple approach passive retraining: on a schedule, train a new model, compare it against production on a holdout, and promote it only if it wins. He prefers it over anything more elaborate until it fails. The comparison needs to use data newer than either model's training set, so neither gets credit for having seen it:
+The registry's real use appears with the second model. Wilson calls the simple approach passive retraining (*ML Engineering in Action*, ch. 16): on a schedule, train a new model, compare it against production on a holdout, and promote it only if it wins. He prefers it over anything more elaborate until it fails. The comparison needs to use data newer than either model's training set, so neither gets credit for having seen it:
 
 ```python
 def train_and_log(month, alpha=float(best["params.alpha"]), slope=3.2):
@@ -285,7 +298,10 @@ v2 trained on rides-2024-03
 v3 trained on rides-2024-05
 ```
 
-Moving the alias takes one line and needs no retraining, and the listing tells you what each version was trained on. This is Wilson's point: months later you can recover the artifact from week 25, and know what it was.
+Moving the alias takes one line and needs no retraining, and the listing tells you what each version was trained on. This is Wilson's point: months later you can recover the artifact from week 25, and know what it was. In ch. 16 he says that with a registry a historic problem takes "no more than an hour" to trace, against hunting for an old model or retraining on data that may have changed. The hour is an illustration in his Fig. 16.3, not a measurement. His Listing 16.3 moves versions between `Production` and `Archived` stages and logs each change to an append-only status table (model name, production version, update time, training time), where this note uses aliases. The idea carries over: the registry keeps what ran, and the log keeps when it changed.
+
+![Six weekly model versions, then a week-25 issue traced with a registry in an hour or without one by painful reconstruction](../assets/sources/images/ml-engineering-in-action-fig16-3.png)
+*Image Source: Ben Wilson, *Machine Learning Engineering in Action* (Manning, 2022), Fig. 16.3*
 
 But **the registry labels; it doesn't deploy.** Moving the `champion` alias changes nothing in production by itself. A CI/CD pipeline, or a service that resolves the alias at startup, does the deploying ([the maturity chapter](05-mlops-maturity-and-best-practices.md)). That gap matters in an incident: a service that loaded at startup keeps running the old model until something restarts it. Your rollback runbook has to include that step.
 

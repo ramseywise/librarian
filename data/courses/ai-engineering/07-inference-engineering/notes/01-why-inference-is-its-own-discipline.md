@@ -1,4 +1,5 @@
 ---
+imported_hash: e34cef790452bf61
 title: 1 — Why Inference Is Its Own Discipline
 summary: A team that budgets from its training run and watches one GPU-utilization chart can read 95% on a fleet that is badly underused, buy more compute when decode is short of memory bandwidth, and report a mean TTFT that describes no real reques…
 order: 2
@@ -21,11 +22,14 @@ Huyen splits inference optimization into three levels (*AI Engineering*, ch. 9):
 
 | Level | What you change | Examples | Notes |
 |---|---|---|---|
-| **Model** | The artifact itself | Quantization, distillation, pruning, speculative decoding, attention variants | [08](08-adaptive-inference.md), [07](07-prefill-decode-kv-cache.md) |
+| **Model** | The artifact itself | Quantization, distillation, pruning, speculative decoding, attention variants | [08](08-adaptive-inference.md), [08c](08c-quantization-and-low-precision.md), [07](07-prefill-decode-kv-cache.md) |
 | **Hardware** | Where and how it runs | GPU choice, memory hierarchy, kernels, compilers | 02–04 (planned), [05](05-compilers-and-frameworks.md) |
 | **Service** | How requests meet the model | Batching, routing, disaggregation, prompt caching, parallelism | [06](06-serving-at-scale.md), [07](07-prefill-decode-kv-cache.md) |
 
 Model-level changes can alter behaviour. Quantization or a different attention scheme may change outputs, so they need an eval. Service-level changes usually do not change outputs, but they move latency and cost a lot. Distillation is the most drastic model-level change, because it replaces the model. Training a small student on a big model's generated outputs, rather than its per-token probabilities, goes back to sequence-level knowledge distillation. In WMT14 English–German translation, an 84M-parameter LSTM student trained on its 221M teacher's beam-search outputs rose from 14.7 to 18.9 BLEU with greedy decoding (word-level distillation gave +0.7). It ran 10× faster than the teacher with beam search, with comparable BLEU ([arXiv:1606.07947](https://arxiv.org/abs/1606.07947) (Kim & Rush, EMNLP 2016)). Training a small model on a frontier model's outputs follows the same recipe, and it changes outputs more than any other lever here. Huyen's analogy is archery: the model is the arrow, the hardware is the bow, and the service is how the archer shoots.
+
+![Word-level versus sequence-level knowledge distillation](../assets/sources/images/kim-2016-sequence-level-knowledge-distillation-fig1.png)
+*Image Source: Kim & Rush, [Sequence-Level Knowledge Distillation](https://arxiv.org/abs/1606.07947) (EMNLP 2016), Fig. 1*
 
 Huyen cites Desislavov et al. (2023): inference can be **up to 90% of the ML cost** of a deployed system. Training is paid once. Inference is paid for every request, for the whole life of the product.
 
@@ -46,6 +50,8 @@ LLM inference has one phase on each side of the ridge:
 |---|---|---|---|
 | **Prefill** | Processes all input tokens in parallel and builds the KV cache | Compute | TTFT |
 | **Decode** | Generates one token per step and re-reads all weights plus the KV cache each step | Memory bandwidth | TPOT |
+
+**Agent workloads add a third ceiling: memory capacity.** Zhao and Liu point out that the roofline, and MFU and MBU with it, can both read low at once, because the limit is how many bytes a request must *hold* in HBM, not how fast they move. They name it the capacity footprint: per request, the weights divided by the batch size plus the KV cache, which for a dense model grows as 2 × d × L with context length L. Fitting a dense Llama-3-70B to chatbot, coding, web-use and computer-use token profiles, the agent cases exceed one B200's memory at modest batch while decode operational intensity stays far below the roof, so adding cards buys capacity without raising utilization. The paper is a position piece with analytic plots and no measurements ([arXiv:2601.22001](https://arxiv.org/abs/2601.22001) (Zhao and Liu, 2026-01, preprint)). Sizing the cache is in [07](07-prefill-decode-kv-cache.md#sizing-the-cache).
 
 That asymmetry drives most of this pillar. Batching ([06](06-serving-at-scale.md)) exists to raise decode's arithmetic intensity. Disaggregation ([07](07-prefill-decode-kv-cache.md)) exists because the two phases want different hardware. Speculative decoding ([08](08-adaptive-inference.md)) exists because decode leaves compute idle.
 
@@ -70,7 +76,7 @@ Huyen separates **online** APIs (latency matters; a user is waiting) from **batc
 
 Total latency = TTFT + TPOT × output tokens. Two systems with the same total can feel very different. Huyen sets a floor from human reading speed: a very fast reader takes about **120 ms per token**, so a TPOT around 120 ms (**6–8 tokens/s**) is enough for streamed chat. Faster than that only matters when a machine reads the output, as in agents, tool calls and chained calls.
 
-Report **percentiles, not means**. Huyen's example: a set of TTFTs with one 3,000 ms outlier averages 390 ms, which describes no real request. Use p50, p90, p95 and p99, and watch the tail. For agents the tail compounds, because a task that makes ten calls hits the p90 of a single call far more often than one call does.
+Report **percentiles, not means**. Huyen's example: a set of TTFTs with one 3,000 ms outlier averages 390 ms, which describes no real request. Use p50, p90, p95 and p99, and watch the tail. For agents the tail compounds, because a task that makes ten calls hits the p90 of a single call far more often than one call does. The other agent-specific lever is the number of model turns. Each tool call that returns to the model for a reasoning step pays a fresh TTFT, so the book's advice is to feed one tool's output straight into the next, or have the model plan several calls in one pass (*Agentic Architectural Patterns*, ch. 2). Illustration, not the book's number: six dependent tool calls at 400 ms TTFT each spend 2.4 s before any output token, and three of them planned together cut that to 1.2 s.
 
 The script below uses ten TTFTs I made up to match Huyen's description, since the book's example gives only the outlier and the mean. It also prices the agent case and shows two requests with the same total latency.
 
@@ -158,11 +164,16 @@ The better metrics:
 
 Prefill shows high MFU and low MBU. Decode shows the opposite. Pope et al. measured both phases of PaLM 540B on 64 TPU v4 chips with a 2,048-token context. Prefill reached 43% MFU at batch 1 and 76% at batch 512. Decode reached only 14% at batch 64 and 33% at batch 512 ([arXiv:2211.05102](https://arxiv.org/abs/2211.05102) (Pope et al., MLSys 2023)).
 
+![PaLM decoding and prefill latency versus cost across batch sizes](../assets/sources/images/pope-2022-efficiently-scaling-transformer-inference-fig1.png)
+*Image Source: Pope et al., [Efficiently Scaling Transformer Inference](https://arxiv.org/abs/2211.05102) (MLSys 2023), Fig. 1*
+
 ![MBU falls as concurrency rises: Llama 2-70B FP16 on 8× A100-80GB, 8× H100-80GB, 8× Gaudi2-96GB](../assets/sources/images/huyen-ai-engineering-fig9-5.png)
 
 *Image Source: Huyen, *AI Engineering* (O'Reilly, 2025), Fig. 9-5*
 
 For Llama 2-70B in FP16 on 8-chip nodes, MBU falls from around 33–43% at one user to around 14–19% at 256 users. Huyen reads the fall as the workload moving from bandwidth-bound toward compute-bound as batches grow. That is expected, not a regression. Note also that the H100 node shows *lower* MBU than the A100 node at low concurrency. A faster chip does not guarantee better utilization of it.
+
+Power follows the same curve, which is why energy per query is a batch-size statement. Saad-Falcon, Narayan et al. measure intelligence per watt (mean accuracy over mean accelerator power) and per joule (accuracy over energy per query) for local models on local hardware. On a B200 under vLLM, going from batch 1 to 64 raised accuracy per joule 11.2–19.7× on Qwen3-8B, Qwen3-14B and GPT-OSS-120B, with per-query energy falling 12–20× (Qwen3-8B: 6,449 J to 548 J) while GPU power rose only from 255 W to 883 W. Their headline that a B200 beats an Apple M4 Max by 1.4× per watt and 1.6–2.3× per joule on the same models is measured at batch 1, the cloud chip's worst case. Per-watt efficiency of the best local model on the best local accelerator rose 5.3× from 2023 to 2025, 3.1× from models and 1.7× from hardware, but per joule the hardware share is 5.9×, because faster memory finishes the query sooner. Power is read from the accelerator's own telemetry (NVML, Apple's powermetrics), not at the wall, with a stated 10–15% error, inputs are capped at 32,000 characters, and the model set is as of October 2025 ([arXiv:2511.07885](https://arxiv.org/abs/2511.07885) (Saad-Falcon et al., 2025-11, preprint)).
 
 ---
 
@@ -212,7 +223,7 @@ Fregly's other ch. 1 points:
 | Compile, fuse, CUDA graphs | Cuts launch overhead; large on small-batch decode | [05](05-compilers-and-frameworks.md) |
 | Continuous batching, routing, parallelism | Throughput; TP also cuts latency | [06](06-serving-at-scale.md) |
 | KV cache management, prefix caching, disaggregation | Memory capacity, TTFT, goodput | [07](07-prefill-decode-kv-cache.md) |
-| Quantization, speculative decoding | Bandwidth per token, decode latency | [08](08-adaptive-inference.md) |
+| Quantization, speculative decoding | Bandwidth per token, decode latency | [08](08-adaptive-inference.md), [08c](08c-quantization-and-low-precision.md) |
 | Checklist and AI-assisted kernel search | Systematic coverage | [09](09-checklist-and-ai-assisted-tuning.md) |
 
 Huyen's ranking of the techniques with the widest impact, across the companies she surveyed: **quantization, tensor parallelism, replica parallelism and attention optimization** (*AI Engineering*, ch. 9).

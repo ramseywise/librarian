@@ -1,7 +1,8 @@
 ---
+imported_hash: 85a4b336743445db
 title: 12 — KG as Shared Agent Memory
 summary: A fan-out of ten agents with no shared record derives the same findings ten times.
-order: 15
+order: 17
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/12-kg-as-shared-agent-memory.md
@@ -30,13 +31,19 @@ This is where the two tracks meet. Track A's execution graph has **state** ([not
 
 The last two rows matter most for this note.
 
+
+Zhang et al.'s survey (ACM TOIS 2025, [arXiv:2404.13501](https://arxiv.org/abs/2404.13501); read as the 2024-04 v1 preprint) gives the vocabulary for the table's right-hand column. Memory has three **sources** (inside-trial, cross-trial, external knowledge), two **forms** (textual, parametric) and three **operations** (write, manage, read), and the loop is write, manage, then read before each LLM call. A KG as used here is external-knowledge, textual memory. The survey never treats graphs as a memory form: structured text means tuples and databases, and it says retrieval memory struggles with heterogeneous information. Shared memory across agents gets one paragraph of future work (synchronising into a unified knowledge base), and the authors report that **no open benchmark exists for agent memory modules**. It is a taxonomy with no numbers of its own, so it backs the framing and the evaluation gap below, not the claim that graphs are the right shared memory.
+
+![Overview of agent memory: sources (inside-trial, cross-trial, external), forms (textual: full, recent, retrieved, external; parametric: fine-tuning, editing) and operations (writing, management, reading)](../assets/sources/images/zhang-2025-memory-survey-fig4.png)
+*Image Source: Zhang et al., [A Survey on the Memory Mechanism of Large Language Model based Agents](https://arxiv.org/abs/2404.13501) (ACM TOIS 2025), Fig. 4*
+
 ---
 
 ## Loop → swarm → graph
 
-Each architecture moves a different bottleneck out of the agent's context. This progression comes from the community synthesis in [sources/](../sources/graph-engineering-karpathy-loop-anthropic-playbook-2026.pdf), which is secondary; the primary sources are cited inline.
+Each architecture moves a different bottleneck out of the agent's context. The three-step framing comes from an unattributed, self-described independent compilation (no author or publisher, not endorsed by Karpathy or Anthropic). It is framing, not evidence: the claims below rest on the primary sources cited inline.
 
-**1. Loop.** Karpathy's [autoresearch](https://github.com/karpathy/autoresearch) (March 2026) runs one agent inside a research harness. The agent may edit `train.py` but not `prepare.py`, and a `program.md` sets the rules. It runs about 5 minutes of training per experiment, keeps a change only if validation bits-per-byte improves, and otherwise `git reset`s. The synthesis puts `train.py` at about 630 lines. It works for the reasons [04-loop](../../04-loop-engineering/readme.md) gives: the result is verifiable, the action is reversible, the horizon is short and the environment is bounded. **The loop moves iteration and evaluation out of the agent.**
+**1. Loop.** Karpathy's [autoresearch](https://github.com/karpathy/autoresearch) (March 2026) runs one agent inside a research harness. The agent may edit `train.py` but not `prepare.py`, and a `program.md` sets the rules. It runs about 5 minutes of training per experiment, keeps a change only if validation bits-per-byte improves, and otherwise `git reset`s. It works for the reasons [04-loop](../../04-loop-engineering/readme.md) gives: the result is verifiable, the action is reversible, the horizon is short and the environment is bounded. **The loop moves iteration and evaluation out of the agent.**
 
 **2. Swarm.** Fan the loop out across parallel workers with fresh contexts, for example Claude Code's dynamic workflows, where orchestration is a generated script that spawns sub-agents. **The swarm moves parallel search out of the agent.** It also creates a new problem, **redundancy**: workers that share nothing rediscover the same findings, and the synthesiser has to read every transcript to combine them.
 
@@ -72,7 +79,7 @@ flowchart LR
 | **Grounding layer** | An evaluator checks each claim against edges with sources: "no supported path from X to Y" is a critique you can act on |
 | **Persistent world model** | Long investigations, incremental ingestion, contradiction tracking, facts with time ranges, handoff between models, recovery after a failed run |
 
-The synthesis makes one further distinction worth keeping. A **commit or lineage DAG** records *what changed and who changed it*. The **KG** records *what is believed and why*. Don't collapse them into one structure. Track A tracing ([note 08](08-governance-and-production.md)) covers the first.
+The playbook makes one further distinction worth keeping. A **commit or lineage DAG** records *what changed and who changed it*. The **KG** records *what is believed and why*. Don't collapse them into one structure. Track A tracing ([note 08](08-governance-and-production.md)) covers the first.
 
 ---
 
@@ -154,7 +161,7 @@ The contract on the wire is a JSON Schema the validator enforces. Trimmed to its
 
 ## Five planes
 
-The synthesis's reference architecture keeps five concerns apart:
+The playbook's reference architecture keeps five concerns apart:
 
 | Plane | Holds | Track A note |
 |---|---|---|
@@ -198,13 +205,13 @@ Each layer has a metric that is easy to misread:
 | Query | Answer correctness **and** path validity: supported edges, cited, time and source constraints respected | A right answer reached through a wrong path is luck |
 | Swarm | Redundant findings, tokens and quality compared with a single loop | Wall-clock gains that cost quality |
 
-Improving the extraction prompt is itself an autoresearch loop. Propose one prompt or schema change, rerun on the gold set, keep it if precision, recall and false-merge rate improve, and revert it otherwise. The synthesis calls this "graph autoresearch". It is [04-loop](../../04-loop-engineering/readme.md) applied to [note 10](10-building-kgs-with-llms.md).
+Improving the extraction prompt is itself an autoresearch loop. Propose one prompt or schema change, rerun on the gold set, keep it if precision, recall and false-merge rate improve, and revert it otherwise. The playbook calls this "graph autoresearch". It is [04-loop](../../04-loop-engineering/readme.md) applied to [note 10](10-building-kgs-with-llms.md).
 
 ---
 
 ## Build path
 
-Don't start at the swarm. The synthesis's staged path matches [note 06](06-when-not-to-build-a-graph.md)'s adoption advice:
+Don't start at the swarm. The playbook's staged path matches [note 06](06-when-not-to-build-a-graph.md)'s adoption advice:
 
 1. **One measured loop.** A fixed metric and reversible actions.
 2. **A role split.** Generator and verifier with isolated contexts.
@@ -226,7 +233,7 @@ Two drills test whether the graph is earning its place:
 
 ## Working reference
 
-Related: [02-context note 06](../../02-context-engineering/notes/06-memory.md) (memory types and hygiene); [its production memory designs](../../02-context-engineering/notes/06-memory.md) (ChatGPT, OpenClaw, Memoria).
+Related: [02-context note 06](../../02-context-engineering/notes/06-memory.md) (memory types and hygiene); [its production memory designs](../../02-context-engineering/notes/06b-memory-architectures.md#production-memory-designs) (ChatGPT, OpenClaw, Memoria).
 
 ---
 

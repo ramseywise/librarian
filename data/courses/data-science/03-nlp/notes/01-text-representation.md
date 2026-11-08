@@ -1,4 +1,5 @@
 ---
+imported_hash: 425baf0d1d783295
 title: Text representation
 summary: A model cannot read. Before any classifier, topic model or neural network sees a film review, somebody has decided how that text becomes numbers, and those decisions quietly set what the model is able to learn.
 order: 2
@@ -50,7 +51,7 @@ median words per description: 55
 
 ## The preprocessing pipeline
 
-Sarkar's chapter 3 (*Text Analytics with Python*, 2nd ed.) and the condensed NLP course notebooks build the same chain. Not every step helps every task. For sentiment, removing "not" destroys the signal, and for neural models less preprocessing is usually better, because the model can learn what a step would have thrown away.
+Sarkar's chapter 3 (*Text Analytics with Python*, 2nd ed.) and the condensed NLP course notebooks build the same chain. NLTK, which supplies most of the tools in the table below, began as a classroom toolkit: its authors ranked ease of use, consistency, extensibility, documentation, simplicity and modularity first and listed efficiency among the things it was not for ([arXiv:cs/0205028](https://arxiv.org/abs/cs/0205028) (Loper & Bird, ACL 2002 Workshop on Effective Tools and Methodologies for Teaching NLP and CL)). They report it only from one Penn graduate course (five assignments, two exams, a final project) with no scores, so it explains why the code reads clearly, not how fast it runs. Not every step helps every task. For sentiment, removing "not" destroys the signal, and for neural models less preprocessing is usually better, because the model can learn what a step would have thrown away.
 
 | Step | Tool | Example | Skip when |
 |---|---|---|---|
@@ -98,7 +99,7 @@ with expansion: brown fox not jump lazy dog
 enter world pandora nd century paraplegic marine dispatch moon pandora unique mission become tear follow order protect alien civilization
 ```
 
-**Stemming and lemmatisation.** A stemmer chops suffixes by rule. It is fast and may produce non-words. A lemmatiser looks up the dictionary form using the part of speech, which is slower and produces real words. The output below shows the difference, and also why part of speech matters: alone, "better" is read as an adverb and maps to "well", whereas as an adjective it would map to "good". M&G compare both on IMDb and find that lemmatisation gives a slightly better and smaller vocabulary, but the gain over plain tokens is small, and larger when training data is scarce.
+**Stemming and lemmatisation.** A stemmer chops suffixes by rule. It is fast and may produce non-words. A lemmatiser looks up the dictionary form using the part of speech, which is slower and produces real words. The output below shows the difference, and also why part of speech matters: alone, "better" is read as an adverb and maps to "well", whereas as an adjective it would map to "good". M&G compare both on IMDb: spaCy lemmatisation cuts the `min_df=5` vocabulary from 27,271 to 21,596 features, and with only 1% of the 25,000 training reviews (five random splits) best CV accuracy moves from 0.721 to 0.731, a small gain that they expect to be largest when data is scarce (*Intro to ML with Python*, ch. 7). The NLTK book's one 38-token sentence shows the usual trade: Porter maps "lying" to "lie" while Lancaster leaves it, both over-stem other words (Porter gives "denni" and "mandat"), and the WordNet lemmatiser turns "women" into "woman" but leaves "lying" and "distributing" alone when no part of speech is passed (*NLP with Python*, ch. 3). Its hand-written suffix stripper over-strips the same way ("is" becomes "i", "basis" becomes "basi"), which the authors accept when a stem only has to be a consistent key, not a word.
 
 ```python
 from nltk.stem import PorterStemmer, LancasterStemmer
@@ -119,6 +120,22 @@ organization organ      org        organization
 better       better     bet        well
 ```
 
+The tokeniser matters as much as the stemmer. A single regular expression keeps contractions and hyphenated words whole, where NLTK's Treebank-style `word_tokenize` splits clitics off (*NLP with Python*, ch. 3, pattern from its Alice example).
+
+```python
+import re
+from nltk import word_tokenize
+
+text = "It's hot-tempered, and it won't wait."
+print(re.findall(r"\w+(?:[-']\w+)*|'|[-.(]+|\S\w*", text))
+print(word_tokenize(text))
+```
+
+```text
+["It's", 'hot-tempered', ',', 'and', 'it', "won't", 'wait', '.']
+['It', "'s", 'hot-tempered', ',', 'and', 'it', 'wo', "n't", 'wait', '.']
+```
+
 ### Linguistic structure (Sarkar ch. 1, 3b)
 
 Beyond tokens, Sarkar's chapter 3b covers the syntax layer that later chapters use:
@@ -126,7 +143,7 @@ Beyond tokens, Sarkar's chapter 3b covers the syntax layer that later chapters u
 | Analysis | Output | Tool |
 |---|---|---|
 | POS tagging | `("fox", "NN")`, `("jumps", "VBZ")`; Penn Treebank tags | `nltk.pos_tag`, spaCy `token.tag_` / `token.pos_` |
-| Shallow parsing (chunking) | Noun phrases `[The brown fox]` | `nltk.RegexpParser` grammar, n-gram taggers trained on conll2000 |
+| Shallow parsing (chunking) | Noun phrases `[The brown fox]`, tagged with IOB labels so a tagger can learn them (*NLP with Python*, ch. 7) | `nltk.RegexpParser` grammar, n-gram taggers trained on conll2000 |
 | Dependency parsing | Head → dependent arcs (`nsubj`, `dobj`) | spaCy `token.dep_`, `token.head` |
 | Constituency parsing | Phrase-structure tree | Stanford CoreNLP (Ch03c, needs a Java server) |
 
@@ -146,11 +163,35 @@ print([chunk.text for chunk in parsed.noun_chunks])
 
 These features power the rule-based extraction in [semantic analysis and NER](05-semantic-analysis-and-ner.md) and the keyphrase chunking in [topic models](03-topic-models-and-summarization.md).
 
+Sarkar's first-edition chapters add the vocabulary and some numbers. A dependency tree is built from words only, with directed head-to-dependent arcs and no word order. A constituency tree adds phrase nodes and keeps the order, so it has more nodes (*Text Analytics with Python*, 1st ed., ch. 1). The two figures below show the same sentence both ways.
+
+![Dependency graph for the fox and dog sentence](../assets/sources/images/sarkar-text-analytics-fig1-9.png)
+
+*Image Source: Sarkar, *Text Analytics with Python* (Apress, 2016), Fig. 1-9*
+
+![Constituency tree for the same sentence](../assets/sources/images/sarkar-text-analytics-fig1-15.png)
+
+*Image Source: Sarkar, *Text Analytics with Python* (Apress, 2016), Fig. 1-15*
+
+Chapter 3 measures taggers on NLTK's treebank sample, with the first 3,500 sentences for training and the rest for testing, one run each (*Text Analytics with Python*, 1st ed., ch. 3). Tagging everything as a noun scores 0.145 and a regex tagger 0.240. A unigram tagger scores 0.861 but leaves unseen words untagged. A bigram tagger alone scores 0.135 and a trigram tagger 0.081, because the training n-grams rarely recur in the test set. Chained as trigram, bigram, unigram and a regex tagger, they reach 0.910, and the classifier-based tagger (Naive Bayes) reaches 0.931. The lesson is the backoff: sparse contexts help only when a simpler model catches the misses. For chunking on the same sample, a hand-written regex grammar gets 54.5% IOB accuracy and a bigram chunker over POS tags 99.6%. The same chunker on CoNLL-2000 (7,500 sentences for training) gets 66.8% with an F-score of 57.3 (*Text Analytics with Python*, 1st ed., ch. 3). The book explains the drop by the larger corpus. A harder and more varied test set is more likely, and the chapter does not test it. Compare with the CoNLL-2000 ladder in [semantic analysis and NER](05-semantic-analysis-and-ner.md), where richer features reach 95.9% accuracy.
+
+![Shallow parse of the sample sentence](../assets/sources/images/sarkar-text-analytics-fig3-2.png)
+
+*Image Source: Sarkar, *Text Analytics with Python* (Apress, 2016), Fig. 3-2*
+
+The refresher chapter shows the Python 2 trap behind the accent step above: `re.findall(r"\w+", "Hèllo")` splits the word into `H` and `llo` until the `re.UNICODE` flag is set (*Text Analytics with Python*, 1st ed., ch. 2). In Python 3, `str` patterns are Unicode-aware by default, so the trap only bites on old code.
+
+Why parsers return one tree and not all of them: a sentence with prepositional-phrase attachment ambiguity ("I shot an elephant in my pajamas") has two analyses, and the count of analyses grows with the Catalan numbers, 1, 2, 5, 14, 42 and on to 208,012 for a sentence of 23 words, the average length in the Wall Street Journal treebank, and more than $10^{12}$ at 50 words. Enumerating them is hopeless, so practical parsers either store shared sub-analyses (chart parsing, a dynamic programme) or score candidates with a weighted grammar; in a probabilistic grammar a parse's score is the product of its rule probabilities, with each left-hand side's rules summing to 1 (*NLP with Python*, ch. 8). A dependency analysis, which draws one labelled arc from each word to its head, expresses the same choice as a single attachment decision, and is what spaCy's `dep_` returns (*NLP with Python*, ch. 8). Feature-based grammars attach attribute-value structures such as number and person to categories and unify them while parsing, so that agreement is enforced by the grammar (*NLP with Python*, ch. 9). Nothing in this pillar's pipelines uses hand-written feature grammars; a trained parser takes agreement from its treebank.
+
+![A projective dependency parse of "I shot an elephant in my pajamas"](../assets/sources/images/nlp-with-python-fig8-8.png)
+
+*Image Source: Bird, Klein and Loper, *Natural Language Processing with Python* (O'Reilly, 2009), Fig. 8-8*
+
 ## Bag of words
 
 Ignore order, and represent each document by how often each vocabulary word appears. This sounds too crude to work, and on many tasks it is close to the best you can do with a few thousand labels. The reason is that which words a document uses says a lot about what it is about, and much of the rest needs far more data to learn.
 
-![Bag-of-words processing: tokenise, build vocabulary, encode](../assets/mueller-guido-bag-of-words.png)
+![Bag-of-words processing: tokenise, build vocabulary, encode](../assets/sources/images/mueller-guido-bag-of-words.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, companion repo `images/bag_of_words.png`*
 
 ```python
@@ -212,7 +253,7 @@ stop_words + min_df=5       5,175 features  0.451% non-zero
 
 ### n-grams
 
-Single words lose "not good" and "Supreme Court". Adding pairs and triples recovers some local order, at the price of many more features. On IMDb, M&G's `(1, 3)` range with TF-IDF and logistic regression goes from 0.89 to 0.91. Pair n-grams with `min_df`, since most long n-grams occur once and teach nothing.
+Single words lose "not good" and "Supreme Court". Adding pairs and triples recovers some local order, at the price of many more features. On IMDb, M&G's `(1, 3)` range with TF-IDF and logistic regression goes from 0.89 to 0.91. Pair n-grams with `min_df`, since most long n-grams occur once and teach nothing. The same sparsity breaks generation: a greedy bigram model that always takes the commonest successor, built on the Genesis text, loops ("the land of the land of the land"), because the best-seen next word of "land" leads back to "of" (*NLP with Python*, ch. 2).
 
 ```python
 cv12 = CountVectorizer(ngram_range=(1, 2), min_df=5)
@@ -391,6 +432,7 @@ flowchart LR
 
 - **Default stop-word lists contain negations.** Both NLTK's and scikit-learn's lists include "not". Removing them turns "not good" into "good", so check the list against your task.
 - **Fitting the vectoriser on all the data.** The vocabulary and IDF then contain the test set. Put the vectoriser in the pipeline.
+- **Testing vocabulary membership against a list.** Keep the vocabulary as a `set` or `dict`: the NLTK book times 1,000 membership tests on a 100,000-word vocabulary at 2.8 s for a list and 0.0037 s for a set, on 2009 hardware, so read it as an order-of-magnitude (about 1,000x) argument (*NLP with Python*, ch. 4).
 - **Calling `.toarray()`.** A matrix with a few hundred thousand features and a few percent of a percent non-zero will not fit in memory as a dense array.
 - **`max_features` before `min_df` thinking.** Keeping the most frequent features keeps the corpus-specific stop words and throws away the rare, informative ones.
 - **Different preprocessing at inference.** A model trained on lemmas and served on raw text degrades with no error. This is [train/serve skew](../../01-classical-ml/notes/10-imbalance-errors-and-drift.md#drift-when-the-world-moves): the world hasn't moved, but serving computes features differently from training. One function, or a layer inside the model.
@@ -434,7 +476,7 @@ top 100 words: 44.2% of tokens
 words seen once: 9,561 of 21,809
 ```
 
-The top 100 words are 44.2% of all tokens, and 9,561 of the 21,809 vocabulary words, about 44%, occur once. This long tail is why `min_df` removes so much at so little cost.
+The top 100 words are 44.2% of all tokens, and 9,561 of the 21,809 vocabulary words, about 44%, occur once. This long tail is why `min_df` removes so much at so little cost. The NLTK book finds the same shape in a novel: *Moby Dick* has 260,819 tokens but 19,317 types, lowercasing alone cuts that to 17,231, the 50 commonest tokens (mostly function words and punctuation) cover nearly half the text, and about 9,000 types are hapaxes (*NLP with Python*, ch. 1). Tokens per type also varies by genre, from 4.3 in humour to 8.3 in romance fiction on the Brown corpus (ch. 1), so a vocabulary setting tuned on one genre will not transfer. On the whole Brown corpus the top eight tokens (the , . of and to a in) already cover 25.97% (ch. 4).
 
 </details>
 

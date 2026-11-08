@@ -29,6 +29,9 @@ cards:
 - front: How do gradient descent and the normal equation differ?
   back: Gradient descent walks towards the answer and needs a learning rate, while the normal equation solves for it directly.
   lesson: data-science/01-classical-ml/notes/02-supervised-learning
+- front: How do you check a hand-derived gradient before you trust it?
+  back: Check a derived gradient against a central difference, and keep the learning rate below 2 over the largest eigenvalue or the loss explodes.
+  lesson: data-science/01-classical-ml/notes/02-supervised-learning
 - front: What do you check before you trust a first score?
   back: Check the base rate, keep the test set back, and scale for distance models before you trust a first score.
   lesson: data-science/01-classical-ml/notes/01-statistical-foundations
@@ -37,7 +40,7 @@ cards:
   lesson: data-science/01-classical-ml/notes/04-model-evaluation
 - front: How do you evaluate a classifier when a dummy already scores 0.759 accuracy?
   back: Beat a dummy, report a ranking metric too, and choose the threshold on validation from what each error costs.
-  lesson: data-science/01-classical-ml/notes/04-model-evaluation
+  lesson: data-science/01-classical-ml/notes/04b-thresholds-pr-roc-and-calibration
 - front: How do you stop a fitted step such as feature selection leaking into cross-validation?
   back: Any step with a fit goes in a pipeline, refit inside each fold, and the chain ships as one object.
   lesson: data-science/01-classical-ml/notes/03-feature-engineering-and-pipelines

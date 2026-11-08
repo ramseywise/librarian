@@ -1,4 +1,5 @@
 ---
+imported_hash: 395b5e667902704f
 title: 8 — Distributed compute
 summary: Distributed compute exists because some jobs do not fit on one machine, and it costs far more than the cluster bill.
 order: 9

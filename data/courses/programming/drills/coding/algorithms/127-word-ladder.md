@@ -1,4 +1,5 @@
 ---
+imported_hash: 2f409ccf771cef31
 title: LC 127 — Word Ladder
 summary: Given beginWord, endWord, and a wordList, return the number of words in the shortest transformation sequence from beginWord to endWord (counting both ends), or 0 if none exists.
 order: 55

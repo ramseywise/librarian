@@ -1,4 +1,5 @@
 ---
+imported_hash: 5945056cebf0f56b
 title: Comp 3
 summary: place_ship(Ship('Cruiser', 3), row=0, col=0, horizontal=False), which cells should the ship occupy?
 order: 96

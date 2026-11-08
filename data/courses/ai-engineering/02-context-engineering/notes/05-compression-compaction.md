@@ -1,4 +1,5 @@
 ---
+imported_hash: 7823e9d78e5a34b3
 title: 5 — Compression and Compaction
 summary: Compaction lets a long-running agent keep going, and it's also how an agent forgets the rule that mattered.
 order: 6
@@ -215,6 +216,9 @@ The upstream management module borrows the CPU cache model. Context lives at lev
 
 MemGPT made this design concrete: the agent manages its own tiers through tool calls, and summarized history is evicted to a searchable recall store. In its multi-session recall test, GPT-4 went from 32.1% to 92.5%, against a baseline that saw only a summary of past sessions ([arXiv:2310.08560](https://arxiv.org/abs/2310.08560) (Packer et al., 2023-10); mechanics and caveats in [agentic foundations 03](../../../generative-ai/03-agentic-foundations/notes/03-memory-as-an-operating-system.md#the-os-analogy)).
 
+![MemGPT: a fixed context holds system instructions, working context and a FIFO queue; a function executor and queue manager move data to and from recall and archival storage](../assets/sources/images/packer-memgpt-fig3.png)
+*Image Source: Packer et al., [MemGPT](https://arxiv.org/abs/2310.08560) (2023), Fig. 3*
+
 The useful habit is thinking in **promotion and demotion**. Compaction demotes content from L1 to L2. Retrieval promotes it back. A good design makes both moves cheap and explicit, rather than letting the window be the only tier ([06](06-memory.md)).
 
 ---
@@ -228,7 +232,7 @@ The useful habit is thinking in **promotion and demotion**. Compaction demotes c
 | **Extractive** | Keep the sentences that matter verbatim | Faithful; cites cleanly; less compression |
 | **Abstractive** | Rewrite into a shorter form | Higher ratio; can introduce errors |
 | **Hierarchical summarisation** | Summarise chunks, then summarise the summaries | Scales to very long inputs; detail lost at each level |
-| **Token pruning** (LLMLingua) | A small LM drops low-perplexity tokens under a per-section budget | On GSM8K chain-of-thought prompts for GPT-3.5-Turbo, 20× cost 1.5 EM, but on BBH 7× cost 13.2. Output is hard for humans to read, though GPT-4 can mostly reconstruct it ([arXiv:2310.05736](https://arxiv.org/abs/2310.05736), Jiang et al., EMNLP 2023) |
+| **Token pruning** (LLMLingua) | A small LM drops [low-perplexity](../../../generative-ai/01-llm-fundamentals/notes/06-pretraining-data-and-objectives.md#entropy-cross-entropy-kl-and-perplexity) tokens under a per-section budget | On GSM8K chain-of-thought prompts for GPT-3.5-Turbo, 20× cost 1.5 EM, but on BBH 7× cost 13.2. Output is hard for humans to read, though GPT-4 can mostly reconstruct it ([arXiv:2310.05736](https://arxiv.org/abs/2310.05736), Jiang et al., EMNLP 2023) |
 | **Query-conditioned** | Compress *relative to the current question* | Highest relevance per token; must be redone per query |
 | **Soft tokens** (gisting) | Fine-tune the model so a short prompt is encoded into a few learned "gist" tokens whose cached state replaces it | Not readable text. On short instruction prompts (about 26 tokens) the LLaMA-7B model with a single gist token won 45.8% of ChatGPT-judged comparisons against the uncompressed model (50% is parity) on out-of-distribution human prompts, while keeping one keyword got 24.6%. Gains over ordinary KV-cache reuse are mostly storage (about 26× more cached prompts), not FLOPs (0.11%). Needs fine-tuning, loses verbatim detail ([arXiv:2304.08467](https://arxiv.org/abs/2304.08467), Mu et al., NeurIPS 2023) |
 

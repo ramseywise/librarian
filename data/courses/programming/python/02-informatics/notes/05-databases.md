@@ -1,4 +1,5 @@
 ---
+imported_hash: 6d64e3d1977d08ef
 title: 5 — Using Databases from Python
 summary: This note covers the Python side of py4e's chapter.
 order: 11

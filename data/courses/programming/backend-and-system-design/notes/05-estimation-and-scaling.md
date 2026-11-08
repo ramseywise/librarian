@@ -1,4 +1,5 @@
 ---
+imported_hash: 4806693135e5c473
 title: 5 — Estimation and scaling
 summary: 'An estimate exists to decide something: whether one database is enough, whether the data fits on one machine, whether a design is off by a factor of a hundred.'
 order: 6

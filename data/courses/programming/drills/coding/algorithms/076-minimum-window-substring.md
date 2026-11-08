@@ -1,4 +1,5 @@
 ---
+imported_hash: 786864e7bfa460f6
 title: LC 76 — Minimum Window Substring
 summary: Given two strings s and t, return the shortest substring of s that contains every character of t including duplicates (counting multiplicity).
 order: 38

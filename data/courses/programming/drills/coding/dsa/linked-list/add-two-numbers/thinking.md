@@ -1,4 +1,5 @@
 ---
+imported_hash: 4d5ea987fab0b7b5
 title: Add Two Numbers — First-Principles Thinking Guide
 summary: Simulate digit-by-digit addition with carry, just like manual addition.
 order: 171

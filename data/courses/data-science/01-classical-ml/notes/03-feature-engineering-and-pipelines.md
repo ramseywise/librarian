@@ -1,4 +1,5 @@
 ---
+imported_hash: 18a4ee33052f750a
 title: Feature Engineering and Pipelines
 summary: Blocks run top to bottom from this notes/ folder.
 order: 4
@@ -163,13 +164,21 @@ ridge 0.357 -> 0.366
 forest 0.247 -> 0.202
 ```
 
-M&G see a stronger version of the same pattern on Boston housing with 13 features expanded to 104: ridge improves from 0.62 to 0.75 test $R^2$ and a random forest gets *worse* (0.80 → 0.77). Expanded features can help linear models and are mostly noise to trees.
+M&G see a stronger version of the same pattern on Boston housing: 13 MinMax-scaled features expanded to 105 columns (104 plus the constant), one split of 379 training rows. Ridge improves from 0.621 to 0.753 test $R^2$ and a random forest gets *worse* (0.799 → 0.763). Even with the extra columns, ridge (0.753) does not catch the plain forest (0.799). Expanded features can help linear models and are mostly noise to trees (*Introduction to ML with Python*, ch. 4, "Interactions and polynomials"; the book's `X_train_poly.shape` is `(379, 105)`).
 
 | Technique | Helps | Cost |
 |---|---|---|
 | Binning | Linear models on low-dim data | Loses within-bin information |
 | Interactions | Linear models where effects combine | Feature count grows quadratically |
 | Polynomials | Smooth non-linear trends | Extreme values at the edges with high degree; overfitting |
+| Splines | Smooth non-linear trends without edge blow-up | Knot placement and degrees of freedom to choose |
+
+**Splines are the safer polynomial.** A global polynomial of high degree is a bad way to buy flexibility, because one wiggle anywhere moves the whole curve. A regression spline fits low-degree pieces joined at knots, constrained to be continuous with continuous first and second derivatives; a cubic spline with $K$ knots costs $K+4$ degrees of freedom, and a natural spline adds the constraint that the fit is linear beyond the boundary knots, which tames the tails. On ISLP's Wage data (males in the central Atlantic region, wage in thousands of dollars on age), a natural cubic spline with 15 degrees of freedom stays sensible at ages above 70 where a degree-15 polynomial swings wildly (*ISLP*, ch. 7, Fig. 7.7).
+
+![A natural cubic spline and a degree-15 polynomial fitted to wage against age: the polynomial oscillates and collapses at the right-hand edge, the spline stays smooth](../assets/sources/images/islp-fig7-7.png)
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 7.7*
+
+Ask for degrees of freedom and let the library place the knots at quantiles of the feature: `df=4` puts three interior knots at the 25th, 50th and 75th percentiles of age (33.75, 42 and 51), and ten-fold CV on the same data finds about 3 df enough for a natural spline and about 4 for a cubic one, with a straight line (1 df) inadequate (*ISLP*, ch. 7). Treat the number of degrees of freedom as a hyperparameter inside the pipeline. The same chapter's other devices are a smoothing spline (a roughness penalty replaces knots, effective df falls from $n$ to 2 as $\lambda$ grows; LOOCV chose 6.8 effective df here) and local regression, which the authors warn degrades once there are more than three or four predictors. For several features, a generalised additive model fits $y = \beta_0 + f_1(x_1) + \dots + f_p(x_p)$, one smooth shape per feature, so each effect stays readable but interactions must be added by hand (*ISLP*, ch. 7).
 
 ---
 
@@ -194,7 +203,7 @@ raw   0.622
 log1p 0.875
 ```
 
-These match the 0.622 and 0.875 M&G print for this recipe.
+These match the 0.622 and 0.875 M&G print for this recipe (*Introduction to ML with Python*, ch. 4, "Univariate nonlinear transformations"; synthetic Poisson counts, 1000 × 3, `log(X + 1)`, ridge).
 
 Other options: `np.sqrt`, `PowerTransformer` (Box-Cox, Yeo-Johnson), `QuantileTransformer`. Transforming the *target* also helps regression on skewed targets (`TransformedTargetRegressor`). Trees ignore monotone transforms of features entirely.
 
@@ -244,7 +253,9 @@ model-based      0.961 real features kept: 28
 RFE to 40        0.986 real features kept: 29
 ```
 
-Every selector beats keeping the noise, and each kept most of the 30 real features. The book's split gives 0.930 with everything, 0.940 univariate and 0.951 for model-based and RFE, so the order among selectors moves with the split and only the gain over no selection is stable. Selection only pays off when you suspect many features are noise; with a regularised model on clean data it rarely helps.
+Every selector beats keeping the noise, and each kept most of the 30 real features. The book's split (breast cancer plus 50 noise columns, 80 features, 284 training rows, `test_size=.5`, logistic regression) gives 0.930 with everything, 0.940 univariate (50% of features kept) and 0.951 for model-based and RFE (forest of 100 trees, 40 features kept; *Introduction to ML with Python*, ch. 4, "Automatic feature selection"), so the order among selectors moves with the split and only the gain over no selection is stable. Selection only pays off when you suspect many features are noise; with a regularised model on clean data it rarely helps.
+
+The classical, model-aware version of the same idea is subset selection for linear models. Searching every subset costs $2^p$ fits (1,048,576 at $p=20$), forward stepwise costs $1 + p(p+1)/2$ (211 at $p=20$), and exhaustive search is infeasible beyond roughly $p=40$. Forward and best-subset choices can differ even at small size: on ISLP's Credit data they agree up to three predictors and diverge at four. The training error always falls as variables are added, so the size is chosen by an estimate of test error, and the criteria disagree: on Credit, $C_p$ picks six variables, adjusted $R^2$ seven and BIC four, because BIC's penalty $\log(n)\,d\,\hat\sigma^2$ exceeds $C_p$'s $2d\hat\sigma^2$ once $n>7$. Validation and 10-fold CV both pick six there, and the one-standard-error rule (the smallest model within one standard error of the best) picks three (*ISLP*, ch. 6, Credit data, 10 predictors). The criteria need an estimate of the noise variance, so they are not usable when $p \ge n$; there only a held-out or cross-validated error is honest (*ISLP*, ch. 6).
 
 Feature selection is a fitted step. Selecting on all data and then cross-validating is the leakage bug below.
 
@@ -290,9 +301,31 @@ one-hot, ridge          0.62
 one-hot pairs, ridge    0.85
 ```
 
+The book's runs agree (*Introduction to ML with Python*, ch. 4, "Case study": first 184 slots train, last 64 test, ridge on one-hot hour and weekday with `PolynomialFeatures(degree=2, interaction_only=True)` reaches 0.85 against 0.84 for the forest). A forest on the raw POSIX time scores −0.04 because trees cannot extrapolate past the training range, and the interaction ridge, unlike the forest, has coefficients you can plot per hour and weekday.
+
 The forest on the timestamp has nothing to split on past the training range, so it predicts roughly the last value it saw (trees can't extrapolate; see [02](02-supervised-learning.md#decision-trees)). These reproduce M&G's ladder. Treating weekday and hour as numbers gives the linear model a slope it should not have (0.13), and one-hot encoding repairs it (0.62).
 
 A person who knows bikes are rented on commutes and weekends writes `X_hour_week` in one line; no model discovers it from the raw timestamp. The final ridge model is also readable: one coefficient per hour-of-day-and-weekday cell.
+
+## Text as features
+
+Text becomes a feature matrix the same way a category does: a vectoriser learns a vocabulary from the training split and turns each document into counts (bag of words) or tf-idf weights. That makes it a fitted step, so it belongs in the pipeline. On the 25,000-review IMDb training set M&G get a 25,000 × 74,849 count matrix; logistic regression scores 0.88 mean 5-fold accuracy untuned and 0.89 with `C` tuned (test 0.88). Dropping words seen in fewer than five documents (`min_df=5`) cuts the vocabulary to 27,271 columns with no change in CV score; the built-in 318-word stopword list removes only 305 of them and lowers CV accuracy to 0.88. Bigrams are where the gain is:
+
+```python
+pipe = make_pipeline(TfidfVectorizer(min_df=5), LogisticRegression(max_iter=1000))
+grid = {"logisticregression__C": [0.001, 0.01, 0.1, 1, 10, 100],
+        "tfidfvectorizer__ngram_range": [(1, 1), (1, 2), (1, 3)]}
+GridSearchCV(pipe, grid, cv=5).fit(texts_train, y_train)
+```
+
+The book's best setting is `ngram_range=(1, 3)` with `C=100` at 0.91 CV accuracy, up from 0.89, and its heat map shows bigrams carry most of the gain and trigrams little (*Introduction to ML with Python*, ch. 7, "Bag-of-words with more than one word"). All figures are one dataset, one classifier and two-decimal scores, so the 0.88 against 0.89 differences between `min_df`, stopwords and tf-idf are not distinguishable. The chapter also notes that cross-validating on pre-vectorised data is safe only because plain `CountVectorizer` learns no statistics beyond the vocabulary; tf-idf does, so use a pipeline. Lemmatisation, topic models and embeddings are covered in the [NLP pillar](../../03-nlp/readme.md).
+
+The same point is the organising idea of Sarkar's text-classification blueprint: normalisation and feature extraction are one shared path that training documents and new documents both go through, so that the model sees consistent inputs. The book is explicit that a fitted extractor (its TF-IDF or word-vector builder) is built once on the training documents and then reused on the documents to predict, not rebuilt from them (*Text Analytics with Python*, ch. 4, Fig. 4-2). In scikit-learn that is `fit` on the training split and `transform` afterwards, which a pipeline enforces.
+
+![Blueprint for a text classifier: training and prediction rows share the same text-normalisation and feature-extraction boxes, with the trained classification model carried from the training row into the prediction row](../assets/sources/images/sarkar-text-analytics-fig4-2.png)
+*Image Source: Sarkar, *Text Analytics with Python* (Apress, 2016), Fig. 4-2*
+
+What the features were worth is in the book's 20 Newsgroups run: about 18,000 posts in 20 classes, a 33% test split with `random_state=42`, normalised text, default hyperparameters, one run, weighted-average scores. Accuracy was 0.67 for multinomial naive Bayes and 0.61 for a linear SVM (hinge-loss SGD) on counts, 0.72 and 0.77 on TF-IDF, and for the SVM only 0.55 on averaged word2vec vectors and 0.53 on TF-IDF-weighted averages (*Text Analytics with Python*, ch. 4). So TF-IDF beat raw counts for both classifiers and beat averaged embeddings by 22 points here, but there is no repeat or tuning, so read the ranking as one split, not a law. The text says a 30% test split where the code uses 33%.
 
 ---
 
@@ -340,9 +373,11 @@ select, then CV: 0.89
 CV the pipeline: -0.03
 ```
 
-The correct answer is that there is no signal, and a score below zero says so. Selecting outside the loop reported a strong model on random numbers. The book's run of the same recipe gets 0.91 and −0.25.
+The correct answer is that there is no signal, and a score below zero says so. Selecting outside the loop reported a strong model on random numbers. The book's run of the same recipe (100 × 10,000 Gaussian noise, `SelectPercentile` at 5%, ridge, 5-fold) gets 0.91 outside the loop and −0.25 inside a `Pipeline` (*Introduction to ML with Python*, ch. 6, "Information leakage"). The book is candid that the scaler version of the bug is usually mild: on breast cancer, scaling outside the loop reports CV 0.98 against 0.97 test, and the pipeline gives the same 0.97 test score and the same best `C` and `gamma`. Leakage through selection or feature extraction, which learns from the target or from structure in the data, is the one that can be large.
 
 **Rule:** any step with a `fit` (scaling, imputation, encoding, selection, PCA, target encoding, vectorising text) must be refit inside each fold. A `Pipeline` does that for you. Resampling is the same kind of step: in [note 10](10-imbalance-errors-and-drift.md#the-leak-resampling-before-you-split), SMOTE before the split reports a ROC-AUC of 0.98 for a model that truly scores 0.70.
+
+McKinney calls such steps *stateful transformations*: Patsy's `standardize(x0)` and `center(x1)` must reuse the training mean and standard deviation on new rows, which `patsy.build_design_matrices([X.design_info], new_data)` does. His worked case also shows the pitfall. On the Titanic training file (177 training rows and 86 test rows lack `Age`) he fills `Age` with the training median, then fits logistic regression on `Pclass`, `IsFemale` and `Age`. Four-fold CV with `C=10` scores 0.7723, 0.8027, 0.7703 and 0.7883 (mean 0.783). The median was computed on all training rows before the folds were cut, so every fold's validation rows helped set it. For a median that leak is tiny, but the clean version puts `SimpleImputer(strategy="median")` inside a `Pipeline`. The book makes no claim that the features are good (*Python for Data Analysis*, ch. 13).
 
 ---
 
@@ -350,7 +385,7 @@ The correct answer is that there is no signal, and a score below zero says so. S
 
 A pipeline chains transformers and a final estimator into one estimator, so `fit`, `predict`, `score` and cross-validation treat the whole chain as one model. The scikit-learn paper gives this two sentences: a `Pipeline` "behaves as a standard estimator", so `GridSearchCV` can tune all its steps ([arXiv:1201.0490](https://arxiv.org/abs/1201.0490), Pedregosa et al., JMLR 2011). It sells that as convenience and never mentions leakage. The case for pipelines in the section above is M&G's.
 
-![Overview of the training and prediction process in a pipeline](../assets/mueller-guido-pipeline.png)
+![Overview of the training and prediction process in a pipeline](../assets/sources/images/mueller-guido-pipeline.png)
 *Image source: Müller & Guido, Introduction to Machine Learning with Python, companion repo `images/pipeline.png`*
 
 ```python
@@ -375,6 +410,8 @@ print(list(pipe_short.named_steps))
 **Accessing steps.** `pipe.named_steps["logisticregression"].coef_` for a fitted pipeline; inside a grid search, `grid.best_estimator_.named_steps[...]`.
 
 ### Grid-searching the preprocessing too
+
+On Boston housing, a `StandardScaler`, `PolynomialFeatures` and `Ridge` pipeline searched over degree 1–3 and `alpha` picks degree 2 with `alpha=10` and scores 0.77 test $R^2$, against 0.63 without the polynomial step; degree 3 is clearly worse in the CV heat map (*Introduction to ML with Python*, ch. 6, "Grid-searching preprocessing steps"). Parameters are addressed as `step__param`, and `make_pipeline` names a step by its lower-cased class name, adding `-1`, `-2` for duplicates.
 
 The preprocessing has hyperparameters as well, and you can search them jointly with the model's:
 

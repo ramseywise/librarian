@@ -1,4 +1,5 @@
 ---
+imported_hash: 93ad6642e390b535
 title: Excel column name
 summary: Given a positive integer, return its Excel column name (1 -> "A", 26 -> "Z", 27 -> "AA", 702 -> "ZZ", 703 -> "AAA").
 order: 87

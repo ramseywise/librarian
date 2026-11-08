@@ -29,13 +29,13 @@ cards:
   lesson: data-engineering/02-ingest-and-modelling/notes/02-dimensional-modelling
 - front: Which type changes numbers you already published?
   back: Type 1 rewrites published history, Type 2 preserves it with a new key, and Type 3 keeps a single prior value.
-  lesson: data-engineering/02-ingest-and-modelling/notes/02-dimensional-modelling
+  lesson: data-engineering/02-ingest-and-modelling/notes/02b-dimensional-modelling-history-and-conformed-dimensions
 - front: Why does the fact query need no date condition?
   back: With Type 2 the fact keeps the key in force at event time, and joining through the natural key restates history to today.
-  lesson: data-engineering/02-ingest-and-modelling/notes/02-dimensional-modelling
+  lesson: data-engineering/02-ingest-and-modelling/notes/02b-dimensional-modelling-history-and-conformed-dimensions
 - front: What does drilling across do differently?
   back: Aggregate each fact to its shared conformed dimensions first and then join the results, because a direct join multiplies both sides.
-  lesson: data-engineering/02-ingest-and-modelling/notes/02-dimensional-modelling
+  lesson: data-engineering/02-ingest-and-modelling/notes/02b-dimensional-modelling-history-and-conformed-dimensions
 - front: What does adding a new source of zone attributes cost?
   back: A vault makes a new source cost one new table and keeps every version, and in exchange readers need marts built on top.
   lesson: data-engineering/02-ingest-and-modelling/notes/03-data-vault-and-obt

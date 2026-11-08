@@ -1,4 +1,5 @@
 ---
+imported_hash: 77cd104f4159756c
 title: Customer Simulation — Study Guide
 summary: 'The most common failure in this round: arriving with a solution and defending it.'
 order: 40

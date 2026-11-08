@@ -1,3 +1,4 @@
+# imported_hash: e43eb158b66e4991
 # Deep learning lecture deck. Covers notes 01-06.
 # Build: make slides PILLAR=data-science/02-deep-learning STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
@@ -83,7 +84,7 @@ parts:
       - layout: image
         title: One hidden layer took two moons from 0.895 to 0.955
         recall: What can the hidden layer draw that logistic regression cannot, and which PyTorch calls replace Ng's cost, backward and update functions?
-        image: ../assets/dl-moons-boundary.png
+        image: ../assets/sources/images/dl-moons-boundary.png
         caption: "Two moons, same loop: logistic regression tests at 0.895 with one straight cut, and one hidden layer at 0.955. Run `practice/moons_boundary.py`."
         takeaway: The same loop with one hidden layer draws a curve that logistic regression cannot.
         source: notes/01-neural-networks-fundamentals.md
@@ -156,7 +157,7 @@ parts:
       - layout: image
         title: Sweep the learning rate before anything else
         recall: How far can the learning rate move accuracy, compared with the choice of adaptive optimiser?
-        image: ../assets/dl-lr-sweep.png
+        image: ../assets/sources/images/dl-lr-sweep.png
         caption: "Digits, Adam, 10 epochs, mean of three seeds: 0.961 at a rate of 0.01, and 0.100 at 1.0, which is chance. Run `practice/lr_sweep.py`."
         takeaway: The rate moves accuracy from chance to 0.96, far more than choosing among adaptive optimisers does.
         source: notes/02-optimisation-and-regularisation.md
@@ -241,7 +242,7 @@ parts:
       - layout: image
         title: Only a train-dev set reveals data mismatch
         recall: How did making training data look like production change dev error here?
-        image: ../assets/dl-data-mismatch.png
+        image: ../assets/sources/images/dl-data-mismatch.png
         caption: "Train on clean digits, deploy on corrupted: dev error is 63.0%. With synthetic corruption added it falls to 14.1%. Run `practice/data_mismatch.py`."
         takeaway: Adding artificial data that looks like production cut dev error from 63% to 14%, at some cost to training error.
         source: notes/03-structuring-ml-projects.md
@@ -315,7 +316,7 @@ parts:
       - layout: image
         title: "Deeper plain networks train worse, residual ones don't"
         recall: Why is a very deep plain network's failure not overfitting, and what fixes it?
-        image: ../assets/dl-depth-degradation.png
+        image: ../assets/sources/images/dl-depth-degradation.png
         caption: "Digits, seed 0: at 62 layers the plain network trains to 0.379 and the residual one to 0.983. Run `practice/depth_degradation.py`."
         takeaway: Plain depth fails on the training data itself, so it isn't overfitting, and `out + x` makes doing nothing the easy default.
         source: notes/04-convolutional-networks.md
@@ -359,6 +360,37 @@ parts:
           the same loss further. My small version loses to supervised training at each label count here, and that's worth
           saying before quoting the ImageNet results, whose runs used different architectures.
 
+      - layout: image
+        title: With 300 images, borrowing ImageNet features beats training from scratch
+        recall: At what data size did the scratch CNN draw level with the frozen ResNet-18, and which arm stayed ahead?
+        image: ../assets/sources/images/dl-vision-transfer.png
+        caption: "Generated shapes, 6 classes, 3 seeds, 600 test images. Scratch gets 2,000 steps, ResNet-18 arms 500. Run `practice/vision_transfer.py`."
+        takeaway: Frozen features win with a handful of labels, fine-tuning from a few hundred, and scratch only draws level with plenty of data.
+        source: notes/04b-vision-in-practice.md
+        notes: >-
+          At 300 images: fine-tuned 0.939, frozen 0.848, scratch 0.359. At 3,000 scratch reaches 0.902, level with frozen, and
+          fine-tuning is at 0.986. This is the transfer that lost on digits in chapter 03, now with the conditions met: far more
+          source data, and a CNN whose early features carry over. Budgets are matched on time, not steps.
+
+      - layout: cards
+        title: Three loud errors and one silent one
+        recall: Why does a frozen backbone still change during training, and what fixes it?
+        cards:
+          - title: Shape
+            body: "No batch dimension: `mat1 and mat2 shapes cannot be multiplied (3x4096 and 12288x6)`. Fix with `unsqueeze(0)`."
+            accent: 0EA5C9
+          - title: Dtype and device
+            body: "A raw PNG is `uint8`: scale it to float in [0, 1], don't just cast. Move every batch to the model's device."
+            accent: D4621A
+          - title: Silent BatchNorm
+            body: "`requires_grad=False` doesn't freeze running statistics. Left in train mode, the frozen arm fell from 0.848 to 0.777."
+            accent: 5B21B6
+        takeaway: Predict through the same transform you tested with, and keep a frozen backbone in eval mode.
+        source: notes/04b-vision-in-practice.md
+        notes: >-
+          The three error types are Bourke's grouping, from Learn PyTorch. The messages here are the ones an Apple GPU prints.
+          The BatchNorm one raises nothing, which is why it is on the slide.
+
   - title: How does a network carry memory?
     summary: The recurrent cell · Forget-gate bias · Attention · Autoencoders
     notes: >-
@@ -379,7 +411,7 @@ parts:
       - layout: image
         title: The forget-gate bias decides whether gradient reaches step 0
         recall: What sets how much gradient reaches the first step of an LSTM?
-        image: ../assets/dl-forget-gate-gradient.png
+        image: ../assets/sources/images/dl-forget-gate-gradient.png
         caption: "Gradient before training on 50 steps: 1.2e-12 at step 0 with bias 0, and 2.0e-2 with bias 2. Run `practice/forget_gate_gradient.py`."
         bullets:
           - "**Accuracy at T=50, three seeds:** bias 2 reaches 0.50, 0.89, 1.00; every other cell stays near 0.50."
@@ -493,7 +525,7 @@ parts:
         title: The best reconstruction is not the best detector
         kicker: Anomaly score
         recall: Why does a wider code rebuild better and detect worse, and how should you choose its size?
-        image: ../assets/dl-autoencoder-bottleneck.png
+        image: ../assets/sources/images/dl-autoencoder-bottleneck.png
         caption: "Hide one digit from training, then score by reconstruction error. Mean over all ten digits, five splits each. Run `practice/autoencoder.py`."
         bullets:
           - "**PCA:** error keeps falling, yet AUC drops from 0.885 at code 8 to 0.743 at 32."
@@ -583,7 +615,7 @@ parts:
       - layout: image
         title: Word counts beat three neural models on 5,000 reviews
         recall: Which kind of model won on 5,000 reviews, and did it still lead on 25,000?
-        image: ../assets/dl-imdb-models.png
+        image: ../assets/sources/images/dl-imdb-models.png
         caption: "IMDb, 5,000 training reviews: TF-IDF bigrams test at 0.886, ahead of embedding average 0.847, TextCNN 0.741 and BiLSTM 0.716. Run `practice/imdb_models.py`."
         takeaway: The linear model wins here, and a notebook on 25,000 reviews saw 0.87 to 0.89 against about 0.90.
         source: notes/06-neural-text-models.md
@@ -593,7 +625,7 @@ parts:
       - layout: image
         title: A pretrained encoder supplies what few labels can't
         recall: What does pretraining supply that your labels can't pay for?
-        image: ../assets/sarkar-universal-embeddings-classification.png
+        image: ../assets/sources/images/sarkar-universal-embeddings-classification.png
         caption: "Diagram, not a result: encode, then classify. Sarkar, Text Analytics with Python (2nd ed.), ch. 10"
         bullets:
           - "**Sarkar:** Universal Sentence Encoder, about 0.86 frozen, about 0.90 fine-tuned."

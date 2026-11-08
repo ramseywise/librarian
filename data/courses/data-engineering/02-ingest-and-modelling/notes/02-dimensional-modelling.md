@@ -1,4 +1,5 @@
 ---
+imported_hash: 276f80fcc074bc63
 title: 2 — Dimensional modelling
 summary: Two analysts bring the same metric to the same meeting with two different numbers, and the rest of the hour is spent finding out why.
 order: 3
@@ -9,13 +10,15 @@ source: learn-ai-engineering/data-engineering/02-ingest-and-modelling/notes/02-d
 
 # 2 — Dimensional modelling
 
+> Part one of two. This part covers the grain, the four design decisions and what can be added up. [2b](02b-dimensional-modelling-history-and-conformed-dimensions.md) covers slowly changing dimensions, dimension shapes, conformed dimensions and when to leave the star.
+
 Two analysts bring the same metric to the same meeting with two different numbers, and the rest of the hour is spent finding out why. Kimball and Ross put that scene near the top of their list of what a warehouse is for, and it is still the best test of a model. A dimensional model is a small set of agreements about what one row means, what can be added up, and what a label meant on the day the event happened. Each section below breaks one of those agreements on a million synthetic taxi trips and shows the number that comes out wrong.
 
 ## The problem with reporting off the source
 
 The ingest chapter left us with raw copies of operational tables. Those tables are normalized for writing: a trip row holds a zone id, the zone table holds a name and a borough, and a payment code means whatever the application code says it means. That shape protects updates and is poor for reading, because each question means working out the joins again, and each analyst works them out slightly differently.
 
-Kimball's architecture separates the kitchen from the dining room ([*The Data Warehouse Toolkit*](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/books/), 2nd ed., ch. 1). Staging is where the cooking happens, and no one eats there. The presentation layer is what people query, and it is built from two kinds of table. The words *fact* and *dimension* come from joint work by General Mills and Dartmouth in the 1960s and spread through AC Nielsen and IRI in the 1970s, so the idea is older than most of the tools that now implement it.
+Kimball's architecture separates the kitchen from the dining room ([*The Data Warehouse Toolkit*](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/books/), 2nd ed., ch. 1). Staging is where the cooking happens, and no one eats there: it is off-limits to business users, and a normalized staging database is acceptable but "not the end goal". The presentation layer is what people query, and it is built from two kinds of table. The words *fact* and *dimension* come from joint work by General Mills and Dartmouth in the 1960s and spread through AC Nielsen and IRI in the 1970s, so the idea is older than most of the tools that now implement it. Kimball's rules of thumb for the proportions, which are practitioner experience and not measurements: fact tables take 90 percent or more of the space, dimensions are shallow (often far fewer than 1 million rows) but wide (50 to 100 attributes is common), and one fact table typically has 5 to 15 dimensions (ch. 1).
 
 - A **fact table** holds measurements. Each row is one event at one grain, and the columns are foreign keys plus numbers.
 - A **dimension table** holds the words people use to filter and group: names, categories, flags. Dimensions are wide, short and read far more often than they change.
@@ -102,6 +105,11 @@ Kimball's design process is four steps (ch. 2), and the order is the useful part
 
 The grain comes first, and at the most atomic level the source can give you. Rolled-up tables answer the questions you predicted, while atomic ones answer those too and the ones nobody has asked yet. Kimball's case study runs on 100 grocery stores and about 60,000 products, and still picks the individual line item.
 
+Kimball's embellished retail schema shows what the atomic grain buys. The frequent-shopper, clerk and time-of-day dimensions are added to the transaction fact as three new foreign keys, and no existing key, fact or application has to change. Had the grain been daily sales by store and product, those three dimensions would not apply to it (ch. 2).
+
+![The POS retail sales transaction fact with the original four dimensions on the right and three added dimensions on the left, each joined by a new foreign key](../assets/sources/images/dwt-ch02-fig2-11.png)
+*Image Source: Kimball and Ross, [*The Data Warehouse Toolkit*](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/books/) (Wiley, 2002), Fig. 2.11*
+
 Here is that design in DuckDB. Each piece carries a decision worth naming.
 
 ```python
@@ -147,11 +155,11 @@ orphan trips on the Unknown zone: 2187
 
 Four details in there are the ones an interviewer asks about.
 
-**Surrogate keys.** `zone_key` is a meaningless integer owned by the warehouse. It buffers us from the source, which may recycle codes or arrive with a second numbering after an acquisition (ch. 2), and the section on history below cannot work without it.
+**Surrogate keys.** `zone_key` is a meaningless integer owned by the warehouse. It buffers us from the source, which may recycle codes or arrive with a second numbering after an acquisition (ch. 2), and the section on history below cannot work without it. It is also cheap. In Kimball's worked retail example (a hypothetical chain: $4 billion a year at a $2.00 average item, so about 2 billion line items a year), four integer keys, a transaction number and four 4-byte facts make a row of only 38 bytes, about 38 GB per billion rows; adding shopper, clerk and time-of-day keys takes it to 48 bytes (ch. 2).
 
 **A row for "we do not know".** The 2187 trips in the ten unlisted zones got key `-1` instead of being dropped. An inner join to the lookup would have made them disappear quietly, so that fares by zone no longer summed to total fares. Kimball uses the same device for "No Promotion in Effect" and "Date to be Determined": the fact keeps a valid key, and the gap is visible as a row someone can count. This is the first place the subject's theme shows up. The model states exactly what it refuses to trust.
 
-**A date dimension built ahead of time.** Calendars do not arrive in events, and a month with no trips would otherwise vanish from a report. Ten years is only about 3,650 rows, so generate it once and generously.
+**A date dimension built ahead of time.** Calendars do not arrive in events, and a month with no trips would otherwise vanish from a report. Ten years is only about 3,650 rows, so generate it once and generously. Keep time of day out of it: folding minutes in would grow ten years to 5,256,000 rows (3,650 x 1,440), where a separate 1,440-row time-of-day dimension costs nothing (ch. 2).
 
 **A degenerate dimension.** `trip_id` sits in the fact with no table behind it. Everything descriptive about a trip already lives in the other dimensions, and the id still earns its place for tracing a row back to the source. Kimball's example is the transaction number on a till receipt.
 
@@ -216,6 +224,8 @@ Facts come in three kinds (ch. 1, with semi-additive balances in ch. 3):
 | Semi-additive | some dimensions, not time | account balance, vehicles in the depot | Summing a daily balance over a week gives a number that means nothing. Take the average or the last value. |
 | Non-additive | no dimension | fare per mile, percentages | Must be recomputed from additive parts |
 
+Kimball's balance example makes the semi-additive trap concrete: daily balances of $50, 50, 100, 100, 100 over a week sum to $400 but average $80, and SQL's `AVG` over a snapshot divides by every row (3 products x 4 stores x 7 dates is 84), where the right divisor is the 7 dates, so the date constraint has to be isolated and its cardinality used (ch. 3). Snapshots are also dense, unlike sparse sales facts: at 60,000 products x 100 stores each load adds about 6 million rows, so Kimball keeps 60 dailies plus 148 weeklies (208 snapshots) instead of 1,095 over three years (ch. 3, hypothetical grocery chain). Store the additive parts of a ratio such as gross margin return on inventory (GMROI) and compute it after summing (ch. 3). Year-to-date and quarter-to-date totals follow the same rule: they are not true to the grain and overstate when summed, so compute them with a date constraint in the query, not in the fact table (ch. 7, general-ledger snapshot). Density can also rule a snapshot out: a daily balance for a bank with 10 million accounts is about 3.65 billion fact rows a year, so Kimball takes point-in-time balances from the transaction fact (columns for a sequence number, a final-row flag and the ending balance) and keeps only a monthly snapshot. That works only while the transaction table is complete, so a late-arriving row forces a sweep forward, and it is invalid for balances that move without transactions, such as brokerage valuations (ch. 9).
+
 Kimball's line on the last row is worth memorizing: the ratio of the sums, not the sum of the ratios. Store the parts and compute the ratio at query time, at whatever level the user has grouped to.
 
 ```python
@@ -237,194 +247,26 @@ FROM fact_trips"""))
 
 These are three answers to "what do we charge per mile?". The ratio of sums, 3.41 dollars, is the real one, total fares over total miles. The average of per-trip ratios, 4.10, is a different quantity that weights a one-block trip the same as a run to the airport, and short trips carry a large share of the flag fall. It is a legitimate number if that is what you meant, and a 20% overstatement if it is not. The sum of ratios is nonsense, though it is the one a dashboard tool produces when someone drags a stored `fare_per_mile` column onto a chart with the default aggregation. That is the case for not storing it: leave out the column, and no one can sum it.
 
-Fact tables also come in three structural kinds (ch. 5). A **transaction** fact has one row per event and never changes, like ours. A **periodic snapshot** has one row per entity per period, such as vehicles in service each day. An **accumulating snapshot** has one row per process instance, updated as it moves through milestones, such as order placed, shipped, delivered. Pick by the question you are asked: the transaction fact tells you what happened, the snapshot how things stood.
+Fact tables also come in three structural kinds (ch. 5). A **transaction** fact has one row per event and never changes, like ours. A **periodic snapshot** has one row per entity per period, such as vehicles in service each day. An **accumulating snapshot** has one row per process instance, updated as it moves through milestones, such as order placed, shipped, delivered. The tests in Kimball's comparison table: an accumulating snapshot is the only kind whose rows are revisited and updated, it carries one date key per milestone, and several date columns alone do not make a fact table an accumulating snapshot. It fits short-lived processes with a definite end, while long-lived ones such as bank accounts belong in a periodic snapshot. Because many milestone dates are unknown at first load, the date keys must be surrogates pointing at an "Unknown" row, not literal SQL dates (ch. 5). Real instances run wide: a university applicant pipeline carries 15 role-playing date keys and a health-care billing line seven (ch. 12, ch. 13). Pick by the question you are asked: the transaction fact tells you what happened, the snapshot how things stood.
 
-## History: slowly changing dimensions
+Kimball's order-fulfilment table is the accumulating snapshot at full size. It carries nine date roles, from the order date to the invoice date, plus quantities for each stage and the lags between them, and its rows are revisited as the order moves (ch. 5). The dates have to be surrogate keys that can point at an Unknown row, because most of them are not known when the row is first loaded.
 
-Dimensions do change. In Kimball's example, a product called IntelliKidz 1.0 moves from Education to Strategy on January 15th (ch. 4; the Kimball Group keeps a [summary of the techniques](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/) online). The question is what happens to last quarter's Education numbers, and only the business can answer it. The modeller's job is to make the answer a deliberate choice for each attribute. Kimball named the three responses in 1994, and the type numbers have stuck.
+![The order fulfillment accumulating snapshot fact table: nine date keys, other dimension keys, degenerate order and invoice numbers, stage quantities and lag columns](../assets/sources/images/dwt-ch05-fig5-10.png)
+*Image Source: Kimball and Ross, [*The Data Warehouse Toolkit*](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/books/) (Wiley, 2002), Fig. 5.10*
 
-Our version: the city redraws a boundary, and zone 6 moves from Queens to Brooklyn on January 15th.
-
-**Type 1, overwrite.** Update the row. It takes one line and keeps no history.
-
-```python
-con.execute("CREATE TABLE dim_zone_t1 AS SELECT * FROM dim_zone")
-before = con.execute("""SELECT round(sum(fare_usd)) FROM fact_trips f JOIN dim_zone_t1 z USING (zone_key)
-    WHERE z.borough = 'Brooklyn'""").fetchall()[0][0]
-con.execute("UPDATE dim_zone_t1 SET borough = 'Brooklyn' WHERE zone_id = 6")  # the city redraws a boundary
-after = con.execute("""SELECT round(sum(fare_usd)) FROM fact_trips f JOIN dim_zone_t1 z USING (zone_key)
-    WHERE z.borough = 'Brooklyn'""").fetchall()[0][0]
-print("Brooklyn fares for January, as reported before:", before)
-print("Brooklyn fares for January, as reported after: ", after)
-```
-
-```text
-Brooklyn fares for January, as reported before: 2382840.0
-Brooklyn fares for January, as reported after:  2710631.0
-```
-
-January's Brooklyn revenue changed by about 328,000 dollars, for days already reported and possibly already invoiced, with no record that anything happened. Type 1 is correct for corrections, such as fixing a misspelled zone name, where the old value was simply wrong. It is wrong for anything people compare over time, and anything built on top, such as an aggregate table, now needs rebuilding.
-
-**Type 2, add a row.** Keep the old row, close it, and open a new one with a new surrogate key. This is the point of surrogate keys, since one natural key now has several rows. Kimball detects a change by comparing a row hash, which spares comparing each column one at a time (ch. 4).
-
-```python
-con.execute("CREATE SEQUENCE zone_v_sk START 1")
-con.execute("""
-CREATE TABLE dim_zone_v (zone_key BIGINT, zone_id INT, zone_name VARCHAR, borough VARCHAR,
-                         row_hash UBIGINT, valid_from DATE, valid_to DATE, is_current BOOLEAN)""")
-
-def apply_scd2(source_sql, load_date):
-    """Close the current row of any changed zone, then open a new one. Rerunning changes nothing."""
-    con.execute(f"""CREATE OR REPLACE TEMP TABLE incoming AS
-        SELECT *, hash(zone_name, borough) AS row_hash FROM ({source_sql})""")
-    con.execute("""UPDATE dim_zone_v d SET valid_to = ?, is_current = false
-        FROM incoming i
-        WHERE d.zone_id = i.zone_id AND d.is_current AND d.row_hash <> i.row_hash""", [load_date])
-    con.execute("""INSERT INTO dim_zone_v
-        SELECT nextval('zone_v_sk'), i.zone_id, i.zone_name, i.borough, i.row_hash,
-               ?::DATE, DATE '9999-12-31', true
-        FROM incoming i
-        LEFT JOIN dim_zone_v d ON d.zone_id = i.zone_id AND d.is_current
-        WHERE d.zone_id IS NULL""", [load_date])
-
-apply_scd2("SELECT * FROM src_zones", "2025-01-01")
-changed = """SELECT zone_id, zone_name, CASE WHEN zone_id = 6 THEN 'Brooklyn' ELSE borough END AS borough FROM src_zones"""
-apply_scd2(changed, "2026-01-15")
-apply_scd2(changed, "2026-01-15")     # a retry
-print(con.sql("SELECT zone_key, zone_id, borough, valid_from, valid_to, is_current FROM dim_zone_v WHERE zone_id = 6 ORDER BY 1"))
-print("rows in dimension:", con.execute("SELECT count(*) FROM dim_zone_v").fetchall()[0][0])
-```
-
-```text
-┌──────────┬─────────┬──────────┬────────────┬────────────┬────────────┐
-│ zone_key │ zone_id │ borough  │ valid_from │  valid_to  │ is_current │
-│  int64   │  int32  │ varchar  │    date    │    date    │  boolean   │
-├──────────┼─────────┼──────────┼────────────┼────────────┼────────────┤
-│        6 │       6 │ Queens   │ 2025-01-01 │ 2026-01-15 │ false      │
-│      251 │       6 │ Brooklyn │ 2026-01-15 │ 9999-12-31 │ true       │
-└──────────┴─────────┴──────────┴────────────┴────────────┴────────────┘
-
-rows in dimension: 251
-```
-
-Three properties of that output matter. The dimension grew by exactly one row, 250 zones became 251 rows, because attributes that did not change do not create history. The retry changed nothing, because a re-run finds a matching hash and no missing row. A pipeline that retries, and all of them do, needs this property; [idempotency and backfills](../../03-transform-and-orchestrate/notes/04-idempotency-and-backfills.md) generalizes it. And the two validity dates form an unbroken chain with no overlap, which is what lets the next step look up the right row.
-
-Facts now take their key from the dimension row that was current when the event happened. Nothing else in the design needs to know.
-
-```python
-con.execute("""
-CREATE TABLE fact_trips_v AS
-SELECT t.trip_id, CAST(strftime(t.pickup_at, '%Y%m%d') AS INT) AS date_key,
-       coalesce(z.zone_key, -1) AS zone_key, t.fare_usd
-FROM src_trips t
-LEFT JOIN dim_zone_v z ON t.zone_id = z.zone_id
-     AND t.pickup_at::DATE >= z.valid_from AND t.pickup_at::DATE < z.valid_to""")
-print("zone 6, grouped by the borough at the time of the trip")
-print(con.sql("""SELECT z.borough, count(*) AS trips, min(f.date_key) AS first_day, max(f.date_key) AS last_day
-    FROM fact_trips_v f JOIN dim_zone_v z USING (zone_key) WHERE z.zone_id = 6 GROUP BY 1 ORDER BY 3"""))
-print("zone 6, restated to today's borough through the natural key")
-print(con.sql("""SELECT cur.borough, count(*) AS trips
-    FROM fact_trips_v f JOIN dim_zone_v z USING (zone_key)
-    JOIN dim_zone_v cur ON cur.zone_id = z.zone_id AND cur.is_current
-    WHERE z.zone_id = 6 GROUP BY 1"""))
-```
-
-```text
-zone 6, grouped by the borough at the time of the trip
-┌──────────┬───────┬───────────┬──────────┐
-│ borough  │ trips │ first_day │ last_day │
-│ varchar  │ int64 │   int32   │  int32   │
-├──────────┼───────┼───────────┼──────────┤
-│ Queens   │ 13251 │  20260101 │ 20260114 │
-│ Brooklyn │ 15998 │  20260115 │ 20260131 │
-└──────────┴───────┴───────────┴──────────┘
-
-zone 6, restated to today's borough through the natural key
-┌──────────┬───────┐
-│ borough  │ trips │
-│ varchar  │ int64 │
-├──────────┼───────┤
-│ Brooklyn │ 29249 │
-└──────────┴───────┘
-```
-
-Both questions are now answerable. Grouped through the fact's own key, you get history as it was: 13,251 trips counted in Queens up to the 14th and 15,998 in Brooklyn from the 15th. Joined back through the natural key to the current row, you get history restated to today's map, all 29,249 in Brooklyn. Kimball's warning here matters for query writers: facts already carry the right key, so do not constrain them with the effective dates in ordinary queries. The dates exist for load logic and as-of lookups of the dimension itself.
-
-That range join is also the answer to **late-arriving facts**. A trip dated January 10th that lands on January 20th looks up by its event date, finds zone key 6, and reports under Queens as it should. The only remaining work is inserting it into the right partition (ch. 13). If it would change a period finance already closed, you need a policy, and Kimball describes keeping two date keys, the event date and the booking date, so that both views tie out. **Late-arriving dimension rows** are the harder case. You learn on the 20th that the change took effect on the 10th, so you insert a row with a new key, fix the dates, and repoint the fact rows in that interval. It is messy and Kimball says so. Surrogate keys in a fact are not ordered by time, so do not rely on their order.
-
-**Type 3, add a column.** Store `prior_borough` beside `borough`. It supports one "before and after" view and is rarely used (ch. 4). Use it for one planned reorganization, when the business wants to compare old and new side by side for a while.
-
-| Type | Mechanism | History | Fact table impact | Use for |
-|---|---|---|---|---|
-| 1 | Overwrite | Gone | None, but past reports change | Corrections |
-| 2 | New row and new key | Full | New facts get new keys; old facts untouched | Anything compared over time |
-| 3 | New column | One step | None | A single planned before and after |
-
-The trade-offs in row growth are real. Kimball warns about Type 2 on a rapidly changing attribute, since a dimension of millions of customers with one volatile column can grow past the point where it is a dimension. Split the volatile columns into their own dimension. In dbt you do not write `apply_scd2` by hand: a [snapshot](https://docs.getdbt.com/docs/build/snapshots) generates it, with `dbt_valid_from` and `dbt_valid_to` in place of our two columns. It is still worth writing once, so that when a snapshot does something surprising you know what it is doing.
-
-Streaming has the same problem under another name. Kleppmann's example is applying a tax rate to a past sale: if you join to the rate as it is now, a rerun gives a different answer, so the join is not deterministic (pp. 475-476). His fix is the Type 2 idea, giving each version of the rate an identifier and referring to it from the sale. He also names the cost that a warehouse rarely feels and a log does, which is that with every version needed forever, log compaction cannot throw any of them away (p. 476). That is the same row growth as above, and the reason streaming pipelines tend to prefer a versioned dimension table to an endless changelog.
-
-## Conformed dimensions and drilling across
-
-One star is a report, while an enterprise warehouse is many stars that can be compared. Kimball's answer is the **bus architecture** (ch. 3): dimensions are built once and shared, so `dim_zone` means the same in trips, in driver shifts and in vehicle inspections. Planning happens on a **bus matrix**, business processes down the side and dimensions across the top, with a tick where a process uses a dimension. His retail example has rows such as Retail Sales, Retail Inventory and Purchase Orders against columns such as Date, Product, Store and Vendor. A single page makes the integration plan visible before anyone writes a pipeline.
-
-| Process | Date | Zone | Payment | Vehicle | Driver |
-|---|---|---|---|---|---|
-| Trips | x | x | x | x | x |
-| Driver shifts | x | x | | | x |
-| Vehicle inspections | x | | | x | |
-
-Conformed dimensions give you a safe way to combine facts, and a tempting wrong way sits right next to it. Add a shifts fact at one row per zone, day and shift, then ask for fares and drivers by zone.
-
-```python
-con.execute("""
-CREATE TABLE fact_shifts AS
-SELECT d.date_key, z.zone_key, (1 + (hash(d.date_key, z.zone_key) % 40))::INT AS drivers_on_shift, s.shift
-FROM dim_date d CROSS JOIN dim_zone z CROSS JOIN (VALUES ('day'), ('night')) s(shift)
-WHERE d.year = 2026 AND d.month = 1 AND z.zone_key > 0""")
-
-wrong = con.execute("""SELECT round(sum(f.fare_usd)), sum(s.drivers_on_shift)
-    FROM fact_trips f JOIN fact_shifts s USING (date_key, zone_key)""").fetchall()[0]
-right = con.execute("""
-WITH t AS (SELECT zone_key, sum(fare_usd) AS fares FROM fact_trips WHERE zone_key > 0 GROUP BY 1),
-     s AS (SELECT zone_key, sum(drivers_on_shift) AS drivers FROM fact_shifts GROUP BY 1)
-SELECT round(sum(t.fares)), sum(s.drivers) FROM t JOIN s USING (zone_key)""").fetchall()[0]
-print("fact joined to fact:", wrong)
-print("drill across:       ", right)
-print("true:               ", con.execute("SELECT round(sum(fare_usd)) FROM fact_trips WHERE zone_key > 0").fetchall()[0][0],
-      con.execute("SELECT sum(drivers_on_shift) FROM fact_shifts").fetchall()[0][0])
-```
-
-```text
-fact joined to fact: (22466405.0, 42499888)
-drill across:        (11233203.0, 314322)
-true:                11233203.0 314322
-```
-
-Joining fact to fact doubled the fares, because each day and zone has two shifts, and it inflated drivers by more than a hundred times, because each shift row repeated once per trip. Both errors are the fan-out from earlier, this time in both directions at once. **Drilling across** means aggregating each fact to the shared dimension first and then joining the results, and that returns the true totals exactly. A BI tool's semantic layer does the same for you, if the model tells it which facts and dimensions conform ([one running, with the fan-out it refuses](../../07-architecture-and-governance/notes/03-catalog-semantic-layer-and-contracts.md#a-semantic-layer-compiles-the-question-at-its-grain)).
-
-## When the star is the wrong tool
-
-Stars are built for analytical questions, and some other uses do not fit them. They are slower to change than a raw layer, they take design effort before value, and they assume someone owns the conformed dimensions. When many source systems need to be integrated and audited, the next chapter's Data Vault separates integration from presentation. When a team has one consumer and a modern column store, the same chapter's One Big Table is often cheaper. Neither removes the need to know what a row means, so the grain sentence survives every alternative.
-
-Two remarks from Kleppmann put the star in a wider frame. An event log and a fact table resemble each other, since both record immutable facts at a fine grain and derive everything else (p. 458). And once a read shape can be derived from a log, the question of whether to normalise or denormalise loses most of its force, because you can have both: normalised at the system of record, denormalised wherever it is read (p. 462). The [first chapter of this subject](../../01-storage-and-compute-foundations/notes/01-data-systems-and-data-models.md) sets out why normalisation exists at all. Dimensional modelling is the discipline of deciding what the derived shape should be.
+What happens when a dimension changes, the shapes that keep one manageable, conformed dimensions and drilling across, and when the star is the wrong tool continue in [part two](02b-dimensional-modelling-history-and-conformed-dimensions.md), which carries on with this script.
 
 ## Pitfalls
 
 - **No declared grain.** If no one can say what a row is, the first join will silently change it. Write the sentence in the model's description and test it.
 - **Inner joins to dimensions.** They drop rows whose key has no match, and totals stop reconciling with no error. Load with left joins to an Unknown row.
-- **Natural keys in the fact.** They look simpler until the first Type 2 change, when one id maps to several rows and each join fans out.
 - **Storing ratios.** They will be summed. Store the numerator and denominator.
 - **Summing a snapshot across time.** Daily balances added over a month produce an impressive, meaningless figure.
-- **Type 1 by default.** An `UPDATE` on a dimension rewrites published history. Choose per attribute, and ask the people who read the reports.
-- **Fact-to-fact joins.** Always drill across through conformed dimensions.
-- **Modelling the org chart.** A "marketing mart" with copies of everything breeds exactly the two-numbers meeting this whole design exists to prevent.
+- **Snowflaking by reflex.** Normalising the product dimension in Kimball's retail example saves 2.7 MB (150,000 rows x 18 bytes) beside a fact table that may reach 10 GB, and it costs the user a join per attribute (ch. 2).
 
 ## Try it
 
 1. Build a periodic snapshot `fact_zone_day` with one row per zone and day, carrying `trips` and `fares`. Check that its fares reconcile with `fact_trips` to the cent, then explain why `count(*)` no longer gives the number of trips.
-2. Run the trip of January 10th through the range join, as a late-arriving fact in zone 6. Which `zone_key` does it get, and which borough does it report under?
-3. Add a Type 3 `prior_borough` column to a copy of `dim_zone` and write the query comparing January fares by old and new borough. Why is this cheaper than Type 2 for this question, and what can it not answer?
 
 The full code for this chapter is in [`practice/02_dimensional_modelling.py`](../practice/02_dimensional_modelling.py).
 
@@ -432,8 +274,6 @@ The full code for this chapter is in [`practice/02_dimensional_modelling.py`](..
 <summary>Answers</summary>
 
 1. `CREATE TABLE fact_zone_day AS SELECT date_key, zone_key, count(*) AS trips, sum(fare_usd) AS fares FROM fact_trips GROUP BY 1, 2`. `sum(fares)` matches `sum(fare_usd)` from the fact, allowing for floating point rounding. `count(*)` now counts zone-days, so the trip count is `sum(trips)`. Each grain has its own meaning of "a row".
-2. It gets `zone_key` 6, the row valid from 2025-01-01 to 2026-01-15, and reports under Queens. The join compares the event date with the validity range and never looks at the load date. That is why the late fact needs no special case.
-3. `ALTER TABLE` plus one `UPDATE`: `prior_borough` takes the old value on the changed row. The dimension does not grow, and each fact can be grouped by either column with no new keys. It cannot say which borough a given trip belonged to on its date, and it holds one prior value only, so a second move loses the first.
 
 </details>
 
@@ -446,15 +286,9 @@ The full code for this chapter is in [`practice/02_dimensional_modelling.py`](..
 | How do you handle a fact whose dimension is unknown? | Point it at a default row such as key -1 rather than dropping it, so totals reconcile and the gap can be counted. |
 | What is a degenerate dimension? | A key in the fact with no dimension table, such as an order number. It is useful for grouping lines and tracing to the source. |
 | Additive, semi-additive, non-additive? | Sums across all dimensions, across some but not time, and across none. Store the parts of a ratio and compute it at query time. |
-| SCD Types 1, 2, 3? | Overwrite and lose history; new row with new key and full history; new column with one prior value. Chosen per attribute. |
-| Why does Type 2 need no change to fact queries? | The fact row holds the surrogate key of the version in force at event time, so a plain key join gives history as it was. |
-| How do you restate Type 2 history to current values? | Join through the natural key to the row with `is_current`. |
-| How do you load a late-arriving fact? | Look up the dimension by event date within the validity range, use that key, write into the correct partition. |
 | Why did a join inflate revenue? | A grain mismatch fanned out the fact. Roll up the finer table first or model it as its own fact, and test key uniqueness after joins. |
-| What is a conformed dimension? | One dimension shared across facts with identical meaning, the basis for comparing processes. |
-| How do you combine two facts? | Drill across: aggregate each to the shared dimensions separately, then join the results. |
 | Transaction, periodic and accumulating snapshot? | One row per event, per entity and period, or per process instance updated at milestones. |
 
 ## Next
 
-[Data Vault and One Big Table](03-data-vault-and-obt.md) looks at the two alternatives to the star: one that puts more structure in the middle, and one that takes nearly all of it out.
+[Part two](02b-dimensional-modelling-history-and-conformed-dimensions.md) takes the model through change: slowly changing dimensions, conformed dimensions and drilling across, and when the star is the wrong tool.

@@ -1,4 +1,5 @@
 ---
+imported_hash: 59a67ce90d1fd4ed
 title: Queue
 summary: A queue is a FIFO (First In, First Out) data structure.
 order: 186

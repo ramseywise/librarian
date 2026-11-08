@@ -1,4 +1,5 @@
 ---
+imported_hash: 7afb60a7bd4f7bc7
 title: Trie (Prefix Tree) — First-Principles Thinking Guide
 summary: Each node represents a character. A path from root to a marked node spells a word.
 order: 229

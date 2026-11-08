@@ -1,4 +1,5 @@
 ---
+imported_hash: 34c83c0cda9226fe
 title: Backend and system design
 summary: 'Ten chapters on the part of backend work that tutorials leave out: what happens when a request is retried, when a token is forged, when a cache key expires under load, when a deploy meets a long request, or when a region goes away.'
 order: 1
@@ -27,7 +28,7 @@ The mental model is a question to ask of every box on a diagram: **what happens 
 
 ## Reading order
 
-Each chapter takes about an hour, with its exercises. The format of a chapter follows [the course's chapter standard](../../.claude/skills/pillar/references/pillar-layout.md). Lab: [`practice/`](practice/readme.md).
+Each chapter takes about an hour, with its exercises. The format of a chapter follows [the course's chapter standard](https://github.com/ramseywise/librarian/blob/main/.claude/skills/pillar/references/pillar-layout.md). Lab: [`practice/`](practice/readme.md).
 
 **The contract and who may use it**
 

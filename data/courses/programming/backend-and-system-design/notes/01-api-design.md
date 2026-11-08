@@ -1,4 +1,5 @@
 ---
+imported_hash: ce4316e22b9de6cc
 title: 1 — API design
 summary: An API is a contract between programs that fail independently.
 order: 2

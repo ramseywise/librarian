@@ -1,4 +1,5 @@
 ---
+imported_hash: 74c032a8a6332d5f
 title: 1 — Ingest
 summary: Every number your company reports begins with someone copying rows out of a system that was not built to be copied from.
 order: 2
@@ -363,6 +364,13 @@ Whichever you pick, keep hold of three kinds of change record and what they can 
 | Watermark + overlap | Within the overlap | No | Medium, needs an index | Low |
 | Log-based CDC | Yes | Yes | Low on the query path | High: connector, broker, snapshots |
 
+What happens to a change after it lands is the staging step. Kimball keeps a master cross-reference table per dimension (surrogate key, operational key, effective and expiration dates, most-recent flag, CRC) and compares each incoming row's CRC against it: the same CRC means ignore the row, a Type 1 change overwrites in place, a Type 2 change adds a row and expires the old one. Referential integrity is enforced in staging, not at load. A fact whose key has no dimension row halts the load, goes to a reloadable suspense file, or gets a per-key "Description Unknown for Operational Key XYZ" row, never one shared dummy key. Dimensions are published before facts (*Data Warehouse Toolkit*, ch. 16). The same chapter's warning applies to ingest: unclean source data has no short-term fix, so assess data feasibility before committing to a schedule, and the warehouse should follow application integration, not lead it, because incompatible data cannot be cleaned downstream once information is lost (ch. 16, ch. 17).
+
+Kimball draws that flow as one decision tree: no CRC change is ignored, new rows get a surrogate key and an insert, Type 1 or 3 changes update in place, and a Type 2 change inserts a new row and updates the prior most-recent row, with the cross-reference table and the most-recent-key table updated at the end (ch. 16).
+
+![Dimension table surrogate key management: a source extract is compared by CRC with the master dimension cross-reference, then new rows, unchanged rows, Type 1 or 3 changes and Type 2 changes each take their own branch](../assets/sources/images/dwt-ch16-fig16-4.png)
+*Image Source: Kimball and Ross, [*The Data Warehouse Toolkit*](https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/books/) (Wiley, 2002), Fig. 16.4*
+
 ---
 
 ## The landing zone as code: Terraform on GCP
@@ -534,7 +542,7 @@ producer.produce(topic=topic, key=key_serializer(key, ctx), value=value_serializ
 producer.flush()
 ```
 
-The registry rejects a producer whose schema breaks the subject's compatibility rule, which turns "an event schema changed and nobody told us" (a scenario in [architecture and governance](../../07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw.md)) from a silent downstream break into a failed deploy upstream.
+The registry rejects a producer whose schema breaks the subject's compatibility rule, which turns "an event schema changed and nobody told us" (a scenario in [architecture and governance](../../07-architecture-and-governance/notes/01b-data-mesh-topologies-and-scenarios.md)) from a silent downstream break into a failed deploy upstream.
 
 ### Processing the stream: four ways in the module
 

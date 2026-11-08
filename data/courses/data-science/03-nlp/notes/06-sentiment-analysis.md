@@ -1,4 +1,5 @@
 ---
+imported_hash: fb1c9e2ac6f1c03b
 title: Sentiment analysis
 summary: 'Your product has fifty thousand reviews, and a manager asks two questions: are people happy, and why not?'
 order: 7
@@ -62,6 +63,8 @@ I sort of liked this Columbo movie its atmosphere, which was real thriller like 
 
 **Normalisation warning for sentiment:** default stop-word lists contain *not*, *no*, *nor* and *very*. Removing them turns "not good" into "good". Sarkar's normaliser keeps negations out of the stop-word list, and you should check yours.
 
+The stop-word list is only the first place negation is lost. A bag of words drops order altogether, so "it's bad, not good at all" and "it's good, not bad at all" get exactly the same vector though their meanings are inverted (*Intro to ML with Python*, ch. 7). Adding bigrams and trigrams is the cheap partial fix: on IMDb (25,000 reviews each way, TF-IDF, logistic regression, five-fold CV) the range `(1, 3)` lifts CV accuracy from 0.89 to 0.91, and the model then learns bigrams such as "not worth" as negative cues. It still cannot tell what "not" scopes over, which is what the LSTM row in section 3 is for. The NLTK book's first classifier is the same idea in miniature: Naive Bayes on 2,000 binary "contains word" features reaches 0.81 on 100 held-out movie reviews, with "outstanding" (11.1 to 1 for positive) and "seagal" (7.7 to 1 for negative) the most informative features (*NLP with Python*, ch. 6). A 100-review test set puts the standard error near four points (my arithmetic: sqrt(0.81 x 0.19 / 100) is about 0.039), so do not compare that 0.81 with the IMDb numbers above.
+
 ## 1. Unsupervised lexicons (ch. 9a)
 
 A lexicon maps words to polarity scores, and a document's score is an aggregate. No labels are needed, which makes lexicons the baseline when you have none.
@@ -118,6 +121,12 @@ SentiWordNet  book threshold  0.0: 0.613   tuned on train (  0.02): 0.658    14.
 ```
 
 A dictionary with no labels gets about 70% right, against 50% for a coin. Sarkar's [Ch09a notebook](https://github.com/dipanjanS/text-analytics-with-python/tree/master/New-Second-Edition/Ch09%20-%20Sentiment%20Analysis) reports close to the same on his 15,000-review test set: TextBlob 0.767, AFINN 0.712, VADER 0.711, SentiWordNet 0.630. Our order matches his, and our book-threshold figures are within two points of his on all four. Tuning a threshold adds up to four points on three of them, and TextBlob is the one that gains nothing. Lexicons fail on domain vocabulary ("unpredictable" is good for a thriller, bad for a car), sarcasm, and reviews that describe a sad plot positively. Each lexicon needs a threshold, and the threshold is a parameter you are tuning on the test set if you pick it by looking at test accuracy, which is why we tuned on train above.
+
+The first edition of Sarkar's book reports the same comparison on a 35,000/15,000 split of the 50,000 IMDb reviews, with the supervised model on the same test half (*Text Analytics with Python*, 1st ed., ch. 7). A hinge-loss SGD classifier on TF-IDF unigrams gets accuracy 0.89, Pattern 0.77, VADER 0.70 and SentiWordNet 0.59. SentiWordNet has recall 0.92 on the positive class and 0.26 on the negative class, and it labels 5,510 of 7,490 negative reviews positive. The book's "F1 of 70%" for it is the positive-class F1 only, as the weighted average is 0.55. On eight hand-picked reviews SentiWordNet got all eight right, which shows how little eight samples say. The VADER and Pattern thresholds of 0.1 were chosen because they "seemed to work best", with no held-out set named, so those scores are optimistic. The book's AFINN-111 has 2,477 entries, so the roughly 3,300 above is a later list. Pattern also returns mood (indicative, imperative, conditional, subjunctive) and a modality score from 0 to 1, where above 0.5 reads as fact and below as wish or hope (*Text Analytics with Python*, 1st ed., ch. 7).
+
+![Four sentiment models compared on accuracy, precision, recall and F1](../assets/sources/images/sarkar-text-analytics-fig7-3.png)
+
+*Image Source: Sarkar, *Text Analytics with Python* (Apress, 2016), Fig. 7-3*
 
 ## 2. Supervised models (ch. 9b)
 

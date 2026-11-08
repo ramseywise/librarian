@@ -1,3 +1,4 @@
+# imported_hash: 59a3e37cf07093bc
 # Safety and Security lecture deck. Covers notes 01-07.
 # Build: make slides PILLAR=ai-engineering/09-safety-and-security STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md

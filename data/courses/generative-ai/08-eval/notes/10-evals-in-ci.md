@@ -1,7 +1,8 @@
 ---
+imported_hash: fbe12f26c145f1e9
 title: 10 — Evals in CI
 summary: An eval that someone has to remember to run stops being run, and one that fails the build on every wobble gets muted.
-order: 11
+order: 15
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/08-eval/notes/10-evals-in-ci.md

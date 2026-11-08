@@ -1,4 +1,5 @@
 ---
+imported_hash: 4f2048134c741958
 title: 3 — Judge Pipelines over Trace Exports
 summary: By the end of chapter 2, Acme Books had a release gate that passed the billing category while billing answers were going wrong in production.
 order: 4

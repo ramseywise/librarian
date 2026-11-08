@@ -1,3 +1,4 @@
+# imported_hash: ac836a75aef924ad
 # Lecture deck for 07-inference-engineering. Covers notes 01-09.
 # Build: make slides PILLAR=07-inference-engineering STRICT=1 PREVIEW=1
 # Running example: one Llama-7B-class model on one A100, followed from its first
@@ -519,7 +520,7 @@ parts:
           - "**PaLM 540B, batch 64:** int8 weights **36.9 → 28.5** ms/token."
           - "**Safe default:** FP8 on Hopper and Blackwell; validate FP4 per model."
         takeaway: Serious quantization methods work around outliers, and every format change needs an eval run, not just perplexity.
-        source: notes/08-adaptive-inference.md
+        source: notes/08c-quantization-and-low-precision.md
         notes: >-
           Weight-only quantization is the popular approach, since it works out of the box and decode is bandwidth-bound. Pope's cost benefit
           is more than double at small batch and near zero at large batch. How well a model survives 4 bits depends on what it was trained to

@@ -1,7 +1,8 @@
 ---
+imported_hash: 8b7df66e5d568cab
 title: '13 · Case Study: Evaluating a Multi-Agent Support System'
 summary: The notes teach the method. This note shows where the method bends when it meets a real backlog, a small calibration sample and a grader that was being fed the wrong input.
-order: 14
+order: 18
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/08-eval/notes/13-case-study-support-agent.md
@@ -26,7 +27,7 @@ A multi-agent system has two failure surfaces that a single quality score can't 
 
 Strand A seeds its rows from queries that sit on routing boundaries. Strand F seeds from typical domain tasks and assumes routing is correct. Each dataset covers what the other misses.
 
-**Why this was non-obvious.** The existing evals measured retrieval (MRR, P@k) and answer quality (grounding, completeness). Neither catches *right answer, wrong tool path* or *routed to the wrong sub-agent*, so those failures were invisible to every grader the team had. This is the trajectory-vs-outcome split of [06](06-evaluating-agents.md#routing-vs-domain-evals-in-multi-agent-systems) applied to a router.
+**Why this was non-obvious.** The existing evals measured retrieval (MRR, P@k) and answer quality (grounding, completeness). Neither catches *right answer, wrong tool path* or *routed to the wrong sub-agent*, so those failures were invisible to every grader the team had. This is the trajectory-vs-outcome split of [06](06b-components-trials-and-cost.md#routing-vs-domain-evals-in-multi-agent-systems) applied to a router.
 
 A domain-eval row carries its expected trajectory and its expected structured output:
 

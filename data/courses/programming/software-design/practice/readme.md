@@ -1,4 +1,5 @@
 ---
+imported_hash: 451356f141696d87
 title: 'Lab: refactoring a smelly module under tests'
 summary: The module was written for this lab, so its smells are deliberate.
 order: 9

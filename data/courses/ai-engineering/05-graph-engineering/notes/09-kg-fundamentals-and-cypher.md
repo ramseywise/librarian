@@ -1,7 +1,8 @@
 ---
+imported_hash: 822dc37d213800ef
 title: 9 — KG Fundamentals and Cypher
 summary: An agent can recite that a drug treats a disease and still have no way to show which source said so, or which of two things named "type 1 diabetes" it meant.
-order: 10
+order: 11
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/09-kg-fundamentals-and-cypher.md
@@ -60,7 +61,7 @@ flowchart LR
     KG -->|rows, paths| A[LLM summarises<br/>into an answer]
 ```
 
-LLMs **build** KGs (extraction, [note 10](10-building-kgs-with-llms.md)), **query** them (text-to-Cypher, [note 11](11-kg-rag-and-text-to-cypher.md)) and **summarise** what comes back, turning a table of paths into prose (*KG & LLMs in Action*, ch. 1, fig. 1.4).
+LLMs **build** KGs (extraction, [note 10](10-building-kgs-with-llms.md)), **query** them (text-to-Cypher, [note 11a](11a-structured-lookups-and-text-to-cypher.md)) and **summarise** what comes back, turning a table of paths into prose (*KG & LLMs in Action*, ch. 1, fig. 1.4).
 
 ### Why it pairs with LLMs
 

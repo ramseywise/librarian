@@ -1,7 +1,8 @@
 ---
+imported_hash: c9c2f26c2009ec4a
 title: Ai
 summary: Driving the AI How to direct AI tools effectively during the coding phase, and what to do when they fail.
-order: 244
+order: 247
 kind: reading
 section: Coding / Notes
 source: learn-ai-engineering/programming/drills/coding/notes/ai.md

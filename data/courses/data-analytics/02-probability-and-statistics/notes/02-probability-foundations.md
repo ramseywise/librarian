@@ -1,4 +1,5 @@
 ---
+imported_hash: f83d6180d7ff4c14
 title: 2 — Probability Foundations
 summary: Larkspur's fraud filter is 99% accurate, it flagged an order, and the support lead wants to cancel it.
 order: 3
@@ -132,9 +133,11 @@ after two independent positives: 0.907
 
 Three lessons sit in those lines. The answer depends on the base rate as much as on accuracy: moving prevalence from 1 in 1,000 to 1 in 100 lifts 9% to 50%. [Grinstead and Snell (*Introduction to Probability*, ch. 4)](https://www.stat.berkeley.edu/users/aldous/134/grinstead.pdf) work the same trap as a cancer test: with a 1-in-1,000 prior, 99% positive on cancers and 95% negative otherwise, 98.1% of positives are false, yet over half of a group of second-year medical students guessed the chance of cancer was above .5. Improving the test helps, but it must beat the base rate, which is why rare-event detection needs extreme specificity. And evidence accumulates: yesterday's posterior is today's prior, so a second independent positive takes you to 91%. That sequential reading is the idea of [Bayesian inference](../../04-bayesian-analysis/notes/01-bayesian-inference.md), applied there to a parameter instead of an event. The word "independent" carries weight in that last step: a repeat of the same test on the same order would not count as new evidence. The same calculation is why precision collapses on rare events: see the [confusion matrix](../../../data-science/01-classical-ml/notes/04-model-evaluation.md#confusion-matrix-precision-recall-f1) in data science and [measuring a guard on your own traffic](../../../ai-engineering/09-safety-and-security/notes/03-guardrail-models.md#measuring-a-guard-on-your-own-traffic) in AI engineering.
 
+The odds form makes the update one multiplication: posterior odds equal prior odds times the likelihood ratio. Efron and Hastie's twins problem uses it. A sonogram shows twin boys, and the physicist asks whether they are identical. Prior odds are 1/3 identical to 2/3 fraternal. Identical twins are always the same sex, and fraternal twins are the same sex half the time, so seeing "same sex" has likelihood ratio 1/(1/2) = 2. The posterior odds are (1/3 / 2/3) x 2 = 1, so the probability is exactly 0.5 (*Computer Age*, ch. 3). Their picture is a book of three million past twin births, one page per observation: of the two million "same sex" births, one million are identical and one million fraternal. Bayes' rule is picking the right page. Written as odds, the 1 in 1,000 fraud filter above is the same step: prior odds of about 1:1,000 times a likelihood ratio of 99 gives odds of about 0.099, a probability of 0.09.
+
 ### The same mistake in hypothesis testing
 
-A p-value is a P(data | no effect). People read it as P(no effect | data). Reinhart's version of the calculation tests 100 candidate cancer drugs, 10 of which work, with 80% power and a 5% threshold: about 8 real detections and about 5 false ones, so one significant drug in three or so is a dud (*Statistics Done Wrong*, ch. 4). His text rounds to 13 discoveries and 62%; without rounding the 4.5 false positives give 64%.
+A p-value is a P(data | no effect). People read it as P(no effect | data). Reinhart's version of the calculation tests 100 candidate cancer drugs, 10 of which work, with 80% power and a 5% threshold: about 8 real detections and about 5 false ones, so one significant drug in three or so is a dud (*Statistics Done Wrong*, ch. 4). His text rounds to 13 discoveries and 62%, a false discovery rate of 38%; without rounding the 4.5 false positives give 64% real. He makes the same point with a mammogram: at 0.8% prevalence, 90% sensitivity and a 7% false-positive rate, a positive result means about a 9% chance of cancer, and he reports that two-thirds of doctors read p < 0.05 as a 95% chance the result is true (ch. 4, as reported).
 
 ```python
 tested, works = 100, 10
@@ -156,6 +159,24 @@ base rate 0.02: P(real | significant) = 0.25
 ```
 
 The base rate here is "how often are the ideas we test really good", and it is usually low. Ioannidis made the argument for whole research fields in [Why Most Published Research Findings Are False](https://doi.org/10.1371/journal.pmed.0020124) (PLOS Medicine, 2005). For a company that tests modest changes, this is why a win at p = 0.04 deserves some suspicion, and [chapter 5](05-hypothesis-testing.md) and the [experimentation pillar](../../03-experimentation-and-causality/readme.md) take it up.
+
+*Think Stats* adds three exercises worth running. In its drug-test example, 60% sensitivity, 99% specificity and 5% prevalence give P(user | positive) = 0.03 / 0.0395 = 0.76, so about one positive in four is a non-user (*Think Stats*, ch. 5, using the sensitivity and specificity estimates it cites from the drug-testing literature). The **Monty Hall** problem has switching win 2/3 of the time and sticking 1/3, with the host always opening a car-free door you did not pick. Mathematicians resisted the answer, and Downey reports that Erdős was convinced only by a computer simulation, so simulate it:
+
+```python
+import random
+def monty(switch, n=100_000):
+    wins = 0
+    for _ in range(n):
+        car, pick = random.randrange(3), random.randrange(3)
+        opened = next(d for d in range(3) if d not in (car, pick))
+        if switch:
+            pick = next(d for d in range(3) if d not in (pick, opened))
+        wins += pick == car
+    return wins / n
+print(monty(True), monty(False))   # about 0.667 and 0.333
+```
+
+The third is the conjunction rule, P(A and B) ≤ P(A) always, since the multiplication P(A)P(B | A) cannot exceed P(A). A story with more detail is more vivid and never more probable (*Think Stats*, ch. 5). Streaks follow the same logic: runs that look like a hot hand are what independent sequences produce, and a Monte Carlo test can check an apparent cluster against that baseline. Downey also warns that Monte Carlo is slow for rare events, and "a little bit of analysis can save a lot of computing" (*Think Stats*, ch. 5): for 100 dice, P(no sixes) = (5/6)^100 by hand.
 
 ## Independence
 
@@ -204,7 +225,7 @@ Opening Monday's and Tuesday's emails have a correlation of 0.28 across all user
 
 ## Random variables, expectation and variance
 
-A *random variable* assigns a number to each outcome. It has a probability mass function if discrete, a density if continuous, and a CDF either way. Two numbers summarise it. The expectation E[X] is its long-run mean. The variance Var(X) = E[(X − E[X])²] is its mean squared distance from that mean, and its square root is the standard deviation.
+A *random variable* assigns a number to each outcome. It has a probability mass function if discrete, a density if continuous, and a CDF either way. Two numbers summarise it. The expectation E[X] is its long-run mean. The variance Var(X) = E[(X − E[X])²] is its mean squared distance from that mean, and its square root is the standard deviation. A worked case from Bruce and Bruce: a webinar attendee buys a $300 service with probability 5%, a $50 one with 15% and nothing otherwise, so the expected value per attendee is 0.05 × 300 + 0.15 × 50 = $22.50 per month (*Practical Statistics*, ch. 1).
 
 ### Linearity needs no independence
 

@@ -38,10 +38,10 @@ cards:
   lesson: data-analytics/02-probability-and-statistics/notes/05-hypothesis-testing
 - front: Which model fits a continuous outcome, a yes/no outcome and a count, and what do you check afterwards?
   back: Pick the GLM from the outcome's type, then check residuals, leverage, dispersion and clustering before trusting any standard error.
-  lesson: data-analytics/02-probability-and-statistics/notes/06-regression-and-glms
+  lesson: data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms
 - front: What does a logistic coefficient of 0.4 do to the odds, and to probability at baselines of 2% and 50%?
   back: Report average marginal effects to stakeholders, since an odds ratio implies a different point change at each baseline.
-  lesson: data-analytics/02-probability-and-statistics/notes/06-regression-and-glms
+  lesson: data-analytics/02-probability-and-statistics/notes/06b-logistic-regression-and-poisson-glms
 - front: Across 1,000 simulated datasets, how did the linear and quadratic tenure models do on bias and coverage?
   back: A simulation grades the procedure rather than one answer, and coverage is the grade that shows the form is wrong.
   lesson: data-analytics/02-probability-and-statistics/notes/07-data-generating-process

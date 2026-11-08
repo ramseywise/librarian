@@ -1,7 +1,8 @@
 ---
+imported_hash: dcb0c157e245fa8a
 title: 11 — Production and the Maturity Ladder
 summary: Offline evals only cover the failures you already thought of, and a system that passes them can still decay when a provider updates a model or the questions change.
-order: 12
+order: 16
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/08-eval/notes/11-production-and-the-maturity-ladder.md
@@ -163,6 +164,11 @@ window 7: false alarms before the change 0, first true alert day 35, days alerti
 The thumbs-down sample is good at finding failures and useless for estimating a rate, which is why the random sample stays separate. On the alerts, the daily rate at a strict margin fires on only 7 of the 30 bad days, and the rolling window holds the alert on 25 of them.
 
 ---
+
+When no labels exist, the drift signal can be a behaviour probe instead of a score. [arXiv:2306.13651](https://arxiv.org/abs/2306.13651) (Jain et al., 2023, preprint) scores a model by how much its output changes when the input is transformed, e.g. perplexity before and after inserting "not" into a Wikipedia sentence. On 1,000 sentences per metric across about 25 open and API models (up to 7B open), the negation score tracked TriviaQA accuracy and the long-range-sensitivity score tracked LAMBADA accuracy in scatter plots, at under 30 minutes per model for most tests. **No correlation coefficients are reported, validation is on Wikipedia only, and the paper proposes monitoring live streams but runs no deployment experiment.** Treat it as a cheap tripwire to compare against a fixed corpus, not as a substitute for the labelled sample above.
+
+![Negation sensitivity score (raw and normalised) against TriviaQA accuracy across model families and sizes](../assets/sources/images/jain-2023-self-supervised-sensitivity-fig3.png)
+*Image Source: Jain et al., [Bring Your Own Data! Self-Supervised Evaluation for Large Language Models](https://arxiv.org/abs/2306.13651) (2023), Fig. 3*
 
 ## Online experiments
 

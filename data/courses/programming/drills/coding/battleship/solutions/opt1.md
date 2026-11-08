@@ -1,4 +1,5 @@
 ---
+imported_hash: 418753c842b38a19
 title: Opt1
 summary: Your brute-force solve() fires at every cell, averaging ~61 shots on a 10x10 board.
 order: 98

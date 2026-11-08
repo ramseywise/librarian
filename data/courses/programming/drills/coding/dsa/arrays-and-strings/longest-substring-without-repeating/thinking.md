@@ -1,4 +1,5 @@
 ---
+imported_hash: b846925158643a08
 title: Longest Substring Without Repeating — First-Principles Thinking Guide
 summary: Use a window [left, right]. Expand right.
 order: 113

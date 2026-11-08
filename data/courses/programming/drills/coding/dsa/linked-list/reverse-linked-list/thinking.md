@@ -1,4 +1,5 @@
 ---
+imported_hash: 94770f8ce4bb7de4
 title: Reverse Linked List — First-Principles Thinking Guide
 summary: Iterate through the list. At each node, reverse its next pointer to point to the previous node.
 order: 179

@@ -1,4 +1,5 @@
 ---
+imported_hash: 568a34e10855d90f
 title: 27, 27
 summary: 'for w in words: chs = [''.''] + list(w) + [''.''] for ch1, ch2 in zip(chs, chs[1:]): ix1 = stoi[ch1] ix2 = stoi[ch2] N[ix1, ix2] += 1'
 order: 6

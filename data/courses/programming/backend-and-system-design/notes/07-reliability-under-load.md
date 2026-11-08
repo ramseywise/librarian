@@ -1,4 +1,5 @@
 ---
+imported_hash: d9639596f16c2cda
 title: 7 — Reliability under load
 summary: An average tells you what a server does. A user's page often waits for many servers, and takes as long as the slowest.
 order: 8

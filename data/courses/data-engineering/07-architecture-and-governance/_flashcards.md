@@ -17,19 +17,19 @@ cards:
   lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw
 - front: What does a mesh decentralise, and what stays central?
   back: A mesh decentralises ownership and products while keeping a central platform and a joint governance group.
-  lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw
+  lesson: data-engineering/07-architecture-and-governance/notes/01b-data-mesh-topologies-and-scenarios
 - front: What is the smallest self-serve platform that governs anything?
   back: One publish call that runs the mandatory checks and records dependencies is the smallest self-serve platform that governs anything.
-  lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw
+  lesson: data-engineering/07-architecture-and-governance/notes/01b-data-mesh-topologies-and-scenarios
 - front: When does a global standard actually take effect?
   back: A standard only takes effect when a step no domain can skip enforces it and routes each failure to a named owner.
-  lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw
+  lesson: data-engineering/07-architecture-and-governance/notes/01b-data-mesh-topologies-and-scenarios
 - front: How does the skeptic case say you should adopt a mesh?
   back: Take the mesh as principles to adopt selectively, starting with ownership on a shared platform, and decentralise technology last.
-  lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw
+  lesson: data-engineering/07-architecture-and-governance/notes/01b-data-mesh-topologies-and-scenarios
 - front: Which axes separate real mesh shapes, and what does each shape trade?
   back: Domain size and the way data moves separate six real mesh shapes, and each one trades agility against conformance.
-  lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw
+  lesson: data-engineering/07-architecture-and-governance/notes/01b-data-mesh-topologies-and-scenarios
 - front: Why start governance from a scanned inventory of personal data?
   back: You cannot protect a column you do not know is personal, so scan values as well as names and start from that inventory.
   lesson: data-engineering/07-architecture-and-governance/notes/02-access-control-pii-gdpr
@@ -65,7 +65,7 @@ cards:
   lesson: data-engineering/07-architecture-and-governance/notes/03-catalog-semantic-layer-and-contracts
 - front: How do you work out who a change to a column will hurt?
   back: Follow the chain to named owners, check the log for unregistered readers, and give a new unit a new column name.
-  lesson: data-engineering/07-architecture-and-governance/notes/03-catalog-semantic-layer-and-contracts
+  lesson: data-engineering/07-architecture-and-governance/notes/03b-data-contracts-who-a-change-reaches
 - front: Where does governance actually exist?
   back: Decide ownership and enforcement before you need them, because governance only exists where a step can fail.
   lesson: data-engineering/07-architecture-and-governance/notes/01-data-architectures-mesh-fabric-mdw

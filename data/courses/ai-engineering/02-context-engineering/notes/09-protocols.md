@@ -1,7 +1,8 @@
 ---
+imported_hash: 635f799ad05c7bea
 title: '9 — Protocols: Context Engineering Without Code'
 summary: '"Protocol" here means a prompt pattern. Wire protocols that carry context between programs, such as the Model Context Protocol (MCP), are in 10.'
-order: 10
+order: 11
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/02-context-engineering/notes/09-protocols.md

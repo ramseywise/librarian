@@ -1,7 +1,8 @@
 ---
+imported_hash: e6923e02e44559ea
 title: create a synthetic dataset
 summary: iris = load_iris() logreg = LogisticRegression(max_iter=1000)
-order: 26
+order: 27
 kind: notebook
 section: Practice / Intro to ml in python
 source: learn-ai-engineering/data-science/01-classical-ml/practice/intro-to-ml-in-python/05-model-evaluation-and-improvement.ipynb

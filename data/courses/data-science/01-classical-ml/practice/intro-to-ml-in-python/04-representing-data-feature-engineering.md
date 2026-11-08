@@ -1,7 +1,8 @@
 ---
+imported_hash: 27873c36f229bfc8
 title: The file has no headers naming the columns, so we pass header=None
 summary: ct = ColumnTransformer( [("scaling", StandardScaler(), ['age', 'hours-per-week']), ("onehot", OneHotEncoder(sparse_output=False), ['workclass', 'education', 'gender', 'occupation'])])
-order: 25
+order: 26
 kind: notebook
 section: Practice / Intro to ml in python
 source: learn-ai-engineering/data-science/01-classical-ml/practice/intro-to-ml-in-python/04-representing-data-feature-engineering.ipynb

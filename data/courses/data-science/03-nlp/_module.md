@@ -1,4 +1,5 @@
 ---
+imported_hash: 77f3754923a99fb1
 title: 03 — Natural language processing
 summary: 'The pre-transformer NLP toolkit, taught as something you can still use: preprocessing, bag of words and TF-IDF, text classification, topic models and summarisation, word embeddings, named entity recognition and sentiment analysis.'
 order: 3

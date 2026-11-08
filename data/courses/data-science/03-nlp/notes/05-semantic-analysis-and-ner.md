@@ -1,4 +1,5 @@
 ---
+imported_hash: a1c2ac28ae3ef851
 title: Semantic analysis and named entity recognition
 summary: Vectors tell you that two documents are alike, but not who did what, where, or to whom.
 order: 6
@@ -76,7 +77,7 @@ large antonym: ['small']
 
 ### Similarity and disambiguation
 
-Because synsets form a tree of is-a links, you can measure how far apart two senses are, and find what they have in common.
+Because synsets form a tree of is-a links, you can measure how far apart two senses are, and find what they have in common. Sizes and scale: WordNet 3.0 holds 117,659 synsets (the count `len(list(wn.all_synsets()))` returns today, and the figure the NLTK book's text gives; its Table 2-2 says "145k", which the book does not reconcile), and "car" alone has 5 of them. Depth shows how deep the is-a chain runs: baleen whale sits at minimum depth 14 below the root `entity`. The book's path-similarity examples against right whale give 0.25 for the minke whale, 0.17 for the orca, 0.08 for a tortoise and 0.04 for a novel (all reproduce in current NLTK), and its authors add that "the numbers won't mean much" beyond the ranking (*NLP with Python*, ch. 2). The 0.25 means a shortest path of three edges (1 / (1 + 3)), through their lowest common hypernym, the baleen whale. Dated: in the book's NLTK 2 code `synset.definition`, `lemma_names` and `lemma.name` are attributes, and in NLTK 3 they are methods, as the snippets here use.
 
 ```python
 from nltk.wsd import lesk
@@ -144,7 +145,7 @@ PERSON ['Peter', 'Harry', 'Andy', 'John', 'Jack', 'Max', 'Snow White', 'Jim']
 ORG ['CIA', 'FBI', 'Bond', 'IMF', 'Batman', 'Sophie', 'Lincoln', 'Riley']
 ```
 
-![Table of the entity types spaCy's English models tag, from PERSON to MONEY](../assets/sarkar-spacy-ner.png)
+![Table of the entity types spaCy's English models tag, from PERSON to MONEY](../assets/sources/images/sarkar-spacy-ner.png)
 *Image source: Sarkar, Text Analytics with Python (2nd ed.), companion repo `Ch08/spacy_ner.png`*
 
 The first line above is one film's description, and spaCy tags its entities sensibly. Run across a thousand film descriptions, the output is usable and also instructive. PERSON dominates, GPE finds real cities, but the ORG list mixes CIA and FBI with "Bond", "Batman" and "Sophie". A news-trained model has never seen fictional characters doing what these do. Counting `ent.label_` over a corpus gives a quick profile of what a collection is about.
@@ -161,7 +162,32 @@ The same text can go through Stanford's CRF-based tagger (`nltk.tag.StanfordNERT
 | Hugging Face token classification | Fine-tuned BERT-style | Any | `pipeline("ner")` ([transformers pipelines](../../02-deep-learning/notes/06-neural-text-models.md#transformers-pipelines)) |
 | LLM extraction | Prompted | Any, defined in the prompt | Flexible schema; check precision |
 
+Sarkar's first-edition chapter 7 compares Stanford's 3-class CRF with NLTK's `ne_chunk` on one Bayern Munich paragraph judged by eye with no gold labels. The CRF gives 9 entities with no misclassifications, while `ne_chunk` gives 14 rows with errors such as Bayern as a person and "Overall" as a place. The author notes that this does not make Stanford better in general (*Text Analytics with Python*, 1st ed., ch. 7). The same chapter reports WordNet at over 155,000 words and 117,000 synsets, `tree.n.01` with 180 direct hyponyms, and path similarity of 0.33 for lion and tiger against 0.07 to 0.13 for tree and any animal. The entity-level F1 in the next sections is the stronger evidence.
+
+### Chunking: the feature ladder (*NLP with Python*, ch. 7)
+
+NER is chunking with entity types, and the NLTK book's noun-phrase chunker shows how each addition pays on the CoNLL-2000 Wall Street Journal split (270k words; scores on its test set, NP chunks only, one run each; IOB accuracy counts tokens, F counts exact chunk matches) (*NLP with Python*, ch. 7):
+
+| Chunker | IOB accuracy | F-measure |
+|---|---|---|
+| No chunks (`RegexpParser("")`) | 43.4% | 0.0% |
+| One regexp over POS tags, `NP: {<[CDJNP].*>+}` | 87.7% | 69.2% |
+| Unigram tagger, POS tag to IOB tag | 92.9% | 83.2% |
+| Bigram tagger | 93.3% | 84.5% |
+| Max-entropy classifier, POS only | 92.9% | 83.2% |
+| + previous POS | 93.6% | 84.4% |
+| + current word | 94.2% | 85.9% |
+| + next POS, paired features, tags since last determiner | 95.9% | 89.5% |
+
+Read three things from it. The do-nothing baseline already scores 43.4% accuracy because over a third of tokens sit outside any noun phrase, so accuracy alone flatters a chunker, and the F column is the one to watch. A one-line rule gets most of the way to a trained model. The final 3.6 points of F come from context features, not a better learner, which is the argument for the hand-built features in the CRF below. The book's relation extraction is the same idea one level up: take every (entity, intervening words, entity) triple for a typed pair such as ORG and LOC, keep those whose middle matches a regular expression like `.*\bin\b(?!\b.+ing)`, and live with false positives such as a committee "secured the most money in the New York". It also warns that gazetteer lookup alone misfires, because place names collide with common words and with other types (May, North) (*NLP with Python*, ch. 7).
+
+![The information extraction pipeline from raw text to relations](../assets/sources/images/nlp-with-python-fig7-1.png)
+
+*Image Source: Bird, Klein and Loper, *Natural Language Processing with Python* (O'Reilly, 2009), Fig. 7-1*
+
 ## Building your own NER tagger (Sarkar ch. 8c)
+
+Part-of-speech tags are the input to this tagger (feature `postag` below), and the NLTK book's ladder shows how far a tagger gets before any sequence model: on Brown news with the full tagset, tagging everything as a noun scores about 0.13, a unigram tagger 0.81 on a held-out 10%, and a bigram-to-unigram-to-noun backoff chain 0.845, with ambiguity capping n-gram taggers at about 1 context in 20 having more than one tag (*NLP with Python*, ch. 5). Code that reproduces the ladder is in [text classification](02-text-classification.md#held-out-discipline-from-the-nltk-book). The book notes that tagging is "an early example of a sequence classification task" and the CRF below is its modern form. Its Brill rules (for example, change NN to VB after "to") are readable but the chapter reports no accuracy for them.
 
 When the entity types are your own (product codes, drug names, contract clauses), train a tagger. Sarkar uses the Kaggle GMB corpus (`ner_dataset.csv.gz`, about 48k sentences, 17 BIO tags: geo, org, per, gpe, tim, art, eve, nat) and a **conditional random field**.
 
@@ -349,6 +375,24 @@ someone studies: True | everyone studies: False
 ```
 
 The prover cannot show the first goal, and it can show the second, which the rule and event require. Sarkar also builds a small first-order model of this kind, a domain of entities and a valuation of predicates, and evaluates quantified expressions against it. The practical descendants are triples (subject, predicate, object), knowledge graphs and constrained output schemas. LLMs now do the extraction step, and the graph and query languages took over the representation.
+
+### What the logic approach could and could not do (*NLP with Python*, ch. 10)
+
+Bird, Klein and Loper start from a question-answering task. A feature grammar builds a `SEM` value by string concatenation while it parses, and `What cities are located in China` becomes `SELECT City FROM city_table WHERE Country="china"` (*Natural Language Processing with Python*, ch. 10). The grammar names one table, one column and a few words, so the approach works only in a restricted domain. It is the ancestor of text-to-SQL, where an LLM now writes the query and the hard part is still the schema.
+
+Logic gives checks that statistics do not. A model is a domain of individuals plus sets built from it, and a sentence is true or false in it. A prover shows entailment, and a model builder looks for the opposite. In the book's example the premises are a woman that every man loves, Adam is a man and Eve is a woman. Mace4 returns a countermodel to the conclusion that Adam loves Eve, because the premises never say that the woman he loves is Eve (*NLP with Python*, ch. 10). A countermodel is a cheap way to find a missing premise.
+
+Scope is the other lesson. `Everybody admires someone` has two readings: a different admired person for each admirer, or one person admired by all, and the second is the logically stronger one. A translation driven by the parse tree always gives the first. Cooper storage keeps the quantifiers aside and generates every ordering (*NLP with Python*, ch. 10). An LLM answering a quantified question picks one reading silently, so test both.
+
+![Two scopings of a sentence with two quantifiers](../assets/sources/images/nlp-with-python-fig10-3.png)
+
+*Image Source: Bird, Klein and Loper, *Natural Language Processing with Python* (O'Reilly, 2009), Fig. 10-3*
+
+Discourse breaks single-sentence logic. In `Angus owns a dog. It bit Irene.` the quantifier in the first sentence has to bind the pronoun in the second. Discourse Representation Theory keeps a list of discourse referents and conditions, and each new sentence adds to it (*NLP with Python*, ch. 10). This is coreference, which today's pipelines handle with a trained model rather than a logical structure.
+
+![A DRS extended by a second sentence](../assets/sources/images/nlp-with-python-fig10-4.png)
+
+*Image Source: Bird, Klein and Loper, *Natural Language Processing with Python* (O'Reilly, 2009), Fig. 10-4*
 
 ## From entities to knowledge graphs
 

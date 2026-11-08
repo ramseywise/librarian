@@ -1,7 +1,8 @@
 ---
+imported_hash: 34012880932e9575
 title: 'Lab: a prompt eval harness (Python)'
 summary: The Python twin of the TypeScript lab. Both read the same cases.json, use the same variants and stub rules, and print the same report, so you can compare them file by file.
-order: 15
+order: 18
 kind: reading
 section: Practice / Prompt eval harness py
 source: learn-ai-engineering/ai-engineering/01-prompt-engineering/practice/prompt-eval-harness-py/README.md

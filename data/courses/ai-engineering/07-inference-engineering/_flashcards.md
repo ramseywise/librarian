@@ -65,7 +65,7 @@ cards:
   lesson: ai-engineering/07-inference-engineering/notes/08-adaptive-inference
 - front: How does absmax quantization work, and what problem do the serious methods all address?
   back: Serious quantization methods work around outliers, and every format change needs an eval run, not just perplexity.
-  lesson: ai-engineering/07-inference-engineering/notes/08-adaptive-inference
+  lesson: ai-engineering/07-inference-engineering/notes/08c-quantization-and-low-precision
 - front: What did compile, INT8, INT4 and speculation each add on Llama-7B, and why did gains shrink?
   back: Gains multiply but shrink because each step attacks a smaller remaining bottleneck, and order matters.
   lesson: ai-engineering/07-inference-engineering/notes/08-adaptive-inference

@@ -1,7 +1,8 @@
 ---
+imported_hash: cb2c0469206718ff
 title: '12 — Managed RAG: Bedrock, Vertex, and building your own'
 summary: Tallybook's team has spent eleven chapters learning how to chunk, embed, fuse, rerank and evaluate.
-order: 13
+order: 21
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/12-managed-rag.md
@@ -73,7 +74,7 @@ Notice what fixed these problems: removing content. Tallybook's stale refund pag
 | Fast | `retrieve()` | 5 | 0.4 (cosine) | No | Agent tool, low latency |
 | Reranking | `retrieve_reranking()` | 15 | 0.05 (reranker) | `amazon.rerank-v1:0` | Eval, complex or multi-concept queries |
 
-**The score scale differs by mode.** Raw cosine similarity (0–1) is calibrated differently from reranker relevance scores (borderline matches 0.05–0.35). Never compare scores across modes.
+**The score scale differs by mode.** Raw [cosine similarity](../../01-llm-fundamentals/notes/01-tokens-and-embeddings.md#vectors-dot-products-and-cosine-similarity) (0–1) is calibrated differently from reranker relevance scores (borderline matches 0.05–0.35). Never compare scores across modes.
 
 `scoreThreshold` is a client-side setting of the agent, not of the service. The [Retrieve request](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent-runtime_Retrieve.html) has no such field, so the threshold is applied after the response comes back. The two modes differ in one configuration object. This block builds both requests and runs them through the real boto3 client with botocore's `Stubber`, so the parameter names and types are validated against the AWS service model with no network call and no real credentials. Enum values such as `overrideSearchType` are not checked locally, so a wrong value there only fails against the real service.
 
@@ -243,7 +244,7 @@ two calls took under 0.35 s: True
 0.66  Refund policy (2024 archive) kb-05  'unds are available within 14 days.'
 ```
 
-Four results went in and two came out: the duplicate of `kb-04` lost on its fingerprint and the runbook fell below the threshold. The stale `kb-05` is still there, with a score that gives no hint it is out of date, saying 14 days next to the current page's 30. A managed index won't catch that. It takes the metadata filter from [03](03-keyword-semantic-and-hybrid-search.md), or removing the page.
+Four results went in and two came out: the duplicate of `kb-04` lost on its fingerprint and the runbook fell below the threshold. The stale `kb-05` is still there, with a score that gives no hint it is out of date, saying 14 days next to the current page's 30. A managed index won't catch that. It takes the metadata filter from [03b](03b-metadata-filters-hybrid-search-and-evaluating-a-retriever.md#metadata-filtering), or removing the page.
 
 ### Where the code lives
 

@@ -1,4 +1,5 @@
 ---
+imported_hash: 4aa8b91839919e73
 title: LC 51 — N-Queens
 summary: Given an integer n, place n queens on an n x n chessboard so that no two attack each other (no shared row, column, or diagonal).
 order: 29

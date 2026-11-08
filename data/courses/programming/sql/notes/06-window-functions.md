@@ -1,4 +1,5 @@
 ---
+imported_hash: 8e8737d8e8b978b2
 title: 6 — Window Functions
 summary: Window functions are evaluated after WHERE, GROUP BY and HAVING, so you can't filter on them in the same query.
 order: 7

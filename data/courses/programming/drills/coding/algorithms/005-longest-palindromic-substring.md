@@ -1,4 +1,5 @@
 ---
+imported_hash: f40f9170f25eb3e2
 title: LC 5 — Longest Palindromic Substring
 summary: Given a string s, return the longest contiguous substring of s that reads the same forwards and backwards.
 order: 7

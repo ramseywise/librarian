@@ -1,7 +1,8 @@
 ---
+imported_hash: 34b80efac1a040f2
 title: 7 — Failure Modes at Scale
 summary: A graph can pass every internal check while being wrong.
-order: 8
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/ai-engineering/05-graph-engineering/notes/07-failure-modes-at-scale.md

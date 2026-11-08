@@ -1,4 +1,5 @@
 ---
+imported_hash: e9450d2e7792bb6d
 title: 2 — React and state
 summary: In the previous chapter you changed the DOM by hand.
 order: 3

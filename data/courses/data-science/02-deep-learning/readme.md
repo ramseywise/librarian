@@ -1,4 +1,5 @@
 ---
+imported_hash: 58e256f2ed324695
 title: 02 — Deep learning
 summary: Neural networks from the forward pass to pre-trained transformers, split along the five courses of Ng's Deep Learning Specialization, with a closing chapter on text models.
 order: 1

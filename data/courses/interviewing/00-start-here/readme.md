@@ -1,4 +1,5 @@
 ---
+imported_hash: ed7d6d9d99fc51b3
 title: Interviewing
 summary: Interview prep for AI, ML, data science, analytics, data engineering and forward-deployed roles.
 order: 1
@@ -91,12 +92,12 @@ only true in an interview, so it goes in a round. Nothing lands in a round folde
 round.
 
 - A topic question goes in the checklist of the note that answers it. If no note answers it, it's a gap for the
-  curriculum, not a row. Authoring and wiring steps: the [`/practice` skill](../../.claude/skills/practice/SKILL.md).
+  curriculum, not a row. Authoring and wiring steps: the [`/practice` skill](https://github.com/ramseywise/librarian/blob/main/.claude/skills/practice/SKILL.md).
 - Round files carry `units:` frontmatter where the mapping to the curriculum is clear. `make crosswalk` turns those
   into [`../CROSSWALK.md`](../CROSSWALK.md).
 - New files stay local until added to the allowlist in `practice/.gitignore`, after clearing the licence and checking
   for anything personal.
 - Strip the preamble on ingest: content starts at the `#`. Anything the model said *about* the notes goes in `sources:`,
   and so does scraped page chrome.
-- This folder is the `interviewing` course in librarian's Courses tab, so keep links relative and
+- Librarian imports this folder as the `interviewing` course with `make import-courses`, so keep links relative and
   keep these files self-contained.

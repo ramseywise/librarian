@@ -1,3 +1,4 @@
+# imported_hash: d8b5a27540eea2ba
 # Applied Analyses lecture deck. Covers notes 01-12.
 # Parts carry no summary: at twelve agenda rows the title slide has no room for one under the part name.
 # Build: make slides PILLAR=data-analytics/06-applied-analyses STRICT=1 PREVIEW=1
@@ -75,7 +76,7 @@ parts:
       - layout: image
         title: Beat seasonal naive before anything else
         kicker: Model selection
-        image: ../assets/applied-forecast-backtest-mase.png
+        image: ../assets/sources/images/applied-forecast-backtest-mase.png
         caption: "Eleven origins of 13 weeks on Fernhill's weekly units. Lower is better."
         bullets:
           - "Prophet 0.63 and harmonic regression 0.70 clear **seasonal naive at 1.21**."
@@ -146,7 +147,7 @@ parts:
       - layout: image
         title: The uncorrected model turns away 42% of applicants
         kicker: Setting the cutoff
-        image: ../assets/applied-credit-cost-curve.png
+        image: ../assets/sources/images/applied-credit-cost-curve.png
         caption: "Cost per application at a 5:1 cost ratio, by cutoff. South German Credit."
         bullets:
           - "Sample PDs: approve 58%, cost **0.444**. Corrected: approve 93%, cost **0.245**."
@@ -179,7 +180,7 @@ parts:
       - layout: image
         title: Did we lose customers, or buy worse ones?
         kicker: The problem
-        image: ../assets/applied-cohort-heatmap.png
+        image: ../assets/sources/images/applied-cohort-heatmap.png
         caption: "Share of each acquisition quarter ordering in each month of age."
         bullets:
           - "Rows age a cohort, columns compare cohorts, **diagonals are calendar time**."
@@ -255,7 +256,7 @@ parts:
       - layout: image
         title: The headline holds still while the devices part
         kicker: The problem
-        image: ../assets/applied-funnel-simpson.png
+        image: ../assets/sources/images/applied-funnel-simpson.png
         caption: "Weekly share of sessions ending in a purchase. Checkout redesign on 15 September."
         bullets:
           - "Rate change at the old mix: **+0.38**. Mix towards mobile: **−0.25**."
@@ -340,7 +341,7 @@ parts:
       - layout: image
         title: The target has already gone
         kicker: Validation on a holdout
-        image: ../assets/applied-rfm-segments.png
+        image: ../assets/sources/images/applied-rfm-segments.png
         caption: "Mean revenue per customer, July to December 2025, by segment set on 30 June."
         bullets:
           - "Champions: 18% of customers, **68%** of future revenue."
@@ -435,7 +436,7 @@ parts:
       - layout: image
         title: Both teams were right, about different rows
         kicker: The answer
-        image: ../assets/applied-sql-revenue-bridge.png
+        image: ../assets/sources/images/applied-sql-revenue-bridge.png
         caption: "Fernhill revenue per quarter by customer kind."
         bullets:
           - "New **+£124,260**"
@@ -505,7 +506,7 @@ parts:
         title: The call works for ninety days, and then it stops
         kicker: Time-varying effects
         recall: When does the welcome call work, and what tells you to look for that?
-        image: ../assets/applied-survival-wear-off.png
+        image: ../assets/sources/images/applied-survival-wear-off.png
         caption: Hazard ratio of the call by tenure band.
         bullets:
           - "**0 to 90 days:** 0.535 [0.472, 0.606]."
@@ -574,7 +575,7 @@ parts:
         title: Mixtures and type chains beat the pooled chain on holdout
         kicker: Holdout
         recall: How should you test a sequence model, and why?
-        image: ../assets/applied-sequence-holdout.png
+        image: ../assets/sources/images/applied-sequence-holdout.png
         caption: Fit on months 0 to 8, then forecast. Type chains use the true labels.
         bullets:
           - "**Alive at 17:** observed 0.247."
@@ -628,7 +629,7 @@ parts:
         title: Shapley is fairer, and still about twice the truth
         kicker: Attribution
         recall: Why can't a better attribution model replace an experiment?
-        image: ../assets/applied-attribution-vs-truth.png
+        image: ../assets/sources/images/applied-attribution-vs-truth.png
         caption: Share of conversions credited to each channel, against the true incremental share.
         bullets:
           - "**12 seeds, paid social:** last touch 47.5%, Shapley 29.0%, truth 16.8%."
@@ -664,7 +665,7 @@ parts:
         title: The marginal stays uncertain, and email's is poorly known
         kicker: What the budget needs
         recall: Which return does a budget decision need, and what does a geo test leave unsettled?
-        image: ../assets/applied-mmm-roas-recovery.png
+        image: ../assets/sources/images/applied-mmm-roas-recovery.png
         caption: Fitted against true ROAS, with 90% intervals. Only paid social's average tightens.
         bullets:
           - "**Paid marginal:** 0.86 [0.62, 1.08], true 0.71."
@@ -714,7 +715,7 @@ parts:
             - "Quote about £155 to £185"
           tag: Wider than the interval
         takeaway: Quote a range wider than the interval, and do not defend a channel with its LTV to CAC, which folklore wants above 3.
-        source: notes/09-marketing-measurement.md
+        source: notes/09b-customer-lifetime-value.md
         notes: >-
           LTV to CAC by channel runs from 2.53 for paid social to 12.09 for organic, with 3.58 and 5.37 for the others. The chapter has no source for the rule that above 3 is healthy, and the overlays do not reconcile, so do not multiply LTV by new customers to get a channel's return. The interval covers sampling error given a correct model, which is why the honest range is wider.
 
@@ -737,7 +738,7 @@ parts:
         title: A 95% target gives 79% in the season that matters
         kicker: Safety stock
         recall: A reorder point misses its service target in season. Do you fix the mean or buy more buffer, and why?
-        image: ../assets/applied-safety-stock-service.png
+        image: ../assets/sources/images/applied-safety-stock-service.png
         caption: Delivered service against target, by season.
         bullets:
           - "**At 95%:** off-season 94.8%, in-season 79.4%; all-year 91.4% hides it."
@@ -766,7 +767,7 @@ parts:
           - "A smaller crew **pools less**, so it waits longer at a similar utilisation."
           - "**Little's law** gap: 8.88e-16."
         takeaway: Waiting depends on crew size as well as utilisation, so read a queue model day by day.
-        source: notes/10-operations-and-supply-chain.md
+        source: notes/10b-packers-queues-and-a-shift-plan.md
         notes: >-
           Waits are in minutes, and a day that starts empty runs below Erlang C. Monday with 5 packers has a utilisation of 1.03 and an infinite Erlang wait, while the real day ends: the simulation gives 18.9 minutes. That is why the recommendation says never five.
 
@@ -785,7 +786,7 @@ parts:
           - ["£20", "7, 6, 5, 5, 5", "28"]
           - ["Recommended plan", "7, 5, 5, 5, 5", "27"]
         takeaway: The data do not say what waiting is worth, so show the plan at each value and let the business choose.
-        source: notes/10-operations-and-supply-chain.md
+        source: notes/10b-packers-queues-and-a-shift-plan.md
         notes: >-
           The recommended plan takes mean wait from 2.96 to 0.95 minutes and packer-days from 23 to 27, for £392 a week, on assumed contracts. Pack time is the other thing to confirm: 3.5 minutes in the operations data against 4.97 on the packing line, and a time near 3.5 would take a packer or more off every day.
 
@@ -869,7 +870,7 @@ parts:
         bullets:
           - "**Blanket email:** coverage cost 2.5 points and nonresponse 20.9, against a margin of 1.7."
         takeaway: Each gap has its own error and a margin only measures sampling, so name which gap you're quoting before trusting a plus-or-minus.
-        source: notes/12-surveys-and-sampling-design.md
+        source: notes/12b-weighting-the-margin-and-the-question.md
         notes: >-
           Coverage is target to frame, sampling is frame to sample, nonresponse is sample to respondents, and measurement sits on top. A probability sample is what makes the sampling step measurable. Size doesn't rescue the other gaps: on US first-dose estimates in May 2021, Delphi-Facebook, with about 250,000 responses a week, ran 17 points over the CDC benchmark, and Axios-Ipsos, with about 1,000 a week, ran 4.2 over (Bradley et al., 2021). Measurement can be as large as anything else: Pew's January 2003 split gave 68% against 43% from a wording change. Fernhill's split ballot, with a planted 12% acquiescence, finds a 4.6 point difference, 1.5 to 7.7. On a five-point scale, report shares: packaging and delivery means are 4.33 and 4.29, but the bottom two boxes are 1.4% and 10.6%.
 
@@ -888,7 +889,7 @@ parts:
           # blanket email, all customers   response 0.147   bias +0.217
           # designed, with reminders       response 0.460   bias +0.047
         takeaway: Bias comes from the link between answering and the answer, and rate appears only in the denominator. Report the sampling margin and what it leaves out.
-        source: notes/12-surveys-and-sampling-design.md
+        source: notes/12b-weighting-the-margin-and-the-question.md
         notes: >-
           Groves's talk slides pool about 959 estimates from 59 studies and conclude that the nonresponse rate by itself is not a good predictor of nonresponse bias. Brick and Tourangeau in 2017 say response rates are far from irrelevant, so don't over-read that. Weighting helps less than it looks: raking takes the email from 72.5% to 66.6%, still 17 points out. Over 400 repeat surveys the designed survey averages 52.8% raked and its Kish margin covers the truth 54.8% of the time, while the email averages 67.8% and never covers it. So the report reads: about 50% satisfied, plus or minus 3 points of sampling error, on 966 answers from 2,000 sampled, and 47% if non-respondents are 5 points less satisfied.
 

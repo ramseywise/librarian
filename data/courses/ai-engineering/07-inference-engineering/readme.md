@@ -1,4 +1,5 @@
 ---
+imported_hash: 2dfb61687efbb531
 title: 07 — Inference Engineering
 summary: 'Inference engineering is the discipline of making a model answer fast enough and cheaply enough to ship: how requests are batched and scheduled, where the KV cache lives, how prefill and decode are split across hardware, and what the GPU is…'
 order: 1
@@ -26,7 +27,7 @@ each of those calls costs in latency, throughput and money.
 ([02](../02-context-engineering/readme.md)) or a loop that makes ten calls where two would do
 ([04](../04-loop-engineering/readme.md)) is a cost this layer can shave but not remove.
 
-**Why a pillar, not a note.** Added 2026-10-31 (see the [structure decisions](../../.claude/skills/pillar/references/pillar-layout.md#structure-decisions)).
+**Why a pillar, not a note.** Added 2026-10-31 (see the [structure decisions](https://github.com/ramseywise/librarian/blob/main/.claude/skills/pillar/references/pillar-layout.md#structure-decisions)).
 The readings backlog held a full book on AI systems performance plus Huyen's inference
 chapter and a steady stream of serving papers, and none of the five pillars could hold them
 without turning into a GPU course.
@@ -58,7 +59,8 @@ Notes are written from the sources by the `/chapter` skill, one source chapter a
 | 05 | [Compilers and frameworks: profiling, torch.compile, Triton, XLA](notes/05-compilers-and-frameworks.md) | ch. 13–14; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8 |
 | 06 | [Serving at scale: deployment, batching, routing, parallelism, autoscaling](notes/06-serving-at-scale.md) | ch. 15–16; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8, 10 |
 | 07 | [Prefill, decode and the KV cache](notes/07-prefill-decode-kv-cache.md) | ch. 17–19; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8 |
-| 08 | [Adaptive inference: speculative decoding, quantization, early exit](notes/08-adaptive-inference.md) | ch. 15, 16, 19; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8 |
+| 08 | [Adaptive inference: speculative decoding, early exit, distillation](notes/08-adaptive-inference.md) | ch. 15, 16, 19; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8 |
+| 08c | [Quantization and low-precision inference](notes/08c-quantization-and-low-precision.md) | ch. 19; Huyen ch. 9; *LLM Engineer's Handbook* ch. 8; quantization papers |
 | 08b | [Serving encoders and vision models](notes/08b-serving-encoders-and-vision-models.md) | Lab; S-LoRA; vLLM and TEI docs |
 | 09 | [Checklist and AI-assisted tuning](notes/09-checklist-and-ai-assisted-tuning.md) | ch. 20, appendix |
 

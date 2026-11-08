@@ -1,4 +1,5 @@
 ---
+imported_hash: 03604339369ad890
 title: TypeScript
 summary: The type challenges are in practice/type-challenges/challenges/.
 order: 1

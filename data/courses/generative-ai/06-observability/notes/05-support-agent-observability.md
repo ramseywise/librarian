@@ -1,4 +1,5 @@
 ---
+imported_hash: e59f9c1fd1d71368
 title: 5 — Support Agent Observability
 summary: Every query in the last four chapters worked because the turn had recorded its route, release, prompt version and tokens.
 order: 6

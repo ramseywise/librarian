@@ -1,7 +1,8 @@
 ---
+imported_hash: ae115eb3617644c7
 title: Python
 summary: Python's teaching lives in programming/python/, and the seeded-bug problems and coding prompts are written in it.
-order: 259
+order: 262
 kind: reading
 section: Python
 source: learn-ai-engineering/programming/drills/python/README.md

@@ -1,4 +1,5 @@
 ---
+imported_hash: ead3e9bdb4a51cf5
 title: Bug 1
 summary: First bug is changing place_ship to pass test_vertical_placement to pass.
 order: 93

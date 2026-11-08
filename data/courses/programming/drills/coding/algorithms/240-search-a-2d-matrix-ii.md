@@ -1,4 +1,5 @@
 ---
+imported_hash: 242809b24293a364
 title: LC 240 — Search a 2D Matrix II
 summary: Given an m x n integer matrix in which every row is sorted ascending left to right and every column is sorted ascending top to bottom, and a target value, return true if target appears in the matrix, false otherwise.
 order: 77

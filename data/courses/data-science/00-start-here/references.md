@@ -1,4 +1,5 @@
 ---
+imported_hash: 654d3ae180ad8f64
 title: References
 summary: Each URL was checked to load on 2026-11-02, and the costs are as the platform listed them.
 order: 2
@@ -16,7 +17,7 @@ source: learn-ai-engineering/data-science/references.md
 | | Source | Pillars |
 |---|---|---|
 | ★ | Müller and Guido, *Introduction to Machine Learning with Python* (O'Reilly, 2016), [PDF](sources/mueller-guido-introduction-to-ml-with-python.pdf). Companion notebooks in [`intro-to-ml-in-python/`](01-classical-ml/practice/intro-to-ml-in-python), from [amueller/introduction_to_ml_with_python](https://github.com/amueller/introduction_to_ml_with_python), with `mglearn` | [01](../01-classical-ml/references.md), [03](../03-nlp/references.md) |
-| ★ | Sarkar, *Text Analytics with Python*, 1st ed. (Apress, 2016, seven chapters), [PDF](sources/sarkar-text-analytics-with-python-2e.pdf), which is the 1st edition despite the `2e` in its file name. The companion notebooks in [`text-analytics-with-python/`](03-nlp/practice/text-analytics-with-python) follow the 2nd ed. (Apress, 2019, not in the repo), from [dipanjanS/text-analytics-with-python](https://github.com/dipanjanS/text-analytics-with-python), Apache-2.0 | [03](../03-nlp/references.md), [02](../02-deep-learning/references.md) (ch. 10) |
+| ★ | Sarkar, *Text Analytics with Python*, 1st ed. (Apress, 2016, seven chapters), [PDF](sources/sarkar-text-analytics-with-python-2e.pdf), which is the 1st edition despite the `2e` in its file name. The companion notebooks in [`text-analytics-with-python/`](03-nlp/practice/text-analytics-with-python) follow the 2nd ed. (Apress, 2019, not in the repo), from [dipanjanS/text-analytics-with-python](https://github.com/dipanjanS/text-analytics-with-python), Apache-2.0 | [03](../03-nlp/references.md), [02](../02-deep-learning/references.md) (ch. 10), [01](../01-classical-ml/references.md) (ch. 4) |
 | | James, Witten, Hastie, Tibshirani and Taylor, *An Introduction to Statistical Learning with Applications in Python* (2023). Held in [`../data-analytics/sources/`](../data-analytics/sources/). Ch. 2 to 6 pair with 01 notes 01 to 04, ch. 8 with note 06, and ch. 12 with note 05 | [01](../01-classical-ml/references.md) |
 | | Bird, Klein and Loper, *Natural Language Processing with Python* (the NLTK book, online edition CC BY-NC-ND 3.0), [PDF](sources/bird-klein-loper-nlp-with-python.pdf) | [03](../03-nlp/references.md) |
 | | Buduma, *Fundamentals of Deep Learning* (O'Reilly), [PDF](sources/buduma-fundamentals-of-deep-learning.pdf) | [02](../02-deep-learning/references.md) |
@@ -67,7 +68,7 @@ The full per-notebook fix tables live in the notes, and this is the index.
 | TensorFlow 1.x to 2.x | Ng DL notebooks: `tf.compat.v1` bridge done, and Tensorflow Tutorial and Convolution model still need the `tf.contrib` rewrite. Sarkar Ch10a: confusion-matrix cell fixed, but `tf.estimator` (removed in TF 2.16) remains | [TF map](../02-deep-learning/notes/01-neural-networks-fundamentals.md#tensorflow-1x-to-2x-status-and-migration-map), [text notebooks](../02-deep-learning/notes/06-neural-text-models.md#tensorflow-status-of-the-text-notebooks) |
 | transformers 4 to 5 | Version 5.22.1 removed the `question-answering`, `summarization` and `translation` pipeline tasks | [Neural text models](../02-deep-learning/notes/06-neural-text-models.md#transformers-pipelines) |
 | Standalone Keras, gensim 3, spaCy 2, pyLDAvis, skater | Not fixed, and reported per notebook in the Practice tables: spaCy `'en'` shortcuts, `keras.layers.normalization`, gensim `size=` and `index2word`, `pyLDAvis.sklearn`, `skater` (dead) in Ch09d, Stanford NER paths `E:/stanford/...` in Ch08b | Pillar 03 notes |
-| PyMC3 to PyMC 5 | Bayesian notebooks belong to data analytics | [Migration map](../../data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc.md#pymc3-to-pymc-5-migration-map), status in the data-analytics [PyMC version audit](../../data-analytics/00-start-here/references.md#pymc-version-audit) |
+| PyMC3 to PyMC 5 | Bayesian notebooks belong to data analytics | [Migration map](../../data-analytics/04-bayesian-analysis/notes/02-mcmc-and-pymc.md#pymc3-to-current-pymc), status in the data-analytics [PyMC version audit](../../data-analytics/00-start-here/references.md#pymc-version-audit) |
 
 ## Source quality
 

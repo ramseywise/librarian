@@ -1,4 +1,5 @@
 ---
+imported_hash: bf455fe72a59d195
 title: 'Worked Example: Evaluating a Startup Through the Reverse Interview'
 summary: 'Company: Series A AI startup, 18 months old, building AI-native contract review for mid-market legal teams.'
 order: 52

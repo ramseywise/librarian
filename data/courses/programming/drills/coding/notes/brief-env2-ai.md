@@ -1,7 +1,8 @@
 ---
+imported_hash: 3571867cab198fbf
 title: 'Env 2 — AI allowed, sandbox, 30 min: production-ready feature end to end'
 summary: 'Single agent, in-environment. What''s graded is visible process, not just the artifact: how you decompose, how you specify I/O, how you verify each increment.'
-order: 247
+order: 250
 kind: reading
 section: Coding / Notes
 source: learn-ai-engineering/programming/drills/coding/notes/brief-env2-ai.md

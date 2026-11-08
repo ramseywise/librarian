@@ -1,4 +1,5 @@
 ---
+imported_hash: 33fc2b38098456ec
 title: Topic models, keyphrases and summarisation
 summary: A colleague hands you ten thousand support tickets and asks what people are complaining about.
 order: 4
@@ -191,7 +192,7 @@ NMF
 5 old, year, year old, boy, girl, father, old boy
 ```
 
-NMF's topics are immediately nameable here: romance, true stories, world-in-peril, New York, school, and coming of age. LDA's are vaguer on this short text, with `life`, `one` and `man` appearing everywhere. Short documents give LDA few words per document to estimate each mixture, so this is not a verdict on LDA in general, but it is why NMF is worth trying first on short text. On IMDb, M&G run LDA with 10 and 100 topics. Topics come out as genres and aspects ("horror", "comedy", "music", "acting/performance"), plus topics that are just "words common in negative reviews". With 100 topics some are very specific, with a topic for "Star Trek". They then show that a topic's top documents are the best way to see what it means, and that is cheap to do.
+NMF's topics are immediately nameable here: romance, true stories, world-in-peril, New York, school, and coming of age. LDA's are vaguer on this short text, with `life`, `one` and `man` appearing everywhere. Short documents give LDA few words per document to estimate each mixture, so this is not a verdict on LDA in general, but it is why NMF is worth trying first on short text. On IMDb, M&G run batch LDA with `max_iter=25` and `random_state=0` on a `CountVectorizer(max_features=10000, max_df=.15)` matrix, so `components_` is (n_topics, 10000), with 10 and then 100 topics (*Intro to ML with Python*, ch. 7). They stress that changing the number of topics changes every topic, not just the count. Topics come out as genres and kinds of review. With 10 topics each one has to be broad enough to cover every kind of review, so they read as historical and war films, bad comedies, TV series and award talk, plus one made of very common words. With 100 topics they specialise (horror and thrillers, music, positive reviews of comedies, two topics of bad reviews), but many are hard to interpret. They then show that a topic's top documents are the best way to see what it means, and that is cheap to do.
 
 ```python
 W = nmf.transform(X_tfidf)
@@ -274,7 +275,7 @@ The result is typical. One grab-bag cluster holds nearly half of the films, with
 
 Ward clustering on the most popular films gives a tree, which you can cut at any level. Here is how Sarkar's dendrogram over 100 popular films looks.
 
-![Ward hierarchical clustering of popular movies by description](../assets/sarkar-movie-hierarchical-clusters.png)
+![Ward hierarchical clustering of popular movies by description](../assets/sources/images/sarkar-movie-hierarchical-clusters.png)
 *Image source: Sarkar, Text Analytics with Python (2nd ed.), companion repo `Ch07/movie_hierachical_clusters.png`*
 
 ```python
@@ -364,6 +365,19 @@ Both open with the defining sentence, and at eight sentences they share five. Sa
 | TextRank (TF-IDF) | Centrality in a similarity graph | Simple, robust | Lexical overlap only |
 | TextRank (embeddings) | Same with semantic similarity | Paraphrases count | Needs vectors; averaged word vectors are crude |
 | LLM | Generates | Fluent, abstractive | Can hallucinate; evaluation is hard |
+
+## What the first edition adds
+
+Sarkar's first-edition chapter 5 works on toy inputs of 8, 9 and 13 sentences with no ROUGE, coherence or human rating, so read its numbers as demonstrations (*Text Analytics with Python*, 1st ed., ch. 5). Four points sharpen this note.
+
+- **Keyphrase scores tie on rarity.** With one TF-IDF document per sentence, phrases that occur in a single sentence tie at 0.707, so "pillar-like legs" outranks a repeated topic word such as "elephants". Its grammar adds an optional determiner (`<DT>?`) to the one above.
+- **Raw collocation counts and PMI fail in opposite ways.** On *Alice in Wonderland* "said alice" occurs 123 times and speech tags dominate, while unfiltered PMI returns one-off pairs. The book never adds a minimum-count filter, and the note's does.
+- **Topic models and the input they take.** On an 8-document toy corpus LSI, LDA and NMF all recover the animals versus programming split with two topics. On Skyrim reviews with five topics, scikit-learn's LDA fitted on TF-IDF gave junk topics, while LSI, gensim LDA and NMF gave readable ones. The book does not comment, but it is a worked case of this note's rule that LDA takes counts. Its claim that NMF "works the best even with small corpora" rests on the toy example only.
+- **Summaries agree only partly.** LSA on a 9-sentence text picks sentences 1, 5 and 8 (top score 5.24), and TextRank picks 0, 3 and 8 with scores between 0.106 and 0.119, which is how flat PageRank scores are on a dense similarity graph. On the 13-sentence Skyrim description both methods keep 3 sentences and share 2 of them. The book's own helpers have bugs (`lsa_text_summarizer` reads a global `sentences`, and `textrank_text_summarizer` ignores its arguments), so use the note's versions.
+
+![PageRank scores on a small network: a link from an important page counts for more than extra links](../assets/sources/images/sarkar-text-analytics-fig5-4.png)
+
+*Image Source: Sarkar, *Text Analytics with Python* (Apress, 2016), Fig. 5-4*
 
 ## Notebooks
 

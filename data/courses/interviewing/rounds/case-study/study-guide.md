@@ -1,4 +1,5 @@
 ---
+imported_hash: 158376ddabee27c5
 title: Study Guide — Case Study Round
 summary: You should be able to write this in 2 minutes from memory.
 order: 8

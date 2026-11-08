@@ -1,3 +1,4 @@
+# imported_hash: af8eb7e09aa699e3
 # Probability and Statistics lecture deck. Covers notes 01-08.
 # Build: make slides PILLAR=data-analytics/02-probability-and-statistics STRICT=1 PREVIEW=1
 # Spec:  .claude/skills/slides/references/deck-spec.md
@@ -302,7 +303,7 @@ parts:
           - "**Cluster on the user:** 27.8% false positives at nominal 5% until you do."
           - "**Overdispersed?** Robust SEs or negative binomial."
         takeaway: Pick the GLM from the outcome's type, then check residuals, leverage, dispersion and clustering before trusting any standard error.
-        source: notes/06-regression-and-glms.md
+        source: notes/06b-logistic-regression-and-poisson-glms.md
         notes: >-
           Overdispersion example: dispersion 8.3, Poisson SE 0.0155 against robust 0.0509. A test using the first would have called the effect highly significant. An offset turns a count into a rate per day. Clustering on user brought that 27.8% down to 3.5%, and robust errors change the uncertainty without changing the estimate.
 
@@ -324,7 +325,7 @@ parts:
           - "Odds always multiply by 1.49."
           - "Points depend on the baseline."
         takeaway: Report average marginal effects to stakeholders, since an odds ratio implies a different point change at each baseline.
-        source: notes/06-regression-and-glms.md
+        source: notes/06b-logistic-regression-and-poisson-glms.md
         notes: >-
           A coefficient of 28 with a standard error of 171,000 is separation, not a strong effect. Gelman and colleagues showed a Cauchy prior with scale 2.5 on standardised inputs gives stable fits. That leads into the Bayesian pillar.
 
@@ -366,7 +367,7 @@ parts:
       - layout: image
         title: A quadratic must turn, even when the data do not
         recall: What peak does a quadratic report when the truth rises then flattens, and how do you check a claimed turning point?
-        image: ../assets/stats-dgp-quadratic-story.png
+        image: ../assets/sources/images/stats-dgp-quadratic-story.png
         caption: Two worlds, one significant squared term. Peak at 29.2 is real; peak at 50.1 is invented.
         bullets:
           - "**Rises then falls:** peak 29.2 [28.7, 29.6]."
@@ -404,7 +405,7 @@ parts:
       - layout: image
         title: A million self-selected rows, worth 278 random ones
         recall: Why can a million self-selected rows have the error of 278 random rows, and why does the interval not warn you?
-        image: ../assets/stats-dgp-meng-interval.png
+        image: ../assets/sources/images/stats-dgp-meng-interval.png
         caption: Same error, opposite honesty. A selected sample's interval is tight and misses.
         bullets:
           - "Response 10.9% with the trait, 9.6% without: **rho 0.02**."
@@ -433,7 +434,7 @@ parts:
       - layout: image
         title: Between stores the slope falls; within stores it rises
         recall: What slope do between-store, store-effects and store-and-week models give, and why are they different?
-        image: ../assets/stats-panel-pooled-vs-within.png
+        image: ../assets/sources/images/stats-panel-pooled-vs-within.png
         caption: One panel, split into variation between stores and within them.
         bullets:
           - "**Between stores:** −1.488."
@@ -484,7 +485,7 @@ parts:
       - layout: image
         title: An event study is a check that can fail
         recall: In the event study, how did the parallel pre-period look, and what did a tilt of 0.15 a week do to the estimate?
-        image: ../assets/stats-panel-event-study.png
+        image: ../assets/sources/images/stats-panel-event-study.png
         caption: Lead coefficients for a parallel world and a tilted one.
         bullets:
           - "**Parallel:** leads from −0.97 to 0.22, 0 of 7 outside."

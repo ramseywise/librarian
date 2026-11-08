@@ -71,10 +71,10 @@ cards:
   lesson: ai-engineering/03-harness-engineering/notes/10-scope-and-done
 - front: Which failures should be retried and which never?
   back: Classify a failure before retrying, because a model refusal repeats itself while a transient error deserves backoff.
-  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
+  lesson: ai-engineering/03-harness-engineering/notes/05b-recovery-and-termination
 - front: What must every recovery path have, and why?
   back: Each recovery path needs a ceiling set from data, since an unbounded retry loop fails repeatedly and expensively.
-  lesson: ai-engineering/03-harness-engineering/notes/05-verification-loops
+  lesson: ai-engineering/03-harness-engineering/notes/05b-recovery-and-termination
 - front: Why re-test compaction versus context reset on each model upgrade?
   back: Resets beat compaction on Sonnet 4.5 and later models need them less, so re-test the choice on each model upgrade.
   lesson: ai-engineering/03-harness-engineering/notes/06-long-horizon-execution

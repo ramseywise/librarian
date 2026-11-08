@@ -1,7 +1,8 @@
 ---
+imported_hash: 234775bb28e8c02d
 title: Top orders per user, with a running total
 summary: orders(order_id, user_id, ordered_at, amount).
-order: 267
+order: 270
 kind: drill
 section: Sql / Window functions
 track: sql

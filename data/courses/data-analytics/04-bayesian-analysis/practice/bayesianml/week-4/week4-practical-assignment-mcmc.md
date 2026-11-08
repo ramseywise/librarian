@@ -1,7 +1,8 @@
 ---
+imported_hash: b0a23f7cff170e8e
 title: Using PyMC3
 summary: In this assignment, we will learn how to use a library for probabilistic programming and inference called <a href="http://docs.pymc.io/">PyMC3</a>.
-order: 12
+order: 15
 kind: notebook
 section: Practice / BayesianML / Week 4
 source: learn-ai-engineering/data-analytics/04-bayesian-analysis/practice/BayesianML/week_4/Week4. Practical Assignment. MCMC.ipynb

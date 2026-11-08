@@ -1,7 +1,8 @@
 ---
+imported_hash: d5b103acbf1ce8d6
 title: Terraform
 summary: 'One drill so far: review/web-stack.md, a PR review with nine seeded security, state and reproducibility issues.'
-order: 268
+order: 271
 kind: reading
 section: Terraform
 source: learn-ai-engineering/programming/drills/terraform/README.md

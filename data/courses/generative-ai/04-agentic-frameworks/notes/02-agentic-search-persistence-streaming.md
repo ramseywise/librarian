@@ -1,4 +1,5 @@
 ---
+imported_hash: c53a51f38c6e0e11
 title: 2 — Agentic Search, Persistence and Streaming
 summary: The agent from note 01 runs once, forgets everything, shows nothing until it finishes, and would publish a report with nobody looking.
 order: 3

@@ -1,7 +1,8 @@
 ---
+imported_hash: 72d2d2b6916cd5a0
 title: 'Learning from Corrections: What People Teach a Model, and What They Can''t'
 summary: Most of it runs on the generated invoices from note 13, because a simulation is the only place where we know the truth about invoices nobody checked.
-order: 16
+order: 17
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/14-learning-from-corrections.md
@@ -181,7 +182,7 @@ invoices  boosted    100 0.300    2000       0.813         0.022        10      
   credit  boosted    500 0.000    2000       0.763        -0.005         2      244.708         -1.138          8        -0.017            0.219         0.420
 ```
 
-![Two panels of AUC against labels bought for random, uncertainty and highest-score sampling. On generated invoices uncertainty leads. On the real credit file random leads at 2,000 labels.](../assets/corrections-active-learning.png)
+![Two panels of AUC against labels bought for random, uncertainty and highest-score sampling. On generated invoices uncertainty leads. On the real credit file random leads at 2,000 labels.](../assets/sources/images/corrections-active-learning.png)
 
 **On invoices, uncertainty wins.** With boosting at 2,000 labels it adds 0.020 AUC and takes 0.206 euros off the cost, on all ten seeds. Logistic regression gains little (0.003), since its simple shape doesn't need many labels.
 
@@ -339,7 +340,7 @@ never retrained minus audit 5%: +0.832 (sd 0.126, 8/8 seeds)
 audit 2% minus audit 5%: -0.023 (sd 0.083, 4/8 seeds)
 ```
 
-![Two panels of true error rate on automatically paid invoices over eight months. All lines jump at month 3. Never retrained stays high, silence falls slowly and levels off above the others, audit and true labels recover by month 5, and reviewed only falls lowest.](../assets/corrections-silent-acceptance.png)
+![Two panels of true error rate on automatically paid invoices over eight months. All lines jump at month 3. Never retrained stays high, silence falls slowly and levels off above the others, audit and true labels recover by month 5, and reviewed only falls lowest.](../assets/sources/images/corrections-silent-acceptance.png)
 
 We expected "silence counts as correct" to stay blind to the new fraud type for good, and that's **not what happened**. Review labels and the 10% of problems that surface are enough to teach it. By month 8 it pays almost none of the new type, even in the hard version, and its cost nearly matches the audit's: 3.905 against 3.890, and 3.836 against 3.805. So the case against silence isn't permanent blindness. It's these three things.
 

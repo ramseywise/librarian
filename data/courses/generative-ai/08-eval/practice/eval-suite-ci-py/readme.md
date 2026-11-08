@@ -1,7 +1,8 @@
 ---
+imported_hash: 1a9d7250e2657b78
 title: 'Lab: an eval suite in CI (Python)'
 summary: The Python twin of the TypeScript lab. It reads that folder's cases.jsonl, kb.json and variants.json, and it produces a byte-identical baseline.json and report.
-order: 18
+order: 22
 kind: reading
 section: Practice / Eval suite ci py
 source: learn-ai-engineering/generative-ai/08-eval/practice/eval-suite-ci-py/README.md

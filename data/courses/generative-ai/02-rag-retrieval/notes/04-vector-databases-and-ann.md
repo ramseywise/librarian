@@ -1,7 +1,8 @@
 ---
+imported_hash: ebdcfa842bf77fe2
 title: 4 — Vector databases and approximate nearest neighbours
 summary: Tallybook's 18 help articles search instantly with a NumPy dot product.
-order: 5
+order: 8
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/02-rag-retrieval/notes/04-vector-databases-and-ann.md
@@ -133,6 +134,9 @@ HNSW speeds up the early part of the walk by stacking proximity graphs of decrea
 | 1 (bottom) | All 1,000, full proximity graph | Precise final search from layer 2's best candidate |
 
 Each layer has exponentially fewer vectors (1000 → 100 → 10), which makes the search approximately logarithmic. The guarantee is weaker than it sounds. Malkov and Yashunin prove O(log N) only for an exact Delaunay graph with bounded degree, and they support the approximate graph that real indexes build only with simulations on low-dimensional data (d=4, plus scaling runs at d=8). On 200M SIFT vectors (128-d) their query time "deviates from the pure logarithm". The paper's largest test is 200M vectors, and it leaves billion-scale data to future work ([arXiv:1603.09320](https://arxiv.org/abs/1603.09320), Malkov & Yashunin, IEEE TPAMI 2020). Two other details matter in practice. A node's top layer is drawn at random, ⌊−ln(U)·m<sub>L</sub>⌋ with m<sub>L</sub> = 1/ln M, so no layer is planned. Neighbours are chosen for diversity, not only for closeness, because on clustered data a graph of nearest neighbours only "stucks at the clusters boundaries".
+
+![HNSW search: a query enters at the sparse top layer and greedily descends, with each layer holding more vectors and a smaller characteristic radius](../assets/sources/images/malkov-efficient-robust-approximate-fig1.png)
+*Image Source: Malkov and Yashunin, [Efficient and Robust Approximate Nearest Neighbor Search Using Hierarchical Navigable Small World Graphs](https://arxiv.org/abs/1603.09320) (2018), Fig. 1*
 
 ```text
 layer 3   o-----------------o-----------o            10 nodes: long jumps
@@ -415,7 +419,7 @@ client.close()                                 # embedded server keeps running o
 | `hybrid(alpha=…)` | fused | `reciprocal_rank_fusion` |
 | `rerank=Rerank(…)` | cross-encoder on top-k | note 05 |
 
-The lecture example weights hybrid as 25% vector / 75% keyword; the lab uses `alpha=0.3`. Some sources define alpha the other way round, with 0 as pure vector ([03 § hybrid search](03-keyword-semantic-and-hybrid-search.md#hybrid-search-and-reciprocal-rank-fusion)). Check before porting a value. Tune alpha on your own eval set: keyword-heavy for catalogues with SKUs, vector-heavy for conversational queries.
+The lecture example weights hybrid as 25% vector / 75% keyword; the lab uses `alpha=0.3`. Some sources define alpha the other way round, with 0 as pure vector ([03 § hybrid search](03b-metadata-filters-hybrid-search-and-evaluating-a-retriever.md#hybrid-search-and-reciprocal-rank-fusion)). Check before porting a value. Tune alpha on your own eval set: keyword-heavy for catalogues with SKUs, vector-heavy for conversational queries.
 
 ---
 

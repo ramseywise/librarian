@@ -1,4 +1,5 @@
 ---
+imported_hash: f0e23b9972060fc5
 title: LC 815 — Bus Routes
 summary: You are given routes, where routes[i] is the list of stops served by bus i on a repeating loop, plus a source stop and a target stop.
 order: 86

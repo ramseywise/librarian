@@ -1,4 +1,5 @@
 ---
+imported_hash: 5d1e94a4690ff459
 title: 3 — dbt tests, snapshots and incremental models
 summary: The dbt project from the transform chapter rebuilds everything on every run, tests only the shape of each column, and forgets history whenever a source overwrites a row.
 order: 4
@@ -260,7 +261,7 @@ skipped model    fare_bands
 
 ## Snapshots: keep what the source overwrites
 
-A source table that updates in place destroys its own history. Pillar 2 built a [Type 2 dimension](../../02-ingest-and-modelling/notes/02-dimensional-modelling.md) by hand to preserve it. A [dbt snapshot](https://docs.getdbt.com/docs/build/snapshots) is that same pattern as a feature: on each run it compares the source with what it holds, closes the rows that changed, and inserts new versions. Since dbt 1.9 you declare it in YAML.
+A source table that updates in place destroys its own history. Pillar 2 built a [Type 2 dimension](../../02-ingest-and-modelling/notes/02b-dimensional-modelling-history-and-conformed-dimensions.md) by hand to preserve it. A [dbt snapshot](https://docs.getdbt.com/docs/build/snapshots) is that same pattern as a feature: on each run it compares the source with what it holds, closes the rows that changed, and inserts new versions. Since dbt 1.9 you declare it in YAML.
 
 This is the example from pillar 2, in which Greenpoint moves from Queens to Brooklyn on January 15th.
 

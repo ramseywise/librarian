@@ -1,7 +1,8 @@
 ---
+imported_hash: 5fb76da3c5663bac
 title: '"You should see that the training set accuracy is about 94.9%"'
 summary: 'def displayData(indices_to_display = None): """ Function that picks 100 random rows from X, creates a 20x20 image from each, then stitches them together into a 10x10 grid of images, and shows it.'
-order: 33
+order: 34
 kind: notebook
 section: Practice / Ng machine learning / Ex3
 source: learn-ai-engineering/data-science/01-classical-ml/practice/ng-machine-learning/ex3/ex3.ipynb

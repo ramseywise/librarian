@@ -1,7 +1,8 @@
 ---
+imported_hash: 6e7203cc5158cdd6
 title: Ensembles
 summary: Blocks run top to bottom from this notes/ folder.
-order: 8
+order: 9
 kind: reading
 section: Notes
 source: learn-ai-engineering/data-science/01-classical-ml/notes/06-ensembles.md
@@ -81,7 +82,16 @@ tree   train 1.000  test 0.881
 forest train 1.000  test 0.972  oob 0.962
 ```
 
-The forest is ahead of a single tree with no tuning, and the out-of-bag score, which needs no separate validation set, is a fair estimate of the test score.
+The forest is ahead of a single tree with no tuning, and the out-of-bag score, which needs no separate validation set, is usually a fair estimate of the test score. "Usually" is doing work: each bagged tree sees about two-thirds of the rows, so every row is out-of-bag for about a third of the trees, and the OOB error approximates leave-one-out CV when there are enough trees (*ISLP*, ch. 8). On ISLP's Heart data (303 patients, 13 predictors) the OOB error comes out well below the test error, and the authors put the gap down to chance:
+
+![Test and out-of-bag error against the number of trees for bagging and a random forest on the Heart data: the curves flatten by about 100 trees and the OOB curves sit below the test curves](../assets/sources/images/islp-fig8-8.png)
+*Image Source: James et al., *An Introduction to Statistical Learning with Applications in Python* (Springer, 2023), Fig. 8.8*
+
+Reading the plot, a single tree has test error of about 0.255, bagging about 0.245 and a forest with $m=\sqrt{p}$ (4 of 13 predictors) about 0.222, while the OOB errors are about 0.17 to 0.19. Two lessons: the error stops improving by roughly 100 trees and more trees do not overfit, and a small test set (about 90 patients, judging by the 0.011 steps in the error curve) makes either estimate a coarse one (*ISLP*, ch. 8, Fig. 8.8, one split).
+
+The same out-of-bag estimate drives R's `randomForest` printout. With 500 trees on the loan-default data, a forest on two predictors (a 3,000-row sample) reports OOB error 38.53%, and a forest on all columns (46,272 rows, balanced classes) reports 34.38%, with class errors of 0.348 for paid off and 0.339 for default. The two runs differ in rows and predictors, so the 4-point gap is not one variable's effect (*Practical Statistics*, ch. 6).
+
+Two further points from the statisticians' account of the same method (*Computer Age*, ch. 17). The OOB error is cross-validation at no extra cost: each row is predicted by averaging only the trees whose bootstrap sample missed it, and once the number of trees is about three times the number the forest needs to stabilise, the OOB error is equivalent to leave-one-out CV. The number of trees is therefore not a tuning parameter, only a stability one: enough for the estimate to settle, and too many cannot overfit. The classic `m` choices are $\sqrt{p}$ or $p/3$; on the 57-feature spam data a forest with $m=7$ beats bagging ($m=57$), and both beat a single tree (9.3% test error) and the lasso (7.1% linear, 5.7% with interactions). A small $m$ also spreads variable importance across correlated predictors instead of crowning one, the same sharing that ridge does for coefficients (the importance plots are in [note 08](08-model-interpretability.md)).
 
 | Parameter | Effect | Default advice |
 |---|---|---|
@@ -128,6 +138,18 @@ lr 0.01                   train 0.988  test 0.958
 | `n_iter_no_change`, `validation_fraction` | Early stopping |
 
 **The tuning recipe:** fix `n_estimators` by time budget, then search `learning_rate` and `max_depth`; or use a low learning rate with early stopping on a validation set.
+
+**What the depth buys.** Boosting with stumps ($d=1$) fits an additive model, adaptively: it selects variables and how much to spend on each. Depth $d=2$ fits a two-way interaction model, and in general depth $d=k$ gives a $(k-1)$th-order interaction model, so interaction order is a more natural way to think of tree size than depth. On the ALS progression data (1,197 training rows, 369 predictors, 625 test rows, shrinkage 0.02) stumps are worst and $d=4$ is about best; reading the plot, $d=7$ bottoms out near 200 trees at about 0.256 and then climbs towards 0.263 by 500, while $d=1$ and $d=2$ are still near 0.261 and 0.260 (*Computer Age*, ch. 17, Fig. 17.8, one split).
+
+![Test mean-squared error against the number of boosted trees on the ALS data for depths 1, 2, 4 and 7 at shrinkage 0.02: depth 1 is highest, depth 4 lowest, depth 7 starts rising after about 200 trees](../assets/sources/images/casi-fig17-8.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 17.8*
+
+**What shrinkage buys.** Shrinkage sets the rate at which boosting fits and so overfits. On a subset of the ALS data with $d=3$, a rate of 0.5 drives training error to about 0.015 while validation error bottoms out near 0.27 within the first 20 trees or so and then climbs to about 0.455 by 250 trees; a rate of 0.02 trains more slowly (about 0.18 at 250 trees) but its validation error keeps falling to about 0.23, the dotted line. The smoother fit also takes much longer to overfit, so it is less sensitive to where you stop (*Computer Age*, ch. 17, Fig. 17.10). The caption calls 0.02 "25 times smaller" than 0.5, which is right (0.5 / 0.02); the chapter's running text says "20 times", a slip, so use 25.
+
+![Training (dashed) and validation (solid) error against the number of boosted trees at shrinkage 0.5 (red) and 0.02 (blue): the red validation curve rises while its training error falls, the blue validation curve falls to a lower floor](../assets/sources/images/casi-fig17-10.png)
+*Image Source: Efron and Hastie, *Computer Age Statistical Inference* (Cambridge University Press, 2016), Fig. 17.10*
+
+**Boosting against a forest, and trimming the ensemble.** Boosting slightly beat a random forest on both the ALS and spam data, but at the price of cross-validating three parameters (rounds, depth, shrinkage), whereas the forest is almost automatic; on spam a McNemar test finds boosting and the forest not significantly different, and both better than bagging. `gbm` grows each tree on a 50% subsample by default, which acts like bagging. AdaBoost, the original boosting algorithm for $\pm 1$ labels, reweights misclassified points so the classifier just fitted has weighted error 0.5; it turns out to be forward-stagewise fitting of the exponential loss, whose left tail punishes confident mistakes far harder than the logistic loss, and on spam it matches binomial gradient boosting. Because shrunken trees are similar, a non-negative lasso over the trees can pick and reweight a subset: on the ALS data it matched the depth-2 boosted model with about a third of the trees, though choosing the number to keep is critical (*Computer Age*, ch. 17, Fig. 17.13).
 
 Because `n_estimators` and `learning_rate` trade against each other, a grid over both is wasteful; early stopping picks `n_estimators` for you. [Note 09](09-training-and-tuning.md#early-stopping-is-regularisation-too) explains why stopping acts as regularisation.
 
@@ -191,7 +213,7 @@ boosting  non-zero 30 of 30   top 3 share 0.75
 
 A single tree picks one of each correlated group, ignoring the rest. Forest feature subsets force it to try the others, so credit spreads. Three caveats follow, and [model interpretability](08-model-interpretability.md) shows each on real output:
 
-- **Impurity importance favours high-cardinality features** and is computed on training data, so it rewards what the model overfit.
+- **Impurity importance favours high-cardinality features** and is computed on training data, so it rewards what the model overfit. R's `randomForest` offers both on the same fit: permutation importance (`type=1`) is scored on the out-of-bag rows, so it is effectively cross-validated, while the Gini measure (`type=2`) comes from the training splits. On the book's loan-default forest the two panels of its Fig. 6-8 rank the variables differently (*Practical Statistics*, ch. 6).
 - **Correlated features share or steal credit.** A low importance doesn't mean a feature is useless.
 - **Importance says how much, never which direction.** Use permutation importance, partial dependence and SHAP instead.
 
@@ -238,6 +260,11 @@ XGBoost, LightGBM and CatBoost run most tabular production boosting. All three e
 | More forest trees never overfit; more boosting rounds do | Averaging vs sequential fitting |
 | Report permutation importance or SHAP, not impurity importance | Impurity importance is biased and train-set based |
 | Don't use tree ensembles on sparse text features | Linear models win there |
+
+M&G's breast-cancer run (569 rows, one split, `random_state=0`, no tuning) shows the order (*Introduction to ML with Python*, ch. 2, "Ensembles of Decision Trees"). A 100-tree forest scores 0.972 test, with train 1.000. Default gradient boosting (100 trees, depth 3, rate 0.1) overfits to train 1.000 and test 0.958. Cutting `max_depth` to 1 gives 0.972 test; cutting `learning_rate` to 0.01 gives 0.965. Depth helped more than rate. With about 143 test rows, 0.01 is one or two rows, so read this as a method order and not a ranking. They also advise a boosting depth of five or less.
+
+ISLP's regression run says the same thing about method order and also shows how little a feature-subset default matters on one split. On Boston housing (70/30 split, `medv`), a depth-3 pruned tree has test MSE 28.07, bagging with all 12 predictors 14.63 (100 trees) and 14.61 (500 trees), a forest with `max_features=6` 20.04, and boosting 14.48 (5,000 trees, learning rate 0.001, depth 3) against 14.50 at a learning rate of 0.2, so the forest is worse than plain bagging on this split. Its pruned Carseats classification tree gets 72.0% test accuracy against 73.5% unpruned, again one 50/50 split. Treat these as an order of magnitude (a tree roughly twice as bad as an ensemble) and not as a ranking among ensembles (*ISLP*, ch. 8, lab). The chapter's other point is the family tree: bagging and forests average independent deep trees, boosting grows small trees sequentially on residuals, and BART (Bayesian additive regression trees, default 200 trees and 1,000 iterations after 100 burn-in) sits between them, with a small train-test gap that boosting loses as its test error climbs after a few hundred iterations on Heart.
+
 
 ---
 

@@ -1,4 +1,5 @@
 ---
+imported_hash: 0e922b4a3db75982
 title: '9 — Design walkthroughs: KV store and feed'
 summary: The method from chapter 8 applies, and every figure here is again hypothetical.
 order: 10

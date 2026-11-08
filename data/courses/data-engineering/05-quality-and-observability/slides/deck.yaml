@@ -1,3 +1,4 @@
+# imported_hash: 73e8449712d0cb13
 # Quality and observability lecture deck. Covers notes 01-06.
 # Build: make slides PILLAR=data-engineering/05-quality-and-observability STRICT=1 PREVIEW=1
 # Running example: one quarter of synthetic taxi trips with five faults planted in March (notes 01-03).

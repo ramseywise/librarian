@@ -1,7 +1,8 @@
 ---
+imported_hash: ad9aaa4fc5e243dc
 title: 13 — Calling models from code
 summary: The ticket assistant has been a stand-in so far.
-order: 14
+order: 18
 kind: reading
 section: Notes
 source: learn-ai-engineering/generative-ai/01-llm-fundamentals/notes/13-calling-models-from-code.md
@@ -264,7 +265,7 @@ The model remembers nothing between calls. A chat is an array you append to: use
 | Set a timeout and an iteration cap on tool loops | Bounds worst-case latency and spend |
 | Pin the model id; test before changing it | Behaviour shifts between versions |
 | Cache long, stable prefixes (system prompt, tool definitions) | Prompt caching cuts cost and latency on repeated prefixes; see [ai-engineering/02-context-engineering](../../../ai-engineering/02-context-engineering/readme.md) |
-
+| Cache semantically similar requests only if a wrong hit is cheap | A semantic cache keys stored responses on embedding similarity, so a near-miss can return the wrong answer. The *Dummies* primer describes it as precomputing embeddings of likely queries to save work (*GenAI and LLMs for Dummies*, ch. 4); the saving is the skipped model call, so cache the response and set a similarity threshold you have tested |
 | Check `stop_reason` before reading content | Truncation and refusals otherwise pass as answers |
 
 Depth on tool design and function calling: [05 — Tools and function calling](../../../ai-engineering/01-prompt-engineering/notes/05-tools-and-function-calling.md). Output control: [04 — Controlling output](../../../ai-engineering/01-prompt-engineering/notes/04-controlling-output.md).
