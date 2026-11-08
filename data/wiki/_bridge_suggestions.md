@@ -1,6 +1,6 @@
 ---
 title: Bridge Suggestions
-updated: 2026-11-05
+updated: 2026-11-08
 ---
 
 # Bridge Suggestions
@@ -21,28 +21,28 @@ Consider creating a bridge page or adding cross-references.
   - prompting: 36 pages
 
 ## context ↔ langgraph (0 cross-links)
-  - context: 22 pages
+  - context: 23 pages
   - langgraph: 17 pages
 
 ## context ↔ projects (0 cross-links)
-  - context: 22 pages
-  - projects: 10 pages
+  - context: 23 pages
+  - projects: 11 pages
 
 ## eval ↔ mcp (0 cross-links)
-  - eval: 80 pages
+  - eval: 89 pages
   - mcp: 9 pages
 
 ## foundations ↔ graph (0 cross-links)
-  - foundations: 442 pages
+  - foundations: 438 pages
   - graph: 13 pages
 
 ## foundations ↔ mcp (0 cross-links)
-  - foundations: 442 pages
+  - foundations: 438 pages
   - mcp: 9 pages
 
 ## graph ↔ projects (0 cross-links)
   - graph: 13 pages
-  - projects: 10 pages
+  - projects: 11 pages
 
 ## graph ↔ prompting (0 cross-links)
   - graph: 13 pages
@@ -50,7 +50,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## harness ↔ projects (0 cross-links)
   - harness: 31 pages
-  - projects: 10 pages
+  - projects: 11 pages
 
 ## interview ↔ langgraph (0 cross-links)
   - interview: 35 pages
@@ -70,7 +70,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## loop ↔ projects (0 cross-links)
   - loop: 11 pages
-  - projects: 10 pages
+  - projects: 11 pages
 
 ## loop ↔ rag (0 cross-links)
   - loop: 11 pages
@@ -89,7 +89,7 @@ Consider creating a bridge page or adding cross-references.
   - prompting: 36 pages
 
 ## eval ↔ langgraph (1 cross-links)
-  - eval: 80 pages
+  - eval: 89 pages
   - langgraph: 17 pages
 
 ## graph ↔ interview (1 cross-links)
@@ -106,7 +106,7 @@ Consider creating a bridge page or adding cross-references.
 
 ## interview ↔ projects (1 cross-links)
   - interview: 35 pages
-  - projects: 10 pages
+  - projects: 11 pages
 
 ## loop ↔ mcp (1 cross-links)
   - loop: 11 pages
@@ -129,11 +129,11 @@ Consider creating a bridge page or adding cross-references.
   - memory: 12 pages
 
 ## eval ↔ graph (2 cross-links)
-  - eval: 80 pages
+  - eval: 89 pages
   - graph: 13 pages
 
 ## foundations ↔ memory (2 cross-links)
-  - foundations: 442 pages
+  - foundations: 438 pages
   - memory: 12 pages
 
 ## graph ↔ meta (2 cross-links)
@@ -173,5 +173,5 @@ Consider creating a bridge page or adding cross-references.
   - prompting: 36 pages
 
 ## projects ↔ prompting (2 cross-links)
-  - projects: 10 pages
+  - projects: 11 pages
   - prompting: 36 pages

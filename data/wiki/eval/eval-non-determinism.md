@@ -2,7 +2,7 @@
 title: Eval Non-Determinism
 tags: [eval, llm, agents, concept]
 summary: "A single trial is an anecdote — run k trials and report pass@k when one success suffices, pass^k when consistency is the product, because a 75% agent passes three consecutive trials only 42% of the time."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
@@ -84,3 +84,6 @@ sampling ([[Eval Error Bars and Sample Size]]).
 - [[UNGATED Metric Convention]] — prerequisite-for
 - [[Simulated User Evaluation]] — extends
 - [[Paired Eval Comparison]] — related
+- [[Best-of-k Headline Inflation]] — extends (when pass@k is reported as if it were pass@1)
+- [[Model Version Drift]] — related (change between snapshots, not between runs)
+- [[Benchmark Prompt Format Sensitivity]] — related

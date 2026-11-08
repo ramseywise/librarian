@@ -2,7 +2,7 @@
 title: Long-Context Prompting
 tags: [prompting, llm, concept]
 summary: Ordering and grounding rules for long prompts — recency bias plus lost-in-the-middle create a Valley of Meh, so frame with an introduction, put longform data next, refocus the question at the end, transition into the answer, and ground in extracted quotes.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--02-prompt-anatomy.md
@@ -68,3 +68,4 @@ documents belong there at all — retrieval, ranking, token budgeting — is
 - [[Context Engineering]] — extends
 - [[Prompt Assembly as Snippet Packing]] — extends
 - [[Prompts as Document Completion]] — prerequisite-for
+- [[Output Length Confounds Reference Metrics]] — related (L-Eval: scoring long-context answers fairly)

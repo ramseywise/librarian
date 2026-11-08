@@ -2,13 +2,14 @@
 title: Context Compaction
 tags: [context, context-management, llm, agents, concept]
 summary: Transforming a large interaction history into a smaller continuation state — the technique that separates an agent that dies at the window limit from one that runs for hours.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--05-compression-compaction.md
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--04-compression-compaction.md
   - data/raw/claude-docs/project-g/docs/support-agents/invocation-flow.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--context-management.md
+  - data/raw/papers/2026-11-02-zhang-2026-autocompact.md
 ---
 
 # Context Compaction
@@ -161,7 +162,10 @@ survived ([[Evaluating Context]]).
 - After large reads that won't be needed again
 
 **Phase boundaries are the better trigger.** Compacting at a natural seam produces a clean
-summary; compacting mid-edit at 95% occupancy forces a summary of an incoherent state.
+summary; compacting mid-edit at 95% occupancy forces a summary of an incoherent state. The trigger
+can also be learned: a model trained to call `compact()` itself beat a fixed length trigger
+at the same 16K budget (38.0% vs 28.8% on SWE-bench Verified, self-reported), while prompting
+alone barely got the action used ([[Learned Proactive Compaction]]).
 
 ## API-Level Support
 
@@ -210,3 +214,4 @@ gone. The same pruning was implemented in both the Python and the TypeScript age
 - [[Context-Aware Compression]] — extends
 - [[Agent Status Bar]] — alternative-to (adds distilled state instead of replacing history)
 - [[Context Window Budgeting]] — prerequisite-for
+- [[Learned Proactive Compaction]] — extends (the agent learns when to call compact())

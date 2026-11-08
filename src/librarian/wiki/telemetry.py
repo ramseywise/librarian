@@ -8,6 +8,7 @@ goes to data/telemetry/, outside data/wiki/, so the MCP index, relinker and grap
     uv run librarian wiki check [--file PATH] # private-leak check, exit 1 on BLOCKER;
                                               # ontology findings (ONT001-004) only warn
     uv run librarian wiki log <op> "<detail>" # exit 2 if detail names a private page
+    uv run librarian wiki log ingest --counts "<source>"  # counts from the diff against HEAD
     uv run librarian wiki ask "<topic>"       # gitignored asked.jsonl
     uv run librarian wiki gaps                # regenerate gitignored gaps.md
 
@@ -150,6 +151,9 @@ from librarian.wiki.oplog import (
 )
 from librarian.wiki.oplog import (
     _write_text as _write_text,
+)
+from librarian.wiki.oplog import (
+    ingest_counts as ingest_counts,
 )
 from librarian.wiki.oplog import (
     roll_operations as roll_operations,
@@ -356,6 +360,22 @@ def _cmd_log(args: argparse.Namespace) -> int:
     if not _OP_RE.match(args.op):
         print("log: op must be one lowercase word, e.g. ingest", file=sys.stderr)
         return 2
+    if args.counts:
+        if "->" in args.detail:
+            print(
+                "log: with --counts, give only the source; the counts are computed", file=sys.stderr
+            )
+            return 2
+        counts = ingest_counts(args.repo_root, args.wiki_dir)
+        if counts is None:
+            print(
+                "log: --counts needs the wiki inside a git checkout at --repo-root", file=sys.stderr
+            )
+            return 2
+        args.detail = (
+            f"{args.detail} -> {counts['new']} new, {counts['updated']} updated, "
+            f"{counts['links']} links, {counts['conflicts']} conflicts"
+        )
     pattern = _private_name_pattern(_private_pages(args.wiki_dir))
     if _names_private_page(f"{args.op} {args.detail}", pattern):
         print(
@@ -375,6 +395,8 @@ def _cmd_log(args: argparse.Namespace) -> int:
     rows = _read_tracked_jsonl(path)
     rows.append({"date": args.today.isoformat(), "op": args.op, "detail": args.detail})
     _write_jsonl(path, roll_operations(rows))
+    if args.counts:
+        print(args.detail)
     return 0
 
 
@@ -426,6 +448,11 @@ def _parser() -> argparse.ArgumentParser:
     log = commands.add_parser("log", parents=[common], help="append to operations.jsonl")
     log.add_argument("op")
     log.add_argument("detail")
+    log.add_argument(
+        "--counts",
+        action="store_true",
+        help="detail is the source; append new/updated/links/conflicts from git diff HEAD",
+    )
     log.set_defaults(func=_cmd_log)
     ask = commands.add_parser("ask", parents=[common], help="append to asked.jsonl")
     ask.add_argument("topic")

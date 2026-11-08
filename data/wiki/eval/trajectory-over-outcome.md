@@ -2,7 +2,7 @@
 title: Trajectory Over Outcome
 tags: [eval, agents, concept]
 summary: "Why an agent has to be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are the two decisions an outcome score cannot see."
-updated: 2026-11-02
+updated: 2026-11-08
 sources:
   - data/raw/articles/2026-07-19-evaluating-ai-agents-deeplearning.md
   - own-prose
@@ -162,3 +162,4 @@ broken (unreachable state, wrong reference, missing permission) before the agent
 - [[Specialist Verdict Panel]] — related (final-answer dimensions scored independently)
 - [[Simulated User Evaluation]] — extends
 - [[Agent Trace Anatomy]] — prerequisite-for
+- [[Extract-and-Evaluate Monitoring]] — extends (scoring a trajectory for sabotage from extracted quotes)

@@ -2,7 +2,7 @@
 title: Eval Error Bars and Sample Size
 tags: [eval, llm, reference]
 summary: "Every pass rate is an estimate — SE = √(p(1−p)/n), so on 50 tasks 80% is ±11 points; size the suite from the smallest difference you must detect, average trials within a task before computing SE, cluster SEs for grouped tasks, and correct for multiple comparisons."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
@@ -81,3 +81,5 @@ independent confirmation. Pre-register the slices that gate releases.
 - [[Eval Non-Determinism]] — related (k trials per task)
 - [[Confidence Interval Coverage and Wilson]] — related (why Wald fails for rare events)
 - [[Multiple Comparisons Corrections]] — related (many metrics or variants compared at once)
+- [[Best-of-k Headline Inflation]] — related (a best-of-k headline is not a single-run estimate)
+- [[Benchmark Prompt Format Sensitivity]] — related (prompt format can move a score more than its error bar)

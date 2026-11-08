@@ -143,11 +143,12 @@ When invoked as `/ingest resolve`:
 
 Adapted from second-brain-os (MIT). Later sources should update the pages earlier ones created, so:
 
-1. Triage first (Step 0b), then sort what is left by date, **oldest first**. Newest first makes every old source look like a contradiction.
+1. Triage first (Step 0b), then sort what is left by date, **oldest first**. Newest first makes every old source look like a contradiction. Paper extractions (`data/raw/papers/`) are the exception: their date is the day the course read them, not when they were written, so batch them **by topic** instead (shared `course_home`, then title and lineage), so that ten papers on one subject land on the same few pages.
 2. Over about 200 sources, propose a filter before starting.
-3. Ingest **ten sources per batch**, then report the batch range and counts, stage it, and stop for a go-ahead.
-4. Read every page the first batch produced. A flaw that passes in batch one is in every later batch too.
-5. Run `/lint` at the end. Large imports leave orphans and duplicates.
+3. **Before the first batch, and every five batches after it,** run `uv run librarian wiki graph` and read the "Directories over 20% of pages" lines. A directory flagged as a split candidate is filling up as a bucket: route the batch's new pages to the subject directory they belong in, and if none exists, say so in the report instead of adding to the bucket. Splitting a directory is the human's decision, because it touches the frontend colour map, domain tags and the eval gate.
+4. Ingest **ten sources per batch**. Then run the close-out (overlap check and reviewer included), **fix every defect the reviewer reports**, re-run `ingest overlap` and `wiki verify` on the pages you touched, and only then stage the batch, report its range and counts, and stop for a go-ahead. A defect left in a staged batch is one the human has to find again.
+5. Read every page the first batch produced. A flaw that passes in batch one is in every later batch too.
+6. Run `/lint` at the end. Large imports leave orphans and duplicates.
 
 ### Transcript Cleaning (auto-captions, subtitle files, unpunctuated meeting text)
 
@@ -249,6 +250,18 @@ For `data/raw/books/` and `data/raw/articles/` sources, apply the same ingest pr
 - Add a `source_type: quote` attribution in the page's `sources:` frontmatter when knowledge comes primarily from a book/article quote.
 - Cross-reference with existing wiki pages that the quote validates or challenges.
 
+#### Paper extractions (`data/raw/papers/`)
+
+Each file is a reading extraction written by `librarian scrape extractions`: Question, Method, Results (each with its Setup), Limits, Terms, Lineage. The extraction is already a summary of the paper, so the risk is not missing content but saying more than it does.
+
+- **Claims only.** Write what the extraction states, nothing more. Do not add a cause, mechanism or consequence ("because…", "which means…", "so teams should…") that the extraction does not state; an explanation you supply is inference, and a page is not the place for it. If an explanation is needed and the extraction has none, leave the result unexplained.
+- **Self-reported by default.** A paper's numbers about its own method, model or benchmark are self-reported: write "(self-reported)" straight after each one unless the extraction cites an independent check. Numbers it reports about other people's systems, measured in its own setup, are not.
+- **Setup next to every number.** Each number keeps the setup the extraction gives it (model, dataset, budget, number of runs, metric). A number with no setup is not written.
+- **Limits are required.** Every page built mainly from a paper has a `## Limits` section (before `## See Also`) holding the extraction's Limits that apply to the page's claim. A page with no limits reads as settled when its source is not.
+- **Lineage gives candidate links, not facts.** Each Lineage entry is a work the paper builds on or argues with. If the wiki has a page for that work or idea, it is a candidate typed link (`extends`, `alternative-to`, `contradicts`); add it only when the relation is clear from the extraction. Do not describe the earlier work from the lineage note alone.
+- **Page rules.** A paper gets a **new page** only for (a) a named mechanism or method with a non-obvious mechanism, or (b) a named benchmark or dataset that other pages will cite. Everything else (a result on a known technique, an ablation, a confirmation or a counter-example) goes into the existing concept page as a sentence or a row, with the paper in its `sources:`. Expect fewer new pages than papers; batch 1's 11 new pages from 10 papers was too many.
+- **Map the fields.** Question and Method give the opening paragraph; Results give the body, one claim per sentence with its setup; Limits give `## Limits`; Terms give inline definitions, never a glossary section; Lineage gives See Also candidates; Code, if present, is quoted only when it is short and the page is about it.
+
 ---
 
 ### Step 9 — Update Manifest
@@ -268,13 +281,14 @@ It hashes the file and replaces any earlier entry for that path. `uv run librari
 Run this once, after the last file, not once per file. Skip it if triage skipped every file: a run that changed nothing has nothing to report on.
 
 1. **Print the report** (see Output format).
-2. **Log the run**, in one command:
+2. **Log the run**, in one command, giving only the source and letting the tool count:
    ```bash
-   uv run librarian wiki log ingest "data/raw/web/x.md -> 2 new, 3 updated, 9 links, 0 conflicts"
+   uv run librarian wiki log ingest --counts "data/raw/web/x.md"
    ```
-   `data/telemetry/operations.jsonl` is committed and `data/raw/` is not, so the detail is the source and the four counts, nothing else. Never name a private page. If the run wrote to `data/wiki/private/`, or the filename carries an organisation or person name, log the directory (`data/raw/notion/`) instead of the file.
+   It appends `-> <n> new, <n> updated, <n> links, <n> conflicts`, computed from the working tree against HEAD (public pages only; `links` is net wikilinks added, inline and See Also), and prints the line: use those numbers in the report rather than your own tally. It counts everything uncommitted under `data/wiki/`, so if an earlier batch is still uncommitted, its pages are counted too: say so in the report. `data/telemetry/operations.jsonl` is committed and `data/raw/` is not, so the detail is the source and the counts, nothing else. Never name a private page. If the run wrote to `data/wiki/private/`, or the filename carries an organisation or person name, log the directory (`data/raw/notion/`) instead of the file.
 3. **Accumulator ceiling:** if the run appended a row to a per-session accumulator page (such as `meta/session-log.md`), keep its last ~30 rows in full and roll older ones into month-range summary rows. (`operations.jsonl` is rolled by `wiki log` itself.)
-4. **Call the `ingest-reviewer` agent once**, unless `--no-review` was passed. Give it the raw source path (or paths) and the list of pages written, new and updated. It returns PASS or a numbered defect list. Print the verdict as it came. Do not fix the defects in the same run: they are for the human.
+4. **Copied-wording check:** `uv run librarian ingest overlap <new and updated pages>` prints `page:line — "phrase"` for each run of 8 or more words a page shares with its `sources:` and exits 1. Paraphrase every hit before calling the reviewer, so it only judges what a mechanical check cannot. A hit in a section this run did not write is older debt: list it under `Not ingested` and leave it.
+5. **Call the `ingest-reviewer` agent once**, unless `--no-review` was passed. Give it the raw source path (or paths) and the list of pages written, new and updated. It returns PASS or a numbered defect list. Print the verdict as it came. Outside Bulk Mode, do not fix the defects in the same run: they are for the human. In Bulk Mode, fix them before staging (Bulk Mode step 4) and print each fix under the verdict.
 
 ## Output format
 

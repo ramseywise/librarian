@@ -485,6 +485,47 @@ class TestLog:
         assert roll_operations(rows) == rows
 
 
+class TestLogCounts:
+    """`log --counts` derives the four numbers from the diff against HEAD."""
+
+    @pytest.fixture
+    def repo(self, tmp_path: Path) -> Path:
+        root = tmp_path / "repo"
+        git = lambda *a: subprocess.run(["git", *a], cwd=root, check=True, capture_output=True)  # noqa: E731
+        (root / "wiki" / "rag").mkdir(parents=True)
+        git("init", "-q")
+        git("config", "user.email", "t@example.com")
+        git("config", "user.name", "Tester")
+        (root / "wiki" / "rag" / "old.md").write_text("Body [[A]].\n")
+        (root / "wiki" / "_conflicts.md").write_text("## Open Conflicts\n")
+        git("add", "-A")
+        git("commit", "-q", "-m", "seed")
+        return root
+
+    def log(self, repo: Path, telemetry: Path, *detail: str) -> int:
+        wiki = repo / "wiki"
+        return main(["log", "ingest", *detail, "--counts", "--wiki-dir", str(wiki),
+                     "--telemetry-dir", str(telemetry), "--repo-root", str(repo),
+                     "--today", "2026-11-05"])  # fmt: skip
+
+    def test_counts_new_updated_links_and_conflicts(self, repo: Path, telemetry: Path) -> None:
+        wiki = repo / "wiki"
+        (wiki / "rag" / "old.md").write_text("Body [[A]], now [[B]].\n\n## See Also\n- [[C]]\n")
+        (wiki / "rag" / "new.md").write_text("New [[A]] and [[B]].\n")
+        (wiki / "_index.md").write_text("[[Ignored]] [[Too]]\n")
+        (wiki / "_conflicts.md").write_text("## Open Conflicts\n\n## Conflict: X — 2026-11-05\n")
+        subprocess.run(["git", "add", "wiki/rag/new.md"], cwd=repo, check=True)  # staged or not
+        assert self.log(repo, telemetry, "data/raw/web/ (2 files)") == 0
+        row = json.loads((telemetry / "operations.jsonl").read_text())
+        assert row["detail"] == (
+            "data/raw/web/ (2 files) -> 1 new, 1 updated, 4 links, 1 conflicts"
+        )
+
+    def test_refuses_hand_written_counts(self, repo: Path, telemetry: Path) -> None:
+        assert self.log(repo, telemetry, "x.md -> 2 new") == 2
+        assert not (telemetry / "operations.jsonl").exists()
+
+
 def write_retrieval_log(path: Path, rows: list[dict[str, object]]) -> Path:
     path.write_text("".join(json.dumps(r) + "\n" for r in rows) + "not json\n")
     return path

@@ -2,7 +2,7 @@
 title: RAG Eval Metrics Suite
 tags: [eval, rag, pattern]
 summary: Eight-metric RAG evaluation framework covering stakeholder quality (faithfulness, naturalness, completeness, relevance), retrieval quality (contextual relevance, recall, document precision), and system calibration — split between runtime-compatible and offline-only metrics.
-updated: 2026-11-02
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/chat-agent/docs/eval/eval_metrics.md
   - data/raw/claude-docs/project-g/docs/stakeholders/agent-comparison-findings.md
@@ -244,3 +244,4 @@ TruLens / Phoenix** (ready-made RAG judges with tracing). All need calibration b
 - [[CRAG Retry Logic]]
 - [[Heuristic Pipeline Metrics]] — related (operational health axis alongside retrieval metrics)
 - [[Observability & Evaluation Glossary]] — rank-based retrieval metrics (MRR, precision@k, recall@k, ndcg@k, hit@k) and heuristic-vs-judge metric typing
+- [[Output Length Confounds Reference Metrics]] — related (length skews n-gram and judge scores)

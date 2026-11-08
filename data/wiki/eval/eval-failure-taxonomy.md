@@ -2,11 +2,12 @@
 title: Eval Failure Taxonomy
 tags: [eval, llm, pattern]
 summary: "A fixed set of stable failure labels, ordered by pipeline stage, one label per fix, including the eval's own failures (context_missing) — the shared vocabulary for graders, dashboards, gate reports and bug tickets."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--02-defining-correct.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--04-graders.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
+  - data/raw/papers/2026-11-05-borji-2023-categorical-archive-chatgpt-failures.md
 ---
 
 # Eval Failure Taxonomy
@@ -52,6 +53,15 @@ The project-level instance of this table lives in [[RAG Eval Gate Contract]].
 
 Review labels on a schedule (quarterly is the course's suggestion): unused labels are eval
 debt.
+
+## An archive is not a rate
+
+A catalogue of failure examples tells you which labels exist, not how often each occurs.
+Borji's archive of early ChatGPT failures (arXiv 2302.03494, 2023) sorts them into 11
+categories that the author calls arbitrary and overlapping, from a convenience sample with no
+denominators, and later model versions were re-tested ad hoc. Use such an archive to seed
+candidate labels, then measure frequencies on a sampled set of your own traces
+([[Error Analysis (Open and Axial Coding)]]).
 
 ## See Also
 - [[Error Analysis (Open and Axial Coding)]] — prerequisite-for (axial coding produces the categories)

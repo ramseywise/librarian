@@ -12,7 +12,7 @@ sources:
 Canonical list of all wiki pages, grouped by domain (the primary retrieval axis).
 Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
-**1246 pages** across 17 domains.
+**1257 pages** across 17 domains.
 
 ## Foundations
 
@@ -439,6 +439,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Vacuum, Bloat and Idle Transactions]] — Updates leave dead row versions that VACUUM only frees for reuse, VACUUM FULL returns space under an exclusive lock, and one forgotten idle transaction stops cleanup entirely; transaction-ID wraparound is the failure to know by name.
 - [[Validating Clusters Without Labels]] — Internal indices, stability and classifier accuracy all look good on data with no groups, so compare every one against a shuffled-column control and validate on outcomes from outside the data.
 - [[Variational Inference and the ELBO]] — Variational inference replaces an intractable posterior with a simple q chosen by maximising the ELBO (reconstruction minus KL to the prior), whose gap to the log evidence equals the KL to the true posterior; it scales well but mean-field versions understate variance under correlation.
+- [[Vision-Language Model Training Families]] — Most VLMs are built by connecting a pretrained vision encoder to a pretrained LLM and training only the connector (a linear map, an MLP or a Q-Former), which is cheap but inherits the LLM's hallucinations and biases; resolution, encoder capacity and visual data matter more than how the two are joined.
 - [[Visual Encoding Accuracy Ranking]] — Readers judge some visual channels far more accurately than others, so put the comparison that matters on the most accurate channel and choose the chart from the question.
 - [[Voice Agent Paradigms]] — Cascaded (VAD → ASR → LLM → TTS), end-to-end omnimodal, and full-duplex voice agents differ in one thing — how far each gets from VAD's assumption that conversation happens in discrete turns — and all three coexist as trade-offs; the cascade's serial latency budget is about 1–2 s before queueing multiplies it.
 - [[Warehouse Cost Meters: Bytes, Slots and Egress]] — A warehouse bill is bytes scanned or slot-hours for compute, a small storage line and route-dependent egress; compute the on-demand versus capacity break-even before choosing, using list prices that carry a read date.
@@ -869,6 +870,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 ## Context
 
 - [[Context Engineering]] — The pillar hub — the minimization objective, the four levers (Write → Select → Compress → Isolate) applied in order, and the four context types.
+- [[Learned Proactive Compaction]] — A coding agent can be trained to call compact() itself, at a seam rather than at a length limit; AutoCompact reports 39.6% vs 30.4% on SWE-bench Verified (self-reported), but the like-for-like 16K gain is 38.0% vs 28.8%, and most of the lift survives even when the compaction calls are skipped.
 - [[Why Context Is Finite]] — Attention divides a fixed budget across n² token pairs, so added tokens thin attention rather than expanding capacity; the marginal return curve turns negative, not merely flat.
 - [[Context Anatomy]] — What goes in the window and in what order — system-prompt altitude, the five layers organized by stability, and stable-before-dynamic ordering for cache prefix matching.
 - [[Context Retrieval Strategies]] — The shift from pre-computed retrieval to just-in-time context, the hybrid default with the ≥80%-of-turns test, and pre-retrieval pipeline ordering.
@@ -1064,7 +1066,15 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 ## Evaluation
 
+- [[Benchmark Prompt Format Sensitivity]] — The same model on the same benchmark can move by more than 20 accuracy points, and swap ranks with its rivals, when only the prompt template, answer format or scoring choice changes; report the exact prompt, keep per-item outputs and never mix numbers from different harnesses.
+- [[Best-of-k Headline Inflation]] — Agent benchmarks often headline the best of several runs, which can sit far above what one run delivers: ScienceAgentBench's o1 scores 42.2% best-of-3 but 27.1% averaged over runs, and MLE-bench's medal rate doubles from pass@1 to pass@8; check which number is reported, and whether an agent could pick its best run on its own.
+- [[Extract-and-Evaluate Monitoring]] — Split an agent monitor in two: an extractor picks the suspicious quotes from a transcript and an evaluator scores only those quotes and the task; giving the scorer less context caught more sabotage (+16.8 points TPR at 1% FPR over the best baseline, self-reported) because full-context monitors talk themselves out of suspicion.
+- [[MLE-bench]] — OpenAI's benchmark of 75 Kaggle competitions that an agent must solve end to end, scored by whether its submission would have won a medal on the private leaderboard; the best agent medalled in 16.9% of competitions at one attempt, and the scaffold mattered far more than hardware or extra time.
+- [[Model Version Drift]] — A hosted model behind the same name can change between snapshots: Chen et al. found GPT-4's prime-number accuracy fall from 84% to 51% between March and June 2023 and its directly runnable code from 52% to 10%, mostly through format and instruction-following changes, while 12% of medical-exam answers changed although accuracy barely moved.
+- [[Output Length Confounds Reference Metrics]] — N-gram and LLM-judge scores on open-ended tasks move with how long the answer is, not only how good it is; L-Eval found that telling models the expected answer length lifted ROUGE-L's agreement with human rankings from Kendall tau 0.5 to 0.8, so control length before comparing systems.
+- [[ScienceAgentBench]] — A benchmark of 102 data-driven discovery tasks taken from 44 peer-reviewed papers, where an agent must write one self-contained Python program; the best agents solve about a third of tasks best-of-3 and far fewer on average, and most failures are programs that run but compute the wrong thing.
 - [[The Augmentation Gate]] — The A in RAG is the gate nobody evaluates — retrieval can be perfect and generation sound while the failure lives entirely in how much retrieved context got handed to the model.
+- [[Tool-Augmented Factuality Checking]] — Check a generated answer by splitting it into short claims, generating a search or code query per claim, running the tool and asking a model whether the evidence agrees; FacTool beat a model checking itself in every domain it tested (science citations 94.7 vs 21.5 F1 with GPT-4, self-reported), because self-checks are too lenient.
 - [[Trajectory Over Outcome]] — Why an agent must be scored on the path and not just the answer — a correct output from a lucky trajectory is a latent failure, and routing and stopping point are invisible to an outcome score.
 
 - [[Agentic KPI Trees]] — KPI tree pattern for agentic products — goal completion rate, no-touch rate, and transaction match accuracy as the primary success metrics for product-assistant, document processing, and reconciliation agents.
@@ -1145,6 +1155,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 - [[Eval Contamination Defenses]] — If eval rows reach a model's training data, prompts or index, the score measures memory — public benchmarks fight it with unique multi-source answers, parameterized task templates refilled every run, temporal freshness and canary GUIDs, and each tactic transfers to a private suite.
 - [[Ablation Switches and Feature Debt]] — A master switch that turns off an agent product's major features (thinking, compaction, memory, background tasks) gives a bare-model baseline, and per-feature switches answer whether each still helps — run before every release to find feature debt that newer models no longer need; companions are two-layer feature flags, deterministic prompt-rendering snapshots and privacy-typed analytics.
 - [[Parameterised Benchmark Instances]] — The answer to benchmark leakage for agent evals — publish the generator, keep instances private and fresh per run, grade on final environment state, and when training on a benchmark reuse environments but hold out whole templates or domains.
+- [[VLM Benchmark Shortcuts]] — Vision-language benchmarks can be passed without seeing: a model of all-zero weights scores 100% on caption-pair tests when ties go to the first, correct, caption; the original VQA answers 'yes' 98% of the time to yes/no questions; exact-match VQA accuracy under-scores free-form answers; and CHAIR misleads on long outputs.
 
 ## Infrastructure
 

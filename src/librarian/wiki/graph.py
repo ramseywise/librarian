@@ -43,6 +43,9 @@ STABILITY_FLOOR = 0.9
 SPLIT_MIN_CLUSTERS = 3
 SPLIT_MIN_SHARE = 0.10
 MIXED_MAX_SHARE = 0.5
+# A directory holding this share of all pages has stopped being a domain and become a bucket;
+# when it is also split, its clusters are the subject directories it should become.
+OVERSIZED_SHARE = 0.20
 TYPE_TAGS = {"concept", "pattern", "decision", "project", "comparison", "reference", "conflict"}
 
 
@@ -85,6 +88,7 @@ class GraphReport:
     clusters: list[Cluster]
     unsettled: int
     split_directories: dict[str, list[int]]
+    oversized_directories: dict[str, float]
     mixed_clusters: list[int]
     stability: float
 
@@ -179,6 +183,17 @@ def _split_directories(graph: nx.Graph, clusters: list[Cluster]) -> dict[str, li
     return split
 
 
+def _oversized_directories(graph: nx.Graph) -> dict[str, float]:
+    """Directory → its share of all pages, for directories at or over `OVERSIZED_SHARE`."""
+    totals = Counter(graph.nodes[n]["directory"] for n in graph)
+    pages = graph.number_of_nodes()
+    return {
+        directory: round(total / pages, 3)
+        for directory, total in sorted(totals.items())
+        if pages and total / pages >= OVERSIZED_SHARE
+    }
+
+
 def analyse(
     graph: nx.Graph, seeds: int = CONSENSUS_SEEDS, cut: float = CONSENSUS_CUT
 ) -> GraphReport:
@@ -223,6 +238,7 @@ def analyse(
         clusters=clusters,
         unsettled=graph.number_of_nodes() - len(cluster_of),
         split_directories=_split_directories(graph, clusters),
+        oversized_directories=_oversized_directories(graph),
         mixed_clusters=[
             c.number for c in clusters if max(c.directories.values()) / c.size <= MIXED_MAX_SHARE
         ],
@@ -269,6 +285,17 @@ def render(report: GraphReport) -> str:
     lines += [
         f"  {directory}: clusters {', '.join(map(str, numbers))}"
         for directory, numbers in report.split_directories.items()
+    ] or ["  none"]
+    lines += ["", f"Directories over {OVERSIZED_SHARE:.0%} of pages:"]
+    lines += [
+        f"  {directory}: {share:.0%}"
+        + (
+            f", split across clusters {', '.join(map(str, report.split_directories[directory]))}:"
+            " a split candidate (check the routing rule first)"
+            if directory in report.split_directories
+            else ", one subject: big but coherent"
+        )
+        for directory, share in report.oversized_directories.items()
     ] or ["  none"]
     mixed = ", ".join(map(str, report.mixed_clusters)) or "none"
     lines.append(f"Clusters with no majority directory: {mixed}")

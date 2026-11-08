@@ -93,6 +93,15 @@ def test_directory_split_across_three_clusters_is_flagged(tmp_path: Path) -> Non
     report = analyse(load_graph(wiki))
     assert report.split_directories == {"foundations": [1, 2, 3]}
     assert report.mixed_clusters == []
+    assert report.oversized_directories == {"foundations": 1.0}
+    assert "foundations: 100%, split across clusters 1, 2, 3" in render(report)
+
+
+def test_large_directory_in_one_cluster_is_oversized_not_split(joined: Path) -> None:
+    report = analyse(load_graph(joined))
+    assert report.oversized_directories == {"memory": 0.462, "rag": 0.462}
+    assert report.split_directories == {}
+    assert "rag: 46%, one subject: big but coherent" in render(report)
 
 
 def test_cluster_with_no_majority_directory_is_flagged(tmp_path: Path) -> None:

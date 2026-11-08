@@ -2,7 +2,7 @@
 title: Execution Boundaries and Guardrails
 tags: [llm, agents, infra, concept]
 summary: "Sandboxes (the isolation ladder and identity sandbox), hooks, and permission gates with declared timeouts — the controls that cannot be argued with, governed by one rule: encode constraints rather than documenting them, and constrain the process as well as the outcome."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--04-execution-boundaries.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--04-execution-boundaries.md
@@ -253,3 +253,4 @@ discipline — see [[Canary Testing for Permission Boundaries]].
 - [[Agent Security Risk Taxonomy]] — instance-of (the sandbox and permission mechanics for R6/R8)
 - [[Agent Deployment Anti-Patterns]] — instance-of (mechanism-based enforcement for #8)
 - [[Protocol-Driven Multi-Agent Collaboration]] — instance-of (the isolation boundary, mechanically)
+- [[Extract-and-Evaluate Monitoring]] — related (a transcript monitor feeding the guardrail layer)

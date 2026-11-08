@@ -34,6 +34,12 @@ stays in the gitignored `private/` mirror.
 
 `coding/` keeps its layout because the drill tooling depends on its paths.
 
+**Timed coding-round prep** (`coding/notes/`): start with the [prep brief](coding/notes/brief.md) and the two
+formats, [no AI, 45 min](coding/notes/brief-env1-noai.md) and [AI allowed, 30 min](coding/notes/brief-env2-ai.md).
+Then the four skills it grades: [planning the approach](coding/notes/approach.md),
+[driving the AI](coding/notes/ai.md), [verification and testing](coding/notes/testing.md) and
+[communication](coding/notes/comms.md).
+
 Unlike `practice/`, this folder has no allowlist: the root `.gitignore` names what stays local. That is
 solutions to site problems (`python/leetcode/` and the `hackerrank/` folders), personal attempts
 (`coding/scratch/`) and the drill log. Check a new file's licence and contents before adding it.

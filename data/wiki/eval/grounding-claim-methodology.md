@@ -2,7 +2,7 @@
 title: Grounding Claim Methodology
 tags: [eval, rag, pattern]
 summary: Claims-based grounding — the "yellow highlighter" approach to RAG verification, where the agent extracts verbatim supporting quotes from retrieved documents before writing the final answer, creating a verifiable paper trail.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/support-agents/invocation-flow.md
   - data/raw/claude-docs/project-g/docs/support-agents/grounding-methodology.md
@@ -127,3 +127,4 @@ text**, can't verify anything, and scores near zero — or worse, scores from it
 - [[Evidence-Labelled Generation with Deterministic QC]] — extends (evidence labels checked by code, not a judge)
 - [[Assembled, Not Generated Replies]] — related (sidestepping grounding by not generating prose at all)
 - [[Specialist Verdict Panel]] — instance-of (claim-level citation checking)
+- [[Tool-Augmented Factuality Checking]] — alternative-to (claims checked against the web, not a supplied context)

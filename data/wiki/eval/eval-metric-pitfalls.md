@@ -2,7 +2,7 @@
 title: Eval Metric Interpretation Pitfalls
 tags: [eval, llm, concept]
 summary: "Ways a correct-looking eval number misleads — flat headlines hiding cancelling slice moves (Simpson's paradox), dropped errored rows shrinking the denominator, ratio metrics whose denominator moves, novelty effects — and the rule: count errors and refusals as failures or report them separately."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--09-reading-results.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
@@ -67,3 +67,5 @@ Optimize the target; test several doses, not just on/off, to see the dose–resp
 - [[Paired Eval Comparison]] — related (identical task sets)
 - [[Outcome Signal Ladder]] — related (proxy vs outcome signals)
 - [[Validated Concept vs Unmeasured System]] — related (a number quoted beyond what it measured)
+- [[VLM Benchmark Shortcuts]] — instance-of (tie-breaking, language priors and strict string match in VLM benchmarks)
+- [[Output Length Confounds Reference Metrics]] — instance-of (answer length moves n-gram and judge scores)

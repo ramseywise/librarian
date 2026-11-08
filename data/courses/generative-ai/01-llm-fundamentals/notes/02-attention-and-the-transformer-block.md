@@ -1,5 +1,5 @@
 ---
-imported_hash: 10b3d2554a92d4dd
+imported_hash: 73efef7dc92cbd6c
 title: 2 — Attention and the transformer block
 summary: 'Take the ticket from the last chapter and add a sentence: The refund for order #A1B2 failed because it was too old.'
 order: 4
@@ -321,4 +321,4 @@ That quadratic term is what the alternatives surveyed in [chapter 03b](03b-beyon
 
 ## Next
 
-[03 — Architectures, scale and the model zoo](03-scale-and-the-model-zoo.md) repeats this block more times with more width, and asks what that buys.
+[02b — What trained attention does](02b-what-trained-attention-does.md): whether attention weights explain anything, how image patches become tokens, and why many heads park their weight on the first token. Then [03 — Architectures, scale and the model zoo](03-scale-and-the-model-zoo.md) repeats this block more times with more width, and asks what that buys.

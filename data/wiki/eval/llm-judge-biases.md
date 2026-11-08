@@ -2,7 +2,7 @@
 title: LLM Judge Biases
 tags: [eval, llm, concept]
 summary: "Position, verbosity, self-preference, leniency, format/authority and capability limits — the documented ways LLM judges go wrong, each with a mitigation (both-order pairwise, different model family, binary criteria with tricky-FAIL examples), plus the pairwise-vs-pointwise and Elo/Bradley–Terry choices."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--05-llm-as-judge.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
@@ -82,3 +82,5 @@ UI agents from screenshots, video from sampled frames — each with its own cali
 - [[Positive-Only Judge Fixtures Measure Recall]] — extends
 - [[Human Verdicts as Judge Fixtures]] — extends
 - [[Human Agreement Ceiling Protocol]] — extends
+- [[Output Length Confounds Reference Metrics]] — related (length control as a verbosity mitigation)
+- [[Tool-Augmented Factuality Checking]] — related (outside evidence instead of a lenient self-check)

@@ -2,7 +2,7 @@
 title: Real-Time Multimodal Agents
 tags: [foundations, voice, concept]
 summary: "Voice dialogue, computer use and robot control are the three settings where continuous input and a strict output time budget make multimodality hard — and all three are moving the same way, from serial pipelines toward end-to-end models and a fast/slow division of labour, with irreversible actions needing a gate."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--README.md
@@ -63,3 +63,4 @@ outside the model ([[Execution Boundaries and Guardrails]]).
 - [[Post-Training for Agents]] — extends (voice SFT, robot-policy RL)
 - [[Realtime Voice Architecture Reference]] — extends (build-time numbers for a voice agent)
 - [[Voice Agent Patterns]] — related
+- [[Vision-Language Model Training Families]] — prerequisite-for (how the vision-language models in these agents are built)

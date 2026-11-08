@@ -11,7 +11,8 @@ torch, fastapi) load only for the verbs that need them.
     librarian wiki sync-check|compact-signals|week     taxonomy drift, compaction evidence, weekly trend
     librarian ingest mark|status|pending                manifest: record compiled files, show pending
     librarian jobs run <name>|list                     unattended jobs through the Agent SDK
-    librarian ingest triage|lint-raw                   gate a raw source, validate raw filenames
+    librarian ingest triage|lint-raw|overlap           gate a raw source, validate raw filenames,
+                                                       find wording copied from a source
     librarian ingest notion|linear|pdf                 pull a source into data/raw/
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
     librarian courses import                           mirror learn-ai-engineering coursework into data/courses/
@@ -100,6 +101,9 @@ GROUPS: dict[str, dict[str, Verb]] = {
             "librarian.ingest.manifest:main", ("pending",), "new or changed files among paths/globs"
         ),
         "lint-raw": Verb("librarian.ingest.lint_raw:main", help="validate data/raw/ filenames"),
+        "overlap": Verb(
+            "librarian.ingest.overlap:main", help="wording a page copies from its raw sources"
+        ),
         "notion": Verb("librarian.ingest.ingest_notion:main", help="Notion page export"),
         "linear": Verb("librarian.ingest.ingest_linear:main", help="Linear issues"),
         "pdf": Verb("librarian.ingest.ingest_pdf:main", help="PDF text extraction"),

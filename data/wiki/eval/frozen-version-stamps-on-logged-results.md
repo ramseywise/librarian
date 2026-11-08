@@ -2,7 +2,7 @@
 title: Frozen Version Stamps on Logged Results
 tags: [eval, infra, pattern]
 summary: Every served result row carries a named version constant for each component that shaped it — prompt hash, enrichment, weights, ranker, composer, schema — and a classifier whose output is logged but whose rule-table is unversioned is a hole; instrumentation ships in the same commit as the feature because logs cannot be backfilled.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/akira/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
   - data/raw/claude-docs/kiez-archive/docs/research/2026-09-16-dis289-relevance-benchmark-corpus.md
@@ -185,3 +185,4 @@ computed once, at the entry point both the sync and batch paths call. Details ar
 - [[Ship Logging Before Features]] — extends
 - [[Intake Option Separability via Reach Vectors]] — related (measuring whether intake options are distinct requests at all)
 - [[Offline Prompt Experiment Runner]] — related (where the prompt-identity stamp was built and is consumed)
+- [[Model Version Drift]] — related (why a model alias needs a dated stamp)

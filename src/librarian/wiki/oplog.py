@@ -5,9 +5,11 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 from pathlib import Path
 from typing import Any
 
+from librarian.wiki.common import WIKILINK_RE
 from librarian.wiki.pages import REPO_ROOT
 
 METRICS_FILE = "metrics.jsonl"
@@ -19,6 +21,7 @@ UNTRACKED_TELEMETRY = {ASKED_FILE}
 METRICS_MAX_ROWS = 36
 OPERATIONS_KEEP_FULL = 30
 _OP_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+_CONFLICT_HEADING_RE = re.compile(r"^## Conflict:", re.MULTILINE)
 
 
 class TelemetryFileError(Exception):
@@ -99,3 +102,61 @@ def roll_operations(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         rollup["ops"][op] = rollup["ops"].get(op, 0) + 1
     ordered = [rollups[m] for m in sorted(rollups)]
     return ordered + entries[len(overflow) :]
+
+
+def _links(text: str) -> int:
+    return sum(1 for _ in WIKILINK_RE.finditer(text))
+
+
+def ingest_counts(repo_root: Path, wiki_dir: Path) -> dict[str, int] | None:
+    """New and updated public pages, net wikilinks and net conflict entries since HEAD.
+
+    Counts the working tree against HEAD, staged or not, so an uncommitted batch is counted
+    once however it was staged. `_*.md` index and suggestion files and `private/` are left
+    out (private is gitignored anyway); `_conflicts.md` is read only for its entry headings.
+    None when `wiki_dir` is not inside a git checkout at `repo_root`.
+    """
+
+    def git(*args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["git", "-C", str(repo_root), *args], capture_output=True, text=True, check=False
+        )
+
+    try:
+        rel = wiki_dir.resolve().relative_to(repo_root.resolve())
+    except ValueError:
+        return None
+    status = git("status", "--porcelain", "--untracked-files=all", "--", str(rel))
+    if status.returncode:
+        return None
+    counts = {"new": 0, "updated": 0, "links": 0, "conflicts": 0}
+    modified: list[str] = []
+    for line in status.stdout.splitlines():
+        code, path = line[:2], line[3:].split(" -> ")[-1].strip('"')
+        parts = Path(path).relative_to(rel).parts
+        if not path.endswith(".md") or "D" in code:
+            continue
+        if parts[-1] == "_conflicts.md":
+            modified.append(path)
+        elif parts[0] == "private" or parts[-1].startswith("_"):
+            continue
+        elif "?" in code or "A" in code:
+            counts["new"] += 1
+            counts["links"] += _links((repo_root / path).read_text())
+        else:
+            counts["updated"] += 1
+            modified.append(path)
+    if modified:
+        diff = git("diff", "HEAD", "--unified=0", "--", *modified)
+        for chunk in re.split(r"^diff --git ", diff.stdout, flags=re.MULTILINE)[1:]:
+            lines = chunk.splitlines()
+            added = "\n".join(ln[1:] for ln in lines if ln[:1] == "+" and ln[:3] != "+++")
+            removed = "\n".join(ln[1:] for ln in lines if ln[:1] == "-" and ln[:3] != "---")
+            if lines[0].endswith("/_conflicts.md"):
+                net = len(_CONFLICT_HEADING_RE.findall(added)) - len(
+                    _CONFLICT_HEADING_RE.findall(removed)
+                )
+                counts["conflicts"] += max(0, net)
+            else:
+                counts["links"] += max(0, _links(added) - _links(removed))
+    return counts

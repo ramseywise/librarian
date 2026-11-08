@@ -2,10 +2,13 @@
 title: Eval Contamination Defenses
 tags: [eval, llm, pattern]
 summary: "If eval rows reach a model's training data, prompts or index, the score measures memory — public benchmarks fight it with unique multi-source answers, parameterized task templates refilled every run, temporal freshness and canary GUIDs, and each tactic transfers to a private suite."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--12-failure-modes.md
+  - data/raw/papers/2026-11-05-chen-2024-scienceagentbench.md
+  - data/raw/papers/2026-11-05-chan-2024-mle-bench.md
+  - data/raw/papers/2026-11-05-borji-2023-categorical-archive-chatgpt-failures.md
 ---
 
 # Eval Contamination Defenses
@@ -42,6 +45,15 @@ verbatim; scores drop on paraphrased versions.
   comparable. If labels came from a grader, record that grader's version too.
 - **Reset state per trial** so one trial's side effects don't look like the next one's
   failure.
+- **Hide the answers from an agent that can read files.** ScienceAgentBench replaces test
+  labels with dummy values (e.g. −1) in the files the agent is given, and drops a few test
+  points so a memorised output cannot match exactly ([[ScienceAgentBench]]).
+- **Reword and compare.** MLE-bench reworded competition descriptions and saw no drop, and
+  checked submissions against public notebooks for copying (self-reported, one model tested;
+  [[MLE-bench]]). An archive of chatbot failures found that rewording a question could flip a
+  correct answer, which is also why a single phrasing is a weak test.
+- **Keep a private held-out set** that never appears online; a public benchmark's examples
+  can enter the next model's training.
 - **Generate synthetic rows with a different model family** from the candidate under test,
   or the candidate finds its own phrasing easy.
 
@@ -63,3 +75,5 @@ verbatim; scores drop on paraphrased versions.
 - [[Simulated User Evaluation]] — related (τ²-bench fresh parameters)
 - [[Eval Non-Determinism]] — alternative-to
 - [[Parameterised Benchmark Instances]] — instance-of
+- [[ScienceAgentBench]] — related (dummy test labels and dropped test points)
+- [[MLE-bench]] — related (familiarity, rewording and plagiarism checks)

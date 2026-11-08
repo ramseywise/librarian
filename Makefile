@@ -2,7 +2,7 @@
 # repo targets below must keep working on a machine without ~/.claude set up.
 -include ~/.claude/Makefile.common
 
-.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build deploy-content obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate eval-chat eval-chat-dry e2e-container e2e-compose
+.PHONY: slides slides-all flashcards deck-graph deck-graph-check deck-check app app-build dev deploy-content obsidian api ui mcp index-rebuild install-ui install-api setup-ollama test test-watch test-e2e install-browsers ingest scrape scrape-sessions scrape-docs scrape-repos lint lint-raw help codemap-reindex codemap-api install-codemap install-presenter eval eval-live eval-nofts eval-gate eval-chat eval-chat-dry e2e-container e2e-compose
 
 # The private tmpfs masks need their mountpoints on the host: the data mount is read-only.
 LOCAL_COMPOSE = docker compose -f docker-compose.yml -f docker-compose.local.yml
@@ -34,6 +34,13 @@ index-rebuild:
 
 ui:
 	cd app && npm run dev
+
+# api + ui together, hot reload, no Docker; Ctrl-C stops both. Open http://localhost:5173.
+dev:
+	@if lsof -nP -iTCP:8000 -sTCP:LISTEN >/dev/null 2>&1; then \
+		echo "port 8000 is in use (make app still running? docker compose stop librarian)"; exit 1; fi
+	@[ -d app/node_modules ] || $(MAKE) install-ui
+	@trap 'kill 0' INT TERM EXIT; $(MAKE) api & $(MAKE) ui & wait
 
 install-ui:
 	cd app && npm install
@@ -179,7 +186,8 @@ typecheck:
 	uv run pyright
 
 help:
-	@echo "app              — start api + ui via Docker (one command)"
+	@echo "dev              — api + ui with hot reload, no Docker (http://localhost:5173)"
+	@echo "app              — api + built ui in one Docker container (http://localhost:8000; needs LIBRARIAN_API_TOKEN)"
 	@echo "app-build        — rebuild Docker images and start"
 	@echo "obsidian         — open wiki in Obsidian"
 	@echo "mcp              — start MCP server (local, used by Claude Code)"
