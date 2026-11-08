@@ -13,9 +13,10 @@ import pytest
 from fastapi import HTTPException
 from sqlalchemy import Engine, create_engine, text
 
+from librarian import accounts
 from librarian.api.security import ChatLimiter
-from librarian.config import Settings
-from librarian.courses import attempts
+from librarian.config import Settings, get_settings
+from librarian.courses import attempts, progress
 from librarian.db import engine as db_engine
 from librarian.db import get_engine
 from librarian.db.migrate import upgrade
@@ -41,13 +42,27 @@ def pg(monkeypatch: pytest.MonkeyPatch) -> Iterator[Engine]:
     engine.dispose()
 
 
-def test_attempts_round_trip_and_dedupe() -> None:
-    assert attempts.record("flashcard", "m:a", "c/m", "knew", payload={"front": "F"}, ts=TS)
-    assert attempts.record("flashcard", "m:a", "c/m", "knew", payload={"front": "F"}, ts=TS)
-    assert attempts.record("mcq", "m:q:x", "c/m", "wrong", ts="2026-01-02T00:00:00+00:00")
-    rows = attempts.attempts()
+def test_attempts_round_trip_and_dedupe(pg: Engine) -> None:
+    me = accounts.ensure_owner(pg, get_settings().owner_email).id
+    assert attempts.record(me, "flashcard", "m:a", "c/m", "knew", payload={"front": "F"}, ts=TS)
+    assert attempts.record(me, "flashcard", "m:a", "c/m", "knew", payload={"front": "F"}, ts=TS)
+    assert attempts.record(me, "mcq", "m:q:x", "c/m", "wrong", ts="2026-01-02T00:00:00+00:00")
+    rows = attempts.attempts(me)
     assert [(a.kind, a.result) for a in rows] == [("flashcard", "knew"), ("mcq", "wrong")]
     assert rows[0].ts.isoformat() == TS and rows[0].payload == {"front": "F"}
+    other = accounts.add_user(pg, "b@example.com").id
+    assert attempts.attempts(other) == []
+
+
+def test_progress_done_is_not_downgraded(pg: Engine) -> None:
+    me = accounts.ensure_owner(pg, get_settings().owner_email).id
+    assert progress.mark(me, "c/m/a", "done")
+    assert progress.mark(me, "c/m/a", "opened")
+    assert progress.mark(me, "c/m/b", "opened")
+    assert {k: s for k, (s, _) in progress.lessons(me).items()} == {
+        "c/m/a": "done",
+        "c/m/b": "opened",
+    }
 
 
 def test_spend_cap_holds_across_two_engines() -> None:

@@ -20,8 +20,11 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, delete
 
+from librarian import accounts
+from librarian.accounts import User
 from librarian.api.routers import courses as courses_routes
-from librarian.courses import attempts, leitner
+from librarian.config import get_settings
+from librarian.courses import attempts, drill_log, leitner
 from librarian.courses import catalog as courses
 from librarian.db import get_engine, tables
 
@@ -86,7 +89,6 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
 
     monkeypatch.setattr(courses, "COURSES_DIR", root)
     monkeypatch.setattr(courses, "WIKI_DIR", wiki)
-    monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "no-drill-log.md")  # never the real one
     monkeypatch.setattr(courses, "LESSON_VEC_CACHE", tmp_path / "cache" / "lessons.npz")
     monkeypatch.setattr(courses, "_semantic_neighbours", lambda texts, ids: None)
     courses._load.cache_clear()
@@ -215,13 +217,14 @@ def test_practice_lists_drills_with_filters_and_concepts(client: TestClient) -> 
     assert "drill" not in client.get("/api/courses/lessons/basics/01-python/vars").json()
 
 
-def test_practice_attaches_attempts_from_drill_log_without_notes(
-    client: TestClient, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+def test_practice_attaches_attempts_from_an_imported_drill_log_without_notes(
+    client: TestClient, tmp_path: Path, owner: User
 ) -> None:
     _write(
         courses.COURSES_DIR / "basics" / "02-sql" / "top-orders.md",
         "---\ntitle: Top orders\nkind: drill\ntrack: sql\n---\n\nRank.\n",
     )
+    assert "attempts" not in client.get("/api/courses/practice").json()[0]
     log = tmp_path / "drill-log.md"
     log.write_text(
         "# Log\n\n| Date | QID | Score | Note |\n|---|---|---|---|\n"
@@ -229,13 +232,13 @@ def test_practice_attaches_attempts_from_drill_log_without_notes(
         "| 2026-10-20 | top-orders | C✓ P✓ | private reflection |\n"
         "| 2026-10-05 | top-orders | C✗ P✗ | private reflection |\n"
     )
-    monkeypatch.setattr(courses, "DRILL_LOG", log)
+    drill_log.import_log(log, owner.id)
     [drill] = client.get("/api/courses/practice").json()
     assert drill["attempts"] == {"count": 3, "last": "2026-10-20", "score": "C✓ P✓"}
     assert "private reflection" not in str(drill)
-
-    monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "missing.md")
-    assert "attempts" not in client.get("/api/courses/practice").json()[0]
+    # Another user's practice list carries none of it.
+    other = accounts.add_user(get_engine(), "b@example.com")
+    assert "attempts" not in courses.practice_drills(other)[0]
 
 
 # ── Semantic concept linking (D5) ────────────────────────────────────────────
@@ -456,7 +459,7 @@ def test_flashcard_result_logs_catalog_text_with_its_lesson(client: TestClient) 
     assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
     body = {"deck": "gen-ai/01-rag", "card": "1", "result": "knew"}
     assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
-    first, second = attempts.attempts(["flashcard"])
+    first, second = attempts.attempts(_owner_id(), ["flashcard"])
     assert (first.payload["front"], first.payload["lesson"], first.result) == (
         "Why hybrid?",
         "gen-ai/01-rag/intro",
@@ -469,11 +472,16 @@ def test_flashcard_result_logs_catalog_text_with_its_lesson(client: TestClient) 
     )
 
 
+def _owner_id() -> str:
+    """Open-mode requests act as the owner, so the store is read as theirs."""
+    return accounts.ensure_owner(get_engine(), get_settings().owner_email).id
+
+
 def _log_review(front: str, deck: str, result: str, days_ago: int) -> None:
     ts = datetime.now(UTC) - timedelta(days=days_ago)
     key = leitner.card_key(deck, front)
     assert attempts.record(
-        "flashcard", key, deck, result, payload={"front": front}, ts=ts.isoformat()
+        _owner_id(), "flashcard", key, deck, result, payload={"front": front}, ts=ts.isoformat()
     )
 
 
@@ -482,7 +490,7 @@ def test_flashcard_result_logs_a_stable_card_key(client: TestClient) -> None:
     for deck in ("gen-ai/01-rag", "gen-ai/01-rag/intro"):
         body = {"deck": deck, "card": "0", "result": "knew"}
         assert client.post("/api/courses/flashcard-results", json=body).json() == {"logged": True}
-    first, second = attempts.attempts(["flashcard"])
+    first, second = attempts.attempts(_owner_id(), ["flashcard"])
     assert first.item == second.item == leitner.card_key("gen-ai/01-rag", "Why hybrid?")
     assert {"lesson", "source", "front"} <= set(first.payload)
 
@@ -555,7 +563,7 @@ def test_flashcard_result_rejects_unknown_cards_and_grades(client: TestClient) -
         client.post(url, json={"deck": "gen-ai/01-rag", "card": "0", "result": "maybe"}).status_code
         == 422
     )
-    assert attempts.attempts() == []
+    assert attempts.attempts(_owner_id()) == []
 
 
 def test_flashcard_result_survives_a_failed_write(

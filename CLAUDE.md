@@ -66,6 +66,7 @@ commits). See `.claude/skills/README.md`.
 - CLI: `librarian wiki stats|snapshot|check|gaps|log|ask|graph|rename|relink`,
   `librarian ingest triage|lint-raw|notion|linear|pdf`, `librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks`,
   `librarian courses check|review`, `librarian users add|list`, `librarian keys create|list|revoke`,
+  `librarian db upgrade|import-attempts|import-drill-log`,
   `librarian mcp [--rebuild]`, `librarian api`. Each is a thin dispatcher to the
   module's `main(argv)`, and `python -m librarian.<module>` works too.
 
@@ -196,14 +197,16 @@ Written by `librarian.wiki.telemetry`, never by hand. Outside `data/wiki/`, so t
   Drill files (frontmatter with a `track`, schema in `programming/drills/README.md`) are
   `kind: drill` with `track`/`topic`/`difficulty`/`timebox_min`/`units`, and their `concepts` become
   `wiki` links. They feed Practice mode: `GET /api/courses/practice` and the `#/practice` tab.
-  Concepts with no wiki page show as plain `drill.tags`. Attempt counts come from sisyphus
-  `drills/coding/drill-log.md`, read live at request time (`SISYPHUS_DIR`) and never written
-  into `data/` — this repo is public and the log is personal history.
+  Concepts with no wiki page show as plain `drill.tags`. Attempt counts come from the caller's
+  drill attempts in the database only. The owner brings the sisyphus `drills/coding/drill-log.md`
+  in locally with `librarian db import-drill-log [--user EMAIL]` (Date, QID, Aid and Score only, never
+  the Note; idempotent); the server never reads it, and it is never written into `data/`: this
+  repo is public and the log is personal history.
   `make flashcards` (`src/librarian/tools/slides/flashcards.py`) turns the local `slides/deck.yaml` and
   `slides/lectures/*.yaml` of each module into its `_flashcards.md`. The tool only deletes files carrying its own `generated_by` line. Frontmatter
   `cards: [{front, back, lesson?}, ...]`, served by `GET /api/courses/flashcards/<module or
   lesson id>`, studied at `#/flashcards/<id>`; self-grades go via `POST /api/courses/flashcard-results` to the attempts store, and `src/librarian/courses/leitner.py` computes due dates from it; it stores no schedule of its own.
-  **Attempts store:** `var/attempts.sqlite3` in the state dir (gitignored; `src/librarian/courses/attempts.py`) holds every graded event: flashcards, quiz answers and drill runs (`POST /api/courses/drill-results`). An old `logs/flashcards.jsonl` is imported once and left alone; the sisyphus drill log is still read live and merged. **Quizzes:** `<module>/_quiz.md` (frontmatter `questions: [{prompt, options, answer, explanation?, lesson?, id?}]`), checked by `librarian courses check quiz`, served without answers by `GET /api/courses/quiz/<id>` and graded by `POST /api/courses/quiz-results`; a wrong answer is due tomorrow like a missed card. Never seed one from `private/`. **Slides viewer:** `#/slides/<module>[/<lecture>]`; `GET /api/courses/slides/<id>` rebuilds a stale deck in the background into `var/slides/` (images need `uv` and macOS Quick Look; without them the viewer shows the slide text). **Study home:** `#/study`, from `GET /api/courses/study`: cards and questions due, the next drill for the weakest track, the module's lecture.
+  **Attempts store:** the `attempts` table of the database (`librarian.db`; `src/librarian/courses/attempts.py`) holds every graded event, each owned by one user: flashcards, quiz answers and drill runs (`POST /api/courses/drill-results`). Every study route reads and writes only the caller's rows, and Leitner days are the user's calendar days (`users.timezone`). An old `var/attempts.sqlite3` comes in with `librarian db import-attempts`; an old `logs/flashcards.jsonl` is imported once into the owner's history and left alone. **Progress:** `GET`/`POST /api/courses/progress` (`src/librarian/courses/progress.py`) stores each lesson as `opened` or `done` per user (done is never downgraded); `/api/me` carries the summary. **Quizzes:** `<module>/_quiz.md` (frontmatter `questions: [{prompt, options, answer, explanation?, lesson?, id?}]`), checked by `librarian courses check quiz`, served without answers by `GET /api/courses/quiz/<id>` and graded by `POST /api/courses/quiz-results`; a wrong answer is due tomorrow like a missed card. Never seed one from `private/`. **Slides viewer:** `#/slides/<module>[/<lecture>]`; `GET /api/courses/slides/<id>` rebuilds a stale deck in the background into `var/slides/` (images need `uv` and macOS Quick Look; without them the viewer shows the slide text). **Study home:** `#/study`, from `GET /api/courses/study`: cards and questions due, the next drill for the weakest track, the module's lecture.
 - Private and tombstoned wiki pages are never linked from lessons.
 - **`data/courses/private/`** (gitignored, mirrors the layout: `private/<course>/<module>/...`) holds
   what must not be public: solutions to site problems (`leetcode/`, `hackerrank/`), `coding/scratch/`,

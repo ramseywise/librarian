@@ -1,7 +1,8 @@
 """Read-side queries the API routes call: lessons, search, drills, flashcard decks and study state.
 
-The catalog and the drill log are reached through `librarian.courses.catalog` at call time, so a test
-that patches `catalog.catalog` or `catalog.DRILL_LOG` still takes effect here."""
+Study state (schedules, drill history) is per user: those functions take the `User`. The catalog is
+reached through `librarian.courses.catalog` at call time, so a test that patches `catalog.catalog`
+still takes effect here."""
 
 from __future__ import annotations
 
@@ -11,6 +12,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from librarian.accounts import User
 from librarian.courses import attempts, leitner, sources
 from librarian.courses.linker import _link_wikilinks, _prose
 from librarian.courses.loader import LessonRec, _outline, _wiki_json
@@ -96,11 +98,14 @@ def lessons_for_concept(page_id: str) -> list[dict[str, Any]]:
 
 
 def practice_drills(
-    track: str | None = None, difficulty: str | None = None, concept: str | None = None
+    user: User,
+    track: str | None = None,
+    difficulty: str | None = None,
+    concept: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Drills (lessons of kind "drill"), filtered — the Practice mode list."""
+    """Drills (lessons of kind "drill"), filtered, with `user`'s attempts — the Practice mode list."""
     cat = _cat().catalog()
-    history = drill_history()
+    history = drill_history(user)
     out = []
     for r in cat.lessons.values():
         if r.kind != "drill":
@@ -138,18 +143,18 @@ def _scheduled_deck(
     return deck | {"cards": cards, "dueCount": counts["due"], "newCount": counts["new"]}
 
 
-def study_deck(deck_id: str) -> dict[str, Any] | None:
+def study_deck(user: User, deck_id: str) -> dict[str, Any] | None:
     """A study deck: every card in a module (`<course>/<module>`) or one lesson (lesson id)."""
     deck = _cat().catalog().decks.get(deck_id)
     if not deck:
         return None
-    return _scheduled_deck(deck, leitner.load_states(), date.today())
+    return _scheduled_deck(deck, leitner.load_states(user), leitner.today(user))
 
 
-def flashcards_due() -> dict[str, Any]:
-    """Cards to study today across every module deck, reviewed and never-seen counted apart."""
-    states = leitner.load_states()
-    today = date.today()
+def flashcards_due(user: User) -> dict[str, Any]:
+    """`user`'s cards to study today across every module deck, reviewed and never-seen counted apart."""
+    states = leitner.load_states(user)
+    today = leitner.today(user)
     modules: list[dict[str, Any]] = []
     for deck_id, deck in _cat().catalog().decks.items():
         if deck_id.count("/") != 1:
@@ -173,7 +178,7 @@ def flashcards_due() -> dict[str, Any]:
     }
 
 
-def log_flashcard_result(deck_id: str, card_id: str, result: str) -> bool | None:
+def log_flashcard_result(user: User, deck_id: str, card_id: str, result: str) -> bool | None:
     """Store one self-graded card. The text comes from the catalog, never from the caller.
 
     None when the deck has no such card. A failed write returns False rather than raising:
@@ -187,6 +192,7 @@ def log_flashcard_result(deck_id: str, card_id: str, result: str) -> bool | None
         return None
     rec = cat.lessons.get(card["lesson"]) if card["lesson"] else None
     return attempts.record(
+        user.id,
         "flashcard",
         leitner.card_key(deck_id, card["front"]),
         deck_id,
@@ -199,54 +205,24 @@ def log_flashcard_result(deck_id: str, card_id: str, result: str) -> bool | None
     )
 
 
-def drill_history() -> dict[str, dict[str, Any]]:
-    """Drill slug -> {count, last, score}: the sisyphus log (read-only) plus runs recorded in the app.
+def drill_history(user: User) -> dict[str, dict[str, Any]]:
+    """Drill slug -> {count, last, score} from `user`'s drill attempts.
 
-    An app run is keyed by its lesson id, whose last segment is the slug the log uses. `score` is the
-    latest one by date; a run recorded in the app shows as its result (pass, fail or revealed).
+    An app run is keyed by its lesson id, whose last segment is the slug; a row imported from the
+    sisyphus log (`librarian db import-drill-log`) is keyed by the slug itself. `last` is a date in
+    the user's timezone and `score` the latest run's: the log's score, else the app's result (pass,
+    fail or revealed).
     """
-    merged = _drill_attempts(_cat().DRILL_LOG)
-    for a in attempts.attempts(["drill"]):
-        slug, day = Path(a.item).name, a.ts.astimezone().date().isoformat()
+    tz = leitner.zone(user.timezone)
+    merged: dict[str, dict[str, Any]] = {}
+    for a in attempts.attempts(user.id, ["drill"]):
+        slug, day = Path(a.item).name, a.ts.astimezone(tz).date().isoformat()
+        score = str(a.payload.get("score") or a.result)
         prev = merged.get(slug)
         if prev is None:
-            merged[slug] = {"count": 1, "last": day, "score": a.result}
+            merged[slug] = {"count": 1, "last": day, "score": score}
         else:
             prev["count"] += 1
             if day >= prev["last"]:
-                prev["last"], prev["score"] = day, a.result
+                prev["last"], prev["score"] = day, score
     return merged
-
-
-def _drill_attempts(log: Path) -> dict[str, dict[str, Any]]:
-    """drill slug (log QID) → {count, last, score} from the log's Markdown table.
-
-    Only those three columns are read; the free-text Note column never leaves the file.
-    """
-    try:
-        text = log.read_text()
-    except OSError:
-        return {}
-    cols: list[str] = []
-    out: dict[str, dict[str, Any]] = {}
-    for line in text.splitlines():
-        if not line.startswith("|"):
-            continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if not cols:
-            cols = [c.lower() for c in cells]
-            continue
-        row = dict(zip(cols, cells, strict=False))
-        qid, date = row.get("qid", ""), row.get("date", "")
-        if not qid or not re.match(r"\d{4}-\d{2}-\d{2}$", date):
-            continue  # the |---| separator, or a malformed row
-        prev = out.get(qid)
-        if prev is None or date >= prev["last"]:
-            out[qid] = {
-                "count": (prev or {"count": 0})["count"] + 1,
-                "last": date,
-                "score": row.get("score", ""),
-            }
-        else:
-            prev["count"] += 1
-    return out

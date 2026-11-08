@@ -79,7 +79,7 @@ export interface PracticeDrill extends LessonOutline {
   course: string;
   drill: DrillMeta;
   concepts: ConceptRef[];
-  /** From sisyphus drills/coding/drill-log.md, read live; absent if never logged. */
+  /** From the caller's drill attempts (app runs and an imported drill log); absent if none. */
   attempts?: { count: number; last: string; score: string };
 }
 

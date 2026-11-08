@@ -1,7 +1,8 @@
 """The attempts store: one table for every graded study event.
 
 A flashcard self-grade, a multiple-choice answer and a drill run are all rows of `attempts`:
-(when, kind, item id, module or lesson id, result, optional JSON payload). The Leitner schedule
+(whose, when, kind, item id, module or lesson id, result, optional JSON payload). Every read and
+write names the user: one user's history is never another's. The Leitner schedule
 (`leitner.py`), the study home (`study.py`) and the coursework signals read it; nothing keeps a
 second copy. This module is a thin repository over the `attempts` table of `librarian.db`
 (Postgres via `DATABASE_URL`, else a SQLite file in the state dir). It is personal study history,
@@ -9,8 +10,9 @@ so it never lives in `data/`: this repo is public.
 
 An earlier version kept `var/attempts.sqlite3` (copy it in once with `librarian db
 import-attempts`) and, before that, appended flashcard grades to `logs/flashcards.jsonl`. The
-first connection imports that jsonl. The import is idempotent (a unique key on the event, so
-re-reading the same file adds nothing) and leaves the file where it is.
+first connection imports that jsonl into the owner's history (`LIBRARIAN_OWNER_EMAIL`). The
+import is idempotent (a unique key on the event, so re-reading the same file adds nothing) and
+leaves the file where it is.
 
 Writes never raise: a store that cannot be written must not interrupt studying, so `record`
 reports False and the route says `logged: false`.
@@ -29,6 +31,7 @@ from typing import Any
 from sqlalchemy import Connection, Engine, Row, select
 from sqlalchemy.exc import SQLAlchemyError
 
+from librarian import accounts
 from librarian.config import get_settings
 from librarian.db import get_engine, tables, upsert
 from librarian.db.attempt_rows import add_attempt, parse_ts
@@ -69,6 +72,7 @@ class Attempt:
 
 
 def record(
+    user_id: str,
     kind: str,
     item: str,
     scope: str,
@@ -85,11 +89,12 @@ def record(
         raise ValueError(f"unreadable timestamp {ts!r}")
     try:
         engine = get_engine()
+        _import_legacy(engine)
         with engine.begin() as conn:
-            _import_legacy(conn, engine)
             add_attempt(
                 conn,
                 engine,
+                user_id=user_id,
                 ts=when,
                 kind=kind,
                 item=item,
@@ -114,19 +119,19 @@ def _parse(row: Row[Any, Any, Any, Any, Any, Any]) -> Attempt:
     )
 
 
-def attempts(kinds: Iterable[str] | None = None) -> list[Attempt]:
-    """Every stored attempt of `kinds` (default all), oldest first. [] when nothing is stored yet."""
+def attempts(user_id: str, kinds: Iterable[str] | None = None) -> list[Attempt]:
+    """`user_id`'s attempts of `kinds` (default all), oldest first. [] when nothing is stored yet."""
     wanted = tuple(kinds) if kinds is not None else KINDS
     t = tables.attempts
     stmt = (
         select(t.c.ts, t.c.kind, t.c.item, t.c.scope, t.c.result, t.c.payload)
-        .where(t.c.kind.in_(wanted))
+        .where(t.c.user_id == user_id, t.c.kind.in_(wanted))
         .order_by(t.c.ts, t.c.id)
     )
     try:
         engine = get_engine()
-        with engine.begin() as conn:
-            _import_legacy(conn, engine)
+        _import_legacy(engine)
+        with engine.connect() as conn:
             rows = conn.execute(stmt).all()
     except (SQLAlchemyError, OSError) as e:
         log.warning("attempts.read_failed", error=str(e))
@@ -134,8 +139,8 @@ def attempts(kinds: Iterable[str] | None = None) -> list[Attempt]:
     return [_parse(row) for row in rows]
 
 
-def flashcard_rows() -> list[dict[str, Any]]:
-    """Flashcard grades in the shape the old jsonl had (deck, front, result, source), for the signals report."""
+def flashcard_rows(user_id: str) -> list[dict[str, Any]]:
+    """A user's flashcard grades in the shape the old jsonl had (deck, front, result, source), for the signals report."""
     return [
         {
             "ts": a.ts.isoformat(),
@@ -146,7 +151,7 @@ def flashcard_rows() -> list[dict[str, Any]]:
             "source": a.payload.get("source", ""),
             "lesson": a.payload.get("lesson"),
         }
-        for a in attempts(["flashcard"])
+        for a in attempts(user_id, ["flashcard"])
     ]
 
 
@@ -165,8 +170,8 @@ def _legacy_key(rec: dict[str, Any]) -> str | None:
     return None
 
 
-def import_flashcard_log(conn: Connection, engine: Engine, path: Path) -> int:
-    """Add the grades in a flashcards.jsonl. Unreadable lines are skipped. Returns rows added."""
+def import_flashcard_log(conn: Connection, engine: Engine, path: Path, user_id: str) -> int:
+    """Add the grades in a flashcards.jsonl to `user_id`'s history. Unreadable lines are skipped. Returns rows added."""
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
     except (OSError, UnicodeDecodeError) as e:
@@ -188,6 +193,7 @@ def import_flashcard_log(conn: Connection, engine: Engine, path: Path) -> int:
         added += add_attempt(
             conn,
             engine,
+            user_id=user_id,
             ts=ts,
             kind="flashcard",
             item=key,
@@ -198,8 +204,12 @@ def import_flashcard_log(conn: Connection, engine: Engine, path: Path) -> int:
     return added
 
 
-def _import_legacy(conn: Connection, engine: Engine) -> None:
-    """Import the old log when it has changed since the last import (size and mtime are the marker)."""
+def _import_legacy(engine: Engine) -> None:
+    """Import the old log into the owner's history when it has changed since the last import.
+
+    Size and mtime are the marker. The owner's row is resolved before the import's transaction
+    opens, since creating it is a write of its own.
+    """
     try:
         stat = LEGACY_FLASHCARD_LOG.stat()
     except OSError:
@@ -208,13 +218,16 @@ def _import_legacy(conn: Connection, engine: Engine) -> None:
         f"{LEGACY_FLASHCARD_LOG}:{stat.st_size}:{stat.st_mtime_ns}".encode()
     ).hexdigest()
     m = tables.meta
-    if conn.execute(select(m.c.value).where(m.c.key == "flashcard_log")).scalar() == marker:
-        return
-    added = import_flashcard_log(conn, engine, LEGACY_FLASHCARD_LOG)
-    conn.execute(
-        upsert(engine, m)
-        .values(key="flashcard_log", value=marker)
-        .on_conflict_do_update(index_elements=["key"], set_={"value": marker})
-    )
+    with engine.connect() as conn:
+        if conn.execute(select(m.c.value).where(m.c.key == "flashcard_log")).scalar() == marker:
+            return
+    owner = accounts.ensure_owner(engine, get_settings().owner_email)
+    with engine.begin() as conn:
+        added = import_flashcard_log(conn, engine, LEGACY_FLASHCARD_LOG, owner.id)
+        conn.execute(
+            upsert(engine, m)
+            .values(key="flashcard_log", value=marker)
+            .on_conflict_do_update(index_elements=["key"], set_={"value": marker})
+        )
     if added:
         log.info("attempts.legacy_imported", rows=added)

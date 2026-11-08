@@ -15,7 +15,7 @@ torch, fastapi) load only for the verbs that need them.
     librarian scrape sessions|docs|repos|feeds|arxiv|bookmarks
     librarian courses check chapters|curriculum|links|drills|quiz|manifest|crosswalk|smoke-labs
     librarian courses review findings|signals|score-eval
-    librarian db upgrade|import-attempts               user-state database (DATABASE_URL)
+    librarian db upgrade|import-attempts|import-drill-log   user-state database (DATABASE_URL)
     librarian users add|list                           accounts
     librarian keys create|list|revoke                  API keys (lk_…), each printed once
     librarian index build [--out FILE]                 build the search index file the servers read
@@ -105,7 +105,14 @@ GROUPS: dict[str, dict[str, Verb]] = {
     "db": {
         "upgrade": Verb("librarian.db.cli:main", ("upgrade",), "apply the database migrations"),
         "import-attempts": Verb(
-            "librarian.db.cli:main", ("import-attempts",), "copy var/attempts.sqlite3 in, once"
+            "librarian.courses.imports:main",
+            ("import-attempts",),
+            "copy var/attempts.sqlite3 into a user's history",
+        ),
+        "import-drill-log": Verb(
+            "librarian.courses.imports:main",
+            ("import-drill-log",),
+            "import the sisyphus drill log into a user's history (local only)",
         ),
     },
     "users": {

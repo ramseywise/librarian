@@ -51,7 +51,6 @@ def _build(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, public: bool) -> Tes
     monkeypatch.setattr(courses, "COURSES_DIR", root)
     monkeypatch.setattr(courses, "WIKI_DIR", wiki)
     monkeypatch.setattr(courses, "PUBLIC_MODE", public)
-    monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "no-drill-log.md")
     monkeypatch.setattr(courses, "LESSON_VEC_CACHE", tmp_path / "cache" / "lessons.npz")
     monkeypatch.setattr(courses, "_semantic_neighbours", lambda texts, ids: None)
     monkeypatch.setattr(sources, "SOURCES_DIR", srcs)

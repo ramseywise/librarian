@@ -244,8 +244,9 @@ named volume (`librarian-pgdata`), not published on the host, with the password 
 To use a managed Postgres instead, drop the `postgres` service and its `depends_on`, and set
 `DATABASE_URL=postgresql://user:password@host:5432/dbname` on the `librarian` service; the same
 upgrade runs against it. With `DATABASE_URL` unset (`make api`, tests) state goes to
-`var/librarian.sqlite3`. Bring an old `var/attempts.sqlite3` across once with `uv run librarian db import-attempts`
-(idempotent; the old file is left alone).
+`var/librarian.sqlite3`. Bring an old `var/attempts.sqlite3` across once with `uv run librarian db import-attempts`,
+and the sisyphus drill log with `uv run librarian db import-drill-log` (both idempotent, both take
+`--user EMAIL`, default the owner; the source files are left alone).
 
 ### Run with Docker
 

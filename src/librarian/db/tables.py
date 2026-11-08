@@ -27,16 +27,22 @@ attempts = Table(
     "attempts",
     metadata,
     Column("id", _ID, primary_key=True, autoincrement=True),
-    Column("user_id", String(64), nullable=True),
+    Column(
+        "user_id",
+        String(64),
+        ForeignKey("users.id", name="attempts_user_fk", ondelete="CASCADE"),
+        nullable=False,
+    ),
     Column("ts", DateTime(timezone=True), nullable=False),
     Column("kind", String(16), nullable=False),
     Column("item", Text, nullable=False),
     Column("scope", Text, nullable=False),
     Column("result", String(16), nullable=False),
     Column("payload", Text, nullable=True),
-    # sha256 of user, ts, kind, item, result: a unique key that still works while user_id is NULL.
+    # sha256 of user, ts, kind, item, result: the same event recorded twice is one row.
     Column("event_key", String(64), nullable=False, unique=True),
     Index("attempts_kind_item", "kind", "item"),
+    Index("attempts_user_kind", "user_id", "kind"),
 )
 
 meta = Table(
@@ -100,10 +106,26 @@ api_keys = Table(
     Index("api_keys_user", "user_id"),
 )
 
+# Lessons a user has opened or finished. `state` is "opened" or "done"; done is never undone
+# by opening the lesson again, and `updated_at` is the last time either happened.
+progress = Table(
+    "progress",
+    metadata,
+    Column(
+        "user_id",
+        String(64),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column("lesson_id", Text, primary_key=True),
+    Column("state", String(16), nullable=False),
+    Column("updated_at", DateTime(timezone=True), nullable=False),
+)
 
-def event_key(user_id: str | None, ts_iso: str, kind: str, item: str, result: str) -> str:
+
+def event_key(user_id: str, ts_iso: str, kind: str, item: str, result: str) -> str:
     """The `attempts.event_key` of one graded event."""
     import hashlib
 
-    raw = "\x1f".join((user_id or "", ts_iso, kind, item, result))
+    raw = "\x1f".join((user_id, ts_iso, kind, item, result))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()

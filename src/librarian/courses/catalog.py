@@ -25,7 +25,7 @@ index leave them out, so nothing derived from them reaches a tracked file or an 
 The code is split by seam, and this module is the facade: the loaders are in `loader`, the
 concept linking in `linker`, the read-side queries in `queries` and the image guard in `assets`.
 What stays here is what tests and the API patch or flip at module level (the paths, `PUBLIC_MODE`,
-`DRILL_LOG`, `LESSON_VEC_CACHE`) and the cache state. The moved names are re-exported, so
+`LESSON_VEC_CACHE`) and the cache state. The moved names are re-exported, so
 `from librarian.courses import catalog` keeps every name it had.
 """
 
@@ -164,9 +164,6 @@ from librarian.courses.loader import (
     outline as outline,
 )
 from librarian.courses.queries import (
-    _drill_attempts as _drill_attempts,
-)
-from librarian.courses.queries import (
     _scheduled_deck as _scheduled_deck,
 )
 from librarian.courses.queries import (
@@ -211,9 +208,6 @@ COURSES_DIR = _settings.courses_dir
 WIKI_DIR = _settings.wiki_dir
 # Deployed container: the private/ course tree is not read at all. Module-level so a test can flip it.
 PUBLIC_MODE = _settings.public_mode
-# Read live from the private sisyphus checkout and never copied into data/ — this repo is
-# public and the log is personal history. Absent → drills just show no attempts.
-DRILL_LOG = _settings.drill_log
 # Lesson vectors keyed by content hash, so a warm restart re-embeds nothing (gitignored).
 LESSON_VEC_CACHE = _settings.lesson_vec_cache
 

@@ -8,6 +8,9 @@ question comes back through the same queue as a card.
 Rules: five boxes reviewed every 1, 2, 4, 8 and 16 days. "knew" moves a card up one box and a
 miss returns it to box 1. A "knew" before the due date reschedules nothing, so studying a deck
 twice in one sitting cannot walk a card to box 5.
+
+Days are the user's calendar days (`users.timezone`), so a card graded at 23:30 in Lisbon is due
+on the user's tomorrow, not the server's.
 """
 
 from __future__ import annotations
@@ -17,7 +20,9 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from typing import Literal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from librarian.accounts import User
 from librarian.courses import attempts
 from librarian.log_config import get_logger
 
@@ -59,8 +64,8 @@ def _timestamp(raw: object) -> datetime | None:
         return None
     ts = ts if ts.tzinfo else ts.replace(tzinfo=UTC)
     try:
-        # A date at the end of the calendar has no local day, or no due date after it.
-        _ = ts.astimezone().date() + timedelta(days=max(BOX_DAYS))
+        # A date at the end of the calendar has no day in every zone, or no due date after it.
+        _ = (ts.astimezone(UTC) + timedelta(days=1)).date() + timedelta(days=max(BOX_DAYS))
     except (OverflowError, OSError):
         return None
     return ts
@@ -78,26 +83,40 @@ def _next_state(state: CardState | None, grade: str, day: date) -> CardState:
     return CardState(box, day + timedelta(days=BOX_DAYS[box - 1]))
 
 
-def _fold(reviews: Iterable[tuple[datetime, str, str]]) -> dict[str, CardState]:
+def zone(name: str) -> ZoneInfo:
+    """The zone `name`, or UTC when it is not a zone this machine knows."""
+    try:
+        return ZoneInfo(name)
+    except (ZoneInfoNotFoundError, ValueError):
+        log.warning("leitner.unknown_timezone", timezone=name)
+        return ZoneInfo("UTC")
+
+
+def today(user: User) -> date:
+    """The date it is now where `user` is."""
+    return datetime.now(zone(user.timezone)).date()
+
+
+def _fold(reviews: Iterable[tuple[datetime, str, str]], tz: ZoneInfo) -> dict[str, CardState]:
     states: dict[str, CardState] = {}
     for ts, key, grade in sorted(reviews, key=lambda r: r[0]):
-        states[key] = _next_state(states.get(key), grade, ts.astimezone().date())
+        states[key] = _next_state(states.get(key), grade, ts.astimezone(tz).date())
     return states
 
 
-def states_from(rows: Iterable[attempts.Attempt]) -> dict[str, CardState]:
-    """Each item's state after its flashcard and question attempts in time order."""
+def states_from(rows: Iterable[attempts.Attempt], timezone: str = "UTC") -> dict[str, CardState]:
+    """Each item's state after its flashcard and question attempts in time order, by `timezone`'s days."""
     reviews = [
         (a.ts, a.item, "knew" if a.good else "missed")
         for a in rows
         if a.kind in SCHEDULED_KINDS and _timestamp(a.ts.isoformat()) is not None
     ]
-    return _fold(reviews)
+    return _fold(reviews, zone(timezone))
 
 
-def load_states() -> dict[str, CardState]:
-    """The schedule as of now. An empty or unreadable store means every item is new."""
-    return states_from(attempts.attempts(SCHEDULED_KINDS))
+def load_states(user: User) -> dict[str, CardState]:
+    """`user`'s schedule as of now. An empty or unreadable store means every item is new."""
+    return states_from(attempts.attempts(user.id, SCHEDULED_KINDS), user.timezone)
 
 
 def status_of(state: CardState | None, today: date) -> Status:

@@ -65,7 +65,6 @@ def env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, Path]:
     wiki.mkdir()
     monkeypatch.setattr(courses, "COURSES_DIR", root)
     monkeypatch.setattr(courses, "WIKI_DIR", wiki)
-    monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "none.md")
     monkeypatch.setattr(courses, "LESSON_VEC_CACHE", tmp_path / "cache" / "lessons.npz")
     monkeypatch.setattr(courses, "_semantic_neighbours", lambda texts, ids: None)
     monkeypatch.setattr(sources, "SOURCES_DIR", lae)

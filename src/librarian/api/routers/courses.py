@@ -1,4 +1,7 @@
-"""/api/courses: the course catalog, lessons, search, practice drills, flashcards, quizzes and slides."""
+"""/api/courses: the course catalog, lessons, search, practice drills, flashcards, quizzes and slides.
+
+Routes that read or write study state (attempts, schedules, progress) are the caller's: they take
+`SignedIn`, and one user never sees another's history."""
 
 from __future__ import annotations
 
@@ -8,8 +11,9 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
+from librarian.api.security import SignedIn
 from librarian.courses import catalog as lib
-from librarian.courses import slides, sources, study
+from librarian.courses import progress, slides, sources, study
 
 router = APIRouter(prefix="/api/courses")
 
@@ -44,22 +48,25 @@ def lessons_for_concept(page_id: str) -> list[dict[str, Any]]:
 
 @router.get("/practice")
 def practice(
-    track: str | None = None, difficulty: str | None = None, concept: str | None = None
+    user: SignedIn,
+    track: str | None = None,
+    difficulty: str | None = None,
+    concept: str | None = None,
 ) -> list[dict[str, Any]]:
-    return lib.practice_drills(track, difficulty, concept)
+    return lib.practice_drills(user, track, difficulty, concept)
 
 
 @router.get("/flashcards/{deck_id:path}")
-def flashcards(deck_id: str) -> dict[str, Any]:
-    deck = lib.study_deck(deck_id)
+def flashcards(user: SignedIn, deck_id: str) -> dict[str, Any]:
+    deck = lib.study_deck(user, deck_id)
     if deck is None:
         raise HTTPException(status_code=404, detail="no flashcards here")
     return deck
 
 
 @router.get("/flashcards-due")
-def flashcards_due() -> dict[str, Any]:
-    return lib.flashcards_due()
+def flashcards_due(user: SignedIn) -> dict[str, Any]:
+    return lib.flashcards_due(user)
 
 
 class CardResult(BaseModel):
@@ -69,18 +76,18 @@ class CardResult(BaseModel):
 
 
 @router.post("/flashcard-results")
-def flashcard_result(body: CardResult) -> dict[str, bool]:
+def flashcard_result(user: SignedIn, body: CardResult) -> dict[str, bool]:
     """A failed write returns logged=false rather than an error: it must not interrupt studying."""
-    logged = lib.log_flashcard_result(body.deck, body.card, body.result)
+    logged = lib.log_flashcard_result(user, body.deck, body.card, body.result)
     if logged is None:
         raise HTTPException(status_code=404, detail="no such card")
     return {"logged": logged}
 
 
 @router.get("/quiz/{quiz_id:path}")
-def quiz_deck(quiz_id: str) -> dict[str, Any]:
+def quiz_deck(user: SignedIn, quiz_id: str) -> dict[str, Any]:
     """A module's or lesson's multiple-choice questions, without the answers."""
-    found = study.quiz_deck(quiz_id)
+    found = study.quiz_deck(user, quiz_id)
     if found is None:
         raise HTTPException(status_code=404, detail="no quiz here")
     return found
@@ -93,10 +100,10 @@ class QuizAnswer(BaseModel):
 
 
 @router.post("/quiz-results")
-def quiz_result(body: QuizAnswer) -> dict[str, Any]:
+def quiz_result(user: SignedIn, body: QuizAnswer) -> dict[str, Any]:
     """Grade one answer on the server. A failed write returns logged=false, never an error."""
     try:
-        graded = study.answer_question(body.quiz, body.question, body.choice)
+        graded = study.answer_question(user, body.quiz, body.question, body.choice)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
     if graded is None:
@@ -110,17 +117,36 @@ class DrillResult(BaseModel):
 
 
 @router.post("/drill-results")
-def drill_result(body: DrillResult) -> dict[str, bool]:
-    logged = study.record_drill(body.drill, body.result)
+def drill_result(user: SignedIn, body: DrillResult) -> dict[str, bool]:
+    logged = study.record_drill(user, body.drill, body.result)
     if logged is None:
         raise HTTPException(status_code=404, detail="no such drill")
     return {"logged": logged}
 
 
 @router.get("/study")
-def study_home() -> dict[str, Any]:
+def study_home(user: SignedIn) -> dict[str, Any]:
     """The study queue: cards and questions due, the next drill, the current module's lecture."""
-    return study.home()
+    return study.home(user)
+
+
+@router.get("/progress")
+def get_progress(user: SignedIn) -> dict[str, Any]:
+    """The caller's opened and finished lessons, done/total per module and the last lesson."""
+    return progress.summary(user)
+
+
+class ProgressMark(BaseModel):
+    lesson: str
+    state: Literal["opened", "done"]
+
+
+@router.post("/progress")
+def mark_progress(user: SignedIn, body: ProgressMark) -> dict[str, bool]:
+    """Mark a lesson opened or done. Done stays done. A failed write returns logged=false."""
+    if not progress.known(body.lesson):
+        raise HTTPException(status_code=404, detail="lesson not found")
+    return {"logged": progress.mark(user.id, body.lesson, body.state)}
 
 
 @router.get("/slides/{deck_id:path}")

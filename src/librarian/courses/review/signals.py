@@ -4,7 +4,7 @@
     librarian courses review signals --write     # also write logs/signals/<date>.md (gitignored)
 
 Reads, and never changes:
-- the attempts store (var/attempts.sqlite3; it imports the old logs/flashcards.jsonl): self-graded cards
+- the owner's attempts in the user-state database (it imports the old logs/flashcards.jsonl): self-graded cards
 - logs/retrieval.jsonl: real wiki searches that found nothing. Eval and sweep rows are ignored
 - sisyphus's drills/coding/drill-log.md ($SISYPHUS_DIR): the Date, QID, Aid and Score columns, never the Note
 - logs/review/findings.jsonl: open decisions and recurring faults
@@ -25,10 +25,13 @@ from collections.abc import Sequence
 from datetime import date
 from pathlib import Path
 
+from librarian import accounts
 from librarian.config import get_settings
 from librarian.courses import attempts as attempt_store
 from librarian.courses.checks.common import is_private, public_files
+from librarian.courses.drill_log import parse as parse_drill_log
 from librarian.courses.review import findings as fl
+from librarian.db import get_engine
 
 SOURCE_PREFIX = "learn-ai-engineering/"
 MIN_CARD_ATTEMPTS = 3  # Fewer than this says nothing about one card
@@ -82,31 +85,6 @@ def flashcard_section(rows: list[dict], root: Path) -> list[str]:
         )
         lines.append(f'- {rate:.0%} missed of {total}: "{front}" ({where})')
     return lines
-
-
-def parse_drill_log(text: str) -> list[dict]:
-    """Rows of the log's table, keeping only date, qid, aid and score. Note text is dropped here."""
-    rows, header = [], None
-    for line in text.splitlines():
-        if not line.startswith("|"):
-            continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if header is None:
-            if "QID" in cells:
-                header = cells
-            continue
-        if set(cells[0]) <= {"-", ":"} or len(cells) < len(header):
-            continue
-        row = dict(zip(header, cells, strict=False))
-        rows.append(
-            {
-                "date": row.get("Date", ""),
-                "qid": row.get("QID", ""),
-                "aid": row.get("Aid", ""),
-                "score": row.get("Score", ""),
-            }
-        )
-    return rows
 
 
 def drill_files(root: Path) -> dict[str, str]:
@@ -188,9 +166,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args(argv)
     cfg = get_settings()
+    owner = accounts.ensure_owner(get_engine(), cfg.owner_email)
     text = build(
         cfg.courses_dir,
-        attempt_store.flashcard_rows(),
+        attempt_store.flashcard_rows(owner.id),
         cfg.retrieval_log,
         cfg.drill_log,
         cfg.review_findings_log,

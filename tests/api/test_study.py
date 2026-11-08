@@ -9,8 +9,9 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from librarian.accounts import User
 from librarian.api.routers import courses as courses_routes
-from librarian.courses import attempts, leitner, slides, study
+from librarian.courses import attempts, drill_log, leitner, slides, study
 from librarian.courses import catalog as courses
 
 MOD = "gen-ai/01-rag"
@@ -62,7 +63,6 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
         )
     monkeypatch.setattr(courses, "COURSES_DIR", root)
     monkeypatch.setattr(courses, "WIKI_DIR", tmp_path / "wiki")
-    monkeypatch.setattr(courses, "DRILL_LOG", tmp_path / "no-drill-log.md")
     monkeypatch.setattr(courses, "LESSON_VEC_CACHE", tmp_path / "cache" / "lessons.npz")
     monkeypatch.setattr(courses, "_semantic_neighbours", lambda texts, ids: None)
     monkeypatch.setattr(slides, "COURSES_DIR", root)
@@ -91,26 +91,26 @@ def test_quiz_is_served_without_answers_and_counted_in_the_catalog(client: TestC
     assert client.get("/api/courses/quiz/gen-ai/nope").status_code == 404
 
 
-def test_answers_are_graded_on_the_server_and_stored(client: TestClient) -> None:
+def test_answers_are_graded_on_the_server_and_stored(client: TestClient, owner: User) -> None:
     url = "/api/courses/quiz-results"
     right = client.post(url, json={"quiz": MOD, "question": "q1", "choice": "b"}).json()
     assert right == {"correct": True, "answer": "b", "explanation": "B is right.", "logged": True}
     wrong = client.post(url, json={"quiz": MOD, "question": "q2", "choice": "y"}).json()
     assert wrong["correct"] is False and wrong["answer"] == "x"
-    assert [a.result for a in attempts.attempts(["mcq"])] == ["correct", "wrong"]
+    assert [a.result for a in attempts.attempts(owner.id, ["mcq"])] == ["correct", "wrong"]
     assert client.post(url, json={"quiz": MOD, "question": "zz", "choice": "a"}).status_code == 404
     assert (
         client.post(url, json={"quiz": MOD, "question": "q1", "choice": "nope"}).status_code == 422
     )
 
 
-def test_a_wrong_answer_is_due_tomorrow_like_a_missed_card(client: TestClient) -> None:
+def test_a_wrong_answer_is_due_tomorrow_like_a_missed_card(client: TestClient, owner: User) -> None:
     client.post("/api/courses/quiz-results", json={"quiz": MOD, "question": "q2", "choice": "y"})
-    state = leitner.load_states()[f"{MOD}:q:q2"]
+    state = leitner.load_states(owner)[f"{MOD}:q:q2"]
     assert state.box == 1
     # Answered the day before, so it is due now; the lesson quiz shares the schedule.
     yesterday = (datetime.now(UTC) - timedelta(days=2)).isoformat()
-    attempts.record("mcq", f"{MOD}:q:q1", MOD, "wrong", ts=yesterday)
+    attempts.record(owner.id, "mcq", f"{MOD}:q:q1", MOD, "wrong", ts=yesterday)
     body = client.get(f"/api/courses/quiz/{MOD}/intro").json()
     assert body["questions"][0]["status"] == "due"
     assert body["dueCount"] == 1
@@ -140,27 +140,31 @@ def test_drill_runs_are_stored_and_shown_in_practice(client: TestClient) -> None
     assert row["attempts"]["count"] == 1 and row["attempts"]["score"] == "fail"
 
 
-def test_drill_log_and_app_runs_merge(client: TestClient, tmp_path: Path) -> None:
-    (tmp_path / "no-drill-log.md").write_text(
+def test_imported_drill_log_and_app_runs_merge(
+    client: TestClient, tmp_path: Path, owner: User
+) -> None:
+    log = tmp_path / "drill-log.md"
+    log.write_text(
         "| Date | QID | Aid | Score | Note |\n|---|---|---|---|---|\n| 2020-01-01 | d-easy | 0 | ✓✓ | n |\n"
     )
+    assert drill_log.import_log(log, owner.id) == (1, 1, 0)
     client.post("/api/courses/drill-results", json={"drill": f"{MOD}/d-easy", "result": "pass"})
     row = next(d for d in client.get("/api/courses/practice").json() if d["id"].endswith("d-easy"))
     assert row["attempts"]["count"] == 2 and row["attempts"]["score"] == "pass"
 
 
-def test_next_drill_is_from_the_weakest_track(client: TestClient) -> None:
-    assert study.next_drill()["reason"] == "weakest track" or True  # no attempts: any drill
+def test_next_drill_is_from_the_weakest_track(client: TestClient, owner: User) -> None:
+    assert study.next_drill(owner)["reason"] == "weakest track" or True  # no attempts: any drill
     client.post("/api/courses/drill-results", json={"drill": f"{MOD}/p-one", "result": "pass"})
     client.post("/api/courses/drill-results", json={"drill": f"{MOD}/d-easy", "result": "fail"})
-    nxt = study.next_drill()
+    nxt = study.next_drill(owner)
     assert nxt is not None and nxt["id"] == f"{MOD}/d-easy" and nxt["track"] == "sql"
     client.post("/api/courses/drill-results", json={"drill": f"{MOD}/d-easy", "result": "pass"})
-    assert study.next_drill()["id"] == f"{MOD}/d-hard"  # type: ignore[index]
+    assert study.next_drill(owner)["id"] == f"{MOD}/d-hard"  # type: ignore[index]
 
 
-def test_next_drill_with_no_attempts_is_the_easiest(client: TestClient) -> None:
-    nxt = study.next_drill()
+def test_next_drill_with_no_attempts_is_the_easiest(client: TestClient, owner: User) -> None:
+    nxt = study.next_drill(owner)
     assert nxt is not None and nxt["reason"] == "first drill"
     assert nxt["drill"]["difficulty"] == "easy"
 
@@ -311,9 +315,9 @@ def test_home_gathers_cards_questions_drill_and_lecture(
     assert [d["id"] for d in body["lecture"]["decks"]] == [MOD, f"{MOD}/01-intro"]
 
 
-def test_home_counts_what_is_due(client: TestClient) -> None:
+def test_home_counts_what_is_due(client: TestClient, owner: User) -> None:
     two_days = (datetime.now(UTC) - timedelta(days=2)).isoformat()
-    attempts.record("mcq", f"{MOD}:q:q1", MOD, "wrong", ts=two_days)
+    attempts.record(owner.id, "mcq", f"{MOD}:q:q1", MOD, "wrong", ts=two_days)
     client.get("/api/courses/study")
     row = client.get("/api/courses/study").json()["modules"][0]
     assert row["questions"]["due"] == 1

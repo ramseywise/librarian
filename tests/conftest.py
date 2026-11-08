@@ -78,6 +78,16 @@ def _isolate_study_state(
     db_engine.reset_engines()
 
 
+@pytest.fixture
+def owner():  # noqa: ANN201 - librarian.accounts.User
+    """The owner, whom open-mode HTTP requests act as: library calls use it to match them."""
+    from librarian import accounts
+    from librarian.config import get_settings
+    from librarian.db import get_engine
+
+    return accounts.ensure_owner(get_engine(), get_settings().owner_email)
+
+
 # ---------------------------------------------------------------------------
 # Fake Anthropic client — drives the agent loop and the judge with no network.
 # ---------------------------------------------------------------------------

@@ -35,13 +35,13 @@ def add_attempt(
     conn: Connection,
     engine: Engine,
     *,
+    user_id: str,
     ts: datetime,
     kind: str,
     item: str,
     scope: str,
     result: str,
     payload: str | None,
-    user_id: str | None = None,
 ) -> int:
     """Insert one event; the same event twice adds nothing. Returns rows added (0 or 1)."""
     stmt = (
@@ -61,8 +61,10 @@ def add_attempt(
     return conn.execute(stmt).rowcount
 
 
-def import_sqlite_attempts(path: Path, engine: Engine | None = None) -> tuple[int, int, int]:
-    """Copy the rows of an old `attempts.sqlite3` once. Returns (read, added, skipped).
+def import_sqlite_attempts(
+    path: Path, *, user_id: str, engine: Engine | None = None
+) -> tuple[int, int, int]:
+    """Copy the rows of an old `attempts.sqlite3` into `user_id`'s history once. Returns (read, added, skipped).
 
     Idempotent: a row already present is not added again. The file is opened read-only and
     left alone. A row with an unreadable timestamp is skipped.
@@ -83,6 +85,7 @@ def import_sqlite_attempts(path: Path, engine: Engine | None = None) -> tuple[in
             added += add_attempt(
                 conn,
                 engine,
+                user_id=user_id,
                 ts=ts,
                 kind=kind,
                 item=item,

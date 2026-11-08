@@ -88,7 +88,7 @@ class Settings(BaseSettings):
     # User state (attempts, chat spend): SQLAlchemy URL, e.g. postgresql://user:pw@host/db.
     # Unset: a SQLite file in the state dir (see `database_url_or_default`).
     database_url: str = Field(default="", validation_alias=_env("DATABASE_URL"))
-    # The private sisyphus checkout, read live for drill attempts.
+    # The private sisyphus checkout; `librarian db import-drill-log` reads its drill log (local only).
     override_sisyphus_dir: Path | None = Field(default=None, validation_alias=_env("SISYPHUS_DIR"))
 
     # The course sources repo (PDFs and book folders), read through the sources route and never
