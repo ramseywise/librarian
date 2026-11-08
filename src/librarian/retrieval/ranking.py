@@ -2,7 +2,7 @@
 
 Shared by the MCP tool, the chat agent and the eval harness. Search blends BM25 and cosine
 similarity equally; backlinks are deliberately not a ranking signal. Ranking changes must clear
-`make eval-gate` on all four arms (see CLAUDE.md, "Retrieval evals").
+`make eval-gate` on all six arms (see CLAUDE.md, "Eval gate").
 """
 
 from __future__ import annotations

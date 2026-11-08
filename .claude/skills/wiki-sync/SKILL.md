@@ -24,53 +24,33 @@ So a new wiki directory needs **no code change** to appear, be filterable and be
 - Empty → full audit, report only
 - `--fix` → apply mechanical fixes (add KNOWN colours); never remove entries without asking
 
-## Step 1 — Discover actual wiki domains
+## Step 1 — Run the check
 
 ```bash
-ls -d data/wiki/*/ | xargs -n1 basename | grep -v '^private$'
-for d in data/wiki/*/; do echo "$(find "$d" -name '*.md' | wc -l | tr -d ' ') $(basename $d)"; done | sort -rn
+uv run librarian wiki sync-check          # --json for parsing; exit 1 on DRIFT
 ```
 
-These names are the **canonical domain list**. Note any domain with **< 3 pages** (thin — merge candidate) or **> 20 pages** (thick — split candidate).
+The verb lists the canonical domain list (directories under `data/wiki/` minus `private/`, with page counts) and prints one line per finding:
 
-Confirm the backend agrees (it should, by construction):
-```bash
-uv run python -c "from librarian.wiki.parser import parse_wiki; print(parse_wiki()['domains'])"
-```
+- `DRIFT`: `parser.py:_domain_tag_set`, `retrieval/corpus.py:wiki_domains` or `wiki/relinker.py:_domain_tag_set` holds a literal list or no longer reads `WIKI_DIR` and excludes `private/`; or a frontend file outside `theme/domains.ts` names three or more domains.
+- `THIN` (< 3 pages) and `THICK` (> 20 pages): merge and split candidates. Most domains are past 20 now, so report only the ones that stand out, and suggest a target or the top themes (that part is yours).
+- `NOTE`: a domain with no `KNOWN` colour (the palette colours it), or a ghost `KNOWN` colour with no directory.
 
-## Step 2 — Read what the code holds
+Do not re-derive any of this by hand. What the verb cannot do is below.
+
+## Step 2 — Read what the code holds (judgement only)
 
 ### `app/src/theme/domains.ts`
-Extract the keys of `const KNOWN: Record<string, string> = {...}` and the `PALETTE` values. (`private` is a KNOWN key on purpose: private pages are shown locally with a badge, decision D1.)
+Only needed to pick a colour for `--fix` (Step 4): read the `KNOWN` values and the `PALETTE`. (`private` is a KNOWN key on purpose: private pages are shown locally with a badge, decision D1.)
 
-### Derivation functions (confirm they still derive, not list)
-- `src/librarian/wiki/parser.py` — `_domain_tag_set()` must read `WIKI_DIR` at call time and exclude `private`; `parse_wiki()` must return `domains`.
-- `src/librarian/retrieval/corpus.py` — `wiki_domains()`, same rule.
-- If either has been replaced by a literal set/list, that is **DRIFT**.
-
-### Remaining hardcoded lists
-- `src/librarian/wiki/relinker.py` — `_domain_tag_set()` (discounts domain tags when scoring shared tags) must read `WIKI_DIR` at call time and exclude `private`, like the two above. A literal set here is **DRIFT**.
-- Regression sweep — no other domain list should exist in the frontend:
-  ```bash
-  P='"(rag|langgraph|adk|infra|memory)"|^\s*(rag|langgraph|adk|infra|memory)\s*:'
-  grep -cE "$P" app/src/theme/domains.ts   # positive control: must be > 0
-  grep -rnE "$P" app/src --include='*.ts' --include='*.tsx' \
-    | grep -v -e theme/domains.ts -e __tests__
-  ```
-  The pattern catches both quoted array entries and unquoted record keys. Any array or record naming three or more domains outside `theme/domains.ts` is **DRIFT** (a list was reintroduced).
+### Derivations and the frontend list
+`sync-check` already decided these (`parse_wiki()` must still return `domains`; read `parser.py` if a DRIFT line says why it is not enough). Open a flagged file and confirm the finding is a real list and not a test fixture or a one-off use before reporting it as DRIFT.
 
 ## Step 3 — Health checks
 
-For each actual wiki domain:
-- **No fixed colour** — not a key in `KNOWN`. This is a **NOTE, not drift**: `domainColor()` already gives it a stable palette colour. Suggest adding a KNOWN entry only if the palette colour clashes with a neighbour or the domain is large.
+The verb's `NOTE` lines are the colour findings. A missing fixed colour is a **NOTE, not drift**: `domainColor()` already gives it a stable palette colour, so suggest a `KNOWN` entry only if the palette colour clashes with a neighbour or the domain is large. A ghost `KNOWN` colour is harmless; list it for cleanup.
 
-For each name in code but with no `data/wiki/<name>/` directory:
-- **Ghost KNOWN colour** — harmless (unused), NOTE; list for cleanup.
-
-Structural:
-- **DRIFT** — a derivation replaced by a literal, or a hardcoded domain list found by the regression sweep.
-- **Thin domain** (< 3 pages) — merge candidate; suggest a target domain.
-- **Thick domain** (> 20 pages) — split candidate; list the top themes.
+Yours to add: for a `THIN` domain, a merge target; for a `THICK` one that stands out, the top themes. A `DRIFT` line you could not confirm in Step 2 is not reported as drift.
 
 ## Step 4 — Colour for new KNOWN entries (if --fix)
 

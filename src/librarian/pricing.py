@@ -10,12 +10,25 @@ rate (prompts above 100K cost $0.50 / $2.50), which a chat turn here does not re
 
 A model missing from the table is refused at startup (`librarian.api.startup`); extend the table
 rather than adding a price setting.
+
+The table is reviewed monthly. `PRICES_REVIEWED` is the date someone last compared it with the
+published prices and the claude-api skill's table; `librarian pricing check` prints it and exits 1
+once it is more than `MAX_AGE_DAYS` old. Bump the date only after that comparison.
 """
 
 from __future__ import annotations
 
+import argparse
 import re
+import sys
+from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import UTC, date, datetime
+
+# Last time the table below was compared with the published prices. 2026-10-06 is the date of the
+# snapshot in the docstring above; nobody has re-checked since.
+PRICES_REVIEWED = date(2026, 10, 6)
+MAX_AGE_DAYS = 35  # a monthly review plus a few days' slack
 
 
 @dataclass(frozen=True)
@@ -82,3 +95,39 @@ def cost_usd(model: str, usage: TokenUsage) -> float:
         + usage.cache_read * p.cache_read
         + usage.cache_write * p.cache_write
     ) / 1_000_000
+
+
+def review_age_days(today: date | None = None) -> int:
+    return ((today or datetime.now(UTC).date()) - PRICES_REVIEWED).days
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """`librarian pricing check`: print the table and its review date; exit 1 when it is stale."""
+    parser = argparse.ArgumentParser(prog="librarian pricing")
+    sub = parser.add_subparsers(dest="verb", required=True)
+    sub.add_parser("check", help="print the price table; exit 1 if not reviewed in 35 days")
+    parser.parse_args(list(argv) if argv is not None else sys.argv[1:])
+
+    from librarian.config import get_settings
+
+    print(
+        f"{'model':<20} {'input':>8} {'output':>8} {'cache read':>11} {'cache write':>12}  (USD / 1M tokens)"
+    )
+    for model, p in PRICES.items():
+        print(
+            f"{model:<20} {p.input:>8.3f} {p.output:>8.3f} {p.cache_read:>11.3f} {p.cache_write:>12.3f}"
+        )
+    age = review_age_days()
+    print(f"\nlast reviewed: {PRICES_REVIEWED.isoformat()} ({age} days ago; limit {MAX_AGE_DAYS})")
+    configured = get_settings().anthropic_model
+    if price_for(configured) is None:
+        print(f"FAIL: the configured model {configured!r} is not in the table", file=sys.stderr)
+        return 1
+    if age > MAX_AGE_DAYS:
+        print(
+            f"FAIL: the price table was last reviewed {age} days ago. Compare it with the "
+            "published prices, then update PRICES_REVIEWED in src/librarian/pricing.py.",
+            file=sys.stderr,
+        )
+        return 1
+    return 0

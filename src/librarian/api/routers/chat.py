@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import time
 from collections.abc import AsyncIterator
 from typing import Literal, Self
 
@@ -14,6 +15,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from librarian import experiments, feedback
 from librarian.agent import run_agent_stream
+from librarian.api import prom
 from librarian.api.routers.release import served_release
 from librarian.api.security import SignedIn, chat_limiter
 from librarian.config import get_release, get_settings
@@ -61,6 +63,7 @@ class ChatRequest(BaseModel):
 
 @router.post("/api/chat/stream")
 async def chat_stream(req: ChatRequest, user: SignedIn, request: Request) -> StreamingResponse:
+    request_started = time.perf_counter()
     settings = get_settings()
     if not settings.chat_enabled:
         raise HTTPException(status_code=404, detail="chat is disabled")
@@ -104,10 +107,16 @@ async def chat_stream(req: ChatRequest, user: SignedIn, request: Request) -> Str
             variant=variant,
             release=served_release() or get_release(),
         )
+        first_token = True
         async for event in stream:
+            if first_token and event["type"] == "token":
+                first_token = False
+                prom.observe_first_token(request_started)
             if event["type"] == "grounding" and not event["cited"]:
                 await asyncio.to_thread(note_unanswered)
             yield f"data: {json.dumps(event)}\n\n"
+        if first_token:
+            prom.note_no_token()
 
     return StreamingResponse(
         generate(),

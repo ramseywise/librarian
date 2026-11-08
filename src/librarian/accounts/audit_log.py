@@ -23,6 +23,8 @@ ACTIONS = frozenset(
         "key_revoke",
         "invite",
         "promote",
+        "user_disable",
+        "user_enable",
         "admin_reload",
     }
 )

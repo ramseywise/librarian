@@ -66,3 +66,38 @@ def test_startup_refuses_an_unknown_model_and_names_the_known_ones() -> None:
 
 def test_startup_accepts_a_known_model() -> None:
     assert find_model_problems(Settings(_env_file=None, anthropic_model="claude-haiku-4-5")) == []
+
+
+def test_pricing_check_passes_when_fresh_and_fails_when_stale(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from datetime import date, timedelta
+
+    from librarian import pricing
+
+    monkeypatch.setenv("ANTHROPIC_MODEL", DEFAULT_CHAT_MODEL)
+    monkeypatch.setattr(
+        pricing, "PRICES_REVIEWED", date.today() - timedelta(days=pricing.MAX_AGE_DAYS)
+    )
+    assert pricing.main(["check"]) == 0
+    assert "last reviewed" in capsys.readouterr().out
+    monkeypatch.setattr(
+        pricing, "PRICES_REVIEWED", date.today() - timedelta(days=pricing.MAX_AGE_DAYS + 1)
+    )
+    assert pricing.main(["check"]) == 1
+    assert "FAIL" in capsys.readouterr().err
+
+
+def test_pricing_check_fails_for_a_model_missing_from_the_table(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from librarian import pricing
+    from librarian.config import get_settings
+
+    monkeypatch.setenv("ANTHROPIC_MODEL", "claude-nope")
+    get_settings.cache_clear()
+    try:
+        assert pricing.main(["check"]) == 1
+    finally:
+        monkeypatch.undo()
+        get_settings.cache_clear()

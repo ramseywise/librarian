@@ -4,6 +4,10 @@ Four things page the owner, and everything else waits for the full phase 5 SLO w
 configured outside the repo, so this page is a checklist. Tick each box once on the real host, then
 record the date in `docs/status.md` (Alerting row).
 
+The SLOs, the `/metrics` endpoint, the Prometheus alert rules and the Grafana dashboard are in
+[slo.md](slo.md); those are metrics-based and complement the four external checks below, which
+still need a monitor outside the host.
+
 Replace `<domain>` with `LIBRARIAN_DOMAIN`. The alert address is the owner's own mailbox, which is
 kept out of this repo.
 

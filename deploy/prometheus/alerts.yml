@@ -1,0 +1,166 @@
+# Alert rules for the SLOs in docs/ops/slo.md. Each alert's runbook is a section of
+# docs/ops/alerting.md or slo.md. Validate with:
+#   docker run --rm --entrypoint promtool -v "$PWD:/w:ro" prom/prometheus:v3.16.0 check rules /w/alerts.yml
+groups:
+  # -- Recording rules: one place for the SLI expressions, reused by alerts and the dashboard.
+  - name: librarian-sli
+    interval: 30s
+    rules:
+      # Availability SLI: share of requests that were not a server error. 4xx is the caller's.
+      - record: librarian:http_requests:rate5m
+        expr: sum(rate(librarian_http_requests_total[5m]))
+      - record: librarian:http_errors:rate5m
+        expr: sum(rate(librarian_http_requests_total{status=~"5.."}[5m]))
+      - record: librarian:http_error_ratio:rate5m
+        expr: librarian:http_errors:rate5m / clamp_min(librarian:http_requests:rate5m, 1e-9)
+      - record: librarian:http_error_ratio:rate1h
+        expr: |
+          sum(rate(librarian_http_requests_total{status=~"5.."}[1h]))
+          / clamp_min(sum(rate(librarian_http_requests_total[1h])), 1e-9)
+      - record: librarian:http_error_ratio:rate6h
+        expr: |
+          sum(rate(librarian_http_requests_total{status=~"5.."}[6h]))
+          / clamp_min(sum(rate(librarian_http_requests_total[6h])), 1e-9)
+      - record: librarian:http_error_ratio:rate3d
+        expr: |
+          sum(rate(librarian_http_requests_total{status=~"5.."}[3d]))
+          / clamp_min(sum(rate(librarian_http_requests_total[3d])), 1e-9)
+      # Search SLI: share of searches slower than 500 ms (0.5 is a bucket edge, so this is exact).
+      - record: librarian:search_slow_ratio:rate5m
+        expr: |
+          1 - (sum(rate(librarian_search_duration_seconds_bucket{le="0.5"}[5m]))
+               / clamp_min(sum(rate(librarian_search_duration_seconds_count[5m])), 1e-9))
+      - record: librarian:search_p95_seconds:rate5m
+        expr: histogram_quantile(0.95, sum by (le) (rate(librarian_search_duration_seconds_bucket[5m])))
+      - record: librarian:chat_first_token_p95_seconds:rate5m
+        expr: histogram_quantile(0.95, sum by (le) (rate(librarian_chat_first_token_seconds_bucket[5m])))
+      - record: librarian:chat_slow_ratio:rate5m
+        expr: |
+          1 - (sum(rate(librarian_chat_first_token_seconds_bucket{le="4.0"}[5m]))
+               / clamp_min(sum(rate(librarian_chat_first_token_seconds_count[5m])), 1e-9))
+
+  - name: librarian-slo
+    rules:
+      # Error budget for 99.5% is 0.5%. Burn rate 14.4 spends 2% of the 30-day budget in an hour;
+      # 6 spends 5% in six hours; 1 spends the whole budget in 30 days (ticket, not page).
+      - alert: LibrarianErrorBudgetFastBurn
+        expr: |
+          librarian:http_error_ratio:rate5m > (14.4 * 0.005)
+          and librarian:http_error_ratio:rate1h > (14.4 * 0.005)
+        for: 2m
+        labels: {severity: page}
+        annotations:
+          summary: "5xx rate is burning the 30-day availability budget 14x too fast"
+          description: "Error ratio {{ $value | humanizePercentage }} over 5m. Runbook: docs/ops/slo.md#error-rate."
+
+      - alert: LibrarianErrorBudgetSlowBurn
+        expr: |
+          librarian:http_error_ratio:rate6h > (6 * 0.005)
+          and librarian:http_error_ratio:rate1h > (6 * 0.005)
+        for: 15m
+        labels: {severity: page}
+        annotations:
+          summary: "5xx rate is burning the 30-day availability budget 6x too fast"
+          description: "Error ratio {{ $value | humanizePercentage }} over 1h. Runbook: docs/ops/slo.md#error-rate."
+
+      - alert: LibrarianErrorBudgetSimmering
+        expr: librarian:http_error_ratio:rate3d > 0.005
+        for: 1h
+        labels: {severity: ticket}
+        annotations:
+          summary: "3-day error ratio is above the 0.5% budget"
+          description: "Runbook: docs/ops/slo.md#error-rate."
+
+      - alert: LibrarianSearchSlow
+        expr: librarian:search_p95_seconds:rate5m > 0.5 and sum(rate(librarian_search_duration_seconds_count[5m])) > 0.01
+        for: 10m
+        labels: {severity: ticket}
+        annotations:
+          summary: "Search p95 is above 500 ms"
+          description: "p95 {{ $value | humanizeDuration }}. Runbook: docs/ops/slo.md#latency."
+
+      - alert: LibrarianChatFirstTokenSlow
+        expr: librarian:chat_first_token_p95_seconds:rate5m > 4 and sum(rate(librarian_chat_first_token_seconds_count[5m])) > 0.005
+        for: 10m
+        labels: {severity: ticket}
+        annotations:
+          summary: "Chat first-token p95 is above 4 s"
+          description: "p95 {{ $value | humanizeDuration }}. Often the model provider; check the no_token share first. Runbook: docs/ops/slo.md#latency."
+
+  - name: librarian-health
+    rules:
+      - alert: LibrarianDown
+        expr: absent(up{job="librarian"} == 1)
+        for: 2m
+        labels: {severity: page}
+        annotations:
+          summary: "No API replica answers /metrics"
+          description: "Runbook: docs/ops/alerting.md."
+
+      - alert: LibrarianNotReady
+        expr: min(librarian_ready) < 1
+        for: 3m
+        labels: {severity: page}
+        annotations:
+          summary: "An API replica reports not ready (database, index or content)"
+          description: "Runbook: docs/ops/slo.md#readiness."
+
+      # Flapping: ready flips repeatedly. changes() counts samples that differ from the previous one.
+      - alert: LibrarianReadinessFlapping
+        expr: max(changes(librarian_ready[15m])) >= 4
+        labels: {severity: ticket}
+        annotations:
+          summary: "Readiness changed {{ $value }} times in 15 minutes"
+          description: "Runbook: docs/ops/slo.md#readiness."
+
+      - alert: LibrarianPublicProbeFailing
+        expr: probe_success{job="librarian-blackbox"} == 0
+        for: 3m
+        labels: {severity: page}
+        annotations:
+          summary: "{{ $labels.instance }} fails from outside (Caddy, DNS or TLS)"
+          description: "The API may be fine: the probe goes through the proxy. Runbook: docs/ops/alerting.md."
+
+      - alert: LibrarianCertExpiringSoon
+        expr: (probe_ssl_earliest_cert_expiry{job="librarian-blackbox"} - time()) < 14 * 86400
+        for: 1h
+        labels: {severity: ticket}
+        annotations:
+          summary: "The certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+          description: "Caddy renews at 30 days left; under 14 means renewal is failing (ports 80/443, DNS). Runbook: docs/ops/slo.md#certificate."
+
+      - alert: LibrarianCertExpiryCritical
+        expr: (probe_ssl_earliest_cert_expiry{job="librarian-blackbox"} - time()) < 3 * 86400
+        labels: {severity: page}
+        annotations:
+          summary: "The certificate for {{ $labels.instance }} expires in under 3 days"
+          description: "Runbook: docs/ops/slo.md#certificate."
+
+      - alert: LibrarianStateDiskLow
+        expr: min(librarian_state_disk_free_ratio) < 0.15
+        for: 15m
+        labels: {severity: ticket}
+        annotations:
+          summary: "The disk holding var/ (indexes, logs, caches) has {{ $value | humanizePercentage }} free"
+          description: "Runbook: docs/ops/slo.md#disk."
+
+      - alert: LibrarianStateDiskCritical
+        expr: min(librarian_state_disk_free_ratio) < 0.05
+        for: 5m
+        labels: {severity: page}
+        annotations:
+          summary: "The state disk is nearly full"
+          description: "Runbook: docs/ops/slo.md#disk."
+
+  - name: librarian-cost
+    rules:
+      # Cap 0 means no cap, so the ratio is only defined where a cap is set.
+      - alert: LibrarianSpendNearGlobalCap
+        expr: |
+          max(librarian_chat_spend_usd{window="today"})
+            > 0.8 * max(librarian_chat_spend_cap_usd{scope="global_daily"})
+          and max(librarian_chat_spend_cap_usd{scope="global_daily"}) > 0
+        labels: {severity: ticket}
+        annotations:
+          summary: "Chat spend today is over 80% of the global daily cap"
+          description: "{{ $value | printf \"%.2f\" }} USD so far. At the cap chat stops for everyone. Runbook: docs/ops/slo.md#spend."

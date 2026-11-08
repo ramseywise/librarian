@@ -9,16 +9,16 @@ the judgement and the order; anything a script can decide is a `librarian` verb 
 | Skill | Calls these verbs |
 |---|---|
 | `ingest` | `ingest lint-raw`, `ingest triage`, `wiki index-add`, `wiki verify`, `ingest mark`, `wiki relink`, `wiki check`, `wiki log` |
-| `learn` | the `ingest` verbs, scoped to `data/raw/web/` |
+| `learn` | the `ingest` verbs, scoped to `data/raw/web/`; `ingest pending` lists the queue files not yet compiled |
 | `seed-kb` | `scrape sessions\|bookmarks`, then `ingest` |
-| `lint` | `wiki stats --json`, `wiki lint`, `wiki check` |
+| `lint` | `wiki stats --json`, `wiki lint` (also open conflicts, empty sections, stale suggestions; `--raw-coverage`; `--fix` for the mechanical fixes), `wiki check` |
 | `query`, `write`, `challenge`, `quiz` | wiki search only; `wiki ask` records an unanswered question |
-| `compact-wiki` | `wiki stats`, `wiki relink` |
+| `compact-wiki` | `wiki stats`, `wiki compact-signals` (age, size, inbound, retrievals, co-retrieval), `wiki relink` |
 | `gaps` | `wiki gaps` |
-| `wiki-weekly` | `wiki snapshot`, `wiki stats` |
+| `wiki-weekly` | `wiki stats`, `wiki week` (trend, operations, open conflicts), `wiki snapshot`, `wiki check`, `wiki graph`, `wiki gaps`, `wiki log` |
 | `wiki-graph` | `wiki graph` |
 | `wiki-rename` | `wiki rename` |
-| `wiki-sync` | read-only taxonomy audit |
+| `wiki-sync` | `wiki sync-check` (read-only taxonomy audit); the skill adds the judgement and any colour fix |
 
 ## Course (author and review `data/courses/`)
 
@@ -51,6 +51,9 @@ plus `{{#librarian}}` / `{{#lae}}` blocks, chiefly the "Where commands run" sect
 
 `adk-context`, `harness-audit`, `evals-bootstrap`, `codemap` (`codemap` entry point and the MCP
 code-index tools).
+
+`present`: a brief to a one-off talk deck. Calls `librarian present` (the presenter tool: Claude writes the content, `build_deck`
+renders it), then previews with the slides tooling.
 
 ## Provided elsewhere
 

@@ -383,6 +383,8 @@ def test_members_get_403_on_admin_routes_and_can_be_promoted(
     )
     assert client.post("/admin/reload", headers=h).status_code == 403
     assert cli.main(["users", "promote", "ada@example.com"]) == 0
+    assert client.get("/api/admin/users").status_code == 401  # a role change ends the session
+    _oauth_login(client)
     assert client.get("/api/admin/users").status_code == 200
 
 
@@ -405,3 +407,195 @@ def test_cli_invite_lists_and_refuses_a_duplicate(
     assert "invited bob@example.com" in out and "already invited" in out
     assert "bob@example.com\topen" in out
     assert cli.main(["users", "promote", "nobody@example.com"]) == 1
+
+
+# ── session lifetime, rotation, disable (phase 5) ──────────────────────────
+
+
+def _age_session(token: str, *, created_days: float = 0, used_days: float | None = None) -> None:
+    """Move a session's clocks into the past."""
+    from datetime import UTC, datetime, timedelta
+
+    from sqlalchemy import update
+
+    from librarian.db import tables
+
+    now = datetime.now(UTC)
+    values: dict[str, Any] = {"created_at": now - timedelta(days=created_days)}
+    if used_days is not None:
+        values["last_used_at"] = now - timedelta(days=used_days)
+    s = tables.sessions
+    with get_engine().begin() as conn:
+        conn.execute(update(s).where(s.c.id == accounts.sessions._hash(token)).values(**values))
+
+
+def _user(email: str = "ada@example.com") -> accounts.User:
+    u = accounts.get_user(get_engine(), email) or accounts.add_user(get_engine(), email)
+    return u
+
+
+def test_a_session_ends_when_idle_too_long(configure: Callable[..., None]) -> None:
+    configure(LIBRARIAN_SESSION_IDLE_DAYS="7")
+    engine = get_engine()
+    token = accounts.create_session(engine, _user().id)
+    assert accounts.resolve_session(engine, token) is not None
+    _age_session(token, used_days=6.9)
+    assert accounts.resolve_session(engine, token) is not None
+    _age_session(token, used_days=7.1)
+    assert accounts.resolve_session(engine, token) is None
+
+
+def test_use_pushes_the_idle_deadline_but_not_the_absolute_one(
+    configure: Callable[..., None],
+) -> None:
+    configure(LIBRARIAN_SESSION_IDLE_DAYS="7")
+    engine = get_engine()
+    token = accounts.create_session(engine, _user().id, days=30)
+    _age_session(token, created_days=6, used_days=6)  # used 6 days ago: still live, and touched
+    assert accounts.resolve_session(engine, token) is not None
+    _age_session(token, created_days=6, used_days=0.001)
+    assert accounts.resolve_session(engine, token) is not None
+    # absolute expiry ignores recent use
+    from datetime import UTC, datetime, timedelta
+
+    from sqlalchemy import update
+
+    from librarian.db import tables
+
+    s = tables.sessions
+    with engine.begin() as conn:
+        conn.execute(update(s).values(expires_at=datetime.now(UTC) - timedelta(seconds=1)))
+    assert accounts.resolve_session(engine, token) is None
+
+
+def test_idle_days_zero_turns_the_idle_timeout_off(configure: Callable[..., None]) -> None:
+    configure(LIBRARIAN_SESSION_IDLE_DAYS="0")
+    engine = get_engine()
+    token = accounts.create_session(engine, _user().id)
+    _age_session(token, used_days=400)
+    assert accounts.resolve_session(engine, token) is not None
+
+
+def test_a_session_from_before_the_migration_idles_from_its_creation(
+    configure: Callable[..., None],
+) -> None:
+    from sqlalchemy import update
+
+    from librarian.db import tables
+
+    configure(LIBRARIAN_SESSION_IDLE_DAYS="7")
+    engine = get_engine()
+    token = accounts.create_session(engine, _user().id)
+    with engine.begin() as conn:
+        conn.execute(update(tables.sessions).values(last_used_at=None))
+    _age_session(token, created_days=8)
+    assert accounts.resolve_session(engine, token) is None
+
+
+def test_creating_a_session_sweeps_dead_ones(configure: Callable[..., None]) -> None:
+    from sqlalchemy import func, select
+
+    from librarian.db import tables
+
+    configure(LIBRARIAN_SESSION_IDLE_DAYS="7")
+    engine = get_engine()
+    old = accounts.create_session(engine, _user().id)
+    _age_session(old, used_days=8)
+    accounts.create_session(engine, _user().id)
+    with engine.connect() as conn:
+        assert conn.execute(select(func.count()).select_from(tables.sessions)).scalar() == 1
+
+
+def test_login_gives_a_new_session_id_and_ends_the_old_one(
+    client: TestClient, fake: Providers
+) -> None:
+    accounts.invite(get_engine(), "ada@example.com")
+    _oauth_login(client)
+    first = client.cookies[SESSION_COOKIE]
+    assert accounts.resolve_session(get_engine(), first) is not None
+    _oauth_login(client)
+    second = client.cookies[SESSION_COOKIE]
+    assert second != first
+    assert accounts.resolve_session(get_engine(), first) is None
+    assert accounts.resolve_session(get_engine(), second) is not None
+
+
+def test_a_planted_session_cookie_does_not_survive_login(
+    client: TestClient, fake: Providers
+) -> None:
+    accounts.invite(get_engine(), "ada@example.com")
+    planted = accounts.create_session(get_engine(), _user("eve@example.com").id)
+    client.cookies.set(SESSION_COOKIE, planted)
+    _oauth_login(client)
+    assert accounts.resolve_session(get_engine(), planted) is None
+
+
+def test_a_role_change_ends_sessions_but_a_no_op_does_not(
+    client: TestClient, fake: Providers
+) -> None:
+    accounts.invite(get_engine(), "ada@example.com")
+    _oauth_login(client)
+    token = client.cookies[SESSION_COOKIE]
+    accounts.set_role(get_engine(), "ada@example.com", "member")  # already a member
+    assert accounts.resolve_session(get_engine(), token) is not None
+    accounts.set_role(get_engine(), "ada@example.com", "admin")
+    assert accounts.resolve_session(get_engine(), token) is None
+    _oauth_login(client)
+    token = client.cookies[SESSION_COOKIE]
+    accounts.set_role(get_engine(), "ada@example.com", "member")  # demotion
+    assert accounts.resolve_session(get_engine(), token) is None
+
+
+def test_disable_ends_sessions_and_keys_and_blocks_sign_in(
+    client: TestClient, fake: Providers
+) -> None:
+    engine = get_engine()
+    accounts.invite(engine, "ada@example.com")
+    _oauth_login(client)
+    ada = _user()
+    key = accounts.create_key(engine, ada.email)[1]
+    token = client.cookies[SESSION_COOKIE]
+    user, ended, revoked = accounts.disable_user(engine, ada.email, owner_email=OWNER)
+    assert (ended, revoked) == (1, 1) and user.disabled_at is not None
+    assert accounts.resolve_session(engine, token) is None
+    assert accounts.resolve_key(engine, key) is None
+    assert client.get("/api/me").status_code == 401
+    assert accounts.may_sign_in(engine, ada.email, OWNER) is False
+    refused = _oauth_login(client)
+    assert "login_error" in refused.headers["location"] or "error" in refused.headers["location"]
+    assert SESSION_COOKIE not in client.cookies or client.get("/api/me").status_code == 401
+    accounts.enable_user(engine, ada.email)
+    assert accounts.may_sign_in(engine, ada.email, OWNER) is True
+    assert accounts.resolve_key(engine, key) is None  # revoked keys stay revoked
+    _oauth_login(client)
+    assert client.get("/api/me").status_code == 200
+
+
+def test_the_owner_cannot_be_disabled() -> None:
+    engine = get_engine()
+    accounts.ensure_owner(engine, OWNER)
+    with pytest.raises(accounts.AccountError, match="owner"):
+        accounts.disable_user(engine, OWNER, owner_email=OWNER)
+
+
+def test_admin_disable_route_and_cli(
+    client: TestClient, fake: Providers, capsys: pytest.CaptureFixture[str]
+) -> None:
+    engine = get_engine()
+    accounts.invite(engine, "ada@example.com")
+    accounts.ensure_owner(engine, OWNER)
+    fake.who = {"email": OWNER, "email_verified": True}
+    _oauth_login(client)
+    h = _csrf(client)
+    assert client.post("/api/admin/users/nobody@example.com/disable", headers=h).status_code == 404
+    assert client.post(f"/api/admin/users/{OWNER}/disable", headers=h).status_code == 409
+    _user()
+    done = client.post("/api/admin/users/ada@example.com/disable", headers=h)
+    assert done.status_code == 200 and done.json()["keys_revoked"] == 0
+    assert client.post("/api/admin/users/ada@example.com/enable", headers=h).status_code == 200
+    assert cli.main(["users", "disable", "ada@example.com"]) == 0
+    assert "disabled ada@example.com" in capsys.readouterr().out
+    assert cli.main(["users", "disable", OWNER]) == 1
+    assert cli.main(["users", "enable", "ada@example.com"]) == 0
+    actions = [e["action"] for e in client.get("/api/admin/audit").json()]
+    assert "user_disable" in actions and "user_enable" in actions

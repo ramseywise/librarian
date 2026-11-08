@@ -136,6 +136,32 @@ def admin_set_role(email: str, body: RoleChange, admin: Admin) -> dict[str, Any]
     return _user_json(user)
 
 
+@router.post("/api/admin/users/{email}/disable")
+def admin_disable_user(email: str, admin: Admin) -> dict[str, Any]:
+    """Lock a user out: no sign-in, sessions ended, keys revoked. The owner cannot be disabled."""
+    engine = get_engine()
+    try:
+        user, ended, revoked = accounts.disable_user(
+            engine, email, owner_email=get_settings().owner_email
+        )
+    except accounts.AccountError as e:
+        code = 409 if "owner" in str(e) else 404
+        raise HTTPException(status_code=code, detail=str(e)) from e
+    audit(engine, "user_disable", user_id=admin.id, target=user.email)
+    return {**_user_json(user), "sessions_ended": ended, "keys_revoked": revoked}
+
+
+@router.post("/api/admin/users/{email}/enable")
+def admin_enable_user(email: str, admin: Admin) -> dict[str, Any]:
+    engine = get_engine()
+    try:
+        user = accounts.enable_user(engine, email)
+    except accounts.AccountError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    audit(engine, "user_enable", user_id=admin.id, target=user.email)
+    return _user_json(user)
+
+
 @router.get("/api/admin/invites")
 def admin_invites(_: Admin) -> list[dict[str, Any]]:
     return [

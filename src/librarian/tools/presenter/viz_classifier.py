@@ -122,9 +122,10 @@ def classify_slides(
     deck_style_context: str = "",
     img_width: int = 1280,
     img_height: int = 720,
+    client: anthropic.Anthropic | None = None,
 ) -> list[VizPrompt]:
     """Classify slides and generate image prompts using two-pass strategy."""
-    client = create_client()
+    client = client or create_client()
     library = _load_library()
     results: list[VizPrompt] = []
 

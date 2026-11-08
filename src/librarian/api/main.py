@@ -18,6 +18,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from librarian import release, retrieval
+from librarian.api import prom
 from librarian.api.routers import graph
 from librarian.api.routers.account import router as account_router
 from librarian.api.routers.auth import router as auth_router
@@ -28,6 +29,7 @@ from librarian.api.routers.feedback import router as feedback_router
 from librarian.api.routers.glossary import router as glossary_router
 from librarian.api.routers.release import ReleaseHeaderMiddleware, poll_releases
 from librarian.api.routers.release import router as release_router
+from librarian.api.routers.spend import router as spend_router
 from librarian.api.routers.tools import router as tools_router
 from librarian.api.routers.wiki_health import router as wiki_health_router
 from librarian.api.security import (
@@ -239,6 +241,7 @@ app.add_middleware(
     csp=build_csp(inline_script_hashes(get_settings().web_dir / "index.html")),
 )
 app.add_middleware(RequestLogMiddleware)
+app.add_middleware(prom.MetricsMiddleware)
 app.add_middleware(ReleaseHeaderMiddleware)
 app.include_router(graph.router)
 app.include_router(account_router)
@@ -249,6 +252,7 @@ app.include_router(curriculum_router)
 app.include_router(feedback_router)
 app.include_router(glossary_router)
 app.include_router(release_router)
+app.include_router(spend_router)
 app.include_router(tools_router)
 app.include_router(wiki_health_router)
 
@@ -264,9 +268,9 @@ async def _index_not_ready(_: Request, exc: retrieval.IndexNotReadyError) -> JSO
     return JSONResponse({"detail": str(exc)}, status_code=503, headers={"Retry-After": "5"})
 
 
-@app.get("/readyz")
-def readyz() -> JSONResponse:
-    """Readiness: a built index is loaded and the model is loaded, or the rerank is off or failed.
+def readiness() -> tuple[bool, dict[str, Any]]:
+    """(ready, body) for /readyz: a built index is loaded and the model is loaded, or the rerank
+    is off or failed.
 
     Never builds or refreshes anything. `index` is the handle's state: ready, building (dev mode,
     first build), missing or error. A model that failed to load is `degraded`, not unready:
@@ -292,7 +296,20 @@ def readyz() -> JSONResponse:
     }
     if unavailable:
         body["degraded"] = ["embeddings_unavailable"]
+    return ready, body
+
+
+@app.get("/readyz")
+def readyz() -> JSONResponse:
+    """Readiness probe: 200 when `readiness()` says ready, else 503."""
+    ready, body = readiness()
     return JSONResponse(body, status_code=200 if ready else 503)
+
+
+# Prometheus scrape target. A plain Starlette route, so the app-wide `current_user` dependency
+# does not apply: it checks LIBRARIAN_METRICS_TOKEN itself (404 when unset). api/prom.py.
+prom.set_readiness(lambda: readiness()[0])
+app.add_route(prom.METRICS_PATH, prom.metrics_endpoint, include_in_schema=False)
 
 
 # Last, so every route above keeps precedence. The UI routes with `#/...`, so a plain static

@@ -1,0 +1,12 @@
+# Blackbox exporter modules for deploy/prometheus/prometheus.yml.
+modules:
+  # GET over TLS that must answer 200 with a verifiable certificate. probe_ssl_earliest_cert_expiry
+  # (cert expiry alert) and probe_success (readiness) come from this one probe.
+  https_2xx:
+    prober: http
+    timeout: 10s
+    http:
+      method: GET
+      valid_status_codes: [200]
+      fail_if_not_ssl: true
+      preferred_ip_protocol: ip4

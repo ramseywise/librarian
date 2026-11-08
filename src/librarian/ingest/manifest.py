@@ -192,6 +192,36 @@ def coverage_gaps(raw_dir: str | Path = "data/raw") -> list[dict]:
     return gaps
 
 
+def pending(patterns: list[str]) -> list[tuple[str, str]]:
+    """(status, repo-relative path) for each matching file that is `new` or `changed`.
+
+    A pattern is a file, a directory (every `.md` under it) or a glob; relative ones resolve
+    against the repo root. Files the manifest holds unchanged are left out.
+    """
+    import glob
+
+    entries = _load()
+    seen: set[Path] = set()
+    for pattern in patterns:
+        p = Path(pattern)
+        p = p if p.is_absolute() else REPO_ROOT / p
+        if p.is_dir():
+            seen.update(p.rglob("*.md"))
+        elif any(c in pattern for c in "*?["):
+            seen.update(Path(m) for m in glob.glob(str(p), recursive=True) if Path(m).is_file())
+        elif p.is_file():
+            seen.add(p)
+    out = []
+    for f in sorted(seen):
+        rel = str(f.relative_to(REPO_ROOT)) if f.is_relative_to(REPO_ROOT) else str(f)
+        entry = entries.get(rel)
+        if entry is None:
+            out.append(("new", rel))
+        elif entry["hash"] != file_hash(f):
+            out.append(("changed", rel))
+    return out
+
+
 def summary() -> dict:
     entries = _load()
     gaps = coverage_gaps()
@@ -214,6 +244,9 @@ def main(argv: list[str] | None = None) -> int:
     mk.add_argument("files", nargs="+", type=Path)
     mk.add_argument("--pages", nargs="*", default=[], help="data/wiki/... paths they produced")
     commands.add_parser("status", help="counts and the first pending raw files")
+    pd = commands.add_parser("pending", help="new or changed files among the given paths or globs")
+    pd.add_argument("paths", nargs="+", help="files, directories or globs (quote globs)")
+    pd.add_argument("--count", action="store_true", help="print only the number")
     args = parser.parse_args(argv)
     if args.command == "mark":
         missing = [str(f) for f in args.files if not f.is_file()]
@@ -224,6 +257,14 @@ def main(argv: list[str] | None = None) -> int:
             for f in args.files:
                 ms.mark(f, list(args.pages))
         print(f"mark: {len(args.files)} file(s) recorded")
+        return 0
+    if args.command == "pending":
+        found = pending(args.paths)
+        if args.count:
+            print(len(found))
+        else:
+            for status, rel in found:
+                print(f"{status}\t{rel}")
         return 0
     s = summary()
     print(

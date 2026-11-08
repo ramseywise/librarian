@@ -32,6 +32,12 @@
 	header @public_host Strict-Transport-Security "max-age=31536000; includeSubDomains"
 	header -Server
 
+	# Metrics are for Prometheus on the compose network (it scrapes librarian:8000 directly), never
+	# for the internet. The API also wants a bearer token; this is the second lock.
+	handle /metrics {
+		respond 404
+	}
+
 	# SSE: send each event as it is written; never buffer or compress the stream.
 	handle /api/chat/stream {
 		reverse_proxy {

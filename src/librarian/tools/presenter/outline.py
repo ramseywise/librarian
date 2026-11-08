@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import cast
 
+import anthropic
 from anthropic.types import TextBlock
 from rich.console import Console
 from rich.prompt import Prompt
@@ -25,8 +26,10 @@ produce a concise narrative arc for a slide deck. Output a JSON object with:
 Keep decks to 8-12 slides. Lead with context, end with a clear call to action."""
 
 
-def generate_outline(intake: DeckIntake, model: str) -> DeckOutline:
-    client = create_client()
+def generate_outline(
+    intake: DeckIntake, model: str, client: anthropic.Anthropic | None = None
+) -> DeckOutline:
+    client = client or create_client()
 
     context_block = ""
     if intake.codebase_summary:

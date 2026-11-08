@@ -1,4 +1,4 @@
-"""`librarian users add|list|invite|invites|promote` and `librarian keys create|list|revoke`."""
+"""`librarian users add|list|invite|invites|promote|disable|enable` and `librarian keys create|list|revoke`."""
 
 from __future__ import annotations
 
@@ -31,6 +31,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     promote = users.add_parser("promote", help="make a user an admin (or --member)")
     promote.add_argument("email")
     promote.add_argument("--member", action="store_true", help="make them a member instead")
+
+    disable = users.add_parser("disable", help="lock a user out: sessions ended, keys revoked")
+    disable.add_argument("email")
+    enable = users.add_parser(
+        "enable", help="let a disabled user sign in again (keys stay revoked)"
+    )
+    enable.add_argument("email")
 
     keys = groups.add_parser("keys").add_subparsers(dest="verb", required=True)
     create = keys.add_parser("create", help="a new API key for a user, printed once")
@@ -69,10 +76,23 @@ def main(argv: Sequence[str] | None = None) -> int:
             user = accounts.set_role(engine, args.email, "member" if args.member else "admin")
             accounts.audit(engine, "promote", target=f"{user.email}:{user.role}")
             print(f"{user.email} is now {user.role}")
+        elif args.group == "users" and args.verb == "disable":
+            from librarian.config import get_settings
+
+            user, ended, revoked = accounts.disable_user(
+                engine, args.email, owner_email=get_settings().owner_email
+            )
+            accounts.audit(engine, "user_disable", target=user.email)
+            print(f"disabled {user.email}: {ended} session(s) ended, {revoked} key(s) revoked")
+        elif args.group == "users" and args.verb == "enable":
+            user = accounts.enable_user(engine, args.email)
+            accounts.audit(engine, "user_enable", target=user.email)
+            print(f"enabled {user.email}")
         elif args.group == "users":
             for u in accounts.list_users(engine):
                 seen = _when(u.last_seen_at)
-                print(f"{u.email}\t{u.role}\t{u.timezone}\tlast seen {seen}\t{u.name or ''}")
+                state = "disabled" if u.disabled_at else u.role
+                print(f"{u.email}\t{state}\t{u.timezone}\tlast seen {seen}\t{u.name or ''}")
         elif args.verb == "create":
             info, key = accounts.create_key(engine, args.email, scopes=args.scopes, name=args.name)
             accounts.audit(engine, "key_create", target=info.id)

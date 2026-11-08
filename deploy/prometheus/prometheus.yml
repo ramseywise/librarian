@@ -1,0 +1,43 @@
+# Scrape example for the compose `observability` profile (docs/ops/slo.md). On another Prometheus,
+# copy the two scrape jobs and the rule file; change the targets.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 30s
+
+rule_files:
+  - /etc/prometheus/alerts.yml
+
+# Add an alertmanager here to get paged; without one the alerts show in the Prometheus UI only.
+# alerting:
+#   alertmanagers:
+#     - static_configs: [{targets: ["alertmanager:9093"]}]
+
+scrape_configs:
+  # The API. `librarian` resolves to one address per replica (docker compose --scale), and each
+  # replica's /metrics already sums its own workers (multiprocess mode, docs/ops/slo.md).
+  - job_name: librarian
+    metrics_path: /metrics
+    authorization:
+      type: Bearer
+      credentials_file: /tmp/metrics-token   # written from LIBRARIAN_METRICS_TOKEN at start
+    dns_sd_configs:
+      - names: [librarian]
+        type: A
+        port: 8000
+        refresh_interval: 15s
+
+  # Public readiness and certificate expiry, from outside the API, through Caddy. Edit the target
+  # to your LIBRARIAN_DOMAIN. (The `up` of the job above only says the API answers metrics.)
+  - job_name: librarian-blackbox
+    metrics_path: /probe
+    params:
+      module: [https_2xx]
+    static_configs:
+      - targets: ["https://librarian.example.com/readyz"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115

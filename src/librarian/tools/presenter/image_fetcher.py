@@ -9,7 +9,7 @@ import structlog
 
 from librarian.tools.presenter._settings import settings
 from librarian.tools.presenter.models import VizPrompt
-from librarian.tools.presenter.providers import get_provider
+from librarian.tools.presenter.providers import ImageProvider, get_provider
 
 log = structlog.get_logger(__name__)
 
@@ -20,9 +20,10 @@ def fetch_images_for_slides(
     viz_prompts: list[VizPrompt],
     output_dir: Path,
     deck_slug: str,
+    provider: ImageProvider | None = None,
 ) -> dict[int, Path]:
     """Fetch all non-skipped slide images in parallel. Returns {slide_number: image_path}."""
-    provider = get_provider()
+    provider = provider or get_provider()
     width = settings.image_width
     height = settings.image_height
     results: dict[int, Path] = {}

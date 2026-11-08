@@ -92,9 +92,17 @@ def _unsigned(settings: Settings, value: str | None) -> dict[str, Any] | None:
     return payload if time.time() - payload.get("t", 0) < STATE_TTL_S else None
 
 
-def _signed_in(settings: Settings, user: User, method: str, next_path: str) -> RedirectResponse:
-    """Start a session for `user` and send them on to `next_path`."""
+def _signed_in(
+    settings: Settings, user: User, method: str, next_path: str, request: Request
+) -> RedirectResponse:
+    """Start a session for `user` and send them on to `next_path`.
+
+    The session id is always new; the one behind any cookie this browser sent is ended, so a
+    session id planted before sign-in (fixation) or left over from an earlier login is dead.
+    """
     engine = get_engine()
+    if old := request.cookies.get(SESSION_COOKIE):
+        accounts.revoke_session(engine, old)
     token = accounts.create_session(engine, user.id, days=settings.session_days)
     accounts.audit(engine, "login", user_id=user.id, target=method)
     log.info("auth.login", user_id=user.id, method=method)
@@ -107,7 +115,7 @@ def _signed_in(settings: Settings, user: User, method: str, next_path: str) -> R
 
 
 def _sign_in_or_refuse(
-    settings: Settings, email: str, name: str | None, method: str, next_path: str
+    settings: Settings, email: str, name: str | None, method: str, next_path: str, request: Request
 ) -> RedirectResponse:
     engine = get_engine()
     user = accounts.sign_in(engine, email, owner_email=settings.owner_email, name=name)
@@ -117,7 +125,7 @@ def _sign_in_or_refuse(
         )
         log.info("auth.refused", method=method, reason="not_invited")
         return _refused("not_invited")
-    return _signed_in(settings, user, method, next_path)
+    return _signed_in(settings, user, method, next_path, request)
 
 
 @router.get("/api/auth/config")
@@ -177,7 +185,7 @@ def callback(
     except oauth.OAuthError as e:
         log.warning("auth.oauth_failed", method=p.name, error=str(e))
         return _refused("provider")
-    return _sign_in_or_refuse(settings, who.email, who.name, p.name, saved["n"])
+    return _sign_in_or_refuse(settings, who.email, who.name, p.name, saved["n"], request)
 
 
 class EmailRequest(BaseModel):
@@ -249,7 +257,7 @@ def email_verify(
     email = login_tokens.consume(get_engine(), token)
     if email is None:
         return _refused("link_expired")
-    return _sign_in_or_refuse(settings, email, None, "email", safe_next(next))
+    return _sign_in_or_refuse(settings, email, None, "email", safe_next(next), request)
 
 
 @auth.post("/auth/logout", status_code=204)

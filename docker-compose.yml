@@ -7,6 +7,8 @@
 # required: the container binds 0.0.0.0 and the API refuses to start open (add `--insecure` to
 # the command to override). Set it, LIBRARIAN_SESSION_SECRET for a login method, ANTHROPIC_API_KEY and
 # POSTGRES_PASSWORD (URL-safe characters; the default is for a laptop) in .env. For UI development use `make ui` (Vite on :5173) against `make api`.
+# A second stack (staging) runs from this same file: `./librarian --stack staging start` sets the
+# project name (own volumes), LIBRARIAN_ENV_FILE (.env.staging) and the host ports. docs/ops/staging.md.
 # Image: LIBRARIAN_IMAGE (default librarian:local, built here). A host sets a registry tag and runs
 # `./librarian upgrade <tag>`, which pulls and never builds (`up --no-build`).
 services:
@@ -76,7 +78,7 @@ services:
     expose:
       - "8000"
     env_file:
-      - path: .env
+      - path: ${LIBRARIAN_ENV_FILE:-.env}
         required: false
     environment:
       - SERVE_COURSE_SOURCES=false
@@ -122,7 +124,7 @@ services:
         condition: service_healthy
     command: ["librarian", "ops", "schedule"]
     env_file:
-      - path: .env
+      - path: ${LIBRARIAN_ENV_FILE:-.env}
         required: false
     environment:
       - DATABASE_URL=postgresql://librarian:${POSTGRES_PASSWORD:-librarian-dev}@postgres:5432/librarian
@@ -144,7 +146,63 @@ services:
       retries: 10
     restart: unless-stopped
 
+  # --- observability profile (docs/ops/slo.md): `COMPOSE_PROFILES=observability ./librarian start`.
+  # Prometheus scrapes the API's /metrics (bearer token LIBRARIAN_METRICS_TOKEN, written to a file
+  # by the entrypoint below so it never appears in the config) and probes /readyz and the
+  # certificate through the blackbox exporter; Grafana is provisioned with the SLO dashboard.
+  # Neither publishes a host port beyond loopback.
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    profiles: ["observability"]
+    depends_on:
+      - librarian
+    user: "65534:65534"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        umask 077
+        printf '%s' "$$LIBRARIAN_METRICS_TOKEN" > /tmp/metrics-token
+        exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml \
+          --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=45d \
+          --web.enable-lifecycle
+    environment:
+      - LIBRARIAN_METRICS_TOKEN=${LIBRARIAN_METRICS_TOKEN:-}
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./deploy/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    restart: unless-stopped
+
+  blackbox:
+    image: prom/blackbox-exporter:v0.29.1
+    profiles: ["observability"]
+    command: ["--config.file=/etc/blackbox/blackbox.yml"]
+    volumes:
+      - ./deploy/prometheus/blackbox.yml:/etc/blackbox/blackbox.yml:ro
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.2.5
+    profiles: ["observability"]
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    volumes:
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/grafana/librarian.json:/var/lib/grafana/dashboards/librarian.json:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+
 volumes:
+  prometheus-data:
+  grafana-data:
   librarian-var:
   librarian-pgdata:
   caddy-data:

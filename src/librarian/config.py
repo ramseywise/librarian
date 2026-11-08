@@ -20,9 +20,16 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
+from dotenv import dotenv_values
 from pydantic import AliasChoices, Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic.fields import FieldInfo
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+)
 
 from librarian.pricing import DEFAULT_CHAT_MODEL
 
@@ -54,6 +61,65 @@ def _env(*names: str) -> AliasChoices:
     return AliasChoices(*names)
 
 
+# Settings that hold a secret. Each can be given as `<NAME>` or `<NAME>_FILE` (a path to a file
+# holding the value, as docker/compose `secrets:` mount them at /run/secrets/<name>), so the
+# value need not sit in `.env` or in `docker inspect` output.
+SECRET_FIELDS = (
+    "database_url",
+    "api_token",
+    "session_secret",
+    "google_client_secret",
+    "github_client_secret",
+    "resend_api_key",
+    "anthropic_api_key",
+    "remote_api_key",
+    "release_webhook_secret",
+    "metrics_token",
+)
+
+
+class SecretFileError(ValueError):
+    """A `<NAME>_FILE` that cannot be read, or that is set together with `<NAME>`."""
+
+
+class _SecretFileSource(PydanticBaseSettingsSource):
+    """Fills `SECRET_FIELDS` from `<NAME>_FILE` in the environment or the `.env` file.
+
+    Trailing newlines are stripped (secret files usually end in one). An unreadable file, or
+    both `<NAME>` and `<NAME>_FILE` set to something, stops startup with a message naming the
+    variable (never the value).
+    """
+
+    def __init__(self, settings_cls: type[BaseSettings], env_file: str | None) -> None:
+        super().__init__(settings_cls)
+        self._dotenv: dict[str, str | None] = dotenv_values(env_file) if env_file else {}
+
+    def _lookup(self, name: str) -> str:
+        return os.environ.get(name) or self._dotenv.get(name) or ""
+
+    def get_field_value(self, field: FieldInfo, field_name: str) -> tuple[Any, str, bool]:
+        return None, field_name, False
+
+    def __call__(self) -> dict[str, str]:
+        out: dict[str, str] = {}
+        for name in SECRET_FIELDS:
+            alias = self.settings_cls.model_fields[name].validation_alias
+            names = alias.choices if isinstance(alias, AliasChoices) else (alias or name,)
+            names = [str(n) for n in names]
+            path = next((p for n in names if (p := self._lookup(f"{n}_FILE"))), "")
+            if not path:
+                continue
+            if any(self._lookup(n) for n in names):
+                raise SecretFileError(f"set {names[0]} or {names[0]}_FILE, not both")
+            try:
+                out[name] = Path(path).read_text(encoding="utf-8").rstrip("\r\n")
+            except OSError as e:
+                raise SecretFileError(
+                    f"{names[0]}_FILE={path}: cannot read the file ({e.strerror or e})"
+                ) from e
+        return out
+
+
 class Settings(BaseSettings):
     """Paths, model names and endpoints. Paths default to locations under `root`."""
 
@@ -62,6 +128,24 @@ class Settings(BaseSettings):
         extra="ignore",
         populate_by_name=True,
     )
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        env_file = settings_cls.model_config.get("env_file")
+        return (
+            init_settings,
+            _SecretFileSource(settings_cls, str(env_file) if env_file else None),
+            env_settings,
+            dotenv_settings,
+            file_secret_settings,
+        )
 
     root: Path = Field(default_factory=discover_root, validation_alias=_env("LIBRARIAN_ROOT"))
 
@@ -130,7 +214,11 @@ class Settings(BaseSettings):
     public_url: str = Field(default="", validation_alias=_env("LIBRARIAN_PUBLIC_URL"))
     # Signs the short-lived OAuth state cookie. 32+ random bytes; changing it only breaks logins in flight.
     session_secret: str = Field(default="", validation_alias=_env("LIBRARIAN_SESSION_SECRET"))
+    # Absolute lifetime (never extended) and idle timeout of a browser session. 0 idle = no timeout.
     session_days: int = Field(default=30, ge=1, validation_alias=_env("LIBRARIAN_SESSION_DAYS"))
+    session_idle_days: int = Field(
+        default=7, ge=0, validation_alias=_env("LIBRARIAN_SESSION_IDLE_DAYS")
+    )
     google_client_id: str = Field(default="", validation_alias=_env("GOOGLE_CLIENT_ID"))
     google_client_secret: str = Field(default="", validation_alias=_env("GOOGLE_CLIENT_SECRET"))
     github_client_id: str = Field(default="", validation_alias=_env("GITHUB_CLIENT_ID"))
@@ -226,6 +314,10 @@ class Settings(BaseSettings):
     release_webhook_secret: str = Field(
         default="", validation_alias=_env("LIBRARIAN_RELEASE_WEBHOOK_SECRET")
     )
+
+    # GET /metrics (Prometheus). Unset: the route answers 404 and nothing is collected. Set: the
+    # scraper sends it as `Authorization: Bearer <token>`. Caddy also refuses /metrics from outside.
+    metrics_token: str = Field(default="", validation_alias=_env("LIBRARIAN_METRICS_TOKEN"))
 
     # Backups (librarian.ops). Where the encrypted dumps go: `s3://bucket/prefix` (needs the `aws`
     # CLI and AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY in the environment) or `file:///dir`.

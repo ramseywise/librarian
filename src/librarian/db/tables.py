@@ -81,6 +81,8 @@ users = Table(
     Column("created_at", DateTime(timezone=True), nullable=False),
     # The last request by any credential of this user, written at most every few minutes.
     Column("last_seen_at", DateTime(timezone=True), nullable=True),
+    # Set by `librarian users disable`: the user cannot sign in, and no session or key resolves.
+    Column("disabled_at", DateTime(timezone=True), nullable=True),
 )
 
 # Who may sign in for the first time. Existing users and the owner need no invite.
@@ -137,6 +139,8 @@ sessions = Table(
     Column("user_id", String(64), ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
     Column("created_at", DateTime(timezone=True), nullable=False),
     Column("expires_at", DateTime(timezone=True), nullable=False),
+    # Last request on this session (written at most every few minutes); null = never since created_at.
+    Column("last_used_at", DateTime(timezone=True), nullable=True),
     Index("sessions_user", "user_id"),
 )
 

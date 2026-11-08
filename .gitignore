@@ -1,6 +1,7 @@
 # Environment
 .env
 .env.local
+.env.staging
 
 # Python
 __pycache__/
@@ -73,6 +74,9 @@ data/wiki/meta/session-log.md
 # not be public: solutions to site problems, scratch code, interview prep. Served to the local
 # UI, never indexed, exported or committed. `librarian wiki check` fails on a tracked file here.
 data/courses/private/
+
+# Generated presenter decks (`librarian present` default --out).
+output/
 
 # Runtime logs — cron output (cartographer, codemap) and MCP retrieval telemetry.
 # logs/ at the repo root is the only log location; the cron scripts, both launchd

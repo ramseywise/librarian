@@ -63,11 +63,12 @@ def list_invites(engine: Engine) -> list[Invite]:
 
 def may_sign_in(engine: Engine, email: str, owner_email: str) -> bool:
     email = normalize_email(email)
-    return (
-        email == normalize_email(owner_email)
-        or get_user(engine, email) is not None
-        or is_invited(engine, email)
-    )
+    if email == normalize_email(owner_email):
+        return True
+    user = get_user(engine, email)
+    if user is not None:
+        return user.disabled_at is None
+    return is_invited(engine, email)
 
 
 def sign_in(
@@ -79,7 +80,7 @@ def sign_in(
         return ensure_owner(engine, email)
     user = get_user(engine, email)
     if user is not None:
-        return user
+        return user if user.disabled_at is None else None
     if not is_invited(engine, email):
         return None
     try:

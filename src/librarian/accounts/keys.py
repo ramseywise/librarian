@@ -68,7 +68,7 @@ def create_key(
 
 
 def resolve_key(engine: Engine, key: str) -> User | None:
-    """The user a live key belongs to, with the key's scopes; None if unknown or revoked."""
+    """The live key's user with the key's scopes; None if unknown, revoked or the user is disabled."""
     k, u = tables.api_keys, tables.users
     stmt = (
         select(u, k.c.id.label("key_id"), k.c.scopes, k.c.last_used_at, k.c.revoked_at)
@@ -77,7 +77,7 @@ def resolve_key(engine: Engine, key: str) -> User | None:
     )
     with engine.connect() as conn:
         row = conn.execute(stmt).mappings().first()
-    if row is None or row["revoked_at"] is not None:
+    if row is None or row["revoked_at"] is not None or row["disabled_at"] is not None:
         return None
     now = datetime.now(UTC)
     last = row["last_used_at"]

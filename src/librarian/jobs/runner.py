@@ -44,7 +44,13 @@ def _cli(*verbs: str) -> list[str]:
 # Per job, only the verbs it needs. Never `scrape`, `ingest notion|linear|pdf`, `wiki rename` or
 # anything else that fetches or rewrites existing pages.
 WIKI_WEEKLY_CLI = _cli(
-    "wiki stats", "wiki snapshot", "wiki check", "wiki graph", "wiki gaps", "wiki log weekly"
+    "wiki stats",
+    "wiki week",
+    "wiki snapshot",
+    "wiki check",
+    "wiki graph",
+    "wiki gaps",
+    "wiki log weekly",
 )
 WEEKLY_CLI = _cli("wiki stats", "wiki check", "courses check")
 # Ingest of the fetched queue files: triage, compile, verify, mark. The scrapers are the job's
@@ -52,6 +58,7 @@ WEEKLY_CLI = _cli("wiki stats", "wiki check", "courses check")
 FEEDS_INGEST_CLI = _cli(
     "ingest triage",
     "ingest status",
+    "ingest pending",
     "ingest mark",
     "ingest lint-raw",
     "wiki stats",

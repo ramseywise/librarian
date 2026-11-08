@@ -26,8 +26,9 @@ def generate_slide_content(
     outline: DeckOutline,
     intake: DeckIntake,
     model: str,
+    client: anthropic.Anthropic | None = None,
 ) -> list[SlideContent]:
-    client = create_client()
+    client = client or create_client()
     results: list[SlideContent] = []
 
     context_block = ""

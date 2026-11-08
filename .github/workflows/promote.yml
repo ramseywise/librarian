@@ -1,0 +1,88 @@
+name: Promote
+
+# Staging to production, by hand. The image is already built and pushed by ci.yml (tags
+# sha-<short> and main). The steps:
+#
+#   1. on the host:  ./librarian --stack staging upgrade sha-abc1234     (docs/ops/staging.md)
+#   2. here:         Run workflow, tag = sha-abc1234
+#        e2e: the container e2e set against the staging URL;
+#        promote: retags that image as `production` in GHCR (a registry-side copy, nothing is
+#        rebuilt, so production runs the bytes staging ran), after the `production` environment
+#        approval if one is configured;
+#   3. on the host:  ./librarian upgrade production   (backup gate, pull, readiness, rollback)
+#
+# This workflow does not deploy and has no host credentials. It also cannot see which image
+# staging runs (/metrics is closed at the proxy), so step 1 is on the operator; the tag below
+# is checked only to exist in the registry.
+#
+# Settings: repository variable STAGING_URL (https://staging.librarian.example.com, no trailing
+# slash) and, in the `staging` environment, the secret STAGING_API_TOKEN (the staging stack's
+# LIBRARIAN_API_TOKEN). Optionally a `production` environment with required reviewers.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to promote, as built by ci.yml (sha-abc1234)"
+        required: true
+        type: string
+
+concurrency:
+  group: promote
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    env:
+      E2E_API_URL: ${{ vars.STAGING_URL }}
+      E2E_TOKEN: ${{ secrets.STAGING_API_TOKEN }}
+    steps:
+      - name: Settings present and tag well-formed
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          [[ "$TAG" =~ ^sha-[0-9a-f]{7,40}$ ]] || { echo "tag must look like sha-abc1234, got: $TAG" >&2; exit 1; }
+          [ -n "$E2E_API_URL" ] || { echo "repository variable STAGING_URL is not set" >&2; exit 1; }
+          [ -n "$E2E_TOKEN" ] || { echo "secret STAGING_API_TOKEN is not set in the staging environment" >&2; exit 1; }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        with:
+          enable-cache: true
+      - run: uv sync --group dev
+      - name: Staging is ready
+        run: curl -fsS --retry 10 --retry-delay 6 --retry-all-errors "$E2E_API_URL/readyz"
+      - name: e2e against staging
+        run: uv run pytest tests/e2e/test_container.py -m e2e -v
+
+  promote:
+    needs: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Image name
+        id: img
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Retag as production
+        env:
+          NAME: ${{ steps.img.outputs.name }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          docker buildx imagetools inspect "$NAME:$TAG" >/dev/null
+          docker buildx imagetools create --tag "$NAME:production" "$NAME:$TAG"
+          docker buildx imagetools inspect "$NAME:production" | head -5
+          echo "Promoted $NAME:$TAG as $NAME:production. On the host: ./librarian upgrade production" >> "$GITHUB_STEP_SUMMARY"

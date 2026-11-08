@@ -55,7 +55,7 @@ def test_migrations_upgrade_from_empty_and_are_idempotent(raw_engine: Engine) ->
         "alembic_version",
     } <= names
     with raw_engine.connect() as conn:
-        assert conn.exec_driver_sql("SELECT version_num FROM alembic_version").scalar() == "0007"
+        assert conn.exec_driver_sql("SELECT version_num FROM alembic_version").scalar() == "0008"
     assert "last_seen_at" in {c["name"] for c in inspect(raw_engine).get_columns("users")}
     cols = {c["name"]: c for c in inspect(raw_engine).get_columns("attempts")}
     assert {"user_id", "ts", "event_key"} <= set(cols)

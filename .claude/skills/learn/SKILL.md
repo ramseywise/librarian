@@ -36,10 +36,9 @@ Store any keywords as `TOPIC_FILTER`.
 
 ### Step 2 — Check the queue
 
-Use Bash to count pending queue files in `data/raw/web/`:
-
+Use Bash to count the queue files the manifest has not seen (new) or has seen changed:
 ```bash
-find data/raw/web -maxdepth 1 \( -name '*-arxiv-*.md' -o -name '*-feed-*.md' \) 2>/dev/null | wc -l
+uv run librarian ingest pending 'data/raw/web/*-arxiv-*.md' 'data/raw/web/*-feed-*.md' --count
 ```
 
 If count is 0:
@@ -54,29 +53,11 @@ If count > 0, report: "Found N queued items. Processing..."
 
 Run the ingest skill scoped to `data/raw/web/` for fetched queue files only.
 
-Use Bash to identify the queue files pending ingest (not yet in manifest):
-
+List the queue files pending ingest (not yet in the manifest, or changed since):
 ```bash
-uv run python -c "
-from librarian.ingest.manifest import REPO_ROOT, MANIFEST_PATH
-import json, re
-from pathlib import Path
-
-manifest_paths = set()
-if MANIFEST_PATH.exists():
-    for line in MANIFEST_PATH.read_text().splitlines():
-        if line.strip():
-            entry = json.loads(line)
-            manifest_paths.add(entry['path'])
-
-web_dir = REPO_ROOT / 'data' / 'raw' / 'web'
-queued = sorted(set(web_dir.glob('*-arxiv-*.md')) | set(web_dir.glob('*-feed-*.md')))
-pending = [f for f in queued
-           if str(f.relative_to(REPO_ROOT)) not in manifest_paths]
-for f in pending:
-    print(f.relative_to(REPO_ROOT))
-"
+uv run librarian ingest pending 'data/raw/web/*-arxiv-*.md' 'data/raw/web/*-feed-*.md'
 ```
+Each line is `new` or `changed`, a tab, then the path.
 
 For each pending file, invoke the `/ingest` skill with that path (or call it once with
 `data/raw/web/` — the ingest skill handles targeted compile mode).

@@ -5,6 +5,7 @@ allowed-tools:
   - Read
   - Grep
   - Bash(uv run librarian wiki stats --json)
+  - Bash(uv run librarian wiki week)
   - Bash(uv run librarian wiki snapshot)
   - Bash(uv run librarian wiki check)
   - Bash(uv run librarian wiki graph --json)
@@ -28,15 +29,19 @@ Every number comes from the telemetry script or its files, and the report ends i
    ```
    Use `metrics.<name>.value` and `.status`, `pages`, `domains` and `open_conflicts`. Never compute or estimate a rate yourself. If this fails, print the failure and stop: there is no review without it.
 
-2. **Trend.** Read `data/telemetry/metrics.jsonl`. Rows are oldest first, so the latest row is the last line. If there is no row, or the latest row is seven or more days old:
+2. **Trend, additions, conflicts.** One read-only verb, run before any snapshot so it compares with the row that was latest:
+   ```bash
+   uv run librarian wiki week --json
+   ```
+   the latest row is the last line of `metrics.jsonl`. `trend` holds each metric's `before` (the latest `metrics.jsonl` row), `after` and `changed`; with no row it is empty, so write `first row`. `snapshot_needed` is true when there is no row or the latest is seven or more days old: then run
    ```bash
    uv run librarian wiki snapshot
    ```
-   and remember that a snapshot was written. Compare the current numbers with the row that was latest before this step. With no earlier row, write `first row`. `metrics.jsonl` is tracked and holds no page titles beyond public hubs, so leave it for Ramsey to stage.
+   and remember that a snapshot was written. `metrics.jsonl` is tracked and holds no page titles beyond public hubs, so leave it for Ramsey to stage.
 
-3. **What was added.** Read `data/telemetry/operations.jsonl` if it exists. Entries have `date`, `op` and `detail`; rows with a `month` key are older roll-ups, so ignore those. Take entries in the window, newest first. Missing file or no entries: `nothing logged this week`. Do not reconstruct the week from git.
+3. **What was added.** `added` in the same output: the operations logged in the window, newest first (roll-up rows ignored, at most ten, `added_more` is the rest). Empty: `nothing logged this week`. Do not reconstruct the week from git.
 
-4. **Unresolved.** Read `data/wiki/_conflicts.md`: an entry whose `**Status:**` does not start with `Resolved` is open. The count must match `open_conflicts`; if not, say so. Then run the leak check:
+4. **Unresolved.** `open_conflicts` in the same output lists the open entries; `open_conflicts_match_stats` false means it disagrees with `wiki stats`, so say so. Then run the leak check:
    ```bash
    uv run librarian wiki check
    ```

@@ -32,21 +32,20 @@ Every move cites its evidence in a dry-run report first, and only the moves Rams
 
 0. **Stats before**: `uv run librarian wiki stats --json`. Print the result;
    it is the "before" half of the final report.
-1. **Age**: `grep -rh "^updated:" data/wiki --include="*.md"` → pages >60 days stale.
-2. **Size**: `find data/wiki -name "*.md" -not -name "_*" -exec wc -l {} +` → pages over
-   ~300 lines (reference dumps, accumulators).
-3. **Similarity**: read `data/wiki/_relink_suggestions.md` if present; optionally run
+1. **Age, size, inbound links, retrievals** in one verb:
+   ```bash
+   uv run librarian wiki compact-signals          # --days N sets the retrieval window (30); --json
+   ```
+   It lists pages stale past 60 days, pages over ~300 lines (reference dumps, accumulators), retire
+   candidates (stale, at most one inbound link, no retrieval in the window) and page pairs
+   co-retrieved in at least three result sets. Absent or sparse telemetry is fine (it says so):
+   age, size and similarity carry the first runs. Do not aggregate `logs/retrieval.jsonl` yourself.
+2. **Similarity**: read `data/wiki/_relink_suggestions.md` if present; optionally run
    `uv run librarian wiki relink` first. High-similarity pairs = merge candidates.
    The relinker is suggest-only, so this file is now its *complete* output — the
    auto-tier pairs it used to write straight into pages appear here too, under
    `## Auto-Link Candidates`. That tier is the strongest merge evidence in the file.
-4. **Retrieval** (if `logs/retrieval.jsonl` has data): per-page retrieval counts over
-   the window; co-retrieval pairs = paths appearing together in one `search_wiki`
-   result set ≥3 times. Aggregate with a short python snippet, don't read the file raw.
-   Absent or sparse telemetry is fine — age/size/similarity carry the first runs.
-5. **Inbound links**: backlink counts from lint or the index — retire candidates need
-   ≤1 inbound link.
-6. **Hubs**: `uv run librarian wiki graph --json` → `hubs`. A top hub with
+3. **Hubs**: `uv run librarian wiki graph --json` → `hubs`. A top hub with
    `clusters_spanned` ≤3 has many links into few topics, so it may be doing several pages'
    work. Split candidates are evidence for Ramsey only: split is not one of the three moves,
    so nothing in phase 4 acts on them. If `stability` is below 0.9 the clusters are not settled:

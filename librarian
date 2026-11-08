@@ -2,7 +2,7 @@
 # One operator entrypoint: the same verbs on a laptop and on the host. Wraps docker compose and
 # the `librarian ops` verbs (src/librarian/ops/). See docs/ops/.
 #
-#   ./librarian [--local] [--dry-run] <command> [args]
+#   ./librarian [--local] [--dry-run] [--stack NAME] <command> [args]
 #
 #   start                       bring the stack up and wait for /readyz
 #   stop                        stop every service (data volumes stay)
@@ -17,6 +17,9 @@
 # --local (or LIBRARIAN_MODE=local) adds docker-compose.local.yml: API on 127.0.0.1:8000, no TLS,
 # images built here. Without it the host mode never builds: it pulls LIBRARIAN_IMAGE.
 # --dry-run (or LIBRARIAN_DRY_RUN=1) prints the commands instead of running them.
+# --stack NAME (or LIBRARIAN_STACK=NAME) addresses a second stack on the same host, e.g. staging:
+# its own compose project (librarian-NAME, so its own volumes), env file .env.NAME, image state
+# .ops/NAME/ and default host ports 8081/8444. Without it, nothing changes. See docs/ops/staging.md.
 set -euo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
@@ -24,7 +27,9 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 MODE="${LIBRARIAN_MODE:-host}"
 DRY="${LIBRARIAN_DRY_RUN:-0}"
 READY_TIMEOUT="${LIBRARIAN_READY_TIMEOUT:-300}"
+STACK="${LIBRARIAN_STACK:-}"
 STATE_DIR=".ops"
+ENV_FILE=".env"
 
 usage() { sed -n '2,/^set -euo/p' "$0" | sed '$d' | sed 's/^# \{0,1\}//'; }
 die() { echo "librarian: $*" >&2; exit "${2:-1}"; }
@@ -38,10 +43,26 @@ run() {
 
 env_get() {  # value of NAME from the environment, else from .env (last assignment wins)
     local name="$1" value="${!1:-}"
-    if [ -z "$value" ] && [ -f .env ]; then
-        value="$(grep -E "^${name}=" .env | tail -n 1 | cut -d= -f2- | sed -e 's/^["'"'"']//' -e 's/["'"'"']$//' || true)"
+    if [ -z "$value" ] && [ -f "$ENV_FILE" ]; then
+        value="$(grep -E "^${name}=" "$ENV_FILE" | tail -n 1 | cut -d= -f2- | sed -e 's/^["'"'"']//' -e 's/["'"'"']$//' || true)"
     fi
     printf '%s' "$value"
+}
+
+# Point the rest of the script at the named stack: project, env file, image state, ports.
+setup_stack() {
+    [ -n "$STACK" ] || return 0
+    case "$STACK" in
+        *[!a-z0-9]*|"") die "--stack: lowercase letters and digits only, got '$STACK'" 2 ;;
+    esac
+    ENV_FILE=".env.$STACK"
+    STATE_DIR=".ops/$STACK"
+    [ "$DRY" = "1" ] || [ -f "$ENV_FILE" ] || die "stack '$STACK': no $ENV_FILE (copy .env.$STACK.example and fill it in)" 2
+    export LIBRARIAN_ENV_FILE="$ENV_FILE"
+    export LIBRARIAN_HTTP_PORT="${LIBRARIAN_HTTP_PORT:-$(env_get LIBRARIAN_HTTP_PORT)}"
+    export LIBRARIAN_HTTPS_PORT="${LIBRARIAN_HTTPS_PORT:-$(env_get LIBRARIAN_HTTPS_PORT)}"
+    : "${LIBRARIAN_HTTP_PORT:=8081}"; : "${LIBRARIAN_HTTPS_PORT:=8444}"
+    export LIBRARIAN_HTTP_PORT LIBRARIAN_HTTPS_PORT
 }
 
 compose_files() {
@@ -49,9 +70,14 @@ compose_files() {
     else echo "-f docker-compose.yml"; fi
 }
 
+compose_args() {  # project and env file for a named stack, then the file list
+    if [ -n "$STACK" ]; then printf -- '-p librarian-%s --env-file %s ' "$STACK" "$ENV_FILE"; fi
+    compose_files
+}
+
 compose() {
     # shellcheck disable=SC2046  # the file list is deliberately word-split
-    run docker compose $(compose_files) "$@"
+    run docker compose $(compose_args) "$@"
 }
 
 current_image() {
@@ -88,7 +114,7 @@ wait_ready() {
     if [ "$DRY" = "1" ]; then echo "+ (wait up to ${READY_TIMEOUT}s for /readyz)"; return 0; fi
     local waited=0
     # shellcheck disable=SC2046
-    until docker compose $(compose_files) exec -T librarian python -c \
+    until docker compose $(compose_args) exec -T librarian python -c \
         "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=5)" \
         >/dev/null 2>&1; do
         if [ "$waited" -ge "$READY_TIMEOUT" ]; then return 1; fi
@@ -113,7 +139,7 @@ cmd_stop() {
 
 cmd_status() {
     export LIBRARIAN_IMAGE; LIBRARIAN_IMAGE="$(current_image)"
-    echo "image: $LIBRARIAN_IMAGE   mode: $MODE"
+    echo "image: $LIBRARIAN_IMAGE   mode: $MODE   stack: ${STACK:-production}"
     compose ps
     if wait_ready_once; then echo "readyz: ok"; else echo "readyz: not ready"; fi
 }
@@ -121,7 +147,7 @@ cmd_status() {
 wait_ready_once() {
     if [ "$DRY" = "1" ]; then return 0; fi
     # shellcheck disable=SC2046
-    docker compose $(compose_files) exec -T librarian python -c \
+    docker compose $(compose_args) exec -T librarian python -c \
         "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=5)" \
         >/dev/null 2>&1
 }
@@ -203,10 +229,12 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --local) MODE=local; shift ;;
         --dry-run) DRY=1; shift ;;
+        --stack) [ $# -ge 2 ] || die "--stack needs a name" 2; STACK="$2"; shift 2 ;;
         *) break ;;
     esac
 done
 
+setup_stack
 [ $# -gt 0 ] || { usage; exit 2; }
 command="$1"; shift
 case "$command" in

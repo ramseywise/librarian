@@ -8,7 +8,8 @@ torch, fastapi) load only for the verbs that need them.
     librarian wiki stats|snapshot|check|gaps|log|ask   wiki health telemetry
     librarian wiki graph|rename|relink                 link graph, safe rename, link suggestions
     librarian wiki lint|verify|index-add               lint findings, orphan/index check and index insert for new pages
-    librarian ingest mark|status                       manifest: record compiled files, show pending
+    librarian wiki sync-check|compact-signals|week     taxonomy drift, compaction evidence, weekly trend
+    librarian ingest mark|status|pending                manifest: record compiled files, show pending
     librarian jobs run <name>|list                     unattended jobs through the Agent SDK
     librarian ingest triage|lint-raw                   gate a raw source, validate raw filenames
     librarian ingest notion|linear|pdf                 pull a source into data/raw/
@@ -19,13 +20,15 @@ torch, fastapi) load only for the verbs that need them.
     librarian ops backup|restore|upgrade|schedule|list    encrypted backups, fenced restore, upgrade gate
     librarian eval compare --experiment NAME           per-variant answer metrics from telemetry and ratings
     librarian metrics product|check-release            product numbers; exit 1 if a release hurt grounding or ratings
+    librarian pricing check                            print the price table; exit 1 when its review is over 35 days old
     librarian feedback export|prune                    reader feedback to data/raw/, retention
-    librarian users add|list|invite|invites|promote    accounts and who may sign in
+    librarian users add|list|invite|invites|promote|disable|enable  accounts and who may sign in
     librarian keys create|list|revoke                  API keys (lk_…), each printed once
     librarian index build [--out FILE]                 build the search index file the servers read
     librarian release build|pull|pin|unpin|list        content releases the API pulls and swaps in
     librarian mcp [--rebuild]                          the wiki MCP server (stdio)
     librarian api [--port N] [--workers N] [--reload]  the FastAPI backend (uvicorn)
+    librarian present <brief> [--out DIR] [--dry-run] [--no-images] [--yes]   brief to deck via build_deck
 """
 
 from __future__ import annotations
@@ -74,6 +77,15 @@ GROUPS: dict[str, dict[str, Verb]] = {
             "librarian.wiki.landing:main", ("verify",), "orphan and index check for new pages"
         ),
         "index-add": Verb("librarian.wiki.landing:main", ("index-add",), "add pages to _index.md"),
+        "sync-check": Verb(
+            "librarian.wiki.sync_check:main",
+            help="taxonomy drift: directories vs code domain lists",
+        ),
+        "compact-signals": Verb(
+            "librarian.wiki.compact_signals:main",
+            help="age, size, links, retrievals for compaction",
+        ),
+        "week": Verb("librarian.wiki.week:main", help="trend, operations and conflicts this week"),
     },
     "ingest": {
         "triage": Verb("librarian.ingest.ingest_gate:main", ("triage",), "gate raw sources"),
@@ -82,6 +94,9 @@ GROUPS: dict[str, dict[str, Verb]] = {
         ),
         "status": Verb(
             "librarian.ingest.manifest:main", ("status",), "manifest counts and pending files"
+        ),
+        "pending": Verb(
+            "librarian.ingest.manifest:main", ("pending",), "new or changed files among paths/globs"
         ),
         "lint-raw": Verb("librarian.ingest.lint_raw:main", help="validate data/raw/ filenames"),
         "notion": Verb("librarian.ingest.ingest_notion:main", help="Notion page export"),
@@ -157,6 +172,11 @@ GROUPS: dict[str, dict[str, Verb]] = {
             "librarian.metrics.cli:main", ("metrics", "check-release"), "grounding/rating check"
         ),
     },
+    "pricing": {
+        "check": Verb(
+            "librarian.pricing:main", ("check",), "price table and its last-reviewed date"
+        ),
+    },
     "users": {
         "add": Verb("librarian.accounts.cli:main", ("users", "add"), "create a user"),
         "list": Verb("librarian.accounts.cli:main", ("users", "list"), "list the users"),
@@ -165,6 +185,10 @@ GROUPS: dict[str, dict[str, Verb]] = {
         "promote": Verb(
             "librarian.accounts.cli:main", ("users", "promote"), "make a user an admin"
         ),
+        "disable": Verb(
+            "librarian.accounts.cli:main", ("users", "disable"), "lock a user out, end sessions"
+        ),
+        "enable": Verb("librarian.accounts.cli:main", ("users", "enable"), "undo a disable"),
     },
     "keys": {
         "create": Verb(
@@ -229,6 +253,10 @@ def _run_mcp(argv: list[str]) -> int:
     return int(_resolve("librarian.mcp.server:main")(argv) or 0)
 
 
+def _run_present(argv: list[str]) -> int:
+    return int(_resolve("librarian.tools.presenter.pipeline:main")(argv) or 0)
+
+
 def _run_api(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(prog="librarian api", description="FastAPI backend (uvicorn).")
     ap.add_argument("--host", default="127.0.0.1")
@@ -272,6 +300,10 @@ def _run_api(argv: list[str]) -> int:
     if settings.open_mode and not is_loopback(args.host):
         configure_logging()
         get_logger(__name__).warning("api.auth.open", host=args.host, hint="--insecure")
+    # /metrics across workers: the client's file directory must exist before they import it.
+    from librarian.api.prom_env import prepare as prepare_metrics
+
+    prepare_metrics(settings, workers)
     # The app logs one structured line per request; uvicorn's access log would repeat it
     # with the query string.
     uvicorn.run(
@@ -293,6 +325,7 @@ def _usage() -> str:
         lines.append(f"  {group}: " + ", ".join(verbs))
     lines += [
         "  mcp [--rebuild]",
+        "  present <brief> [--out DIR] [--dry-run] [--no-images] [--yes]",
         "  api [--host H] [--port N] [--workers N] [--reload] [--insecure] [--check]",
         "",
         "Run a verb with --help for its options.",
@@ -310,6 +343,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_mcp(rest)
     if group == "api":
         return _run_api(rest)
+    if group == "present":
+        return _run_present(rest)
     verbs = GROUPS.get(group)
     if verbs is None:
         print(f"librarian: unknown command {group!r}\n\n{_usage()}", file=sys.stderr)

@@ -42,20 +42,16 @@ uv run librarian wiki check           # Private leak: a failure is a BLOCKER; re
 
 `wiki check` is the **Private leak** check (BLOCKER).
 
+`wiki lint` also reports, with no flag: **open entries in `data/wiki/_conflicts.md`** (BLOCKER), empty placeholder sections (NOTE) and `_relink_suggestions.md` entries unreviewed for over 14 days (NOTE). Add `--raw-coverage` for **uncovered raw files** (WARN: files in `data/raw/` that no page lists in `sources:`, one line per directory).
 What the verb does not cover is yours to check, with Read/Grep:
-
-- **Open entries in `data/wiki/_conflicts.md`** (BLOCKER)
-- **Uncovered raw files** (WARN): files in `data/raw/` with no coverage in any wiki page `sources:` list
 - **Untyped links** (WARN): pages where >50% of `## See Also` entries lack a `— type` annotation (the rate is in `wiki stats`)
-- **Empty sections** (NOTE): sections holding only a comment placeholder
 - **Bridge gaps** (NOTE): domain pairs with >5 pages each but <3 cross-domain wikilinks (see `data/wiki/_bridge_suggestions.md`)
-- **Stale suggestions** (NOTE): `data/wiki/_relink_suggestions.md` entries older than 14 days unreviewed
 
 ### Fixed or proposed
 
 Every finding is one or the other.
 
-**Mechanical** (the file alone determines the fix; `--fix` applies these, and sets `updated:` on each page it changes):
+**Mechanical** (the file alone determines the fix; `uv run librarian wiki lint --fix` applies these, prints a `[FIXED]` line per change and sets `updated:` on each page it changes; `--quick <pages>` limits it):
 - Missing domain tag, when the page's directory under `data/wiki/` names the domain
 - Empty sections: remove a section holding only a comment placeholder
 

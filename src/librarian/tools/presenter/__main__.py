@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import sys
-from pathlib import Path
 
 import structlog
 from rich.console import Console
@@ -14,25 +13,18 @@ from librarian.tools.presenter._settings import settings
 console = Console()
 log = structlog.get_logger(__name__)
 
-AGENT_DIR = Path(__file__).resolve().parent
-
-
 # ---------------------------------------------------------------------------
 # Deck workflow
 # ---------------------------------------------------------------------------
 
 
 def run_deck(dry_run: bool = False) -> None:
-    from librarian.tools.presenter.image_fetcher import fetch_images_for_slides
+    from librarian.tools.presenter import pipeline
     from librarian.tools.presenter.intake import collect_deck_intake
     from librarian.tools.presenter.outline import approval_checkpoint, generate_outline
-    from librarian.tools.presenter.renderer import render_deck
     from librarian.tools.presenter.slide_writer import generate_slide_content
-    from librarian.tools.presenter.viz_classifier import classify_slides
 
     model = settings.viz_model
-    slides_dir = settings.viz_output_dir / "slides"
-    template_path = AGENT_DIR / "template.pptx"
 
     # 1. Intake
     intake = collect_deck_intake()
@@ -56,36 +48,12 @@ def run_deck(dry_run: bool = False) -> None:
                 console.print(f"  • {bullet}")
         return
 
-    # 4. Viz classification + prompt building
-    console.print("\n[bold yellow]Building image prompts…[/bold yellow]")
-    img_w = settings.image_width
-    img_h = settings.image_height
-    deck_style_context = (
-        f"Deck title: {outline.title}\n"
-        f"Audience: {intake.audience}\n"
-        f"Tone: {intake.tone}\n"
-        f"Maintain visual coherence: use a consistent color palette, recurring "
-        f"visual motifs, and unified style across all slides."
-    )
-    viz_prompts = classify_slides(slides, model, deck_style_context, img_w, img_h)
-
-    skipped = sum(1 for vp in viz_prompts if vp.skip_image)
-    fetching = len(viz_prompts) - skipped
-    console.print(f"  {fetching} images to fetch, {skipped} slides use text-only layout")
-
-    # 5. Image fetch
-    console.print("\n[bold yellow]Fetching images…[/bold yellow]")
-    import re
-
-    deck_slug = re.sub(r"[^\w]+", "_", outline.title.lower()).strip("_")[:40]
-    image_map = fetch_images_for_slides(viz_prompts, slides_dir, deck_slug)
-
-    # 6. Render
-    console.print("\n[bold yellow]Rendering deck…[/bold yellow]")
-    tpl = template_path if intake.use_template else None
-    out_path = render_deck(outline, slides, image_map, tpl, slides_dir)
-
-    console.print(f"\n[bold green]Done![/bold green] Deck saved to [cyan]{out_path}[/cyan]")
+    # 4-6. Image prompts, image fetch, then the deck spec rendered by build_deck.
+    out_dir = settings.viz_output_dir / pipeline.slugify(outline.title)
+    console.print("\n[bold yellow]Building images and rendering deck…[/bold yellow]")
+    spec_path, out_path = pipeline.build_media_and_deck(outline, slides, intake, out_dir)
+    console.print(f"\n[bold green]Done![/bold green] Spec [cyan]{spec_path}[/cyan]")
+    console.print(f"Deck saved to [cyan]{out_path}[/cyan]")
 
 
 # ---------------------------------------------------------------------------

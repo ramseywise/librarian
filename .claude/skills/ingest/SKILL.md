@@ -223,7 +223,7 @@ Follow `CLAUDE.md` exactly for each file triage did not skip.
    - Create a new page in the right subdirectory if it doesn't exist.
    - Update the summary, add new facts, update `updated:` date and `sources:` list.
    - Tags: at least one domain tag + one type tag (see `CLAUDE.md`).
-5. **Contradiction check:** if source disagrees with existing wiki claim → add entry to `data/wiki/_conflicts.md`, tag page with `conflict`. Do NOT silently overwrite. Consider source `confidence` level when evaluating contradictions (see CLAUDE.md § Source Confidence).
+5. **Contradiction check:** if source disagrees with existing wiki claim → add entry to `data/wiki/_conflicts.md`, tag page with `conflict`. Do NOT silently overwrite. Consider source `confidence` level when evaluating contradictions (see `docs/wiki-templates.md` § Source Confidence).
 6. **Cross-references (bidirectional):** add `[[wikilinks]]` to related pages in both directions. For each new page, identify 2–3 existing pages that should link TO it and add backlinks in their `## See Also` sections. Use typed relationships (`— extends`, `— prerequisite-for`, etc.) where the relationship type is clear.
 7. **Update `data/wiki/_index.md`** with the verb, never by hand (it skips `private/` pages and keeps the count and the order):
     ```bash
