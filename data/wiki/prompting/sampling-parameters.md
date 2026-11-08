@@ -2,7 +2,7 @@
 title: Sampling Parameters
 tags: [prompting, llm, reference]
 summary: Temperature, top_p, max_tokens, stop and frequency/presence penalties — tune temperature or top_p and one penalty, never both; temperature 0 is not deterministic; best-of-n wants temperature ≈ sqrt(n)/10; many reasoning endpoints fix or reject these knobs.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--04-controlling-output.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--07-prompting-reasoning-models.md
@@ -47,3 +47,5 @@ repetition detection, penalties or higher temperature ([[Prompts as Document Com
 - [[Logprobs as Confidence Signal]] — extends
 - [[Self-Consistency]] — prerequisite-for (needs non-zero temperature)
 - [[Prompt Engineering]] — instance-of
+- [[Hierarchical Story Generation]] — related (top-k sampling with k=10 for story decoding)
+- [[Scheduled Sampling]] — related (sampling during training rather than decoding)

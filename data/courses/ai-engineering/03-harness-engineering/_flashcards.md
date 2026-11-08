@@ -19,13 +19,13 @@ cards:
   back: A system missing any of acceptance, boundary, feedback or rollback is a prompt with tools attached, not a harness.
   lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
 - front: What is the harness ratchet?
-  back: A harness grows by encoding each real failure as a check, so the same failure cannot happen again.
+  back: A harness grows by encoding each real failure as a check, so it cannot recur.
   lesson: ai-engineering/03-harness-engineering/notes/01-what-a-harness-is
 - front: 'An agent is confidently wrong rather than stuck: which subsystem has the gap?'
-  back: Agents are rarely stuck and often confidently wrong, which points at a gap in the feedback subsystem.
+  back: Agents are rarely stuck, often confidently wrong, which points at a feedback gap.
   lesson: ai-engineering/03-harness-engineering/notes/02-harness-anatomy
-- front: In what order do you build up a harness?
-  back: Build capability first, then the constraints that make it survive scale, and productize last.
+- front: What do you build on Monday morning, and what comes after?
+  back: Start with a tool loop, sandbox, filesystem, plan file, one verification gate and traces, then add constraints as failures show up.
   lesson: ai-engineering/03-harness-engineering/notes/02-harness-anatomy
 - front: 'A tool is misused: what do you check first?'
   back: When a tool is misused, check the tool description before questioning the model.
@@ -43,16 +43,16 @@ cards:
   back: Only a skill's name and description stay resident, so the description's job is deciding when the skill fires.
   lesson: ai-engineering/03-harness-engineering/notes/03-tool-design
 - front: How do you defend against a poisoned MCP tool description?
-  back: Treat a tool description as untrusted code, and break the lethal triad (private data, untrusted content, an exfiltration channel).
+  back: Treat a tool description as untrusted code, pin and diff descriptions, and break the lethal triad (private data, untrusted content, an exfiltration channel).
   lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
 - front: Why must a write tool without an idempotency key never be auto-retried?
   back: A tool with no idempotency key must never be auto-retried, because one timeout can become three charged invoices.
   lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
 - front: How should you design a tool call that takes minutes?
-  back: Name a slow tool for its initiation, return a task ID at once, and deliver completion later as an event.
+  back: Name a slow tool for its initiation, return a task ID at once, and report completion as an event.
   lesson: ai-engineering/03-harness-engineering/notes/03b-mcp-write-safety-and-async-tools
-- front: What decides whether a constraint belongs in AGENTS.md, a permission gate or a hook?
-  back: An instruction is a request and a hook is a rule, so anything that must hold every time belongs in a hook or a permission.
+- front: Which constraints belong in a hook or permission rather than a sentence?
+  back: An instruction is a request and a hook is a rule.
   lesson: ai-engineering/03-harness-engineering/notes/04-execution-boundaries
 - front: Why is a virtualenv not a sandbox?
   back: A virtualenv isolates dependencies and not effects, so real isolation starts at the OS level and pairs every rung with quotas.
@@ -124,7 +124,7 @@ cards:
   back: Harness components encode assumptions about model weakness, so disable each in turn on every upgrade and delete what no longer pays.
   lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
 - front: What do you do when an agent fails?
-  back: When an agent fails, change the system around it, and then make sure that failure cannot happen again.
+  back: When an agent fails, change the system around it, then make sure that failure cannot recur.
   lesson: ai-engineering/03-harness-engineering/notes/08-maturity-and-failure-modes
 - front: Which pillar covers the loops a harness runs?
   back: Loop engineering runs the harness again, against a goal, until a scorekeeper says stop.

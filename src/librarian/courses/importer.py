@@ -153,6 +153,9 @@ ROOT_MODULE = "00-start-here"
 LESSON_EXTS = {".md", ".mdx", ".ipynb"}
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
 MAX_ASSET_BYTES = 2 * 1024 * 1024
+# Pre-commit's check-added-large-files limit (--maxkb=1024): a bigger practice file (a dataset)
+# stays in the sibling, where the lab that reads it is run.
+MAX_PRACTICE_BYTES = 1024 * 1024
 MAX_LESSON_CHARS = 400_000
 
 _VENDORED_RE = re.compile(r"(-main|-master|-[0-9a-f]{7})$")
@@ -1057,6 +1060,9 @@ def plan_practice(plan: Plan, source: Path, subjects: list[str], since: str) -> 
         )
         if len(parts) > depth and not folder.is_dir():
             plan.new_dirs.add(str(folder.relative_to(COURSES_DIR)))
+            continue
+        if src.stat().st_size > MAX_PRACTICE_BYTES:
+            log.warning("practice_too_large", path=rel, bytes=src.stat().st_size)
             continue
         plan.copies[dest] = src
 

@@ -2,7 +2,7 @@
 title: Eval-Driven Development (EDD)
 tags: [eval, llm, pattern]
 summary: Writing the eval suite before the agent exists — ATDD reconstructed for non-deterministic systems, where first-ness buys honesty rather than design pressure.
-updated: 2026-10-17
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/claude-docs/ai-project-template/docs/plans/AIT-89-plan.md
@@ -136,3 +136,4 @@ tree, and wholesale vendoring that swept ten unrelated drifted skills into the d
 - [[TDD as Coding-Agent Harness]] — alternative-to
 - [[Skill Pipeline Dryrun Testing]] — instance-of (a regression harness over a conversational pipeline)
 - [[Name-Only Sync Guards Miss Content Drift]] — related (the sync failure hit while templating EDD)
+- [[Evaluation-Driven Model Selection]] — extends (applies the define-criteria-first rule to choosing a model)

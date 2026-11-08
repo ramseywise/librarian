@@ -2,10 +2,12 @@
 title: Observability and Runtime Patterns
 tags: [infra, concept]
 summary: Observability tool choice (LangSmith vs Langfuse), tracing architecture, runtime topology and checkpointer alignment rules, trigger patterns, and key signals to monitor for assistant agents.
-updated: 2026-11-02
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/research/evaluation-and-learning/observability-and-runtime.md
   - data/raw/agent-skills/observability/SKILL.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch10-monitoring-production.md
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
 ---
 
 # Observability and Runtime Patterns
@@ -144,6 +146,14 @@ LANGFUSE_PUBLIC_KEY=...
 LANGFUSE_HOST=https://your-langfuse.internal
 ```
 
+## Metrics, traces and ownership (Huyen, Albada)
+
+Huyen (*AI Engineering*, O'Reilly, chapter 10) treats observability as part of the design, not an add-on, and names three outcome measures: mean time to detection, mean time to response and change failure rate (the share of changes that need a fix or rollback). The chapter's practices: pick metrics from the failures you want to catch, log everything with tags and IDs, trace every query step so the broken step shows, read production data by hand each day, and pass monitoring findings into the evaluation pipeline.
+
+Albada (chapter 10 of *Building Applications with AI Agents*, O'Reilly 2025) puts infrastructure signals and semantic ones (intent, tool choice, hallucination, abandonment) in one pipeline. The chapter instruments a LangGraph agent with OpenTelemetry, opening a span per node that records the tool, latency, status, error code, prompt id and token counts, and uses Grafana, Loki and Tempo as the reference stack. Sensitive logs go to separate clusters with access control, with PII redacted or hashed at span export, and a RACI chart gives each metric an accountable owner.
+
+Limits: neither chapter reports data; Albada's alert thresholds are illustrative, the stack comparison is qualitative and dated, and vendor eval features are assertions, not tests. Huyen says the architecture is validated at several companies but gives no numbers.
+
 ## See Also
 - [[Langfuse ADK Tracing Patterns]] <!-- auto-linked -->
 - [[Observability — LangFuse vs LangSmith Decision]]
@@ -166,3 +176,5 @@ LANGFUSE_HOST=https://your-langfuse.internal
 - [[Agent Trace Anatomy]] — extends (span tree, GenAI semantic conventions and trace-to-eval flow for agent runs)
 - [[Runtime vs Process Observability]] — extends (process artifacts as the second observability layer)
 - [[Memory Store Operations]] — instance-of (tracing the memory lookup span)
+- [[Online Eval Sampling]] — related (the drift tests and failure-or-variation rule that sit on top of these traces)
+- [[User Feedback Loops]] — related (implicit and explicit feedback logged as metrics)

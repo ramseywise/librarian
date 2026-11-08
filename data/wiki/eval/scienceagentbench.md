@@ -63,3 +63,4 @@ can score low. The models are from 2024.
 - [[MLE-bench]] — alternative-to
 - [[Eval Contamination Defenses]] — related
 - [[Trajectory Over Outcome]] — related (why "it ran" is not "it worked")
+- [[NatureBench]] — related (tasks built from published science, scored against the published result)

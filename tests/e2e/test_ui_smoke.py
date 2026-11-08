@@ -73,6 +73,7 @@ def test_graph_tab(page: Page) -> None:
     expect(page.get_by_role("button", name="Graph", exact=True)).to_have_attribute(
         "aria-current", "page"
     )
+    page.get_by_role("group", name="Browse by").get_by_role("button", name="Course").click()
     filters = page.get_by_role("group", name="Filter by curriculum")
     curriculum = _get("/api/graph/curriculum")
     for course in curriculum["courses"]:
@@ -81,12 +82,10 @@ def test_graph_tab(page: Page) -> None:
                 "button", name=f"{course['title']} {len(course['pageIds'])}", exact=True
             )
         ).to_be_visible()
-    for beyond in curriculum["beyond"]:
-        expect(
-            filters.get_by_role(
-                "button", name=f"{beyond['domain']} {len(beyond['pageIds'])}", exact=True
-            )
-        ).to_be_visible()
+    outside = sum(len(b["pageIds"]) for b in curriculum["beyond"])
+    expect(
+        filters.get_by_role("button", name=f"Not in a course {outside}", exact=True)
+    ).to_be_visible()
     expect(filters.get_by_text("private", exact=True)).to_have_count(0)
 
 
@@ -159,6 +158,7 @@ def test_module_filter_shows_its_pages(page: Page) -> None:
     course, module = next(
         (c, m) for c in curriculum["courses"] for m in c["modules"] if m["pageIds"]
     )
+    page.get_by_role("group", name="Browse by").get_by_role("button", name="Course").click()
     filters = page.get_by_role("group", name="Filter by curriculum")
     filters.get_by_role("button", name=f"Show modules in {course['title']}").click()
     filters.get_by_role(

@@ -91,3 +91,4 @@ sampling ([[Eval Error Bars and Sample Size]]).
 - [[Price Reversal in Reasoning-Model Costs]] — related (per-query cost also varies between runs)
 - [[E-Commerce Operation Benchmarks]] — related (MerchantBench uses 3 runs per configuration)
 - [[Forecasting Rare Model Behaviours]] — related (forecasts a rare behaviour from per-query elicitation probabilities)
+- [[Connect Four AlphaZero Build Task]] — related (8 trials per agent against a fixed solver anchor)

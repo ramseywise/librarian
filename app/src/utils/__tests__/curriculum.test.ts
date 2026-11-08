@@ -30,6 +30,7 @@ describe("curriculum filters", () => {
     ["course:ai", ["a", "b"]],
     ["module:ai/rag", ["a"]],
     ["beyond:patterns", ["c", "d", "e"]],
+    ["beyond:all", ["c", "d", "e"]],
   ])("%s selects its pages", (id, expected) => {
     expect([...filterPrimaryIds(nodes, new Set([id]), facets)!].sort()).toEqual(expected);
   });
@@ -37,6 +38,11 @@ describe("curriculum filters", () => {
   it("plain directory and type tags still work alongside them", () => {
     expect([...filterPrimaryIds(nodes, new Set(["patterns"]), facets)!].sort()).toEqual(["c", "d", "e"]);
     expect([...filterPrimaryIds(nodes, new Set(["project", "module:ai/rag"]), facets)!].sort()).toEqual(["a", "p"]);
+  });
+
+  it("a `dir:` facet selects the pages in that wiki directory", () => {
+    const withPaths = [{ ...node("x"), data: { ...node("x").data, path: "foundations/x.md" } }, node("y")];
+    expect([...facetsOf(null, withPaths).get("dir:foundations")!]).toEqual(["x"]);
   });
 
   it("selects nothing for a facet id before the curriculum loads", () => {

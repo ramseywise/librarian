@@ -70,3 +70,7 @@ catastrophe this century comparable to a full nuclear war.
 - [[Live Penetration Testing of Agents and Professionals]] — related (a cyber-offense capability measured in a live setting)
 - [[Trajectory Over Outcome]] — related
 - [[Forecasting Rare Model Behaviours]] — related (forecasting worst-case misuse and misaligned-action risk from a small eval)
+- [[Goal-Directedness Measure]] — related (a measured propensity score, and a position paper on agentic harms)
+- [[LM Red Teaming]] — related (automated test-case generation against a target model)
+- [[Goal-Directedness Measure]] — related (a measured propensity score, and a position paper on agentic harms)
+- [[LM Red Teaming]] — related (automated test-case generation against a target model)

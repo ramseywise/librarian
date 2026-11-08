@@ -35,3 +35,5 @@ Simulated GPT-4 feedback may not cover real human responses. Training on languag
 - [[Verification Loops]] — related
 - [[Trajectory Over Outcome]] — related (MINT scores outcomes only)
 - [[InterCode]] — related (another multi-turn benchmark with execution feedback)
+- [[TheoremQA]] — related (one of the datasets MINT repurposes)
+- [[Text-Game Agent Environments (Jericho, ALFWorld, CALM)]] — related (the ALFWorld environment it repurposes)

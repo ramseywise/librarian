@@ -37,3 +37,4 @@ Hallucinations are reduced, not removed, and only directly stated factual errors
 - [[Tool-Augmented Factuality Checking]] — alternative-to (verifies claims with outside tools instead of the model's own isolated answers)
 - [[SAFE Long-Form Factuality Scoring]] — related (FActScore-style atomic-fact scoring)
 - [[FActScore]] — prerequisite-for (the metric its biography results are reported in)
+- [[MetaCrit Adaptive Critique]] — related (critique graded to the answer rather than applied to every output)

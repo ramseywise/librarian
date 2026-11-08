@@ -67,3 +67,4 @@ The models date from 2024-2026.
 - [[Eval Contamination Defenses]] — related
 - [[Terminal-Bench]] — related
 - [[InterCode]] — related (interactive coding with execution feedback)
+- [[SUSVIBES (Vibe-Coding Security Benchmark)]] — related (repo-level tasks scored on security as well as function)

@@ -9,6 +9,7 @@ sources:
   - data/raw/web/2026-11-05-citation-check-corrections-jev-and-cascades.md
   - data/raw/web/2026-11-05-citation-check-corrections-third-pass.md
   - data/raw/papers/2026-11-05-li-2026-jev-as-judge.md
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
 ---
 
 # Cheap-First Gating and Model Cascades
@@ -80,6 +81,12 @@ while keeping its accuracy. Before training a router, compare it with the best s
 
 - No industry post read gave measured production savings.
 - How far the benchmark results carry over to answer-then-score cascades beyond FrugalGPT, which LLMRouterBench names.
+
+## Router, gateway and cache (Huyen)
+
+Huyen (*AI Engineering*, O'Reilly, chapter 10) puts a small, fast intent classifier in front of the models as the router, and adjusts the context when a query is sent to a model with a smaller context limit. A model gateway sits in front of the models for a unified interface, access control, cost limits and fallback. Caches come after: exact caching serves only identical requests, semantic caching serves similar ones, and the chapter advises weighing efficiency, cost and performance risk first and never caching user-specific or time-sensitive queries.
+
+Limits: no measurements; tool gateways are left out because the chapter calls them uncommon.
 
 ## See Also
 - [[Confidence-Gated Escalation]] — extends (how the gate's threshold is set and checked)

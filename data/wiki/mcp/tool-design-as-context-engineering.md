@@ -2,11 +2,12 @@
 title: Tool Design as Context Engineering
 tags: [mcp, llm, agents, concept]
 summary: Tools consume context twice — definitions sit in the window permanently, results enter per call — so token-efficient results, unambiguous boundaries, and terse routing descriptions are context decisions, not API aesthetics.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--10-tools-and-multi-agent.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--06-multi-agent-context.md
   - data/raw/repos/datathon_mcp/CLAUDE.md
+  - data/raw/papers/2026-11-07-qin-2024-tool-learning-foundation-models.md
 ---
 
 # Tool Design as Context Engineering
@@ -88,6 +89,32 @@ description: Use when deploying to production or rolling back.
 ```
 
 Negative examples reduce misfires: *"Don't call this when…"* plus what to do instead.
+
+## Evidence: tools can hurt, and examples help
+
+Qin et al., "Tool Learning with Foundation Models" (arXiv 2304.08354, v3 of August 2024), is a
+survey with one small experiment of its own: 18 tools in the BMTools repository, tried with
+text-davinci-003 and ChatGPT (23 March 2023 version) under no-tool, zero-shot (API documentation)
+and few-shot (documentation plus usage examples) prompting. Results are self-reported.
+
+- ChatGPT on Calculator/ASDiv (266 items): 91.7 with no tool, 74.1 zero-shot and 92.5 few-shot.
+- ChatGPT on Wikipedia/HotpotQA (200 sampled): 34.5 with no tool, but 8.5 zero-shot and 19.0 few-shot.
+- ChatGPT on Search Engine/RealTimeQA (30 items): 50.0 with no tool, 43.3 zero-shot and 63.3 few-shot.
+- Tools whose parameter is executable code stay hard: KGs (SPARQL, 64 curated questions) few-shot
+  46.9 for davinci and 14.1 for ChatGPT.
+- Six tools (Map, Weather, Slides, Tables, Cooking Assistant, AI Painting) reach satisfying
+  completion with few-shot prompting; Weather scores 99.0 for both models.
+
+The authors read this as zero-shot tool use sometimes scoring under no tool when the model has the
+knowledge itself, and claim few-shot always beats no tool, which their own ChatGPT row on Wikipedia/HotpotQA
+contradicts (34.5 with no tool against 19.0 few-shot). They prefer usage examples to descriptions alone.
+They also recommend unifying tool interfaces, and adding a retrieval stage that selects tools once
+the set outgrows the context window. The test sets are small (for example n=10 for 3D models, n=30 for
+RealTimeQA) with no variance or repeated runs, and curated queries are scored by humans reading the API-call
+trace, with no rubric or agreement given. Queries were expanded with ChatGPT, itself a model under test.
+Per the extraction, the text and Table 1 disagree on Calculator datasets and Stock test size, the
+few-shot claim conflicts with the HotpotQA row, and
+the authors concede scores across tools are not comparable. The models predate native function calling.
 
 ## See Also
 - [[Context Engineering]] — related (part of)

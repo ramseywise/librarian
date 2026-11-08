@@ -8,6 +8,7 @@ sources:
   - data/raw/linear/2026-04-24-evaluation-and-improvement.md
   - data/raw/claude-docs/playground/docs/archived/librarian-stack-audit.md
   - data/raw/claude-docs/playground/docs/archived/mvp-feedback-eval/plan.md
+  - data/raw/papers/2026-11-07-gilardi-2023-chatgpt-outperforms-crowd-workers-text.md
 ---
 
 # HITL Annotation Pipeline
@@ -89,6 +90,19 @@ Veselovsky et al. (arXiv 2306.07899, a work-in-progress preprint, 2023) estimate
 
 Limits: one task, chosen as easy for LLMs, one platform, a June 2023 snapshot, no ground truth on actual LLM use, and the human training data (2019) differs from the 2023 responses in more than LLM availability.
 
+## LLM annotators against crowd workers (Gilardi et al.)
+
+Gilardi, Alizadeh and Kubli (PNAS, arXiv 2303.15056, 2023) gave the same codebooks to three trained annotators (research assistants), US-based MTurk Masters workers and gpt-3.5-turbo run zero-shot, one chat session per tweet. Four datasets (n=6,183) covered relevance, stance, topic and frame tasks, and accuracy meant agreement with the trained annotators' labels.
+
+- ChatGPT's accuracy exceeded MTurk's by about 25 points on average (self-reported).
+- ChatGPT's cost was under $0.003 per annotation, about thirty times cheaper than MTurk (self-reported); the extraction notes the figure is stated without a derivation.
+- ChatGPT's accuracy tracked trained-annotator agreement, so it did better on easier tasks, while its margin over MTurk correlated negatively with that agreement, so the margin was larger on harder tasks. Across tasks, intercoder agreement correlated only weakly with accuracy.
+- Relevance accuracy was reported for four sets in the text; the 2023 content-moderation sample scored only 59%, and the extraction notes that its prompt had no examples.
+
+The preceding section covers a separate question: whether crowd-written text is human-written at all.
+
+Limits: the gold standard is the trained annotators, and accuracy counts only texts on which they agreed. Only gpt-3.5-turbo was tested, zero-shot, on English text in one topic area (content moderation) plus US Congress tweets; the authors call for multilingual, few-shot, chain-of-thought and other-model work. No significance tests are reported, per-task accuracy appears only in a figure, and the outperformance is claimed against MTurk, not against the trained annotators.
+
 ## See Also
 - [[Online Eval Sampling]] <!-- auto-linked -->
 - [[Conversational Test Fixture Design]] <!-- auto-linked -->
@@ -103,3 +117,4 @@ Limits: one task, chosen as easy for LLMs, one platform, a June 2023 snapshot, n
 - [[Recency-Seeded Label Queue Samples the Thin End]] — extends (seed only judgeable rows, stratify kind × field, rank by rater basis)
 - [[Snapshot the Judged Value on the Verdict Row]] — extends (verdict rows for pre-canonical or mutable subjects)
 - [[LangSmith Platform]] — instance-of (annotation queues as the review surface)
+- [[Silicon Sampling and Algorithmic Fidelity]] — related (a model standing in for human respondents, as here for human labelers)

@@ -40,3 +40,5 @@ Because agents are online they could find public oracle solutions, though the au
 - [[Repository-Level Coding Benchmarks]] — related (LongCLI-Bench, another long command-line benchmark)
 - [[Holistic Agent Leaderboard (HAL)]] — related (scaffold and cost effects)
 - [[Eval Contamination Defenses]] — related (canary string, public tasks)
+- [[AutoLab]] — extends (reuses its harness and agent for long-horizon optimisation tasks)
+- [[DataSpace]] — related (the agent harness moved accuracy with the backbone fixed)

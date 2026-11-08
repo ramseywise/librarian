@@ -70,6 +70,8 @@ saw only a subsample of each task, and could search the internet.
   BIG-G.
 
 ## See Also
+- [[HELM Holistic Evaluation]] — related (a standardized multi-metric evaluation that compares itself with BIG-bench)
+- [[HELM Holistic Evaluation]] — related (a standardized multi-metric evaluation that compares itself with BIG-bench)
 - [[Eval Contamination Defenses]] — related (the canary tactic this benchmark uses)
 - [[AGIEval]] — alternative-to (a human-exam benchmark of the same period)
 - [[GPQA]] — alternative-to (narrow, expert-written questions in place of a broad community set)

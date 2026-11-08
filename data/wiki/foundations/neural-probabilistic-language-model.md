@@ -2,7 +2,7 @@
 title: Neural Probabilistic Language Model
 tags: [foundations, llm, concept]
 summary: Bengio et al. (2003) introduced the idea of learning distributed word representations (embeddings) jointly with a neural network language model — fighting the curse of dimensionality by mapping words to a continuous vector space where semantically similar words have nearby representations.
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/pdfs/2003-02-01-neural-probabilistic-language-model.md
 ---
@@ -71,3 +71,5 @@ Every modern LLM begins with an embedding layer mapping tokens to dense vectors 
 - [[LLM Fundamentals Interview Study Guide]] — instance-of
 - [[Track2Vec Playlist Co-Occurrence Embeddings]] — instance-of (applies embedding idea to non-text domain)
 - [[Neural Text Models vs TF-IDF]] — related (from-scratch embeddings against a linear baseline)
+- [[Hierarchical Story Generation]] — related (a later sequence generator decoded with top-k sampling)
+- [[Perplexity and Bits-per-Byte]] — related (the metric its headline result is stated in)

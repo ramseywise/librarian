@@ -9,19 +9,13 @@ const base: ComponentProps<typeof MapBar> = {
   onResetRevealed: () => {},
   nextCap: null,
   onExpand: () => {},
-  onGrouping: () => {},
   refocus: null,
-  search: null,
 };
 
 describe("MapBar", () => {
-  it("offers the two arrangements on the atlas, and no way back", () => {
-    const onGrouping = vi.fn();
-    render(<MapBar {...base} onGrouping={onGrouping} />);
-    expect(screen.getByRole("button", { name: "Domain" })).toHaveAttribute("aria-pressed", "true");
-    fireEvent.click(screen.getByRole("button", { name: "Course" }));
-    expect(onGrouping).toHaveBeenCalledWith("course");
-    expect(screen.queryByText(/Back/)).toBeNull();
+  it("draws nothing on the atlas: the switch and search are in the sidebar", () => {
+    const { container } = render(<MapBar {...base} />);
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("shows the breadcrumb, the count and the way out at page level", () => {

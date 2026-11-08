@@ -4,28 +4,9 @@ import { TagFilterPanel } from "../TagFilterPanel";
 import type { Curriculum } from "../../types";
 
 describe("TagFilterPanel", () => {
-  it("renders one chip per payload domain, never private", () => {
-    render(<TagFilterPanel domains={["context", "loop", "private", "rag"]} activeTags={new Set()} onChange={() => {}} />);
-    for (const d of ["context", "loop", "rag"]) expect(screen.getByRole("button", { name: d })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "private" })).toBeNull();
-  });
-
-  it("filter and brief are sibling buttons, not nested", () => {
-    const onChange = vi.fn();
-    const onBrief = vi.fn();
-    render(<TagFilterPanel domains={["rag"]} activeTags={new Set(["rag"])} onChange={onChange} onBrief={onBrief} />);
-    const filter = screen.getByRole("button", { name: "rag" });
-    const brief = screen.getByRole("button", { name: "Brief me on rag" });
-    expect(filter).toHaveAttribute("aria-pressed", "true");
-    expect(filter.contains(brief) || brief.contains(filter)).toBe(false);
-    expect(document.querySelector("button button")).toBeNull();
-
-    fireEvent.click(brief);
-    expect(onBrief).toHaveBeenCalledWith("rag");
-    expect(onChange).not.toHaveBeenCalled();
-
-    fireEvent.click(filter);
-    expect(onChange).toHaveBeenCalledWith(new Set());
+  it("says so while the curriculum loads", () => {
+    render(<TagFilterPanel activeTags={new Set()} onChange={() => {}} />);
+    expect(screen.getByText("Loading courses…")).toBeInTheDocument();
   });
 });
 
@@ -49,25 +30,25 @@ describe("TagFilterPanel with the curriculum", () => {
   const setup = (active: string[] = [], onBrief?: (d: string) => void) => {
     const onChange = vi.fn();
     render(
-      <TagFilterPanel domains={["rag"]} curriculum={curriculum} activeTags={new Set(active)} onChange={onChange} onBrief={onBrief} />,
+      <TagFilterPanel curriculum={curriculum} activeTags={new Set(active)} onChange={onChange} onBrief={onBrief} />,
     );
     return onChange;
   };
   const expand = () => fireEvent.click(screen.getByRole("button", { name: "Show modules in AI Engineering" }));
 
-  it("replaces the directory chips with courses and beyond", () => {
+  it("lists courses and one row for the pages in none, not a chip per directory", () => {
     setup();
-    expect(screen.queryByRole("button", { name: "rag" })).toBeNull();
     expect(screen.getByRole("button", { name: "AI Engineering 2" })).toHaveAttribute("aria-pressed", "false");
-    expect(screen.getByRole("button", { name: "patterns 1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Not in a course 1" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "patterns 1" })).toBeNull();
   });
 
-  it("filters by course, by module and by beyond directory", () => {
+  it("filters by course, by module and by pages in no course", () => {
     const onChange = setup();
     fireEvent.click(screen.getByRole("button", { name: "AI Engineering 2" }));
     expect(onChange).toHaveBeenLastCalledWith(new Set(["course:ai"]));
-    fireEvent.click(screen.getByRole("button", { name: "patterns 1" }));
-    expect(onChange).toHaveBeenLastCalledWith(new Set(["beyond:patterns"]));
+    fireEvent.click(screen.getByRole("button", { name: "Not in a course 1" }));
+    expect(onChange).toHaveBeenLastCalledWith(new Set(["beyond:all"]));
     expand();
     fireEvent.click(screen.getByRole("button", { name: "RAG 2" }));
     expect(onChange).toHaveBeenLastCalledWith(new Set(["module:ai/rag"]));

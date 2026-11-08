@@ -60,3 +60,4 @@ papers whereas the headline comparison uses three.
 - [[ScienceAgentBench]] — related
 - [[LLM-as-Judge Evaluation]] — related (the judge is validated against human leaf labels)
 - [[Trajectory Over Outcome]] — related (artifact grading only)
+- [[NatureBench]] — extends (moves from reproducing a paper to matching its published result with the method withheld)

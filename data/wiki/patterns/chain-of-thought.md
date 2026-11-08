@@ -99,3 +99,4 @@ See [[Agent Memory Types]] for the reflection implementation.
 - [[Self-Consistency]] — extends (sample several CoT paths, majority-vote the answer)
 - [[Prompting Reasoning Models]] — extends (reasoning models do CoT natively; manual CoT can hurt instruction-following)
 - [[Self-Ask Prompting]] — extends (the method the self-ask paper compares itself against and builds on)
+- [[ROSCOE Reasoning Chain Metrics]] — related (metrics for scoring the reasoning chain itself)

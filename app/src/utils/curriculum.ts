@@ -6,10 +6,13 @@ import type { Curriculum, Facets, Glossary, WikiNodeData } from "../types";
 export const courseFacet = (course: string) => `course:${course}`;
 export const moduleFacet = (course: string, module: string) => `module:${course}/${module}`;
 export const beyondFacet = (domain: string) => `beyond:${domain}`;
+/** Every page no lesson links, whatever its directory. */
+export const OUTSIDE_COURSES = "beyond:all";
+export const dirFacet = (dir: string) => `dir:${dir}`;
 export const tagFacet = (tag: string) => `tag:${tag}`;
 export const termFacet = (term: string) => `term:${term}`;
 
-const FACET_ID = /^(course|module|beyond|tag|term):/;
+const FACET_ID = /^(course|module|beyond|dir|tag|term):/;
 const CURRICULUM_FACET = /^(course|module|beyond):/;
 export const isFacetId = (tag: string) => FACET_ID.test(tag);
 export const isModuleFacet = (tag: string) => tag.startsWith("module:");
@@ -26,7 +29,8 @@ export function facetPending(id: string, c: Curriculum | null, glossary: Glossar
 
 /**
  * Filter id → the pages it selects: every course, module and "beyond" directory once the
- * curriculum is in, every frontmatter tag, and every glossary term (the pages that mention it).
+ * curriculum is in (and all pages outside a course), every wiki directory, every frontmatter
+ * tag, and every glossary term (the pages that mention it).
  */
 export function facetsOf(
   c: Curriculum | null,
@@ -40,14 +44,17 @@ export function facetsOf(
       for (const m of course.modules) out.set(moduleFacet(course.id, m.id), new Set(m.pageIds));
     }
     for (const b of c.beyond) out.set(beyondFacet(b.domain), new Set(b.pageIds));
+    out.set(OUTSIDE_COURSES, new Set(c.beyond.flatMap((b) => b.pageIds)));
   }
+  const add = (id: string, page: string) => {
+    const set = out.get(id);
+    if (set) set.add(page);
+    else out.set(id, new Set([page]));
+  };
   for (const n of nodes) {
-    for (const t of n.data.tags ?? []) {
-      const id = tagFacet(t);
-      const set = out.get(id);
-      if (set) set.add(n.id);
-      else out.set(id, new Set([n.id]));
-    }
+    const dir = n.data.path?.split("/")[0];
+    if (dir) add(dirFacet(dir), n.id);
+    for (const t of n.data.tags ?? []) add(tagFacet(t), n.id);
   }
   if (glossary) for (const [term, pages] of Object.entries(glossary.mentions)) out.set(termFacet(term), new Set(pages));
   return out;

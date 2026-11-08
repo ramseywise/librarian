@@ -2,7 +2,7 @@
 title: "Sampled Ranking Metrics and MRR"
 tags: [foundations, pattern]
 summary: "Ranking each positive against 99 sampled negatives is a different metric from the full ranking, inflates scores several-fold and flipped the order of two models; rank the whole catalogue, and use MRR only when one good result ends the task."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--05-time-series-and-recommenders--notes--03-two-tower-and-evaluation.md
 ---
@@ -34,3 +34,4 @@ NDCG came from a need for graded relevance and a discount for documents a user i
 - [[RMSE vs Top-N Ranking in Recommenders]] — prerequisite-for
 - [[Two-Tower Retrieval with logQ Correction]] — related
 - [[Counterfactual Evaluation with Inverse Propensity Scoring]] — extends (the next rung of offline evaluation)
+- [[PERSONA-CHAT]] — related (hits@1 against random distractors is a sampled ranking metric)

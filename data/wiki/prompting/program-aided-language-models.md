@@ -2,7 +2,7 @@
 title: Program-Aided Language Models (PAL)
 tags: [prompting, llm, concept]
 summary: The model writes a program and an interpreter computes the answer — few-shot examples are code with the reasoning in comments, so exact computation (dates, arithmetic) moves out of the token predictor; only safe with a sandbox, and today usually a code-execution tool.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
 ---
@@ -42,3 +42,4 @@ decomposition; Python does the computation.
 - [[Prompting Technique Selection]] — instance-of
 - [[Chain of Thought]] — alternative-to (reasoning as code instead of prose)
 - [[Execution Boundaries and Guardrails]] — prerequisite-for
+- [[TheoremQA]] — related (benchmark that compares PoT with CoT)

@@ -166,6 +166,10 @@ function WikiGraphInner({
   const [layout, setLayout] = useState<LayoutMode>("umap-semantic");
   const onAll = mapView.level === "all";
   const grouping: Grouping = mapView.level === "all" ? "domain" : mapView.grouping;
+  // The sidebar's Domain / Course switch: follows the map's grouping, and on a focused level
+  // changes only which filters it lists (the atlas is where the grouping itself changes).
+  const [sideGrouping, setSideGrouping] = useState<Grouping>(grouping);
+  useEffect(() => setSideGrouping(grouping), [grouping]);
   const anchorId = mapView.level === "page" ? mapView.page : null;
   const [searchText, setSearchText] = useState("");
   const deferredSearch = useDeferredValue(searchText);
@@ -725,7 +729,12 @@ function WikiGraphInner({
       <GraphSidebar
         id="graph-controls"
         open={menuOpen}
-        domains={domains}
+        grouping={sideGrouping}
+        onGrouping={(g) => {
+          setSideGrouping(g);
+          if (onAtlas) navigate(mapPath({ level: "atlas", grouping: g }));
+        }}
+        search={hasNodes ? <MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} /> : undefined}
         curriculum={curriculum}
         glossary={glossary}
         facets={facets}
@@ -760,9 +769,7 @@ function WikiGraphInner({
             onResetRevealed={handleResetRevealed}
             nextCap={nextCap}
             onExpand={expandCap}
-            onGrouping={(g) => navigate(mapPath({ level: "atlas", grouping: g }))}
             refocus={clickedPage ? { title: `Focus on ${pageInfo.get(clickedPage)?.title ?? clickedPage}`, onClick: () => openPage(clickedPage) } : null}
-            search={<MapSearch value={searchText} onChange={setSearchText} result={search} onOpenPage={openPage} />}
           />
         )}
 

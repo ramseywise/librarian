@@ -72,3 +72,5 @@ A log-normal fit serves as the baseline.
 - [[Eval Error Bars and Sample Size]] — related (small-eval uncertainty; this method gives none of its own)
 - [[Eval Non-Determinism]] — related (repeated sampling of a stochastic model)
 - [[Best-of-k Headline Inflation]] — related (the extraction lists a best-of-N scaling law as a precursor)
+- [[LM Red Teaming]] — related (an LM generating adversarial queries for another model)
+- [[LM Red Teaming]] — related (an LM generating adversarial queries for another model)

@@ -36,8 +36,8 @@ cards:
 - front: What happens when two parallel branches write one key with no reducer?
   back: Branches in one super-step that write one key with no reducer raise an error in LangGraph and lose work elsewhere.
   lesson: ai-engineering/05-graph-engineering/notes/03-state-and-reducers
-- front: What is the true-dependency test for deciding whether steps can run in parallel?
-  back: To tell a real edge from an incidental one, ask whether the next step reads the previous output. If not, fan out.
+- front: How does a graph run one reviewer per changed file when the count is unknown?
+  back: Send fans out one reviewer per file at runtime, a reducer merges the results, and a cap on N bounds the cost.
   lesson: ai-engineering/05-graph-engineering/notes/03-state-and-reducers
 - front: What single mechanism underlies human-in-the-loop, resume and time travel?
   back: Saving state after every super-step gives one mechanism for human approval, crash recovery and time travel.
@@ -46,7 +46,7 @@ cards:
   back: On resume a node reruns from its first line, so any side effect belongs after the interrupt.
   lesson: ai-engineering/05-graph-engineering/notes/04-durable-execution-and-interrupts
 - front: Why not put a human approval gate on every node?
-  back: A gate on every node trains people to approve without reading, so gate only where consequence concentrates.
+  back: Gate only where consequence concentrates, since a gate on every node trains people to approve unread.
   lesson: ai-engineering/05-graph-engineering/notes/04-durable-execution-and-interrupts
 - front: Why does choosing a topology also choose what to watch?
   back: Five shapes cover most graphs, and each has a named failure, so choosing a shape also chooses what to watch.
@@ -76,7 +76,7 @@ cards:
   back: Most multi-agent failures are structural, so fix topology and verification before you reword prompts.
   lesson: ai-engineering/05-graph-engineering/notes/07-failure-modes-at-scale
 - front: What is an anchor, and what happens to a graph that has none?
-  back: Without an anchor the graph can't edit, it stays perfectly self-consistent while drifting far from reality.
+  back: An anchor is a reference the graph can't edit, such as held-out tests; without one, coupled loops stay self-consistent while drifting from reality.
   lesson: ai-engineering/05-graph-engineering/notes/07-failure-modes-at-scale
 - front: How do you attribute and budget cost in a graph?
   back: Carry graph, run and node IDs on every call, and budget per node, per run and per tenant.
@@ -85,7 +85,7 @@ cards:
   back: 'n8n''s reported design: per-node bounds, one gate after planning, and a 30K cap on the artifact under construction.'
   lesson: ai-engineering/05-graph-engineering/notes/08-governance-and-production
 - front: What are nodes and edges in an agent graph, and in a knowledge graph?
-  back: An agent graph is execution topology and a knowledge graph is a data structure; they share only a name until agents share memory.
+  back: In an agent graph nodes are computation and edges are transitions; in a knowledge graph nodes are entities and edges are typed relationships.
   lesson: ai-engineering/05-graph-engineering/notes/01-graph-vs-loop
 - front: Why does naming edges by meaning matter more than having edges?
   back: A graph whose edges are all RELATED_TO says that things connect but not how, so the edge type holds the knowledge.
@@ -109,7 +109,7 @@ cards:
   back: Default to vector, then canned traversals, then text-to-Cypher with a validator for the long tail.
   lesson: ai-engineering/05-graph-engineering/notes/11-kg-rag-and-text-to-cypher
 - front: When does a graph question need no model, and which indexes answer it?
-  back: Answer a fixed question shape with a canned query by name or place, and keep the model for the long tail.
+  back: Use a full-text index for names and point distance for places, and keep the model for the long tail.
   lesson: ai-engineering/05-graph-engineering/notes/11a-structured-lookups-and-text-to-cypher
 - front: What schema should a text-to-Cypher prompt show, and how should it handle a question it can't answer?
   back: 'Show the model an annotated, filtered schema, and let it return `success: false` instead of inventing a plausible query.'
@@ -130,7 +130,7 @@ cards:
   back: Features are the graph ML bottleneck, and a false predicted link does what a false merge does to every later traversal.
   lesson: ai-engineering/05-graph-engineering/notes/13-graph-ml-and-gnns
 - front: What do matrix factorisation, Node2Vec and a GNN have in common?
-  back: Every method is an encoder plus a decoder, and on the book's two runs the heaviest model, GAT, never beat GraphSAGE.
+  back: Matrix factorisation, Node2Vec and GNNs are all an encoder that turns structure into a vector plus a decoder that turns it into a prediction.
   lesson: ai-engineering/05-graph-engineering/notes/13b-representation-learning-and-gnns
 - front: What is the gate before adding a swarm to a persistent graph?
   back: Build one measured loop first and add the swarm last, evaluating each layer by its own metric.

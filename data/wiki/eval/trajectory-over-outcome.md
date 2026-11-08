@@ -8,6 +8,7 @@ sources:
   - own-prose
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--06-evaluating-agents.md
   - data/raw/papers/2026-11-05-yehudai-2025-survey-evaluation-llm-based-agents.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch09-validation-measurement.md
 ---
 
 # Trajectory Over Outcome
@@ -160,7 +161,18 @@ seed with boundary queries) from **domain evals** (given correct routing, does t
 correctly?). And **treat a 0% task as suspect**: a task failing every trial across versions is usually
 broken (unreachable state, wrong reference, missing permission) before the agent is.
 
+## Recall, precision and parameter accuracy over tool calls (Albada)
+
+Albada (*Building Applications with AI Agents*, O'Reilly 2025, chapter 9) scores planning against canonical workflows that carry ground-truth tool calls. **Tool recall** is the share of expected tool calls the planner made; **tool precision** is the share of its calls that were needed. **Parameter accuracy** credits an expected call only if the tool name and every parameter value match. End-to-end tests add phrase recall and task success. Each component also gets its own tests: tools (happy path, malformed and adversarial input, latency, error handling, determinism, mocks for external services), memory (retrieval accuracy at k, no stale data, efficiency as the store grows, resilience to failures) and learning (generalization, adaptation to distribution shift, no catastrophic forgetting).
+
+The chapter's illustrative deployment criterion for a support agent is 95% tool recall or better on refund and cancellation scenarios, and a regression in multi-turn tests blocks promotion; no measurement sits behind the figure.
+
+## Limits
+
+The chapter runs no experiments and all its numbers are illustrative. Its code listing scores recall and precision as 1.0 when no calls are expected, even if the agent called tools anyway, and its example evaluation row has an input order that does not match the order in the expected refund call (A89268 against A12345). The code listings are truncated in the extraction.
+
 ## See Also
+- [[Goal-Directedness Measure]] — related (compares subtask capability with composite-task use)
 - [[MedBrowseComp]] — related
 - [[CLI Agent Failure Timeline]] — related (failure traced step by step in coding-agent runs)
 - [[TheAgentCompany]] — related
@@ -183,3 +195,6 @@ broken (unreachable state, wrong reference, missing permission) before the agent
 - [[Agents' Last Exam (ALE)]] — related (an artifact-only grader that never reads the trajectory)
 - [[Universal Verifier for Computer-Use Agents]] — related (scores process and outcome separately)
 - [[Taste-Bench]] — related (decision quality at a fork)
+- [[Hidden-DFA Environment Inference Testbed]] — related (graded by whether the gathered evidence sufficed)
+- [[ROSCOE Reasoning Chain Metrics]] — related (scores the reasoning steps rather than the final answer)
+- [[Golden Set Mechanics]] — related (how the evaluation rows carrying these expected calls are grown and kept)

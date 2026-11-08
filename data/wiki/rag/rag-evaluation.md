@@ -281,3 +281,4 @@ This is especially important for edge cases — judge prompts optimized on avera
 - [[RAG Architecture Selection]] — prerequisite-for (component gates diagnose which failure an architecture change should target)
 - [[Evaluating Context]] — extends (metrics per context lever, ablation and length/position sweeps beyond retrieval)
 - [[Experiment Tracking Schemas]] — instance-of (per-stage config capture is what makes component gates diffable)
+- [[Long-Form QA Evaluation Hurdles]] — related (controls showing a generator ignoring its retrievals)

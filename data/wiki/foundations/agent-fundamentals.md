@@ -153,3 +153,5 @@ operations, at least until reliability is proven ([[Execution Boundaries and Gua
 - [[Real-Time Multimodal Agents]] — extends (the same loop under real-time constraints)
 - [[Agentic Workflow Patterns]] — alternative-to (fixed-path workflows)
 - [[Single Agent With Tools]] — related
+- [[SayCan Affordance-Grounded Skill Selection]] — related (an LLM's choice among skills weighted by what the robot can do now)
+- [[SayCan Affordance-Grounded Skill Selection]] — related (an LLM's choice among skills weighted by what the robot can do now)

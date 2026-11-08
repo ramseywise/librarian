@@ -4,9 +4,12 @@ tags: [eval, concept]
 summary: "The same model on the same benchmark can move by more than 20 accuracy points, and swap ranks with its rivals, when only the prompt template, answer format or scoring choice changes; report the exact prompt, keep per-item outputs and never mix numbers from different harnesses."
 updated: 2026-11-08
 sources:
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch04-evaluate-ai-systems.md
   - data/raw/papers/2026-11-05-biderman-2024-lessons-trenches-reproducible-evaluation-language.md
   - data/raw/papers/2026-11-05-ye-2023-comprehensive-capability-analysis-gpt-3.md
   - data/raw/papers/2026-11-05-guha-2023-legalbench.md
+  - data/raw/papers/2026-11-08-akter-2023-depth-look-gemini-s-language.md
+  - data/raw/papers/2026-11-08-bommasani-2023-holistic-evaluation-language-models.md
 ---
 
 # Benchmark Prompt Format Sensitivity
@@ -36,6 +39,31 @@ together**, and the last two are rarely reported.
   for a 7B open model (see [[LegalBench]]), and a plain-language prompt beat a legalese one
   by up to 21 points on four of five tasks for GPT-3.5.
 
+## A third-party comparison under identical prompts
+
+Akter et al. (arXiv 2312.11444, preprint) ran Gemini Pro against two OpenAI models (the 3.5 Turbo and
+4 Turbo versions of GPT) and an open Mixtral model through LiteLLM on 10 datasets with the same prompts and evaluators, and API queries from 11 to 22
+December 2023. Their MMLU and HumanEval numbers sit below the ones in the Gemini and Mixtral
+technical reports, which they attribute to prompt sensitivity; the HumanEval gap is unresolved.
+They also say prompt choice affected every model, with the GPT models appearing steadier
+under small prompt changes. Setup is a single run with no confidence intervals; decoding is greedy on
+MMLU, BIG-Bench Hard and the math sets, temperature 0 on code, 0.3 on FLORES and provider defaults
+on WebArena. The numbers (self-reported) are the authors' own:
+
+- **MMLU, 5-shot, 14,042 samples:** adding chain of thought lowered accuracy for Gemini Pro and
+  Mixtral and widened the Gemini-GPT 3.5 gap. Gemini Pro's answers skewed toward D.
+- **Evaluator choices:** the BBH last-word and math last-number matching deviate from the Eleuther
+  defaults to avoid penalising format. A default answer of "C" was used on MMLU CoT when none
+  could be extracted.
+- **Blocked responses:** with safety filters disabled, Gemini Pro still returned "Blocked
+  Response" errors in low-resource languages on FLORES-200 5-shot; it blocked over half of
+  samples in 12 of 20 languages, so chrF over all 20 languages fell far below both GPT models.
+- **WebArena:** an "unachievable" hint in the prompt made Gemini Pro predict most tasks
+  unachievable, far above the true 4.4% rate; GPT 3.5 Turbo dropped from 8.87 to 6.36 without the hint.
+  The Gemini and GPT runs used different default temperature and top-p, so that comparison is not
+  hyperparameter-identical.
+- Differences of 1 to 4 points are common, and data leakage was not measured.
+
 ## Other variance sources
 
 - **Run-to-run noise.** A single run on a small set misleads; HumanEval has only 164 items.
@@ -46,6 +74,7 @@ together**, and the last two are rarely reported.
   another paper is not comparable.
 - **The judge problem.** The best models for deciding whether a free-form answer is
   equivalent to the gold one are the same models being evaluated.
+- **Multiple-choice answer format (a textbook report).** Huyen (*AI Engineering*, chapter 4) says to freeze the prompt format when scoring multiple-choice questions, citing Alzahrani et al. 2024 for answers that change with an extra space or the word "Choices:". She reports that three quarters of the tasks in lm-evaluation-harness were multiple choice as of April 2024, and notes that random guessing scores 25% on four-option questions. See [[Evaluation-Driven Model Selection]].
 
 ## What to report
 
@@ -63,6 +92,11 @@ zero-shot, one run each. Few-shot selection, answer extraction, normalisation, t
 run-to-run variance are argued from cited work rather than tested. It covers multiple-choice
 evaluation almost exclusively; LLM judges get a paragraph and agents are not covered.
 
+The Akter comparison is a snapshot of API systems as of 27 December 2023, with exact model version
+strings not given, and without the self-consistency decoding the Gemini report used, so its
+numbers are not comparable to Google's. HELM's format results (see [[HELM Holistic Evaluation]]) come from 3 seeds and
+1,000 instances per scenario, which its authors say may leave some comparisons insignificant.
+
 ## See Also
 - [[Eval Error Bars and Sample Size]] — related
 - [[Eval Non-Determinism]] — related
@@ -72,4 +106,7 @@ evaluation almost exclusively; LLM judges get a paragraph and agents are not cov
 - [[LegalBench]] — related (demonstration and wording sensitivity measured on legal tasks)
 - [[AGIEval]] — related (zero-shot vs few-shot and chain of thought moved exam scores unevenly)
 - [[TruthfulQA]] — related (GPT-3-175B scored 58.1% true with one prompt and 12.5% with another)
+- [[HELM Holistic Evaluation]] — related (OPT-175B on HellaSwag moved from 79.1% to 30.2% with the multiple-choice format)
 - [[BIG-bench]] — instance-of (appending answer options to the query and sampling settings changed scores)
+- [[TyDi QA]] — related (benchmark whose design aims to limit answer overlap)
+- [[Evaluation-Driven Model Selection]] — related (benchmark choice and aggregation for model selection)

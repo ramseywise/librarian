@@ -7,7 +7,7 @@ cards:
   back: Images cost context as text does, and cost grows with area.
   lesson: ai-engineering/08-multimodal-engineering/notes/01-image-input
 - front: How should you read the resolution and encoder-size results for your own task?
-  back: Read this as a ranking of levers for research models, not a forecast for your task.
+  back: Resolution moved the score more than encoder size, but treat it as a ranking of levers for research models, not a forecast for your task.
   lesson: ai-engineering/08-multimodal-engineering/notes/01-image-input
 - front: What should you log and monitor so a downscale cannot silently erase small text?
   back: Log the pixel height of the smallest text you need, and monitor it like token count.
@@ -19,13 +19,13 @@ cards:
   back: Route per page and log the route, so a shift in accuracy points at a route and a document family.
   lesson: ai-engineering/08-multimodal-engineering/notes/02-document-understanding
 - front: Which pages should go to the expensive route?
-  back: Send only the hard pages to the expensive route.
+  back: Send only pages with no text layer, tables or formulas, or a failed check to the expensive route.
   lesson: ai-engineering/08-multimodal-engineering/notes/02-document-understanding
 - front: Why set per-page timeouts on CPU document parsing?
   back: At the 95th percentile a CPU page takes about twenty times the median, so set per-page timeouts.
   lesson: ai-engineering/08-multimodal-engineering/notes/02-document-understanding
 - front: What do you do when an arithmetic check fails on an extracted document?
-  back: A failed check says something is wrong, then you retry with a crop, try a second route, or ask a person.
+  back: 'A failed check means something is wrong: retry with a crop, try a second route, or ask a person.'
   lesson: ai-engineering/08-multimodal-engineering/notes/02-document-understanding
 - front: Which score picks an engine, and which decides whether you can ship?
   back: Use edit distance to pick an engine, and field F1 to decide whether you can ship.
@@ -37,13 +37,13 @@ cards:
   back: Positions matter when a label sits over its value, and our two-column layout turned out harmless.
   lesson: ai-engineering/08-multimodal-engineering/notes/02-document-understanding
 - front: What does a field that the arithmetic can't reach need?
-  back: Each field the arithmetic can't reach needs a check of its own.
+  back: A vendor name or IBAN needs its own check, such as IBAN check digits or a supplier list.
   lesson: ai-engineering/08-multimodal-engineering/notes/02-document-understanding
 - front: When is a failed check worth the most, and why?
   back: People are the cost, so a failed check is worth most when it triggers another attempt first.
   lesson: ai-engineering/08-multimodal-engineering/notes/02-document-understanding
 - front: Before you label more data for a fine-tuned vision-language model, what should you check, and why?
-  back: Read one batch's labels, look at the page as the model gets it, and score after every conversion before adding data.
+  back: Before adding data, check the labels, the pixels the model sees, and the score after saving.
   lesson: ai-engineering/08-multimodal-engineering/notes/02b-fine-tuning-a-vision-language-model
 - front: What did swapping BM25 for a neural embedder show about the text routes?
   back: Swapping BM25 for a neural embedder barely moved the text routes, so ingestion was the bottleneck here.
@@ -52,7 +52,7 @@ cards:
   back: Late interaction finds a small region on a dense page, where a single vector finds the vague page.
   lesson: ai-engineering/08-multimodal-engineering/notes/03-multimodal-rag
 - front: Why narrow to a few hundred pages before reranking with patches?
-  back: Recall at a few hundred is a much easier job than precision at five.
+  back: Scanning every patch of every page is too costly, so narrow with a cheap first stage and rerank a few hundred pages with patches.
   lesson: ai-engineering/08-multimodal-engineering/notes/03-multimodal-rag
 - front: What usually decides for a cascade in a regulated use?
   back: For a regulated use such as disputing a charge, audit and tool calling usually decide for the cascade.
@@ -61,7 +61,7 @@ cards:
   back: Write the budget per stage at the 95th percentile, then test the VAD window on real callers.
   lesson: ai-engineering/08-multimodal-engineering/notes/04-speech-and-voice-agents
 - front: What goes wrong if voice agent history keeps text the caller never heard?
-  back: Otherwise the agent believes it read out a policy that the caller never heard.
+  back: If history keeps unspoken text, the agent believes it read out a policy the caller never heard, so keep only what was played.
   lesson: ai-engineering/08-multimodal-engineering/notes/04-speech-and-voice-agents
 - front: How do you protect against a low WER hiding a wrong value you will act on?
   back: Read back any value you will act on, and confirm it before calling the tool.
@@ -84,7 +84,7 @@ cards:
 - front: Why can't training a ControlNet damage the base model?
   back: Zero-initialised connections leave the base model's output unchanged at step 0, so training the control copy can't damage it.
   lesson: ai-engineering/08-multimodal-engineering/notes/06b-editing-and-customizing-images
-- front: When is a customized model worth training, and which method fits?
+- front: What do you do before and after training a customized image model?
   back: Try a reference image or a control image first, then train one concept per model and record the base and adapter hashes.
   lesson: ai-engineering/08-multimodal-engineering/notes/06b-editing-and-customizing-images
 - front: Which negatives make a good test for a vision model on invoices?

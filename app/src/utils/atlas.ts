@@ -78,7 +78,7 @@ export function sectorsOf(
     if (beyond) {
       out.push({
         id: BEYOND_SECTOR,
-        label: "Beyond the curriculum",
+        label: "Not in a course",
         color: "var(--text-dim)",
         pageIds: beyond.sort(rank),
       });

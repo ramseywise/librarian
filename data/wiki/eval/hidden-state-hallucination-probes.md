@@ -40,3 +40,4 @@ SAPLMA was tested only in English on OPT-6.7b and LLAMA2-7b. Statements are clas
 - [[Lookback Lens]] — alternative-to (another white-box detector, reading attention instead of hidden states)
 - [[SelfCheckGPT]] — alternative-to (black-box detection from sampled consistency)
 - [[Language Model Self-Knowledge]] — alternative-to (a trained value head and stated uncertainty rather than a probe on activations)
+- [[Contrast-Consistent Search]] — related (an unsupervised probe on hidden states, needing no labels)

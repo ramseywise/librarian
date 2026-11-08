@@ -51,3 +51,4 @@ available.
 - [[Evaluating Prompts]] — prerequisite-for
 - [[Stop Sequences and Completion Anatomy]] — extends (a known start makes the decision token readable)
 - [[Language Model Self-Knowledge]] — related (calibration of a model's own probabilities)
+- [[MC Dropout]] — related (uncertainty from stochastic passes rather than token probabilities)

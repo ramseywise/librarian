@@ -1,27 +1,37 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { GraphSidebar } from "../GraphSidebar";
-import type { Facets, Glossary } from "../../types";
+import type { Curriculum, Facets, Glossary } from "../../types";
 
 const term = (id: string, label: string) => ({ id, label, aliases: [], def: "", page: null, mentions: 1 });
 const glossary: Glossary = {
   terms: [term("bm25", "BM25"), term("rrf", "Reciprocal Rank Fusion"), term("unused", "Unused")],
   mentions: { bm25: ["a", "b"], rrf: ["a"] },
 };
+const curriculum: Curriculum = {
+  courses: [{ id: "ai", title: "AI Engineering", pageIds: ["a"], modules: [] }],
+  beyond: [{ domain: "patterns", pageIds: ["c"] }],
+  primaryCourse: { a: "ai" },
+  stale: false,
+};
 const facets: Facets = new Map([
+  ["dir:rag", new Set(["a", "b"])],
+  ["dir:patterns", new Set(["c"])],
   ["tag:rag", new Set(["a", "b"])],
   ["tag:pattern", new Set(["a"])],
   ["term:bm25", new Set(["a", "b"])],
   ["term:rrf", new Set(["a"])],
 ]);
 
-function renderSidebar(activeTags = new Set<string>(), onChange = vi.fn()) {
+function renderSidebar(activeTags = new Set<string>(), onChange = vi.fn(), grouping: "domain" | "course" = "domain", onGrouping = vi.fn()) {
   render(
     <GraphSidebar
       id="graph-controls"
       open={false}
-      domains={["rag"]}
-      curriculum={null}
+      grouping={grouping}
+      onGrouping={onGrouping}
+      onBrief={vi.fn()}
+      curriculum={curriculum}
       glossary={glossary}
       facets={facets}
       activeTags={activeTags}
@@ -32,12 +42,37 @@ function renderSidebar(activeTags = new Set<string>(), onChange = vi.fn()) {
 }
 
 describe("GraphSidebar", () => {
+  it("Domain lists directories and tags, Course lists courses, and the switch reports a change", () => {
+    const onGrouping = vi.fn();
+    renderSidebar(new Set(), vi.fn(), "domain", onGrouping);
+    expect(screen.getByRole("button", { name: "Domain" })).toHaveAttribute("aria-pressed", "true");
+    const dirs = screen.getByRole("group", { name: "Filter by directory" });
+    expect(within(dirs).getByRole("button", { name: "rag 2" })).toBeInTheDocument();
+    expect(within(dirs).getByRole("button", { name: "Brief me on rag" })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Filter by curriculum" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Course" }));
+    expect(onGrouping).toHaveBeenCalledWith("course");
+  });
+
+  it("Course shows the course tree and no tags", () => {
+    renderSidebar(new Set(), vi.fn(), "course");
+    expect(screen.getByRole("group", { name: "Filter by curriculum" })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Topic tags" })).toBeNull();
+    expect(screen.queryByRole("group", { name: "Filter by directory" })).toBeNull();
+  });
+
+  it("a directory chip filters by `dir:`", () => {
+    const onChange = renderSidebar();
+    fireEvent.click(within(screen.getByRole("group", { name: "Filter by directory" })).getByRole("button", { name: "patterns 1" }));
+    expect(onChange).toHaveBeenCalledWith(new Set(["dir:patterns"]));
+  });
+
   it("lists the top topic tags, the rest behind more, and an active one always", () => {
     const many: Facets = new Map(
       Array.from({ length: 15 }, (_, i) => [`tag:t${i}`, new Set(Array.from({ length: 20 - i }, (_, j) => `p${j}`))]),
     );
     render(
-      <GraphSidebar id="s" open={false} domains={[]} curriculum={null} glossary={null}
+      <GraphSidebar id="s" open={false} grouping="domain" onGrouping={vi.fn()} curriculum={null} glossary={null}
         facets={many} activeTags={new Set(["tag:t14"])} onChange={vi.fn()} />,
     );
     const topic = screen.getByRole("group", { name: "Topic tags" });

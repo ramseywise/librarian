@@ -24,7 +24,7 @@ cards:
   back: Start with a linear model or kNN to learn the data, and learn one knob per family.
   lesson: data-science/01-classical-ml/notes/02-supervised-learning
 - front: Why do scikit-learn estimators chain in pipelines and plug into search?
-  back: The API is uniform by design, so estimators chain in pipelines and plug into search.
+  back: 'Choose, fit, predict, score: the same four calls for every family, so swapping a model is one line.'
   lesson: data-science/01-classical-ml/notes/01-statistical-foundations
 - front: How do gradient descent and the normal equation differ?
   back: Gradient descent walks towards the answer and needs a learning rate, while the normal equation solves for it directly.
@@ -65,7 +65,7 @@ cards:
 - front: When does a shuffled split flatter a model?
   back: If new data brings new groups or later dates, a shuffled split flatters the model.
   lesson: data-science/01-classical-ml/notes/09-training-and-tuning
-- front: Which tool would you use for how a feature moves the prediction?
+- front: Which tool answers which interpretability question?
   back: Permutation is global, partial dependence shows shape, and SHAP explains one row, so match the tool to the question.
   lesson: data-science/01-classical-ml/notes/08-model-interpretability
 - front: What is local accuracy, and how do you check it?
@@ -81,7 +81,7 @@ cards:
   back: Fit on unlabelled normal data, choose the cut on a small labelled set, and score with F1.
   lesson: data-science/01-classical-ml/notes/05-unsupervised-learning
 - front: Why does k-means on one-hot columns ignore the categories?
-  back: Check how each column type is weighted in the distance, since the weighting decides which columns get heard.
+  back: In k-means a column's say is its variance, so one-hot dummies are drowned out by z-scored numbers, and FAMD reweights them.
   lesson: data-science/01-classical-ml/notes/05b-clustering-categorical-and-mixed-data
 - front: What can validate a customer segmentation?
   back: Run every method against a shuffled-column control, and judge segments on an outcome that wasn't used to fit them.
@@ -105,16 +105,16 @@ cards:
   back: Put the sampler in the pipeline, and if you resample, recalibrate on untouched data before you price.
   lesson: data-science/01-classical-ml/notes/10-imbalance-errors-and-drift
 - front: Which kind of drift stays invisible to PSI?
-  back: Concept shift looks like no change at all, so monitor inputs as well as the score and get labels when you can.
+  back: Concept shift leaves every PSI at the noise floor while AUC falls, so only fresh labels can show it.
   lesson: data-science/01-classical-ml/notes/10-imbalance-errors-and-drift
 - front: What do you do with a finding from reading errors?
   back: Every finding from reading errors is a hypothesis until it holds on rows you did not read.
   lesson: data-science/01-classical-ml/notes/12-reading-the-errors
-- front: What should you do when errors look identical to correct rows?
+- front: What should you check before you change the model after reading errors?
   back: Look for missing information, bad labels and the wrong threshold before you change the model.
   lesson: data-science/01-classical-ml/notes/12-reading-the-errors
 - front: Why must a slice you found by reading be re-tested on unread rows?
-  back: A slice is real when it survives rows you did not read, and the model is right about it when its score matches the default rate.
+  back: A slice found by reading is real only if it survives rows you did not read. High school faded.
   lesson: data-science/01-classical-ml/notes/12-reading-the-errors
 - front: How do you tell a real gain from one that reading the errors produced?
   back: Read errors on one set and score the fix on rows you did not read, because reading selects on noise.
@@ -126,7 +126,7 @@ cards:
   back: Policy saved 2.49 euros per invoice; a perfect model adds at most 0.07, so fix policy first.
   lesson: data-science/01-classical-ml/notes/13-automate-review-or-reject
 - front: Under a capacity limit, which cases should go to review?
-  back: Rank the queue by expected saving, since at 5% capacity the highest scores cost 5.279 against 4.661.
+  back: Send to review the invoices nearest the pay-or-reject coin flip, not the riskiest, since at 5% capacity the highest scores cost 5.279 against 4.661.
   lesson: data-science/01-classical-ml/notes/13-automate-review-or-reject
 - front: What can no score monitor see, and what do you need to catch it?
   back: No score monitor can see a new fraud type, so buy labels on automated cases and check calibration near the thresholds.
@@ -147,7 +147,7 @@ cards:
   back: A low ratio can come from the model, the label or the world before anyone applied, so say which before you blame the model.
   lesson: data-science/01-classical-ml/notes/15-fairness-in-automated-scoring
 - front: Why doesn't deleting the sensitive column remove its effect?
-  back: Predict the group from your features, then ask which of the helpful ones have a job-related reason to be there.
+  back: Other columns such as postcode predict the group (AUC 0.827), so predict the group from your features and keep only those with a job-related reason.
   lesson: data-science/01-classical-ml/notes/15-fairness-in-automated-scoring
 - front: When base rates differ, can one model equalise PPV, FPR and FNR across groups?
   back: With unequal base rates and imperfect prediction, equal PPV and FNR force unequal FPR, so someone has to choose which gap to close and own it.

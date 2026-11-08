@@ -7,7 +7,7 @@ cards:
   back: Attention flows one way, so a model reasons further only by writing tokens, which is why chain-of-thought works.
   lesson: ai-engineering/01-prompt-engineering/notes/01-how-models-read-prompts
 - front: What happened when the word-count instruction moved in front of the paragraph, and what test does it suggest?
-  back: When a task changes how content must be read, put the instruction first and restructure rather than insisting.
+  back: Moving the instruction before the paragraph took the count from 348 to 173; if an expert could not finish in one read, restructure.
   lesson: ai-engineering/01-prompt-engineering/notes/01-how-models-read-prompts
 - front: Besides left-to-right attention, what four properties of LLMs explain most prompting rules?
   back: Tokenization, no backtracking, truth bias and the chat transcript explain why reordering beats asking harder.
@@ -16,28 +16,28 @@ cards:
   back: The API renders messages into one transcript, so roles shape behaviour but only reserved tokens separate speakers.
   lesson: ai-engineering/01-prompt-engineering/notes/01-how-models-read-prompts
 - front: What four criteria must every prompt meet, and which one is never automatic?
-  back: Chat fine-tuning gives you criteria one, three and four almost free, but carrying the right information never comes free.
+  back: A prompt must resemble training data, carry all relevant information, lead to a solution and have a stopping point; only carrying the right information never comes free.
   lesson: ai-engineering/01-prompt-engineering/notes/02-prompt-anatomy
 - front: What is the Valley of Meh, and how does the sandwich structure respond to it?
   back: Content in the early middle of a prompt is used least, so state the task early and refocus on it at the end.
   lesson: ai-engineering/01-prompt-engineering/notes/02b-document-types-formatting-and-templates
 - front: In Li's Tau-Bench ablation, which change to an agent's system prompt hurt most, and which barely mattered?
-  back: Write agent prompts as numbered procedures with exception branches, and ablate one component at a time before rewriting.
+  back: Flattening procedure to an unordered list cut success by over 30% while tone barely mattered, so write numbered procedures and ablate one component at a time.
   lesson: ai-engineering/01-prompt-engineering/notes/02b-document-types-formatting-and-templates
-- front: According to Min et al., what do few-shot examples actually teach, and what are their three drawbacks?
+- front: According to Min et al., what do few-shot examples actually teach?
   back: Few-shot examples mostly teach format and label space, so add them only when zero-shot fails in a way you can name.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
 - front: How much did chain-of-thought improve PaLM 540B on GSM8K, and how do you keep the reasoning away from the user?
-  back: Chain-of-thought spends output tokens on reasoning, and a parseable block lets the app show only the answer.
+  back: Chain-of-thought lifted PaLM 540B on GSM8K from 17.9% to 56.9%; a parseable block lets the app show only the answer.
   lesson: ai-engineering/01-prompt-engineering/notes/03b-chain-of-thought-and-reasoning
 - front: How do Tree of Thoughts and CoT compare on Game of 24, and what does ToT need that CoT does not?
-  back: Tree of Thoughts recovers from dead ends through generate, evaluate and backtrack, at the cost of a code controller.
+  back: Tree of Thoughts recovers from dead ends through generate, evaluate and backtrack (4% to 74% on Game of 24), at the cost of a code controller.
   lesson: ai-engineering/01-prompt-engineering/notes/03b-chain-of-thought-and-reasoning
 - front: What does ReAct add to chain-of-thought, what are the ALFWorld results, and how does it fail?
-  back: ReAct alternates reasoning with actions so answers rest on retrieved facts, and a single bad search can derail it.
+  back: ReAct alternates reasoning with actions so answers rest on retrieved facts (71% vs 45% on ALFWorld), and a single bad search can derail it.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
 - front: When does Reflexion work, what result did it achieve on HumanEval, and when does it become dangerous?
-  back: Reflexion retries with written feedback, so it needs reversible actions and an evaluator stronger than the actor.
+  back: Reflexion retries with written feedback (91% vs 80% on HumanEval), so it needs reversible actions and an evaluator stronger than the actor.
   lesson: ai-engineering/01-prompt-engineering/notes/03-core-techniques
 - front: Given a task's failure, which prompting technique do you reach for, and what does it cost?
   back: Name how the output fails, then choose the cheapest technique that buys what is missing.
@@ -63,19 +63,19 @@ cards:
 - front: Which reasoning-model failures can you not catch by reading the visible chain of thought?
   back: Judge a reasoning model by its outputs and an eval, since the visible chain of thought is neither a complete record nor a safety monitor.
   lesson: ai-engineering/01-prompt-engineering/notes/07b-reasoning-model-failure-modes
-- front: What are the main paths for offline prompt evaluation, and how do you source samples?
+- front: What is the offline path from cheap checks to judges?
   back: Start offline with cheap exact checks, escalate to judges only where needed, and watch acceptance online as a guardrail.
   lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
-- front: What makes a good LLM judge rubric, and why does the rubric go before the content?
+- front: What makes a good LLM judge rubric?
   back: Ask judges a specific, ordinal, multi-aspect question, and calibrate their scores against several human annotators.
   lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
 - front: What does the prompt modification case study show about F1, template adherence and methodology?
   back: Prompt wording can move F1 by 26 points and trade against format adherence, so change one thing and re-score.
   lesson: ai-engineering/01-prompt-engineering/notes/08-evaluating-prompts
-- front: What does the prompt optimization loop look like, and what automated tools can propose changes?
+- front: What is the rule for keeping a new prompt version?
   back: Version the template with its model and score, and keep a new version only when it beats the old on the eval.
   lesson: ai-engineering/01-prompt-engineering/notes/09-prompt-optimization
-- front: How should a model rank instructions from different sources, and which defenses are strongest?
+- front: How should you layer defenses against prompt injection?
   back: Layer defenses from prompt warnings up to quarantined architectures, and treat all model output as untrusted.
   lesson: ai-engineering/01-prompt-engineering/notes/10-adversarial-prompting
 - front: How do you get diversity in synthetic data generation, and what are its pitfalls?
@@ -87,7 +87,7 @@ cards:
 - front: What do you shape first, where do guarantees live, and how do you prove a change?
   back: Shape the document first, then keep guarantees in code and prove every change with an eval.
   lesson: ai-engineering/01-prompt-engineering/notes/09-prompt-optimization
-- front: Which pillars and readings come after prompt engineering?
+- front: What does prompting leave to the next pillar?
   back: Prompting sets what the model is asked; the next pillar decides what else sits in the window with it.
   lesson: ai-engineering/01-prompt-engineering/notes/02-prompt-anatomy
 ---

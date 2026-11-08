@@ -2,7 +2,7 @@
 title: "Probability Calibration and Reliability Curves"
 tags: [foundations, concept]
 summary: "A score is calibrated when a 0.8 happens 80% of the time; check with a reliability diagram and Brier score, and fix on held-out data with isotonic, Platt or temperature scaling."
-updated: 2026-11-05
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--04-model-evaluation.md
 ---
@@ -40,3 +40,4 @@ These are 2021 image classifiers; do not carry the ranking to other domains.
 - [[Calibrated Score, Deterministic Decision Rule]] — related
 - [[Prior Shift Correction for Oversampled Defaults]] — related
 - [[Confidence-Gated Escalation]] — extends (calibration measured per task for an LLM gate)
+- [[MC Dropout]] — related (an uncertainty estimate whose calibration is a separate check)

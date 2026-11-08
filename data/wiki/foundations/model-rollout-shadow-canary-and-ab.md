@@ -2,9 +2,10 @@
 title: "Model Rollout: Shadow, Canary and A/B"
 tags: [foundations, pattern]
 summary: "A model that won the offline gate has won on old data; shadow shows disagreement before labels exist, canary routes a stable hashed share, and A/B is the only option when predictions change future data."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--03-batch-and-online-serving.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch10-monitoring-production.md
 ---
 
 # Model Rollout: Shadow, Canary and A/B
@@ -26,8 +27,13 @@ Flow: gate, shadow (both run, champion answers), canary (small share gets the ch
 - Expect a gap: engineers reported production performance short of what offline evaluation promised. Continuous delivery for ML has three change axes (code, model, data) where conventional delivery considers only code.
 - A random per-request canary puts one user on two models and pollutes the comparison.
 
+## In agent services (Albada)
+
+Albada (*Building Applications with AI Agents*, O'Reilly 2025, chapter 10) applies both stages to agent versions. In shadow mode the new version runs beside production on the same inputs, linked by a shared request ID, without serving its outputs to users. A canary then serves 1 to 5% of traffic, tags metrics by version, alerts on regressions and rolls back immediately. These are the chapter's recommendations, not measured results.
+
 ## See Also
 - [[Passive Retraining and the Promotion Gate]] — prerequisite-for
 - [[Choosing Batch, Stream or Online Serving]] — related
 - [[Model Registry Aliases and the Run Record]] — related (a challenger alias can drive shadowing)
 - [[Peeking and Sequential Testing]] — related
+- [[Online Eval Sampling]] — related (what to score on the live traffic once a version is exposed)

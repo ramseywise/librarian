@@ -42,3 +42,4 @@ Kadavath: only pretrained models, and the authors expect RLHF models to be less 
 - [[Hidden-State Hallucination Probes]] — alternative-to (reads truth from internal activations rather than from the model's stated probabilities)
 - [[SelfCheckGPT]] — alternative-to (checks answers by sampling consistency instead of a model's own probability)
 - [[Logprobs as Confidence Signal]] — related (probabilities used as a confidence signal)
+- [[Contrast-Consistent Search]] — related (reads truth from hidden states instead of probabilities)

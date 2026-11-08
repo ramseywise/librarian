@@ -61,3 +61,4 @@ from Oct, Nov and Dec 2023.
 - [[Eval Suite Maintenance]] — related (a refreshed benchmark as a counter to staleness)
 - [[REST Multi-Problem Stress Testing]] — alternative-to (a harder benchmark from concatenated questions, with no generator)
 - [[Compositionality Gap]] — related (a differently defined reasoning gap, for chained GSM8K pairs)
+- [[TheoremQA]] — related

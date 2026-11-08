@@ -2,7 +2,7 @@
 title: "Topic Models and Extractive Summarisation"
 tags: [foundations, concept]
 summary: "LSI, LDA and NMF factor the document-term matrix into readable topics; choose k by coherence plus reading, check seed stability; document clustering and TextRank/LSA summaries share the same machinery."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--03-nlp--notes--03-topic-models-and-summarization.md
 ---
@@ -72,3 +72,4 @@ On a 29-sentence article both methods opened with the defining sentence and shar
 - [[Embedding Clustering and Anomaly Detection]] — extends
 - [[Clustering Validation Against Named Baselines]] — related
 - [[HDBSCAN with KMeans Fallback]] — related
+- [[Multi-News]] — related (multi-document summarization dataset with extractive baselines)

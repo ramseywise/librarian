@@ -146,6 +146,8 @@ Judges that score by token probability instead of a generated verdict are [[GPTS
 
 ## See Also
 - [[PaperBench]] — related (a judge validated against human leaf labels)
+- [[DataSpace]] — related (a model-free table comparison used instead of a judge)
+- [[FINDER and DEFT (Deep Research Agent Failures)]] — related (judge and reference report from the same vendor)
 - [[Gaia2]] — related
 - [[SAFE Long-Form Factuality Scoring]] — related (an LLM-plus-search judge validated against human labels)
 - [[Shepherd Critic Model]] — related
@@ -173,6 +175,9 @@ Judges that score by token probability instead of a generated verdict are [[GPTS
 - [[Grader States (Heuristic, Calibrated, Experimental)]] — extends
 - [[SOMA Judge Rubric]] — extends (specific, ordinal, multi-aspect rubric; never reveal self-grading)
 - [[Verification Loops]] — instance-of
+- [[HITL Annotation Pipeline]] — related (LLM annotators against crowd workers on text-annotation tasks)
+- [[Silicon Sampling and Algorithmic Fidelity]] — related (an LLM standing in for human respondents)
+- [[MetaCrit Adaptive Critique]] — related (a monitor and controller that decide how hard to critique)
 - [[LLM-as-a-Verifier]] — extends (score-token expectation instead of a discrete verdict)
 - [[J1 Reinforcement-Learned Judge]] — extends (a judge trained with RL)
 - [[Prometheus 2 Evaluator Models]] — extends (an open trained evaluator)

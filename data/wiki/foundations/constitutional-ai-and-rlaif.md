@@ -133,3 +133,7 @@ its own judgment has no external reference to drift *against*.
 - [[Reward Hacking and Overoptimization]] — related (an explicit constitution makes the alignment target auditable)
 - [[LLM-as-Judge Evaluation]] — instance-of (a model judging model output, at training time rather than eval time)
 - [[Constitutional Classifiers]] — extends (a constitution used to train input and output classifiers rather than the policy)
+- [[ETHICS Benchmark]] — related (a dataset for testing predicted human moral judgments)
+- [[LM Red Teaming]] — related (automated red-team prompt generation)
+- [[ETHICS Benchmark]] — related (a dataset for testing predicted human moral judgments)
+- [[LM Red Teaming]] — related (automated red-team prompt generation)

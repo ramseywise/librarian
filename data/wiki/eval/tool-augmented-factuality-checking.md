@@ -78,3 +78,4 @@ Cossio (arXiv 2508.01781, 2025), a single-author survey, runs no experiments. It
 - [[RAGChecker]] — related (claim-level checks against the retrieved context)
 - [[FActScore]] — alternative-to (atomic facts scored against Wikipedia instead of tools)
 - [[SelfCheckGPT]] — alternative-to (the model's own samples as the evidence, no tool)
+- [[Summary Factual Consistency Metrics]] — alternative-to (source-grounded checkers for summaries)

@@ -99,9 +99,11 @@ verbatim; scores drop on paraphrased versions.
   it suggests private held-out evaluations ([[Extreme-Risk Model Evaluation]]).
 
 ## See Also
+- [[HELM Holistic Evaluation]] — related (flags only disclosed contamination; a later survey asserts static-benchmark memorisation without measuring it)
 - [[SWE-Lancer]] — related (private holdout)
 - [[Min-K% Prob Pretraining-Data Detection]] — related (membership test from token probabilities)
 - [[FreshQA]] — related (temporal freshness in a question set)
+- [[NatureBench]] — related (public task data, exact-score feedback and a post-hoc shortcut judge)
 - [[Hashed Fingerprint Contamination Gate]] — instance-of (a mechanical leak check)
 - [[Golden Set Mechanics]] — extends (curation and versioning of the rows themselves)
 - [[Eval Suite Maintenance]] — related (overfitting and saturation)
@@ -121,3 +123,4 @@ verbatim; scores drop on paraphrased versions.
 - [[Live Multi-Market Trading Benchmark]] — related (live data as a way around leakage, untested in the paper)
 - [[BIG-bench]] — instance-of (a canary GUID in every task file)
 - [[Counterfactual Task Variants]] — related (default against counterfactual task conditions)
+- [[Evaluation-Driven Model Selection]] — related (the 13-token overlap rule and reported contamination rates)

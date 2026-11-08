@@ -11,6 +11,8 @@ sources:
   - data/raw/repos/datathon_mcp/.claude--docs--research--awo-welfare-data-harvester.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
   - data/raw/papers/2026-11-05-gandhi-2023-understanding-social-reasoning-language-models.md
+  - data/raw/papers/2026-11-06-driouich-2025-diverse-private-synthetic-datasets-generation.md
+  - data/raw/papers/2026-11-06-zhang-2025-can-llms-ask-good-questions.md
 ---
 
 # Synthetic Dataset Generation for RAG Eval
@@ -237,6 +239,30 @@ Asking a model for "100 test questions" returns 100 variations of the same polit
 Guard against **self-preference**: if the generating model is also a candidate under test it finds its
 own phrasing easy — generate with a **different model family**, then read the rows.
 
+## Corpus-grounded generation with clustering and PII masking (Driouich et al.)
+
+Driouich, Cao and Thomas (arXiv 2508.18929, a 2025 workshop paper) describe a LangGraph pipeline of three agents that builds a question-answer set for RAG evaluation from a private corpus. A diversity agent clusters the chunk embeddings with k-means and takes representative samples from every cluster, so topics are covered through the corpus rather than through whatever a prompt suggests. A privacy agent detects personal data in each sample and pseudonymizes it, writing a privacy report. A QA agent then writes question-answer pairs from the masked samples and a QA report. Setup: chunks of 256 tokens, text-embedding-3-small embeddings, GPT-4o for the diversity and QA agents, GPT-4.1 for the privacy agent, temperature 0.
+
+- **Diversity, judged.** A GPT-4.1 judge saw pairs of question sets and rated variety, topical coverage and phrasing from 1 to 10. On one document (the EU AI Act), at 10 questions the pipeline scored 7.8 against 7.0 for an evolutionary baseline in the style of RAGAS and 6.2 for few-shot direct prompting; at 100 questions it scored 9.0 against 8.1 and 7.6 (self-reported). Each cell is one number, with no repeats.
+- **Privacy, per label.** On three AI4Privacy datasets (PII, PWI, PHI), the privacy agent's entity accuracy was highest for JOBTYPE (0.94), LASTNAME (0.91) and DISABILITYSTATUS (0.91), and GENDER scored 0.83 (PHI), 0.88 (PWI) and 0.83 (PII) (self-reported). The paper never defines accuracy and has no baseline such as a regex or Presidio tool ([[Presidio PII Redaction for Langfuse]]).
+
+## What unconstrained question generation produces (Zhang et al.)
+
+Zhang, Liu and colleagues (arXiv 2501.03491, a 2025 preprint) compare the questions of four models (GPT-4o, DeepSeek-V3, Claude-3.7-Sonnet and the Llama-3.3-70B-Instruct model) with those in two human-built QA sets, TriviaQA and HotpotQA. Setup for the LLM side: WikiText contexts, 1,024 questions per model from a shared 256 contexts, temperature 0, one run, with GPT-4o assigning each question one of 10 hand-built types.
+
+- **Question type.** In the type table the descriptive type was 27.1 for Llama, 44.7 for DeepSeek, 29.4 for Claude and 37.1 for GPT-4o, against 3.0 for TriviaQA and 1.5 for HotpotQA. The identity-or-attribution type ran the other way: 34.2 and 39.7 for the two human sets, 9.3 to 14.8 for the models (self-reported).
+- **Answer length.** Human gold answers average 2.0 words (TriviaQA) and 2.2 (HotpotQA). Model answers given the context ran 24.4 to 35.0 words, and 7.3 to 13.7 after a shortening step with a concise-answer prompt (self-reported).
+- **Question length.** Model questions averaged 15.3 to 23.6 words with a standard deviation of 3.6 to 5.6, against 18.0 +/- 10.0 for HotpotQA and 14.0 +/- 6.5 for TriviaQA (self-reported).
+- **Judge check.** The GPT-4o judge correlated 0.76 (Pearson) with 300 manual annotations; the paper gives no annotator count or method.
+
+The authors conclude that model-written questions suit RAG testing and hallucination detection; the extraction notes this is asserted, not tested.
+
+## Limits
+
+Driouich et al.: the extraction finds no check of question quality (correctness, answerability or groundedness), no human review and no RAG system run over the questions. Diversity is tested on a single document and privacy on separate synthetic text, so leaked personal data in the generated questions is never checked. One model family writes the data and also judges diversity (GPT-4.1), there is no ablation, and the gaps of about one rating point rest on single runs. The extraction notes two inconsistencies: the paper says lower cosine-based values mean more spread, yet the pipeline's value is the least negative at every size, so that column does not back the diversity claim and only the judge column clearly favours the pipeline; and the dataset-size table's sentence and entity columns look swapped. The extraction also notes that the abstract's "robust" masking sits beside label accuracies of 0.83 to 0.91, that only the top labels are reported in the text, and that the rise in diversity with set size is partly built in because more samples cover more clusters. It also notes that the datasets are named "...-Masking-200K" while only 1,600 to 1,800 samples of each are used, and that the baselines converge on the same value (-0.33) at n=100.
+
+Zhang et al.: the human and model question sets come from different contexts (HotpotQA uses multi-paragraph evidence, WikiText a single paragraph), so differences in type are mixed up with task design and the annotation brief. GPT-4o generates questions and also classifies types, selects covered sentences and rates answers, with one run per model and no confidence intervals. "Good" questions are never defined by human preference or downstream use, which the extraction says leaves the title stronger than the findings. The extraction notes inconsistencies: Llama's question length is 23.6 in one table and 18.5 in another for the main prompt; GPT-4o's type shares differ between the main table (45.8 and 53.4) and the prompt-variant table (58.0 and 41.2); and GPT-4o's T9 share is 14.1 in one table and 14.7 in another. The "three variations" check has only two independent variants, since the first is the main prompt; the shortened-answer standard deviations in Table 4 exceed the means; and Appendix B cites "Figure 5c" for what are three panels.
+
 ## See Also
 - [[RAG Eval Metrics Suite]]
 - [[RAG Evaluation]]
@@ -250,3 +276,5 @@ own phrasing easy — generate with a **different model family**, then read the 
 - [[Proxy Schema Overfits the Guess]] — extends (a synthetic source whose guessed fields hardened into required ones)
 - [[Diversity Seeding for Synthetic Data]] — extends (combinatorial, hierarchical and audience seeding; Promptagator query generation)
 - [[BigToM Model-Generated Benchmark]] — related (a model fills a causal template to write test items)
+- [[Silicon Sampling and Algorithmic Fidelity]] — related (simulating human respondents with a model; a different synthetic-data use)
+- [[PII Masking Approaches]] — related (masking source text before generating test items)

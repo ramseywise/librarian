@@ -53,6 +53,7 @@ the selected run only. The models in both are 2024 vintage.
 - [[Eval Non-Determinism]] — prerequisite-for (pass@k and pass^k definitions)
 - [[MLE-bench]] — instance-of
 - [[ScienceAgentBench]] — instance-of
+- [[AutoLab]] — instance-of (Avg@3 against Best@3 gap grows with per-task standard deviation)
 - [[Eval Error Bars and Sample Size]] — related
 - [[Validated Concept vs Unmeasured System]] — related
 - [[LLM-as-a-Verifier]] — related (best-of-N selection against single-run leaderboard entries, compute not matched)

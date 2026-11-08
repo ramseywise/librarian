@@ -2,9 +2,10 @@
 title: Input Guardrails Pipeline
 tags: [llm, concept, pattern]
 summary: 7-stage deterministic safety pipeline (normalise → size check → domain classify → injection detect → PII redact → XML envelope → advisory) that runs before every LLM call — LLM-free by design.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
 ---
 
 # Input Guardrails Pipeline
@@ -184,6 +185,12 @@ def guardrails_node(state: AgentState) -> dict:
 | `check_size` | Tune limits for your model's context window |
 | `injection_detect` | Universal — rarely needs changing |
 | `xml_envelope` | Universal — rarely needs changing |
+
+## Where it sits in the build order (Huyen)
+
+Huyen (*AI Engineering*, O'Reilly, chapter 10) adds input guardrails as the second step of the five-step architecture, after context construction. Input guardrails include PII masking with a reverse map. On the output side it lists retry, parallel calls and human fallback, and says to track the false refusal rate too. The chapter notes that guardrails cost latency in exchange for reliability, and fit badly with streamed output.
+
+Limits: the chapter says the ordering follows what its author commonly sees and that needs differ per application; no data backs it.
 
 ## See Also
 - [[Deterministic Review Substrate]] <!-- auto-linked -->

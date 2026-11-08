@@ -1,8 +1,9 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useTheme } from "../hooks/useTheme";
-import { tagColor } from "../theme/domains";
+import { domainColor, tagColor } from "../theme/domains";
 import type { Curriculum, Facets, Glossary } from "../types";
 import { termFacet } from "../utils/curriculum";
+import type { Grouping } from "../utils/mapRoute";
 import { Chip, TagFilterPanel } from "./TagFilterPanel";
 
 /** Type tags (CLAUDE.md, "Type Tags"): one per page, so they get their own row. */
@@ -15,7 +16,11 @@ const TOPIC_LIMIT = 12;
 interface Props {
   id: string;
   open: boolean;
-  domains: string[];
+  /** Which filters the panel lists; on the atlas it also arranges the ring. */
+  grouping: Grouping;
+  onGrouping: (g: Grouping) => void;
+  /** The map's search box. */
+  search?: ReactNode;
   curriculum: Curriculum | null;
   glossary: Glossary | null;
   facets: Facets;
@@ -34,6 +39,37 @@ function Section({ title, children, defaultOpen = true }: { title: string; child
       <summary className="panel-label">{title}</summary>
       <div className="side-section-body">{children}</div>
     </details>
+  );
+}
+
+/** Wiki directories, largest first, each with a brief. */
+function DirectorySection({ facets, activeTags, onToggle, onBrief }: {
+  facets: Facets;
+  activeTags: Set<string>;
+  onToggle: (id: string) => void;
+  onBrief?: (domain: string) => void;
+}) {
+  useTheme();
+  const dirs = [...facets]
+    .filter(([id]) => id.startsWith("dir:"))
+    .map(([id, pages]) => ({ id, dir: id.slice(4), count: pages.size }))
+    .sort((a, b) => b.count - a.count || a.dir.localeCompare(b.dir));
+  return (
+    <div className="cur-chips" role="group" aria-label="Filter by directory">
+      {dirs.map((d) => (
+        <Chip
+          key={d.id}
+          id={d.id}
+          label={d.dir}
+          count={d.count}
+          color={domainColor(d.dir)}
+          active={activeTags.has(d.id)}
+          onToggle={onToggle}
+          briefScope={d.dir}
+          onBrief={onBrief}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -124,13 +160,17 @@ function TagsSection({ facets, glossary, activeTags, onToggle }: {
 }
 
 /**
- * The map's left column, from under the header down: curriculum, tags (frontmatter tags and
- * glossary terms, all filters), layers and the minimap. Below 760px it is the ☰ drawer.
+ * The map's left column, from under the header down. A Domain / Course switch picks the filters:
+ * Domain lists wiki directories and every tag (frontmatter topic and type tags, glossary terms);
+ * Course lists the courses and their modules. Search, layers and the minimap sit in both.
+ * Below 760px it is the ☰ drawer.
  */
 export function GraphSidebar({
   id,
   open,
-  domains,
+  grouping,
+  onGrouping,
+  search,
   curriculum,
   glossary,
   facets,
@@ -151,7 +191,13 @@ export function GraphSidebar({
   return (
     <aside id={id} className={`graph-sidebar${open ? " is-open" : ""}`} aria-label="Map filters and layers">
       <div className="side-head">
-        <span className="side-title">Filters</span>
+        <div className="seg" role="group" aria-label="Browse by">
+          {(["domain", "course"] as const).map((g) => (
+            <button key={g} type="button" className="seg-btn" aria-pressed={grouping === g} onClick={() => onGrouping(g)}>
+              {g === "domain" ? "Domain" : "Course"}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           className="chip chip--all"
@@ -161,18 +207,21 @@ export function GraphSidebar({
           {activeTags.size ? `Clear (${activeTags.size})` : "All"}
         </button>
       </div>
-      <Section title="Curriculum">
-        <TagFilterPanel
-          domains={domains}
-          curriculum={curriculum}
-          activeTags={activeTags}
-          onChange={onChange}
-          onBrief={onBrief}
-        />
-      </Section>
-      {hasTags && (
-        <Section title="Tags">
-          <TagsSection facets={facets} glossary={glossary} activeTags={activeTags} onToggle={toggle} />
+      {search && <div className="side-search-row">{search}</div>}
+      {grouping === "domain" ? (
+        <>
+          <Section title="Directories">
+            <DirectorySection facets={facets} activeTags={activeTags} onToggle={toggle} onBrief={onBrief} />
+          </Section>
+          {hasTags && (
+            <Section title="Tags">
+              <TagsSection facets={facets} glossary={glossary} activeTags={activeTags} onToggle={toggle} />
+            </Section>
+          )}
+        </>
+      ) : (
+        <Section title="Courses">
+          <TagFilterPanel curriculum={curriculum} activeTags={activeTags} onChange={onChange} onBrief={onBrief} />
         </Section>
       )}
       {layers && <Section title="Layers">{layers}</Section>}

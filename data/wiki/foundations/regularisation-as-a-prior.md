@@ -2,7 +2,7 @@
 title: Regularisation as a Prior
 tags: [foundations, concept]
 summary: "Ridge is the MAP estimate under a Normal prior and lasso the MAP under a Laplace prior, with penalty strength equal to prior precision; lasso's exact zeros come from the MAP's geometry, not from a Bayesian belief in sparsity."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md
 ---
@@ -35,3 +35,4 @@ Across 2,000 simulated experiments with true lifts Normal(0, 0.2) and standard e
 - [[Winner's Curse]] — related (the inflation shrinkage removes)
 - [[Logistic Regression Separation]] — related
 - [[Adam, AdamW and Decoupled Weight Decay]] — related
+- [[MC Dropout]] — related (dropout reread as approximate Bayesian inference)

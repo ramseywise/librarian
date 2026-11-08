@@ -43,3 +43,4 @@ biggest lever after context ([[Code Generation Prompting]]).
 - [[Prompting Technique Selection]] — instance-of
 - [[Agentic Workflow Patterns]] — instance-of (evaluator–optimizer)
 - [[Loop Detection and the Two-Retry Rule]] — extends (bounding the retry budget)
+- [[MetaCrit Adaptive Critique]] — related (a critique pipeline whose paper found unconditional critique lowered accuracy)

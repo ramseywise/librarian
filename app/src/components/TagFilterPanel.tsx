@@ -2,12 +2,10 @@ import { useState } from "react";
 import { useTheme } from "../hooks/useTheme";
 import { courseColor, domainColor } from "../theme/domains";
 import type { Curriculum, CurriculumCourse } from "../types";
-import { beyondFacet, courseFacet, isFacetId, moduleFacet } from "../utils/curriculum";
+import { courseFacet, isFacetId, moduleFacet, OUTSIDE_COURSES } from "../utils/curriculum";
 
 interface Props {
-  /** Domain list from the graph payload (disk-derived on the server; no `private`). */
-  domains: string[];
-  /** Curriculum facet; null until it loads, and the panel shows directory chips until then. */
+  /** Curriculum facet; null until it loads. */
   curriculum?: Curriculum | null;
   activeTags: Set<string>;
   onChange: (tags: Set<string>) => void;
@@ -152,7 +150,8 @@ function CourseRow({ course, activeTags, onToggle, onBrief }: CourseRowProps) {
   );
 }
 
-export function TagFilterPanel({ domains, curriculum, activeTags, onChange, onBrief }: Props) {
+/** The course view of the map sidebar: courses, their modules, and the pages in none. */
+export function TagFilterPanel({ curriculum, activeTags, onChange, onBrief }: Props) {
   useTheme(); // Colours below are read at render, so a theme switch has to render this again.
   function toggle(tag: string) {
     const next = new Set(activeTags);
@@ -161,29 +160,12 @@ export function TagFilterPanel({ domains, curriculum, activeTags, onChange, onBr
     onChange(next);
   }
 
-  if (!curriculum) {
-    return (
-      <div className="side-chips" role="group" aria-label="Filter by domain">
-        {domains
-          .filter((d) => d !== "private")
-          .map((tag) => (
-            <Chip
-              key={tag}
-              id={tag}
-              label={tag}
-              color={domainColor(tag)}
-              active={activeTags.has(tag)}
-              onToggle={toggle}
-              briefScope={tag}
-              onBrief={onBrief}
-            />
-          ))}
-      </div>
-    );
-  }
+  if (!curriculum) return <p className="side-empty">Loading courses…</p>;
 
   // Ids no section lists (an old link's bare tag): shown so they can be cleared one by one.
   const plainTags = [...activeTags].filter((t) => !isFacetId(t)).sort();
+  const outside = curriculum.beyond.reduce((n, b) => n + b.pageIds.length, 0);
+  const outsideActive = activeTags.has(OUTSIDE_COURSES);
 
   return (
     <div className="side-curriculum" role="group" aria-label="Filter by curriculum">
@@ -198,27 +180,21 @@ export function TagFilterPanel({ domains, curriculum, activeTags, onChange, onBr
         {curriculum.courses.map((c) => (
           <CourseRow key={c.id} course={c} activeTags={activeTags} onToggle={toggle} onBrief={onBrief} />
         ))}
+        {outside > 0 && (
+          <li className="cur-row cur-outside" title="Pages no lesson links yet: mostly build findings in patterns/">
+            <button
+              type="button"
+              className="cur-filter"
+              aria-pressed={outsideActive}
+              style={outsideActive ? { color: "var(--text)", borderColor: "var(--text-dim)" } : undefined}
+              onClick={() => toggle(OUTSIDE_COURSES)}
+            >
+              <span className="cur-dot" style={{ background: "var(--text-dim)" }} aria-hidden="true" />
+              <span className="cur-name">Not in a course</span> <span className="cur-count">{outside}</span>
+            </button>
+          </li>
+        )}
       </ul>
-      {curriculum.beyond.length > 0 && (
-        <>
-          <div className="panel-label cur-beyond-label">Beyond the curriculum</div>
-          <div className="cur-chips">
-            {curriculum.beyond.map((b) => (
-              <Chip
-                key={b.domain}
-                id={beyondFacet(b.domain)}
-                label={b.domain}
-                count={b.pageIds.length}
-                color={domainColor(b.domain)}
-                active={activeTags.has(beyondFacet(b.domain))}
-                onToggle={toggle}
-                briefScope={b.domain}
-                onBrief={onBrief}
-              />
-            ))}
-          </div>
-        </>
-      )}
     </div>
   );
 }

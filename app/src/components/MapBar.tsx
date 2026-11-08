@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-import { mapPath, parentOf, type Grouping, type MapView } from "../utils/mapRoute";
+import { mapPath, parentOf, type MapView } from "../utils/mapRoute";
 
 interface Props {
   view: MapView;
@@ -14,13 +13,14 @@ interface Props {
   /** The next cap, when there is more to show. */
   nextCap: number | null;
   onExpand: () => void;
-  onGrouping: (g: Grouping) => void;
   /** Label of the page a click has focused, offered as the next level. */
   refocus: { title: string; onClick: () => void } | null;
-  search: ReactNode;
 }
 
-/** Where you are on the map and the way back: breadcrumb, Back, how much of the level is shown. */
+/**
+ * Where you are on the map and the way back: breadcrumb, Back, how much of the level is shown.
+ * None on the atlas, the top level; the Domain / Course switch and search are in the sidebar.
+ */
 export function MapBar({
   view,
   sectorLabel,
@@ -32,30 +32,9 @@ export function MapBar({
   onResetRevealed,
   nextCap,
   onExpand,
-  onGrouping,
   refocus,
-  search,
 }: Props) {
-  if (view.level === "atlas") {
-    return (
-      <div className="map-bar">
-        <div className="seg" role="group" aria-label="Arrange the atlas by">
-          {(["domain", "course"] as const).map((g) => (
-            <button
-              key={g}
-              type="button"
-              className="seg-btn"
-              aria-pressed={view.grouping === g}
-              onClick={() => onGrouping(g)}
-            >
-              {g === "domain" ? "Domain" : "Course"}
-            </button>
-          ))}
-        </div>
-        {search}
-      </div>
-    );
-  }
+  if (view.level === "atlas") return null;
 
   const grouping = view.level === "all" ? "domain" : view.grouping;
   const parent = parentOf(view);
@@ -103,7 +82,6 @@ export function MapBar({
           Focus here
         </button>
       )}
-      {search}
     </div>
   );
 }

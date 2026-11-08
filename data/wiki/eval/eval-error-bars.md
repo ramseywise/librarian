@@ -95,6 +95,8 @@ sampling alone gives at 100 questions per set, by the extraction's estimate.
 - [[Paired Eval Comparison]] — extends (variance reduction for A vs B)
 - [[Eval Metric Interpretation Pitfalls]] — related (what the number means, not just how wide it is)
 - [[Small-N Reporting Floor]] — instance-of (Wilson bounds enforced in a report)
+- [[Connect Four AlphaZero Build Task]] — instance-of (n = 8 per agent, Holm-corrected comparisons, one gap not significant after correction)
+- [[DataSpace]] — instance-of (a 7-task gap between backbones from single runs, no noise estimate)
 - [[Binary Gate Sample Power]] — related (power for never-event gates)
 - [[Eval Non-Determinism]] — related (k trials per task)
 - [[Confidence Interval Coverage and Wilson]] — related (why Wald fails for rare events)
@@ -108,3 +110,4 @@ sampling alone gives at 100 questions per set, by the extraction's estimate.
 - [[Live Multi-Market Trading Benchmark]] — related (single-run cells, no intervals)
 - [[Live Penetration Testing of Agents and Professionals]] — related (one run per agent, no hypothesis tests)
 - [[GPQA]] — related (the authors state the effect size needed for 80% power at 448 questions)
+- [[Evaluation-Driven Model Selection]] — related (rough sample-size rule and a Simpson's paradox example)

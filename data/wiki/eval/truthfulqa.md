@@ -37,3 +37,8 @@ Because 437 of 817 questions were filtered against GPT-3-175B, its results are b
 - [[FreshQA]] — alternative-to (another factuality benchmark, built around whether answers are current)
 - [[Benchmark Prompt Format Sensitivity]] — related (the prompt moved GPT-3's score from 12.5% to 58.1% here)
 - [[Language Model Self-Knowledge]] — related (uses TruthfulQA among its calibration tasks)
+- [[ETHICS Benchmark]] — related (another alignment-flavoured benchmark, filtered adversarially)
+- [[HELM Holistic Evaluation]] — related (runs TruthfulQA as one of its core scenarios)
+- [[ETHICS Benchmark]] — related (another alignment-flavoured benchmark, filtered adversarially)
+- [[HELM Holistic Evaluation]] — related (runs TruthfulQA as one of its core scenarios)
+- [[Evaluation-Driven Model Selection]] — related (a textbook chapter that uses it as a factual-consistency example)

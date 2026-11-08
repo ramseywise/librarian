@@ -44,3 +44,5 @@ conclusion statements do not obviously match the tables. The systems date from M
 - [[Eval Contamination Defenses]] — related
 - [[Web Agent Benchmarks (WebShop and Mind2Web)]] — related
 - [[GAIA General-Assistant Benchmark]] — related
+- [[MEDEC]] — related (medical error detection benchmark)
+- [[FINDER and DEFT (Deep Research Agent Failures)]] — related (deep research agent failure taxonomy)

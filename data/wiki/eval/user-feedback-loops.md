@@ -2,7 +2,7 @@
 title: User Feedback Loops
 tags: [eval, llm, infra]
 summary: Explicit ratings or implicit usage signals from deployed users — the only eval source that catches "technically correct but unhelpful", slow and sparse and biased, whose real payoff is converting thumbs-down cases into permanent golden-set entries.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/ai-project-template/skills/project-discovery/reference/eval-approaches.md
   - data/raw/claude-docs/akira/docs/research/2026-09-20-dis345-favourite-holdout-judgments.md
@@ -18,6 +18,8 @@ sources:
   - data/raw/repos/akira/.claude--docs--plans--2026-09-20-dis345-favourite-holdout-judgments.md
   - data/raw/repos/diskoe/.claude--docs--plans--2026-09-20-dis345-favourite-holdout-judgments.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--11-production-and-the-maturity-ladder.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch10-monitoring-production.md
+  - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
 ---
 
 # User Feedback Loops
@@ -116,6 +118,17 @@ inserting them into that corpus as ground truth would be. Two practical conseque
 Feedback is a **sampling rule and a calibration label**, not a metric to optimize directly:
 optimizing the 👍 rate rewards flattery.
 
+## Conversational feedback and its biases (Huyen, Albada)
+
+Huyen (*AI Engineering*, O'Reilly, chapter 10) separates **explicit** feedback (information users give in answer to a request) from **implicit** feedback (inferred from what they do). Albada (chapter 10 of *Building Applications with AI Agents*) logs implicit signals such as rephrasing and abandonment, and explicit ratings, as metrics, and ties low ratings to traces so they can enter the evaluation set. The chapter also advises converting each production failure into a regression test, by exporting its trace into the test suite, and keeping exemplar successes as golden paths.
+
+- **What users say.** In the FITS dataset, automatic clustering into 8 groups found the largest cluster to be users clarifying their demand again, 26.54% (3,702 items) (reported).
+- **When to ask.** Huyen recommends asking without interrupting: at the start of a conversation, after something goes wrong, and when the model is unsure. Showing the prompt to just 1% of a big user base is proposed to spare users annoyance, though that adds feedback bias (the chapter's claim).
+- **Biases.** Huyen recommends varying option positions to offset position bias and inspecting rating distributions for leniency: Uber drivers averaged 4.8 in 2015 and scores below 4.6 risked deactivation (reported).
+- **Training on feedback.** Huyen advises care with degenerate feedback loops, where predictions shape the feedback that shapes the next model, and with sycophancy.
+
+Limits: the chapter admits it does not know which gives more reliable feedback, full or partial side-by-side responses, and the rewrite of Uber's rating options is not validated. Neither chapter has experiments of its own.
+
 ## See Also
 - [[Eval Ladder]] — related (part of; rung 4)
 - [[Golden Set Mechanics]] — related (feeds; thumbs-down cases become golden entries)
@@ -125,3 +138,4 @@ optimizing the 👍 rate rewards flattery.
 - [[Explore Slice for Position Bias]] — extends (a feedback loop that cannot learn from its own ranking)
 - [[Outcome Signal Ladder]] — extends (which proxy counts as the outcome before attendance is loggable)
 - [[Write-Time Deterministic Holdout]] — extends (the hash-split column that made favourites holdable before any consumer existed)
+- [[Observability and Runtime Patterns]] — related (the monitoring side that feeds the same evaluation set)

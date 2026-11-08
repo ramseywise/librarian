@@ -65,3 +65,4 @@ explained.
 - [[Eval Contamination Defenses]] — related
 - [[Holistic Agent Leaderboard (HAL)]] — related (scaffold and cost effects across nine benchmarks)
 - [[Agents' Last Exam (ALE)]] — related (another end-to-end benchmark graded on output artifacts)
+- [[NatureBench]] — related (optimisation-style tasks scored against a reference result)

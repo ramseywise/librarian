@@ -59,3 +59,5 @@ out-of-distribution objects.
 - [[Real-Time Multimodal Agents]] — instance-of (the robotics setting)
 - [[Fast-Slow Thinking Architecture]] — alternative-to (a different fast/slow split)
 - [[Post-Training for Agents]] — prerequisite-for (behaviour cloning and RL for robot policies)
+- [[SayCan Affordance-Grounded Skill Selection]] — related (an LLM choosing among learned robot skills)
+- [[SayCan Affordance-Grounded Skill Selection]] — related (an LLM choosing among learned robot skills)

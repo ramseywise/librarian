@@ -75,3 +75,7 @@ The authors themselves say almost every metric they tried, the GPT-4 judge inclu
 - [[Long-Context Prompting]] — related
 - [[Benchmark Prompt Format Sensitivity]] — related (another prompt detail that moves scores)
 - [[SelfCheckGPT]] — related (a hallucination detector of the kind re-scored in the Janiak study)
+- [[SQuAD]] — related (one of the datasets used in the detector comparison)
+- [[MEDEC]] — related (correction scored with reference metrics)
+- [[Long-Form QA Evaluation Hurdles]] — related (ROUGE-L tested with trivial baselines and truncation)
+- [[Text Metrics Beyond N-gram Overlap]] — related (metrics that replace word overlap)

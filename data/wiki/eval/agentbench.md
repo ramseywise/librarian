@@ -37,3 +37,4 @@ One run per model at temperature 0, with no variance reported. Only simple chain
 - [[InterCode]] — related (concurrent interactive Bash and SQL evaluation)
 - [[Eval Failure Taxonomy]] — related
 - [[Holistic Agent Leaderboard (HAL)]] — related (agent evaluation across many benchmarks)
+- [[Text-Game Agent Environments (Jericho, ALFWorld, CALM)]] — related (the ALFWorld environment behind House Holding)

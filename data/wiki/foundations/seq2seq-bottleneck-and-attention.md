@@ -2,7 +2,7 @@
 title: "Seq2seq Bottleneck and Attention"
 tags: [foundations, concept]
 summary: "Encoding a whole input into one vector bottlenecks long inputs; letting the decoder weight all encoder states at each step fixed date normalisation (0.032 to 1.000 whole dates), and removing the recurrence from this idea gives self-attention."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--05-sequence-models.md
 ---
@@ -29,3 +29,6 @@ In one-hot form every pair of words is equally far apart. Embeddings give geomet
 - [[LSTM Forget-Gate Bias and Vanishing Gradients]] — prerequisite-for
 - [[Self-Attention Mechanism]] — extends
 - [[Autoencoder Bottleneck vs PCA and Anomaly Scores]] — related (the bottleneck as the point)
+- [[Scheduled Sampling]] — related (a training schedule for the decoder of such models)
+- [[PERSONA-CHAT]] — related (dialogue dataset with generative baselines)
+- [[Multi-News]] — related (pointer-generator summarisation benchmark)

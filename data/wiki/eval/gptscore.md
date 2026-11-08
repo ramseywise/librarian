@@ -33,3 +33,5 @@ The evaluation sets are random subsets, drawn to limit GPT3 API cost, and their 
 - [[LLM-as-a-Verifier]] — alternative-to (another scorer built on token probabilities)
 - [[GEMBA Translation Quality Prompting]] — alternative-to (prompting a model to output a score, rather than reading its probabilities)
 - [[Output Length Confounds Reference Metrics]] — related (reference-based text metrics it is compared against)
+- [[Text Metrics Beyond N-gram Overlap]] — related (embedding and learned metrics, the other non-overlap family)
+- [[ROSCOE Reasoning Chain Metrics]] — related (a reference-free metric for reasoning chains)

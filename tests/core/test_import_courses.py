@@ -670,3 +670,35 @@ def test_adopted_files_must_be_ours(tmp_path: Path) -> None:
     assert not ic._owned(tmp_path / "other.md", "source: learn-ai-engineering/x", adopted)
     assert ic._owned(deck, "slides: []\n", adopted)
     assert not ic._owned(deck, "slides: []\n", adopted, removing=True)
+
+
+def test_practice_file_over_the_commit_limit_is_not_copied(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "lae"
+    lab = source / "data-science" / "01-classical-ml" / "practice" / "lab"
+    (lab / "data").mkdir(parents=True)
+    (lab / "data" / "small.csv").write_text("a,b\n")
+    (lab / "data" / "big.data").write_bytes(b"x" * (ic.MAX_PRACTICE_BYTES + 1))
+    _git(tmp_path, "init", "-q", str(source))
+    _git(
+        source,
+        "-c",
+        "user.name=t",
+        "-c",
+        "user.email=t@t",
+        "commit",
+        "-q",
+        "--allow-empty",
+        "-m",
+        "base",
+    )
+    _git(source, "add", ".")
+    _git(source, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "lab")
+    dest = tmp_path / "courses"
+    (dest / "data-science" / "01-classical-ml" / "practice" / "lab").mkdir(parents=True)
+    monkeypatch.setattr(ic, "COURSES_DIR", dest)
+    plan = ic.Plan()
+    ic.plan_practice(plan, source, ["data-science"], "HEAD~1")
+    copied = {p.name for p in plan.copies}
+    assert copied == {"small.csv"}

@@ -2,12 +2,13 @@
 title: Online Eval Sampling
 tags: [eval, infra, llm, pattern]
 summary: "Score 10–20% of production traces by rule rather than at random — negative feedback, high-cost dialogues, time windows, and a full 48-hour review after any model or prompt change."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--eval-harness.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--observability.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--11-production-and-the-maturity-ladder.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch10-monitoring-production.md
 ---
 
 # Online Eval Sampling
@@ -89,6 +90,12 @@ When offline evals can't settle a question, **A/B test**: a primary metric tied 
 not the mechanism; test several doses, not just on/off. Kill switches for such experiments are on
 [[Ablation Switches and Feature Debt]].
 
+## Drift statistics and the failure-or-variation test (Albada)
+
+Albada (*Building Applications with AI Agents*, O'Reilly 2025, chapter 10) gives a decision tree for telling a systematic failure from expected variation in a probabilistic agent: set a success criterion (for example an evaluation score), rerun the case three to five times, and for failures that do not reproduce apply confidence and variance bounds. The chapter's drift detectors, all with illustrative thresholds, are a KS test on input and output features such as query length or latency, KL divergence on token or embedding frequency vectors for concept drift, the population stability index (below 0.1 stable, 0.1 to 0.25 minor drift, above 0.25 major, with a retrain priority when PSI above 0.25 persists for 48 hours; see [[Population Stability Index]]), and cosine similarity between current and historical query embeddings as a review trigger. Evidently AI is named for alerting.
+
+Limits: no experiment or data stands behind any threshold, and the chapter's code examples are simplified (a KS test on four values per sample, KL divergence on three tokens).
+
 ## See Also
 - [[Eval vs Test Distinction]] <!-- auto-linked -->
 - [[Eval Suite Maintenance]] — related (part of; the source of rolling discovery rows)
@@ -100,3 +107,4 @@ not the mechanism; test several doses, not just on/off. Kill switches for such e
 - [[Experiment Tracking Schemas]] — prerequisite-for (prompt_version + git_commit + model as the attribution key for a drift signal)
 - [[Publish Automatically, Sample for Review]] — instance-of (a publish-time random sample graded by an operator)
 - [[Agent Trace Anatomy]] — prerequisite-for
+- [[Population Stability Index]] — related (the PSI bands used as a drift alarm here)

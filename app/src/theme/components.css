@@ -84,8 +84,13 @@
   gap: var(--space-4);
   z-index: var(--z-panel);
 }
-.side-head { display: flex; align-items: center; justify-content: space-between; }
-.side-title { font-size: var(--fs-md); font-weight: 600; color: var(--text); }
+.side-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.side-head .seg { flex: 1; }
+.side-head .seg-btn { flex: 1; padding: 5px var(--space-3); }
+/* Search in the column: full width, results in the flow rather than over the canvas. */
+.side-search-row { font-size: var(--fs-sm); }
+.side-search-row .map-search-input { width: 100%; height: 28px; }
+.side-search-row .map-search-list { position: static; width: auto; margin-top: var(--space-1); }
 .side-section { border-top: 1px solid var(--border); padding-top: var(--space-3); }
 .side-section > summary {
   cursor: pointer;
@@ -236,7 +241,8 @@
 .cur-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cur-count { flex: none; color: var(--text-faint); font-variant-numeric: tabular-nums; }
 .cur-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.cur-beyond-label { margin-top: var(--space-2); margin-bottom: 0; }
+/* No ▸ toggle on this row: indent past where one would be. */
+.cur-outside { margin-top: var(--space-2); padding-left: calc(20px + var(--space-1)); }
 .chip {
   padding: 3px var(--space-3);
   border-radius: var(--radius-pill);

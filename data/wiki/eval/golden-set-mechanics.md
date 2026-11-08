@@ -2,12 +2,13 @@
 title: Golden Set Mechanics
 tags: [eval, llm, reference]
 summary: The shape of a golden case (input/expected/metadata), sizing by purpose (20–50 at spec time, 100–1000 for CI), sourcing priority, and the anti-staleness practices that keep a set measuring.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/guacamayo/docs/research/2026-08-02_eval-driven-development.md
   - data/raw/claude-docs/guacamayo/skills/workflow-plan/references/golden-set-authoring.md
   - data/raw/claude-docs/guacamayo/skills/workflow-plan/SKILL.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--03-eval-datasets.md
+  - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch09-validation-measurement.md
 ---
 
 # Golden Set Mechanics
@@ -125,6 +126,14 @@ Every row should carry:
 Sizing and its uncertainty are on [[Eval Error Bars and Sample Size]]; leak defenses on
 [[Eval Contamination Defenses]].
 
+## Growing the set (Albada)
+
+Albada (*Building Applications with AI Agents*, O'Reilly 2025, chapter 9) defines each evaluation example as an input state, a conversation history and an expected final state, so that scoring can be automated. The set is a living specification: grow it with every new tool or workflow. For model-generated examples the chapter names three targeted techniques (adversarial prompting, counterfactual editing and distributional interpolation) and says humans should review them before they are added. For novel domains it pairs engineers with subject-matter experts to build custom benchmarks, tagging each case with its failure type. Albada recommends automated offline evals at every merge or model update, with the history retained, so a regression shows against it.
+
+## Limits
+
+The chapter has no experiments or measured results, and the chapter concedes that automated tests can only be as good as their sets and metrics, and may miss rare edge cases.
+
 ## See Also
 - [[System Design — Unified Eval Harness]] <!-- auto-linked -->
 - [[Eval-Driven Development (EDD)]] — prerequisite-for
@@ -141,3 +150,4 @@ Sizing and its uncertainty are on [[Eval Error Bars and Sample Size]]; leak defe
 - [[Eval Suite Maintenance]] — extends (the eight authoring rules, incl. negative cases and the two-expert test)
 - [[Eval Non-Determinism]] — related (a golden row is scored over k trials, not one)
 - [[Answer Criteria with Named Wrong Answers]] — extends (named wrong answers as adversarial case seeds)
+- [[Trajectory Over Outcome]] — related (tool-call recall and precision over the expected calls in such rows)
