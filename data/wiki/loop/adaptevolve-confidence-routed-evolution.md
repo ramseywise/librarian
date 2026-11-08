@@ -26,7 +26,7 @@ AdaptEvolve (Ray et al., an AMD-affiliated preprint) targets the cost of evoluti
 - Averaged over the two, 37.9% lower cost keeping 97.5% of the large-model accuracy.
 - Against a cascade that escalates on failure, similar accuracy (73.6 against 73.8) at cost 2.08 against 2.81. Against random routing at the same ratio, 73.6 against 68.2. A static tree trained on the warm-up scored 71.2 on LiveCodeBench.
 
-Only model choice varies; the loop's prompts and harness are unchanged, so this is a cost technique, not self-improvement.
+Only model choice varies; the loop's prompts and harness are unchanged, so the extraction notes class it as a cost technique, not self-improvement.
 
 ## Limits
 

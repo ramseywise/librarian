@@ -9,7 +9,7 @@ sources:
 
 # Compiling Workflows into Weights
 
-Dennis, Patil, Shabahang and Guo (i14, University of Melbourne; arXiv 2605.22502, a preprint) move a workflow's structure out of the runtime and into the model. Steps: draw the procedure as a flowchart; sample routes through it with scenario details; ask Claude Sonnet 4.5 to write a conversation for each route; run full-parameter supervised fine-tuning on those dialogues; serve the small model with a one-line system prompt. Training data carries no procedural annotations, and the orchestrator is used only to make data. The authors frame it as persistent structure in weights, transient state in the prompt. It is SFT on teacher traces with no reinforcement learning.
+Dennis, Patil, Shabahang and Guo (i14, University of Melbourne; arXiv 2605.22502, a preprint) move a workflow's structure out of the runtime and into the model. Steps: draw the procedure as a flowchart; sample routes through it with scenario details; ask Claude Sonnet 4.5 to write a conversation for each route; run full-parameter SFT on those dialogues; serve the small model with a one-line system prompt. Training data carries no procedural annotations, and the orchestrator is used only to make data. The authors frame it as persistent structure in weights, transient state in the prompt. It is SFT on teacher traces with no reinforcement learning.
 
 ## Results (self-reported)
 

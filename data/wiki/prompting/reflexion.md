@@ -41,7 +41,7 @@ biggest lever after context ([[Code Generation Prompting]]).
 
 ## One retry in practice (Lakshmanan and Hapke)
 
-The reliability chapter describes the generate, critique, regenerate loop and notes that exactly one retry is common because it avoids defining what good enough means. In their single run, a weighted rubric scored a good logo and an average one at 0.9 each, which is why they used one fixed round of critique with a different model as critic to limit self-bias. They warn reflection adds calls and tail latency when API availability is poor (a 2025 statement), and that code generation, with a compiler or sandbox as the evaluator, justifies it most.
+The reliability chapter describes the generate, critique, regenerate loop and notes that exactly one retry is common because it avoids defining what good enough means. In their single run, a weighted rubric scored the real Pydantic logo and a generated sushi-restaurant logo at 0.9 each (self-reported), which the authors say makes it hard to separate good enough from great, which is why they used one fixed round of critique with a different model as critic to limit self-bias. They warn reflection adds calls and tail latency when API availability is poor (a 2025 statement), and, in the authors' view, that code generation, with a compiler or sandbox as the evaluator, justifies multiple stages.
 
 ## See Also
 - [[Verification Loops]] — extends

@@ -9,7 +9,7 @@ sources:
 
 # MIMESIS User Simulator Training
 
-MIMESIS (an October 2026 preprint from NYU and Meta) argues that for agents trained to talk with users, the simulated user is the environment, and frontier LLMs make poor ones: they are too cooperative.
+MIMESIS (an October 2026 preprint from NYU and Meta) argues that for agents trained to talk with users, the simulated user is the environment, and frontier LLMs used as simulators distort how hard a task looks.
 
 ## Mechanism
 

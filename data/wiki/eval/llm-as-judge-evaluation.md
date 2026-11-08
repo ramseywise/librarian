@@ -197,3 +197,4 @@ Judges that score by token probability instead of a generated verdict are [[GPTS
 - [[UQ Unsolved Questions Benchmark]] — related (validators used as judges where no gold answer exists)
 - [[Knowledge Index and Information Gain]] — related (an LLM judge splits and scores reasoning steps)
 - [[Prompt Optimization]] — related (a reference-comparison judge as the optimiser's reward, with a same-model-judge caveat)
+- [[ChatGPT Information Extraction Evaluation]] — related (self-judged explanation quality near 100% against human checks)

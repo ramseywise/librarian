@@ -35,5 +35,5 @@ About four calls per step, so checking a long chain multiplies cost well beyond 
 - [[Verification Loops]] — prerequisite-for
 - [[Chain-of-Verification]] — related (isolated verification questions on a draft)
 - [[Outcome vs Process Reward Models]] — alternative-to (step scores from a trained model rather than prompted calls)
-- [[Self-Consistency]] — extends (swaps the majority vote for confidence weights)
+- [[Self-Consistency]] — prerequisite-for (swaps the majority vote for confidence weights)
 - [[SelfCheckGPT]] — related (different method: sample agreement to flag hallucinated sentences)

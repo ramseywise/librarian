@@ -2,7 +2,7 @@
 title: "Adam, AdamW and Decoupled Weight Decay"
 tags: [foundations, comparison]
 summary: "L2 regularisation inside Adam is not weight decay (weight_decay 0.1 collapsed to chance while AdamW trained fine), and learning rate matters more than optimiser choice: a sweep by factors of ten moves accuracy from 0.174 to 0.961 on one model."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--02-optimisation-and-regularisation.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md
@@ -26,3 +26,4 @@ Adam, 10 epochs, digits: 1e-5 gave 0.174, 1e-4 0.647, 1e-3 0.956, 1e-2 0.961, 1e
 - [[Weight Initialisation and Activation Scale]] — prerequisite-for
 - [[Regularisation Under Noisy Labels]] — related
 - [[Regularisation as a Prior]] — related
+- [[D-Adaptation (Learning-Rate-Free Optimisation)]] — extends (removes the learning-rate setting)

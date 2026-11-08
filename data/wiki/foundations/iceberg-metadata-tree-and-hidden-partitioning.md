@@ -2,7 +2,7 @@
 title: "Iceberg Metadata Tree and Hidden Partitioning"
 tags: [foundations, concept]
 summary: "Iceberg stores a tree of metadata, manifest lists and manifests under an atomic catalog pointer, which enables planning-time pruning, hidden partitioning, partition evolution and schema tracking by field ID."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--02-table-formats.md
 ---
@@ -31,3 +31,4 @@ Two appends and a delete produced three snapshots (append, append, overwrite; th
 - [[Partition Pruning, Clustering and Column Pruning]] — related
 - [[Copy-on-Write vs Merge-on-Read]] — related
 - [[Table Format as a Commit Log over Parquet]] — alternative-to
+- [[Delta Lake Transaction Log]] — alternative-to (log-based table format)

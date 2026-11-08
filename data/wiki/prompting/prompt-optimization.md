@@ -80,13 +80,17 @@ A 2025 survey from AWS authors (arXiv 2502.16923, preprint) frames automatic pro
 4. **Filter and retain:** top-K greedy, bandit selection such as UCB, region-based search, or a metaheuristic ensemble.
 5. **Iteration depth:** a fixed number of steps in most methods, or variable with a patience or reward threshold.
 
-Its only cost figure compares optimising a system prompt (about 60 hours for SPRIG, given without model or hardware) with about 10 minutes per task for ProTeGi. It credits APE with showing a few hundred examples can be enough to seed optimisation. Failure modes it lists: LLM self-reflection can misidentify errors and fail to improve a prompt; uninterpretable "evil twin" prompts can recover much of a good prompt's performance; entropy and likelihood scoring need output probabilities that black-box APIs often withhold; and feedback adds an LLM call per step. On theory, only an upper bound on the gain exists, no lower bound. Open problems it names: task-agnostic optimisation (methods assume a known task and an eval set), system prompts and agents, and multimodal prompts.
+Its only cost figure compares optimising a system prompt (about 60 hours for SPRIG, given without model or hardware) with about 10 minutes per task for ProTeGi (self-reported). It credits APE with showing a few hundred examples can be enough to seed optimisation. Failure modes it lists: LLM self-reflection can misidentify errors and fail to improve a prompt; uninterpretable "evil twin" prompts can recover some of a good prompt's performance; entropy and likelihood scoring need output probabilities that black-box APIs often withhold; and feedback adds an LLM call per step. On theory, only an upper bound on the gain exists, no lower bound. Open problems it names: task-agnostic optimisation (methods assume a known task and an eval set), system prompts and agents, and multimodal prompts.
 
-Scope limits (authors): black-box discrete prompts only, so soft prompts, gradient-based AutoPrompt, Reflexion and similar are excluded; single-category labels are forced; the 57-method comparison is in the appendix with asymptotic complexity formulas, not measurements; it covers work to about early 2025.
 
 ## A book example: best-of-N and a reference-comparison judge
 
-Lakshmanan and Hapke (Generative AI Design Patterns, 2025) describe the optimiser as a pipeline, a dataset (possibly one example), an evaluator and an optimiser that returns the best-scoring prompt per step, rerun each time the model or some other dependency changes. Their illustration is one run rewriting a book blurb with DSPy on claude-3-7-sonnet: the baseline rewrite scored 0.63 and best-of-10 reached 0.74, both from an LLM judge of the same style with no human check, and best-of-N costs N inference calls. They recommend a judge that compares the rewrite with the original as a reference, because separate absolute scores such as 0.89 and 0.90 cannot be trusted to rank (an anecdote, not a measurement). A few-shot variant (BootstrapFewShot) is described but not scored. Framework lists in the chapter are dated 2025. All figures are single illustrative runs.
+Lakshmanan and Hapke (Generative AI Design Patterns, 2025) describe the optimiser as a pipeline, a dataset (possibly one example), an evaluator and an optimiser that returns the best-scoring prompt per step, rerun each time the model or some other dependency changes. Their illustration is one run rewriting a book blurb with DSPy on claude-3-7-sonnet: the baseline rewrite scored 0.63 and best-of-10 reached 0.74 (self-reported), both from an LLM judge of the same style with no human check, and best-of-N costs N inference calls. They recommend a judge that compares the rewrite with the original as a reference, because separate absolute scores such as 0.89 and 0.90 (self-reported) cannot be trusted to rank (an anecdote, not a measurement). A few-shot variant (BootstrapFewShot) is described but not scored.
+
+## Limits
+
+- Ramnath et al. (survey): black-box discrete prompts only, so soft prompts, gradient-based AutoPrompt, Reflexion and similar are excluded; single-category labels are forced; the 57-method comparison is in the appendix with asymptotic complexity formulas, not measurements; it covers work to about early 2025.
+- Lakshmanan and Hapke (book): framework lists in the chapter are dated 2025, and all figures are single illustrative runs.
 
 ## See Also
 - [[Evaluating Prompts]] — prerequisite-for
@@ -95,3 +99,4 @@ Lakshmanan and Hapke (Generative AI Design Patterns, 2025) describe the optimise
 - [[Prompt Templates and Variables]] — extends
 - [[Principled Instructions (26 Prompt Principles)]] — related (hand-written prompt rules, the manual alternative to search)
 - [[Dependency Injection for LLM Chains]] — related (swappable chain steps)
+- [[GATE Generative Active Task Elicitation]] — related (elicits the task from the user instead)

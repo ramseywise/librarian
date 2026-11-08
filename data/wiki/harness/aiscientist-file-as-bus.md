@@ -14,8 +14,8 @@ AiScientist (Chen et al., an April 2026 preprint, revised May) is a hierarchical
 ## Findings (self-reported)
 
 - PaperBench (20 tasks, one GPU, 24 hours, single run): 30.52 against 20.60 for the matched iterative baseline with Gemini-3-Flash, and 33.73 against 22.37 with GLM-5. Cost per task was $15.67 against $27.44 and $12.20 against $54.90.
-- MLE-Bench Lite (22 tasks, three seeds): 81.82 Any Medal under both backbones, 4.55 and 16.67 points above the strongest matched baseline. A reference Codex harness on a stronger model scored 29.45 on PaperBench and 68.18 on MLE-Bench Lite.
-- Ablation: removing File-as-Bus cost 6.41 points on PaperBench and 31.82 Any Medal points on MLE-Bench Lite. Valid submission and bronze stayed mostly intact; above-median, silver and gold fell. The authors read this as durable state mattering for diagnosing and improving over later rounds, not for a first runnable result.
+- MLE-Bench Lite (22 tasks, three seeds): 81.82 Any Medal under both backbones, 4.55 and 16.67 points above the strongest matched baseline. A Codex (GPT-5.5 xhigh) reference, not matched to the other runs, scored 29.45 on PaperBench and 68.18 on MLE-Bench Lite.
+- Ablation: dropping File-as-Bus cost 6.41 points on PaperBench and, on MLE-Bench Lite, 31.82 points of Any Medal rate. Valid submissions and bronze medals mostly held; above-median, silver and gold results fell. The authors read this as durable state mattering for later rounds of diagnosis and improvement, and not for producing a first runnable result.
 
 ## Limits
 

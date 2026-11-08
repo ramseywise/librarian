@@ -2,7 +2,7 @@
 title: "Row Stores vs Column Stores"
 tags: [foundations, comparison]
 summary: "OLTP and OLAP pull storage in opposite directions: row stores win on key lookups, column stores win on scans by about two orders of magnitude through pruning, compression, vectorisation and block skipping; includes rollups and the column-store write path."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--01-storage-and-compute-foundations--notes--03-row-and-column-stores.md
 ---
@@ -63,3 +63,4 @@ A compressed sorted column cannot take a mid-column insert without rewriting eve
 - [[Parquet Row Groups, Pruning and Sort Order]] — extends
 - [[Choosing a Store from the Access Pattern]] — related
 - [[SQL Indexes and Query Plans]] — related
+- [[DuckDB Embedded Analytical Database]] — instance-of (an embedded columnar engine)

@@ -35,7 +35,7 @@ Theorem 1: if student and teacher share an initialization, one small gradient st
 - The authors call the distillation tasks artificial and say they do not know which traits can transmit, when, or why some animals fail for some models; more complex traits are future work, and no mitigation experiments are given.
 - The misalignment rates are about 8-10% on eight prompts, using evaluation suffixes the authors say increase effect sizes. Main bars use 3 seeds; the cross-model matrix uses at least 5 runs.
 - The extraction notes the CoT filter's weakness means the reasoning results show less about undetectable signal than the abstract implies, and that most results are bar charts with no numeric table.
-- The one open-weight model, Qwen2.5-7B, was tested only on animals via numbers. Models are mid-2025; this is a v1 preprint.
+- The one open-weight model, Qwen2.5-7B, was tested only on animals via numbers. Models are mid-2025; this is a v1 preprint (arXiv 2507.14805v1), although the extraction's header gives the venue as Nature, 2026, which the text it read does not confirm.
 
 ## See Also
 

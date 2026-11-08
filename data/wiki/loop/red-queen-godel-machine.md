@@ -13,7 +13,7 @@ Iacob et al. (a 2026 preprint) start from a Gödel-machine search that relies on
 
 ## What the extraction reports
 
-- Theory: Propositions hold per epoch under stationarity (binary outcomes, fixed evaluator, workspace and scoring rule). With a changing pool there is no monotone improvement guarantee, only a bound that loosens by the pool drift. The guarantees concern the validation anchor, not the true objective.
+- Theory: Propositions hold per epoch under stationarity (binary outcomes, fixed evaluator, workspace and scoring rule). With a changing pool there is no monotone improvement guarantee, only a bound that loosens by the pool drift. The guarantees are about the validation anchor and say nothing directly about the true objective.
 - Paper-writing task: a fixed reviewer saturates (writer validation 100.0 against reviewer anchor accuracy 78.2); the full mechanism reaches 95.0, but intervals overlap with replacement-only and no-erasure arms.
 - Proof task: the co-evolved grader flatters its own specialist. Under the two independent graders the specialist scores 4.03, against 4.08 for a static prover and 3.60 for the baseline search.
 - Coding (DeepSWE, 28 held-out tasks): 85.7 at high effort against 82.1 for the baseline search and 83.0 for the base model, so the margin over the base model is 2.7 points. Cost is about 14% more tokens than the baseline search; validation takes 65 to 70% of tokens.

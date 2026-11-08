@@ -19,7 +19,7 @@ Search ran independently per domain for 30 iterations; the meta agent was GPT-4 
 
 - Test results against the best hand-designed agent: DROP F1 79.4 against 65.8; MGSM 53.4% against 39.0%; MMLU 69.6 against 65.9; GPQA 34.6 against 31.6. On MMLU and GPQA the margins sit inside the reported intervals, by the extraction's reading of Table 1.
 - Code as the search space beat prompt-only optimisation in all four domains (DROP 79.4 against 69.1).
-- ARC case study: stepping stones appeared at iterations 3, 5, 11 and 12, and the best agent combined three earlier ideas.
+- ARC case study: stepping stones appeared at iterations 3, 5, 11 and 12, and the strongest agent drew on three of the earlier discoveries.
 - Transfer within maths was strong (GSM8K 69.5 against 43.6). Transfer to reading comprehension was positive, to multi-task mixed (one agent below the best baseline), and to science at best a match. The authors hypothesise that models lack the knowledge for the science and multi-task questions, so better structure helps less; this is untested.
 - Agents found on ARC with the weaker model kept their lead on stronger models, though the best agent on one model was not best on the others.
 

@@ -673,30 +673,24 @@ function WikiGraphInner({
     [navigate, activeTags],
   );
 
-  const allNodes = !onAll && (
+  // Offered only when the filter is small enough to draw; a disabled button is just noise.
+  const allNodes = !onAll && allNodesAllowed && (
     <div className={`graph-all-nodes seg${onAtlas ? " graph-all-nodes--atlas" : ""}`}>
       <button
         type="button"
         className="seg-btn"
-        disabled={!allNodesAllowed}
         onClick={openAll}
-        title={
-          allNodesAllowed
-            ? "Every page under the current filter on one canvas"
-            : `Filter to under ${ALL_NODES_LIMIT.toLocaleString("en-US")} pages to draw them all at once`
-        }
+        title="Every page under the current filter on one canvas"
       >
-        {allNodesAllowed
-          ? `All nodes (${pagesInFilter.toLocaleString("en-US")})`
-          : `All nodes: filter to under ${ALL_NODES_LIMIT.toLocaleString("en-US")} (${pagesInFilter.toLocaleString("en-US")} now)`}
+        {`All nodes (${pagesInFilter.toLocaleString("en-US")})`}
       </button>
     </div>
   );
 
-  // Connections and the minimap act on the page canvas, not the atlas. They stay in the sidebar on the
-  // atlas (disabled, with the minimap's room held) so opening a domain doesn't reflow the panel.
-  const layers = (
-    <fieldset className="side-layers" disabled={onAtlas} title={onAtlas ? "Open a domain or course to choose which connections are drawn" : undefined}>
+  // Connections, arrangement and the minimap act on the page canvas. The atlas draws no lines, so
+  // the sidebar has no Map section there rather than disabled controls.
+  const mapControls = !onAtlas && !curriculumPending && (
+    <>
       <EdgeTogglePanel
         visibility={edgeVis}
         onChange={setEdgeVis}
@@ -709,26 +703,24 @@ function WikiGraphInner({
         loadingUmap={loadingUmap}
         umapUnavailable={layout === "umap-semantic" && umapFailed}
       />
-    </fieldset>
+      {/* Outside <ReactFlow>, inside its provider: it reads the same store. The theme's colours are
+          passed in because its CSS variables are scoped to the canvas. */}
+      <div className="panel-label panel-label--spaced">Minimap</div>
+      <div className="side-minimap">
+        <MiniMap
+          nodeColor={miniMapColor}
+          className="graph-minimap"
+          bgColor="var(--surface)"
+          maskColor="var(--minimap-mask)"
+          maskStrokeColor="var(--border-pressed)"
+          style={{ width: 240, height: 150 }}
+          pannable
+          zoomable
+          ariaLabel="Minimap"
+        />
+      </div>
+    </>
   );
-  // Outside <ReactFlow>, inside its provider: it reads the same store. The theme's colours are
-  // passed in because its CSS variables are scoped to the canvas.
-  const minimap = onAtlas || curriculumPending ? (
-    <div className="side-minimap-empty">Open a domain or course to see the minimap</div>
-  ) : (
-    <MiniMap
-      nodeColor={miniMapColor}
-      className="graph-minimap"
-      bgColor="var(--surface)"
-      maskColor="var(--minimap-mask)"
-      maskStrokeColor="var(--border-pressed)"
-      style={{ width: 240, height: 150 }}
-      pannable
-      zoomable
-      ariaLabel="Minimap"
-    />
-  );
-
   return (
     <div className="graph-root">
       <GraphSidebar
@@ -746,8 +738,7 @@ function WikiGraphInner({
         activeTags={activeTags}
         onChange={onActiveTagsChange}
         onBrief={onBrief}
-        layers={layers}
-        minimap={minimap}
+        map={mapControls || undefined}
         list={
           hasNodes ? (
             <AtlasList
@@ -762,15 +753,10 @@ function WikiGraphInner({
       />
 
       <div className="graph-canvas">
-        {/* Connection status, and how much of the wiki is on the canvas */}
-        <div className={`graph-status ${ready ? "graph-status--live" : "graph-status--offline"}`}>
-          {statusText}
-          {hasNodes && (
-            <span className="graph-status-count">
-              {" "}· {onAtlas ? (primaryIds?.size ?? baseNodes.length) : pageCount} of {baseNodes.length} pages
-            </span>
-          )}
-        </div>
+        {/* Connection status, shown only while it is not the normal live state */}
+        {statusText !== "● live" && statusText !== "● ready" && (
+          <div className={`graph-status ${ready ? "graph-status--live" : "graph-status--offline"}`}>{statusText}</div>
+        )}
 
         {hasNodes && (
           <MapBar

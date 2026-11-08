@@ -26,6 +26,8 @@ export function UserMenu({ me, config }: { me: Me | null; config: AuthConfig | n
   }, [open]);
 
   if (!me) return config && !config.open ? <a className="pill-btn" href="#/login">Sign in</a> : null;
+  // Open (local, no sign-in) mode has one implicit owner: nothing to show or sign out of.
+  if (config?.open) return null;
 
   const budget = me.chat.daily_budget_usd;
   return (

@@ -170,7 +170,6 @@
 /* "All nodes": same corner as the layout panel it sits under. */
 .graph-all-nodes { position: absolute; top: 90px; right: var(--space-5); z-index: var(--z-panel); }
 .graph-all-nodes--atlas { top: var(--space-5); }
-.graph-all-nodes button:disabled { opacity: 0.8; cursor: not-allowed; color: var(--text-muted); }
 
 /* ---- Focused level ------------------------------------------------------------- */
 .map-fade-in { animation: map-fade 260ms ease-out; }

@@ -9,7 +9,7 @@ sources:
 
 # RISE Recursive Introspection
 
-RISE (Qu et al., CMU and Berkeley, arXiv 2407.18219, preprint) turns a single-turn problem into a multi-turn one. After a wrong attempt the model gets a short retry prompt and tries again, for up to 5 turns, and it is trained on that multi-turn history. Training is iterative and on-policy in the DAgger sense: sample the current model, fix the failures with better answers, retrain. Every round retrains from the original base weights on the pooled data of all earlier rounds, which the paper found better than continuing from the last checkpoint. The reward is a sparse binary answer match, and training weights each turn by its advantage rather than filtering to successes.
+RISE (the RISE authors, CMU and Berkeley, arXiv 2407.18219, preprint) turns a single-turn problem into a multi-turn one. After a wrong attempt the model gets a short retry prompt and tries again, for up to 5 turns, and it is trained on that multi-turn history. Training is iterative and on-policy in the DAgger sense: sample the current model, fix the failures with better answers, retrain. Every round retrains from the original base weights on the pooled data of all earlier rounds, which the paper found better than continuing from the last checkpoint. The reward is a sparse binary answer match, and training weights each turn by its advantage rather than filtering to successes.
 
 At inference there are two modes: with an oracle the loop stops on a correct answer; without one it runs every turn and then votes over the answers produced across turns.
 

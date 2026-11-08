@@ -9,7 +9,7 @@ sources:
 
 # Train-Test Ablation Audit
 
-Li et al. (Google DeepMind, a 2026 preprint) used AlphaEvolve with Gemini 2.5 Pro to evolve game-solving algorithms: a regret-minimisation variant (VAD-CFR) and a population-based solver (PSRO variants). The search proposes combinations of mechanisms; the audit decides which to keep.
+Li et al. (Google DeepMind, a 2026 preprint) used AlphaEvolve with Gemini 2.5 Pro to evolve game-solving algorithms: VAD-CFR and PSRO variants. The search proposes combinations of mechanisms; the audit decides which to keep.
 
 ## The audit
 
@@ -25,7 +25,7 @@ The search scored candidates on four training games. Afterwards each component o
 
 ## Limits
 
-- A single evolutionary trajectory; stability of the distilled components across runs is unverified.
+- Only one evolutionary trajectory was examined, so whether the distilled components recur across runs is unverified.
 - Train and test games share three families, so most of the generalisation is within family; only Blotto and Battleship lie outside.
 - The train-test split was chosen by hand; no intervals on the main tables; effect sizes of a few hundredths in log10 units.
 - Distillation needs human judgment.

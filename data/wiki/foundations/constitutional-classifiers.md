@@ -2,7 +2,7 @@
 title: Constitutional Classifiers
 tags: [foundations, infra, pattern]
 summary: "Reference design for classifier guardrails — a natural-language constitution generates the synthetic training data, question and answer are judged together so coded requests are caught, and a near-free activation probe screens everything and escalates only suspicious traffic to a stronger classifier."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agent-fundamentals.md
 ---
@@ -35,3 +35,4 @@ cover the input and output positions only; the execution position needs hard gat
 - [[Constitutional AI and RLAIF]] — extends (a constitution as the source of training data, for a guard model)
 - [[Input Guardrails Pipeline]] — alternative-to (rule- and model-based input screening)
 - [[Execution Boundaries and Guardrails]] — extends (the execution-position controls classifiers do not cover)
+- [[Past-Tense Refusal Jailbreak]] — related (a simple attack on refusal-trained models)

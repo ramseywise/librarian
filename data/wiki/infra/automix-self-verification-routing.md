@@ -13,7 +13,7 @@ AutoMix (Aggarwal et al., NeurIPS 2024, arXiv 2310.12963) is a three-step cascad
 
 ## The router
 
-The router treats the verifier score as a noisy observation of a hidden variable, how hard the question is for each model. It is a partially observable decision process: actions are keep the current answer or route to a larger model, the reward is performance minus a weighted cost, and the observation model is fitted on a training set by kernel density estimation. A simpler variant just thresholds the verifier score. Inference takes under 1 ms per query in the two-model case (self-reported). The router can also choose to keep a weak small-model answer when low verifier scores mark the question as unsolvable even by the large model, which a plain threshold cannot do.
+The router treats the verifier score as a noisy observation of a hidden variable, how hard the question is for each model. It is a POMDP: actions are keep the current answer or route to a larger model, the reward is performance minus a weighted cost, and the observation model is fitted on a training set by Gaussian KDE. A simpler variant just thresholds the verifier score. Inference takes under 1 ms per query in the two-model case (self-reported). The router can also choose to keep a weak small-model answer when low verifier scores mark the question as unsolvable even by the large model, which a plain threshold cannot do.
 
 ## Efficiency metric
 
@@ -32,7 +32,7 @@ The paper scores a method by incremental benefit per unit cost, the slope from t
 - Designed for context-grounded tasks, where the context lets the verifier check an answer; the authors say it does not cover factual or commonsense question answering, and extending to subjective generation is left open.
 - The cost figures are simulated from price ratios rather than measured in latency or dollars; baselines are given zero router cost, and eight verifier samples are costed as one call.
 - Only 2023-2024 black-box models; GPT-4 is the only large model. Training the router needs answers from every model on a labelled set.
-- Inconsistencies in the paper: verifier shots (3 in a listing, 4 in the method text), verifier temperature (1.0 against 0.7), the lowest useful cost ratio (1:10 in the main text, 1:25 in an appendix), and mislabelled model names in two figure captions. The significance claims give no test details.
+- Inconsistencies flagged in the extraction notes: verifier shots (3 in a listing, 4 in the method text), verifier temperature (1.0 against 0.7), the lowest useful cost ratio (1:10 in the main text, 1:25 in an appendix), and mislabelled model names in two figure captions. The extraction notes also say the significance claims give no test details.
 
 ## See Also
 - [[Cheap-First Gating and Model Cascades]] — prerequisite-for

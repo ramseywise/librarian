@@ -111,3 +111,4 @@ UI agents from screenshots, video from sampled frames — each with its own cali
 - [[Taste-Bench]] — related (both-orders scoring against position bias)
 - [[FACTS Leaderboard]] — related (concedes judge self-preference and averages two judges to reduce it)
 - [[HITL Annotation Pipeline]] — related (LLM annotators compared with crowd workers, with the Gilardi limits)
+- [[Medprompt]] — related (a choice-shuffle ensemble that targets option-order bias)

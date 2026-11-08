@@ -71,3 +71,4 @@ Setup: DPG target, 280B red LM, classifier above, unless noted.
 - [[Constitutional AI and RLAIF]] — related (red-team prompts form its training distribution)
 - [[Prompt Injection]] — related (adversarial input to a deployed model)
 - [[LLM-as-Judge Evaluation]] — related (a model grading model output, here a fine-tuned classifier)
+- [[Past-Tense Refusal Jailbreak]] — instance-of (a one-line rephrasing attack)

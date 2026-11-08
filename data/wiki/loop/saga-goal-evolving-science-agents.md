@@ -23,7 +23,7 @@ In most tasks the three modes performed about alike, and autopilot was often com
 
 - A fixed-objective optimiser alone over-optimised the primary objective (poor drug-likeness for antibiotics, poor stability for magnets); the authors call this reward hacking by the optimiser.
 - Nanobody task: 2 to 5 times fewer oracle calls than two baseline pipelines. In wet-lab testing 3 of 24 designs bound; no single metric separated binders (all p>0.05) but the evolved composite did (p=0.03).
-- Antibiotics: 28 compounds tested, 4 with over 80% inhibition under the stated assay.
+- Antibiotics: of 28 compounds tested, four showed inhibition above 80% in the stated assay.
 
 ## Limits
 

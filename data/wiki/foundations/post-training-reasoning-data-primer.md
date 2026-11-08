@@ -15,14 +15,14 @@ Li et al. (Peking University, Tsinghua and Qiyuan Tech; arXiv 2606.02113, prepri
 
 - **Difficulty is relative to the base.** One problem may be out of reach for a given base and trivial for a different one. DAPO discards any prompt group that every rollout solves or none does, while Skywork-OR1 estimates difficulty separately for each model (see [[DAPO]]).
 - **Small sets need support.** Few demonstrations (LIMO, s1) succeed only if the skill lies inside the base policy's support; large pools (OpenThoughts, Big-Math) pay off when the useful signal sits far out in the tail, or must span multiple bases or domains.
-- **Does RL expand capability?** Some work reads current verifiable-reward RL as sharpening what the base can already reach; counter-work relaxes this with longer horizons, external rollouts or different metrics, so the answer depends on which assumption is broken.
+- **Does RL expand capability?** Some work reads current RLVR as sharpening what the base can already reach; counter-work relaxes this with longer horizons, external rollouts or different metrics, so the answer depends on which assumption is broken.
 - **Ceiling versus efficiency.** A reading device splits scaling into a reachable ceiling (moved by data, verifier and context) and approach efficiency (moved by loss design, sampling and warm-start distillation); total data is unique data times reuse. The authors call the equations a reading device, not a law.
 - **Coverage is a recipe, not a count.** What a model inherits is set by the mix of sources, the filters and the choice of teacher, not by the example count; synthetic data can also shrink diversity over generations, pass on teacher quirks and leak benchmark items.
 - **Reward channels are brittle.** A judge model can be tricked by trigger tokens, a rule-based checker can wrongly reject right answers, and a learned verifier can be gamed.
 - **Self-play keeps curation.** It moves it into an anchor such as an answer, interpreter or majority vote (STaR, R-Zero, Absolute Zero, TTRL).
 - **Agent data as replayable episodes.** Cleaned success-only SFT traces remove the failures, retries and state differences where credit assignment is visible.
 - **Long CoT is not faithful reasoning,** and process-reward models need their own tests.
-- Frontier recipes converge on long-CoT SFT or distillation followed by GRPO-style verifiable-reward RL; the primer says optimiser visibility is not causal isolation.
+- Frontier recipes converge on long-CoT SFT or distillation followed by GRPO-style RLVR; the primer says optimiser visibility is not causal isolation.
 
 ## Limits
 

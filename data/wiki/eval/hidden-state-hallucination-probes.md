@@ -41,3 +41,4 @@ SAPLMA was tested only in English on OPT-6.7b and LLAMA2-7b. Statements are clas
 - [[SelfCheckGPT]] — alternative-to (black-box detection from sampled consistency)
 - [[Language Model Self-Knowledge]] — alternative-to (a trained value head and stated uncertainty rather than a probe on activations)
 - [[Contrast-Consistent Search]] — related (an unsupervised probe on hidden states, needing no labels)
+- [[Open NLP Questions Large Language Models Do Not Solve]] — related (position paper listing persistent hallucination)

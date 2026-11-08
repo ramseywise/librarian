@@ -9,7 +9,7 @@ sources:
 
 # Agent-FLAN Agent Tuning Data Design
 
-Agent-FLAN (a March 2024 preprint from Shanghai AI Lab) is a supervised fine-tuning recipe for open models, built on three observations about agent training data. No reinforcement learning is used.
+Agent-FLAN (a March 2024 preprint) is a supervised fine-tuning recipe for open models, built on three observations about agent training data. No reinforcement learning is used.
 
 ## Three moves
 

@@ -23,8 +23,8 @@ AutoScientists (Gao, Fang and Zitnik, a May 2026 preprint) replaces a single aut
 
 - Table S3 has a caption mismatch in the extraction.
 - Run-to-run spread is moderate (nanochat final bpb SD 0.0010 over three runs; hERG SD 0.020).
-- Other baselines on BioML-Bench are published numbers from a different CPU-only 8-hour protocol; only the single-agent loop and Biomni were re-run under the team's setting.
-- The 3.25x parallel speed-up is a projection, since agents ran sequentially; cost is higher than the main text suggests.
+- On BioML-Bench the other baselines are published figures from a different protocol (CPU only, eight hours); just the single-agent loop and Biomni were re-run under the team's setting.
+- The 3.25x parallel speed-up is a projection, because agents actually ran one after another. Cost is also higher than the main text implies.
 
 ## See Also
 - [[Multi-Agent Topology Patterns]] — prerequisite-for

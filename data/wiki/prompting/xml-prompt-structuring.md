@@ -63,11 +63,11 @@ They are frequently used together: XML-tagged input sections, JSON-schema'd resp
 
 He et al. (Microsoft and MIT, arXiv 2411.10541, preprint, 2024) compare plain text, Markdown, YAML and JSON versions of the same five-part prompt (persona, task instructions, examples, output format, user ask) on six benchmarks. Models are 2023 OpenAI snapshots through Azure; content is identical across formats, and the authors do not separate the section-splitting effect from the syntax effect. HTML and XML were not tried, so the study says nothing directly about XML tags.
 
-- gpt-35-turbo-0613 on MMLU (14,079 questions): 59.7 with JSON against 50.0 with Markdown. On HumanEval (164 problems, pass@1): 59.8 with JSON against 40.2 with plain text. Both gaps p<0.001 on a one-sided matched-pair t-test (self-reported).
-- GPT-4 moved much less: the paper's dispersion measure across the four formats stayed below 0.036 for gpt-4-1106-preview on every benchmark, against 0.035 to 0.176 for the GPT-3.5 series (read from a figure).
+- gpt-35-turbo-0613 on MMLU (14,079 questions): 59.7 with JSON against 50.0 with Markdown (self-reported). On HumanEval (164 problems, pass@1): 59.8 with JSON against 40.2 with plain text (self-reported). Both gaps p<0.001 on a one-sided matched-pair t-test (self-reported).
+- GPT-4 moved much less: the paper's dispersion measure across the four formats stayed below 0.036 for gpt-4-1106-preview on every benchmark, against 0.035 to 0.176 for the GPT-3.5 series (read from a figure; self-reported).
 - Best format differs by model and task: the GPT-3.5 series favoured JSON on several tasks while GPT-4 favoured Markdown. Overlap between top-format sets was often below 0.2 across model series and above 0.7 within one sub-series.
-- Worst case: gpt-4-32k-0613 on HumanEval scored 21.95 with JSON against 76.22 with plain text; the authors read outputs and report the model wrote its reasoning but not the code, and call the cause a hypothesis.
-- On MMLU at temperature 0, GPT-3.5 gave identical answers under Markdown and JSON for only 16% of items.
+- Worst case: gpt-4-32k-0613 on HumanEval scored 21.95 with JSON against 76.22 with plain text (self-reported); the authors read outputs and report the model wrote its reasoning but not the code, and call the cause a hypothesis.
+- On MMLU at temperature 0, GPT-3.5 gave identical answers under Markdown and JSON for only 16% of items (self-reported).
 
 ## Limits
 

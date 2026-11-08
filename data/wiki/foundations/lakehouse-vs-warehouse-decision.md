@@ -2,7 +2,7 @@
 title: "Lakehouse vs Warehouse Decision"
 tags: [foundations, decision]
 summary: "A lakehouse puts a transactional metadata layer over open files to avoid the two-tier lake-plus-warehouse copy; what you gain is one copy and many engines, what you give up is data independence, multi-table transactions and some native performance."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--03-lakehouse-vs-warehouse.md
 ---
@@ -49,3 +49,4 @@ Pitfalls: a lake of Parquet without a metadata layer is not a lakehouse; lower c
 - [[Object Store Guarantees and the Partial-Write Problem]] — prerequisite-for
 - [[Spark Shuffles and When One Machine Is Enough]] — related
 - [[Warehouse, Fabric and Lakehouse: Sizing the Physical Architecture]] — related (data fabric, MDW and sizing)
+- [[Delta Lake Transaction Log]] — instance-of (an open table format behind the lakehouse)

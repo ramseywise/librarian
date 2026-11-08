@@ -72,3 +72,4 @@ and **interaction protocol** (single-shot, multi-turn, simulated user, dual cont
 - [[XYEval]] — related (pedantic simulated-user variant on tau2)
 - [[MINT Multi-Turn Benchmark]] — instance-of (GPT-4 simulated feedback in a multi-turn benchmark)
 - [[Silicon Sampling and Algorithmic Fidelity]] — related (backstory-conditioned model as a simulated respondent, group-level match only)
+- [[MIMESIS User Simulator Training]] — related (simulator realism against real users, and simulators as training environments)

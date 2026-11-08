@@ -57,3 +57,4 @@ Small question sets, three small models, and several internal count inconsistenc
 - [[Self-MoA Single-Model Aggregation]] — extends (an aggregator model synthesises the samples instead of a vote; includes the sample-and-vote results of Agent Forest)
 - [[TUMIX Tool-Use Mixture]] — related (heterogeneous tool-using agents, voted)
 - [[Logic-of-Thought]] — related (combined with self-consistency in its experiments)
+- [[Medprompt]] — extends (a shuffled-choice ensemble on top)

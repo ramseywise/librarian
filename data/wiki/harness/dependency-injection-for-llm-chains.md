@@ -21,7 +21,7 @@ The problem the authors name: LLM steps are nondeterministic, hosted models chan
 
 ## Caveats
 
-- Hand-written mocks get harder to keep faithful as the steps interact more; external tools can be mocked the same way.
+- The book authors concede that hand-written mocks get harder to keep faithful as the steps interact more; external tools can be mocked the same way.
 - At the time of writing (2025) the authors say no GenAI framework supports this natively, with one framework coming close for prompts and tools but not for whole agents. That statement is likely dated.
 - Assertions are disabled under Python's `-O` flag in production. The book gives no measured effect and no example beyond one small text-improvement chain.
 

@@ -205,6 +205,8 @@ small set, does RL converge in a simplified environment, does the reward track t
 on a sample? Reuse benchmark *environments* for training, never benchmark *items*.
 
 ## See Also
+- [[Autodata Agentic Self-Instruct]] — related
+- [[Multi-Agent Evolve Self-Play]] — related
 - [[RLHF Pipeline]] — prerequisite-for (the chat-model pipeline this extends)
 - [[Preference Optimization Algorithms]] — prerequisite-for (PPO, DPO and GRPO mechanics)
 - [[RLVP — Verifiable Path Penalties]] — extends (dense path penalties on top of outcome reward)
@@ -234,3 +236,20 @@ on a sample? Reuse benchmark *environments* for training, never benchmark *items
 - [[Reflection in Pre-Training]] — related (reflection appears before post-training)
 - [[Compiling Workflows into Weights]] — instance-of (SFT on teacher dialogues along a flowchart so no orchestrator runs at inference)
 - [[CALM Composition to Augment LLMs]] — related (adds a frozen specialist model through cross-attention instead of fine-tuning the anchor)
+- [[DreamGym Synthetic Experience RL]] — instance-of (RL on a learned environment model instead of the real one)
+- [[AgentScaler Environment Scaling]] — instance-of (verifiable function-calling environments built from API graphs)
+- [[AutoGym Blueprint-First Verifiable Gyms]] — instance-of (verifier-first gym generation)
+- [[VERA Co-Evolving Model and Harness]] — instance-of (RL on the model alternating with gated harness edits)
+- [[MIMESIS User Simulator Training]] — instance-of (a trained user simulator as the training environment)
+- [[Agent-FLAN Agent Tuning Data Design]] — instance-of (SFT data design for agent tuning)
+- [[GUI Agent RL with GUI-R1 and ARPO]] — instance-of (RL for GUI agents)
+- [[ComputerRL API-GUI Agent RL]] — instance-of
+- [[LaMer Meta-RL Exploration]] — instance-of
+- [[Critical-State RL]] — instance-of
+- [[AgenticQwen Dual Data Flywheels]] — instance-of
+- [[KARL Multi-Task RL Knowledge Agents]] — instance-of
+- [[Synthetic Computers at Scale]] — related (data substrate, no training reported)
+- [[World Knowledge Model for Agent Planning]] — related
+- [[RoboCat Self-Improving Robot Generalist]] — related
+- [[Subliminal Learning]] — related (traits can pass through distillation data)
+- [[Past-Tense Refusal Jailbreak]] — related (refusal training generalises poorly to rephrasings)

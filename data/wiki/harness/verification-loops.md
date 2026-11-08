@@ -292,6 +292,8 @@ retrieved**, which constrains hallucination at the point of writing rather than 
 afterward.
 
 ## See Also
+- [[Evaluator Exploits in Discovery Loops]] — related
+- [[AIRA Draft-Debug-Improve Search]] — related
 - [[Eval Suite Maintenance]] <!-- auto-linked -->
 - [[Harness Engineering]] — related (part of)
 - [[Agent Retry Taxonomy]] — related

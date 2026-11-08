@@ -15,19 +15,19 @@ Kim et al. (an August 2026 preprint) argue that self-modifying agents such as ST
 
 - Removing recursion lowered archive-best validation score from 0.845 to 0.714 (Gemma, CO-Bench), 0.886 to 0.806 (GPT-5.2, CO-Bench) and 0.917 to 0.759 (GPT-5.2, AlphaEvolve math).
 - About 72% of that gain came from the inter-layer context string, about 15% from the code library, about 13% from machinery such as beams and retries.
-- Held-out CO-Bench: 0.851 against 0.814 for OpenEvolve and 0.451 for Gödel Agent with Gemma; 0.870 against 0.702 and 0.527 with GPT-5.2. Giving Gödel Agent 5x and 10x budget lifted it only to 0.615 and 0.628. The authors explain this by the fixed driver: the model must choose to modify itself and usually does not, whereas the operator always emits an injection.
+- Held-out CO-Bench: 0.851 against 0.814 for OpenEvolve and 0.451 for Gödel Agent with Gemma; 0.870 against 0.702 and 0.527 with GPT-5.2. Giving Gödel Agent 5x and 10x budget lifted it only to 0.615 and 0.628. The authors explain this through the fixed driver: Gödel Agent relies on the model choosing to modify itself, which it rarely does, while the operator emits an injection every time.
 - Deeper layers regress individual tasks (41% of chain-task pairs regress at depth 3), and the next layer repairs them because it sees the code. Rollback is absent at depth 2 and appears at depth 3 in 55% (code) or 33% (prompt) of emissions. Mean score peaks at depth 3.
-- Agentic mode costs 4 to 10 times the tokens; at matched token budget the lead over OpenEvolve narrows (0.732 against 0.718 on one benchmark).
+- Agentic mode costs 4 to 10 times the tokens; at matched compute it still leads OpenEvolve (S2D 0.732 against 0.718; LawBench 0.784 against 0.745) (self-reported).
 - The gain depends on headroom: absent on SWE-Bench, where the operator never activates, and on AlgoTune, where the seed is strong.
 
-Every layer here is the same model. That is consistent with [[Harness Updating vs Harness Benefit]], which found the evolving model mattered little.
+Every layer here is the same model. See also [[Harness Updating vs Harness Benefit]].
 
 ## Limits
 
 - Scores are validation archive-best, with no held-out pass for the ablations; three seeds.
 - Meta-depth is an author-defined metric.
 - Role labels on 596 emissions come from two LLM raters with Cohen's kappa 0.59 on average (0.30 to 0.37 on abstract roles).
-- Gödel Agent was run in a corrected per-task configuration; the published interface scores about 0.
+- Gödel Agent was run in a corrected configuration set up per task; through its published interface it scores close to 0.
 - The ARC-AGI-2 held-out claim is in the text, not in a table, per the extraction.
 - A single group, preprint.
 

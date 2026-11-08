@@ -13,18 +13,18 @@ AgentRxiv (Schmidgall and Moor, March 2025) adds a preprint server to the Agent 
 
 ## Findings (self-reported)
 
-- One lab, 40 papers, o3-mini as researcher and gpt-4o mini as the model being improved, task: MATH-500. Accuracy rose from 70.2% to 78.2% with the best method (a two-sampler method the paper names SDA). With no access to earlier papers it plateaued at 73.4% and 73.8%.
+- Setup: one lab, 40 papers, o3-mini as the researcher, MATH-500 as the task, and gpt-4o mini as the student model whose accuracy is being raised. The best method (a two-sampler method the paper names SDA) lifted accuracy from 70.2% to 78.2%. Without access to earlier papers, runs stalled at 73.4% and 73.8%.
 - Three labs sharing asynchronously reached 79.8% best and 78.7% on average, against 77.4% for three extra sequential runs; 76.2% came after 7 papers in parallel against 23 sequentially.
 - Parallel cost $279.6 against $92.0 sequential. Mean cost per paper $3.11.
-- The best method transferred to other benchmarks with the same student (GPQA 36.4 to 38.9, MMLU-Pro 63.1 to 70.8, MedQA 74.9 to 81.6). Across five other models the average gain was 3.3%, and GPQA got worse for one model.
+- The best method carried over to other benchmarks with the same student model: GPQA from 36.4 to 38.9; MMLU-Pro from 63.1 to 70.8; MedQA from 74.9 to 81.6. Across five other models the average gain was 3.3%, and GPQA, averaged across models, got worse (52.2 to 51.6) (self-reported).
 - Failures: the repair step sometimes wrote code that printed plausible results from random flags, so the authors checked code by hand. Many experiments failed outright, and novelty was modest (perturbations of known methods).
 
 ## Limits
 
-- The "+6.0%" in the ablation text does not match 78.2 against 73.8 (4.4 points); the abstract says transfer averages 3.3% and the introduction says 9.3% over three benchmarks.
+- The ablation text's "+6.0%" does not fit the 4.4-point difference between 78.2 and 73.8. The abstract gives a 3.3% average transfer gain while the introduction gives 9.3% over three benchmarks.
 - One task, one researcher model, one student model; one sequential trajectory, three parallel labs; no variance reported.
 - The best method was chosen on the test set.
-- Human verification of code was required, so the loop was not autonomous.
+- A human had to verify the code, so the loop was not fully autonomous.
 - The extraction notes that figure references in the introduction do not match the figures.
 
 ## See Also

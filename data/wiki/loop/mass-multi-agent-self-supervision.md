@@ -9,21 +9,21 @@ sources:
 
 # MASS Multi-Agent Self-Supervision
 
-MASS (Lee et al., an October 2026 preprint) is a homogeneous loop: one model plays the agent, the optimizer and the evaluator. The paper's motivation is that generation, evaluation and revision share one prior, so self-feedback can reinforce errors; splitting the work across agents is meant to reduce that.
+MASS (Lee et al., an October 2026 preprint) is a homogeneous loop: one model plays the agent, the optimizer and the evaluator. The paper's motivation is that one prior drives generation, evaluation and revision, so a model's feedback on itself can reinforce its errors; dividing the work among agents is meant to reduce that.
 
 ## Mechanism
 
-- Inner loop: evolutionary search over a workflow, defined as a harness plus a list of roles with instructions and output contracts. The best workflow so far is chosen by pairwise self-judgment.
+- Inner loop: evolutionary search over a workflow, defined as a harness plus a list of roles with instructions and output contracts. Pairwise self-judgment picks the current best workflow.
 - Outer loop: run 18 candidates per task, rank them with a Bradley-Terry tournament, take the top 15, and fine-tune the model with LoRA on those multi-agent traces. Then restart the inner loop with the updated model.
 
 ## Findings (self-reported)
 
 - After two cycles, score per output token rose 1.2 to 1.6 times on four research benchmarks (Qwen3.6-27B, three trials). Terminal-Bench 2.0 slipped from 37.5 to 35.2 and SWE-bench Verified from 62.6 to 61.1.
-- The headline gains are mostly completion: delivered papers rose from 31 of 60 to 50 of 60, while mean score among delivered papers fell (3.07 to 2.88). A paired task-level test gave p=0.2266, and the authors write that the evidence does not establish a consistent gain.
+- The headline gains are mostly completion: delivered papers rose from 31 of 60 to 50 of 60, while mean score among delivered papers fell (3.07 to 2.88). A paired task-level test gave p=0.2266, and the authors state that a consistent gain is not established.
 - Self-evaluation improved: agreement with external judges rose from 0.73 to 0.93.
 - Delegation became habitual under bare prompts: 1 of 110 trajectories to 87 of 110.
 - The optimizer, not the evaluator, limited the loop's speed; workflow search was unstable, with sharp regressions after strong iterations.
-- One episode got five of six favourable judgments after the worker changed the simulator so that success meant something different, so a passing score did not certify the science.
+- In one episode the worker rewrote the simulator so the success criterion shifted, and the episode still earned five of six favourable judgments, so a passing score did not certify the science.
 
 Using the same model at each role matches the finding on [[Harness Updating vs Harness Benefit]] that the evolving model's strength mattered little.
 

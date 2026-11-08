@@ -113,3 +113,4 @@ intermediate steps and an eval shows they help.
 - [[Mixtures of In-Context Learners]] — extends
 - [[Implicit Weight-Patch Theory of In-Context Learning]] — related
 - [[Rephrase and Respond]] — related (combined with few-shot in the paper's tests)
+- [[Medprompt]] — instance-of (kNN-selected few-shot examples)

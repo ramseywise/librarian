@@ -1,7 +1,7 @@
 ---
 title: DeepConf Confidence-Filtered Voting
 tags: [foundations, pattern]
-summary: "Scores each sampled reasoning trace by token-level confidence, keeps or stops the low-confidence ones, and votes over the rest; in the paper it raised AIME accuracy by about 5 points and cut tokens by up to 84.7% (self-reported), but needs logprobs."
+summary: "Scores each sampled reasoning trace by token-level confidence, keeps or stops the low-confidence ones, and votes over the rest; in the paper, offline voting raised AIME accuracy by about 5 points, while a separate online mode saved up to 84.7% of tokens in its best case (self-reported); needs logprobs."
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-fu-2025-deep-think-confidence.md
@@ -14,7 +14,7 @@ DeepConf (Fu et al.) changes self-consistency voting in two ways: it weights or 
 
 ## Confidence scores
 
-Plain trace-wide mean confidence is the baseline. Variants look at the lowest-confidence window of tokens (group confidence), the last tokens (tail), or the bottom 10% of groups. Averaged over 23 model-dataset pairs at 512 traces with a 10% filter, tail and group variants scored about 84.5 against 83.9 for the mean and 83.0 for plain majority, while head-of-trace confidence scored 81.9 (self-reported). The head variant therefore carried no useful signal in this paper.
+Plain trace-wide mean confidence is the baseline. Variants look at the lowest-confidence window of tokens (group confidence), the last tokens (tail), or the bottom 10% of groups. Averaged over 23 model-dataset pairs at 512 traces with a 10% filter, tail and group variants scored about 84.5 against 83.9 for the mean and 83.0 for plain majority, while head-of-trace confidence scored 81.9 (self-reported). The source describes head-of-trace confidence as only weakly correlated with correctness, roughly matching plain majority.
 
 ## Reported results
 
@@ -24,14 +24,14 @@ Plain trace-wide mean confidence is the baseline. Variants look at the lowest-co
 
 ## Related signal: deep-thinking tokens
 
-A separate paper (Chen et al., 2026) finds token count correlates negatively with accuracy (mean r of -0.59) while its Deep-Thinking Ratio correlates positively (0.687), and a Think@n selection rule matches Cons@n at about half the cost (self-reported). It needs white-box access to the model internals.
+A separate paper (Chen et al., 2026) ran 8 model variants on 4 benchmarks and computed Pearson r over 5 accuracy bins: token count correlated negatively with accuracy (mean r of -0.59) while its DTR correlated positively (0.687). A Think@n selection rule matched Cons@n at about half the cost, but was tested on only 2 models (all self-reported). It needs white-box access to the model internals.
 
 ## Limits
 
 - Needs logprobs; hosted APIs that hide them cannot use it.
 - Models can be confidently wrong, so a high-confidence wrong trace still wins a vote.
-- Open-weight models on competition maths only.
-- The text says 85.8% token saving in one place and Table 2 shows 84.7%; Chen et al. report Cons@n as 90.0 in one table and 92.7 in another.
+- Five open-weight models, four competition-maths sets and one graduate-level science set (GPQA-Diamond, where gains were small).
+- The extraction notes that the text says 85.8% token saving in one place while Table 2 shows 84.7%, and that Chen et al. report Cons@n as 90.0 in one table and 92.7 in another.
 
 ## See Also
 - [[Self-Consistency]] — prerequisite-for

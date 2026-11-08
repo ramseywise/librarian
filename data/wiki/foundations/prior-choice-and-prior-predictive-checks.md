@@ -11,9 +11,9 @@ sources:
 
 # Prior Choice and Prior Predictive Checks
 
-## Flat is a choice
+## Flatness depends on the scale
 
-A flat prior on a rate is not flat on the log-odds, and a wide prior on log-odds is not wide on the rate. Uniform p has a logit with sd 1.81, with 46% of its mass within plus or minus 1. A Normal(0, 10) on the logit puts 65% of mass on rates below 1% or above 99%: a strong prior that the outcome is nearly deterministic. Normal(0, 1.5) puts about none there; Cauchy(0, 2.5) puts 32%, heavy tails by design.
+Uniform on a rate becomes a bell-shaped logit (sd 1.81, 46% of mass within one unit of zero), and a very diffuse logit prior piles up at the extremes of the rate. Normal(0, 10) on the logit puts 65% of its mass below 1% or above 99%, which asserts near-determinism. Normal(0, 1.5) puts about none there, and Cauchy(0, 2.5) puts 32% by virtue of its heavy tails.
 
 ## Kinds of prior
 
@@ -26,19 +26,19 @@ A flat prior on a rate is not flat on the log-odds, and a wide prior on log-odds
 | Conjugate | convenience, not insight |
 | Jeffreys | invariant under reparameterisation; Beta(1/2, 1/2) for a rate, piles mass at the edges |
 
-Read a Beta as evidence claimed: Beta(3, 97) is "around 3%, give or take" (95% in [0.006, 0.071]); Beta(30, 970) has the same mean and claims ten times the evidence ([0.020, 0.041]). Use half-normal, half-Cauchy or exponential for standard deviations rather than Uniform(0, big).
+Treat a Beta as a statement of how much evidence you hold. Beta(3, 97) says roughly 3% with a 95% interval of 0.006 to 0.071, while Beta(30, 970) keeps the mean yet asserts ten times the data (0.020 to 0.041). For standard deviations, prefer half-normal, half-Cauchy or exponential to Uniform(0, big).
 
 ## Prior predictive check
 
-Simulate outcomes from the prior and ask whether they are believable (one call in PyMC). On the 23-launch logistic model, the probability of 0 or 23 failures was 0.29 under Normal(0, 100) priors, 0.18 under Normal(0, 5) and 0.02 under Normal(0, 1.5). The "uninformative" prior expects total failure or none nearly 30% of the time. It pairs with [[Posterior Predictive Checks]]. Revise a prior that gives nonsense: choosing it is part of model checking.
+Draw outcomes from the prior alone and judge whether they look plausible (a single call in PyMC). On the 23-launch logistic model, the chance of 0 or 23 failures was 0.29 with Normal(0, 100) priors, 0.18 with Normal(0, 5) and 0.02 with Normal(0, 1.5). The "uninformative" prior thus expected all-or-nothing outcomes almost 30% of the time. Pair it with [[Posterior Predictive Checks]], and revise any prior that yields nonsense, since prior choice is part of model checking.
 
 ## A default for logistic regression
 
-Scale non-binary inputs to mean 0 and sd 0.5, put independent Cauchy(0, 2.5) on coefficients and Cauchy(0, 10) on the intercept. It stays stable under complete separation (see [[Logistic Regression Separation]]): on six separated points, the flat fit's slope ran to 100.3 with P(y = 1) 1.000000 at the largest x; Normal(0, 100) gave 39.1, Normal(0, 10) gave 9.6 and 0.991752, and Cauchy(0, 2.5) gave slope 3.6 and 0.859, about what six observations are worth. Unscaled inputs make the default meaningless.
+Rescale numeric inputs to mean 0 and sd 0.5, then place Cauchy(0, 2.5) priors, independent across coefficients, with Cauchy(0, 10) on the intercept. It remains stable under complete separation (see [[Logistic Regression Separation]]): on six separated points the flat fit's slope reached 100.3 with P(y = 1) of 1.000000 at the top x; Normal(0, 100) gave 39.1, Normal(0, 10) gave 9.6 and 0.991752, and Cauchy(0, 2.5) gave a slope of 3.6 and 0.859, roughly what six observations justify. Without the rescaling the default means little.
 
 ### Where the default comes from (Gelman et al., 2008)
 
-The paper that proposed this default (published in 2008, posted to arXiv in 2009) reasons that, on standardised inputs, a move from one standard deviation below the mean to one above rarely changes the logit by more than 5, and a shift of 5 takes a probability from 0.01 to 0.50. It notes that the likelihood from half a success and half a failure looks close to a t distribution with 7 degrees of freedom and scale 2.5, and picks the heavier-tailed Cauchy as slightly more conservative. Because inputs are rescaled, interactions are shrunk harder: with plus or minus one half coding, a three-way interaction can change the logit by about 5/4 under the same prior.
+The paper that proposed this default (published in 2008, posted to arXiv in 2009) argues that on standardised inputs, moving across two standard deviations seldom shifts the logit by over 5, and a logit shift of 5 moves a probability from about 1% to 50%. It observes that the likelihood given half a success and half a failure resembles a t distribution (7 degrees of freedom, scale 2.5), and chooses the heavier-tailed Cauchy as slightly more conservative. Because inputs are rescaled, interactions are shrunk harder: with plus or minus one half coding, a three-way interaction can change the logit by about 5/4 under the same prior.
 
 Reported results (self-reported by the authors, using their bayesglm fit, which returns a posterior mode):
 
@@ -50,7 +50,7 @@ Limits the authors state: standardising makes the prior depend on the data, whic
 
 ## The prior washes out
 
-The log-likelihood grows with N and the log-prior does not. Flat Beta(1, 1) versus Beta(2, 10) with true rate 0.6: the posterior-mean gap was 0.333 at N = 0, 0.131 at N = 32 and 0.010 at N = 500. Priors matter most exactly when Bayesian methods matter most, at small N. They wash out toward what the data says, not the truth, and a prior with zero mass at the truth never washes out.
+Data contribute more to the log-likelihood as N rises while the log-prior stays fixed. Comparing flat Beta(1, 1) with Beta(2, 10) at a true rate of 0.6, the posterior means differed by 0.333 at N = 0, 0.131 at N = 32 and 0.010 at N = 500. So priors count most at small N, where Bayesian methods are most needed. Posteriors converge to what the data say rather than to the truth, and a prior giving the truth zero mass never recovers.
 
 ## A/B example
 

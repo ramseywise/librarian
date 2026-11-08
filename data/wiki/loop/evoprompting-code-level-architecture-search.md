@@ -13,13 +13,13 @@ EvoPrompting (Chen, Dohan and So, NeurIPS 2023) uses a language model as the var
 
 ## Mechanism
 
-Each round, few-shot prompts are built from the best surviving models, the language model writes candidate architectures as code, the candidates are trained and scored, the top ones become the next parents, and every evaluated child is used to prompt-tune the model with a soft prompt for the next round. Settings: 10 parents, two in-context examples, 10 rounds, 10 prompts, 16 samples per prompt.
+Each round, few-shot prompts are built from the best surviving models, the language model writes candidate architectures as code, each candidate is trained and scored, the best become the next parents, and every evaluated child also feeds a soft-prompt tuning step for the next round. Settings: 10 parents, two in-context examples, 10 rounds, 10 prompts, 16 samples per prompt.
 
 ## Findings (self-reported)
 
-- On the CLRS algorithmic-reasoning suite, discovered graph networks beat the Triplet-GMPNN baseline on 21 of 30 tasks at similar model size, after searching on only three tasks and evaluating the best models on all 30 (62B PaLM, 1,600 models per search).
+- On the CLRS algorithmic-reasoning suite, discovered graph networks beat the Triplet-GMPNN baseline on 21 of the 30 tasks at similar model size. The search used only three tasks; the best models were afterwards scored on all 30. Setup: 62B PaLM, 1,600 models per search.
 - Heapsort example: out-of-distribution accuracy up 125% for a 6.68% increase in model size; the paper's own reimplemented baseline scores much lower than the published one, so the gain is smaller against it.
-- MNIST-1D ablations: naive few-shot prompting is unsuccessful; random parents plus prompt-tuning is no better than naive prompting; fit parents without prompt-tuning is much worse than the full method. Random parents plateau after about 200 individuals.
+- MNIST-1D ablations: plain few-shot prompting did not work; random parents with prompt-tuning did no better than that; fit parents without prompt-tuning came out far below the full method. Random parents plateau after about 200 individuals.
 
 ## Limits
 

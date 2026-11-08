@@ -24,9 +24,9 @@ The paper executes model-written code as though it were benign. Anyone reusing t
 
 ## Limits
 
-- One model family (text-davinci-003 headline); no later models on the headline table.
+- The headline table uses text-davinci-003; the paper also tests PaLM 2-S, gpt-3.5-turbo and gpt-4, where the margins differ. The authors say instruction-tuned models were hard to elicit CoC from.
 - Tasks are benchmark suites; no deployment-style evaluation.
-- Emulator output is unchecked, so a wrong emulated line propagates into later lines.
+- The extraction notes that emulation accuracy is not measured separately.
 
 ## See Also
 - [[Program-Aided Language Models (PAL)]] — prerequisite-for

@@ -1,7 +1,7 @@
 ---
 title: Skeleton-of-Thought
 tags: [prompting, pattern]
-summary: "A prompt-only way to cut answer latency: the model first drafts a short numbered skeleton, then each point is expanded in a parallel request; the paper reports up to 2.39x speed-up on list-style questions (self-reported), with poor fit for step-by-step math."
+summary: "A prompt-only way to cut answer latency: the model first drafts a short numbered skeleton, then each point is expanded in a parallel request; the paper reports up to 2.39x speed-up for its best model and up to 2.33x for its best question category, on Vicuna-80 (self-reported), with poor fit for step-by-step math."
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-ning-2023-skeleton-thought.md

@@ -20,7 +20,7 @@ sources:
 
 ## The skeptic position
 
-Kambhampati (2024) is an opinion piece. It cites about 30% GPT-4 accuracy on Blocks World planning and a collapse when names are obfuscated, reads this as approximate retrieval rather than reasoning, and reports in the author's lab studies that self-verification made results worse. Its proposed remedy, LLM-Modulo, pairs a generator with an external verifier. It predates reasoning models.
+Kambhampati (2024) is an opinion piece. It cites about 30% GPT-4 accuracy on Blocks World planning (self-reported: IPC-derived instances, GPT-3, 3.5 and 4, run by the author's own group during 2022-23, no instance counts) and a collapse when names are obfuscated, reads this as approximate retrieval rather than reasoning, and reports in the author's lab studies that self-verification made results worse. Its proposed remedy, LLM-Modulo, pairs a generator with an external verifier. It predates reasoning models.
 
 ## Limits
 

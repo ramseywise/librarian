@@ -18,7 +18,7 @@ EmotionPrompt (Li et al., arXiv 2307.11760, preprint, 2023) appends one of 11 fi
 - **Zero-shot CoT as baseline.** "Let's think step by step" lowered Instruction Induction averages for some models (GPT-4 from 80.75 to 59.72).
 - **Human study.** GPT-4 only, 106 participants rating 30 open-ended questions on a 1-5 scale: an average 10.9% gain over three rated dimensions (performance, truthfulness, responsibility). EmotionPrompt was worse on two of the 30 questions; no significance test is reported.
 - **TruthfulQA.** On ChatGPT, truthfulness went from 0.75 to 0.80 and informativeness from 0.53 to 0.68 (average over stimuli). On Vicuna-13b, informativeness fell from 0.32 to 0.05, and Flan-T5 was flat on truthfulness; the extraction notes the paper's 19% and 12% averages cannot be derived from its table.
-- **Model and temperature.** Gains were smaller on models with high baselines (GPT-4 0.85 points, Vicuna 9.58 absolute points on zero-shot Instruction Induction), and the gain widened at higher temperature.
+- **Model and temperature.** On zero-shot Instruction Induction the gains in absolute points were Vicuna 9.58 (the largest), then Llama 2 at 6.00, ChatGPT at 4.32, Flan-T5-Large at 0.28, with GPT-4 (0.85) and BLOOM (0.51) near the bottom. High baselines are the authors' explanation for the small gains on GPT-4, ChatGPT and BLOOM only. The gain widened at higher temperature.
 - **Best stimulus varies.** The second stimulus did best on Instruction Induction and the compound one on BIG-Bench; combining stimuli helped little when a single one already worked.
 
 ## Limits

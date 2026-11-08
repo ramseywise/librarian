@@ -9,7 +9,7 @@ sources:
 
 # GATE Generative Active Task Elicitation
 
-Li, Tamkin, Goodman and Andreas (MIT, Anthropic and Stanford; arXiv 2310.11589 v1, October 2023) propose letting the model drive elicitation of a user's intent. The preprint prints no venue. The reported outcomes are the authors' own (self-reported) and the paper gives them mostly as bar charts, with no numeric effect sizes in the text.
+The authors (arXiv 2310.11589 v1, October 2023) propose letting the model drive elicitation of a user's intent. The preprint prints no venue. The reported outcomes are the authors' own (self-reported) and the paper gives them mostly as bar charts, with no numeric effect sizes in the text.
 
 ## Method
 

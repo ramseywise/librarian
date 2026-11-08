@@ -59,3 +59,6 @@ An agent costs 3.00 a ticket (six minutes at 30.00 an hour); a wrong automatic a
 - [[ML Test Score: Scoring Production Readiness by the Minimum]] — related
 - [[Passive Retraining and the Promotion Gate]] — related
 - [[Review Route Thresholds From Priced Costs]] — instance-of
+- [[Microsoft ML Workflow Survey: Nine Stages and an Activity Maturity Index]] — instance-of (a nine-stage workflow from a company survey)
+- [[ML Deployment Challenges by Workflow Stage]] — related
+- [[Four Levels of AI Design Complexity]] — related (why systems that learn after launch are hard to prototype)

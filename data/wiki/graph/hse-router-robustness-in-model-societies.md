@@ -22,7 +22,7 @@ Setup: two collections of model outputs, EmbedLLM (112 models on 36,054 question
 
 ## A related result on pool size
 
-Marjanovic et al. (arXiv 2609.17306, a preprint) built pools of 3-20 from 23 models (2B-1.6T parameters) and ran three simple multi-agent systems (clustered routing, majority vote, an LLM judge) on HLE, GPQA-Diamond and FrontierScience-Olympiad with no tools. They report that growing a mixed pool nearly always lowered achieved performance relative to the best single model in the pool even as the oracle ceiling rose, with only single-family pools occasionally ahead (about +2 on FrontierScience and under +1 on GPQA for the Gemma4 family). On HLE the best single model scored 29.4% pass@1, 32.2% with majority over five samples and 36.5% with a judge over five (compute not matched across rows). Correct answers were much more alike across models (Mantel r 0.931) than errors (0.384).
+Marjanovic et al. (arXiv 2609.17306, a preprint) built pools of 3-20 from 23 models (2B-1.6T parameters) and ran three simple multi-agent systems (clustered routing, majority vote, an LLM judge) on HLE, GPQA-Diamond and FrontierScience-Olympiad with no tools. They report that growing a mixed pool nearly always lowered achieved performance relative to the best single model in the pool even as the oracle ceiling rose, with only single-family pools occasionally ahead (about +2 on FrontierScience and under +1 on GPQA for the Gemma4 family) (self-reported). On HLE the best single model scored 29.4% pass@1, 32.2% with majority over five samples and 36.5% with a judge over five (compute not matched across rows) (self-reported). Correct answers were much more alike across models (Mantel r 0.931) than errors (0.384) (self-reported).
 
 ## Limits
 

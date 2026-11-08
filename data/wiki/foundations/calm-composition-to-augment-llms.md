@@ -18,7 +18,7 @@ Setup: PaLM2 models only; CALM trained on about 5-7% of each domain's data; the 
 - GSM8K in 25 machine-translated low-resource languages: 25.0 against 22.5 for the anchor; further pre-training gave 22.6, which the authors read as forgetting. High-resource languages: 31.8 against 28.0 (further pre-training 25.6).
 - Code: HumanEval pass@1 22.5 against 16.4 for the anchor, but the further-pre-trained code model scored 24.3, and on MBPP 32.2 against 43.0. On code-to-text it kept anchor performance while the code-trained anchor fell from 30.4 to 18.9.
 - Synthetic key-value arithmetic: 84.3% against 0.7% and 0.0% for the two models alone, with training on 20% of keys.
-- Ablations at equal added parameters: the gain disappears with a random or vanilla augmenting model and CALM beat LoRA (HumanEval 22.5 against 18.3), so the specialist, not the extra parameters, carries the gain.
+- Ablations at equal added parameters: CALM beat LoRA (HumanEval 22.5 against 18.3), so the specialist, not the extra parameters, carries the gain (self-reported).
 
 ## Limits
 

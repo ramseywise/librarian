@@ -22,7 +22,7 @@ AgenticQwen (Alibaba, an April 2026 preprint) is a recipe for small agentic mode
 Setup: non-thinking mode with tools; three tau2 domains (about 300 tasks, Avg@4) and BFCL-V4 multi-turn (about 800 tasks); average over seven columns.
 
 - 8B: 47.4 against 23.8 for Qwen3-8B and 52.0 for Qwen3-235B-A22B. 30B-A3B: 50.2 against 36.2.
-- The 30B-A3B beats the 235B on three BFCL columns (for example Miss Func 52.0 vs 47.5); the authors note it is a mixture-of-experts model with 3B active parameters.
+- The 30B-A3B beats the 235B on three BFCL columns (for example Miss Func 52.0 vs 47.5); the authors note it is an MoE model with 3B active parameters.
 - Deep-search pilot with under 10K search examples: XBench 47.0 against 30.0 for the vanilla 30B and 48.0 for the 235B; GAIA 41.7, 37.3 and 48.5 for the same three models in that order.
 - On GAIA the 30B ran in 344.1 s against 449.5 s for the 235B; the "fewer unnecessary steps" explanation is the authors' guess.
 

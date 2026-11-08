@@ -22,7 +22,7 @@ Cost per call, as the paper tabulates it for 50 Polyglot tasks (self-reported): 
 
 ## Results (self-reported, single runs)
 
-- Polyglot-225 with Qwen3-Coder-30B as the coding model: 31.1% with one judge and 32.0% with another, against 30.5% for HGM, 27.1% for DGM and 25.1% for SICA. The paper reports 224 CPU-hours against 347 for HGM.
+- On Polyglot-225, with a 30B Qwen3-Coder model doing the coding, SIFT scored 31.1% with one judge and 32.0% with another, against 30.5% for HGM, 27.1% for DGM and 25.1% for SICA. The paper reports 224 CPU-hours against 347 for HGM.
 - With o3-mini as coding model, 35.1% within 30 expansion steps; three repeats range from 32.0% to 35.6%.
 - TerminalBench: the judge-selected agent scored 36.7% on repeated full evaluation against 28.1% for the top accuracy-selected agent, though it scored lower on the 50-task search subset.
 - Judge quality: Spearman 0.72 and 63.2% per-verdict agreement with measured outcomes. A weaker judge keeps the global ordering but is worse at the top (recall of the true top five 3 of 5 against 4 of 5). Showing the judge full files beat showing diffs (Spearman 0.68 against 0.40).

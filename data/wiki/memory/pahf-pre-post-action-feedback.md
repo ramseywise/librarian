@@ -16,7 +16,7 @@ PAHF (Meta Superintelligence Labs and academic co-authors, a February 2026 prepr
 - **Memory.** A per-user store of notes (SQLite or a FAISS index) read by top-k dense retrieval. A write goes through a salience check on the feedback, a summary, and a similarity check against existing notes: above a threshold the LLM merges the new text into the old note, below it a new note is added.
 - **Pre-action feedback.** When retrieved memory leaves the choice ambiguous, the agent may ask the user one clarifying question before acting.
 - **Post-action feedback.** After acting the user's reaction is written back, which is how a changed preference gets corrected.
-- **Protocol.** Four phases: learn, test, learn after a preference change, test. Metrics are success rate, feedback frequency, and average cumulative personalisation error (lower is better).
+- **Protocol.** Four phases: learn, test, learn after a preference change, test. Metrics are success rate, feedback frequency, and ACPE (lower is better).
 
 ## Why both channels
 

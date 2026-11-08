@@ -19,7 +19,7 @@ Gema et al. (2025) build tasks on which accuracy falls as the reasoning budget g
 
 ## Reading it
 
-The result sits beside [[Overthinking and Concise Reasoning]]: both say longer traces can be worse. Here the cause is probed with constructed tasks rather than observed on natural questions. For practice, tune effort per task and test the high setting, as in [[Prompting Reasoning Models]].
+The result sits beside [[Overthinking and Concise Reasoning]]: both say longer traces can be worse. Here the cause is probed with constructed tasks rather than observed on natural questions.
 
 ## Limits
 

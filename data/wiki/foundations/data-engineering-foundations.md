@@ -2,7 +2,7 @@
 title: Data Engineering Foundations
 tags: [foundations, concept]
 summary: "The six stages of data engineering as a pipeline discipline — ingest, transform, orchestrate, warehouse, monitor, feature-serve — where each stage's job is to prepare data for the next, plus the modern-stack tools (DuckDB, Polars, Iceberg, Dagster) missing from Zoomcamp-era material."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--CURRICULUM.md
   - data/raw/repos/learn-ai-engineering/data-engineering--README.md
@@ -123,3 +123,4 @@ See [[RAG Eval Gate Contract]].
 - [[Orchestrator Core Loop, Logical Dates and Retries]] — related (orchestrate stage)
 - [[Data Quality Dimensions and Tests as Failing-Row Queries]] — related (monitor stage)
 - [[Point-in-Time As-Of Join for Features]] — related (feature-serve stage)
+- [[DuckDB Embedded Analytical Database]] — related (an in-process analytical engine)

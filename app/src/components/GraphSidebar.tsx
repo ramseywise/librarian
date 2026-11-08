@@ -27,10 +27,8 @@ interface Props {
   activeTags: Set<string>;
   onChange: (tags: Set<string>) => void;
   onBrief?: (domain: string) => void;
-  /** Layer toggles and layout; none on the atlas, which draws neither. */
-  layers?: ReactNode;
-  /** The canvas minimap, or a placeholder holding its room on the atlas. */
-  minimap?: ReactNode;
+  /** How a focused map is drawn: connections, arrangement, minimap. Absent on the atlas, which draws no lines. */
+  map?: ReactNode;
   /** Every sector and page as plain links. */
   list?: ReactNode;
   /** The wiki's latest health snapshot. */
@@ -167,8 +165,9 @@ function TagsSection({ facets, glossary, activeTags, onToggle }: {
 
 /**
  * The map's left column, from under the header down. A Domain / Course switch picks the filters:
- * Domain lists wiki directories and every tag (frontmatter topic and type tags, glossary terms);
- * Course lists the courses and their modules. Search, layers and the minimap sit in both.
+ * Domain lists wiki directories, with tags, page types and glossary terms behind "More filters";
+ * Course lists the courses and their modules. Search sits in both; the Map section (connections,
+ * arrangement, minimap) only on a focused level, where there is a drawn map to change.
  * Below 760px it is the ☰ drawer.
  */
 export function GraphSidebar({
@@ -183,8 +182,7 @@ export function GraphSidebar({
   activeTags,
   onChange,
   onBrief,
-  layers,
-  minimap,
+  map,
   list,
   health,
 }: Props) {
@@ -216,14 +214,14 @@ export function GraphSidebar({
         </button>
       </div>
       {search && <div className="side-search-row">{search}</div>}
-      {layers && <Section title="Connections">{layers}</Section>}
+      {map && <Section title="Map">{map}</Section>}
       {grouping === "domain" ? (
         <>
           <Section title="Directories">
             <DirectorySection facets={facets} activeTags={activeTags} onToggle={toggle} onBrief={onBrief} />
           </Section>
           {hasTags && (
-            <Section title="Tags">
+            <Section title="More filters" defaultOpen={false}>
               <TagsSection facets={facets} glossary={glossary} activeTags={activeTags} onToggle={toggle} />
             </Section>
           )}
@@ -233,17 +231,16 @@ export function GraphSidebar({
           <TagFilterPanel curriculum={curriculum} activeTags={activeTags} onChange={onChange} onBrief={onBrief} />
         </Section>
       )}
-      {minimap && (
-        <Section title="Minimap">
-          <div className="side-minimap">{minimap}</div>
-        </Section>
-      )}
       {list && (
         <Section title="Browse as a list" defaultOpen={false}>
           {list}
         </Section>
       )}
-      {health && <Section title="Wiki health">{health}</Section>}
+      {health && (
+        <Section title="Wiki health" defaultOpen={false}>
+          {health}
+        </Section>
+      )}
     </aside>
   );
 }

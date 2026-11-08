@@ -2,7 +2,7 @@
 title: "Choosing Which Rows to Label: Active Learning and Rules"
 tags: [foundations, comparison]
 summary: "Rules can stand in for many hand labels but learned rule weights lose to a plain vote at low label density; uncertainty sampling beat random on generated data and lost AUC on real data, and its labelled set is biased."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--14-learning-from-corrections.md
 ---
@@ -46,3 +46,4 @@ Highest-score was worse again on credit (AUC diff -0.079 logistic, -0.035 booste
 - [[Label Quality: Agreement, Noise and Confident Learning]] — related
 - [[Learning From Corrections and the Audit Sample]] — related
 - [[Train, Validation and Test Discipline]] — related
+- [[GATE Generative Active Task Elicitation]] — related (active elicitation with a language model)

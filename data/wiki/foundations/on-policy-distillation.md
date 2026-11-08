@@ -74,3 +74,4 @@ ReOPD (Microsoft Research and Amsterdam, a July 2026 preprint) adapts on-policy 
 - [[Chain-of-Agents AFM Distillation]] — related (multi-agent trajectories into one model)
 - [[Reinforcement-Learned Teachers]] — related (teacher trained with RL for explanations, then used to distil)
 - [[Compiling Workflows into Weights]] — related (SFT on teacher dialogues along a workflow, no on-policy step)
+- [[Subliminal Learning]] — related (traits can pass through distillation data)

@@ -176,7 +176,10 @@ aligned with what you actually want is the hard half.
 
 Kumar et al. (arXiv 2502.21321, preprint, March 2025) survey post-training as fine-tuning, RL and test-time scaling, citing other work and running no experiments. Claims worth keeping: generation is an MDP (state is tokens so far, action is the next token), and RL for LLMs differs from classic RL by a very large action space, sparse and delayed feedback, difficult credit assignment and several competing objectives. Reward models learn relative preferences (Bradley-Terry or Plackett-Luce), not calibrated scores. GRPO drops the critic and normalises rewards within a sampled group, with an outcome mode and a process mode. DPO loses per-step credit assignment because it treats whole trajectories uniformly. The survey's future-directions section says current RL methods for LLMs need heavy compute and often underperform distillation, and names reward misgeneralisation, overthinking and catastrophic forgetting as open problems.
 
-Limits: many of its numbers carry a citation and no setup (22% wasted computation, 29% forgetting, 94% on MATH, r=0.34), so do not cite them from here. The extraction found citation errors (the DPO reference points at a different paper), a description of ORPO that does not match the ORPO paper, a DPO loss printed without its log and minus sign, and dubious rows in its model table. It covers R1, o1 and Kimi K1.5 only in outline and predates later GRPO variants.
+
+## Limits
+
+- Kumar et al. (survey): many of its numbers carry a citation and no setup (22% wasted computation, 29% forgetting, 94% on MATH, r=0.34), so do not cite them from here. The extraction found citation errors (the DPO reference points at a different paper), a description of ORPO that does not match the ORPO paper, a DPO loss printed without its log and minus sign, and dubious rows in its model table. It covers R1, o1 and Kimi K1.5 only in outline and predates later GRPO variants.
 
 ## See Also
 - [[RLHF Pipeline]] — prerequisite-for (PPO is its Stage 3; every method here is a removal from it)

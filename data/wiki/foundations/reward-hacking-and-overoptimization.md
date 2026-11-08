@@ -105,3 +105,4 @@ and the most commonly missed).
 - [[Evaluator Exploits in Discovery Loops]] — instance-of
 - [[Emergent Cheating in Research Swarms]] — instance-of
 - [[Train-Test Ablation Audit]] — instance-of
+- [[Subliminal Learning]] — related (hidden trait transfer through filtered data)

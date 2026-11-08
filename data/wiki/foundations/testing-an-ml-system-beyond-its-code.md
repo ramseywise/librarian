@@ -40,3 +40,5 @@ Cheap catches for a run that finishes yet is wrong: check input and output shape
 - [[PyTorch Training Loop Silent Bugs]] — related
 - [[Rerunnable Cleaning Loader with Assertions]] — related
 - [[MLOps Maturity Levels and CT vs CI/CD]] — related
+- [[ML Deployment Challenges by Workflow Stage]] — related (verification as one stage among four)
+- [[Four Levels of AI Design Complexity]] — related (simulated prototypes miss inference errors)

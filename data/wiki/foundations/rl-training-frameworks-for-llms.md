@@ -46,3 +46,4 @@ landscape moves quickly.
 - [[RLHF Pipeline]] — instance-of (the three-stage pipeline these frameworks run end to end)
 - [[Training-Agent Disaggregation]] — extends (wiring an existing multi-agent graph to a trainer via logical model names)
 - [[Post-Training Reasoning Data Primer]] — related (data choices that decide what these trainers can learn)
+- [[Agent Lightning v1.0 Harnessed Agentic RL]] — instance-of (proxy-captured traces turned into trainer input without changing the harness)

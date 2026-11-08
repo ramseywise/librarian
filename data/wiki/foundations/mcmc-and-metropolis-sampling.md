@@ -2,7 +2,7 @@
 title: MCMC and Metropolis Sampling
 tags: [foundations, concept]
 summary: "MCMC returns correlated samples from the posterior using only density ratios; step size decides whether a Metropolis chain works, effective sample size and R-hat tell whether it did, and gradient-based NUTS removes the tuning for continuous models."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--02-mcmc-and-pymc.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--06-bayesian-machine-learning.md
@@ -55,3 +55,4 @@ Start sensibly, bound priors, rescale inputs, run several chains, prefer NUTS. T
 - [[Beta-Binomial Updating and Credible Intervals]] — prerequisite-for (the closed form used to check a sampler)
 - [[Prior Choice and Prior Predictive Checks]] — related (what the sampler is given)
 - [[Expectation-Maximisation for Gaussian Mixtures]] — alternative-to (point estimate instead of samples)
+- [[No-U-Turn Sampler (NUTS)]] — instance-of (adaptive Hamiltonian sampler)

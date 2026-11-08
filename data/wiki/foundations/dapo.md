@@ -37,15 +37,18 @@ instead of discarding them, and agentic self-instruct changes the task distribut
 
 ## Lite PPO: which tricks matter, by setup (Liu et al.)
 
-Liu et al. (Alibaba ROLL team, arXiv 2508.08221, preprint) ran one-seed ablations of RL tricks on Qwen3-4B and 8B, base and aligned, math only, with a REINFORCE advantage, no KL term, 1024 rollouts per step (128 prompts times 8), 8192-token responses and 5,000-problem Easy, Medium and Hard sets. Results are read from smoothed curves; the paper gives no results table, and the extraction reports no plotted values.
+Liu et al. (Alibaba ROLL team, arXiv 2508.08221, preprint) ran one-seed ablations of RL tricks on Qwen3-4B and 8B, base and aligned, math only, with a REINFORCE advantage, no KL term, 1024 rollouts per step (128 prompts times 8), 8192-token responses and 5,000-problem Easy, Medium and Hard sets (self-reported setup). Results are read from smoothed curves; the paper gives no results table, and the extraction reports no plotted values.
 
 - **Std in the advantage:** a small group std in the denominator inflates gradients when rewards are concentrated (easy data), which can destabilise training; on hard data it matters little. Group mean with batch-level std beat group mean with group std.
-- **Clip-Higher** (upper clip 0.28 against 0.2): helped aligned models, did nothing or hurt base models, whose policy clipping rate was about 0.003. Most tokens in the base model sat in the top probability bin (91.7% and 88.2% in one reading of Fig 9, which is the extractor's inference from number order). The best upper bound varied with size: 4B improved up to 0.32, 8B peaked at 0.28 (two sizes only).
+- **Clip-Higher** (upper clip 0.28 against 0.2): helped aligned models, did nothing or hurt base models, whose policy clipping rate was about 0.003 (self-reported). Most tokens in the base model sat in the top probability bin (91.7% and 88.2% in one reading of Fig 9, which is the extractor's inference from number order; self-reported). The best upper bound varied with size: 4B improved up to 0.32, 8B peaked at 0.28 (two sizes only; self-reported).
 - **Token-level loss:** more effective on base models, limited gain on aligned ones.
 - **Overlong filtering:** helped with an 8k length cap, little at 20k.
 - **Lite PPO:** group-mean, batch-std advantage plus token-level loss on a critic-free PPO loss, which the authors say beat GRPO and DAPO on the base models, without reported numbers (self-reported).
 
-Limits: Qwen3 family only, 4B and 8B, verifiable math rewards, one seed, no error bars. Clip-Higher and dynamic sampling are not ablated inside Lite PPO. The extraction is missing the text of one takeaway (group against batch normalisation under different reward scales) and has broken cross-references. The authors' own framing is that conflicting advice in the literature (group against batch normalisation, with or without std, sequence against token loss) likely reflects different setups. Whether a DAPO change helps therefore depends on base against aligned model.
+## Limits
+
+- Lite PPO (Liu et al.): Qwen3 family only, 4B and 8B, verifiable math rewards, one seed, no error bars. Clip-Higher and dynamic sampling are not ablated inside Lite PPO. The extraction is missing the text of one takeaway (group against batch normalisation under different reward scales) and has broken cross-references.
+- Lite PPO (Liu et al.): the authors frame the conflicting advice in the literature (group against batch normalisation, with or without std, sequence against token loss) as likely reflecting differing setups. Only Clip-Higher and token-level loss were shown to depend on base against aligned model; the other changes were not ablated that way.
 
 ## See Also
 - [[Preference Optimization Algorithms]] — extends (GRPO with four anti-collapse changes)

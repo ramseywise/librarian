@@ -21,7 +21,7 @@ Setup: Gemini 2.5 Pro and Flash on three benchmarks, HLE with 2,500 questions, G
 
 ## Selection is the bottleneck
 
-On HLE with Pro, per-round coverage (some agent was right) fell from 51.92 in round 1 to 33.87 in round 6 while accuracy rose from 21.13 to 32.37 and plateaued near 34%, because refinement narrows the answers and the model struggles to pick the right one from noisy candidates (authors' account). Token-confidence selection did not help.
+On HLE with Pro, per-round coverage (some agent was right) fell from 51.92 in round 1 to 33.87 in round 6 while accuracy rose from 21.13 to 32.37 and plateaued near 34% (self-reported), because refinement narrows the answers and the model struggles to pick the right one from noisy candidates (authors' account). Token-confidence selection did not help.
 
 ## Limits
 

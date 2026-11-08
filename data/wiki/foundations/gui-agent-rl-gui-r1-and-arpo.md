@@ -23,7 +23,7 @@ Both papers apply GRPO to vision-language GUI agents, but at different levels of
 
 - GRPO plus a per-task buffer of successful trajectories. When a whole group of rollouts fails, one failure is swapped for a stored success so the reward still varies. Binary task reward; no KL term; asymmetric clipping; 8 rollouts per task; 256 parallel environments.
 - Setup: UI-Tars-1.5 7B, a 128-task OSWorld subset kept because at least one of 16 rollouts succeeded, 15-step limit, single run.
-- Results (self-reported): OSWorld 29.9 against 26.0 for plain GRPO and 23.5 base; on the stricter variant with no automatic credit for infeasible tasks, 23.8. On the in-domain set of four tasks (32 episodes) success rose from 68.8 to 81.25; on the other 96 tasks from the same pool the scores were 55.2 (base), 52.08 (GRPO) and 56.3 (ARPO).
+- Results (self-reported): OSWorld 29.9 against 26.0 for plain GRPO and 23.5 base; on the stricter variant with no automatic credit for infeasible tasks, 23.8. On the 32 in-domain training tasks success rose from 68.8 (GRPO) to 81.25, a gain of 4 tasks; on the other 96 tasks from the same pool the scores were 55.2 (base), 52.08 (GRPO) and 56.3 (ARPO).
 - Against preference-style baselines on the same data: ARPO scored 27.3 and GRPO 26.0, with KTO at 24.6, DPO at 22.4 and rejection-sampling SFT lowest at 21.8.
 
 ## Limits

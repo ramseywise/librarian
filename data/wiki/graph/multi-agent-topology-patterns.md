@@ -156,6 +156,7 @@ bytes**, so every interface needs a contract the receiver can check.
   bus without persistence drops messages for a worker that is down.
 
 ## See Also
+- [[AutoScientists Self-Organizing Teams]] — instance-of
 - [[Graph Engineering]] — extends
 - [[Graph Topology Primitives]] — extends
 - [[Loop-to-Graph Escalation]] — extends

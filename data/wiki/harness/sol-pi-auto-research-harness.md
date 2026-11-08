@@ -9,14 +9,14 @@ sources:
 
 # SoL-Pi Auto-Research Harness
 
-SoL-Pi (Liu et al., an NVIDIA-led preprint, September 2026) runs an agent that reads traces, proposes harness changes and tests them over 535 executable environments, on top of the Pi coding harness. The target is cost, not capability. Search and held-out evaluation are separated: held-out results never feed back, and a failed validation rejects a candidate without triggering more optimisation.
+SoL-Pi (Liu et al., an NVIDIA-led preprint, September 2026) uses an agent to read traces, propose harness changes and test them across 535 executable environments, built on the Pi coding harness. The target is cost, not capability. Search and held-out evaluation are separated: held-out results never feed back, and a failed validation rejects a candidate without triggering more optimisation.
 
 ## The four retained mechanisms
 
-- Action fusion: an edit and its follow-up command in one tool call.
-- Online context compaction at plan-step boundaries, when a cache-cost gate says it pays.
-- ObservationPack: tool output over 10 KiB is archived to local storage and sent in full for two requests, after which the model sees a handle and head and tail excerpts and can fetch exact pages.
-- Evidence-preserving reducer: a cheaper model summarises build and test logs of 4 KiB or more, and a deterministic verifier checks the summary (schema, hash, exit code, quotes).
+- Action fusion: an edit and the command that follows it go out as a single tool call.
+- Online context compaction: at plan-step boundaries, and only when a cache-cost gate judges it worthwhile.
+- ObservationPack: large tool output (over 10 KiB) is stored locally and shown in full for two requests; after that the model gets a handle plus head and tail excerpts, and can fetch exact pages on demand.
+- Evidence-preserving reducer: a cheaper model condenses long build and test logs (4 KiB and up), then a deterministic verifier checks the condensed version for schema, hash, exit code and quotes.
 
 ## Findings (self-reported; single runs, no seeds)
 
@@ -26,7 +26,7 @@ SoL-Pi (Liu et al., an NVIDIA-led preprint, September 2026) runs an agent that r
 
 ## Limits
 
-- The score drops about 6% at the full-stack point, and the harness solves fewer tasks on Terminal-Bench, so "comparable performance" is generous (the extraction's reading).
+- The full stack loses about 6% of score and solves fewer Terminal-Bench tasks, so the extraction reads "comparable performance" as generous.
 - The authors call the transfer evidence preliminary, say the counts do not establish a scaling law, and note that triggered-subset comparisons do not isolate interactions. There is no leave-one-out ablation.
 - Costs use August 2026 prices and cache pricing; the gate ignores the cost of the summarising call.
 - The model names are taken from the text and could not be checked.

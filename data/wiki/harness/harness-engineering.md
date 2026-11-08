@@ -293,6 +293,9 @@ Atomic pages: [[Harness Subsystem Attribution]] · [[Dynamic Tool Discovery]] ·
 [[Quality Document]] · [[Deep Agent Pillars]]
 
 ## See Also
+- [[ADAS Meta Agent Search]] — instance-of
+- [[SoL-Pi Auto-Research Harness]] — instance-of
+- [[Procedural Graphs]] — instance-of
 - [[Deep Research Agent Systems]] — instance-of (search agents as a harness class)
 - [[Spec, Verifier, Environment Layering]] — extends (a practitioner framing of the same harness as spec + verifier + workshop)
 - [[Agent Scaffolding Skill Layers]] <!-- auto-linked -->

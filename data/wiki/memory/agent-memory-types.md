@@ -352,3 +352,5 @@ For Deep Agents, memory is surfaced through pluggable backends rather than direc
 - [[MemInsight Attribute Augmentation]] — instance-of (attribute-annotated semantic memory)
 - [[ChatDB SQL Symbolic Memory]] — instance-of (symbolic memory in SQL tables)
 - [[Bad Memory File-Based Prompt Injection]] — related (poisoned memory files)
+- [[PAHF Pre- and Post-Action Feedback Personalization]] — instance-of (per-user preference memory updated from feedback before and after acting)
+- [[Agent S Hierarchical GUI Agent]] — instance-of (narrative and episodic experience retrieval for a GUI agent)

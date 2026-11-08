@@ -13,14 +13,13 @@ CoAT (Pan et al., 2025) searches over candidate reasoning steps with MCTS, and a
 
 ## Reported results
 
-- Ablation on the CRB component at 32B: 0.67 to 0.77 (self-reported; the extraction does not say what CRB stands for).
+- Ablation on CRB, the authors' own set of 205 questions, scored by an unnamed judge, at 32B: 0.67 to 0.77 (self-reported; the extraction does not say what CRB stands for).
 - Beats KAG on exact match (self-reported).
 
 ## Limits
 
 - Baselines are not compute-matched; tree search spends many more calls.
 - The extraction notes that the stated 22% and 18% relative gains do not match the arithmetic of the table values.
-- Retrieval quality limits what the memory adds; no study of wrong memories.
 
 ## See Also
 - [[Adaptive Branching MCTS]] — related (another search over answers with a budget)

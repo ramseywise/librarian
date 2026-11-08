@@ -34,3 +34,4 @@ In a survey of 551 respondents rating workflow stages on six dimensions, an inde
 - [[Testing an ML System Beyond Its Code]] — extends
 - [[Passive Retraining and the Promotion Gate]] — related
 - [[Data Engineering Foundations]] — related
+- [[Microsoft ML Workflow Survey: Nine Stages and an Activity Maturity Index]] — instance-of (a maturity index without levels)

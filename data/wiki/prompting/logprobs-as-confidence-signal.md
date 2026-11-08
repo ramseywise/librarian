@@ -54,3 +54,4 @@ available.
 - [[MC Dropout]] — related (uncertainty from stochastic passes rather than token probabilities)
 - [[RLMF Metacognitive Advantage Scaling]] — related (trains stated confidence to match sampling-consistency confidence)
 - [[DeepConf Confidence-Filtered Voting]] — extends (trace-level confidence for filtering votes)
+- [[ChatGPT Information Extraction Evaluation]] — related (written confidence numbers compared with model probabilities)

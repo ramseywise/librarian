@@ -54,7 +54,7 @@ describe("WikiGraph", () => {
     const { WikiGraph } = await import("../WikiGraph");
     render(<WikiGraph activeTags={new Set()} onActiveTagsChange={vi.fn()} />);
     expect(await screen.findByRole("application", { name: /^Atlas of 3 wiki pages in 2 sectors/ })).toBeInTheDocument();
-    expect(screen.getByText(/3 of 3 pages/)).toBeInTheDocument();
+    expect(screen.queryByText(/of 3 pages/)).not.toBeInTheDocument();
   });
 
   it("draws every page as a node on the all-pages level", async () => {

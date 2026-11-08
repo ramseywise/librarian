@@ -19,11 +19,11 @@ Foster et al. (an August 2026 preprint) put a judge between the generator and th
 
 ## Results (self-reported)
 
-On 20 text and tabular tasks, 24 hours on one GPU, 10 seeds: average normalised score 0.684 without the model, 0.711 inference-only and 0.729 agentic, against oracle ceilings of 0.748 and 0.759. The guided variants reached the baseline's final score in about 15 hours. Selection advantage per run correlates with the final score (Pearson 0.55). Offline, pilot experiments lifted pairwise accuracy from judgment alone to 78.5% (5 minutes) and 84.0% (4 hours); an LLM arbiter over three judges (69.4%) beat a majority vote (68.0%).
+On 20 text and tabular tasks, 24 hours on one GPU, 10 seeds: average normalised score was 0.684 without the model, 0.711 with the inference-only variant and 0.729 with the agentic one, against oracle ceilings of 0.748 and 0.759. The guided variants reached the baseline's final score in about 15 hours. Selection advantage per run correlates with the final score (Pearson 0.55). Offline, pilot experiments lifted pairwise accuracy from judgment alone to 78.5% (5 minutes) and 84.0% (4 hours); an LLM arbiter over three judges (69.4%) beat a majority vote (68.0%).
 
 ## Limits
 
-- Significance is modest: the probability of improvement over no model is about 0.59, with 95% interval bounds just above 0.5.
+- The evidence is only modestly significant: the probability of beating the no-model setting is about 0.59, with the 95% interval's lower bound just above 0.5.
 - The generator and the preference model are the same Qwen model in the end-to-end runs.
 - The extraction notes that the context-count labels on the offline scaling numbers are unreliable.
 - Cost of the judging and pilot compute is not counted in the 24-hour budget; only the executed candidate's compute is.

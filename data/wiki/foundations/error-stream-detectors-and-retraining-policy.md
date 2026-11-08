@@ -2,7 +2,7 @@
 title: "Error-Stream Detectors and Retraining Policy"
 tags: [foundations, pattern]
 summary: "When labels arrive, Page-Hinkley or CUSUM on the error stream trades detection delay against false alarms with no free setting; label delay decides whether this is possible, and scheduled retraining is the defensible default over triggers."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--06-ml-platform--notes--04-drift.md
 ---
@@ -48,3 +48,4 @@ Blind adaptation retrains on a schedule; informed adaptation waits for a trigger
 - [[Drift Triage: Broken Feeds, Benign Shifts and Concept Drift]] — prerequisite-for
 - [[Passive Retraining and the Promotion Gate]] — extends
 - [[Peeking and Sequential Testing]] — related
+- [[Concept-Drift Detector Families and Prequential Evaluation]] — extends (the full detector taxonomy)

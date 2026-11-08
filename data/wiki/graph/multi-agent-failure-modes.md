@@ -104,6 +104,7 @@ escalate rather than override), **frozen nodes** (some measurements deliberately
 - [ ] At least one anchor the graph cannot edit, and someone watching it.
 
 ## See Also
+- [[Emergent Cheating in Research Swarms]] — instance-of
 - [[Graph Engineering]] — extends
 - [[Multi-Agent Topology Patterns]] — extends
 - [[Loop Termination Design]] — extends

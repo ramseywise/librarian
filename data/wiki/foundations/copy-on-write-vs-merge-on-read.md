@@ -2,7 +2,7 @@
 title: "Copy-on-Write vs Merge-on-Read"
 tags: [foundations, decision]
 summary: "Updating a lake table either rewrites whole files (copy-on-write) or appends delete and delta records merged later (merge-on-read); choose by update distribution, and compare Delta, Iceberg and Hudi as of their release snapshot."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-engineering--04-warehouse-lakehouse-streaming--notes--02-table-formats.md
 ---
@@ -40,3 +40,4 @@ These projects copy each other's ideas every release. A 2020 or 2021 statement t
 - [[Table Format as a Commit Log over Parquet]] — prerequisite-for
 - [[Iceberg Metadata Tree and Hidden Partitioning]] — related
 - [[Small Files, Prefix Layout and Storage Tiers]] — related
+- [[Delta Lake Transaction Log]] — related (a table format that rewrites files)
