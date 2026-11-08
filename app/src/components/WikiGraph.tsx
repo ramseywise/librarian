@@ -693,10 +693,10 @@ function WikiGraphInner({
     </div>
   );
 
-  // Layers and the minimap act on the page canvas, not the atlas. They stay in the sidebar on the
+  // Connections and the minimap act on the page canvas, not the atlas. They stay in the sidebar on the
   // atlas (disabled, with the minimap's room held) so opening a domain doesn't reflow the panel.
   const layers = (
-    <fieldset className="side-layers" disabled={onAtlas} title={onAtlas ? "Open a domain or course to use layers" : undefined}>
+    <fieldset className="side-layers" disabled={onAtlas} title={onAtlas ? "Open a domain or course to choose which connections are drawn" : undefined}>
       <EdgeTogglePanel
         visibility={edgeVis}
         onChange={setEdgeVis}

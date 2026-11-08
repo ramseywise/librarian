@@ -92,7 +92,7 @@ you build fix #3, that is the benchmark shape to evaluate it against.
 
 xMemory (preprint, 2026) retrieves over a hierarchy of decoupled memory units rather than flat chunks. Setup: LoCoMo (four answerable categories), text-embedding-3-small, greedy decoding, same backbone for construction and answering. With Qwen3-8B it scored 34.48 BLEU and 43.98 F1 at 4,711 tokens per query against 31.44 and 40.88 at 7,755 for the best listed baseline (Nemori), with its largest gains on multi-hop and temporal questions (self-reported). In the ablation memory structure alone beat chunk RAG (F1 40.77 against 36.48), and freezing split and merge of the structure lowered results.
 
-## Limits of the paper evidence
+## Limits
 
 - On PerLTQA, some baselines (LightMem, A-Mem on Llama) used fewer tokens than xMemory, so "fewest tokens" does not hold everywhere. Stage I alone lowered F1 slightly while cutting tokens.
 

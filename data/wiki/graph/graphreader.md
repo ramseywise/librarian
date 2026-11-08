@@ -33,3 +33,4 @@ Li et al. (EMNLP Findings 2024).
 - [[Knowledge Graph Retrieval]] — prerequisite-for
 - [[MemWalker Summary-Tree Navigation]] — alternative-to
 - [[Context Retrieval Strategies]] — related
+- [[LightPROF Knowledge Adapter for KGQA]] — related

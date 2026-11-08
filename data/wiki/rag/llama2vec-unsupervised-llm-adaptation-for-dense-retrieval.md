@@ -9,7 +9,7 @@ sources:
 
 # Llama2Vec Unsupervised LLM Adaptation for Dense Retrieval
 
-A decoder LLM predicts the next token, so its final-token state is not built to summarise a whole passage. Llama2Vec adds an unlabelled adaptation step. Two prompts append special tokens to a sentence and train its embedding to predict (a) the vocabulary of the sentence itself (EBAE) and (b) the vocabulary of the next sentence (EBAR). The two suffixes are masked from each other so one pass yields both, which the authors say saves almost half the compute. Setup: LLaMA-2-7B, DPR-curated Wikipedia, 10,000 steps, batch 256, length 1024, learning rate 1e-5; fine-tuning copies the RepLLaMA recipe: LoRA, contrastive loss and hard negatives mined with ANN search. Numbers below are the paper's (self-reported).
+Llama2Vec adds an unlabelled adaptation step so that an LLM's final-token embedding captures the global meaning of a sentence. Two prompts append special tokens to a sentence and train its embedding to predict (a) the vocabulary of the sentence itself (EBAE) and (b) the vocabulary of the next sentence (EBAR). The two suffixes are masked from each other so one pass yields both, which the authors say saves almost half the compute. Setup: LLaMA-2-7B, DPR-curated Wikipedia, 10,000 steps, batch 256, length 1024, learning rate 1e-5; fine-tuning copies the RepLLaMA recipe: LoRA, contrastive loss and hard negatives mined with ANN search. Numbers below are the paper's (self-reported).
 
 ## Reported results
 

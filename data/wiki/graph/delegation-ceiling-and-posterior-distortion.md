@@ -67,6 +67,10 @@ architecture with a change in information.
 - **Distortion and accuracy.** On gpt-4.1-mini only, the per-question correlation between posterior
   divergence and accuracy drop is 0.72 (3-agent relay) and 0.44 (5-agent relay).
 
+## A topology comparison under controlled information (Nechepurenko, self-reported)
+
+Nechepurenko's preprint compares five coordination topologies with the information available to agents held fixed: sequential, ensemble, orchestrator, debate and consensus. Setup: forecasting 100 post-cutoff Polymarket markets with claude-opus-4-6 at temperature 0.3, web search disabled, scored by Brier score (lower is better). Results (self-reported, paired tests on the n=94 markets common to all configurations) were 0.153 sequential, 0.159 ensemble, 0.162 orchestrator, 0.170 debate and 0.181 consensus, against 0.152 for the market price itself. None of the differences is significant after Bonferroni correction; the bootstrap intervals that separate consensus from three others are exploratory only, by the authors' own description. The result is one model on one task family.
+
 ## Limits
 
 - The theory covers the common-evidence regime, meaning settings with no fresh outside signal;
@@ -81,12 +85,13 @@ architecture with a change in information.
   conflicts with 43.5% in the main table (full set); one figure labels the MMLU baseline 82.4 and 87,
   whereas the text gives 90.7; the table lists the o4-mini baseline at 0.899 beside the 0.907
   gpt-4.1-mini one. Check these before quoting a single figure.
+- Nechepurenko material: one model, one task family, web search disabled, n=100 markets (94 common
+  to all configurations), with nothing significant after correction. The extraction notes an
+  inconsistency: the pipeline's overall Brier is 0.151 in Table 3 against 0.153 in Table 2, which the
+  paper attributes to fallback predictions. It also notes that the bootstrap figures are resampling
+  probabilities and should not be read as t-test results.
 - A v1 preprint that cites Kim 2025, Xu 2026 and Wan 2025 as empirical neighbours and engages no
   later literature.
-
-## A topology comparison under controlled information (Nechepurenko, self-reported)
-
-Nechepurenko's preprint compares five coordination topologies with the information available to agents held fixed: sequential, ensemble, orchestrator, debate and consensus. The task was forecasting 100 Polymarket markets with claude-opus-4-6, scored by Brier score (lower is better). Results were 0.153 sequential, 0.159 ensemble, 0.162 orchestrator, 0.170 debate and 0.181 consensus, against 0.152 for the market price itself. None of the differences is significant after Bonferroni correction. The extraction frames this as consistent with topology mattering less than information when information is controlled; the result is one model on one task family.
 
 ## See Also
 - [[Multi-Agent Failure Modes at Scale]] — prerequisite-for (a measured information-loss account of why relays degrade)

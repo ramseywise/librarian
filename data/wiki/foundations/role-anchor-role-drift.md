@@ -36,8 +36,8 @@ the trainable weights, and costs about 22% (RAG) and 18% (decomposer-solver) ext
   apparent RL gain vanished under the anchor (+0.310 unanchored against +0.057). Epoch-9 accuracy 0.550
   against 0.297; decomposer insertion rate 0.596 against 0.143. Drift began abruptly after epoch 4.
 - **Mechanism check.** The anchor reduced the update's projection onto the drift direction (decomposer:
-  +0.50 became -0.06; RAG: +0.22 became +0.006). The direction was defined from the unanchored run itself, so the
-  authors hedge with "suggests".
+  +0.50 became -0.06; RAG: +0.22 became +0.006). The extraction notes the direction was defined from the unanchored run itself, which makes the
+  check partly circular, and the authors soften their claim with "suggests".
 
 ## Limits
 

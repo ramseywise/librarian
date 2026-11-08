@@ -2,7 +2,7 @@
 title: Code Generation Prompting
 tags: [prompting, pattern]
 summary: Prompt shapes for code — instruction→code, comments→code, signature completion with stop sequences, schema→SQL, explain-code, parseable unit-test prompts and fill-in-the-middle — plus the over-refusal trap of generic safety system prompts; context and verification remain the biggest levers.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--11-applications.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--prompt-library.md
@@ -49,3 +49,4 @@ refusals** ([[Evaluating Prompts]]).
 - [[Verification Loops]] — extends
 - [[Program-Aided Language Models (PAL)]] — alternative-to
 - [[Prompts as Document Completion]] — related
+- [[Chain of Code]] — related

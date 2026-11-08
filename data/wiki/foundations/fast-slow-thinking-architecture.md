@@ -2,7 +2,7 @@
 title: Fast-Slow Thinking Architecture
 tags: [foundations, voice, pattern]
 summary: "Three ways to give a real-time agent deep reasoning without blocking it — fast fillers then slow answers, a fast interaction model advised by a background reasoner (the 2026 mainstream), or one model that thinks while speaking — plus the text-vs-latent channel between them and the rule that the fast side never claims 'done' before the slow side confirms."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--07-agentic-applications--real-time-multimodal-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
@@ -75,3 +75,4 @@ became about 15× faster. The rule that makes it safe: **the fast model must nev
 - [[Voice Agent Paradigms]] — extends (adding reasoning to any voice paradigm)
 - [[Harness Orchestration]] — instance-of (fast/slow as a two-agent pattern)
 - [[Computer Use Visual Grounding]] — extends (talking while acting)
+- [[Reflection in Pre-Training]] — related

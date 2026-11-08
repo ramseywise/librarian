@@ -2,7 +2,7 @@
 title: Wiki Index
 tags: [meta, reference]
 summary: Auto-generated table of contents for every page in data/wiki/, grouped by domain directory.
-updated: 2026-11-05
+updated: 2026-11-08
 sources:
   - data/wiki/
 ---
@@ -1137,7 +1137,7 @@ Regenerate after every ingest. `data/wiki/private/` is deliberately excluded.
 
 ## Memory
 
-- [[Agent Cognitive Compressor]] — The Agent Cognitive Compressor rewrites one bounded, schema-governed state (the Compressed Cognitive State) every turn instead of replaying the transcript or retrieving artifacts; the paper reports qualitatively flat memory size and lower hallucination and drift over 50-turn episodes but gives no numeric effect sizes in its text.
+- [[ACC Bounded Memory Control for Agents]] — The Agent Cognitive Compressor rewrites one bounded, schema-governed state (the Compressed Cognitive State) every turn instead of replaying the transcript or retrieving artifacts; the paper reports qualitatively flat memory size and lower hallucination and drift over 50-turn episodes but gives no numeric effect sizes in its text.
 - [[Agent Memory Types]] — Three-tier memory taxonomy (semantic/episodic/procedural) with storage patterns, context window strategies, reflection pattern, and SQLite preference store for assistant agents — backed by LangGraph BaseStore.
 - [[ArcMemo Concept-Level Memory]] — ArcMemo stores reusable abstract concepts distilled from solved puzzles instead of raw solutions or one running summary, and on a 100-puzzle ARC-AGI-1 subset it lifts an o4-mini baseline from 55.17 to 59.33, a gain the paper's own variance numbers make fragile (self-reported).
 - [[Bad Memory File-Based Prompt Injection]] — A 2026 study plants a malicious rule in a trusted memory file (CLAUDE.md, AGENTS.md, behavior or knowledge files) and measures how often four models act on it and whether it survives later sessions; success and persistence vary widely by model, goal and attack order, and the lowest attack success did not mean the lowest persistence.

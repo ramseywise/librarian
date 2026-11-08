@@ -2,7 +2,7 @@
 title: Evolve Loop
 tags: [llm, agents, infra, pattern]
 summary: "A slow loop pointed at a fast one that rewrites files rather than weights — four edit targets, a 5–10 run cadence, and the anti-busywork rule that makes 'no change needed' a first-class success."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--evolve-loop.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--08-self-improving-loops.md
@@ -139,3 +139,7 @@ and separate evidence collection from scheduled consolidation ([[Sleep Learning]
 - [[Self-Modification as a Release Process]] — extends
 - [[Sleep Learning]] — extends
 - [[Loop Scorekeeper]] — extends
+- [[EvoPrompting Code-Level Architecture Search]] — instance-of
+- [[AdaptEvolve Confidence-Routed Evolution]] — instance-of
+- [[SIFT Judge-Guided Self-Improvement Tree Search]] — instance-of
+- [[Meta^n Recursive Operator Stack]] — instance-of

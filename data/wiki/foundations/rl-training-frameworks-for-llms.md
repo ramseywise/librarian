@@ -2,7 +2,7 @@
 title: RL Training Frameworks for LLMs
 tags: [foundations, llm, comparison]
 summary: "verl, OpenRLHF, and TRL are the three open-source backbones for RL on language models: verl for 70B+ reasoning runs, OpenRLHF for the broadest production use up to ~30B, and TRL for the flattest learning curve up to ~13B. Pick by model scale and algorithm, not popularity."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
 ---
@@ -45,3 +45,4 @@ landscape moves quickly.
 - [[Outcome vs Process Reward Models]] — related (the reward signal plugged into the training loop)
 - [[RLHF Pipeline]] — instance-of (the three-stage pipeline these frameworks run end to end)
 - [[Training-Agent Disaggregation]] — extends (wiring an existing multi-agent graph to a trainer via logical model names)
+- [[Post-Training Reasoning Data Primer]] — related (data choices that decide what these trainers can learn)

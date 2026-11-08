@@ -58,3 +58,5 @@ omitted here. Code and data were described as forthcoming.
 - [[Holistic Agent Leaderboard (HAL)]] — related (cost-accuracy frontiers; this paper does not cite it)
 - [[Eval Non-Determinism]] — related (cost per query also varies between runs)
 - [[Eval Metric Interpretation Pitfalls]] — related
+- [[Overthinking and Concise Reasoning]] — related
+- [[Inverse Scaling in Test-Time Compute]] — related

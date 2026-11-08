@@ -161,3 +161,4 @@ this is R3 and R8 with an egress path attached.
 - [[PreAct]] — related
 - [[Natural-Language Agent Harnesses]] — related
 - [[AGENTS.md Context File Evaluation]] — related
+- [[Synthetic Computers at Scale]] — related

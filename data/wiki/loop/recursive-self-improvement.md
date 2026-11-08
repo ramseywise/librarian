@@ -2,7 +2,7 @@
 title: Recursive Self-Improvement
 tags: [llm, agents, eval, concept]
 summary: "Level 4 at the frontier — the write boundary is the load-bearing design decision, a 3% hit rate is fine when attempts are cheap, and automating generation shifts the bottleneck onto verification."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--08-self-improving-loops.md
@@ -163,3 +163,19 @@ authors, by *breaking the inner loop's deterministic search patterns*.
 - [[Self-Modification as a Release Process]] — extends
 - [[Four Media for Agent Lessons]] — extends
 - [[Training-Agent Disaggregation]] — alternative-to (improve the weights from traces instead of rewriting the harness)
+- [[RISE Recursive Introspection]] — related
+- [[Strategy Lock-In in Post-Training Agents]] — related
+- [[SIFT Judge-Guided Self-Improvement Tree Search]] — instance-of
+- [[Rehearse Focused Outcome Memory]] — instance-of
+- [[AI Research Preference Model]] — instance-of
+- [[Meta^n Recursive Operator Stack]] — instance-of
+- [[Red Queen Gödel Machine]] — instance-of
+- [[MASS Multi-Agent Self-Supervision]] — instance-of
+- [[AdaptEvolve Confidence-Routed Evolution]] — instance-of
+- [[EvoPrompting Code-Level Architecture Search]] — instance-of
+- [[Train-Test Ablation Audit]] — instance-of
+- [[SAGA Goal-Evolving Science Agents]] — instance-of
+- [[Multi-Agent Evolve Self-Play]] — instance-of
+- [[AIRA Draft-Debug-Improve Search]] — instance-of
+- [[Self-Evolving Agent Taxonomies]] — related
+- [[Evaluator Exploits in Discovery Loops]] — related

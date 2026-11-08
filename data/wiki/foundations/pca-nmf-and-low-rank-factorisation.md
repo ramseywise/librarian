@@ -2,7 +2,7 @@
 title: "PCA, NMF and Low-Rank Factorisation"
 tags: [foundations, concept]
 summary: "PCA rotates to maximum-variance axes, NMF builds additive non-negative parts, collaborative filtering factorises a mostly missing matrix; scale before PCA."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--01-classical-ml--notes--05-unsupervised-learning.md
 ---
@@ -49,3 +49,4 @@ Learn a feature vector per movie and a preference vector per user so that their 
 - [[t-SNE and UMAP Visualisation Rules]] — related
 - [[Clustering Algorithms: k-means, Agglomerative and DBSCAN]] — related
 - [[Regularisation as a Prior]] — related
+- [[DoRA Weight-Decomposed Low-Rank Adaptation]] — related (low-rank updates to model weights)

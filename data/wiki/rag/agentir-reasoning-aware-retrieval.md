@@ -24,10 +24,10 @@ A deep-research agent writes a reasoning trace before each search call. AgentIR 
 - One benchmark with a fixed corpus, no seeds or confidence intervals; gaps of 1 to 3 points between history variants are weak evidence.
 - Training used one agent and one corpus; transfer was tested on two other agents. It needs an agent that exposes reasoning traces, plus fine-tuning.
 - Because the oracle reranker sees the gold answer, it can only produce training labels. The Agentic-R comparison differs in backbone and data.
-- Internal inconsistency: the abstract's 68% and 52% figures are the with-visit variants (68.07 and 51.93); without the visit tool the figures are 66.27 and 50.72.
+- The extraction notes an inconsistency: the abstract's 68% and 52% figures are the with-visit variants (68.07 and 51.93); without the visit tool the figures are 66.27 and 50.72.
 - That variant combining prior queries and documents was cut to fit context, which may understate its score.
 
 ## See Also
 - [[RAG Reranking]] — prerequisite-for
 - [[RL for Retrieval Policies]] — related
-- [[Deep Research Agent Systems]] — related
+- [[Deep Research Agent Systems]] — prerequisite-for

@@ -32,8 +32,8 @@ They test different variables (long context against retrieval, versus the size o
 
 ## Limits
 
-- Li et al.: only two generator models; the Wikipedia long contexts are synthetic, which the authors say may bias against RAG, so that source's long-context lead is confounded. No cost, latency, chunk size or top-k is given, contexts stop around 67K words, and there are no confidence intervals. The text says 13,651 kept questions once and Table 3 says 13,628. The abstract's "comparably" for the summarization retriever is looser than the tables support.
-- Jin et al.: results are plotted, not tabulated, so magnitudes are not quotable. The explanation that hard negatives drive the decline is the authors' reading, supported by the controlled negatives test.
+- Li et al.: only two generator models; the Wikipedia long contexts are synthetic, which the authors say may bias against RAG, so that source's long-context lead is confounded. The extraction notes no cost, latency, chunk size or top-k in what was read, contexts that stop around 67K words, and no confidence intervals. It also notes the text says 13,651 kept questions once while Table 3 says 13,628, and that the abstract's "comparably" for the summarization retriever is looser than Table 5 allows.
+- Jin et al.: the extraction notes results are plotted, not tabulated, so magnitudes are not quotable. The explanation that hard negatives drive the decline is the authors' reading, supported by the controlled negatives test.
 - Both are 2024 models; newer ones may shift the balance.
 
 ## See Also

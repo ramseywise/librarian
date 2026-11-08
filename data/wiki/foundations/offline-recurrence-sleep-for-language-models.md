@@ -21,7 +21,7 @@ The paper (a 2026 preprint) treats a hybrid model, with attention over a bounded
 ## Limits
 
 - Tasks are synthetic and models modest in scale. Training cost grows about linearly with the number of loops and is described as unstable and slow.
-- The benefit is lower latency at wake time, not lower total compute. No analysis of forgetting, interference or multiple sessions, and no comparison with retrieval or compaction. No seed counts or variance; failure claims hold only under a fixed training-token budget. A depth-of-reasoning task (Depo) is reported as curves only.
+- The benefit is lower latency at wake time, not lower total compute. No analysis of forgetting, interference or multiple sessions, and no comparison with retrieval or compaction. No seed counts or variance; failure claims hold only under a fixed training-token budget. Depo, a k-hop graph retrieval task, is reported as test-loss curves only.
 
 ## See Also
 - [[Delta-Mem Fixed-Size State Memory]] — alternative-to

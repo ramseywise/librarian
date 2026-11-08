@@ -100,3 +100,8 @@ See [[Agent Memory Types]] for the reflection implementation.
 - [[Prompting Reasoning Models]] — extends (reasoning models do CoT natively; manual CoT can hurt instruction-following)
 - [[Self-Ask Prompting]] — extends (the method the self-ask paper compares itself against and builds on)
 - [[ROSCOE Reasoning Chain Metrics]] — related (metrics for scoring the reasoning chain itself)
+- [[Chain of Code]] — extends (interpreter plus an LM emulator for lines that cannot run)
+- [[Logic-of-Thought]] — extends (derived logic facts appended to the context)
+- [[Skeleton-of-Thought]] — extends (skeleton then parallel expansion, for latency)
+- [[Overthinking and Concise Reasoning]] — related (token savings from shorter chains)
+- [[LLM Reasoning Surveys and the Can-LLMs-Reason Debate]] — related

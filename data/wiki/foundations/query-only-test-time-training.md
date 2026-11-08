@@ -36,7 +36,7 @@ Because keys and values stay fixed, the cache is reused and the cost is dominate
 ## Limits
 
 - Single runs, no confidence intervals, and sample sizes are not stated. The learning rate is tuned per dataset, and high or low rates fail badly.
-- On the shortest synthetic length, qTTT trailed thinking mode on bank transactions, 28.0 to 36.0. Gains depend on the task and are smaller on summarization, and on two subsets Qwen3-32B with qTTT scored under thinking.
+- On the shortest synthetic length, qTTT trailed thinking mode on bank transactions, 28.0 to 36.0. Gains depend on the task and are smaller on summarization, and on GovReport Qwen3-32B with qTTT scored under plain in-context use (26.0 against 26.7).
 - Only Qwen3 models from 1.7B to 32B were tried, and synthetic contexts reach about 10K tokens. No comparison with RAG, compression or other test-time-training variants.
 - The claim that dilution is the main cause rests on a correlation with attention mass and a no-RoPE ablation, neither of which excludes other causes.
 

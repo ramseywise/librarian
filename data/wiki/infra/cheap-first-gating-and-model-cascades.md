@@ -98,3 +98,6 @@ Limits: no measurements; tool gateways are left out because the chapter calls th
 - [[Context Engineering and Cost Interview Study Guide]] — related (model routing among the cost levers)
 - [[LLM Inference Economics]] — prerequisite-for (where the price gap between models comes from)
 - [[JEV-as-a-Judge Cascade]] — instance-of (a cheap-first cascade for judging preference pairs)
+- [[AutoMix Self-Verification Routing]] — instance-of (self-verified escalation with a learned router)
+- [[LLMSelector Per-Module Model Assignment]] — related (assigning a model per module of a pipeline, not per query)
+- [[HSE and Router Robustness in Model Societies]] — related (whether a routed pool differs enough to be worth routing)

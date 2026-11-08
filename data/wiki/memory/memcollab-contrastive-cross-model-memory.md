@@ -9,7 +9,7 @@ sources:
 
 # MemCollab Contrastive Cross-Model Memory
 
-MemCollab (a 2026 preprint) asks how memory written by one model can be reused by another. Its starting observation is that plain transfer can hurt: in the paper's own setup, a Qwen2.5-7B-Instruct agent given memory distilled from 32B trajectories (Buffer-of-Thoughts style) scored 50.6 on MATH500 against 52.2 with no memory, and 34.1 on HumanEval against 42.7. Memory came from 1000 training items; each dataset's test split held 500 separate items (HumanEval has 164 tasks). Runs used temperature 0, a smolagents CodeAgent and seed 42.
+MemCollab (a 2026 preprint) asks how memory written by one model can be reused by another. Its starting observation is that plain transfer can hurt: in the paper's own setup, a Qwen2.5-7B-Instruct agent given memory distilled from 32B trajectories (Buffer-of-Thoughts style) scored 50.6 on MATH500 against 52.2 with no memory, and 34.1 on HumanEval against 42.7 (self-reported, that setup). Memory came from 1000 training items; each dataset's test split held 500 separate items (HumanEval has 164 tasks). Runs used temperature 0, a smolagents CodeAgent and seed 42.
 
 ## Mechanism
 
@@ -28,11 +28,11 @@ Retrieval is two-step: filter to the task category, then keep only entries in wh
 ## Limits
 
 - The authors' single stated limitation: safety filtering and access control for a shared memory are left to later work.
-- Models are mostly Qwen2.5 and Llama-3 (4B to 72B) on math and code tasks with checkable answers. Because memory is built and evaluated within the same task families, carry-over to new domains is not shown.
-- Building memory means running several models over the training tasks and having a correctness signal. One test swapped that signal for model self-selection (ASQA) and still showed a gain (Qwen-7B 15.4 to 21.3).
+- The extraction notes that models are mostly Qwen2.5 and Llama-3 (4B to 72B) on math and code tasks with checkable answers. Because memory is built and evaluated within the same task families, the notes add that carry-over to new domains is not shown.
+- Building memory means running several models over the training tasks and having a correctness signal. One test swapped that signal for model self-selection (ASQA) and still showed a gain (Qwen-7B 15.4 to 21.3, self-reported, ASQA test).
 - Seed spread appears only for the main configuration; other tables are single runs. The no-memory 7B HumanEval run has a spread of 5.32, so small gaps are noisy.
 - The mechanism explanation ("suppressing model-specific bias") is an interpretation, not tested by an experiment.
-- Internal inconsistencies: prose near Table 2 gives Llama-3-8B 74.4% on MATH500, yet the table row reads 42.4 (74.4 is its GSM8K number); Table 2 also shows Qwen-32B MemCollab at 70.6 on MATH500 where Table 1 has 73.8. GPT-5-mini serves as the memory-quality judge.
+- Internal inconsistencies (the extraction notes): prose near Table 2 gives Llama-3-8B 74.4% on MATH500, yet the table row reads 42.4 (74.4 is its GSM8K number); Table 2 also shows Qwen-32B MemCollab at 70.6 on MATH500 where Table 1 has 73.8. GPT-5-mini serves as the memory-quality judge.
 
 ## See Also
 - [[Memory Lifecycle]] — prerequisite-for

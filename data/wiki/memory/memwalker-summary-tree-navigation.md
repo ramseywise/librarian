@@ -17,7 +17,7 @@ MemWalker (Chen et al., 2023) uses hierarchical summaries as navigable memory in
 2. **Navigate.** Given a question, the model reads the root's children, writes its reasoning, and picks a child. At a leaf it either answers or reverts to the parent. Unparseable output three times in a row ends navigation with no answer.
 3. **Working memory.** Content from visited nodes is carried into the leaf prompt, truncated to fit.
 
-Prompts are zero-shot on Stable Beluga 2 (70B, 4,096-token window), with segments of 1,000 to 1,200 tokens and 5 to 8 children per node.
+Prompts are zero-shot on Stable Beluga 2 (70B, 4,096-token window), with segments of 1,000 to 1,200 tokens and a per-dataset cap of 8, 5 or 8 children per node.
 
 ## Results (self-reported, 101 to 306 examples per set)
 

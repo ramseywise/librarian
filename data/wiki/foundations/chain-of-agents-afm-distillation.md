@@ -1,7 +1,7 @@
 ---
 title: Chain-of-Agents AFM Distillation
 tags: [foundations, pattern]
-summary: Chain-of-Agents distils trajectories of a multi-agent system into one agent foundation model with supervised fine-tuning and then DAPO reinforcement learning, reporting 59.8 on AIME25 and 55.3 on GAIA for 32B models (self-reported, vendor team, small-sample evaluations).
+summary: Chain-of-Agents distils trajectories of a multi-agent system into one agent foundation model with supervised fine-tuning and then DAPO reinforcement learning, reporting 59.8 on AIME25 and 55.3 on GAIA for 32B models (self-reported, industry team, small-sample evaluations).
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-li-2025-chain-agents.md
@@ -38,9 +38,10 @@ running separate agents.
 
 ## Limits
 
-- No ablation against plain tool-integrated reasoning on the same data, so the paradigm effect is not
-  isolated; the teacher bounds the data; AIME sets have 30 problems each; no limitations section,
-  reward-hacking or failure analysis; prompts are not deduplicated between SFT and RL sets.
+- The extraction notes there is no ablation against plain tool-integrated reasoning on the same data,
+  so the paradigm effect is not isolated, and that the teacher bounds the data. It also notes AIME sets have 30 problems each and that the paper has no limitations section,
+  reward-hacking or failure analysis; prompts are not deduplicated between SFT and RL sets, which the
+  authors say they handle by relying on DAPO's filtering.
 - Internal inconsistencies noted by the extraction: the text gives about 47k code traces while the data
   table has 59,929; BrowseComp 11.1 in one table and 11.0 in another; one baseline's GAIA score is attributed
   inconsistently; unlabelled duplicate rows in the code table; backbones mix base and instruct.
@@ -49,3 +50,5 @@ running separate agents.
 - [[Post-Training for Agents]] — prerequisite-for
 - [[AgentArk Multi-Agent Distillation]] — alternative-to
 - [[Harness Orchestration]] — related
+- [[Reinforcement-Learned Teachers]] — related
+- [[DualDistill Agentic-R1]] — related

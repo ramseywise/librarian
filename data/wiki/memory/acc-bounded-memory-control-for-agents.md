@@ -1,15 +1,17 @@
 ---
-title: Agent Cognitive Compressor
+title: ACC Bounded Memory Control for Agents
+aliases:
+  - Agent Cognitive Compressor
 tags: [memory, pattern]
-summary: "The Agent Cognitive Compressor rewrites one bounded, schema-governed state (the Compressed Cognitive State) every turn instead of replaying the transcript or retrieving artifacts; the paper reports qualitatively flat memory size and lower hallucination and drift over 50-turn episodes but gives no numeric effect sizes in its text."
+summary: "ACC rewrites one bounded, schema-governed state (the Compressed Cognitive State) every turn instead of replaying the transcript or retrieving artifacts; the paper reports qualitatively flat memory size and lower hallucination and drift over 50-turn episodes but gives no numeric effect sizes in its text."
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-bousetouane-2026-ai-agents-need-memory-control.md
 ---
 
-# Agent Cognitive Compressor
+# ACC Bounded Memory Control for Agents
 
-The Agent Cognitive Compressor (ACC, a 2026 preprint with no venue) controls within-session state. Each turn it recalls candidate artifacts, qualifies them, commits a new Compressed Cognitive State (CCS) that replaces the old one, acts, and then stores the turn in an artifact store. The CCS is made of nine typed fields: an episodic trace, a semantic gist, focal entities, a relational map, the goal, constraints, a predictive cue, uncertainty and artifact references. Retrieved artifacts count as external evidence and cannot change the state unless the compressor commits them under the schema, which the paper presents as a defence against memory poisoning (a design claim, untested).
+ACC (a 2026 preprint with no venue; the source uses the acronym without expanding it) controls within-session state. Each turn it recalls candidate artifacts, qualifies them, commits a new Compressed Cognitive State (CCS) that replaces the old one, acts, and then stores the turn in an artifact store. The CCS is made of nine typed fields: an episodic trace, a semantic gist, focal entities, a relational map, the goal, constraints, a predictive cue, uncertainty and artifact references. Retrieved artifacts count as external evidence and cannot change the state unless the compressor commits them under the schema, which the paper presents as a defence against memory poisoning (a design claim, untested).
 
 ## Setup
 

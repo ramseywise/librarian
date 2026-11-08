@@ -79,3 +79,4 @@ strips anything.
 - [[Harness Orchestration]] — related
 - [[Runtime vs Process Observability]] — prerequisite-for
 - [[Model or Harness Failure Taxonomy]] — extends
+- [[SoL-Pi Auto-Research Harness]] — related

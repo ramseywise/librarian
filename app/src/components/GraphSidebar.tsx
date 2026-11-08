@@ -10,7 +10,7 @@ import { Chip, TagFilterPanel } from "./TagFilterPanel";
 const TYPE_TAGS = new Set(["concept", "pattern", "decision", "project", "comparison", "reference", "conflict"]);
 /** Terms listed before a search narrows them: the most mentioned. */
 const TERM_LIMIT = 12;
-/** Topic tags listed before "more", so layers and the minimap stay in view. */
+/** Topic tags listed before "more", so the sidebar stays short. */
 const TOPIC_LIMIT = 12;
 
 interface Props {
@@ -130,11 +130,13 @@ function TagsSection({ facets, glossary, activeTags, onToggle }: {
           </button>
         )}
       </div>
-      <div className="panel-label side-sublabel">Type</div>
-      <div className="cur-chips" role="group" aria-label="Type tags">{type.map(chip)}</div>
+      <details className="side-sub">
+        <summary className="panel-label side-sublabel">Page type</summary>
+        <div className="cur-chips" role="group" aria-label="Type tags">{type.map(chip)}</div>
+      </details>
       {glossary && (
-        <>
-          <div className="panel-label side-sublabel">Glossary terms</div>
+        <details className="side-sub" open={[...activeTags].some((t) => t.startsWith("term:"))}>
+          <summary className="panel-label side-sublabel">Glossary terms</summary>
           <input
             type="search"
             className="side-search"
@@ -157,7 +159,7 @@ function TagsSection({ facets, glossary, activeTags, onToggle }: {
             ))}
             {terms.length === 0 && <span className="side-empty">No term matches.</span>}
           </div>
-        </>
+        </details>
       )}
     </>
   );
@@ -195,7 +197,7 @@ export function GraphSidebar({
   const hasTags = [...facets.keys()].some((k) => k.startsWith("tag:"));
 
   return (
-    <aside id={id} className={`graph-sidebar${open ? " is-open" : ""}`} aria-label="Map filters and layers">
+    <aside id={id} className={`graph-sidebar${open ? " is-open" : ""}`} aria-label="Map filters and connections">
       <div className="side-head">
         <div className="seg" role="group" aria-label="Browse by">
           {(["domain", "course"] as const).map((g) => (
@@ -214,6 +216,7 @@ export function GraphSidebar({
         </button>
       </div>
       {search && <div className="side-search-row">{search}</div>}
+      {layers && <Section title="Connections">{layers}</Section>}
       {grouping === "domain" ? (
         <>
           <Section title="Directories">
@@ -230,7 +233,6 @@ export function GraphSidebar({
           <TagFilterPanel curriculum={curriculum} activeTags={activeTags} onChange={onChange} onBrief={onBrief} />
         </Section>
       )}
-      {layers && <Section title="Layers">{layers}</Section>}
       {minimap && (
         <Section title="Minimap">
           <div className="side-minimap">{minimap}</div>

@@ -5,6 +5,7 @@ summary: The model writes a program and an interpreter computes the answer — f
 updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--03-core-techniques.md
+  - data/raw/papers/2026-11-06-imani-2023-mathprompter.md
 ---
 
 # Program-Aided Language Models (PAL)
@@ -38,8 +39,19 @@ decomposition; Python does the computation.
 - The general principle — move deterministic work out of the model — recurs throughout the
   wiki, e.g. [[Length Limits Are a Fit Layer, Not a Prompt]].
 
+## MathPrompter: agreement between two expressions
+
+Imani et al. (2023) add a consistency check to program-aided arithmetic. With GPT-3 175B the model writes an algebraic template with variables, produces both an algebraic expression and a Python function for it, evaluates both on random values, accepts when they agree, and votes over several agreeing runs. On MultiArith accuracy went from 78.7 to 92.5 (self-reported, one dataset).
+
+## Limits
+
+One dataset, and a failure case where both expressions agree and are wrong, so agreement is not proof.
+
 ## See Also
 - [[Prompting Technique Selection]] — instance-of
 - [[Chain of Thought]] — alternative-to (reasoning as code instead of prose)
 - [[Execution Boundaries and Guardrails]] — prerequisite-for
 - [[TheoremQA]] — related (benchmark that compares PoT with CoT)
+- [[DualDistill Agentic-R1]] — related (student chooses between code and text)
+- [[Chain of Code]] — extends (an LM emulator covers lines the interpreter cannot run)
+- [[Logic-of-Thought]] — related (code expands logic facts, then appended to the prompt)

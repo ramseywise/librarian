@@ -28,16 +28,17 @@ Setup: Qwen2.5 1.5B, 3B and 7B Instruct, GRPO, six QA sets with 128 test questio
 
 ## A-RAG, a second agentic result
 
-A-RAG (arXiv 2602.03442, a work-in-progress preprint) gives a ReAct-style agent three tools (keyword search, semantic search, chunk read). With a GPT-5-mini backbone and top-5 everywhere, its full version scored 74.1 on MuSiQue against 52.8 for chunk RAG, and 94.5 against 81.2 on HotpotQA; judged by GPT-5-mini. With GPT-4o-mini it was best on three of five datasets, and HippoRAG2 beat it on HotpotQA and 2Wiki, so the authors tie agentic gains to a strong tool-using model. Its one-tool variant beat chunk RAG everywhere, and the authors report that GraphRAG and workflow methods did not consistently beat chunk RAG in their unified setup.
+A-RAG (arXiv 2602.03442, a work-in-progress preprint) gives a ReAct-style agent three tools (keyword search, semantic search, chunk read). With a GPT-5-mini backbone and top-5 everywhere, its full version scored 74.1 (self-reported) on MuSiQue against 52.8 (self-reported) for chunk RAG, and 94.5 (self-reported) against 81.2 (self-reported) on HotpotQA (LLM-judged accuracy, with GPT-5-mini as backbone, Qwen3-Embedding-0.6B, top-5 for every method, baselines reproduced locally, and GPT-5-mini as judge). With GPT-4o-mini it was best on three of five datasets, and HippoRAG2 beat it on HotpotQA and 2Wiki, so the authors tie agentic gains to a strong tool-using model. Its one-tool variant beat chunk RAG everywhere, and the authors report that GraphRAG and workflow methods did not consistently beat chunk RAG in their unified setup.
 
 ## Limits
 
-- Graph-R1: 128 test questions per set; the ablation covers two sets; the generation-quality comparison used GPT-4o-mini as the judge. Total cost columns use mixed units (the text says per 1K tokens, the table column is per 1M tokens). The text gives 57.28 in one place and 57.82 elsewhere for 7B. The retrieval-representation ordering (none, chunks, graph, hypergraph) is read from curves with no table.
-- A-RAG: baselines reproduced locally by the authors; the judge is the same family as the backbone.
-- Both papers favour their own method on benchmarks they chose.
+- Graph-R1: the paper has no limitations section. The extraction notes list 128 test questions per set with no seeds, confidence intervals or significance tests, so per-set differences are noisy. They also note that the graph is built with GPT-4o-mini, so only answer-time cost is zero, and that the GPT-4o-mini graph baselines are not RL-trained and use a larger retrieved context, so the comparison mixes training with graph type; the one controlled comparison is Search-R1. The ablation covers two sets, and the generation-quality comparison used GPT-4o-mini as the judge.
+- Graph-R1 inconsistencies: the extraction notes the text gives 57.28 in one place and 57.82 elsewhere for 7B (the table says 57.82), and that the text says cost per 1K tokens while the table column is per 1M tokens. The extraction notes the retrieval-representation ordering (none, chunks, graph, hypergraph) is read from curves with no table.
+- A-RAG: the authors concede no systematic comparison of tool subsets, that the larger models they name were not tested in the main results, and that generalisation beyond multi-hop QA is unverified. The extraction notes no latency or dollar cost, no variance or seeds, baselines reproduced locally by the authors, and a judge from the same family as the backbone.
 
 ## See Also
 - [[Knowledge Graph Retrieval]] — prerequisite-for (graph retrieval fundamentals)
 - [[RL for Retrieval Policies]] — prerequisite-for (RL over retrieval actions)
 - [[Reciprocal Rank Fusion (RRF)]] — prerequisite-for (the fusion step in hypergraph retrieval)
 - [[Agentic RAG — Advanced Patterns]] — prerequisite-for (agentic retrieval in general)
+- [[LightPROF Knowledge Adapter for KGQA]] — alternative-to

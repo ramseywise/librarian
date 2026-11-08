@@ -2,7 +2,7 @@
 title: Training-Agent Disaggregation
 tags: [foundations, llm, pattern]
 summary: "Make an existing agent trainable without rewriting it: keep the runtime as-is, trace each run as state → action → reward into an external trainer, bind trainable roles to logical model names a proxy can re-route to a learning policy, and train each role with the algorithm that fits it (SFT, PPO, contextual bandit)."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/interviewing--notes--agents-self-training.md
   - data/raw/repos/sisyphus/interviewing--notes--agents-self-training.md
@@ -64,3 +64,4 @@ evaluation while smaller models serve the trained roles.
 - [[Multi-Agent Reinforcement Learning]] — extends (training several interacting roles)
 - [[Reward Hacking and Overoptimization]] — prerequisite-for (what a weak reward does to the trained role)
 - [[Post-Training for Agents]] — related
+- [[Agent Lightning v1.0 Harnessed Agentic RL]] — instance-of

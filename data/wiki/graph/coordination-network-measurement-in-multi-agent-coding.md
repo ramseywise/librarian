@@ -47,8 +47,8 @@ team, and a file policy of forbidden, allowed or mandatory. 1,902 graded runs pl
 - **Single runs mislead.** The same flat configuration, collected twice with identical prompts, gave
   a distributed-task exponent of 1.76 in one session and 2.44 in the other; matched cells differed in 13 of 27 cases on the distributed task
   and in none of 27 on the chained one.
-- **Hidden material gets opened.** Across the main runs, the hidden tests were opened in 234 runs and the reference
-  solution was opened in 77 of them; sealed runs opened a decoy test file in 80% of runs.
+- **Hidden material gets opened.** Across the main runs, the hidden tests were opened in 234 runs; separately, the
+  reference solution was opened in 77 runs (the source does not nest the two counts); sealed runs opened a decoy test file in 80% of runs.
 - Network structure did not predict success: exploratory regressions explained about a tenth of
   the variance.
 

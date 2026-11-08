@@ -173,6 +173,12 @@
 .graph-edge-panel { display: flex; flex-direction: column; gap: var(--space-2); }
 .edge-row { display: flex; align-items: center; cursor: pointer; }
 .edge-label { font-size: var(--fs-md); margin-left: var(--space-2); }
+.edge-hint { font-size: var(--fs-xs); color: var(--text-muted); margin-left: var(--space-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.side-sub > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: var(--space-1); }
+.side-sub > summary::-webkit-details-marker { display: none; }
+.side-sub > summary::before { content: "▸"; font-size: var(--fs-2xs); }
+.side-sub[open] > summary::before { content: "▾"; }
+.side-sub > .cur-chips, .side-sub > .side-search { margin-top: var(--space-2); }
 
 .graph-layout-panel { margin-top: var(--space-3); }
 .btn-row { display: flex; gap: var(--space-2); }

@@ -110,9 +110,10 @@ All numbers are self-reported by the papers.
 - **A straight-through gradient instead of RL.** CLaRa trains retrieval and generation jointly with a differentiable top-k and calls RL-based sampling unstable and inefficient; see [[Soft Context Compression for RAG (CLaRa and REFRAG)]]. REFRAG, in the same page, instead uses a GRPO-style policy to choose which compressed chunks to expand.
 - **Tuning the LM and the retriever separately.** [[RA-DIT Dual Instruction Tuning]] updates the query encoder from the LM's preferences without online rollouts.
 
-## Limits of the paper evidence
+## Limits
 
 - MMOA-RAG's baselines were re-implemented by its authors; its ablation labels are read from plot labels (the extraction notes the series assignment is inferred). The reported gains are 1 to 3 F1 points, from one run.
+- The extraction notes the reference numbering for Contriever, BGE and E5 in the Table 7 caption differs from the main text, so the caption is not reliable for attribution.
 
 ## See Also
 - [[Memory-Augmented Conversational RAG]] <!-- auto-linked -->

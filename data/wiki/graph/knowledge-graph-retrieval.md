@@ -175,7 +175,7 @@ All figures are self-reported by preprints.
 - **WFM, a graph foundation model used as a retriever.** A text-augmented graph with dense passage nodes and a GAT-style encoder. Setup: 1,000 held-out questions per set, DeepSeek V4 Flash generator, DeepSeek V4 Pro judge. Accuracy in open and reject mode was 89.6 and 84.3 on HotpotQA, 90.2 and 82.4 on 2Wiki, and 69.8 and 52.6 on MuSiQue, ahead of Youtu-GraphRAG by 2.8 to 5.1 points. Replacing the passage-node graph with an entity-only graph cost 7.48 points of recall.
 - **Prompt-only GraphRAG against plain RAG.** A-RAG and Graph-R1 both report graph methods that rely on prompting underperforming or not consistently beating chunk RAG; see [[Graph-R1 Agentic GraphRAG]].
 
-## Limits of the paper evidence
+## Limits
 
 - WFM: the authors flag the new table cells and diagnostic sweeps as planning values they built, to be validated later, so the headline numbers are unverified. In its memory table the RHELM zero-shot full-context baseline (46.8) beats every retrieval method except WFM, and WFM without reflection (48.90) leads it by only 2.1. The ACM template is unfilled.
 - ARK-V1: one dataset with binary tasks; large-backbone rows are single runs at temperature 0 with no variance.
@@ -194,3 +194,5 @@ All figures are self-reported by preprints.
 - [[CorpusMap Entity Navigation for Agentic Search]] — alternative-to (entity navigation for an agent instead of a graph query)
 - [[STAIR ToC-Constrained Generation Retrieval]] — alternative-to (a document's table of contents as the retrieval structure)
 - [[GraphReader]] — instance-of
+- [[LightPROF Knowledge Adapter for KGQA]] — related (a trained adapter encodes retrieved paths for a frozen LLM)
+- [[CoAT Associative-Memory MCTS]] — related

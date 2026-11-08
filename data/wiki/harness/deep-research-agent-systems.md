@@ -32,10 +32,11 @@ A blueprint of Master, Planner, Executor and Writer agents. The Master chooses a
 
 ## Limits
 
-- The survey has no limitations section and its tables are compilations; the extraction flags rows it could not verify (an OpenAI DR GAIA average below its level scores, and an H2O.ai row appearing under both test and dev with different models).
-- ODS: no cost, latency or variance; closed systems score higher on SimpleQA; ablation SimpleQA uses 500 questions. Inconsistencies: ODS-v1 with Llama3.1-70B is 83.4 in Table 2 and 84.0 in Table 3, and the text names OpenPerplex in one place and serper.dev in another.
-- MindSearch: the text says multi-query generation matters most, but Table 3 shows removing page selection costs more (58.0 against 60.6); the open-set human study has 100 queries and 5 raters; speed claims lack hardware details.
-- Baidu: a blueprint with no ablation of the DAG against ReAct or a single agent, and no cost data; its win-rate labels (WTL and NWR) are inconsistent in the paper.
+- The survey itself names, in a closing limitation paragraph, weak generalisation across varied tasks, rigid workflows, trouble wiring in fine-grained external tools, and heavy compute for advanced planning and optimisation. Its open challenges add narrow information sources, linear planning, single-agent designs, benchmarks that models can answer from memory, and underdeveloped self-evolution.
+- Its tables are compilations. The extraction notes no controlled comparison of static against dynamic or single against multi-agent designs, no cost or latency figures, no survey method, and rows it could not verify (an OpenAI DR GAIA average below its level scores, and an H2O.ai row appearing under both test and dev with different models).
+- ODS: no cost, latency or variance; closed systems score higher on SimpleQA; ablation SimpleQA uses 500 questions. The extraction notes inconsistencies: ODS-v1 with Llama3.1-70B is 83.4 in Table 2 and 84.0 in Table 3, and the text names OpenPerplex in one place and serper.dev in another.
+- MindSearch: the extraction notes that the text says multi-query generation matters most, but Table 3 shows removing page selection costs more (58.0 against 60.6, self-reported); the open-set human study has 100 queries and 5 raters; speed claims lack hardware details.
+- Baidu: a blueprint with no ablation of the DAG against ReAct or a single agent, and no cost data; the extraction notes that its win-rate labels (WTL and NWR) are used inconsistently.
 
 ## See Also
 - [[WebThinker Deep Research Agent]] — instance-of
@@ -44,3 +45,6 @@ A blueprint of Master, Planner, Executor and Writer agents. The Master chooses a
 - [[AgentIR Reasoning-Aware Retrieval]] — instance-of
 - [[Task Decomposition Patterns]] — related
 - [[FINDER and DEFT (Deep Research Agent Failures)]] — related
+- [[AgentRxiv Shared Preprint Server]] — instance-of
+- [[CodeScientist Semi-Automated Discovery]] — instance-of
+- [[AutoScientists Self-Organizing Teams]] — instance-of

@@ -9,7 +9,7 @@ sources:
 
 # Progressive Disclosure and Skill Packs at Library Scale
 
-The paper (LOONGDOC; arXiv 2607.17598) turns the long-document tasks of a public long-context suite into an agent environment on BenchFlow and ACP. It uses three harnesses (Codex, Pi, Claude-Code) and three small or mid-sized models (claude-haiku-4.5, gpt-5.4-mini and qwen3.6-27b).
+The paper (LOONGDOC; arXiv 2607.17598) turns the long-document tasks of a public long-context suite into an agent environment on BenchFlow and ACP. It uses three harnesses (Codex, Pi, Claude-Code) and three models (claude-haiku-4.5, gpt-5.4-mini and qwen3.6-27b).
 
 ## Approaches compared
 

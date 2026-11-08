@@ -2,7 +2,7 @@
 title: Prompt Engineering
 tags: [prompting, llm, concept]
 summary: The innermost layer of the agent stack — the instructions and examples themselves, grounded in the document-completion mental model; ends where decisions about what to include in the window begin.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--README.md
@@ -132,3 +132,6 @@ is the primary security concern for any system with external inputs. See
 - [[Evaluating Prompts]] — prerequisite-for
 - [[Prompt Optimization]] — extends
 - [[Prompt Leaking]] — instance-of
+- [[Rephrase and Respond]] — instance-of (model rewrites the question before answering)
+- [[EmotionPrompt]] — instance-of (emotional stimuli appended to a prompt)
+- [[Principled Instructions (26 Prompt Principles)]] — instance-of (a catalogue of prompt rules)

@@ -23,7 +23,7 @@ sources:
 
 - The authors say synthetic data is much easier than BrowseComp and that the RL model over-searches; the 9B variant gains little from RL.
 - Ablations use a 266-question subset with no seeds or error bars; baselines mix self-run and copied results.
-- Internal inconsistencies: 3,090 against 3,250 QA pairs; 22.2% (Table 3) against 20.8% (text); Xbench 51.8 (Table 1) against 50.0 (Tables 2 and 3).
+- The extraction notes internal inconsistencies: 3,090 against 3,250 QA pairs; 22.2% (Table 3) against 20.8% (text); Xbench 51.8 (Table 1) against 50.0 (Tables 2 and 3).
 
 ## See Also
 - [[Deep Research Agent Systems]] — prerequisite-for

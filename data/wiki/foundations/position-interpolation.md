@@ -23,7 +23,7 @@ RoPE models trained at a window L fail when run beyond it: on LLaMA 7B trained a
 
 ## A later recipe
 
-The Large World Model (Liu et al., ICLR 2025) grows a LLaMA-2 7B window in stages (32K, 128K, 256K, 512K, 1M tokens, on 4.8B, 12B, 12B, 3B and 1.8B tokens), raising the RoPE base from 1M to 50M at the last stage, with each stage starting from the previous. It serves 1M tokens with Blockwise RingAttention across a TPU slice (minimum v4-128). Single-needle retrieval is described as near-perfect, and at 1M the multi-needle scores were 0.67, 0.84 and 0.69 against 0.84, 0.97 and 0.84 at 32K (self-reported). MMLU slipped from 0.39 to 0.35 at 1M, which the text's "no negative effects" claim glosses over. Tuning the chat-to-retrieval data mix traded MT-Bench (2.42 to 5.8) against needle accuracy (100% to 31%).
+LWM (Liu et al., ICLR 2025) grows a LLaMA-2 7B window in stages (32K, 128K, 256K, 512K, 1M tokens, on 4.8B, 12B, 12B, 3B and 1.8B tokens), raising the RoPE base from 1M to 50M at the last stage, with each stage starting from the previous. It serves 1M tokens with Blockwise RingAttention across a TPU slice (minimum v4-128). Single-needle retrieval is described as near-perfect, and at 1M the multi-needle scores were 0.67, 0.84 and 0.69 against 0.84, 0.97 and 0.84 at 32K (self-reported). MMLU slipped from 0.39 to 0.35 at 1M, which, the extraction notes, sits uneasily with the paper's "no negative effects" wording. Tuning the chat-to-retrieval data mix traded MT-Bench (2.42 to 5.8) against needle accuracy (100% to 31%).
 
 ## Limits
 

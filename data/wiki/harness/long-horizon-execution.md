@@ -157,3 +157,5 @@ See [[Harness Orchestration]] for when decomposition is worth its cost, and
 - [[DeepCode Information-Flow Management]] — related
 - [[AlphaCodium Flow Engineering]] — related
 - [[Paper-Replication Completion Gate]] — related
+- [[AiScientist File-as-Bus]] — instance-of
+- [[AutoScientists Self-Organizing Teams]] — instance-of

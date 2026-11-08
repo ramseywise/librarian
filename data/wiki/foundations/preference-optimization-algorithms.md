@@ -2,11 +2,12 @@
 title: Preference Optimization Algorithms
 tags: [foundations, llm, comparison]
 summary: "The PPO → DPO → GRPO → KTO/IPO/ORPO family — what each removes from the stage before it, the five-algorithm decision table, and why the field shifted from choosing an algorithm to designing a reward structure."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
   - data/raw/claude-docs/learn-ai-engineering/docs/research/2026-07-22_rl_landscape.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
+  - data/raw/papers/2026-11-06-kumar-2025-llm-post-training.md
 ---
 
 # Preference Optimization Algorithms
@@ -170,6 +171,12 @@ The consequence for practice: the field's live question moved from *"which align
 algorithm?"* to *"what reward structure?"* — the algorithm table above is increasingly
 the easy half of the decision, and designing a reward that is both verifiable and
 aligned with what you actually want is the hard half.
+
+## A 2025 survey's framing (Kumar et al.)
+
+Kumar et al. (arXiv 2502.21321, preprint, March 2025) survey post-training as fine-tuning, RL and test-time scaling, citing other work and running no experiments. Claims worth keeping: generation is an MDP (state is tokens so far, action is the next token), and RL for LLMs differs from classic RL by a very large action space, sparse and delayed feedback, difficult credit assignment and several competing objectives. Reward models learn relative preferences (Bradley-Terry or Plackett-Luce), not calibrated scores. GRPO drops the critic and normalises rewards within a sampled group, with an outcome mode and a process mode. DPO loses per-step credit assignment because it treats whole trajectories uniformly. The survey's future-directions section says current RL methods for LLMs need heavy compute and often underperform distillation, and names reward misgeneralisation, overthinking and catastrophic forgetting as open problems.
+
+Limits: many of its numbers carry a citation and no setup (22% wasted computation, 29% forgetting, 94% on MATH, r=0.34), so do not cite them from here. The extraction found citation errors (the DPO reference points at a different paper), a description of ORPO that does not match the ORPO paper, a DPO loss printed without its log and minus sign, and dubious rows in its model table. It covers R1, o1 and Kimi K1.5 only in outline and predates later GRPO variants.
 
 ## See Also
 - [[RLHF Pipeline]] — prerequisite-for (PPO is its Stage 3; every method here is a removal from it)

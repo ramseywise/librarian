@@ -30,7 +30,7 @@ This KDD '25 survey organises work by retrieval, structuring and generation. Its
 - Jiang's structuring loop is a proposal; it gives no cost, latency or hybrid-chunk comparison. The extraction notes mis-attributed references in the reference list (e.g. a Self-Refine entry and a PaLM 2 blog post), so check citations before reuse.
 
 ## See Also
-- [[RAG Retrieval Strategies]] — instance-of
+- [[RAG Retrieval Strategies]] — prerequisite-for
 - [[Knowledge Graph Retrieval]] — related
 - [[RAG Reranking]] — related
 - [[Reciprocal Rank Fusion]] — related

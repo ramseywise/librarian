@@ -1,7 +1,7 @@
 ---
 title: SkillWeaver Compositional Skill Routing
 tags: [harness, pattern]
-summary: "SkillWeaver routes a multi-skill query by decomposing it, retrieving skills per sub-task and composing them; its Skill-Aware Decomposition (SAD) step re-decomposes with retrieved skill names as hints, lifting exact step-count accuracy from 51.0% to 67.7% on the authors' CompSkillBench (self-reported)."
+summary: "SkillWeaver routes a multi-skill query by decomposing it, retrieving skills per sub-task and composing them; its SAD step re-decomposes with retrieved skill names as hints, lifting exact step-count accuracy from 51.0% to 67.7% on the authors' CompSkillBench (self-reported)."
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-06-gao-2026-compositional-skill-routing-llm-agents.md
@@ -9,7 +9,7 @@ sources:
 
 # SkillWeaver Compositional Skill Routing
 
-Gao (Alibaba Cloud, single author, preprint) argues that skill routing is usually framed as picking one skill, while real queries need several. SkillWeaver has three stages: an LLM decomposer splits the query into sub-tasks, a bi-encoder (all-MiniLM-L6-v2) with a FAISS index retrieves skills for each sub-task, and a composer arranges the chosen skills into a dependency graph. The paper identifies decomposition granularity, meaning how many sub-tasks the query is split into, as the bottleneck. Its remedy, **Skill-Aware Decomposition (SAD)**, retrieves skills for the first-pass sub-tasks and then asks the decomposer to try again with the retrieved skill names as hints.
+Gao (Alibaba Cloud, single author, preprint) argues that skill routing is usually framed as picking one skill, while real queries need several. SkillWeaver has three stages: an LLM decomposer splits the query into sub-tasks, a bi-encoder (all-MiniLM-L6-v2) with a FAISS index retrieves skills for each sub-task, and a composer arranges the chosen skills into a dependency graph. The paper identifies decomposition granularity, meaning how many sub-tasks the query is split into, as the bottleneck. Its remedy, which the paper calls **SAD**, retrieves skills for the first-pass sub-tasks and then asks the decomposer to try again with the retrieved skill names as hints.
 
 ## CompSkillBench
 

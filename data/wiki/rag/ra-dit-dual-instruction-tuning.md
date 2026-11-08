@@ -28,9 +28,11 @@ Setup: a 65B LLaMA with the DRAGON+ retriever over a 399M-chunk corpus, ten chun
 
 ## Limits
 
-- The introduction's percentages (for example NQ +22% 0-shot) do not match Table 2's point differences (28.8 to 35.2); they are probably relative gains.
+- The extraction notes the introduction's percentages (for example NQ +22% 0-shot) do not match Table 2's point differences (28.8 to 35.2).
 - Dev-set gains from the dual tuning are around a point or less. Iterating the two stages gave no further gain in preliminary runs, which are not tabulated.
 - The ATLAS comparison mixes model sizes and fine-tuning regimes. Parallel per-chunk encoding was both trained and tested in the same form, which may favour it.
+
+- The extraction notes the DRAGON+ row in Table 7 (53.4) does not equal the baseline in Table 6 (53.8), which it attributes to few-shot truncation differences (footnote 11), and that Table 6 labels the method "RIT" where the text says RA-IT. Compare only within a table.
 
 ## See Also
 - [[RL for Retrieval Policies]] — prerequisite-for (the wider question of tuning retrieval from downstream signal)

@@ -122,3 +122,4 @@ See [[LangGraph Advanced Patterns]] for the priority order of advanced patterns.
 - [[LangGraph Advanced Patterns]]
 - [[LangGraph CRAG Pipeline]]
 - [[ADK vs LangGraph Comparison]]
+- [[Task-Decoupled Planning]] — extends (scopes context per subtask node and replans locally)

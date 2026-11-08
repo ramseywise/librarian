@@ -66,3 +66,6 @@ the slow GUI agent ([[Fast-Slow Thinking Architecture]]).
 - [[Fast-Slow Thinking Architecture]] — extends (talking while acting)
 - [[Tool Design as Harness Surface]] — prerequisite-for (the computer/bash/editor action space)
 - [[Universal Verifier for Computer-Use Agents]] — related (verifying computer-use trajectories from screenshots)
+- [[ComputerRL API-GUI Agent RL]] — related
+- [[GUI Agent RL with GUI-R1 and ARPO]] — related
+- [[Agent S Hierarchical GUI Agent]] — related

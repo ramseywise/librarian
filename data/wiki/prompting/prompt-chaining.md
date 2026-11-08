@@ -2,7 +2,7 @@
 title: Prompt Chaining
 tags: [prompting, llm, agents, concept]
 summary: Decomposing a complex task into simpler prompts with fixed I/O contracts — trading a general/weak prompt for strong single-job steps wired as a pipeline or (by default) a DAG; the boundary case between prompting and harness engineering.
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt--prompt-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--01-prompt-engineering--notes--06-chaining-and-workflows.md
@@ -107,3 +107,5 @@ agent architecture.
 - [[Stateful Objects of Discourse]] — extends
 - [[Prompting Reasoning Models]] — alternative-to
 - [[Stop Sequences and Completion Anatomy]] — prerequisite-for
+- [[Skeleton-of-Thought]] — extends (a two-call chain whose second call fans out in parallel)
+- [[Branch-Solve-Merge]] — extends (plan, parallel solve, merge as one program)

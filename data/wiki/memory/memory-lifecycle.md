@@ -95,9 +95,16 @@ split this repo uses.
 
 ## Three 2026 papers on running the lifecycle
 
-- **MemFactory** (infrastructure paper) packages the lifecycle as four layers (Module, Agent, Environment, Trainer) with a built-in GRPO trainer; its Updater emits ADD, DEL, UPDATE or NONE. Only the MemAgent recurrent-memory agent is evaluated: on Qwen3-1.7B the average goes 0.3118 to 0.3581 (+14.8%) after 250 valid training steps on one GPU with shortened samples, avg@4, against the same untrained checkpoint; the out-of-distribution score falls 0.0332 to 0.0195. On Qwen3-4B-Instruct 0.6146 to 0.6595 (self-reported). Limits: Memory-R1 and RMT agents ship but are not trained or evaluated; no seeds, variance or ablations; question counts and reward type per experiment are unstated; "first unified framework" is the authors' claim.
+- **MemFactory** (infrastructure paper) packages the lifecycle as four layers (Module, Agent, Environment, Trainer) with a built-in GRPO trainer; its Updater emits ADD, DEL, UPDATE or NONE. Only the MemAgent recurrent-memory agent is evaluated: on Qwen3-1.7B the average goes 0.3118 to 0.3581 (+14.8%) after 250 valid training steps on one GPU with shortened samples, avg@4, against the same untrained checkpoint (self-reported); the out-of-distribution score falls 0.0332 to 0.0195 (self-reported, same run). On Qwen3-4B-Instruct 0.6146 to 0.6595 (self-reported). Limits: Memory-R1 and RMM (MemoryRMMAgent) agents ship but are not trained or evaluated; see Limits.
 - **Always-On agents survey** scores each stored state item on authority, scope, mutability, provenance, recoverability and actionability, and widens the lifecycle into ten steps that run from observing and writing through validation, organization, retrieval, acting, updating and forgetting to audit and rollback. Rollback is exposed by 27 of 435 coded works (a corpus the authors scoped and coded). Its AOEP-v0 pilot covers nine fault patterns and seven systems with a local Qwen2.5-7B reader under greedy decoding, scoring obligations passed out of 15: hand-built governed reducer 15, no memory 0, naive append 7, full context 7, vector RAG 7, Mem0-style 4, real mem0ai 3 (self-reported); sampled decoding gives a mean of 6.6. The authors call it not a benchmark; the reducer is an oracle, no frontier models, the envelope ablation was not run, and the extraction did not read the full 136-page paper.
-- **MAPLE** splits memory, learning and personalization into sub-agents, with learning run asynchronously and both episodic and semantic records kept (reference store: JSON files). On 150 synthetic personas with 10-turn dialogues, the personalization score goes 4.17 to 4.78 (+14.6%, d=0.95), trait incorporation 45% to 75% (self-reported). The only baseline is stateless, the judge is from the same model family, and the horizon is one 10-turn session; design claims are untested. The paper's p<0.01 (abstract) and p<0.001 (text) disagree, and df 74.5 does not fit n=150.
+- **MAPLE** splits memory, learning and personalization into sub-agents, with learning run asynchronously and both episodic and semantic records kept (reference store: JSON files). On 150 synthetic personas with 10-turn dialogues, the personalization score goes 4.17 to 4.78 (+14.6%, d=0.95), trait incorporation 45% to 75% (self-reported). See Limits for the caveats.
+
+## Limits
+
+The 2026 papers above:
+
+- MemFactory: the extraction notes no seeds, variance or ablations, and that question counts and reward type per experiment are unstated. "First unified framework" is the authors' claim.
+- MAPLE: the only baseline is stateless, the judge is from the same model family, and the horizon is one 10-turn session; design claims are untested. The extraction notes that the abstract's p<0.01 and the text's p<0.001 disagree, and that the reported df of 74.5 does not fit n=150 personas and is unexplained.
 
 ## See Also
 - [[Agent Memory Types]] — extends (what happens to the types over time)
@@ -116,4 +123,4 @@ split this repo uses.
 - [[MemCollab Contrastive Cross-Model Memory]] — instance-of (memory shared across models)
 - [[Memory Intelligence Agent]] — instance-of
 - [[OCR-Memory Optical Context Retrieval]] — instance-of (episodic retrieval over rendered history)
-- [[Agent Cognitive Compressor]] — instance-of (bounded working state)
+- [[ACC Bounded Memory Control for Agents]] — instance-of (bounded working state)

@@ -57,3 +57,4 @@ can write down; a reviewer covers the judgement calls you cannot.
 - [[PreAct]] — related (a verify-before-store gate on a compiled routine)
 - [[InfCode Adversarial Test-Patch Refinement]] — related
 - [[TestGen-LLM Filter Cascade]] — related
+- [[CodeScientist Semi-Automated Discovery]] — related

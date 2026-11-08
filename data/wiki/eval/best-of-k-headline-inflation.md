@@ -60,3 +60,6 @@ the selected run only. The models in both are 2024 vintage.
 - [[Private Variant Testing on Arena Leaderboards]] — instance-of (a provider picks the best of many private variants)
 - [[PaperBench]] — instance-of (the human baseline takes the best of three attempts)
 - [[Forecasting Rare Model Behaviours]] — related (forecasting the worst query as the number of queries grows)
+- [[Adaptive Branching MCTS]] — related (Pass@k results depend on the call budget)
+- [[Olympiad Proof Agents and Verifier Loops]] — related (pipeline results compared against best-of-32 leaderboard baselines)
+- [[TUMIX Tool-Use Mixture]] — related (matched by inference count, with starred baselines selected on the test benchmark)

@@ -41,5 +41,5 @@ Mistral 3 7B with LoRA, 2,000 training examples, with "I don't know" targets on 
 - [[RAG Evaluation]] — prerequisite-for (separating retrieval failure from generation failure)
 - [[Agentic RAG — Advanced Patterns]] — related (CRAG and Self-RAG also gate on retrieval quality)
 - [[CRAG Retry Logic]] — alternative-to (a retrieval grader that triggers a retry rather than an abstention)
-- [[FreshQA]] — instance-of (one of the three benchmarks the labels were applied to)
+- [[FreshQA]] — related (one of the three benchmarks the labels were applied to)
 - [[RAG Retrieval Strategies]] — prerequisite-for (what the retrieval half of the split is measuring)

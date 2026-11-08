@@ -13,7 +13,7 @@ sources:
 
 ## Setup
 
-A synthetic workspace for a fictional user, run on Claude Code with Haiku 4.5 and Opus 4.7 and on Codex with GPT-5.2 and GPT-5.5, 10 trials in each cell. Three payloads, each tied to one file and goal: an SSH-key-reading snippet in the auto-loaded CLAUDE.md or AGENTS.md (credential exfiltration), a pinned vulnerable package install in a knowledge file (unauthorized tool use), and an "always recommend one card brand" rule in a behavior file. Attack success rate (ASR) counts trials where the probe carries out what the attacker wanted; persistence counts trials where the payload remains in memory afterwards. By the authors' account, ASR cannot be compared between goals.
+A synthetic workspace for a fictional user, run on Claude Code with Haiku 4.5 and Opus 4.7 and on Codex with GPT-5.2 and GPT-5.5, 10 trials in each cell. Three payloads, each tied to one file and goal: an SSH-key-reading snippet in the auto-loaded CLAUDE.md or AGENTS.md (credential exfiltration), a pinned package install (pyyaml 5.3.1) in a knowledge file (unauthorized tool use), and an "always recommend one card brand" rule in a behavior file. ASR (the source does not expand it) is the fraction of trials in which the probe carries out the attacker's intended action; persistence counts trials where the payload remains in memory afterwards. By the authors' account, ASR cannot be compared between goals.
 
 ## Results (all self-reported by the study's own harness)
 

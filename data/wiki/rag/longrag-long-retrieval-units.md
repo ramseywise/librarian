@@ -22,10 +22,10 @@ LongRAG (arXiv 2406.15319, preprint) shifts the load from retriever to reader. D
 
 ## Limits
 
-- The abstract gives Qasper as 25.9; the text and Table 6 give 26.3 at k=1 and 25.9 at k=2.
+- The extraction notes the abstract gives Qasper as 25.9 while the text and Table 6 give 26.3 at k=1 and 25.9 at k=2.
 - The lenient metric is not like for like with the Atlas and MDR baselines (the authors "believe" the difference is insignificant). Unit-level ablations use 200 test cases.
-- Grouping was tested only with hyperlinks. Long embedders were weak. Open-source DeepSeek-V2 reading fell well behind the proprietary readers. The paper gives no cost or latency for reading about 30K tokens, and does not compare against a reranked top-k pipeline.
-- 2024 models and a 512-token encoder limit that has since eased.
+- Grouping was tested only with hyperlinks. Long embedders were weak. Open-source DeepSeek-V2 reading fell well behind the proprietary readers. The extraction notes the paper gives no cost or latency for reading about 30K tokens and no comparison against a reranked top-k pipeline.
+- The extraction notes the models are 2024 vintage and the 512-token encoder limit has since eased.
 
 ## See Also
 - [[RAG Retrieval Strategies]] — prerequisite-for (chunk size as the usual retrieval-unit choice)

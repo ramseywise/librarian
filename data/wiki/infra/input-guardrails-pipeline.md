@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/claude-docs/playground/docs/research/agentic-ai/guardrails-pipeline.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
+  - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch10-composable-agentic-workflows.md
 ---
 
 # Input Guardrails Pipeline
@@ -191,6 +192,10 @@ def guardrails_node(state: AgentState) -> dict:
 Huyen (*AI Engineering*, O'Reilly, chapter 10) adds input guardrails as the second step of the five-step architecture, after context construction. Input guardrails include PII masking with a reverse map. On the output side it lists retry, parallel calls and human fallback, and says to track the false refusal rate too. The chapter notes that guardrails cost latency in exchange for reliability, and fit badly with streamed output.
 
 Limits: the chapter says the ordering follows what its author commonly sees and that needs differ per application; no data backs it.
+
+## Running the guardrail in parallel (Lakshmanan and Hapke)
+
+The composable-workflow chapter runs an LLM-as-judge input check on a small model concurrently with the real call (asyncio gather), so the guardrail adds no latency and a failed check cancels the other call. It notes guard logs are useful for spotting attacks and for fine-tuning on the real input distribution. The chapter reports no measurements; it is a worked example with a toy domain.
 
 ## See Also
 - [[Deterministic Review Substrate]] <!-- auto-linked -->

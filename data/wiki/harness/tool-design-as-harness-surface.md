@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness--notes--03-tool-design.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
+  - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch07-enabling-agents-to-take-action.md
 ---
 
 # Tool Design as Harness Surface
@@ -238,6 +239,10 @@ minutes, put the asynchrony in the interface: **name the initiation, not the com
 task ID `get_status` / `cancel` verbs, and give event-trigger tools precise filters. See
 [[Asynchronous Agent Event Loop]].
 
+## Tool calling and tool count (Lakshmanan and Hapke)
+
+The book states the mechanism plainly: the model only names a tool and supplies arguments; the calling application runs it and passes the result back in a further model call. For accuracy it recommends few tools and parameters, observing in June 2025 a limit of roughly 3 to 10 tools depending on the model (the authors' observation, with no data). Other rules: clear names and parameter descriptions, a system-prompt policy for when to use each tool, enumerated parameter values, not asking the model to fill in what the caller already knows, and descriptive error messages so a retry can follow. Where the input would be a long phrase in a domain language such as SQL, the authors prefer having the model write that code and executing it in a sandbox (limits on CPU, memory, network and time, validate before running, feed errors back), and say code execution was unreliable in mid-2025 outside narrow languages or tightly controlled sandboxes. The six prompt-injection design patterns they list are covered elsewhere in the wiki.
+
 ## See Also
 - [[Agentic Engineering and the New SDLC]] <!-- auto-linked -->
 - [[Harness Maturity and Failure Modes]] <!-- auto-linked -->
@@ -259,3 +264,5 @@ task ID `get_status` / `cancel` verbs, and give event-trigger tools precise filt
 - [[APIGen]] — related (verified function-calling training data)
 - [[Harness-1 State-Externalizing Search Agent]] — related (tool surface for a search agent)
 - [[AutoHarness Synthesized Code Harness]] — related
+- [[Dependency Injection for LLM Chains]] — related (mocking tools and steps in tests)
+- [[EvoOntology Self-Evolving Ontology Layer]] — related

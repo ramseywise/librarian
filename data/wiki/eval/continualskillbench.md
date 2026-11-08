@@ -26,6 +26,7 @@ Guan et al. (Peking University and BIGAI, a 2026 preprint) built a benchmark of 
 - Reward blends rubrics judged by an LLM, task order assisted by an LLM and skill quality scored by an LLM, and raw and normalized reward can disagree.
 - The paper reports no variance, seeds or significance tests, and the extraction infers that some Exact Match cells rest on roughly 10 to 14 tasks.
 - Skills are prompted files, not a learned memory manager.
+- The extraction notes a count mismatch: the introduction says Sequential improves in 14 of 15 combinations, which matches the normalized count, while Section 4.2 gives 13 of 15 on raw reward and 14 of 15 on normalized.
 
 ## See Also
 - [[Skill Lift Evaluation]] — related (with-and-without skill comparisons)

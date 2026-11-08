@@ -119,3 +119,4 @@ for the measurements and rationale.
 - [[HERMES Dev-Primitives]] — instance-of
 - [[Conductor Learned Orchestration]] — instance-of (learned decomposition into worker subtasks)
 - [[SAT Self-Organizing Agent Teams]] — instance-of (learned strategy bank for team structure)
+- [[Task-Decoupled Planning]] — instance-of (a DAG of subtasks with per-node scoped context)

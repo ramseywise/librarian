@@ -99,3 +99,6 @@ confidence of 0.96, so the score did not flag the failure. One-line descriptions
 - [[CRAG Retry Logic]] — related (a graded retrieval step that also branches on a threshold)
 - [[Drift Seen and Unseen in an Automated Router]] — related (why a fixed threshold decays after it is set)
 - [[JEV-as-a-Judge Cascade]] — extends (the gate applied to an LLM judge, with a lower-bound threshold rule)
+- [[KnowNo Conformal Ask-for-Help]] — related (escalating to a human on a calibrated set)
+- [[DeepConf Confidence-Filtered Voting]] — related
+- [[AutoMix Self-Verification Routing]] — related (sampled self-verification as the confidence signal, routed by a POMDP)

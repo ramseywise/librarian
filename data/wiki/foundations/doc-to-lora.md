@@ -37,3 +37,5 @@ Target model gemma-2-2b-it, a 309M-parameter hypernetwork, one rank-8 LoRA per 8
 - [[Query-Only Test-Time Training (qTTT)]] — alternative-to
 - [[Index-Time Distillation]] — related
 - [[Delta-Mem Fixed-Size State Memory]] — alternative-to (a small state instead of weights)
+- [[DoRA Weight-Decomposed Low-Rank Adaptation]] — related (a trained LoRA variant)
+- [[CALM Composition to Augment LLMs]] — related

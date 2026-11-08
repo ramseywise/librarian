@@ -63,3 +63,4 @@ post-session job so live latency is unaffected.
 - [[Memory Architecture]] — prerequisite-for
 - [[AIOS]] — related (an OS kernel view of agent memory and scheduling)
 - [[JAZ Invoke Loop]] — alternative-to (history searched by code instead of a memory store; compared against Letta)
+- [[Agent S Hierarchical GUI Agent]] — alternative-to

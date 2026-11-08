@@ -37,3 +37,5 @@ Like every optimizer, it is only as good as the eval behind it ([[Evaluating Pro
 - [[Prompt Optimization]] — instance-of
 - [[Few-Shot Prompting]] — extends
 - [[Prompt Chaining]] — extends
+- [[Archon Inference-Time Architecture Search]] — related (Bayesian search over inference-time pipelines)
+- [[LLMSelector Per-Module Model Assignment]] — related (assigns models per module, compared with a DSPy optimiser)

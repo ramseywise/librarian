@@ -7,6 +7,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--post-training-for-agents.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--preference-optimization.md
   - data/raw/repos/learn-ai-engineering/generative-ai--05-RL--rlhf-pipeline.md
+  - data/raw/papers/2026-11-06-liu-2025-part-i.md
 ---
 
 # DAPO
@@ -34,6 +35,18 @@ change more: [[RLVP — Verifiable Path Penalties]] restores variance to uniform
 instead of discarding them, and agentic self-instruct changes the task distribution itself
 ([[Post-Training for Agents]]).
 
+## Lite PPO: which tricks matter, by setup (Liu et al.)
+
+Liu et al. (Alibaba ROLL team, arXiv 2508.08221, preprint) ran one-seed ablations of RL tricks on Qwen3-4B and 8B, base and aligned, math only, with a REINFORCE advantage, no KL term, 1024 rollouts per step (128 prompts times 8), 8192-token responses and 5,000-problem Easy, Medium and Hard sets. Results are read from smoothed curves; the paper gives no results table, and the extraction reports no plotted values.
+
+- **Std in the advantage:** a small group std in the denominator inflates gradients when rewards are concentrated (easy data), which can destabilise training; on hard data it matters little. Group mean with batch-level std beat group mean with group std.
+- **Clip-Higher** (upper clip 0.28 against 0.2): helped aligned models, did nothing or hurt base models, whose policy clipping rate was about 0.003. Most tokens in the base model sat in the top probability bin (91.7% and 88.2% in one reading of Fig 9, which is the extractor's inference from number order). The best upper bound varied with size: 4B improved up to 0.32, 8B peaked at 0.28 (two sizes only).
+- **Token-level loss:** more effective on base models, limited gain on aligned ones.
+- **Overlong filtering:** helped with an 8k length cap, little at 20k.
+- **Lite PPO:** group-mean, batch-std advantage plus token-level loss on a critic-free PPO loss, which the authors say beat GRPO and DAPO on the base models, without reported numbers (self-reported).
+
+Limits: Qwen3 family only, 4B and 8B, verifiable math rewards, one seed, no error bars. Clip-Higher and dynamic sampling are not ablated inside Lite PPO. The extraction is missing the text of one takeaway (group against batch normalisation under different reward scales) and has broken cross-references. The authors' own framing is that conflicting advice in the literature (group against batch normalisation, with or without std, sequence against token loss) likely reflects different setups. Whether a DAPO change helps therefore depends on base against aligned model.
+
 ## See Also
 - [[Preference Optimization Algorithms]] — extends (GRPO with four anti-collapse changes)
 - [[Post-Training for Agents]] — instance-of (the RL-for-tool-calling recipe)
@@ -41,3 +54,7 @@ instead of discarding them, and agentic self-instruct changes the task distribut
 - [[RL Training Frameworks for LLMs]] — prerequisite-for (the backbones that ship the DAPO recipe)
 - [[FrogNano Online Task Synthesis]] — related
 - [[Composer 2 Training Recipe]] — related
+- [[Post-Training Reasoning Data Primer]] — related (data-side view of the same recipes, including dynamic sampling as a difficulty filter)
+- [[LaMer Meta-RL Exploration]] — related
+- [[Critical-State RL]] — related
+- [[GUI Agent RL with GUI-R1 and ARPO]] — related

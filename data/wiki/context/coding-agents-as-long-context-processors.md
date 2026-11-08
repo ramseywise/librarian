@@ -23,7 +23,7 @@ Codex v0.46.0 with GPT-5 on 200 randomly drawn examples per benchmark. Baselines
 | LongBench-v2 | 61.50 | 63.30 |
 | Natural Questions | 56.00 | 50.90 |
 
-- Standard RAG over the same corpora scored lower on all five (for example 65.00 on BrowseComp-Plus and 13.38 on Oolong-Real). A ReAct agent with retrieve and get-document tools sat in between.
+- Standard RAG over the same corpora scored lower on all five (for example 65.00 on BrowseComp-Plus and 13.38 on Oolong-Real). A ReAct agent with retrieve and get-document tools did not reliably beat RAG: on Oolong-Synthetic it scored 31.39 against RAG's 45.53.
 - Full-context GPT-5 over windows of 200K tokens scored 59.22 on Oolong-Synthetic and 22.45 on Oolong-Real. On two benchmarks it saw a 100K sample, and there the authors attribute the unexpectedly high scores (20.0 and 27.0) to probable contamination.
 - Adding a retriever (Gemini embeddings or BM25) did not reliably help and often lowered scores (BrowseComp-Plus 88.50 without, 84.00 and 78.50 with). The authors hypothesise that the retriever becomes the default path and displaces the agent's own file exploration; native search commands per run fell from 14.92 to 8.33 to 9.84. They call the mechanism an open question.
 - Layout matters: on a 100-example BrowseComp-Plus subset a folder tree gave 89.0 against 83.0 for a single JSON file, with sed use up from 0.61 to 4.48 reads per run.

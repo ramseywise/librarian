@@ -56,7 +56,9 @@ When tools belong to agents or MCP servers, retrieving tools alone drops what th
 - Recall@5 0.83 against 0.70 for MCP-Zero, 0.74 for ScaleMCP, 0.56 for a query-retrieval baseline and 0.20 for BM25; nDCG@5 0.46 against 0.41, 0.40, 0.32 and 0.14.
 - Across eight embedding models Recall@5 ran 0.80 to 0.87 against 0.65 to 0.74 for MCP-Zero; 39.13% of top-K items came from the agent corpus.
 
-Limits: one benchmark, no intervals, no ablation of tool-only against agent-only against joint, and no end-to-end task success, latency or token saving, though token cost motivates the work. Its per-model table compares against MCP-Zero only, and its Recall@5 column averages about 0.85 against Table 1's 0.83 (the extraction's computation, unexplained by the paper). The abstract and the contributions list assign the 19.4% and 17.7% gains to opposite metrics. The authors also wrote ScaleMCP, so some baselines are their own.
+## Limits
+
+- One benchmark, no intervals, no ablation of tool-only against agent-only against joint, and no end-to-end task success, latency or token saving, though token cost motivates the work. Its per-model table compares against MCP-Zero only, and its Recall@5 column averages about 0.85 against Table 1's 0.83 (the extraction notes this as its own computation, unexplained by the paper). The extraction notes that the abstract and the contributions list assign the 19.4% and 17.7% gains to opposite metrics. The authors also wrote ScaleMCP, so some baselines are their own.
 
 ## See Also
 - [[Tool Design as Harness Surface]] — extends (tool discovery at scale)

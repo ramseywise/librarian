@@ -14,7 +14,7 @@ that each expose the interface of a single agent: Review (a solver and critic lo
 Selection (parallel solvers and a selector) and Planning and Execution (a planner and executor). An
 LLM organizer chooses primitives and combines them for each query, guided by a knowledge pool of 45 structures
 drawn from published systems. Primitives communicate by KV-cache state, and the authors report that
-re-encoding positions (a rotary offset) is needed when concatenating caches.
+re-encoding positions (a RoPE offset) is needed when concatenating caches.
 
 ## Motivating tests (self-reported)
 
@@ -27,8 +27,8 @@ re-encoding positions (a rotary offset) is needed when concatenating caches.
 
 - Mean gain on eight benchmarks (math: AIME24/25, MATH, GSM8K; code: HumanEval+, MBPP+; medical: MedQA; science: GPQA-Diamond) and five
   backbones: +13.9 (Qwen3-4B), +16.5 (8B), +12.0 (14B), +6.6 (R1-Distill-Qwen-32B) and +6.3 points
-  (R1-Distill-Llama-70B). Text-communicating multi-agent systems gained +2.4 to +7.3 on Qwen3-8B,
-  against 58.8 to 75.3 for primitives. Composition beat the best single primitive by 3.5 to 7.0 points.
+  (R1-Distill-Llama-70B). Text-communicating multi-agent systems gained +2.4 to +7.3 on Qwen3-8B; the single-agent
+  baseline there averaged 58.8 and primitives 75.3 (the +16.5 above). Composition beat the best single primitive by 3.5 to 7.0 points.
 - Cost: about 3,350 tokens against 14,343 for text multi-agent on Qwen3-4B; latency about 1.3 to 1.6
   times a single agent. For Qwen3-14B and the distilled models tokens were within about 0 to 14% of single.
 - Llama-3-70B workers with a GPT-5.2 organizer beat eight published methods (MATH 72.4 against single
@@ -45,6 +45,11 @@ re-encoding positions (a rotary offset) is needed when concatenating caches.
   model; the noise tests are synthetic.
 - Extraction note: the accuracy rows for the two organizer settings in the cost table are identical,
   so one accuracy figure is likely reused.
+- The extraction lists inconsistencies in the source: the Table 8 caption names Qwen3-4B and 8B but
+  the table holds Qwen3-4B and 14B; the Table 3 caption says "three models" but the table covers
+  Qwen3-8B plus the two distilled models; the extracted Table 14 repeats one distilled-model block
+  under the same label and omits one latency; the ablation is named "KV PoPE" in prose yet
+  "RoPE" in the table, and the extraction reads it as RoPE.
 - A competing latent system is cheaper but unstable across backbones (a 10.1-point average loss on one).
 
 ## See Also

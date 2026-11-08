@@ -390,3 +390,16 @@ The two likely measure different configurations (streamed vs fully serial; endpo
 **Status:** Resolved — 2026-10-30
 **Resolution:** Claim B is correct — the 53.4%/42.9% figures have no stated method and are removed; [[Knowledge Graph Retrieval]] now cites only the GraphRAG paper's evidence.
 **Impact:** Whether the wiki should quote any graph-vs-vector accuracy number; [[Knowledge Graph Retrieval]], [[Graph Engineering]], [[Text-to-Cypher]].
+
+## Conflict: Does multi-agent work among copies of one model match a single agent? — 2026-11-08
+
+**Claim A** (from `[[Multi-Agent Topology Patterns]]`, sourced from `data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--05-topology-patterns.md`):
+> Debate among copies of one model matches a single agent given the same compute; recombining the same information cannot add any.
+
+**Claim B** (from new sources `data/raw/papers/2026-11-06-li-2026-scaling-behavior-single-llm-driven.md`, recorded in `[[Protocol-Driven Multi-Agent Collaboration]]`, and `data/raw/papers/2026-11-06-ao-2026-reliability-limits-llm-based-multi.md`, recorded in `[[Delegation Ceiling and Posterior Distortion]]`):
+> Agents built on one base model do not merely match a single agent: in a sequential chain, accuracy rose, peaked and then fell as agents were added, 7B and 8B models never benefited, and one 70B task fell from 58.82% to 25.49% at 8 agents (self-reported). In a relay study no multi-agent condition beat the single agent, and relays scored far below it (self-reported).
+
+The two may differ in scope (debate at matched compute vs sequential chains and relays at growing agent counts), but Claim A states parity while Claim B reports parity as an upper bound with frequent losses.
+
+**Status:** Unresolved
+**Impact:** Whether the new-information test should say same-model collaboration "matches" or "at best matches, often loses to" a single agent; [[Multi-Agent Topology Patterns]], [[Multi-Agent Failure Modes]], [[Protocol-Driven Multi-Agent Collaboration]].

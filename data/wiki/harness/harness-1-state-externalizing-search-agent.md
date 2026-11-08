@@ -24,7 +24,7 @@ The harness splits policy from environment. Prompt-tier working memory shows the
 
 - Scope is evidence-seeking retrieval in a 40-turn, 32K-context episode; report writing, abstention and an adversarial web are excluded; the evidence graph is built with regular expressions, and verification uses an LLM as proxy.
 - Harness nudges are hard-coded prompting, so some of the gain is not policy capability. Frontier baselines run in Context-1's harness, not their own. One RL run per configuration; no confidence intervals.
-- Internal inconsistencies: BrowseComp-Plus final-answer recall is 0.658 in the text and 0.667 in Table 2; the 11.4-point headline gain is measured against Tongyi DeepResearch while the held-out gains are measured against Context-1, and the extraction flags the "closest open baseline" wording as unreconciled.
+- The extraction notes internal inconsistencies: BrowseComp-Plus final-answer recall is 0.658 in the text and 0.667 in Table 2; the 11.4-point headline gain is measured against Tongyi DeepResearch while the held-out gains are measured against Context-1, and the extraction notes flag the "closest open baseline" wording as unreconciled.
 
 ## See Also
 - [[Deep Research Agent Systems]] — prerequisite-for

@@ -95,3 +95,4 @@ The Transformer is the foundation of every LLM used in agent systems. Understand
 - [[Encoder Tokens, Position and Attention Scaling]] — extends
 - [[Recurrent Memory Transformer (RMT)]] — instance-of
 - [[Gist Tokens]] — instance-of
+- [[Mixture-of-Transformers]] — extends (per-modality weights with shared attention)

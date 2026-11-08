@@ -46,3 +46,5 @@ All numbers below are self-reported by the authors.
 - [[Verification Loops]] — prerequisite-for
 - [[Iterative Harness Simplification]] — related (the other direction: removing harness parts as models improve)
 - [[Harness Continual Learning]] — alternative-to (harness evolved against anchors rather than a per-game simulator)
+- [[VERA Co-Evolving Model and Harness]] — alternative-to
+- [[ADAS Meta Agent Search]] — related

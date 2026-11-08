@@ -5,6 +5,12 @@ summary: "Most VLMs are built by connecting a pretrained vision encoder to a pre
 updated: 2026-11-08
 sources:
   - data/raw/papers/2026-11-03-bordes-2024-introduction-vision-language-modeling.md
+  - data/raw/papers/2026-11-06-han-2023-imagebind-llm.md
+  - data/raw/papers/2026-11-06-liu-2023-prismer.md
+  - data/raw/papers/2026-11-06-piergiovanni-2023-mirasol3b.md
+  - data/raw/papers/2026-11-06-lian-2025-describe-anything.md
+  - data/raw/papers/2026-11-06-nassar-2025-smoldocling.md
+  - data/raw/papers/2026-11-06-liu-2023-language-quantized-autoencoders.md
 ---
 
 # Vision-Language Model Training Families
@@ -55,8 +61,33 @@ Nothing on choosing which parts to freeze for a new domain, no
 hyperparameters, no memory figures, no minimum dataset sizes and no in-training evaluation.
 It is a May 2024 snapshot: the 224×224 norm and the model line-up have dated.
 
+## Designs from individual papers
+
+Setups differ per paper; each number is the authors' own (self-reported).
+
+| Model | Design | Reported result |
+|---|---|---|
+| ImageBind-LLM (arXiv 2309.03905) | Trains on image-text pairs only. A frozen ImageBind image encoder feeds a bind network (a linear projection plus 3 residual blocks); the image feature is injected into each word token across all 32 LLaMA layers behind a gate that starts at zero. For audio, video and 3D input at inference, each modality's own encoder is used, with a training-free cache that fetches the closest image features. | One visual token enters the LLM; OCR is weak (IIIT5K 13.9 against 80.17 for BLIP2); MME perception 775.77. |
+| Prismer (arXiv 2303.02506, TMLR 2024) | Frozen CLIP ViT and frozen RoBERTa plus six frozen expert models (depth, normal, edge, segmentation, object detection, OCR); about 20% of parameters train. The experts are independent black-box models, not mixture-of-experts layers. | Base model COCO CIDEr 135.1, VQAv2 76.8 after 12.7M pairs; experts add about 6 NoCaps out-of-domain CIDEr and 1 VQAv2 (Large). Training Large took 8 days on 32 V100. |
+| Mirasol3B (arXiv 2311.05698, CVPR 2024) | About 3B parameters. An autoregressive audio-video model over time chunks, each compressed to 32 tokens by a Combiner (with a Token Turing Machine variant), joined by cross-attention to a text decoder. | MSRVTT-QA 50.42 against 47.4 for Flamingo 80B; NExT-QA 68.2 at 128 frames, 72.0 at 512, 73.2 at 512 with the Token Turing Machine Combiner (about 30% less memory and 18% less runtime). |
+| Describe Anything, DAM-3B (arXiv 2504.16072, ICCV 2025) | Takes a focal prompt: the full image with a mask, plus a crop expanded by alpha=3 with its mask, via a zero-initialised mask patch embedding and gated cross-attention. Data come from a two-stage pipeline: human mask-and-keyword pairs expanded to detailed captions, then semi-supervised self-labelling on SA-1B. | On the authors' own DLC-Bench (892 questions, Objects365 v2 validation, Llama 3.1 8B text-only judge): 67.3% against 61.5 for GPT-4o and 62.5 for o1. Ablation: full image only 48.7, focal crop only 65.4, both with cross-attention 67.3. |
+| SmolDocling (arXiv 2503.11576) | 256M parameters: a SigLIP base patch-16/512 encoder (93M) with SmolLM2 135M, pixel shuffle to 64 tokens per patch. Outputs DocTags, an XML-like markup with nested location tags and OTSL tables. Three training stages: frozen encoder, unfrozen, fine-tune. | Full-page text edit distance 0.48 against 0.56 for Qwen2.5-VL 7B on DocLayNet in the authors' harness; 0.35 s per page and 0.489 GB VRAM; layout mAP 0.231 against 0.133 (human 0.82). |
+| LQAE (arXiv 2302.00902) | Maps ViT patch embeddings to their nearest entry in the frozen RoBERTa word-embedding table, so an image becomes 256 text tokens and no image-text pairs are needed. A high mask ratio of about 50% is crucial. | 2-way miniImageNet with text-davinci-003 53.97 against 51.3 for Frozen (chance 50%); 5-way 29.04 against 26.26. Swapping in VQ-VAE tokens drops to near zero. |
+
+## Limits
+
+- ImageBind-LLM has no ablations, only image-only quantitative evaluation, a confounded PandaGPT comparison (LLaMA against Vicuna) and unstated k and alpha. Internal inconsistency noted by the extraction: the abstract says 3M cached features and the body says 1M.
+- Prismer needs all six experts at inference; its ablations use a reduced setup (3M pairs, 224px, BASE, single runs, differences of tenths of a point). The extraction notes the per-expert reading is unverified because the table's colour coding was lost.
+- Mirasol3B comparisons are not controlled; ablations use a 1.15B model with half the steps; the streaming claim is untested; subtitle or ASR text is left to future work. The extraction notes some reference author names were inferred and that a "0.75%" masking ratio is probably a typo.
+- Describe Anything: the benchmark and data pipeline come from the same authors, the benchmark questions are seeded by vision-language models including GPT-4o (also a baseline), and it needs a mask as input. Internal inconsistency noted by the extraction: stage-1 region counts are 603k and 202k in one place and 684k and 226k in a table caption.
+- SmolDocling shows failure modes (missing tags, endless repetition), has no ablation of staging or of DocTags against Markdown, and needed a near-full pretraining run (64 A100 for 4 epochs). Internal inconsistencies noted by the extraction: the SynthDocNet size is 250K in the text but 375K in Table 1, and the code-language count is 56 on one page but 57 on another.
+- LQAE is, in the authors' words, far from state-of-the-art; classification only; it mixes language-model sizes (GPT-3.5 against about 6B) and uses ImageNet-derived train and test data. Internal inconsistencies noted by the extraction: the Table 2 caption wording on class labels and chance level is garbled, and a Table 3 row carries a Davinci label that does not fit the rest.
+
 ## See Also
 - [[VLM Benchmark Shortcuts]] — extends (how these models are evaluated, and how that fails)
 - [[Real-Time Multimodal Agents]] — related (VLMs under a latency budget)
 - [[Contrastive Self-Supervised Pretraining]] — prerequisite-for (the contrastive objective behind CLIP-style encoders)
 - [[Computer Use Visual Grounding]] — related
+- [[MoE-LLaVA and MoE-Tuning]] — instance-of (a sparse mixture-of-experts vision-language model)
+- [[Mixture-of-Transformers]] — instance-of (per-modality weights with global attention)
+- [[DoRA Weight-Decomposed Low-Rank Adaptation]] — related (a LoRA variant)

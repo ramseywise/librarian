@@ -2,7 +2,7 @@
 title: Agent Fundamentals
 tags: [foundations, llm, concept]
 summary: "Agent = LLM + Context + Tools, read as policy, observation space and action space — the five-part context and what breaks when each part is removed, the four-step tool call, why RL-trained 'model-as-agent' still needs a harness, the three places an agent can learn, and when a workflow beats an autonomous agent."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--agent-fundamentals.md
   - data/raw/repos/learn-ai-engineering/generative-ai--03-agentic-foundations--README.md
@@ -155,3 +155,4 @@ operations, at least until reliability is proven ([[Execution Boundaries and Gua
 - [[Single Agent With Tools]] — related
 - [[SayCan Affordance-Grounded Skill Selection]] — related (an LLM's choice among skills weighted by what the robot can do now)
 - [[SayCan Affordance-Grounded Skill Selection]] — related (an LLM's choice among skills weighted by what the robot can do now)
+- [[World Knowledge Model for Agent Planning]] — related

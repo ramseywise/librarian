@@ -43,3 +43,8 @@ All numbers are self-reported by the authors, and baselines (Static Harness, RAG
 - [[AutoHarness Synthesized Code Harness]] — alternative-to
 - [[Iterative Harness Simplification]] — related
 - [[Harness Updating vs Harness Benefit]] — related (a measurement study of evolve loops; Kang et al. cite it)
+- [[EvoOntology Self-Evolving Ontology Layer]] — related (gated, trajectory-driven revision of a layer the agent queries)
+- [[VERA Co-Evolving Model and Harness]] — instance-of
+- [[Synthetic Computers at Scale]] — related
+- [[Procedural Graphs]] — related
+- [[Self-Evolving Agent Taxonomies]] — related

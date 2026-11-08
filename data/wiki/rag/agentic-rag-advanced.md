@@ -229,5 +229,6 @@ All figures are self-reported by the papers, each on its own setup.
 - [[RL for Retrieval Policies]] — extends (Self-RAG as a learned retrieval policy, alongside online RL and per-subtask modules)
 - [[RAG Architecture Selection]] — related (part of; the nine-architecture selection space these patterns sit inside, plus Fusion RAG)
 - [[Graph-R1 Agentic GraphRAG]] — instance-of (agentic retrieval over a graph, trained with RL)
-- [[FRAMES Benchmark]] — instance-of (a multi-step retrieval-planning benchmark)
+- [[FRAMES Benchmark]] — related (a multi-step retrieval-planning benchmark)
 - [[Sufficient Context Autorater]] — related (a gate on whether retrieved context is enough)
+- [[CoAT Associative-Memory MCTS]] — related (tree search over reasoning with node memory)

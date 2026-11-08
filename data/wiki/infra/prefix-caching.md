@@ -115,3 +115,4 @@ tokens, so nothing was ever cached.
 - [[Cache-Stable Context Layout]] — extends (cache breakers and boundary ordering at the context-assembly layer)
 - [[LazyLLM Dynamic Token Pruning]] — related (changes which tokens are kept per layer, a different lever from cache reuse)
 - [[Cache-Augmented Generation]] — instance-of (a preloaded corpus whose key-value cache is reused across queries)
+- [[Skeleton-of-Thought]] — related (per-point requests repeat the question and skeleton; KV reuse proposed, not tested)

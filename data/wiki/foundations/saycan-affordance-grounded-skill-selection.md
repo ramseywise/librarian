@@ -72,3 +72,4 @@ Plan success means the chosen skills are right, whether or not they execute.
 - [[Action Chunking]] — related (the planner-and-policy split in robot control)
 - [[Agent Fundamentals]] — related (the tool-using loop with a grounded action set)
 - [[Chain of Thought]] — related (used for the negation case study)
+- [[KnowNo Conformal Ask-for-Help]] — extends (adds a calibrated decision to ask a human)

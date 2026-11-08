@@ -6,6 +6,7 @@ updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context-engineering--notes--01-why-context-is-finite.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--02-context--notes--01-why-context-is-finite.md
+  - data/raw/papers/2026-11-06-mohsin-2025-fundamental-limits-llms-scale.md
 ---
 
 # Why Context Is Finite
@@ -84,6 +85,17 @@ sub-agent isolation — all exist to keep the window on the left side of that cu
 5. **Plan for sessions that outlive the window.** Long-horizon work needs compaction and
    external memory, not a bigger window. See [[Context Compaction]] and
    [[Memory as Context]].
+
+## A theory paper on the limit
+
+Mohsin (arXiv 2511.12869, preprint under review at TMLR) is a theory-plus-survey paper with no experiments of its own; the extraction judges that its numbers are all borrowed and that nothing citable comes from it beyond the cited sources. What it offers is labelled theory: Lemma 4 and Corollary 1 argue that softmax attention needs a margin of about ln N over N items, and a failure bound for retrieval multiplies how much a distractor is exposed by how much attention it gets.
+
+Its empirical claims are cited from others, so cite the originals. A single irrelevant passage cutting accuracy by up to 30% comes from Yang et al. 2025b (setup not given in this paper); poisoned retrieval reaching about 90% attack success with five poisoned documents per query in a knowledge base of millions of entries comes from the PoisonedRAG work; and a "70B model with 64K effective context" figure comes from Wang et al. 2024c.
+
+## Limits
+
+- The extraction flags rigor problems: the proof of Theorem 2 is flawed (the index it defines reduces to k, so each model is reached a single time instead of infinitely many times); Lemma 3 covers only sinusoidal position encodings, and the claim for rotary encodings is asserted without proof; several propositions are stylised or labelled testable claims; its figures plot values cited from others or illustrate, not data produced there.
+- The extraction also notes that the paper is inconsistent about where some numbers originate, for example a repeated Wang et al. 2024c citation.
 
 ## See Also
 - [[Context Engineering]] — related (part of)

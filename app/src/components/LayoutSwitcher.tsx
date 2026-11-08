@@ -9,20 +9,20 @@ interface Props {
 }
 
 const MODES: { key: LayoutMode; label: string; hint: string }[] = [
-  { key: "dagre", label: "Hierarchy", hint: "Top-down by link structure" },
-  { key: "umap-semantic", label: "Semantic", hint: "Spatial position encodes meaning (UMAP)" },
+  { key: "dagre", label: "By links", hint: "Top-down tree, following the wikilinks" },
+  { key: "umap-semantic", label: "By similarity", hint: "Pages with similar meaning sit close together (UMAP)" },
 ];
 
 export function LayoutSwitcher({ current, onChange, loadingUmap, umapUnavailable }: Props) {
   return (
     <div className="graph-layout-panel">
-      <div className="panel-label panel-label--spaced">Layout</div>
+      <div className="panel-label panel-label--spaced">Arrange pages</div>
       <div className="btn-row">
         {MODES.map(({ key, label, hint }) => (
           <button
             key={key}
             type="button"
-            title={key === "umap-semantic" && umapUnavailable ? "UMAP unavailable on the server — showing Hierarchy" : hint}
+            title={key === "umap-semantic" && umapUnavailable ? "UMAP unavailable on the server — arranged by links" : hint}
             aria-pressed={current === key}
             onClick={() => onChange(key)}
             className="toggle-btn"

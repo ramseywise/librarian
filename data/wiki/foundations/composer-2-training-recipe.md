@@ -21,7 +21,7 @@ Composer 2 (Cursor Research, a March 2026 technical report) starts from Kimi K2.
 
 ## Results (self-reported)
 
-Composer models are scored in Cursor's own harness. Composer 2 scored 61.3 on CursorBench-3 and 61.7 on Terminal-Bench, plus 73.7 on SWE-bench Multilingual, against 44.2, 65.9 and 47.9 for Composer 1.5. Kimi K2.5 scored 36.0 on CursorBench and 47.3 on Terminal-Bench; GPT-5.4 scored 63.9 on CursorBench and Opus 4.6 High 58.2, with refused GPT problems scored as 0. RL raised both average reward and best-of-K, shown as curves only. CursorBench-3 is internal; its median edit is 181 changed lines against 7 to 10 for the public SWE-bench variants.
+Composer models are scored in Cursor's own harness. Composer 2 scored 61.3 on CursorBench-3 and 61.7 on Terminal-Bench, plus 73.7 on SWE-bench Multilingual, against 44.2, 47.9 and 65.9 respectively for Composer 1.5. Kimi K2.5 scored 36.0 on CursorBench and 47.3 on Terminal-Bench; GPT-5.4 scored 63.9 on CursorBench and Opus 4.6 High 58.2, with refused GPT problems scored as 0. RL raised both average reward and best-of-K, shown as curves only. CursorBench-3 is internal; its median edit is 181 changed lines against 7 to 10 for the public SWE-bench variants.
 
 ## Limits
 
@@ -35,3 +35,5 @@ Composer models are scored in Cursor's own harness. Composer 2 scored 61.3 on Cu
 - [[DAPO]] — related
 - [[FrogNano Online Task Synthesis]] — related
 - [[Harness Engineering]] — related
+- [[AgenticQwen Dual Data Flywheels]] — related
+- [[KARL Multi-Task RL Knowledge Agents]] — related

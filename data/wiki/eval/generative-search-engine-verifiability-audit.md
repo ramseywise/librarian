@@ -15,7 +15,7 @@ The audit asks whether the sources a generative search engine cites actually bac
 
 - **Citation recall:** fraction of sentences worth verifying that their citations fully back. The authors treat every statement about the external world as verification-worthy.
 - **Citation precision:** share of citations that support their sentence. A citation counted as partial support only if the sentence's citations jointly support it and no single one does.
-- Support is judged with the attributable-to-identified-sources framework (AIS). Fluency and perceived utility are 5-point Likert ratings, one annotator per pair; agreement on 250 pairs with three annotators was over 82.0% pairwise.
+- Whether a citation backs its sentence follows AIS (Rashkin et al. 2022). Fluency and perceived utility are 5-point Likert ratings, one annotator per pair; agreement on 250 pairs with three annotators was over 82.0% pairwise.
 
 ## Reported results
 

@@ -24,7 +24,7 @@ BlockSearch is the authors' name for a Qwen3-0.6B model fine-tuned to read a cor
 
 - Only two small backbones were tried (0.6B and 0.36B), with one query sample per corpus size; corpus capped at N=10,000, documents at 300 tokens, documents independent with a block-sparse mask rather than full attention.
 - Retrieval-only training costs general ability (MMLU 40.2 to 33.6). On the indirect-relevance set OBLIQ every variant is near zero. Hybrid search, rerankers and production ANN are not tested.
-- Internal inconsistencies: SSMax at N=10k is 17.8 in the text and 16.5 in Table 2; the combined result is 20.0 in the text and 20.5 in Table 2.
+- The extraction notes internal inconsistencies: SSMax at N=10k is 17.8 in the text and 16.5 in Table 2; the combined result is 20.0 in the text and 20.5 in Table 2.
 
 ## See Also
 - [[RAG Reranking]] — related

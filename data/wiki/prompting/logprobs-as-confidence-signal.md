@@ -52,3 +52,5 @@ available.
 - [[Stop Sequences and Completion Anatomy]] — extends (a known start makes the decision token readable)
 - [[Language Model Self-Knowledge]] — related (calibration of a model's own probabilities)
 - [[MC Dropout]] — related (uncertainty from stochastic passes rather than token probabilities)
+- [[RLMF Metacognitive Advantage Scaling]] — related (trains stated confidence to match sampling-consistency confidence)
+- [[DeepConf Confidence-Filtered Voting]] — extends (trace-level confidence for filtering votes)

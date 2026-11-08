@@ -30,3 +30,5 @@ Liu et al. (Salesforce AI Research, a 2024 preprint) build synthetic function-ca
 - [[Tool Design as Harness Surface]] — related
 - [[Play2Prompt]] — alternative-to
 - [[Salesforce Koa]] — extends (Koa's SFT baseline uses APIGen and APIGen-MT data)
+- [[AgentScaler Environment Scaling]] — related
+- [[Agent-FLAN Agent Tuning Data Design]] — alternative-to

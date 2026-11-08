@@ -36,3 +36,6 @@ model or self-consistency is cheaper ([[Prompting Reasoning Models]]).
 - [[Prompting Technique Selection]] — instance-of
 - [[LLM Fundamentals Interview Study Guide]] — prerequisite-for
 - [[Self-Ask Prompting]] — alternative-to (another structured reasoning scaffold)
+- [[Adaptive Branching MCTS]] — extends (chooses wider or deeper by Thompson sampling)
+- [[CoAT Associative-Memory MCTS]] — extends (MCTS with a per-node memory)
+- [[MVoT Multimodal Visualization of Thought]] — related

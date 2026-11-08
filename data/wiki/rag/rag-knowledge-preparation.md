@@ -128,7 +128,7 @@ Defects found in the first EDA of a web-crawled managed KB for a support assista
 
 A technical report on a medical-advice RAG (Qwen2.5-32B summaries, all-mpnet-base-v2 and Chroma, 1,000 synthetic queries, 989 condition pages) found that indexing LLM-written summaries retrieved better than indexing full pages: p@1 0.51 against 0.47, p@5 0.76 against 0.68 (self-reported). The summarizer was told to retain just symptoms and next steps, which suits the query type, and the authors advise indexing full pages for a more general system. Retrieval capped accuracy: with k=5 the ceiling is the 76% precision at 5. Summaries also cut the average reasoning-training example from 74,641 tokens to 7,544.
 
-## Limits of the paper evidence
+## Limits
 
 - One domain and one query type. A 32B model fine-tuned on reasoning traces scored 0.56 against 0.54 with retrieval alone, within about 2 standard deviations (the extraction's caution), so most of the gain came from retrieval.
 

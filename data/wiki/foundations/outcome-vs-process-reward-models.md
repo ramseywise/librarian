@@ -71,3 +71,6 @@ and adds deterministic penalties for path violations, without a learned step sco
 - [[Post-Training for Agents]] — extends (reward forms for agent RL)
 - [[FrogNano Online Task Synthesis]] — related
 - [[Role Anchor and Role Drift]] — related (module drift under final-answer rewards)
+- [[Post-Training Reasoning Data Primer]] — related
+- [[SelfCheck Step Verification]] — alternative-to (prompted step checks with no trained scorer)
+- [[Olympiad Proof Agents and Verifier Loops]] — related

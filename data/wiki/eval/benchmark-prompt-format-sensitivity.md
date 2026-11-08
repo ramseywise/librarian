@@ -10,6 +10,7 @@ sources:
   - data/raw/papers/2026-11-05-guha-2023-legalbench.md
   - data/raw/papers/2026-11-08-akter-2023-depth-look-gemini-s-language.md
   - data/raw/papers/2026-11-08-bommasani-2023-holistic-evaluation-language-models.md
+  - data/raw/papers/2026-11-06-he-2024-does-prompt-formatting-have-any.md
 ---
 
 # Benchmark Prompt Format Sensitivity
@@ -110,3 +111,4 @@ numbers are not comparable to Google's. HELM's format results (see [[HELM Holist
 - [[BIG-bench]] — instance-of (appending answer options to the query and sampling settings changed scores)
 - [[TyDi QA]] — related (benchmark whose design aims to limit answer overlap)
 - [[Evaluation-Driven Model Selection]] — related (benchmark choice and aggregation for model selection)
+- [[XML Prompt Structuring]] — related (prompt-format study with JSON, Markdown, YAML and plain text on 2023 GPT models)

@@ -9,7 +9,7 @@ sources:
 
 # AnyTool
 
-Du, Wei and Zhang (a 2024 preprint) address picking the right API from a very large pool. A meta-agent routes the query to category agents, which route to tool agents holding the API functions; the retrieved candidates go to a solver using DFSDT (the tree-search solver from ToolBench). The system uses GPT-4 function calling throughout.
+Du, Wei and Zhang (a 2024 preprint) address picking the right API from a very large pool. A meta-agent routes the query to category agents, which route to tool agents holding the API functions; the retrieved candidates go to a solver using DFSDT. The system uses GPT-4 function calling throughout.
 
 ## Mechanism
 

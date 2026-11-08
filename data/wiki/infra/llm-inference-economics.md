@@ -73,3 +73,7 @@ mitigations follow from mechanism rather than from a list.
 - [[Two AI Cost Economies: Durable Once, Contextual On Demand]] — extends (splitting spend by durability of the output)
 - [[Right-Sizing a Document-to-LLM Pipeline]] — instance-of (input-token depth dominating a real pipeline's bill)
 - [[LazyLLM Dynamic Token Pruning]] — instance-of
+- [[LLM in a Flash]] — instance-of (paging weights from flash when DRAM is short)
+- [[MoE Expert Offloading]] — instance-of (expert caching and hard quantization on a small GPU)
+- [[BitNet b1.58 Ternary Weights]] — instance-of (quantization applied during training)
+- [[Scaling Laws for Precision]] — extends (loss as a function of precision)

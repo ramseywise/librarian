@@ -4,6 +4,7 @@ tags: [foundations, pattern]
 summary: "A wide prior is not uninformative once a model transforms it; simulate outcomes from the prior before seeing data, pick weakly informative priors on a standardised scale, and remember priors wash out with data but a zero-mass region never does."
 updated: 2026-11-04
 sources:
+  - data/raw/papers/2026-11-06-gelman-2009-weakly-informative-default-prior-distribution.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--03-priors-and-bandits.md
   - data/raw/repos/learn-ai-engineering/data-analytics--04-bayesian-analysis--notes--04-bayesian-ab-testing.md
 ---
@@ -34,6 +35,18 @@ Simulate outcomes from the prior and ask whether they are believable (one call i
 ## A default for logistic regression
 
 Scale non-binary inputs to mean 0 and sd 0.5, put independent Cauchy(0, 2.5) on coefficients and Cauchy(0, 10) on the intercept. It stays stable under complete separation (see [[Logistic Regression Separation]]): on six separated points, the flat fit's slope ran to 100.3 with P(y = 1) 1.000000 at the largest x; Normal(0, 100) gave 39.1, Normal(0, 10) gave 9.6 and 0.991752, and Cauchy(0, 2.5) gave slope 3.6 and 0.859, about what six observations are worth. Unscaled inputs make the default meaningless.
+
+### Where the default comes from (Gelman et al., 2008)
+
+The paper that proposed this default (published in 2008, posted to arXiv in 2009) reasons that, on standardised inputs, a move from one standard deviation below the mean to one above rarely changes the logit by more than 5, and a shift of 5 takes a probability from 0.01 to 0.50. It notes that the likelihood from half a success and half a failure looks close to a t distribution with 7 degrees of freedom and scale 2.5, and picks the heavier-tailed Cauchy as slightly more conservative. Because inputs are rescaled, interactions are shrunk harder: with plus or minus one half coding, a three-way interaction can change the logit by about 5/4 under the same prior.
+
+Reported results (self-reported by the authors, using their bayesglm fit, which returns a posterior mode):
+
+- A 45-dataset cross-validation (UCI sets with binary-discretised predictors, five folds) found the Cauchy scale with the best average score was 0.75, yet the authors still recommend 2.5 as a deliberately weaker, conservative choice. The best prior varied by dataset (for example a t with 4 degrees of freedom and scale 0.8 for one set, 2 degrees and scale 2.8 for another).
+- Plain maximum likelihood and Jeffreys-prior fits did poorly in cross-validation; a finite-degrees-of-freedom t beat Gaussian and Laplace priors on average. The text gives no numeric margin.
+- Bioassay (20 animals, four doses, deaths 0/1/3/5): the standardised-dose coefficient moved from 10.2 (standard error 6.4) to 5.4 (2.2).
+
+Limits the authors state: standardising makes the prior depend on the data, which may be troublesome at very small sample sizes; the cross-validation scores point estimates, not full posteriors; and the corpus may not represent social-science use. The paper only discusses, without results, Poisson and other log-link models.
 
 ## The prior washes out
 

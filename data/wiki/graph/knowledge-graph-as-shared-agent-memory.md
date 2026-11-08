@@ -2,7 +2,7 @@
 title: Knowledge Graph as Shared Agent Memory
 tags: [memory, agents, rag, llm, pattern]
 summary: "Loop → swarm → graph as three capacity unlocks: parallel workers rediscover the same findings because nothing connects them, and a typed KG is what turns fan-out from re-derivation into accumulation."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph--graph-engineering.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--05-graph-engineering--notes--12-kg-as-shared-agent-memory.md
@@ -151,3 +151,6 @@ stage is measured.
 - [[LangGraph State Reducers]] — extends (shared-write discipline for parallel branches)
 - [[Knowledge Graph Entity Resolution]] — prerequisite-for (reversible merges)
 - [[Graph Machine Learning and GNNs]] — extends
+- [[Procedural Graphs]] — related
+- [[Emergent Cheating in Research Swarms]] — related
+- [[AgentRxiv Shared Preprint Server]] — related

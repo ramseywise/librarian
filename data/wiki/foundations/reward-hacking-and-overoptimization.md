@@ -101,3 +101,7 @@ and the most commonly missed).
 - [[Outcome vs Process Reward Models]] — extends (the same proxy problem at step level, and why verifiable outcomes reduce it)
 - [[RLVP — Verifiable Path Penalties]] — extends (penalizing verifier gaming in agent RL)
 - [[Role Anchor and Role Drift]] — related (modules drifting under final-answer rewards)
+- [[RLMF Metacognitive Advantage Scaling]] — related (extra-reward variant hacked without a threshold)
+- [[Evaluator Exploits in Discovery Loops]] — instance-of
+- [[Emergent Cheating in Research Swarms]] — instance-of
+- [[Train-Test Ablation Audit]] — instance-of

@@ -26,7 +26,7 @@ GRIT trains one Mistral 7B model on two objectives at once: a contrastive embedd
 - Needs more fine-tuning compute than generation-only tuning; 4096-dimensional embeddings are four times the storage of a 1024-dimensional model, and the 7B model is far costlier to run than a small embedder.
 - Caching tests use one dataset (NQ), synthetic extremes (4000 tokens against 1), and a lenient match metric. In the RAG baseline the 7B model serves both stages, unlike typical small-embedder setups.
 - Embeddings for inputs over 512 tokens, multilinguality and multimodality are untested. The authors concede the model may be tuned near the generative eval sets.
-- Internal inconsistency: the conclusion says "15 of 16" retrieval datasets improved, while Table 3 lists 15 datasets (14 improved).
+- The extraction notes an internal inconsistency: the conclusion says "15 of 16" retrieval datasets improved, while Table 3 lists 15 datasets (14 improved).
 
 ## See Also
 - [[RAG Reranking]] — prerequisite-for

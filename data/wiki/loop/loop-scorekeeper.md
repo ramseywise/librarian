@@ -2,7 +2,7 @@
 title: Loop Scorekeeper
 tags: [loop, eval, pattern]
 summary: "The scorekeeper (verifier/grader) decides whether a loop's cheap repeated motion becomes value or slop — it must be objective, automatic, fast, clear and hard to fake, live outside the loop's write scope, anchor on deterministic checks, and be written before the loop's first pass."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--03-the-scorekeeper.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop-engineering--notes--09-failure-modes-and-guardrails.md
@@ -96,3 +96,6 @@ is in [[Verification Loops]]; this page is *what* to measure.
 - [[Recursive Self-Improvement]] — prerequisite-for
 - [[Loop Termination Design]] — prerequisite-for
 - [[Multi-Agent Failure Modes at Scale]] — prerequisite-for
+- [[Train-Test Ablation Audit]] — related
+- [[Evaluator Exploits in Discovery Loops]] — related
+- [[Red Queen Gödel Machine]] — related

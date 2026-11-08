@@ -66,3 +66,5 @@ comparisons, self-reported); quality is judged by an LLM from the same family as
 - [[Multi-Agent Failure Modes at Scale]] — prerequisite-for
 - [[Multi-Agent Topology Patterns]] — prerequisite-for
 - [[Delegation Ceiling and Posterior Distortion]] — related (another measured limit on multi-agent gains)
+- [[HSE and Router Robustness in Model Societies]] — related (a diversity measure over model pools)
+- [[TUMIX Tool-Use Mixture]] — related (refinement rounds narrow answers and coverage falls)

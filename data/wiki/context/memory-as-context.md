@@ -245,7 +245,7 @@ answer traces to the memory that caused it. See [[Evaluating Context]].
 - [[Memory Lifecycle]] — extends
 - [[Contextual Retrieval]] — extends (the retrieved tier of two-tier memory)
 - [[Memory-Augmented Conversational RAG]] — extends
-- [[Agent Cognitive Compressor]] — instance-of (one bounded state rewritten each turn)
+- [[ACC Bounded Memory Control for Agents]] — instance-of (one bounded state rewritten each turn)
 - [[Memory Curse Expanded Recall]] — related
 - [[Scroll Event Log and Eviction Index]] — instance-of
 - [[PRO-LONG Programmatic Memory]] — instance-of

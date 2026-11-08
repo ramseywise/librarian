@@ -85,3 +85,9 @@ build your own eval.
 - [[REST Multi-Problem Stress Testing]] — related (reasoning models under several questions in one prompt)
 - [[Embers of Autoregression]] — related (o1-preview tested for next-word-prediction effects)
 - [[Knowledge Index and Information Gain]] — related (step-level scores for distilled and RL-trained reasoners)
+- [[Reflection in Pre-Training]] — related (reflection appears in base models before post-training)
+- [[Overthinking and Concise Reasoning]] — related (token savings from shorter reasoning)
+- [[Inverse Scaling in Test-Time Compute]] — related (tasks where more budget lowers accuracy)
+- [[LLM Reasoning Surveys and the Can-LLMs-Reason Debate]] — related
+- [[MAKER Million-Step Decomposition]] — related (small non-reasoning models for single steps)
+- [[MVoT Multimodal Visualization of Thought]] — related

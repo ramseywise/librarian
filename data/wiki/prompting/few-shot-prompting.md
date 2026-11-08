@@ -112,3 +112,4 @@ intermediate steps and an eval shows they help.
 - [[LongICLBench and Many-Shot ICL Scaling]] — extends
 - [[Mixtures of In-Context Learners]] — extends
 - [[Implicit Weight-Patch Theory of In-Context Learning]] — related
+- [[Rephrase and Respond]] — related (combined with few-shot in the paper's tests)

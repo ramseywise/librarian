@@ -137,9 +137,9 @@ All figures are self-reported.
 - **Table-augmented generation (TAG).** A three-step paradigm: synthesise a database query from the request, execute it, then generate the answer from the returned rows plus the request. The authors present Text2SQL and RAG as special cases and define it for one iteration, leaving multi-hop and agentic extensions to future work. Setup: a set of 80 queries adapted from BIRD, answered by a 70B Llama 3.1 Instruct model and scored by exact match. Text2SQL scored 0.17, RAG 0.00, retrieval plus LM rank 0.02, Text2SQL plus LM 0.13; a hand-written TAG pipeline (LOTUS, written with expert knowledge of the schema) scored 0.55 overall, 0.65 on comparison queries. The hand-written pipeline is not automatic query synthesis.
 - **Retrieval to cut hallucinated steps in structured output.** A fine-tuned retriever suggests step and table names to a StarCoderBase workflow generator (JSON workflows, 157-example human-eval split, greedy decoding, one run). Hallucinated steps fell from about 0.14-0.16 to 0.017-0.072, and hallucinated tables from about 0.19-0.21 to 0.016-0.044. A 3B model with the retriever matched a 15.5B model without it on trigger exact match (0.615 against 0.632). Fine-tuning the 110M encoder (step recall@15 0.743) mattered much more than using a bigger untuned one (0.561 for a 4.8B encoder); mixing random, BM25 and ANCE negatives beat any single strategy.
 
-## Limits of the paper evidence
+## Limits
 
-- TAG: the 80 queries are a small, modified benchmark; the extraction notes the abstract and conclusion word the 20 to 65 point gain loosely ("higher accuracy"), and the model is given as 70B in one place and 80B in another (a typo).
+- TAG: the 80 queries are a small, modified benchmark; the extraction notes the abstract and conclusion word the 20 to 65 point gain loosely ("higher accuracy"), and notes a typo in the paper: Appendix B says 80B while the body says 70B.
 - Retrieval for workflows: one domain, one run per cell, no variance reported.
 
 ## See Also

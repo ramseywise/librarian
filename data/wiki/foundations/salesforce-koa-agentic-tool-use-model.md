@@ -31,8 +31,10 @@ Chen et al. (Salesforce Agentforce and AI Research, with NVIDIA, a 2026 technica
 - Not shown: seeds or intervals, human-labelled set size, judge identities, training curves, reward-hacking analysis, ablations of the duplicate gate or coverage reward, and any GPU-hours or dollars. The internal benchmarks are not public and no overlap check with training data is described.
 - Gains are 1 to 3 points in single runs; "capability preserved" on BFCL means no gain. GPT-4.1 BFCL numbers come from the public leaderboard, not the same harness. FP8 latency and memory are not reported.
 - The extraction flags some GPT-4.1 table values as its own best reading.
+- The extraction's statement of the synthetic-set Name score (0.902 for Koa against 0.891 for the base and 0.937 for GPT-4.1) contradicts itself, so this page does not rely on it.
 
 ## See Also
 - [[Post-Training for Agents]] — prerequisite-for
 - [[APIGen]] — prerequisite-for
 - [[RL Training Frameworks for LLMs]] — related
+- [[AgentScaler Environment Scaling]] — related

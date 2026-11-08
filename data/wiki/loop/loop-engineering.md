@@ -2,7 +2,7 @@
 title: Loop Engineering
 tags: [llm, agents, infra, concept]
 summary: "The fourth layer of the stack — designing the cycle that re-prompts, checks, and stops an agent when nobody is watching, replacing yourself as the person who prompts it."
-updated: 2026-11-05
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--README.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-engineering.md
@@ -324,3 +324,4 @@ loop length. **Anything longer must checkpoint and resume rather than hold the p
 - [[Graph Engineering]] — extends (the layer above: when one loop is no longer the right shape)
 - [[Loop-to-Graph Escalation]] — extends (the decision procedure for crossing that boundary)
 - [[Cheap-First Gating and Model Cascades]] — related (a per-request gate rather than per-step tiers)
+- [[Strategy Lock-In in Post-Training Agents]] — related (execution loops close, strategy loops stay open)

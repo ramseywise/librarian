@@ -29,13 +29,13 @@ About 80% of the oracle errors fell in numerical, tabular and post-processing ca
 
 ## The multi-step loop
 
-The model writes k search queries per step for n steps; BM25 returns n_docs per query, and only documents not already in context are added; a final call answers. Vanilla multi-step improves slowly because the generated queries lack diversity (the authors observed the model going the wrong way and not correcting). A planning prompt (sample query sequences, a rule against repeating queries, and a step-by-step cue) brought 0.66 against the 0.73 oracle. It costs six non-parallelizable inference calls.
+The model writes k search queries per step for n steps; BM25 returns n_docs per query, and only documents not already in context are added; a final call answers. Vanilla multi-step improves slowly because the generated queries lack diversity (the authors observed the model going the wrong way and not correcting). A planning prompt (sample query sequences, a rule against repeating queries, and a step-by-step cue) brought 0.66 against the 0.73 oracle. In the vanilla setting the authors count six non-parallelizable inference calls (five for retrieval, one to answer).
 
 ## Limits
 
 - Possible pretraining contamination (Wikipedia), acknowledged by the authors; limited query diversity.
 - BM25 over Wikipedia only, held fixed on purpose; no dense retriever, reranker or web search. Multi-step results are for Gemini-Pro-1.5-0514 only.
-- The planning-prompt parts were changed together, so no ablation says which matters. The 0.66 comes from a plot; the text has no grid table.
+- The planning-prompt parts were changed together, so no ablation says which matters. The extraction notes the 0.66 comes from a plot and the text has no grid table.
 - Single-step context recall was low (0.12 to 0.15). The models are 2024 vintage.
 
 ## See Also

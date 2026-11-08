@@ -18,16 +18,16 @@ Jev-Mem (a 2026 preprint) argues that memory control can itself become a main so
 
 ## Results (LoCoMo with an LLM judge; gpt-4o-mini writes the answers; one run)
 
-- Overall 0.777 against 0.700 for the strongest baseline (MAGMA), a relative gain of 11.0%; other baselines were Full Context (0.481), A-MEM, MemoryOS and Nemori (self-reported).
-- Adversarial questions 0.962 against 0.742; temporal 0.637 against MAGMA's 0.650 (self-reported).
-- Total memory build time 158 s against 1,044 s for Nemori, the fastest competitor, and 3,636 s for A-MEM; average query time 0.93 s against 1.47 s for MAGMA and 32.68 s for MemoryOS (self-reported). Hardware and the controller backend are not stated.
+- Overall 0.777 against 0.700 for the strongest baseline (MAGMA), a relative gain of 11.0% (self-reported, LoCoMo with an LLM judge, one run); other baselines were Full Context (0.481), A-MEM, MemoryOS and Nemori (self-reported, same setup).
+- Adversarial questions 0.962 against 0.742; temporal 0.637 against MAGMA's 0.650 (self-reported, same LoCoMo setup).
+- Total memory build time 158 s against 1,044 s for Nemori, the fastest competitor, and 3,636 s for A-MEM (self-reported, LoCoMo build, hardware unstated); average query time 0.93 s against 1.47 s for MAGMA and 32.68 s for MemoryOS (self-reported, same setup). Hardware and the controller backend are not stated.
 
 ## Limits
 
 - No ablations: System One versus LLM control, each view, the stopping rule and the budget are untested, so the causal story is asserted.
-- One benchmark and one answer model, a single run, the judge model unnamed. The text says two benchmarks but describes only LoCoMo.
-- Baseline figures may come from the MAGMA paper, which shares a first author, and the timing conditions are unclear. The paper does not say whether the time spent in controller calls counts toward latency, and the controller's scores are not assumed to be calibrated.
-- Internal inconsistencies: prose in Section 4.2 gives 0.625 (multi-hop), 0.610 (open-domain) and 0.797 (single-hop), while Table 1 has 0.623, 0.618 and 0.802; the prose says it matches the best temporal score, but Table 1 shows 0.637 against 0.650; and it says "best in five of six categories" for a table with five categories plus overall. Table 1 is the version to prefer.
+- One benchmark and one answer model, a single run, the judge model unnamed. The extraction notes the text says two benchmarks but describes only LoCoMo.
+- The extraction notes baseline figures may come from the MAGMA paper, which shares a first author, and the timing conditions are unclear. The paper does not say whether the time spent in controller calls counts toward latency, and the controller's scores are not assumed to be calibrated.
+- The extraction notes internal inconsistencies: prose in Section 4.2 gives 0.625 (multi-hop), 0.610 (open-domain) and 0.797 (single-hop), while Table 1 has 0.623, 0.618 and 0.802; the prose says it matches the best temporal score, but Table 1 shows 0.637 against 0.650; and it says "best in five of six categories" for a table with five categories plus overall. Table 1 is the version to prefer.
 
 ## See Also
 - [[Memory Lifecycle]] — prerequisite-for

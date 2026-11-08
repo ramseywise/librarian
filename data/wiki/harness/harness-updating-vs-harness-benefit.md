@@ -35,3 +35,8 @@ The authors' advice is to put the capability budget into the agent that solves t
 - [[Harness Engineering]] — prerequisite-for
 - [[Harness Continual Learning]] — related (cites this paper for the point that repeated improvement alone gives no retention criterion)
 - [[Skill Authoring Discipline]] — related
+- [[Meta^n Recursive Operator Stack]] — related
+- [[MASS Multi-Agent Self-Supervision]] — related
+- [[Red Queen Gödel Machine]] — related
+- [[SoL-Pi Auto-Research Harness]] — related
+- [[ADAS Meta Agent Search]] — related

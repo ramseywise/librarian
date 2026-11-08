@@ -82,3 +82,4 @@ The harness doesn't get smaller. **It gets re-aimed.**
 - [[AutoHarness Synthesized Code Harness]] — related
 - [[Harness Continual Learning]] — related
 - [[Harness Updating vs Harness Benefit]] — related
+- [[SoL-Pi Auto-Research Harness]] — related

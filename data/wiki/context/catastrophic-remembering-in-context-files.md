@@ -13,15 +13,15 @@ The paper names a failure it calls catastrophic remembering: an LLM-maintained i
 
 ## Observational data (1,867 repositories)
 
-- Across 247,694 tracked instruction lifetimes, a file's instruction count rises 226% over its life. The median last version holds 39 instructions (90th percentile 131). Files gain 4.9 instructions per commit on average over 19,267 commits. Among repositories with multiple versions (n=1,576), 64.3% grew and 26.6% shrank.
-- The hazard of deletion falls with an instruction's age (slope -0.032 per commit, 95% CI -0.047 to -0.019). 77.3% of deaths happen in rewrites or migrations; a rewrite cuts a file to 59.5% of its size, and 91.5% of that regrows within 10 commits.
+- Across 247,694 tracked instruction lifetimes, a file's instruction count rises 226% over its life (self-reported, repository analysis). The median last version holds 39 instructions (90th percentile 131). Files gain 4.9 instructions per commit on average over 19,267 commits (self-reported, same analysis). Among repositories with multiple versions (n=1,576), 64.3% grew and 26.6% shrank (self-reported).
+- The hazard of deletion falls with an instruction's age (slope -0.032 per commit, 95% CI -0.047 to -0.019; self-reported, repository analysis). 77.3% of deaths happen in rewrites or migrations; a rewrite cuts a file to 59.5% of its size, and within 10 commits the file regrows to 91.5% of its prior size (all self-reported, repository analysis).
 
 ## Controlled study (simulated)
 
 An inverted IFEval loop with claude-haiku-4-5 as both maintainer and executor, where each history rewrites a prompt over time.
-- At 15 steps (552 histories, 3 seeds), excess size is +60.4% with no comments, -5.8% with informative "prompt comments" (notes addressed to whoever maintains the file next, removed before the executor reads the prompt) and +53.2% with comment-shaped noise.
-- At 51 steps (184 worlds, one seed), +211.3% falls to +1.4%. A narrative of past attempts without outcomes was the worst arm (+70.0%).
-- On WildIFEval (64 worlds, 16 distractors), satisfaction rises from 50.4% to 62.0% (+11.6 points, CI 5.1 to 18.3); a second judge gives +7.8 (self-reported).
+- At 15 steps (552 histories, 3 seeds), excess size is +60.4% with no comments, -5.8% with informative "prompt comments" (notes addressed to whoever maintains the file next, removed before the executor reads the prompt) and +53.2% with comment-shaped noise (self-reported, simulated loop).
+- At 51 steps (184 worlds, one seed), +211.3% falls to +1.4% (self-reported, simulated loop). A narrative of past attempts without outcomes was the worst arm (+70.0%, self-reported, same loop).
+- On WildIFEval (64 worlds, 16 distractors), satisfaction rises from 50.4% to 62.0% (+11.6 points, CI 5.1 to 18.3); a second judge gives +7.8 (all self-reported, simulated loop).
 
 ## Limits
 

@@ -46,3 +46,4 @@ Mind2Web: open-loop offline scoring, so a valid path missing from the cached dat
 - [[AgentBench]] — related (reuses both as environments)
 - [[MedBrowseComp]] — related (a later web-browsing benchmark)
 - [[ACI (Agent-Computer Interface)]] — related
+- [[DreamGym Synthetic Experience RL]] — related

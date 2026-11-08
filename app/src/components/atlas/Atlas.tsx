@@ -66,6 +66,9 @@ const BAND_LABEL_MIN = 14;
 const WIDE_QUERY = "(min-width: 760px)";
 const MAX_VIEW_ZOOM = 5;
 const DRAG_SLOP = 4;
+/** Backing pixels per canvas when re-rendering for a zoom: past this a bigger bitmap costs more than it shows. */
+const MAX_CANVAS_PX = 16e6;
+const SHARPEN_MS = 150;
 
 const reducedMotion = () =>
   typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -170,7 +173,8 @@ export function Atlas({
   // ring is still drawn in its own coordinates, so hit tests map the pointer back through it.
   const worldRef = useRef<HTMLDivElement>(null);
   const view = useRef({ k: 1, x: 0, y: 0 });
-  const [viewZoomed, setViewZoomed] = useState(false);
+  const [viewK, setViewK] = useState(1);
+  const viewZoomed = viewK > 1;
   const dragRef = useRef<{ x: number; y: number; vx: number; vy: number; moved: boolean } | null>(null);
   const suppressClick = useRef(false);
 
@@ -181,7 +185,7 @@ export function Atlas({
     v.x = Math.min(0, Math.max(width * (1 - v.k), v.x));
     v.y = Math.min(0, Math.max(height * (1 - v.k), v.y));
     if (worldRef.current) worldRef.current.style.transform = `translate(${v.x}px, ${v.y}px) scale(${v.k})`;
-    setViewZoomed(v.k > 1);
+    setViewK(v.k);
   }, []);
 
   /** Zoom by `factor` about a point in stage coordinates (the centre by default). */
@@ -253,6 +257,26 @@ export function Atlas({
     };
     drawHot(ctx, frame);
   }, []);
+
+  // Once a zoom settles, redraw at the zoomed resolution so the scaled bitmap stays sharp.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const d = draw.current;
+      const base = window.devicePixelRatio || 1;
+      const { width, height } = d.g;
+      const dpr = Math.max(base, Math.min(base * viewK, Math.sqrt(MAX_CANVAS_PX / Math.max(1, width * height))));
+      if (Math.abs(dpr - d.dpr) < 0.01) return;
+      d.dpr = dpr;
+      for (const canvas of [baseRef.current, hotRef.current]) {
+        if (!canvas) continue;
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+      }
+      paintBase(false);
+      paintHot();
+    }, SHARPEN_MS);
+    return () => clearTimeout(timer);
+  }, [viewK, paintBase, paintHot]);
 
   // --- Size ---------------------------------------------------------------------------
   useLayoutEffect(() => {

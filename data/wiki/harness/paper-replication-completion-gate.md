@@ -42,3 +42,5 @@ Setup for the results below: Codex running GPT-5.4 with extra-high reasoning; 4 
 - [[Spec, Verifier, Environment Layering]] — related
 - [[Three-Layer Termination Check]] — related
 - [[Long-Horizon Execution]] — related
+- [[AiScientist File-as-Bus]] — related
+- [[CodeScientist Semi-Automated Discovery]] — related

@@ -2,7 +2,7 @@
 title: "Weight Initialisation and Activation Scale"
 tags: [foundations, concept]
 summary: "Initial weight scale decides whether the signal survives the layers: too small or too large and a deep net never trains, while He (ReLU) and Glorot (tanh) scales keep activation spread stable; measure first-layer and last-layer activation std before blaming the optimiser."
-updated: 2026-11-04
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--notes--02-optimisation-and-regularisation.md
   - data/raw/repos/learn-ai-engineering/data-science--02-deep-learning--README.md
@@ -40,3 +40,4 @@ With tanh at six layers: a small std gave 0.330, He 0.975, Glorot 0.970, the las
 - [[Batch Normalization]] — related
 - [[Gradient Checking with Finite Differences]] — related
 - [[Adam, AdamW and Decoupled Weight Decay]] — related (the next check)
+- [[BitNet b1.58 Ternary Weights]] — related (weights restricted to three values from the start of training)

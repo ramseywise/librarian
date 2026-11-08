@@ -22,8 +22,8 @@ WebThinker wraps a large reasoning model (QwQ-32B in the main runs) in a loop th
 
 - No images, video or GUI browsing; single-run Pass@1 with no error bars; no cost, latency or tool-call counts.
 - Report evaluation is 30 synthetic Glaive questions with LLM judges only. OpenAI Deep Research is far ahead where reported (GAIA 67.4 against 48.5).
-- Headline gains over Search-o1 mix relative and absolute figures, and the intro and results give different numbers.
-- Internal inconsistency: Section 4.7 gives 44.9 for the RL model's average, Table 3 gives 45.4.
+- The extraction notes that headline gains over Search-o1 mix relative and absolute figures, and the intro and results give different numbers.
+- The extraction notes an internal inconsistency: Section 4.7 gives 44.9 for the RL model's average, Table 3 gives 45.4.
 
 ## See Also
 - [[Deep Research Agent Systems]] — prerequisite-for

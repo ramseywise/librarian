@@ -157,7 +157,7 @@ control flow the only variable. Lessons from keeping the shared pipeline clean:
 
 A best-practices study (Mistral-7B-Instruct-v0.2, all-MiniLM-L6-v2 with FAISS, TruthfulQA 817 questions and MMLU 1824) reports, self-reported and from single runs, that retrieving a contrastive pair of examples (one right, one wrong) beat every other variant; MMLU ROUGE-L went from 8.91 to 23.87. The extraction notes the retrieval corpus is the evaluation data with the active query masked, so this is a few-shot setup rather than retrieval from an independent corpus. Sentence-level filtering ranked second (TruthfulQA ROUGE-L 25.51 against 23.86). Baseline RAG on MMLU FActScore (63.73) sat below no retrieval (64.58).
 
-## Limits of the paper evidence
+## Limits
 
 - The text says no-RAG consistently underperforms, but the MMLU row shows the opposite. No significance test appears in the extraction.
 

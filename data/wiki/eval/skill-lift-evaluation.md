@@ -47,7 +47,7 @@ Results (self-reported):
 - Of the 87 tasks, 13 showed a negative skills delta pooled over the 18 configurations.
 - Domain gain ranged from Natural Science (42.0 to 70.8, 14 tasks) down to Mathematics and OR (45.7 to 55.4, 8 tasks).
 
-## Skills in the wild: retrieval, loading and refinement (Liu et al. 2026)
+## Skills in the wild: retrieval, loading and refinement (Liu et al. 2026, all figures self-reported)
 
 Liu et al. (UCSB and MIT; an April 2026 preprint under review) re-run SkillsBench (84 of its 87 tasks, 3 runs each, Claude Opus 4.6 in Claude Code) while making skill access more realistic, drawing on a pool of 34,198 skills collected from two public registries. Pass rates (self-reported) fall as the setup loosens: 55.4 when the skills are force-loaded, then 51.2 curated, 43.5 with distractors added, 40.1 with top-5 retrieval alongside curated skills, and 38.4 with retrieval alone; no skill at all gave 35.4. Claude loaded all curated skills in 49% of trajectories (31% with distractors). Without curated skills, Kimi K2.5 (19.8 against 21.8 with none) and Qwen3.5-397B (19.7 against 20.5) fell below their no-skill baselines, each in its own harness.
 

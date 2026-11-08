@@ -120,3 +120,4 @@ producing "needs human re-scope."
 - [[Reproduce to Tell a Break From a Stuck Agent]] — extends (harness exhaustion masquerading as a break)
 - [[Bounding Agents Rather Than Trusting Them]] — instance-of (the fourth bound)
 - [[Aegean Stability-Horizon Consensus]] — instance-of (quorum plus stability horizon as a stopping rule)
+- [[Strategy Lock-In in Post-Training Agents]] — related

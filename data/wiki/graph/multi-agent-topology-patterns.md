@@ -1,6 +1,6 @@
 ---
 title: Multi-Agent Topology Patterns
-tags: [graph, langgraph, agents, comparison]
+tags: [graph, langgraph, agents, comparison, conflict]
 summary: "The five recurring graph shapes (generate-then-verify, supervisor, fan-out/fan-in, subgraph, handoff), what each costs and how each fails, plus the two design questions underneath them: is context shared, and who decides what runs next."
 updated: 2026-11-08
 sources:
@@ -169,3 +169,7 @@ bytes**, so every interface needs a contract the receiver can check.
 - [[SAT Self-Organizing Agent Teams]] — instance-of
 - [[Agent Primitives Latent Composition]] — instance-of
 - [[CAID Centralized Asynchronous Isolated Delegation]] — instance-of
+- [[Self-MoA Single-Model Aggregation]] — instance-of (one strong model sampled several times and aggregated, against mixed-model mixtures)
+- [[TUMIX Tool-Use Mixture]] — instance-of (heterogeneous tool-using agents refining over rounds with LLM-judged stopping)
+- [[Archon Inference-Time Architecture Search]] — instance-of (layered generate, critique, rank and fuse stack chosen by Bayesian search)
+- [[HSE and Router Robustness in Model Societies]] — related (whether a model pool is diverse enough for routing to matter)

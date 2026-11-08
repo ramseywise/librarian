@@ -11,6 +11,7 @@ sources:
   - data/raw/notion/2026-06-04-hypernova-mcp-server-poc.md
   - data/raw/agent-skills/langchain-rag/references/advanced-patterns.md
   - data/raw/repos/learn-ai-engineering/ai-engineering--03-harness-engineering--notes--03-tool-design.md
+  - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch07-enabling-agents-to-take-action.md
 ---
 
 # MCP Protocol
@@ -177,6 +178,10 @@ With `observability: enabled`:
 
 See Hypernova MCP for the full production deployment of this pattern.
 
+## Limits stated in a 2025 book
+
+Lakshmanan and Hapke (Generative AI Design Patterns, ch. 7) list three MCP limits as of May 2025 and flag them as likely to date: the protocol does not enforce authentication or authorisation; communication is mostly one-way, with agent-to-agent protocols arriving to fill it; and standard calls were terminated after 30-60 seconds depending on network setup, with streamable HTTP enabling longer streams. Their split of work: MCP eases supplying tool definitions, while a client framework eases invoking tools and returning results. Stdio transport suits Python-only clients and streamable HTTP other languages or machines.
+
 ## See Also
 - [[Karpathy LLM Wiki Pattern]]
 - [[ADK Context Engineering]]
@@ -191,3 +196,4 @@ See Hypernova MCP for the full production deployment of this pattern.
 - [[MCP Server Architecture Patterns]] — instance-of (five server patterns and a tool-count budget)
 - [[Alita]] — related (generated tool scripts packaged as MCPs)
 - [[Agent Communication Protocol Taxonomy]] — related
+- [[EvoOntology Self-Evolving Ontology Layer]] — related (an ontology served to a data agent through browse and resolve MCP tools)

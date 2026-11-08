@@ -11,7 +11,7 @@ sources:
 
 Ruan et al. (arXiv 2512.20184, December 2025 preprint) start from a failure of simple majority
 voting across refinement rounds: agents revise once they see their peers' reasoning, and the majority may therefore flip
-from one round to the next, and a fixed round limit or a stop-at-majority rule can commit a transient state.
+from one round to the next, and a protocol that halts at a set round count, or at the first majority, can lock in an answer that is only momentary.
 
 ## Mechanism
 
@@ -23,8 +23,8 @@ embedding similarity or an LLM judge. A fast path finalizes when a
 quorum is stable for two rounds; a slow path covers an overturned majority. The serving engine
 exposes dispatch, completion callback, cancel and ensemble-state calls. Safety and liveness
 proofs (refinement validity, monotonicity, termination) rest on an assumption that an agent given several
-solutions can reach the quality of the best (the authors do not prove this for LLMs), plus at most
-half-minus-one agents that stop on failure, and a partially synchronous network.
+solutions can reach the quality of the best (the authors do not prove this for LLMs), plus a failure model in which up to
+⌈(N−1)/2⌉ agents may fail-stop, and a partially synchronous network.
 
 ## Results (self-reported)
 

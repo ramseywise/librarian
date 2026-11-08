@@ -41,3 +41,6 @@ Setup: Qwen3.5-4B, the authors' Leaf harness (five typed tools, natural terminat
 - [[DAPO]] — related
 - [[Composer 2 Training Recipe]] — related
 - [[Tool Design as Harness Surface]] — related
+- [[DreamGym Synthetic Experience RL]] — alternative-to
+- [[AutoGym Blueprint-First Verifiable Gyms]] — alternative-to
+- [[AgenticQwen Dual Data Flywheels]] — alternative-to

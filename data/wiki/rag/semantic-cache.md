@@ -134,13 +134,19 @@ The same `multilingual-e5-base` embedding model routes by intent type using pre-
 
 ## Plan Reuse Variant (AgentReuse)
 
-AgentReuse (a 2025 preprint) caches agent plans rather than answers. It embeds the request, classifies its intent, strips the key parameters, and searches the cache only within that intent; on similarity of at least 0.75 it reuses the stored plan and fills in the new parameters. Setup: a Chinese smart-assistant dataset of 23 intents and 2,664 requests (a figure the text also gives as 2,644), an m3e-small embedder and a flat inner-product FAISS index.
-- Matching: F1 0.9718 and accuracy 0.9459 against 0.9100 and 0.8366 for GPTCache; keeping raw text with the arguments scores 0.9035 and 0.8272 (self-reported).
-- Latency is 93.12% below calling the model for every plan and 60.61% below GPTCache; the first figure depends on assuming 31.8 s for each plan-generation call and leaves out execution time. Reused plans gave identical responses in 93 of 100 AutoGen trials (20 requests, 5 repeats).
-- Overhead is about 100 MB of GPU memory and 9.2 ms with an existing intent classifier, or about 500 MB and 23.5 ms without one. The premise that about 30% of requests are similar comes from earlier work the paper cites.
-- Limits: Chinese assistant commands only, one embedder, described by the authors as exploratory; internal inconsistencies include 2,664 against 2,644 requests, a line saying overhead does not exceed 1 ms next to 5.228 ms values, and "60.61 percentage points" for a relative reduction.
+AgentReuse (a 2025 preprint) caches agent plans rather than answers. It embeds the request, classifies its intent, strips the key parameters, and searches the cache only within that intent; on similarity of at least 0.75 it reuses the stored plan and fills in the new parameters. Setup: a Chinese smart-assistant dataset of 23 intents and 2,664 requests (see Limits), an m3e-small embedder and a flat inner-product FAISS index.
+- Matching: F1 0.9718 and accuracy 0.9459 against 0.9100 and 0.8366 for GPTCache; keeping raw text with the arguments scores 0.9035 and 0.8272 (all self-reported, threshold 0.75 on that dataset).
+- Latency is 93.12% below calling the model for every plan (self-reported, assuming 31.8 s for each plan-generation call, execution time excluded) and 60.61% below GPTCache (self-reported, same dataset; see Limits on the unit). Reused plans gave identical responses in 93 of 100 AutoGen trials (self-reported; 20 requests, 5 repeats).
+- Overhead is about 100 MB of GPU memory and 9.2 ms per request with an existing intent classifier, or about 500 MB and 23.5 ms without one (self-reported, per-request estimates). The premise that about 30% of requests are similar comes from earlier work the paper cites, not from a measurement in the paper.
 
 ---
+
+## Limits
+
+AgentReuse (the plan-reuse section above):
+
+- Chinese assistant commands only and one embedder; the authors describe the work as exploratory. The 93.12% latency figure rests on an assumed per-plan cost, not a measured end-to-end run.
+- The extraction notes internal inconsistencies: the request count appears as 2,664 and as 2,644; a line says other overhead does not exceed 1 ms next to values of 5.228 ms; and one passage calls the 60.61% latency reduction "60.61 percentage points" although it is a relative reduction.
 
 ## See Also
 - [[RAG Evaluation]] <!-- auto-linked -->
@@ -150,5 +156,5 @@ AgentReuse (a 2025 preprint) caches agent plans rather than answers. It embeds t
 - [[CRAG Retry Logic]]
 - [[RAG Retrieval Strategies]]
 - [[Agentic RAG — Advanced Patterns]]
-- [[Agent Cognitive Compressor]] — related (reuse of structured state instead of raw plans)
+- [[ACC Bounded Memory Control for Agents]] — related (reuse of structured state instead of raw plans)
 - [[Cache-Augmented Generation]] — related (caches attention state for a whole corpus, not answers)

@@ -2,7 +2,7 @@
 title: Loop Autonomy Ladder
 tags: [llm, agents, infra, pattern]
 summary: "Four rungs of handoff — tool approval, stop condition, trigger, session — climbed one at a time, each earned with a verifier that has been observed catching a real failure."
-updated: 2026-10-30
+updated: 2026-11-08
 sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--04-loop--loop-autonomy-ladder.md
   - data/raw/repos/learn-ai-engineering/interviewing--notes--loop-engineering.md
@@ -166,3 +166,6 @@ just on failure.
 - [[Execution Boundaries and Guardrails]] — extends
 - [[Loop Scorekeeper]] — extends
 - [[Loop State File]] — extends
+- [[Self-Evolving Agent Taxonomies]] — related
+- [[SAGA Goal-Evolving Science Agents]] — related
+- [[CodeScientist Semi-Automated Discovery]] — related

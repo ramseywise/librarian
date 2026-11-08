@@ -20,6 +20,7 @@ sources:
   - data/raw/repos/learn-ai-engineering/ai-engineering--06-eval--notes--11-production-and-the-maturity-ladder.md
   - data/raw/papers/2026-11-07-building-applications-with-ai-agents-ch10-monitoring-production.md
   - data/raw/papers/2026-11-07-huyen-ai-engineering-ch10-ai-engineering-architecture-user-feedback.md
+  - data/raw/papers/2026-11-06-lakshmanan-hapke-genai-design-patterns-ch10-composable-agentic-workflows.md
 ---
 
 # User Feedback Loops
@@ -128,6 +129,10 @@ Huyen (*AI Engineering*, O'Reilly, chapter 10) separates **explicit** feedback (
 - **Training on feedback.** Huyen advises care with degenerate feedback loops, where predictions shape the feedback that shapes the next model, and with sycophancy.
 
 Limits: the chapter admits it does not know which gives more reliable feedback, full or partial side-by-side responses, and the rewrite of Uber's rating options is not validated. Neither chapter has experiments of its own.
+
+## Copilot mode and agent mode (Lakshmanan and Hapke)
+
+Their composable-workflow chapter treats agent mode as copilot mode where the user accepts every recommendation, so one workflow serves both. Feedback is collected through the interface: both the generated draft and the person's edited version are stored, and a changed decision (for example a different writer assigned) is logged. If people have to leave the application to complete the task, the agent never sees the context it would need to learn from. They add that organic feedback alone is not enough (volume, detail hidden by last-step edits, automation fatigue, wrong labels) and pair it with a data program, tie steps to delayed business outcomes, and sample logs at scale. No numbers are given.
 
 ## See Also
 - [[Eval Ladder]] — related (part of; rung 4)
