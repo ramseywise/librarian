@@ -9,8 +9,10 @@ sentence. Read `.claude/skills/pillar/references/pillar-layout.md` ("notes/" and
 or `/papers`, not this skill.
 
 Checks run here over `data/courses/` (`make chapter-check`, `make link-check`, `librarian courses check curriculum`);
-the ledger, PDFs and `scripts/papers/` stay in `../learn-ai-engineering`, but lessons are authored and edited in
-`data/courses/` directly (the importer is retired).
+the ledger, PDFs and `scripts/papers/` stay in `../learn-ai-engineering`, but lessons are authored in
+`../learn-ai-engineering` and mirrored into `data/courses/`: edit the sibling's note, then run
+`uv run librarian courses import --subject <course>` here. A file edited here is never overwritten (the import
+reports it as `kept_local_edit`), but it also stops following the sibling.
 
 ## Step 1 — Place it
 

@@ -7,6 +7,10 @@ You are turning one pillar's notes into a lecture deck. The notes are the source
 The deck is a talk built on them: one idea per slide, with the evidence kept in. It is not
 the notes reflowed onto slides.
 
+A deck whose first line is `# imported_hash:` is mirrored from `../learn-ai-engineering`: edit the sibling's
+`slides/` spec, run `uv run librarian courses import --subject <course>`, then build here. A deck written here with
+no hash is this repo's own, and the import leaves it alone.
+
 The rendering is deterministic. You write a YAML spec, and `src/librarian/tools/slides/build_deck.py`
 draws it. Never hand-edit the `.pptx`. Edit the YAML and rebuild.
 

@@ -115,6 +115,9 @@ GROUPS: dict[str, dict[str, Verb]] = {
         "feeds": Verb("librarian.ingest.scrape_feeds:main", help="RSS/blog feeds"),
         "arxiv": Verb("librarian.ingest.scrape_arxiv:main", help="arXiv papers"),
         "bookmarks": Verb("librarian.ingest.scrape_bookmarks:main", help="saved web pages"),
+        "extractions": Verb(
+            "librarian.ingest.scrape_extractions:main", help="course reading extractions"
+        ),
     },
     "index": {
         "build": Verb("librarian.retrieval.artifact:main", help="build a search index artifact"),

@@ -20,18 +20,16 @@ paper into citations and findings in the notes.
 This skill spans two checkouts. The reading pipeline exists only in the sibling `learn-ai-engineering` repo
 (`../learn-ai-engineering`, the same checkout as `COURSE_SOURCES_DIR`): `scripts/papers/` (`potw.py`, the ledger,
 `extract.py`, `figures.py`, `citegraph.py`), the PDFs under `<home>/sources/` and the extractions. The notes are
-authored here. Paths below are written as the ledger gives them, relative to the sibling.
+authored there too and mirrored here. Paths below are written as the ledger gives them, relative to the sibling.
 
 - **In the sibling** (`cd ../learn-ai-engineering` first): every `scripts/papers/` command, every `make papers*`,
   `ledger-check` and `extract-*` target, and every `sources/` path.
-- **In this repo:** the notes. A ledger `note` such as `ai-engineering/02-context-engineering/notes/05-x.md` is
-  `data/courses/ai-engineering/02-context-engineering/notes/05-x.md` here, and so are the home's `references.md`
-  and `README.md`. Lessons are authored in `data/courses/` only (the importer is retired): never edit the sibling's
-  copy of a note. `make chapter-check`, `make link-check` and `/curriculum` run here.
-- **`mark integrated`** runs in the sibling and looks for the citation in the sibling's copy of the note and
-  `references.md`, which edits made here do not change. If it refuses for that reason, check that the citation is in
-  the `data/courses/` note and `references.md`, then rerun with `--no-citation "authored in librarian data/courses"`.
-  The user sees every such exception.
+- **Edit the sibling's note**, `references.md` and `README.md` (a ledger `note` path such as
+  `ai-engineering/02-context-engineering/notes/05-x.md` is relative to the sibling), then mirror them here with
+  `uv run librarian courses import --subject <course>`. The mirror lands at `data/courses/<same path>` (modules are
+  lower-cased); a file edited in `data/courses/` is never overwritten and stops following the sibling, so do not
+  edit the mirror. `make chapter-check`, `make link-check` and `/curriculum` run here, after the import.
+- **`mark integrated`** runs in the sibling and finds the citation in the sibling's note and `references.md`.
 - **The `source-reader` agent** in this repo is read-only and writes no extraction. The reader that writes
   `scripts/papers/extractions/<key>.json` is the sibling's (it has the Write tool). Where a step below says the reader
   writes or checks an extraction, run that step in a session started in the sibling, or note in the report that the
@@ -210,4 +208,4 @@ Don't commit — the user reviews the diff.
 
 ## Chapter standard and subject homes
 
-A note you touch must still meet the chapter section of `.claude/skills/pillar/references/pillar-layout.md`. Run `make chapter-check PILLAR=<pillar>` after editing (here it checks `data/courses/`; edit lessons there). In the four subject areas, notes live in `<subject>/<NN-pillar>/notes/` and PDFs stay in `<subject>/sources/`. Add the row to the `references.md` of the pillar whose note it maps to.
+A note you touch must still meet the chapter section of `.claude/skills/pillar/references/pillar-layout.md`. Run `make chapter-check PILLAR=<pillar>` after editing (here it checks the `data/courses/` mirror; edit in the sibling and import first). In the four subject areas, notes live in `<subject>/<NN-pillar>/notes/` and PDFs stay in `<subject>/sources/`. Add the row to the `references.md` of the pillar whose note it maps to.

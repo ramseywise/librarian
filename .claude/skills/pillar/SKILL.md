@@ -12,8 +12,10 @@ Check each note with `make chapter-check PILLAR=<pillar>` and list what falls sh
 `uv run librarian courses check curriculum issues --pillar <pillar>` for what falls short in how the notes connect, and fix it through `/curriculum fix <pillar>`.
 
 Checks run here over `data/courses/` (`make chapter-check`, `make link-check`, `librarian courses check curriculum`);
-the ledger, PDFs and `scripts/papers/` stay in `../learn-ai-engineering`, but lessons are authored and edited in
-`data/courses/` directly (the importer is retired).
+the ledger, PDFs and `scripts/papers/` stay in `../learn-ai-engineering`, but lessons are authored in
+`../learn-ai-engineering` and mirrored into `data/courses/`: edit the sibling's note, then run
+`uv run librarian courses import --subject <course>` here. A file edited here is never overwritten (the import
+reports it as `kept_local_edit`), but it also stops following the sibling.
 
 The pillar's content is the point. Do not rewrite notes that already work. Move, rename,
 add frontmatter, write the missing README and references.md, and fold vendored material

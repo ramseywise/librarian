@@ -4,7 +4,7 @@ description: "Keep the course one coherent whole as it grows. Shows the curricul
 ---
 <!-- Generated from .claude/skills/_shared/curriculum.md in the librarian repo (uv run python -m librarian.tools.skillsync sync). Edit the template, not this file. -->
 
-You keep the curriculum integrated. Paths are relative to `data/courses/` in this repo. Lessons are authored and edited there directly (the importer is retired). PDF, paper and ledger steps stay in the sibling (`cd ../learn-ai-engineering`). Every new note makes the course bigger, and only integration makes it better:
+You keep the curriculum integrated. Paths are relative to `data/courses/` in this repo, the mirror of `../learn-ai-engineering`. Read and check here; make edits in the sibling's copy of the same path, then run `uv run librarian courses import --subject <course>`. PDF, paper and ledger steps stay in the sibling (`cd ../learn-ai-engineering`). Every new note makes the course bigger, and only integration makes it better:
 a chapter nobody links to, or one that repeats another under a new name, is a net cost.
 
 The map (`librarian courses check curriculum`, over `data/courses/`) answers structure, and the `curriculum-steward` agent answers what takes

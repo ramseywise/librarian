@@ -10,8 +10,16 @@ Moved from CLAUDE.md. Contract summary stays in CLAUDE.md: courses are authored 
   `order`, optional `section`, `kind` (`reading` | `notebook`), and `wiki: [page-id, …]`
   to link concepts explicitly. Inline `[[Wiki Page]]` links work too. Images go in the
   module's `assets/` and are referenced relatively.
-- Lessons are authored here; the one-off import from `../learn-ai-engineering` ended 2026-11-06 and
-  the importer is gone. Edit `data/courses/` directly. Drills are the `drills` module of the
+- `../learn-ai-engineering` is the source and `data/courses/` its mirror: notes, `slides/` deck specs
+  and practice code are authored there and brought in with `uv run librarian courses import [--subject X]
+  [--dry-run]` (`make import-courses`; `src/librarian/courses/importer.py`). Generated lessons and decks carry an
+  `imported_hash` line; a file edited here (hash mismatch) or written here with no hash is never overwritten
+  and is reported as `kept_local_edit`. Practice code comes by sibling git history: files committed since the
+  commit recorded in `_mirror.json` are copied when their lab folder is already mirrored (a new lab folder is
+  logged as `practice_folder_not_mirrored` and stays a decision), and each `practice/manifest.yaml` is
+  rewritten to the mirror's file names. Book and paper figures, including a subject home's `sources/images/`,
+  go to the private mirror only. `--adopt REV` takes back hashless files unchanged since librarian commit
+  REV (used once, after the 2026-11-06 import stripped the hashes). Drills are the `drills` module of the
   Programming course (`programming/drills`); the root `.gitignore` keeps local files out of it. Never copy
   from sisyphus (private; `jobs/` is personal PII).
   Drill files (frontmatter with a `track`, schema in `programming/drills/README.md`) are
@@ -33,14 +41,14 @@ Moved from CLAUDE.md. Contract summary stays in CLAUDE.md: courses are authored 
   interview prep. It is the publication gate: anything there stays on this machine. The catalog serves
   it to the local UI as part of its course with `private: true`, but it never reaches the search index,
   MCP, the curriculum snapshot, the gap list or a public lesson's prev/next. Nothing public links into it.
-  Two kinds of file live only in the mirror, maintained by hand, with the public lessons unchanged
+  Two kinds of file live only in the mirror, written by the importer (or by hand), with the public lessons unchanged
   (`librarian.courses.overlay`): book and paper figures with no licence to share (all of `<module>/assets/sources/...`
   and named figures elsewhere in `assets/`; the asset route and deck builder fall back to the mirror, the UI hides a figure that is in neither tree) and each module's
   `readings:` list (`private/<course>/<module>/_module.md`, merged by the catalog; the public
   `_module.md` keeps `readings_count`). Lessons' `sources/` links
   are resolved at render time through `COURSE_SOURCES_DIR` (default `../learn-ai-engineering`) and
   served by `GET /api/courses/sources/<path>`, local only (`SERVE_COURSE_SOURCES=false` turns it off).
-  The sibling supplies nothing else: only those `sources/` PDFs.
+  PDFs are never copied: a cited reading is a link into the sibling.
   `data/concept_homes.json` (hand-edited) lists the maths concepts and the lessons that teach them, for `courses check curriculum`.
 - **Media is built here, for every course.** Deck specs are `<course>/<module>/slides/deck.yaml`
   or `slides/lectures/NN-slug.yaml`, images are in the module's `assets/`, and `src/librarian/tools/slides/`

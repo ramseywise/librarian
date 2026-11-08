@@ -14,7 +14,8 @@ home, a note and a relevance score. Route moves its PDF to the home's `sources/`
 
 Every command in this skill is the reading pipeline, and the pipeline exists only in the sibling
 `learn-ai-engineering` repo (`../learn-ai-engineering`): `cd ../learn-ai-engineering` before running any of them.
-`/papers` and `/chapter` then write the findings into the notes in this repo's `data/courses/`.
+`/papers` and `/chapter` then write the findings into the sibling's notes, and
+`uv run librarian courses import` mirrors them into this repo's `data/courses/`.
 
 Nothing leaves the repo. A reading with no home stays in the ledger as `parked` (worth
 knowing: interest 2–3) or `skipped` (not for this course). If `status --list parked` shows a

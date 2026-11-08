@@ -4,8 +4,9 @@ description: "Author and wire one piece of practice material: a drill in program
 ---
 
 You add one piece of practice material and leave it wired in, checked and reviewed. The checks and the reviewer
-run here over `data/courses/` (paths below are relative to it). Drills and rounds are authored in `data/courses/` directly; licence files
-(`THIRD_PARTY.md`) remain in `../learn-ai-engineering`. Private drills (`data/courses/private/`) are never checked or named. Practice tests what the notes
+run here over `data/courses/` (paths below are relative to it). Drills, rounds and lab code are authored in `../learn-ai-engineering` and mirrored here with
+`uv run librarian courses import --subject <course>` (lab code once committed there; a new lab folder is reported as
+`practice_folder_not_mirrored` for the user to decide); licence files (`THIRD_PARTY.md`) remain in `../learn-ai-engineering`. Private drills (`data/courses/private/`) are never checked or named. Practice tests what the notes
 teach, so a new file never becomes the only home of a topic.
 
 `$ARGUMENTS` is a path to wire, or `drill <track> <topic> "<idea>"`, or `round <round> "<idea>"`.
